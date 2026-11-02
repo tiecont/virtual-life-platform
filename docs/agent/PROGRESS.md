@@ -49,3 +49,14 @@ M01-05 remote acceptance scope changed by explicit owner instruction to code off
 DB: only city foundation migration (platform_metadata plus checksum journal); repeated/concurrent application and transactional DDL rollback tested. No legacy database migration, no user data imported. Boundary checker rejects cross-app/world internals, deep package imports and manifest cycles. Further dynamic-code security review remains M22.
 
 Next exact action: M02-01..05 architecture ownership, adapter/migration order and single-owner/future fencing ADRs; verify boundaries and architecture consistency before M03. W0 remains IN_PROGRESS until M02.
+
+## M02-01..05 — VERIFIED architecture deliverables; W0 VERIFIED locally
+
+Changed architecture context/container/module map, service-port responsibilities, DB ownership/transaction and migration boundaries, concrete adapter compatibility references, authority/transport ADR 0003, future lease/fencing/routing/split-brain design and invariant verification map. Current and future features explicitly distinguished. Executable ownership checker reads actual SQL migrations and guards imports; added architecture:check to root check.
+
+- `node scripts/verify-architecture.mjs` → 0 (m02-architecture.log): 1 actual SQL table + separate journal owner, 15 source files checked.
+- `pnpm lint` → 0 (m02-lint.log).
+- `node --test tests/governance/*.test.mjs` → 0, 7 tests (m02-governance-tests.log).
+- App code/types/build unchanged from M01 verified baseline; no repeat gameplay/runtime claim from specification checks. No DB changes in M02.
+
+W0 AUD + M00–M02 VERIFIED for offline local scope. W1 and later NOT_VERIFIED; no public release. Next exact action M03-01..06: identity migration compatibility design, signed host-only city session cookie, guest/upgrade/rotation/logout, private choices/export/delete and deny-by-default restricted admission; verify actual PG/HTTP and browser flows before downstream M04/M05.

@@ -7,3 +7,4 @@
 | D-003 | Governance/architecture modules verified against relevant spec deliverables; no false runtime claims | Accepted task interpretation | ADR 0001; dependencies remain strict including remote PR acceptance |
 | D-004 | Offline-only owner scope: implement/verify CI locally; remote PR and required checks later | Explicit owner instruction | ADR 0002 supersedes ADR 0001 remote dependency gate |
 | D-005 | Pin installed Node 26.9.0 and audited TS/Nest/Next/Drizzle; separate city PostgreSQL | Accepted local implementation | ADR 0002; m01-check.log |
+| D-006 | Single process room authority, Socket.IO when M06 mounts it, PostgreSQL critical transitions; fencing before multiple replicas | Accepted design | ADR 0003; future design is not implemented |

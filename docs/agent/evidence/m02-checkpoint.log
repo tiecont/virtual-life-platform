@@ -1,0 +1,45 @@
+{
+  "modules": {
+    "M00": "VERIFIED",
+    "M01": "VERIFIED",
+    "M02": "VERIFIED",
+    "M03": "PENDING",
+    "M04": "PENDING",
+    "M05": "PENDING",
+    "M06": "PENDING",
+    "M07": "PENDING",
+    "M08": "PENDING",
+    "M09": "PENDING",
+    "M10": "PENDING",
+    "M11": "PENDING",
+    "M12": "PENDING",
+    "M13": "PENDING",
+    "M14": "PENDING",
+    "M15": "PENDING",
+    "M16": "PENDING",
+    "M17": "PENDING",
+    "M18": "PENDING",
+    "M19": "PENDING",
+    "M20": "PENDING",
+    "M21": "PENDING",
+    "M22": "PENDING",
+    "M23": "PENDING",
+    "M24": "PENDING"
+  },
+  "ready": [
+    "M03-01",
+    "M03-02",
+    "M03-03",
+    "M03-04",
+    "M03-05",
+    "M03-06",
+    "M21-01",
+    "M21-02",
+    "M21-03",
+    "M21-04",
+    "M21-05",
+    "M21-06"
+  ],
+  "blocked": []
+}
+Governance consistency verified; no gameplay or release claim.

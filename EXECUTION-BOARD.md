@@ -15,11 +15,11 @@
 | M01 | M01-04 · Create local development stack and reproducible env examples. | VERIFIED | docs/agent/evidence/m01-check.log (offline scope ADR 0002) |
 | M01 | M01-05 · Add CI on PR + required checks, caches and artifact outputs. | VERIFIED | docs/agent/evidence/m01-check.log (offline scope ADR 0002) |
 | M01 | M01-06 · Document onboarding for other agents and human developers. | VERIFIED | docs/agent/evidence/m01-check.log (offline scope ADR 0002) |
-| M02 | M02-01 · Document context/container/module architecture and domain ownership (C4 lightweight). | TODO | — |
-| M02 | M02-02 · Specify DB ownership, module service APIs and transactional boundaries. | TODO | — |
-| M02 | M02-03 · Specify adapter-first integration for two existing projects. | TODO | — |
-| M02 | M02-04 · Create architecture decision records for room authority, transport and persistence. | TODO | — |
-| M02 | M02-05 · Specify multi-instance design for future use without implementing prematurely. | TODO | — |
+| M02 | M02-01 · Document context/container/module architecture and domain ownership (C4 lightweight). | VERIFIED | docs/agent/evidence/m02-architecture.log |
+| M02 | M02-02 · Specify DB ownership, module service APIs and transactional boundaries. | VERIFIED | docs/agent/evidence/m02-architecture.log |
+| M02 | M02-03 · Specify adapter-first integration for two existing projects. | VERIFIED | docs/agent/evidence/m02-architecture.log |
+| M02 | M02-04 · Create architecture decision records for room authority, transport and persistence. | VERIFIED | docs/agent/evidence/m02-architecture.log |
+| M02 | M02-05 · Specify multi-instance design for future use without implementing prematurely. | VERIFIED | docs/agent/evidence/m02-architecture.log |
 | M03 | M03-01 · Audit old guest/token/cookie/session flows; design migration for existing users. | TODO | — |
 | M03 | M03-02 · Implement identity endpoints, signed secure cookies, session rotation/logout and optional guest sessions. | TODO | — |
 | M03 | M03-03 · Implement public user profile (nickname, avatar selection, visibility) and distinct private prefs. | TODO | — |

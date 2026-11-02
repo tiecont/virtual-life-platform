@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-02T15:00:31.880112+00:00",
+  "updatedAt": "2026-11-02T15:03:20.194501+00:00",
   "tasks": {
     "AUD-01": {
       "status": "VERIFIED",
@@ -101,6 +101,31 @@
       "evidence": "docs/agent/evidence/m01-check.log; m01-e2e-attempt2.log; m01-fresh-install.log; m01-dev-smoke.json; m01-negative-gate.log",
       "verification": "pnpm check \u2192 0; pnpm test:e2e \u2192 0; fresh source pnpm install --offline --frozen-lockfile \u2192 0; local scope ADR 0002",
       "commit": "c7ec45b9ffb2c5643890fd5a3db6787f3758c556"
+    },
+    "M02-01": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/ARCHITECTURE.md, PERSISTENCE.md, FUTURE-OWNERSHIP.md, INVARIANTS.md; docs/adr/0003-authority-and-transport.md; docs/agent/evidence/m02-*.log",
+      "verification": "node scripts/verify-architecture.mjs \u2192 0; pnpm lint \u2192 0; node --test tests/governance/*.test.mjs \u2192 0 (7); architecture-specific acceptance review, no gameplay claims"
+    },
+    "M02-02": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/ARCHITECTURE.md, PERSISTENCE.md, FUTURE-OWNERSHIP.md, INVARIANTS.md; docs/adr/0003-authority-and-transport.md; docs/agent/evidence/m02-*.log",
+      "verification": "node scripts/verify-architecture.mjs \u2192 0; pnpm lint \u2192 0; node --test tests/governance/*.test.mjs \u2192 0 (7); architecture-specific acceptance review, no gameplay claims"
+    },
+    "M02-03": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/ARCHITECTURE.md, PERSISTENCE.md, FUTURE-OWNERSHIP.md, INVARIANTS.md; docs/adr/0003-authority-and-transport.md; docs/agent/evidence/m02-*.log",
+      "verification": "node scripts/verify-architecture.mjs \u2192 0; pnpm lint \u2192 0; node --test tests/governance/*.test.mjs \u2192 0 (7); architecture-specific acceptance review, no gameplay claims"
+    },
+    "M02-04": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/ARCHITECTURE.md, PERSISTENCE.md, FUTURE-OWNERSHIP.md, INVARIANTS.md; docs/adr/0003-authority-and-transport.md; docs/agent/evidence/m02-*.log",
+      "verification": "node scripts/verify-architecture.mjs \u2192 0; pnpm lint \u2192 0; node --test tests/governance/*.test.mjs \u2192 0 (7); architecture-specific acceptance review, no gameplay claims"
+    },
+    "M02-05": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/ARCHITECTURE.md, PERSISTENCE.md, FUTURE-OWNERSHIP.md, INVARIANTS.md; docs/adr/0003-authority-and-transport.md; docs/agent/evidence/m02-*.log",
+      "verification": "node scripts/verify-architecture.mjs \u2192 0; pnpm lint \u2192 0; node --test tests/governance/*.test.mjs \u2192 0 (7); architecture-specific acceptance review, no gameplay claims"
     }
   }
 }

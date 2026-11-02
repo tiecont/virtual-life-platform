@@ -1,0 +1,15 @@
+✔ worlds cannot import another world repository, platform internals or application code (1.106157ms)
+✔ contracts cannot import SDK and apps cannot import another application internals (4.308101ms)
+✔ the scanner rejects actual source imports and manifest cycles (12.424526ms)
+✔ audit ranges and conjunctive dependencies preserve the authoritative DAG (5.812226ms)
+✔ cycles, unknown dependencies and duplicate module IDs are rejected (0.646544ms)
+✔ checkpoint cannot assert verification without evidence or through an unmet gate (0.330551ms)
+✔ the supplied plan pack is accepted without changing its manifest shape (4.468422ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 77.622911
