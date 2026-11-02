@@ -1,0 +1,174 @@
+$ pnpm build && node scripts/with-test-db.mjs pnpm exec playwright test
+$ pnpm -r build
+Scope: 5 of 6 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+apps/portal-web build$ next build --webpack
+apps/platform-api build$ tsc -p tsconfig.json && node ../../scripts/copy-migrations.mjs
+packages/world-sdk build$ tsc -p tsconfig.json
+apps/portal-web build: ▲ Next.js 16.4.4 (webpack)
+apps/portal-web build: ✓ Running next.config.ts took 32ms
+apps/portal-web build:   Creating an optimized production build ...
+packages/world-sdk build: Done
+apps/platform-api build: Done
+apps/portal-web build: ✓ Compiled successfully in 1973ms
+apps/portal-web build:   Running TypeScript ...
+apps/portal-web build:   Finished TypeScript in 1370ms ...
+apps/portal-web build:   Collecting page data using 6 workers ...
+apps/portal-web build:   Generating static pages using 6 workers (0/3) ...
+apps/portal-web build: ✓ Generating static pages using 6 workers (3/3) in 691ms
+apps/portal-web build:   Finalizing page optimization ...
+apps/portal-web build:   Collecting build traces ...
+apps/portal-web build: Route (app)
+apps/portal-web build: ┌ ƒ /
+apps/portal-web build: ├ ○ /_not-found
+apps/portal-web build: ├ ○ /identity
+apps/portal-web build: └ ƒ /social
+apps/portal-web build: ○  (Static)   prerendered as static content
+apps/portal-web build: ƒ  (Dynamic)  server-rendered on demand
+apps/portal-web build: Done
+ Network virtual-city-test-38b20742_default Creating 
+ Network virtual-city-test-38b20742_default Creating 
+ Network virtual-city-test-38b20742_default Created 
+ Network virtual-city-test-38b20742_default Created 
+ Container virtual-city-test-38b20742-db-1 Creating 
+ Container virtual-city-test-38b20742-db-1 Created 
+ Container virtual-city-test-38b20742-db-1 Starting 
+ Container virtual-city-test-38b20742-db-1 Started 
+ Container virtual-city-test-38b20742-db-1 Waiting 
+ Container virtual-city-test-38b20742-db-1 Healthy 
+[WebServer] (node:88414) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:88434) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:88434) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:88434) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:88413) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:88553) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:88588) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:88601) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 8 tests using 1 worker
+
+(node:88661) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/foundation.spec.ts:2:5 › portal displays real API/database readiness and truthful availability on desktop/mobile (438ms)
+  ✓  2 [desktop] › tests/e2e/identity.spec.ts:3:5 › guest profile, private settings, session renewal and deletion survive reload and synchronize tabs (1.7s)
+  ✓  3 [desktop] › tests/e2e/identity.spec.ts:30:5 › upgrading retains identity and permits sign-in from a separate browser context (1.8s)
+  ✘  4 [desktop] › tests/e2e/social.spec.ts:4:5 › two browser contexts consent to friendship, receive live updates and enforce private blocks (2.6s)
+(node:89138) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  5 [mobile] › tests/e2e/foundation.spec.ts:2:5 › portal displays real API/database readiness and truthful availability on desktop/mobile (540ms)
+  ✓  6 [mobile] › tests/e2e/identity.spec.ts:3:5 › guest profile, private settings, session renewal and deletion survive reload and synchronize tabs (1.8s)
+  ✓  7 [mobile] › tests/e2e/identity.spec.ts:30:5 › upgrading retains identity and permits sign-in from a separate browser context (2.0s)
+  ✘  8 [mobile] › tests/e2e/social.spec.ts:4:5 › two browser contexts consent to friendship, receive live updates and enforce private blocks (2.3s)
+
+
+  1) [desktop] › tests/e2e/social.spec.ts:4:5 › two browser contexts consent to friendship, receive live updates and enforce private blocks 
+
+    Error: locator.uncheck: Clicking the checkbox did not change its state
+    Call log:
+      - waiting for getByLabel('Allow new friend requests using my code')
+        - locator resolved to <input checked type="checkbox"/>
+      - attempting click action
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - performing click action
+        - click action done
+        - waiting for scheduled navigations to finish
+        - navigations have finished
+
+
+      28 |     await other.getByRole('button',{name:'Send friend request'}).click(); await expect(other.getByRole('status')).toHaveText('Friend request sent.');
+      29 |     const myRequests = page.getByRole('region',{name:'Pending requests'}); await expect(myRequests.getByRole('heading',{name:'Circle Bob'})).toBeVisible(); await myRequests.getByRole('button',{name:'Decline',exact:true}).click(); await expect(page.getByRole('status')).toHaveText('Request closed.');
+    > 30 |     await page.getByLabel('Allow new friend requests using my code').uncheck(); await expect(page.getByRole('status')).toHaveText('Request settings saved.'); await other.getByLabel('Contact code from a friend').fill(codeA); await other.getByRole('button',{name:'Send friend request'}).click(); await expect(other.getByRole('status')).toContainText('This request is unavailable');
+         |                                                                      ^
+      31 |     await page.reload(); await expect(page.getByLabel('Allow new friend requests using my code')).not.toBeChecked(); expect(await page.getByLabel('Your contact code', {exact:true}).inputValue()).toBe(codeA);
+      32 |     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true); await page.screenshot({path:`artifacts/social-${test.info().project.name}.png`,fullPage:true});
+      33 |   } finally { await peer.close(); }
+        at /home/tiecont/Projects/virtual-city/tests/e2e/social.spec.ts:30:70
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/social-two-browser-context-d1e45--and-enforce-private-blocks-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/social-two-browser-context-d1e45--and-enforce-private-blocks-desktop/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/social-two-browser-context-d1e45--and-enforce-private-blocks-desktop/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/social-two-browser-context-d1e45--and-enforce-private-blocks-desktop/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/social-two-browser-context-d1e45--and-enforce-private-blocks-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [mobile] › tests/e2e/social.spec.ts:4:5 › two browser contexts consent to friendship, receive live updates and enforce private blocks 
+
+    Error: locator.uncheck: Clicking the checkbox did not change its state
+    Call log:
+      - waiting for getByLabel('Allow new friend requests using my code')
+        - locator resolved to <input checked type="checkbox"/>
+      - attempting click action
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - performing click action
+        - click action done
+        - waiting for scheduled navigations to finish
+        - navigations have finished
+
+
+      28 |     await other.getByRole('button',{name:'Send friend request'}).click(); await expect(other.getByRole('status')).toHaveText('Friend request sent.');
+      29 |     const myRequests = page.getByRole('region',{name:'Pending requests'}); await expect(myRequests.getByRole('heading',{name:'Circle Bob'})).toBeVisible(); await myRequests.getByRole('button',{name:'Decline',exact:true}).click(); await expect(page.getByRole('status')).toHaveText('Request closed.');
+    > 30 |     await page.getByLabel('Allow new friend requests using my code').uncheck(); await expect(page.getByRole('status')).toHaveText('Request settings saved.'); await other.getByLabel('Contact code from a friend').fill(codeA); await other.getByRole('button',{name:'Send friend request'}).click(); await expect(other.getByRole('status')).toContainText('This request is unavailable');
+         |                                                                      ^
+      31 |     await page.reload(); await expect(page.getByLabel('Allow new friend requests using my code')).not.toBeChecked(); expect(await page.getByLabel('Your contact code', {exact:true}).inputValue()).toBe(codeA);
+      32 |     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true); await page.screenshot({path:`artifacts/social-${test.info().project.name}.png`,fullPage:true});
+      33 |   } finally { await peer.close(); }
+        at /home/tiecont/Projects/virtual-city/tests/e2e/social.spec.ts:30:70
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/social-two-browser-context-d1e45--and-enforce-private-blocks-mobile/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/social-two-browser-context-d1e45--and-enforce-private-blocks-mobile/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/social-two-browser-context-d1e45--and-enforce-private-blocks-mobile/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/social-two-browser-context-d1e45--and-enforce-private-blocks-mobile/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/social-two-browser-context-d1e45--and-enforce-private-blocks-mobile/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [desktop] › tests/e2e/social.spec.ts:4:5 › two browser contexts consent to friendship, receive live updates and enforce private blocks 
+    [mobile] › tests/e2e/social.spec.ts:4:5 › two browser contexts consent to friendship, receive live updates and enforce private blocks 
+  6 passed (17.9s)
+pnpm exited 1
+ Container virtual-city-test-38b20742-db-1 Stopping 
+ Container virtual-city-test-38b20742-db-1 Stopped 
+ Container virtual-city-test-38b20742-db-1 Removing 
+ Container virtual-city-test-38b20742-db-1 Removed 
+ Network virtual-city-test-38b20742_default Removing 
+ Network virtual-city-test-38b20742_default Removed 
+[ELIFECYCLE] Command failed with exit code 1.

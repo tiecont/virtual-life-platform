@@ -26,11 +26,11 @@
 | M03 | M03-04 · Implement privacy settings and export/delete requests hooks with auditable policy. | VERIFIED | docs/agent/evidence/m03-final-checks.json |
 | M03 | M03-05 · Add admission/eligibility policy interface for restricted worlds. | VERIFIED | docs/agent/evidence/m03-final-checks.json |
 | M03 | M03-06 · Implement abuse-resistant account/session safeguards. | VERIFIED | docs/agent/evidence/m03-final-checks.json |
-| M04 | M04-01 · Define state machines for friend request: PENDING/ACCEPTED/DECLINED/EXPIRED/CANCELLED. | TODO | — |
-| M04 | M04-02 · Implement friend endpoints and atomic reciprocal acceptance. | TODO | — |
-| M04 | M04-03 · Implement block/unblock effects and cache invalidation. | TODO | — |
-| M04 | M04-04 · Implement presence/friends discovery respecting per-world privacy. | TODO | — |
-| M04 | M04-05 · Add social abuse controls for bulk requests and spam. | TODO | — |
+| M04 | M04-01 · Define state machines for friend request: PENDING/ACCEPTED/DECLINED/EXPIRED/CANCELLED. | VERIFIED | docs/agent/evidence/m04-checks.json |
+| M04 | M04-02 · Implement friend endpoints and atomic reciprocal acceptance. | VERIFIED | docs/agent/evidence/m04-checks.json |
+| M04 | M04-03 · Implement block/unblock effects and cache invalidation. | VERIFIED | docs/agent/evidence/m04-checks.json |
+| M04 | M04-04 · Implement presence/friends discovery respecting per-world privacy. | VERIFIED | docs/agent/evidence/m04-checks.json |
+| M04 | M04-05 · Add social abuse controls for bulk requests and spam. | VERIFIED | docs/agent/evidence/m04-checks.json |
 | M05 | M05-01 · Define versioned `WorldDefinition` and required capabilities. | TODO | — |
 | M05 | M05-02 · Implement `WorldRegistry` and feature-flagged activation per environment. | TODO | — |
 | M05 | M05-03 · Define world lifecycle hooks (bootstrap, onJoin, onLeave, onCommand) with permission guard. | TODO | — |

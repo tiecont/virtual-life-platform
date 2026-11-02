@@ -2,7 +2,7 @@
 
 Project repository: `git@github.com:tiecont/virtual-life-platform.git` (configured locally; no push performed). The Virtual City plan is the product specification.
 
-Offline implementation of the supplied [master plan](MASTER-AGENT-PLAN.md). Current features and evidence are in [PROGRESS](docs/agent/PROGRESS.md); resume from [HANDOFF](docs/agent/HANDOFF.md). Guest/registered identity, session renewal, private settings and own-data export/delete are available at `/identity`. A working identity is not a playable city. All worlds remain closed. Nothing is deployed or published.
+Offline implementation of the supplied [master plan](MASTER-AGENT-PLAN.md). Current features and evidence are in [PROGRESS](docs/agent/PROGRESS.md); resume from [HANDOFF](docs/agent/HANDOFF.md). Guest/registered identity, session renewal, private settings and own-data export/delete are available at `/identity`. Consent-based friends, private contact codes and blocking are available at `/social`. A working identity is not a playable city. All worlds remain closed. Nothing is deployed or published.
 
 ## Local setup
 
@@ -56,3 +56,9 @@ No art/media imported; system fonts and code-native status UI only. Gameplay ass
 Open `/identity` to create a browser guest, set a name/avatar preference, edit private presence choices or export/delete your own data. Upgrade optionally with a separate sign-in name/password to return from another browser with the same account ID. Password recovery is not available. Logging out an unregistered guest can lose access; the UI explains this before upgrade/logout. No legacy guest session is automatically imported or merged.
 
 SESSION_SECRET is required (>=32 random characters). setup:local generates it; existing local .env files must be extended with a freshly generated value without committing it. Cookies are signed, HttpOnly and host-only, with Secure + __Host prefix in production. CSRF/Origin checks guard writes, session tokens are hashed in DB, salted scrypt credentials never enter exports/logs. Rates and concurrent KDF work are bounded. Production TLS/proxy/rate/secret rotation and security review remain future gates. No public release is authorized.
+
+## Social consent
+
+Visit `/social`, share your own contact code privately, and accept or decline offers. No global user search or DM. Opposite explicit requests are mutual consent; block removes friendship and pending offers in both directions, and unblock does not restore friendship. Turn off new requests or replace your code to close pending incoming offers. Live account-scoped notifications contain only a refresh signal; the API applies privacy/block policy before returning data.
+
+PUBLIC_SOCKET_ORIGIN is the trusted browser-reachable Socket.IO origin (default local http://127.0.0.1:4300). Configure it with WEB_ORIGIN/edge TLS in a real deployment; no production configuration is verified here. Current world activity is unavailable until authoritative room/registry integration. Controlled source fixtures in tests are privacy checks, not proof of playable worlds. See docs/architecture/SOCIAL-API.md.

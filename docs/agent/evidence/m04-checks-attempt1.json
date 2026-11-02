@@ -1,0 +1,8 @@
+[
+  {
+    "startedAt": "2026-11-02T16:11:10.990931+00:00",
+    "command": "pnpm check",
+    "exitCode": 2,
+    "log": "m04-check.log"
+  }
+]

@@ -7,7 +7,7 @@ export const ReadinessSchema = z.discriminatedUnion('status', [
   z.strictObject({ status: z.literal('unavailable') }),
 ]);
 export const ApiErrorSchema = z.strictObject({ error: z.strictObject({
-  code: z.enum(['FORBIDDEN', 'NOT_FOUND', 'INVALID_REQUEST', 'INTERNAL_ERROR', 'UNAUTHENTICATED', 'RATE_LIMITED', 'IDEMPOTENCY_CONFLICT', 'NAME_UNAVAILABLE']),
+  code: z.enum(['FORBIDDEN', 'NOT_FOUND', 'INVALID_REQUEST', 'INTERNAL_ERROR', 'UNAUTHENTICATED', 'RATE_LIMITED', 'IDEMPOTENCY_CONFLICT', 'NAME_UNAVAILABLE', 'NOT_AVAILABLE']),
   message: z.string(), requestId: z.uuid(),
 }) });
 export type Readiness = z.infer<typeof ReadinessSchema>;
@@ -43,3 +43,26 @@ export const SessionCheckAckSchema = z.discriminatedUnion('ok', [
   z.strictObject({ schemaVersion: z.literal(1), requestId: z.uuid(), ok: z.literal(true), result: z.strictObject({ accountId: z.uuid(), kind: z.enum(['guest', 'registered']) }) }),
   z.strictObject({ schemaVersion: z.literal(1), requestId: z.uuid(), ok: z.literal(false), error: z.strictObject({ code: z.enum(['INVALID_REQUEST', 'UNAUTHENTICATED', 'RATE_LIMITED', 'INTERNAL_ERROR']), retryable: z.boolean() }) }),
 ]);
+
+export type ApiErrorCode = z.infer<typeof ApiErrorSchema>['error']['code'];
+export const ContactCodeSchema = z.string().trim().toUpperCase().regex(/^VL-[A-F0-9]{32}$/);
+export const FriendRequestStateSchema = z.enum(['PENDING','ACCEPTED','DECLINED','EXPIRED','CANCELLED']);
+export const FriendRequestInputSchema = z.strictObject({ contactCode: ContactCodeSchema });
+export const FriendRespondSchema = z.strictObject({ action: z.enum(['accept','decline','cancel']) });
+export const BlockInputSchema = z.strictObject({ targetId: z.uuid().transform(id => id.toLowerCase()), blocked: z.boolean() });
+export const SocialSettingsInputSchema = z.strictObject({ requestPolicy: z.enum(['code','none']) });
+export const SocialSettingsSchema = SocialSettingsInputSchema.extend({ schemaVersion: z.literal(1), contactCode: ContactCodeSchema });
+export const FriendRequestResultSchema = z.strictObject({ schemaVersion: z.literal(1), id: z.uuid(), state: FriendRequestStateSchema, expiresAt: z.iso.datetime() });
+export const SocialPageSchema = z.strictObject({ cursor: z.uuid().transform(id => id.toLowerCase()).optional(), limit: z.coerce.number().int().min(1).max(50).default(20) });
+export const SharedActivitySchema = z.strictObject({ worldSlug: z.string().regex(/^[a-z][a-z0-9-]{0,63}$/) });
+export const FriendsPageSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(z.strictObject({ profile: PublicProfileSchema, activity: SharedActivitySchema.nullable() })), nextCursor: z.uuid().nullable() });
+export type SharedActivity = z.infer<typeof SharedActivitySchema>;
+export type SocialSettings = z.infer<typeof SocialSettingsSchema>;
+export type FriendRequestResult = z.infer<typeof FriendRequestResultSchema>;
+
+export const SocialRequestsPageSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(FriendRequestResultSchema.extend({ direction: z.enum(['incoming','outgoing']), sender: PublicProfileSchema.nullable(), codeHint: z.string().nullable() })), nextCursor: z.uuid().nullable() });
+export const BlocksPageSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(z.strictObject({ targetId: z.uuid(), label: z.string().nullable() })) });
+
+export type FriendsPage = z.infer<typeof FriendsPageSchema>;
+export type SocialRequestsPage = z.infer<typeof SocialRequestsPageSchema>;
+export type BlocksPage = z.infer<typeof BlocksPageSchema>;

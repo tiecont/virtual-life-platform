@@ -1,23 +1,18 @@
 import cookie from '@fastify/cookie';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { z, ZodError } from 'zod';
+import { z } from 'zod';
 import { GuestInputSchema, ProfilePatchSchema, PrivacySchema, UpgradeInputSchema, LoginInputSchema } from '@virtual-city/contracts';
 import type { Config } from '../config';
 import { IdentityService } from './service';
 import { IdentityError, unauthorized } from './errors';
 import { WindowLimiter } from './limits';
+import { apiErrorHandler } from '../common/http-errors';
 export function sessionCookieName(config: Config) { return config.NODE_ENV === 'production' ? '__Host-city_session' : 'city_session'; }
 export function registerIdentity(http: FastifyInstance, config: Config, service: IdentityService, now = Date.now) {
   const name = sessionCookieName(config); const limiter = new WindowLimiter(now);
   const cookieOptions = { path: '/', httpOnly: true, secure: config.NODE_ENV === 'production', sameSite: 'lax' as const, signed: true };
   http.register(cookie, { secret: config.SESSION_SECRET });
-  function token(req: FastifyRequest, optional = false): string | undefined {
-    const signed = req.cookies[name];
-    if (!signed) { if (optional) return undefined; throw unauthorized(); }
-    const result = req.unsignCookie(signed);
-    if (!result.valid || !result.value) { if (optional) return undefined; throw unauthorized(); }
-    return result.value;
-  }
+  const token = (req: FastifyRequest, optional = false) => readSessionToken(req, config, optional);
   function protectedToken(req: FastifyRequest): string {
     const value = token(req)!;
     service.verifyCsrf(value, req.headers['x-csrf-token']);
@@ -28,12 +23,7 @@ export function registerIdentity(http: FastifyInstance, config: Config, service:
   const emptyBody = (req: FastifyRequest) => { z.strictObject({}).parse(req.body ?? {}); };
   const writeCookie = (reply: FastifyReply, value: string, expiresAt: string) => reply.setCookie(name, value, { ...cookieOptions, maxAge: Math.max(0, Math.floor((Date.parse(expiresAt) - now()) / 1000)) });
   http.register(async api => {
-    api.setErrorHandler((error, req, reply) => {
-      const status = error instanceof IdentityError ? error.status : error instanceof ZodError ? 422 : (typeof error === 'object' && error && 'statusCode' in error && typeof error.statusCode === 'number' && error.statusCode >= 400 && error.statusCode < 500 ? error.statusCode : 503);
-      const code = error instanceof IdentityError ? error.code : status < 500 ? 'INVALID_REQUEST' : 'INTERNAL_ERROR';
-      if (status === 429) reply.header('retry-after', '60');
-      return reply.code(status).send({ error: { code, message: error instanceof IdentityError ? error.message : status < 500 ? 'Invalid request' : 'Service unavailable', requestId: req.id } });
-    });
+    api.setErrorHandler(apiErrorHandler);
     api.addHook('onRequest', async req => {
       if (!limiter.take('http:' + req.ip, 300)) throw new IdentityError('RATE_LIMITED', 429, 'Please wait before trying again');
     });
@@ -77,3 +67,11 @@ export function registerIdentity(http: FastifyInstance, config: Config, service:
     });
   }, { prefix: '/v1' });
 }
+
+export function readSessionToken(req: FastifyRequest, config: Config, optional = false): string | undefined {
+    const signed = req.cookies[sessionCookieName(config)];
+    if (!signed) { if (optional) return undefined; throw unauthorized(); }
+    const result = req.unsignCookie(signed);
+    if (!result.valid || !result.value) { if (optional) return undefined; throw unauthorized(); }
+    return result.value;
+  }

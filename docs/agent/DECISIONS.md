@@ -11,3 +11,5 @@
 | D-007 | Optional local registered upgrade/sign-in, salted bounded scrypt, same account ID, no recovery promise | Accepted local implementation and verified | ADR 0005; m03-final-checks.json |
 | D-008 | Auth-only Socket.IO gateway in M03 meets revocation acceptance; rooms/seat/travel remain separate dependent modules | Implemented and verified over actual network | IDENTITY-SOCKET.md; 29 integration tests |
 | D-009 | Project named virtual-life-platform; local origin points to owner-supplied SSH repository; no push/fetch | Owner-directed | ADR 0006; project-name-checks.json |
+| D-010 | Private contact codes, explicit reciprocal consent, normalized pair constraints, bilateral block priority and no auth cache | Implemented/verified | ADR 0007; m04-checks.json |
+| D-011 | Account-scoped refresh only; no room activity until authoritative source; privacy projections always rechecked | Implemented/verified interface + current HTTP/UI | SOCIAL-API.md; M05/M06 live room source still pending |

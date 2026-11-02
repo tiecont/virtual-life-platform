@@ -12,7 +12,12 @@
     "identity_consents": "platform.identity",
     "identity_deletion_receipts": "platform.identity",
     "identity_credentials": "platform.identity",
-    "identity_login_requests": "platform.identity"
+    "identity_login_requests": "platform.identity",
+    "social_preferences": "platform.social",
+    "social_friend_requests": "platform.social",
+    "social_friendships": "platform.social",
+    "social_blocks": "platform.social",
+    "social_mutations": "platform.social"
   },
   "journalTable": "city_schema_migrations",
   "legacyDatabases": "not managed by city migrations",

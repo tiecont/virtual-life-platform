@@ -1,0 +1,82 @@
+$ pnpm governance:check && pnpm architecture:check && pnpm lint && pnpm typecheck && pnpm test && pnpm test:integration && pnpm build
+$ node scripts/verify-governance.mjs
+{
+  "modules": {
+    "M00": "VERIFIED",
+    "M01": "VERIFIED",
+    "M02": "VERIFIED",
+    "M03": "VERIFIED",
+    "M04": "PENDING",
+    "M05": "PENDING",
+    "M06": "PENDING",
+    "M07": "PENDING",
+    "M08": "PENDING",
+    "M09": "PENDING",
+    "M10": "PENDING",
+    "M11": "PENDING",
+    "M12": "PENDING",
+    "M13": "PENDING",
+    "M14": "PENDING",
+    "M15": "PENDING",
+    "M16": "PENDING",
+    "M17": "PENDING",
+    "M18": "PENDING",
+    "M19": "PENDING",
+    "M20": "PENDING",
+    "M21": "PENDING",
+    "M22": "PENDING",
+    "M23": "PENDING",
+    "M24": "PENDING"
+  },
+  "ready": [
+    "M04-01",
+    "M04-02",
+    "M04-03",
+    "M04-04",
+    "M04-05",
+    "M05-01",
+    "M05-02",
+    "M05-03",
+    "M05-04",
+    "M05-05",
+    "M10-01",
+    "M10-02",
+    "M10-03",
+    "M10-04",
+    "M10-05",
+    "M21-01",
+    "M21-02",
+    "M21-03",
+    "M21-04",
+    "M21-05",
+    "M21-06"
+  ],
+  "blocked": []
+}
+Governance consistency verified; no gameplay or release claim.
+$ node scripts/verify-architecture.mjs
+Architecture consistency passed: 16 SQL tables + journal; 32 source files checked. Future gameplay invariants remain runtime gates.
+$ eslint . && node scripts/check-boundaries.mjs
+Boundary checks passed: 32 source files
+$ pnpm build:packages && pnpm -r typecheck
+$ pnpm --filter './packages/*' -r build
+Scope: 3 of 6 workspace projects
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+Scope: 5 of 6 workspace projects
+packages/contracts typecheck$ tsc -p tsconfig.json --noEmit
+packages/contracts typecheck: Done
+apps/platform-api typecheck$ tsc -p tsconfig.json --noEmit
+apps/portal-web typecheck$ tsc --noEmit
+packages/world-sdk typecheck$ tsc -p tsconfig.json --noEmit
+packages/world-sdk typecheck: Done
+apps/portal-web typecheck: app/social/SocialPanel.tsx(5,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+apps/portal-web typecheck: app/social/SocialPanel.tsx(75,213): error TS7006: Parameter 'row' implicitly has an 'any' type.
+apps/portal-web typecheck: app/social/SocialPanel.tsx(78,299): error TS7006: Parameter 'row' implicitly has an 'any' type.
+apps/portal-web typecheck: app/social/SocialPanel.tsx(81,204): error TS7006: Parameter 'row' implicitly has an 'any' type.
+apps/portal-web typecheck: Failed
+/home/tiecont/Projects/virtual-city/apps/portal-web:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @virtual-city/portal-web@0.1.0 typecheck: `tsc --noEmit`
+Exit status 2
+[ELIFECYCLE] Command failed with exit code 2.
+[ELIFECYCLE] Command failed with exit code 2.

@@ -91,5 +91,8 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
   http.addHook('preClose', async () => { unsubscribe(); io.disconnectSockets(true); io.engine.close(); });
   http.addHook('onClose', async () => { await io.close(); });
   // M06 may register room commands only after its dependencies are VERIFIED.
-  return { io, authorize, allowCommand: (name: string) => { commands.add(name); } };
+  const emitToAccount = (accountId: string, event: string, payload: unknown) => {
+    for (const sockets of sessions.values()) for (const socket of sockets) if (leases.get(socket)?.context.accountId === accountId && socket.connected) socket.emit(event, payload);
+  };
+  return { io, authorize, emitToAccount, allowCommand: (name: string) => { commands.add(name); } };
 }

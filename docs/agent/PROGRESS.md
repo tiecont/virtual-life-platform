@@ -1,5 +1,7 @@
 # Agent progress
 
+Current checkpoint: **W1 in progress; W0 + M03/M04 VERIFIED locally. Next: M05 world SDK/registry.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence.
+
 2026-11-02, Linux local host, Node v26.9.0, pnpm 11.28.5, Docker 29.9.0. Source of task status: task-state.json (checked by scripts/plan-status.mjs). No public release occurred.
 
 ## AUD-01..08 — VERIFIED audit, not verified legacy worlds
@@ -24,11 +26,11 @@ Product PRD, all seven world policies, seven persona journeys and wireflows, UX 
 
 DAG checkpoint rejects verification without evidence, unknown task IDs, cycles and completed tasks with unmet dependencies. Document-specific acceptance interpretation is recorded in ADR 0001; this is not runtime/gameplay verification.
 
-## Waves
+## Historical initial wave checkpoint
 
 W0 IN_PROGRESS (AUD/M00 verified; M01 next). W1–W4 TODO. W5/W6 TODO and publicly gated. Public release: NOT_LIVE.
 
-## Next exact action
+## Historical initial next action
 
 M01-01..06: create independent pinned pnpm foundation; verify HTTP → PostgreSQL migrations and readiness. Do not start M02 unless all M01 acceptance criteria are verified.
 
@@ -103,3 +105,18 @@ Next exact action: M04-01..05, lowest-ID ready module: friend-request state mach
 Project name set to virtual-life-platform in root package/manifest/docs and web branding. Origin configured locally to git@github.com:tiecont/virtual-life-platform.git. No remote network operation, push, PR or publication; owner offline instruction still active. Current directory retained for workspace/artifact continuity. ADR 0006 records this scope.
 
 project-name-checks.json actual outcomes: frozen install → 0, pnpm build → 0, existing browser suite → 0 (6 desktop/mobile cases, including viewport checks after branding). Next exact action remains M04, dependent on verified M03 at c66520d.
+
+## M04-01..05 — VERIFIED social domain and browser slice
+
+Actual outcomes m04-checks.json, 2026-11-02T16:17–16:19Z, Node 26.9.0/pnpm 11.28.5/PostgreSQL 17.7-alpine:
+- `pnpm check` → 0: 7 governance/boundary + 11 unit + 45 actual PostgreSQL/HTTP/Socket.IO integration tests, lint/types/ownership and production builds.
+- `pnpm test:e2e` → 0: 8 desktop/mobile browser tests. Two independent browser contexts exchange/accept offers and receive actual live notifications; upgrade preserves friendship/code, block removes contact, unblock does not restore it, preference persists after reload.
+- Frozen install → 0 in m04-frozen-install.log (command exit in m04-checks-attempt2.json). Source code/lock consumed for final check.
+
+Implemented contact-code consent, SQL state/unique pair constraints, reciprocal race handling, idempotent responses, server expiry, unfriend, bilateral private block enforcement, identity-owned visibility projection, bounded/persisted abuse limits and moderation hook, account-scoped refresh events, export/delete lifecycle and actual DOM social UI. Source/protocol/state diagram in SOCIAL-API.md and ADR 0007. Migration 0004 adds five social tables; architecture checker covers 16 tables + journal. No active world source, no simulated population, no report/moderator operations claimed.
+
+Failures retained: m04-check-attempt1 → exit 2 (frontend direct zod type import unavailable; exported contract types used instead); m04-e2e-attempt1 → exit 1 (controlled checkbox reverted during async write). Fixed pending draft/rollback and sequence guards against stale refresh; existing uncheck and reload assertions retained, rerun passed. Also added current block checks before receipt replay, tested old send/accept receipts cannot bypass a new block. Checkbox failure screenshot retained; final social desktop/mobile screenshots copied from real browser output and mobile visually inspected.
+
+Large-graph test uses isolated explicitly synthetic 499-edge fixture and two concurrent accepts: final 500, never 501. This is invariant evidence, not a load benchmark/CCU result. Privacy source fixtures test every world key including hidden dating/unknown worlds; actual room presence remains M05/M06 integration. No public release, all world flags OFF, no legacy changes.
+
+Next exact action: M05-01..05 read plans/05-world-sdk-registry.md, implement versioned world contracts + flags/registry, guarded lifecycle sample sandbox and private discovery tests. M06 stays gated until M05 verified.

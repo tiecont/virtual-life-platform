@@ -11,6 +11,8 @@ import { IdentityService } from './identity/service';
 import { registerIdentity } from './identity/http';
 import { migrationNames } from './db/migrations';
 import { createIdentityGateway } from './identity/socket';
+import { SocialService, type SocialPresencePort } from './social/service';
+import { registerSocial } from './social/http';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -25,7 +27,7 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number } = {}) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; socialPresence?: SocialPresencePort } = {}) {
   const requiredMigrations = await migrationNames();
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
     bodyLimit: 8192, requestTimeout: 10000, genReqId: () => randomUUID(),
@@ -40,6 +42,9 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   });
   const identity = new IdentityService(db, config, options.now);
   registerIdentity(http, config, identity, options.now);
+  const social = new SocialService(db, identity, options.socialPresence, options.now);
+  registerSocial(http, config, identity, social, options.now);
+  identity.registerExportOwner('social', (id, transaction) => social.exportAccount(id, transaction));
   http.get('/health/live', async () => ({ status: 'ok' }));
   http.get('/health/ready', async (_req, reply) => {
     try {
@@ -51,6 +56,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   app.useGlobalFilters(new SafeHttpErrors());
   await app.init();
   const gateway = createIdentityGateway(http, config, identity, options.now);
+  const unsubscribeSocial = social.onChanged(ids => { for (const id of ids) gateway.emitToAccount(id, 'friendship.changed', { schemaVersion: 1 }); });
+  http.addHook('onClose', async () => { unsubscribeSocial(); });
   await http.ready();
-  return { app, http, identity, gateway };
+  return { app, http, identity, gateway, social };
 }

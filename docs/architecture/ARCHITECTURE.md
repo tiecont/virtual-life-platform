@@ -1,12 +1,12 @@
 # Context, containers and module ownership (M02-01)
 
-Current executable container: Next portal status page → Nest/Fastify API → independent PostgreSQL. This is the verified foundation. All gameplay modules below are target boundaries, not existing features. One API process is a modular monolith, not microservices. Pixi/Socket.IO are not yet mounted.
+Current executable containers: Next status/identity/social UI → Nest/Fastify HTTP + authenticated identity/social Socket.IO → independent PostgreSQL. Identity and social are verified; registry/rooms/engines/world adapters below remain target boundaries. One API process is a modular monolith, not microservices. Pixi and room gameplay are not yet mounted.
 
 ```mermaid
 flowchart LR
   Browser[Browser: DOM controls and future Pixi scenes] --> Web[Next portal / shared shell]
   Web --> API[Nest Fastify modular monolith]
-  Browser -. future authenticated Socket.IO .-> API
+  Browser -->|authenticated identity/social Socket.IO| API
   API --> Platform[Platform service interfaces]
   API --> Engines[Shared engine service interfaces]
   API --> Adapters[World adapters]

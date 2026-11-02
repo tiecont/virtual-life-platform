@@ -4,11 +4,14 @@ import { PrivacySchema, type Me, type Privacy, type ProfileInput, type PublicPro
 import type { Config } from '../config';
 import { IdentityError, unauthorized } from './errors';
 import { PasswordHasher, type PasswordRecord } from './passwords';
+import { canViewPresence } from './policy';
 type DB = Pick<Pool, 'query'> | PoolClient;
 type Session = { id: string; account_id: string; expires_at: Date; revoked_at: Date | null; revoked_reason: string | null; kind: 'guest' | 'registered'; display_name: string; avatar_key: PublicProfile['avatarKey'] };
 export type IdentityContext = Readonly<{ accountId: string; sessionId: string; kind: 'guest' | 'registered'; expiresAt: number }>;
 const defaults: Privacy = { presence: 'hidden', analyticsConsent: false, worldVisibility: { dating: 'hidden' } };
 export class IdentityService {
+  private exportOwners = new Map<string, (accountId: string, db: PoolClient) => Promise<unknown>>();
+  registerExportOwner(owner: string, reader: (accountId: string, db: PoolClient) => Promise<unknown>) { if (this.exportOwners.has(owner)) throw new Error('Duplicate export owner'); this.exportOwners.set(owner, reader); }
   private passwords = new PasswordHasher();
   private subscribers = new Set<(event: { accountId: string; sessionIds: string[] }) => void>();
   constructor(readonly pool: Pick<Pool, 'query' | 'connect'>, private config: Config, private now = Date.now) {}
@@ -38,8 +41,20 @@ export class IdentityService {
   }
   private async lockedSession(db: PoolClient, token: string, allowRevoked = false) {
     const initial = await this.session(token, db, true);
-    await this.lock(db, 'account:' + initial.account_id);
+    await this.lockAccounts(db, [initial.account_id]);
     return this.session(token, db, allowRevoked);
+  }
+  // Internal platform transaction ports. Never handed to world/client modules.
+  async lockAccounts(db: PoolClient, ids: string[]) { for (const id of [...new Set(ids)].sort()) await this.lock(db, 'account:' + id); }
+  async contextInTransaction(db: PoolClient, token: string): Promise<IdentityContext> { const s = await this.session(token, db); return Object.freeze({ accountId: s.account_id, sessionId: s.id, kind: s.kind, expiresAt: s.expires_at.getTime() }); }
+  fingerprint(value: unknown) { return this.keyed('mutation:v1:' + JSON.stringify(value)); }
+  async publicProfiles(ids: string[], db: DB = this.pool): Promise<PublicProfile[]> {
+    if (ids.length > 100) throw new IdentityError('INVALID_REQUEST', 422, 'Too many profiles requested');
+    return (await db.query<{ account_id: string; display_name: string; avatar_key: PublicProfile['avatarKey'] }>('SELECT account_id,display_name,avatar_key FROM identity_profiles WHERE account_id=ANY($1::uuid[])', [ids])).rows.map(row => ({ id: row.account_id, displayName: row.display_name, avatarKey: row.avatar_key }));
+  }
+  async presenceVisible(viewer: string, target: string, world: string, relationship: { blocked: boolean; friends: boolean }, db: DB = this.pool) {
+    const row = (await db.query('SELECT choices FROM identity_privacy WHERE account_id=$1', [target])).rows[0];
+    return row ? canViewPresence(viewer, target, world, PrivacySchema.parse(row.choices), relationship) : false;
   }
   private public(session: Session): PublicProfile { return { id: session.account_id, displayName: session.display_name, avatarKey: session.avatar_key }; }
   private view(session: Session, token: string): Me { return { profile: this.public(session), kind: session.kind, expiresAt: session.expires_at.toISOString(), csrfToken: this.csrf(token) }; }
@@ -136,7 +151,9 @@ export class IdentityService {
       const choices = (await db.query('SELECT choices FROM identity_privacy WHERE account_id=$1', [s.account_id])).rows[0].choices;
       const consents = (await db.query('SELECT action,created_at FROM identity_consents WHERE account_id=$1 ORDER BY created_at', [s.account_id])).rows;
       const credentials = (await db.query<{ login_name: string }>('SELECT login_name FROM identity_credentials WHERE account_id=$1', [s.account_id])).rows[0];
-      return { schemaVersion: 1, profile: this.public(s), kind: s.kind, privacy: PrivacySchema.parse(choices), consents, ...(credentials ? { signInName: credentials.login_name } : {}) };
+      const domains: Record<string, unknown> = {};
+      for (const [owner, reader] of this.exportOwners) domains[owner] = await reader(s.account_id, db);
+      return { schemaVersion: 1, profile: this.public(s), kind: s.kind, privacy: PrivacySchema.parse(choices), consents, ...(Object.keys(domains).length ? { domains } : {}), ...(credentials ? { signInName: credentials.login_name } : {}) };
     });
   }
   async delete(token: string, requestId: string) {

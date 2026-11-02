@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-02T15:44:03.700329+00:00",
+  "updatedAt": "2026-11-02T16:22:40.169011+00:00",
   "tasks": {
     "AUD-01": {
       "status": "VERIFIED",
@@ -156,6 +156,31 @@
       "status": "VERIFIED",
       "evidence": "docs/agent/evidence/m03-final-checks.json; m03-final-check.log; m03-final-e2e.log; docs/architecture/IDENTITY-API.md; IDENTITY-SOCKET.md; ADR 0004/0005",
       "verification": "pnpm frozen install/check/test:e2e \u2192 0; 7 governance, 11 unit, 29 real PG+HTTP+Socket.IO integration, 6 browser E2E; M03 policy ports verified, room/travel consumers remain M06/M09 gates"
+    },
+    "M04-01": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/SOCIAL-API.md; docs/adr/0007-social-consent.md; docs/agent/evidence/m04-checks.json; m04-check.log; m04-e2e.log",
+      "verification": "pnpm check \u2192 0 (7 governance,11 unit,45 PG/HTTP/socket integration); pnpm test:e2e \u2192 0 (8 desktop/mobile); real room activity remains a consumer gate for M05/M06"
+    },
+    "M04-02": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/SOCIAL-API.md; docs/adr/0007-social-consent.md; docs/agent/evidence/m04-checks.json; m04-check.log; m04-e2e.log",
+      "verification": "pnpm check \u2192 0 (7 governance,11 unit,45 PG/HTTP/socket integration); pnpm test:e2e \u2192 0 (8 desktop/mobile); real room activity remains a consumer gate for M05/M06"
+    },
+    "M04-03": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/SOCIAL-API.md; docs/adr/0007-social-consent.md; docs/agent/evidence/m04-checks.json; m04-check.log; m04-e2e.log",
+      "verification": "pnpm check \u2192 0 (7 governance,11 unit,45 PG/HTTP/socket integration); pnpm test:e2e \u2192 0 (8 desktop/mobile); real room activity remains a consumer gate for M05/M06"
+    },
+    "M04-04": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/SOCIAL-API.md; docs/adr/0007-social-consent.md; docs/agent/evidence/m04-checks.json; m04-check.log; m04-e2e.log",
+      "verification": "pnpm check \u2192 0 (7 governance,11 unit,45 PG/HTTP/socket integration); pnpm test:e2e \u2192 0 (8 desktop/mobile); real room activity remains a consumer gate for M05/M06"
+    },
+    "M04-05": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/SOCIAL-API.md; docs/adr/0007-social-consent.md; docs/agent/evidence/m04-checks.json; m04-check.log; m04-e2e.log",
+      "verification": "pnpm check \u2192 0 (7 governance,11 unit,45 PG/HTTP/socket integration); pnpm test:e2e \u2192 0 (8 desktop/mobile); real room activity remains a consumer gate for M05/M06"
     }
   }
 }

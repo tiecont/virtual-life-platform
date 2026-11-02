@@ -1,6 +1,6 @@
 # Persistence and transaction boundaries (M02-02/03)
 
-Current database changes: platform_metadata and city_schema_migrations only. They are owned by foundation and verified in real PostgreSQL. Future tables use owner prefixes or schemas and are added by additive, checksum-verified migrations; the owner map must be updated in the same change. The current database is independent from both source apps. Never point the city migration command at their databases.
+Current local migrations 0001–0004 include foundation, identity and social; table owners are listed in ownership.json and verified against actual SQL. No production/legacy migrations have been applied. Future tables use owner prefixes or schemas and are added by additive, checksum-verified migrations; the owner map must be updated in the same change. The current database is independent from both source apps. Never point the city migration command at their databases.
 
 | Operation | Transaction / authority | Retry and rollback |
 |---|---|---|
