@@ -1,0 +1,12 @@
+✔ audit ranges and conjunctive dependencies preserve the authoritative DAG (5.845085ms)
+✔ cycles, unknown dependencies and duplicate module IDs are rejected (0.504593ms)
+✔ checkpoint cannot assert verification without evidence or through an unmet gate (0.324264ms)
+✔ the supplied plan pack is accepted without changing its manifest shape (3.894125ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 69.708046

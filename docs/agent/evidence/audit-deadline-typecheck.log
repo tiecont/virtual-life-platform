@@ -1,0 +1,12 @@
+[WARN] Unsupported engine: wanted: {"node":"26.13.x"} (current: {"node":"v26.9.0","pnpm":"11.28.5"})
+$ pnpm -r typecheck
+.                                        | [WARN] Unsupported engine: wanted: {"node":"26.13.x"} (current: {"node":"v26.9.0","pnpm":"11.28.5"})
+Scope: 4 of 5 workspace projects
+packages/scene-data typecheck$ tsc --noEmit
+packages/contracts typecheck$ tsc --noEmit
+packages/scene-data typecheck: Done
+packages/contracts typecheck: Done
+apps/api typecheck$ tsc --noEmit
+apps/web typecheck$ tsc --noEmit
+apps/web typecheck: Done
+apps/api typecheck: Done

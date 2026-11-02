@@ -1,0 +1,42 @@
+$ pnpm test:unit && pnpm test:integration
+$ vitest run --project unit
+
+ RUN  v5.0.5 /home/tiecont/Projects/maid-cafe
+
+(node:18233) [FSTWRN004] FastifyWarning: It seems that you are overriding an errorHandler in the same scope, which can lead to subtle bugs. To disable this behavior, set 'allowErrorHandlerOverride' to false. For more information, visit: https://fastify.dev/docs/latest/Reference/Server/#allowerrorhandleroverride
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:18233) [FSTWRN004] FastifyWarning: It seems that you are overriding an errorHandler in the same scope, which can lead to subtle bugs. To disable this behavior, set 'allowErrorHandlerOverride' to false. For more information, visit: https://fastify.dev/docs/latest/Reference/Server/#allowerrorhandleroverride
+
+ Test Files  3 passed (3)
+      Tests  11 passed (11)
+   Start at  21:44:40
+   Duration  1.17s (import 66%, transform 17%, tests 16%, worker 1%)
+
+$ node scripts/with-test-db.mjs vitest run --project integration
+ Network maid-cafe-test-efea2f28_default Creating 
+ Network maid-cafe-test-efea2f28_default Creating 
+ Network maid-cafe-test-efea2f28_default Created 
+ Network maid-cafe-test-efea2f28_default Created 
+ Container maid-cafe-test-efea2f28-db-1 Creating 
+ Container maid-cafe-test-efea2f28-db-1 Created 
+ Container maid-cafe-test-efea2f28-db-1 Starting 
+ Container maid-cafe-test-efea2f28-db-1 Started 
+ Container maid-cafe-test-efea2f28-db-1 Waiting 
+ Container maid-cafe-test-efea2f28-db-1 Healthy 
+
+ RUN  v5.0.5 /home/tiecont/Projects/maid-cafe
+
+(node:18852) [FSTWRN004] FastifyWarning: It seems that you are overriding an errorHandler in the same scope, which can lead to subtle bugs. To disable this behavior, set 'allowErrorHandlerOverride' to false. For more information, visit: https://fastify.dev/docs/latest/Reference/Server/#allowerrorhandleroverride
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  21:44:46
+   Duration  1.98s (import 70%, tests 26%, transform 4%)
+
+ Container maid-cafe-test-efea2f28-db-1 Stopping 
+ Container maid-cafe-test-efea2f28-db-1 Stopped 
+ Container maid-cafe-test-efea2f28-db-1 Removing 
+ Container maid-cafe-test-efea2f28-db-1 Removed 
+ Network maid-cafe-test-efea2f28_default Removing 
+ Network maid-cafe-test-efea2f28_default Removed 

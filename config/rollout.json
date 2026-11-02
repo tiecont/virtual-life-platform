@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "publicRelease": false,
+  "worlds": {
+    "deadline": {
+      "enabled": false
+    },
+    "maid": {
+      "enabled": false
+    },
+    "library": {
+      "enabled": false
+    },
+    "restaurant": {
+      "enabled": false
+    },
+    "lounge": {
+      "enabled": false,
+      "unlicensedMediaAllowed": false
+    },
+    "dating": {
+      "enabled": false,
+      "requiresReviewedAdultVerification": true,
+      "globallyDiscoverable": false
+    },
+    "park": {
+      "enabled": false
+    }
+  }
+}

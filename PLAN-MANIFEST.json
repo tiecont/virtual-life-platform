@@ -1,0 +1,399 @@
+{
+  "project": "Virtual City",
+  "version": "1.0",
+  "status": "plan_only_not_implemented",
+  "entrypoint": "MASTER-AGENT-PLAN.md",
+  "agent_rules": "AGENTS.md",
+  "release_waves": [
+    "W0",
+    "W1",
+    "W2",
+    "W3",
+    "W4",
+    "W5",
+    "W6"
+  ],
+  "plans": [
+    {
+      "moduleId": "M00",
+      "name": "Product Vision, UX & Governance",
+      "file": "plans/00-product-governance.md",
+      "dependsOn": "AUD-01..08",
+      "earliestWave": "W0",
+      "tasks": [
+        "M00-01",
+        "M00-02",
+        "M00-03",
+        "M00-04",
+        "M00-05"
+      ]
+    },
+    {
+      "moduleId": "M01",
+      "name": "Repository & Developer Foundation",
+      "file": "plans/01-repository-foundation.md",
+      "dependsOn": "M00",
+      "earliestWave": "W0",
+      "tasks": [
+        "M01-01",
+        "M01-02",
+        "M01-03",
+        "M01-04",
+        "M01-05",
+        "M01-06"
+      ]
+    },
+    {
+      "moduleId": "M02",
+      "name": "Domain Architecture & ADRs",
+      "file": "plans/02-architecture-boundaries.md",
+      "dependsOn": "M00, M01",
+      "earliestWave": "W0",
+      "tasks": [
+        "M02-01",
+        "M02-02",
+        "M02-03",
+        "M02-04",
+        "M02-05"
+      ]
+    },
+    {
+      "moduleId": "M03",
+      "name": "Identity, Session, Profile & Privacy",
+      "file": "plans/03-identity-privacy.md",
+      "dependsOn": "M02",
+      "earliestWave": "W1",
+      "tasks": [
+        "M03-01",
+        "M03-02",
+        "M03-03",
+        "M03-04",
+        "M03-05",
+        "M03-06"
+      ]
+    },
+    {
+      "moduleId": "M04",
+      "name": "Friends, Blocking & Social Graph",
+      "file": "plans/04-social-graph.md",
+      "dependsOn": "M03",
+      "earliestWave": "W1",
+      "tasks": [
+        "M04-01",
+        "M04-02",
+        "M04-03",
+        "M04-04",
+        "M04-05"
+      ]
+    },
+    {
+      "moduleId": "M05",
+      "name": "World SDK, Registry & Lifecycle",
+      "file": "plans/05-world-sdk-registry.md",
+      "dependsOn": "M02, M03",
+      "earliestWave": "W1",
+      "tasks": [
+        "M05-01",
+        "M05-02",
+        "M05-03",
+        "M05-04",
+        "M05-05"
+      ]
+    },
+    {
+      "moduleId": "M06",
+      "name": "Room Engine, Seats, Presence & Reconnect",
+      "file": "plans/06-room-realtime.md",
+      "dependsOn": "M03, M05",
+      "earliestWave": "W1",
+      "tasks": [
+        "M06-01",
+        "M06-02",
+        "M06-03",
+        "M06-04",
+        "M06-05",
+        "M06-06",
+        "M06-07"
+      ]
+    },
+    {
+      "moduleId": "M07",
+      "name": "Pixi Scene Engine, Avatars & Art Pipeline",
+      "file": "plans/07-scene-avatar-assets.md",
+      "dependsOn": "M05, M06",
+      "earliestWave": "W1",
+      "tasks": [
+        "M07-01",
+        "M07-02",
+        "M07-03",
+        "M07-04",
+        "M07-05",
+        "M07-06"
+      ]
+    },
+    {
+      "moduleId": "M08",
+      "name": "Trust, Safety & Moderation Platform",
+      "file": "plans/08-safety-moderation.md",
+      "dependsOn": "M03, M04, M06",
+      "earliestWave": "W1",
+      "tasks": [
+        "M08-01",
+        "M08-02",
+        "M08-03",
+        "M08-04",
+        "M08-05",
+        "M08-06"
+      ]
+    },
+    {
+      "moduleId": "M09",
+      "name": "Cross-World Invitations, Portal Travel & Party",
+      "file": "plans/09-invitations-travel.md",
+      "dependsOn": "M04, M05, M06, M08",
+      "earliestWave": "W1",
+      "tasks": [
+        "M09-01",
+        "M09-02",
+        "M09-03",
+        "M09-04",
+        "M09-05",
+        "M09-06"
+      ]
+    },
+    {
+      "moduleId": "M10",
+      "name": "Focus/Pomodoro Engine Shared by Cafe & Library",
+      "file": "plans/10-focus-engine.md",
+      "dependsOn": "M02, M03",
+      "earliestWave": "W2",
+      "tasks": [
+        "M10-01",
+        "M10-02",
+        "M10-03",
+        "M10-04",
+        "M10-05"
+      ]
+    },
+    {
+      "moduleId": "M11",
+      "name": "Shared Hospitality: Menu, Orders, Staff, Service",
+      "file": "plans/11-hospitality-engine.md",
+      "dependsOn": "M02, M06, M08",
+      "earliestWave": "W2",
+      "tasks": [
+        "M11-01",
+        "M11-02",
+        "M11-03",
+        "M11-04",
+        "M11-05",
+        "M11-06"
+      ]
+    },
+    {
+      "moduleId": "M12",
+      "name": "Events, Performances & Reservations",
+      "file": "plans/12-events-reservations.md",
+      "dependsOn": "M04, M05, M06, M08",
+      "earliestWave": "W3",
+      "tasks": [
+        "M12-01",
+        "M12-02",
+        "M12-03",
+        "M12-04",
+        "M12-05",
+        "M12-06"
+      ]
+    },
+    {
+      "moduleId": "M13",
+      "name": "Cross-World Progression & Cosmetic Economy",
+      "file": "plans/13-progression-economy.md",
+      "dependsOn": "M03, M08",
+      "earliestWave": "W3",
+      "tasks": [
+        "M13-01",
+        "M13-02",
+        "M13-03",
+        "M13-04",
+        "M13-05"
+      ]
+    },
+    {
+      "moduleId": "M14",
+      "name": "City Portal, World Map & Discovery",
+      "file": "plans/14-city-portal-discovery.md",
+      "dependsOn": "M05, M07, M09",
+      "earliestWave": "W1",
+      "tasks": [
+        "M14-01",
+        "M14-02",
+        "M14-03",
+        "M14-04",
+        "M14-05"
+      ]
+    },
+    {
+      "moduleId": "M15",
+      "name": "Existing Deadline Cafe Integration",
+      "file": "plans/15-deadline-integration.md",
+      "dependsOn": "AUD-01..08, M06, M07, M09, M10, M14",
+      "earliestWave": "W2",
+      "tasks": [
+        "M15-01",
+        "M15-02",
+        "M15-03",
+        "M15-04",
+        "M15-05",
+        "M15-06"
+      ]
+    },
+    {
+      "moduleId": "M16",
+      "name": "Existing Maid Cafe Social Integration",
+      "file": "plans/16-maid-integration.md",
+      "dependsOn": "AUD-01..08, M06, M07, M08, M09, M11, M14",
+      "earliestWave": "W2",
+      "tasks": [
+        "M16-01",
+        "M16-02",
+        "M16-03",
+        "M16-04",
+        "M16-05",
+        "M16-06"
+      ]
+    },
+    {
+      "moduleId": "M17",
+      "name": "Eternal Library — Quiet Study World",
+      "file": "plans/17-library-world.md",
+      "dependsOn": "M10, M12, M14",
+      "earliestWave": "W3",
+      "tasks": [
+        "M17-01",
+        "M17-02",
+        "M17-03",
+        "M17-04",
+        "M17-05"
+      ]
+    },
+    {
+      "moduleId": "M18",
+      "name": "Grand Restaurant — Fine-Dining Social World",
+      "file": "plans/18-restaurant-world.md",
+      "dependsOn": "M11, M12, M14",
+      "earliestWave": "W4",
+      "tasks": [
+        "M18-01",
+        "M18-02",
+        "M18-03",
+        "M18-04",
+        "M18-05",
+        "M18-06"
+      ]
+    },
+    {
+      "moduleId": "M19",
+      "name": "Moonlight Lounge — Social Stage & Mocktail Bar",
+      "file": "plans/19-lounge-world.md",
+      "dependsOn": "M11, M12, M14, M08",
+      "earliestWave": "W5",
+      "tasks": [
+        "M19-01",
+        "M19-02",
+        "M19-03",
+        "M19-04",
+        "M19-05",
+        "M19-06"
+      ]
+    },
+    {
+      "moduleId": "M20",
+      "name": "Heart Garden / Blind Date — Adult-Only World",
+      "file": "plans/20-dating-world.md",
+      "dependsOn": "M03, M04, M06, M08, M09, M12, M14",
+      "earliestWave": "W6",
+      "tasks": [
+        "M20-01",
+        "M20-02",
+        "M20-03",
+        "M20-04",
+        "M20-05",
+        "M20-06",
+        "M20-07"
+      ]
+    },
+    {
+      "moduleId": "M21",
+      "name": "Infrastructure, CI/CD & Observability",
+      "file": "plans/21-infra-observability.md",
+      "dependsOn": "M01, M02",
+      "earliestWave": "W1",
+      "tasks": [
+        "M21-01",
+        "M21-02",
+        "M21-03",
+        "M21-04",
+        "M21-05",
+        "M21-06"
+      ]
+    },
+    {
+      "moduleId": "M22",
+      "name": "Quality, Security, Load & Accessibility",
+      "file": "plans/22-testing-security-performance.md",
+      "dependsOn": "M06, M08, M21",
+      "earliestWave": "W1",
+      "tasks": [
+        "M22-01",
+        "M22-02",
+        "M22-03",
+        "M22-04",
+        "M22-05",
+        "M22-06"
+      ]
+    },
+    {
+      "moduleId": "M23",
+      "name": "Release Trains, Rollback & Community Operations",
+      "file": "plans/23-release-operations.md",
+      "dependsOn": "M15, M16, M21, M22",
+      "earliestWave": "W2",
+      "tasks": [
+        "M23-01",
+        "M23-02",
+        "M23-03",
+        "M23-04",
+        "M23-05",
+        "M23-06"
+      ]
+    },
+    {
+      "moduleId": "M24",
+      "name": "Central Park — Public Social Commons",
+      "file": "plans/24-central-park-world.md",
+      "dependsOn": "M04, M05, M06, M07, M08, M09, M14",
+      "earliestWave": "W3",
+      "tasks": [
+        "M24-01",
+        "M24-02",
+        "M24-03",
+        "M24-04",
+        "M24-05"
+      ]
+    }
+  ],
+  "originalPlans": [
+    "reference/DEADLINE-CAFE-ORIGINAL-MASTER-PLAN.md",
+    "reference/MAID-CAFE-ORIGINAL-MASTER-PLAN.md"
+  ],
+  "taskStates": [
+    "TODO",
+    "IN_PROGRESS",
+    "VERIFIED",
+    "BLOCKED_TECHNICAL",
+    "BLOCKED_EXTERNAL",
+    "DEFERRED_APPROVED"
+  ],
+  "rule": "Verification evidence required; public release requires human authorization; no date/CCU guarantee"
+}

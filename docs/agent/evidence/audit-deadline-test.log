@@ -1,0 +1,31 @@
+[WARN] Unsupported engine: wanted: {"node":"26.13.x"} (current: {"node":"v26.9.0","pnpm":"11.28.5"})
+$ pnpm -r test
+.                                        | [WARN] Unsupported engine: wanted: {"node":"26.13.x"} (current: {"node":"v26.9.0","pnpm":"11.28.5"})
+Scope: 4 of 5 workspace projects
+packages/contracts test$ vitest run --passWithNoTests
+packages/scene-data test$ vitest run --passWithNoTests
+packages/scene-data test:  RUN  v4.1.12 /home/tiecont/Projects/deadline-cafe/packages/scene-data
+packages/contracts test:  RUN  v4.1.12 /home/tiecont/Projects/deadline-cafe/packages/contracts
+packages/scene-data test: No test files found, exiting with code 0
+packages/scene-data test: include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+packages/scene-data test: exclude:  **/node_modules/**, **/.git/**
+packages/scene-data test: Done
+packages/contracts test:  Test Files  1 passed (1)
+packages/contracts test:       Tests  1 passed (1)
+packages/contracts test:    Start at  21:44:41
+packages/contracts test:    Duration  375ms (transform 34ms, setup 0ms, import 193ms, tests 5ms, environment 0ms)
+packages/contracts test: Done
+apps/api test$ jest --runInBand --passWithNoTests
+apps/web test$ vitest run --passWithNoTests
+apps/web test:  RUN  v4.1.12 /home/tiecont/Projects/deadline-cafe/apps/web
+apps/web test:  Test Files  1 passed (1)
+apps/web test:       Tests  2 passed (2)
+apps/web test:    Start at  21:44:42
+apps/web test:    Duration  717ms (transform 73ms, setup 0ms, import 342ms, tests 14ms, environment 0ms)
+apps/web test: Done
+apps/api test: Test Suites: 3 passed, 3 total
+apps/api test: Tests:       4 passed, 4 total
+apps/api test: Snapshots:   0 total
+apps/api test: Time:        6.933 s
+apps/api test: Ran all test suites.
+apps/api test: Done

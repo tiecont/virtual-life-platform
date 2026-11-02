@@ -1,0 +1,70 @@
+{
+  "updatedAt": "2026-11-02T14:49:44.091482+00:00",
+  "tasks": {
+    "AUD-01": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/repository-inventory.md; docs/architecture/legacy-compatibility.md; docs/adr/0001-adapter-first.md; docs/agent/evidence/audit-*-checks.json",
+      "verification": "source inspection + pnpm lint/typecheck/test/build baseline recorded; Deadline lint failure disclosed, not a completed-world claim"
+    },
+    "AUD-02": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/repository-inventory.md; docs/architecture/legacy-compatibility.md; docs/adr/0001-adapter-first.md; docs/agent/evidence/audit-*-checks.json",
+      "verification": "source inspection + pnpm lint/typecheck/test/build baseline recorded; Deadline lint failure disclosed, not a completed-world claim"
+    },
+    "AUD-03": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/repository-inventory.md; docs/architecture/legacy-compatibility.md; docs/adr/0001-adapter-first.md; docs/agent/evidence/audit-*-checks.json",
+      "verification": "source inspection + pnpm lint/typecheck/test/build baseline recorded; Deadline lint failure disclosed, not a completed-world claim"
+    },
+    "AUD-04": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/repository-inventory.md; docs/architecture/legacy-compatibility.md; docs/adr/0001-adapter-first.md; docs/agent/evidence/audit-*-checks.json",
+      "verification": "source inspection + pnpm lint/typecheck/test/build baseline recorded; Deadline lint failure disclosed, not a completed-world claim"
+    },
+    "AUD-05": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/repository-inventory.md; docs/architecture/legacy-compatibility.md; docs/adr/0001-adapter-first.md; docs/agent/evidence/audit-*-checks.json",
+      "verification": "source inspection + pnpm lint/typecheck/test/build baseline recorded; Deadline lint failure disclosed, not a completed-world claim"
+    },
+    "AUD-06": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/repository-inventory.md; docs/architecture/legacy-compatibility.md; docs/adr/0001-adapter-first.md; docs/agent/evidence/audit-*-checks.json",
+      "verification": "source inspection + pnpm lint/typecheck/test/build baseline recorded; Deadline lint failure disclosed, not a completed-world claim"
+    },
+    "AUD-07": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/repository-inventory.md; docs/architecture/legacy-compatibility.md; docs/adr/0001-adapter-first.md; docs/agent/evidence/audit-*-checks.json",
+      "verification": "source inspection + pnpm lint/typecheck/test/build baseline recorded; Deadline lint failure disclosed, not a completed-world claim"
+    },
+    "AUD-08": {
+      "status": "VERIFIED",
+      "evidence": "docs/architecture/repository-inventory.md; docs/architecture/legacy-compatibility.md; docs/adr/0001-adapter-first.md; docs/agent/evidence/audit-*-checks.json",
+      "verification": "source inspection + pnpm lint/typecheck/test/build baseline recorded; Deadline lint failure disclosed, not a completed-world claim"
+    },
+    "M00-01": {
+      "status": "VERIFIED",
+      "evidence": "docs/product/; docs/agent/evidence/m00-review.log; docs/agent/evidence/m00-tests.log",
+      "verification": "node scripts/verify-governance.mjs \u2192 0; node --test tests/governance/plan-status.test.mjs \u2192 0 (4 tests), document acceptance review"
+    },
+    "M00-02": {
+      "status": "VERIFIED",
+      "evidence": "docs/product/; docs/agent/evidence/m00-review.log; docs/agent/evidence/m00-tests.log",
+      "verification": "node scripts/verify-governance.mjs \u2192 0; node --test tests/governance/plan-status.test.mjs \u2192 0 (4 tests), document acceptance review"
+    },
+    "M00-03": {
+      "status": "VERIFIED",
+      "evidence": "docs/product/; docs/agent/evidence/m00-review.log; docs/agent/evidence/m00-tests.log",
+      "verification": "node scripts/verify-governance.mjs \u2192 0; node --test tests/governance/plan-status.test.mjs \u2192 0 (4 tests), document acceptance review"
+    },
+    "M00-04": {
+      "status": "VERIFIED",
+      "evidence": "docs/product/; docs/agent/evidence/m00-review.log; docs/agent/evidence/m00-tests.log",
+      "verification": "node scripts/verify-governance.mjs \u2192 0; node --test tests/governance/plan-status.test.mjs \u2192 0 (4 tests), document acceptance review"
+    },
+    "M00-05": {
+      "status": "VERIFIED",
+      "evidence": "docs/product/; docs/agent/evidence/m00-review.log; docs/agent/evidence/m00-tests.log",
+      "verification": "node scripts/verify-governance.mjs \u2192 0; node --test tests/governance/plan-status.test.mjs \u2192 0 (4 tests), document acceptance review"
+    }
+  }
+}

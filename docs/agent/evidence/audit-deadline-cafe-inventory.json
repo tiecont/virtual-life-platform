@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-02T14:44:24.829130+00:00",
+  "path": "/home/tiecont/Projects/deadline-cafe",
+  "commands": [
+    {
+      "label": "status",
+      "command": [
+        "git",
+        "status",
+        "--short",
+        "--branch"
+      ],
+      "exitCode": 0,
+      "output": "## main\n M .gitignore\n M apps/web/app/globals.css\n M apps/web/app/layout.tsx\n M apps/web/app/page.tsx\n M apps/web/next.config.ts\n?? apps/web/app/cafe/\n?? apps/web/app/error.tsx\n?? apps/web/app/help/\n?? apps/web/app/loading.tsx\n?? apps/web/app/lobby/\n?? apps/web/app/not-found.tsx\n?? apps/web/app/privacy/\n?? apps/web/app/stats/\n?? apps/web/app/unavailable/\n?? apps/web/public/\n?? apps/web/src/\n?? docs/ASSET-LICENSES.md\n?? scripts/e2e-stack.ts\n?? tests/\n"
+    },
+    {
+      "label": "head",
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exitCode": 0,
+      "output": "f9475b4caa65813e9351aaa4598663df538116a3\n"
+    },
+    {
+      "label": "source-fingerprint",
+      "command": [
+        "git",
+        "diff",
+        "--stat"
+      ],
+      "exitCode": 0,
+      "output": " .gitignore               | 1 +\n apps/web/app/globals.css | 4 +++-\n apps/web/app/layout.tsx  | 3 ++-\n apps/web/app/page.tsx    | 4 +++-\n apps/web/next.config.ts  | 2 +-\n 5 files changed, 10 insertions(+), 4 deletions(-)\n"
+    },
+    {
+      "label": "runtime",
+      "command": [
+        "node",
+        "--version"
+      ],
+      "exitCode": 0,
+      "output": "v26.9.0\n"
+    },
+    {
+      "label": "pnpm",
+      "command": [
+        "pnpm",
+        "--version"
+      ],
+      "exitCode": 0,
+      "output": "11.28.5\n"
+    }
+  ]
+}
