@@ -9,12 +9,12 @@
 | M00 | M00-03 · Định nghĩa UX design tokens, tone, a11y/mobile; first-time onboarding không cần hứa account liên thông nếu chưa tích hợp. | VERIFIED | docs/agent/evidence/m00-review.log |
 | M00 | M00-04 · Định nghĩa product analytics và privacy-friendly events. | VERIFIED | docs/agent/evidence/m00-review.log |
 | M00 | M00-05 · Lập product risk register, phase-bound scope và release operator signoff. | VERIFIED | docs/agent/evidence/m00-review.log |
-| M01 | M01-01 · Inspect repositories and choose integration topology (single monorepo, git submodules, adapter façade) via ADR. | TODO | — |
-| M01 | M01-02 · Initialize pnpm workspaces, runtime versions, CI quality scripts only where missing. | TODO | — |
-| M01 | M01-03 · Create `packages/contracts`, `world-sdk`, shared config and convention for domain imports. | TODO | — |
-| M01 | M01-04 · Create local development stack and reproducible env examples. | TODO | — |
-| M01 | M01-05 · Add CI on PR + required checks, caches and artifact outputs. | TODO | — |
-| M01 | M01-06 · Document onboarding for other agents and human developers. | TODO | — |
+| M01 | M01-01 · Inspect repositories and choose integration topology (single monorepo, git submodules, adapter façade) via ADR. | VERIFIED | docs/agent/evidence/m01-check.log (offline scope ADR 0002) |
+| M01 | M01-02 · Initialize pnpm workspaces, runtime versions, CI quality scripts only where missing. | VERIFIED | docs/agent/evidence/m01-check.log (offline scope ADR 0002) |
+| M01 | M01-03 · Create `packages/contracts`, `world-sdk`, shared config and convention for domain imports. | VERIFIED | docs/agent/evidence/m01-check.log (offline scope ADR 0002) |
+| M01 | M01-04 · Create local development stack and reproducible env examples. | VERIFIED | docs/agent/evidence/m01-check.log (offline scope ADR 0002) |
+| M01 | M01-05 · Add CI on PR + required checks, caches and artifact outputs. | VERIFIED | docs/agent/evidence/m01-check.log (offline scope ADR 0002) |
+| M01 | M01-06 · Document onboarding for other agents and human developers. | VERIFIED | docs/agent/evidence/m01-check.log (offline scope ADR 0002) |
 | M02 | M02-01 · Document context/container/module architecture and domain ownership (C4 lightweight). | TODO | — |
 | M02 | M02-02 · Specify DB ownership, module service APIs and transactional boundaries. | TODO | — |
 | M02 | M02-03 · Specify adapter-first integration for two existing projects. | TODO | — |

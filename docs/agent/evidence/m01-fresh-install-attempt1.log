@@ -1,0 +1,28 @@
+Scope: all 6 workspace projects
+[WARN] The store at /home/tiecont/.local/share/pnpm/store/v11 is not used because packages cannot be hard linked from it into this project. Using the store at /tmp/.pnpm-store/v11 instead. Set storeDir to choose the store.
+✓ Lockfile passes supply-chain policies (verified 3m ago)
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +270
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+[WARN] pg-cloudflare@1.4.1 is an optional dependency that could not be fetched. Excluding it from installation.
+ERR_PNPM_NO_OFFLINE_TARBALL: A package is missing from the store but cannot download it in offline mode. The missing package may be downloaded from https://registry.npmjs.org/pg-cloudflare/-/pg-cloudflare-1.4.1.tgz.
+[WARN] @next/swc-linux-x64-gnu@16.4.4 is an optional dependency that could not be fetched. Excluding it from installation.
+ERR_PNPM_NO_OFFLINE_TARBALL: A package is missing from the store but cannot download it in offline mode. The missing package may be downloaded from https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-16.4.4.tgz.
+[WARN] sharp@0.35.5 is an optional dependency that could not be fetched. Excluding it from installation.
+ERR_PNPM_NO_OFFLINE_TARBALL: A package is missing from the store but cannot download it in offline mode. The missing package may be downloaded from https://registry.npmjs.org/sharp/-/sharp-0.35.5.tgz.
+[WARN] @esbuild/linux-x64@0.27.7 is an optional dependency that could not be fetched. Excluding it from installation.
+ERR_PNPM_NO_OFFLINE_TARBALL: A package is missing from the store but cannot download it in offline mode. The missing package may be downloaded from https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.27.7.tgz.
+[WARN] @img/colour@1.1.0 is an optional dependency that could not be fetched. Excluding it from installation.
+ERR_PNPM_NO_OFFLINE_TARBALL: A package is missing from the store but cannot download it in offline mode. The missing package may be downloaded from https://registry.npmjs.org/@img/colour/-/colour-1.1.0.tgz.
+[WARN] lightningcss-linux-x64-gnu@1.33.0 is an optional dependency that could not be fetched. Excluding it from installation.
+ERR_PNPM_NO_OFFLINE_TARBALL: A package is missing from the store but cannot download it in offline mode. The missing package may be downloaded from https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.33.0.tgz.
+[WARN] @rolldown/binding-linux-x64-gnu@1.2.16 is an optional dependency that could not be fetched. Excluding it from installation.
+ERR_PNPM_NO_OFFLINE_TARBALL: A package is missing from the store but cannot download it in offline mode. The missing package may be downloaded from https://registry.npmjs.org/@rolldown/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.2.16.tgz.
+[WARN] @img/sharp-libvips-linux-x64@1.3.4 is an optional dependency that could not be fetched. Excluding it from installation.
+ERR_PNPM_NO_OFFLINE_TARBALL: A package is missing from the store but cannot download it in offline mode. The missing package may be downloaded from https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.3.4.tgz.
+[WARN] @img/sharp-linux-x64@0.35.5 is an optional dependency that could not be fetched. Excluding it from installation.
+ERR_PNPM_NO_OFFLINE_TARBALL: A package is missing from the store but cannot download it in offline mode. The missing package may be downloaded from https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.35.5.tgz.
+[ERR_PNPM_NO_OFFLINE_TARBALL] A package is missing from the store but cannot download it in offline mode. The missing package may be downloaded from https://registry.npmjs.org/@eslint/js/-/js-9.39.1.tgz.
+
+exit=1

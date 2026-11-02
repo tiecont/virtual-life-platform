@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-02T14:49:44.091482+00:00",
+  "updatedAt": "2026-11-02T15:00:31.880112+00:00",
   "tasks": {
     "AUD-01": {
       "status": "VERIFIED",
@@ -67,34 +67,40 @@
       "verification": "node scripts/verify-governance.mjs \u2192 0; node --test tests/governance/plan-status.test.mjs \u2192 0 (4 tests), document acceptance review"
     },
     "M01-01": {
-      "status": "IN_PROGRESS",
-      "evidence": "docs/agent/evidence/m01-*",
-      "verification": "local acceptance in progress; remote PR removed from session scope by owner, ADR 0002"
+      "status": "VERIFIED",
+      "evidence": "docs/agent/evidence/m01-check.log; m01-e2e-attempt2.log; m01-fresh-install.log; m01-dev-smoke.json; m01-negative-gate.log",
+      "verification": "pnpm check \u2192 0; pnpm test:e2e \u2192 0; fresh source pnpm install --offline --frozen-lockfile \u2192 0; local scope ADR 0002",
+      "commit": "c7ec45b9ffb2c5643890fd5a3db6787f3758c556"
     },
     "M01-02": {
-      "status": "IN_PROGRESS",
-      "evidence": "docs/agent/evidence/m01-*",
-      "verification": "local acceptance in progress; remote PR removed from session scope by owner, ADR 0002"
+      "status": "VERIFIED",
+      "evidence": "docs/agent/evidence/m01-check.log; m01-e2e-attempt2.log; m01-fresh-install.log; m01-dev-smoke.json; m01-negative-gate.log",
+      "verification": "pnpm check \u2192 0; pnpm test:e2e \u2192 0; fresh source pnpm install --offline --frozen-lockfile \u2192 0; local scope ADR 0002",
+      "commit": "c7ec45b9ffb2c5643890fd5a3db6787f3758c556"
     },
     "M01-03": {
-      "status": "IN_PROGRESS",
-      "evidence": "docs/agent/evidence/m01-*",
-      "verification": "local acceptance in progress; remote PR removed from session scope by owner, ADR 0002"
+      "status": "VERIFIED",
+      "evidence": "docs/agent/evidence/m01-check.log; m01-e2e-attempt2.log; m01-fresh-install.log; m01-dev-smoke.json; m01-negative-gate.log",
+      "verification": "pnpm check \u2192 0; pnpm test:e2e \u2192 0; fresh source pnpm install --offline --frozen-lockfile \u2192 0; local scope ADR 0002",
+      "commit": "c7ec45b9ffb2c5643890fd5a3db6787f3758c556"
     },
     "M01-04": {
-      "status": "IN_PROGRESS",
-      "evidence": "docs/agent/evidence/m01-*",
-      "verification": "local acceptance in progress; remote PR removed from session scope by owner, ADR 0002"
+      "status": "VERIFIED",
+      "evidence": "docs/agent/evidence/m01-check.log; m01-e2e-attempt2.log; m01-fresh-install.log; m01-dev-smoke.json; m01-negative-gate.log",
+      "verification": "pnpm check \u2192 0; pnpm test:e2e \u2192 0; fresh source pnpm install --offline --frozen-lockfile \u2192 0; local scope ADR 0002",
+      "commit": "c7ec45b9ffb2c5643890fd5a3db6787f3758c556"
     },
     "M01-05": {
-      "status": "IN_PROGRESS",
-      "evidence": "docs/agent/evidence/m01-*",
-      "verification": "local acceptance in progress; remote PR removed from session scope by owner, ADR 0002"
+      "status": "VERIFIED",
+      "evidence": "docs/agent/evidence/m01-check.log; m01-e2e-attempt2.log; m01-fresh-install.log; m01-dev-smoke.json; m01-negative-gate.log",
+      "verification": "pnpm check \u2192 0; pnpm test:e2e \u2192 0; fresh source pnpm install --offline --frozen-lockfile \u2192 0; local scope ADR 0002",
+      "commit": "c7ec45b9ffb2c5643890fd5a3db6787f3758c556"
     },
     "M01-06": {
-      "status": "IN_PROGRESS",
-      "evidence": "docs/agent/evidence/m01-*",
-      "verification": "local acceptance in progress; remote PR removed from session scope by owner, ADR 0002"
+      "status": "VERIFIED",
+      "evidence": "docs/agent/evidence/m01-check.log; m01-e2e-attempt2.log; m01-fresh-install.log; m01-dev-smoke.json; m01-negative-gate.log",
+      "verification": "pnpm check \u2192 0; pnpm test:e2e \u2192 0; fresh source pnpm install --offline --frozen-lockfile \u2192 0; local scope ADR 0002",
+      "commit": "c7ec45b9ffb2c5643890fd5a3db6787f3758c556"
     }
   }
 }

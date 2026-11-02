@@ -1,0 +1,32 @@
+Scope: all 6 workspace projects
+✓ Lockfile passes supply-chain policies (verified 3m ago)
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +270
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Packages are cloned from the content-addressable store to the virtual store.
+  Content-addressable store is at: /home/tiecont/.local/share/pnpm/store/v11
+  Virtual store is at:             node_modules/.pnpm
+Progress: resolved 270, reused 270, downloaded 0, added 269
+Progress: resolved 270, reused 270, downloaded 0, added 270, done
+.../esbuild@0.27.7/node_modules/esbuild postinstall$ node install.js
+.../esbuild@0.27.7/node_modules/esbuild postinstall: Done
+
+devDependencies:
++ @eslint/js 9.39.1
++ @playwright/test 1.64.1
++ @types/node 26.0.0
++ @types/pg 8.23.1
++ @types/react 19.3.0
++ @types/react-dom 19.3.0
++ @virtual-city/contracts 0.1.0 <- packages/contracts
++ eslint 9.39.1
++ pg 8.23.1
++ tsx 4.21.0
++ typescript 5.9.3
++ typescript-eslint 8.57.1
++ vitest 4.1.12
+
+Done in 2.1s using pnpm v11.28.5
+
+exit=0
