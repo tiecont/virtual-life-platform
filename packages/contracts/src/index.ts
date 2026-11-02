@@ -36,3 +36,10 @@ export const LoginNameSchema = z.string().normalize('NFKC').trim().toLowerCase()
 export const UpgradeInputSchema = z.strictObject({ loginName: LoginNameSchema, password: z.string().min(12).max(128) });
 export const LoginInputSchema = UpgradeInputSchema.extend({ requestId: z.uuid() });
 export type UpgradeInput = z.infer<typeof UpgradeInputSchema>;
+// Identity transport only; room/world envelopes remain owned by M05/M06/M09.
+export const SessionHandshakeSchema = z.strictObject({ schemaVersion: z.literal(1), csrfToken: z.string().regex(/^[a-f0-9]{64}$/) });
+export const SessionCheckSchema = z.strictObject({ schemaVersion: z.literal(1), requestId: z.uuid() });
+export const SessionCheckAckSchema = z.discriminatedUnion('ok', [
+  z.strictObject({ schemaVersion: z.literal(1), requestId: z.uuid(), ok: z.literal(true), result: z.strictObject({ accountId: z.uuid(), kind: z.enum(['guest', 'registered']) }) }),
+  z.strictObject({ schemaVersion: z.literal(1), requestId: z.uuid(), ok: z.literal(false), error: z.strictObject({ code: z.enum(['INVALID_REQUEST', 'UNAUTHENTICATED', 'RATE_LIMITED', 'INTERNAL_ERROR']), retryable: z.boolean() }) }),
+]);

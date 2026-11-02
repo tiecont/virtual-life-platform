@@ -20,12 +20,12 @@
 | M02 | M02-03 · Specify adapter-first integration for two existing projects. | VERIFIED | docs/agent/evidence/m02-architecture.log |
 | M02 | M02-04 · Create architecture decision records for room authority, transport and persistence. | VERIFIED | docs/agent/evidence/m02-architecture.log |
 | M02 | M02-05 · Specify multi-instance design for future use without implementing prematurely. | VERIFIED | docs/agent/evidence/m02-architecture.log |
-| M03 | M03-01 · Audit old guest/token/cookie/session flows; design migration for existing users. | TODO | — |
-| M03 | M03-02 · Implement identity endpoints, signed secure cookies, session rotation/logout and optional guest sessions. | TODO | — |
-| M03 | M03-03 · Implement public user profile (nickname, avatar selection, visibility) and distinct private prefs. | TODO | — |
-| M03 | M03-04 · Implement privacy settings and export/delete requests hooks with auditable policy. | TODO | — |
-| M03 | M03-05 · Add admission/eligibility policy interface for restricted worlds. | TODO | — |
-| M03 | M03-06 · Implement abuse-resistant account/session safeguards. | TODO | — |
+| M03 | M03-01 · Audit old guest/token/cookie/session flows; design migration for existing users. | VERIFIED | docs/agent/evidence/m03-final-checks.json |
+| M03 | M03-02 · Implement identity endpoints, signed secure cookies, session rotation/logout and optional guest sessions. | VERIFIED | docs/agent/evidence/m03-final-checks.json |
+| M03 | M03-03 · Implement public user profile (nickname, avatar selection, visibility) and distinct private prefs. | VERIFIED | docs/agent/evidence/m03-final-checks.json |
+| M03 | M03-04 · Implement privacy settings and export/delete requests hooks with auditable policy. | VERIFIED | docs/agent/evidence/m03-final-checks.json |
+| M03 | M03-05 · Add admission/eligibility policy interface for restricted worlds. | VERIFIED | docs/agent/evidence/m03-final-checks.json |
+| M03 | M03-06 · Implement abuse-resistant account/session safeguards. | VERIFIED | docs/agent/evidence/m03-final-checks.json |
 | M04 | M04-01 · Define state machines for friend request: PENDING/ACCEPTED/DECLINED/EXPIRED/CANCELLED. | TODO | — |
 | M04 | M04-02 · Implement friend endpoints and atomic reciprocal acceptance. | TODO | — |
 | M04 | M04-03 · Implement block/unblock effects and cache invalidation. | TODO | — |

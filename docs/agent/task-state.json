@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-02T15:18:35.335788+00:00",
+  "updatedAt": "2026-11-02T15:44:03.700329+00:00",
   "tasks": {
     "AUD-01": {
       "status": "VERIFIED",
@@ -128,34 +128,34 @@
       "verification": "node scripts/verify-architecture.mjs \u2192 0; pnpm lint \u2192 0; node --test tests/governance/*.test.mjs \u2192 0 (7); architecture-specific acceptance review, no gameplay claims"
     },
     "M03-01": {
-      "status": "IN_PROGRESS",
-      "evidence": "docs/agent/evidence/m03-guest-checks.json; docs/adr/0004-identity-sessions.md",
-      "verification": "Guest/privacy slice: pnpm check \u2192 0 (7 governance, 9 unit, 14 PG integration); pnpm test:e2e \u2192 0 (4). Full module pending registered upgrade and final acceptance review."
+      "status": "VERIFIED",
+      "evidence": "docs/agent/evidence/m03-final-checks.json; m03-final-check.log; m03-final-e2e.log; docs/architecture/IDENTITY-API.md; IDENTITY-SOCKET.md; ADR 0004/0005",
+      "verification": "pnpm frozen install/check/test:e2e \u2192 0; 7 governance, 11 unit, 29 real PG+HTTP+Socket.IO integration, 6 browser E2E; M03 policy ports verified, room/travel consumers remain M06/M09 gates"
     },
     "M03-02": {
-      "status": "IN_PROGRESS",
-      "evidence": "docs/agent/evidence/m03-guest-checks.json; docs/adr/0004-identity-sessions.md",
-      "verification": "Guest/privacy slice: pnpm check \u2192 0 (7 governance, 9 unit, 14 PG integration); pnpm test:e2e \u2192 0 (4). Full module pending registered upgrade and final acceptance review."
+      "status": "VERIFIED",
+      "evidence": "docs/agent/evidence/m03-final-checks.json; m03-final-check.log; m03-final-e2e.log; docs/architecture/IDENTITY-API.md; IDENTITY-SOCKET.md; ADR 0004/0005",
+      "verification": "pnpm frozen install/check/test:e2e \u2192 0; 7 governance, 11 unit, 29 real PG+HTTP+Socket.IO integration, 6 browser E2E; M03 policy ports verified, room/travel consumers remain M06/M09 gates"
     },
     "M03-03": {
-      "status": "IN_PROGRESS",
-      "evidence": "docs/agent/evidence/m03-guest-checks.json; docs/adr/0004-identity-sessions.md",
-      "verification": "Guest/privacy slice: pnpm check \u2192 0 (7 governance, 9 unit, 14 PG integration); pnpm test:e2e \u2192 0 (4). Full module pending registered upgrade and final acceptance review."
+      "status": "VERIFIED",
+      "evidence": "docs/agent/evidence/m03-final-checks.json; m03-final-check.log; m03-final-e2e.log; docs/architecture/IDENTITY-API.md; IDENTITY-SOCKET.md; ADR 0004/0005",
+      "verification": "pnpm frozen install/check/test:e2e \u2192 0; 7 governance, 11 unit, 29 real PG+HTTP+Socket.IO integration, 6 browser E2E; M03 policy ports verified, room/travel consumers remain M06/M09 gates"
     },
     "M03-04": {
-      "status": "IN_PROGRESS",
-      "evidence": "docs/agent/evidence/m03-guest-checks.json; docs/adr/0004-identity-sessions.md",
-      "verification": "Guest/privacy slice: pnpm check \u2192 0 (7 governance, 9 unit, 14 PG integration); pnpm test:e2e \u2192 0 (4). Full module pending registered upgrade and final acceptance review."
+      "status": "VERIFIED",
+      "evidence": "docs/agent/evidence/m03-final-checks.json; m03-final-check.log; m03-final-e2e.log; docs/architecture/IDENTITY-API.md; IDENTITY-SOCKET.md; ADR 0004/0005",
+      "verification": "pnpm frozen install/check/test:e2e \u2192 0; 7 governance, 11 unit, 29 real PG+HTTP+Socket.IO integration, 6 browser E2E; M03 policy ports verified, room/travel consumers remain M06/M09 gates"
     },
     "M03-05": {
-      "status": "IN_PROGRESS",
-      "evidence": "docs/agent/evidence/m03-guest-checks.json; docs/adr/0004-identity-sessions.md",
-      "verification": "Guest/privacy slice: pnpm check \u2192 0 (7 governance, 9 unit, 14 PG integration); pnpm test:e2e \u2192 0 (4). Full module pending registered upgrade and final acceptance review."
+      "status": "VERIFIED",
+      "evidence": "docs/agent/evidence/m03-final-checks.json; m03-final-check.log; m03-final-e2e.log; docs/architecture/IDENTITY-API.md; IDENTITY-SOCKET.md; ADR 0004/0005",
+      "verification": "pnpm frozen install/check/test:e2e \u2192 0; 7 governance, 11 unit, 29 real PG+HTTP+Socket.IO integration, 6 browser E2E; M03 policy ports verified, room/travel consumers remain M06/M09 gates"
     },
     "M03-06": {
-      "status": "IN_PROGRESS",
-      "evidence": "docs/agent/evidence/m03-guest-checks.json; docs/adr/0004-identity-sessions.md",
-      "verification": "Guest/privacy slice: pnpm check \u2192 0 (7 governance, 9 unit, 14 PG integration); pnpm test:e2e \u2192 0 (4). Full module pending registered upgrade and final acceptance review."
+      "status": "VERIFIED",
+      "evidence": "docs/agent/evidence/m03-final-checks.json; m03-final-check.log; m03-final-e2e.log; docs/architecture/IDENTITY-API.md; IDENTITY-SOCKET.md; ADR 0004/0005",
+      "verification": "pnpm frozen install/check/test:e2e \u2192 0; 7 governance, 11 unit, 29 real PG+HTTP+Socket.IO integration, 6 browser E2E; M03 policy ports verified, room/travel consumers remain M06/M09 gates"
     }
   }
 }

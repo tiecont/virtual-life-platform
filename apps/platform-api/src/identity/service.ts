@@ -6,7 +6,7 @@ import { IdentityError, unauthorized } from './errors';
 import { PasswordHasher, type PasswordRecord } from './passwords';
 type DB = Pick<Pool, 'query'> | PoolClient;
 type Session = { id: string; account_id: string; expires_at: Date; revoked_at: Date | null; revoked_reason: string | null; kind: 'guest' | 'registered'; display_name: string; avatar_key: PublicProfile['avatarKey'] };
-export type IdentityContext = Readonly<{ accountId: string; sessionId: string; kind: 'guest' | 'registered' }>;
+export type IdentityContext = Readonly<{ accountId: string; sessionId: string; kind: 'guest' | 'registered'; expiresAt: number }>;
 const defaults: Privacy = { presence: 'hidden', analyticsConsent: false, worldVisibility: { dating: 'hidden' } };
 export class IdentityService {
   private passwords = new PasswordHasher();
@@ -43,7 +43,7 @@ export class IdentityService {
   }
   private public(session: Session): PublicProfile { return { id: session.account_id, displayName: session.display_name, avatarKey: session.avatar_key }; }
   private view(session: Session, token: string): Me { return { profile: this.public(session), kind: session.kind, expiresAt: session.expires_at.toISOString(), csrfToken: this.csrf(token) }; }
-  async authenticate(token: string): Promise<IdentityContext> { const s = await this.session(token); return Object.freeze({ accountId: s.account_id, sessionId: s.id, kind: s.kind }); }
+  async authenticate(token: string): Promise<IdentityContext> { const s = await this.session(token); return Object.freeze({ accountId: s.account_id, sessionId: s.id, kind: s.kind, expiresAt: s.expires_at.getTime() }); }
   async me(token: string): Promise<Me> { return this.view(await this.session(token), token); }
   async guest(input: ProfileInput & { requestId: string }, existingToken?: string) {
     if (existingToken) { try { return { me: await this.me(existingToken), token: existingToken, created: false }; } catch (e) { if (!(e instanceof IdentityError)) throw e; } }

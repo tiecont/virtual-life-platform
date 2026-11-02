@@ -1,0 +1,95 @@
+import { randomUUID } from 'node:crypto';
+import { Server, type Socket } from 'socket.io';
+import type { FastifyInstance } from 'fastify';
+import { SessionHandshakeSchema, SessionCheckSchema, SessionCheckAckSchema } from '@virtual-city/contracts';
+import type { Config } from '../config';
+import { IdentityService, type IdentityContext } from './service';
+import { IdentityError, unauthorized } from './errors';
+import { sessionCookieName } from './http';
+import { WindowLimiter } from './limits';
+type Lease = { token: string; context: IdentityContext; cleanup: () => void; armExpiry: () => void };
+export function createIdentityGateway(http: FastifyInstance, config: Config, identity: IdentityService, now = Date.now) {
+  const limits = new WindowLimiter(now);
+  const leases = new WeakMap<Socket, Lease>();
+  const sessions = new Map<string, Set<Socket>>();
+  const commands = new Set(['session.check']);
+  const io = new Server(http.server, {
+    transports: ['websocket'], serveClient: false, maxHttpBufferSize: 8192, connectTimeout: 5000,
+    cors: { origin: config.WEB_ORIGIN, credentials: true },
+    allowRequest: (request, done) => {
+      const allowed = request.headers.origin === config.WEB_ORIGIN && limits.take('handshake:' + request.socket.remoteAddress, 30) && io.engine.clientsCount < 1000;
+      done(null, allowed);
+    },
+  });
+  function disconnect(socket: Socket, reason: 'session-ended' | 'rate-limit' = 'session-ended') {
+    socket.emit('session.revoked', { schemaVersion: 1, reason }); socket.disconnect(true);
+  }
+  async function authorize(socket: Socket): Promise<IdentityContext> {
+    const lease = leases.get(socket);
+    if (!lease || !socket.connected) throw unauthorized();
+    if (!limits.take('commands:' + lease.context.sessionId, 60)) throw new IdentityError('RATE_LIMITED', 429, 'Please wait before trying again');
+    const current = await identity.authenticate(lease.token);
+    if (current.accountId !== lease.context.accountId || current.sessionId !== lease.context.sessionId) throw unauthorized();
+    return current;
+  }
+  io.use(async (socket, next) => {
+    try {
+      const handshake = SessionHandshakeSchema.parse(socket.handshake.auth);
+      const header = socket.handshake.headers.cookie ?? '';
+      if (header.length > 4096) throw unauthorized();
+      const signed = http.parseCookie(header)[sessionCookieName(config)];
+      if (!signed) throw unauthorized();
+      const parsed = http.unsignCookie(signed);
+      if (!parsed.valid || !parsed.value) throw unauthorized();
+      identity.verifyCsrf(parsed.value, handshake.csrfToken);
+      const context = await identity.authenticate(parsed.value);
+      if (socket.conn.readyState !== 'open') throw unauthorized();
+      const current = sessions.get(context.sessionId) ?? new Set<Socket>();
+      if (current.size >= 4) return next(new Error('RATE_LIMITED'));
+      current.add(socket); sessions.set(context.sessionId, current);
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const cleanup = () => {
+        if (timer) clearTimeout(timer);
+        leases.delete(socket); current.delete(socket);
+        if (current.size === 0) sessions.delete(context.sessionId);
+      };
+      const armExpiry = () => {
+        const remaining = context.expiresAt - now();
+        if (remaining <= 0) { disconnect(socket); return; }
+        timer = setTimeout(armExpiry, Math.min(remaining, 86400000)); timer.unref();
+      };
+      socket.conn.once('close', cleanup); socket.once('disconnect', cleanup);
+      leases.set(socket, { token: parsed.value, context, cleanup, armExpiry });
+      next();
+    } catch { next(new Error('UNAUTHENTICATED')); }
+  });
+  io.on('connection', socket => {
+    leases.get(socket)?.armExpiry();
+    socket.onAny(event => {
+      if (!commands.has(event) || !limits.take('events:' + socket.id, 120)) disconnect(socket, 'rate-limit');
+    });
+    socket.on('session.check', async (input: unknown, ack: unknown) => {
+      if (typeof ack !== 'function') { disconnect(socket); return; }
+      const parsed = SessionCheckSchema.safeParse(input);
+      const requestId = parsed.success ? parsed.data.requestId : randomUUID();
+      if (!parsed.success) {
+        ack(SessionCheckAckSchema.parse({ schemaVersion: 1, requestId, ok: false, error: { code: 'INVALID_REQUEST', retryable: false } })); return;
+      }
+      try {
+        const context = await authorize(socket);
+        ack(SessionCheckAckSchema.parse({ schemaVersion: 1, requestId, ok: true, result: { accountId: context.accountId, kind: context.kind } }));
+      } catch (error) {
+        const code = error instanceof IdentityError ? (error.code === 'RATE_LIMITED' ? 'RATE_LIMITED' : 'UNAUTHENTICATED') : 'INTERNAL_ERROR';
+        ack(SessionCheckAckSchema.parse({ schemaVersion: 1, requestId, ok: false, error: { code, retryable: code !== 'UNAUTHENTICATED' } }));
+        if (code !== 'RATE_LIMITED') disconnect(socket);
+      }
+    });
+  });
+  const unsubscribe = identity.onRevoked(event => {
+    for (const id of event.sessionIds) for (const socket of [...(sessions.get(id) ?? [])]) disconnect(socket);
+  });
+  http.addHook('preClose', async () => { unsubscribe(); io.disconnectSockets(true); io.engine.close(); });
+  http.addHook('onClose', async () => { await io.close(); });
+  // M06 may register room commands only after its dependencies are VERIFIED.
+  return { io, authorize, allowCommand: (name: string) => { commands.add(name); } };
+}

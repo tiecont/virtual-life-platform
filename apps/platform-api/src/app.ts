@@ -10,6 +10,7 @@ import type { Config } from './config';
 import { IdentityService } from './identity/service';
 import { registerIdentity } from './identity/http';
 import { migrationNames } from './db/migrations';
+import { createIdentityGateway } from './identity/socket';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -49,6 +50,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   });
   app.useGlobalFilters(new SafeHttpErrors());
   await app.init();
+  const gateway = createIdentityGateway(http, config, identity, options.now);
   await http.ready();
-  return { app, http, identity };
+  return { app, http, identity, gateway };
 }

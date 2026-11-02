@@ -84,3 +84,16 @@ Regression found and fixed: m03-check-attempt2.log/json records exit 1 because i
 DB migration 0003 adds platform-owned credentials/login request receipts and session creation order; SQL ownership checker covers 11 tables + journal. No production/legacy migration. Local dev database still needs pending 0002/0003 on next db:migrate.
 
 Next exact action M03-06: implement an authentication-only Socket.IO session gateway (no rooms/travel yet) and actual network tests for origin/CSRF/auth guard, per-command reauthentication and post-commit revocation. This fulfills M03's socket revocation acceptance without starting M06 room ownership out of DAG order. M03 remains IN_PROGRESS until that guardrail slice is verified. M04/M05 remain locked.
+
+## M03-01..06 — VERIFIED identity module; W1 still IN_PROGRESS
+
+Final actual commands/exit codes recorded in m03-final-checks.json, 2026-11-02T15:39–15:41Z, Node 26.9.0/pnpm 11.28.5/Linux/PostgreSQL 17.7-alpine:
+- `pnpm install --frozen-lockfile` → 0.
+- `pnpm check` → 0: 7 governance/boundary tests, 11 unit, 29 actual PostgreSQL/HTTP/Socket.IO integration, lint/types/ownership and builds.
+- `pnpm test:e2e` → 0: 6 desktop/mobile browser tests, guest/private data lifecycle and registered cross-browser continuity.
+
+Final M03 acceptance adds actual network-authenticated Socket.IO session gateway, strict handshake and per-command guards, Origin/CSRF, private credential storage, post-commit logout/renewal/upgrade/deletion disconnection, external DB revocation checks, idle/clock expiry, bounded connections/commands and transport shutdown. Gateway is auth-only and has no room/travel/chat commands. Restricted admission/presence interfaces are fail-closed and tested for unknown age/forged roles/registered status/blocks/hidden dating/unknown worlds; live world consumers remain M05/M06/M09 acceptance, not claimed here.
+
+Migration compatibility uses deliberate rejection of legacy cookies/body formats and documented possession-proof strategy; no legacy account migration performed. All identity tables owned by platform, explicit deletion/export/expiry policies, no credential export or logging. Server task evidence is in IDENTITY-API.md/IDENTITY-SOCKET.md and ADRs 0004/0005. M03 fulfilled its own interface/identity transport boundaries; W1 needs the remaining social/registry/room/scene/safety/travel/portal modules.
+
+Next exact action: M04-01..05, lowest-ID ready module: friend-request state machine, reciprocal consent, atomic pair uniqueness, block policy and privacy-safe discovery. Do not start M06 before M05 verified. No public release, all worlds OFF, no remote operations.
