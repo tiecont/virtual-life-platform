@@ -4,7 +4,7 @@ import { WorldRegistry, defineWorld, createSandboxWorld, type WorldHooks, type W
 
 const definition: WorldDefinition = {
   schemaVersion: 1, apiVersion: 1, slug: 'test-sandbox', version: '1.0.0', title: 'Test Sandbox', kind: 'sandbox',
-  sceneRef: { key: 'test-scene', version: '1.0.0' }, capacity: 8, capabilities: ['presence'],
+  sceneRef: { key: 'test-scene', version: '1.0.0' }, capacity: 8, capabilities: ['presence'], seatIds: [],
   accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'test', position: { x: 0.5, y: 0.5 }, icon: 'flask' },
 };
 const invocation: WorldInvocation = { schemaVersion: 1, worldVersion: '1.0.0', sceneVersion: '1.0.0', action: 'join', membershipId: 'controlled-membership-fixture' };
@@ -30,6 +30,8 @@ describe('M05 strict world definitions', () => {
       { schemaVersion: 2 }, { version: 'latest' }, { extra: true }, { visibility: 'hidden' },
       { map: { ...definition.map, position: { x: 2, y: 0 } } },
       { slug: 'dating' },
+      { seatIds: ['seat-1'] }, { capabilities: ['presence', 'seating'] },
+      { capabilities: ['presence', 'seating'], seatIds: ['seat-1', 'seat-1'] },
     ]) expect(WorldDefinitionSchema.safeParse({ ...definition, ...change }).success).toBe(false);
     expect(WorldDefinitionSchema.parse(definition)).toEqual(definition);
     expect(WorldDefinitionSchema.safeParse({ ...definition, slug: 'dating', visibility: 'hidden', accessPolicy: { kind: 'restricted', policyKey: 'dating.review', requiresAdult: true } }).success).toBe(true);

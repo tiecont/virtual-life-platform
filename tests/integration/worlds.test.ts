@@ -13,7 +13,7 @@ import { migrate } from '../../apps/platform-api/src/db/migrations';
 let pool: Pool; let admin: Pool; let app: Awaited<ReturnType<typeof createApp>>; let url: string; let directory: string; let flagsFile: string; let offset = 0;
 const schema = 'worlds_test_' + randomUUID().replaceAll('-', '');
 const origin = 'http://127.0.0.1:3300'; const now = () => Date.now() + offset;
-const base: WorldDefinition = { schemaVersion: 1, apiVersion: 1, slug: 'policy-fixture', version: '1.0.0', title: 'Policy Fixture (not a playable world)', kind: 'sandbox', sceneRef: { key: 'policy-fixture', version: '1.0.0' }, capacity: 8, capabilities: ['presence'], accessPolicy: { kind: 'private', policyKey: 'fixture.private' }, visibility: 'listed', map: { region: 'sandbox', position: { x: 0.5, y: 0.5 }, icon: 'flask' } };
+const base: WorldDefinition = { schemaVersion: 1, apiVersion: 1, slug: 'policy-fixture', version: '1.0.0', title: 'Policy Fixture (not a playable world)', kind: 'sandbox', sceneRef: { key: 'policy-fixture', version: '1.0.0' }, capacity: 8, capabilities: ['presence'], seatIds: [], accessPolicy: { kind: 'private', policyKey: 'fixture.private' }, visibility: 'listed', map: { region: 'sandbox', position: { x: 0.5, y: 0.5 }, icon: 'flask' } };
 const hooks = { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => ({ controlledPolicyFixture: true }) };
 const invocation = { schemaVersion: 1, worldVersion: '1.0.0', sceneVersion: '1.0.0', action: 'command', membershipId: 'controlled-m06-port-fixture', payload: { type: 'inspect' } };
 const grants = new Set<string>(); const members = new Set<string>();

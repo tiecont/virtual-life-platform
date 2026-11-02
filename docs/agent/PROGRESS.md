@@ -1,6 +1,6 @@
 # Agent progress
 
-Current checkpoint: **W1 in progress; W0 + M03/M04/M05 + M06-01 VERIFIED locally. Next: M06-02 seats/grace.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence.
+Current checkpoint: **W1 in progress; W0 + M03/M04/M05 + M06-01/02 VERIFIED locally. Next: M06-03 realtime security completion.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence.
 
 2026-11-02, Linux local host, Node v26.9.0, pnpm 11.28.5, Docker 29.9.0. Source of task status: task-state.json (checked by scripts/plan-status.mjs). No public release occurred.
 
@@ -142,3 +142,13 @@ Implemented bounded single-owner allocator, capacity-safe provisional SDK admiss
 100 concurrent target-room attempts use real independent PostgreSQL sessions and controlled connection-ID fixtures: 7 admitted plus original owner = 8 capacity, 93 ROOM_FULL, no oversubscription; cleanup leaves original occupancy1. This is invariant evidence, NOT 100 network connections or performance measurement. Actual network tests cover ACKs/IDOR/forged authority/stale epoch/assets/replays/multitab/revocation/disable. Initial peer snapshot intentionally own-only with aggregate occupancy; no scene/chat/seat/delta/reconnect-grace acceptance claimed. No migration, assets, real-world flag change or public release.
 
 Next exact action M06-02: declarative seat IDs per world, atomic claim/release, one seat/account, disconnect grace and final revocation cleanup; 100-way contention plus actual Socket.IO tests. Then M06-03..07 replay/security completion, privacy-safe peer projections/deltas/client recovery, benchmarks and single-owner release guard before M06 verification.
+
+## M06-02 — VERIFIED seats/grace slice; M06 IN_PROGRESS
+
+Actual evidence m06-seats-checks.json, 2026-11-02T17:20Z: pnpm check -> 0 (7 governance,26 unit,60 actual PG/HTTP/socket integration, lint/types/ownership/builds). Targeted room suite -> 0 (9 tests), later extended with the tenth regression. Prior full run -> 0 (59 integration), final run supersedes after the additional edge case and snapshot validation. Test containers cleaned up. No room-browser acceptance claimed yet.
+
+Optional declarative seat IDs and seating/capacity/uniqueness validation, sandbox8 original code-defined IDs, one seat/account and owner/seat, live-session/membership/epoch/permission guards, non-mutating receipt replay, anonymous availability, 15-second capacity/seat hold, reconnect same membership, expiry cleanup and immediate revocation/leave/world disable. Real network seat/ownership/grace flows pass. 100 independent real DB sessions concurrently claiming shared-seat via controlled connection fixture -> exactly1 owner/99 SEAT_TAKEN; not a CCU/load result. Validators reject contradictory self-seat/duplicate seats/overcapacity snapshots.
+
+Review found and fixed a potential indefinite hold: older session disconnected while a second remained live, then second logout left the older session remembered without a grace deadline. Revocation now starts bounded grace when valid dormant sessions remain but no connections. Real registered two-session regression proves expiry. No assertion weakened. No DB/art/source/rollout changes or publication. SDK seatIds default empty preserves existing presence-only manifests in this prerelease workspace; strict M05 docs amended in ROOMS.md, no deployed-client compatibility claim.
+
+Next exact action M06-03: add actual network pending-queue/rate/expired-session/invalid-action security scenarios; finish command guards/replay audit. Continue M06-04 privacy-safe peer projections, snapshots/deltas/client sync, M06-05 restart recovery, M06-06 metrics/real network baseline, M06-07 exclusive owner guard/fencing alternative. M06 stays incomplete and downstream locked.

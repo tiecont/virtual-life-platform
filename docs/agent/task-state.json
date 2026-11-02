@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-02T17:08:32Z",
+  "updatedAt": "2026-11-02T17:20:00Z",
   "tasks": {
     "AUD-01": {
       "status": "VERIFIED",
@@ -187,6 +187,7 @@
     "M05-03": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m05-checks.json; m05-unit-attempt1.log", "verification": "12 SDK tests including unauthorized direct call, every-call policy/membership, real sandbox inspect, queue drain/revoke/disable races; actual membership integration remains M06" },
     "M05-04": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m05-checks.json; docs/architecture/WORLD-SDK.md", "verification": "shared strict catalog/map contract; HTTP no player/policy data; private/hidden/adult no-proof filtering; expired/revoked real sessions denied" },
     "M05-05": { "status": "VERIFIED", "evidence": "docs/architecture/WORLD-SDK.md; docs/adr/0008-world-registry-lifecycle.md; docs/agent/evidence/m05-check-attempt1.log", "verification": "compatibility sequencing against audited Deadline/Maid shapes and 2 boundary rejection tests; actual room/event mapper deferred to dependent M15/M16, not claimed implemented" },
-    "M06-01": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m06-allocator-checks.json; docs/architecture/ROOMS.md", "verification": "pnpm check -> 0 (7 governance,25 unit,55 PG/HTTP/socket integration); 100 real-session target joins never exceed capacity; actual network join/leave/retry/multitab/access/revoke/disable and empty-room eviction verified" }
+    "M06-01": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m06-allocator-checks.json; docs/architecture/ROOMS.md", "verification": "pnpm check -> 0 (7 governance,25 unit,55 PG/HTTP/socket integration); 100 real-session target joins never exceed capacity; actual network join/leave/retry/multitab/access/revoke/disable and empty-room eviction verified" },
+    "M06-02": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m06-seats-checks.json; docs/architecture/ROOMS.md", "verification": "pnpm check -> 0 (7 governance,26 unit,60 PG/HTTP/socket integration); 100 claimants one seat owner, real network ownership/replay/grace/expiry/revocation/multi-session cleanup" }
   }
 }

@@ -6,6 +6,8 @@ import { RoomAckSchema, RoomsListSchema, MeSchema, type Me, type RoomSnapshot, t
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/config';
 import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { defineWorld } from '@virtual-city/world-sdk';
+import { DISCONNECT_GRACE_MS } from '../../apps/platform-api/src/rooms/service';
 
 let pool: Pool; let admin: Pool; let app: Awaited<ReturnType<typeof createApp>>; let url: string; let offset = 0; let serial = 1;
 const clients = new Set<Socket>(); const origin = 'http://127.0.0.1:3300';
@@ -17,12 +19,18 @@ beforeAll(async () => {
   if (!['127.0.0.1', 'localhost', '[::1]'].includes(connection.hostname) || !/^virtual_city_test(?:_|$)/.test(connection.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
   admin = new Pool({ connectionString: connection.toString() }); await admin.query(`CREATE SCHEMA "${schema}"`);
   connection.searchParams.set('options', '-c search_path=' + schema); pool = new Pool({ connectionString: connection.toString() }); await migrate(pool);
-  app = await createApp(config(), pool, false, { now }); await app.app.listen(0, '127.0.0.1'); url = await app.app.getUrl();
+  app = await createApp(config(), pool, false, { now, worlds: { modules: [defineWorld({
+    schemaVersion: 1, apiVersion: 1, slug: 'seat-contention-fixture', version: '1.0.0', title: '100-seat contention fixture (not a playable world)', kind: 'sandbox',
+    sceneRef: { key: 'seat-fixture', version: '1.0.0' }, capacity: 100, seatIds: ['shared-seat', 'alternate-seat'], capabilities: ['presence', 'seating'],
+    accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'sandbox', position: { x: 0.5, y: 0.5 }, icon: 'flask' },
+  }, { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {} })] } }); await app.app.listen(0, '127.0.0.1'); url = await app.app.getUrl();
   await app.worlds.registry.setEnabled('sdk-sandbox', true);
+  await app.worlds.registry.setEnabled('seat-contention-fixture', true);
 });
 afterEach(async () => {
   for (const client of clients) client.close(); clients.clear();
   await app.worlds.registry.setEnabled('sdk-sandbox', false); await app.rooms.maintain(); await app.worlds.registry.setEnabled('sdk-sandbox', true);
+  await app.worlds.registry.setEnabled('seat-contention-fixture', false); await app.rooms.maintain(); await app.worlds.registry.setEnabled('seat-contention-fixture', true);
 });
 afterAll(async () => { for (const client of clients) client.close(); await app?.app.close(); await pool?.end(); if (admin) { await admin.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`); await admin.end(); } });
 async function guest(): Promise<User> {
@@ -64,7 +72,9 @@ describe('M06-01 real PostgreSQL identity + Socket.IO authoritative room allocat
     expect(attempts.filter(result => result.status === 'rejected').every(result => result.status === 'rejected' && result.reason.code === 'ROOM_FULL')).toBe(true);
     expect((await list(owner)).rooms).toEqual([{ roomId: snapshot.roomId, capacity: 8, occupancy: 8 }]);
     await Promise.all(visitors.map((_visitor, i) => app.rooms.detach('concurrency-fixture-' + i)));
+    offset += DISCONNECT_GRACE_MS + 1; await app.rooms.maintain();
     expect((await list(owner)).rooms[0].occupancy).toBe(1);
+    offset = 0;
   });
   it('uses one account membership across tabs, handles retries and rejects mutation-key conflicts', async () => {
     const user = await guest(); const a = await connect(user); const b = await connect(user); const input = joinInput();
@@ -95,5 +105,65 @@ describe('M06-01 real PostgreSQL identity + Socket.IO authoritative room allocat
     await app.rooms.maintain();
     expect(app.rooms.hasMembership({ accountId: user.me.profile.id, sessionId: 'untrusted', kind: 'guest', expiresAt: Date.now() + 1000 }, 'sdk-sandbox', snapshot.membershipId)).toBe(false);
     const observer = await guest(); expect((await list(observer)).rooms.every(room => room.occupancy === 0)).toBe(true);
+  });
+  it('claims/releases seats over real sockets, enforces ownership and makes old receipt replay non-mutating', async () => {
+    const a = await guest(); const b = await guest(); const ca = await connect(a); const cb = await connect(b); const first = await join(ca); const second = await join(cb);
+    const claim = ownInput(first, { seatId: 'seat-1' }); const claimed = await command(ca, 'seat.claim', claim); expect(claimed.ok).toBe(true);
+    if (!claimed.ok || claimed.result.type !== 'snapshot') throw new Error('Expected snapshot');
+    expect(claimed.result.self.seatId).toBe('seat-1'); expect(claimed.result.seats[0]).toEqual({ seatId: 'seat-1', state: 'occupied', mine: true });
+    expect(await command(ca, 'seat.claim', claim)).toEqual(claimed);
+    const taken = await command(cb, 'seat.claim', ownInput(second, { seatId: 'seat-1' })); expect(taken.ok).toBe(false); if (!taken.ok) expect(taken.error.code).toBe('SEAT_TAKEN');
+    expect((await command(cb, 'seat.release', ownInput(second, { seatId: 'seat-1' }))).ok).toBe(false);
+    expect((await command(cb, 'seat.claim', ownInput(first, { seatId: 'seat-2' }))).ok).toBe(false);
+    const double = await command(ca, 'seat.claim', ownInput(first, { seatId: 'seat-2' })); expect(double.ok).toBe(false); if (!double.ok) expect(double.error.code).toBe('ALREADY_SEATED');
+    expect((await command(ca, 'seat.claim', ownInput(first, { seatId: 'missing' }))).ok).toBe(false);
+    expect((await command(ca, 'seat.release', ownInput(first, { seatId: 'seat-1' }))).ok).toBe(true);
+    const replay = await command(ca, 'seat.claim', claim); expect(replay.ok).toBe(true); if (replay.ok && replay.result.type === 'snapshot') expect(replay.result.self.seatId).toBe(null);
+    expect((await command(cb, 'seat.claim', ownInput(second, { seatId: 'seat-1' }))).ok).toBe(true);
+  });
+  it('holds a seat during disconnect grace, resumes the same membership and expires it without a phantom owner', async () => {
+    const a = await guest(); const b = await guest(); const ca = await connect(a); const cb = await connect(b); const snapshot = await join(ca); const other = await join(cb);
+    await command(ca, 'seat.claim', ownInput(snapshot, { seatId: 'seat-1' }));
+    const oldConnection = ca.id!; ca.close(); await app.rooms.detach(oldConnection);
+    const held = await command(cb, 'room.snapshot', ownInput(other)); expect(held.ok).toBe(true); if (held.ok && held.result.type === 'snapshot') expect(held.result.seats[0]).toEqual({ seatId: 'seat-1', state: 'held', mine: false });
+    expect((await command(cb, 'seat.claim', ownInput(other, { seatId: 'seat-1' }))).ok).toBe(false);
+    const resumed = await connect(a); const recovered = await join(resumed); expect(recovered.membershipId).toBe(snapshot.membershipId); expect(recovered.self.seatId).toBe('seat-1');
+    const nextConnection = resumed.id!; resumed.close(); await app.rooms.detach(nextConnection);
+    offset += DISCONNECT_GRACE_MS + 1; await app.rooms.maintain();
+    const released = await command(cb, 'seat.claim', ownInput(other, { seatId: 'seat-1' })); expect(released.ok).toBe(true);
+    const fresh = await connect(a); const freshMembership = await join(fresh); expect(freshMembership.membershipId).not.toBe(snapshot.membershipId); expect(freshMembership.self.seatId).toBe(null); offset = 0;
+  });
+  it('revocation releases seats immediately even for a member currently in grace', async () => {
+    const a = await guest(); const b = await guest(); const ca = await connect(a); const cb = await connect(b); const snapshot = await join(ca); const other = await join(cb);
+    await command(ca, 'seat.claim', ownInput(snapshot, { seatId: 'seat-1' })); const oldConnection = ca.id!; ca.close(); await app.rooms.detach(oldConnection);
+    const logout = await app.http.inject({ method: 'POST', url: '/v1/session/logout', headers: { origin, cookie: a.cookie, 'x-csrf-token': a.me.csrfToken, 'idempotency-key': randomUUID() }, payload: {} }); expect(logout.statusCode).toBe(200);
+    const released = await command(cb, 'seat.claim', ownInput(other, { seatId: 'seat-1' })); expect(released.ok).toBe(true);
+  });
+  it('a disconnected older session plus logout of the last live session cannot hold a seat forever', async () => {
+    const initial = await guest(); const loginName = 'room_' + randomUUID().replaceAll('-', '').slice(0, 16); const password = 'room-tests-only-account-password';
+    const upgraded = await app.http.inject({ method: 'POST', url: '/v1/session/upgrade', headers: { origin, cookie: initial.cookie, 'x-csrf-token': initial.me.csrfToken, 'idempotency-key': randomUUID() }, payload: { loginName, password } }); expect(upgraded.statusCode).toBe(200);
+    const first = { cookie: String(upgraded.headers['set-cookie']).split(';')[0], me: MeSchema.parse(upgraded.json()) };
+    const loggedIn = await app.http.inject({ method: 'POST', url: '/v1/session/login', headers: { origin }, payload: { requestId: randomUUID(), loginName, password } }); expect(loggedIn.statusCode).toBe(200);
+    const second = { cookie: String(loggedIn.headers['set-cookie']).split(';')[0], me: MeSchema.parse(loggedIn.json()) };
+    const a = await connect(first); const b = await connect(second); const snapshot = await join(a); await join(b);
+    await command(a, 'seat.claim', ownInput(snapshot, { seatId: 'seat-1' })); const firstConnection = a.id!; a.close(); await app.rooms.detach(firstConnection);
+    expect((await command(b, 'room.snapshot', ownInput(snapshot))).ok).toBe(true);
+    const closed = new Promise(resolve => b.once('disconnect', resolve));
+    const loggedOut = await app.http.inject({ method: 'POST', url: '/v1/session/logout', headers: { origin, cookie: second.cookie, 'x-csrf-token': second.me.csrfToken, 'idempotency-key': randomUUID() }, payload: {} }); expect(loggedOut.statusCode).toBe(200); await closed;
+    offset += DISCONNECT_GRACE_MS + 1; await app.rooms.maintain();
+    expect((await list(first)).rooms.every(room => room.occupancy === 0)).toBe(true); offset = 0;
+  });
+  it('one hundred simultaneous real-session seat claims produce exactly one owner', async () => {
+    const visitors: { token: string; connectionId: string; snapshot: RoomSnapshot }[] = [];
+    for (let i = 0; i < 100; i++) {
+      const user = await guest(); const token = await credential(user); const connectionId = 'seat-fixture-' + i;
+      const snapshot = await app.rooms.join(token, connectionId, joinInput({ worldSlug: 'seat-contention-fixture' }) as RoomJoin, () => true); visitors.push({ token, connectionId, snapshot });
+    }
+    expect(new Set(visitors.map(visitor => visitor.snapshot.roomId)).size).toBe(1);
+    const results = await Promise.allSettled(visitors.map(visitor => app.rooms.seat(visitor.token, visitor.connectionId, { ...ownInput(visitor.snapshot), seatId: 'shared-seat' }, 'seat.claim')));
+    expect(results.filter(result => result.status === 'fulfilled')).toHaveLength(1);
+    expect(results.filter(result => result.status === 'rejected').every(result => result.status === 'rejected' && result.reason.code === 'SEAT_TAKEN')).toBe(true);
+    const final = await app.rooms.snapshot(visitors[0].token, visitors[0].connectionId, ownInput(visitors[0].snapshot)); expect(final.seats.filter(seat => seat.state === 'occupied')).toHaveLength(1);
+    expect(final.occupancy).toBe(100);
   });
 });

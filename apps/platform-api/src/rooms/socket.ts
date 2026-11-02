@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { RoomJoinSchema, RoomOwnCommandSchema, RoomAckSchema, type RoomJoin, type RoomOwnCommand } from '@virtual-city/contracts';
+import { RoomJoinSchema, RoomOwnCommandSchema, RoomAckSchema, SeatClaimSchema, SeatReleaseSchema, type RoomJoin, type RoomOwnCommand, type SeatClaim, type SeatRelease } from '@virtual-city/contracts';
 import { WorldError } from '@virtual-city/world-sdk';
 import type { createIdentityGateway } from '../identity/socket';
 import { DomainError } from '../common/errors';
@@ -7,11 +7,11 @@ import { IdentityError } from '../identity/errors';
 import type { RoomService } from './service';
 
 export function registerRoomGateway(gateway: ReturnType<typeof createIdentityGateway>, rooms: RoomService) {
-  for (const name of ['room.join', 'room.leave', 'room.snapshot']) gateway.allowCommand(name);
+  for (const name of ['room.join', 'room.leave', 'room.snapshot', 'seat.claim', 'seat.release']) gateway.allowCommand(name);
   const unsubscribe = rooms.onEnded((ids, event) => { for (const id of ids) gateway.io.of('/').sockets.get(id)?.emit('room.ended', event); });
   gateway.io.on('connection', socket => {
     let pending = 0;
-    function handle<T extends RoomJoin | RoomOwnCommand>(name: string, schema: { safeParse(input: unknown): { success: true; data: T } | { success: false } }, run: (credential: string, input: T) => Promise<unknown>) {
+    function handle<T extends RoomJoin | RoomOwnCommand | SeatClaim | SeatRelease>(name: string, schema: { safeParse(input: unknown): { success: true; data: T } | { success: false } }, run: (credential: string, input: T) => Promise<unknown>) {
       socket.on(name, async (input: unknown, ack: unknown) => {
         if (typeof ack !== 'function') { socket.disconnect(true); return; }
         const parsed = schema.safeParse(input); const requestId = parsed.success ? parsed.data.requestId : randomUUID();
@@ -31,6 +31,8 @@ export function registerRoomGateway(gateway: ReturnType<typeof createIdentityGat
     handle('room.join', RoomJoinSchema, (credential, input) => rooms.join(credential, socket.id, input, () => socket.connected));
     handle('room.leave', RoomOwnCommandSchema, (credential, input) => rooms.leave(credential, socket.id, input));
     handle('room.snapshot', RoomOwnCommandSchema, (credential, input) => rooms.snapshot(credential, socket.id, input));
+    handle('seat.claim', SeatClaimSchema, (credential, input) => rooms.seat(credential, socket.id, input, 'seat.claim'));
+    handle('seat.release', SeatReleaseSchema, (credential, input) => rooms.seat(credential, socket.id, input, 'seat.release'));
     socket.once('disconnect', () => { void rooms.detach(socket.id); });
   });
   return unsubscribe;

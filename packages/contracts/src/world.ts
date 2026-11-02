@@ -4,6 +4,7 @@ export const WORLD_API_VERSION = 1 as const;
 export const WorldSlugSchema = z.string().regex(/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/).max(64);
 export const WorldVersionSchema = z.string().regex(/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/).max(32);
 export const WorldCapabilitySchema = z.enum(['presence', 'seating', 'focus', 'hospitality', 'events', 'chat', 'portals']);
+export const SeatIdSchema = z.string().regex(/^[a-z][a-z0-9-]{0,63}$/);
 const PolicyKeySchema = z.string().regex(/^[a-z][a-z0-9.-]{0,63}$/);
 export const WorldAccessPolicySchema = z.discriminatedUnion('kind', [
   z.strictObject({ kind: z.literal('public') }),
@@ -21,10 +22,14 @@ export const WorldDefinitionSchema = z.strictObject({
   slug: WorldSlugSchema, version: WorldVersionSchema, title: z.string().trim().min(1).max(80),
   kind: z.enum(['world', 'sandbox']), sceneRef: WorldSceneRefSchema,
   capacity: z.number().int().min(1).max(100),
+  seatIds: z.array(SeatIdSchema).max(100).default([]),
   capabilities: z.array(WorldCapabilitySchema).min(1).max(7)
     .refine(items => new Set(items).size === items.length && items.includes('presence'), 'Unique capabilities including presence required'),
   accessPolicy: WorldAccessPolicySchema, visibility: z.enum(['listed', 'hidden']), map: WorldMapSchema,
 }).superRefine((world, ctx) => {
+  if (new Set(world.seatIds).size !== world.seatIds.length || world.seatIds.length > world.capacity || (world.capabilities.includes('seating') !== (world.seatIds.length > 0))) {
+    ctx.addIssue({ code: 'custom', path: ['seatIds'], message: 'Unique seat IDs within capacity must match seating capability' });
+  }
   if (world.visibility === 'hidden' && world.accessPolicy.kind === 'public') {
     ctx.addIssue({ code: 'custom', path: ['accessPolicy'], message: 'Hidden worlds require an explicit policy' });
   }
