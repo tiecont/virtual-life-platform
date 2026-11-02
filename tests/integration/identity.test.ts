@@ -117,6 +117,54 @@ describe('M03 identity over HTTP and real PostgreSQL', () => {
     const denied = await server.http.inject({ method: 'POST', url: '/v1/session/guest', headers: { origin }, remoteAddress: '127.0.5.1', payload: { requestId: key(), displayName: 'Limited Visitor', avatarKey: 'fern' } });
     expect(denied.statusCode).toBe(429); expect(denied.headers['retry-after']).toBe('60');
   });
+  it('upgrades a guest exactly once without changing identity, then signs in after logout', async () => {
+    const user = await guest('Registered Visitor'); const name = 'city_' + key().replaceAll('-', '').slice(0, 16); const password = 'local-only-synthetic-passphrase-2026';
+    const requestId = key(); const input = { loginName: name, password };
+    const upgrade = () => server.http.inject({ method: 'POST', url: '/v1/session/upgrade', headers: headers(user, requestId), payload: input });
+    const [a, b] = await Promise.all([upgrade(), upgrade()]); expect(a.statusCode).toBe(200); expect(b.statusCode).toBe(200); expect(cookie(a)).toBe(cookie(b));
+    const registered = { cookie: cookie(a), me: MeSchema.parse(a.json()) };
+    expect(registered.me.kind).toBe('registered'); expect(registered.me.profile.id).toBe(user.me.profile.id);
+    expect((await server.http.inject({ url: '/v1/me', headers: { cookie: user.cookie } })).statusCode).toBe(401);
+    const record = (await pool.query('SELECT * FROM identity_credentials WHERE account_id=$1', [user.me.profile.id])).rows[0];
+    expect(record.login_name).toBe(name); expect(record.salt).toHaveLength(32); expect(record.digest).toHaveLength(128); expect(JSON.stringify(record)).not.toContain(password);
+    const receipts = (await pool.query('SELECT * FROM identity_mutations WHERE account_id=$1', [user.me.profile.id])).rows; expect(JSON.stringify(receipts)).not.toContain(password);
+    const conflict = await server.http.inject({ method: 'POST', url: '/v1/session/upgrade', headers: headers(user, requestId), payload: { ...input, loginName: name + 'x' } }); expect(conflict.statusCode).toBe(409);
+    const bootstrap = await server.http.inject({ method: 'POST', url: '/v1/session/guest', headers: { origin }, remoteAddress: '127.0.9.1', payload: user.input }); expect(bootstrap.statusCode).toBe(401);
+    await server.http.inject({ method: 'POST', url: '/v1/session/logout', headers: headers(registered), payload: {} });
+    const loginInput = { loginName: name.toUpperCase(), password, requestId: key() };
+    const login = () => server.http.inject({ method: 'POST', url: '/v1/session/login', headers: { origin }, remoteAddress: '127.0.8.1', payload: loginInput });
+    const [first, retry] = await Promise.all([login(), login()]); expect(first.statusCode).toBe(200); expect(retry.statusCode).toBe(200); expect(cookie(first)).toBe(cookie(retry)); expect(first.json().profile.id).toBe(user.me.profile.id);
+    const invalid = await server.http.inject({ method: 'POST', url: '/v1/session/login', headers: { origin }, remoteAddress: '127.0.8.1', payload: { ...loginInput, password: 'wrong-local-test-password', requestId: key() } });
+    const unknown = await server.http.inject({ method: 'POST', url: '/v1/session/login', headers: { origin }, remoteAddress: '127.0.8.1', payload: { ...loginInput, loginName: 'unknown_' + key().slice(0, 8), requestId: key() } });
+    expect(invalid.statusCode).toBe(401); expect(unknown.statusCode).toBe(401); expect(invalid.json().error.message).toBe(unknown.json().error.message);
+    const exported = await server.http.inject({ url: '/v1/me/export', headers: { cookie: cookie(first) } }); expect(exported.json().signInName).toBe(name); expect(exported.body).not.toContain('digest'); expect(exported.body).not.toContain('salt');
+    const signedIn = { cookie: cookie(first), me: MeSchema.parse(first.json()) }; await server.http.inject({ method: 'DELETE', url: '/v1/me', headers: headers(signedIn) });
+    expect((await pool.query('SELECT count(*)::int AS n FROM identity_credentials WHERE account_id=$1', [user.me.profile.id])).rows[0].n).toBe(0);
+  });
+  it('username races have one winner and a successful account switch revokes the old browser session', async () => {
+    const a = await guest(); const b = await guest(); const loginName = 'race_' + key().replaceAll('-', '').slice(0, 16); const password = 'local-only-race-passphrase';
+    const upgrade = (user: typeof a) => server.http.inject({ method: 'POST', url: '/v1/session/upgrade', headers: headers(user), payload: { loginName, password } });
+    const outcomes = await Promise.all([upgrade(a), upgrade(b)]); expect(outcomes.map(r => r.statusCode).sort()).toEqual([200, 409]);
+    const winnerIndex = outcomes[0].statusCode === 200 ? 0 : 1; const winner = winnerIndex === 0 ? a : b; const loser = winnerIndex === 0 ? b : a;
+    expect((await server.http.inject({ url: '/v1/me', headers: { cookie: loser.cookie } })).json().kind).toBe('guest');
+    const login = await server.http.inject({ method: 'POST', url: '/v1/session/login', headers: { origin, cookie: loser.cookie }, remoteAddress: '127.0.10.1', payload: { loginName, password, requestId: key() } });
+    expect(login.statusCode).toBe(200); expect(login.json().profile.id).toBe(winner.me.profile.id);
+    expect((await server.http.inject({ url: '/v1/me', headers: { cookie: loser.cookie } })).statusCode).toBe(401);
+  });
+  it('caps live sessions per registered account and preserves registration after session expiry cleanup', async () => {
+    const user = await guest(); const loginName = 'cap_' + key().replaceAll('-', '').slice(0, 16); const password = 'local-only-session-cap-password';
+    const upgrade = await server.http.inject({ method: 'POST', url: '/v1/session/upgrade', headers: headers(user), payload: { loginName, password } }); expect(upgrade.statusCode).toBe(200);
+    for (let i = 0; i < 11; i++) {
+      const response = await server.http.inject({ method: 'POST', url: '/v1/session/login', headers: { origin }, remoteAddress: '127.0.12.' + (i + 1), payload: { loginName, password, requestId: key() } });
+      expect(response.statusCode).toBe(200);
+    }
+    expect((await pool.query('SELECT count(*)::int AS n FROM identity_sessions WHERE account_id=$1 AND revoked_at IS NULL AND expires_at>$2', [user.me.profile.id, new Date(now)])).rows[0].n).toBe(10);
+    expect((await server.http.inject({ url: '/v1/me', headers: { cookie: cookie(upgrade) } })).statusCode).toBe(401);
+  });
+  it('caps sign-in attempts before additional KDF work', async () => {
+    for (let i = 0; i < 5; i++) expect((await server.http.inject({ method: 'POST', url: '/v1/session/login', headers: { origin }, remoteAddress: '127.0.11.1', payload: { loginName: 'missing_test_user', password: 'local-only-unknown-password', requestId: key() } })).statusCode).toBe(401);
+    expect((await server.http.inject({ method: 'POST', url: '/v1/session/login', headers: { origin }, remoteAddress: '127.0.11.1', payload: { loginName: 'missing_test_user', password: 'local-only-unknown-password', requestId: key() } })).statusCode).toBe(429);
+  });
   it('production cookie is signed, secure and __Host scoped (HTTP injection, not a TLS deployment claim)', async () => {
     const prod = await createApp(readConfig({ NODE_ENV: 'production', DATABASE_URL: process.env.TEST_DATABASE_URL, SESSION_SECRET: 'test-only-session-secret-not-production-0001', WEB_ORIGIN: 'https://city.example' }), pool);
     try {
@@ -129,6 +177,7 @@ describe('M03 identity over HTTP and real PostgreSQL', () => {
     const user = await guest(); now += 301000;
     for (const url of ['/v1/me', '/v1/me/privacy', '/v1/me/export']) expect((await server.http.inject({ url, headers: { cookie: user.cookie } })).statusCode).toBe(401);
     expect(await server.identity.purgeExpired()).toBeGreaterThan(0);
+    expect((await pool.query("SELECT count(*)::int AS n FROM identity_accounts WHERE kind='registered'")).rows[0].n).toBeGreaterThan(0);
     expect((await pool.query('SELECT count(*)::int AS n FROM identity_sessions WHERE account_id=$1', [user.me.profile.id])).rows[0].n).toBe(0);
     const fresh = await server.http.inject({ method: 'POST', url: '/v1/session/guest', headers: { origin }, remoteAddress: '127.0.6.1', payload: user.input });
     expect(fresh.statusCode).toBe(201); expect(fresh.json().profile.id).not.toBe(user.me.profile.id); expect(cookie(fresh)).not.toBe(user.cookie);

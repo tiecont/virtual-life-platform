@@ -5,7 +5,7 @@ class RequestFailure extends Error { constructor(readonly status: number, messag
 async function request(path: string, options: RequestInit = {}): Promise<unknown> {
   const response = await fetch('/v1' + path, { ...options, credentials: 'same-origin', cache: 'no-store' });
   if (!response.ok) {
-    const messages: Record<number, string> = { 401: 'This session has ended. Create a new guest or sign in when available.', 403: 'The session changed or the request was rejected. Refresh and try again.', 409: 'This request changed. Please try again.', 422: 'Please check the supplied fields.', 429: 'Too many requests. Wait a minute before trying again.' };
+    const messages: Record<number, string> = { 401: 'This session has ended. Create a new guest or sign in to return.', 403: 'The session changed or the request was rejected. Refresh and try again.', 409: 'This change conflicts with existing data. Try another sign-in name or retry the unchanged request.', 422: 'Please check the supplied fields.', 429: 'Too many requests. Wait a minute before trying again.' };
     throw new RequestFailure(response.status, messages[response.status] ?? 'The city is unavailable. Your changes have not been confirmed. Try again.');
   }
   return response.json();
@@ -13,10 +13,11 @@ async function request(path: string, options: RequestInit = {}): Promise<unknown
 export default function IdentityPanel() {
   const [me, setMe] = useState<Me | null>(null); const [privacy, setPrivacy] = useState<Privacy | null>(null);
   const [name, setName] = useState(''); const [avatar, setAvatar] = useState<Me['profile']['avatarKey']>('fern');
+  const [loginName, setLoginName] = useState(''); const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(true); const [busy, setBusy] = useState(false); const [message, setMessage] = useState(''); const [deleteConfirmed, setDeleteConfirmed] = useState(false);
   const pendingKeys = useRef(new Map<string, string>()); const channel = useRef<BroadcastChannel | null>(null); const mounted = useRef(true);
   const setIdentity = useCallback((value: Me | null) => {
-    setMe(value); if (value) { setName(value.profile.displayName); setAvatar(value.profile.avatarKey); }
+    setMe(value); if (!value) { setPassword(''); pendingKeys.current.clear(); } if (value) { setName(value.profile.displayName); setAvatar(value.profile.avatarKey); }
   }, []);
   const restore = useCallback(async () => {
     try {
@@ -66,16 +67,28 @@ export default function IdentityPanel() {
   }
   if (loading) return <p role="status">Restoring browser identity…</p>;
   return <div className="identity-panel"><p role="status" aria-live="polite">{message || (me ? `Welcome, ${me.profile.displayName}.` : 'Create a guest to begin.')}</p>
-    <form onSubmit={saveProfile} className="status-card"><h2>{me ? 'Your profile' : 'Create a guest'}</h2><p className="muted">This guest stays in this browser. Logging out or clearing site data can lose access.</p>
+    <form onSubmit={saveProfile} className="status-card"><h2>{me ? 'Your profile' : 'Create a guest'}</h2><p className="muted">{me?.kind === 'registered' ? 'You can return with your sign-in name and password.' : 'This guest stays in this browser. Upgrade below before logging out if you want to return.'}</p>
       <label htmlFor="display-name">Display name</label><input id="display-name" value={name} onChange={e => setName(e.target.value)} minLength={2} maxLength={24} autoComplete="nickname" required disabled={busy}/>
       <label htmlFor="avatar-key">Avatar color</label><select id="avatar-key" value={avatar} onChange={e => setAvatar(AvatarKeySchema.parse(e.target.value))} disabled={busy}>{AvatarKeySchema.options.map(value => <option key={value} value={value}>{value}</option>)}</select>
       <button disabled={busy} type="submit">{busy ? 'Confirming…' : me ? 'Save profile' : 'Create guest identity'}</button></form>
+    {!me && <form className="status-card" onSubmit={e => { e.preventDefault(); void perform(async () => {
+      const body = { loginName, password }; const requestKey = key('login', body);
+      const identity = MeSchema.parse(await request('/session/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...body, requestId: requestKey.id }) }));
+      pendingKeys.current.delete(requestKey.signature); setIdentity(identity); setPassword(''); setPrivacy(PrivacySchema.parse(await request('/me/privacy')));
+    }, 'Signed in. Your city identity is restored.', 'session'); }}><h2>Return to your identity</h2>
+      <label htmlFor="login-name">Sign-in name</label><input id="login-name" value={loginName} onChange={e => setLoginName(e.target.value)} autoComplete="username" required minLength={3} maxLength={32} disabled={busy}/>
+      <label htmlFor="login-password">Password</label><input id="login-password" type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" required minLength={12} maxLength={128} disabled={busy}/><button disabled={busy}>Sign in</button></form>}
+    {me?.kind === 'guest' && <form className="status-card" onSubmit={e => { e.preventDefault(); void perform(async () => {
+      setIdentity(MeSchema.parse(await mutate('/session/upgrade', 'POST', { loginName, password }))); setPassword('');
+    }, 'Identity upgraded. Use your sign-in name and password to return.', 'session'); }}><h2>Keep this identity</h2><p className="muted">Add a sign-in name and password to keep the same identity on another browser. Keep them safe: password recovery is not available.</p>
+      <label htmlFor="register-name">Choose a sign-in name</label><input id="register-name" value={loginName} onChange={e => setLoginName(e.target.value)} autoComplete="username" required minLength={3} maxLength={32} pattern="[A-Za-z][A-Za-z0-9_]{2,31}" disabled={busy}/><p className="muted">3–32 letters, numbers or underscores; start with a letter. This is separate from your display name.</p>
+      <label htmlFor="register-password">New password (12–128 characters)</label><input id="register-password" type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="new-password" required minLength={12} maxLength={128} disabled={busy}/><button disabled={busy}>Upgrade identity</button></form>}
     {me && privacy && <><form className="status-card" onSubmit={e => { e.preventDefault(); void perform(async () => { setPrivacy(PrivacySchema.parse(await mutate('/me/privacy', 'PATCH', privacy))); }, 'Privacy choices saved.'); }}>
       <h2>Your privacy</h2><label htmlFor="presence">Who can see your presence?</label><select id="presence" value={privacy.presence} disabled={busy} onChange={e => setPrivacy({ ...privacy, presence: VisibilitySchema.parse(e.target.value) })}><option value="hidden">Nobody</option><option value="friends">Friends (when available)</option><option value="public">Everyone in an eligible world</option></select>
       <label className="checkbox"><input type="checkbox" checked={privacy.analyticsConsent} disabled={busy} onChange={e => setPrivacy({ ...privacy, analyticsConsent: e.target.checked })}/>Allow optional usage analytics</label><p className="muted">No external analytics service is connected. Restricted-world presence stays private.</p><button disabled={busy}>Save privacy</button></form>
       <section className="status-card actions"><h2>Session and data</h2><button disabled={busy} onClick={() => void perform(async () => { setIdentity(MeSchema.parse(await mutate('/session/rotate', 'POST'))); }, 'Session renewed. Your identity is unchanged.', 'session')}>Renew session</button>
         <button disabled={busy} onClick={() => void perform(async () => { const data = await request('/me/export'); const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })); const link = document.createElement('a'); link.href = url; link.download = 'virtual-city-data.json'; link.click(); URL.revokeObjectURL(url); }, 'Your data export is ready.')}>Export my data</button>
-        <button disabled={busy} onClick={() => void perform(async () => { await mutate('/session/logout', 'POST'); setIdentity(null); setPrivacy(null); }, 'Logged out. This guest can no longer be restored from this session.')}>Log out</button>
+        <button disabled={busy} onClick={() => void perform(async () => { await mutate('/session/logout', 'POST'); setIdentity(null); setPrivacy(null); }, me.kind === 'registered' ? 'Logged out. Sign in to return to your identity.' : 'Logged out. This guest can no longer be restored from this session.')}>Log out</button>
         <label className="checkbox"><input type="checkbox" checked={deleteConfirmed} disabled={busy} onChange={e => setDeleteConfirmed(e.target.checked)}/>I want to permanently delete this city identity and its data</label><button className="danger" disabled={busy || !deleteConfirmed} onClick={() => void perform(async () => { await mutate('/me', 'DELETE'); setIdentity(null); setPrivacy(null); setDeleteConfirmed(false); }, 'City identity deleted.')}>Delete my identity</button>
       </section></>}
   </div>;

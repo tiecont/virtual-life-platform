@@ -8,6 +8,10 @@ it('unknown-age/self-attested/forged-role accounts cannot bypass default restric
   expect(await policy.permits(context, { enabled: false, restricted: false, requiresAdult: false })).toBe(false);
   expect(await policy.permits(null, { enabled: true, restricted: false, requiresAdult: false })).toBe(false);
   expect(await policy.permits(context, { enabled: true, restricted: false, requiresAdult: false })).toBe(true);
+  expect(await policy.permits({ ...context, kind: 'registered' }, { enabled: true, restricted: true, requiresAdult: true })).toBe(false);
+  const reviewed = new AdmissionPolicy({ hasReviewedProof: async () => true });
+  expect(await reviewed.permits(context, { enabled: true, restricted: true, requiresAdult: true })).toBe(false);
+  expect(await reviewed.permits(context, { enabled: true, restricted: true, requiresAdult: true, restrictedAccessApproved: true })).toBe(true);
 });
 it('world privacy, bilateral blocks, friendship and dating isolation filter presence', () => {
   const privacy = { presence: 'public' as const, analyticsConsent: false, worldVisibility: { deadline: 'friends' as const, dating: 'hidden' as const } };

@@ -74,3 +74,13 @@ Database: additive 0002_identity.sql, checksum journal/transactional runner; tes
 Not complete: registered-account upgrade/login, actual room/socket/travel/social binding of policy/revocation ports, production/TLS operations, legal retention approval. No world open and no public release. M03 remains IN_PROGRESS; M04/M05 are not unlocked yet.
 
 Next exact action: M03-02 second slice — implement optional local registered upgrade retaining account ID, password-based login with salted bounded scrypt, idempotent upgrade/login and safe credential/session revocation; verify API and browser sign-out/sign-in with unchanged identity, then review all M03 criteria.
+
+## M03 registration vertical slice — VERIFIED slice; actual socket revocation next
+
+Actual outcomes in m03-checks.json (2026-11-02T15:29–15:31Z): `pnpm check` → 0 (7 governance/boundary, 11 unit, 18 PostgreSQL integration, lint/types/architecture and builds), `pnpm test:e2e` → 0 (6 desktop/mobile browser tests). Registered upgrade is idempotent, preserves account/profile/privacy, revokes old sessions; login works from a separate browser context and deletion invalidates that context. Passwords are salted async scrypt with bounded KDF concurrency; no external auth service or recovery promise. ADR 0005 and IDENTITY-API updated.
+
+Regression found and fixed: m03-check-attempt2.log/json records exit 1 because identical timestamps made session-cap eviction choose a UUID-dependent session. Added monotonically generated DB creation_order in migration 0003; oldest session eviction now deterministic. Kept assertion rather than weakening it; rerun passed. Also tightened readiness to require all bundled migrations; partial-DB real HTTP test proves 503 until migrations complete.
+
+DB migration 0003 adds platform-owned credentials/login request receipts and session creation order; SQL ownership checker covers 11 tables + journal. No production/legacy migration. Local dev database still needs pending 0002/0003 on next db:migrate.
+
+Next exact action M03-06: implement an authentication-only Socket.IO session gateway (no rooms/travel yet) and actual network tests for origin/CSRF/auth guard, per-command reauthentication and post-commit revocation. This fulfills M03's socket revocation acceptance without starting M06 room ownership out of DAG order. M03 remains IN_PROGRESS until that guardrail slice is verified. M04/M05 remain locked.

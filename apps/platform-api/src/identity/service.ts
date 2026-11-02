@@ -1,13 +1,15 @@
 import { createHash, createHmac, randomUUID, randomBytes, timingSafeEqual } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
-import { PrivacySchema, type Me, type Privacy, type ProfileInput, type PublicProfile } from '@virtual-city/contracts';
+import { PrivacySchema, type Me, type Privacy, type ProfileInput, type PublicProfile, type UpgradeInput } from '@virtual-city/contracts';
 import type { Config } from '../config';
 import { IdentityError, unauthorized } from './errors';
+import { PasswordHasher, type PasswordRecord } from './passwords';
 type DB = Pick<Pool, 'query'> | PoolClient;
 type Session = { id: string; account_id: string; expires_at: Date; revoked_at: Date | null; revoked_reason: string | null; kind: 'guest' | 'registered'; display_name: string; avatar_key: PublicProfile['avatarKey'] };
 export type IdentityContext = Readonly<{ accountId: string; sessionId: string; kind: 'guest' | 'registered' }>;
 const defaults: Privacy = { presence: 'hidden', analyticsConsent: false, worldVisibility: { dating: 'hidden' } };
 export class IdentityService {
+  private passwords = new PasswordHasher();
   private subscribers = new Set<(event: { accountId: string; sessionIds: string[] }) => void>();
   constructor(readonly pool: Pick<Pool, 'query' | 'connect'>, private config: Config, private now = Date.now) {}
   hash(token: string) { return createHash('sha256').update(token).digest('hex'); }
@@ -33,6 +35,11 @@ export class IdentityService {
     const row = result.rows[0];
     if (!row || row.expires_at.getTime() <= this.now() || (!allowRevoked && row.revoked_at)) throw unauthorized();
     return row;
+  }
+  private async lockedSession(db: PoolClient, token: string, allowRevoked = false) {
+    const initial = await this.session(token, db, true);
+    await this.lock(db, 'account:' + initial.account_id);
+    return this.session(token, db, allowRevoked);
   }
   private public(session: Session): PublicProfile { return { id: session.account_id, displayName: session.display_name, avatarKey: session.avatar_key }; }
   private view(session: Session, token: string): Me { return { profile: this.public(session), kind: session.kind, expiresAt: session.expires_at.toISOString(), csrfToken: this.csrf(token) }; }
@@ -75,8 +82,7 @@ export class IdentityService {
   }
   async updateProfile(token: string, requestId: string, input: Partial<ProfileInput>): Promise<Me> {
     return this.tx(async db => {
-      await this.lock(db, 'session:' + this.hash(token));
-      const session = await this.session(token, db);
+      const session = await this.lockedSession(db, token);
       const old = await this.previous(db, session, requestId, 'profile', input);
       if (old !== undefined) return { ...this.view(session, token), profile: old as PublicProfile };
       const profile: PublicProfile = { id: session.account_id, displayName: input.displayName ?? session.display_name, avatarKey: input.avatarKey ?? session.avatar_key };
@@ -88,8 +94,7 @@ export class IdentityService {
   async privacy(token: string): Promise<Privacy> { const s = await this.session(token); return PrivacySchema.parse((await this.pool.query('SELECT choices FROM identity_privacy WHERE account_id=$1', [s.account_id])).rows[0].choices); }
   async updatePrivacy(token: string, requestId: string, input: Privacy): Promise<Privacy> {
     return this.tx(async db => {
-      await this.lock(db, 'session:' + this.hash(token));
-      const s = await this.session(token, db); const prior = await this.previous(db, s, requestId, 'privacy', input);
+      const s = await this.lockedSession(db, token); const prior = await this.previous(db, s, requestId, 'privacy', input);
       if (prior !== undefined) return PrivacySchema.parse(prior);
       await db.query('UPDATE identity_privacy SET choices=$2 WHERE account_id=$1', [s.account_id, input]);
       await db.query('INSERT INTO identity_consents VALUES($1,$2,$3,$4)', [randomUUID(), s.account_id, 'privacy.updated.v1', new Date(this.now())]);
@@ -98,8 +103,7 @@ export class IdentityService {
   }
   async rotate(token: string, requestId: string) {
     const result = await this.tx(async db => {
-      await this.lock(db, 'session:' + this.hash(token));
-      const old = await this.session(token, db, true);
+      const old = await this.lockedSession(db, token, true);
       const prior = await this.previous(db, old, requestId, 'rotate', {});
       const nextToken = this.keyed('rotate-token:v1:' + token + ':' + requestId);
       if (prior !== undefined) {
@@ -117,8 +121,7 @@ export class IdentityService {
   }
   async logout(token: string, requestId: string) {
     const result = await this.tx(async db => {
-      await this.lock(db, 'session:' + this.hash(token));
-      const s = await this.session(token, db, true); const prior = await this.previous(db, s, requestId, 'logout', {});
+      const s = await this.lockedSession(db, token, true); const prior = await this.previous(db, s, requestId, 'logout', {});
       if (prior !== undefined && s.revoked_reason === 'logout') return { accountId: s.account_id, revoked: [] as string[] };
       if (s.revoked_at) throw unauthorized();
       await db.query("UPDATE identity_sessions SET revoked_at=$2,revoked_reason='logout' WHERE id=$1", [s.id, new Date(this.now())]);
@@ -129,10 +132,11 @@ export class IdentityService {
   }
   async export(token: string) {
     return this.tx(async db => {
-      const s = await this.session(token, db);
+      const s = await this.lockedSession(db, token);
       const choices = (await db.query('SELECT choices FROM identity_privacy WHERE account_id=$1', [s.account_id])).rows[0].choices;
       const consents = (await db.query('SELECT action,created_at FROM identity_consents WHERE account_id=$1 ORDER BY created_at', [s.account_id])).rows;
-      return { schemaVersion: 1, profile: this.public(s), kind: s.kind, privacy: PrivacySchema.parse(choices), consents };
+      const credentials = (await db.query<{ login_name: string }>('SELECT login_name FROM identity_credentials WHERE account_id=$1', [s.account_id])).rows[0];
+      return { schemaVersion: 1, profile: this.public(s), kind: s.kind, privacy: PrivacySchema.parse(choices), consents, ...(credentials ? { signInName: credentials.login_name } : {}) };
     });
   }
   async delete(token: string, requestId: string) {
@@ -144,7 +148,7 @@ export class IdentityService {
         if (receipt.rows[0].request_hash !== receiptHash) throw unauthorized();
         return null;
       }
-      const s = await this.session(token, db);
+      const s = await this.lockedSession(db, token);
       const sessions = (await db.query<{ id: string }>('SELECT id FROM identity_sessions WHERE account_id=$1', [s.account_id])).rows.map(row => row.id);
       await db.query('INSERT INTO identity_deletion_receipts VALUES($1,$2,$3)', [this.hash(token), receiptHash, new Date(this.now() + 86400000)]);
       await db.query('DELETE FROM identity_accounts WHERE id=$1', [s.account_id]);
@@ -152,10 +156,84 @@ export class IdentityService {
     });
     if (result) this.notify(result.accountId, result.sessions); return { deleted: true };
   }
+  async upgrade(token: string, requestId: string, input: UpgradeInput) {
+    const original = await this.session(token, this.pool, true);
+    const nextToken = this.keyed('upgrade-token:v1:' + token + ':' + requestId);
+    const prior = await this.previous(this.pool, original, requestId, 'upgrade', input);
+    if (prior !== undefined) {
+      if (original.revoked_reason !== 'upgrade') throw unauthorized();
+      return { token: nextToken, me: this.view(await this.session(nextToken), nextToken) };
+    }
+    if (original.revoked_at) throw unauthorized();
+    if (original.kind !== 'guest') throw new IdentityError('INVALID_REQUEST', 409, 'This identity is already registered');
+    const credential = await this.passwords.hash(input.password);
+    let result;
+    try {
+      result = await this.tx(async db => {
+        const old = await this.lockedSession(db, token, true);
+        const prior = await this.previous(db, old, requestId, 'upgrade', input);
+        if (prior !== undefined) {
+          if (old.revoked_reason !== 'upgrade') throw unauthorized();
+          return { token: nextToken, me: this.view(await this.session(nextToken, db), nextToken), accountId: old.account_id, revoked: [] as string[] };
+        }
+        if (old.revoked_at) throw unauthorized();
+        if (old.kind !== 'guest') throw new IdentityError('INVALID_REQUEST', 409, 'This identity is already registered');
+        await db.query('INSERT INTO identity_credentials(account_id,login_name,salt,digest) VALUES($1,$2,$3,$4)', [old.account_id, input.loginName, credential.salt, credential.digest]);
+        await db.query("UPDATE identity_accounts SET kind='registered' WHERE id=$1", [old.account_id]);
+        const revoked = (await db.query<{ id: string }>("UPDATE identity_sessions SET revoked_at=$2,revoked_reason='upgrade' WHERE account_id=$1 AND revoked_at IS NULL RETURNING id", [old.account_id, new Date(this.now())])).rows.map(row => row.id);
+        const id = randomUUID();
+        await db.query('INSERT INTO identity_sessions(id,account_id,token_hash,expires_at,created_at) VALUES($1,$2,$3,$4,$5)', [id, old.account_id, this.hash(nextToken), new Date(this.now() + this.config.SESSION_TTL_SECONDS * 1000), new Date(this.now())]);
+        await this.remember(db, old, requestId, 'upgrade', input, { sessionId: id });
+        await db.query('INSERT INTO identity_consents VALUES($1,$2,$3,$4)', [randomUUID(), old.account_id, 'account.upgraded.password.v1', new Date(this.now())]);
+        return { token: nextToken, me: this.view(await this.session(nextToken, db), nextToken), accountId: old.account_id, revoked };
+      });
+    } catch (error) {
+      if (typeof error === 'object' && error && 'constraint' in error && error.constraint === 'identity_credentials_login_name_key') throw new IdentityError('NAME_UNAVAILABLE', 409, 'That sign-in name is unavailable');
+      throw error;
+    }
+    this.notify(result.accountId, result.revoked); return result;
+  }
+  async login(input: UpgradeInput & { requestId: string }, existingToken?: string) {
+    const record = (await this.pool.query<PasswordRecord & { account_id: string }>('SELECT account_id,salt,digest FROM identity_credentials WHERE login_name=$1', [input.loginName])).rows[0];
+    if (!await this.passwords.verify(input.password, record)) throw unauthorized();
+    const requestHash = this.keyed('login-request:v1:' + input.loginName + ':' + input.requestId);
+    const fingerprint = this.keyed('login-input:v1:' + JSON.stringify(input));
+    const result = await this.tx(async db => {
+      await this.lock(db, 'login:' + requestHash);
+      let old: Session | undefined;
+      if (existingToken) { try { old = await this.session(existingToken, db); } catch (e) { if (!(e instanceof IdentityError)) throw e; } }
+      for (const id of [...new Set([record.account_id, ...(old ? [old.account_id] : [])])].sort()) await this.lock(db, 'account:' + id);
+      const current = (await db.query<PasswordRecord>('SELECT salt,digest FROM identity_credentials WHERE account_id=$1', [record.account_id])).rows[0];
+      if (!current || current.salt !== record.salt || current.digest !== record.digest) throw unauthorized();
+      const previous = (await db.query('SELECT * FROM identity_login_requests WHERE request_hash=$1', [requestHash])).rows[0];
+      if (previous) {
+        if (previous.fingerprint !== fingerprint) throw new IdentityError('IDEMPOTENCY_CONFLICT', 409, 'Request key was used with different input');
+        if (!previous.session_id || previous.expires_at.getTime() <= this.now()) throw unauthorized();
+        const token = this.keyed('login-token:v1:' + requestHash + ':' + previous.server_nonce);
+        return { token, me: this.view(await this.session(token, db), token), revocations: [] as { accountId: string; sessionIds: string[] }[] };
+      }
+      const nonce = randomBytes(32).toString('hex'); const token = this.keyed('login-token:v1:' + requestHash + ':' + nonce);
+      const expires = new Date(this.now() + this.config.SESSION_TTL_SECONDS * 1000); const id = randomUUID();
+      const revocations: { accountId: string; sessionIds: string[] }[] = [];
+      if (old) {
+        const revoked = await db.query<{ id: string }>("UPDATE identity_sessions SET revoked_at=$2,revoked_reason='login' WHERE id=$1 AND revoked_at IS NULL RETURNING id", [old.id, new Date(this.now())]);
+        if (revoked.rows.length) revocations.push({ accountId: old.account_id, sessionIds: [old.id] });
+      }
+      const active = (await db.query<{ id: string }>('SELECT id FROM identity_sessions WHERE account_id=$1 AND revoked_at IS NULL AND expires_at>$2 ORDER BY creation_order', [record.account_id, new Date(this.now())])).rows;
+      const removed = active.slice(0, Math.max(0, active.length - 9)).map(row => row.id);
+      if (removed.length) { await db.query("UPDATE identity_sessions SET revoked_at=$2,revoked_reason='login' WHERE id=ANY($1::uuid[])", [removed, new Date(this.now())]); revocations.push({ accountId: record.account_id, sessionIds: removed }); }
+      await db.query('INSERT INTO identity_sessions(id,account_id,token_hash,expires_at,created_at) VALUES($1,$2,$3,$4,$5)', [id, record.account_id, this.hash(token), expires, new Date(this.now())]);
+      await db.query('INSERT INTO identity_login_requests VALUES($1,$2,$3,$4,$5)', [requestHash, nonce, fingerprint, id, expires]);
+      return { token, me: this.view(await this.session(token, db), token), revocations };
+    });
+    for (const revoked of result.revocations) this.notify(revoked.accountId, revoked.sessionIds);
+    return result;
+  }
   async purgeExpired() {
     const expired = await this.tx(async db => {
       await this.lock(db, 'identity:maintenance');
       const expired = (await db.query<{ id: string; account_id: string }>('DELETE FROM identity_sessions WHERE expires_at <= $1 RETURNING id,account_id', [new Date(this.now())])).rows;
+      await db.query('DELETE FROM identity_login_requests WHERE expires_at <= $1', [new Date(this.now())]);
       await db.query('DELETE FROM identity_bootstraps WHERE expires_at <= $1', [new Date(this.now())]);
       await db.query('DELETE FROM identity_deletion_receipts WHERE expires_at <= $1', [new Date(this.now())]);
       await db.query('DELETE FROM identity_mutations WHERE created_at < $1', [new Date(this.now() - 86400000)]);

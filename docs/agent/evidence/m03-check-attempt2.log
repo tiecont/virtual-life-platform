@@ -1,0 +1,151 @@
+$ pnpm governance:check && pnpm architecture:check && pnpm lint && pnpm typecheck && pnpm test && pnpm test:integration && pnpm build
+$ node scripts/verify-governance.mjs
+{
+  "modules": {
+    "M00": "VERIFIED",
+    "M01": "VERIFIED",
+    "M02": "VERIFIED",
+    "M03": "PENDING",
+    "M04": "PENDING",
+    "M05": "PENDING",
+    "M06": "PENDING",
+    "M07": "PENDING",
+    "M08": "PENDING",
+    "M09": "PENDING",
+    "M10": "PENDING",
+    "M11": "PENDING",
+    "M12": "PENDING",
+    "M13": "PENDING",
+    "M14": "PENDING",
+    "M15": "PENDING",
+    "M16": "PENDING",
+    "M17": "PENDING",
+    "M18": "PENDING",
+    "M19": "PENDING",
+    "M20": "PENDING",
+    "M21": "PENDING",
+    "M22": "PENDING",
+    "M23": "PENDING",
+    "M24": "PENDING"
+  },
+  "ready": [
+    "M03-01",
+    "M03-02",
+    "M03-03",
+    "M03-04",
+    "M03-05",
+    "M03-06",
+    "M21-01",
+    "M21-02",
+    "M21-03",
+    "M21-04",
+    "M21-05",
+    "M21-06"
+  ],
+  "blocked": []
+}
+Governance consistency verified; no gameplay or release claim.
+$ node scripts/verify-architecture.mjs
+Architecture consistency passed: 11 SQL tables + journal; 25 source files checked. Future gameplay invariants remain runtime gates.
+$ eslint . && node scripts/check-boundaries.mjs
+Boundary checks passed: 25 source files
+$ pnpm build:packages && pnpm -r typecheck
+$ pnpm --filter './packages/*' -r build
+Scope: 3 of 6 workspace projects
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+Scope: 5 of 6 workspace projects
+packages/contracts typecheck$ tsc -p tsconfig.json --noEmit
+packages/contracts typecheck: Done
+apps/portal-web typecheck$ tsc --noEmit
+apps/platform-api typecheck$ tsc -p tsconfig.json --noEmit
+packages/world-sdk typecheck$ tsc -p tsconfig.json --noEmit
+packages/world-sdk typecheck: Done
+apps/portal-web typecheck: Done
+apps/platform-api typecheck: Done
+$ pnpm build:packages && node --test tests/governance/*.test.mjs && vitest run --project unit
+$ pnpm --filter './packages/*' -r build
+Scope: 3 of 6 workspace projects
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+✔ worlds cannot import another world repository, platform internals or application code (1.210962ms)
+✔ contracts cannot import SDK and apps cannot import another application internals (4.593201ms)
+✔ the scanner rejects actual source imports and manifest cycles (11.54222ms)
+✔ audit ranges and conjunctive dependencies preserve the authoritative DAG (6.336714ms)
+✔ cycles, unknown dependencies and duplicate module IDs are rejected (0.533985ms)
+✔ checkpoint cannot assert verification without evidence or through an unmet gate (0.263185ms)
+✔ the supplied plan pack is accepted without changing its manifest shape (4.018378ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 88.414522
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+
+ Test Files  6 passed (6)
+      Tests  11 passed (11)
+   Start at  22:28:21
+   Duration  926ms (transform 369ms, setup 0ms, import 1.28s, tests 773ms, environment 1ms)
+
+$ pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project integration
+$ pnpm --filter './packages/*' -r build
+Scope: 3 of 6 workspace projects
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+ Network virtual-city-test-0cce8bc5_default Creating 
+ Network virtual-city-test-0cce8bc5_default Creating 
+ Network virtual-city-test-0cce8bc5_default Created 
+ Network virtual-city-test-0cce8bc5_default Created 
+ Container virtual-city-test-0cce8bc5-db-1 Creating 
+ Container virtual-city-test-0cce8bc5-db-1 Created 
+ Container virtual-city-test-0cce8bc5-db-1 Starting 
+ Container virtual-city-test-0cce8bc5-db-1 Started 
+ Container virtual-city-test-0cce8bc5-db-1 Waiting 
+ Container virtual-city-test-0cce8bc5-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/identity.test.ts (15 tests | 1 failed) 2472ms
+     × caps live sessions per registered account and preserves registration after session expiry cleanup 964ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/identity.test.ts > M03 identity over HTTP and real PostgreSQL > caps live sessions per registered account and preserves registration after session expiry cleanup
+AssertionError: expected 200 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 200
+
+ ❯ tests/integration/identity.test.ts:162:108
+    160|     }
+    161|     expect((await pool.query('SELECT count(*)::int AS n FROM identity_…
+    162|     expect((await server.http.inject({ url: '/v1/me', headers: { cooki…
+       |                                                                                                            ^
+    163|   });
+    164|   it('caps sign-in attempts before additional KDF work', async () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 17 passed (18)
+   Start at  22:28:30
+   Duration  3.78s (transform 147ms, setup 0ms, import 819ms, tests 2.71s, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-0cce8bc5-db-1 Stopping 
+ Container virtual-city-test-0cce8bc5-db-1 Stopped 
+ Container virtual-city-test-0cce8bc5-db-1 Removing 
+ Container virtual-city-test-0cce8bc5-db-1 Removed 
+ Network virtual-city-test-0cce8bc5_default Removing 
+ Network virtual-city-test-0cce8bc5_default Removed 
+[ELIFECYCLE] Command failed with exit code 1.
+[ELIFECYCLE] Command failed with exit code 1.

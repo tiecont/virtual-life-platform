@@ -9,6 +9,7 @@ import { SCHEMA_VERSION } from '@virtual-city/contracts';
 import type { Config } from './config';
 import { IdentityService } from './identity/service';
 import { registerIdentity } from './identity/http';
+import { migrationNames } from './db/migrations';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -24,6 +25,7 @@ Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
 export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number } = {}) {
+  const requiredMigrations = await migrationNames();
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
     bodyLimit: 8192, requestTimeout: 10000, genReqId: () => randomUUID(),
     logger: logging ? { level: 'info', serializers: { req: (req: FastifyRequest) => ({ method: req.method, path: req.url.split('?')[0] }) }, redact: ['req.headers.cookie', 'req.headers.authorization', 'req.body', 'res.headers.set-cookie'] } : false,
@@ -40,7 +42,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.get('/health/live', async () => ({ status: 'ok' }));
   http.get('/health/ready', async (_req, reply) => {
     try {
-      const result = await db.query('SELECT schema_version FROM platform_metadata WHERE singleton=true');
+      const result = await db.query('SELECT schema_version FROM platform_metadata WHERE singleton=true AND (SELECT count(*) FROM city_schema_migrations WHERE name=ANY($1::text[]))=$2', [requiredMigrations, requiredMigrations.length]);
       if (result.rows.length !== 1 || result.rows[0].schema_version !== SCHEMA_VERSION) throw new Error('Incompatible database schema');
       return { status: 'ready', schemaVersion: SCHEMA_VERSION };
     } catch { return reply.code(503).send({ status: 'unavailable' }); }

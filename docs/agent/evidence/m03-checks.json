@@ -1,0 +1,14 @@
+[
+  {
+    "startedAt": "2026-11-02T15:29:47.436342+00:00",
+    "command": "pnpm check",
+    "exitCode": 0,
+    "log": "m03-check.log"
+  },
+  {
+    "startedAt": "2026-11-02T15:30:31.492087+00:00",
+    "command": "pnpm test:e2e",
+    "exitCode": 0,
+    "log": "m03-e2e.log"
+  }
+]

@@ -10,7 +10,9 @@
     "identity_bootstraps": "platform.identity",
     "identity_mutations": "platform.identity",
     "identity_consents": "platform.identity",
-    "identity_deletion_receipts": "platform.identity"
+    "identity_deletion_receipts": "platform.identity",
+    "identity_credentials": "platform.identity",
+    "identity_login_requests": "platform.identity"
   },
   "journalTable": "city_schema_migrations",
   "legacyDatabases": "not managed by city migrations",

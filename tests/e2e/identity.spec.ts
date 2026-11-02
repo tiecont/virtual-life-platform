@@ -27,3 +27,26 @@ test('guest profile, private settings, session renewal and deletion survive relo
   await expect(page.getByRole('status')).toHaveText('City identity deleted.'); await expect(peer.getByRole('button', { name: 'Create guest identity' })).toBeVisible();
   expect((await context.request.get('/v1/me')).status()).toBe(401);
 });
+test('upgrading retains identity and permits sign-in from a separate browser context', async ({ page, context, browser }) => {
+  const loginName = 'visitor_' + Math.random().toString(36).slice(2, 12);
+  const password = 'synthetic-e2e-only-passphrase';
+  await page.goto('/identity'); await page.getByLabel('Display name').fill('Registered Visitor');
+  await page.getByRole('button', { name: 'Create guest identity' }).click(); await expect(page.getByRole('status')).toContainText('Guest identity created');
+  const original = await (await context.request.get('/v1/me')).json();
+  await page.getByLabel('Choose a sign-in name').fill(loginName); await page.getByLabel('New password').fill(password);
+  await page.getByRole('button', { name: 'Upgrade identity' }).click(); await expect(page.getByRole('status')).toContainText('Identity upgraded');
+  expect((await (await context.request.get('/v1/me')).json()).profile.id).toBe(original.profile.id);
+  await expect(page.getByRole('heading', { name: 'Keep this identity' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Log out', exact: true }).click(); await expect(page.getByRole('status')).toContainText('Logged out. Sign in');
+  await page.getByLabel('Sign-in name', { exact: true }).fill(loginName); await page.getByLabel('Password', { exact: true }).fill(password);
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await expect(page.getByRole('status')).toContainText('Signed in. Your city identity is restored.');
+  const independent = await browser.newContext({ baseURL: 'http://127.0.0.1:3300' });
+  try {
+    const second = await independent.newPage(); await second.goto('/identity'); await second.getByLabel('Sign-in name', { exact: true }).fill(loginName); await second.getByLabel('Password', { exact: true }).fill(password);
+    await second.getByRole('button', { name: 'Sign in', exact: true }).click(); await expect(second.getByRole('status')).toContainText('Signed in. Your city identity is restored.');
+    const restored = await (await independent.request.get('/v1/me')).json(); expect(restored.profile.id).toBe(original.profile.id); expect(restored.kind).toBe('registered');
+    await page.screenshot({ path: `artifacts/registered-${test.info().project.name}.png`, fullPage: true });
+    await page.getByLabel('I want to permanently delete').check(); await page.getByRole('button', { name: 'Delete my identity' }).click(); await expect(page.getByRole('status')).toHaveText('City identity deleted.');
+    expect((await independent.request.get('/v1/me')).status()).toBe(401);
+  } finally { await independent.close(); }
+});

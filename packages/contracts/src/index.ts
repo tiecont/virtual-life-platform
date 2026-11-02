@@ -7,7 +7,7 @@ export const ReadinessSchema = z.discriminatedUnion('status', [
   z.strictObject({ status: z.literal('unavailable') }),
 ]);
 export const ApiErrorSchema = z.strictObject({ error: z.strictObject({
-  code: z.enum(['FORBIDDEN', 'NOT_FOUND', 'INVALID_REQUEST', 'INTERNAL_ERROR', 'UNAUTHENTICATED', 'RATE_LIMITED', 'IDEMPOTENCY_CONFLICT']),
+  code: z.enum(['FORBIDDEN', 'NOT_FOUND', 'INVALID_REQUEST', 'INTERNAL_ERROR', 'UNAUTHENTICATED', 'RATE_LIMITED', 'IDEMPOTENCY_CONFLICT', 'NAME_UNAVAILABLE']),
   message: z.string(), requestId: z.uuid(),
 }) });
 export type Readiness = z.infer<typeof ReadinessSchema>;
@@ -31,3 +31,8 @@ export type Privacy = z.infer<typeof PrivacySchema>;
 export type ProfileInput = z.infer<typeof ProfileInputSchema>;
 
 export const ProfilePatchSchema = ProfileInputSchema.partial().refine(value => Object.keys(value).length > 0);
+
+export const LoginNameSchema = z.string().normalize('NFKC').trim().toLowerCase().regex(/^[a-z][a-z0-9_]{2,31}$/);
+export const UpgradeInputSchema = z.strictObject({ loginName: LoginNameSchema, password: z.string().min(12).max(128) });
+export const LoginInputSchema = UpgradeInputSchema.extend({ requestId: z.uuid() });
+export type UpgradeInput = z.infer<typeof UpgradeInputSchema>;

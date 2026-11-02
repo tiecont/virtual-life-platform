@@ -1,7 +1,7 @@
 import cookie from '@fastify/cookie';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z, ZodError } from 'zod';
-import { GuestInputSchema, ProfilePatchSchema, PrivacySchema } from '@virtual-city/contracts';
+import { GuestInputSchema, ProfilePatchSchema, PrivacySchema, UpgradeInputSchema, LoginInputSchema } from '@virtual-city/contracts';
 import type { Config } from '../config';
 import { IdentityService } from './service';
 import { IdentityError, unauthorized } from './errors';
@@ -15,7 +15,7 @@ export function registerIdentity(http: FastifyInstance, config: Config, service:
     const signed = req.cookies[name];
     if (!signed) { if (optional) return undefined; throw unauthorized(); }
     const result = req.unsignCookie(signed);
-    if (!result.valid || !result.value) throw unauthorized();
+    if (!result.valid || !result.value) { if (optional) return undefined; throw unauthorized(); }
     return result.value;
   }
   function protectedToken(req: FastifyRequest): string {
@@ -43,6 +43,17 @@ export function registerIdentity(http: FastifyInstance, config: Config, service:
       const result = await service.guest(input, token(req, true));
       writeCookie(reply, result.token, result.me.expiresAt);
       return reply.code(result.created ? 201 : 200).send(result.me);
+    });
+    api.post('/session/upgrade', async (req, reply) => {
+      const value = protectedToken(req);
+      if (!limiter.take('upgrade:' + service.hash(value), 5)) throw new IdentityError('RATE_LIMITED', 429, 'Please wait before trying again');
+      const result = await service.upgrade(value, requestKey(req), UpgradeInputSchema.parse(req.body));
+      writeCookie(reply, result.token, result.me.expiresAt); return result.me;
+    });
+    api.post('/session/login', async (req, reply) => {
+      if (!limiter.take('login:' + req.ip, 5)) throw new IdentityError('RATE_LIMITED', 429, 'Please wait before signing in again');
+      const result = await service.login(LoginInputSchema.parse(req.body), token(req, true));
+      writeCookie(reply, result.token, result.me.expiresAt); return result.me;
     });
     api.get('/me', req => service.me(token(req)!));
     api.patch('/me', req => service.updateProfile(protectedToken(req), requestKey(req), ProfilePatchSchema.parse(req.body)));

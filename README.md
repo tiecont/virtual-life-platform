@@ -1,6 +1,6 @@
 # Virtual City
 
-Offline implementation of the supplied [master plan](MASTER-AGENT-PLAN.md). Current features and evidence are in [PROGRESS](docs/agent/PROGRESS.md); resume from [HANDOFF](docs/agent/HANDOFF.md). A status page is a foundation slice, not a playable city. All worlds remain closed. Nothing is deployed or published.
+Offline implementation of the supplied [master plan](MASTER-AGENT-PLAN.md). Current features and evidence are in [PROGRESS](docs/agent/PROGRESS.md); resume from [HANDOFF](docs/agent/HANDOFF.md). Guest/registered identity, session renewal, private settings and own-data export/delete are available at `/identity`. A working identity is not a playable city. All worlds remain closed. Nothing is deployed or published.
 
 ## Local setup
 
@@ -15,7 +15,7 @@ pnpm db:migrate
 pnpm dev
 ```
 
-Open http://127.0.0.1:3300. API liveness is http://127.0.0.1:4300/health/live; readiness `/health/ready` requires the migrated schema v1. Setup generates an ignored mode-600 `.env` and refuses to overwrite it. `.env.example` documents fields; never commit local credentials. Compose binds only 127.0.0.1:55452 and owns `virtual-city-dev` resources. Change ports/origins consistently if occupied; do not kill unrelated services. API_INTERNAL_URL is a trusted server-side URL, never browser input.
+Open http://127.0.0.1:3300. API liveness is http://127.0.0.1:4300/health/live; readiness `/health/ready` requires compatible schema v1 and every migration bundled in this API build. Run migrations after pulling schema changes. Setup generates an ignored mode-600 `.env` and refuses to overwrite it. `.env.example` documents fields; never commit local credentials. Compose binds only 127.0.0.1:55452 and owns `virtual-city-dev` resources. Change ports/origins consistently if occupied; do not kill unrelated services. API_INTERNAL_URL is a trusted server-side URL, never browser input.
 
 `pnpm db:stop` stops only city development containers and retains data. Re-run `pnpm db:up` to resume. Normal setup/migrations are additive and idempotent. Do not delete volumes or reset a developer/production database as a debugging step. Migration errors intentionally omit secrets; inspect connectivity, schema/journal and checksums locally without printing credentials.
 
@@ -35,7 +35,7 @@ E2E runs built API/web on local :4300/:3300 with isolated PostgreSQL, covering r
 ## Workspace and integration
 
 - apps/platform-api: one Nest/Fastify process, Drizzle-owned schema, SQL journal.
-- apps/portal-web: Next.js status page; no identity/travel UI until dependencies unlock.
+- apps/portal-web: Next.js status and identity UI, same-origin API rewrite; worlds/travel are not implemented yet.
 - packages/contracts: strict versioned foundation status/error wire shapes.
 - packages/world-sdk: version compatibility only; M05 owns world lifecycle/registry.
 - packages/config: shared strict TypeScript baseline.
@@ -48,3 +48,9 @@ Legacy repos remain independent at ../deadline-cafe and ../maid-cafe; they are n
 .github/workflows/quality.yml runs the same checks + E2E on pull requests, with cache, isolated PostgreSQL and seven-day failure artifacts. Per owner instruction, work stays offline: remote PRs, hosted CI and repository required-check settings are not executed here. After creating a remote, configure required status `Quality / quality`, run one failing/passing PR, and verify branch protection before merging. CI has read-only repository permission and no deployment step.
 
 No art/media imported; system fonts and code-native status UI only. Gameplay assets need a provenance manifest in M07. Public release, moderation operations, restricted-world access, production migrations, infrastructure and legal/content approvals remain gated. Read AGENTS.md before resuming. Use `pnpm plan:status` and update evidence/checkpoints after each verified slice.
+
+## Identity usage and limits
+
+Open `/identity` to create a browser guest, set a name/avatar preference, edit private presence choices or export/delete your own data. Upgrade optionally with a separate sign-in name/password to return from another browser with the same account ID. Password recovery is not available. Logging out an unregistered guest can lose access; the UI explains this before upgrade/logout. No legacy guest session is automatically imported or merged.
+
+SESSION_SECRET is required (>=32 random characters). setup:local generates it; existing local .env files must be extended with a freshly generated value without committing it. Cookies are signed, HttpOnly and host-only, with Secure + __Host prefix in production. CSRF/Origin checks guard writes, session tokens are hashed in DB, salted scrypt credentials never enter exports/logs. Rates and concurrent KDF work are bounded. Production TLS/proxy/rate/secret rotation and security review remain future gates. No public release is authorized.
