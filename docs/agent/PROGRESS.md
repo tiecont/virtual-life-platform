@@ -1,6 +1,6 @@
 # Agent progress
 
-Current checkpoint: **W1 in progress; W0 + M03/M04/M05 + M06-01..04 VERIFIED locally. Next: M06-05 reconnect/restart recovery.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence.
+Current checkpoint: **W1 in progress; W0 + M03/M04/M05 + M06-01..05 VERIFIED locally. Next: M06-06 metrics/network baseline.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence.
 
 2026-11-02, Linux local host, Node v26.9.0, pnpm 11.28.5, Docker 29.9.0. Source of task status: task-state.json (checked by scripts/plan-status.mjs). No public release occurred.
 
@@ -170,3 +170,13 @@ Room snapshots project only viewer-authorized profiles. Public presence is visib
 Added strict `RoomDeltaSchema` and `applyRoomDelta`: matching epoch/room/world required, duplicates/old versions ignored, gaps reported for resync, malformed or cross-context state rejected. Server remains authoritative and recomputes each viewer projection. No room state is persisted; no fake population, scene, chat, travel or performance result claimed. Projection is safety-sensitive and must fail closed; operational metrics/retry UX are future work.
 
 Next exact action: M06-05 reconnect after transport loss/process restart, truthful interrupted state and multi-tab recovery. Then M06-06 measured socket/join/room benchmark and bounded metrics, M06-07 single-owner/fencing guard. M06/downstream remain incomplete.
+
+## M06-05 — VERIFIED recovery state and process restart slice
+
+2026-11-02T17:57Z, Linux/Node26.9.0/pnpm11.28.5/PostgreSQL17.7-alpine. `pnpm check` ->0 with explicit TOP_LEVEL_EXIT=0 in m06-reconnect-complete-check.log: 7 governance,30 unit,67 actual PG/HTTP/Socket.IO integration; lint/types/architecture and production builds. Earlier staged checks retained as historical evidence; final complete check supersedes them. Child test processes and disposable DB cleaned up.
+
+Rooms close in Fastify preClose before gateway transport closes, emitting server-stopping while connected. SDK RoomRecovery clears cached live projections/seats on loss, exposes reconnecting/interrupted/syncing state, invalidates late ACK tickets, requires authoritative snapshot, detects new membership/epoch and rejects foreign membership deltas. Real child API is SIGKILLed and restarted on the same port with the same DB/cookie: old snapshot command ->NOT_IN_ROOM; new epoch/membership,occupancy1,no phantom seat. Grace reconnect retains original seat; multi-tab tests retained. Fixed seat/reconnect delta bases and now notify peers on grace expiry/session removal; actual socket deltas apply contiguously through claim/detach/rejoin/expiry.
+
+No room browser/scene exists yet: recovery presentation is a tested SDK state adapter for M07 consumption, not verified pixels. No DB migration, public flags, production recovery, benchmark or multi-owner claim. Runtime state remains ephemeral; restart intentionally loses seats and requires admission.
+
+Next exact action: M06-06 bounded low-cardinality metrics and reproducible real-socket benchmark with hardware/socket count/p95 join/CPU/memory, then M06-07 exclusive owner/split-brain guard. Full M06 and downstream remain gated.

@@ -60,6 +60,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerIdentity(http, config, identity, options.now);
   registerSocial(http, config, identity, social, options.now);
   identity.registerExportOwner('social', (id, transaction) => social.exportAccount(id, transaction));
+  // Emit truthful room interruption events while sockets are still connected; the gateway closes immediately after this hook.
+  http.addHook('preClose', async () => { await rooms.close(); });
   http.get('/health/live', async () => ({ status: 'ok' }));
   http.get('/health/ready', async (_req, reply) => {
     try {

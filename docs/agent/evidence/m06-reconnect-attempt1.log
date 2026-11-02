@@ -1,0 +1,1 @@
+Targeted reconnect/restart test is recorded in m06-reconnect-check.log after the initial implementation; this file is reserved for the first red/diagnostic run if one occurs.

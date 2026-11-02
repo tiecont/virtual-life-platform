@@ -32,4 +32,10 @@ Room versions increase for membership, seat, reconnect and privacy/profile proje
 
 M06-04 evidence covers public/hidden presence, bilateral block projection, live viewer-safe delta, duplicate/out-of-order/gap reducer behavior and previous room/seat guards. This is not a rendered scene or high-fanout performance result. Projection failure must fail closed; operational metrics and client retry UX remain M06-05/M06-06 work.
 
-Pending M06-05..07: reconnect/restart UX, measured network benchmark/budgets and single-owner split-brain rejection. No scene/chat/movement/travel success claimed. Disconnected hook cleanup and lifecycle deadlines remain to address; sandbox currently holds no per-player resources.
+## Recovery (M06-05)
+
+Fastify preClose removes room state and emits room.ended(server-stopping) before gateway shutdown. SIGKILL has no final event; clients treat transport loss as unconfirmed until a new snapshot. RoomRecovery exposes idle/syncing/active/reconnecting/interrupted plus sanitized reason. Offline/gap/ended state returns no live snapshot; cached peers and seats cannot appear authoritative. Sync tickets reject late ACKs after disconnect/ended/new sync. A fresh snapshot after epoch/membership change marks membership-reset. Only active matching context/membership/account deltas apply. A browser view must consume this state in M07; no rendered recovery UI is claimed yet.
+
+Actual child-process restart on the same port and DB verifies stale membership rejection, new epoch/membership, occupancy1 and no seat resurrection. Grace reconnect/multi-tab preserve one account membership and seat; seat/detach/reconnect/expiry deltas are contiguous. Restart is interruption, not durable room recovery. Critical orders/focus will need their domain reconciliation separately.
+
+Pending M06-06..07: measured network benchmark/budgets and single-owner split-brain rejection. No scene/chat/movement/travel success claimed. Disconnected hook cleanup and lifecycle deadlines remain to address; sandbox currently holds no per-player resources.
