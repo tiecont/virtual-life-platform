@@ -31,7 +31,7 @@ try {
   if (!['127.0.0.1', 'localhost', '[::1]'].includes(parsed.hostname) || !/^virtual_city_test(?:_|$)/.test(parsed.pathname.slice(1))) {
     throw new Error('Refusing non-local or non-test database');
   }
-  await run(args[0], args.slice(1), { ...process.env, TEST_DATABASE_URL: url, DATABASE_URL: url, NODE_ENV: 'test' });
+  await run(args[0], args.slice(1), { ...process.env, SESSION_SECRET: process.env.SESSION_SECRET ?? randomUUID() + randomUUID(), TEST_DATABASE_URL: url, DATABASE_URL: url, NODE_ENV: 'test' });
 } catch (error) {
   console.error(error.message);
   process.exitCode = 1;

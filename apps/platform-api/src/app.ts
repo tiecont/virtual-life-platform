@@ -7,6 +7,8 @@ import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { Pool } from 'pg';
 import { SCHEMA_VERSION } from '@virtual-city/contracts';
 import type { Config } from './config';
+import { IdentityService } from './identity/service';
+import { registerIdentity } from './identity/http';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -21,7 +23,7 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query'>, logging = false) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number } = {}) {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
     bodyLimit: 8192, requestTimeout: 10000, genReqId: () => randomUUID(),
     logger: logging ? { level: 'info', serializers: { req: (req: FastifyRequest) => ({ method: req.method, path: req.url.split('?')[0] }) }, redact: ['req.headers.cookie', 'req.headers.authorization', 'req.body', 'res.headers.set-cookie'] } : false,
@@ -33,6 +35,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query'>, logging
       return reply.code(403).send({ error: { code: 'FORBIDDEN', message: 'Origin is not allowed', requestId: req.id } });
     }
   });
+  const identity = new IdentityService(db, config, options.now);
+  registerIdentity(http, config, identity, options.now);
   http.get('/health/live', async () => ({ status: 'ok' }));
   http.get('/health/ready', async (_req, reply) => {
     try {
@@ -44,5 +48,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query'>, logging
   app.useGlobalFilters(new SafeHttpErrors());
   await app.init();
   await http.ready();
-  return { app, http };
+  return { app, http, identity };
 }

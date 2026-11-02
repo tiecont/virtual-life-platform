@@ -60,3 +60,17 @@ Changed architecture context/container/module map, service-port responsibilities
 - App code/types/build unchanged from M01 verified baseline; no repeat gameplay/runtime claim from specification checks. No DB changes in M02.
 
 W0 AUD + M00–M02 VERIFIED for offline local scope. W1 and later NOT_VERIFIED; no public release. Next exact action M03-01..06: identity migration compatibility design, signed host-only city session cookie, guest/upgrade/rotation/logout, private choices/export/delete and deny-by-default restricted admission; verify actual PG/HTTP and browser flows before downstream M04/M05.
+
+## M03 guest/privacy vertical slice — VERIFIED slice, module IN_PROGRESS
+
+2026-11-02T15:15–15:17Z, local Node 26.9.0/pnpm 11.28.5/PostgreSQL 17.7-alpine. Implemented signed host-only guest sessions, trusted server identity, profile changes, separate privacy, own-data export/delete, session renewal/logout, bounded rates, post-commit revocation port, retention maintenance and deny-by-default admission/presence policy interfaces. Added real /identity DOM UI with reload and BroadcastChannel synchronization. API contract and limitations in IDENTITY-API.md and ADR 0004.
+
+- `pnpm check` → 0: governance (7), unit (9), actual PG integration (14), lint/boundaries/types, architecture ownership (9 SQL tables + journal), production builds. m03-guest-check.log and m03-guest-checks.json.
+- `pnpm test:e2e` → 0: 4 desktop/mobile browser tests, actual same-origin rewrite → API → PG, profile/privacy reload, two tabs, rotation, export/download, deletion. m03-guest-e2e.log; m03-guest-{desktop,mobile}.png (mobile visually inspected, no overflow/clipping).
+- Tests include same bootstrap/profile key concurrency, tampered/legacy cookie rejection, strict forged ID/role rejection, Origin/CSRF denial including multibyte header, private-only export, deletion isolation, rate cap, expiry/purge and fresh nonce after TTL, production cookie flags. Production cookie test uses injection, not deployed HTTPS.
+
+Database: additive 0002_identity.sql, checksum journal/transactional runner; tested only isolated fresh DBs in this slice. Existing local dev DB still at foundation until explicit pnpm db:migrate. Existing .env extended with generated SESSION_SECRET without printing/committing it; setup script now generates it. No legacy DB/source changed.
+
+Not complete: registered-account upgrade/login, actual room/socket/travel/social binding of policy/revocation ports, production/TLS operations, legal retention approval. No world open and no public release. M03 remains IN_PROGRESS; M04/M05 are not unlocked yet.
+
+Next exact action: M03-02 second slice — implement optional local registered upgrade retaining account ID, password-based login with salted bounded scrypt, idempotent upgrade/login and safe credential/session revocation; verify API and browser sign-out/sign-in with unchanged identity, then review all M03 criteria.

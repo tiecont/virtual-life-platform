@@ -2,7 +2,15 @@
   "schemaVersion": 1,
   "tables": {
     "platform_metadata": "platform.foundation",
-    "city_schema_migrations": "platform.foundation"
+    "city_schema_migrations": "platform.foundation",
+    "identity_accounts": "platform.identity",
+    "identity_profiles": "platform.identity",
+    "identity_privacy": "platform.identity",
+    "identity_sessions": "platform.identity",
+    "identity_bootstraps": "platform.identity",
+    "identity_mutations": "platform.identity",
+    "identity_consents": "platform.identity",
+    "identity_deletion_receipts": "platform.identity"
   },
   "journalTable": "city_schema_migrations",
   "legacyDatabases": "not managed by city migrations",

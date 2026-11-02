@@ -24,12 +24,12 @@ afterAll(async () => {
 });
 describe('real PostgreSQL and HTTP vertical slice', () => {
   it('readiness fails on clean DB, then succeeds after idempotent concurrent migrations, including actual TCP', async () => {
-    const { app, http } = await createApp(readConfig({ NODE_ENV: 'test', DATABASE_URL: process.env.TEST_DATABASE_URL }), pool);
+    const { app, http } = await createApp(readConfig({ NODE_ENV: 'test', SESSION_SECRET: 'test-only-session-secret-not-production-0001', DATABASE_URL: process.env.TEST_DATABASE_URL }), pool);
     try {
       expect((await http.inject('/health/ready')).statusCode).toBe(503);
       await Promise.all([migrate(pool), migrate(pool)]);
       await migrate(pool);
-      expect((await pool.query('SELECT count(*)::int AS count FROM city_schema_migrations')).rows[0].count).toBe(1);
+      expect((await pool.query('SELECT count(*)::int AS count FROM city_schema_migrations')).rows[0].count).toBe(2);
       expect((await pool.query('SELECT count(*)::int AS count FROM platform_metadata')).rows[0].count).toBe(1);
       await app.listen(0, '127.0.0.1');
       const url = await app.getUrl();
@@ -52,7 +52,7 @@ describe('real PostgreSQL and HTTP vertical slice', () => {
       await writeFile(join(directory, '0002_broken.sql'), 'CREATE TABLE must_rollback(id integer); SELECT definitely_missing_column;');
       await expect(migrate(pool, directory)).rejects.toBeDefined();
       expect((await pool.query("SELECT to_regclass('must_rollback') AS table_name")).rows[0].table_name).toBe(null);
-      expect((await pool.query('SELECT count(*)::int AS count FROM city_schema_migrations')).rows[0].count).toBe(1);
+      expect((await pool.query('SELECT count(*)::int AS count FROM city_schema_migrations')).rows[0].count).toBe(2);
     } finally { await rm(directory, { recursive: true, force: true }); }
   });
   it('enforces singleton metadata and positive schema version in PostgreSQL', async () => {

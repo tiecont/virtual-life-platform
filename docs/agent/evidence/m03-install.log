@@ -1,0 +1,10 @@
+Scope: all 6 workspace projects
+✓ Lockfile passes supply-chain policies (verified 11m ago)
+Progress: resolved 1, reused 0, downloaded 0, added 0
+[WARN] deprecated eslint@9.39.1
+Progress: resolved 185, reused 132, downloaded 0, added 0
+Packages: +1
++
+Progress: resolved 353, reused 273, downloaded 0, added 1, done
+
+Done in 2.5s using pnpm v11.28.5
