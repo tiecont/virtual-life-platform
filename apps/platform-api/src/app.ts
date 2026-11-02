@@ -15,6 +15,8 @@ import { SocialService, type SocialPresencePort } from './social/service';
 import { registerSocial } from './social/http';
 import { createWorldRuntime, type WorldRuntimeOptions } from './worlds/service';
 import { registerWorlds } from './worlds/http';
+import { RoomService } from './rooms/service';
+import { registerRoomGateway } from './rooms/socket';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -43,9 +45,11 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
     }
   });
   const identity = new IdentityService(db, config, options.now);
-  const worlds = await createWorldRuntime(config, identity, options.worlds);
+  const worlds = await createWorldRuntime(config, identity, { ...options.worlds, membership: options.worlds?.membership ?? { permits: async (actor, slug, membershipId) => rooms?.hasMembership(actor, slug, membershipId) ?? false } });
+  const rooms = new RoomService(worlds.registry, identity, options.now);
   http.addHook('onClose', async () => { await worlds.registry.close(); });
-  registerWorlds(http, config, worlds.registry, options.now);
+  http.addHook('onClose', async () => { await rooms.close(); });
+  registerWorlds(http, config, worlds.registry, options.now, rooms);
   registerIdentity(http, config, identity, options.now);
   const social = new SocialService(db, identity, options.socialPresence, options.now);
   registerSocial(http, config, identity, social, options.now);
@@ -61,8 +65,9 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   app.useGlobalFilters(new SafeHttpErrors());
   await app.init();
   const gateway = createIdentityGateway(http, config, identity, options.now);
+  const unsubscribeRooms = registerRoomGateway(gateway, rooms);
   const unsubscribeSocial = social.onChanged(ids => { for (const id of ids) gateway.emitToAccount(id, 'friendship.changed', { schemaVersion: 1 }); });
-  http.addHook('onClose', async () => { unsubscribeSocial(); });
+  http.addHook('onClose', async () => { unsubscribeSocial(); unsubscribeRooms(); });
   await http.ready();
-  return { app, http, identity, gateway, social, worlds };
+  return { app, http, identity, gateway, social, worlds, rooms };
 }

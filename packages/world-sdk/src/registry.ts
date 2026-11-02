@@ -47,6 +47,7 @@ export class WorldRegistry {
   #revision = 0;
   #closed = false;
   #closing?: Promise<void>;
+  #unavailableListeners = new Set<(slug: string) => void>();
   constructor(readonly environment: 'development' | 'test' | 'production', private ports: WorldPorts) {}
   register(adapter: WorldAdapter) {
     if (this.#closed) throw unavailable();
@@ -56,6 +57,8 @@ export class WorldRegistry {
     this.#entries.set(slug, { adapter, enabled: false, phase: 'disabled', generation: 0, needsCleanup: false, cleanupFailed: false, pending: 0, tail: Promise.resolve() }); this.#revision++;
   }
   slugs(): string[] { return [...this.#entries.keys()]; }
+  onUnavailable(listener: (slug: string) => void) { this.#unavailableListeners.add(listener); return () => { this.#unavailableListeners.delete(listener); }; }
+  #notifyUnavailable(entry: Entry) { for (const listener of this.#unavailableListeners) { try { listener(entry.adapter.definition.slug); } catch { /* Access checks remain authoritative if a consumer fails. */ } } }
   #get(slug: string) { const entry = this.#entries.get(slug); if (!entry) throw new WorldError('NOT_FOUND', 'World not found'); return entry; }
   #queue<T>(entry: Entry, work: () => Promise<T>, control = false): Promise<T> {
     if (!control && entry.pending >= 64) return Promise.reject(unavailable());
@@ -80,6 +83,7 @@ export class WorldRegistry {
     if (enabled && this.environment === 'production' && entry.adapter.definition.kind === 'sandbox') throw new WorldError('FORBIDDEN', 'Sandbox unavailable in production');
     if (entry.enabled === enabled && ((enabled && entry.phase === 'available') || (!enabled && entry.phase === 'disabled'))) return entry.tail;
     entry.enabled = enabled; entry.phase = enabled ? 'offline' : 'disabled';
+    this.#notifyUnavailable(entry);
     const generation = ++entry.generation; this.#revision++;
     return this.#queue(entry, async () => {
       if (entry.generation !== generation) return;
@@ -94,6 +98,12 @@ export class WorldRegistry {
     }, true);
   }
   #ready(entry: Entry) { if (this.#closed || !entry.enabled || entry.phase !== 'available') throw unavailable(); }
+  async authorizeWorld(credential: string, slug: string) {
+    const actor = await this.ports.authenticate(credential); const entry = this.#get(slug);
+    if (!await this.ports.canAccess(actor, entry.adapter.definition)) throw new WorldError('NOT_FOUND', 'World not found');
+    this.#ready(entry);
+    return { actor, definition: entry.adapter.definition };
+  }
   #card(entry: Entry): WorldCard {
     const world = entry.adapter.definition;
     return {
@@ -133,7 +143,7 @@ export class WorldRegistry {
       try { result = await this.#invoke(entry, { hook: invocation.action, context, payload: invocation.payload }); }
       catch (error) {
         if (error instanceof WorldError && ['INVALID_REQUEST', 'FORBIDDEN'].includes(error.code)) throw error;
-        entry.phase = 'offline'; this.#revision++; await this.#stop(entry); throw unavailable();
+        entry.phase = 'offline'; this.#revision++; this.#notifyUnavailable(entry); await this.#stop(entry); throw unavailable();
       }
       this.#ready(entry); if (entry.generation !== generation) throw unavailable();
       return result;

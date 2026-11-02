@@ -1,13 +1,15 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { WorldError, type WorldRegistry } from '@virtual-city/world-sdk';
+import { WorldSlugSchema, RoomsListSchema } from '@virtual-city/contracts';
+import type { RoomService } from '../rooms/service';
 import type { Config } from '../config';
 import { readSessionToken } from '../identity/http';
 import { WindowLimiter } from '../identity/limits';
 import { DomainError } from '../common/errors';
 import { apiErrorHandler } from '../common/http-errors';
 
-export function registerWorlds(http: FastifyInstance, config: Config, registry: WorldRegistry, now = Date.now) {
+export function registerWorlds(http: FastifyInstance, config: Config, registry: WorldRegistry, now = Date.now, rooms?: RoomService) {
   const limits = new WindowLimiter(now);
   http.register(async api => {
     api.setErrorHandler((error, req, reply) => {
@@ -19,6 +21,12 @@ export function registerWorlds(http: FastifyInstance, config: Config, registry: 
       const credential = readSessionToken(req, config)!;
       z.strictObject({}).parse(req.query);
       return registry.catalog(credential);
+    });
+    if (rooms) api.get('/worlds/:slug/rooms', async req => {
+      if (!limits.take(req.ip, 120)) throw new DomainError('RATE_LIMITED', 429, 'Please wait before trying again');
+      const credential = readSessionToken(req, config)!; z.strictObject({}).parse(req.query);
+      const { slug } = z.strictObject({ slug: WorldSlugSchema }).parse(req.params);
+      return RoomsListSchema.parse(await rooms.list(credential, slug));
     });
   }, { prefix: '/v1' });
 }

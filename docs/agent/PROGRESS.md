@@ -1,6 +1,6 @@
 # Agent progress
 
-Current checkpoint: **W1 in progress; W0 + M03/M04/M05 VERIFIED locally. Next: M06 room allocator/join slice.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence.
+Current checkpoint: **W1 in progress; W0 + M03/M04/M05 + M06-01 VERIFIED locally. Next: M06-02 seats/grace.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence.
 
 2026-11-02, Linux local host, Node v26.9.0, pnpm 11.28.5, Docker 29.9.0. Source of task status: task-state.json (checked by scripts/plan-status.mjs). No public release occurred.
 
@@ -132,3 +132,13 @@ Runtime flags use optional trusted local JSON plus SIGHUP wiring, default false 
 Intentional initial acceptance run failed (7 missing-registry failures,1 schema pass) in m05-registry-red.log; implemented code passes original scenarios. One documentation apply_patch context mismatch aborted atomically and was reapplied with correct README context; no runtime verification failure hidden. No DB migration, legacy change, copied assets, remote push or public activation. W1 remains incomplete; W2–W6 not verified.
 
 Next exact action: M06-01 room allocator with bounded authoritative capacity and authenticated join/leave, wire through existing session gateway + SDK membership port, real 100-way concurrency/admission/eviction tests. Then seats/snapshot/reconnect/benchmark before completing M06.
+
+## M06-01 — VERIFIED allocator/join vertical slice; M06 IN_PROGRESS
+
+2026-11-02T17:08Z, Linux/Node 26.9.0/pnpm 11.28.5/PostgreSQL 17.7-alpine. Actual commands in m06-allocator-checks.json: targeted integration -> 0 (5 tests); pnpm check -> 0 (7 governance,25 unit,55 PG/HTTP/Socket.IO integration plus lint/types/ownership/production builds). First lint found prefer-const in composition, fixed before final full check. No browser repeat in this slice; M05's 8 regression cases remain previous evidence, not new room-browser acceptance.
+
+Implemented bounded single-owner allocator, capacity-safe provisional SDK admission, one room/account with shared tabs, scoped runtime idempotency, epoch/membership/connection guards, aggregate-only rooms HTTP, actual session gateway join/snapshot/leave ACKs, disconnect/logout cleanup, world disable generation/removal and empty-room eviction. Contracts in packages/contracts/src/rooms.ts; code in platform-api/rooms; docs in ROOMS.md. SDK now consumes authoritative RoomService membership by default (supersedes M05's default-deny checkpoint); controlled M05 fixture overrides remain labeled tests.
+
+100 concurrent target-room attempts use real independent PostgreSQL sessions and controlled connection-ID fixtures: 7 admitted plus original owner = 8 capacity, 93 ROOM_FULL, no oversubscription; cleanup leaves original occupancy1. This is invariant evidence, NOT 100 network connections or performance measurement. Actual network tests cover ACKs/IDOR/forged authority/stale epoch/assets/replays/multitab/revocation/disable. Initial peer snapshot intentionally own-only with aggregate occupancy; no scene/chat/seat/delta/reconnect-grace acceptance claimed. No migration, assets, real-world flag change or public release.
+
+Next exact action M06-02: declarative seat IDs per world, atomic claim/release, one seat/account, disconnect grace and final revocation cleanup; 100-way contention plus actual Socket.IO tests. Then M06-03..07 replay/security completion, privacy-safe peer projections/deltas/client recovery, benchmarks and single-owner release guard before M06 verification.

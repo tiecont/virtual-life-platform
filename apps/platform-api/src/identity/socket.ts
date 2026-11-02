@@ -94,5 +94,9 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
   const emitToAccount = (accountId: string, event: string, payload: unknown) => {
     for (const sockets of sessions.values()) for (const socket of sockets) if (leases.get(socket)?.context.accountId === accountId && socket.connected) socket.emit(event, payload);
   };
-  return { io, authorize, emitToAccount, allowCommand: (name: string) => { commands.add(name); } };
+  const withSession = async <T>(socket: Socket, action: (context: IdentityContext, credential: string) => Promise<T>): Promise<T> => {
+    const context = await authorize(socket); const lease = leases.get(socket);
+    if (!lease) throw unauthorized(); return action(context, lease.token);
+  };
+  return { io, authorize, withSession, emitToAccount, allowCommand: (name: string) => { commands.add(name); } };
 }
