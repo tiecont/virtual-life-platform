@@ -1,7 +1,7 @@
 {
-  "project": "Virtual City",
+  "project": "virtual-life-platform",
   "version": "1.0",
-  "status": "plan_only_not_implemented",
+  "status": "implementation_in_progress",
   "entrypoint": "MASTER-AGENT-PLAN.md",
   "agent_rules": "AGENTS.md",
   "release_waves": [
@@ -265,7 +265,7 @@
     },
     {
       "moduleId": "M17",
-      "name": "Eternal Library — Quiet Study World",
+      "name": "Eternal Library \u2014 Quiet Study World",
       "file": "plans/17-library-world.md",
       "dependsOn": "M10, M12, M14",
       "earliestWave": "W3",
@@ -279,7 +279,7 @@
     },
     {
       "moduleId": "M18",
-      "name": "Grand Restaurant — Fine-Dining Social World",
+      "name": "Grand Restaurant \u2014 Fine-Dining Social World",
       "file": "plans/18-restaurant-world.md",
       "dependsOn": "M11, M12, M14",
       "earliestWave": "W4",
@@ -294,7 +294,7 @@
     },
     {
       "moduleId": "M19",
-      "name": "Moonlight Lounge — Social Stage & Mocktail Bar",
+      "name": "Moonlight Lounge \u2014 Social Stage & Mocktail Bar",
       "file": "plans/19-lounge-world.md",
       "dependsOn": "M11, M12, M14, M08",
       "earliestWave": "W5",
@@ -309,7 +309,7 @@
     },
     {
       "moduleId": "M20",
-      "name": "Heart Garden / Blind Date — Adult-Only World",
+      "name": "Heart Garden / Blind Date \u2014 Adult-Only World",
       "file": "plans/20-dating-world.md",
       "dependsOn": "M03, M04, M06, M08, M09, M12, M14",
       "earliestWave": "W6",
@@ -370,7 +370,7 @@
     },
     {
       "moduleId": "M24",
-      "name": "Central Park — Public Social Commons",
+      "name": "Central Park \u2014 Public Social Commons",
       "file": "plans/24-central-park-world.md",
       "dependsOn": "M04, M05, M06, M07, M08, M09, M14",
       "earliestWave": "W3",

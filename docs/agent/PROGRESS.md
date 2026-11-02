@@ -97,3 +97,9 @@ Final M03 acceptance adds actual network-authenticated Socket.IO session gateway
 Migration compatibility uses deliberate rejection of legacy cookies/body formats and documented possession-proof strategy; no legacy account migration performed. All identity tables owned by platform, explicit deletion/export/expiry policies, no credential export or logging. Server task evidence is in IDENTITY-API.md/IDENTITY-SOCKET.md and ADRs 0004/0005. M03 fulfilled its own interface/identity transport boundaries; W1 needs the remaining social/registry/room/scene/safety/travel/portal modules.
 
 Next exact action: M04-01..05, lowest-ID ready module: friend-request state machine, reciprocal consent, atomic pair uniqueness, block policy and privacy-safe discovery. Do not start M06 before M05 verified. No public release, all worlds OFF, no remote operations.
+
+## Owner steering — virtual-life-platform name and local origin
+
+Project name set to virtual-life-platform in root package/manifest/docs and web branding. Origin configured locally to git@github.com:tiecont/virtual-life-platform.git. No remote network operation, push, PR or publication; owner offline instruction still active. Current directory retained for workspace/artifact continuity. ADR 0006 records this scope.
+
+project-name-checks.json actual outcomes: frozen install → 0, pnpm build → 0, existing browser suite → 0 (6 desktop/mobile cases, including viewport checks after branding). Next exact action remains M04, dependent on verified M03 at c66520d.

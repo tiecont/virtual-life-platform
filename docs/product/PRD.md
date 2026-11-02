@@ -1,4 +1,4 @@
-# Virtual City product contract
+# virtual-life-platform product contract
 
 One identity can discover and enter distinct 2D worlds, do a shared activity, leave safely, and meet consenting friends again. Shared identity never means shared disclosure. A guest can begin without registration. First public beta requires two real integrated worlds; a link or test scene is not integration.
 

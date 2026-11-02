@@ -1,4 +1,4 @@
-# AGENTS.md — Virtual City instructions
+# AGENTS.md — virtual-life-platform instructions
 
 **MUST READ FIRST:** [`MASTER-AGENT-PLAN.md`](MASTER-AGENT-PLAN.md). Đây là file điều phối dự án. Mỗi module có plan riêng dưới `plans/`.
 

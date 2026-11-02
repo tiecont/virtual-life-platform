@@ -10,3 +10,4 @@
 | D-006 | Single process room authority, Socket.IO when M06 mounts it, PostgreSQL critical transitions; fencing before multiple replicas | Accepted design | ADR 0003; future design is not implemented |
 | D-007 | Optional local registered upgrade/sign-in, salted bounded scrypt, same account ID, no recovery promise | Accepted local implementation and verified | ADR 0005; m03-final-checks.json |
 | D-008 | Auth-only Socket.IO gateway in M03 meets revocation acceptance; rooms/seat/travel remain separate dependent modules | Implemented and verified over actual network | IDENTITY-SOCKET.md; 29 integration tests |
+| D-009 | Project named virtual-life-platform; local origin points to owner-supplied SSH repository; no push/fetch | Owner-directed | ADR 0006; project-name-checks.json |

@@ -1,4 +1,4 @@
-# VIRTUAL CITY — MASTER AGENT ORCHESTRATOR PLAN
+# virtual-life-platform — MASTER AGENT ORCHESTRATOR PLAN
 
 > **Version:** 1.0 | **Language:** Vietnamese | **Status:** PLAN ONLY — NOT IMPLEMENTED  
 > **Role:** Master orchestration contract for a coding agent.  
