@@ -45,13 +45,19 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
     }
   });
   const identity = new IdentityService(db, config, options.now);
-  const worlds = await createWorldRuntime(config, identity, { ...options.worlds, membership: options.worlds?.membership ?? { permits: async (actor, slug, membershipId) => rooms?.hasMembership(actor, slug, membershipId) ?? false } });
-  const rooms = new RoomService(worlds.registry, identity, options.now);
+  const social = new SocialService(db, identity, options.socialPresence, options.now);
+  let roomService: RoomService | undefined = undefined;
+  const worlds = await createWorldRuntime(config, identity, { ...options.worlds, membership: options.worlds?.membership ?? { permits: async (actor, slug, membershipId) => roomService?.hasMembership(actor, slug, membershipId) ?? false } });
+  roomService = new RoomService(worlds.registry, identity, options.now, {
+    relationships: (viewer, targets) => social.roomRelationships(viewer, targets),
+    profiles: (viewer, targets, world, relationships) => identity.visibleRoomProfiles(viewer, targets, world, relationships),
+  });
+  if (!roomService) throw new Error('Room service failed to initialize');
+  const rooms = roomService;
   http.addHook('onClose', async () => { await worlds.registry.close(); });
   http.addHook('onClose', async () => { await rooms.close(); });
   registerWorlds(http, config, worlds.registry, options.now, rooms);
   registerIdentity(http, config, identity, options.now);
-  const social = new SocialService(db, identity, options.socialPresence, options.now);
   registerSocial(http, config, identity, social, options.now);
   identity.registerExportOwner('social', (id, transaction) => social.exportAccount(id, transaction));
   http.get('/health/live', async () => ({ status: 'ok' }));
@@ -67,7 +73,9 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const gateway = createIdentityGateway(http, config, identity, options.now);
   const unsubscribeRooms = registerRoomGateway(gateway, rooms);
   const unsubscribeSocial = social.onChanged(ids => { for (const id of ids) gateway.emitToAccount(id, 'friendship.changed', { schemaVersion: 1 }); });
-  http.addHook('onClose', async () => { unsubscribeSocial(); unsubscribeRooms(); });
+  const unsubscribeRoomSocial = social.onChanged(ids => { void rooms.refreshAccounts(ids); });
+  const unsubscribeRoomIdentity = identity.onChanged(id => { void rooms.refreshAccounts([id]); });
+  http.addHook('onClose', async () => { unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
   return { app, http, identity, gateway, social, worlds, rooms };
 }

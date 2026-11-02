@@ -3,7 +3,7 @@ import type { IdentityContext } from './service';
 // Inputs come from services. Never deserialize age/role/friend/block claims from clients.
 export function canViewPresence(viewer: string, target: string, world: string, privacy: Privacy, relationship: { blocked: boolean; friends: boolean }): boolean {
   if (viewer === target) return true;
-  if (world === 'dating' || relationship.blocked || !['deadline', 'maid', 'library', 'restaurant', 'lounge', 'park'].includes(world)) return false;
+  if (world === 'dating' || relationship.blocked || !['deadline', 'maid', 'library', 'restaurant', 'lounge', 'park', 'sdk-sandbox'].includes(world)) return false;
   const visibility = privacy.worldVisibility[world as keyof Privacy['worldVisibility']] ?? privacy.presence;
   return visibility === 'public' || (visibility === 'friends' && relationship.friends);
 }

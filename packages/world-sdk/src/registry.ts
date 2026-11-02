@@ -57,6 +57,10 @@ export class WorldRegistry {
     this.#entries.set(slug, { adapter, enabled: false, phase: 'disabled', generation: 0, needsCleanup: false, cleanupFailed: false, pending: 0, tail: Promise.resolve() }); this.#revision++;
   }
   slugs(): string[] { return [...this.#entries.keys()]; }
+  permitsActivityDisclosure(slug: string): boolean {
+    const entry = this.#entries.get(slug);
+    return Boolean(!this.#closed && entry?.enabled && entry.phase === 'available' && entry.adapter.definition.visibility === 'listed' && entry.adapter.definition.accessPolicy.kind === 'public' && slug !== 'dating');
+  }
   onUnavailable(listener: (slug: string) => void) { this.#unavailableListeners.add(listener); return () => { this.#unavailableListeners.delete(listener); }; }
   #notifyUnavailable(entry: Entry) { for (const listener of this.#unavailableListeners) { try { listener(entry.adapter.definition.slug); } catch { /* Access checks remain authoritative if a consumer fails. */ } } }
   #get(slug: string) { const entry = this.#entries.get(slug); if (!entry) throw new WorldError('NOT_FOUND', 'World not found'); return entry; }

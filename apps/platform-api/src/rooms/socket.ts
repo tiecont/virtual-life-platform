@@ -9,6 +9,9 @@ import type { RoomService } from './service';
 export function registerRoomGateway(gateway: ReturnType<typeof createIdentityGateway>, rooms: RoomService) {
   for (const name of ['room.join', 'room.leave', 'room.snapshot', 'seat.claim', 'seat.release']) gateway.allowCommand(name);
   const unsubscribe = rooms.onEnded((ids, event) => { for (const id of ids) gateway.io.of('/').sockets.get(id)?.emit('room.ended', event); });
+  const unsubscribeChanged = rooms.onChanged(updates => {
+    for (const update of updates) gateway.io.of('/').sockets.get(update.connectionId)?.emit('room.delta', { schemaVersion: 1, type: 'delta', fromVersion: update.fromVersion, state: update.snapshot });
+  });
   const unsubscribeSessions = gateway.onSessionEnded(context => { void rooms.endSessions(context.accountId, [context.sessionId]); });
   gateway.io.on('connection', socket => {
     let pending = 0;
@@ -36,5 +39,5 @@ export function registerRoomGateway(gateway: ReturnType<typeof createIdentityGat
     handle('seat.release', SeatReleaseSchema, (credential, input) => rooms.seat(credential, socket.id, input, 'seat.release'));
     socket.once('disconnect', () => { void rooms.detach(socket.id); });
   });
-  return () => { unsubscribe(); unsubscribeSessions(); };
+  return () => { unsubscribe(); unsubscribeChanged(); unsubscribeSessions(); };
 }

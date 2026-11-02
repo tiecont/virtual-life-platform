@@ -24,4 +24,12 @@ M03 handshake checks stay active: exact Origin, signed city cookie, CSRF/schema,
 
 The gateway's trusted session-ended callback removes corresponding room sessions on idle expiry or next-command discovery of revocation. This is distinct from ordinary network loss, which keeps bounded grace. HTTP revocation also notifies the room service directly. No expired session can prolong its seat by repeatedly issuing invalid commands. These local tests do not replace a production edge/TLS/security review.
 
-Pending M06-04..07: peer presence with privacy/block filtering, deltas/client gap recovery, reconnect/restart UX, measured network benchmark/budgets and single-owner split-brain rejection. No scene/chat/movement/travel success claimed. Disconnected hook cleanup and lifecycle deadlines remain to address; sandbox currently holds no per-player resources.
+## Privacy-safe peers and client sync (M06-04)
+
+RoomSnapshot now contains the viewer's own account/profile plus peer profiles that pass platform presence policy for the current world. PostgreSQL social relationships are authoritative; bilateral blocks override friendship and public presence. Hidden presence, unknown worlds and dating never enter a room projection. Seat state is anonymous (`mine` is viewer-relative). Profile, privacy and social block changes refresh affected rooms and emit viewer-specific `room.delta` events.
+
+Room versions increase for membership, seat, reconnect and privacy/profile projection changes. Delta envelopes carry `fromVersion` and complete filtered state. The SDK reducer requires matching epoch/room/world context, applies contiguous versions, ignores duplicates/old states and reports gaps for snapshot resync. The server recomputes each viewer projection, so clients cannot widen visibility by editing a delta.
+
+M06-04 evidence covers public/hidden presence, bilateral block projection, live viewer-safe delta, duplicate/out-of-order/gap reducer behavior and previous room/seat guards. This is not a rendered scene or high-fanout performance result. Projection failure must fail closed; operational metrics and client retry UX remain M06-05/M06-06 work.
+
+Pending M06-05..07: reconnect/restart UX, measured network benchmark/budgets and single-owner split-brain rejection. No scene/chat/movement/travel success claimed. Disconnected hook cleanup and lifecycle deadlines remain to address; sandbox currently holds no per-player resources.

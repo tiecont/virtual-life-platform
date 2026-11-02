@@ -14,6 +14,7 @@ export class IdentityService {
   registerExportOwner(owner: string, reader: (accountId: string, db: PoolClient) => Promise<unknown>) { if (this.exportOwners.has(owner)) throw new Error('Duplicate export owner'); this.exportOwners.set(owner, reader); }
   private passwords = new PasswordHasher();
   private subscribers = new Set<(event: { accountId: string; sessionIds: string[] }) => void>();
+  private changes = new Set<(accountId: string) => void>();
   constructor(readonly pool: Pick<Pool, 'query' | 'connect'>, private config: Config, private now = Date.now) {}
   hash(token: string) { return createHash('sha256').update(token).digest('hex'); }
   private keyed(value: string) { return createHmac('sha256', this.config.SESSION_SECRET).update(value).digest('hex'); }
@@ -24,6 +25,8 @@ export class IdentityService {
     if (actual.length !== expected.length || !timingSafeEqual(actual, expected)) throw new IdentityError('FORBIDDEN', 403, 'CSRF validation failed');
   }
   onRevoked(listener: (event: { accountId: string; sessionIds: string[] }) => void) { this.subscribers.add(listener); return () => { this.subscribers.delete(listener); }; }
+  onChanged(listener: (accountId: string) => void) { this.changes.add(listener); return () => { this.changes.delete(listener); }; }
+  private changed(accountId: string) { for (const listener of this.changes) { try { listener(accountId); } catch { /* Readers always apply current identity policy. */ } } }
   private notify(accountId: string, sessionIds: string[]) { if (sessionIds.length === 0) return; for (const listener of this.subscribers) { try { listener({ accountId, sessionIds }); } catch { /* DB remains authoritative even if a consumer fails. */ } } }
   private async tx<T>(work: (client: PoolClient) => Promise<T>): Promise<T> {
     const client = await this.pool.connect();
@@ -55,6 +58,12 @@ export class IdentityService {
   async presenceVisible(viewer: string, target: string, world: string, relationship: { blocked: boolean; friends: boolean }, db: DB = this.pool) {
     const row = (await db.query('SELECT choices FROM identity_privacy WHERE account_id=$1', [target])).rows[0];
     return row ? canViewPresence(viewer, target, world, PrivacySchema.parse(row.choices), relationship) : false;
+  }
+  async visibleRoomProfiles(viewer: string, ids: string[], world: string, relationships: Map<string, { blocked: boolean; friends: boolean }>): Promise<PublicProfile[]> {
+    if (ids.length > 100) throw new Error('Room profile projection limit');
+    const rows = await this.pool.query<{ account_id: string; display_name: string; avatar_key: PublicProfile['avatarKey']; choices: unknown }>('SELECT p.account_id,p.display_name,p.avatar_key,c.choices FROM identity_profiles p JOIN identity_privacy c ON c.account_id=p.account_id WHERE p.account_id=ANY($1::uuid[])', [ids]);
+    return rows.rows.filter(row => canViewPresence(viewer, row.account_id, world, PrivacySchema.parse(row.choices), relationships.get(row.account_id) ?? { blocked: true, friends: false }))
+      .map(row => ({ id: row.account_id, displayName: row.display_name, avatarKey: row.avatar_key }));
   }
   private public(session: Session): PublicProfile { return { id: session.account_id, displayName: session.display_name, avatarKey: session.avatar_key }; }
   private view(session: Session, token: string): Me { return { profile: this.public(session), kind: session.kind, expiresAt: session.expires_at.toISOString(), csrfToken: this.csrf(token) }; }
@@ -96,7 +105,7 @@ export class IdentityService {
     await db.query('INSERT INTO identity_mutations VALUES($1,$2,$3,$4,$5,$6,$7)', [session.account_id, requestId, session.id, operation, this.keyed(operation + ':' + JSON.stringify(body)), JSON.stringify(result), new Date(this.now())]);
   }
   async updateProfile(token: string, requestId: string, input: Partial<ProfileInput>): Promise<Me> {
-    return this.tx(async db => {
+    const result = await this.tx(async db => {
       const session = await this.lockedSession(db, token);
       const old = await this.previous(db, session, requestId, 'profile', input);
       if (old !== undefined) return { ...this.view(session, token), profile: old as PublicProfile };
@@ -105,16 +114,20 @@ export class IdentityService {
       await this.remember(db, session, requestId, 'profile', input, profile);
       return { ...this.view(session, token), profile };
     });
+    this.changed(result.profile.id); return result;
   }
   async privacy(token: string): Promise<Privacy> { const s = await this.session(token); return PrivacySchema.parse((await this.pool.query('SELECT choices FROM identity_privacy WHERE account_id=$1', [s.account_id])).rows[0].choices); }
   async updatePrivacy(token: string, requestId: string, input: Privacy): Promise<Privacy> {
-    return this.tx(async db => {
+    let accountId = '';
+    const result = await this.tx(async db => {
       const s = await this.lockedSession(db, token); const prior = await this.previous(db, s, requestId, 'privacy', input);
+      accountId = s.account_id;
       if (prior !== undefined) return PrivacySchema.parse(prior);
       await db.query('UPDATE identity_privacy SET choices=$2 WHERE account_id=$1', [s.account_id, input]);
       await db.query('INSERT INTO identity_consents VALUES($1,$2,$3,$4)', [randomUUID(), s.account_id, 'privacy.updated.v1', new Date(this.now())]);
       await this.remember(db, s, requestId, 'privacy', input, input); return input;
     });
+    this.changed(accountId); return result;
   }
   async rotate(token: string, requestId: string) {
     const result = await this.tx(async db => {

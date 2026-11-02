@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-02T17:27:54Z",
+  "updatedAt": "2026-11-02T17:39:58Z",
   "tasks": {
     "AUD-01": {
       "status": "VERIFIED",
@@ -189,6 +189,7 @@
     "M05-05": { "status": "VERIFIED", "evidence": "docs/architecture/WORLD-SDK.md; docs/adr/0008-world-registry-lifecycle.md; docs/agent/evidence/m05-check-attempt1.log", "verification": "compatibility sequencing against audited Deadline/Maid shapes and 2 boundary rejection tests; actual room/event mapper deferred to dependent M15/M16, not claimed implemented" },
     "M06-01": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m06-allocator-checks.json; docs/architecture/ROOMS.md", "verification": "pnpm check -> 0 (7 governance,25 unit,55 PG/HTTP/socket integration); 100 real-session target joins never exceed capacity; actual network join/leave/retry/multitab/access/revoke/disable and empty-room eviction verified" },
     "M06-02": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m06-seats-checks.json; docs/architecture/ROOMS.md", "verification": "pnpm check -> 0 (7 governance,26 unit,60 PG/HTTP/socket integration); 100 claimants one seat owner, real network ownership/replay/grace/expiry/revocation/multi-session cleanup" },
-    "M06-03": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m06-security-checks.json; docs/architecture/ROOMS.md; IDENTITY-SOCKET.md", "verification": "pnpm check ->0 (7 governance,26 unit,63 PG/HTTP/socket integration); actual pending/rate cap, expiry cleanup, strict authority/schema checks, previous replay/IDOR/Origin/CSRF/revoke suites retained" }
+    "M06-03": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m06-security-checks.json; docs/architecture/ROOMS.md; IDENTITY-SOCKET.md", "verification": "pnpm check ->0 (7 governance,26 unit,63 PG/HTTP/socket integration); actual pending/rate cap, expiry cleanup, strict authority/schema checks, previous replay/IDOR/Origin/CSRF/revoke suites retained" },
+    "M06-04": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m06-presence-checks.json; docs/architecture/ROOMS.md", "verification": "pnpm check ->0 (7 governance,28 unit,64 PG/HTTP/socket integration); viewer-safe privacy/block projection, live room.delta and SDK gap/duplicate/out-of-order reducer tests pass" }
   }
 }

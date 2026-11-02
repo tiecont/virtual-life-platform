@@ -39,7 +39,7 @@
 | M06 | M06-01 · Implement room lifecycle/allocator with max capacity and admission policy. | VERIFIED | m06-allocator-checks.json; full M06 remains incomplete |
 | M06 | M06-02 · Implement atomic seat claim/release, ownership and grace period. | VERIFIED | m06-seats-checks.json; controlled-connection concurrency, actual socket/grace scenarios |
 | M06 | M06-03 · Implement Socket.IO auth at handshake AND each command; validation envelope+ACK. | VERIFIED | m06-security-checks.json; other M06 acceptance remains pending |
-| M06 | M06-04 · Implement per-room snapshots/versioned deltas and gap detection. | TODO | — |
+| M06 | M06-04 · Implement per-room snapshots/versioned deltas and gap detection. | VERIFIED | m06-presence-checks.json; privacy-safe projection and SDK gap reducer |
 | M06 | M06-05 · Implement disconnect/reconnect and multi-tab semantics. | TODO | — |
 | M06 | M06-06 · Add metric instrumentation, rate limits, bounded queues and load harness. | TODO | — |
 | M06 | M06-07 · Document multi-instance ownership/fencing alternative (implement only when justified). | TODO | — |

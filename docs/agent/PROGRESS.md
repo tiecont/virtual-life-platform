@@ -1,6 +1,6 @@
 # Agent progress
 
-Current checkpoint: **W1 in progress; W0 + M03/M04/M05 + M06-01..03 VERIFIED locally. Next: M06-04 privacy-safe snapshots/deltas/client sync.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence.
+Current checkpoint: **W1 in progress; W0 + M03/M04/M05 + M06-01..04 VERIFIED locally. Next: M06-05 reconnect/restart recovery.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence.
 
 2026-11-02, Linux local host, Node v26.9.0, pnpm 11.28.5, Docker 29.9.0. Source of task status: task-state.json (checked by scripts/plan-status.mjs). No public release occurred.
 
@@ -160,3 +160,13 @@ Next exact action M06-03: add actual network pending-queue/rate/expired-session/
 Added trusted gateway session-ended callbacks, so idle expiry/external revocation discovered by command immediately releases room/seat ownership instead of applying network grace. Retained cookie/Origin/CSRF, expiry/revoke, IDOR, stale epoch/assets and scoped non-mutating replay assertions. Ordinary transport loss still keeps15-second grace. No DB/assets/UI/world flags changed, all containers cleaned. No public transport security approval or production readiness claimed.
 
 Next exact action: M06-04 viewer-filtered peer snapshots, world activity source integration, room versions/deltas and client gap/resync reducer with privacy/block update tests. Remaining restart UX/benchmarks/exclusive single owner are M06-05..07; M06/downstream not complete.
+
+## M06-04 — VERIFIED privacy-safe peer projection and delta sync
+
+2026-11-02T17:39Z. Targeted privacy/block room test -> 0; package sync tests -> 0 (3); lint/typecheck -> 0; full `pnpm check` -> 0 with 7 governance, 28 unit, 64 real PostgreSQL/HTTP/Socket.IO integration tests and production builds. Evidence: `m06-presence-checks.json` and `m06-presence-check.log`. No browser room UI claim.
+
+Room snapshots project only viewer-authorized profiles. Public presence is visible, hidden presence is omitted, and bilateral blocks override friendship/public settings. Seat state stays anonymous. Social block and identity/profile/privacy callbacks refresh affected rooms and emit per-connection filtered `room.delta`; targeted Socket.IO test confirms B no longer receives A after block while A sees only self. Existing room/seat/revoke/disable tests remain in the full suite.
+
+Added strict `RoomDeltaSchema` and `applyRoomDelta`: matching epoch/room/world required, duplicates/old versions ignored, gaps reported for resync, malformed or cross-context state rejected. Server remains authoritative and recomputes each viewer projection. No room state is persisted; no fake population, scene, chat, travel or performance result claimed. Projection is safety-sensitive and must fail closed; operational metrics/retry UX are future work.
+
+Next exact action: M06-05 reconnect after transport loss/process restart, truthful interrupted state and multi-tab recovery. Then M06-06 measured socket/join/room benchmark and bounded metrics, M06-07 single-owner/fencing guard. M06/downstream remain incomplete.

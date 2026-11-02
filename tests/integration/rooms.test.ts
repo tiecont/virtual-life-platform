@@ -50,12 +50,21 @@ async function join(client: Socket, extra: Record<string, unknown> = {}): Promis
 }
 async function credential(user: User) { const signed = app.http.parseCookie(user.cookie).city_session; const parsed = app.http.unsignCookie(signed); if (!parsed.value) throw new Error('Invalid test cookie'); return parsed.value; }
 async function list(user: User) { const response = await app.http.inject({ url: '/v1/worlds/sdk-sandbox/rooms', headers: { cookie: user.cookie } }); expect(response.statusCode).toBe(200); return RoomsListSchema.parse(response.json()); }
+async function setPresence(user: User, visibility: 'hidden' | 'public') {
+  const response = await app.http.inject({ method: 'PATCH', url: '/v1/me/privacy', headers: { origin, cookie: user.cookie, 'x-csrf-token': user.me.csrfToken, 'idempotency-key': randomUUID() }, payload: { presence: visibility, analyticsConsent: false, worldVisibility: { dating: 'hidden' } } });
+  expect(response.statusCode).toBe(200);
+}
+async function block(actor: User, target: User) {
+  const response = await app.http.inject({ method: 'POST', url: '/v1/blocks', headers: { origin, cookie: actor.cookie, 'x-csrf-token': actor.me.csrfToken, 'idempotency-key': randomUUID() }, payload: { targetId: target.me.profile.id, blocked: true } });
+  expect(response.statusCode).toBe(200);
+}
 describe('M06-01 real PostgreSQL identity + Socket.IO authoritative room allocator slice', () => {
   it('joins, snapshots and leaves via guarded network commands without disclosing other profiles', async () => {
     const user = await guest(); const client = await connect(user); const snapshot = await join(client);
     expect(snapshot.self.accountId).toBe(user.me.profile.id); expect(snapshot.occupancy).toBe(1); expect(snapshot.capacity).toBe(8);
     const latest = await command(client, 'room.snapshot', ownInput(snapshot)); expect(latest.ok).toBe(true);
-    expect(JSON.stringify(latest)).not.toMatch(/csrfToken|Room Test Visitor|connections|sessionId/);
+    expect(JSON.stringify(latest)).not.toMatch(/csrfToken|connections|sessionId/);
+    if (latest.ok && latest.result.type === 'snapshot') expect(latest.result.participants).toHaveLength(1);
     expect((await list(user)).rooms).toEqual([{ roomId: snapshot.roomId, capacity: 8, occupancy: 1 }]);
     const leave = ownInput(snapshot); const left = await command(client, 'room.leave', leave); expect(left.ok).toBe(true);
     expect(await command(client, 'room.leave', leave)).toEqual(left);
@@ -196,5 +205,17 @@ describe('M06-01 real PostgreSQL identity + Socket.IO authoritative room allocat
     const client = await connect(user); const snapshot = await join(client); expect((await command(client, 'seat.claim', ownInput(snapshot, { seatId: 'seat-1' }))).ok).toBe(true);
     const closed = new Promise(resolve => client.once('disconnect', resolve)); await closed; await app.rooms.maintain();
     expect((await command(other, 'seat.claim', ownInput(otherSnapshot, { seatId: 'seat-1' }))).ok).toBe(true);
+  });
+  it('projects room peers through privacy and bilateral block policy, then emits a viewer-safe delta', async () => {
+    const a = await guest(); const b = await guest(); await setPresence(a, 'public');
+    const ca = await connect(a); const cb = await connect(b); const delta = new Promise<unknown>(resolve => cb.once('room.delta', resolve));
+    const aSnapshot = await join(ca); const bSnapshot = await join(cb, { roomId: aSnapshot.roomId });
+    expect(bSnapshot.participants.map(participant => participant.profile.id)).toContain(a.me.profile.id);
+    await block(a, b);
+    const event = await delta; expect(event).toMatchObject({ type: 'delta', state: { roomId: aSnapshot.roomId } });
+    const blocked = await command(cb, 'room.snapshot', ownInput(bSnapshot)); expect(blocked.ok).toBe(true);
+    if (blocked.ok && blocked.result.type === 'snapshot') expect(blocked.result.participants.map(participant => participant.profile.id)).toEqual([b.me.profile.id]);
+    const aView = await command(ca, 'room.snapshot', ownInput(aSnapshot)); expect(aView.ok).toBe(true);
+    if (aView.ok && aView.result.type === 'snapshot') expect(aView.result.participants.map(participant => participant.profile.id)).toEqual([a.me.profile.id]);
   });
 });

@@ -68,6 +68,14 @@ export class SocialService {
     return (await db.query('SELECT 1 FROM social_blocks WHERE (blocker_id=$1 AND blocked_id=$2) OR (blocker_id=$2 AND blocked_id=$1) LIMIT 1', [a, b])).rows.length > 0;
   }
   async canContact(a: string, b: string): Promise<boolean> { return a !== b && !await this.isBlocked(a, b); }
+  async roomRelationships(viewer: string, targets: string[]) {
+    if (targets.length > 100) throw new Error('Room relationship projection limit');
+    const result = await this.pool.query<{ id: string; blocked: boolean; friends: boolean }>(`SELECT target AS id,
+      EXISTS(SELECT 1 FROM social_blocks WHERE (blocker_id=$1 AND blocked_id=target) OR (blocker_id=target AND blocked_id=$1)) AS blocked,
+      EXISTS(SELECT 1 FROM social_friendships WHERE low_id=LEAST($1::uuid,target) AND high_id=GREATEST($1::uuid,target)) AS friends
+      FROM unnest($2::uuid[]) AS target`, [viewer, targets]);
+    return new Map(result.rows.map(row => [row.id, { blocked: row.blocked, friends: row.friends }]));
+  }
   private async requireCapacity(db: PoolClient, a: string, b: string) {
     for (const id of [a, b]) if (Number((await db.query('SELECT count(*) FROM social_friendships WHERE low_id=$1 OR high_id=$1', [id])).rows[0].count) >= 500) throw unavailable();
   }
