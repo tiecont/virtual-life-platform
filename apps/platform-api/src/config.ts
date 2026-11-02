@@ -10,6 +10,7 @@ const Env = z.object({
     return ['postgres:', 'postgresql:'].includes(url.protocol);
   }),
   WEB_ORIGIN: z.string().url().default('http://127.0.0.1:3300'),
+  WORLD_FLAGS_FILE: z.string().min(1).max(4096).optional(),
 }).superRefine((env, ctx) => {
   const origin = new URL(env.WEB_ORIGIN);
   if (origin.origin !== env.WEB_ORIGIN || !['http:', 'https:'].includes(origin.protocol)) {

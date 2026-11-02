@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-02T16:22:40.169011+00:00",
+  "updatedAt": "2026-11-02T16:55:00Z",
   "tasks": {
     "AUD-01": {
       "status": "VERIFIED",
@@ -181,6 +181,11 @@
       "status": "VERIFIED",
       "evidence": "docs/architecture/SOCIAL-API.md; docs/adr/0007-social-consent.md; docs/agent/evidence/m04-checks.json; m04-check.log; m04-e2e.log",
       "verification": "pnpm check \u2192 0 (7 governance,11 unit,45 PG/HTTP/socket integration); pnpm test:e2e \u2192 0 (8 desktop/mobile); real room activity remains a consumer gate for M05/M06"
-    }
+    },
+    "M05-01": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m05-checks.json; docs/architecture/WORLD-SDK.md; ADR 0008", "verification": "pnpm check -> 0 (7 governance,25 unit,50 PG/HTTP/socket integration); pnpm test:e2e -> 0 (8 regression cases); strict version/metadata validators" },
+    "M05-02": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m05-checks.json; m05-integration-attempt1.log", "verification": "real authenticated HTTP reload without restart, environment isolation, invalid/unknown/missing flags fail closed; lifecycle errors and stale-card rejection tests pass" },
+    "M05-03": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m05-checks.json; m05-unit-attempt1.log", "verification": "12 SDK tests including unauthorized direct call, every-call policy/membership, real sandbox inspect, queue drain/revoke/disable races; actual membership integration remains M06" },
+    "M05-04": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m05-checks.json; docs/architecture/WORLD-SDK.md", "verification": "shared strict catalog/map contract; HTTP no player/policy data; private/hidden/adult no-proof filtering; expired/revoked real sessions denied" },
+    "M05-05": { "status": "VERIFIED", "evidence": "docs/architecture/WORLD-SDK.md; docs/adr/0008-world-registry-lifecycle.md; docs/agent/evidence/m05-check-attempt1.log", "verification": "compatibility sequencing against audited Deadline/Maid shapes and 2 boundary rejection tests; actual room/event mapper deferred to dependent M15/M16, not claimed implemented" }
   }
 }

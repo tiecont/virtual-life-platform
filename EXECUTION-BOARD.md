@@ -31,11 +31,11 @@
 | M04 | M04-03 · Implement block/unblock effects and cache invalidation. | VERIFIED | docs/agent/evidence/m04-checks.json |
 | M04 | M04-04 · Implement presence/friends discovery respecting per-world privacy. | VERIFIED | docs/agent/evidence/m04-checks.json |
 | M04 | M04-05 · Add social abuse controls for bulk requests and spam. | VERIFIED | docs/agent/evidence/m04-checks.json |
-| M05 | M05-01 · Define versioned `WorldDefinition` and required capabilities. | TODO | — |
-| M05 | M05-02 · Implement `WorldRegistry` and feature-flagged activation per environment. | TODO | — |
-| M05 | M05-03 · Define world lifecycle hooks (bootstrap, onJoin, onLeave, onCommand) with permission guard. | TODO | — |
-| M05 | M05-04 · Implement server/client shared world map metadata contract. | TODO | — |
-| M05 | M05-05 · Define SDK compatibility strategy for two existing applications. | TODO | — |
+| M05 | M05-01 · Define versioned `WorldDefinition` and required capabilities. | VERIFIED | docs/agent/evidence/m05-checks.json |
+| M05 | M05-02 · Implement `WorldRegistry` and feature-flagged activation per environment. | VERIFIED | docs/agent/evidence/m05-checks.json |
+| M05 | M05-03 · Define world lifecycle hooks (bootstrap, onJoin, onLeave, onCommand) with permission guard. | VERIFIED | docs/agent/evidence/m05-checks.json; membership integration M06 |
+| M05 | M05-04 · Implement server/client shared world map metadata contract. | VERIFIED | docs/agent/evidence/m05-checks.json |
+| M05 | M05-05 · Define SDK compatibility strategy for two existing applications. | VERIFIED | WORLD-SDK.md; legacy runtime mapping remains M15/M16 |
 | M06 | M06-01 · Implement room lifecycle/allocator with max capacity and admission policy. | TODO | — |
 | M06 | M06-02 · Implement atomic seat claim/release, ownership and grace period. | TODO | — |
 | M06 | M06-03 · Implement Socket.IO auth at handshake AND each command; validation envelope+ACK. | TODO | — |

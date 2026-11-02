@@ -38,8 +38,8 @@ E2E runs built API/web on local :4300/:3300 with isolated PostgreSQL, covering r
 
 - apps/platform-api: one Nest/Fastify process, Drizzle-owned schema, SQL journal.
 - apps/portal-web: Next.js status and identity UI, same-origin API rewrite; worlds/travel are not implemented yet.
-- packages/contracts: strict versioned foundation status/error wire shapes.
-- packages/world-sdk: version compatibility only; M05 owns world lifecycle/registry.
+- packages/contracts: strict versioned status, identity, social and world wire shapes.
+- packages/world-sdk: definitions, guarded lifecycle/registry and a labeled local sandbox; authoritative rooms remain M06.
 - packages/config: shared strict TypeScript baseline.
 - scripts/check-boundaries.mjs: static import and manifest-cycle enforcement. No cross-app, cross-world or world-to-domain internals. This supplements TypeScript; it is not a sandbox for arbitrary dynamic code.
 
@@ -62,3 +62,7 @@ SESSION_SECRET is required (>=32 random characters). setup:local generates it; e
 Visit `/social`, share your own contact code privately, and accept or decline offers. No global user search or DM. Opposite explicit requests are mutual consent; block removes friendship and pending offers in both directions, and unblock does not restore friendship. Turn off new requests or replace your code to close pending incoming offers. Live account-scoped notifications contain only a refresh signal; the API applies privacy/block policy before returning data.
 
 PUBLIC_SOCKET_ORIGIN is the trusted browser-reachable Socket.IO origin (default local http://127.0.0.1:4300). Configure it with WEB_ORIGIN/edge TLS in a real deployment; no production configuration is verified here. Current world activity is unavailable until authoritative room/registry integration. Controlled source fixtures in tests are privacy checks, not proof of playable worlds. See docs/architecture/SOCIAL-API.md.
+
+## World registry
+
+Authenticated GET /v1/worlds returns privacy-safe metadata. Only SDK Sandbox (local test world) is registered; disabled by default, no playable scene/room. Optional WORLD_FLAGS_FILE uses config/world-flags.example.json and the current NODE_ENV; SIGHUP reloads flags in the API process. Sandbox activation is denied in production. Invalid files/unknown flags disable worlds; permissions cannot be supplied by flags. All actual world rollout flags remain OFF. See docs/architecture/WORLD-SDK.md for lifecycle, errors, rollback and legacy adapter sequencing. Room/travel wire contracts remain M06/M09.

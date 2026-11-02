@@ -1,6 +1,6 @@
 # Agent progress
 
-Current checkpoint: **W1 in progress; W0 + M03/M04 VERIFIED locally. Next: M05 world SDK/registry.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence.
+Current checkpoint: **W1 in progress; W0 + M03/M04/M05 VERIFIED locally. Next: M06 room allocator/join slice.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence.
 
 2026-11-02, Linux local host, Node v26.9.0, pnpm 11.28.5, Docker 29.9.0. Source of task status: task-state.json (checked by scripts/plan-status.mjs). No public release occurred.
 
@@ -120,3 +120,15 @@ Failures retained: m04-check-attempt1 → exit 2 (frontend direct zod type impor
 Large-graph test uses isolated explicitly synthetic 499-edge fixture and two concurrent accepts: final 500, never 501. This is invariant evidence, not a load benchmark/CCU result. Privacy source fixtures test every world key including hidden dating/unknown worlds; actual room presence remains M05/M06 integration. No public release, all world flags OFF, no legacy changes.
 
 Next exact action: M05-01..05 read plans/05-world-sdk-registry.md, implement versioned world contracts + flags/registry, guarded lifecycle sample sandbox and private discovery tests. M06 stays gated until M05 verified.
+
+## M05-01..05 — VERIFIED world SDK/registry
+
+2026-11-02T16:55Z, Node 26.9.0/pnpm 11.28.5/Linux/PostgreSQL 17.7-alpine. Evidence m05-checks.json records actual outcomes: offline lock/frozen installs -> 0; pnpm check -> 0 (7 governance,25 unit,50 PG/HTTP/Socket.IO integration; lint/types/ownership/builds); pnpm test:e2e -> 0 (8 existing desktop/mobile browser flows). No web layout/assets changed; no new visual acceptance claimed. Test DB containers cleaned up.
+
+Strict schema/API v1 manifests/capabilities/policies/map/card metadata, frozen definitions, private hooks/single-use registry grants, bounded serial invocation queues, per-call authentication/access/membership and exact world/scene versions. Disable generation invalidates queued/in-flight ACKs and awaits shutdown; hook errors mark adapter offline and sanitize failure. SDK Sandbox is a real local lifecycle module with inspect command, explicitly no playable scene or room owner. Direct unauthorized calls, bad manifests, legacy shapes, stale assets, hidden/private/restricted discovery, flag reload/env isolation, permission/session revocation, disabled active hooks and cleanup failure tested.
+
+Runtime flags use optional trusted local JSON plus SIGHUP wiring, default false and no production sandbox. Reload method tested over real persistent HTTP without process restart; OS signal delivery not separately exercised. Invalid/missing/unknown config disables worlds. Catalog never returns players/occupancy/policy keys. Actual membership provider defaults deny; tests label controlled membership/policy fixtures. M06 must integrate authoritative room membership/cleanup before playable room claims. Legacy strategy and wire-rejection tests do not claim bidirectional mapper/runtime integration; M15/M16 retain source/revision gates. ADR 0008 and WORLD-SDK.md document this scope and rollback.
+
+Intentional initial acceptance run failed (7 missing-registry failures,1 schema pass) in m05-registry-red.log; implemented code passes original scenarios. One documentation apply_patch context mismatch aborted atomically and was reapplied with correct README context; no runtime verification failure hidden. No DB migration, legacy change, copied assets, remote push or public activation. W1 remains incomplete; W2–W6 not verified.
+
+Next exact action: M06-01 room allocator with bounded authoritative capacity and authenticated join/leave, wire through existing session gateway + SDK membership port, real 100-way concurrency/admission/eviction tests. Then seats/snapshot/reconnect/benchmark before completing M06.

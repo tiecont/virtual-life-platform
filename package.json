@@ -38,6 +38,7 @@
     "tsx": "4.21.0",
     "pg": "8.23.1",
     "@virtual-city/contracts": "workspace:*",
+    "@virtual-city/world-sdk": "workspace:*",
     "socket.io-client": "4.8.4"
   }
 }

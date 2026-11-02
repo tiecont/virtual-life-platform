@@ -13,6 +13,8 @@ import { migrationNames } from './db/migrations';
 import { createIdentityGateway } from './identity/socket';
 import { SocialService, type SocialPresencePort } from './social/service';
 import { registerSocial } from './social/http';
+import { createWorldRuntime, type WorldRuntimeOptions } from './worlds/service';
+import { registerWorlds } from './worlds/http';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -27,7 +29,7 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; socialPresence?: SocialPresencePort } = {}) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions } = {}) {
   const requiredMigrations = await migrationNames();
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
     bodyLimit: 8192, requestTimeout: 10000, genReqId: () => randomUUID(),
@@ -41,6 +43,9 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
     }
   });
   const identity = new IdentityService(db, config, options.now);
+  const worlds = await createWorldRuntime(config, identity, options.worlds);
+  http.addHook('onClose', async () => { await worlds.registry.close(); });
+  registerWorlds(http, config, worlds.registry, options.now);
   registerIdentity(http, config, identity, options.now);
   const social = new SocialService(db, identity, options.socialPresence, options.now);
   registerSocial(http, config, identity, social, options.now);
@@ -59,5 +64,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const unsubscribeSocial = social.onChanged(ids => { for (const id of ids) gateway.emitToAccount(id, 'friendship.changed', { schemaVersion: 1 }); });
   http.addHook('onClose', async () => { unsubscribeSocial(); });
   await http.ready();
-  return { app, http, identity, gateway, social };
+  return { app, http, identity, gateway, social, worlds };
 }

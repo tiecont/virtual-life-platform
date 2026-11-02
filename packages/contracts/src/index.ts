@@ -1,4 +1,5 @@
 import { z } from 'zod';
+export * from './world';
 // Foundation status only. World/session/room schemas belong to their gated modules.
 export const SCHEMA_VERSION = 1 as const;
 export const LivenessSchema = z.strictObject({ status: z.literal('ok') });
@@ -7,7 +8,7 @@ export const ReadinessSchema = z.discriminatedUnion('status', [
   z.strictObject({ status: z.literal('unavailable') }),
 ]);
 export const ApiErrorSchema = z.strictObject({ error: z.strictObject({
-  code: z.enum(['FORBIDDEN', 'NOT_FOUND', 'INVALID_REQUEST', 'INTERNAL_ERROR', 'UNAUTHENTICATED', 'RATE_LIMITED', 'IDEMPOTENCY_CONFLICT', 'NAME_UNAVAILABLE', 'NOT_AVAILABLE']),
+  code: z.enum(['FORBIDDEN', 'NOT_FOUND', 'INVALID_REQUEST', 'INTERNAL_ERROR', 'UNAUTHENTICATED', 'RATE_LIMITED', 'IDEMPOTENCY_CONFLICT', 'NAME_UNAVAILABLE', 'NOT_AVAILABLE', 'WORLD_UNAVAILABLE', 'WORLD_VERSION_MISMATCH']),
   message: z.string(), requestId: z.uuid(),
 }) });
 export type Readiness = z.infer<typeof ReadinessSchema>;

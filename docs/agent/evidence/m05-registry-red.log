@@ -1,0 +1,111 @@
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |unit| packages/world-sdk/test/registry.test.ts (8 tests | 7 failed) 16ms
+     × runs hooks only through authenticated, policy-checked and membership-checked dispatch 3ms
+     × checks permission and membership on every command, not just join 1ms
+     × rejects duplicate slugs, stale assets/world versions, unknown and disabled worlds 1ms
+     × disables active hooks, rejects stale cards and cleans up before reactivation 1ms
+     × fails closed on bootstrap/command/shutdown failures without exposing internal messages 1ms
+     × hides unauthorized/hidden worlds and projects only catalog metadata 0ms
+     × isolates environments and rejects sandbox activation in production 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| packages/world-sdk/test/registry.test.ts > M05 guarded world registry and lifecycle > runs hooks only through authenticated, policy-checked and membership-checked dispatch
+TypeError: defineWorld is not a function
+ ❯ fixture packages/world-sdk/test/registry.test.ts:13:19
+     11| function fixture(overrides: Partial<WorldHooks> = {}, ports: Partial<W…
+     12|   const calls: string[] = [];
+     13|   const adapter = defineWorld(definition, {
+       |                   ^
+     14|     bootstrap: async () => { calls.push('bootstrap'); }, shutdown: asy…
+     15|     onJoin: async () => { calls.push('join'); }, onLeave: async () => …
+ ❯ packages/world-sdk/test/registry.test.ts:40:42
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  |unit| packages/world-sdk/test/registry.test.ts > M05 guarded world registry and lifecycle > checks permission and membership on every command, not just join
+TypeError: defineWorld is not a function
+ ❯ fixture packages/world-sdk/test/registry.test.ts:13:19
+     11| function fixture(overrides: Partial<WorldHooks> = {}, ports: Partial<W…
+     12|   const calls: string[] = [];
+     13|   const adapter = defineWorld(definition, {
+       |                   ^
+     14|     bootstrap: async () => { calls.push('bootstrap'); }, shutdown: asy…
+     15|     onJoin: async () => { calls.push('join'); }, onLeave: async () => …
+ ❯ packages/world-sdk/test/registry.test.ts:52:33
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  |unit| packages/world-sdk/test/registry.test.ts > M05 guarded world registry and lifecycle > rejects duplicate slugs, stale assets/world versions, unknown and disabled worlds
+TypeError: defineWorld is not a function
+ ❯ fixture packages/world-sdk/test/registry.test.ts:13:19
+     11| function fixture(overrides: Partial<WorldHooks> = {}, ports: Partial<W…
+     12|   const calls: string[] = [];
+     13|   const adapter = defineWorld(definition, {
+       |                   ^
+     14|     bootstrap: async () => { calls.push('bootstrap'); }, shutdown: asy…
+     15|     onJoin: async () => { calls.push('join'); }, onLeave: async () => …
+ ❯ packages/world-sdk/test/registry.test.ts:62:42
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  |unit| packages/world-sdk/test/registry.test.ts > M05 guarded world registry and lifecycle > disables active hooks, rejects stale cards and cleans up before reactivation
+TypeError: defineWorld is not a function
+ ❯ fixture packages/world-sdk/test/registry.test.ts:13:19
+     11| function fixture(overrides: Partial<WorldHooks> = {}, ports: Partial<W…
+     12|   const calls: string[] = [];
+     13|   const adapter = defineWorld(definition, {
+       |                   ^
+     14|     bootstrap: async () => { calls.push('bootstrap'); }, shutdown: asy…
+     15|     onJoin: async () => { calls.push('join'); }, onLeave: async () => …
+ ❯ packages/world-sdk/test/registry.test.ts:71:33
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  |unit| packages/world-sdk/test/registry.test.ts > M05 guarded world registry and lifecycle > fails closed on bootstrap/command/shutdown failures without exposing internal messages
+TypeError: defineWorld is not a function
+ ❯ fixture packages/world-sdk/test/registry.test.ts:13:19
+     11| function fixture(overrides: Partial<WorldHooks> = {}, ports: Partial<W…
+     12|   const calls: string[] = [];
+     13|   const adapter = defineWorld(definition, {
+       |                   ^
+     14|     bootstrap: async () => { calls.push('bootstrap'); }, shutdown: asy…
+     15|     onJoin: async () => { calls.push('join'); }, onLeave: async () => …
+ ❯ packages/world-sdk/test/registry.test.ts:82:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  |unit| packages/world-sdk/test/registry.test.ts > M05 guarded world registry and lifecycle > hides unauthorized/hidden worlds and projects only catalog metadata
+TypeError: defineWorld is not a function
+ ❯ fixture packages/world-sdk/test/registry.test.ts:13:19
+     11| function fixture(overrides: Partial<WorldHooks> = {}, ports: Partial<W…
+     12|   const calls: string[] = [];
+     13|   const adapter = defineWorld(definition, {
+       |                   ^
+     14|     bootstrap: async () => { calls.push('bootstrap'); }, shutdown: asy…
+     15|     onJoin: async () => { calls.push('join'); }, onLeave: async () => …
+ ❯ packages/world-sdk/test/registry.test.ts:93:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  |unit| packages/world-sdk/test/registry.test.ts > M05 guarded world registry and lifecycle > isolates environments and rejects sandbox activation in production
+TypeError: defineWorld is not a function
+ ❯ fixture packages/world-sdk/test/registry.test.ts:13:19
+     11| function fixture(overrides: Partial<WorldHooks> = {}, ports: Partial<W…
+     12|   const calls: string[] = [];
+     13|   const adapter = defineWorld(definition, {
+       |                   ^
+     14|     bootstrap: async () => { calls.push('bootstrap'); }, shutdown: asy…
+     15|     onJoin: async () => { calls.push('join'); }, onLeave: async () => …
+ ❯ packages/world-sdk/test/registry.test.ts:101:35
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 1 passed (8)
+   Start at  23:37:31
+   Duration  319ms (transform 59ms, setup 0ms, import 140ms, tests 16ms, environment 0ms)
+

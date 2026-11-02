@@ -32,6 +32,9 @@ importers:
       '@virtual-city/contracts':
         specifier: workspace:*
         version: link:packages/contracts
+      '@virtual-city/world-sdk':
+        specifier: workspace:*
+        version: link:packages/world-sdk
       eslint:
         specifier: 9.39.1
         version: 9.39.1(supports-color@7.2.0)
@@ -71,6 +74,9 @@ importers:
       '@virtual-city/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@virtual-city/world-sdk':
+        specifier: workspace:*
+        version: link:../../packages/world-sdk
       drizzle-orm:
         specifier: 0.45.4
         version: 0.45.4(@types/pg@8.23.1)(pg@8.23.1)
