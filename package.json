@@ -10,7 +10,7 @@
     "build:packages": "pnpm --filter './packages/*' -r build",
     "dev": "pnpm build:packages && node --env-file-if-exists=.env scripts/dev-stack.mjs",
     "lint": "eslint . && node scripts/check-boundaries.mjs",
-    "typecheck": "pnpm build:packages && pnpm -r typecheck",
+    "typecheck": "pnpm build:packages && pnpm -r typecheck && tsc -p tests/load/tsconfig.json",
     "test": "pnpm build:packages && node --test tests/governance/*.test.mjs && vitest run --project unit",
     "test:integration": "pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project integration",
     "test:e2e": "pnpm build && node scripts/with-test-db.mjs pnpm exec playwright test",
@@ -22,7 +22,8 @@
     "setup:local": "node scripts/create-local-env.mjs",
     "db:up": "docker compose --env-file .env -f infra/compose/dev.yml up -d --wait",
     "db:stop": "docker compose --env-file .env -f infra/compose/dev.yml stop",
-    "architecture:check": "node scripts/verify-architecture.mjs"
+    "architecture:check": "node scripts/verify-architecture.mjs",
+    "bench:rooms": "pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/rooms-baseline.ts"
   },
   "devDependencies": {
     "@eslint/js": "9.39.1",

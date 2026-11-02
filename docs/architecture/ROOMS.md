@@ -38,4 +38,10 @@ Fastify preClose removes room state and emits room.ended(server-stopping) before
 
 Actual child-process restart on the same port and DB verifies stale membership rejection, new epoch/membership, occupancy1 and no seat resurrection. Grace reconnect/multi-tab preserve one account membership and seat; seat/detach/reconnect/expiry deltas are contiguous. Restart is interruption, not durable room recovery. Critical orders/focus will need their domain reconciliation separately.
 
-Pending M06-06..07: measured network benchmark/budgets and single-owner split-brain rejection. No scene/chat/movement/travel success claimed. Disconnected hook cleanup and lifecycle deadlines remain to address; sandbox currently holds no per-player resources.
+## Metrics and pressure (M06-06)
+
+RoomMetrics uses fixed command/error labels and12 fixed non-cumulative latency buckets(last upperMs:null means infinity). Counters/max/total only,no per-user/room/world labels or raw samples. createApp.diagnostics() returns operator-only aggregate socket/transport/room/membership/seat/grace/receipt/queue totals; no HTTP endpoint exposes it. M21 may export protected metrics later. Test-runtime IPC provides CPU/RSS/diagnostics; production has no IPC listener.
+
+External pending cap256 and8/socket/session60/minute remain active. Maintenance/refresh and trusted cleanup coalesce: keys restricted to existing room world/session/connection state; unknown disconnect/refresh/session identifiers do not allocate queue keys. Control jobs reserve cleanup capacity beyond admission cap; this is not a fixed256 cap on all cleanup. Deltas use volatile transport; non-writable peers lose replaceable updates,32 consecutive drops disconnect. Consumers must snapshot on gaps/reconnect and periodically reconcile even when no next delta arrives; M07 must implement this browser behavior. Reliable command budgets remain bounded by incoming rate/concurrency limits.
+
+See ROOM-BENCHMARK.md and m06-network-baseline.json for actual24socket baseline and limits. Controlled non-writable fixture verifies dropping,not WAN slow-reader capacity. Pending M06-07: exclusive owner/split-brain fail-safe. No scene/chat/movement/travel success claimed. Disconnected hook cleanup and lifecycle deadlines remain to address; sandbox currently holds no per-player resources.

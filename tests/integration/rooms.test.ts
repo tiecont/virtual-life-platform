@@ -12,6 +12,7 @@ import { DISCONNECT_GRACE_MS } from '../../apps/platform-api/src/rooms/service';
 
 let pool: Pool; let admin: Pool; let app: Awaited<ReturnType<typeof createApp>>; let url: string; let databaseUrl: string; let offset = 0; let serial = 1;
 const clients = new Set<Socket>(); const origin = 'http://127.0.0.1:3300';
+let socketSerial = 1;
 const schema = 'rooms_test_' + randomUUID().replaceAll('-', ''); const now = () => Date.now() + offset;
 const config = () => readConfig({ NODE_ENV: 'test', DATABASE_URL: process.env.TEST_DATABASE_URL, SESSION_SECRET: 'room-test-only-session-secret-000000001' });
 type User = { cookie: string; me: Me };
@@ -39,7 +40,9 @@ async function guest(): Promise<User> {
   expect(response.statusCode).toBe(201); return { cookie: String(response.headers['set-cookie']).split(';')[0], me: MeSchema.parse(response.json()) };
 }
 function connect(user: User, target = url) {
-  const client = io(target, { forceNew: true, autoConnect: false, reconnection: false, timeout: 2000, transports: ['websocket'], extraHeaders: { origin, cookie: user.cookie }, auth: { schemaVersion: 1, csrfToken: user.me.csrfToken } }); clients.add(client);
+  // Independent visitors use actual loopback source addresses; unchanged production IP limits remain active.
+  const localAddress = '127.21.' + Math.floor(socketSerial / 250) + '.' + (socketSerial++ % 250 + 1);
+  const client = io(target, { forceNew: true, autoConnect: false, reconnection: false, timeout: 2000, transports: ['websocket'], transportOptions: { websocket: { localAddress } }, extraHeaders: { origin, cookie: user.cookie }, auth: { schemaVersion: 1, csrfToken: user.me.csrfToken } }); clients.add(client);
   return new Promise<Socket>((resolve, reject) => { client.once('connect', () => resolve(client)); client.once('connect_error', reject); client.connect(); });
 }
 const joinInput = (extra: Record<string, unknown> = {}) => ({ schemaVersion: 1, requestId: randomUUID(), worldSlug: 'sdk-sandbox', worldVersion: '1.0.0', sceneVersion: '1.0.0', ...extra });
@@ -271,5 +274,37 @@ describe('M06-01 real PostgreSQL identity + Socket.IO authoritative room allocat
       offset += DISCONNECT_GRACE_MS + 1; await change(() => app.rooms.maintain());
       expect(state.occupancy).toBe(1); expect(state.seats[0].state).toBe('available');
     } finally { offset = 0; }
+  });
+  it('drops replaceable deltas for a controlled non-writable transport and resyncs without leaking diagnostics', async () => {
+    const user = await guest(); const observer = await guest(); const a = await connect(user); const b = await connect(observer);
+    const own = await join(a); const peer = await join(b); const serverPeer = app.gateway.io.of('/').sockets.get(b.id!)!;
+    const before = app.diagnostics(); const transport = serverPeer.conn.transport;
+    // Controlled transport pressure, not a claim about WAN kernel buffering.
+    const writable = Object.getOwnPropertyDescriptor(transport, 'writable')!;
+    Object.defineProperty(transport, 'writable', { configurable: true, get: () => false, set: () => {} });
+    try { expect((await command(a, 'seat.claim', ownInput(own, { seatId: 'seat-1' }))).ok).toBe(true); }
+    finally { Object.defineProperty(transport, 'writable', writable); }
+    expect(app.diagnostics().realtime.droppedDeltas).toBeGreaterThan(before.realtime.droppedDeltas);
+    const snapshot = await command(b, 'room.snapshot', ownInput(peer)); expect(snapshot.ok).toBe(true);
+    if (snapshot.ok && snapshot.result.type === 'snapshot') expect(snapshot.result.seats[0].state).toBe('occupied');
+    const metrics = app.diagnostics(); expect(metrics.sockets).toBe(2); expect(metrics.rooms.memberships).toBe(2);
+    expect(JSON.stringify(metrics)).not.toMatch(new RegExp([user.me.profile.id, own.roomId, own.membershipId, user.me.csrfToken].join('|')));
+    expect((await app.http.inject({ url: '/metrics' })).statusCode).toBe(404);
+  });
+  it('coalesces repeated maintenance and profile refresh requests behind a slow hook', async () => {
+    let release!: () => void; let began!: () => void;
+    const delayed = new Promise<void>(resolve => { release = resolve; }); const started = new Promise<void>(resolve => { began = resolve; });
+    const world = defineWorld({ schemaVersion: 1, apiVersion: 1, slug: 'control-queue-fixture', version: '1.0.0', title: 'Control queue fixture', kind: 'sandbox', sceneRef: { key: 'control-queue', version: '1.0.0' }, capacity: 8, capabilities: ['presence'], accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'sandbox', position: { x: 0.5, y: 0.5 }, icon: 'flask' } }, {
+      bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => { began(); await delayed; }, onLeave: async () => {}, onCommand: async () => {},
+    });
+    app.worlds.registry.register(world); await app.worlds.registry.setEnabled(world.definition.slug, true);
+    const actor = await guest(); const client = await connect(actor); await join(client);
+    const other = await connect(await guest()); const joining = command(other, 'room.join', joinInput({ worldSlug: world.definition.slug })); await started;
+    try {
+      const queued = Array.from({ length: 2000 }, () => [app.rooms.maintain(), app.rooms.refreshAccounts([actor.me.profile.id])]).flat();
+      expect(app.rooms.diagnostics().controlKeys).toBe(2); expect(app.rooms.diagnostics().pending).toBe(3);
+      release(); expect((await joining).ok).toBe(true); await Promise.all(queued);
+      expect(app.rooms.diagnostics().controlKeys).toBe(0); expect(app.rooms.diagnostics().pending).toBe(0);
+    } finally { release(); await app.worlds.registry.setEnabled(world.definition.slug, false); }
   });
 });

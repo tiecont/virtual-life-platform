@@ -17,6 +17,7 @@ import { createWorldRuntime, type WorldRuntimeOptions } from './worlds/service';
 import { registerWorlds } from './worlds/http';
 import { RoomService } from './rooms/service';
 import { registerRoomGateway } from './rooms/socket';
+import { RoomMetrics } from './rooms/metrics';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -73,11 +74,13 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   app.useGlobalFilters(new SafeHttpErrors());
   await app.init();
   const gateway = createIdentityGateway(http, config, identity, options.now);
-  const unsubscribeRooms = registerRoomGateway(gateway, rooms);
+  const roomMetrics = new RoomMetrics();
+  const unsubscribeRooms = registerRoomGateway(gateway, rooms, roomMetrics);
   const unsubscribeSocial = social.onChanged(ids => { for (const id of ids) gateway.emitToAccount(id, 'friendship.changed', { schemaVersion: 1 }); });
   const unsubscribeRoomSocial = social.onChanged(ids => { void rooms.refreshAccounts(ids); });
   const unsubscribeRoomIdentity = identity.onChanged(id => { void rooms.refreshAccounts([id]); });
   http.addHook('onClose', async () => { unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
-  return { app, http, identity, gateway, social, worlds, rooms };
+  const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
+  return { app, http, identity, gateway, social, worlds, rooms, diagnostics };
 }

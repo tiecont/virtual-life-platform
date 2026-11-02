@@ -41,7 +41,7 @@
 | M06 | M06-03 · Implement Socket.IO auth at handshake AND each command; validation envelope+ACK. | VERIFIED | m06-security-checks.json; other M06 acceptance remains pending |
 | M06 | M06-04 · Implement per-room snapshots/versioned deltas and gap detection. | VERIFIED | m06-presence-checks.json; privacy-safe projection and SDK gap reducer |
 | M06 | M06-05 · Implement disconnect/reconnect and multi-tab semantics. | VERIFIED | m06-reconnect-checks.json; actual SIGKILL/restart + SDK recoverable state; browser scene remains M07 |
-| M06 | M06-06 · Add metric instrumentation, rate limits, bounded queues and load harness. | TODO | — |
+| M06 | M06-06 · Add metric instrumentation, rate limits, bounded queues and load harness. | VERIFIED | m06-metrics-checks.json; actual24socket baseline339.6ms p95join; limited local profile only |
 | M06 | M06-07 · Document multi-instance ownership/fencing alternative (implement only when justified). | TODO | — |
 | M07 | M07-01 · Define isometric/2D coordinate/tile/map scene spec and collision zones. | TODO | — |
 | M07 | M07-02 · Implement Pixi scene loader, camera, sprite lifecycle and event-driven state render. | TODO | — |

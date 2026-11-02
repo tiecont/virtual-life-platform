@@ -1,0 +1,364 @@
+{
+  "recordedAt": "2026-11-02T18:07:53.738Z",
+  "profile": "loopback synthetic SDK sandbox; real HTTP identity/privacy + Socket.IO; isolated child API process; PostgreSQL tmpfs",
+  "command": "pnpm bench:rooms",
+  "hardware": {
+    "platform": "linux",
+    "release": "7.2.9-2-cachyos",
+    "node": "v26.9.0",
+    "cpuModel": "AMD Ryzen 7 4800HS with Radeon Graphics",
+    "logicalCpus": 16,
+    "availableParallelism": 16,
+    "hostMemoryBytes": 24573251584,
+    "cgroupCpuMax": "unavailable",
+    "cgroupMemoryMax": "unavailable"
+  },
+  "load": {
+    "uniqueAccounts": 24,
+    "peakActualSockets": 24,
+    "rooms": 3,
+    "capacityPerRoom": 8,
+    "simultaneousJoinAttempts": 24,
+    "reconnectBurst": 4,
+    "steadyHoldMs": 2000,
+    "elapsedMs": 2835.905586
+  },
+  "latencyMs": {
+    "join": {
+      "samples": 24,
+      "p50": 197.150306,
+      "p95": 339.60623099999975,
+      "max": 358.22434
+    },
+    "reconnectIncludingHandshake": {
+      "samples": 4,
+      "p95": 149.62656499999957,
+      "max": 149.62656499999957
+    }
+  },
+  "serverProcess": {
+    "cpuMs": 569.395,
+    "cpuPercentOfOneCore": 20.078066167326913,
+    "rssBefore": 166707200,
+    "rssPeakSampled": 174309376,
+    "rssAfter": 173608960,
+    "heapUsedPeakSampled": 45578424,
+    "sampleIntervalMs": 100
+  },
+  "diagnostics": {
+    "sockets": 24,
+    "transportConnections": 24,
+    "rooms": {
+      "rooms": 3,
+      "memberships": 0,
+      "connections": 0,
+      "occupiedSeats": 0,
+      "graceMemberships": 0,
+      "receipts": 52,
+      "pending": 0,
+      "peakPending": 24,
+      "controlKeys": 0
+    },
+    "realtime": {
+      "pendingCommands": 0,
+      "peakPendingCommands": 24,
+      "droppedDeltas": 0,
+      "slowConsumerDisconnects": 0,
+      "commands": {
+        "room.join": {
+          "count": 28,
+          "errors": {
+            "OK": 28
+          },
+          "buckets": [
+            {
+              "upperMs": 1,
+              "count": 0
+            },
+            {
+              "upperMs": 5,
+              "count": 0
+            },
+            {
+              "upperMs": 10,
+              "count": 0
+            },
+            {
+              "upperMs": 25,
+              "count": 0
+            },
+            {
+              "upperMs": 50,
+              "count": 1
+            },
+            {
+              "upperMs": 100,
+              "count": 7
+            },
+            {
+              "upperMs": 250,
+              "count": 11
+            },
+            {
+              "upperMs": 500,
+              "count": 9
+            },
+            {
+              "upperMs": 1000,
+              "count": 0
+            },
+            {
+              "upperMs": 2500,
+              "count": 0
+            },
+            {
+              "upperMs": 5000,
+              "count": 0
+            },
+            {
+              "upperMs": null,
+              "count": 0
+            }
+          ],
+          "totalMs": 5152.2912289999995,
+          "maxMs": 353.8475940000001
+        },
+        "room.leave": {
+          "count": 24,
+          "errors": {
+            "OK": 24
+          },
+          "buckets": [
+            {
+              "upperMs": 1,
+              "count": 0
+            },
+            {
+              "upperMs": 5,
+              "count": 0
+            },
+            {
+              "upperMs": 10,
+              "count": 0
+            },
+            {
+              "upperMs": 25,
+              "count": 0
+            },
+            {
+              "upperMs": 50,
+              "count": 2
+            },
+            {
+              "upperMs": 100,
+              "count": 5
+            },
+            {
+              "upperMs": 250,
+              "count": 17
+            },
+            {
+              "upperMs": 500,
+              "count": 0
+            },
+            {
+              "upperMs": 1000,
+              "count": 0
+            },
+            {
+              "upperMs": 2500,
+              "count": 0
+            },
+            {
+              "upperMs": 5000,
+              "count": 0
+            },
+            {
+              "upperMs": null,
+              "count": 0
+            }
+          ],
+          "totalMs": 3393.745601999999,
+          "maxMs": 211.47137900000052
+        },
+        "room.snapshot": {
+          "count": 24,
+          "errors": {
+            "OK": 24
+          },
+          "buckets": [
+            {
+              "upperMs": 1,
+              "count": 0
+            },
+            {
+              "upperMs": 5,
+              "count": 0
+            },
+            {
+              "upperMs": 10,
+              "count": 1
+            },
+            {
+              "upperMs": 25,
+              "count": 5
+            },
+            {
+              "upperMs": 50,
+              "count": 7
+            },
+            {
+              "upperMs": 100,
+              "count": 11
+            },
+            {
+              "upperMs": 250,
+              "count": 0
+            },
+            {
+              "upperMs": 500,
+              "count": 0
+            },
+            {
+              "upperMs": 1000,
+              "count": 0
+            },
+            {
+              "upperMs": 2500,
+              "count": 0
+            },
+            {
+              "upperMs": 5000,
+              "count": 0
+            },
+            {
+              "upperMs": null,
+              "count": 0
+            }
+          ],
+          "totalMs": 1144.9835760000003,
+          "maxMs": 87.72790099999997
+        },
+        "seat.claim": {
+          "count": 0,
+          "errors": {},
+          "buckets": [
+            {
+              "upperMs": 1,
+              "count": 0
+            },
+            {
+              "upperMs": 5,
+              "count": 0
+            },
+            {
+              "upperMs": 10,
+              "count": 0
+            },
+            {
+              "upperMs": 25,
+              "count": 0
+            },
+            {
+              "upperMs": 50,
+              "count": 0
+            },
+            {
+              "upperMs": 100,
+              "count": 0
+            },
+            {
+              "upperMs": 250,
+              "count": 0
+            },
+            {
+              "upperMs": 500,
+              "count": 0
+            },
+            {
+              "upperMs": 1000,
+              "count": 0
+            },
+            {
+              "upperMs": 2500,
+              "count": 0
+            },
+            {
+              "upperMs": 5000,
+              "count": 0
+            },
+            {
+              "upperMs": null,
+              "count": 0
+            }
+          ],
+          "totalMs": 0,
+          "maxMs": 0
+        },
+        "seat.release": {
+          "count": 0,
+          "errors": {},
+          "buckets": [
+            {
+              "upperMs": 1,
+              "count": 0
+            },
+            {
+              "upperMs": 5,
+              "count": 0
+            },
+            {
+              "upperMs": 10,
+              "count": 0
+            },
+            {
+              "upperMs": 25,
+              "count": 0
+            },
+            {
+              "upperMs": 50,
+              "count": 0
+            },
+            {
+              "upperMs": 100,
+              "count": 0
+            },
+            {
+              "upperMs": 250,
+              "count": 0
+            },
+            {
+              "upperMs": 500,
+              "count": 0
+            },
+            {
+              "upperMs": 1000,
+              "count": 0
+            },
+            {
+              "upperMs": 2500,
+              "count": 0
+            },
+            {
+              "upperMs": 5000,
+              "count": 0
+            },
+            {
+              "upperMs": null,
+              "count": 0
+            }
+          ],
+          "totalMs": 0,
+          "maxMs": 0
+        }
+      }
+    }
+  },
+  "limits": [
+    "Single short local baseline, no TLS/WAN/browser rendering, not production capacity or maximum CCU",
+    "tsx test server; bootstrap outside measured window; client/DB CPU excluded from server CPU but share host",
+    "RSS high-water is sampled, not an OS-enforced peak; small sample p95 must not be extrapolated",
+    "No rate limits raised; unique loopback source addresses used for HTTP guest bootstrap",
+    "No public/restricted worlds, travel, chat or production deployment"
+  ]
+}

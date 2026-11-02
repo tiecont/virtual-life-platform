@@ -1,0 +1,50 @@
+$ pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/rooms-baseline.ts
+$ pnpm --filter './packages/*' -r build
+Scope: 3 of 6 workspace projects
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+ Network virtual-city-test-e74d1a7c_default Creating 
+ Network virtual-city-test-e74d1a7c_default Creating 
+ Network virtual-city-test-e74d1a7c_default Created 
+ Network virtual-city-test-e74d1a7c_default Created 
+ Container virtual-city-test-e74d1a7c-db-1 Creating 
+ Container virtual-city-test-e74d1a7c-db-1 Created 
+ Container virtual-city-test-e74d1a7c-db-1 Starting 
+ Container virtual-city-test-e74d1a7c-db-1 Started 
+ Container virtual-city-test-e74d1a7c-db-1 Waiting 
+ Container virtual-city-test-e74d1a7c-db-1 Healthy 
+
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+Error: Transform failed with 23 errors:
+/home/tiecont/Projects/virtual-city/tests/load/rooms-baseline.ts:64:2: ERROR: Top-level await is currently not supported with the "cjs" output format
+/home/tiecont/Projects/virtual-city/tests/load/rooms-baseline.ts:64:50: ERROR: Top-level await is currently not supported with the "cjs" output format
+/home/tiecont/Projects/virtual-city/tests/load/rooms-baseline.ts:65:12: ERROR: Top-level await is currently not supported with the "cjs" output format
+/home/tiecont/Projects/virtual-city/tests/load/rooms-baseline.ts:68:17: ERROR: Top-level await is currently not supported with the "cjs" output format
+/home/tiecont/Projects/virtual-city/tests/load/rooms-baseline.ts:68:78: ERROR: Top-level await is currently not supported with the "cjs" output format
+...
+    at failureErrorWithLog (/home/tiecont/Projects/virtual-city/node_modules/.pnpm/esbuild@0.27.7/node_modules/esbuild/lib/main.js:1748:15)
+    at /home/tiecont/Projects/virtual-city/node_modules/.pnpm/esbuild@0.27.7/node_modules/esbuild/lib/main.js:1017:50
+    at responseCallbacks.<computed> (/home/tiecont/Projects/virtual-city/node_modules/.pnpm/esbuild@0.27.7/node_modules/esbuild/lib/main.js:884:9)
+    at handleIncomingPacket (/home/tiecont/Projects/virtual-city/node_modules/.pnpm/esbuild@0.27.7/node_modules/esbuild/lib/main.js:939:12)
+    at Socket.readFromStdout (/home/tiecont/Projects/virtual-city/node_modules/.pnpm/esbuild@0.27.7/node_modules/esbuild/lib/main.js:862:7)
+    at Socket.emit (node:events:514:20)
+    at addChunk (node:internal/streams/readable:576:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:527:3)
+    at Readable.push (node:internal/streams/readable:407:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23) {
+  name: 'TransformError'
+}
+
+Node.js v26.9.0
+node exited 1
+ Container virtual-city-test-e74d1a7c-db-1 Stopping 
+ Container virtual-city-test-e74d1a7c-db-1 Stopped 
+ Container virtual-city-test-e74d1a7c-db-1 Removing 
+ Container virtual-city-test-e74d1a7c-db-1 Removed 
+ Network virtual-city-test-e74d1a7c_default Removing 
+ Network virtual-city-test-e74d1a7c_default Removed 
+[ELIFECYCLE] Command failed with exit code 1.
+
+TOP_LEVEL_EXIT=1

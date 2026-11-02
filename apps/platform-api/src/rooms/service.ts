@@ -21,38 +21,59 @@ export class RoomService {
   #receipts = new Map<string, Receipt>();
   #tail: Promise<void> = Promise.resolve();
   #pending = 0;
+  #peakPending = 0;
   #closed = false;
   #ended = new Set<(connectionIds: string[], event: RoomEnded) => void>();
   #worldGenerations = new Map<string, number>();
   #unsubscribe: () => void;
   #unsubscribeRevocations: () => void;
   #changed = new Set<(updates: RoomUpdate[]) => void>();
+  #controls = new Map<string, { promise: Promise<void>; again: boolean }>();
+  #refresh = new Set<string>();
   constructor(private registry: WorldRegistry, private identity: IdentityService, private now = Date.now, private projection?: RoomProjection) {
     this.#unsubscribe = registry.onUnavailable(slug => {
       this.#worldGenerations.set(slug, (this.#worldGenerations.get(slug) ?? 0) + 1);
-      void this.#run(async () => { for (const room of [...this.#rooms.values()]) if (room.slug === slug) this.#removeRoom(room, 'world-unavailable'); }, true);
+      void this.#control('world:' + slug, async () => { for (const room of [...this.#rooms.values()]) if (room.slug === slug) this.#removeRoom(room, 'world-unavailable'); });
     });
     this.#unsubscribeRevocations = identity.onRevoked(event => { void this.endSessions(event.accountId, event.sessionIds); });
   }
   onChanged(listener: (updates: RoomUpdate[]) => void) { this.#changed.add(listener); return () => { this.#changed.delete(listener); }; }
+  diagnostics() {
+    const rooms = [...this.#rooms.values()]; const members = rooms.flatMap(room => [...room.members.values()]);
+    return { rooms: rooms.length, memberships: this.#accounts.size, connections: this.#connections.size,
+      occupiedSeats: members.filter(member => member.seatId !== null).length,
+      graceMemberships: members.filter(member => member.disconnectedUntil !== null).length,
+      receipts: this.#receipts.size, pending: this.#pending, peakPending: this.#peakPending, controlKeys: this.#controls.size };
+  }
   endSessions(accountId: string, sessionIds: string[]) {
-    return this.#run(async () => {
-      const revoked = new Set(sessionIds);
+    const currentRoom = this.#rooms.get(this.#accounts.get(accountId) ?? ''); const current = currentRoom?.members.get(accountId);
+    if (!current) return Promise.resolve();
+    return Promise.all([...new Set(sessionIds)].filter(id => current.sessions.has(id)).map(sessionId => this.#control('session:' + sessionId, async () => {
       const room = this.#rooms.get(this.#accounts.get(accountId) ?? ''); const member = room?.members.get(accountId);
       if (!room || !member) return;
       const fromVersion = room.version;
-      for (const [id, sessionId] of member.connections) if (revoked.has(sessionId)) { member.connections.delete(id); this.#connections.delete(id); }
-      for (const id of revoked) member.sessions.delete(id);
+      for (const [id, ownerSession] of member.connections) if (ownerSession === sessionId) { member.connections.delete(id); this.#connections.delete(id); }
+      member.sessions.delete(sessionId);
       if (member.sessions.size === 0) this.#removeMember(room, member, 'disconnected');
       else if (member.connections.size === 0 && member.disconnectedUntil === null) { member.disconnectedUntil = this.now() + DISCONNECT_GRACE_MS; room.version++; }
       if (room.version !== fromVersion) await this.#notifyChanged(room, fromVersion);
-    }, true);
+    }))).then(() => {});
   }
   onEnded(listener: (connections: string[], event: RoomEnded) => void) { this.#ended.add(listener); return () => { this.#ended.delete(listener); }; }
   #run<T>(work: () => Promise<T>, control = false): Promise<T> {
     if (!control && (this.#closed || this.#pending >= 256)) return Promise.reject(new DomainError('RATE_LIMITED', 429, 'Room service busy'));
     this.#pending++;
+    this.#peakPending = Math.max(this.#peakPending, this.#pending);
     const result = this.#tail.then(work).finally(() => { this.#pending--; }); this.#tail = result.then(() => {}, () => {}); return result;
+  }
+  #control(key: string, work: () => Promise<void>): Promise<void> {
+    const pending = this.#controls.get(key); if (pending) { pending.again = true; return pending.promise; }
+    const entry = { promise: Promise.resolve(), again: false };
+    entry.promise = this.#run(async () => {
+      try { do { entry.again = false; await work(); } while (entry.again); }
+      finally { this.#controls.delete(key); }
+    }, true);
+    this.#controls.set(key, entry); return entry.promise;
   }
   hasMembership(actor: WorldActor, slug: string, membershipId: string): boolean {
     const room = this.#rooms.get(this.#accounts.get(actor.accountId) ?? ''); const member = room?.members.get(actor.accountId);
@@ -169,12 +190,13 @@ export class RoomService {
     });
   }
   detach(connectionId: string) {
-    return this.#run(async () => {
+    if (!this.#connections.has(connectionId)) return Promise.resolve();
+    return this.#control('detach:' + connectionId, async () => {
       const connection = this.#connections.get(connectionId); if (!connection) return;
       const room = this.#rooms.get(connection.roomId); const member = room?.members.get(connection.accountId);
       this.#connections.delete(connectionId); member?.connections.delete(connectionId);
       if (room && member && member.connections.size === 0) { member.disconnectedUntil = this.now() + DISCONNECT_GRACE_MS; const fromVersion = room.version; room.version++; await this.#notifyChanged(room, fromVersion); } await this.#sweep();
-    }, true);
+    });
   }
   seat(credential: string, connectionId: string, input: SeatClaim | SeatRelease, operation: 'seat.claim' | 'seat.release') {
     return this.#run(async () => {
@@ -212,16 +234,20 @@ export class RoomService {
     return room && member ? this.#snapshot(room, member) : null;
   }
   refreshAccounts(accountIds: string[]) {
-    const targets = new Set(accountIds);
-    return this.#run(async () => {
-      for (const room of this.#rooms.values()) {
-        if (![...room.members.keys()].some(id => targets.has(id))) continue;
-        const fromVersion = room.version; room.version++;
-        await this.#notifyChanged(room, fromVersion);
+    for (const id of accountIds) if (this.#accounts.has(id)) this.#refresh.add(id);
+    if (!this.#refresh.size) return Promise.resolve();
+    return this.#control('refresh', async () => {
+      while (this.#refresh.size) {
+        const targets = new Set(this.#refresh); this.#refresh.clear();
+        for (const room of this.#rooms.values()) {
+          if (![...room.members.keys()].some(id => targets.has(id))) continue;
+          const fromVersion = room.version; room.version++;
+          await this.#notifyChanged(room, fromVersion);
+        }
       }
-    }, true);
+    });
   }
-  maintain() { return this.#run(async () => { await this.#sweep(); }, true); }
+  maintain() { return this.#control('maintenance', async () => { await this.#sweep(); }); }
   async close() {
     if (this.#closed) return this.#tail;
     this.#closed = true; this.#unsubscribe(); this.#unsubscribeRevocations(); await this.#run(async () => { for (const room of [...this.#rooms.values()]) this.#removeRoom(room, 'server-stopping'); this.#receipts.clear(); this.#ended.clear(); }, true);

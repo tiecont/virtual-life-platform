@@ -9,6 +9,10 @@ async function main() {
   const runtime = await createApp(config, pool);
   await runtime.worlds.registry.setEnabled('sdk-sandbox', true);
   await runtime.app.listen(Number(process.env.ROOM_TEST_PORT ?? 0), '127.0.0.1');
+  process.on('message', (message: unknown) => {
+    if (typeof message !== 'object' || !message || !('type' in message) || message.type !== 'sample' || !('id' in message)) return;
+    process.send?.({ type: 'sample', id: message.id, cpu: process.cpuUsage(), memory: process.memoryUsage(), diagnostics: runtime.diagnostics() });
+  });
   process.send?.({ type: 'ready', url: await runtime.app.getUrl() });
   process.once('SIGTERM', () => { void runtime.app.close().then(() => pool.end()).then(() => { process.disconnect?.(); }); });
 }

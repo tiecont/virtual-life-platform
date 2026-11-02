@@ -1,0 +1,14 @@
+{
+  "verifiedAt": "2026-11-02T18:11:00Z",
+  "source": "workspace diff from92141a1; checkpoint commit in git log",
+  "environment": "Linux7.2.9-2-cachyos/Node26.9.0/pnpm11.28.5/PostgreSQL17.7-alpine",
+  "commands": [
+    { "command": "pnpm check", "exitCode": 1, "log": "m06-metrics-check-attempt1.log", "reason": "fixture shared loopback IP exceeded unchanged handshake rate; independent actual sources added" },
+    { "command": "pnpm check", "exitCode": 0, "log": "m06-metrics-complete-check.log", "governanceTests": 7, "unitTests": 31, "integrationTests": 69 },
+    { "command": "pnpm typecheck && pnpm lint && git diff --check", "exitCode": 0, "log": "m06-metrics-final-static.log", "scope": "final load/support strict typecheck added" },
+    { "command": "pnpm bench:rooms", "exitCode": 1, "log": "m06-network-baseline-attempt1.log", "reason": "CJS top-level await; no load result" },
+    { "command": "pnpm bench:rooms", "exitCode": 0, "log": "m06-network-baseline-attempt2.log", "report": "m06-network-baseline.json" }
+  ],
+  "verified": ["fixed command/outcome histograms; aggregate diagnostics omit identities/room IDs/secrets", "controlled non-writable real socket drops delta and snapshot recovers", "4000maintenance/refresh calls ->2control jobs behind slow hook", "24actual sockets/3rooms/4reconnects without duplication", "join p95/CPU/RSS/hardware measured; final memberships/seats0"],
+  "limits": ["short local sample,not sustained/max CCU", "no production/TLS/WAN/browser/slow-reader capacity", "internal diagnostics only,no metrics endpoint", "M06 awaits exclusive owner guard", "no migration/flags/public deployment"]
+}

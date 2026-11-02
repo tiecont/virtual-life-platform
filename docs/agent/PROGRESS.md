@@ -1,6 +1,6 @@
 # Agent progress
 
-Current checkpoint: **W1 in progress; W0 + M03/M04/M05 + M06-01..05 VERIFIED locally. Next: M06-06 metrics/network baseline.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence.
+Current checkpoint: **W1 in progress; W0 + M03/M04/M05 + M06-01..06 VERIFIED locally. Next: M06-07 exclusive owner guard.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence.
 
 2026-11-02, Linux local host, Node v26.9.0, pnpm 11.28.5, Docker 29.9.0. Source of task status: task-state.json (checked by scripts/plan-status.mjs). No public release occurred.
 
@@ -180,3 +180,13 @@ Rooms close in Fastify preClose before gateway transport closes, emitting server
 No room browser/scene exists yet: recovery presentation is a tested SDK state adapter for M07 consumption, not verified pixels. No DB migration, public flags, production recovery, benchmark or multi-owner claim. Runtime state remains ephemeral; restart intentionally loses seats and requires admission.
 
 Next exact action: M06-06 bounded low-cardinality metrics and reproducible real-socket benchmark with hardware/socket count/p95 join/CPU/memory, then M06-07 exclusive owner/split-brain guard. Full M06 and downstream remain gated.
+
+## M06-06 - VERIFIED metrics, bounded controls and network baseline
+
+2026-11-02T18:11Z. `pnpm check` ->0 in m06-metrics-complete-check.log:7 governance,31 unit,69 real PG/HTTP/socket integration, lint/types/architecture/builds. Added strict typecheck coverage for load/runtime support and ran final `pnpm typecheck && pnpm lint && git diff --check` ->0 (m06-metrics-final-static.log). `pnpm bench:rooms` ->0 (attempt2 log + m06-network-baseline.json). Earlier private Engine.IO buffer access failed typecheck; replaced with public writable/volatile behavior. First load run failed CJS top-level await before measuring; fixed async main. First full suite exceeded shared loopback IP handshake rate; fixtures now use distinct actual source addresses. Server rates unchanged; failure logs retained.
+
+Metrics use fixed event/outcome histograms/counts/max/total latency, in-flight/peak and dropped/slow-peer counters. Diagnostics are internal aggregate-only, not an HTTP endpoint. Deltas are volatile; non-writable peers drop replaceable state and after32 consecutive drops disconnect. External256 service pending +8/socket +60/session rates retained; cleanup coalesces by existing world/session/connection keys, refresh by current membership, singleton maintenance. Slow-hook test:4000 refresh/maintenance requests ->2 jobs,3 total pending including blocker; drains to0. Controlled non-writable real socket verifies drop+snapshot recovery, not WAN buffering capacity. Diagnostics omit identity/room/session secrets.
+
+Measured short loopback profile:24 real authenticated sockets,3 rooms/capacity8,24 concurrent joins,2-second hold,4 reconnect burst,24 leaves; final memberships/seats0. Ryzen7 4800HS/16 logical CPUs/24.57GB host RAM; p95join339.606ms,max358.224ms;p95reconnect149.627ms(4samples);server CPU569.395ms over2835.906ms(20.078% one core),sampled RSSpeak174309376bytes. Full hardware/values in report. No max CCU,sustained/WAN/TLS/production throughput claim. No flags/migrations/remote changes.
+
+Next exact action: M06-07 fail-safe single-owner guard and competing-owner/lost-authority tests, document future fencing protocol. Full M06 remains incomplete.
