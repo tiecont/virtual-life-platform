@@ -166,4 +166,35 @@ describe('M06-01 real PostgreSQL identity + Socket.IO authoritative room allocat
     const final = await app.rooms.snapshot(visitors[0].token, visitors[0].connectionId, ownInput(visitors[0].snapshot)); expect(final.seats.filter(seat => seat.state === 'occupied')).toHaveLength(1);
     expect(final.occupancy).toBe(100);
   });
+  it('shares one session command budget across room and seat events and rejects invalid action/role claims', async () => {
+    const user = await guest(); const client = await connect(user); const snapshot = await join(client);
+    for (const extra of [{ action: 'grant-admin' }, { role: 'moderator' }, { accountId: randomUUID() }, { schemaVersion: 99 }]) {
+      const invalid = await command(client, 'seat.claim', ownInput(snapshot, { seatId: 'seat-1', ...extra })); expect(invalid.ok).toBe(false); if (!invalid.ok) expect(invalid.error.code).toBe('INVALID_REQUEST');
+    }
+    for (let i = 0; i < 59; i++) expect((await command(client, 'room.snapshot', ownInput(snapshot))).ok).toBe(true);
+    const limited = await command(client, 'seat.claim', ownInput(snapshot, { seatId: 'seat-1' })); expect(limited.ok).toBe(false); if (!limited.ok) expect(limited.error.code).toBe('RATE_LIMITED');
+    expect(client.connected).toBe(true);
+  });
+  it('bounds pending commands on a slow world hook before allowing an unbounded queue', async () => {
+    let began!: () => void; let finish!: () => void; let limited!: () => void;
+    const started = new Promise<void>(resolve => { began = resolve; }); const delayed = new Promise<void>(resolve => { finish = resolve; }); const rateSeen = new Promise<void>(resolve => { limited = resolve; });
+    const world = defineWorld({ schemaVersion: 1, apiVersion: 1, slug: 'queue-bound-fixture', version: '1.0.0', title: 'Queue bound fixture', kind: 'sandbox', sceneRef: { key: 'queue-fixture', version: '1.0.0' }, capacity: 8, capabilities: ['presence'], accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'sandbox', position: { x: 0.5, y: 0.5 }, icon: 'flask' } }, {
+      bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => { began(); await delayed; }, onLeave: async () => {}, onCommand: async () => {},
+    });
+    app.worlds.registry.register(world); await app.worlds.registry.setEnabled(world.definition.slug, true);
+    try {
+      const user = await guest(); const client = await connect(user); const first = command(client, 'room.join', joinInput({ worldSlug: world.definition.slug })); await started;
+      const more = Array.from({ length: 9 }, () => command(client, 'room.join', joinInput({ worldSlug: world.definition.slug })).then(result => { if (!result.ok && result.error.code === 'RATE_LIMITED') limited(); return result; }));
+      await rateSeen; finish();
+      const results = await Promise.all([first, ...more]); expect(results.filter(result => result.ok)).toHaveLength(8); expect(results.filter(result => !result.ok)).toHaveLength(2);
+      expect(results.filter(result => result.ok).every(result => result.ok && result.result.type === 'snapshot' && result.result.occupancy === 1)).toBe(true);
+    } finally { finish(); await app.worlds.registry.setEnabled(world.definition.slug, false); }
+  });
+  it('idle session expiry immediately frees ownership instead of extending a disconnected seat hold', async () => {
+    const user = await guest(); const observer = await guest(); const other = await connect(observer); const otherSnapshot = await join(other);
+    await pool.query('UPDATE identity_sessions SET expires_at=$2 WHERE account_id=$1', [user.me.profile.id, new Date(now() + 1000)]);
+    const client = await connect(user); const snapshot = await join(client); expect((await command(client, 'seat.claim', ownInput(snapshot, { seatId: 'seat-1' }))).ok).toBe(true);
+    const closed = new Promise(resolve => client.once('disconnect', resolve)); await closed; await app.rooms.maintain();
+    expect((await command(other, 'seat.claim', ownInput(otherSnapshot, { seatId: 'seat-1' }))).ok).toBe(true);
+  });
 });

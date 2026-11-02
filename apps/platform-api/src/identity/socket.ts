@@ -13,6 +13,7 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
   const leases = new WeakMap<Socket, Lease>();
   const sessions = new Map<string, Set<Socket>>();
   const commands = new Set(['session.check']);
+  const endedListeners = new Set<(context: IdentityContext) => void>();
   const io = new Server(http.server, {
     transports: ['websocket'], serveClient: false, maxHttpBufferSize: 8192, connectTimeout: 5000,
     cors: { origin: config.WEB_ORIGIN, credentials: true },
@@ -22,6 +23,8 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
     },
   });
   function disconnect(socket: Socket, reason: 'session-ended' | 'rate-limit' = 'session-ended') {
+    const context = leases.get(socket)?.context;
+    if (reason === 'session-ended' && context) for (const listener of endedListeners) { try { listener(context); } catch { /* Session DB and command guards remain authoritative. */ } }
     socket.emit('session.revoked', { schemaVersion: 1, reason }); socket.disconnect(true);
   }
   async function authorize(socket: Socket): Promise<IdentityContext> {
@@ -98,5 +101,9 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
     const context = await authorize(socket); const lease = leases.get(socket);
     if (!lease) throw unauthorized(); return action(context, lease.token);
   };
-  return { io, authorize, withSession, emitToAccount, allowCommand: (name: string) => { commands.add(name); } };
+  return {
+    io, authorize, withSession, emitToAccount, endSession: (socket: Socket) => disconnect(socket),
+    onSessionEnded: (listener: (context: IdentityContext) => void) => { endedListeners.add(listener); return () => { endedListeners.delete(listener); }; },
+    allowCommand: (name: string) => { commands.add(name); },
+  };
 }

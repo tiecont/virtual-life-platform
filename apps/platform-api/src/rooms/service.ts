@@ -26,17 +26,18 @@ export class RoomService {
       this.#worldGenerations.set(slug, (this.#worldGenerations.get(slug) ?? 0) + 1);
       void this.#run(async () => { for (const room of [...this.#rooms.values()]) if (room.slug === slug) this.#removeRoom(room, 'world-unavailable'); }, true);
     });
-    this.#unsubscribeRevocations = identity.onRevoked(event => {
-      void this.#run(async () => {
-        const revoked = new Set(event.sessionIds);
-        const room = this.#rooms.get(this.#accounts.get(event.accountId) ?? ''); const member = room?.members.get(event.accountId);
-        if (!room || !member) return;
-        for (const [id, sessionId] of member.connections) if (revoked.has(sessionId)) { member.connections.delete(id); this.#connections.delete(id); }
-        for (const id of revoked) member.sessions.delete(id);
-        if (member.sessions.size === 0) this.#removeMember(room, member, 'disconnected');
-        else if (member.connections.size === 0 && member.disconnectedUntil === null) { member.disconnectedUntil = this.now() + DISCONNECT_GRACE_MS; room.version++; }
-      }, true);
-    });
+    this.#unsubscribeRevocations = identity.onRevoked(event => { void this.endSessions(event.accountId, event.sessionIds); });
+  }
+  endSessions(accountId: string, sessionIds: string[]) {
+    return this.#run(async () => {
+      const revoked = new Set(sessionIds);
+      const room = this.#rooms.get(this.#accounts.get(accountId) ?? ''); const member = room?.members.get(accountId);
+      if (!room || !member) return;
+      for (const [id, sessionId] of member.connections) if (revoked.has(sessionId)) { member.connections.delete(id); this.#connections.delete(id); }
+      for (const id of revoked) member.sessions.delete(id);
+      if (member.sessions.size === 0) this.#removeMember(room, member, 'disconnected');
+      else if (member.connections.size === 0 && member.disconnectedUntil === null) { member.disconnectedUntil = this.now() + DISCONNECT_GRACE_MS; room.version++; }
+    }, true);
   }
   onEnded(listener: (connections: string[], event: RoomEnded) => void) { this.#ended.add(listener); return () => { this.#ended.delete(listener); }; }
   #run<T>(work: () => Promise<T>, control = false): Promise<T> {

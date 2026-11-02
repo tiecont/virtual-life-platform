@@ -1,0 +1,11 @@
+{
+  "verifiedAt": "2026-11-02T17:27:54Z",
+  "source": "workspace diff from e998786; checkpoint commit in git log",
+  "environment": "Linux, Node 26.9.0, pnpm 11.28.5, PostgreSQL 17.7-alpine",
+  "commands": [
+    { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/rooms.test.ts", "exitCode": 0, "tests": 13, "log": "m06-security-attempt1.log" },
+    { "command": "pnpm check", "exitCode": 0, "governanceTests": 7, "unitTests": 26, "integrationTests": 63, "log": "m06-security-check.log" }
+  ],
+  "verified": ["Strict socket envelopes reject forged action/role/account/schema", "Handshake Origin/cookie/CSRF and per-command session guards retained from M03", "Actual room/seat session rate cap", "Slow hook -> max8 pending/socket,2 excess of10 receive RATE_LIMITED", "Idle expiry removes seat immediately through trusted session-ended callback", "Existing room/seat IDOR/replay/assets/epoch/revoke tests pass"],
+  "limits": ["No public/production transport security review", "M06 snapshots/deltas/reconnect UX/benchmarks/single-owner fencing gate remain incomplete", "No new browser room UI or deployed world"]
+}

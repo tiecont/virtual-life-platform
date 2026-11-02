@@ -9,6 +9,7 @@ import type { RoomService } from './service';
 export function registerRoomGateway(gateway: ReturnType<typeof createIdentityGateway>, rooms: RoomService) {
   for (const name of ['room.join', 'room.leave', 'room.snapshot', 'seat.claim', 'seat.release']) gateway.allowCommand(name);
   const unsubscribe = rooms.onEnded((ids, event) => { for (const id of ids) gateway.io.of('/').sockets.get(id)?.emit('room.ended', event); });
+  const unsubscribeSessions = gateway.onSessionEnded(context => { void rooms.endSessions(context.accountId, [context.sessionId]); });
   gateway.io.on('connection', socket => {
     let pending = 0;
     function handle<T extends RoomJoin | RoomOwnCommand | SeatClaim | SeatRelease>(name: string, schema: { safeParse(input: unknown): { success: true; data: T } | { success: false } }, run: (credential: string, input: T) => Promise<unknown>) {
@@ -24,7 +25,7 @@ export function registerRoomGateway(gateway: ReturnType<typeof createIdentityGat
           if (socket.connected) ack(RoomAckSchema.parse({ schemaVersion: 1, requestId, ok: true, result }));
         } catch (error) {
           const code = error instanceof DomainError || error instanceof IdentityError || error instanceof WorldError ? error.code : 'INTERNAL_ERROR';
-          reject(code); if (code === 'UNAUTHENTICATED') socket.disconnect(true);
+          reject(code); if (code === 'UNAUTHENTICATED') gateway.endSession(socket);
         } finally { pending--; }
       });
     }
@@ -35,5 +36,5 @@ export function registerRoomGateway(gateway: ReturnType<typeof createIdentityGat
     handle('seat.release', SeatReleaseSchema, (credential, input) => rooms.seat(credential, socket.id, input, 'seat.release'));
     socket.once('disconnect', () => { void rooms.detach(socket.id); });
   });
-  return unsubscribe;
+  return () => { unsubscribe(); unsubscribeSessions(); };
 }
