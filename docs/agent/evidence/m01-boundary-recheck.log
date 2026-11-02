@@ -1,0 +1,13 @@
+$ eslint . && node scripts/check-boundaries.mjs
+Boundary checks passed: 15 source files
+✔ worlds cannot import another world repository, platform internals or application code (1.294581ms)
+✔ contracts cannot import SDK and apps cannot import another application internals (3.810987ms)
+✔ the scanner rejects actual source imports and manifest cycles (12.345624ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 70.629952

@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:17.7-alpine
+    environment:
+      POSTGRES_USER: virtual_city_test
+      POSTGRES_PASSWORD: ${CITY_TEST_DB_PASSWORD:?Test harness must supply ephemeral password}
+      POSTGRES_DB: virtual_city_test
+    ports: ["127.0.0.1::5432"]
+    tmpfs: ["/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U virtual_city_test -d virtual_city_test"]
+      interval: 1s
+      timeout: 3s
+      retries: 30

@@ -1,36 +1,50 @@
-# Virtual City — Agent Plan Pack
+# Virtual City
 
-**Trạng thái:** Bộ đặc tả/kế hoạch, chưa phải source code đã hoàn thành hoặc đã triển khai.  
-**Mục đích:** Giao **một file tổng** cho coding agent và để agent tự đọc các file module, kiểm thử, lưu checkpoint và tiếp tục qua nhiều phiên.
+Offline implementation of the supplied [master plan](MASTER-AGENT-PLAN.md). Current features and evidence are in [PROGRESS](docs/agent/PROGRESS.md); resume from [HANDOFF](docs/agent/HANDOFF.md). A status page is a foundation slice, not a playable city. All worlds remain closed. Nothing is deployed or published.
 
-## Bắt đầu
+## Local setup
 
-1. Copy **toàn bộ nội dung** gói này vào root repository *hoặc* thư mục kế hoạch được chỉ định; nếu repo đang có `AGENTS.md`, **merge hướng dẫn** và không ghi đè nguyên trạng.
-2. Giữ cấu trúc thư mục và relative links. Đảm bảo hai kế hoạch cũ trong `reference/` có sẵn; đây là **reference snapshot** và không chứng minh source code đang tồn tại.
-3. Với Codex hoặc coding agent có quyền truy cập repository, gửi đúng prompt:
+Linux, Node **26.9.0** (`.node-version`), pnpm **11.28.5**, Docker Engine + Compose v2. Exact dependency pins and pnpm-lock.yaml are committed. The Node pin describes the verified environment, not an LTS claim.
 
-   **`Read MASTER-AGENT-PLAN.md completely, follow its execution protocol and implement the next unblocked task. Continue through the plan, verify and checkpoint every milestone; do not claim success without evidence.`**
+```sh
+pnpm install --frozen-lockfile
+pnpm setup:local
+pnpm db:up
+pnpm build:packages
+pnpm db:migrate
+pnpm dev
+```
 
-4. Nếu muốn giới hạn agent chỉ thực hiện một phase, dùng: `Read MASTER-AGENT-PLAN.md. Execute only Wave W1 and its required dependencies, then report acceptance evidence.`
-5. Người sở hữu cung cấp đường dẫn repository thực tế của Deadline/Maid (nếu hai dự án nằm ngoài workspace), secrets và quyền triển khai **chỉ khi thực sự cần**.
+Open http://127.0.0.1:3300. API liveness is http://127.0.0.1:4300/health/live; readiness `/health/ready` requires the migrated schema v1. Setup generates an ignored mode-600 `.env` and refuses to overwrite it. `.env.example` documents fields; never commit local credentials. Compose binds only 127.0.0.1:55452 and owns `virtual-city-dev` resources. Change ports/origins consistently if occupied; do not kill unrelated services. API_INTERNAL_URL is a trusted server-side URL, never browser input.
 
-> Ghi chú: Một prompt có thể **khởi động và định hướng toàn bộ quy trình**, nhưng không bảo đảm agent luôn chạy liên tục qua giới hạn phiên, quyền truy cập hay rào cản triển khai. Khi dừng, agent phải lưu checkpoint để phiên sau tiếp tục.
+`pnpm db:stop` stops only city development containers and retains data. Re-run `pnpm db:up` to resume. Normal setup/migrations are additive and idempotent. Do not delete volumes or reset a developer/production database as a debugging step. Migration errors intentionally omit secrets; inspect connectivity, schema/journal and checksums locally without printing credentials.
 
-## Entry points
+## Checks
 
-- [`MASTER-AGENT-PLAN.md`](MASTER-AGENT-PLAN.md) — **file tổng, single source of truth về điều phối**
-- [`AGENTS.md`](AGENTS.md) — hướng dẫn ngắn để coding agent luôn nhận đúng quy trình
-- [`plans/`](plans/) — các kế hoạch độc lập có dependency và DoD
-- [`reference/`](reference/) — bản gốc hai kế hoạch Deadline Cafe và Maid Cafe Social, giữ nguyên nội dung
-- [`docs/agent/`](docs/agent/) — checkpoint và evidence mẫu; điền theo kết quả thực chạy
-- [`contracts/`](contracts/) — hợp đồng API/event mẫu để agent hoàn thiện và kiểm thử
+```sh
+pnpm check
+pnpm exec playwright install chromium
+pnpm test:e2e
+pnpm plan:status
+```
 
-## Quy tắc ưu tiên đặc tả
+`check` runs governance, ESLint/layer boundaries, strict types, unit tests, **real PostgreSQL integration tests**, and builds. Root `test` contains governance/unit tests; `test:integration` is separate and included in `check`. Without TEST_DATABASE_URL, the test harness creates a unique Compose project, random loopback port/password and tmpfs database, then cleans up its resources on success/failure. An explicit TEST_DATABASE_URL is accepted only for a loopback database named `virtual_city_test` or `virtual_city_test_*`. Never supply production credentials. Integration tests use isolated schemas, apply migrations repeatedly/concurrently, exercise HTTP/TCP readiness and transactional rollback. Test process kill -9 may leave a uniquely named container; inspect that project before manual cleanup.
 
-1. Bảo vệ dữ liệu, luật áp dụng, yêu cầu rõ ràng của chủ dự án và bảo mật vận hành.
-2. `MASTER-AGENT-PLAN.md` và các quyết định ADR đã được chấp nhận.
-3. Các `plans/*.md` và interface/contract được version hóa.
-4. Các plan cũ `reference/*.md` đối với **nghiệp vụ chi tiết còn tương thích**.
-5. Code đang chạy và migrations đã phát hành: phải audit và migrate an toàn, không xóa để khớp plan.
+E2E runs built API/web on local :4300/:3300 with isolated PostgreSQL, covering real readiness and keyboard/mobile status UI. It refuses to reuse existing servers. Screenshots are real local artifacts under ignored `artifacts/`; HTML/traces under ignored playwright-report/test-results. It verifies the foundation only.
 
-Khi xung đột, **ghi ADR và compatibility plan** trước khi sửa. Không âm thầm phá vỡ two existing apps.
+## Workspace and integration
+
+- apps/platform-api: one Nest/Fastify process, Drizzle-owned schema, SQL journal.
+- apps/portal-web: Next.js status page; no identity/travel UI until dependencies unlock.
+- packages/contracts: strict versioned foundation status/error wire shapes.
+- packages/world-sdk: version compatibility only; M05 owns world lifecycle/registry.
+- packages/config: shared strict TypeScript baseline.
+- scripts/check-boundaries.mjs: static import and manifest-cycle enforcement. No cross-app, cross-world or world-to-domain internals. This supplements TypeScript; it is not a sandbox for arbitrary dynamic code.
+
+Legacy repos remain independent at ../deadline-cafe and ../maid-cafe; they are not workspace dependencies. See [inventory](docs/architecture/repository-inventory.md), [compatibility matrix](docs/architecture/legacy-compatibility.md) and [adapter ADR](docs/adr/0001-adapter-first.md). No legacy .env is read or copied.
+
+## CI and release
+
+.github/workflows/quality.yml runs the same checks + E2E on pull requests, with cache, isolated PostgreSQL and seven-day failure artifacts. Per owner instruction, work stays offline: remote PRs, hosted CI and repository required-check settings are not executed here. After creating a remote, configure required status `Quality / quality`, run one failing/passing PR, and verify branch protection before merging. CI has read-only repository permission and no deployment step.
+
+No art/media imported; system fonts and code-native status UI only. Gameplay assets need a provenance manifest in M07. Public release, moderation operations, restricted-world access, production migrations, infrastructure and legal/content approvals remain gated. Read AGENTS.md before resuming. Use `pnpm plan:status` and update evidence/checkpoints after each verified slice.

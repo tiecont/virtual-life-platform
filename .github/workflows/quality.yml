@@ -1,0 +1,48 @@
+name: Quality
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  quality:
+    name: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17.7-alpine
+        env:
+          POSTGRES_USER: virtual_city_test
+          POSTGRES_PASSWORD: ci_ephemeral_only
+          POSTGRES_DB: virtual_city_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U virtual_city_test -d virtual_city_test"
+          --health-interval 2s --health-timeout 3s --health-retries 30
+    env:
+      TEST_DATABASE_URL: postgresql://virtual_city_test:ci_ephemeral_only@127.0.0.1:5432/virtual_city_test
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.28.5
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-evidence
+          path: |
+            playwright-report/
+            test-results/
+            artifacts/
+          retention-days: 7

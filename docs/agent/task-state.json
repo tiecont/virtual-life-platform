@@ -65,6 +65,36 @@
       "status": "VERIFIED",
       "evidence": "docs/product/; docs/agent/evidence/m00-review.log; docs/agent/evidence/m00-tests.log",
       "verification": "node scripts/verify-governance.mjs \u2192 0; node --test tests/governance/plan-status.test.mjs \u2192 0 (4 tests), document acceptance review"
+    },
+    "M01-01": {
+      "status": "IN_PROGRESS",
+      "evidence": "docs/agent/evidence/m01-*",
+      "verification": "local acceptance in progress; remote PR removed from session scope by owner, ADR 0002"
+    },
+    "M01-02": {
+      "status": "IN_PROGRESS",
+      "evidence": "docs/agent/evidence/m01-*",
+      "verification": "local acceptance in progress; remote PR removed from session scope by owner, ADR 0002"
+    },
+    "M01-03": {
+      "status": "IN_PROGRESS",
+      "evidence": "docs/agent/evidence/m01-*",
+      "verification": "local acceptance in progress; remote PR removed from session scope by owner, ADR 0002"
+    },
+    "M01-04": {
+      "status": "IN_PROGRESS",
+      "evidence": "docs/agent/evidence/m01-*",
+      "verification": "local acceptance in progress; remote PR removed from session scope by owner, ADR 0002"
+    },
+    "M01-05": {
+      "status": "IN_PROGRESS",
+      "evidence": "docs/agent/evidence/m01-*",
+      "verification": "local acceptance in progress; remote PR removed from session scope by owner, ADR 0002"
+    },
+    "M01-06": {
+      "status": "IN_PROGRESS",
+      "evidence": "docs/agent/evidence/m01-*",
+      "verification": "local acceptance in progress; remote PR removed from session scope by owner, ADR 0002"
     }
   }
 }
