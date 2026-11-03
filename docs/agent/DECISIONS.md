@@ -1,5 +1,7 @@
 # Decisions
 
+M11-04 / ADR0031: stricttrusted MenuPolicy/timed-course OrderWorkflowStrategy,order-snapshotted recipes with serverdeadlines andcourseledger;sameengine forsyntheticcoffee/dining/mocktail. prepare/ready/serve requirecurrentassignedshift/originalseatedcustomer/currentpolicy;requeue preservescompletedcourses andinvalidatesunfinishedpreparation. Completion/outbox remains05. Evidence m11-workflows-checks.json.
+
 M11-03 / ADR0030: policy-offered voluntary service shifts bound to current visit,oneopen/account,server4hlimit;no moderation privilege. Ownend/currentdisconnectgrace/restart requeues existing pre-serve work with newversion. Fair20rowSQLsequence batches/3stimer/endpointreconciliation,privateexport/erasure and bounded90dayretention. Actual24hospitality/223integration fullcheck evidence m11-shifts-checks.json;strandedcustomer cleanup remains06.
 
 M11-02 / ADR0029: shared durable policy-gated city order core,room-owner serialized authorization and account/row-locked atomic claims,private participation projection. Staff port defaultsdeny;no inferred authority from role/appearance. New runtime place/claim/pendingcancel only;shifts/workflows/completion/refusal staged03..06. Evidence m11-core-checks.json.

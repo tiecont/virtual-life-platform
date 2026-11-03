@@ -1,5 +1,11 @@
 # Agent progress
 
+## M11-04 - VERIFIED trusted menus and reusable course service
+
+Workspace from63a7811;m11-workflows-checks.json/ADR0031/HOSPITALITY.md. Initial3schema-red failures retained(menuunsupported,notmissingroute). Targeted27then32integration0,unit3/typecheck/packages0. Firstfullcheck failedlint no-control-regex;character-code implementation keeps control-character policy;secondfullcheck0(7governance,178unit,231integration/builds). Final extra backwardsclock1pass32filteredskips0;not232fullsuite claim. Scene browser24(12each)0;no new hospitality UI. Additive0016 retainedcitydev DB0;diff0. Documentationpatch wrong context rejected atomically/reapplied.
+
+Strict MenuPolicy/itemallowlist/resolvedworkflow and timed-courses1..5/1..300s snapshot perorder. Syntheticcoffee/threecoursedining/mocktail shareprepare/ready/serve engine;serverdeadline/assignedcurrentstaff/customeroriginalseat+validattachedsession/currentpolicy/safety/block/version/keys required. Concurrent8TCPserveretries->1courseledger/version;receiptfailure rollsbackstate/ledger. Requeue clearsunfinisheddeadline,keepsservedcourses andreplacement onlyrestartsunfinishedcourse;oldstaffreceipts cannotact. SQLcourse/readiness/forgedtime/recipe/score/actor/role andbackwardclockreject;restartpreservessnapshot withoutnewroomadmission. SERVEDnotCOMPLETED;actualMaidminigame remainsM16. Next exact actionM11-05 durableuniquecompletion+sameSQLtransaction outbox andtransactional idempotent progresshookdelivery/restart/rollback/retry tests. M11-06 still ownsrefusal/safetyreassignment/strandedcustomercleanup. No realflags/legacy/remote/public change;previewoff,devDB0016.
+
 ## M11-03 - VERIFIED voluntary shifts and disconnected-work recovery
 
 Final existing browser regression40(20desktop/20mobile)->0 in m11-shifts-browser.log;no new hospitality UI claimed.

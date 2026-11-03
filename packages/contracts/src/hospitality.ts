@@ -3,11 +3,11 @@ import { TravelSourceSchema } from './travel';
 import { WorldSlugSchema, WorldVersionSchema } from './world-primitives';
 const uuid = z.uuid().transform(value => value.toLowerCase());
 export const OrderPhaseSchema = z.enum(['PENDING', 'ASSIGNED', 'PREPARING', 'READY', 'SERVED', 'COMPLETED', 'CANCELLED']);
-export { HospitalityPolicySchema, type HospitalityPolicy } from './hospitality-policy';
+export { HospitalityPolicySchema, MenuPolicySchema, OrderWorkflowStrategySchema, type HospitalityPolicy, type MenuPolicy, type OrderWorkflowStrategy } from './hospitality-policy';
 export const OrderPlaceSchema = z.strictObject({ schemaVersion: z.literal(1), source: TravelSourceSchema, policyVersion: WorldVersionSchema, itemKey: WorldSlugSchema });
 export const OrderMutationSchema = z.strictObject({ schemaVersion: z.literal(1), source: TravelSourceSchema, expectedVersion: z.number().int().nonnegative() });
 export const OrderQueueSchema = z.strictObject({ schemaVersion: z.literal(1), source: TravelSourceSchema });
-export const OrderViewSchema = z.strictObject({ schemaVersion: z.literal(1), id: uuid, phase: OrderPhaseSchema, version: z.number().int().nonnegative(), worldSlug: WorldSlugSchema, roomId: uuid, itemKey: WorldSlugSchema, policyVersion: WorldVersionSchema, mine: z.boolean(), assignedToMe: z.boolean(), createdAt: z.iso.datetime(), updatedAt: z.iso.datetime() });
+export const OrderViewSchema = z.strictObject({ schemaVersion: z.literal(1), id: uuid, phase: OrderPhaseSchema, version: z.number().int().nonnegative(), worldSlug: WorldSlugSchema, roomId: uuid, itemKey: WorldSlugSchema, policyVersion: WorldVersionSchema, mine: z.boolean(), assignedToMe: z.boolean(), createdAt: z.iso.datetime(), updatedAt: z.iso.datetime(), service: z.strictObject({ workflowKey: WorldSlugSchema, workflowVersion: WorldVersionSchema, courseNumber: z.number().int().min(1).max(5), courseCount: z.number().int().min(1).max(5), coursesServed: z.number().int().min(0).max(5), courseLabel: z.string().min(1).max(80), readyAt: z.iso.datetime().nullable() }).optional() });
 export const OrderResultSchema = z.strictObject({ schemaVersion: z.literal(1), order: OrderViewSchema });
 export const OrderPageSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(OrderViewSchema).max(50), truncated: z.boolean() });
 export type OrderPhase = z.infer<typeof OrderPhaseSchema>;
@@ -15,3 +15,4 @@ export const StaffShiftStartSchema = z.strictObject({ schemaVersion: z.literal(1
 export const StaffShiftEndSchema = z.strictObject({ schemaVersion: z.literal(1) });
 export const StaffShiftViewSchema = z.strictObject({ schemaVersion: z.literal(1), id: uuid, worldSlug: WorldSlugSchema, roomId: uuid, phase: z.enum(['active', 'interrupted', 'ended']), startedAt: z.iso.datetime(), expiresAt: z.iso.datetime(), interruptedAt: z.iso.datetime().nullable(), endsAt: z.iso.datetime().nullable(), reason: z.enum(['voluntary', 'disconnected', 'visit-ended', 'restart', 'expired']).nullable() });
 export const StaffShiftResultSchema = z.strictObject({ schemaVersion: z.literal(1), shift: StaffShiftViewSchema.nullable() });
+export const HospitalityMenuSchema = z.strictObject({ schemaVersion: z.literal(1), policyVersion: WorldVersionSchema, items: z.array(z.strictObject({ key: WorldSlugSchema, label: z.string().min(1).max(80), courseCount: z.number().int().min(1).max(5) })).max(50) });

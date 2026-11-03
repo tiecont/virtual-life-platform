@@ -42,7 +42,8 @@
     "engine_hospitality_orders": "engine.hospitality",
     "engine_hospitality_mutations": "engine.hospitality",
     "engine_hospitality_shifts": "engine.hospitality",
-    "engine_hospitality_shift_mutations": "engine.hospitality"
+    "engine_hospitality_shift_mutations": "engine.hospitality",
+    "engine_hospitality_courses": "engine.hospitality"
   },
   "journalTable": "city_schema_migrations",
   "legacyDatabases": "not managed by city migrations",

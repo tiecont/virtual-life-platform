@@ -52,6 +52,7 @@ export class IdentityService {
   // Internal platform transaction ports. Never handed to world/client modules.
   async lockAccounts(db: PoolClient, ids: string[]) { for (const id of [...new Set(ids)].sort()) await this.lock(db, 'account:' + id); }
   async contextInTransaction(db: PoolClient, token: string): Promise<IdentityContext> { const s = await this.session(token, db); return Object.freeze({ accountId: s.account_id, sessionId: s.id, kind: s.kind, expiresAt: s.expires_at.getTime() }); }
+  async hasConnectedSession(accountId: string, sessionIds: string[]) { return Boolean((await this.pool.query('SELECT 1 FROM identity_sessions WHERE account_id=$1 AND id=ANY($2::uuid[]) AND revoked_at IS NULL AND expires_at>$3 LIMIT 1', [accountId, sessionIds, new Date(this.now())])).rowCount); }
   fingerprint(value: unknown) { return this.keyed('mutation:v1:' + JSON.stringify(value)); }
   async publicProfiles(ids: string[], db: DB = this.pool): Promise<PublicProfile[]> {
     if (ids.length > 100) throw new IdentityError('INVALID_REQUEST', 422, 'Too many profiles requested');

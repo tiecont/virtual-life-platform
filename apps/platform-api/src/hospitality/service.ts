@@ -1,13 +1,14 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
 import { z } from 'zod';
-import { StaffShiftStartSchema, StaffShiftResultSchema, StaffShiftViewSchema, OrderPlaceSchema, OrderMutationSchema, OrderQueueSchema, OrderPageSchema, OrderResultSchema, OrderViewSchema, type OrderPhase, type HospitalityPolicy } from '@virtual-city/contracts';
+import { HospitalityMenuSchema, OrderWorkflowStrategySchema, StaffShiftStartSchema, StaffShiftResultSchema, StaffShiftViewSchema, OrderPlaceSchema, OrderMutationSchema, OrderQueueSchema, OrderPageSchema, OrderResultSchema, OrderViewSchema, type OrderPhase, type HospitalityPolicy, type OrderWorkflowStrategy } from '@virtual-city/contracts';
 import type { IdentityService, IdentityContext } from '../identity/service';
 import type { RoomService } from '../rooms/service';
 import type { SocialService } from '../social/service';
 import { DomainError } from '../common/errors';
 import { nextOrderPhase } from './lifecycle';
-type Row = { id: string; customer_id: string; assignee_id: string | null; world_slug: string; room_id: string; item_key: string; policy_version: string; phase: OrderPhase; version: number; created_at: Date; updated_at: Date };
+import { advanceService, type ServiceAction } from './workflow';
+type Row = { id: string; customer_id: string; assignee_id: string | null; customer_epoch: string; customer_membership_id: string; world_slug: string; room_id: string; item_key: string; policy_version: string; phase: OrderPhase; version: number; created_at: Date; updated_at: Date; workflow: OrderWorkflowStrategy | null; course_index: number; ready_at: Date | null };
 type Shift = { id: string; account_id: string; world_slug: string; room_id: string; owner_epoch: string; membership_id: string; policy_version: string; started_at: Date; expires_at: Date; interrupted_at: Date | null; ended_at: Date | null; reason: 'voluntary' | 'disconnected' | 'visit-ended' | 'restart' | 'expired' | null };
 type Context = { worldSlug: string; roomId: string; seatId: string | null; epoch: string; membershipId: string; policy: HospitalityPolicy };
 export interface HospitalityStaffPort { permits(db: PoolClient, actor: IdentityContext, context: Readonly<Context>): Promise<boolean> }
@@ -21,7 +22,10 @@ export class HospitalityService {
     if (!context.policy.staffing) return false;
     return Boolean((await db.query('SELECT 1 FROM engine_hospitality_shifts WHERE account_id=$1 AND world_slug=$2 AND room_id=$3 AND owner_epoch=$4 AND membership_id=$5 AND policy_version=$6 AND ended_at IS NULL AND expires_at>$7 AND interrupted_at IS NULL', [actor.accountId, context.worldSlug, context.roomId, context.epoch, context.membershipId, context.policy.version, new Date(this.now())])).rowCount);
   }
-  private view(row: Row, actor: string) { return OrderViewSchema.parse({ schemaVersion: 1, id: row.id, phase: row.phase, version: row.version, worldSlug: row.world_slug, roomId: row.room_id, itemKey: row.item_key, policyVersion: row.policy_version, mine: row.customer_id === actor, assignedToMe: row.assignee_id === actor, createdAt: row.created_at.toISOString(), updatedAt: row.updated_at.toISOString() }); }
+  private view(row: Row, actor: string) {
+    const workflow = row.workflow ? OrderWorkflowStrategySchema.parse(row.workflow) : null;
+    return OrderViewSchema.parse({ schemaVersion: 1, id: row.id, phase: row.phase, version: row.version, worldSlug: row.world_slug, roomId: row.room_id, itemKey: row.item_key, policyVersion: row.policy_version, mine: row.customer_id === actor, assignedToMe: row.assignee_id === actor, createdAt: row.created_at.toISOString(), updatedAt: row.updated_at.toISOString(), ...(workflow ? { service: { workflowKey: workflow.key, workflowVersion: workflow.version, courseNumber: row.course_index + 1, courseCount: workflow.courses.length, coursesServed: row.course_index + (['SERVED', 'COMPLETED'].includes(row.phase) ? 1 : 0), courseLabel: workflow.courses[row.course_index].label, readyAt: row.ready_at?.toISOString() ?? null } } : {}) });
+  }
   private result(row: Row, actor: string) { return OrderResultSchema.parse({ schemaVersion: 1, order: this.view(row, actor) }); }
   private async tx<T>(token: string, targets: string[], work: (db: PoolClient, actor: IdentityContext) => Promise<T>) {
     if (this.#closed) throw new DomainError('WORLD_UNAVAILABLE', 503, 'Service unavailable');
@@ -45,14 +49,15 @@ export class HospitalityService {
     return this.rooms.hospitalityContext(token, input.source, true, (_actor, context, valid) => this.tx(token, [], async (db, actor) => {
       const prior = await this.prior(db, actor.accountId, key, fingerprint); if (prior) return this.result(prior, actor.accountId);
       if (input.policyVersion !== context.policy.version || !context.policy.itemKeys.includes(input.itemKey)) throw absent();
+      const menuItem = context.policy.menu?.items.find(item => item.key === input.itemKey), workflow = menuItem ? context.policy.menu!.workflows.find(workflow => workflow.key === menuItem.workflowKey)! : null;
       if ((await db.query("SELECT 1 FROM engine_hospitality_orders WHERE customer_id=$1 AND phase NOT IN ('COMPLETED','CANCELLED')", [actor.accountId])).rowCount) throw new DomainError('IDEMPOTENCY_CONFLICT', 409, 'An existing order must finish or be cancelled first');
       if ((await db.query("SELECT count(*)::int AS n FROM engine_hospitality_orders WHERE room_id=$1 AND phase NOT IN ('COMPLETED','CANCELLED')", [context.roomId])).rows[0].n >= context.policy.maxQueue) throw new DomainError('RATE_LIMITED', 429, 'The service queue is full');
       await this.quota(db, actor.accountId, true); const at = new Date(this.now());
-      const row = (await db.query<Row>("INSERT INTO engine_hospitality_orders(id,customer_id,world_slug,room_id,customer_epoch,customer_membership_id,item_key,policy_version,phase,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,'PENDING',$9,$9) RETURNING *", [randomUUID(), actor.accountId, context.worldSlug, context.roomId, input.source.epoch, input.source.membershipId, input.itemKey, context.policy.version, at])).rows[0];
+      const row = (await db.query<Row>("INSERT INTO engine_hospitality_orders(id,customer_id,world_slug,room_id,customer_epoch,customer_membership_id,item_key,policy_version,phase,created_at,updated_at,workflow) VALUES($1,$2,$3,$4,$5,$6,$7,$8,'PENDING',$9,$9,$10) RETURNING *", [randomUUID(), actor.accountId, context.worldSlug, context.roomId, input.source.epoch, input.source.membershipId, input.itemKey, context.policy.version, at, workflow ? JSON.stringify(workflow) : null])).rows[0];
       await this.remember(db, actor.accountId, key, row, fingerprint, 'place'); if (!valid() || this.now() >= actor.expiresAt) throw new DomainError('NOT_IN_ROOM', 409, 'Your visit changed'); return this.result(row, actor.accountId);
     }));
   }
-  async mutate(token: string, id: string, requestKey: string, action: 'claim' | 'cancel', raw: unknown) {
+  async mutate(token: string, id: string, requestKey: string, action: 'claim' | 'cancel' | ServiceAction, raw: unknown) {
     id = uuid.parse(id); const key = uuid.parse(requestKey), input = OrderMutationSchema.parse(raw), fingerprint = this.identity.fingerprint({ operation: 'order.' + action, id, input });
     await this.maintain();
     const known = (await this.pool.query<{ customer_id: string }>('SELECT customer_id FROM engine_hospitality_orders WHERE id=$1', [id])).rows[0]; if (!known) { await this.identity.authenticate(token); throw absent(); }
@@ -61,11 +66,25 @@ export class HospitalityService {
       if (!row || row.room_id !== context.roomId || row.world_slug !== context.worldSlug || row.customer_id !== known.customer_id) throw absent();
       const prior = await this.prior(db, actor.accountId, key, fingerprint); if (prior) return this.result(prior, actor.accountId);
       if (action === 'cancel' ? row.customer_id !== actor.accountId : row.customer_id === actor.accountId || !await this.permits(db, actor, context) || await this.social.isBlocked(actor.accountId, row.customer_id, db)) throw absent();
+      if (action !== 'cancel') { if (row.policy_version !== context.policy.version) throw absent(); await this.rooms.hospitalityCustomer(row.customer_id, { epoch: row.customer_epoch, roomId: row.room_id, membershipId: row.customer_membership_id }); }
       if (row.version !== input.expectedVersion) throw new DomainError('IDEMPOTENCY_CONFLICT', 409, 'Refresh this order before trying again');
-      const phase = nextOrderPhase(row.phase, action); await this.quota(db, actor.accountId, false);
+      if (action !== 'claim' && action !== 'cancel' && row.assignee_id !== actor.accountId) throw absent();
+      const at = this.now(); if (at < row.updated_at.getTime()) throw new DomainError('WORLD_UNAVAILABLE', 503, 'Service clock unavailable');
+      const workflow = row.workflow ? OrderWorkflowStrategySchema.parse(row.workflow) : null;
+      if (action !== 'claim' && action !== 'cancel' && !workflow) throw absent();
+      const step = action === 'claim' || action === 'cancel' ? { phase: nextOrderPhase(row.phase, action), course: row.course_index, readyAt: null } : advanceService(workflow!, row.phase, row.course_index, row.ready_at?.getTime() ?? null, action, at);
+      await this.quota(db, actor.accountId, false);
       if (action === 'claim' && (await db.query("SELECT count(*)::int AS n FROM engine_hospitality_orders WHERE assignee_id=$1 AND phase IN ('ASSIGNED','PREPARING','READY')", [actor.accountId])).rows[0].n >= context.policy.maxActivePerStaff) throw new DomainError('NOT_AVAILABLE', 409, 'Your service queue is full');
-      const updated = (await db.query<Row>('UPDATE engine_hospitality_orders SET phase=$2,assignee_id=$3,version=version+1,updated_at=$4 WHERE id=$1 RETURNING *', [id, phase, action === 'claim' ? actor.accountId : null, new Date(this.now())])).rows[0];
+      if (action === 'serve') await db.query('INSERT INTO engine_hospitality_courses VALUES($1,$2,$3,$4,$5)', [id, row.course_index, workflow!.courses[row.course_index].key, new Date(at), row.version + 1]);
+      const updated = (await db.query<Row>('UPDATE engine_hospitality_orders SET phase=$2,assignee_id=$3,version=version+1,updated_at=$4,course_index=$5,ready_at=$6 WHERE id=$1 RETURNING *', [id, step.phase, action === 'claim' ? actor.accountId : action === 'cancel' ? null : row.assignee_id, new Date(at), step.course, step.readyAt === null ? null : new Date(step.readyAt)])).rows[0];
       await this.remember(db, actor.accountId, key, updated, fingerprint, action); if (!valid() || this.now() >= actor.expiresAt) throw new DomainError('NOT_IN_ROOM', 409, 'Your visit changed'); return this.result(updated, actor.accountId);
+    }));
+  }
+  menu(token: string, raw: unknown) {
+    const input = OrderQueueSchema.parse(raw);
+    return this.rooms.hospitalityContext(token, input.source, false, (_actor, context, valid) => this.tx(token, [], async () => {
+      if (!context.policy.menu || !valid()) throw absent();
+      return HospitalityMenuSchema.parse({ schemaVersion: 1, policyVersion: context.policy.version, items: context.policy.menu.items.map(item => ({ key: item.key, label: item.label, courseCount: context.policy.menu!.workflows.find(workflow => workflow.key === item.workflowKey)!.courses.length })) });
     }));
   }
   get(token: string, id: string) { id = uuid.parse(id); return this.tx(token, [], async (db, actor) => { const row = (await db.query<Row>('SELECT * FROM engine_hospitality_orders WHERE id=$1 AND (customer_id=$2 OR assignee_id=$2)', [id, actor.accountId])).rows[0]; if (!row) throw absent(); return this.result(row, actor.accountId); }); }
@@ -83,7 +102,7 @@ export class HospitalityService {
   async redactAccount(id: string, db: PoolClient) {
     // Retain the customer's service request without retaining a deleted staff identity.
     await db.query("DELETE FROM engine_hospitality_orders WHERE assignee_id=$1 AND phase IN ('SERVED','COMPLETED')", [id]);
-    await db.query("UPDATE engine_hospitality_orders SET assignee_id=NULL,phase='PENDING',version=version+1,updated_at=greatest(updated_at,$2) WHERE assignee_id=$1", [id, new Date(this.now())]);
+    await db.query("UPDATE engine_hospitality_orders SET assignee_id=NULL,phase='PENDING',version=version+1,ready_at=NULL,updated_at=greatest(updated_at,$2) WHERE assignee_id=$1", [id, new Date(this.now())]);
   }
   private shiftView(row: Shift) { return StaffShiftViewSchema.parse({ schemaVersion: 1, id: row.id, worldSlug: row.world_slug, roomId: row.room_id, phase: row.ended_at ? 'ended' : row.interrupted_at ? 'interrupted' : 'active', startedAt: row.started_at.toISOString(), expiresAt: row.expires_at.toISOString(), interruptedAt: row.interrupted_at?.toISOString() ?? null, endsAt: row.ended_at?.toISOString() ?? null, reason: row.reason }); }
   private shiftResult(row: Shift | null) { return StaffShiftResultSchema.parse({ schemaVersion: 1, shift: row ? this.shiftView(row) : null }); }
@@ -106,7 +125,7 @@ export class HospitalityService {
       await this.shiftRemember(db, actor.accountId, key, row.id, fingerprint, 'start'); if (!valid() || this.now() >= actor.expiresAt) throw new DomainError('NOT_IN_ROOM', 409, 'Your visit changed'); return this.shiftResult(row);
     }));
   }
-  private requeue(db: PoolClient, account: string) { return db.query("UPDATE engine_hospitality_orders SET phase='PENDING',assignee_id=NULL,version=version+1,updated_at=greatest(updated_at,$2) WHERE assignee_id=$1 AND phase IN ('ASSIGNED','PREPARING','READY')", [account, new Date(this.now())]); }
+  private requeue(db: PoolClient, account: string) { return db.query("UPDATE engine_hospitality_orders SET phase='PENDING',assignee_id=NULL,ready_at=NULL,version=version+1,updated_at=greatest(updated_at,$2) WHERE assignee_id=$1 AND phase IN ('ASSIGNED','PREPARING','READY')", [account, new Date(this.now())]); }
   private async customers(account: string) { return (await this.pool.query<{ customer_id: string }>("SELECT customer_id FROM engine_hospitality_orders WHERE assignee_id=$1 AND phase IN ('ASSIGNED','PREPARING','READY')", [account])).rows.map(row => row.customer_id); }
   async endShift(token: string, id: string, requestKey: string) {
     id = uuid.parse(id); const key = uuid.parse(requestKey), fingerprint = this.identity.fingerprint({ operation: 'shift.end', id }), initial = await this.identity.authenticate(token);

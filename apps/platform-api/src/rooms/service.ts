@@ -315,6 +315,13 @@ export class RoomService {
       return work(actor, { worldSlug: room.slug, roomId: room.id, seatId, epoch: this.epoch, membershipId: member.id, policy: definition.hospitalityPolicy }, valid);
     });
   }
+  // Internal, called only inside a hospitality owner callback; must not enqueue recursively.
+  async hospitalityCustomer(accountId: string, source: TravelSource) {
+    const room = this.#rooms.get(source.roomId), member = room?.members.get(accountId);
+    if (source.epoch !== this.epoch || !room || !member || member.id !== source.membershipId || !member.seatId || !member.connections.size) throw new DomainError('NOT_AVAILABLE', 404, 'This order is unavailable');
+    if (!await this.identity.hasConnectedSession(accountId, [...member.connections.values()])) throw new DomainError('NOT_AVAILABLE', 404, 'This order is unavailable');
+    await this.safety?.assert(accountId, room.slug, room.id);
+  }
   hospitalityRecovery<T>(work: (visit: (accountId: string, source: TravelSource) => { state: 'connected' | 'grace' | 'gone' | 'restart'; disconnectedAt: number | null }) => Promise<T>) {
     return this.#run(async () => work((accountId, source) => {
       if (source.epoch !== this.epoch) return { state: 'restart', disconnectedAt: null };
