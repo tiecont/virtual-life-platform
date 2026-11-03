@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
 import { z } from 'zod';
-import { FocusStartSchema, FocusResultSchema, FocusSessionSchema, type FocusSession } from '@virtual-city/contracts';
+import { FocusStartSchema, FocusResultSchema, FocusSessionSchema, FocusHistoryQuerySchema, FocusHistorySchema, type FocusSession } from '@virtual-city/contracts';
 import type { IdentityContext, IdentityService } from '../identity/service';
 import type { RoomService } from '../rooms/service';
 import { DomainError } from '../common/errors';
@@ -54,6 +54,19 @@ export class FocusService {
   }
   current(token: string) { return this.tx(token, async (db, actor) => { const row = (await db.query<Row>("SELECT * FROM engine_focus_sessions WHERE account_id=$1 ORDER BY (phase IN ('active','paused')) DESC,creation_order DESC LIMIT 1 FOR UPDATE", [actor.accountId])).rows[0]; return this.result(row ? await this.transition(db, row) : null); }); }
   get(token: string, id: string) { id = uuid.parse(id); return this.tx(token, async (db, actor) => this.result(await this.transition(db, await this.own(db, actor, id)))); }
+  history(token: string, raw: unknown) {
+    const query = FocusHistoryQuerySchema.parse(raw);
+    return this.tx(token, async (db, actor) => {
+      let before: string | null = null;
+      if (query.cursor) {
+        const cursor = (await db.query<{ creation_order: string }>('SELECT creation_order FROM engine_focus_sessions WHERE account_id=$1 AND id=$2 AND ($3::text IS NULL OR world_slug=$3)', [actor.accountId, query.cursor, query.worldSlug ?? null])).rows[0];
+        if (!cursor) throw unavailable(); before = cursor.creation_order;
+      }
+      const rows = (await db.query<Row>('SELECT * FROM engine_focus_sessions WHERE account_id=$1 AND ($2::bigint IS NULL OR creation_order<$2) AND ($3::text IS NULL OR world_slug=$3) ORDER BY creation_order DESC LIMIT $4 FOR UPDATE', [actor.accountId, before, query.worldSlug ?? null, query.limit + 1])).rows;
+      const items = []; for (const row of rows.slice(0, query.limit)) items.push(this.view(await this.transition(db, row)));
+      return FocusHistorySchema.parse({ schemaVersion: 1, serverTime: new Date(this.now()).toISOString(), items, nextCursor: rows.length > query.limit ? items.at(-1)!.id : null });
+    });
+  }
   mutate(token: string, id: string, requestKey: string, action: Exclude<FocusAction, 'read'>) {
     id = uuid.parse(id); const key = uuid.parse(requestKey);
     return this.tx(token, async (db, actor) => {

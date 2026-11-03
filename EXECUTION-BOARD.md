@@ -63,7 +63,7 @@
 | M09 | M09-06 · Test cross-world transition with artificial network failure. | VERIFIED | m09-browser-checks.json;fullcheck178integration/E2E38+extended2;synthetic only |
 | M10 | M10-01 · Compare legacy Deadline focus contracts and persistence. | VERIFIED | m10-audit-checks.json;8source hashes/current schema+absent runtime compared;no legacy mutation |
 | M10 | M10-02 · Implement trusted start/pause/finish/cancel rules with deterministic server clock. | VERIFIED | m10-engine-checks.json;125unit/190integration,build0,scene24;0012 local |
-| M10 | M10-03 · Implement room/world-scoped session association and privacy. | TODO | — |
+| M10 | M10-03 · Implement room/world-scoped session association and privacy. | VERIFIED | m10-scope-checks.json;check0(125unit/193integration/builds),focus15 |
 | M10 | M10-04 · Provide accessible timer UI package and shareable completion summary. | TODO | — |
 | M10 | M10-05 · Add SQL queries/retention for daily summaries and test DST/timezone edge cases. | TODO | — |
 | M11 | M11-01 · Audit legacy Maid order/shift semantics, extract shared vs maid-only behaviors. | TODO | — |

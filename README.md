@@ -104,4 +104,4 @@ M09-06 adds `/travel` confirmation, own-room read/rejoin and truthful recovery a
 
 M10-01 records the [readonly focus compatibility audit](docs/architecture/FOCUS-COMPATIBILITY.md). The legacy source has schema/SQL but no live focus service; the city backend now owns the shared timer. Re-run `node scripts/audit-deadline-focus.mjs` before integrating a changed source revision.
 
-M10-02 adds the [private persistent focus engine](docs/architecture/FOCUS.md), with trusted seat-authorized start,server deadlines,idempotent completion/cancellation and optional policy-gated pause. SDK Sandbox's local mode is unpausable. A live browser timer,scoped history and timezone summaries remain subsequent tasks; no productivity surveillance or rewards are introduced.
+M10-02/03 add the [private persistent focus engine](docs/architecture/FOCUS.md), with trusted seat-authorized start,server deadlines,idempotent completion/cancellation,optional policy-gated pause and bounded own world-scoped history. SDK Sandbox's local mode is unpausable. A live browser timer and timezone summaries remain subsequent tasks; no productivity surveillance or rewards are introduced.

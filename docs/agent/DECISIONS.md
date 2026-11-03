@@ -1,5 +1,7 @@
 # Decisions
 
+M10-03 / ADR0025: focus history is always account-private,even with public room presence; immutable origin/creation order,own world-filtered cursor/max50 pages. Synthetic Deadline/Library verify scope without claiming integrated worlds; m10-scope-checks.json.
+
 M10-02 / ADR0024: trusted account-owned persistent focus,seat-authorized start and explicit origin pause policy; deadline completion before cancel,terminal retries cannot repeat outcomes. Private90day bounded history/receipts,no tick writes/notes/rewards; m10-engine-checks.json records actual checks and incomplete final whole-command exit.
 
 | ID | Decision | Status | Evidence |

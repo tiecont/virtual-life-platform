@@ -12,10 +12,11 @@ const opened: { app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: 
 beforeAll(async () => { const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database'); admin = new Pool({ connectionString: url.toString() }); });
 afterEach(async () => { for (const socket of sockets) socket.close(); sockets.clear(); for (const r of opened.splice(0)) { await r.app.app.close(); await r.pool.end(); await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`); } });
 afterAll(async () => { await admin.end(); });
-async function open() {
+async function open(scopedWorlds = false) {
   const schema = 'focus_test_' + randomUUID().replaceAll('-', ''); await admin.query(`CREATE SCHEMA "${schema}"`); const url = new URL(process.env.TEST_DATABASE_URL!); url.searchParams.set('options', '-c search_path=' + schema); const pool = new Pool({ connectionString: url.toString() }); await migrate(pool); let now = Date.now();
   const module = defineWorld({ schemaVersion: 1, apiVersion: 1, slug: 'focus-library-fixture', version: '1.0.0', title: 'Synthetic focus library (not actual Library world)', kind: 'sandbox', sceneRef: { key: 'focus-fixture', version: '1.0.0' }, capacity: 2, seatIds: ['seat-1', 'seat-2'], capabilities: ['presence', 'seating', 'focus'], focusPolicy: { pauseAllowed: true }, accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'sandbox', position: { x: .5, y: .5 }, icon: 'flask' } }, { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {}, travel: { prepare: async () => {}, abort: async () => {}, depart: async () => {} } });
-  const config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'focus-local-test-only-session-secret-000001' }), options = { now: () => now, worlds: { modules: [module] } }, app = await createApp(config, pool, false, options); opened.push({ app, pool, schema }); await app.app.listen(0, '127.0.0.1'); for (const slug of app.worlds.registry.slugs()) await app.worlds.registry.setEnabled(slug, true);
+  const scoped = scopedWorlds ? ['deadline', 'library'].map(slug => defineWorld({ ...module.definition, slug, title: 'Synthetic ' + slug + ' focus fixture', focusPolicy: { pauseAllowed: slug === 'library' } }, { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {}, travel: { prepare: async () => {}, abort: async () => {}, depart: async () => {} } })) : [];
+  const config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'focus-local-test-only-session-secret-000001' }), options = { now: () => now, worlds: { modules: [module, ...scoped] } }, app = await createApp(config, pool, false, options); opened.push({ app, pool, schema }); await app.app.listen(0, '127.0.0.1'); for (const slug of app.worlds.registry.slugs()) await app.worlds.registry.setEnabled(slug, true);
   return { app, pool, options, config, url: await app.app.getUrl(), now: () => now, advance: (ms: number) => { now += ms; } };
 }
 type Runtime = Awaited<ReturnType<typeof open>>; type User = { me: Me; cookie: string };
@@ -125,4 +126,40 @@ it('invalidates a source flag generation that changes during awaited focus autho
   const started = new Promise<void>(resolve => { began = resolve; }), gate = new Promise<void>(resolve => { release = resolve; }), original = r.app.worlds.registry.authorizeWorld.bind(r.app.worlds.registry); let intercept = true;
   r.app.worlds.registry.authorizeWorld = async (token, slug) => { const result = await original(token, slug); if (intercept) { intercept = false; began(); await gate; } return result; };
   const pending = post(r, u, 'focus', input(peer.source)); await started; await r.app.worlds.registry.setEnabled('sdk-sandbox', false); await r.app.worlds.registry.setEnabled('sdk-sandbox', true); release(); expect((await pending).statusCode).toBe(409); expect((await r.pool.query('SELECT 1 FROM engine_focus_sessions')).rowCount).toBe(0);
+});
+
+it('pages private world-scoped history in stable creation order across synthetic Deadline and Library without changing origin', async () => {
+  const r = await open(true), u = await guest(r), deadline = await seat(r, u, 'deadline'), first = await start(r, u, deadline.source);
+  await deadline.socket.timeout(5000).emitWithAck('room.leave', deadline.command());
+  const library = await seat(r, u, 'library'); expect((await post(r, u, 'focus', input(library.source))).statusCode).toBe(409);
+  expect((await get(r, u)).json().session.origin).toEqual(first.origin); r.advance(900000); const second = await start(r, u, library.source, 1500); await action(r, u, second.id, 'cancel');
+  const third = await start(r, u, library.source, 3000);
+  const newest = await get(r, u, 'focus/history?limit=1'); expect(newest.statusCode).toBe(200); expect(newest.json().items.map((item: { id: string }) => item.id)).toEqual([third.id]); expect(newest.json().nextCursor).toBe(third.id);
+  const next = await get(r, u, 'focus/history?limit=1&cursor=' + newest.json().nextCursor); expect(next.json().items[0].id).toBe(second.id);
+  const last = await get(r, u, 'focus/history?limit=1&cursor=' + second.id); expect(last.json().items[0]).toMatchObject({ id: first.id, phase: 'completed', origin: first.origin }); expect(last.json().nextCursor).toBeNull();
+  const filtered = await get(r, u, 'focus/history?worldSlug=deadline'); expect(filtered.json().items.map((item: { id: string }) => item.id)).toEqual([first.id]);
+  expect((await get(r, u, 'focus/history?worldSlug=library')).json().items).toHaveLength(2); expect((await get(r, u, 'focus/history?worldSlug=deadline&cursor=' + second.id)).statusCode).toBe(404);
+  expect((await post(r, u, 'focus', input(deadline.source))).statusCode).toBe(409); expect((await r.pool.query('SELECT 1 FROM engine_focus_sessions')).rowCount).toBe(3);
+});
+
+it('keeps focus history private under public/hidden per-world presence and rejects foreign or forged history cursors', async () => {
+  const r = await open(true), owner = await guest(r), viewer = await guest(r);
+  const privacy = async (presence: 'public' | 'hidden', visibility: 'public' | 'hidden') => { const response = await r.app.http.inject({ method: 'PATCH', url: '/v1/me/privacy', headers: headers(owner), payload: { presence, analyticsConsent: false, worldVisibility: { deadline: visibility, library: visibility } } }); expect(response.statusCode).toBe(200); };
+  await privacy('public', 'hidden'); const seated = await seat(r, owner, 'deadline'), timer = await start(r, owner, seated.source), watching = await seat(r, viewer, 'deadline', false);
+  const snapshot = async () => RoomAckSchema.parse(await watching.socket.timeout(5000).emitWithAck('room.snapshot', watching.command()));
+  expect(JSON.stringify(await snapshot())).not.toContain(owner.me.profile.id); expect(JSON.stringify(await snapshot())).not.toContain(timer.id);
+  await privacy('public', 'public'); const visible = await snapshot(); expect(JSON.stringify(visible)).toContain(owner.me.profile.id); expect(JSON.stringify(visible)).not.toMatch(/remainingMs|startedAt|durationSeconds|focus/); expect(JSON.stringify(visible)).not.toContain(timer.id);
+  expect((await get(r, viewer, 'focus/history')).json().items).toEqual([]); expect((await get(r, viewer, 'focus/history?cursor=' + timer.id)).statusCode).toBe(404); expect((await get(r, owner, 'focus/history?cursor=' + randomUUID())).statusCode).toBe(404);
+  for (const query of ['limit=0', 'limit=51', 'limit=1.5', 'cursor=invalid', 'accountId=' + owner.me.profile.id, 'worldSlug=deadline&worldSlug=library', 'roomId=' + seated.source.roomId]) expect((await get(r, viewer, 'focus/history?' + query)).statusCode).toBe(422);
+  expect((await r.app.http.inject({ url: '/v1/focus/history' })).statusCode).toBe(401);
+  const exported = (await get(r, viewer, 'me/export')).json(); expect(JSON.stringify(exported)).not.toContain(timer.id);
+  await privacy('hidden', 'hidden'); expect((await get(r, owner, 'focus/history')).json().items[0].id).toBe(timer.id); expect(JSON.stringify(await snapshot())).not.toContain(owner.me.profile.id);
+});
+
+it('denies new starts in a closed origin while retaining own private history and independent timer cancellation', async () => {
+  const r = await open(true), u = await guest(r), seated = await seat(r, u, 'deadline'), timer = await start(r, u, seated.source); await action(r, u, timer.id, 'cancel');
+  await r.pool.query("INSERT INTO safety_incident_controls VALUES('deadline','world',true,NULL,$1)", [new Date(r.now())]);
+  expect((await post(r, u, 'focus', input(seated.source))).statusCode).toBe(404); expect((await get(r, u, 'focus/history?worldSlug=deadline')).json().items[0].id).toBe(timer.id);
+  await r.app.worlds.registry.setEnabled('deadline', false); expect((await post(r, u, 'focus', input(seated.source))).statusCode).not.toBe(201); expect((await get(r, u, 'focus/' + timer.id)).json().session.phase).toBe('cancelled');
+  expect((await action(r, u, timer.id, 'cancel')).statusCode).toBe(200); expect((await r.pool.query('SELECT 1 FROM engine_focus_sessions')).rowCount).toBe(1);
 });

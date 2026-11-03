@@ -1,5 +1,11 @@
 # Agent progress
 
+## M10-03 - VERIFIED own world-scoped focus history
+
+Workspace from9847bdf; m10-scope-checks.json/ADR0025. Full pnpm check exit0(7governance,125unit,193integration/builds),targeted focus15 exit0,typecheck/lint/diff0. Initial fixture accessed nonexistent public hooks; corrected explicit synthetic hooks. Next attempt expected403 for closed world but existing admission hides it with404; corrected assertion,policy unchanged. Both failed logs retained.
+
+Own history uses account-checked world-filtered UUID cursor/creation order and max50 records,serverTime/nextCursor. Actual synthetic Deadline/Library socket seats/start/move/history verify immutable origin,one running timer,cursor IDOR,strict query,global/world hidden/public presence with no focus leak and closed-origin denial with retained own history. No frontend/E2E rerun,migration,actual legacy/world integration,notes/rewards/public projection or flag/remote change. Next exact action M10-04 reusable accessible timer UI,server-time recovery and explicit sanitized completion sharing,real desktop/mobile verification.
+
 ## M10-02 - VERIFIED private persistent focus engine
 
 2026-11-03 workspace from a5d4830; evidence m10-engine-checks.json. Initial pnpm check exit0:7governance,125unit,189integration/builds. Final expanded stages pass125unit/190integration; whole-command exit unavailable after session expiration,so separate pnpm build exit0 collected. Final focused12 real PG/HTTP/socket tests,APIbuild/lint exit0; scene browser24 exit0. Additive0012 applied local exit0. Initial red and partial attempt logs retained.
