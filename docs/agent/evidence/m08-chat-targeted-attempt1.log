@@ -1,0 +1,72 @@
+ Network virtual-city-test-0f04f2ed_default Creating 
+ Network virtual-city-test-0f04f2ed_default Creating 
+ Network virtual-city-test-0f04f2ed_default Created 
+ Network virtual-city-test-0f04f2ed_default Created 
+ Container virtual-city-test-0f04f2ed-db-1 Creating 
+ Container virtual-city-test-0f04f2ed-db-1 Created 
+ Container virtual-city-test-0f04f2ed-db-1 Starting 
+ Container virtual-city-test-0f04f2ed-db-1 Started 
+ Container virtual-city-test-0f04f2ed-db-1 Waiting 
+ Container virtual-city-test-0f04f2ed-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/chat.test.ts (10 tests | 2 failed) 3115ms
+   × broadcasts only approved normalized server-profile messages and deduplicates actual socket retries 202ms
+   × bounds timed-out underlying classifier work and never emits late successes after providers eventually resolve 810ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/chat.test.ts > broadcasts only approved normalized server-profile messages and deduplicates actual socket retries
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ tests/integration/chat.test.ts:78:14
+     76|   const aa = messages(a), bb = messages(b); const input = chatInput(sa…
+     77|   const first = await send(a, input); expect(first.ok).toBe(true); awa…
+     78|   expect(bb).toHaveLength(1); expect(aa).toHaveLength(1); expect(bb[0]…
+       |              ^
+     79|   expect(await send(a, input)).toEqual(first); await flush(b, sb); exp…
+     80|   const conflict = await send(a, { ...input, content: { kind: 'text', …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  |integration| tests/integration/chat.test.ts > bounds timed-out underlying classifier work and never emits late successes after providers eventually resolve
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ tests/integration/chat.test.ts:123:42
+    121|   expect((await send(a, chatInput(sa, { kind: 'canned', id: 'hello' })…
+    122|   releases.forEach(release => release()); await expect.poll(() => runt…
+    123|   expect(aa).toHaveLength(1); expect(bb).toHaveLength(1); expect(aa[0]…
+       |                                          ^
+    124| });
+    125|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 8 passed (10)
+   Start at  09:47:29
+   Duration  3.91s (transform 286ms, setup 0ms, import 681ms, tests 3.11s, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-0f04f2ed-db-1 Stopping 
+ Container virtual-city-test-0f04f2ed-db-1 Stopped 
+ Container virtual-city-test-0f04f2ed-db-1 Removing 
+ Container virtual-city-test-0f04f2ed-db-1 Removed 
+ Network virtual-city-test-0f04f2ed_default Removing 
+ Network virtual-city-test-0f04f2ed_default Removed 
+
+TOP_LEVEL_EXIT=1

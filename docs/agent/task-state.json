@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-03T02:30:44Z",
+  "updatedAt": "2026-11-03T03:09:17.622559+00:00",
   "tasks": {
     "AUD-01": {
       "status": "VERIFIED",
@@ -200,6 +200,7 @@
     "M07-04": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m07-movement-checks.json; docs/adr/0010-negotiated-scene-movement.md", "verification": "final check->0 (7 governance,43 unit,75 PG/HTTP/socket integration/builds); E2E26->0; actual sampled click/keyboard interpolation around solid tiles, negotiated old/new projections,privacy/freeze/idempotency/forgery and trusted seat point checks" },
     "M07-05": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m07-accessibility-checks.json; docs/architecture/SCENES.md", "verification": "check->0 (43unit,75integration/builds); final E2E28->0 after real focus/mobile hook failures fixed; actual contrast>=5.7288,targets>=44,keyboard focus/skip/low-motion/fallback/mobile checks; final lint/diff->0" },
     "M07-06": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m07-performance-checks.json; docs/architecture/SCENE-PERFORMANCE.md; docs/adr/0011-renderer-loading-and-asset-cache.md", "verification": "check->0(7governance,43unit,75integration/builds); final boundaries3/lint/diff->0,E2E30->0; real profile passes readiness/bytes/immutable warm-cache/idle/rAF/3remount heap budgets; no physical-device/production claim" },
-    "M08-01": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m08-policy-checks.json; docs/product/SAFETY-THREAT-MODEL.md; docs/adr/0012-draft-safety-policy-and-runtime-gates.md", "verification": "check->0(7governance,45unit,75integration/builds); strict actual-policy/unsafe-config tests; audited current enforcement and world threats/escalation/sanctions/appeals/retention; definition scope only, no runtime moderation claim" }
+    "M08-01": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m08-policy-checks.json; docs/product/SAFETY-THREAT-MODEL.md; docs/adr/0012-draft-safety-policy-and-runtime-gates.md", "verification": "check->0(7governance,45unit,75integration/builds); strict actual-policy/unsafe-config tests; audited current enforcement and world threats/escalation/sanctions/appeals/retention; definition scope only, no runtime moderation claim" },
+    "M08-02": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m08-chat-checks.json; docs/architecture/CHAT-SAFETY.md", "verification": "final pnpm check ->0:7 governance,48 unit,89 integration/builds; existing E2E30 ->0; production/default OFF, curated gate and volatile delivery limits documented" }
   }
 }

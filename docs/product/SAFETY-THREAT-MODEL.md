@@ -2,7 +2,9 @@
 
 M08-01 defines and validates policy. It does not implement chat moderation, reports, sanctions, appeals, moderator authentication or retention jobs. Those are M08-02..06. `config/safety-policy.json` is a versioned local draft with `SafetyPolicySchema`; public release, coverage approval and retention review are false. No operator/contact is invented, no privileged account is created, and no external message is sent.
 
-## Audit: enforced now versus required next
+M08-02 update: the default-OFF local [chat backend](../architecture/CHAT-SAFETY.md) now enforces pre-broadcast checks, bounded moderation and fresh audience filtering. Production is closed; reporting and staff runtime remain pending. The following table preserves the M08-01 audit baseline.
+
+## M08-01 audit baseline: enforced then versus required next
 
 | Surface | Current evidence-backed control | Missing runtime gate |
 |---|---|---|
@@ -77,7 +79,7 @@ Draft appeal window30days and review target72h need owner/contact/coverage revie
 
 | Data | Local policy target | Implementation/review status |
 |---|---|---|
-| Ordinary or rejected raw chat | 0h persisted by default | No chat table/pipeline yet; future report evidence is a separate justified exception |
+| Ordinary or rejected raw chat | 0h persisted by default | No raw chat table; M08-02 pipeline is ephemeral; future report evidence is a separate justified exception |
 | Report snapshot | At most5 message references and1,000 note characters;30days | Encrypted at rest, assigned-case access, reporter confidentiality and purge job required in M08-03/06 |
 | Case metadata | 90days | No runtime store yet; minimize account linkage and free text |
 | Audit metadata | 180days | No raw evidence/body in audit; append-only history plus reviewed identity redaction policy required |
@@ -88,6 +90,6 @@ These draft limits align the existing30day evidence target in ANALYTICS. They ar
 
 ## Verification handoff
 
-`SafetyPolicySchema` is strict and versioned. Tests load the actual JSON, require every category/product context and bounded retention/escalation target, and reject fail-open fallback, reporter disclosure, unreviewed classifier sanctions, raw chat storage, missing child-safety coverage, slower critical triage, overlong temporary bans and adult/staff/privacy bypasses. Safe closure/no-media choices remain valid. It validates policy definitions only; current routes still have no chat/report/moderator runtime.
+`SafetyPolicySchema` is strict and versioned. Tests load the actual JSON, require every category/product context and bounded retention/escalation target, and reject fail-open fallback, reporter disclosure, unreviewed classifier sanctions, raw chat storage, missing child-safety coverage, slower critical triage, overlong temporary bans and adult/staff/privacy bypasses. Safe closure/no-media choices remain valid. It validates policy definitions only; separate M08-02 verification covers the gated chat runtime. Report/moderator runtime remains pending.
 
-M08-02 must consume these rules through authenticated server commands and test allowed/denied delivery, expiry/revoke, block projections, flood/quick-chat limits, Vietnamese/Unicode normalization and moderation outage before any broadcast. M08-03..06 add confidential reporting/evidence/RBAC, cross-world sanction/appeal enforcement, moderator controls and retention/false-positive/recovery tests. W1 cannot release without those results.
+M08-02 consumes these rules through authenticated server commands and test allowed/denied delivery, expiry/revoke, block projections, flood/quick-chat limits, Vietnamese/Unicode normalization and moderation outage before any broadcast. M08-03..06 add confidential reporting/evidence/RBAC, cross-world sanction/appeal enforcement, moderator controls and retention/false-positive/recovery tests. W1 cannot release without those results.

@@ -81,3 +81,5 @@ Room commands use authenticated Socket.IO with authoritative capacity, seats, pr
 ## World registry
 
 Authenticated GET /v1/worlds returns privacy-safe metadata. Only SDK Sandbox (local test world) is registered; disabled by default, no playable scene/room. Optional WORLD_FLAGS_FILE uses config/world-flags.example.json and the current NODE_ENV; SIGHUP reloads flags in the API process. Sandbox activation is denied in production. Invalid files/unknown flags disable worlds; permissions cannot be supplied by flags. All actual world rollout flags remain OFF. See docs/architecture/WORLD-SDK.md for lifecycle, errors, rollback and legacy adapter sequencing. Room/travel wire contracts remain M06/M09.
+
+M08-02 adds a default-OFF development/test-only [ephemeral chat backend](docs/architecture/CHAT-SAFETY.md) with bounded pre-broadcast moderation. Production chat is closed; reports/sanctions/moderator UI and public safety approval remain pending.

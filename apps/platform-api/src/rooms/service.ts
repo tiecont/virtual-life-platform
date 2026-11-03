@@ -284,6 +284,32 @@ export class RoomService {
     });
   }
   maintain() { return this.#control('maintenance', async () => { await this.#sweep(); }); }
+  authorizeChat(credential: string, connectionId: string, input: RoomOwnCommand) {
+    return this.#run(async () => {
+      await this.#sweep(); const actor = await this.identity.authenticate(credential); const { room } = this.#own(actor, connectionId, input);
+      const generation = this.#worldGenerations.get(room.slug) ?? 0; const { definition } = await this.registry.authorizeWorld(credential, room.slug);
+      if (generation !== (this.#worldGenerations.get(room.slug) ?? 0)) throw new DomainError('WORLD_UNAVAILABLE', 503, 'World unavailable');
+      if (!definition.capabilities.includes('chat')) throw new DomainError('FORBIDDEN', 403, 'Chat capability unavailable');
+      return { actor, worldSlug: room.slug };
+    });
+  }
+  publishChat(credential: string, connectionId: string, input: RoomOwnCommand, emit: (recipient: { connectionId: string; profile: PublicProfile }) => void) {
+    return this.#run(async () => {
+      await this.#sweep(); const actor = await this.identity.authenticate(credential); const { room } = this.#own(actor, connectionId, input);
+      const generation = this.#worldGenerations.get(room.slug) ?? 0; const { definition } = await this.registry.authorizeWorld(credential, room.slug);
+      if (generation !== (this.#worldGenerations.get(room.slug) ?? 0)) throw new DomainError('WORLD_UNAVAILABLE', 503, 'World unavailable');
+      if (!definition.capabilities.includes('chat')) throw new DomainError('FORBIDDEN', 403, 'Chat capability unavailable');
+      const recipients: { connectionId: string; profile: PublicProfile }[] = [];
+      for (const member of room.members.values()) {
+        if (!member.connections.size) continue;
+        const snapshot = await this.#snapshot(room, member); const sender = snapshot.participants.find(person => person.profile.id === actor.accountId);
+        if (sender) for (const id of member.connections.keys()) recipients.push({ connectionId: id, profile: sender.profile });
+      }
+      await this.identity.authenticate(credential); await this.authority.assert();
+      if (generation !== (this.#worldGenerations.get(room.slug) ?? 0)) throw new DomainError('WORLD_UNAVAILABLE', 503, 'World unavailable');
+      for (const recipient of recipients) emit(recipient);
+    });
+  }
   #freezeMotion(member: Member) {
     if (!member.motion) return;
     const point = motionPosition(member.motion, this.now(), false);

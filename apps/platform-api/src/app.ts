@@ -19,6 +19,8 @@ import { RoomService } from './rooms/service';
 import { registerRoomGateway } from './rooms/socket';
 import { RoomMetrics } from './rooms/metrics';
 import { RoomAuthority } from './rooms/authority';
+import { createSafetyRuntime, loadSafetyPolicy, type SafetyRuntimeOptions } from './safety/runtime';
+import { registerChatGateway } from './safety/socket';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -33,7 +35,8 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions } = {}) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions } = {}) {
+  const safetyPolicy = await loadSafetyPolicy(options.safety?.policy);
   const requiredMigrations = await migrationNames();
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
     bodyLimit: 8192, requestTimeout: 10000, genReqId: () => randomUUID(),
@@ -57,6 +60,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   });
   if (!roomService) throw new Error('Room service failed to initialize');
   const rooms = roomService;
+  const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, policy: safetyPolicy }, options.now);
   http.addHook('onClose', async () => { await worlds.registry.close(); });
   http.addHook('onClose', async () => { await rooms.close(); });
   registerWorlds(http, config, worlds.registry, options.now, rooms);
@@ -64,7 +68,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerSocial(http, config, identity, social, options.now);
   identity.registerExportOwner('social', (id, transaction) => social.exportAccount(id, transaction));
   // Emit truthful room interruption events while sockets are still connected; the gateway closes immediately after this hook.
-  http.addHook('preClose', async () => { await rooms.close(); roomAuthority.close(); });
+  http.addHook('preClose', async () => { chat.close(); await rooms.close(); roomAuthority.close(); });
   http.get('/health/live', async () => ({ status: 'ok' }));
   http.get('/health/ready', async (_req, reply) => {
     try {
@@ -79,11 +83,12 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const gateway = createIdentityGateway(http, config, identity, options.now);
   const roomMetrics = new RoomMetrics();
   const unsubscribeRooms = registerRoomGateway(gateway, rooms, roomMetrics);
+  registerChatGateway(gateway, chat);
   const unsubscribeSocial = social.onChanged(ids => { for (const id of ids) gateway.emitToAccount(id, 'friendship.changed', { schemaVersion: 1 }); });
   const unsubscribeRoomSocial = social.onChanged(ids => { void rooms.refreshAccounts(ids); });
   const unsubscribeRoomIdentity = identity.onChanged(id => { void rooms.refreshAccounts([id]); });
   http.addHook('onClose', async () => { unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity, gateway, social, worlds, rooms, diagnostics };
+  return { app, http, identity, gateway, social, worlds, rooms, chat, diagnostics };
 }
