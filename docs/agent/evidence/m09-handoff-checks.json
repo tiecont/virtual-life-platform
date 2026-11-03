@@ -1,0 +1,32 @@
+{
+  "taskID": "M09-04",
+  "verifiedAt": "2026-11-03T06:06:00Z",
+  "source": "workspace from523953f; checkpoint commit follows git log",
+  "environment": "Linux, Node26.9.0, pnpm11.28.5, real disposable local PostgreSQL/Socket.IO, Chromium desktop/mobile",
+  "commands": [
+    { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/travel.test.ts -t 'prepares a destination'", "exitCode": 1, "testsFailed": 1, "filteredSkips": 14, "log": "m09-handoff-red.log", "reason": "coordinator request port did not exist before implementation" },
+    { "command": "pnpm check", "exitCode": 0, "governanceTests": 7, "unitTests": 121, "integrationTests": 169, "log": "m09-handoff-check-attempt1.log", "scope": "all governance/architecture/lint/types/assets/unit/integration/builds; two additional fault regressions added afterward are covered by targeted31" },
+    { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/travel.test.ts", "exitCode": 0, "tests": 31, "log": "m09-handoff-targeted-final.log", "scope": "includes actual owner-lock loss and source resource departure failure added after full check" },
+    { "command": "pnpm test:e2e", "exitCode": 0, "tests": 36, "log": "m09-handoff-e2e.log", "scope": "existing18desktop/18mobile regressions; browser travel routing remains M09-06" },
+    { "command": "pnpm lint", "exitCode": 0, "log": "m09-handoff-lint-final.log" },
+    { "command": "pnpm db:migrate", "exitCode": 0, "log": "m09-handoff-dev-migration.log", "scope": "additive0010 applied to retained city development DB only" },
+    { "command": "git diff --check", "exitCode": 0 }
+  ],
+  "verified": [
+    "registry-owned nonpublic prepare/abort/depart grants with500ms deadlines, generation/expiry invalidation, no normal command membership, explicit adapter opt-in",
+    "source seat/current membership preserved during delayed preparation while source commands run; holds count toward target capacity and cap64",
+    "one-owner source/target index replacement with READY/COMMITTED persistence, no speculative public join/leave before acknowledged SQL commit",
+    "actual socket transfer/replay/concurrent same-key request, all old source tabs invalidated, forged authority rejects and identity unchanged",
+    "expiry/source leave/flag/private/adult/sanction/disconnect/logout during preparation rejects target and retains source or truthful lobby",
+    "deferred SQL COMMIT failure restores source seat without ended event; actual COMMIT then injected lost acknowledgement reconciles historical committed receipt with null target snapshot",
+    "old-owner restart and actual PG advisory-lock backend termination prevent phantom target membership",
+    "hung/late target preparation and source cleanup failure quarantine their adapters; no second active membership or reactivation"
+  ],
+  "limits": [
+    "single exclusive owner/schema, not a distributed fenced protocol; old epoch metadata cannot restore runtime rooms",
+    "a committed receipt is historical; null snapshot means current live target could not be confirmed",
+    "uncooperative trusted resource hooks may keep running after abort; quarantined world requires operator cleanup/restart before resource-owning production use",
+    "fixture/sandbox adapters only, no real Deadline/Maid integration, group or browser travel routing yet",
+    "no new UI/assets/visual acceptance, public flag, staff, legacy or remote operation; production release remains gated"
+  ]
+}

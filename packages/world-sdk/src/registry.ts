@@ -7,18 +7,25 @@ export interface WorldPorts {
   hasMembership(actor: WorldActor, worldSlug: string, membershipId: string): Promise<boolean>;
 }
 export type WorldHookContext = Readonly<{ accountId: string; kind: WorldActor['kind']; membershipId: string }>;
+export type WorldTravelContext = WorldHookContext & Readonly<{ signal: AbortSignal; expiresAt: number }>;
+export interface WorldTravelHooks {
+  prepare(context: WorldTravelContext): Promise<void>;
+  abort(context: WorldTravelContext): Promise<void>;
+  depart(context: WorldTravelContext): Promise<void>;
+}
 export interface WorldHooks {
   bootstrap(): Promise<void>;
   shutdown(): Promise<void>;
   onJoin(context: WorldHookContext): Promise<void>;
   onLeave(context: WorldHookContext): Promise<void>;
   onCommand(context: WorldHookContext, payload: unknown): Promise<unknown>;
+  travel?: WorldTravelHooks;
 }
 export class WorldError extends Error {
   constructor(readonly code: 'NOT_FOUND' | 'FORBIDDEN' | 'INVALID_REQUEST' | 'WORLD_UNAVAILABLE' | 'WORLD_VERSION_MISMATCH', message: string) { super(message); }
 }
 const unavailable = () => new WorldError('WORLD_UNAVAILABLE', 'World unavailable');
-type Grant = { adapter: WorldAdapter; hook: 'bootstrap' | 'shutdown' | WorldInvocation['action']; context?: WorldHookContext; payload?: unknown };
+type Grant = { adapter: WorldAdapter; hook: 'bootstrap' | 'shutdown' | 'prepare' | 'abort' | 'depart' | WorldInvocation['action']; context?: WorldHookContext; travelContext?: WorldTravelContext; payload?: unknown };
 const grants = new WeakMap<object, Grant>();
 function freeze<T>(value: T): T {
   if (value && typeof value === 'object') { for (const child of Object.values(value)) freeze(child); Object.freeze(value); }
@@ -28,24 +35,30 @@ function freeze<T>(value: T): T {
 export class WorldAdapter {
   readonly definition: WorldDefinition;
   #hooks: WorldHooks;
-  constructor(definition: unknown, hooks: WorldHooks) { this.definition = freeze(WorldDefinitionSchema.parse(definition)); this.#hooks = Object.freeze({ ...hooks }); }
+  constructor(definition: unknown, hooks: WorldHooks) { this.definition = freeze(WorldDefinitionSchema.parse(definition)); this.#hooks = Object.freeze({ ...hooks, ...(hooks.travel ? { travel: Object.freeze({ ...hooks.travel }) } : {}) }); }
   async invoke(token: object): Promise<unknown> {
     const grant = grants.get(token);
     if (!grant || grant.adapter !== this) throw new WorldError('FORBIDDEN', 'Registry authorization required');
     grants.delete(token);
     if (grant.hook === 'bootstrap' || grant.hook === 'shutdown') return this.#hooks[grant.hook]();
+    if (grant.hook === 'prepare' || grant.hook === 'abort' || grant.hook === 'depart') {
+      if (!this.#hooks.travel || !grant.travelContext) throw unavailable();
+      return this.#hooks.travel[grant.hook](grant.travelContext);
+    }
     if (!grant.context) throw new WorldError('FORBIDDEN', 'Registry authorization required');
     if (grant.hook === 'join') return this.#hooks.onJoin(grant.context);
     if (grant.hook === 'leave') return this.#hooks.onLeave(grant.context);
     return this.#hooks.onCommand(grant.context, grant.payload);
   }
+  get supportsTravel() { return !!this.#hooks.travel; }
 }
 export const defineWorld = (definition: unknown, hooks: WorldHooks) => new WorldAdapter(definition, hooks);
-type Entry = { adapter: WorldAdapter; enabled: boolean; phase: WorldCard['availability']; generation: number; needsCleanup: boolean; cleanupFailed: boolean; pending: number; tail: Promise<void> };
+type Entry = { adapter: WorldAdapter; enabled: boolean; phase: WorldCard['availability']; generation: number; needsCleanup: boolean; cleanupFailed: boolean; travelStalled?: boolean; pending: number; tail: Promise<void> };
 export class WorldRegistry {
   #entries = new Map<string, Entry>();
   #revision = 0;
   #closed = false;
+  #preparations = new Set<() => void>();
   #closing?: Promise<void>;
   #unavailableListeners = new Set<(slug: string) => void>();
   constructor(readonly environment: 'development' | 'test' | 'production', private ports: WorldPorts) {}
@@ -76,6 +89,7 @@ export class WorldRegistry {
     return entry.adapter.invoke(token);
   }
   async #stop(entry: Entry) {
+    if (entry.travelStalled) return;
     if (!entry.needsCleanup) return;
     try { await this.#invoke(entry, { hook: 'shutdown' }); entry.needsCleanup = false; }
     catch { entry.cleanupFailed = true; entry.phase = 'offline'; throw unavailable(); }
@@ -84,6 +98,7 @@ export class WorldRegistry {
     if (this.#closed) throw unavailable();
     if (typeof enabled !== 'boolean') throw new WorldError('INVALID_REQUEST', 'Expected a boolean flag');
     const entry = this.#get(slug);
+    if (entry.travelStalled) { if (enabled) throw unavailable(); entry.enabled = false; this.#notifyUnavailable(entry); return; }
     if (enabled && this.environment === 'production' && entry.adapter.definition.kind === 'sandbox') throw new WorldError('FORBIDDEN', 'Sandbox unavailable in production');
     if (entry.enabled === enabled && ((enabled && entry.phase === 'available') || (!enabled && entry.phase === 'disabled'))) return entry.tail;
     entry.enabled = enabled; entry.phase = enabled ? 'offline' : 'disabled';
@@ -102,6 +117,50 @@ export class WorldRegistry {
     }, true);
   }
   #ready(entry: Entry) { if (this.#closed || !entry.enabled || entry.phase !== 'available') throw unavailable(); }
+  #quarantine(entry: Entry) { entry.cleanupFailed = true; entry.phase = 'offline'; entry.generation++; this.#revision++; this.#notifyUnavailable(entry); }
+  // Preparation never calls normal onJoin or supplies active membership authority.
+  // Each underlying hook is bounded; an ignored abort quarantines this adapter.
+  async #travelHook(entry: Entry, hook: 'prepare' | 'abort' | 'depart', context: WorldTravelContext, controller: AbortController, now: () => number) {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const timeout = new Promise<never>((_, reject) => { timer = setTimeout(() => { entry.travelStalled = true; controller.abort(); this.#quarantine(entry); reject(unavailable()); }, Math.max(1, Math.min(500, context.expiresAt - now()))); });
+      await Promise.race([this.#queue(entry, () => {
+        if (controller.signal.aborted) throw unavailable();
+        return Promise.race([this.#invoke(entry, { hook, travelContext: context }).then(() => {}), timeout]);
+      }), timeout]);
+    } catch (error) { controller.abort(); if (hook !== 'prepare') this.#quarantine(entry); throw error; }
+    finally { if (timer) clearTimeout(timer); }
+  }
+  async prepareAdmission(credential: string, slug: string, membershipId: string, expiresAt: number, now = Date.now) {
+    const { actor } = await this.authorizeWorld(credential, slug), entry = this.#get(slug), generation = entry.generation;
+    if (!entry.adapter.supportsTravel || expiresAt <= now()) throw unavailable();
+    const controller = new AbortController(), context = Object.freeze({ accountId: actor.accountId, kind: actor.kind, membershipId, expiresAt, signal: controller.signal });
+    const cancel = () => controller.abort(); this.#preparations.add(cancel); let finished = false;
+    const abort = async () => {
+      if (finished) return; finished = true; cancel(); this.#preparations.delete(cancel);
+      // A stuck underlying preparation owns its queue slot; never queue more
+      // resource work behind it. Quarantine requires operator restart/cleanup.
+      if (entry.cleanupFailed) return;
+      const cleanup = new AbortController();
+      await this.#travelHook(entry, 'abort', Object.freeze({ ...context, signal: cleanup.signal, expiresAt: now() + 500 }), cleanup, now);
+    };
+    try { await this.#travelHook(entry, 'prepare', context, controller, now); }
+    catch (error) { await abort(); throw error; }
+    return Object.freeze({
+      valid: () => !finished && !controller.signal.aborted && !this.#closed && entry.enabled && entry.phase === 'available' && entry.generation === generation && now() < expiresAt,
+      abort,
+      complete: () => { if (finished || controller.signal.aborted || entry.generation !== generation || now() >= expiresAt) throw unavailable(); finished = true; this.#preparations.delete(cancel); },
+    });
+  }
+  async prepareDeparture(credential: string, slug: string, membershipId: string, now = Date.now) {
+    const { actor } = await this.authorizeWorld(credential, slug), entry = this.#get(slug);
+    if (!entry.adapter.supportsTravel || !await this.ports.hasMembership(actor, slug, membershipId)) throw new WorldError('FORBIDDEN', 'Travel lifecycle required');
+    let used = false;
+    return async () => {
+      if (used) return; used = true; const controller = new AbortController();
+      await this.#travelHook(entry, 'depart', Object.freeze({ accountId: actor.accountId, kind: actor.kind, membershipId, expiresAt: now() + 500, signal: controller.signal }), controller, now);
+    };
+  }
   async authorizeWorld(credential: string, slug: string) {
     const actor = await this.ports.authenticate(credential); const entry = this.#get(slug);
     if (!await this.ports.canAccess(actor, entry.adapter.definition)) throw new WorldError('NOT_FOUND', 'World not found');
@@ -155,6 +214,7 @@ export class WorldRegistry {
   }
   close(): Promise<void> {
     if (this.#closing) return this.#closing;
+    for (const cancel of this.#preparations) cancel(); this.#preparations.clear();
     const stops = this.slugs().map(slug => this.setEnabled(slug, false)); this.#closed = true;
     this.#closing = Promise.allSettled(stops).then(results => { if (results.some(result => result.status === 'rejected')) throw unavailable(); });
     return this.#closing;

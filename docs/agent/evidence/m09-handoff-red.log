@@ -1,0 +1,43 @@
+ Network virtual-city-test-e8accd31_default Creating 
+ Network virtual-city-test-e8accd31_default Creating 
+ Network virtual-city-test-e8accd31_default Created 
+ Network virtual-city-test-e8accd31_default Created 
+ Container virtual-city-test-e8accd31-db-1 Creating 
+ Container virtual-city-test-e8accd31-db-1 Created 
+ Container virtual-city-test-e8accd31-db-1 Starting 
+ Container virtual-city-test-e8accd31-db-1 Started 
+ Container virtual-city-test-e8accd31-db-1 Waiting 
+ Container virtual-city-test-e8accd31-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/travel.test.ts (15 tests | 1 failed | 14 skipped) 503ms
+   × prepares a destination without public membership, retains source seat, then switches exactly once with current snapshots 500ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/travel.test.ts > prepares a destination without public membership, retains source seat, then switches exactly once with current snapshots
+TypeError: r.app.travel.request is not a function
+ ❯ tests/integration/travel.test.ts:229:32
+    227|   const seat = RoomAckSchema.parse(await peer.socket.timeout(5000).emi…
+    228|   const issued = await create(r, u, peer.source), key = randomUUID();
+    229|   const request = r.app.travel.request(credential(r, u), peer.socket.i…
+       |                                ^
+    230|   await expect.poll(() => started).toBe(true);
+    231|   expect(r.app.rooms.diagnostics()).toMatchObject({ memberships: 1, oc…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 14 skipped (15)
+   Start at  12:52:40
+   Duration  1.34s (transform 278ms, setup 0ms, import 717ms, tests 503ms, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-e8accd31-db-1 Stopping 
+ Container virtual-city-test-e8accd31-db-1 Stopped 
+ Container virtual-city-test-e8accd31-db-1 Removing 
+ Container virtual-city-test-e8accd31-db-1 Removed 
+ Network virtual-city-test-e8accd31_default Removing 
+ Network virtual-city-test-e8accd31_default Removed 

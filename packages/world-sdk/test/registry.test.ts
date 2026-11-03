@@ -8,6 +8,35 @@ const definition: WorldDefinition = {
   accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'test', position: { x: 0.5, y: 0.5 }, icon: 'flask' },
 };
 const invocation: WorldInvocation = { schemaVersion: 1, worldVersion: '1.0.0', sceneVersion: '1.0.0', action: 'join', membershipId: 'controlled-membership-fixture' };
+describe('M09 separate bounded travel lifecycle grants', () => {
+  it('preparation invokes no ordinary join and never supplies command authority; abort and departure are single-use', async () => {
+    const calls: string[] = []; let member = false;
+    const { registry, adapter } = fixture({ travel: { prepare: async () => { calls.push('prepare'); }, abort: async () => { calls.push('abort'); }, depart: async () => { calls.push('depart'); } } }, { hasMembership: async () => member });
+    await registry.setEnabled(definition.slug, true);
+    await expect(adapter.invoke({ hook: 'prepare' })).rejects.toMatchObject({ code: 'FORBIDDEN' });
+    const prepared = await registry.prepareAdmission('server-credential', definition.slug, 'nonpublic-preparation', Date.now() + 30000); expect(prepared.valid()).toBe(true);
+    await expect(registry.dispatch('server-credential', definition.slug, { ...invocation, membershipId: 'nonpublic-preparation', action: 'command' })).rejects.toMatchObject({ code: 'FORBIDDEN' });
+    await expect(registry.prepareDeparture('server-credential', definition.slug, 'foreign-source')).rejects.toMatchObject({ code: 'FORBIDDEN' });
+    await prepared.abort(); await prepared.abort(); expect(prepared.valid()).toBe(false); expect(() => prepared.complete()).toThrow();
+    member = true; const departure = await registry.prepareDeparture('server-credential', definition.slug, invocation.membershipId); member = false; await departure(); await departure(); expect(calls).toEqual(['prepare', 'abort', 'depart']); await registry.close();
+  });
+  it('requires an explicit travel lifecycle and invalidates preparation on expiry and world generation change', async () => {
+    const unsupported = fixture(); await unsupported.registry.setEnabled(definition.slug, true); await expect(unsupported.registry.prepareAdmission('server-credential', definition.slug, 'prepared', Date.now() + 1000)).rejects.toMatchObject({ code: 'WORLD_UNAVAILABLE' }); await unsupported.registry.close();
+    let now = 10000; const { registry } = fixture({ travel: { prepare: async () => {}, abort: async () => {}, depart: async () => {} } }); await registry.setEnabled(definition.slug, true);
+    const first = await registry.prepareAdmission('server-credential', definition.slug, 'first', 10050, () => now); now = 10050; expect(first.valid()).toBe(false); await first.abort();
+    const second = await registry.prepareAdmission('server-credential', definition.slug, 'second', 20000, () => now); await registry.setEnabled(definition.slug, false); expect(second.valid()).toBe(false); await second.abort(); await registry.close();
+  });
+  it('rolls back a settled preparation error and quarantines failed resource cleanup', async () => {
+    let aborted = 0; const { registry } = fixture({ travel: { prepare: async () => { throw new Error('synthetic prepare failure'); }, abort: async () => { aborted++; }, depart: async () => {} } }); await registry.setEnabled(definition.slug, true);
+    await expect(registry.prepareAdmission('server-credential', definition.slug, 'prepared', Date.now() + 30000)).rejects.toThrow(); expect(aborted).toBe(1); await registry.close();
+    const failed = fixture({ travel: { prepare: async () => {}, abort: async () => { throw new Error('synthetic cleanup failure'); }, depart: async () => {} } }); await failed.registry.setEnabled(definition.slug, true); const prepared = await failed.registry.prepareAdmission('server-credential', definition.slug, 'prepared', Date.now() + 30000); await expect(prepared.abort()).rejects.toThrow(); expect((await failed.registry.catalog('server-credential')).worlds[0].availability).toBe('offline'); await expect(failed.registry.setEnabled(definition.slug, true)).rejects.toMatchObject({ code: 'WORLD_UNAVAILABLE' }); await failed.registry.close();
+  });
+  it('bounds a stuck preparation and closes without awaiting its late success', async () => {
+    let release!: () => void, signal: AbortSignal | undefined;
+    const { registry } = fixture({ travel: { prepare: async context => { signal = context.signal; await new Promise<void>(resolve => { release = resolve; }); }, abort: async () => {}, depart: async () => {} } }); await registry.setEnabled(definition.slug, true);
+    await expect(registry.prepareAdmission('server-credential', definition.slug, 'prepared', Date.now() + 30000)).rejects.toMatchObject({ code: 'WORLD_UNAVAILABLE' }); expect(signal?.aborted).toBe(true); expect((await registry.catalog('server-credential')).worlds[0].availability).toBe('offline'); await registry.close(); release();
+  });
+});
 function fixture(overrides: Partial<WorldHooks> = {}, ports: Partial<WorldPorts> = {}) {
   const calls: string[] = [];
   const adapter = defineWorld(definition, {

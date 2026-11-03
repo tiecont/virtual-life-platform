@@ -1,6 +1,6 @@
 # Travel Lifecycle and Admission Boundary
 
-M09-01 implements the executable lifecycle model; M09-02 adds scoped durable authorization and HTTP issuance/read/cancel. Neither moves a player. There is no destination reservation, membership handoff or travel UI yet. Existing room.join still rejects a different current membership. See ADR0017/0018 and the M09 checkpoints for verified scope.
+M09-01 defines the lifecycle; M09-02 adds scoped durable authorization and HTTP issuance/read/cancel. M09-04 adds a socket coordinator with separate target preparation, bounded capacity holds and an owner-serialized membership switch. Browser travel routing remains M09-06. Ordinary room.join still rejects a different current membership. See ADR0017/0018/0020 and the M09 checkpoints for verified scope.
 
 ## Audit
 
@@ -68,7 +68,7 @@ sequenceDiagram
   end
 ```
 
-This diagram specifies obligations, not a completed room handoff. The eventual linearization point must be one owner-serialized switch after fresh target confirmation; intermediate preparation is never a second active account membership or normal destination authority. Capacity counts active plus bounded preparations. No observer may see two active memberships. Awaited hooks cannot create an unguarded publication window. Source departure failure must not invent successful target activity. Target rollback/cleanup and resource-owning hook deadlines need explicit implementation/evidence.
+M09-04 implements this protocol for the single exclusive owner with synthetic targets. A separate hold counts toward target capacity without entering active membership indexes. Preparation hooks run outside the owner queue; final source/target validation and index replacement serialize within it. See the transaction/acknowledgement limits below; the diagram is not evidence for distributed owners or integrated legacy worlds.
 
 ## Failure and Privacy Rules
 
@@ -100,4 +100,16 @@ Migration0008 stores one active intent/account and body-free mutation fingerprin
 
 Source membership and target checks execute through the existing serialized room owner; no capacity is reserved during HTTP/database latency. A source leave, full destination, access change or expiry can invalidate a previously issued capability. Actual switch authority must never rely on a stale observation. Additive rollback and remaining implementation obligations are documented in ADR0018.
 
-One owner, synthetic fixtures and all real flagsOFF remain the current operating scope. No cross-process handshake, durable room recovery, real Deadline/Maid integration, party, invitation, public release or browser travel success is claimed by M09-01/02.
+## M09-04 Socket Handoff
+
+`travel.request` accepts strict `{schemaVersion:1,requestId,intentId,capability}` after authenticated gateway/session guards. Maximum2 pending/socket and64 coordinator jobs; same-key/session/connection retries share one job. ACK success contains `{schemaVersion:1,receipt,snapshot}` with snapshot null when a historical committed receipt cannot establish a current target. No raw capability enters the ACK, logs or notifications. Private `travel.accepted/failed` hints contain only schemaVersion/requestId; acceptance is emitted only with a current target snapshot.
+
+Adapters must explicitly implement registry travel prepare/abort/depart. These hooks receive AbortSignal/deadline, never ordinary active membership authority. Preparation retains source seat/membership, counts one bounded target hold and allows other owner commands to run. Failed settled preparation runs abort; a nonsettling hook or failed cleanup quarantines the adapter. Each hook/queue wait has a500ms cap, bounded by original intent expiry. Quarantined adapters cannot reactivate in process; uncooperative external resource cleanup remains an operational limit, not a claimed success.
+
+After target confirmation, READY is durable. Final owner validation rechecks source/connection/session/epoch, current target/private/adult/safety/version/flags and preparation validity. Account-locked SQL verifies phase/session/deadline again, writes historical target IDs, then replaces source/target indexes synchronously before COMMIT. Events and target snapshot wait for the acknowledged transaction. A rejected transaction restores original source/seat/tab connections without publishing speculative joins/leaves. If acknowledgement is lost after the DB actually commits, runtime conservatively restores source and retry returns historical COMMITTED with null snapshot. The retry cannot silently switch again. Restart similarly requires fresh membership; old target IDs provide no admission authority.
+
+Source release invalidates all old tab commands; requesting connection receives target, other source tabs get ended and must reconcile. Current policy/authority loss after commit removes target and returns null/lobby. Source resources that have already departed are not recreated. Source cleanup failure quarantines that world, while an independent confirmed target can remain active. Viewer-specific target snapshots retain identity/avatar and current privacy/block rules. There is no global location broadcast.
+
+Migration0010 adds nullable target_room_id/target_membership_id constrained to COMMITTED records. ADR0020 documents linearization, failure recovery, rollback and trusted hook limitations. No real world is enabled. M09-03 invitation consent remains distinct; accept creates no automatic transfer. M09-05 group/offline behavior and M09-06 browser routing/network fault acceptance remain unfinished.
+
+One owner, synthetic fixtures and all real flagsOFF remain the current operating scope. No cross-process handshake, durable room recovery, real Deadline/Maid integration, party, public release or browser travel success is claimed here.

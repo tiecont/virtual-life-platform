@@ -28,6 +28,7 @@ import { IncidentPolicy, IncidentService } from './safety/incidents';
 import { requestLog } from './common/request-log';
 import { TravelService } from './travel/service';
 import { registerTravel } from './travel/http';
+import { registerTravelGateway } from './travel/socket';
 import { InvitationService } from './invitations/service';
 import { registerInvitations } from './invitations/http';
 class SafeHttpErrors implements ExceptionFilter {
@@ -110,6 +111,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const roomMetrics = new RoomMetrics();
   const unsubscribeRooms = registerRoomGateway(gateway, rooms, roomMetrics);
   registerChatGateway(gateway, chat);
+  registerTravelGateway(gateway, travel);
   const unsubscribeSanctions = sanctions.onChanged(id => gateway.emitToAccount(id, 'sanction.changed', SanctionChangedSchema.parse({ schemaVersion: 1 })));
   const unsubscribeSocial = social.onChanged(ids => { for (const id of ids) gateway.emitToAccount(id, 'friendship.changed', { schemaVersion: 1 }); });
   const unsubscribeInvitations = invitations.onChanged((ids, event) => { for (const id of ids) gateway.emitToAccount(id, event, { schemaVersion: 1 }); });

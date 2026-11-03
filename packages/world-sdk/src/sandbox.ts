@@ -15,6 +15,7 @@ export function createSandboxWorld() {
     bootstrap: async () => { started = true; }, shutdown: async () => { started = false; },
     onJoin: async () => { if (!started) throw new Error('Sandbox not initialized'); },
     onLeave: async () => { if (!started) throw new Error('Sandbox not initialized'); },
+    travel: { prepare: async context => { if (!started || context.signal.aborted) throw new Error('Sandbox unavailable'); }, abort: async () => {}, depart: async () => {} },
     onCommand: async (_context, payload) => {
       if (!started) throw new Error('Sandbox not initialized');
       if (!SandboxCommandSchema.safeParse(payload).success) throw new WorldError('INVALID_REQUEST', 'Unknown sandbox command');

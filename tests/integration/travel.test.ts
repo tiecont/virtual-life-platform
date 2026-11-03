@@ -2,7 +2,7 @@ import { beforeAll, afterAll, afterEach, it, expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 import { io, type Socket } from 'socket.io-client';
-import { MeSchema, RoomAckSchema, TravelIntentReceiptSchema, type Me, type RoomSnapshot, type TravelSource, type TravelDestination } from '@virtual-city/contracts';
+import { MeSchema, RoomAckSchema, TravelAckSchema, TravelIntentReceiptSchema, type Me, type RoomSnapshot, type TravelSource, type TravelDestination } from '@virtual-city/contracts';
 import { defineWorld } from '@virtual-city/world-sdk';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/config';
@@ -21,12 +21,12 @@ afterEach(async () => {
   for (const r of opened.splice(0)) { await r.app.app.close(); await r.pool.end(); await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`); }
 });
 afterAll(async () => { await admin.end(); });
-async function open(capacity = 8) {
+async function open(capacity = 8, prepare: (signal: AbortSignal) => Promise<void> = async () => {}, depart: () => Promise<void> = async () => {}) {
   const schema = 'travel_test_' + randomUUID().replaceAll('-', ''); await admin.query(`CREATE SCHEMA "${schema}"`);
   const url = new URL(process.env.TEST_DATABASE_URL!); url.searchParams.set('options', '-c search_path=' + schema);
   const pool = new Pool({ connectionString: url.toString() }); await migrate(pool); let offset = 0;
   const access = { private: false, adult: false };
-  const modules = ['maid', 'private-room', 'dating'].map(slug => defineWorld({ schemaVersion: 1, apiVersion: 1, slug, version: '1.0.0', title: 'Synthetic travel target (not integrated world)', kind: 'sandbox', sceneRef: { key: 'travel-fixture', version: '1.0.0' }, capacity, capabilities: ['presence'], accessPolicy: slug === 'maid' ? { kind: 'public' } : slug === 'dating' ? { kind: 'restricted', policyKey: 'travel.adult', requiresAdult: true } : { kind: 'private', policyKey: 'travel.private' }, visibility: slug === 'maid' ? 'listed' : 'hidden', map: { region: 'sandbox', position: { x: .5, y: .5 }, icon: 'flask' } }, { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {} }));
+  const modules = ['maid', 'private-room', 'dating'].map(slug => defineWorld({ schemaVersion: 1, apiVersion: 1, slug, version: '1.0.0', title: 'Synthetic travel target (not integrated world)', kind: 'sandbox', sceneRef: { key: 'travel-fixture', version: '1.0.0' }, capacity, capabilities: ['presence'], accessPolicy: slug === 'maid' ? { kind: 'public' } : slug === 'dating' ? { kind: 'restricted', policyKey: 'travel.adult', requiresAdult: true } : { kind: 'private', policyKey: 'travel.private' }, visibility: slug === 'maid' ? 'listed' : 'hidden', map: { region: 'sandbox', position: { x: .5, y: .5 }, icon: 'flask' } }, { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {}, travel: { prepare: context => prepare(context.signal), abort: async () => {}, depart: async () => depart() } }));
   const config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'travel-local-test-session-secret-000000001' });
   const now = () => Date.now() + offset;
   const options = { now, worlds: { modules, policy: { permits: async () => access.private }, adultProof: { hasReviewedProof: async () => access.adult } } };
@@ -219,4 +219,151 @@ it('exports own receipt metadata without capabilities, cascades identity erasure
   const next = await guest(r);
   await r.pool.query("CREATE FUNCTION fail_travel_receipt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic receipt failure'; END $$"); await r.pool.query('CREATE TRIGGER fail_travel BEFORE INSERT ON travel_mutations FOR EACH ROW EXECUTE FUNCTION fail_travel_receipt()');
   expect((await post(r, next, 'travel-intents', input())).statusCode).toBe(503); expect((await r.pool.query('SELECT 1 FROM travel_intents')).rowCount).toBe(0);
+});
+
+it('prepares a destination without public membership, retains source seat, then switches exactly once with current snapshots', async () => {
+  let release!: () => void, started = false;
+  const r = await open(1, async () => { started = true; await new Promise<void>(resolve => { release = resolve; }); }), u = await guest(r), peer = await join(r, u);
+  const seat = RoomAckSchema.parse(await peer.socket.timeout(5000).emitWithAck('seat.claim', { ...own(peer.state), seatId: 'seat-1' })); expect(seat.ok).toBe(true);
+  const issued = await create(r, u, peer.source), key = randomUUID();
+  const request = r.app.travel.request(credential(r, u), peer.socket.id!, { schemaVersion: 1, requestId: key, intentId: issued.intentId, capability: issued.capability! }, () => peer.socket.connected);
+  await expect.poll(() => started).toBe(true);
+  expect(r.app.rooms.diagnostics()).toMatchObject({ memberships: 1, occupiedSeats: 1, travelHolds: 1 });
+  expect((await r.app.rooms.list(credential(r, u), 'maid')).rooms[0].occupancy).toBe(0);
+  expect(RoomAckSchema.parse(await peer.socket.timeout(5000).emitWithAck('room.snapshot', own(peer.state))).ok).toBe(true);
+  release(); const result = await request; expect(result.receipt.phase).toBe('COMMITTED'); expect(result.snapshot).toMatchObject({ worldSlug: 'maid', self: { accountId: u.me.profile.id, seatId: null }, occupancy: 1 });
+  expect(r.app.rooms.diagnostics()).toMatchObject({ memberships: 1, occupiedSeats: 0, travelHolds: 0 });
+  expect(RoomAckSchema.parse(await peer.socket.timeout(5000).emitWithAck('room.snapshot', own(peer.state)))).toMatchObject({ ok: false, error: { code: 'NOT_IN_ROOM' } });
+  const replay = await r.app.travel.request(credential(r, u), peer.socket.id!, { schemaVersion: 1, requestId: key, intentId: issued.intentId, capability: issued.capability! }, () => peer.socket.connected); expect(replay.snapshot?.membershipId).toBe(result.snapshot?.membershipId);
+});
+
+const transfer = async (peer: Awaited<ReturnType<typeof join>>, intent: Awaited<ReturnType<typeof create>>, key = randomUUID()) => TravelAckSchema.parse(await peer.socket.timeout(5000).emitWithAck('travel.request', { schemaVersion: 1, requestId: key, intentId: intent.intentId, capability: intent.capability! }));
+
+it('rechecks reviewed adult eligibility and committed target sanctions after preparation, retaining valid source', async () => {
+  for (const change of ['adult', 'sanction']) {
+    let release!: () => void, started = false;
+    const r = await open(1, async () => { started = true; await new Promise<void>(resolve => { release = resolve; }); }), u = await guest(r), reporter = await guest(r), peer = await join(r, u); r.access.private = true; r.access.adult = true;
+    const target = change === 'adult' ? 'dating' : 'maid', issued = await create(r, u, peer.source, destination(target)), pending = transfer(peer, issued); await expect.poll(() => started).toBe(true);
+    if (change === 'adult') r.access.adult = false;
+    else {
+      const caseId = randomUUID(); await r.pool.query("INSERT INTO safety_cases(id,receipt_id,reporter_id,subject_id,request_id,fingerprint,world_slug,category,severity,created_at) VALUES($1,$2,$3,$4,$5,$6,'maid','harassment','high',$7)", [caseId, randomUUID(), reporter.me.profile.id, u.me.profile.id, randomUUID(), r.app.identity.fingerprint({ syntheticHandoff: true }), new Date(r.now())]);
+      await r.app.rooms.safetyMutation(async () => { await r.pool.query("INSERT INTO safety_sanctions(id,case_id,subject_id,kind,category,world_slug,effective_at,expires_at,appeal_until) VALUES($1,$2,$3,'world-ban','harassment','maid',$4,$5,$5)", [randomUUID(), caseId, u.me.profile.id, new Date(r.now()), new Date(r.now() + 60000)]); return { result: true }; });
+    }
+    release(); expect((await pending).ok).toBe(false); expect(r.app.rooms.diagnostics()).toMatchObject({ memberships: 1, travelHolds: 0 }); expect(RoomAckSchema.parse(await peer.socket.timeout(5000).emitWithAck('room.snapshot', own(peer.state))).ok).toBe(true);
+  }
+});
+
+it('reconciles ambiguous COMMIT acknowledgement without inventing a live target or replaying membership', async () => {
+  const r = await open(), u = await guest(r), peer = await join(r, u), issued = await create(r, u, peer.source), key = randomUUID();
+  const connect = r.pool.connect.bind(r.pool); let injected = false;
+  r.pool.connect = (async (...args: unknown[]) => {
+    if (typeof args[0] === 'function') return Reflect.apply(connect, r.pool, args);
+    const client = await connect(); let committing = false;
+    return new Proxy(client, { get(target, property) {
+      if (property === 'query') return async (...args: unknown[]) => {
+        if (typeof args[0] === 'string' && args[0].includes('target_room_id=$4')) committing = true;
+        const result = await Reflect.apply(target.query, target, args);
+        if (!injected && committing && args[0] === 'COMMIT') { injected = true; r.pool.connect = connect; throw new Error('synthetic commit acknowledgement lost'); }
+        return result;
+      };
+      const value = Reflect.get(target, property); return typeof value === 'function' ? value.bind(target) : value;
+    } });
+  }) as typeof r.pool.connect;
+  expect((await transfer(peer, issued, key)).ok).toBe(false); expect(injected).toBe(true);
+  const replay = await transfer(peer, issued, key); expect(replay).toMatchObject({ ok: true, result: { receipt: { phase: 'COMMITTED' }, snapshot: null } });
+  expect(r.app.rooms.diagnostics()).toMatchObject({ memberships: 1, travelHolds: 0 }); expect(RoomAckSchema.parse(await peer.socket.timeout(5000).emitWithAck('room.snapshot', own(peer.state))).ok).toBe(true);
+});
+
+it('owner lock loss during preparation discards source/holds and denies every late destination completion', async () => {
+  let release!: () => void, started = false;
+  const r = await open(1, async () => { started = true; await new Promise<void>(resolve => { release = resolve; }); }), u = await guest(r), peer = await join(r, u), issued = await create(r, u, peer.source);
+  const pending = r.app.travel.request(credential(r, u), peer.socket.id!, { schemaVersion: 1, requestId: randomUUID(), intentId: issued.intentId, capability: issued.capability! }, () => peer.socket.connected).then(result => ({ result }), error => ({ error })); await expect.poll(() => started).toBe(true);
+  const owner = (await r.pool.query("SELECT pid FROM pg_locks WHERE locktype='advisory' AND classid=1447840561::oid AND objid=(hashtext(current_schema())::bigint & 4294967295)::oid AND objsubid=2 AND granted")).rows[0]; expect(owner).toBeDefined(); await r.pool.query('SELECT pg_terminate_backend($1)', [owner.pid]);
+  await expect.poll(() => r.app.diagnostics().authority).toBe('lost'); release(); expect('error' in await pending).toBe(true); expect(r.app.rooms.diagnostics()).toMatchObject({ memberships: 0, travelHolds: 0 });
+  expect((await r.pool.query("SELECT 1 FROM travel_intents WHERE phase='COMMITTED'")).rowCount).toBe(0); expect((await r.app.http.inject({ url: '/health/ready' })).statusCode).toBe(503);
+});
+
+it('quarantines failing source resource departure without creating a second active membership', async () => {
+  const r = await open(8, async () => {}, async () => { throw new Error('synthetic source resource cleanup failure'); }), u = await guest(r), peer = await join(r, u), issued = await create(r, u, peer.source), first = await transfer(peer, issued);
+  if (!first.ok || !first.result.snapshot) throw new Error('Expected first admission');
+  const target = first.result.snapshot, next = await create(r, u, { epoch: target.epoch, roomId: target.roomId, membershipId: target.membershipId }, destination('sdk-sandbox')), second = await transfer(peer, next);
+  expect(second).toMatchObject({ ok: true, result: { receipt: { phase: 'COMMITTED' }, snapshot: { worldSlug: 'sdk-sandbox', self: { accountId: u.me.profile.id } } } });
+  expect(r.app.rooms.diagnostics()).toMatchObject({ memberships: 1, travelHolds: 0 }); expect((await r.app.worlds.registry.catalog(credential(r, u))).worlds.find(world => world.slug === 'maid')?.availability).toBe('offline');
+});
+
+it('travels over authenticated socket with same-key ACK replay and invalidates every old source tab', async () => {
+  const r = await open(), u = await guest(r), first = await join(r, u), other = await join(r, u), issued = await create(r, u, first.source), key = randomUUID();
+  const outcomes = await Promise.all([transfer(first, issued, key), transfer(first, issued, key)]); expect(outcomes.every(result => result.ok)).toBe(true);
+  const result = outcomes[0]; if (!result.ok || !result.result.snapshot) throw new Error('Expected confirmed target');
+  const target = result.result.snapshot; expect(target.worldSlug).toBe('maid'); expect(target.self.accountId).toBe(u.me.profile.id);
+  expect(r.app.rooms.diagnostics()).toMatchObject({ memberships: 1, connections: 1, travelHolds: 0 });
+  expect(RoomAckSchema.parse(await other.socket.timeout(5000).emitWithAck('room.snapshot', own(other.state)))).toMatchObject({ ok: false, error: { code: 'NOT_IN_ROOM' } });
+  expect(await transfer(first, issued, key)).toEqual(result);
+  expect(await transfer(first, issued)).toMatchObject({ ok: false, error: { code: 'IDEMPOTENCY_CONFLICT' } });
+  const malicious = await first.socket.timeout(5000).emitWithAck('travel.request', { schemaVersion: 1, requestId: randomUUID(), intentId: issued.intentId, capability: issued.capability, accountId: randomUUID() }); expect(TravelAckSchema.parse(malicious)).toMatchObject({ ok: false, error: { code: 'INVALID_REQUEST' } });
+  expect(RoomAckSchema.parse(await first.socket.timeout(5000).emitWithAck('room.snapshot', own(target))).ok).toBe(true);
+});
+
+it('retains source on timed-out/hung preparation and quarantines late completion without blocking owner commands', async () => {
+  let release!: () => void, aborted = false, started = false;
+  const r = await open(1, async signal => { started = true; signal.addEventListener('abort', () => { aborted = true; }); await new Promise<void>(resolve => { release = resolve; }); }), u = await guest(r), peer = await join(r, u), issued = await create(r, u, peer.source);
+  const pending = transfer(peer, issued); await expect.poll(() => started).toBe(true);
+  const source = RoomAckSchema.parse(await peer.socket.timeout(5000).emitWithAck('room.snapshot', own(peer.state))); expect(source.ok).toBe(true);
+  const failed = await pending; expect(failed).toMatchObject({ ok: false, error: { code: 'WORLD_UNAVAILABLE' } }); expect(aborted).toBe(true);
+  expect(r.app.rooms.diagnostics()).toMatchObject({ memberships: 1, travelHolds: 0 }); expect((await get(r, u, issued.intentId)).json().phase).toBe('FAILED');
+  release(); expect((await r.app.worlds.registry.catalog(credential(r, u))).worlds.find(world => world.slug === 'maid')?.availability).toBe('offline');
+  expect(RoomAckSchema.parse(await peer.socket.timeout(5000).emitWithAck('room.snapshot', own(peer.state))).ok).toBe(true);
+  await expect(r.app.worlds.registry.setEnabled('maid', true)).rejects.toMatchObject({ code: 'WORLD_UNAVAILABLE' });
+});
+
+it('cancellation during nonpublic preparation wins and removes its hold without releasing source', async () => {
+  let release!: () => void, started = false;
+  const r = await open(1, async () => { started = true; await new Promise<void>(resolve => { release = resolve; }); }), u = await guest(r), peer = await join(r, u), issued = await create(r, u, peer.source);
+  const pending = transfer(peer, issued); await expect.poll(() => started).toBe(true);
+  expect((await post(r, u, `travel-intents/${issued.intentId}/cancel`, {})).json().phase).toBe('CANCELLED'); release(); expect((await pending).ok).toBe(false);
+  expect((await get(r, u, issued.intentId)).json().phase).toBe('CANCELLED'); expect(r.app.rooms.diagnostics()).toMatchObject({ memberships: 1, travelHolds: 0 });
+  expect(RoomAckSchema.parse(await peer.socket.timeout(5000).emitWithAck('room.snapshot', own(peer.state))).ok).toBe(true);
+});
+
+it('counts pending holds in target capacity and never activates two users into a last slot', async () => {
+  let release!: () => void, started = false;
+  const r = await open(2, async () => { started = true; await new Promise<void>(resolve => { release = resolve; }); }), occupant = await join(r, await guest(r), 'maid'), a = await guest(r), source = await join(r, a), issued = await create(r, a, source.source, destination('maid', occupant.state.roomId));
+  const pending = transfer(source, issued); await expect.poll(() => started).toBe(true);
+  const b = await guest(r), second = await join(r, b); expect((await post(r, b, 'travel-intents', input(second.source, destination('maid', occupant.state.roomId)))).statusCode).toBe(409);
+  release(); expect((await pending).ok).toBe(true); expect((await r.app.rooms.list(credential(r, a), 'maid')).rooms.find(room => room.roomId === occupant.state.roomId)?.occupancy).toBe(2); expect(r.app.rooms.diagnostics().travelHolds).toBe(0);
+});
+
+it.each(['expiry', 'source-leave', 'target-disable', 'private-withdrawal', 'disconnect', 'logout'] as const)('revalidates %s after preparation started and cannot publish a stale target', async change => {
+  let release!: () => void, started = false;
+  const r = await open(1, async () => { started = true; await new Promise<void>(resolve => { release = resolve; }); }), u = await guest(r), peer = await join(r, u); r.access.private = true;
+  const issued = await create(r, u, peer.source, destination(change === 'private-withdrawal' ? 'private-room' : 'maid'));
+  // Direct coordinator promise allows observing disconnect/logout rejection even
+  // when the real socket can no longer receive an ACK.
+  const pending = r.app.travel.request(credential(r, u), peer.socket.id!, { schemaVersion: 1, requestId: randomUUID(), intentId: issued.intentId, capability: issued.capability! }, () => peer.socket.connected).then(result => ({ result }), error => ({ error }));
+  await expect.poll(() => started).toBe(true);
+  if (change === 'expiry') r.advance(30000);
+  if (change === 'source-leave') expect(RoomAckSchema.parse(await peer.socket.timeout(5000).emitWithAck('room.leave', own(peer.state))).ok).toBe(true);
+  if (change === 'target-disable') await r.app.worlds.registry.setEnabled('maid', false);
+  if (change === 'private-withdrawal') r.access.private = false;
+  if (change === 'disconnect') peer.socket.close();
+  if (change === 'logout') expect((await post(r, u, 'session/logout', {})).statusCode).toBe(200);
+  release(); const outcome = await pending; expect('error' in outcome).toBe(true); expect(r.app.rooms.diagnostics().travelHolds).toBe(0);
+  expect((await r.pool.query("SELECT 1 FROM travel_intents WHERE phase='COMMITTED'")).rowCount).toBe(0);
+  if (!['source-leave', 'logout'].includes(change)) expect(r.app.rooms.diagnostics().memberships).toBe(1);
+});
+
+it('rolls back the unannounced index switch and source seat when a deferred database constraint rejects COMMIT', async () => {
+  const r = await open(), u = await guest(r), peer = await join(r, u); expect(RoomAckSchema.parse(await peer.socket.timeout(5000).emitWithAck('seat.claim', { ...own(peer.state), seatId: 'seat-1' })).ok).toBe(true);
+  const issued = await create(r, u, peer.source), ended: unknown[] = []; peer.socket.on('room.ended', event => ended.push(event));
+  await r.pool.query("CREATE FUNCTION fail_travel_commit() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.phase='COMMITTED' THEN RAISE EXCEPTION 'synthetic deferred commit failure'; END IF; RETURN NEW; END $$");
+  await r.pool.query('CREATE CONSTRAINT TRIGGER fail_travel_commit AFTER UPDATE ON travel_intents DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION fail_travel_commit()');
+  expect(await transfer(peer, issued)).toMatchObject({ ok: false, error: { code: 'INTERNAL_ERROR' } }); expect(ended).toEqual([]);
+  expect(r.app.rooms.diagnostics()).toMatchObject({ memberships: 1, occupiedSeats: 1, travelHolds: 0 }); expect(RoomAckSchema.parse(await peer.socket.timeout(5000).emitWithAck('room.snapshot', own(peer.state))).ok).toBe(true);
+  expect((await get(r, u, issued.intentId)).json().phase).toBe('FAILED');
+});
+
+it('treats a durable committed receipt after owner restart as history with no phantom live snapshot', async () => {
+  const r = await open(), u = await guest(r), peer = await join(r, u), issued = await create(r, u, peer.source), key = randomUUID(); expect((await transfer(peer, issued, key)).ok).toBe(true); await restart(r);
+  const newPeer = await join(r, u), result = await transfer(newPeer, issued, key); expect(result).toMatchObject({ ok: true, result: { receipt: { phase: 'COMMITTED' }, snapshot: null } });
+  expect(r.app.rooms.diagnostics()).toMatchObject({ memberships: 1, travelHolds: 0 }); expect((await get(r, u, issued.intentId)).json().phase).toBe('COMMITTED');
 });
