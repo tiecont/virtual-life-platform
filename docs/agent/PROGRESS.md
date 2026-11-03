@@ -1,5 +1,11 @@
 # Agent progress
 
+## M13-03 - VERIFIED server-approved visit appearance
+
+From b172c91;m13-outfit-checks.json/ADR0041. Actual fullcheck0:7governance,195unit,306integration,lint/types/architecture/assets/builds;browser6(3eachdevice),0024localmigration/diff0. Initial isolated2tests passed but process handle expired across continuation; no isolated exit/red-first claim. Rootcheck independently verifies final code.
+
+Current-world explicit outfit policy,private selection/account-locked receipts,per-visible-participant effective outfit and renderer fallback verified. Actual shift/entitlement gate,old-key nonreactivation,rollback/retry,shift-end/entitlement-loss casual,stale restart source,export/erasure pass. Fresh snapshots apply current restrictions;existing15s roomrefresh has transport/queue latency,no dedicated shift-change appearance push. Inventory never becomes profile/role authority. Defaultrewardsdisabled/allrealflagsOFF,previewoff,cityDB0024. Next exact action M13-04 accessible private wardrobe preview/equip UI with canonical inventory,server validation,uncertain-response retry and identity cleanup;then05compensating reversal/abuse.
+
 ## M13-02 - VERIFIED source-unique private XP ledger
 
 From9abb774;m13-ledger-checks.json/ADR0040. Fullcheck exit0:7governance,194unit,304integration including5newprogression,lint/types/architecture/assets/builds;additive0023localmigration/diff0. Targetedfocus3pass thencombined4pass;these were passing initial acceptance,not red-first evidence. Browser regression evidence recorded separately after completion.

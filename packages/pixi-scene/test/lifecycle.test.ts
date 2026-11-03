@@ -32,3 +32,11 @@ it('fails closed on duplicate participants, foreign world and unmapped seats', (
     { ...snapshot, participants: [{ ...snapshot.participants[0], seatId: 'seat-99' }] },
   ]) expect(() => sceneEntities(sandboxScene, state)).toThrow('SCENE_CONTEXT_MISMATCH');
 });
+it('keeps each participant outfit independent and defaults older snapshots to casual', () => {
+  const state = structuredClone(snapshot);
+  state.participants[0].outfit = 'cafe-apron';
+  const entities = sceneEntities(sandboxScene, state).entities;
+  expect(entities.find(entity => entity.id === peer)?.outfit).toBe('cafe-apron');
+  expect(entities.find(entity => entity.self)?.outfit).toBe('casual');
+  expect(sceneEntities(sandboxScene, snapshot).entities.every(entity => entity.outfit === 'casual')).toBe(true);
+});

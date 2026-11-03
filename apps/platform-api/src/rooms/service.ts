@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { RoomSnapshotSchema, RoomEndedSchema, type TravelSource, type TravelDestination, type RoomMotion, type RoomMove, type RoomJoin, type RoomOwnCommand, type RoomSnapshot, type RoomEnded, type SeatClaim, type SeatRelease, type PublicProfile } from '@virtual-city/contracts';
+import { RoomSnapshotSchema, RoomEndedSchema, type WorldDefinition, type AvatarAppearance, type TravelSource, type TravelDestination, type RoomMotion, type RoomMove, type RoomJoin, type RoomOwnCommand, type RoomSnapshot, type RoomEnded, type SeatClaim, type SeatRelease, type PublicProfile } from '@virtual-city/contracts';
 import { findScenePath, motionPosition, type WorldRegistry, type WorldActor } from '@virtual-city/world-sdk';
 import type { IdentityService } from '../identity/service';
 import { DomainError } from '../common/errors';
@@ -17,7 +17,10 @@ export interface RoomProjection {
 }
 export type RoomUpdate = { connectionId: string; fromVersion: number; snapshot: RoomSnapshot };
 export interface RoomSafetyPort { assert(accountId: string, worldSlug: string, roomId?: string, chat?: boolean): Promise<void> }
+export type RoomAppearanceReader=(account:string,world:WorldDefinition,source:TravelSource,connected:boolean)=>Promise<AvatarAppearance['outfit']>;
 export class RoomService {
+  #appearance?: RoomAppearanceReader;
+  setAppearanceProjection(reader: RoomAppearanceReader) { this.#appearance=reader; }
   readonly epoch = randomUUID();
   #rooms = new Map<string, Room>();
   #travelHolds = new Map<string, TravelHold>();
@@ -138,12 +141,14 @@ export class RoomService {
   }
   #holds(room: Room) { return [...this.#travelHolds.values()].filter(hold => hold.room.id === room.id).length; }
   async #snapshot(room: Room, member: Member, withMotion = false): Promise<RoomSnapshot> {
+    const projection=this.registry.projectionContext(room.slug);
     const seats = [...room.seats].map(([seatId, ownerId]) => ({ seatId, state: ownerId ? room.members.get(ownerId)?.disconnectedUntil !== null ? 'held' : 'occupied' : 'available', mine: ownerId === member.accountId }));
     const ids = [...room.members.keys()];
     const relationships = this.projection ? await this.projection.relationships(member.accountId, ids) : new Map(ids.map(id => [id, { blocked: id !== member.accountId, friends: false }]));
     const profiles = this.projection ? await this.projection.profiles(member.accountId, ids, room.slug, relationships) : [];
     const profileMap = new Map(profiles.map(profile => [profile.id, profile]));
-    const participants = [...room.members.values()].filter(candidate => profileMap.has(candidate.accountId)).map(candidate => ({ profile: profileMap.get(candidate.accountId)!, seatId: candidate.seatId, state: candidate.disconnectedUntil === null ? 'active' as const : 'reconnecting' as const, ...(withMotion && candidate.motion ? { motion: candidate.motion } : {}) }));
+    const participants = await Promise.all([...room.members.values()].filter(candidate => profileMap.has(candidate.accountId)).map(async candidate => ({ profile: profileMap.get(candidate.accountId)!, seatId: candidate.seatId, state: candidate.disconnectedUntil === null ? 'active' as const : 'reconnecting' as const, ...(withMotion && candidate.motion ? { motion: candidate.motion } : {}),outfit:projection.definition.appearancePolicy&&projection.definition.appearancePolicy.apron!=='forbidden'?await this.#appearance?.(candidate.accountId,projection.definition,{epoch:this.epoch,roomId:room.id,membershipId:candidate.id},candidate.connections.size>0&&(projection.definition.appearancePolicy.apron!=='on-shift'||await this.identity.hasConnectedSession(candidate.accountId,[...candidate.connections.values()])))??'casual' as const:'casual' as const })));
+    if(!projection.valid())throw new DomainError('WORLD_UNAVAILABLE',503,'World appearance changed');
     return RoomSnapshotSchema.parse({ schemaVersion: 1, type: 'snapshot', epoch: this.epoch, roomId: room.id, worldSlug: room.slug, roomVersion: room.version, capacity: room.capacity, occupancy: room.members.size, membershipId: member.id, self: { accountId: member.accountId, seatId: member.seatId, ...(withMotion && member.motion ? { motion: member.motion } : {}) }, ...(withMotion ? { serverTime: this.now() } : {}), seats, participants });
   }
   async #notifyChanged(room: Room, fromVersion: number) {
@@ -302,6 +307,12 @@ export class RoomService {
       await this.safety?.assert(actor.accountId, room.slug, room.id);
       const seatId = member.seatId, valid = () => !this.#closed && this.authority.state === 'held' && this.#rooms.get(room.id)?.members.get(actor.accountId) === member && member.seatId === seatId && [...member.connections.values()].includes(actor.sessionId) && generation === (this.#worldGenerations.get(room.slug) ?? 0);
       return work(actor, { worldSlug: room.slug, roomId: room.id, seatId, epoch: this.epoch, membershipId: member.id, canPause: definition.focusPolicy.pauseAllowed }, valid);
+    });
+  }
+  appearanceContext<T>(credential:string,source:TravelSource,work:(actor:WorldActor,world:WorldDefinition,valid:()=>boolean)=>Promise<T>) {
+    return this.#run(async()=>{await this.#sweep();const actor=await this.identity.authenticate(credential),room=this.#rooms.get(this.#accounts.get(actor.accountId)??''),member=room?.members.get(actor.accountId);
+      if(!room||!member||source.epoch!==this.epoch||source.roomId!==room.id||source.membershipId!==member.id||![...member.connections.values()].includes(actor.sessionId))throw new DomainError('NOT_IN_ROOM',409,'Your current visit changed');
+      const projection=this.registry.projectionContext(room.slug);await this.registry.authorizeWorld(credential,room.slug);await this.safety?.assert(actor.accountId,room.slug,room.id);return work(actor,projection.definition,()=>projection.valid()&&!this.#closed&&this.authority.state==='held'&&member.connections.size>0&&[...member.connections.values()].includes(actor.sessionId));
     });
   }
   reservationCheckIn<T>(credential: string, source: TravelSource, worldSlug: string, work: (valid: () => boolean) => Promise<T>) {

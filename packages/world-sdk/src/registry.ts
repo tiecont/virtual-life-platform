@@ -173,6 +173,7 @@ export class WorldRegistry {
     if (!valid()) throw unavailable();
     return work(actor, definition, valid);
   }
+  projectionContext(slug: string) { const entry=this.#get(slug);this.#ready(entry);const generation=entry.generation;return {definition:entry.adapter.definition,valid:()=>!this.#closed&&entry.enabled&&entry.phase==='available'&&entry.generation===generation}; }
   #card(entry: Entry): WorldCard {
     const world = entry.adapter.definition;
     return {

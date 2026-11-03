@@ -15,6 +15,7 @@ export interface HospitalityStaffPort { permits(db: PoolClient, actor: IdentityC
 const uuid = z.uuid().transform(value => value.toLowerCase());
 const absent = () => new DomainError('NOT_AVAILABLE', 404, 'This order is unavailable');
 export class HospitalityService {
+  async permitsUniform(account:string,world:string,source:{epoch:string;roomId:string;membershipId:string},policyVersion:string) { return !!(await this.pool.query('SELECT 1 FROM engine_hospitality_shifts WHERE account_id=$1 AND world_slug=$2 AND room_id=$3 AND owner_epoch=$4 AND membership_id=$5 AND policy_version=$6 AND ended_at IS NULL AND interrupted_at IS NULL AND expires_at>$7',[account,world,source.roomId,source.epoch,source.membershipId,policyVersion,new Date(this.now())])).rowCount; }
   #maintenance?: Promise<void>; #closed = false;
   constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private rooms: RoomService, private social: SocialService, private staff?: HospitalityStaffPort, private now = Date.now) {}
   private async permits(db: PoolClient, actor: IdentityContext, context: Context) {

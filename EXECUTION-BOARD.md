@@ -80,7 +80,7 @@
 | M12 | M12-06 · Write concurrency and timezone integration tests. | VERIFIED | m12-regression-checks.json;check0(190unit/299integration/builds),47event/reservation;independent network/DST |
 | M13 | M13-01 · Define XP and cosmetics policies for each world with cap and abuse prevention. | VERIFIED | m13-policy-checks.json;194unit/types/lint/build0;policy only,no ledger |
 | M13 | M13-02 · Implement entitlement service and ledger/unique source id. | VERIFIED | m13-ledger-checks.json;check0(194unit/304integration/builds),sourceunique grants/entitlements;0023local |
-| M13 | M13-03 · Implement world outfit restrictions and appearance validation. | TODO | — |
+| M13 | M13-03 · Implement world outfit restrictions and appearance validation. | VERIFIED | docs/agent/evidence/m13-outfit-checks.json; ADR0041 |
 | M13 | M13-04 · Implement cosmetics UI and non-trading unlocks with accessibility. | TODO | — |
 | M13 | M13-05 · Implement abuse tests and rollback for incorrect rewards. | TODO | — |
 | M14 | M14-01 · Create original pixel-art city map with clickable world hotspots and accessible text list. | TODO | — |

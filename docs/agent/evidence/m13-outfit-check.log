@@ -1,0 +1,207 @@
+$ pnpm governance:check && pnpm architecture:check && pnpm lint && pnpm typecheck && pnpm assets:check && pnpm test && pnpm test:integration && pnpm build
+$ node scripts/verify-governance.mjs
+{
+  "modules": {
+    "M00": "VERIFIED",
+    "M01": "VERIFIED",
+    "M02": "VERIFIED",
+    "M03": "VERIFIED",
+    "M04": "VERIFIED",
+    "M05": "VERIFIED",
+    "M06": "VERIFIED",
+    "M07": "VERIFIED",
+    "M08": "VERIFIED",
+    "M09": "VERIFIED",
+    "M10": "VERIFIED",
+    "M11": "VERIFIED",
+    "M12": "VERIFIED",
+    "M13": "PENDING",
+    "M14": "PENDING",
+    "M15": "PENDING",
+    "M16": "PENDING",
+    "M17": "PENDING",
+    "M18": "PENDING",
+    "M19": "PENDING",
+    "M20": "PENDING",
+    "M21": "PENDING",
+    "M22": "PENDING",
+    "M23": "PENDING",
+    "M24": "PENDING"
+  },
+  "ready": [
+    "M13-03",
+    "M13-04",
+    "M13-05",
+    "M14-01",
+    "M14-02",
+    "M14-03",
+    "M14-04",
+    "M14-05",
+    "M21-01",
+    "M21-02",
+    "M21-03",
+    "M21-04",
+    "M21-05",
+    "M21-06"
+  ],
+  "blocked": []
+}
+Governance consistency verified; no gameplay or release claim.
+$ node scripts/verify-architecture.mjs
+Architecture consistency passed: 63 SQL tables + journal; 144 source files checked. Future gameplay invariants remain runtime gates.
+$ eslint . && node scripts/check-boundaries.mjs
+Boundary checks passed: 144 source files
+$ pnpm build:packages && pnpm -r typecheck && tsc -p tests/load/tsconfig.json
+$ pnpm --filter './packages/*' -r build
+Scope: 5 of 8 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/world-sdk build: Done
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/pixi-scene build: Done
+Scope: 7 of 8 workspace projects
+packages/contracts typecheck$ tsc -p tsconfig.json --noEmit
+packages/contracts typecheck: Done
+packages/world-sdk typecheck$ tsc -p tsconfig.json --noEmit
+packages/focus-ui typecheck$ tsc -p tsconfig.json --noEmit
+packages/world-sdk typecheck: Done
+packages/pixi-scene typecheck$ tsc -p tsconfig.json --noEmit
+apps/platform-api typecheck$ tsc -p tsconfig.json --noEmit
+packages/focus-ui typecheck: Done
+packages/pixi-scene typecheck: Done
+apps/portal-web typecheck$ tsc --noEmit
+apps/platform-api typecheck: Done
+apps/portal-web typecheck: Done
+$ node --import tsx scripts/build-avatar-assets.ts --check
+(node:384816) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Original avatar atlas and provenance reproduce exactly.
+$ pnpm build:packages && node --test tests/governance/*.test.mjs && vitest run --project unit
+$ pnpm --filter './packages/*' -r build
+Scope: 5 of 8 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/pixi-scene build: Done
+✔ worlds cannot import another world repository, platform internals or application code (1.238989ms)
+✔ contracts cannot import SDK and apps cannot import another application internals (4.388091ms)
+✔ the scanner rejects actual source imports and manifest cycles (12.49773ms)
+✔ audit ranges and conjunctive dependencies preserve the authoritative DAG (6.243931ms)
+✔ cycles, unknown dependencies and duplicate module IDs are rejected (0.88271ms)
+✔ checkpoint cannot assert verification without evidence or through an unmet gate (0.259618ms)
+✔ the supplied plan pack is accepted without changing its manifest shape (3.862723ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 74.043506
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+
+ Test Files  29 passed (29)
+      Tests  195 passed (195)
+   Start at  21:09:03
+   Duration  3.09s (transform 4.83s, setup 0ms, import 18.49s, tests 3.67s, environment 8ms)
+
+$ pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project integration
+$ pnpm --filter './packages/*' -r build
+Scope: 5 of 8 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/pixi-scene build: Done
+ Network virtual-city-test-d60175a8_default Creating 
+ Network virtual-city-test-d60175a8_default Creating 
+ Network virtual-city-test-d60175a8_default Created 
+ Network virtual-city-test-d60175a8_default Created 
+ Container virtual-city-test-d60175a8-db-1 Creating 
+ Container virtual-city-test-d60175a8-db-1 Created 
+ Container virtual-city-test-d60175a8-db-1 Starting 
+ Container virtual-city-test-d60175a8-db-1 Started 
+ Container virtual-city-test-d60175a8-db-1 Waiting 
+ Container virtual-city-test-d60175a8-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+(node:394347) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:394412) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:394507) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:394578) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:394651) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:394684) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:394790) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ Test Files  15 passed (15)
+      Tests  306 passed (306)
+   Start at  21:09:17
+   Duration  226.26s (transform 914ms, setup 0ms, import 9.75s, tests 214.30s, environment 2ms)
+
+ Container virtual-city-test-d60175a8-db-1 Stopping 
+ Container virtual-city-test-d60175a8-db-1 Stopped 
+ Container virtual-city-test-d60175a8-db-1 Removing 
+ Container virtual-city-test-d60175a8-db-1 Removed 
+ Network virtual-city-test-d60175a8_default Removing 
+ Network virtual-city-test-d60175a8_default Removed 
+$ pnpm -r build
+Scope: 7 of 8 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/world-sdk build: Done
+apps/platform-api build$ tsc -p tsconfig.json && node ../../scripts/copy-migrations.mjs
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/pixi-scene build: Done
+apps/portal-web build$ next build --webpack
+apps/portal-web build: ▲ Next.js 16.4.4 (webpack)
+apps/portal-web build: ✓ Running next.config.ts took 127ms
+apps/portal-web build:   Creating an optimized production build ...
+apps/platform-api build: Done
+apps/portal-web build: ✓ Compiled successfully in 5.0s
+apps/portal-web build:   Running TypeScript ...
+apps/portal-web build:   Finished TypeScript in 3.2s ...
+apps/portal-web build:   Collecting page data using 12 workers ...
+apps/portal-web build:   Generating static pages using 12 workers (0/6) ...
+apps/portal-web build:   Generating static pages using 12 workers (1/6) 
+apps/portal-web build:   Generating static pages using 12 workers (2/6) 
+apps/portal-web build:   Generating static pages using 12 workers (4/6) 
+apps/portal-web build: ✓ Generating static pages using 12 workers (6/6) in 1342ms
+apps/portal-web build:   Finalizing page optimization ...
+apps/portal-web build:   Collecting build traces ...
+apps/portal-web build: Route (app)
+apps/portal-web build: ┌ ƒ /
+apps/portal-web build: ├ ○ /_not-found
+apps/portal-web build: ├ ○ /identity
+apps/portal-web build: ├ ƒ /invitations
+apps/portal-web build: ├ ○ /moderation
+apps/portal-web build: ├ ○ /safety
+apps/portal-web build: ├ ƒ /social
+apps/portal-web build: ├ ƒ /travel
+apps/portal-web build: ├ ƒ /worlds/sdk-sandbox
+apps/portal-web build: └ ○ /worlds/sdk-sandbox/avatar-lab
+apps/portal-web build: ○  (Static)   prerendered as static content
+apps/portal-web build: ƒ  (Dynamic)  server-rendered on demand
+apps/portal-web build: Done

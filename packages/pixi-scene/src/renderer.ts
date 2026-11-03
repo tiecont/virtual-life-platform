@@ -8,7 +8,7 @@ import { avatarAtlasSpec, avatarFrame } from './avatar-art';
 
 export async function createCafeScene(host: HTMLElement, input: SceneManifest, onSeat: (seatId: string) => void, options: { signal?: AbortSignal; outfit?: AvatarAppearance['outfit']; onMove?: (point: { x: number; y: number }) => void } = {}) {
   const scene = SceneManifestSchema.parse(input); const size = scene.tileSize;
-  const outfit = AvatarOutfitSchema.parse(options.outfit ?? 'casual');
+  AvatarOutfitSchema.parse(options.outfit ?? 'casual');
   options.signal?.throwIfAborted();
   const app = new Application();
   let texture: Texture;
@@ -173,7 +173,7 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
     for (const entity of entities) {
       let avatar = avatars.get(entity.id);
       if (!avatar) {
-        const appearance: AvatarAppearance = { schemaVersion: 1, core: 'starter-v1', palette: entity.palette, outfit };
+        const appearance: AvatarAppearance = { schemaVersion: 1, core: 'starter-v1', palette: entity.palette, outfit:entity.outfit };
         const root = new Container(); const sprite = new Sprite(frameTexture(appearance, entity.pose, 0)); sprite.anchor.set(.5, .92); sprite.scale.set(1.2); root.addChild(sprite);
         if (entity.self) root.addChild(label('You', 0, -55, '#233d34', 13));
         avatar = { root, sprite, appearance, pose: entity.pose, startedAt: null, serverTime: 0, receivedAt: 0, settledPose: entity.settledPose, self: entity.self }; avatars.set(entity.id, avatar); people.addChild(root); created++;
@@ -183,14 +183,14 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
       avatar.motion = entity.motion; avatar.serverTime = state?.serverTime ?? 0; avatar.receivedAt = performance.now(); avatar.settledPose = entity.settledPose;
       if (entity.pose === 'walk' && !lowMotion && avatar.startedAt === null) avatar.startedAt = performance.now();
       if (lowMotion && entity.motion) { const at = tileCenter(scene, entity.motion.path[entity.motion.path.length - 1]); avatar.root.position.set(at.x, at.y); avatar.pose = entity.settledPose; }
-      avatar.appearance = { ...avatar.appearance, palette: entity.palette };
+      avatar.appearance = { ...avatar.appearance, palette: entity.palette, outfit:entity.outfit };
       avatar.sprite.texture = frameTexture(avatar.appearance, avatar.pose, 0);
     }
     people.visible = true; updateSeats(state);
     canvas.dataset.entityCount = String(entities.length); canvas.dataset.roomVersion = state ? String(state.roomVersion) : '';
     canvas.dataset.createdEntities = String(created); canvas.dataset.removedEntities = String(removed);
     canvas.dataset.sittingCount = String(entities.filter(entity => entity.pose === 'sit').length); canvas.dataset.suspended = 'false';
-    canvas.dataset.avatarCore = 'starter-v1'; canvas.dataset.avatarOutfit = outfit;
+    canvas.dataset.avatarCore = 'starter-v1'; canvas.dataset.avatarOutfit = entities.find(entity=>entity.self)?.outfit??'casual';
     canvas.dataset.avatarPalettes = [...new Set(entities.map(entity => entity.palette))].sort().join(',');
     canvas.dataset.movingCount = String(entities.filter(entity => entity.pose === 'walk').length);
     const selfEntity = entities.find(entity => entity.self);

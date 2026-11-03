@@ -39,5 +39,5 @@ export class ProgressionService {
   async own(token: string) {
     const initial=await this.identity.authenticate(token),db=await this.pool.connect(); try { await db.query('BEGIN');await this.identity.lockAccounts(db,[initial.accountId]);const actor=await this.identity.contextInTransaction(db,token),result=await this.exportAccount(actor.accountId,db);await db.query('COMMIT');return result; } catch(error) { await db.query('ROLLBACK');throw error; } finally { db.release(); }
   }
-  async maintain() { const db=await this.pool.connect();try { await db.query('DELETE FROM engine_progression_partners WHERE ledger_id IN(SELECT ledger_id FROM engine_progression_partners WHERE completed_at<$1 ORDER BY completed_at LIMIT 100)',[new Date(this.now()-2*86400000)]); } finally { db.release(); } }
+  async maintain() { const db=await this.pool.connect();try { await db.query('DELETE FROM engine_progression_partners WHERE ledger_id IN(SELECT ledger_id FROM engine_progression_partners WHERE completed_at<$1 ORDER BY completed_at LIMIT 100)',[new Date(this.now()-2*86400000)]);await db.query('DELETE FROM engine_progression_appearance_mutations WHERE (account_id,request_id) IN(SELECT account_id,request_id FROM engine_progression_appearance_mutations WHERE created_at<$1 ORDER BY created_at LIMIT 100)',[new Date(this.now()-90*86400000)]); } finally { db.release(); } }
 }

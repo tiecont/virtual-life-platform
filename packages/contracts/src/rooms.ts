@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { WorldSlugSchema, WorldVersionSchema, SeatIdSchema } from './world';
 import { PublicProfileSchema } from './profiles';
 import { TilePointSchema } from './scene';
+import { AvatarOutfitSchema } from './avatar';
 
 export const RoomMotionSchema = z.strictObject({ path: z.array(TilePointSchema).min(1).max(256), startedAt: z.number().int().nonnegative(), stepMs: z.literal(150) })
   .refine(motion => motion.path.every((point, index, path) => index === 0 || Math.abs(point.x - path[index - 1].x) + Math.abs(point.y - path[index - 1].y) === 1), 'Path must use adjacent orthogonal tiles');
@@ -16,7 +17,7 @@ export const SeatClaimSchema = RoomOwnCommandSchema.extend({ seatId: SeatIdSchem
 export const SeatReleaseSchema = RoomOwnCommandSchema.extend({ seatId: SeatIdSchema });
 export const RoomMoveSchema = RoomOwnCommandSchema.extend({ destination: TilePointSchema });
 export type RoomMove = z.infer<typeof RoomMoveSchema>;
-export const RoomParticipantSchema = z.strictObject({ profile: PublicProfileSchema, seatId: SeatIdSchema.nullable(), state: z.enum(['active', 'reconnecting']), motion: RoomMotionSchema.optional() });
+export const RoomParticipantSchema = z.strictObject({ profile: PublicProfileSchema, seatId: SeatIdSchema.nullable(), state: z.enum(['active', 'reconnecting']), motion: RoomMotionSchema.optional(), outfit: AvatarOutfitSchema.optional() });
 export const RoomSnapshotSchema = z.strictObject({
   schemaVersion: z.literal(1), type: z.literal('snapshot'), epoch: z.uuid(), roomId: z.uuid(), worldSlug: WorldSlugSchema,
   roomVersion: z.number().int().nonnegative(), capacity: z.number().int().min(1).max(100), occupancy: z.number().int().nonnegative().max(100),

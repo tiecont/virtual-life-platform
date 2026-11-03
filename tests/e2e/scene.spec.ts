@@ -47,7 +47,7 @@ test('actual cafe scene and keyboard seat controls reflect authoritative rooms o
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   const identity = await guest(context, 'Scene Visitor'); await enter(page);
   const canvas = page.locator('canvas[data-scene="sdk-sandbox"]'); await expect(canvas).toHaveAttribute('data-entity-count', '1');
-  await expect(canvas).toHaveAttribute('data-avatar-core', 'starter-v1'); await expect(canvas).toHaveAttribute('data-avatar-outfit', 'cafe-apron');
+  await expect(canvas).toHaveAttribute('data-avatar-core', 'starter-v1'); await expect(canvas).toHaveAttribute('data-avatar-outfit', 'casual');
   await expect(canvas).toHaveAttribute('data-avatar-palettes', 'mint');
   const changed = await context.request.patch('/v1/me', { headers: { origin, 'x-csrf-token': identity.csrfToken, 'idempotency-key': randomUUID() }, data: { avatarKey: 'indigo' } });
   expect(changed.status()).toBe(200); await expect(canvas).toHaveAttribute('data-avatar-palettes', 'indigo');

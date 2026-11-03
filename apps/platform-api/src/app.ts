@@ -44,6 +44,7 @@ import { EventPermissions } from './events/permissions';
 import { EventInvitationService } from './events/invitations';
 import { ProgressionService } from './progression/service';
 import { registerProgression } from './progression/http';
+import { AppearanceService } from './progression/appearance';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -93,6 +94,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const focus = new FocusService(db, identity, rooms, options.now);
   const hospitality = new HospitalityService(db, identity, rooms, social, options.hospitality?.staff, options.now);
   const progression = new ProgressionService(db, identity, focus, async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account,world) && await new SanctionPolicy(transaction, options.now).permits(account,world), options.progression?.policy, options.now);
+  const appearance=new AppearanceService(db,identity,rooms,hospitality,options.now);rooms.setAppearanceProjection((account,world,source,connected)=>appearance.project(account,world,source,connected));
   const hospitalityOutbox = new HospitalityOutbox(db, identity, [...options.hospitality?.completionSinks ?? [], ...progression.policy.enabled ? [progression.hospitalitySink()] : []], options.now);
   const eventPermissions = new EventPermissions(reports, options.now);
   const events = new EventService(db, identity, social, worlds.registry, { permits: async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account, world) && await new SanctionPolicy(transaction, options.now).permits(account, world) }, options.events?.organizers ?? eventPermissions, options.now, eventPermissions);
@@ -114,7 +116,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerTravel(http, config, identity, travel, options.now);
   registerInvitations(http, config, identity, invitations, options.now);
   registerFocus(http, config, identity, focus, options.now);
-  registerProgression(http, config, identity, progression, options.now);
+  registerProgression(http, config, identity, progression, appearance, options.now);
+  identity.registerExportOwner('appearance',(id,transaction)=>appearance.exportAccount(id,transaction));
   identity.registerExportOwner('progression', (id, transaction) => progression.exportAccount(id,transaction));
   registerHospitality(http, config, identity, hospitality, options.now);
   registerEvents(http, config, identity, events, eventInvitations, options.now);

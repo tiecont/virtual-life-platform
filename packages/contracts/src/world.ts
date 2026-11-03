@@ -31,8 +31,10 @@ export const WorldDefinitionSchema = z.strictObject({
   focusPolicy: z.strictObject({ pauseAllowed: z.boolean() }).optional(),
   hospitalityPolicy: HospitalityPolicySchema.optional(),
   eventPolicy: WorldEventPolicySchema.optional(),
+  appearancePolicy: z.strictObject({ apron: z.enum(['forbidden','allowed','on-shift']) }).optional(),
   accessPolicy: WorldAccessPolicySchema, visibility: z.enum(['listed', 'hidden']), map: WorldMapSchema,
 }).superRefine((world, ctx) => {
+  if (world.appearancePolicy?.apron === 'on-shift' && !world.hospitalityPolicy?.staffing) ctx.addIssue({ code: 'custom', path: ['appearancePolicy'], message: 'Uniform policy requires explicit voluntary staffing' });
   if (world.capabilities.includes('focus') !== !!world.focusPolicy) ctx.addIssue({ code: 'custom', path: ['focusPolicy'], message: 'Focus capability requires an explicit trusted timer policy' });
   if (world.capabilities.includes('hospitality') !== !!world.hospitalityPolicy) ctx.addIssue({ code: 'custom', path: ['hospitalityPolicy'], message: 'Hospitality capability requires an explicit trusted service policy' });
   if (world.capabilities.includes('events') !== !!world.eventPolicy || world.eventPolicy && world.eventPolicy.maxCapacity > world.capacity) ctx.addIssue({ code: 'custom', path: ['eventPolicy'], message: 'Events require an explicit policy within world capacity' });
