@@ -25,6 +25,8 @@ Open http://127.0.0.1:3300. API liveness is http://127.0.0.1:4300/health/live; r
 
 ## Checks
 
+`test:e2e` runs desktop and mobile in separate API/database lifetimes to keep unrelated device cases from sharing a loopback handshake rate budget. API limits remain unchanged. Reports are under `playwright-report/{desktop,mobile}` and failure artifacts under `test-results/{desktop,mobile}`. Run filtered browser cases with `pnpm test:e2e tests/e2e/scene.spec.ts`.
+
 ```sh
 pnpm check
 pnpm exec playwright install chromium

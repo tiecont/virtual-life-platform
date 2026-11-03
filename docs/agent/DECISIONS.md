@@ -16,3 +16,4 @@
 | D-012 | Strict SDK v1, independent lifecycle/flags, hidden discovery excluded, runtime membership denies until M06 | Implemented/verified locally | ADR 0008; WORLD-SDK.md; m05-checks.json |
 | D-013 | Enforce one room owner per DB schema with a dedicated PostgreSQL advisory lock; irreversible loss, no distributed failover claim | Implemented and verified locally | ADR 0009; m06-owner-checks.json; future lease/fencing remains gated |
 | D-014 | Orthogonal strict tile scene, original local fixture assets and explicit dev/test sandbox opt-in; real world/default flags stay OFF | Implemented/verified M07-01 | SCENES.md; m07-scene-checks.json; production avatar actions remain M07-03 |
+| D-015 | Device profiles receive separate browser-test API/DB lifetimes; keep production handshake budgets unchanged | Implemented/verified M07-02 | run-browser-tests.mjs; m07-lifecycle-e2e-attempt2.log22 tests; original combined run21/22 retained |

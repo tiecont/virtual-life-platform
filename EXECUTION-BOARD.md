@@ -44,7 +44,7 @@
 | M06 | M06-06 · Add metric instrumentation, rate limits, bounded queues and load harness. | VERIFIED | m06-metrics-checks.json; actual24socket baseline339.6ms p95join; limited local profile only |
 | M06 | M06-07 · Document multi-instance ownership/fencing alternative (implement only when justified). | VERIFIED | m06-owner-checks.json; single-owner PG guard + actual paused-owner/backend-loss tests; distributed replicas prohibited |
 | M07 | M07-01 · Define isometric/2D coordinate/tile/map scene spec and collision zones. | VERIFIED | m07-scene-checks.json; actual cafe pixels/keyboard room/seats/privacy desktop+mobile; fixture art only |
-| M07 | M07-02 · Implement Pixi scene loader, camera, sprite lifecycle and event-driven state render. | TODO | — |
+| M07 | M07-02 · Implement Pixi scene loader, camera, sprite lifecycle and event-driven state render. | VERIFIED | m07-lifecycle-checks.json; keyed sprites/camera/cancellation and22 E2E; original multi-frame actions remain03 |
 | M07 | M07-03 · Implement avatar core + world outfit variants with a legal asset manifest. | TODO | — |
 | M07 | M07-04 · Implement destination click, path validation, movement interpolation. | TODO | — |
 | M07 | M07-05 · Implement accessibility/responsive fallback UI. | TODO | — |

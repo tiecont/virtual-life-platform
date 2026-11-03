@@ -1,17 +1,28 @@
 import { Application, Assets, Container, Graphics, Sprite, Text, type Texture } from 'pixi.js';
-import { RoomSnapshotSchema, SceneManifestSchema, type RoomSnapshot, type SceneManifest } from '@virtual-city/contracts';
+import { SceneManifestSchema, type RoomSnapshot, type SceneManifest } from '@virtual-city/contracts';
 import { tileCenter } from './spec';
+import { fitSceneCamera } from './camera';
+import { sceneEntities } from './entities';
 
-export async function createCafeScene(host: HTMLElement, input: SceneManifest, onSeat: (seatId: string) => void) {
+export async function createCafeScene(host: HTMLElement, input: SceneManifest, onSeat: (seatId: string) => void, options: { signal?: AbortSignal } = {}) {
   const scene = SceneManifestSchema.parse(input); const size = scene.tileSize;
+  options.signal?.throwIfAborted();
   const app = new Application();
-  await app.init({ width: scene.columns * size, height: scene.rows * size, background: '#e4ebe7', antialias: false, autoStart: false, resolution: 1, preference: 'webgl' });
   let texture: Texture;
-  try { texture = await Assets.load<Texture>('/assets/sandbox/fixture-avatar.svg'); }
-  catch (error) { app.destroy(true, { children: true }); throw error; }
+  try {
+    await app.init({ width: scene.columns * size, height: scene.rows * size, background: '#e4ebe7', antialias: false, autoStart: false, resolution: Math.min(window.devicePixelRatio || 1, 2), preference: 'webgl' });
+    options.signal?.throwIfAborted();
+    texture = await Assets.load<Texture>('/assets/sandbox/fixture-avatar.svg');
+    options.signal?.throwIfAborted();
+  } catch (error) {
+    if (app.renderer) app.destroy(true, { children: true });
+    else app.stage.destroy({ children: true });
+    throw error;
+  }
   const canvas = app.canvas;
   canvas.setAttribute('aria-hidden', 'true'); canvas.dataset.scene = scene.key;
-  const floor = new Graphics(); app.stage.addChild(floor);
+  const world = new Container(); app.stage.addChild(world);
+  const floor = new Graphics(); world.addChild(floor);
   for (let y = 0; y < scene.rows; y++) for (let x = 0; x < scene.columns; x++) floor.rect(x * size, y * size, size, size).fill((x + y) % 2 ? '#dbe7df' : '#e5eee8');
   function rect(g: Graphics, x: number, y: number, w: number, h: number, color: string) { g.rect(x, y, w, h).fill(color); }
   for (const zone of scene.collisionZones) {
@@ -42,44 +53,88 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
     rect(floor, x * size + 61, 14, 6, 61, '#eff4ef');
   }
   const rug = new Graphics().rect(6 * size, 9 * size, 7 * size, 3 * size).fill('#a7c2c6');
-  rug.rect(6 * size + 8, 9 * size + 8, 7 * size - 16, 3 * size - 16).stroke({ color: '#e6eee8', width: 2 }); app.stage.addChild(rug);
-  const seats = new Container(); const people = new Container(); app.stage.addChild(seats, people);
+  rug.rect(6 * size + 8, 9 * size + 8, 7 * size - 16, 3 * size - 16).stroke({ color: '#e6eee8', width: 2 }); world.addChild(rug);
+  const seats = new Container(); const people = new Container({ sortableChildren: true }); world.addChild(seats, people);
   function label(text: string, x: number, y: number, color = '#354944', fontSize = 14) {
     const element = new Text({ text, style: { fontFamily: 'system-ui, sans-serif', fontSize, fill: color, fontWeight: '600' } }); element.anchor.set(.5); element.position.set(x, y); return element;
   }
-  app.stage.addChild(label('WINDOW TABLE', 4.5 * size, 8 * size), label('GARDEN TABLE', 13.5 * size, 8 * size));
-  app.stage.addChild(label('LOCAL TEST CAFE', 9.5 * size, 1.8 * size, '#eff4ef', 14));
+  world.addChild(label('WINDOW TABLE', 4.5 * size, 8 * size), label('GARDEN TABLE', 13.5 * size, 8 * size));
+  world.addChild(label('LOCAL TEST CAFE', 9.5 * size, 1.8 * size, '#eff4ef', 14));
   let destroyed = false;
+  let current: RoomSnapshot | null = null; let context = ''; let created = 0; let removed = 0; let frames = 0;
+  const avatars = new Map<string, { root: Container; sprite: Sprite }>();
+  const chairs = scene.seats.map(point => {
+    const at = tileCenter(scene, point); const chair = new Graphics().roundRect(-18, -17, 36, 33, 4).fill('#ffffff');
+    chair.position.set(at.x, at.y);
+    const back = new Graphics().rect(at.x - 18, at.y + (point.facing === 'south' ? -20 : 12), 36, 8).fill('#9c5149');
+    const occupied = new Graphics().circle(at.x, at.y - 3, 6).fill('#e4e9e4'); occupied.visible = false;
+    chair.on('pointertap', () => {
+      if (current && !current.self.seatId && current.seats.some(seat => seat.seatId === point.seatId && seat.state === 'available')) onSeat(point.seatId);
+    });
+    seats.addChild(chair, back, label(point.seatId.slice(5).padStart(2, '0'), at.x, at.y + 30, '#40584c', 12), occupied);
+    return { point, chair, occupied };
+  });
+  function render() { if (!destroyed) { canvas.dataset.renderCount = String(++frames); app.render(); } }
+  function updateSeats(state: RoomSnapshot | null) {
+    current = state;
+    for (const { point, chair, occupied } of chairs) {
+      const seat = state?.seats.find(seat => seat.seatId === point.seatId);
+      chair.tint = seat?.mine ? '#287a70' : seat?.state === 'available' ? '#d77766' : '#87918c';
+      const enabled = !!state && seat?.state === 'available' && !state.self.seatId;
+      chair.eventMode = enabled ? 'static' : 'none'; chair.cursor = enabled ? 'pointer' : 'default';
+      occupied.visible = !!seat && seat.state !== 'available' && !state?.participants.some(person => person.seatId === seat.seatId) && !seat.mine;
+    }
+  }
+  function remove(id: string) {
+    const avatar = avatars.get(id); if (!avatar) return;
+    people.removeChild(avatar.root); avatar.root.destroy({ children: true }); avatars.delete(id); removed++;
+  }
   function update(input: RoomSnapshot | null) {
     if (destroyed) return;
-    const state = input ? RoomSnapshotSchema.parse(input) : null;
-    if (state && (state.worldSlug !== scene.key || state.seats.some(seat => !scene.seats.some(point => point.seatId === seat.seatId)))) throw new Error('SCENE_CONTEXT_MISMATCH');
-    seats.removeChildren().forEach(child => child.destroy()); people.removeChildren().forEach(child => child.destroy());
-    for (const point of scene.seats) {
-      const seat = state?.seats.find(seat => seat.seatId === point.seatId); const at = tileCenter(scene, point);
-      const chair = new Graphics();
-      chair.roundRect(-18, -17, 36, 33, 4).fill(seat?.mine ? '#287a70' : seat?.state === 'available' ? '#d77766' : '#87918c');
-      chair.rect(-18, point.facing === 'south' ? -20 : 12, 36, 8).fill('#9c5149'); chair.position.set(at.x, at.y);
-      if (state && seat?.state === 'available' && !state.self.seatId) { chair.eventMode = 'static'; chair.cursor = 'pointer'; chair.on('pointertap', () => onSeat(point.seatId)); }
-      seats.addChild(chair, label(point.seatId.slice(5).padStart(2, '0'), at.x, at.y + 30, '#40584c', 12));
-      if (seat?.state !== 'available' && seat?.state !== undefined && !state?.participants.some(p => p.seatId === seat.seatId)) {
-        const occupied = new Graphics().circle(at.x, at.y - 3, 6).fill('#e4e9e4'); seats.addChild(occupied);
+    let projection: ReturnType<typeof sceneEntities> | null;
+    try { projection = input ? sceneEntities(scene, input) : null; }
+    catch (error) { update(null); throw error; }
+    const state = projection?.state ?? null;
+    const nextContext = state ? [state.epoch, state.roomId, state.membershipId, state.self.accountId].join(':') : '';
+    if (nextContext !== context) for (const id of avatars.keys()) remove(id);
+    context = nextContext;
+    const entities = projection?.entities ?? [];
+    const visibleIds = new Set(entities.map(entity => entity.id));
+    for (const id of avatars.keys()) if (!visibleIds.has(id)) remove(id);
+    for (const entity of entities) {
+      let avatar = avatars.get(entity.id);
+      if (!avatar) {
+        const root = new Container(); const sprite = new Sprite(texture); sprite.anchor.set(.5, .85); root.addChild(sprite);
+        if (entity.self) root.addChild(label('You', 0, -55, '#233d34', 13));
+        avatar = { root, sprite }; avatars.set(entity.id, avatar); people.addChild(root); created++;
       }
+      avatar.root.position.set(entity.x, entity.y); avatar.root.zIndex = entity.y; avatar.root.alpha = entity.opacity;
+      avatar.sprite.scale.set(1.2, entity.pose === 'sit' ? .98 : 1.2);
     }
-    const profiles = new Map(state?.participants.map(p => [p.profile.id, p]) ?? []);
-    if (state && !profiles.has(state.self.accountId)) profiles.set(state.self.accountId, { profile: { id: state.self.accountId, displayName: 'You', avatarKey: 'mint' }, seatId: state.self.seatId, state: 'active' });
-    let standing = 0;
-    for (const person of profiles.values()) {
-      const seat = scene.seats.find(seat => seat.seatId === person.seatId);
-      const point = seat ?? { x: scene.spawn.x + (standing++ % 4) - 2, y: scene.spawn.y - Math.floor((standing - 1) / 4) };
-      const at = tileCenter(scene, point); const sprite = new Sprite(texture); sprite.anchor.set(.5, .85); sprite.position.set(at.x, at.y); sprite.scale.set(1.2);
-      sprite.alpha = person.state === 'reconnecting' ? .4 : 1;
-      people.addChild(sprite);
-      if (person.profile.id === state?.self.accountId) people.addChild(label('You', at.x, at.y - 55, '#233d34', 13));
-    }
-    canvas.dataset.entityCount = String(profiles.size); canvas.dataset.roomVersion = state ? String(state.roomVersion) : '';
-    app.render();
+    people.visible = true; updateSeats(state);
+    canvas.dataset.entityCount = String(entities.length); canvas.dataset.roomVersion = state ? String(state.roomVersion) : '';
+    canvas.dataset.createdEntities = String(created); canvas.dataset.removedEntities = String(removed);
+    canvas.dataset.sittingCount = String(entities.filter(entity => entity.pose === 'sit').length); canvas.dataset.suspended = 'false';
+    render();
   }
-  host.appendChild(canvas); update(null);
-  return { update, destroy() { if (destroyed) return; destroyed = true; app.destroy(true, { children: true }); } };
+  function suspend() {
+    if (destroyed) return;
+    people.visible = false; updateSeats(null); canvas.dataset.entityCount = '0'; canvas.dataset.sittingCount = '0'; canvas.dataset.roomVersion = ''; canvas.dataset.suspended = 'true'; render();
+  }
+  function resize() {
+    if (destroyed || !host.clientWidth || !host.clientHeight) return;
+    const width = host.clientWidth, height = host.clientHeight;
+    const camera = fitSceneCamera({ width, height }, { width: scene.columns * size, height: scene.rows * size });
+    app.renderer.resize(width, height); world.scale.set(camera.scale); world.position.set(camera.x, camera.y); render();
+  }
+  const observer = new ResizeObserver(resize);
+  function destroy() {
+    if (destroyed) return;
+    destroyed = true; observer.disconnect(); options.signal?.removeEventListener('abort', destroy);
+    avatars.clear(); current = null; app.destroy(true, { children: true });
+  }
+  host.appendChild(canvas); observer.observe(host); options.signal?.addEventListener('abort', destroy, { once: true });
+  if (options.signal?.aborted) { destroy(); options.signal.throwIfAborted(); }
+  update(null); resize();
+  return { update, suspend, destroy };
 }

@@ -25,38 +25,47 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
   const socket = useRef<Socket | null>(null); const recovery = useRef(new RoomRecovery()); const latest = useRef<RoomSnapshot | null>(null);
   const alive = useRef(true); const desired = useRef(false); const inFlight = useRef(false); const sequence = useRef(0);
   const claimRef = useRef<(seatId: string) => void>(() => {});
-  function publish() { if (alive.current) { const next = recovery.current.view; latest.current = next.snapshot; setView(next); } }
+  function publish() {
+    if (!alive.current) return;
+    const next = recovery.current.view; latest.current = next.snapshot; setView(next);
+    if (next.status === 'syncing') scene.current?.suspend(); else scene.current?.update(next.snapshot);
+  }
+  function closeConnection() {
+    desired.current = false; sequence.current++; inFlight.current = false;
+    const client = socket.current; socket.current = null; client?.removeAllListeners(); client?.close();
+    recovery.current = new RoomRecovery(); latest.current = null;
+    if (alive.current) { setBusy(false); setMessage(''); publish(); }
+  }
   useEffect(() => {
-    alive.current = true; let disposed = false;
+    alive.current = true; let disposed = false; let pending: AbortController | null = null;
     async function load() {
+      pending?.abort(); const controller = new AbortController(); pending = controller;
+      setLoading(true); setMe(null); setAvailable(false); setMessage('');
       try {
-        const [identity, catalog] = await Promise.all([fetch('/v1/me', { cache: 'no-store' }), fetch('/v1/worlds', { cache: 'no-store' })]);
+        const [identity, catalog] = await Promise.all([fetch('/v1/me', { cache: 'no-store', signal: controller.signal }), fetch('/v1/worlds', { cache: 'no-store', signal: controller.signal })]);
         if (!identity.ok) throw new Error('Open identity to create a guest or sign in.');
         const nextMe = MeSchema.parse(await identity.json());
         if (!catalog.ok) throw new Error('The city is unavailable. Try again shortly.');
         const worlds = WorldCatalogSchema.parse(await catalog.json()); const world = worlds.worlds.find(world => world.slug === 'sdk-sandbox');
-        if (!disposed) { setMe(nextMe); setAvailable(world?.availability === 'available'); }
-      } catch (error) { if (!disposed) setMessage(error instanceof Error ? error.message : 'The city is unavailable.'); }
-      finally { if (!disposed) setLoading(false); }
+        if (!disposed && !controller.signal.aborted) { setMe(nextMe); setAvailable(world?.availability === 'available'); }
+      } catch (error) { if (!disposed && !controller.signal.aborted) setMessage(error instanceof Error ? error.message : 'The city is unavailable.'); }
+      finally { if (!disposed && !controller.signal.aborted) setLoading(false); }
     }
     void load();
-    const identityBus = new BroadcastChannel('virtual-city-identity');
-    identityBus.onmessage = () => {
-      desired.current = false; socket.current?.close(); socket.current = null; recovery.current = new RoomRecovery(); publish(); void load();
-    };
-    return () => { disposed = true; alive.current = false; desired.current = false; sequence.current++; socket.current?.close(); socket.current = null; identityBus.close(); };
+    const identityBus = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel('virtual-city-identity');
+    if (identityBus) identityBus.onmessage = () => { closeConnection(); void load(); };
+    return () => { disposed = true; pending?.abort(); alive.current = false; closeConnection(); identityBus?.close(); };
   }, []);
   useEffect(() => {
     const element = host.current; if (!element) return;
-    let cancelled = false; let owned: SceneView | undefined;
-    void import('@virtual-city/pixi-scene').then(module => module.createCafeScene(element, sandboxScene, id => claimRef.current(id))).then(renderer => {
+    let cancelled = false; let owned: SceneView | undefined; const controller = new AbortController();
+    void import('@virtual-city/pixi-scene').then(module => module.createCafeScene(element, sandboxScene, id => claimRef.current(id), { signal: controller.signal })).then(renderer => {
       owned = renderer;
       if (cancelled) { renderer.destroy(); return; }
       scene.current = renderer; renderer.update(recovery.current.view.snapshot); setSceneState('ready');
     }).catch(() => { if (!cancelled) setSceneState('failed'); });
-    return () => { cancelled = true; owned?.destroy(); if (scene.current === owned) scene.current = null; };
+    return () => { cancelled = true; controller.abort(); owned?.destroy(); if (scene.current === owned) scene.current = null; };
   }, []);
-  useEffect(() => { scene.current?.update(view.snapshot); }, [view]);
 
   async function sync(joining: boolean) {
     const client = socket.current; if (!client?.connected || inFlight.current || !desired.current) return;
@@ -82,24 +91,24 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
   }, []);
   function enter() {
     if (!me || !available || inFlight.current) return;
-    desired.current = true; socket.current?.close(); recovery.current = new RoomRecovery(); publish();
+    closeConnection(); desired.current = true;
     const client = io(socketOrigin, { autoConnect: false, reconnection: true, reconnectionAttempts: 3, reconnectionDelay: 1000, transports: ['websocket'], withCredentials: true, auth: { schemaVersion: 1, csrfToken: me.csrfToken } });
     socket.current = client;
     client.on('connect', () => { if (socket.current === client) void syncRef.current(true); });
-    client.on('disconnect', () => { if (socket.current === client && alive.current) { sequence.current++; inFlight.current = false; setBusy(false); recovery.current.disconnect(); publish(); } });
+    client.on('disconnect', () => { if (socket.current === client && alive.current) { sequence.current++; inFlight.current = false; setBusy(false); setMessage(''); recovery.current.disconnect(); publish(); } });
     client.on('connect_error', () => { if (socket.current === client && alive.current) { recovery.current.disconnect(); publish(); setMessage('Connection unavailable. Rejoin to try again.'); } });
     client.on('room.delta', event => {
       if (socket.current !== client || !alive.current) return;
       try {
         const state = latest.current;
         const gap = recovery.current.delta(event);
-        if (gap) { latest.current = state; void syncRef.current(false); } else publish();
+        if (gap) { scene.current?.suspend(); latest.current = state; void syncRef.current(false); } else publish();
       } catch { recovery.current.disconnect(); publish(); setMessage('Room state changed. Rejoin to confirm your place.'); }
     });
     client.on('room.ended', event => {
       if (socket.current !== client || !alive.current) return;
       try { recovery.current.ended(event); } catch { recovery.current.disconnect(); }
-      desired.current = false; publish(); if (recovery.current.view.status !== 'idle') client.close();
+      desired.current = false; setMessage(''); publish(); if (recovery.current.view.status !== 'idle') client.close();
     });
     client.on('session.revoked', () => {
       if (socket.current !== client || !alive.current) return;
@@ -119,7 +128,7 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
       if (name === 'room.leave') { desired.current = false; client.close(); recovery.current = new RoomRecovery(); publish(); setMessage('You left the cafe.'); }
       else if (ack.result.type === 'snapshot') { recovery.current.acceptSnapshot(ticket, ack.result); publish(); setMessage(name === 'seat.claim' ? 'Your seat is confirmed.' : 'You stood up.'); }
     } catch (error) {
-      if (alive.current && socket.current === client) { recovery.current.disconnect(); publish(); setMessage(error instanceof Error ? error.message : 'Change unconfirmed. Rejoin to check your place.'); }
+      if (alive.current && socket.current === client && run === sequence.current) { recovery.current.disconnect(); publish(); setMessage(error instanceof Error ? error.message : 'Change unconfirmed. Rejoin to check your place.'); }
     } finally { if (sequence.current === run) { inFlight.current = false; if (alive.current) setBusy(false); } }
   }
   claimRef.current = id => { void mutate('seat.claim', id); };
