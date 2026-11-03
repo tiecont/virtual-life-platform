@@ -5,7 +5,7 @@ import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, type NestFastifyApplication } from '@nestjs/platform-fastify';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { Pool } from 'pg';
-import { SCHEMA_VERSION } from '@virtual-city/contracts';
+import { SCHEMA_VERSION, SanctionChangedSchema } from '@virtual-city/contracts';
 import type { Config } from './config';
 import { IdentityService } from './identity/service';
 import { registerIdentity } from './identity/http';
@@ -23,6 +23,7 @@ import { createSafetyRuntime, loadSafetyPolicy, type SafetyRuntimeOptions } from
 import { registerChatGateway } from './safety/socket';
 import { ReportService } from './safety/reports';
 import { registerReports } from './safety/http';
+import { SanctionPolicy, SanctionService } from './safety/sanctions';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -42,7 +43,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const requiredMigrations = await migrationNames();
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
     bodyLimit: 8192, requestTimeout: 10000, genReqId: () => randomUUID(),
-    logger: logging ? { level: 'info', serializers: { req: (req: FastifyRequest) => ({ method: req.method, path: req.url.split('?')[0].replace(/^(\/v1\/(?:reports|moderation\/cases))\/[^/]+/, '$1/[redacted]') }) }, redact: ['req.headers.cookie', 'req.headers.authorization', 'req.body', 'res.headers.set-cookie'] } : false,
+    logger: logging ? { level: 'info', serializers: { req: (req: FastifyRequest) => ({ method: req.method, path: req.url.split('?')[0].replace(/^(\/v1\/(?:reports|moderation\/(?:cases|sanctions)|me\/sanctions))\/[^/]+/, '$1/[redacted]') }) }, redact: ['req.headers.cookie', 'req.headers.authorization', 'req.body', 'res.headers.set-cookie'] } : false,
   }), { logger: false });
   const http = app.getHttpAdapter().getInstance() as FastifyInstance;
   http.addHook('onRequest', async (req, reply) => {
@@ -53,23 +54,27 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   });
   const identity = new IdentityService(db, config, options.now);
   const social = new SocialService(db, identity, options.socialPresence, options.now);
+  const sanctionPolicy = new SanctionPolicy(db, options.now);
   let roomService: RoomService | undefined = undefined;
-  const worlds = await createWorldRuntime(config, identity, { ...options.worlds, membership: options.worlds?.membership ?? { permits: async (actor, slug, membershipId) => roomService?.permits(actor, slug, membershipId) ?? false } });
+  const worlds = await createWorldRuntime(config, identity, { ...options.worlds, safety: sanctionPolicy, membership: options.worlds?.membership ?? { permits: async (actor, slug, membershipId) => roomService?.permits(actor, slug, membershipId) ?? false } });
   const roomAuthority = new RoomAuthority(db);
   roomService = new RoomService(worlds.registry, identity, roomAuthority, options.now, {
     relationships: (viewer, targets) => social.roomRelationships(viewer, targets),
     profiles: (viewer, targets, world, relationships) => identity.visibleRoomProfiles(viewer, targets, world, relationships),
-  });
+  }, sanctionPolicy);
   if (!roomService) throw new Error('Room service failed to initialize');
   const rooms = roomService;
   const reports = new ReportService(db, identity, rooms, safetyPolicy, config.NODE_ENV, config.SAFETY_EVIDENCE_KEY, config.SAFETY_EVIDENCE_KEY_ID, options.now);
+  const sanctions = new SanctionService(db, identity, reports, rooms, safetyPolicy, config.NODE_ENV, config.SAFETY_EVIDENCE_KEY, config.SAFETY_EVIDENCE_KEY_ID, options.now);
   const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, policy: safetyPolicy, evidence: reports.cache }, options.now);
   http.addHook('onClose', async () => { await worlds.registry.close(); });
   http.addHook('onClose', async () => { await rooms.close(); });
   registerWorlds(http, config, worlds.registry, options.now, rooms);
   registerIdentity(http, config, identity, options.now);
   registerSocial(http, config, identity, social, options.now);
-  registerReports(http, config, identity, reports, options.now);
+  registerReports(http, config, identity, reports, sanctions, options.now);
+  identity.registerExportOwner('sanctions', (id, transaction) => sanctions.exportAccount(id, transaction));
+  identity.registerDeletionOwner('sanctions', (id, transaction) => sanctions.redactAccount(id, transaction));
   identity.registerExportOwner('safety', (id, transaction) => reports.exportAccount(id, transaction));
   identity.registerDeletionOwner('safety', (id, transaction) => reports.redactAccount(id, transaction));
   identity.registerExportOwner('social', (id, transaction) => social.exportAccount(id, transaction));
@@ -90,11 +95,12 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const roomMetrics = new RoomMetrics();
   const unsubscribeRooms = registerRoomGateway(gateway, rooms, roomMetrics);
   registerChatGateway(gateway, chat);
+  const unsubscribeSanctions = sanctions.onChanged(id => gateway.emitToAccount(id, 'sanction.changed', SanctionChangedSchema.parse({ schemaVersion: 1 })));
   const unsubscribeSocial = social.onChanged(ids => { for (const id of ids) gateway.emitToAccount(id, 'friendship.changed', { schemaVersion: 1 }); });
   const unsubscribeRoomSocial = social.onChanged(ids => { void rooms.refreshAccounts(ids); });
   const unsubscribeRoomIdentity = identity.onChanged(id => { void rooms.refreshAccounts([id]); });
-  http.addHook('onClose', async () => { unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
+  http.addHook('onClose', async () => { unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, diagnostics };
+  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, diagnostics };
 }

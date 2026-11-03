@@ -84,6 +84,8 @@ Authenticated GET /v1/worlds returns privacy-safe metadata. Only SDK Sandbox (lo
 
 M08-02 adds a default-OFF development/test-only [ephemeral chat backend](docs/architecture/CHAT-SAFETY.md) with bounded pre-broadcast moderation. Production chat is closed; sanctions/moderator UI and public safety approval remain pending.
 
-M08-03 adds [confidential local reports](docs/architecture/REPORTS.md), encrypted evidence, assigned-case staff access and a room report/block dialog. A separate stable local evidence key is required; without it reporting truthfully stays unavailable. No staff is provisioned, and production remains closed. Sanctions, appeals and moderator UI remain pending.
+M08-03 adds [confidential local reports](docs/architecture/REPORTS.md), encrypted evidence, assigned-case staff access and a room report/block dialog. A separate stable local evidence key is required; without it reporting truthfully stays unavailable. No staff is provisioned, and production remains closed.
+
+M08-04 adds [temporary sanctions and private appeals](docs/architecture/SANCTIONS.md). Assigned staff can issue bounded reasoned restrictions; committed bans/mutes apply across sessions at world/room/chat guards. Visit `/safety` for your own decisions and private appeal receipts, including while world access is suspended. Moderator UI and incident controls remain M08-05. Actual M09 travel is not implemented; its target admission must use the shared safety guard. Public/real-world flags remain OFF.
 
 `pnpm setup:safety` creates an ignored local evidence key without overwriting an existing one. `pnpm dev` loads it for local reports; chat and real world/public flags remain independently closed.

@@ -10,12 +10,14 @@ export interface WorldRuntimeOptions {
   policy?: { permits(actor: WorldActor, policyKey: string): Promise<boolean> };
   adultProof?: AdultEligibilityProvider;
   membership?: { permits(actor: WorldActor, slug: string, membershipId: string): Promise<boolean> };
+  safety?: { permits(accountId: string, worldSlug: string): Promise<boolean> };
 }
 export async function createWorldRuntime(config: Config, identity: IdentityService, options: WorldRuntimeOptions = {}) {
   const admission = new AdmissionPolicy(options.adultProof);
   const registry = new WorldRegistry(config.NODE_ENV, {
     authenticate: credential => identity.authenticate(credential),
     canAccess: async (actor, world) => {
+      if (options.safety && !await options.safety.permits(actor.accountId, world.slug)) return false;
       const policy = world.accessPolicy;
       const approved = policy.kind === 'public' || (await options.policy?.permits(actor, policy.policyKey) ?? false);
       return admission.permits(actor, { enabled: true, restricted: policy.kind !== 'public', restrictedAccessApproved: approved, requiresAdult: policy.kind === 'restricted' && policy.requiresAdult });

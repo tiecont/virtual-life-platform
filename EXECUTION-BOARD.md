@@ -52,7 +52,7 @@
 | M08 | M08-01 · Define content, harassment and privacy threat model by world, plus escalation protocol. | VERIFIED | m08-policy-checks.json; audited definition/schema/config with45unit/75integration/builds; runtime02..06 pending |
 | M08 | M08-02 · Implement server-side chat/emote/moderation pipeline. | VERIFIED | m08-chat-checks.json; check48unit/89integration,E2E30; defaultOFF |
 | M08 | M08-03 · Implement reporting with minimal evidence, immutable audit log and access RBAC. | VERIFIED | m08-reports-checks.json;100integration,E2E32; encrypted local reporting/assigned RBAC |
-| M08 | M08-04 · Implement sanction lifecycle, cross-world enforcement and appeal intake. | TODO | — |
+| M08 | M08-04 · Implement sanction lifecycle, cross-world enforcement and appeal intake. | VERIFIED | m08-sanctions-checks.json; current admission/chat/room/private appeals; actual M09 travel remains gated |
 | M08 | M08-05 · Build moderator UI, kill switches and operational runbook. | TODO | — |
 | M08 | M08-06 · Test false positive handling, rate limits, privacy access and response latencies. | TODO | — |
 | M09 | M09-01 · Define travel intent state machine: CREATED/READY/COMMITTED/EXPIRED/FAILED/CANCELLED. | TODO | — |

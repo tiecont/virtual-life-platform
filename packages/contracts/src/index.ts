@@ -72,3 +72,4 @@ export type FriendsPage = z.infer<typeof FriendsPageSchema>;
 export type SocialRequestsPage = z.infer<typeof SocialRequestsPageSchema>;
 export type BlocksPage = z.infer<typeof BlocksPageSchema>;
 export * from './reports';
+export * from './sanctions';

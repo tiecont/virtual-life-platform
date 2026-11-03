@@ -1,0 +1,14 @@
+import { z } from 'zod';
+import { SafetySanctionSchema, SafetyCategorySchema } from './safety';
+import { WorldSlugSchema } from './world-primitives';
+const uuid = z.uuid().transform(value => value.toLowerCase());
+export const SanctionInputSchema = z.strictObject({ kind: SafetySanctionSchema, durationMinutes: z.number().int().min(1).max(43200), privateReason: z.string().trim().min(20).max(1000) });
+export type SanctionInput = z.infer<typeof SanctionInputSchema>;
+export const SanctionRevokeSchema = z.strictObject({ privateReason: z.string().trim().min(20).max(1000) });
+export const SanctionSummarySchema = z.strictObject({ id: uuid, kind: SafetySanctionSchema, category: SafetyCategorySchema, worldSlug: WorldSlugSchema.nullable(), roomId: uuid.nullable(), effectiveAt: z.iso.datetime(), expiresAt: z.iso.datetime(), state: z.enum(['active', 'expired', 'revoked']), appealUntil: z.iso.datetime() });
+export const AppealReceiptSchema = z.strictObject({ schemaVersion: z.literal(1), receiptId: uuid, status: z.literal('received'), createdAt: z.iso.datetime() });
+export const OwnSanctionsSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(SanctionSummarySchema).max(100), truncated: z.boolean(), appeals: z.array(AppealReceiptSchema.extend({ sanctionId: uuid })).max(100) });
+export const SanctionChangedSchema = z.strictObject({ schemaVersion: z.literal(1) });
+export const CaseSanctionsSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(SanctionSummarySchema).max(100), truncated: z.boolean() });
+export const SanctionResultSchema = z.strictObject({ schemaVersion: z.literal(1), sanction: SanctionSummarySchema });
+export const AppealInputSchema = z.strictObject({ note: z.string().trim().min(10).max(1000) });

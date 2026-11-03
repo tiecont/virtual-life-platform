@@ -27,7 +27,7 @@ export function registerRoomGateway(gateway: ReturnType<typeof createIdentityGat
       stalled.delete(socket);
       socket.volatile.emit('room.delta', { schemaVersion: 1, type: 'delta', fromVersion: update.fromVersion, state: update.snapshot });
     }
-  });
+  }, id => gateway.io.of('/').sockets.get(id)?.connected === true);
   const unsubscribeSessions = gateway.onSessionEnded(context => { void rooms.endSessions(context.accountId, [context.sessionId]); });
   gateway.io.on('connection', socket => {
     let pending = 0;

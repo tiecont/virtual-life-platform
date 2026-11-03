@@ -8,7 +8,8 @@ import { WindowLimiter } from '../identity/limits';
 import { DomainError } from '../common/errors';
 import { apiErrorHandler } from '../common/http-errors';
 import type { ReportService } from './reports';
-export function registerReports(http: FastifyInstance, config: Config, identity: IdentityService, reports: ReportService, now = Date.now) {
+import type { SanctionService } from './sanctions';
+export function registerReports(http: FastifyInstance, config: Config, identity: IdentityService, reports: ReportService, sanctions: SanctionService, now = Date.now) {
   const limits = new WindowLimiter(now);
   const token = (req: FastifyRequest) => readSessionToken(req, config)!;
   const key = (req: FastifyRequest) => z.uuid().parse(req.headers['idempotency-key']).toLowerCase();
@@ -24,5 +25,10 @@ export function registerReports(http: FastifyInstance, config: Config, identity:
     api.get('/moderation/cases', req => { const query = z.strictObject({ cursor: z.uuid().optional() }).parse(req.query); return reports.cases(token(req), query.cursor); });
     api.get('/moderation/cases/:id', req => reports.detail(token(req), id(req)));
     api.post('/moderation/cases/:id/assignment', req => reports.assign(write(req), id(req), key(req), CaseAssignmentSchema.parse(req.body)));
+    api.post('/moderation/cases/:id/sanctions', req => sanctions.issue(write(req), id(req), key(req), req.body));
+    api.get('/moderation/cases/:id/sanctions', req => sanctions.caseSanctions(token(req), id(req)));
+    api.post('/moderation/sanctions/:id/revoke', req => sanctions.revoke(write(req), id(req), key(req), req.body));
+    api.get('/me/sanctions', req => sanctions.own(token(req)));
+    api.post('/me/sanctions/:id/appeal', async (req, reply) => reply.code(201).send(await sanctions.appeal(write(req), id(req), key(req), req.body)));
   }, { prefix: '/v1' });
 }

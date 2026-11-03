@@ -71,6 +71,18 @@ export class ReportService {
     const grants = (await db.query<{ world_slug: string; role: 'moderator' | 'safety-admin' }>(`SELECT g.world_slug,g.role FROM safety_staff_grants g JOIN identity_accounts a ON a.id=g.account_id WHERE g.account_id=$1 AND a.kind='registered' AND g.expires_at>$2 AND ($3::text IS NULL OR g.world_slug=$3) FOR SHARE OF g`, [actorId, new Date(this.now()), world ?? null])).rows;
     if (!grants.length) throw unavailable(); return grants;
   }
+  async reviewContext(db: PoolClient, actor: IdentityContext, caseId: string) {
+    this.enabled();
+    const row = (await db.query<CaseRow>('SELECT * FROM safety_cases WHERE id=$1 FOR UPDATE', [caseId])).rows[0]; if (!row) throw unavailable();
+    const grants = await this.grant(db, actor.accountId, row.world_slug);
+    if (!row.subject_id || row.assigned_to !== actor.accountId || [row.reporter_id, row.subject_id].includes(actor.accountId) || (row.category === 'staff-abuse' && !grants.some(grant => grant.role === 'safety-admin'))) throw unavailable();
+    return { row, admin: grants.some(grant => grant.role === 'safety-admin') };
+  }
+  async evidenceInTransaction(db: PoolClient, caseId: string) {
+    this.enabled(); const sealed = (await db.query<{ key_id: string; iv: Buffer; tag: Buffer; ciphertext: Buffer; expires_at: Date }>('SELECT * FROM safety_report_evidence WHERE case_id=$1', [caseId])).rows[0];
+    if (!sealed || sealed.expires_at.getTime() <= this.now()) throw unavailable();
+    return ReportEvidenceSchema.parse(this.#cipher!.open('case:' + caseId, { ...sealed, keyId: sealed.key_id }));
+  }
   cases(token: string, cursor?: string) {
     return this.tx(token, [], async (db, actor) => {
       const grants = await this.grant(db, actor.accountId);

@@ -14,6 +14,7 @@ export interface RoomProjection {
   profiles(viewerId: string, targetIds: string[], worldSlug: string, relationships: Map<string, { blocked: boolean; friends: boolean }>): Promise<PublicProfile[]>;
 }
 export type RoomUpdate = { connectionId: string; fromVersion: number; snapshot: RoomSnapshot };
+export interface RoomSafetyPort { assert(accountId: string, worldSlug: string, roomId?: string, chat?: boolean): Promise<void> }
 export class RoomService {
   readonly epoch = randomUUID();
   #rooms = new Map<string, Room>();
@@ -29,11 +30,11 @@ export class RoomService {
   #worldGenerations = new Map<string, number>();
   #unsubscribe: () => void;
   #unsubscribeRevocations: () => void;
-  #changed = new Set<(updates: RoomUpdate[]) => void>();
+  #changed = new Map<(updates: RoomUpdate[]) => void, (connectionId: string) => boolean>();
   #controls = new Map<string, { promise: Promise<void>; again: boolean }>();
   #refresh = new Set<string>();
   #unsubscribeAuthority: () => void;
-  constructor(private registry: WorldRegistry, private identity: IdentityService, private authority: RoomAuthority, private now = Date.now, private projection?: RoomProjection) {
+  constructor(private registry: WorldRegistry, private identity: IdentityService, private authority: RoomAuthority, private now = Date.now, private projection?: RoomProjection, private safety?: RoomSafetyPort) {
     this.#unsubscribeAuthority = authority.onLost(() => { this.#abandon(); });
     this.#unsubscribe = registry.onUnavailable(slug => {
       this.#worldGenerations.set(slug, (this.#worldGenerations.get(slug) ?? 0) + 1);
@@ -41,7 +42,20 @@ export class RoomService {
     });
     this.#unsubscribeRevocations = identity.onRevoked(event => { void this.endSessions(event.accountId, event.sessionIds); });
   }
-  onChanged(listener: (updates: RoomUpdate[]) => void) { this.#changed.add(listener); return () => { this.#changed.delete(listener); }; }
+  onChanged(listener: (updates: RoomUpdate[]) => void, accepts: (connectionId: string) => boolean = () => true) { this.#changed.set(listener, accepts); return () => { this.#changed.delete(listener); }; }
+  // Serialize committed restrictions with joins, delayed chat publication and room commands.
+  safetyMutation<T>(work: () => Promise<{ result: T; interruption?: { accountId: string; worldSlug: string | null; roomId: string | null } }>): Promise<T> {
+    return this.#run(async () => {
+      const { result, interruption } = await work();
+      if (interruption) {
+        const room = this.#rooms.get(this.#accounts.get(interruption.accountId) ?? ''); const member = room?.members.get(interruption.accountId);
+        if (room && member && (!interruption.worldSlug || room.slug === interruption.worldSlug) && (!interruption.roomId || room.id === interruption.roomId)) {
+          const from = room.version; this.#removeMember(room, member, 'world-unavailable'); await this.#notifyChanged(room, from);
+        }
+      }
+      return result;
+    });
+  }
   diagnostics() {
     const rooms = [...this.#rooms.values()]; const members = rooms.flatMap(room => [...room.members.values()]);
     return { rooms: rooms.length, memberships: this.#accounts.size, connections: this.#connections.size,
@@ -132,13 +146,14 @@ export class RoomService {
     for (const member of room.members.values()) {
       const snapshots = new Map<boolean, RoomSnapshot>();
       for (const connectionId of member.connections.keys()) {
+        if (![...this.#changed.values()].some(accepts => accepts(connectionId))) continue;
         const motion = this.#motionConnections.has(connectionId);
         if (!snapshots.has(motion)) snapshots.set(motion, await this.#snapshot(room, member, motion));
         updates.push({ connectionId, fromVersion, snapshot: snapshots.get(motion)! });
       }
     }
     await this.authority.assert();
-    for (const listener of this.#changed) { try { listener(updates); } catch { /* The next snapshot remains authoritative. */ } }
+    for (const [listener, accepts] of this.#changed) { try { listener(updates.filter(update => accepts(update.connectionId))); } catch { /* The next snapshot remains authoritative. */ } }
   }
   #receipt(actor: WorldActor, requestId: string, operation: Receipt['operation'], input: unknown) {
     const key = actor.accountId + ':' + requestId; const fingerprint = this.identity.fingerprint({ operation, input }); const receipt = this.#receipts.get(key);
@@ -162,6 +177,7 @@ export class RoomService {
       const current = this.#rooms.get(this.#accounts.get(actor.accountId) ?? '');
       if (request.receipt && (!current || current.id !== request.receipt.roomId || current.members.get(actor.accountId)?.id !== request.receipt.membershipId)) throw new DomainError('NOT_IN_ROOM', 409, 'Previous membership ended');
       if (current) {
+        await this.safety?.assert(actor.accountId, current.slug, current.id);
         if (current.slug !== input.worldSlug || (input.roomId && current.id !== input.roomId)) throw new DomainError('ALREADY_IN_ROOM', 409, 'Leave the current room before joining another');
         const member = current.members.get(actor.accountId)!;
         const fromVersion = current.version;
@@ -180,6 +196,7 @@ export class RoomService {
         room = { id: randomUUID(), slug: input.worldSlug, capacity: definition.capacity, version: 0, members: new Map(), emptySince: this.now(), seats: new Map(definition.seatIds.map(id => [id, null])) }; this.#rooms.set(room.id, room); created = true;
       }
       if (room.members.size >= room.capacity) throw new DomainError('ROOM_FULL', 409, 'Room is full');
+      await this.safety?.assert(actor.accountId, room.slug, room.id);
       const member: Member = { id: randomUUID(), accountId: actor.accountId, worldVersion: input.worldVersion, sceneVersion: input.sceneVersion, connections: new Map([[connectionId, actor.sessionId]]), sessions: new Set([actor.sessionId]), disconnectedUntil: null, seatId: null, ...(definition.scene ? { motion: { path: [definition.scene.spawn], startedAt: this.now(), stepMs: 150 } as RoomMotion } : {}) };
       room.members.set(actor.accountId, member); this.#accounts.set(actor.accountId, room.id); this.#connections.set(connectionId, { roomId: room.id, accountId: actor.accountId, sessionId: actor.sessionId });
       if (input.motionVersion) this.#motionConnections.add(connectionId);
@@ -303,6 +320,7 @@ export class RoomService {
       const generation = this.#worldGenerations.get(room.slug) ?? 0; const { definition } = await this.registry.authorizeWorld(credential, room.slug);
       if (generation !== (this.#worldGenerations.get(room.slug) ?? 0)) throw new DomainError('WORLD_UNAVAILABLE', 503, 'World unavailable');
       if (!definition.capabilities.includes('chat')) throw new DomainError('FORBIDDEN', 403, 'Chat capability unavailable');
+      await this.safety?.assert(actor.accountId, room.slug, room.id, true);
       return { actor, worldSlug: room.slug };
     });
   }
@@ -319,6 +337,7 @@ export class RoomService {
         if (sender) for (const id of member.connections.keys()) recipients.push({ connectionId: id, accountId: member.accountId, worldSlug: room.slug, profile: sender.profile });
       }
       await this.identity.authenticate(credential); await this.authority.assert();
+      await this.safety?.assert(actor.accountId, room.slug, room.id, true);
       if (generation !== (this.#worldGenerations.get(room.slug) ?? 0)) throw new DomainError('WORLD_UNAVAILABLE', 503, 'World unavailable');
       for (const recipient of recipients) emit(recipient);
     });

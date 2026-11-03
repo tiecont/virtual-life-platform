@@ -1,0 +1,45 @@
+ Network virtual-city-test-1ea8a3e0_default Creating
+ Network virtual-city-test-1ea8a3e0_default Creating
+ Network virtual-city-test-1ea8a3e0_default Created
+ Network virtual-city-test-1ea8a3e0_default Created
+ Container virtual-city-test-1ea8a3e0-db-1 Creating
+ Container virtual-city-test-1ea8a3e0-db-1 Created
+ Container virtual-city-test-1ea8a3e0-db-1 Starting
+ Container virtual-city-test-1ea8a3e0-db-1 Started
+ Container virtual-city-test-1ea8a3e0-db-1 Waiting
+ Container virtual-city-test-1ea8a3e0-db-1 Healthy
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/sanctions.test.ts (14 tests | 1 failed) 22845ms
+   × rolls back notes, sanction, audit and receipt together and does not interrupt rooms on transaction failure 1684ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/sanctions.test.ts > rolls back notes, sanction, audit and receipt together and does not interrupt rooms on transaction failure
+AssertionError: expected 503 to be 500 // Object.is equality
+
+- Expected
++ Received
+
+- 500
++ 503
+
+ ❯ tests/integration/sanctions.test.ts:182:75
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 13 passed (14)
+   Start at  11:05:55
+   Duration  27.00s (transform 1.18s, setup 0ms, import 3.83s, tests 22.85s, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-1ea8a3e0-db-1 Stopping
+ Container virtual-city-test-1ea8a3e0-db-1 Stopped
+ Container virtual-city-test-1ea8a3e0-db-1 Removing
+ Container virtual-city-test-1ea8a3e0-db-1 Removed
+ Network virtual-city-test-1ea8a3e0_default Removing
+ Network virtual-city-test-1ea8a3e0_default Removed

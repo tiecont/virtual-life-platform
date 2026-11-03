@@ -22,7 +22,11 @@
     "safety_cases": "platform.safety",
     "safety_report_evidence": "platform.safety",
     "safety_audit_events": "platform.safety",
-    "safety_case_mutations": "platform.safety"
+    "safety_case_mutations": "platform.safety",
+    "safety_sanctions": "platform.safety",
+    "safety_sanction_notes": "platform.safety",
+    "safety_appeals": "platform.safety",
+    "safety_sanction_mutations": "platform.safety"
   },
   "journalTable": "city_schema_migrations",
   "legacyDatabases": "not managed by city migrations",
