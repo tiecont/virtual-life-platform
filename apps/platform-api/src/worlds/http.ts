@@ -8,8 +8,9 @@ import { readSessionToken } from '../identity/http';
 import { WindowLimiter } from '../identity/limits';
 import { DomainError } from '../common/errors';
 import { apiErrorHandler } from '../common/http-errors';
+import type { DiscoveryService } from '../discovery/service';
 
-export function registerWorlds(http: FastifyInstance, config: Config, registry: WorldRegistry, now = Date.now, rooms?: RoomService) {
+export function registerWorlds(http: FastifyInstance, config: Config, registry: WorldRegistry, now = Date.now, rooms?: RoomService,discovery?:DiscoveryService) {
   const limits = new WindowLimiter(now);
   http.register(async api => {
     api.setErrorHandler((error, req, reply) => {
@@ -22,6 +23,7 @@ export function registerWorlds(http: FastifyInstance, config: Config, registry: 
       z.strictObject({}).parse(req.query);
       return registry.catalog(credential);
     });
+    if(discovery)api.get('/discovery',req=>{if(!limits.take('discovery:'+req.ip,120))throw new DomainError('RATE_LIMITED',429,'Please wait before refreshing discovery');z.strictObject({}).parse(req.query);return discovery.observe(readSessionToken(req,config)!);});
     if (rooms) api.get('/worlds/:slug/rooms', async req => {
       if (!limits.take(req.ip, 120)) throw new DomainError('RATE_LIMITED', 429, 'Please wait before trying again');
       const credential = readSessionToken(req, config)!; z.strictObject({}).parse(req.query);

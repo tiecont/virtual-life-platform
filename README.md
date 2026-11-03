@@ -2,11 +2,13 @@
 
 Project repository: `git@github.com:tiecont/virtual-life-platform.git` (configured locally; no push performed). The Virtual City plan is the product specification.
 
-The [shared hospitality engine](docs/architecture/HOSPITALITY.md) provides private policy-gated orders, atomic claims, voluntary shifts, reusable timed courses, transactional completion hooks and service refusal/block/safety recovery. Actual progression consumers and real Maid integration remain subsequent modules. No public hospitality world is enabled.
+The [shared hospitality engine](docs/architecture/HOSPITALITY.md) provides private policy-gated orders, atomic claims, voluntary shifts, reusable timed courses, transactional completion hooks and service refusal/block/safety recovery. Optional progression consumers are implemented; real Maid integration remains gated. No public hospitality world is enabled.
 
-The [event engine](docs/architecture/EVENTS-RESERVATIONS.md) provides policy-gated silent schedules, private RSVPs, explicit calendar download, virtual table holds/check-in/FIFO and scoped controls/private cancellation notices. Concurrent effects use PostgreSQL transactions. Discovery/invitations and actual Restaurant integration remain later tasks; real event worlds remain disabled.
+The [event engine](docs/architecture/EVENTS-RESERVATIONS.md) provides policy-gated silent schedules, private RSVPs, explicit calendar download, virtual table holds/check-in/FIFO, consented discovery/invitations and scoped controls/private cancellation notices. Concurrent effects use PostgreSQL transactions. Actual Restaurant integration remains a later task; real event worlds remain disabled.
 
-The optional [progression engine](docs/architecture/PROGRESSION.md) now stores private source-unique completion grants and cosmetic entitlements. Progression defaults OFF; outfit restrictions/equip UI and compensating revocation remain subsequent tasks.
+The optional [progression engine](docs/architecture/PROGRESSION.md) stores private source-unique completion grants, cosmetic entitlements and immutable corrections, with server-approved outfits and a private wardrobe. Progression defaults OFF.
+
+The [city portal](docs/architecture/CITY-PORTAL.md) has original schematic art, catalog-only links, a shared private header and explicit travel confirmation. Bounded discovery suggests occupied places and listed events, with one real fallback for a confirmed empty city. Observed counts expire after30seconds; failed sources stay unknown. Discovery creates no rooms.
 
 Offline implementation of the supplied [master plan](MASTER-AGENT-PLAN.md). Current features and evidence are in [PROGRESS](docs/agent/PROGRESS.md); resume from [HANDOFF](docs/agent/HANDOFF.md). Guest/registered identity, session renewal, private settings and own-data export/delete are available at `/identity`. Consent-based friends, private contact codes and blocking are available at `/social`. A working identity is not a playable city. All worlds remain closed. Nothing is deployed or published.
 

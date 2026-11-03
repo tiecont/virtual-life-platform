@@ -1,0 +1,7 @@
+{
+  "occupiedBeforeScheduled": true,
+  "actualUsedPlaces": 1,
+  "noEmptyRoomAllocation": true,
+  "privateScheduleExcluded": true,
+  "featuredLinkDoesNotAutoTravel": true
+}

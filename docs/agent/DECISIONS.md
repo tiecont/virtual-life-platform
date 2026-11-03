@@ -1,5 +1,7 @@
 # Decisions
 
+M14-05 / ADR0048: bounded owner-based discovery,no owned tables or room creation;occupied first,near public schedules next,max3,exactly1actual confirmed-empty fallback. Unknown/truncated calendar never means empty. Oldest30sTTL/current safety+generation checks,slowcatalogoutside roomqueue,8global/2account pending and30/account/min keep work bounded. Counts are allocated places inclgrace,not guaranteed capacity. Full317integration/206unit/builds and68browser pass;nomigration/realrollout.
+
 M14-04 / ADR0047: strict publicdestination/optionalroomUUID URIhints neverauthorize orauto-createintents. RoomIDs onlyfromauthorizedpublicdirectory;serverrechecks scope/capacity andpreservessource. HTTP8s deadline and separate knownreceiptCANCELLED vsunknownlocaldismissal keepUXtruthful;unknownauth<=30s expires. Actual203unit/builds/route8+regression10 pass,includingfullroom/release/sameworld/forbidden/timeout/cancel. No backendcontract/migration change.
 
 M14-03 / ADR0046: sharedrootheader readsownme/room/catalog,publicownworldtitle orPrivatevisit;globalcasualpaletteavatar keepsuniforminventoryprivate. Friend/inboxcenterlinks existingguardedpages,nosuggestions/counts. Version-only refresh hints carrynoauthority;no header socket. Broad56browser pass after per-spec+profile API/DB isolation (realIPbudgets preserved),finalleavehint8affectedcases pass.201unit/builds0,nomigration/backendchange.

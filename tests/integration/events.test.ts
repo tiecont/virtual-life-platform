@@ -42,6 +42,36 @@ async function grant(r: Runtime, u: User, role: 'organizer' | 'performer', event
 async function befriend(r: Runtime, a: User, b: User) { const code = (await get(r, b, 'social/me')).json().contactCode, request = await post(r, a, 'friends/requests', { contactCode: code }); expect(request.statusCode).toBe(200); expect((await post(r, b, 'friends/requests/' + request.json().id + '/respond', { action: 'accept' })).json().state).toBe('ACCEPTED'); }
 const inviteOptIn = (r: Runtime, u: User, enabled: boolean) => r.app.http.inject({ method: 'PATCH', url: '/v1/me/invitations/settings', headers: headers(u), payload: { schemaVersion: 1, allowInvitations: enabled } });
 
+it('discovery concentrates confirmed empty city into one eligible place without allocating rooms or exposing hidden metadata',async()=>{
+ const r=await open(),viewer=await guest(r);expect((await r.app.http.inject({url:'/v1/discovery'})).statusCode).toBe(401);expect((await get(r,viewer,'discovery?accountId='+viewer.me.profile.id)).statusCode).toBe(422);const before=r.app.rooms.diagnostics().rooms;
+ for(let n=0;n<3;n++){const response=await get(r,viewer,'discovery');expect(response.statusCode).toBe(200);expect(response.json().featured).toHaveLength(1);expect(response.json().featured[0]).toMatchObject({worldSlug:'sdk-sandbox',reason:'start-here',roomCount:0,usedPlaces:0});expect(response.body).not.toMatch(/private-event-fixture|dating|organizer|profile|capability|sessionId/);expect(response.body).not.toContain(viewer.me.profile.id);expect(response.headers['cache-control']).toBe('no-store');}
+ expect(r.app.rooms.diagnostics().rooms).toBe(before);
+});
+it('discovery ranks actual room allocations before listed schedules,excludes private schedules and rechecks current access',async()=>{
+ const r=await open(),viewer=await guest(r),owner=await guest(r);const visit=await join(r,owner),listed=await schedule(r,owner,{worldSlug:'sdk-sandbox'});if(!visit.source)throw Error('Fixture membership unavailable');await schedule(r,owner,{worldSlug:'sdk-sandbox',visibility:'private',title:'Private undiscoverable event',schedule:{...input(r).schedule,opensAt:new Date(r.now()+5000).toISOString(),startsAt:new Date(r.now()+10000).toISOString(),checkInClosesAt:new Date(r.now()+20000).toISOString(),endsAt:new Date(r.now()+30000).toISOString()}});
+ const before=r.app.rooms.diagnostics().rooms,response=await get(r,viewer,'discovery'),view=response.json();expect(response.statusCode).toBe(200);expect(view.featured.map((item:{worldSlug:string})=>item.worldSlug)).toEqual(['event-fixture','sdk-sandbox']);expect(view.featured[0]).toMatchObject({reason:'occupied',usedPlaces:1,roomCount:1,roomId:visit.source.roomId});expect(view.featured[1]).toMatchObject({reason:'scheduled',eventAt:listed.event.schedule.startsAt,eventState:'upcoming',usedPlaces:0});expect(response.body).not.toMatch(/Private undiscoverable|organizer|profile|attendees/);expect(r.app.rooms.diagnostics().rooms).toBe(before);
+ await r.app.worlds.registry.setEnabled('sdk-sandbox',false);expect((await get(r,viewer,'discovery')).json().featured.map((item:{worldSlug:string})=>item.worldSlug)).not.toContain('sdk-sandbox');await r.pool.query("INSERT INTO safety_incident_controls VALUES('event-fixture','world',true,NULL,$1)",[new Date(r.now())]);expect((await get(r,viewer,'discovery')).json().featured.map((item:{worldSlug:string})=>item.worldSlug)).not.toContain('event-fixture');
+});
+it('discovery preserves known occupied counts during schedule outage and refuses unknown room snapshots',async()=>{
+ const r=await open(),viewer=await guest(r);await join(r,viewer);const eventRead=r.app.events.catalog.bind(r.app.events),roomRead=r.app.rooms.discovery.bind(r.app.rooms);
+ r.app.events.catalog=async()=>{throw Error('synthetic schedule outage');};try{const response=await get(r,viewer,'discovery');expect(response.statusCode).toBe(200);expect(response.json()).toMatchObject({schedulesKnown:false,featured:[{worldSlug:'event-fixture',reason:'occupied',usedPlaces:1}]});}finally{r.app.events.catalog=eventRead;}
+ r.app.rooms.discovery=async()=>{throw Error('synthetic room outage');};try{const response=await get(r,viewer,'discovery');expect(response.statusCode).toBe(503);expect(response.json()).not.toHaveProperty('featured');expect(response.body).not.toContain('synthetic');}finally{r.app.rooms.discovery=roomRead;}
+ expect((await get(r,viewer,'discovery')).statusCode).toBe(200);
+});
+it('discovery bounds held reads per account and globally over actual TCP and releases permits after completion',async()=>{
+ const r=await open(),viewer=await guest(r),original=r.app.rooms.discovery.bind(r.app.rooms);let release!:()=>void,entered=0;let gate=new Promise<void>(resolve=>release=resolve);r.app.rooms.discovery=async token=>{entered++;await gate;return original(token);};
+ const read=(u:User)=>fetch(r.url+'/v1/discovery',{headers:{cookie:u.cookie},signal:AbortSignal.timeout(10000)});
+ const pending=[read(viewer),read(viewer)];try{await expect.poll(()=>entered).toBe(2);expect((await read(viewer)).status).toBe(429);}finally{release();await Promise.all(pending.map(async reply=>{const response=await reply;expect(response.status).toBe(200);await response.json();}));r.app.rooms.discovery=original;}
+ const users=await Promise.all(Array.from({length:9},()=>guest(r)));entered=0;gate=new Promise<void>(resolve=>release=resolve);r.app.rooms.discovery=async token=>{entered++;await gate;return original(token);};const batch=users.slice(0,8).map(read);
+ try{await expect.poll(()=>entered).toBe(8);expect((await read(users[8])).status).toBe(429);}finally{release();await Promise.all(batch.map(async reply=>{const response=await reply;expect(response.status).toBe(200);await response.json();}));r.app.rooms.discovery=original;}
+ expect((await get(r,viewer,'discovery')).statusCode).toBe(200);
+});
+it('discovery leaves realtime commands unblocked by a slow catalog and rejects the resulting old snapshot',async()=>{
+ const r=await open(),viewer=await guest(r),visit=await join(r,viewer);if(!visit.source)throw Error('Fixture visit unavailable');const catalog=r.app.worlds.registry.catalog.bind(r.app.worlds.registry);let begin!:()=>void,release!:()=>void,once=true;const began=new Promise<void>(resolve=>begin=resolve),gate=new Promise<void>(resolve=>release=resolve);
+ r.app.worlds.registry.catalog=async token=>{if(once){once=false;begin();await gate;}return catalog(token);};const pending=get(r,viewer,'discovery');
+ try{await began;const ack=RoomAckSchema.parse(await visit.socket.timeout(5000).emitWithAck('room.snapshot',{schemaVersion:1,requestId:randomUUID(),...visit.source}));expect(ack.ok).toBe(true);r.advance(30000);}finally{release();const response=await pending;expect(response.statusCode).toBe(503);expect(response.json()).not.toHaveProperty('featured');r.app.worlds.registry.catalog=catalog;}
+ expect((await get(r,viewer,'discovery')).statusCode).toBe(200);
+});
 it('serves an authenticated empty catalog and denies ungranted scheduling or automatic calendar access', async () => {
   const r = await open(), u = await guest(r); expect((await get(r, u)).statusCode).toBe(200); expect((await get(r, u)).json().items).toEqual([]);
   expect((await r.app.http.inject({ url: '/v1/events?worldSlug=event-fixture' })).statusCode).toBe(401);

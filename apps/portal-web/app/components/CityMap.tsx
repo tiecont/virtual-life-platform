@@ -6,6 +6,7 @@ import { layoutCityWorlds } from './city-plots';
 import PixelCityArt from './PixelCityArt';
 import WorldActivity from './WorldActivity';
 import { travelHref } from '../travel/destination-link';
+import FeaturedPlaces from './FeaturedPlaces';
 import './city-map.css';
 const availability={available:'Open for admission checks',disabled:'Visits closed',offline:'Temporarily offline'};
 export default function CityMap(){
@@ -21,6 +22,7 @@ export default function CityMap(){
   <div className="city-map-frame"><PixelCityArt/><nav className="city-hotspots" aria-label="City map places">{plots.map(({world,x,y},index)=><a key={world.slug} href={'#city-world-'+world.slug} data-world-slug={world.slug} data-availability={world.availability} style={{left:x/48*100+'%',top:y/30*100+'%'}} aria-label={world.title+' — '+availability[world.availability]+'. Show details'} title={world.title+' · '+availability[world.availability]} onClick={()=>focusDetails(world.slug)}><span aria-hidden="true">{index+1}</span></a>)}</nav><span className="city-map-caption">ORIGINAL PIXEL CITY · SCHEMATIC MAP</span></div>
   <p className="city-message" aria-live="polite">{state==='loading'?'Checking the city catalog...':state==='session'?'Open identity to see places available to your session.':state==='error'?'City catalog unavailable. Refresh or return when connected.':!catalog?.worlds.length?'No places are listed for your session.':catalog.worlds.length>plots.length?`Map shows ${plots.length} places. All ${catalog.worlds.length} approved places are in the list below.`:'Only places listed for your session appear here.'}</p>
   {state==='session'&&<Link href="/identity">Open identity</Link>}
+  {catalog&&<FeaturedPlaces worlds={catalog.worlds} onAccessChanged={()=>void refresh.current()}/>}
   {catalog&&<ul className="city-world-list" aria-label="Available city catalog">{catalog.worlds.map(world=><li key={world.slug} data-world-slug={world.slug} data-availability={world.availability}><span className="city-world-number" aria-hidden="true">{numbers.get(world.slug)??'·'}</span><div><h3 id={'city-world-'+world.slug} tabIndex={-1}>{world.title}</h3><p>{world.kind==='sandbox'?'Local test place · ':''}{availability[world.availability]}</p><p className="city-access-note">{world.accessHint==='session-required'?'Your session and destination rules are checked before entry.':'Additional destination permission is required.'}</p>{world.availability==='available'&&world.accessHint==='session-required'&&<Link href={world.slug==='sdk-sandbox'?'/worlds/sdk-sandbox':travelHref(world.slug)}>{world.slug==='sdk-sandbox'?'Visit local cafe':'Open travel confirmation'}</Link>}<button className="city-details-button" aria-expanded={expanded===world.slug} onClick={()=>setExpanded(value=>value===world.slug?null:world.slug)}>{expanded===world.slug?'Hide activity for ':'Show activity for '}{world.title}</button>{expanded===world.slug&&<WorldActivity world={world} onAccessChanged={()=>void refresh.current()}/>}</div></li>)}</ul>}
   <p className="city-art-credit">Original code-authored artwork. <a href="/assets/city/provenance.json">City art provenance</a></p>
  </section>;

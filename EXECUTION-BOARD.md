@@ -87,7 +87,7 @@
 | M14 | M14-02 · Build world detail cards with safe occupancy and schedules. | VERIFIED | docs/agent/evidence/m14-activity-checks.json; ADR0045 |
 | M14 | M14-03 · Integrate shared header, avatar, current world, friend/invite center. | VERIFIED | docs/agent/evidence/m14-header-checks.json; ADR0046 |
 | M14 | M14-04 · Build route/portal UX (loading, full room, forbidden, cancelled, reconnect). | VERIFIED | docs/agent/evidence/m14-route-checks.json; ADR0047 |
-| M14 | M14-05 · Add initial activation strategy to concentrate activity. | TODO | — |
+| M14 | M14-05 · Add initial activation strategy to concentrate activity. | VERIFIED | m14-discovery-checks.json;206unit/317integration/full68browser;bounded owner observations/no allocation/privacy/TTL/outages |
 | M15 | M15-01 · Audit actual Deadline source and compare to reference plan. | TODO | — |
 | M15 | M15-02 · Implement platform identity/session adapter preserving existing guest upgrades. | TODO | — |
 | M15 | M15-03 · Bridge room/seat and focus events to shared contracts. | TODO | — |

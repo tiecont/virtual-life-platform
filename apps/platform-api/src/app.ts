@@ -45,6 +45,7 @@ import { EventInvitationService } from './events/invitations';
 import { ProgressionService } from './progression/service';
 import { registerProgression } from './progression/http';
 import { AppearanceService } from './progression/appearance';
+import { DiscoveryService } from './discovery/service';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -100,6 +101,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const events = new EventService(db, identity, social, worlds.registry, { permits: async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account, world) && await new SanctionPolicy(transaction, options.now).permits(account, world) }, options.events?.organizers ?? eventPermissions, options.now, eventPermissions);
   const reservations = new ReservationService(db, identity, social, rooms, events, options.now); events.attachReservations(reservations);
   const eventInvitations = new EventInvitationService(db, identity, invitations, events, options.now); events.attachInvitations(eventInvitations);
+  const discovery=new DiscoveryService(identity,rooms,events,options.now);http.addHook('preClose',async()=>discovery.close());
   const unsubscribeInvitationWithdrawal = social.onContactWithdrawn((transaction, a, b) => invitations.withdrawContact(transaction, a, b));
   const unsubscribeHospitalityWithdrawal = social.onContactWithdrawn((transaction, a, b) => hospitality.withdrawContact(transaction, a, b));
   const unsubscribeEventWithdrawal = social.onContactWithdrawn((transaction, a, b) => events.withdrawContact(transaction, a, b));
@@ -109,7 +111,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, policy: safetyPolicy, evidence: reports.cache }, options.now);
   http.addHook('onClose', async () => { await worlds.registry.close(); });
   http.addHook('onClose', async () => { await rooms.close(); });
-  registerWorlds(http, config, worlds.registry, options.now, rooms);
+  registerWorlds(http, config, worlds.registry, options.now, rooms,discovery);
   registerIdentity(http, config, identity, options.now);
   registerSocial(http, config, identity, social, options.now);
   registerReports(http, config, identity, reports, sanctions, incidents, options.now);

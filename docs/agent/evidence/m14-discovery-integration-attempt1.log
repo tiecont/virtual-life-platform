@@ -1,0 +1,42 @@
+ Network virtual-city-test-4238ec79_default Creating 
+ Network virtual-city-test-4238ec79_default Creating 
+ Network virtual-city-test-4238ec79_default Created 
+ Network virtual-city-test-4238ec79_default Created 
+ Container virtual-city-test-4238ec79-db-1 Creating 
+ Container virtual-city-test-4238ec79-db-1 Created 
+ Container virtual-city-test-4238ec79-db-1 Starting 
+ Container virtual-city-test-4238ec79-db-1 Started 
+ Container virtual-city-test-4238ec79-db-1 Waiting 
+ Container virtual-city-test-4238ec79-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/events.test.ts (51 tests | 1 failed | 46 skipped) 3253ms
+   × discovery ranks actual room allocations before listed schedules,excludes private schedules and rechecks current access 655ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/events.test.ts > discovery ranks actual room allocations before listed schedules,excludes private schedules and rechecks current access
+AssertionError: expected '{"schemaVersion":1,"observedAt":"2026…' not to contain 'event-fixture'
+
+Expected: "event-fixture"
+Received: "{"schemaVersion":1,"observedAt":"2026-11-03T10:00:00.000Z","expiresAt":"2026-11-03T10:00:30.000Z","schedulesKnown":true,"featured":[{"worldSlug":"no-event-fixture","reason":"start-here","roomCount":0,"usedPlaces":0,"eventAt":null,"eventState":null}]}"
+
+ ❯ tests/integration/events.test.ts:53:371
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed | 46 skipped (51)
+   Start at  23:26:54
+   Duration  4.39s (transform 451ms, setup 0ms, import 1.02s, tests 3.25s, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-4238ec79-db-1 Stopping 
+ Container virtual-city-test-4238ec79-db-1 Stopped 
+ Container virtual-city-test-4238ec79-db-1 Removing 
+ Container virtual-city-test-4238ec79-db-1 Removed 
+ Network virtual-city-test-4238ec79_default Removing 
+ Network virtual-city-test-4238ec79_default Removed 

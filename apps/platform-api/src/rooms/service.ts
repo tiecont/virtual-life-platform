@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { RoomSnapshotSchema, RoomEndedSchema, type WorldDefinition, type AvatarAppearance, type TravelSource, type TravelDestination, type RoomMotion, type RoomMove, type RoomJoin, type RoomOwnCommand, type RoomSnapshot, type RoomEnded, type SeatClaim, type SeatRelease, type PublicProfile } from '@virtual-city/contracts';
+import { RoomSnapshotSchema, RoomEndedSchema, type WorldCard, type WorldDefinition, type AvatarAppearance, type TravelSource, type TravelDestination, type RoomMotion, type RoomMove, type RoomJoin, type RoomOwnCommand, type RoomSnapshot, type RoomEnded, type SeatClaim, type SeatRelease, type PublicProfile } from '@virtual-city/contracts';
 import { findScenePath, motionPosition, type WorldRegistry, type WorldActor } from '@virtual-city/world-sdk';
 import type { IdentityService } from '../identity/service';
 import { DomainError } from '../common/errors';
@@ -18,6 +18,7 @@ export interface RoomProjection {
 export type RoomUpdate = { connectionId: string; fromVersion: number; snapshot: RoomSnapshot };
 export interface RoomSafetyPort { assert(accountId: string, worldSlug: string, roomId?: string, chat?: boolean): Promise<void> }
 export type RoomAppearanceReader=(account:string,world:WorldDefinition,source:TravelSource,connected:boolean)=>Promise<AvatarAppearance['outfit']>;
+export type RoomDiscoveryObservation={observedAt:string;worlds:WorldCard[];rooms:{worldSlug:string;roomId:string;capacity:number;occupancy:number}[]};
 export class RoomService {
   #appearance?: RoomAppearanceReader;
   setAppearanceProjection(reader: RoomAppearanceReader) { this.#appearance=reader; }
@@ -288,6 +289,19 @@ export class RoomService {
     return this.#run(async () => {
       await this.#sweep(); await this.registry.authorizeWorld(credential, slug);
       return { schemaVersion: 1 as const, rooms: [...this.#rooms.values()].filter(room => room.slug === slug).map(room => ({ roomId: room.id, capacity: room.capacity, occupancy: room.members.size })) };
+    });
+  }
+  async discovery(credential:string):Promise<RoomDiscoveryObservation>{
+    // Catalog policy hooks run before entering the room queue. A slow unrelated
+    // listed-private policy must not hold the realtime room owner.
+    const started=this.now(),catalog=await this.registry.catalog(credential);
+    return this.#run(async()=>{await this.#sweep();const actor=await this.identity.authenticate(credential),worlds:WorldCard[]=[],generations:{valid:()=>boolean}[]=[];
+      for(const world of catalog.worlds.filter(world=>world.availability==='available'&&world.accessHint==='session-required'&&world.slug!=='dating')){
+        const context=this.registry.projectionContext(world.slug);if(context.definition.visibility!=='listed'||context.definition.accessPolicy.kind!=='public')continue;
+        try{await this.safety?.assert(actor.accountId,world.slug);}catch(error){if(error instanceof DomainError&&[403,404].includes(error.status))continue;throw error;}worlds.push(world);generations.push(context);
+      }
+      const allowed=new Set(worlds.map(world=>world.slug)),rooms=[...this.#rooms.values()].filter(room=>allowed.has(room.slug)).map(room=>({worldSlug:room.slug,roomId:room.id,capacity:room.capacity,occupancy:room.members.size}));
+      if(this.authority.state!=='held'||generations.some(context=>!context.valid()))throw new DomainError('WORLD_UNAVAILABLE',503,'Activity changed');if(this.now()>=actor.expiresAt)throw new DomainError('UNAUTHENTICATED',401,'Session ended');return {observedAt:new Date(started).toISOString(),worlds,rooms};
     });
   }
   current(credential: string) {
