@@ -1,5 +1,11 @@
 # Agent progress
 
+## M15-01 — VERIFIED complete readonly Deadline comparison
+
+From7abe23e;ADR0049/DEADLINE-INTEGRATION-AUDIT.md/m15-audit-checks.json. New reusable source-only audit command0 records52hashes,12APIfiles,9route refs,0transport imports and8/8unchanged focused-audit files;second hash/status/HEAD check unchanged. Syntax/lint0. Manual reference comparison covers actualguestcookie+CSRF/catalog/schema/placeholder scene/disabledfocus/assets/tests/socialgaps. Dated2026-11-02baseline preserved:lint1,typecheck/test/build0;7unitcases,no priorDeadlinePGintegration/browser run. No freshlegacyruntime or gameplay claim.
+
+M15-02..06 BLOCKED_EXTERNAL atADR0001 clean full-world revision boundary/B-001;B-002 applies to redistribution. Backend is committed but web/tests untracked/dirty;do not conflate. No legacy source/media/env/DB/process/network/migration/copy/mutation or cityruntime change. RealflagsOFF/DB0025/no workers. Next exact action M16-01 run same readonly command forMaid,compare actual DTO/menu/schema/health-onlyruntime/landing anddated baseline;record integrationpin gates,then independentM17-01 original Library scene and access UI.
+
 ## M14-05 — VERIFIED observed discovery and activity concentration
 
 From81ddbec;ADR0048/m14-discovery-checks.json. Actual `pnpm check` exit0:7governance,206unit,317integration,lint/types/architecture/assets/allbuilds. Target browser6pass;full default browser68pass(34/device),28isolated spec/device lifetimes all0. Desktop/mobile screenshots inspected,older regenerated visual artifacts restored. Missing-policy red and first integration4pass1fail retained;the failure was a substring assertion matching valid no-event-fixture,corrected to exact slug comparison. Final root suite includes slow-catalog isolation beyond earlier targeted5pass.

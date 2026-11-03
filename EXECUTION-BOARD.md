@@ -88,12 +88,12 @@
 | M14 | M14-03 · Integrate shared header, avatar, current world, friend/invite center. | VERIFIED | docs/agent/evidence/m14-header-checks.json; ADR0046 |
 | M14 | M14-04 · Build route/portal UX (loading, full room, forbidden, cancelled, reconnect). | VERIFIED | docs/agent/evidence/m14-route-checks.json; ADR0047 |
 | M14 | M14-05 · Add initial activation strategy to concentrate activity. | VERIFIED | m14-discovery-checks.json;206unit/317integration/full68browser;bounded owner observations/no allocation/privacy/TTL/outages |
-| M15 | M15-01 · Audit actual Deadline source and compare to reference plan. | TODO | — |
-| M15 | M15-02 · Implement platform identity/session adapter preserving existing guest upgrades. | TODO | — |
-| M15 | M15-03 · Bridge room/seat and focus events to shared contracts. | TODO | — |
-| M15 | M15-04 · Embed Deadline scene in shared game shell and avatar/portal actions. | TODO | — |
-| M15 | M15-05 · Integrate invitations, privacy and moderation hooks. | TODO | — |
-| M15 | M15-06 · Performance, accessibility, migration and rollback. | TODO | — |
+| M15 | M15-01 · Audit actual Deadline source and compare to reference plan. | VERIFIED | m15-audit-checks.json;52hashes/12APIfiles/9routes/8priorunchanged;dated baseline gaps explicit |
+| M15 | M15-02 · Implement platform identity/session adapter preserving existing guest upgrades. | BLOCKED_EXTERNAL | B-001 clean full-world revision;ADR0049;proof/mapping remains unimplemented |
+| M15 | M15-03 · Bridge room/seat and focus events to shared contracts. | BLOCKED_EXTERNAL | B-001/ADR0049;actual source adapter follows approved pin |
+| M15 | M15-04 · Embed Deadline scene in shared game shell and avatar/portal actions. | BLOCKED_EXTERNAL | B-001/B-002;preserve dirty web;no playable legacy scene yet |
+| M15 | M15-05 · Integrate invitations, privacy and moderation hooks. | BLOCKED_EXTERNAL | B-001/ADR0049;no verified legacy adapter callbacks |
+| M15 | M15-06 · Performance, accessibility, migration and rollback. | BLOCKED_EXTERNAL | B-001 and02..05;no real integrated journey certificate |
 | M16 | M16-01 · Audit actual Maid repo vs original master plan and baseline tests. | TODO | — |
 | M16 | M16-02 · Bridge Maid identity/session, roles and avatars to platform. | TODO | — |
 | M16 | M16-03 · Bridge order lifecycle/shift to shared hospitality engine. | TODO | — |
