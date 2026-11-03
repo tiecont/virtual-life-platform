@@ -1,5 +1,9 @@
 # Agent progress
 
+## M12-06 - VERIFIED network concurrency and DST acceptance
+
+From2397711;m12-regression-checks.json/EVENTS-VERIFICATION.md. Fullcheck exit0:7governance,190unit,299integration including47event/reservation,lint/types/architecture/assets/builds;diff0. Initial combinedDST2failed45filteredskips because scenario tried to release CHECKED_IN attendance; corrected test releases CONFIRMED consent,expires a replacement,then checks in a fresh confirmed allocation. No runtime/model relaxation. Two independent signed TCP/Socket.IO sessions race same table after authorized timezone adjustment for springgap/repeatedfallhour;absoluteinstants/offsets,onewinner,retry/TTL/currentadmission pass. Local M12taskscope complete;actualadapters/UI/staff/interactiveapproval/publicrelease not claimed. Next M13-01: strict nonmonetary XP/cosmetic policy perworld,caps/anti-farm rules and no social/dating pressure incentives,then M13-02 durable ledger. AllflagsOFF,previewoff,DB0022.
+
 ## M12-05 - VERIFIED consented private invitations and global discovery
 
 From7be8d9a; m12-discovery-checks.json/ADR0038. Fullcheck exit0:7governance,190unit,297integration including45event/reservation,lint/types/architecture/assets/builds;0022localmigration/diff0. Initial2query/route reds retained;targeted2pass. Expanded target4pass1failed because fixture attempted schedule adjustment after OPEN; corrected opensAt to exercise SCHEDULED,final fullsuite passes. Current consent port, private invite preview/acceptance/expiry/revocation, SQL-blocked deadline, block/unfriend races, callback rollback/private booking release, old-key nonreactivation, metadata hiding/erasure and seeded adult-discovery denial verified. Acceptance creates no allocation. Browser evidence recorded separately when complete. Next M12-06 actual independent network sessions/DST/reservation acceptance; allrealflagsOFF/no actualworld/UI/public rollout,cityDB0022.

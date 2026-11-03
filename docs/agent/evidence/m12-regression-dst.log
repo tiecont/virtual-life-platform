@@ -1,0 +1,47 @@
+ Network virtual-city-test-f5f1875f_default Creating 
+ Network virtual-city-test-f5f1875f_default Creating 
+ Network virtual-city-test-f5f1875f_default Created 
+ Network virtual-city-test-f5f1875f_default Created 
+ Container virtual-city-test-f5f1875f-db-1 Creating 
+ Container virtual-city-test-f5f1875f-db-1 Created 
+ Container virtual-city-test-f5f1875f-db-1 Starting 
+ Container virtual-city-test-f5f1875f-db-1 Started 
+ Container virtual-city-test-f5f1875f-db-1 Waiting 
+ Container virtual-city-test-f5f1875f-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/events.test.ts (47 tests | 2 failed | 45 skipped) 2059ms
+   × two independent network sessions preserve one table and trusted expiry after timezone change through 'spring gap' 1144ms
+   × two independent network sessions preserve one table and trusted expiry after timezone change through 'repeated fall hour' 911ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/events.test.ts > two independent network sessions preserve one table and trusted expiry after timezone change through 'spring gap'
+ FAIL  |integration| tests/integration/events.test.ts > two independent network sessions preserve one table and trusted expiry after timezone change through 'repeated fall hour'
+AssertionError: expected 409 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 409
+
+ ❯ tests/integration/events.test.ts:462:163
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 45 skipped (47)
+   Start at  20:34:35
+   Duration  3.39s (transform 581ms, setup 0ms, import 1.18s, tests 2.06s, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-f5f1875f-db-1 Stopping 
+ Container virtual-city-test-f5f1875f-db-1 Stopped 
+ Container virtual-city-test-f5f1875f-db-1 Removing 
+ Container virtual-city-test-f5f1875f-db-1 Removed 
+ Network virtual-city-test-f5f1875f_default Removing 
+ Network virtual-city-test-f5f1875f_default Removed 

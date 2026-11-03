@@ -1,5 +1,7 @@
 # Decisions
 
+M12-06: acceptance combines independent TCP/Socket.IO sessions with actual SQL allocations and authorized timezone change across both DST transitions. CHECKED_IN attendance remains historical until end; tests cancel CONFIRMED consent before replacing allocation. No runtime change;full299integration/builds pass. EVENTS-VERIFICATION.md maps actual scope/limits.
+
 M12-05 / ADR0038: event-private consent reuses platform friendship/opt-in via an owner port and transactional opt-out callback; explicit acceptance grants viewing only and revocation cancels private participation. Global discovery excludes private/hidden/restricted/dating. Expired offers cannot disclose later metadata. Evidence full297integration/builds exit0;allrealflagsOFF.
 
 M12-04 / ADR0037: registered expiring organizer/performer roles remain separate from M08 moderator authority; only original organizer adjusts unoccupied schedules. Cancellation works during closure and atomically releases participation/unique private notices/receipt with sorted recipient locks and retry on snapshot growth. Socket hints contain schemaVersion only. Interactive audience stays denied; independent approval/stage coverage remains mandatory M19 gate, not a completed workflow. Evidence final290integration/browser4 pass.
