@@ -2,6 +2,8 @@
 import { useEffect,useRef,useState } from 'react';
 import type { WorldCard } from '@virtual-city/contracts';
 import { ACTIVITY_MAX_AGE_MS,activityFresh,roomActivity,scheduledActivity } from './city-activity';
+import Link from 'next/link';
+import { travelHref } from '../travel/destination-link';
 type Observation={rooms:ReturnType<typeof roomActivity>|null;events:ReturnType<typeof scheduledActivity>|null;receivedAt:number;receivedMono:number};
 export default function WorldActivity({world,onAccessChanged}:{world:WorldCard;onAccessChanged:()=>void}){
  const [view,setView]=useState<Observation|null>(null),[busy,setBusy]=useState(false),[message,setMessage]=useState('Activity not confirmed.'),[expired,setExpired]=useState(false);
@@ -19,6 +21,7 @@ export default function WorldActivity({world,onAccessChanged}:{world:WorldCard;o
  const fresh=view&&!expired&&activityFresh(view.receivedAt,view.receivedMono,Date.now(),performance.now());
  return <section className="city-activity" aria-label={'Activity for '+world.title}><h4>Activity snapshot</h4><p className="city-activity-message" aria-live="polite">{expired?'Activity snapshot expired. Refresh to confirm counts and schedules.':message}</p>
   {fresh&&<><p>{view.rooms?view.rooms.rooms?`Room places in use: ${view.rooms.usedPlaces} across ${view.rooms.rooms} allocated ${view.rooms.rooms===1?'room':'rooms'}.`:'No rooms are currently allocated in this snapshot.':'Room activity unknown. Refresh to try again.'}</p><p className="city-access-note">Counts include reconnect-held places. They do not identify visitors or guarantee a free place.</p>
+  {view.rooms&&world.accessHint==='session-required'&&view.rooms.directory.length>0&&<ul className="city-room-options">{view.rooms.directory.slice(0,3).map((room,index)=><li key={room.roomId}><span>Room {index+1} · {room.occupancy}/{room.capacity} places in use as observed</span><Link href={travelHref(world.slug,room.roomId)}>Review room {index+1}</Link></li>)}{view.rooms.directory.length>3&&<li>Only the first three returned rooms are shown.</li>}</ul>}
   <h4>Listed events</h4>{!world.capabilities.includes('events')?<p>This place does not offer an event schedule.</p>:view.events?<>{view.events.items.length?<ul className="city-schedule">{view.events.items.slice(0,3).map(event=><li key={event.id}><strong>{event.title}</strong><span>{event.phase.toLowerCase()} as observed</span><time dateTime={event.schedule.startsAt}>{event.startsLabel}</time><span>to {event.endsLabel} · {event.schedule.timeZone}</span></li>)}</ul>:<p>No listed upcoming events in this snapshot.</p>}{(view.events.truncated||view.events.items.length>3)&&<p>Only the first three returned events are shown. More may be listed.</p>}</>:<p>Schedule unknown. Refresh to try again.</p>}
   <p className="city-received">Received on this device: <time dateTime={new Date(view.receivedAt).toISOString()}>{new Date(view.receivedAt).toLocaleTimeString()}</time> · expires after 30 seconds.</p></>}
   <button disabled={busy} onClick={()=>void reload.current()}>Refresh activity</button>

@@ -1,5 +1,7 @@
 # Decisions
 
+M14-04 / ADR0047: strict publicdestination/optionalroomUUID URIhints neverauthorize orauto-createintents. RoomIDs onlyfromauthorizedpublicdirectory;serverrechecks scope/capacity andpreservessource. HTTP8s deadline and separate knownreceiptCANCELLED vsunknownlocaldismissal keepUXtruthful;unknownauth<=30s expires. Actual203unit/builds/route8+regression10 pass,includingfullroom/release/sameworld/forbidden/timeout/cancel. No backendcontract/migration change.
+
 M14-03 / ADR0046: sharedrootheader readsownme/room/catalog,publicownworldtitle orPrivatevisit;globalcasualpaletteavatar keepsuniforminventoryprivate. Friend/inboxcenterlinks existingguardedpages,nosuggestions/counts. Version-only refresh hints carrynoauthority;no header socket. Broad56browser pass after per-spec+profile API/DB isolation (realIPbudgets preserved),finalleavehint8affectedcases pass.201unit/builds0,nomigration/backendchange.
 
 M14-02 / ADR0045: reuse ownerdirectory/eventcatalog,one explicitly expandedcard,no100worldfanout. Counts meanallocatedplaces includinggrace,notpeopleonline/freecapacity. Device-receivedsnapshot expires30s;partialfailuresunknown,access401/403/404 clearsandrefreshescatalog. Existing safetyguard already404;no runtimeauthfix. Sandboxsilenteventpolicyexplicit/defaultorganizerdenied. Full312integration/builds/browser6 pass,nomigration.

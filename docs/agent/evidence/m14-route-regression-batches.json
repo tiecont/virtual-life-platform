@@ -1,0 +1,14 @@
+[
+  {
+    "spec": "tests/e2e/travel.spec.ts",
+    "exitCode": 0
+  },
+  {
+    "spec": "tests/e2e/city-activity.spec.ts",
+    "exitCode": 0
+  },
+  {
+    "spec": "tests/e2e/city-header.spec.ts",
+    "exitCode": 0
+  }
+]

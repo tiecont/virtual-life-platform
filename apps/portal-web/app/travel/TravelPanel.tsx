@@ -3,17 +3,19 @@ import { useEffect, useRef, useState } from 'react';
 import { io, type Socket } from 'socket.io-client';
 import { ApiErrorSchema, MeSchema, OwnRoomSchema, RoomAckSchema, RoomDeltaSchema, TravelAckSchema, TravelIntentReceiptSchema, WorldCatalogSchema, type Me, type RoomSnapshot, type TravelIntentInput, type WorldCard } from '@virtual-city/contracts';
 import { announceVisitChange } from '../components/visit-hint';
+import type { DestinationLink } from './destination-link';
 type Pending = { createKey: string; requestId: string; input: TravelIntentInput; intentId?: string; capability?: string };
 class TravelError extends Error { constructor(readonly code: string) { super(code); } }
-const messageFor = (error: unknown) => error instanceof TravelError ? error.code === 'UNAUTHENTICATED' ? 'Your session ended. Open identity to continue.' : error.code === 'ROOM_FULL' ? 'The destination is full. Your current visit will be checked again.' : error.code === 'RATE_LIMITED' ? 'Please wait before trying again.' : error.code === 'NOT_IN_ROOM' || error.code === 'ALREADY_IN_ROOM' ? 'Your room changed. Refresh your visit before travelling.' : 'Travel could not be confirmed. Refresh your visit or retry the same request.' : 'Connection interrupted. Your place is unconfirmed.';
-export default function TravelPanel({ socketOrigin }: { socketOrigin: string }) {
-  const [me, setMe] = useState<Me | null>(null), [worlds, setWorlds] = useState<WorldCard[]>([]), [current, setCurrent] = useState<RoomSnapshot | null>(null), [destination, setDestination] = useState(''), [connection, setConnection] = useState<'connecting' | 'ready' | 'offline'>('connecting'), [message, setMessage] = useState(''), [busy, setBusy] = useState(false), [hasPending, setHasPending] = useState(false), [identityRevision, setIdentityRevision] = useState(0);
+const messageFor = (error: unknown) => error instanceof TravelError ? error.code === 'UNAUTHENTICATED' ? 'Your session ended. Open identity to continue.' : error.code === 'ROOM_FULL' ? 'The destination is full. Your current visit will be checked again.' : error.code === 'RATE_LIMITED' ? 'Please wait before trying again.' : error.code === 'NOT_IN_ROOM' || error.code === 'ALREADY_IN_ROOM' ? 'Your room changed. Refresh your visit before travelling.' : 'Travel could not be confirmed. Refresh your visit or retry the same request.' : 'Travel response was interrupted. Refresh your visit or retry the same request.';
+export default function TravelPanel({ socketOrigin,preferred={kind:'none'} }: { socketOrigin: string;preferred?:DestinationLink }) {
+  const [me, setMe] = useState<Me | null>(null), [worlds, setWorlds] = useState<WorldCard[]>([]), [current, setCurrent] = useState<RoomSnapshot | null>(null), [destination, setDestination] = useState(preferred.kind==='preferred'?preferred.worldSlug:''),[targetRoom,setTargetRoom]=useState<string|null>(preferred.kind==='preferred'?preferred.roomId??null:null),[linkTouched,setLinkTouched]=useState(false), [connection, setConnection] = useState<'connecting' | 'ready' | 'offline'>('connecting'), [message, setMessage] = useState(''), [busy, setBusy] = useState(false), [hasPending, setHasPending] = useState(false), [identityRevision, setIdentityRevision] = useState(0);
   const client = useRef<Socket | null>(null), actor = useRef<Me | null>(null), snapshot = useRef<RoomSnapshot | null>(null), pending = useRef<Pending | null>(null), alive = useRef(true), operation = useRef(0), mutation = useRef(0), writing = useRef(false), lifetime = useRef<AbortController | null>(null), refresh = useRef<() => Promise<void>>(async () => {});
   const announcedVisit=useRef<string|null>(null);
   const publish = (state: RoomSnapshot | null) => { snapshot.current = state; if(state){const key=state.epoch+':'+state.membershipId;if(announcedVisit.current!==key){announcedVisit.current=key;announceVisitChange();}}if (alive.current) setCurrent(state); };
   function clearPending() { pending.current = null; if (alive.current) setHasPending(false); }
   async function api(path: string, options: RequestInit = {}) {
-    const response = await fetch('/v1' + path, { ...options, cache: 'no-store', credentials: 'same-origin', signal: lifetime.current?.signal });
+    const timeout=AbortSignal.timeout(8000),signal=lifetime.current?AbortSignal.any([lifetime.current.signal,timeout]):timeout;
+    const response = await fetch('/v1' + path, { ...options, cache: 'no-store', credentials: 'same-origin', signal });
     if (!response.ok) { const parsed = ApiErrorSchema.safeParse(await response.json().catch(() => null)); throw new TravelError(parsed.success ? parsed.data.error.code : 'INTERNAL_ERROR'); } return response.json() as Promise<unknown>;
   }
   useEffect(() => {
@@ -70,10 +72,10 @@ export default function TravelPanel({ socketOrigin }: { socketOrigin: string }) 
   }, [socketOrigin, identityRevision]);
   async function travel(retry = false) {
     const socket = client.current, identity = actor.current, world = worlds.find(world => world.slug === destination);
-    if (!socket?.connected || !identity || writing.current || connection !== 'ready' || (!retry && !world)) return;
+    if (!socket?.connected || !identity || writing.current || connection !== 'ready' || (!retry && (!world||world.slug===snapshot.current?.worldSlug&&(!targetRoom||targetRoom===snapshot.current.roomId)))) return;
     if (!retry) {
       const source = snapshot.current;
-      pending.current = { createKey: crypto.randomUUID(), requestId: crypto.randomUUID(), input: { schemaVersion: 1, source: source ? { epoch: source.epoch, roomId: source.roomId, membershipId: source.membershipId } : null, destination: { worldSlug: world!.slug, worldVersion: world!.version, sceneVersion: world!.sceneRef.version } } };
+      pending.current = { createKey: crypto.randomUUID(), requestId: crypto.randomUUID(), input: { schemaVersion: 1, source: source ? { epoch: source.epoch, roomId: source.roomId, membershipId: source.membershipId } : null, destination: { worldSlug: world!.slug, worldVersion: world!.version, sceneVersion: world!.sceneRef.version,...targetRoom?{roomId:targetRoom}:{} } } };
     }
     const request = pending.current; if (!request) return;
     writing.current = true; setBusy(true); setHasPending(true); setMessage('Confirming travel...'); const ticket = ++operation.current, writeId = ++mutation.current;
@@ -104,7 +106,7 @@ export default function TravelPanel({ socketOrigin }: { socketOrigin: string }) 
     try {
       if (request.intentId) await api('/travel-intents/' + request.intentId + '/cancel', { method: 'POST', headers: { 'content-type': 'application/json', 'x-csrf-token': identity.csrfToken, 'idempotency-key': crypto.randomUUID() }, body: '{}' });
       if (!alive.current || writeId !== mutation.current) return;
-      clearPending(); setMessage('Request closed. Checking your current visit...'); await refresh.current();
+      const known=!!request.intentId;clearPending(); setMessage(known?'Travel request closed.':'Interrupted request dismissed. Wait briefly before starting another trip.'); await refresh.current();
     } catch (error) { if (alive.current && writeId === mutation.current) setMessage(messageFor(error)); }
     finally { if (alive.current && writeId === mutation.current) { writing.current = false; setBusy(false); } }
   }
@@ -115,7 +117,9 @@ export default function TravelPanel({ socketOrigin }: { socketOrigin: string }) 
         {current && <p className="muted">{current.occupancy} / {current.capacity} present · {current.self.seatId ? 'Your seat is retained.' : 'On the floor'}</p>}
         <button disabled={busy} onClick={() => { if (client.current?.connected) void refresh.current(); else client.current?.connect(); }}>Refresh your visit</button>{current && <button className="secondary" disabled={busy} onClick={() => void leave()}>Return to lobby</button>}
       </section>
-      <form onSubmit={event => { event.preventDefault(); void travel(); }}><h2>Choose your destination</h2><label htmlFor="travel-destination">Destination</label><select id="travel-destination" value={destination} disabled={busy || hasPending || connection !== 'ready'} onChange={event => setDestination(event.target.value)} required><option value="">Choose a world</option>{worlds.filter(world => world.slug !== current?.worldSlug).map(world => <option key={world.slug} value={world.slug}>{world.title}</option>)}</select><p className="muted">Your current place stays while the destination is checked. Confirm to leave it and enter the selected world.</p><button disabled={busy || connection !== 'ready' || hasPending || !worlds.some(world => world.slug === destination && world.slug !== current?.worldSlug)}>Confirm travel</button>{hasPending && <><button className="secondary" type="button" disabled={busy || connection !== 'ready'} onClick={() => void travel(true)}>Retry last travel</button><button className="secondary" type="button" disabled={busy} onClick={() => void cancelRequest()}>Close travel request</button></>}</form>
+      <form onSubmit={event => { event.preventDefault(); void travel(); }}><h2>Choose your destination</h2><label htmlFor="travel-destination">Destination</label><select id="travel-destination" value={destination} disabled={busy || hasPending || connection !== 'ready'} onChange={event => {setDestination(event.target.value);setTargetRoom(null);setLinkTouched(true);}} required><option value="">Choose a world</option>{worlds.filter(world => world.slug !== current?.worldSlug||world.slug===destination&&!!targetRoom&&targetRoom!==current.roomId).map(world => <option key={world.slug} value={world.slug}>{world.title}</option>)}</select>
+      {!linkTouched&&preferred.kind==='invalid'?<p className="travel-link-notice" aria-live="polite">This destination link is invalid. Choose a listed place.</p>:connection==='ready'&&destination&&!worlds.some(world=>world.slug===destination)?<p className="travel-link-notice" aria-live="polite">That destination is unavailable. Choose a listed place.</p>:connection==='ready'&&current?.worldSlug===destination&&(!targetRoom||targetRoom===current.roomId)?<p className="travel-link-notice" aria-live="polite">You are already in the selected room or world.</p>:targetRoom?<p className="travel-link-notice">A specific room is selected. Confirmation checks its capacity and access again.</p>:null}
+      <p className="muted">Your current place stays while the destination is checked. Confirm to leave it and enter the selected world.</p><button disabled={busy || connection !== 'ready' || hasPending || !worlds.some(world => world.slug === destination && (world.slug !== current?.worldSlug||!!targetRoom&&targetRoom!==current.roomId))}>Confirm travel</button>{hasPending && <><button className="secondary" type="button" disabled={busy || connection !== 'ready'} onClick={() => void travel(true)}>Retry last travel</button><button className="secondary" type="button" disabled={busy} onClick={() => void cancelRequest()}>{pending.current?.intentId?'Close travel request':'Dismiss interrupted request'}</button></>}</form>
     </>}
   </div>;
 }
