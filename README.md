@@ -2,7 +2,7 @@
 
 Project repository: `git@github.com:tiecont/virtual-life-platform.git` (configured locally; no push performed). The Virtual City plan is the product specification.
 
-The [shared hospitality core](docs/architecture/HOSPITALITY.md) provides private policy-gated order placement, atomic claim and pending cancellation. Staff authorization defaults to deny; shifts, full workflows and real Maid integration remain subsequent tasks. No public hospitality world is enabled.
+The [shared hospitality engine](docs/architecture/HOSPITALITY.md) provides private policy-gated order placement,atomic claim,pending cancellation and explicitly offered voluntary shifts with disconnect recovery. Full service workflows and real Maid integration remain subsequent tasks. No public hospitality world is enabled.
 
 Offline implementation of the supplied [master plan](MASTER-AGENT-PLAN.md). Current features and evidence are in [PROGRESS](docs/agent/PROGRESS.md); resume from [HANDOFF](docs/agent/HANDOFF.md). Guest/registered identity, session renewal, private settings and own-data export/delete are available at `/identity`. Consent-based friends, private contact codes and blocking are available at `/social`. A working identity is not a playable city. All worlds remain closed. Nothing is deployed or published.
 

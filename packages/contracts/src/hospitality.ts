@@ -11,3 +11,7 @@ export const OrderViewSchema = z.strictObject({ schemaVersion: z.literal(1), id:
 export const OrderResultSchema = z.strictObject({ schemaVersion: z.literal(1), order: OrderViewSchema });
 export const OrderPageSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(OrderViewSchema).max(50), truncated: z.boolean() });
 export type OrderPhase = z.infer<typeof OrderPhaseSchema>;
+export const StaffShiftStartSchema = z.strictObject({ schemaVersion: z.literal(1), source: TravelSourceSchema, policyVersion: WorldVersionSchema });
+export const StaffShiftEndSchema = z.strictObject({ schemaVersion: z.literal(1) });
+export const StaffShiftViewSchema = z.strictObject({ schemaVersion: z.literal(1), id: uuid, worldSlug: WorldSlugSchema, roomId: uuid, phase: z.enum(['active', 'interrupted', 'ended']), startedAt: z.iso.datetime(), expiresAt: z.iso.datetime(), interruptedAt: z.iso.datetime().nullable(), endsAt: z.iso.datetime().nullable(), reason: z.enum(['voluntary', 'disconnected', 'visit-ended', 'restart', 'expired']).nullable() });
+export const StaffShiftResultSchema = z.strictObject({ schemaVersion: z.literal(1), shift: StaffShiftViewSchema.nullable() });

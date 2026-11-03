@@ -1,0 +1,19 @@
+{
+  "taskID": "M11-03",
+  "source": "workspace froma4970e6; checkpoint SHA follows git log",
+  "environment": "2026-11-03;Node26.9.0/pnpm11.28.5;local disposable PostgreSQL,actual TCP/Socket.IO",
+  "commands": [
+    { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/hospitality.test.ts -t 'voluntary active shift'", "exitCode": 1, "log": "m11-shifts-red.log", "scope": "1failed17filteredskips;actual missing shift POST404 instead of201 before runtime implementation" },
+    { "command": "pnpm build:packages", "exitCode": 0, "log": "m11-shifts-packages.log" },
+    { "command": "pnpm --filter @virtual-city/platform-api typecheck", "exitCode": 0, "log": "m11-shifts-typecheck.log" },
+    { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/hospitality.test.ts", "exitCode": 0, "log": "m11-shifts-integration-attempt1.log", "scope": "18tests" },
+    { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/hospitality.test.ts", "exitCode": 0, "log": "m11-shifts-integration-attempt2.log", "scope": "22tests;additional fair21shift/concurrentstaffcap tests then included in fullcheck" },
+    { "command": "pnpm lint", "exitCode": 0, "log": "m11-shifts-lint.log" },
+    { "command": "pnpm check", "exitCode": 0, "log": "m11-shifts-check.log", "scope": "7governance,175unit,223integration including24hospitality,lint/types/architecture/assets/builds" },
+    { "command": "pnpm db:migrate", "exitCode": 0, "log": "m11-shifts-local-migration.log", "scope": "retained city dev DB additive0015;legacy DBs unchanged" },
+    { "command": "node scripts/run-browser-tests.mjs", "exitCode": 0, "log": "m11-shifts-browser.log", "scope": "40existing desktop/mobile regression tests;no new hospitality UI" },
+    { "command": "git diff --check", "exitCode": 0 }
+  ],
+  "verified": ["Current connected visit and explicit policy voluntarily grant service permission;no client roles/actor/duration", "20actualTCPclaim contenders now use realvoluntary shifts,exactly1assignment", "Actual lastsocket loss/grace/reconnect/timeout with sameorder and newversion;replacementstaff claim remainingwork", "Remainingtab preserves shift;4hexpiry/restart/ownend requeues once;oldreceipt/end cannot reactivate or end later work", "Concurrentstaffcap,offshiftdenial,end-vs-claim race,receiptfailure atomicrollback", "Private shiftprojection/export/erasure,24hourly newcommand receipts/exactretry,100then5retentionwithreceiptcascade", "Fair sequence-based20rowbatch reaches21st disconnected shift with frozenclock"],
+  "limits": ["No hospitality UI or realMaid/Restaurant/Lounge adapter/rollout;default worlds lack offered staffing", "15second grace is earliest reassignment,not a wall-clockSLA;main3second bounded batches and endpointreconciliation can be delayed", "Singleowner/directPG;outage/lostauthority failsclosed", "Restart invalidates oldroom;requeue does not grant newadmission;M11-06 must handle abandonedcustomer withdrawal/expiry", "04workflow/actions,05completion/outbox,06block/sanction/refusal remain pending", "90day defaults require operatorretention review;B-001/B-002/B-003 unchanged"]
+}

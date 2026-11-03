@@ -1,5 +1,13 @@
 # Agent progress
 
+## M11-03 - VERIFIED voluntary shifts and disconnected-work recovery
+
+Final existing browser regression40(20desktop/20mobile)->0 in m11-shifts-browser.log;no new hospitality UI claimed.
+
+Workspace froma4970e6;m11-shifts-checks.json/ADR0030. Initial missing shift API1failed17filteredskips(404not201) retained. Targeted18then22pass;full pnpm check0(7governance,175unit,223integration including24hospitality/builds). Typecheck/packages/lint/diff0;additive0015 retainedlocalcity DB migration0. Actual20TCPstaffclaim acceptance now uses realvoluntary shifts rather than trusted injectedgrants. Actualsocket grace/reconnect/replacementstaff and sameitem/version,no offshift assignment after end/claimrace,remainingtab/4hexpiry/restart,receiptrollback/privateexport/erasure/quota100+5shiftpurge pass. Fair sequence20rowbatch reaches21st droppedshift under frozenclock;actual simultaneousstarts respect staffcap.
+
+Trusted policy must explicitly offer voluntary staffing;one open shift/account,current epoch/room/member/policy,server4hduration,24newcommands/hour with exactretries. Ownend withdraws without liveworld admission,requeues pre-serve work atomically/incrementsversion and cannot end later shift by oldreceipt. Main3smaintenance and endpointreconciliation awaitroom/account locks;shutdownawaits. Grace15s is earliestdeadline,not realtimeSLA;batching/outagesdelay. Terminal90daycleanup bounded100orders/100shifts perbatch;retentiondefaultsneedownerreview. Restartdoesnotinventroomadmission;oldroomcustomerwithdrawal/expiry remainsM11-06. Fullworkflows/actions04,completion/outbox05 andrefusal/block/sanction06 remain pending;no UI/realMaid/public claim. Next exact actionM11-04 strict trusted menu/catalog and reusable timedcourse workflows for synthetic coffee/multicourse/mocktail,with serversteps/currentstaff+customer/version/retry tests. AllflagsOFF,previewoff,no remote/legacy mutation.
+
 ## M11-02 - VERIFIED atomic hospitality order core
 
 Workspace from3e6bcc4; m11-core-checks.json/ADR0029/HOSPITALITY.md. Full pnpm check0(7governance,175unit,211integration/builds),targeted12realPG/HTTP/socket0,typecheck/packages0,browser40(20eachdevice)0,diff0. Twenty actualTCPstaff claims yield1assignee/version1/claimreceipt. All49phase/action model cases pass;historical m11-core-red.log is passing,not red-first evidence. Additive0014 retained localcity DB migration0;legacy DBs untouched. A documentation patch with nonexistent README context was rejected atomically and reapplied with actual context.

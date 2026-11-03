@@ -1,0 +1,25 @@
+ Network virtual-city-test-29950867_default Creating 
+ Network virtual-city-test-29950867_default Creating 
+ Network virtual-city-test-29950867_default Created 
+ Network virtual-city-test-29950867_default Created 
+ Container virtual-city-test-29950867-db-1 Creating 
+ Container virtual-city-test-29950867-db-1 Created 
+ Container virtual-city-test-29950867-db-1 Starting 
+ Container virtual-city-test-29950867-db-1 Started 
+ Container virtual-city-test-29950867-db-1 Waiting 
+ Container virtual-city-test-29950867-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+
+ Test Files  1 passed (1)
+      Tests  22 passed (22)
+   Start at  15:24:25
+   Duration  13.43s (transform 326ms, setup 0ms, import 869ms, tests 12.42s, environment 0ms)
+
+ Container virtual-city-test-29950867-db-1 Stopping 
+ Container virtual-city-test-29950867-db-1 Stopped 
+ Container virtual-city-test-29950867-db-1 Removing 
+ Container virtual-city-test-29950867-db-1 Removed 
+ Network virtual-city-test-29950867_default Removing 
+ Network virtual-city-test-29950867_default Removed 

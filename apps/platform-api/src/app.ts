@@ -106,7 +106,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   identity.registerDeletionOwner('safety', (id, transaction) => reports.redactAccount(id, transaction));
   identity.registerExportOwner('social', (id, transaction) => social.exportAccount(id, transaction));
   // Emit truthful room interruption events while sockets are still connected; the gateway closes immediately after this hook.
-  http.addHook('preClose', async () => { chat.close(); await focus.close(); await invitations.close(); await travel.close(); await reports.close(); await rooms.close(); roomAuthority.close(); });
+  http.addHook('preClose', async () => { chat.close(); await hospitality.close(); await focus.close(); await invitations.close(); await travel.close(); await reports.close(); await rooms.close(); roomAuthority.close(); });
   http.get('/health/live', async () => ({ status: 'ok' }));
   http.get('/health/ready', async (_req, reply) => {
     try {

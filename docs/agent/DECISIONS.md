@@ -1,5 +1,7 @@
 # Decisions
 
+M11-03 / ADR0030: policy-offered voluntary service shifts bound to current visit,oneopen/account,server4hlimit;no moderation privilege. Ownend/currentdisconnectgrace/restart requeues existing pre-serve work with newversion. Fair20rowSQLsequence batches/3stimer/endpointreconciliation,privateexport/erasure and bounded90dayretention. Actual24hospitality/223integration fullcheck evidence m11-shifts-checks.json;strandedcustomer cleanup remains06.
+
 M11-02 / ADR0029: shared durable policy-gated city order core,room-owner serialized authorization and account/row-locked atomic claims,private participation projection. Staff port defaultsdeny;no inferred authority from role/appearance. New runtime place/claim/pendingcancel only;shifts/workflows/completion/refusal staged03..06. Evidence m11-core-checks.json.
 
 M11-01 / ADR0028: preserve Maid's planned sevenstate/voluntaryshift compatibility while implementing a separate city hospitality engine;actualsource is foundation+DTO+menu,not running order/shift gameplay. World-specific recipe/NPC/art stays behind futureM16 adapter,no legacy copy/ORMrewrite. Audit evidence m11-audit-checks.json.

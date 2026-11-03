@@ -12,9 +12,9 @@ const opened: { app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: 
 beforeAll(async () => { const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database'); admin = new Pool({ connectionString: url.toString() }); });
 afterEach(async () => { for (const socket of sockets) socket.close(); sockets.clear(); for (const r of opened.splice(0)) { await r.app.app.close(); await r.pool.end(); await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`); } });
 afterAll(async () => { await admin.end(); });
-async function open(allowStaff = true, maxQueue = 50) {
+async function open(allowStaff = true, maxQueue = 50, voluntary = false, maxStaff = 32) {
   const schema = 'hospitality_test_' + randomUUID().replaceAll('-', ''); await admin.query(`CREATE SCHEMA "${schema}"`); const url = new URL(process.env.TEST_DATABASE_URL!); url.searchParams.set('options', '-c search_path=' + schema); const pool = new Pool({ connectionString: url.toString() }); await migrate(pool); let now = Date.now();
-  const module = defineWorld({ schemaVersion: 1, apiVersion: 1, slug: 'hospitality-fixture', version: '1.0.0', title: 'Synthetic hospitality test (not actual Maid world)', kind: 'sandbox', sceneRef: { key: 'hospitality-fixture', version: '1.0.0' }, capacity: 32, seatIds: ['seat-1', 'seat-2', 'seat-3'], capabilities: ['presence', 'seating', 'hospitality'], hospitalityPolicy: { version: '1.0.0', itemKeys: ['coffee', 'tea'], maxActivePerStaff: 1, maxQueue }, accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'sandbox', position: { x: .5, y: .5 }, icon: 'flask' } }, { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {}, travel: { prepare: async () => {}, abort: async () => {}, depart: async () => {} } });
+  const module = defineWorld({ schemaVersion: 1, apiVersion: 1, slug: 'hospitality-fixture', version: '1.0.0', title: 'Synthetic hospitality test (not actual Maid world)', kind: 'sandbox', sceneRef: { key: 'hospitality-fixture', version: '1.0.0' }, capacity: 32, seatIds: ['seat-1', 'seat-2', 'seat-3'], capabilities: ['presence', 'seating', 'hospitality'], hospitalityPolicy: { version: '1.0.0', itemKeys: ['coffee', 'tea'], maxActivePerStaff: 1, maxQueue, ...(voluntary ? { staffing: { kind: 'voluntary', maxStaff } } : {}) }, accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'sandbox', position: { x: .5, y: .5 }, icon: 'flask' } }, { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {}, travel: { prepare: async () => {}, abort: async () => {}, depart: async () => {} } });
   const staffIds = new Set<string>(), config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'hospitality-local-test-only-session-secret-000001' }), options = { now: () => now, worlds: { modules: [module] }, ...(allowStaff ? { hospitality: { staff: { permits: async (_db: unknown, actor: { accountId: string }) => staffIds.has(actor.accountId) } } } : {}) }, app = await createApp(config, pool, false, options);
   opened.push({ app, pool, schema }); await app.app.listen(0, '127.0.0.1'); await app.worlds.registry.setEnabled('hospitality-fixture', true);
   return { app, pool, options, config, staffIds, url: await app.app.getUrl(), now: () => now, advance: (ms: number) => { now += ms; } };
@@ -37,10 +37,11 @@ const mutation = (source: TravelSource, expectedVersion = 0) => ({ schemaVersion
 async function place(r: Runtime, u: User, source: TravelSource, key = randomUUID()) { const response = await post(r, u, 'orders', input(source), key); expect(response.statusCode).toBe(201); return OrderResultSchema.parse(response.json()).order; }
 const act = (r: Runtime, u: User, id: string, action: string, source: TravelSource, expectedVersion = 0, key = randomUUID()) => post(r, u, `orders/${id}/${action}`, mutation(source, expectedVersion), key);
 async function restart(r: Runtime) { await r.app.app.close(); const old = r.app, app = await createApp(r.config, r.pool, false, r.options); opened.find(item => item.app === old)!.app = app; r.app = app; await app.app.listen(0, '127.0.0.1'); r.url = await app.app.getUrl(); await app.worlds.registry.setEnabled('hospitality-fixture', true); }
+async function shift(r: Runtime, u: User, source: TravelSource, key = randomUUID()) { const response = await post(r, u, 'staff/shifts', { schemaVersion: 1, source, policyVersion: '1.0.0' }, key); expect(response.statusCode).toBe(201); return response.json().shift as { id: string; phase: string }; }
 
 it('20 actual TCP staff claims produce exactly one assigned staff,version and committed receipt', async () => {
-  const r = await open(), customer = await guest(r), visit = await join(r, customer, 'seat-1'), order = await place(r, customer, visit.source), staff = [];
-  for (let i = 0; i < 20; i++) { const user = await guest(r, true); staff.push({ user, visit: await join(r, user), key: randomUUID() }); }
+  const r = await open(false, 50, true), customer = await guest(r), visit = await join(r, customer, 'seat-1'), order = await place(r, customer, visit.source), staff = [];
+  for (let i = 0; i < 20; i++) { const user = await guest(r), visit = await join(r, user); await shift(r, user, visit.source); staff.push({ user, visit, key: randomUUID() }); }
   const responses = await Promise.all(staff.map(async peer => { const response = await fetch(r.url + `/v1/orders/${order.id}/claim`, { method: 'POST', headers: { ...headers(peer.user, peer.key), 'content-type': 'application/json' }, body: JSON.stringify(mutation(peer.visit.source)), signal: AbortSignal.timeout(5000) }); return { status: response.status, body: await response.json() }; }));
   expect(responses.filter(response => response.status === 200)).toHaveLength(1); expect(responses.filter(response => response.status === 409)).toHaveLength(19);
   const winner = staff[responses.findIndex(response => response.status === 200)], row = (await r.pool.query('SELECT * FROM engine_hospitality_orders')).rows[0]; expect(row).toMatchObject({ phase: 'ASSIGNED', version: 1, assignee_id: winner.user.me.profile.id }); expect((await r.pool.query("SELECT 1 FROM engine_hospitality_mutations WHERE operation='claim'")).rowCount).toBe(1);
@@ -125,4 +126,91 @@ it('bounds durable placement quota while allowing exact retry,and SQL rejects in
   for (let i = 0; i < 12; i++) { lastKey = randomUUID(); const order = await place(r, customer, c.source, lastKey); expect((await act(r, customer, order.id, 'cancel', c.source)).statusCode).toBe(200); }
   expect((await post(r, customer, 'orders', input(c.source))).statusCode).toBe(429); expect((await post(r, customer, 'orders', input(c.source), lastKey)).statusCode).toBe(201);
   await expect(r.pool.query("UPDATE engine_hospitality_orders SET phase='ASSIGNED' WHERE id=(SELECT id FROM engine_hospitality_orders LIMIT 1)")).rejects.toMatchObject({ code: '23514' });
+});
+
+it('voluntary active shift alone grants service permission and ending it atomically requeues one unchanged item', async () => {
+  const r = await open(false, 50, true), customer = await guest(r), c = await join(r, customer, 'seat-1'), staff = await guest(r), s = await join(r, staff), order = await place(r, customer, c.source);
+  expect((await act(r, staff, order.id, 'claim', s.source)).statusCode).toBe(404); const active = await shift(r, staff, s.source); expect(active.phase).toBe('active'); expect((await act(r, staff, order.id, 'claim', s.source)).statusCode).toBe(200);
+  const ended = await post(r, staff, `staff/shifts/${active.id}/end`, { schemaVersion: 1 }); expect(ended.statusCode).toBe(200); expect(ended.json().shift).toMatchObject({ phase: 'ended', reason: 'voluntary' });
+  expect((await r.pool.query('SELECT id,item_key,phase,version,assignee_id FROM engine_hospitality_orders')).rows).toEqual([{ id: order.id, item_key: 'coffee', phase: 'PENDING', version: 2, assignee_id: null }]); expect((await act(r, staff, order.id, 'claim', s.source, 2)).statusCode).toBe(404);
+});
+
+it('actual disconnect preserves assignment inside grace,reconnect resumes the same shift,and timeout requeues without duplicating items', async () => {
+  const r = await open(false, 50, true), customer = await guest(r), c = await join(r, customer, 'seat-1'), staff = await guest(r), s = await join(r, staff), active = await shift(r, staff, s.source), order = await place(r, customer, c.source); await act(r, staff, order.id, 'claim', s.source);
+  const disconnected = new Promise<void>(resolve => r.app.gateway.io.sockets.sockets.get(s.socket.id!)!.once('disconnect', () => resolve()));
+  s.socket.close(); await disconnected;
+  // Synchronize the real server disconnect rather than using wall-clock sleeps.
+  await r.app.rooms.maintain(); r.advance(14999); await r.app.hospitality.maintain();
+  expect((await get(r, staff, 'staff/shift')).json().shift).toMatchObject({ id: active.id, phase: 'interrupted' }); expect((await get(r, customer, 'orders/' + order.id)).json().order.phase).toBe('ASSIGNED');
+  const restored = await join(r, staff); expect(restored.source).toEqual(s.source); await r.app.hospitality.maintain(); expect((await get(r, staff, 'staff/shift')).json().shift.phase).toBe('active');
+  const dropped = new Promise<void>(resolve => r.app.gateway.io.sockets.sockets.get(restored.socket.id!)!.once('disconnect', () => resolve())); restored.socket.close(); await dropped; await r.app.rooms.maintain(); r.advance(15000); await r.app.hospitality.maintain();
+  expect((await get(r, customer, 'orders/' + order.id)).json().order).toMatchObject({ id: order.id, phase: 'PENDING', version: 2 }); expect((await get(r, staff, 'staff/shift')).json().shift).toMatchObject({ phase: 'ended', reason: 'disconnected' }); expect((await r.pool.query('SELECT 1 FROM engine_hospitality_orders')).rowCount).toBe(1);
+  const replacement = await guest(r), replacementVisit = await join(r, replacement); await shift(r, replacement, replacementVisit.source); expect((await act(r, replacement, order.id, 'claim', replacementVisit.source, 0)).statusCode).toBe(409); expect((await act(r, replacement, order.id, 'claim', replacementVisit.source, 2)).statusCode).toBe(200); await r.app.hospitality.maintain(); expect((await get(r, customer, 'orders/' + order.id)).json().order).toMatchObject({ phase: 'ASSIGNED', version: 3 });
+});
+
+it('recovery after process restart ends old shifts and old assignment versions cannot reclaim the item', async () => {
+  const r = await open(false, 50, true), customer = await guest(r), c = await join(r, customer, 'seat-1'), staff = await guest(r), s = await join(r, staff), active = await shift(r, staff, s.source), order = await place(r, customer, c.source); await act(r, staff, order.id, 'claim', s.source); await restart(r); await r.app.hospitality.maintain();
+  expect((await get(r, staff, 'staff/shift')).json().shift).toMatchObject({ id: active.id, phase: 'ended', reason: 'restart' }); expect((await get(r, customer, 'orders/' + order.id)).json().order).toMatchObject({ phase: 'PENDING', version: 2 });
+  const next = await join(r, staff); await shift(r, staff, next.source); expect((await act(r, staff, order.id, 'claim', next.source, 0)).statusCode).toBe(404); expect((await act(r, staff, order.id, 'claim', next.source, 2)).statusCode).toBe(404);
+});
+
+it('shift source/policy/cap are trusted,own retries are durable and peer shifts remain private', async () => {
+  const r = await open(false, 50, true, 1), a = await guest(r), av = await join(r, a), b = await guest(r), bv = await join(r, b), key = randomUUID(), active = await shift(r, a, av.source, key);
+  expect((await post(r, a, 'staff/shifts', { schemaVersion: 1, source: av.source, policyVersion: '1.0.0' }, key)).json().shift.id).toBe(active.id); expect((await post(r, b, 'staff/shifts', { schemaVersion: 1, source: bv.source, policyVersion: '1.0.0' })).statusCode).toBe(409);
+  expect((await post(r, b, `staff/shifts/${active.id}/end`, { schemaVersion: 1 })).statusCode).toBe(404); expect((await get(r, b, 'staff/shift')).json().shift).toBeNull(); expect(JSON.stringify((await get(r, b, 'me/export')).json())).not.toContain(active.id);
+  expect((await post(r, a, 'staff/shifts', { schemaVersion: 1, source: av.source, policyVersion: '2.0.0' }, key)).statusCode).toBe(409);
+  await post(r, a, `staff/shifts/${active.id}/end`, { schemaVersion: 1 }); const next = await shift(r, b, bv.source); expect(next.id).not.toBe(active.id);
+  const exported = (await get(r, a, 'me/export')).json().domains.hospitality; expect(exported.shifts[0].id).toBe(active.id); expect(JSON.stringify(exported)).not.toMatch(/owner_epoch|membership_id|fingerprint/);
+});
+
+it('offered staffing is explicit and cannot be added through role or duration fields', async () => {
+  const r = await open(false), a = await guest(r), av = await join(r, a); const body = { schemaVersion: 1, source: av.source, policyVersion: '1.0.0' };
+  expect((await post(r, a, 'staff/shifts', body)).statusCode).toBe(404); for (const extra of [{ role: 'staff' }, { accountId: a.me.profile.id }, { expiresAt: new Date().toISOString() }, { maxActivePerStaff: 99 }]) expect((await post(r, a, 'staff/shifts', { ...body, ...extra })).statusCode).toBe(422);
+});
+
+it('failed end receipt rolls back both shift withdrawal and order requeue;own end works after leaving a closed world', async () => {
+  const r = await open(false, 50, true), customer = await guest(r), c = await join(r, customer, 'seat-1'), staff = await guest(r), s = await join(r, staff), active = await shift(r, staff, s.source), order = await place(r, customer, c.source); await act(r, staff, order.id, 'claim', s.source);
+  await r.pool.query("CREATE FUNCTION fail_shift_end() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.operation='end' THEN RAISE EXCEPTION 'synthetic shift end receipt failure'; END IF; RETURN NEW; END $$"); await r.pool.query('CREATE TRIGGER fail_shift_end BEFORE INSERT ON engine_hospitality_shift_mutations FOR EACH ROW EXECUTE FUNCTION fail_shift_end()');
+  expect((await post(r, staff, `staff/shifts/${active.id}/end`, { schemaVersion: 1 })).statusCode).toBe(503); expect((await get(r, customer, 'orders/' + order.id)).json().order.phase).toBe('ASSIGNED'); expect((await get(r, staff, 'staff/shift')).json().shift.phase).toBe('active'); await r.pool.query('DROP TRIGGER fail_shift_end ON engine_hospitality_shift_mutations');
+  await s.socket.timeout(5000).emitWithAck('room.leave', s.command()); await r.app.worlds.registry.setEnabled('hospitality-fixture', false); expect((await post(r, staff, `staff/shifts/${active.id}/end`, { schemaVersion: 1 })).statusCode).toBe(200); expect((await get(r, customer, 'orders/' + order.id)).json().order.phase).toBe('PENDING');
+});
+
+it('ending a shift racing a claim cannot leave an assignment owned by off-shift staff,and stale receipt cannot reactivate it', async () => {
+  const r = await open(false, 50, true), customer = await guest(r), c = await join(r, customer, 'seat-1'), staff = await guest(r), s = await join(r, staff), active = await shift(r, staff, s.source), order = await place(r, customer, c.source), key = randomUUID();
+  const results = await Promise.all([act(r, staff, order.id, 'claim', s.source, 0, key), post(r, staff, `staff/shifts/${active.id}/end`, { schemaVersion: 1 })]); expect(results[1].statusCode).toBe(200); expect([200, 404]).toContain(results[0].statusCode);
+  expect((await r.pool.query('SELECT phase,assignee_id FROM engine_hospitality_orders')).rows[0]).toEqual({ phase: 'PENDING', assignee_id: null }); expect((await act(r, staff, order.id, 'claim', s.source, 0, key)).statusCode).toBe(404);
+  await shift(r, staff, s.source); expect((await post(r, staff, `staff/shifts/${active.id}/end`, { schemaVersion: 1 })).statusCode).toBe(200); expect((await get(r, staff, 'staff/shift')).json().shift.phase).toBe('active');
+});
+
+it('one remaining tab keeps the current shift active while expiry requeues assigned work once', async () => {
+  const r = await open(false, 50, true), customer = await guest(r), c = await join(r, customer, 'seat-1'), staff = await guest(r), s = await join(r, staff), tab = await join(r, staff), active = await shift(r, staff, s.source), order = await place(r, customer, c.source); await act(r, staff, order.id, 'claim', tab.source);
+  const disconnected = new Promise<void>(resolve => r.app.gateway.io.sockets.sockets.get(s.socket.id!)!.once('disconnect', () => resolve())); s.socket.close(); await disconnected; await r.app.rooms.maintain(); r.advance(15000); await r.app.hospitality.maintain(); expect((await get(r, staff, 'staff/shift')).json().shift).toMatchObject({ id: active.id, phase: 'active' });
+  r.advance(4 * 3600000); await r.app.hospitality.maintain(); await r.app.hospitality.maintain(); expect((await get(r, customer, 'orders/' + order.id)).json().order).toMatchObject({ phase: 'PENDING', version: 2 }); expect((await get(r, staff, 'staff/shift')).json().shift).toMatchObject({ phase: 'ended', reason: 'expired' }); expect((await act(r, staff, order.id, 'claim', tab.source, 2)).statusCode).toBe(404);
+});
+
+it('bounds shift command receipts durably without charging exact retries or allowing new terminal-end receipt spam', async () => {
+  const r = await open(false, 50, true), staff = await guest(r), s = await join(r, staff); let lastId = '', lastKey = randomUUID();
+  for (let i = 0; i < 12; i++) { const active = await shift(r, staff, s.source); lastId = active.id; lastKey = randomUUID(); expect((await post(r, staff, `staff/shifts/${active.id}/end`, { schemaVersion: 1 }, lastKey)).statusCode).toBe(200); }
+  expect((await post(r, staff, 'staff/shifts', { schemaVersion: 1, source: s.source, policyVersion: '1.0.0' })).statusCode).toBe(429); expect((await post(r, staff, `staff/shifts/${lastId}/end`, { schemaVersion: 1 }, lastKey)).statusCode).toBe(200); expect((await post(r, staff, `staff/shifts/${lastId}/end`, { schemaVersion: 1 })).statusCode).toBe(429); expect((await r.pool.query('SELECT 1 FROM engine_hospitality_shift_mutations')).rowCount).toBe(24);
+});
+
+it('erases own shifts/receipts and bounds terminal shift retention to100 rows per batch', async () => {
+  const r = await open(false, 50, true), staff = await guest(r), s = await join(r, staff), active = await shift(r, staff, s.source); await post(r, staff, `staff/shifts/${active.id}/end`, { schemaVersion: 1 });
+  const ago = new Date(r.now() - 91 * 86400000); await r.pool.query("UPDATE engine_hospitality_shifts SET started_at=$1,expires_at=$1::timestamptz+interval '4 hours',ended_at=$1", [ago]);
+  await r.pool.query('INSERT INTO engine_hospitality_shifts(id,account_id,world_slug,room_id,owner_epoch,membership_id,policy_version,started_at,expires_at,ended_at,reason) SELECT md5(n::text)::uuid,account_id,world_slug,room_id,owner_epoch,membership_id,policy_version,started_at,expires_at,ended_at,reason FROM engine_hospitality_shifts CROSS JOIN generate_series(1,104) n WHERE id=$1', [active.id]);
+  await r.app.hospitality.maintain(); expect((await r.pool.query('SELECT 1 FROM engine_hospitality_shifts')).rowCount).toBe(5); await r.app.hospitality.maintain(); expect((await r.pool.query('SELECT 1 FROM engine_hospitality_shifts')).rowCount).toBe(0); expect((await r.pool.query('SELECT 1 FROM engine_hospitality_shift_mutations')).rowCount).toBe(0);
+  const next = await shift(r, staff, s.source); expect(next.id).not.toBe(active.id); expect((await r.app.http.inject({ method: 'DELETE', url: '/v1/me', headers: headers(staff), payload: {} })).statusCode).toBe(200); expect((await r.pool.query('SELECT 1 FROM engine_hospitality_shifts')).rowCount).toBe(0); expect((await r.pool.query('SELECT 1 FROM engine_hospitality_shift_mutations')).rowCount).toBe(0);
+});
+
+it('fair bounded recovery reaches disconnected shifts beyond the first20 even with a frozen test clock', async () => {
+  const r = await open(false, 50, true); let last: { staff: User; visit: Awaited<ReturnType<typeof join>>; id: string } | undefined;
+  for (let i = 0; i < 21; i++) { const staff = await guest(r), visit = await join(r, staff), active = await shift(r, staff, visit.source); last = { staff, visit, id: active.id }; }
+  const target = last!, disconnected = new Promise<void>(resolve => r.app.gateway.io.sockets.sockets.get(target.visit.socket.id!)!.once('disconnect', () => resolve())); target.visit.socket.close(); await disconnected; await r.app.rooms.maintain(); r.advance(15000);
+  await r.app.hospitality.maintain(); await r.app.hospitality.maintain(); expect((await r.pool.query('SELECT reason,ended_at FROM engine_hospitality_shifts WHERE id=$1', [target.id])).rows[0]).toMatchObject({ reason: 'disconnected', ended_at: new Date(r.now()) }); expect((await r.pool.query('SELECT 1 FROM engine_hospitality_shifts WHERE ended_at IS NULL')).rowCount).toBe(20);
+});
+
+it('concurrent voluntary starts cannot exceed per-room staff capacity', async () => {
+  const r = await open(false, 50, true, 1), a = await guest(r), av = await join(r, a), b = await guest(r), bv = await join(r, b);
+  const responses = await Promise.all([{ user: a, source: av.source }, { user: b, source: bv.source }].map(async peer => fetch(r.url + '/v1/staff/shifts', { method: 'POST', headers: { ...headers(peer.user), 'content-type': 'application/json' }, body: JSON.stringify({ schemaVersion: 1, source: peer.source, policyVersion: '1.0.0' }), signal: AbortSignal.timeout(5000) })));
+  expect(responses.map(response => response.status).sort()).toEqual([201, 409]); expect((await r.pool.query('SELECT 1 FROM engine_hospitality_shifts WHERE ended_at IS NULL')).rowCount).toBe(1);
 });

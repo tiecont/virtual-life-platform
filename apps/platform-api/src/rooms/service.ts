@@ -304,7 +304,7 @@ export class RoomService {
       return work(actor, { worldSlug: room.slug, roomId: room.id, seatId, epoch: this.epoch, membershipId: member.id, canPause: definition.focusPolicy.pauseAllowed }, valid);
     });
   }
-  hospitalityContext<T>(credential: string, source: TravelSource, seated: boolean, work: (actor: WorldActor, context: { worldSlug: string; roomId: string; seatId: string | null; policy: NonNullable<import('@virtual-city/contracts').WorldDefinition['hospitalityPolicy']> }, valid: () => boolean) => Promise<T>) {
+  hospitalityContext<T>(credential: string, source: TravelSource, seated: boolean, work: (actor: WorldActor, context: { worldSlug: string; roomId: string; seatId: string | null; epoch: string; membershipId: string; policy: NonNullable<import('@virtual-city/contracts').WorldDefinition['hospitalityPolicy']> }, valid: () => boolean) => Promise<T>) {
     return this.#run(async () => {
       await this.#sweep(); const actor = await this.identity.authenticate(credential), room = this.#rooms.get(this.#accounts.get(actor.accountId) ?? ''), member = room?.members.get(actor.accountId);
       if (!room || !member || source.epoch !== this.epoch || source.roomId !== room.id || source.membershipId !== member.id || (seated && !member.seatId) || ![...member.connections.values()].includes(actor.sessionId)) throw new DomainError('NOT_IN_ROOM', 409, 'Your current visit could not be confirmed');
@@ -312,8 +312,17 @@ export class RoomService {
       if (!definition.capabilities.includes('hospitality') || !definition.hospitalityPolicy) throw new DomainError('NOT_AVAILABLE', 404, 'Service is unavailable');
       await this.safety?.assert(actor.accountId, room.slug, room.id); const seatId = member.seatId;
       const valid = () => !this.#closed && this.authority.state === 'held' && this.#rooms.get(room.id)?.members.get(actor.accountId) === member && (!seated || member.seatId === seatId) && [...member.connections.values()].includes(actor.sessionId) && generation === (this.#worldGenerations.get(room.slug) ?? 0);
-      return work(actor, { worldSlug: room.slug, roomId: room.id, seatId, policy: definition.hospitalityPolicy }, valid);
+      return work(actor, { worldSlug: room.slug, roomId: room.id, seatId, epoch: this.epoch, membershipId: member.id, policy: definition.hospitalityPolicy }, valid);
     });
+  }
+  hospitalityRecovery<T>(work: (visit: (accountId: string, source: TravelSource) => { state: 'connected' | 'grace' | 'gone' | 'restart'; disconnectedAt: number | null }) => Promise<T>) {
+    return this.#run(async () => work((accountId, source) => {
+      if (source.epoch !== this.epoch) return { state: 'restart', disconnectedAt: null };
+      const room = this.#rooms.get(source.roomId), member = room?.members.get(accountId);
+      if (!member || member.id !== source.membershipId) return { state: 'gone', disconnectedAt: null };
+      if (!member.connections.size) return { state: 'grace', disconnectedAt: member.disconnectedUntil === null ? this.now() : member.disconnectedUntil - DISCONNECT_GRACE_MS };
+      return { state: 'connected', disconnectedAt: null };
+    }));
   }
   travelContext(credential: string, source: TravelSource | null, destination: TravelDestination) {
     return this.#run(async () => {

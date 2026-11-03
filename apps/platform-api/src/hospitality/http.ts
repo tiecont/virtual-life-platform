@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { WorldError } from '@virtual-city/world-sdk';
+import { StaffShiftEndSchema } from '@virtual-city/contracts';
 import type { Config } from '../config';
 import type { IdentityService } from '../identity/service';
 import { readSessionToken } from '../identity/http';
@@ -18,6 +19,9 @@ export function registerHospitality(http: FastifyInstance, config: Config, ident
     api.addHook('onRequest', async req => { if (!limiter.take('ip:' + req.ip, 300)) throw new DomainError('RATE_LIMITED', 429, 'Please wait'); });
     api.addHook('preHandler', async req => { z.strictObject({}).parse(req.query); if (!limiter.take('session:' + identity.hash(token(req)), 60)) throw new DomainError('RATE_LIMITED', 429, 'Please wait'); });
     api.post('/orders', async (req, reply) => reply.code(201).send(await service.place(write(req), uuid.parse(req.headers['idempotency-key']), req.body)));
+    api.get('/staff/shift', req => service.currentShift(token(req)));
+    api.post('/staff/shifts', async (req, reply) => reply.code(201).send(await service.startShift(write(req), uuid.parse(req.headers['idempotency-key']), req.body)));
+    api.post('/staff/shifts/:id/end', req => { StaffShiftEndSchema.parse(req.body); return service.endShift(write(req), id(req), uuid.parse(req.headers['idempotency-key'])); });
     api.get('/orders/:id', req => service.get(token(req), id(req)));
     api.post('/orders/queue', req => service.queue(write(req), req.body));
     for (const action of ['claim', 'cancel'] as const) api.post('/orders/:id/' + action, req => service.mutate(write(req), id(req), uuid.parse(req.headers['idempotency-key']), action, req.body));
