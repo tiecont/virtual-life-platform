@@ -1,5 +1,11 @@
 # Agent progress
 
+## M11-01 - VERIFIED readonly hospitality compatibility audit
+
+Workspace from54d9572;m11-audit-checks.json/m11-hospitality-audit.json/ADR0028/HOSPITALITY-COMPATIBILITY.md. Actual MaidHEAD33180a920505a6e0f3998dbf0367be0b72727710/master+dirtyuntracked unchanged. TenSHA256 sourcefiles,TypeScriptAST7states/9serviceDTO/2healthroutes,SQL6tables and source/webinventory recorded;syntax/audit/lint/diff0. Manualreference3.4..3.7 comparison establishes sevenphases,voluntary shifts,max2work,requeue/version/minigame invalidation,uniquecompletion/outbox requirements. Actualsource has menu/identity schema,noorders/shifts/runtimegateway/playpage. No legacyruntime/test/DB/process/mutation/secret/copy or newgameplay verification claimed.
+
+Sharedengine owns currentroom/seat/account authority,perworld policy,durableatomicclaim/lifecycle/receipts/completion/safety. Maidrole/art/recipe/minigame/NPC presentation remains world-specific. City APIs will be new strictv1,not silent rewrite of absenthandlers;actualM16 requires approvedsource/rights/identity/resource-travel mapping. ExistingB-001/B-002 publicgates unchanged. Next exact actionM11-02 core durable order lifecycle and20staff atomic claim behind trusted policy/current membership;then03 shifts/disconnect recovery. No migration/rollout/remote/legacy change.
+
 ## M10-05 - VERIFIED calendar-day private SQL summaries
 
 Workspace from83227b9;m10-daily-checks.json/ADR0027. Finalfullcheck0(7governance,126unit,199integration/builds),focus21->0,actualdesktop/mobilefocus2->0,diff0. Initial5newsummary red retained;targeted19/20 and firstfullcheck failed only the repeated-hour fixture's driver timestamp-without-zone converted byhostTZ. AssertSQLformatted localtext instead;runtime summary unchanged. Additive0013 completed-account/timeindex applied retained localdevDB->0.
