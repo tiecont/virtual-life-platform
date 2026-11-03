@@ -55,7 +55,7 @@
 | M08 | M08-04 · Implement sanction lifecycle, cross-world enforcement and appeal intake. | VERIFIED | m08-sanctions-checks.json; current admission/chat/room/private appeals; actual M09 travel remains gated |
 | M08 | M08-05 · Build moderator UI, kill switches and operational runbook. | VERIFIED | m08-moderation-checks.json; scoped desk, appeals, durable controls |
 | M08 | M08-06 · Test false positive handling, rate limits, privacy access and response latencies. | VERIFIED | m08-regression-checks.json; corpus, flood, current authority, measured local responses |
-| M09 | M09-01 · Define travel intent state machine: CREATED/READY/COMMITTED/EXPIRED/FAILED/CANCELLED. | TODO | — |
+| M09 | M09-01 · Define travel intent state machine: CREATED/READY/COMMITTED/EXPIRED/FAILED/CANCELLED. | VERIFIED | m09-lifecycle-checks.json; executable model and source/target diagrams, no runtime travel yet |
 | M09 | M09-02 · Implement scoped one-time, short-lived travel intents + validation. | TODO | — |
 | M09 | M09-03 · Implement recipient invitation flows and notifications with consent. | TODO | — |
 | M09 | M09-04 · Implement handshake across source and destination room owners. | TODO | — |

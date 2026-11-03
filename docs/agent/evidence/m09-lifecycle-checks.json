@@ -1,0 +1,25 @@
+{
+  "taskID": "M09-01",
+  "verifiedAt": "2026-11-03T04:54:47Z",
+  "source": "workspace fromb468f37; checkpoint commit follows git log",
+  "environment": "Linux, Node26.9.0, pnpm11.28.5, disposable local PostgreSQL",
+  "commands": [
+    { "command": "pnpm exec vitest run --project unit apps/platform-api/src/travel/lifecycle.unit.test.ts", "exitCode": 0, "tests": 34, "log": "m09-lifecycle-unit-attempt1.log" },
+    { "command": "pnpm check", "exitCode": 0, "governanceTests": 7, "unitTests": 117, "integrationTests": 127, "log": "m09-lifecycle-check-final.log", "scope": "Governance, architecture, lint, types, assets, all unit/integration and builds; includes the additional actual TCP M08 workflow" },
+    { "command": "git diff --check", "exitCode": 0 }
+  ],
+  "verified": [
+    "Audited actual account/connection room indexes, one owner/epoch, different-room guard, registry hook grants and current safety/privacy policies",
+    "Six strict shared phases with bounded private timestamp schema; original expiry never extends",
+    "All30 phase/event pairs, two exact-deadline cases, no-op/terminal retry and invalid-time/state regression cases",
+    "No CREATED direct commit; expiry wins over late events; terminal states never reactivate",
+    "Source/target sequence and failure/privacy/ACK/restart obligations documented with Mermaid diagrams and ADR0017"
+  ],
+  "limits": [
+    "Executable lifecycle model only, not actual room handoff or proof of two-room atomicity",
+    "No travel endpoint, token, reservation, invitations, party or browser travel UI in this task",
+    "Existing room.join guard remains unchanged; M09-02..06 must implement and fault-test runtime admission",
+    "Single owner/trusted hook limitations remain; no distributed protocol or durable room recovery claim",
+    "No new migration, browser change/E2E rerun, public flag, staff, remote or legacy action"
+  ]
+}
