@@ -1,0 +1,30 @@
+$ pnpm --filter './packages/*' -r build
+Scope: 4 of 7 workspace projects
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+ Network virtual-city-test-300cbc04_default Creating 
+ Network virtual-city-test-300cbc04_default Creating 
+ Network virtual-city-test-300cbc04_default Created 
+ Network virtual-city-test-300cbc04_default Created 
+ Container virtual-city-test-300cbc04-db-1 Creating 
+ Container virtual-city-test-300cbc04-db-1 Created 
+ Container virtual-city-test-300cbc04-db-1 Starting 
+ Container virtual-city-test-300cbc04-db-1 Started 
+ Container virtual-city-test-300cbc04-db-1 Waiting 
+ Container virtual-city-test-300cbc04-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+
+ Test Files  1 passed (1)
+      Tests  19 passed (19)
+   Start at  11:19:48
+   Duration  12.77s (transform 279ms, setup 0ms, import 885ms, tests 11.74s, environment 0ms)
+
+ Container virtual-city-test-300cbc04-db-1 Stopping 
+ Container virtual-city-test-300cbc04-db-1 Stopped 
+ Container virtual-city-test-300cbc04-db-1 Removing 
+ Container virtual-city-test-300cbc04-db-1 Removed 
+ Network virtual-city-test-300cbc04_default Removing 
+ Network virtual-city-test-300cbc04_default Removed 

@@ -2,7 +2,7 @@ import { beforeAll, afterAll, afterEach, it, expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 import { io, type Socket } from 'socket.io-client';
-import { MeSchema, RoomAckSchema, ChatAckSchema, SanctionResultSchema, OwnSanctionsSchema, AppealReceiptSchema, type Me, type RoomSnapshot } from '@virtual-city/contracts';
+import { MeSchema, RoomAckSchema, ChatAckSchema, SanctionResultSchema, OwnSanctionsSchema, AppealReceiptSchema, CaseAppealsSchema, ModerationSessionSchema, IncidentPageSchema, type Me, type RoomSnapshot } from '@virtual-city/contracts';
 import { defineWorld } from '@virtual-city/world-sdk';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/config';
@@ -230,4 +230,89 @@ it('persists an account-wide appeal budget across different sanctions and reject
     expect((await post(r, target, `me/sanctions/${sanctionId}/appeal`, { note: 'Please review this restriction independently.' })).statusCode).toBe(index < 5 ? 201 : 429);
   }
   expect((await r.pool.query('SELECT * FROM safety_appeals')).rowCount).toBe(5);
+});
+
+it('searches only scoped assigned cases and gates staff session/controls by registered current grants', async () => {
+  const { r, reporter, id, reviewer, administrator } = await reported(); const outside = await staff(r, 'moderator', 'restaurant');
+  expect((await get(r, reporter, 'moderation/session')).statusCode).toBe(404);
+  expect(ModerationSessionSchema.parse((await get(r, reviewer, 'moderation/session')).json()).scopes).toEqual([{ worldSlug: 'maid', role: 'moderator' }]);
+  expect((await get(r, reviewer, 'moderation/cases?id=' + id + '&category=harassment&severity=medium&world=maid')).json().items).toHaveLength(1);
+  for (const query of ['category=hate', 'severity=critical', 'world=restaurant']) expect((await get(r, reviewer, 'moderation/cases?' + query)).json().items).toHaveLength(0);
+  expect((await get(r, outside, 'moderation/cases?id=' + id)).json().items).toHaveLength(0); expect((await get(r, reviewer, 'moderation/cases?reporterId=' + reporter.me.profile.id)).statusCode).toBe(422);
+  expect(IncidentPageSchema.parse((await get(r, administrator, 'moderation/controls')).json()).items).toEqual([]);
+  await r.pool.query('UPDATE safety_staff_grants SET expires_at=$2 WHERE account_id=$1', [reviewer.me.profile.id, new Date(Date.now() - 1)]); expect((await get(r, reviewer, 'moderation/session')).statusCode).toBe(404);
+});
+
+it('scoped admin closes chat before delayed moderation delivery, keeps room activity, requires independent recovery and rejects stale closure replay', async () => {
+  let release!: () => void, started!: () => void; const pending = new Promise<void>(resolve => { release = resolve; }), inspecting = new Promise<void>(resolve => { started = resolve; });
+  const { r, witness, peer, id, administrator, reviewer } = await reported('harassment', { inspect: async () => { started(); await pending; return { decision: 'allow' }; } });
+  const path = 'moderation/controls/maid', input = { surface: 'chat', closed: true, reason: 'incident' }, key = randomUUID();
+  expect((await post(r, reviewer, path, input)).statusCode).toBe(404);
+  let messages = 0; witness.socket.on('chat.message', () => { messages++; }); const sending = chat(peer.socket, peer.state, true); await inspecting;
+  const responses = await Promise.all([post(r, administrator, path, input, key), post(r, administrator, path, input, key)]); expect(responses.map(value => value.statusCode)).toEqual([200, 200]); release();
+  expect((await sending).ok).toBe(false); expect(messages).toBe(0); expect((await chat(peer.socket, peer.state)).ok).toBe(false); expect((await command(peer.socket, 'room.snapshot', own(peer.state))).ok).toBe(true);
+  expect((await post(r, administrator, path, { surface: 'chat', closed: false, reason: 'reviewed-recovery' })).statusCode).toBe(403);
+  const independent = await staff(r, 'safety-admin'); expect((await post(r, independent, path, { surface: 'chat', closed: false, reason: 'reviewed-recovery' })).statusCode).toBe(200);
+  expect((await post(r, administrator, path, input, key)).json().control.closed).toBe(false); expect((await chat(peer.socket, peer.state)).ok).toBe(true);
+  expect((await r.pool.query('SELECT * FROM safety_incident_audit')).rowCount).toBe(2); await expect(r.pool.query('TRUNCATE safety_incident_audit')).rejects.toMatchObject({ code: '55000' });
+  expect((await get(r, administrator, 'moderation/cases?id=' + id)).statusCode).toBe(200);
+});
+
+it('world closure interrupts all occupants and persists across restart without evidence key; recovery cannot override disabled flags', async () => {
+  const { r, target, peer, witness, administrator } = await reported(); const otherAdmin = await staff(r, 'safety-admin');
+  const ended = [peer.socket, witness.socket].map(socket => new Promise<unknown>(resolve => socket.once('room.ended', resolve)));
+  expect((await post(r, administrator, 'moderation/controls/maid', { surface: 'world', closed: true, reason: 'coverage-loss' })).statusCode).toBe(200); await Promise.all(ended); expect(r.app.rooms.diagnostics().memberships).toBe(0);
+  expect((await command(peer.socket, 'room.join', joinInput())).ok).toBe(false); expect((await command(peer.socket, 'room.join', joinInput('restaurant'))).ok).toBe(true);
+  await r.app.app.close(); const replacement = await createApp({ ...r.config, SAFETY_EVIDENCE_KEY: undefined }, r.pool, false, { now: r.now, worlds: { modules: r.modules }, safety: { enabled: true } });
+  opened.find(value => value.app === r.app)!.app = replacement; r.app = replacement; await replacement.app.listen(0, '127.0.0.1'); r.url = await replacement.app.getUrl(); await replacement.worlds.registry.setEnabled('maid', true);
+  const fresh = await socketFor(r, target); expect((await command(fresh, 'room.join', joinInput())).ok).toBe(false);
+  expect((await post(r, otherAdmin, 'moderation/controls/maid', { surface: 'world', closed: false, reason: 'reviewed-recovery' })).statusCode).toBe(200);
+  await replacement.worlds.registry.setEnabled('maid', false); expect((await command(fresh, 'room.join', joinInput())).ok).toBe(false);
+  await replacement.worlds.registry.setEnabled('maid', true); expect((await command(fresh, 'room.join', joinInput())).ok).toBe(true);
+  expect((await post(r, administrator, 'moderation/controls/maid', { surface: 'chat', closed: true, reason: 'incident' })).statusCode).toBe(200);
+});
+
+it('only a distinct assigned reviewer can inspect and decide an appeal; concurrent replay revokes once and reveals only controlled result to subject', async () => {
+  const { r, target, reporter, peer, id, reviewer, administrator } = await reported(); const issued = await issue(r, reviewer, id); expect(issued.statusCode).toBe(200); const sanctionId = issued.json().sanction.id;
+  const receipt = await post(r, target, `me/sanctions/${sanctionId}/appeal`, { note: 'Private subject context for independent review.' }); expect(receipt.statusCode).toBe(201); const appealId = receipt.json().receiptId;
+  expect(CaseAppealsSchema.parse((await get(r, reviewer, `moderation/cases/${id}/appeals`)).json()).items).toHaveLength(0);
+  const path = `moderation/appeals/${appealId}/review`, input = { decision: 'revoke', privateReason: 'Independent review supports reversing this restriction.' }, key = randomUUID();
+  for (const actor of [reviewer, administrator, target, reporter]) expect((await post(r, actor, path, input)).statusCode).toBe(404);
+  await assign(r, administrator, id, administrator); const detail = CaseAppealsSchema.parse((await get(r, administrator, `moderation/cases/${id}/appeals`)).json()); expect(detail.items[0]).toMatchObject({ note: 'Private subject context for independent review.', issuanceReason: reason });
+  const responses = await Promise.all([post(r, administrator, path, input, key), post(r, administrator, path, input, key)]); expect(responses.map(value => value.statusCode)).toEqual([200, 200]); expect(responses[0].json()).toEqual(responses[1].json());
+  expect((await post(r, administrator, path, { ...input, decision: 'uphold' }, key)).statusCode).toBe(409); expect((await post(r, administrator, path, input)).statusCode).toBe(409);
+  expect((await chat(peer.socket, peer.state)).ok).toBe(true); const own = OwnSanctionsSchema.parse((await get(r, target, 'me/sanctions')).json()); expect(own.appeals[0].status).toBe('revoked'); expect(own.items[0].state).toBe('revoked'); expect(JSON.stringify(own)).not.toMatch(/Private subject|Independent review|Private reporter/);
+  expect((await r.pool.query("SELECT * FROM safety_audit_events WHERE action='appeal.reviewed'")).rowCount).toBe(1); expect((await r.pool.query("SELECT * FROM safety_sanction_notes WHERE purpose='review'")).rows[0].ciphertext.toString()).not.toContain(input.privateReason);
+});
+
+it('appeal uphold leaves restriction active; expired/tampered appeal evidence and moderator platform review are denied', async () => {
+  const { r, target, id, reviewer, administrator } = await reported('threats'); await assign(r, administrator, id, administrator);
+  const response = await issue(r, administrator, id, 'platform-ban'); expect(response.statusCode).toBe(200); const sanctionId = response.json().sanction.id;
+  const appeal = await post(r, target, `me/sanctions/${sanctionId}/appeal`, { note: 'Please review this restriction independently.' }); const appealId = appeal.json().receiptId;
+  await assign(r, administrator, id, reviewer); expect((await get(r, reviewer, `moderation/cases/${id}/appeals`)).json().items).toHaveLength(0);
+  expect((await post(r, reviewer, `moderation/appeals/${appealId}/review`, { decision: 'uphold', privateReason: reason })).statusCode).toBe(404);
+  const lead = await staff(r, 'safety-admin'); await assign(r, administrator, id, lead);
+  const noteId = (await r.pool.query('SELECT evidence_id FROM safety_appeals WHERE id=$1', [appealId])).rows[0].evidence_id;
+  const sealed = (await r.pool.query('SELECT ciphertext,expires_at FROM safety_sanction_notes WHERE id=$1', [noteId])).rows[0]; await r.pool.query('UPDATE safety_sanction_notes SET ciphertext=$2 WHERE id=$1', [noteId, Buffer.alloc(16)]);
+  expect((await post(r, lead, `moderation/appeals/${appealId}/review`, { decision: 'uphold', privateReason: reason })).statusCode).toBe(503);
+  await r.pool.query('UPDATE safety_sanction_notes SET ciphertext=$2,expires_at=$3 WHERE id=$1', [noteId, sealed.ciphertext, new Date(Date.now() - 1)]);
+  expect((await post(r, lead, `moderation/appeals/${appealId}/review`, { decision: 'uphold', privateReason: reason })).statusCode).toBe(404);
+  await r.pool.query('UPDATE safety_sanction_notes SET expires_at=$2 WHERE id=$1', [noteId, sealed.expires_at]);
+  const original = (await r.pool.query("SELECT id,expires_at FROM safety_sanction_notes WHERE sanction_id=$1 AND purpose='issue'", [sanctionId])).rows[0];
+  await r.pool.query('UPDATE safety_sanction_notes SET expires_at=$2 WHERE id=$1', [original.id, new Date(Date.now() - 1)]);
+  expect((await post(r, lead, `moderation/appeals/${appealId}/review`, { decision: 'uphold', privateReason: reason })).statusCode).toBe(404);
+  await r.pool.query('UPDATE safety_sanction_notes SET expires_at=$2 WHERE id=$1', [original.id, original.expires_at]);
+  expect((await post(r, lead, `moderation/appeals/${appealId}/review`, { decision: 'uphold', privateReason: reason })).json().status).toBe('upheld'); const own = (await get(r, target, 'me/sanctions')).json(); expect(own.items[0].state).toBe('active'); expect(own.appeals[0].status).toBe('upheld');
+});
+
+it('does not uphold a sanction already independently revoked or lose original appeal intake idempotency after review', async () => {
+  const { r, target, id, reviewer, administrator } = await reported(); const issued = await issue(r, reviewer, id); const sanctionId = issued.json().sanction.id;
+  const key = randomUUID(), path = `me/sanctions/${sanctionId}/appeal`, note = 'Please review this restriction independently.';
+  const original = await post(r, target, path, { note }, key); const appealId = original.json().receiptId;
+  await assign(r, administrator, id, administrator);
+  expect((await post(r, administrator, `moderation/sanctions/${sanctionId}/revoke`, { privateReason: reason })).statusCode).toBe(200);
+  expect((await post(r, administrator, `moderation/appeals/${appealId}/review`, { decision: 'uphold', privateReason: reason })).statusCode).toBe(409);
+  expect((await post(r, administrator, `moderation/appeals/${appealId}/review`, { decision: 'revoke', privateReason: reason })).statusCode).toBe(200);
+  const replay = await post(r, target, path, { note }, key); expect(replay.statusCode).toBe(201); expect(replay.json()).toEqual(original.json());
+  expect((await get(r, target, 'me/sanctions')).json().appeals[0].status).toBe('revoked');
 });

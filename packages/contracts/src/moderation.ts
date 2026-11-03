@@ -1,0 +1,14 @@
+import { z } from 'zod';
+import { WorldSlugSchema } from './world-primitives';
+import { SafetyCategorySchema, SafetySeveritySchema } from './safety';
+import { SanctionSummarySchema } from './sanctions';
+const uuid = z.uuid().transform(value => value.toLowerCase());
+export const CaseSearchSchema = z.strictObject({ cursor: uuid.optional(), id: uuid.optional(), world: WorldSlugSchema.optional(), category: SafetyCategorySchema.optional(), severity: SafetySeveritySchema.optional() });
+export const ModerationSessionSchema = z.strictObject({ schemaVersion: z.literal(1), accountId: uuid, scopes: z.array(z.strictObject({ worldSlug: WorldSlugSchema, role: z.enum(['moderator', 'safety-admin']) })).max(100), reportsAvailable: z.boolean() });
+export const IncidentInputSchema = z.strictObject({ surface: z.enum(['world', 'chat']), closed: z.boolean(), reason: z.enum(['incident', 'coverage-loss', 'reviewed-recovery']) }).refine(value => value.closed ? value.reason !== 'reviewed-recovery' : value.reason === 'reviewed-recovery', 'Recovery requires explicit review');
+export const IncidentStateSchema = z.strictObject({ worldSlug: WorldSlugSchema, surface: z.enum(['world', 'chat']), closed: z.boolean(), changedAt: z.iso.datetime() });
+export const IncidentPageSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(IncidentStateSchema).max(200) });
+export const IncidentResultSchema = z.strictObject({ schemaVersion: z.literal(1), control: IncidentStateSchema });
+export const AppealReviewInputSchema = z.strictObject({ decision: z.enum(['uphold', 'revoke']), privateReason: z.string().trim().min(20).max(1000) });
+export const AppealDispositionSchema = z.strictObject({ schemaVersion: z.literal(1), receiptId: uuid, status: z.enum(['upheld', 'revoked']), reviewedAt: z.iso.datetime() });
+export const CaseAppealsSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(z.strictObject({ receiptId: uuid, createdAt: z.iso.datetime(), status: z.enum(['received', 'upheld', 'revoked']), sanction: SanctionSummarySchema, note: z.string().max(1000).nullable(), issuanceReason: z.string().max(1000).nullable(), reviewedAt: z.iso.datetime().nullable() })).max(25), nextCursor: uuid.nullable() });

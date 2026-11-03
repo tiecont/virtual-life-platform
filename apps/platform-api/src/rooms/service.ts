@@ -44,9 +44,10 @@ export class RoomService {
   }
   onChanged(listener: (updates: RoomUpdate[]) => void, accepts: (connectionId: string) => boolean = () => true) { this.#changed.set(listener, accepts); return () => { this.#changed.delete(listener); }; }
   // Serialize committed restrictions with joins, delayed chat publication and room commands.
-  safetyMutation<T>(work: () => Promise<{ result: T; interruption?: { accountId: string; worldSlug: string | null; roomId: string | null } }>): Promise<T> {
+  safetyMutation<T>(work: () => Promise<{ result: T; closeWorld?: string; interruption?: { accountId: string; worldSlug: string | null; roomId: string | null } }>): Promise<T> {
     return this.#run(async () => {
-      const { result, interruption } = await work();
+      const { result, interruption, closeWorld } = await work();
+      if (closeWorld) for (const room of [...this.#rooms.values()]) if (room.slug === closeWorld) this.#removeRoom(room, 'world-unavailable');
       if (interruption) {
         const room = this.#rooms.get(this.#accounts.get(interruption.accountId) ?? ''); const member = room?.members.get(interruption.accountId);
         if (room && member && (!interruption.worldSlug || room.slug === interruption.worldSlug) && (!interruption.roomId || room.id === interruption.roomId)) {

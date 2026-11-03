@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
-import { ReportInputSchema, ReportReceiptSchema, ReportEvidenceSchema, CaseSummarySchema, CasePageSchema, CaseDetailSchema, CaseAssignmentSchema, type ReportInput, type ReportReceipt, type ReportEvidence, type SafetyPolicy } from '@virtual-city/contracts';
+import { ReportInputSchema, ReportReceiptSchema, ReportEvidenceSchema, CaseSummarySchema, CasePageSchema, CaseDetailSchema, CaseAssignmentSchema, CaseSearchSchema, type ReportInput, type ReportReceipt, type ReportEvidence, type SafetyPolicy } from '@virtual-city/contracts';
 import type { IdentityService, IdentityContext } from '../identity/service';
 import type { RoomService } from '../rooms/service';
 import { DomainError } from '../common/errors';
@@ -71,6 +71,8 @@ export class ReportService {
     const grants = (await db.query<{ world_slug: string; role: 'moderator' | 'safety-admin' }>(`SELECT g.world_slug,g.role FROM safety_staff_grants g JOIN identity_accounts a ON a.id=g.account_id WHERE g.account_id=$1 AND a.kind='registered' AND g.expires_at>$2 AND ($3::text IS NULL OR g.world_slug=$3) FOR SHARE OF g`, [actorId, new Date(this.now()), world ?? null])).rows;
     if (!grants.length) throw unavailable(); return grants;
   }
+  // Trusted staff gate remains usable for emergency closure when evidence access is unavailable.
+  grantsInTransaction(db: PoolClient, actorId: string, world?: string) { return this.grant(db, actorId, world); }
   async reviewContext(db: PoolClient, actor: IdentityContext, caseId: string) {
     this.enabled();
     const row = (await db.query<CaseRow>('SELECT * FROM safety_cases WHERE id=$1 FOR UPDATE', [caseId])).rows[0]; if (!row) throw unavailable();
@@ -83,11 +85,12 @@ export class ReportService {
     if (!sealed || sealed.expires_at.getTime() <= this.now()) throw unavailable();
     return ReportEvidenceSchema.parse(this.#cipher!.open('case:' + caseId, { ...sealed, keyId: sealed.key_id }));
   }
-  cases(token: string, cursor?: string) {
+  cases(token: string, search?: unknown) {
+    const query = CaseSearchSchema.parse(typeof search === 'string' ? { cursor: search } : search ?? {});
     return this.tx(token, [], async (db, actor) => {
       const grants = await this.grant(db, actor.accountId);
       const scopes = grants.map(grant => grant.world_slug), adminScopes = grants.filter(grant => grant.role === 'safety-admin').map(grant => grant.world_slug);
-      const rows = (await db.query<CaseRow>(`SELECT * FROM safety_cases WHERE world_slug=ANY($1::text[]) AND reporter_id IS DISTINCT FROM $2 AND subject_id IS DISTINCT FROM $2 AND (assigned_to=$2 OR world_slug=ANY($3::text[])) AND (category<>'staff-abuse' OR world_slug=ANY($3::text[])) AND ($4::uuid IS NULL OR id>$4) ORDER BY id LIMIT 26`, [scopes, actor.accountId, adminScopes, cursor ?? null])).rows;
+      const rows = (await db.query<CaseRow>(`SELECT * FROM safety_cases WHERE world_slug=ANY($1::text[]) AND reporter_id IS DISTINCT FROM $2 AND subject_id IS DISTINCT FROM $2 AND (assigned_to=$2 OR world_slug=ANY($3::text[])) AND (category<>'staff-abuse' OR world_slug=ANY($3::text[])) AND ($4::uuid IS NULL OR id>$4) AND ($5::uuid IS NULL OR id=$5) AND ($6::text IS NULL OR world_slug=$6) AND ($7::text IS NULL OR category=$7) AND ($8::text IS NULL OR severity=$8) ORDER BY id LIMIT 26`, [scopes, actor.accountId, adminScopes, query.cursor ?? null, query.id ?? null, query.world ?? null, query.category ?? null, query.severity ?? null])).rows;
       return CasePageSchema.parse({ schemaVersion: 1, items: rows.slice(0, 25).map(row => this.summary(row)), nextCursor: rows.length > 25 ? rows[24].id : null });
     });
   }

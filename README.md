@@ -89,3 +89,5 @@ M08-03 adds [confidential local reports](docs/architecture/REPORTS.md), encrypte
 M08-04 adds [temporary sanctions and private appeals](docs/architecture/SANCTIONS.md). Assigned staff can issue bounded reasoned restrictions; committed bans/mutes apply across sessions at world/room/chat guards. Visit `/safety` for your own decisions and private appeal receipts, including while world access is suspended. Moderator UI and incident controls remain M08-05. Actual M09 travel is not implemented; its target admission must use the shared safety guard. Public/real-world flags remain OFF.
 
 `pnpm setup:safety` creates an ignored local evidence key without overwriting an existing one. `pnpm dev` loads it for local reports; chat and real world/public flags remain independently closed.
+
+M08-05 adds the local [moderation desk](docs/architecture/MODERATION.md) at `/moderation`, independent appeal disposition and durable scoped incident closure/recovery. Real staff grants are not provisioned by setup or any endpoint. The [runbook](docs/operations/MODERATION-RUNBOOK.md) documents the implemented local workflow and remaining operational gates; public activation remains denied.

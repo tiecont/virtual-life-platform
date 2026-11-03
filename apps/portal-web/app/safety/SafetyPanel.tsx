@@ -56,7 +56,7 @@ export default function SafetyPanel() {
       const receipt = AppealReceiptSchema.parse(await request(`/me/sanctions/${id}/appeal`, controller.signal, { method: 'POST', headers: { 'content-type': 'application/json', 'x-csrf-token': me.csrfToken, 'idempotency-key': keys.current.get(signature)! }, body: JSON.stringify(body) }));
       if (owner.current !== identity || parent.signal.aborted || revision.current !== run) return;
       keys.current.delete(signature); setNotes(current => ({ ...current, [id]: '' }));
-      setData(current => current ? { ...current, appeals: [...current.appeals.filter(value => value.sanctionId !== id), { ...receipt, sanctionId: id }] } : current);
+      setData(current => current ? { ...current, appeals: [...current.appeals.filter(value => value.sanctionId !== id), { ...receipt, sanctionId: id, reviewedAt: null }] } : current);
       setMessage('Appeal received. Receipt: ' + receipt.receiptId);
     } catch (error) {
       if (owner.current !== identity || parent.signal.aborted || revision.current !== run) return;
@@ -70,7 +70,7 @@ export default function SafetyPanel() {
       {data.items.map(item => {
         const receipt = data.appeals.find(value => value.sanctionId === item.id);
         return <article className="safety-decision" key={item.id} aria-labelledby={'decision-' + item.id}><h2 id={'decision-' + item.id}>{names[item.kind]}</h2><dl><dt>Status</dt><dd>{item.state}</dd><dt>Category</dt><dd>{item.category.replaceAll('-', ' ')}</dd><dt>Scope</dt><dd>{item.worldSlug ?? 'All worlds'}{item.roomId ? ' / reported room' : ''}</dd><dt>Effective</dt><dd><time dateTime={item.effectiveAt}>{new Date(item.effectiveAt).toLocaleString()}</time></dd><dt>Ends</dt><dd><time dateTime={item.expiresAt}>{new Date(item.expiresAt).toLocaleString()}</time></dd></dl>
-          {receipt ? <p>Appeal received. Receipt: <span className="safety-receipt">{receipt.receiptId}</span></p> : <><p>Appeal deadline: <time dateTime={item.appealUntil}>{new Date(item.appealUntil).toLocaleString()}</time></p>{available && Date.parse(item.appealUntil) > Date.now() ? <form onSubmit={event => { void appeal(event, item.id); }}><label htmlFor={'appeal-' + item.id}>Your appeal</label><textarea id={'appeal-' + item.id} value={notes[item.id] ?? ''} onChange={event => setNotes(current => ({ ...current, [item.id]: event.target.value }))} required minLength={10} maxLength={1000} disabled={busy}/><button disabled={busy} type="submit">Send private appeal</button></form> : <p>Appeal intake is currently unavailable.</p>}</>}
+          {receipt ? <p>{receipt.status === 'received' ? 'Appeal received.' : receipt.status === 'upheld' ? 'Appeal reviewed: restriction upheld.' : 'Appeal reviewed: restriction revoked.'} Receipt: <span className="safety-receipt">{receipt.receiptId}</span></p> : <><p>Appeal deadline: <time dateTime={item.appealUntil}>{new Date(item.appealUntil).toLocaleString()}</time></p>{available && Date.parse(item.appealUntil) > Date.now() ? <form onSubmit={event => { void appeal(event, item.id); }}><label htmlFor={'appeal-' + item.id}>Your appeal</label><textarea id={'appeal-' + item.id} value={notes[item.id] ?? ''} onChange={event => setNotes(current => ({ ...current, [item.id]: event.target.value }))} required minLength={10} maxLength={1000} disabled={busy}/><button disabled={busy} type="submit">Send private appeal</button></form> : <p>Appeal intake is currently unavailable.</p>}</>}
         </article>;
       })}</>}
   </div>;

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
-import { SanctionInputSchema, SanctionRevokeSchema, SanctionSummarySchema, SanctionResultSchema, OwnSanctionsSchema, CaseSanctionsSchema, AppealInputSchema, AppealReceiptSchema, type SafetyPolicy } from '@virtual-city/contracts';
+import { SanctionInputSchema, SanctionRevokeSchema, SanctionSummarySchema, SanctionResultSchema, OwnSanctionsSchema, CaseSanctionsSchema, AppealInputSchema, AppealReceiptSchema, CaseAppealsSchema, AppealReviewInputSchema, AppealDispositionSchema, type SafetyPolicy } from '@virtual-city/contracts';
 import type { IdentityService, IdentityContext } from '../identity/service';
 import type { RoomService } from '../rooms/service';
 import { DomainError } from '../common/errors';
@@ -10,6 +10,7 @@ import { EvidenceCipher } from './evidence';
 const unavailable = () => new DomainError('NOT_AVAILABLE', 404, 'This safety action is unavailable');
 const HOUR = 3600000;
 type Sanction = { id: string; case_id: string; subject_id: string | null; issuer_id: string | null; kind: 'warn' | 'mute' | 'room-eject' | 'world-ban' | 'platform-ban'; category: string; world_slug: string | null; room_id: string | null; effective_at: Date; expires_at: Date; revoked_at: Date | null; appeal_until: Date };
+type Appeal = { id: string; sanction_id: string; subject_id: string | null; created_at: Date; evidence_id: string; status: 'received' | 'upheld' | 'revoked'; reviewed_at: Date | null };
 
 // Enforcement deliberately has no dependency on the evidence key or staff feature gates.
 export class SanctionPolicy {
@@ -114,7 +115,7 @@ export class SanctionService {
   }
   async exportAccount(id: string, db: PoolClient) {
     const rows = (await db.query<Sanction>('SELECT * FROM safety_sanctions WHERE subject_id=$1 ORDER BY effective_at DESC,id LIMIT 101', [id])).rows;
-    const appeals = (await db.query('SELECT id,sanction_id,created_at FROM safety_appeals WHERE subject_id=$1 ORDER BY created_at DESC LIMIT 100', [id])).rows.map(row => ({ ...AppealReceiptSchema.parse({ schemaVersion: 1, receiptId: row.id, status: 'received', createdAt: row.created_at.toISOString() }), sanctionId: row.sanction_id }));
+    const appeals = (await db.query<Appeal>('SELECT * FROM safety_appeals WHERE subject_id=$1 ORDER BY created_at DESC LIMIT 100', [id])).rows.map(row => ({ ...AppealReceiptSchema.parse({ schemaVersion: 1, receiptId: row.id, status: 'received', createdAt: row.created_at.toISOString() }), sanctionId: row.sanction_id, status: row.status, reviewedAt: row.reviewed_at?.toISOString() ?? null }));
     return OwnSanctionsSchema.parse({ schemaVersion: 1, items: rows.slice(0, 100).map(row => this.summary(row)), truncated: rows.length > 100, appeals });
   }
   async appeal(token: string, id: string, key: string, raw: unknown) {
@@ -135,7 +136,56 @@ export class SanctionService {
   }
   async redactAccount(id: string, db: PoolClient) {
     // Both case participants' allegations and appeal notes can contain their personal data.
-    await db.query('DELETE FROM safety_sanction_notes WHERE sanction_id IN (SELECT s.id FROM safety_sanctions s JOIN safety_cases c ON c.id=s.case_id WHERE s.subject_id=$1 OR s.issuer_id=$1 OR c.reporter_id=$1 OR c.subject_id=$1)', [id]);
+    await db.query('DELETE FROM safety_sanction_notes WHERE sanction_id IN (SELECT s.id FROM safety_sanctions s JOIN safety_cases c ON c.id=s.case_id WHERE s.subject_id=$1 OR s.issuer_id=$1 OR c.reporter_id=$1 OR c.subject_id=$1 OR EXISTS(SELECT 1 FROM safety_appeals a WHERE a.sanction_id=s.id AND a.reviewer_id=$1))', [id]);
+  }
+  caseAppeals(token: string, caseId: string, cursor?: string) {
+    this.enabled();
+    return this.tx(token, [], async (db, actor) => {
+      const { admin } = await this.reports.reviewContext(db, actor, caseId);
+      const rows = (await db.query<Appeal>('SELECT a.* FROM safety_appeals a JOIN safety_sanctions s ON s.id=a.sanction_id WHERE s.case_id=$1 AND s.issuer_id IS DISTINCT FROM $2 AND (s.kind<>\'platform-ban\' OR $4) AND ($3::uuid IS NULL OR a.id>$3) ORDER BY a.id LIMIT 26', [caseId, actor.accountId, cursor ?? null, admin])).rows;
+      const items = [];
+      for (const row of rows.slice(0, 25)) {
+        const sanction = (await db.query<Sanction>('SELECT * FROM safety_sanctions WHERE id=$1', [row.sanction_id])).rows[0];
+        const sealed = (await db.query('SELECT * FROM safety_sanction_notes WHERE id=$1 AND expires_at>$2', [row.evidence_id, new Date(this.now())])).rows[0];
+        const opened = sealed ? this.#cipher!.open('sanction-note:' + row.evidence_id, { ...sealed, keyId: sealed.key_id }) as { text: string } : null;
+        const issue = (await db.query('SELECT * FROM safety_sanction_notes WHERE sanction_id=$1 AND purpose=\'issue\' AND expires_at>$2 ORDER BY id LIMIT 1', [row.sanction_id, new Date(this.now())])).rows[0];
+        const issuance = issue ? this.#cipher!.open('sanction-note:' + issue.id, { ...issue, keyId: issue.key_id }) as { text: string } : null;
+        await this.audit(db, sanction, actor.accountId, 'appeal.viewed', 'independent-review');
+        items.push({ receiptId: row.id, createdAt: row.created_at.toISOString(), status: row.status, sanction: this.summary(sanction), note: opened?.text ?? null, issuanceReason: issuance?.text ?? null, reviewedAt: row.reviewed_at?.toISOString() ?? null });
+      }
+      return CaseAppealsSchema.parse({ schemaVersion: 1, items, nextCursor: rows.length > 25 ? rows[24].id : null });
+    });
+  }
+  async reviewAppeal(token: string, id: string, key: string, raw: unknown) {
+    const input = AppealReviewInputSchema.parse(raw); await this.identity.authenticate(token); this.enabled();
+    const initial = (await this.pool.query<Sanction>('SELECT s.* FROM safety_sanctions s JOIN safety_appeals a ON a.sanction_id=s.id WHERE a.id=$1', [id])).rows[0]; if (!initial?.subject_id) throw unavailable();
+    const result = await this.rooms.safetyMutation(async () => ({ result: await this.tx(token, [initial.subject_id!], async (db, actor) => {
+      this.enabled(); const { admin } = await this.reports.reviewContext(db, actor, initial.case_id);
+      const row = (await db.query<Sanction>('SELECT * FROM safety_sanctions WHERE id=$1 FOR UPDATE', [initial.id])).rows[0];
+      if (row.issuer_id === actor.accountId || (row.kind === 'platform-ban' && !admin)) throw unavailable();
+      const fingerprint = this.identity.fingerprint({ operation: 'appeal.review', id, input }); const previous = await this.prior(db, actor.accountId, key, fingerprint); if (previous) return AppealDispositionSchema.parse(previous);
+      const appeal = (await db.query<Appeal>('SELECT * FROM safety_appeals WHERE id=$1 FOR UPDATE', [id])).rows[0];
+      if (appeal.status !== 'received') throw new DomainError('IDEMPOTENCY_CONFLICT', 409, 'This appeal has already been reviewed');
+      if (input.decision === 'uphold' && row.revoked_at) throw new DomainError('IDEMPOTENCY_CONFLICT', 409, 'This restriction has already been revoked');
+      // A final disposition requires reading still-authentic, nonexpired subject evidence.
+      const sealed = (await db.query('SELECT * FROM safety_sanction_notes WHERE id=$1 AND expires_at>$2', [appeal.evidence_id, new Date(this.now())])).rows[0]; if (!sealed) throw unavailable();
+      this.#cipher!.open('sanction-note:' + appeal.evidence_id, { ...sealed, keyId: sealed.key_id });
+      if (input.decision === 'uphold') {
+        await this.reports.evidenceInTransaction(db, row.case_id);
+        const original = (await db.query('SELECT * FROM safety_sanction_notes WHERE sanction_id=$1 AND purpose=\'issue\' AND expires_at>$2 ORDER BY id LIMIT 1', [row.id, new Date(this.now())])).rows[0]; if (!original) throw unavailable();
+        this.#cipher!.open('sanction-note:' + original.id, { ...original, keyId: original.key_id });
+      }
+      await this.note(db, row.id, 'review', input.privateReason);
+      if (input.decision === 'revoke' && !row.revoked_at) {
+        await db.query('UPDATE safety_sanctions SET revoked_at=$2 WHERE id=$1', [row.id, new Date(this.now())]);
+        await this.audit(db, row, actor.accountId, 'sanction.revoked', 'independent-reversal');
+      }
+      const status = input.decision === 'revoke' ? 'revoked' : 'upheld', reviewedAt = new Date(this.now());
+      await db.query('UPDATE safety_appeals SET status=$2,reviewed_at=$3,reviewer_id=$4 WHERE id=$1', [id, status, reviewedAt, actor.accountId]);
+      await this.audit(db, row, actor.accountId, 'appeal.reviewed', 'independent-review');
+      const result = AppealDispositionSchema.parse({ schemaVersion: 1, receiptId: id, status, reviewedAt: reviewedAt.toISOString() }); await this.remember(db, actor.accountId, key, fingerprint, 'review', result); return result;
+    }) }));
+    this.changed(initial.subject_id); return result;
   }
   maintain() {
     if (!this.#maintenance) this.#maintenance = this.pool.query('DELETE FROM safety_sanction_notes WHERE id IN (SELECT id FROM safety_sanction_notes WHERE expires_at<=$1 ORDER BY expires_at LIMIT 100 FOR UPDATE SKIP LOCKED)', [new Date(this.now())]).then(result => result.rowCount ?? 0).finally(() => { this.#maintenance = undefined; });

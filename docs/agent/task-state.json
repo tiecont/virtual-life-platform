@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-03T03:41:00Z",
+  "updatedAt": "2026-11-03T04:31:11Z",
   "tasks": {
     "AUD-01": {
       "status": "VERIFIED",
@@ -203,6 +203,7 @@
     "M08-01": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m08-policy-checks.json; docs/product/SAFETY-THREAT-MODEL.md; docs/adr/0012-draft-safety-policy-and-runtime-gates.md", "verification": "check->0(7governance,45unit,75integration/builds); strict actual-policy/unsafe-config tests; audited current enforcement and world threats/escalation/sanctions/appeals/retention; definition scope only, no runtime moderation claim" },
     "M08-02": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m08-chat-checks.json; docs/architecture/CHAT-SAFETY.md", "verification": "final pnpm check ->0:7 governance,48 unit,89 integration/builds; existing E2E30 ->0; production/default OFF, curated gate and volatile delivery limits documented" },
     "M08-03": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m08-reports-checks.json; docs/architecture/REPORTS.md", "verification": "check->0:7governance,50unit,100integration/builds; final extra production-gate safety units4->0; final E2E32->0 after form/resync fixes; encrypted evidence/audit/assigned RBAC/local report-block UI verified, production closed" },
-    "M08-04": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m08-sanctions-checks.json; docs/architecture/SANCTIONS.md; ADR0015", "verification": "check->0:7governance,51unit,109integration/builds; expanded final sanctions14->0; E2E34->0; final lint/diff0. Single-owner current guards/expiry/revoke/private appeal retry verified; actual travel remains M09" }
+    "M08-04": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m08-sanctions-checks.json; docs/architecture/SANCTIONS.md; ADR0015", "verification": "check->0:7governance,51unit,109integration/builds; expanded final sanctions14->0; E2E34->0; final lint/diff0. Single-owner current guards/expiry/revoke/private appeal retry verified; actual travel remains M09" },
+    "M08-05": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m08-moderation-checks.json; docs/architecture/MODERATION.md; docs/operations/MODERATION-RUNBOOK.md", "verification": "check->0(7governance,51unit,120integration/builds); fullE2E34->0; corrected staff viewport/keyboard wait then targeted2->0; scoped desk, independent appeals, durable closure/recovery and restart/missing-key denials" }
   }
 }
