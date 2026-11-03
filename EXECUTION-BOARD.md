@@ -94,12 +94,12 @@
 | M15 | M15-04 · Embed Deadline scene in shared game shell and avatar/portal actions. | BLOCKED_EXTERNAL | B-001/B-002;preserve dirty web;no playable legacy scene yet |
 | M15 | M15-05 · Integrate invitations, privacy and moderation hooks. | BLOCKED_EXTERNAL | B-001/ADR0049;no verified legacy adapter callbacks |
 | M15 | M15-06 · Performance, accessibility, migration and rollback. | BLOCKED_EXTERNAL | B-001 and02..05;no real integrated journey certificate |
-| M16 | M16-01 · Audit actual Maid repo vs original master plan and baseline tests. | TODO | — |
-| M16 | M16-02 · Bridge Maid identity/session, roles and avatars to platform. | TODO | — |
-| M16 | M16-03 · Bridge order lifecycle/shift to shared hospitality engine. | TODO | — |
-| M16 | M16-04 · Integrate platform chat/report/block/sanction with existing UX. | TODO | — |
-| M16 | M16-05 · Integrate invitation/travel with role/shift cleanup rules. | TODO | — |
-| M16 | M16-06 · Run E2E, asset/legal audit, rollback & release gate. | TODO | — |
+| M16 | M16-01 · Audit actual Maid repo vs original master plan and baseline tests. | VERIFIED | m16-audit-checks.json;25hashes/2healthroutes/10priorunchanged;no working gameplay inferred |
+| M16 | M16-02 · Bridge Maid identity/session, roles and avatars to platform. | BLOCKED_EXTERNAL | B-001/ADR0050;clean implementation snapshot before adapter |
+| M16 | M16-03 · Bridge order lifecycle/shift to shared hospitality engine. | BLOCKED_EXTERNAL | B-001/ADR0050;one canonical owner;minigame/NPC gaps explicit |
+| M16 | M16-04 · Integrate platform chat/report/block/sanction with existing UX. | BLOCKED_EXTERNAL | B-001/ADR0050;actual legacy callback/UX binding pending |
+| M16 | M16-05 · Integrate invitation/travel with role/shift cleanup rules. | BLOCKED_EXTERNAL | B-001/ADR0050;no synthetic substitution for real cleanup |
+| M16 | M16-06 · Run E2E, asset/legal audit, rollback & release gate. | BLOCKED_EXTERNAL | B-001/B-002 and02..05;no actual integrated service loop yet |
 | M17 | M17-01 · Design silent library theme, seating map, room categories and access UI. | TODO | — |
 | M17 | M17-02 · Reuse platform room/seats and Focus Engine without copying code. | TODO | — |
 | M17 | M17-03 · Implement quiet mode/limited quick-chat and group study event. | TODO | — |

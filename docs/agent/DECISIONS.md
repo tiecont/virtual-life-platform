@@ -1,5 +1,7 @@
 # Decisions
 
+M16-01 / ADR0050: current25file observation/10priorhashesunchanged remains health-only DTO/menu foundation;no working role/shift/order/safety/scene inferred. Dated11unit/4PGfoundation baseline separate. Preserve sourcepin/redistribution gates;never replace realintegration withsynthetic fixture orclaim shared timedcourses implementlegacyminigame/NPC. Advance independentM17.
+
 M15-01 / ADR0049: verified audit scope only;complete Deadline source observation52hashes/12APIfiles/9routes/all8priorfocusedunchanged,committedbackend distinct fromdirtyweb. No actualfocus/realtime/scene gameplay inferred. Preserve datedlintfailure/testgaps. ADR0001 clean full-world pin gates02..06;rights gate redistribution;independentM16audit/M17continue without sourceoverwrite.
 
 M14-05 / ADR0048: bounded owner-based discovery,no owned tables or room creation;occupied first,near public schedules next,max3,exactly1actual confirmed-empty fallback. Unknown/truncated calendar never means empty. Oldest30sTTL/current safety+generation checks,slowcatalogoutside roomqueue,8global/2account pending and30/account/min keep work bounded. Counts are allocated places inclgrace,not guaranteed capacity. Full317integration/206unit/builds and68browser pass;nomigration/realrollout.

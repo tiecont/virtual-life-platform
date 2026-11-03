@@ -2,7 +2,7 @@
 
 | ID | Tasks | Type | Evidence / resolution |
 |---|---|---|---|
-| B-001 | M15/M16 integration revision | External | M15-01 fresh52hash audit confirms Deadline backend HEADf9475b4 but dirty/untracked full web/tests;ADR0001 requires clean full-world pin before02..06. Maid likewise needs stable snapshot. Exact source observations are not approval;no source changes made here. See DEADLINE-INTEGRATION-AUDIT.md/ADR0049. |
+| B-001 | M15/M16 integration revision | External | M15-01fresh52hash audit confirms Deadline backend HEADf9475b4 but dirty/untracked full web/tests;M16-01fresh25hash audit confirms Maid HEAD33180a9 plus largely untracked implementation. ADR0001 requires clean full-world pins before02..06. Exact source observations are not approval;no source changes made here. See DEADLINE-INTEGRATION-AUDIT.md/ADR0049 andMAID-INTEGRATION-AUDIT.md/ADR0050. |
 | B-002 | Legacy redistribution | External | No root code licenses found; owner must clarify rights before copying/distributing source or assets. Does not block independent city foundation. |
 | B-003 | Public release / restricted worlds | External | No operator/domain/secrets/moderation coverage/age-review approval supplied. Flags OFF; local work may continue. |
 

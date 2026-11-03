@@ -244,6 +244,12 @@
     "M15-03": { "status": "BLOCKED_EXTERNAL", "evidence": "B-001;ADR0049", "verification": "Actual legacy room/focus bridge awaits integration pin" },
     "M15-04": { "status": "BLOCKED_EXTERNAL", "evidence": "B-001/B-002;ADR0049", "verification": "Preserve dirty/untracked scene/UI;reuse scope unresolved" },
     "M15-05": { "status": "BLOCKED_EXTERNAL", "evidence": "B-001;ADR0049", "verification": "Legacy safety/travel callback binding awaits actual adapter" },
-    "M15-06": { "status": "BLOCKED_EXTERNAL", "evidence": "B-001;ADR0049", "verification": "Real journey/migration/rollback acceptance depends on02..05" }
+    "M15-06": { "status": "BLOCKED_EXTERNAL", "evidence": "B-001;ADR0049", "verification": "Real journey/migration/rollback acceptance depends on02..05" },
+    "M16-01": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m16-audit-checks.json; docs/architecture/MAID-INTEGRATION-AUDIT.md; docs/adr/0050-maid-foundation-is-not-integrated-gameplay.md", "verification": "Readonly25hashes/2healthroutes/0transport imports/10priorunchanged;schema/menu/health/landing vsreference/runtime/testgaps documented;datedbaseline separate" },
+    "M16-02": { "status": "BLOCKED_EXTERNAL", "evidence": "B-001;ADR0050", "verification": "Clean implementation revision required before identity/role adapter" },
+    "M16-03": { "status": "BLOCKED_EXTERNAL", "evidence": "B-001;ADR0050", "verification": "Actual hospitality bridge awaits source pin;minigame/NPC differences remain work" },
+    "M16-04": { "status": "BLOCKED_EXTERNAL", "evidence": "B-001;ADR0050", "verification": "Actual safety UX/handler binding awaits source adapter" },
+    "M16-05": { "status": "BLOCKED_EXTERNAL", "evidence": "B-001;ADR0050", "verification": "Real role/shift departure callbacks await adapter" },
+    "M16-06": { "status": "BLOCKED_EXTERNAL", "evidence": "B-001/B-002;ADR0050", "verification": "Actual integrated service loop/reuse/rollback depends on02..05" }
   }
 }

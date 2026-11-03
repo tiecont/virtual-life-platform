@@ -1,5 +1,11 @@
 # Agent progress
 
+## M16-01 — VERIFIED complete readonly Maid comparison
+
+From6124a1c;ADR0050/MAID-INTEGRATION-AUDIT.md/m16-audit-checks.json. Audit command0:25hashes,2healthroute refs,0transport imports,10/10prior focused files unchanged andsecondhash/status/HEAD unchanged. Manual actualsource/reference comparison confirms DTO/menu/schema/health/landing foundation,no order/shift/room/scene runtime. Prior2026-11-02baseline lint/types/test/build0(11unit/4PGfoundation) preserved asdated;no freshlegacygameplay/DB/browser result. Minigame/NPC/role/refusal/safety differences remain explicit futurework.
+
+M16-02..06BLOCKED_EXTERNAL atADR0001/B-001clean implementation snapshot;B-002redistribution. No legacy source/env/media/DB/process/network/migration/copy/mutation or cityruntimechange. Next exact action M17-01 independently authored silent Library theme/geometry/desk areas/accessUI using shared room shell;explicit local/test opt-in/defaultrealflagsOFF. Actual seat/focus sharing remains02,quiet/groupstudy03..04,fulljourney05;do not claim whole module fromscene.
+
 ## M15-01 — VERIFIED complete readonly Deadline comparison
 
 From7abe23e;ADR0049/DEADLINE-INTEGRATION-AUDIT.md/m15-audit-checks.json. New reusable source-only audit command0 records52hashes,12APIfiles,9route refs,0transport imports and8/8unchanged focused-audit files;second hash/status/HEAD check unchanged. Syntax/lint0. Manual reference comparison covers actualguestcookie+CSRF/catalog/schema/placeholder scene/disabledfocus/assets/tests/socialgaps. Dated2026-11-02baseline preserved:lint1,typecheck/test/build0;7unitcases,no priorDeadlinePGintegration/browser run. No freshlegacyruntime or gameplay claim.
