@@ -1,0 +1,4 @@
+{
+  "schemaVersion": 1,
+  "assets": [{ "path": "fixture-avatar.svg", "dimensions": [32, 48], "source": "Original geometric pixel fixture authored in this workspace for M07-01", "externalSource": false, "purpose": "Local sample only; not final production avatar art", "releaseApproved": false, "rights": "No third-party artwork imported; distribution/license decision remains with project owner" }]
+}

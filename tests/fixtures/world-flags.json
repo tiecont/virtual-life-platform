@@ -1,0 +1,4 @@
+{
+  "schemaVersion": 1,
+  "environments": { "development": { "sdk-sandbox": true }, "test": { "sdk-sandbox": true }, "production": {} }
+}

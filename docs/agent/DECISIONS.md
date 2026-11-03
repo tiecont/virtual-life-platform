@@ -15,3 +15,4 @@
 | D-011 | Account-scoped refresh only; no room activity until authoritative source; privacy projections always rechecked | Implemented/verified interface + current HTTP/UI | SOCIAL-API.md; M05/M06 live room source still pending |
 | D-012 | Strict SDK v1, independent lifecycle/flags, hidden discovery excluded, runtime membership denies until M06 | Implemented/verified locally | ADR 0008; WORLD-SDK.md; m05-checks.json |
 | D-013 | Enforce one room owner per DB schema with a dedicated PostgreSQL advisory lock; irreversible loss, no distributed failover claim | Implemented and verified locally | ADR 0009; m06-owner-checks.json; future lease/fencing remains gated |
+| D-014 | Orthogonal strict tile scene, original local fixture assets and explicit dev/test sandbox opt-in; real world/default flags stay OFF | Implemented/verified M07-01 | SCENES.md; m07-scene-checks.json; production avatar actions remain M07-03 |

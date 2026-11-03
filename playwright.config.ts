@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import { resolve } from 'node:path';
 export default defineConfig({
   testDir: 'tests/e2e', workers: 1, retries: 0,
   reporter: [['list'], ['html', { open: 'never' }]],
@@ -8,7 +9,7 @@ export default defineConfig({
     { name: 'mobile', use: { ...devices['iPhone 13'], defaultBrowserType: 'chromium' } },
   ],
   webServer: [
-    { command: 'pnpm db:migrate && pnpm --filter @virtual-city/platform-api start', url: 'http://127.0.0.1:4300/health/ready', reuseExistingServer: false, timeout: 60000 },
+    { command: 'pnpm db:migrate && pnpm --filter @virtual-city/platform-api start', url: 'http://127.0.0.1:4300/health/ready', env: { WORLD_FLAGS_FILE: resolve('tests/fixtures/world-flags.json') }, reuseExistingServer: false, timeout: 60000 },
     { command: 'pnpm --filter @virtual-city/portal-web start', url: 'http://127.0.0.1:3300', reuseExistingServer: false, timeout: 60000 },
   ],
 });
