@@ -1,5 +1,7 @@
 # Decisions
 
+M13-01 / ADR0039: optional default-disabled completion-only XP;account20/day/world10/day/fixed2percompletion,partner2/day and60s cooldown;no dating/social/timeonline/monetary/trading rewards. Existing casual/apron art only;unlock does not imply staffing/equip permission. Pure policy model verified194unit/builds;ledger and engine consumers remain02.
+
 M12-06: acceptance combines independent TCP/Socket.IO sessions with actual SQL allocations and authorized timezone change across both DST transitions. CHECKED_IN attendance remains historical until end; tests cancel CONFIRMED consent before replacing allocation. No runtime change;full299integration/builds pass. EVENTS-VERIFICATION.md maps actual scope/limits.
 
 M12-05 / ADR0038: event-private consent reuses platform friendship/opt-in via an owner port and transactional opt-out callback; explicit acceptance grants viewing only and revocation cancels private participation. Global discovery excludes private/hidden/restricted/dating. Expired offers cannot disclose later metadata. Evidence full297integration/builds exit0;allrealflagsOFF.

@@ -78,7 +78,7 @@
 | M12 | M12-04 · Implement organizer/performer/mod permissions and cancel notifications. | VERIFIED | m12-governance-checks.json;check0(190unit/290integration/builds),38event/reservation,browser4,0021local;interactive denied |
 | M12 | M12-05 · Implement event discovery and invitations with privacy restrictions. | VERIFIED | m12-discovery-checks.json;check0(190unit/297integration/builds),45event/reservation,0022local |
 | M12 | M12-06 · Write concurrency and timezone integration tests. | VERIFIED | m12-regression-checks.json;check0(190unit/299integration/builds),47event/reservation;independent network/DST |
-| M13 | M13-01 · Define XP and cosmetics policies for each world with cap and abuse prevention. | TODO | — |
+| M13 | M13-01 · Define XP and cosmetics policies for each world with cap and abuse prevention. | VERIFIED | m13-policy-checks.json;194unit/types/lint/build0;policy only,no ledger |
 | M13 | M13-02 · Implement entitlement service and ledger/unique source id. | TODO | — |
 | M13 | M13-03 · Implement world outfit restrictions and appearance validation. | TODO | — |
 | M13 | M13-04 · Implement cosmetics UI and non-trading unlocks with accessibility. | TODO | — |

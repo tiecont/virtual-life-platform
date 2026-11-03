@@ -80,3 +80,4 @@ export * from './focus';
 export * from './hospitality';
 export * from './events';
 export * from './reservations';
+export * from './progression';

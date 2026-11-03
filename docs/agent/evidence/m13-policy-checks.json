@@ -1,0 +1,15 @@
+{
+ "taskID":"M13-01","source":"workspace fromf302867;checkpoint SHA followsgitlog","environment":"2026-11-03;Node26.9.0/pnpm11.28.5;local Linux",
+ "commands":[
+  {"command":"pnpm exec vitest run --project unit apps/platform-api/src/progression/policy.unit.test.ts","exitCode":1,"log":"m13-policy-red.log","scope":"Missing policy module before implementation"},
+  {"command":"pnpm build:packages","exitCode":2,"log":"m13-policy-packages.log","scope":"TypeScript inferred never for allowed-kind union;explicit mapped kind typing fixed it"},
+  {"command":"pnpm build:packages","exitCode":0,"log":"m13-policy-packages-final.log"},
+  {"command":"pnpm exec vitest run --project unit","exitCode":0,"log":"m13-policy-unit.log","scope":"194tests including4policy cases"},
+  {"command":"pnpm lint","exitCode":0,"log":"m13-policy-lint.log"},
+  {"command":"pnpm --filter @virtual-city/platform-api typecheck","exitCode":0,"log":"m13-policy-typecheck.log"},
+  {"command":"pnpm build","exitCode":0,"log":"m13-policy-build.log"},
+  {"command":"git diff --check","exitCode":0}
+ ],
+ "verified":["Disabled-by-default perworld source allowlist;no Park/dating/social rewards","Whole-grant account/world UTC-day caps,partner repetition/self guards,cooldown","Current eligibility,completion-day integrity,late/future observation guards","Strict schemas reject forged amount/authority/trading/wealth ranking"],
+ "limits":["Pure model,not ledger/award API/consumer/inventory/equip implementation","No DB migration or app composition;no new integration/browser scenario to rerun for this disconnected model","M12 full299integration passed immediately before this additive model;not a new303integration claim","M13-02 must prove durable source uniqueness,serialized usage/safety,export/erasure and actual grants","All real rollout flags OFF;no real resources/media/legacy mutation"]
+}

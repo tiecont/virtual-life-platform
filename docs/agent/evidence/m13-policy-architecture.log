@@ -1,0 +1,2 @@
+$ node scripts/verify-architecture.mjs
+Architecture consistency passed: 58 SQL tables + journal; 141 source files checked. Future gameplay invariants remain runtime gates.

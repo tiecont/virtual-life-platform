@@ -1,0 +1,9 @@
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+
+ Test Files  29 passed (29)
+      Tests  194 passed (194)
+   Start at  20:42:35
+   Duration  3.92s (transform 6.77s, setup 0ms, import 23.77s, tests 4.11s, environment 6ms)
+

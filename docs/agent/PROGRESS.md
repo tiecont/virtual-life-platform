@@ -1,5 +1,9 @@
 # Agent progress
 
+## M13-01 - VERIFIED bounded nonmonetary policy model
+
+Fromf302867;m13-policy-checks.json/ADR0039/PROGRESSION.md. Actual194unit pass,packages/APItypecheck/lint/fullworkspacebuild/diff0. Missingmodule red and initial TypeScript never-union build failure retained;explicit kind-map typing fixed without schema relaxation. No disconnected-model DB/browser rerun claimed. Defaultdisabled perworld source policy,UTC account/world caps,partner repetition/self/cooldown/eligibility/time/forged-input guards verified. Casualfree/apron10lifetimeXP threshold defined only;no ledger/grant/consumer/equip functionality yet. Next M13-02 durable unique-source private SQL ledger/entitlements with account locks and reviewed engine completion ports;verify replay/restart/caps/rollback/privacy/erasure. AllflagsOFF,previewoff,DB0022.
+
 ## M12-06 - VERIFIED network concurrency and DST acceptance
 
 From2397711;m12-regression-checks.json/EVENTS-VERIFICATION.md. Fullcheck exit0:7governance,190unit,299integration including47event/reservation,lint/types/architecture/assets/builds;diff0. Initial combinedDST2failed45filteredskips because scenario tried to release CHECKED_IN attendance; corrected test releases CONFIRMED consent,expires a replacement,then checks in a fresh confirmed allocation. No runtime/model relaxation. Two independent signed TCP/Socket.IO sessions race same table after authorized timezone adjustment for springgap/repeatedfallhour;absoluteinstants/offsets,onewinner,retry/TTL/currentadmission pass. Local M12taskscope complete;actualadapters/UI/staff/interactiveapproval/publicrelease not claimed. Next M13-01: strict nonmonetary XP/cosmetic policy perworld,caps/anti-farm rules and no social/dating pressure incentives,then M13-02 durable ledger. AllflagsOFF,previewoff,DB0022.
