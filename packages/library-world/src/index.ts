@@ -32,10 +32,11 @@ export const libraryAreas=[
  {key:'reading',title:'Reading corner',description:'Individual reading desks. Bring your own reading; no books are distributed.',seatIds:['seat-1','seat-2','seat-3','seat-4']},
  {key:'study',title:'Study alcove',description:'Shared desks for quiet company. These are in the same room, with no private-space promise.',seatIds:['seat-5','seat-6','seat-7','seat-8']},
 ] as const;
+export const libraryWorldVersion='1.1.0';
 export function createLibraryWorld(){
  let started=false;
- return defineWorld({schemaVersion:1,apiVersion:1,slug:'library',version:'1.0.0',title:'Eternal Library',kind:'world',sceneRef:{key:libraryScene.key,version:libraryScene.version},scene:libraryScene,
-  capacity:8,seatIds:libraryScene.seats.map(seat=>seat.seatId),capabilities:['presence','seating','portals'],appearancePolicy:{apron:'forbidden'},
+ return defineWorld({schemaVersion:1,apiVersion:1,slug:'library',version:libraryWorldVersion,title:'Eternal Library',kind:'world',sceneRef:{key:libraryScene.key,version:libraryScene.version},scene:libraryScene,
+  capacity:8,seatIds:libraryScene.seats.map(seat=>seat.seatId),capabilities:['presence','seating','focus','portals'],focusPolicy:{pauseAllowed:true},appearancePolicy:{apron:'forbidden'},
   accessPolicy:{kind:'public'},visibility:'listed',map:{region:'learning',position:{x:.25,y:.2},icon:'book'},
  },{bootstrap:async()=>{started=true;},shutdown:async()=>{started=false;},onJoin:async()=>{if(!started)throw Error('Library unavailable');},onLeave:async()=>{},
   onCommand:async()=>{throw new WorldError('INVALID_REQUEST','Library activity unavailable');},

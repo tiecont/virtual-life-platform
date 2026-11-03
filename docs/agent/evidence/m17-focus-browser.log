@@ -1,0 +1,90 @@
+ Network virtual-city-test-5a8f9bea_default Creating 
+ Network virtual-city-test-5a8f9bea_default Creating 
+ Network virtual-city-test-5a8f9bea_default Created 
+ Network virtual-city-test-5a8f9bea_default Created 
+ Container virtual-city-test-5a8f9bea-db-1 Creating 
+ Container virtual-city-test-5a8f9bea-db-1 Created 
+ Container virtual-city-test-5a8f9bea-db-1 Starting 
+ Container virtual-city-test-5a8f9bea-db-1 Started 
+ Container virtual-city-test-5a8f9bea-db-1 Waiting 
+ Container virtual-city-test-5a8f9bea-db-1 Healthy 
+[WebServer] (node:936352) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:936375) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:936375) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:936375) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:936351) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:936464) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:936517) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:936605) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:936661) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/focus.spec.ts:6:5 › private focus recovers a lost start response and sleep,requires explicit sanitized sharing and clears on logout (5.4s)
+  ✓  2 [desktop] › tests/e2e/library.spec.ts:7:5 › original library scene and native desk areas work with actual identity and authoritative seating (2.1s)
+  ✓  3 [desktop] › tests/e2e/library.spec.ts:18:5 › library asset failure keeps keyboard desks usable and sessionless access never enters a room (1.2s)
+  ✓  4 [desktop] › tests/e2e/library.spec.ts:24:5 › Library uses the private shared timer with exact-key retry,pause and durable continuation after leaving (2.5s)
+
+  4 passed (16.1s)
+ Container virtual-city-test-5a8f9bea-db-1 Stopping 
+ Container virtual-city-test-5a8f9bea-db-1 Stopped 
+ Container virtual-city-test-5a8f9bea-db-1 Removing 
+ Container virtual-city-test-5a8f9bea-db-1 Removed 
+ Network virtual-city-test-5a8f9bea_default Removing 
+ Network virtual-city-test-5a8f9bea_default Removed 
+ Network virtual-city-test-7ef81844_default Creating 
+ Network virtual-city-test-7ef81844_default Creating 
+ Network virtual-city-test-7ef81844_default Created 
+ Network virtual-city-test-7ef81844_default Created 
+ Container virtual-city-test-7ef81844-db-1 Creating 
+ Container virtual-city-test-7ef81844-db-1 Created 
+ Container virtual-city-test-7ef81844-db-1 Starting 
+ Container virtual-city-test-7ef81844-db-1 Started 
+ Container virtual-city-test-7ef81844-db-1 Waiting 
+ Container virtual-city-test-7ef81844-db-1 Healthy 
+[WebServer] (node:937956) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:937969) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:937969) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:937969) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:937955) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:938014) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:938116) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:938130) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:938269) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [mobile] › tests/e2e/focus.spec.ts:6:5 › private focus recovers a lost start response and sleep,requires explicit sanitized sharing and clears on logout (5.6s)
+  ✓  2 [mobile] › tests/e2e/library.spec.ts:7:5 › original library scene and native desk areas work with actual identity and authoritative seating (2.3s)
+  ✓  3 [mobile] › tests/e2e/library.spec.ts:18:5 › library asset failure keeps keyboard desks usable and sessionless access never enters a room (1.3s)
+  ✓  4 [mobile] › tests/e2e/library.spec.ts:24:5 › Library uses the private shared timer with exact-key retry,pause and durable continuation after leaving (2.3s)
+
+  4 passed (16.3s)
+ Container virtual-city-test-7ef81844-db-1 Stopping 
+ Container virtual-city-test-7ef81844-db-1 Stopped 
+ Container virtual-city-test-7ef81844-db-1 Removing 
+ Container virtual-city-test-7ef81844-db-1 Removed 
+ Network virtual-city-test-7ef81844_default Removing 
+ Network virtual-city-test-7ef81844_default Removed 

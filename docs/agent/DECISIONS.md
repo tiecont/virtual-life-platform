@@ -1,5 +1,7 @@
 # Decisions
 
+M17-02 / ADR0052: Libraryfocus is a capability/policy andsharedUI integration,notanother timerowner. World1.1.0/scene1.0.0,explicitboundedpause,privateimmutableorigin throughleave/restart. Actual8Socketdesk race/8samekeyHTTPinjectretry andbrowserrealHTTPcommitloss pass;injectedserverclockonlyfortimedcompletion. Full321integration/210unit/builds/browser8,nomigration/reward/realflagactivation.
+
 M17-01 / ADR0051: independentworldpackage with originalgeometry,one quietroomtype/two clearly labeleddeskareas,reused Pixi readingstyle andsharedWorldRoomPanel/RoomSafety. No duplicatedowner/DB or ebookcontent. Explicit nonproductionmoduleopt-in+independentworldflag/defaultOFF;productionrejectslocaloption. Full319integration/209unit/builds +Library4/affected34browser pass;initialclosed-dialogdimensions andglobalidentityselector failuresretained/fixed precisely. Focus/groups later02..05.
 
 M16-01 / ADR0050: current25file observation/10priorhashesunchanged remains health-only DTO/menu foundation;no working role/shift/order/safety/scene inferred. Dated11unit/4PGfoundation baseline separate. Preserve sourcepin/redistribution gates;never replace realintegration withsynthetic fixture orclaim shared timedcourses implementlegacyminigame/NPC. Advance independentM17.

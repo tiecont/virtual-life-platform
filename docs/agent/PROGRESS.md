@@ -1,5 +1,11 @@
 # Agent progress
 
+## M17-02 — VERIFIED shared canonical Library focus
+
+Fromee588dd;ADR0052/m17-focus-checks.json. Unitred1fail2pass retained;targetLibrary4pass0. Fullcheck0:7governance,210unit,321integration,lint/types/architecture/assets/allbuilds. Library+SDKfocus browser8pass(4/device),first run0. Sourceprovenance2hashes/diff0;timer desktop/mobile images inspected andearlierM17-01regeneratedscreenshots restored. No migration,cityDB0025/defaultrealflagsOFF/no workers/preview.
+
+Libraryworld1.1.0/scene1.0.0 enablesfocus+explicitboundedpausepolicy andexistingFocusPanel;no newengine/table/tickstream. Eight actualSocket visitors race1desk->1winner,ninthtargetfull->lobby;winner8samekeyFastifyHTTPinjectretry->1SQLtimer. Forgedseat source/foreignread/privatehistory/publicprofile-but-nofocustimerprojection pass. Trustedtestclockpause/resume/4finishretries yield1completedrecord;actualAPIclose/reopen afterroomleave preservesactivecanonicalorigin andcompletion. BrowseractualcommittedHTTPabort/identicalkeyretry/pause/resume/leavecontinuation/cancel/onehistoryentry pass;SDKunpausablefocusregression staysgreen. Clocktests are not15min wall-time norclientauthority;no reward/staff/notes/sharingactivation. Next exact action M17-03 quiet/nochat/noemote enforcement plus silent group-study eventUI usingM12ownerAPI/default-denyorganizers;capacity<=8/separateadmission,unknown/stale/consent/retry/browser tests.
+
 ## M17-01 — VERIFIED original local Library scene and shared shell
 
 From3095e5a;ADR0051/LIBRARY.md/m17-scene-checks.json. Offline workspace install0(downloads0),layout2cases/API2cases/types/lint0. Fullcheck0:7governance,209unit,319integration,architecture/assets/allbuilds. Final Library4browserpass and scene/focus/wardrobe/header34affectedbrowserpass(17/device,8isolatedlifetimes). Sourceprovenance2hashes match;desktop/mobile images inspected,no overflow/visiblebuttons>=44px. Older regenerated wardrobe/header visuals restored. No migration,cityDB0025/realflagsOFF/no workers/preview.

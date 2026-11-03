@@ -1,0 +1,16 @@
+{
+ "taskID":"M17-02","source":"workspace fromee588dd;checkpoint SHA follows git log",
+ "environment":"2026-11-03UTC/2026-11-04Asia_Ho_Chi_Minh;Node26.9.0/pnpm11.28.5;actual Socket.IO/Chromium desktop-mobile/HTTP and disposable PostgreSQL",
+ "commands":[
+  {"command":"pnpm exec vitest run --project unit packages/library-world/test/scene.test.ts","exitCode":1,"log":"m17-focus-red.log","scope":"1missing-focus-policy failure/2layout cases passed"},
+  {"command":"pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/library.test.ts","exitCode":0,"logs":["m17-focus-packages.log","m17-focus-integration-attempt1.log"],"scope":"4Library cases;first target run passed"},
+  {"command":"pnpm check","exitCode":0,"log":"m17-focus-check.log","exitArtifact":"m17-focus-check.exit","scope":"7governance,210unit,321integration,lint/types/architecture/assets/allbuilds"},
+  {"command":"node scripts/run-browser-tests.mjs tests/e2e/library.spec.ts tests/e2e/focus.spec.ts","exitCode":0,"log":"m17-focus-browser.log","exitArtifact":"m17-focus-browser.exit","scope":"8browserpass,4eachdevice;3Library and1SDKfocus cases per device"},
+  {"command":"Node SHA256 comparison against library/provenance.json","exitCode":0,"log":"m17-focus-provenance.log","scope":"2declared original source fingerprints match"},
+  {"command":"git diff --check","exitCode":0}
+ ],
+ "verified":["Eight actual signed Socket.IO visitors in one8place Library race same desk:exactly1winner;ninth targeted join rejectsROOM_FULL and remains in lobby","Only current seat owner may start;8same-key concurrent FastifyHTTP-injection retries persist1canonicalfocus row with exact Library/room/desk origin","Public room profile visibility does not reveal private timer ID/duration/remaining/pause state;foreign account read404 andown history scoped","Server-clock pause/resume and4terminal retries produce1retained completed session;no copied timer implementation","Actual API shutdown/restart after room.leave preserves active timer and immutable origin;trusted injected clock completes it without membership","Browser actual committedHTTP response abort+explicitretry uses identicalkey/samecanonicalID;pause/resume/leavecontinuation/cancel/oneownhistory entry pass","Existing SDKunpausable focus browser regression passes;Library policy explicitly permits bounded pause","Desktop/mobile private timer screenshots visually inspected;older regenerated scene-slice screenshots restored"],
+ "visualArtifacts":"m17-focus-visual/{desktop,mobile}.png and actual scope/retry/continuation JSON",
+ "migration":"None;Libraryworldversion1.1.0/scene1.0.0;retained cityDB0025/defaultrealflagsOFF",
+ "limits":["Focus retry concurrency uses Fastify HTTP injection plus real Socket.IO seat race;separate browser flow proves actual HTTP response-loss retry","Completion/restart tests use injected trusted server clock,not15minutes real wall time;no public clock-setting endpoint/client completion authority","No progression/operator/staff/notes/book sharing or public activation","No actual Library->legacyDeadline journey;M15integration gates remain","Quiet group events/progress consent/fullmodulejourney remainM17-03..05;M17-01full34affectedbrowser is separate prior evidence"]
+}

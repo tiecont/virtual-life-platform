@@ -14,7 +14,7 @@ Offline implementation of the supplied [master plan](MASTER-AGENT-PLAN.md). Curr
 
 A synthetic cafe scene is available at `/worlds/sdk-sandbox` only with explicit local/test flags. It renders real room presence, original starter avatars and seat state with keyboard controls. Server-approved walking supports floor clicks and keyboard destinations around solid tables/walls. See [scene setup and limitations](docs/architecture/SCENES.md); real world rollout remains OFF.
 
-The independently authored [Eternal Library](docs/architecture/LIBRARY.md) has an original reading-room scene and native desk controls at `/worlds/library`. Its local module installation and world flag both default OFF; production rejects the local activation option. Reading corner and Study alcove are areas of one shared quiet layout. Focus/events/group study are subsequent Library slices; no books or audio are distributed.
+The independently authored [Eternal Library](docs/architecture/LIBRARY.md) has an original reading-room scene,native desk controls and the shared private focus timer at `/worlds/library`. Its local module installation and world flag both default OFF; production rejects the local activation option. Reading corner and Study alcove are areas of one shared quiet layout. Events/group study remain subsequent Library slices;no books or audio are distributed.
 
 The original starter avatar and outfit/action previews are at `/worlds/sdk-sandbox/avatar-lab`. Regenerate its atlas with `pnpm assets:avatars` after building packages; `pnpm assets:check` verifies reproducibility and provenance. Preview actions do not grant gameplay permissions. Public media/release approval remains pending.
 

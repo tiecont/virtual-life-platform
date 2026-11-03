@@ -12,4 +12,8 @@ Set `LOCAL_LIBRARY_WORLD=1` only in a development/test API environment and set `
 
 ## Slice scope
 
-M17-01 provides scene,desk areas,access and native controls. Focus capability is deliberately absent until02verifies correct shared focus scope. Events,quiet-policy regression,consented study invitations/progress and full timed travel are03..05. No room population,schedule,peer or productivity value is invented. M15/M16source revision gates do not block this independent world,but actual Library->legacyDeadline acceptance cannot be claimed using synthetic travel alone.
+M17-01 provides scene,desk areas,access and native controls. M17-02 enables shared focus in world version1.1.0,using the unchanged scene1.0.0. It reuses the existing private timer/history and account-wide one-active rule. Start requires the server's current Library seat;bounded pause/resume is explicitly allowed here. Leaving or losing the room does not cancel or reset the durable timer. Restarted/finished history retains its original Library/room/desk scope. A public profile does not make the timer public;no task notes or productivity are broadcast.
+
+No new timer database or per-second writes are introduced. Interrupted browser starts retain their exact mutation key;user retry observes the committed timer. Pause and completion use server time,not the browser clock. Integration tests advance only an injected trusted server clock;browser tests verify the actual response-loss/pause/resume/leave/cancel flow. See ADR0052/m17-focus-checks.json for actual outcomes and limits.
+
+Events,quiet-policy regression,consented study invitations/progress and full timed travel remain03..05. No room population,schedule,peer or productivity value is invented. M15/M16source revision gates do not block this independent world,but actual Library->legacyDeadline acceptance cannot be claimed using synthetic travel alone.
