@@ -1,5 +1,11 @@
 # Agent progress
 
+## M14-03 - VERIFIED shared own identity/visit header
+
+From3d7399b;m14-header-checks.json/ADR0046. Actual201unit/7governance,webtypes/lint/allworkspacebuild0;targeted6browser0;fullbrowser56(28eachdevice)across24spec/device lifetimes all0,then final lobby-leave hint completion independently verified by lint/webbuild/final8affectedbrowsercases0. No new backend/schema/migration/full312integration rerun;M14-02 baseline separate. Initialfullattempt desktop26pass2fail fromsharedloopback guest429/catalog429;log retained,runner nowisolatesdefaultfull per spec+profile without app limit changes. Explicitfilteredcommands retain batch. Historical regenerated oldvisuals restored;new headerdesktop/mobileimages/targetJSON inspected,44px/nooverflow.
+
+Persistent ownidentity/paletteavatar,lastcheckedvisit/publiccatalogtitle/privatefallback,friend/inbox/travel nav,current room/travel/lobby version-only hints and identity/latefetch cleanup verified. Browser0header-onlysockets/1explicitroom socket;forgedlocationhintignored,actualpublictravel/currentheaderReturntolobby pass. No contact suggestions/peer locations/unreadcounts/roleinventory disclosed. DefaultBC fallbacklimited tosamepageplusroute/visibility/manual30s;no broadphysicaldevice/WCAG/productioncertificate. AllrealflagsOFF,previewoff,DB0025. Next exact action M14-04 strict public destination+optionalroom link hints into travel confirmation,HTTP deadlines,cancel/full/forbidden/closed/reconnect flows using existing authoritative travel engine;then05activityconcentration.
+
 ## M14-02 - VERIFIED bounded activity/schedule details
 
 Froma41d3d3;m14-activity-checks.json/ADR0045. Finalfullcheck exit0:7governance,200unit,312integration,lint/types/architecture/assets/builds;browser6(3eachdevice),extra finalwebtypes/lint/targeted2/diff0. Initial closure test incorrectlyexpected403 while existingguard returned404;retainedfailure,correctedassertion withoutauthorizationchange. Firstfullcheck311pass1fail assumed sandboxneveroffered events;explicit no-eventfixture nowpreservesnegativeguard,finalfullsuite passes. No migration.

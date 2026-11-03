@@ -2,13 +2,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { io, type Socket } from 'socket.io-client';
 import { ApiErrorSchema, MeSchema, OwnRoomSchema, RoomAckSchema, RoomDeltaSchema, TravelAckSchema, TravelIntentReceiptSchema, WorldCatalogSchema, type Me, type RoomSnapshot, type TravelIntentInput, type WorldCard } from '@virtual-city/contracts';
+import { announceVisitChange } from '../components/visit-hint';
 type Pending = { createKey: string; requestId: string; input: TravelIntentInput; intentId?: string; capability?: string };
 class TravelError extends Error { constructor(readonly code: string) { super(code); } }
 const messageFor = (error: unknown) => error instanceof TravelError ? error.code === 'UNAUTHENTICATED' ? 'Your session ended. Open identity to continue.' : error.code === 'ROOM_FULL' ? 'The destination is full. Your current visit will be checked again.' : error.code === 'RATE_LIMITED' ? 'Please wait before trying again.' : error.code === 'NOT_IN_ROOM' || error.code === 'ALREADY_IN_ROOM' ? 'Your room changed. Refresh your visit before travelling.' : 'Travel could not be confirmed. Refresh your visit or retry the same request.' : 'Connection interrupted. Your place is unconfirmed.';
 export default function TravelPanel({ socketOrigin }: { socketOrigin: string }) {
   const [me, setMe] = useState<Me | null>(null), [worlds, setWorlds] = useState<WorldCard[]>([]), [current, setCurrent] = useState<RoomSnapshot | null>(null), [destination, setDestination] = useState(''), [connection, setConnection] = useState<'connecting' | 'ready' | 'offline'>('connecting'), [message, setMessage] = useState(''), [busy, setBusy] = useState(false), [hasPending, setHasPending] = useState(false), [identityRevision, setIdentityRevision] = useState(0);
   const client = useRef<Socket | null>(null), actor = useRef<Me | null>(null), snapshot = useRef<RoomSnapshot | null>(null), pending = useRef<Pending | null>(null), alive = useRef(true), operation = useRef(0), mutation = useRef(0), writing = useRef(false), lifetime = useRef<AbortController | null>(null), refresh = useRef<() => Promise<void>>(async () => {});
-  const publish = (state: RoomSnapshot | null) => { snapshot.current = state; if (alive.current) setCurrent(state); };
+  const announcedVisit=useRef<string|null>(null);
+  const publish = (state: RoomSnapshot | null) => { snapshot.current = state; if(state){const key=state.epoch+':'+state.membershipId;if(announcedVisit.current!==key){announcedVisit.current=key;announceVisitChange();}}if (alive.current) setCurrent(state); };
   function clearPending() { pending.current = null; if (alive.current) setHasPending(false); }
   async function api(path: string, options: RequestInit = {}) {
     const response = await fetch('/v1' + path, { ...options, cache: 'no-store', credentials: 'same-origin', signal: lifetime.current?.signal });
@@ -92,7 +94,7 @@ export default function TravelPanel({ socketOrigin }: { socketOrigin: string }) 
   async function leave() {
     const socket = client.current, state = snapshot.current; if (!socket?.connected || !state || writing.current) return;
     writing.current = true; setBusy(true); const writeId = ++mutation.current;
-    try { const ack = RoomAckSchema.parse(await socket.timeout(5000).emitWithAck('room.leave', { schemaVersion: 1, requestId: crypto.randomUUID(), epoch: state.epoch, roomId: state.roomId, membershipId: state.membershipId })); if (!alive.current || writeId !== mutation.current) return; if (!ack.ok) throw new TravelError(ack.error.code); publish(null); setConnection('ready'); setMessage('You returned to the lobby.'); clearPending(); }
+    try { const ack = RoomAckSchema.parse(await socket.timeout(5000).emitWithAck('room.leave', { schemaVersion: 1, requestId: crypto.randomUUID(), epoch: state.epoch, roomId: state.roomId, membershipId: state.membershipId })); if (!alive.current || writeId !== mutation.current) return; if (!ack.ok) throw new TravelError(ack.error.code); publish(null);announcedVisit.current=null;announceVisitChange(); setConnection('ready'); setMessage('You returned to the lobby.'); clearPending(); }
     catch (error) { if (alive.current) { setMessage(messageFor(error)); await refresh.current(); } }
     finally { if (alive.current && writeId === mutation.current) { writing.current = false; setBusy(false); } }
   }

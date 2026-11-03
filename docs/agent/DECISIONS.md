@@ -1,5 +1,7 @@
 # Decisions
 
+M14-03 / ADR0046: sharedrootheader readsownme/room/catalog,publicownworldtitle orPrivatevisit;globalcasualpaletteavatar keepsuniforminventoryprivate. Friend/inboxcenterlinks existingguardedpages,nosuggestions/counts. Version-only refresh hints carrynoauthority;no header socket. Broad56browser pass after per-spec+profile API/DB isolation (realIPbudgets preserved),finalleavehint8affectedcases pass.201unit/builds0,nomigration/backendchange.
+
 M14-02 / ADR0045: reuse ownerdirectory/eventcatalog,one explicitly expandedcard,no100worldfanout. Counts meanallocatedplaces includinggrace,notpeopleonline/freecapacity. Device-receivedsnapshot expires30s;partialfailuresunknown,access401/403/404 clearsandrefreshescatalog. Existing safetyguard already404;no runtimeauthfix. Sandboxsilenteventpolicyexplicit/defaultorganizerdenied. Full312integration/builds/browser6 pass,nomigration.
 
 M14-01 / ADR0044: original inlineSVG schematic town,only authenticated catalog hotspots/native list. Stable nearest-free12plot display resolves coincident metadata;allcatalogentries remainlist. No invented occupancy/hiddenworlds/locationauthority. Abort/identity cleanup excludes oldcatalog afterlogout. Actual197unit/frontendbuild/browser6 pass;noAPI/migration/fullintegrationrerun,prior311baseline separate.

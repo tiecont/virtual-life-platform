@@ -1,0 +1,35 @@
+$ pnpm build:packages && node --test tests/governance/*.test.mjs && vitest run --project unit
+$ pnpm --filter './packages/*' -r build
+Scope: 5 of 8 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/world-sdk build: Done
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/pixi-scene build: Done
+✔ worlds cannot import another world repository, platform internals or application code (1.111978ms)
+✔ contracts cannot import SDK and apps cannot import another application internals (4.501495ms)
+✔ the scanner rejects actual source imports and manifest cycles (10.915733ms)
+✔ audit ranges and conjunctive dependencies preserve the authoritative DAG (5.960105ms)
+✔ cycles, unknown dependencies and duplicate module IDs are rejected (0.617891ms)
+✔ checkpoint cannot assert verification without evidence or through an unmet gate (0.288221ms)
+✔ the supplied plan pack is accepted without changing its manifest shape (4.196542ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 89.650138
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+
+ Test Files  32 passed (32)
+      Tests  201 passed (201)
+   Start at  22:14:47
+   Duration  2.79s (transform 4.75s, setup 0ms, import 16.13s, tests 3.34s, environment 7ms)
+

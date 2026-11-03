@@ -10,6 +10,7 @@ import './room.css';
 import RoomSafety from './RoomSafety';
 import FocusPanel from '../../components/FocusPanel';
 import Wardrobe from '../../components/Wardrobe';
+import { announceVisitChange } from '../../components/visit-hint';
 
 const idle: RoomRecoveryView = { status: 'idle', snapshot: null, reason: null };
 type SceneView = Awaited<ReturnType<typeof createCafeScene>>;
@@ -32,6 +33,7 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
   const host = useRef<HTMLDivElement>(null); const scene = useRef<SceneView | null>(null);
   const socket = useRef<Socket | null>(null); const recovery = useRef(new RoomRecovery()); const latest = useRef<RoomSnapshot | null>(null);
   const alive = useRef(true); const desired = useRef(false); const inFlight = useRef(false); const sequence = useRef(0);
+  const announcedVisit=useRef<string|null>(null);
   const claimRef = useRef<(seatId: string) => void>(() => {});
   const moveRef = useRef<(point: { x: number; y: number }) => void>(() => {});
   useEffect(() => {
@@ -56,6 +58,7 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
   function publish() {
     if (!alive.current) return;
     const next = recovery.current.view; latest.current = next.snapshot; setView(next);
+    if(next.snapshot){const key=next.snapshot.epoch+':'+next.snapshot.membershipId;if(announcedVisit.current!==key){announcedVisit.current=key;announceVisitChange();}}else if(['idle','interrupted'].includes(next.status)&&announcedVisit.current){announcedVisit.current=null;announceVisitChange();}
     if (next.snapshot) setSafetyRoom(next.snapshot); else if (next.status !== 'syncing') setSafetyRoom(null);
     if (next.status === 'syncing') scene.current?.suspend(); else scene.current?.update(next.snapshot);
   }

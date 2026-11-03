@@ -1,0 +1,159 @@
+ Network virtual-city-test-695984cc_default Creating 
+ Network virtual-city-test-695984cc_default Creating 
+ Network virtual-city-test-695984cc_default Created 
+ Network virtual-city-test-695984cc_default Created 
+ Container virtual-city-test-695984cc-db-1 Creating 
+ Container virtual-city-test-695984cc-db-1 Created 
+ Container virtual-city-test-695984cc-db-1 Starting 
+ Container virtual-city-test-695984cc-db-1 Started 
+ Container virtual-city-test-695984cc-db-1 Waiting 
+ Container virtual-city-test-695984cc-db-1 Healthy 
+[WebServer] (node:566954) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:567005) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:567005) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:567005) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:566953) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:567065) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:567155) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:567168) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 28 tests using 1 worker
+
+(node:567260) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/e2e/city-activity.spec.ts:6:5 › world activity reads actual room allocations and listed schedules,on demand,then expires and handles a partial outage (2.8s)
+  ✓   2 [desktop] › tests/e2e/city-activity.spec.ts:23:5 › unavailable activity stays unknown and logout aborts a held room-directory response (727ms)
+  ✓   3 [desktop] › tests/e2e/city-header.spec.ts:7:5 › shared header retains identity and approved avatar across room,friend,inbox and travel routes with server-read visit hints (2.1s)
+  ✓   4 [desktop] › tests/e2e/city-header.spec.ts:15:5 › identity replacement and late own-room reads cannot expose old header data or invented visit hints (521ms)
+  ✓   5 [desktop] › tests/e2e/city-map.spec.ts:7:5 › original city map uses real catalog hotspots with matching native list,keyboard access and session-preserving cafe navigation (2.5s)
+  ✓   6 [desktop] › tests/e2e/city-map.spec.ts:17:5 › catalog outage clears hotspots and an aborted old catalog cannot restore them after logout (792ms)
+  ✓   7 [desktop] › tests/e2e/focus.spec.ts:6:5 › private focus recovers a lost start response and sleep,requires explicit sanitized sharing and clears on logout (5.8s)
+  ✓   8 [desktop] › tests/e2e/foundation.spec.ts:2:5 › portal displays real API/database readiness and truthful availability on desktop/mobile (552ms)
+  ✓   9 [desktop] › tests/e2e/identity.spec.ts:3:5 › guest profile, private settings, session renewal and deletion survive reload and synchronize tabs (2.3s)
+  ✓  10 [desktop] › tests/e2e/identity.spec.ts:30:5 › upgrading retains identity and permits sign-in from a separate browser context (2.1s)
+  ✓  11 [desktop] › tests/e2e/invitations.spec.ts:4:5 › recipient consent, live invitation retry and block privacy work on desktop/mobile without teleporting (3.7s)
+  ✘  12 [desktop] › tests/e2e/safety.spec.ts:8:5 › assigned moderator decisions, private appeal retry and independent recovery work on desktop/mobile (132ms)
+(node:568889) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  13 [desktop] › tests/e2e/scene.spec.ts:46:5 › actual cafe scene and keyboard seat controls reflect authoritative rooms on desktop/mobile (4.8s)
+  ✘  14 [desktop] › tests/e2e/scene.spec.ts:71:5 › viewer-filtered scene never fabricates peers and a bilateral block clears the visible visitor (30.2s)
+(node:570742) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  15 [desktop] › tests/e2e/scene.spec.ts:88:5 › private report receipt and block flow works with keyboard focus on desktop/mobile without target disclosure (19.2s)
+  ✓  16 [desktop] › tests/e2e/scene.spec.ts:124:5 › keyed sprites follow real seat deltas, resize and leave without allocating duplicate avatars (7.0s)
+  ✓  17 [desktop] › tests/e2e/scene.spec.ts:156:5 › actual transport interruption hides stale seats then reconnects to one retained avatar and seat (5.3s)
+  ✓  18 [desktop] › tests/e2e/scene.spec.ts:192:5 › identity replacement clears sprites and a remounted scene owns only one canvas (3.0s)
+  ✓  19 [desktop] › tests/e2e/scene.spec.ts:217:5 › asset failure retains real room and keyboard controls without a blank successful scene (764ms)
+  ✓  20 [desktop] › tests/e2e/scene.spec.ts:227:5 › leaving while the actual asset is loading cancels the old scene before remount (2.0s)
+  ✓  21 [desktop] › tests/e2e/scene.spec.ts:248:5 › original avatar action and outfit previews render distinct pixels and respect reduced motion (1.9s)
+  ✓  22 [desktop] › tests/e2e/scene.spec.ts:281:5 › keyboard and canvas destinations follow approved paths around tables and reject solid tiles (5.3s)
+  ✓  23 [desktop] › tests/e2e/scene.spec.ts:313:5 › room keyboard focus, reduced motion, readable text contrast and mobile targets remain usable (2.6s)
+  ✓  24 [desktop] › tests/e2e/scene.spec.ts:357:5 › scene loading, immutable cache, idle work and repeated scene lifetime fit the local performance profile (11.9s)
+  ✓  25 [desktop] › tests/e2e/social.spec.ts:4:5 › two browser contexts consent to friendship, receive live updates and enforce private blocks (2.9s)
+  ✓  26 [desktop] › tests/e2e/travel.spec.ts:5:5 › synthetic Deadline to Maid to Portal keeps identity through lost commit ACK, reconnect and concurrent source tab (3.0s)
+  ✓  27 [desktop] › tests/e2e/wardrobe.spec.ts:6:5 › private wardrobe previews locked styles, equips with a durable retry and reconciles revocation and logout (16.1s)
+  ✓  28 [desktop] › tests/e2e/wardrobe.spec.ts:31:5 › late wardrobe reads cannot repopulate the previous identity after logout (1.1s)
+
+
+  1) [desktop] › tests/e2e/safety.spec.ts:8:5 › assigned moderator decisions, private appeal retry and independent recovery work on desktop/mobile 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 429
+
+      11 |   if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
+      12 |   const pool = new Pool({ connectionString: url.toString() });
+    > 13 |   const subject = await context.request.post('/v1/session/guest', { headers: { origin }, data: { requestId: randomUUID(), displayName: 'Appeal Visitor', avatarKey: 'mint' } }); expect(subject.status()).toBe(201);
+         |                                                                                                                                                                                                           ^
+      14 |   const me = MeSchema.parse(await subject.json());
+      15 |   const make = async () => {
+      16 |     const response = await fetch('http://127.0.0.1:4300/v1/session/guest', { method: 'POST', headers: { origin, 'content-type': 'application/json' }, body: JSON.stringify({ requestId: randomUUID(), displayName: 'Safety Review Fixture', avatarKey: 'mint' }) }); expect(response.status).toBe(201);
+        at /home/tiecont/Projects/virtual-city/tests/e2e/safety.spec.ts:13:203
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/safety-assigned-moderator--45717-very-work-on-desktop-mobile-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/desktop/safety-assigned-moderator--45717-very-work-on-desktop-mobile-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/desktop/safety-assigned-moderator--45717-very-work-on-desktop-mobile-desktop/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/desktop/safety-assigned-moderator--45717-very-work-on-desktop-mobile-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [desktop] › tests/e2e/scene.spec.ts:71:5 › viewer-filtered scene never fabricates peers and a bilateral block clears the visible visitor 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: browserContext.close: Test ended.
+    Browser logs:
+
+    <launching> /home/tiecont/.cache/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-linux64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,AvoidCorsURLLoaderRestartOnRedirect,Translate,AutoDeElevate,OptimizationHints,NetworkTimeServiceQuerying,AimEnabled,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/tmp/playwright_chromiumdev_profile-f2IBnw --remote-debugging-pipe --no-startup-window
+    <launched> pid=568902
+    [pid=568902][err] [1103/221817.125173:WARNING:components/dbus/xdg/portal.cc:126] Failed to register with org.freedesktop.host.portal.Registry
+    [pid=568902][err] [1103/221817.155417:WARNING:sandbox/policy/linux/sandbox_linux.cc:405] InitializeSandbox() called with multiple threads in process gpu-process.
+    [pid=568902][err] [1103/221817.934478:ERROR:gpu/command_buffer/service/gl_utils.cc:431] [.WebGL-0x3cb4001cac00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+    [pid=568902][err] [1103/221818.175005:INFO:CONSOLE:0] "[.WebGL-0x3cb4001cac00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels", source: http://127.0.0.1:3300/worlds/sdk-sandbox (0)
+    [pid=568902][err] [1103/221818.232172:ERROR:gpu/command_buffer/service/gl_utils.cc:431] [.WebGL-0x3cb4001cac00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+    [pid=568902][err] [1103/221818.256735:INFO:CONSOLE:0] "[.WebGL-0x3cb4001cac00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels", source: http://127.0.0.1:3300/worlds/sdk-sandbox (0)
+    [pid=568902][err] [1103/221818.270465:ERROR:gpu/command_buffer/service/gl_utils.cc:431] [.WebGL-0x3cb4001cac00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+    [pid=568902][err] [1103/221818.297653:INFO:CONSOLE:0] "[.WebGL-0x3cb4001cac00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels", source: http://127.0.0.1:3300/worlds/sdk-sandbox (0)
+    [pid=568902][err] [1103/221818.309207:ERROR:gpu/command_buffer/service/gl_utils.cc:431] [.WebGL-0x3cb4001cac00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
+    [pid=568902][err] [1103/221818.360929:INFO:CONSOLE:0] "[.WebGL-0x3cb4001cac00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)", source: http://127.0.0.1:3300/worlds/sdk-sandbox (0)
+    [pid=568902][err] [1103/221826.271154:INFO:CONSOLE:0] "The resource http://127.0.0.1:3300/_next/static/css/15101e984366dcba.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.", source: http://127.0.0.1:3300/worlds/sdk-sandbox (0)
+    [pid=568902][err] [1103/221826.981687:INFO:CONSOLE:0] "The resource http://127.0.0.1:3300/_next/static/css/15101e984366dcba.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.", source: http://127.0.0.1:3300/worlds/sdk-sandbox (0)
+    [pid=568902][err] [1103/221834.338200:INFO:CONSOLE:0] "The resource http://127.0.0.1:3300/_next/static/css/15101e984366dcba.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.", source: http://127.0.0.1:3300/worlds/sdk-sandbox (0)
+    [pid=568902] <gracefully close start>
+
+      83 |     await expect(other.locator('canvas[data-scene]')).toHaveAttribute('data-entity-count', '1');
+      84 |     await page.getByRole('button', { name: 'Leave cafe', exact: true }).click(); await other.getByRole('button', { name: 'Leave cafe', exact: true }).click();
+    > 85 |   } finally { await peer.close(); }
+         |               ^
+      86 | });
+      87 |
+      88 | test('private report receipt and block flow works with keyboard focus on desktop/mobile without target disclosure', async ({ page, context, browser }) => {
+        at /home/tiecont/Projects/virtual-city/tests/e2e/scene.spec.ts:85:15
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/scene-viewer-filtered-scen-a258c--clears-the-visible-visitor-desktop/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/scene-viewer-filtered-scen-a258c--clears-the-visible-visitor-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/desktop/scene-viewer-filtered-scen-a258c--clears-the-visible-visitor-desktop/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/desktop/scene-viewer-filtered-scen-a258c--clears-the-visible-visitor-desktop/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/desktop/scene-viewer-filtered-scen-a258c--clears-the-visible-visitor-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [desktop] › tests/e2e/safety.spec.ts:8:5 › assigned moderator decisions, private appeal retry and independent recovery work on desktop/mobile 
+    [desktop] › tests/e2e/scene.spec.ts:71:5 › viewer-filtered scene never fabricates peers and a bilateral block clears the visible visitor 
+  26 passed (2.5m)
+pnpm exited 1
+ Container virtual-city-test-695984cc-db-1 Stopping 
+ Container virtual-city-test-695984cc-db-1 Stopped 
+ Container virtual-city-test-695984cc-db-1 Removing 
+ Container virtual-city-test-695984cc-db-1 Removed 
+ Network virtual-city-test-695984cc_default Removing 
+ Network virtual-city-test-695984cc_default Removed 
