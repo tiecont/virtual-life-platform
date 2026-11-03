@@ -322,13 +322,17 @@ export class RoomService {
     if (!await this.identity.hasConnectedSession(accountId, [...member.connections.values()])) throw new DomainError('NOT_AVAILABLE', 404, 'This order is unavailable');
     await this.safety?.assert(accountId, room.slug, room.id);
   }
-  hospitalityRecovery<T>(work: (visit: (accountId: string, source: TravelSource) => { state: 'connected' | 'grace' | 'gone' | 'restart'; disconnectedAt: number | null }) => Promise<T>) {
+  async hospitalityAllowed(accountId: string, world: string, room: string) {
+    try { await this.safety?.assert(accountId, world, room); return true; }
+    catch (error) { if (error instanceof DomainError && [403, 404].includes(error.status)) return false; throw error; }
+  }
+  hospitalityRecovery<T>(work: (visit: (accountId: string, source: TravelSource) => { state: 'connected' | 'grace' | 'gone' | 'restart'; disconnectedAt: number | null; seated: boolean; sessionIds: string[] }) => Promise<T>) {
     return this.#run(async () => work((accountId, source) => {
-      if (source.epoch !== this.epoch) return { state: 'restart', disconnectedAt: null };
+      if (source.epoch !== this.epoch) return { state: 'restart', disconnectedAt: null, seated: false, sessionIds: [] };
       const room = this.#rooms.get(source.roomId), member = room?.members.get(accountId);
-      if (!member || member.id !== source.membershipId) return { state: 'gone', disconnectedAt: null };
-      if (!member.connections.size) return { state: 'grace', disconnectedAt: member.disconnectedUntil === null ? this.now() : member.disconnectedUntil - DISCONNECT_GRACE_MS };
-      return { state: 'connected', disconnectedAt: null };
+      if (!member || member.id !== source.membershipId) return { state: 'gone', disconnectedAt: null, seated: false, sessionIds: [] };
+      if (!member.connections.size) return { state: 'grace', disconnectedAt: member.disconnectedUntil === null ? this.now() : member.disconnectedUntil - DISCONNECT_GRACE_MS, seated: Boolean(member.seatId), sessionIds: [] };
+      return { state: 'connected', disconnectedAt: null, seated: Boolean(member.seatId), sessionIds: [...member.connections.values()] };
     }));
   }
   travelContext(credential: string, source: TravelSource | null, destination: TravelDestination) {

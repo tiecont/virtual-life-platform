@@ -1,5 +1,11 @@
 # Agent progress
 
+## M11-06 - VERIFIED service consent and safety recovery
+
+Workspace from b0ff06c; m11-safety-checks.json/ADR0033. Full `pnpm check` exit0:7governance,178unit,252integration including53hospitality,lint/types/architecture/assets/builds. Existing safety/report/block/moderation browser8(4eachdevice) pass; additive0018 local migration0; diff0. Initial2route/requeue reds and38pass4obsolete restart/expiry expectations retained. Updated cancellation semantics plus independent seat/session/block tests pass50,final consent4pass49filteredskips; final fullcheck includes all53.
+
+Private own refusal/withdrawal, durable exclusion after unblock, atomic block/requeue rollback, serialized block/withdraw-vs-serve, actual SanctionPolicy restrictions, grace/reconnect/seat/session/restart/two-hour customer cancellation, export/erasure and no completion/reward verified. Recovery fair20orders/batch complements20shifts; observation delay is not realtime SLA. Abandoned customer work now cancels rather than preserving impossible old-room PENDING; staff requeue then cancel may increment version twice. Existing reports verified, no new hospitality report UI/context claimed. All local M11 tasks VERIFIED at shared-engine scope; real Maid remains M16. Next exact action M12-01: audit existing time/registry/safety contracts and define/test event/reservation lifecycles with IANA/DST/zero-overbooking policy; then M12-02 runtime catalog/RSVP. DevDB0018,previewoff,allrealflagsOFF,no legacy/remote/public mutation.
+
 ## M11-05 - VERIFIED transactional completion and progress outbox
 
 Workspace fromb472280;m11-completion-checks.json/ADR0032. Initialmissingroute1failed33filteredskips retained;targeted1then39pass. Fullcheck0(7governance,178unit,238integration/builds);finalhospitality40pass afternewbatchtest/finalretrybackoff. Initialbatch1pass1failed38skips duehash-castUUIDfixture,changedtogen_random_uuid(no runtimevalidationchange);finaltargeted2pass. Browserreadiness/identity/travel8(4eachdevice)pass,final lint/diff0;0017localcitymigration0. Commentarymistatedinitial39as40,corrected;no239fullsuiteclaim.

@@ -1,0 +1,25 @@
+ Network virtual-city-test-b116f6e8_default Creating 
+ Network virtual-city-test-b116f6e8_default Creating 
+ Network virtual-city-test-b116f6e8_default Created 
+ Network virtual-city-test-b116f6e8_default Created 
+ Container virtual-city-test-b116f6e8-db-1 Creating 
+ Container virtual-city-test-b116f6e8-db-1 Created 
+ Container virtual-city-test-b116f6e8-db-1 Starting 
+ Container virtual-city-test-b116f6e8-db-1 Started 
+ Container virtual-city-test-b116f6e8-db-1 Waiting 
+ Container virtual-city-test-b116f6e8-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+
+ Test Files  1 passed (1)
+      Tests  4 passed | 49 skipped (53)
+   Start at  16:22:02
+   Duration  4.05s (transform 408ms, setup 0ms, import 946ms, tests 2.96s, environment 0ms)
+
+ Container virtual-city-test-b116f6e8-db-1 Stopping 
+ Container virtual-city-test-b116f6e8-db-1 Stopped 
+ Container virtual-city-test-b116f6e8-db-1 Removing 
+ Container virtual-city-test-b116f6e8-db-1 Removed 
+ Network virtual-city-test-b116f6e8_default Removing 
+ Network virtual-city-test-b116f6e8_default Removed 

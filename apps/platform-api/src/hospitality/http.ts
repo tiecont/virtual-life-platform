@@ -26,6 +26,7 @@ export function registerHospitality(http: FastifyInstance, config: Config, ident
     api.post('/orders/queue', req => service.queue(write(req), req.body));
     api.post('/orders/menu', req => service.menu(write(req), req.body));
     api.post('/orders/:id/complete', req => service.complete(write(req), id(req), uuid.parse(req.headers['idempotency-key']), req.body));
+    for (const action of ['refuse', 'withdraw'] as const) api.post('/orders/:id/' + action, req => service.withdraw(write(req), id(req), uuid.parse(req.headers['idempotency-key']), req.body, action === 'refuse'));
     for (const action of ['claim', 'cancel', 'prepare', 'ready', 'serve'] as const) api.post('/orders/:id/' + action, req => service.mutate(write(req), id(req), uuid.parse(req.headers['idempotency-key']), action, req.body));
   }, { prefix: '/v1' });
 }

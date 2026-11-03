@@ -86,6 +86,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const hospitality = new HospitalityService(db, identity, rooms, social, options.hospitality?.staff, options.now);
   const hospitalityOutbox = new HospitalityOutbox(db, identity, options.hospitality?.completionSinks, options.now);
   const unsubscribeInvitationWithdrawal = social.onContactWithdrawn((transaction, a, b) => invitations.withdrawContact(transaction, a, b));
+  const unsubscribeHospitalityWithdrawal = social.onContactWithdrawn((transaction, a, b) => hospitality.withdrawContact(transaction, a, b));
   const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, policy: safetyPolicy, evidence: reports.cache }, options.now);
   http.addHook('onClose', async () => { await worlds.registry.close(); });
   http.addHook('onClose', async () => { await rooms.close(); });
@@ -130,7 +131,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const unsubscribeInvitations = invitations.onChanged((ids, event) => { for (const id of ids) gateway.emitToAccount(id, event, { schemaVersion: 1 }); });
   const unsubscribeRoomSocial = social.onChanged(ids => { void rooms.refreshAccounts(ids); });
   const unsubscribeRoomIdentity = identity.onChanged(id => { void rooms.refreshAccounts([id]); });
-  http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeInvitationWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
+  http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeInvitationWithdrawal(); unsubscribeHospitalityWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
   return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, hospitality, hospitalityOutbox, diagnostics };
