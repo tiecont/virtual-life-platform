@@ -1,6 +1,12 @@
 # Agent progress
 
-Current checkpoint: **W1 in progress; W0 + M03-M09 and M10-01 VERIFIED at their documented local task scope. Next M10-02 trusted focus engine; M14 is also dependency-ready.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence; later entries supersede earlier runtime inventories. The cafe and travel destinations are synthetic local test worlds, not integrated legacy worlds.
+## M10-02 - VERIFIED private persistent focus engine
+
+2026-11-03 workspace from a5d4830; evidence m10-engine-checks.json. Initial pnpm check exit0:7governance,125unit,189integration/builds. Final expanded stages pass125unit/190integration; whole-command exit unavailable after session expiration,so separate pnpm build exit0 collected. Final focused12 real PG/HTTP/socket tests,APIbuild/lint exit0; scene browser24 exit0. Additive0012 applied local exit0. Initial red and partial attempt logs retained.
+
+Trusted seat/source/epoch/member/focus policy and owner generation authorize start. Durable account transactions/receipts,one active/paused timer,server deadlines,exact completion precedence,terminal nonreactivation,optional cumulative10min pause and backward-clock denial verified. Existing timer survives leave/restart/login/logout; private own export/erasure,bounded quotas/90day cleanup and failed receipt rollback verified. No tick writes,notes,rewards or live UI claim. All actual rollout flagsOFF; no legacy/remote/public change. Next exact action M10-03: bounded own world-filtered history with account-owned cursor and synthetic Deadline/Library privacy/current-source tests.
+
+Current checkpoint: **W1 in progress; W0 + M03-M09 and M10-01/02 VERIFIED at their documented local task scope. Next M10-03 scoped focus history; M14 is also dependency-ready.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence; later entries supersede earlier runtime inventories. The cafe and travel destinations are synthetic local test worlds, not integrated legacy worlds.
 
 2026-11-02, Linux local host, Node v26.9.0, pnpm 11.28.5, Docker 29.9.0. Source of task status: task-state.json (checked by scripts/plan-status.mjs). No public release occurred.
 

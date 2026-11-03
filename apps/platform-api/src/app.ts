@@ -31,6 +31,8 @@ import { registerTravel } from './travel/http';
 import { registerTravelGateway } from './travel/socket';
 import { InvitationService } from './invitations/service';
 import { registerInvitations } from './invitations/http';
+import { FocusService } from './focus/service';
+import { registerFocus } from './focus/http';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -77,6 +79,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const incidents = new IncidentService(db, identity, reports, rooms, () => worlds.registry.slugs(), options.now);
   const travel = new TravelService(db, identity, rooms, options.now);
   const invitations = new InvitationService(db, identity, social, worlds.registry, options.now);
+  const focus = new FocusService(db, identity, rooms, options.now);
   const unsubscribeInvitationWithdrawal = social.onContactWithdrawn((transaction, a, b) => invitations.withdrawContact(transaction, a, b));
   const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, policy: safetyPolicy, evidence: reports.cache }, options.now);
   http.addHook('onClose', async () => { await worlds.registry.close(); });
@@ -87,6 +90,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerReports(http, config, identity, reports, sanctions, incidents, options.now);
   registerTravel(http, config, identity, travel, options.now);
   registerInvitations(http, config, identity, invitations, options.now);
+  registerFocus(http, config, identity, focus, options.now);
+  identity.registerExportOwner('focus', (id, transaction) => focus.exportAccount(id, transaction));
   identity.registerExportOwner('invitations', (id, transaction) => invitations.exportAccount(id, transaction));
   identity.registerExportOwner('travel', (id, transaction) => travel.exportAccount(id, transaction));
   identity.registerExportOwner('sanctions', (id, transaction) => sanctions.exportAccount(id, transaction));
@@ -95,7 +100,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   identity.registerDeletionOwner('safety', (id, transaction) => reports.redactAccount(id, transaction));
   identity.registerExportOwner('social', (id, transaction) => social.exportAccount(id, transaction));
   // Emit truthful room interruption events while sockets are still connected; the gateway closes immediately after this hook.
-  http.addHook('preClose', async () => { chat.close(); await invitations.close(); await travel.close(); await reports.close(); await rooms.close(); roomAuthority.close(); });
+  http.addHook('preClose', async () => { chat.close(); await focus.close(); await invitations.close(); await travel.close(); await reports.close(); await rooms.close(); roomAuthority.close(); });
   http.get('/health/live', async () => ({ status: 'ok' }));
   http.get('/health/ready', async (_req, reply) => {
     try {
@@ -120,5 +125,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeInvitationWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, diagnostics };
+  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, diagnostics };
 }

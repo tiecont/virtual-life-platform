@@ -1,0 +1,13 @@
+import { z } from 'zod';
+import { TravelSourceSchema } from './travel';
+import { WorldSlugSchema, SeatIdSchema } from './world-primitives';
+const uuid = z.uuid().transform(value => value.toLowerCase());
+export const FocusDurationSchema = z.union([z.literal(900), z.literal(1500), z.literal(3000)]);
+export const FocusPhaseSchema = z.enum(['active', 'paused', 'completed', 'cancelled']);
+export const FocusStartSchema = z.strictObject({ schemaVersion: z.literal(1), source: TravelSourceSchema, durationSeconds: FocusDurationSchema });
+export const FocusMutationSchema = z.strictObject({ schemaVersion: z.literal(1) });
+export const FocusSessionSchema = z.strictObject({ schemaVersion: z.literal(1), id: uuid, phase: FocusPhaseSchema, durationSeconds: FocusDurationSchema, startedAt: z.iso.datetime(), endsAt: z.iso.datetime().nullable(), changedAt: z.iso.datetime(), pausedUntil: z.iso.datetime().nullable(), remainingMs: z.number().int().min(0).max(3000000), canPause: z.boolean(), pauseBudgetMs: z.number().int().min(0).max(600000), origin: z.strictObject({ worldSlug: WorldSlugSchema, roomId: uuid, seatId: SeatIdSchema }) });
+export const FocusResultSchema = z.strictObject({ schemaVersion: z.literal(1), serverTime: z.iso.datetime(), session: FocusSessionSchema.nullable() });
+export type FocusSession = z.infer<typeof FocusSessionSchema>;
+export type FocusResult = z.infer<typeof FocusResultSchema>;
+export type FocusStart = z.infer<typeof FocusStartSchema>;

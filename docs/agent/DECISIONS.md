@@ -1,5 +1,7 @@
 # Decisions
 
+M10-02 / ADR0024: trusted account-owned persistent focus,seat-authorized start and explicit origin pause policy; deadline completion before cancel,terminal retries cannot repeat outcomes. Private90day bounded history/receipts,no tick writes/notes/rewards; m10-engine-checks.json records actual checks and incomplete final whole-command exit.
+
 | ID | Decision | Status | Evidence |
 |---|---|---|---|
 | D-001 | Independent city workspace, adapter-first; preserve both legacy repos and DBs | Accepted local implementation | docs/adr/0001-adapter-first.md |

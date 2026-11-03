@@ -36,7 +36,9 @@
     "invitations": "platform.invitations",
     "invitation_mutations": "platform.invitations",
     "invitation_groups": "platform.invitations",
-    "invitation_group_items": "platform.invitations"
+    "invitation_group_items": "platform.invitations",
+    "engine_focus_sessions": "engine.focus",
+    "engine_focus_mutations": "engine.focus"
   },
   "journalTable": "city_schema_migrations",
   "legacyDatabases": "not managed by city migrations",

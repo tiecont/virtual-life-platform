@@ -26,8 +26,10 @@ export const WorldDefinitionSchema = z.strictObject({
   seatIds: z.array(SeatIdSchema).max(100).default([]),
   capabilities: z.array(WorldCapabilitySchema).min(1).max(7)
     .refine(items => new Set(items).size === items.length && items.includes('presence'), 'Unique capabilities including presence required'),
+  focusPolicy: z.strictObject({ pauseAllowed: z.boolean() }).optional(),
   accessPolicy: WorldAccessPolicySchema, visibility: z.enum(['listed', 'hidden']), map: WorldMapSchema,
 }).superRefine((world, ctx) => {
+  if (world.capabilities.includes('focus') !== !!world.focusPolicy) ctx.addIssue({ code: 'custom', path: ['focusPolicy'], message: 'Focus capability requires an explicit trusted timer policy' });
   if (world.scene && (world.scene.key !== world.sceneRef.key || world.scene.version !== world.sceneRef.version || [...world.scene.seats.map(seat => seat.seatId)].sort().join(',') !== [...world.seatIds].sort().join(','))) ctx.addIssue({ code: 'custom', path: ['scene'], message: 'Scene geometry must match the versioned world seat contract' });
   if (new Set(world.seatIds).size !== world.seatIds.length || world.seatIds.length > world.capacity || (world.capabilities.includes('seating') !== (world.seatIds.length > 0))) {
     ctx.addIssue({ code: 'custom', path: ['seatIds'], message: 'Unique seat IDs within capacity must match seating capability' });

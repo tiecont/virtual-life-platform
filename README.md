@@ -102,4 +102,6 @@ M09-05 adds bounded group offers in `/invitations`, independent consent and expl
 
 M09-06 adds `/travel` confirmation, own-room read/rejoin and truthful recovery after a lost acknowledgement. Dedicated Synthetic Deadline/Maid/Portal adapters require `LOCAL_TRAVEL_FIXTURES=1` plus dev/test world flags and are rejected in production. They verify the travel protocol without claiming actual legacy integration or gameplay. Pending capabilities never enter URL/storage; real world rollout stays OFF.
 
-M10-01 records the [readonly focus compatibility audit](docs/architecture/FOCUS-COMPATIBILITY.md). The legacy source has schema/SQL but no live focus service; the shared city timer is the next implementation task. Re-run `node scripts/audit-deadline-focus.mjs` before integrating a changed source revision.
+M10-01 records the [readonly focus compatibility audit](docs/architecture/FOCUS-COMPATIBILITY.md). The legacy source has schema/SQL but no live focus service; the city backend now owns the shared timer. Re-run `node scripts/audit-deadline-focus.mjs` before integrating a changed source revision.
+
+M10-02 adds the [private persistent focus engine](docs/architecture/FOCUS.md), with trusted seat-authorized start,server deadlines,idempotent completion/cancellation and optional policy-gated pause. SDK Sandbox's local mode is unpausable. A live browser timer,scoped history and timezone summaries remain subsequent tasks; no productivity surveillance or rewards are introduced.

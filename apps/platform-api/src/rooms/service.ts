@@ -293,6 +293,17 @@ export class RoomService {
       return { schemaVersion: 1 as const, snapshot: await this.#snapshot(room, member), worldVersion: member.worldVersion, sceneVersion: member.sceneVersion };
     });
   }
+  focusStart<T>(credential: string, source: TravelSource, work: (actor: WorldActor, context: { worldSlug: string; roomId: string; seatId: string; epoch: string; membershipId: string; canPause: boolean }, valid: () => boolean) => Promise<T>) {
+    return this.#run(async () => {
+      await this.#sweep(); const actor = await this.identity.authenticate(credential), room = this.#rooms.get(this.#accounts.get(actor.accountId) ?? ''), member = room?.members.get(actor.accountId);
+      if (!room || !member || source.epoch !== this.epoch || source.roomId !== room.id || source.membershipId !== member.id || !member.seatId || ![...member.connections.values()].includes(actor.sessionId)) throw new DomainError('NOT_IN_ROOM', 409, 'An active seat is required');
+      const generation = this.#worldGenerations.get(room.slug) ?? 0, { definition } = await this.registry.authorizeWorld(credential, room.slug);
+      if (!definition.capabilities.includes('focus') || !definition.focusPolicy) throw new DomainError('NOT_AVAILABLE', 404, 'Focus is unavailable in this world');
+      await this.safety?.assert(actor.accountId, room.slug, room.id);
+      const seatId = member.seatId, valid = () => !this.#closed && this.authority.state === 'held' && this.#rooms.get(room.id)?.members.get(actor.accountId) === member && member.seatId === seatId && [...member.connections.values()].includes(actor.sessionId) && generation === (this.#worldGenerations.get(room.slug) ?? 0);
+      return work(actor, { worldSlug: room.slug, roomId: room.id, seatId, epoch: this.epoch, membershipId: member.id, canPause: definition.focusPolicy.pauseAllowed }, valid);
+    });
+  }
   travelContext(credential: string, source: TravelSource | null, destination: TravelDestination) {
     return this.#run(async () => {
       await this.#sweep();

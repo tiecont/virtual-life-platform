@@ -7,7 +7,7 @@ export function createSandboxWorld() {
   let started = false;
   return defineWorld({
     schemaVersion: 1, apiVersion: 1, slug: 'sdk-sandbox', version: '1.0.0', title: 'SDK Sandbox (local test world)', kind: 'sandbox',
-    sceneRef: { key: 'sdk-sandbox', version: '1.0.0' }, capacity: 8, capabilities: ['presence', 'seating'],
+    sceneRef: { key: 'sdk-sandbox', version: '1.0.0' }, capacity: 8, capabilities: ['presence', 'seating', 'focus'], focusPolicy: { pauseAllowed: false },
     scene: sandboxScene,
     seatIds: ['seat-1', 'seat-2', 'seat-3', 'seat-4', 'seat-5', 'seat-6', 'seat-7', 'seat-8'],
     accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'sandbox', position: { x: 0.5, y: 0.5 }, icon: 'flask' },
