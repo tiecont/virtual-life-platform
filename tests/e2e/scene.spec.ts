@@ -272,3 +272,47 @@ test('keyboard and canvas destinations follow approved paths around tables and r
   await writeFile(`artifacts/cafe-movement-${test.info().project.name}.json`, JSON.stringify({ samples, final: await canvas.getAttribute('data-self-position'), crossedSolidTile: false }, null, 2));
   await page.getByRole('button', { name: 'Leave cafe', exact: true }).click(); expect(errors).toEqual([]);
 });
+
+test('room keyboard focus, reduced motion, readable text contrast and mobile targets remain usable', async ({ page, context }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' }); await guest(context, 'Accessible Visitor');
+  await page.goto('/worlds/sdk-sandbox');
+  await expect(page.getByRole('button', { name: 'Enter cafe', exact: true })).toBeEnabled();
+  const skip = page.getByRole('link', { name: 'Skip to room controls', exact: true }); await skip.focus(); await page.keyboard.press('Enter');
+  await expect(page.getByRole('complementary', { name: 'Your room', exact: true })).toBeFocused();
+  await page.keyboard.press('Tab'); await expect(page.getByRole('button', { name: 'Enter cafe', exact: true })).toBeFocused();
+  await page.keyboard.press('Enter'); await expect(page.getByRole('heading', { name: 'Walk around', exact: true })).toBeFocused();
+  const canvas = page.locator('canvas[data-scene]'); await expect(canvas).toHaveAttribute('data-reduced-motion', 'true');
+  await expect(page.getByLabel('Reduce room motion', { exact: true })).toBeChecked();
+  await expect(page.locator('button[title="select to enable accessibility for this content"]')).toBeHidden();
+  await page.keyboard.press('Tab'); await expect(page.getByRole('button', { name: 'Walk to entrance', exact: true })).toBeFocused();
+  await page.getByRole('button', { name: 'Walk to window aisle', exact: true }).focus(); await page.keyboard.press('Enter');
+  await expect(page.getByText('Your walk is confirmed.', { exact: true })).toBeVisible();
+  await expect(canvas).toHaveAttribute('data-active-animations', '0');
+  const frames = await canvas.getAttribute('data-render-count'); await page.waitForTimeout(350);
+  await expect(canvas).toHaveAttribute('data-render-count', frames!);
+  await page.getByLabel('Reduce room motion', { exact: true }).uncheck(); await expect(canvas).toHaveAttribute('data-reduced-motion', 'false');
+  await page.getByLabel('Reduce room motion', { exact: true }).check();
+  const contrast = await page.evaluate(() => {
+    const luminance = (rgb: number[]) => rgb.map(value => { value /= 255; return value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4; }).reduce((sum, value, i) => sum + value * [.2126, .7152, .0722][i], 0);
+    const rgb = (value: string) => value.match(/[\d.]+/g)!.slice(0, 3).map(Number);
+    return [...document.querySelectorAll('.cafe-note,.cafe-scene-caption,.cafe-eyebrow,.cafe-occupancy,.cafe-seat-grid small,.cafe-present small')].filter(element => !element.closest('button:disabled')).map(element => {
+      let parent: Element | null = element; let background = 'rgb(248, 250, 249)';
+      while (parent) { const color = getComputedStyle(parent).backgroundColor; if (color !== 'rgba(0, 0, 0, 0)' && color !== 'transparent') { background = color; break; } parent = parent.parentElement; }
+      const foreground = getComputedStyle(element).color; const a = luminance(rgb(foreground)), b = luminance(rgb(background));
+      return { selector: element.className || element.tagName, foreground, background, ratio: (Math.max(a, b) + .05) / (Math.min(a, b) + .05) };
+    });
+  });
+  expect(contrast.length).toBeGreaterThan(8); expect(contrast.every(row => row.ratio >= 4.5)).toBe(true);
+  const targets = await page.getByRole('button').evaluateAll(buttons => buttons.map(button => {
+    const rect = button.getBoundingClientRect(); const style = getComputedStyle(button);
+    return { label: button.textContent, width: rect.width, height: rect.height, minHeight: style.minHeight, transform: style.transform };
+  }));
+  await mkdir('artifacts', { recursive: true }); await writeFile(`artifacts/cafe-targets-${test.info().project.name}.json`, JSON.stringify(targets, null, 2));
+  for (const target of targets) { expect(target.height, target.label ?? '').toBeGreaterThanOrEqual(44); expect(target.width, target.label ?? '').toBeGreaterThanOrEqual(44); }
+  await page.getByRole('link', { name: 'Back to visit controls', exact: true }).focus(); await page.keyboard.press('Enter');
+  await page.keyboard.press('Tab'); await expect(page.getByRole('button', { name: 'Leave cafe', exact: true })).toBeFocused();
+  await page.keyboard.press('Enter'); await expect(page.getByRole('button', { name: 'Enter cafe', exact: true })).toBeFocused();
+  await expect(page.getByLabel('Room occupancy unconfirmed', { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await mkdir('artifacts', { recursive: true }); await writeFile(`artifacts/cafe-a11y-${test.info().project.name}.json`, JSON.stringify({ contrast, keyboardEntryAndLeave: true, explicitAndSystemReducedMotion: true, minButtonTargetPx: 44 }, null, 2));
+});

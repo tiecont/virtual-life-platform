@@ -1,0 +1,185 @@
+$ pnpm build && node scripts/run-browser-tests.mjs
+$ pnpm -r build
+Scope: 6 of 7 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+apps/platform-api build$ tsc -p tsconfig.json && node ../../scripts/copy-migrations.mjs
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/pixi-scene build: Done
+apps/portal-web build$ next build --webpack
+apps/portal-web build: ▲ Next.js 16.4.4 (webpack)
+apps/portal-web build: ✓ Running next.config.ts took 29ms
+apps/portal-web build:   Creating an optimized production build ...
+apps/platform-api build: Done
+apps/portal-web build: ✓ Compiled successfully in 3.7s
+apps/portal-web build:   Running TypeScript ...
+apps/portal-web build:   Finished TypeScript in 1825ms ...
+apps/portal-web build:   Collecting page data using 8 workers ...
+apps/portal-web build:   Generating static pages using 8 workers (0/4) ...
+apps/portal-web build:   Generating static pages using 8 workers (1/4) 
+apps/portal-web build:   Generating static pages using 8 workers (2/4) 
+apps/portal-web build:   Generating static pages using 8 workers (3/4) 
+apps/portal-web build: ✓ Generating static pages using 8 workers (4/4) in 770ms
+apps/portal-web build:   Finalizing page optimization ...
+apps/portal-web build:   Collecting build traces ...
+apps/portal-web build: Route (app)
+apps/portal-web build: ┌ ƒ /
+apps/portal-web build: ├ ○ /_not-found
+apps/portal-web build: ├ ○ /identity
+apps/portal-web build: ├ ƒ /social
+apps/portal-web build: ├ ƒ /worlds/sdk-sandbox
+apps/portal-web build: └ ○ /worlds/sdk-sandbox/avatar-lab
+apps/portal-web build: ○  (Static)   prerendered as static content
+apps/portal-web build: ƒ  (Dynamic)  server-rendered on demand
+apps/portal-web build: Done
+ Network virtual-city-test-af7ee3e4_default Creating 
+ Network virtual-city-test-af7ee3e4_default Creating 
+ Network virtual-city-test-af7ee3e4_default Created 
+ Network virtual-city-test-af7ee3e4_default Created 
+ Container virtual-city-test-af7ee3e4-db-1 Creating 
+ Container virtual-city-test-af7ee3e4-db-1 Created 
+ Container virtual-city-test-af7ee3e4-db-1 Starting 
+ Container virtual-city-test-af7ee3e4-db-1 Started 
+ Container virtual-city-test-af7ee3e4-db-1 Waiting 
+ Container virtual-city-test-af7ee3e4-db-1 Healthy 
+[WebServer] (node:95751) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:95771) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:95771) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:95771) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:95750) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:95821) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:95864) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:95895) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 14 tests using 1 worker
+
+(node:95952) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/e2e/foundation.spec.ts:2:5 › portal displays real API/database readiness and truthful availability on desktop/mobile (364ms)
+  ✓   2 [desktop] › tests/e2e/identity.spec.ts:3:5 › guest profile, private settings, session renewal and deletion survive reload and synchronize tabs (1.5s)
+  ✓   3 [desktop] › tests/e2e/identity.spec.ts:30:5 › upgrading retains identity and permits sign-in from a separate browser context (1.8s)
+  ✓   4 [desktop] › tests/e2e/scene.spec.ts:45:5 › actual cafe scene and keyboard seat controls reflect authoritative rooms on desktop/mobile (4.4s)
+  ✓   5 [desktop] › tests/e2e/scene.spec.ts:70:5 › viewer-filtered scene never fabricates peers and a bilateral block clears the visible visitor (2.5s)
+  ✓   6 [desktop] › tests/e2e/scene.spec.ts:87:5 › keyed sprites follow real seat deltas, resize and leave without allocating duplicate avatars (6.7s)
+  ✓   7 [desktop] › tests/e2e/scene.spec.ts:119:5 › actual transport interruption hides stale seats then reconnects to one retained avatar and seat (4.7s)
+  ✓   8 [desktop] › tests/e2e/scene.spec.ts:155:5 › identity replacement clears sprites and a remounted scene owns only one canvas (2.3s)
+  ✓   9 [desktop] › tests/e2e/scene.spec.ts:180:5 › asset failure retains real room and keyboard controls without a blank successful scene (658ms)
+  ✓  10 [desktop] › tests/e2e/scene.spec.ts:190:5 › leaving while the actual asset is loading cancels the old scene before remount (1.6s)
+  ✓  11 [desktop] › tests/e2e/scene.spec.ts:211:5 › original avatar action and outfit previews render distinct pixels and respect reduced motion (1.9s)
+  ✓  12 [desktop] › tests/e2e/scene.spec.ts:244:5 › keyboard and canvas destinations follow approved paths around tables and reject solid tiles (4.9s)
+  ✓  13 [desktop] › tests/e2e/scene.spec.ts:276:5 › room keyboard focus, reduced motion, readable text contrast and mobile targets remain usable (2.1s)
+  ✓  14 [desktop] › tests/e2e/social.spec.ts:4:5 › two browser contexts consent to friendship, receive live updates and enforce private blocks (2.4s)
+
+  14 passed (41.5s)
+ Container virtual-city-test-af7ee3e4-db-1 Stopping 
+ Container virtual-city-test-af7ee3e4-db-1 Stopped 
+ Container virtual-city-test-af7ee3e4-db-1 Removing 
+ Container virtual-city-test-af7ee3e4-db-1 Removed 
+ Network virtual-city-test-af7ee3e4_default Removing 
+ Network virtual-city-test-af7ee3e4_default Removed 
+ Network virtual-city-test-ea9e47f6_default Creating 
+ Network virtual-city-test-ea9e47f6_default Creating 
+ Network virtual-city-test-ea9e47f6_default Created 
+ Network virtual-city-test-ea9e47f6_default Created 
+ Container virtual-city-test-ea9e47f6-db-1 Creating 
+ Container virtual-city-test-ea9e47f6-db-1 Created 
+ Container virtual-city-test-ea9e47f6-db-1 Starting 
+ Container virtual-city-test-ea9e47f6-db-1 Started 
+ Container virtual-city-test-ea9e47f6-db-1 Waiting 
+ Container virtual-city-test-ea9e47f6-db-1 Healthy 
+[WebServer] (node:98502) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:98516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:98516) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:98516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:98501) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:98562) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:98598) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:98630) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 14 tests using 1 worker
+
+(node:98703) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [mobile] › tests/e2e/foundation.spec.ts:2:5 › portal displays real API/database readiness and truthful availability on desktop/mobile (529ms)
+  ✓   2 [mobile] › tests/e2e/identity.spec.ts:3:5 › guest profile, private settings, session renewal and deletion survive reload and synchronize tabs (1.8s)
+  ✓   3 [mobile] › tests/e2e/identity.spec.ts:30:5 › upgrading retains identity and permits sign-in from a separate browser context (1.9s)
+  ✓   4 [mobile] › tests/e2e/scene.spec.ts:45:5 › actual cafe scene and keyboard seat controls reflect authoritative rooms on desktop/mobile (4.5s)
+  ✓   5 [mobile] › tests/e2e/scene.spec.ts:70:5 › viewer-filtered scene never fabricates peers and a bilateral block clears the visible visitor (2.2s)
+  ✓   6 [mobile] › tests/e2e/scene.spec.ts:87:5 › keyed sprites follow real seat deltas, resize and leave without allocating duplicate avatars (6.2s)
+  ✓   7 [mobile] › tests/e2e/scene.spec.ts:119:5 › actual transport interruption hides stale seats then reconnects to one retained avatar and seat (5.1s)
+  ✓   8 [mobile] › tests/e2e/scene.spec.ts:155:5 › identity replacement clears sprites and a remounted scene owns only one canvas (2.3s)
+  ✓   9 [mobile] › tests/e2e/scene.spec.ts:180:5 › asset failure retains real room and keyboard controls without a blank successful scene (3.0s)
+  ✓  10 [mobile] › tests/e2e/scene.spec.ts:190:5 › leaving while the actual asset is loading cancels the old scene before remount (1.7s)
+  ✓  11 [mobile] › tests/e2e/scene.spec.ts:211:5 › original avatar action and outfit previews render distinct pixels and respect reduced motion (2.5s)
+  ✓  12 [mobile] › tests/e2e/scene.spec.ts:244:5 › keyboard and canvas destinations follow approved paths around tables and reject solid tiles (4.8s)
+  ✘  13 [mobile] › tests/e2e/scene.spec.ts:276:5 › room keyboard focus, reduced motion, readable text contrast and mobile targets remain usable (2.0s)
+(node:100744) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  14 [mobile] › tests/e2e/social.spec.ts:4:5 › two browser contexts consent to friendship, receive live updates and enforce private blocks (2.9s)
+
+
+  1) [mobile] › tests/e2e/scene.spec.ts:276:5 › room keyboard focus, reduced motion, readable text contrast and mobile targets remain usable 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 44
+    Received:    6
+
+      304 |   expect(contrast.length).toBeGreaterThan(8); expect(contrast.every(row => row.ratio >= 4.5)).toBe(true);
+      305 |   for (const button of await page.getByRole('button').all()) {
+    > 306 |     if (await button.isVisible()) { const box = (await button.boundingBox())!; expect(box.height).toBeGreaterThanOrEqual(44); expect(box.width).toBeGreaterThanOrEqual(44); }
+          |                                                                                                   ^
+      307 |   }
+      308 |   await page.getByRole('link', { name: 'Back to visit controls', exact: true }).focus(); await page.keyboard.press('Enter');
+      309 |   await page.keyboard.press('Tab'); await expect(page.getByRole('button', { name: 'Leave cafe', exact: true })).toBeFocused();
+        at /home/tiecont/Projects/virtual-city/tests/e2e/scene.spec.ts:306:99
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/mobile/scene-room-keyboard-focus--b90f3-obile-targets-remain-usable-mobile/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/mobile/scene-room-keyboard-focus--b90f3-obile-targets-remain-usable-mobile/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/mobile/scene-room-keyboard-focus--b90f3-obile-targets-remain-usable-mobile/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/mobile/scene-room-keyboard-focus--b90f3-obile-targets-remain-usable-mobile/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [mobile] › tests/e2e/scene.spec.ts:276:5 › room keyboard focus, reduced motion, readable text contrast and mobile targets remain usable 
+  13 passed (45.8s)
+pnpm exited 1
+ Container virtual-city-test-ea9e47f6-db-1 Stopping 
+ Container virtual-city-test-ea9e47f6-db-1 Stopped 
+ Container virtual-city-test-ea9e47f6-db-1 Removing 
+ Container virtual-city-test-ea9e47f6-db-1 Removed 
+ Network virtual-city-test-ea9e47f6_default Removing 
+ Network virtual-city-test-ea9e47f6_default Removed 
+[ELIFECYCLE] Command failed with exit code 1.
+
+TOP_LEVEL_EXIT=1

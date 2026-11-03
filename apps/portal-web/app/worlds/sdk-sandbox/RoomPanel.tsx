@@ -22,11 +22,33 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
   const [me, setMe] = useState<Me | null>(null); const [available, setAvailable] = useState(false); const [loading, setLoading] = useState(true);
   const [view, setView] = useState(idle); const [message, setMessage] = useState(''); const [busy, setBusy] = useState(false);
   const [sceneState, setSceneState] = useState<'loading' | 'ready' | 'failed'>('loading');
+  const [lowMotion, setLowMotion] = useState(false); const lowMotionRef = useRef(false); const userMotion = useRef<boolean | null>(null);
+  const [walking, setWalking] = useState(false);
+  const focusIntent = useRef<'actions' | 'entry' | null>(null); const entryButton = useRef<HTMLButtonElement>(null);
   const host = useRef<HTMLDivElement>(null); const scene = useRef<SceneView | null>(null);
   const socket = useRef<Socket | null>(null); const recovery = useRef(new RoomRecovery()); const latest = useRef<RoomSnapshot | null>(null);
   const alive = useRef(true); const desired = useRef(false); const inFlight = useRef(false); const sequence = useRef(0);
   const claimRef = useRef<(seatId: string) => void>(() => {});
   const moveRef = useRef<(point: { x: number; y: number }) => void>(() => {});
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => { const value = userMotion.current ?? media.matches; lowMotionRef.current = value; setLowMotion(value); scene.current?.setReducedMotion(value); };
+    update(); media.addEventListener('change', update); return () => media.removeEventListener('change', update);
+  }, []);
+  useEffect(() => {
+    if (view.status === 'active' && focusIntent.current === 'actions') { document.getElementById('cafe-action-title')?.focus(); focusIntent.current = null; }
+    if (view.status === 'idle' && focusIntent.current === 'entry' && !busy) {
+      const button = entryButton.current;
+      if (button && !button.disabled) { button.focus(); if (document.activeElement === button) focusIntent.current = null; }
+    }
+  }, [view, busy]);
+  useEffect(() => {
+    const motion = view.snapshot?.self.motion; const serverTime = view.snapshot?.serverTime;
+    const remaining = motion && serverTime !== undefined ? motion.startedAt + (motion.path.length - 1) * motion.stepMs - serverTime : 0;
+    setWalking(remaining > 0);
+    if (remaining <= 0) return;
+    const timer = setTimeout(() => setWalking(false), remaining); return () => clearTimeout(timer);
+  }, [view.snapshot]);
   function publish() {
     if (!alive.current) return;
     const next = recovery.current.view; latest.current = next.snapshot; setView(next);
@@ -64,7 +86,7 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
     void import('@virtual-city/pixi-scene').then(module => module.createCafeScene(element, sandboxScene, id => claimRef.current(id), { signal: controller.signal, outfit: 'cafe-apron', onMove: point => moveRef.current(point) })).then(renderer => {
       owned = renderer;
       if (cancelled) { renderer.destroy(); return; }
-      scene.current = renderer; renderer.update(recovery.current.view.snapshot); setSceneState('ready');
+      scene.current = renderer; renderer.setReducedMotion(lowMotionRef.current); renderer.update(recovery.current.view.snapshot); setSceneState('ready');
     }).catch(() => { if (!cancelled) setSceneState('failed'); });
     return () => { cancelled = true; controller.abort(); owned?.destroy(); if (scene.current === owned) scene.current = null; };
   }, []);
@@ -93,7 +115,7 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
   }, []);
   function enter() {
     if (!me || !available || inFlight.current) return;
-    closeConnection(); desired.current = true;
+    closeConnection(); focusIntent.current = 'actions'; desired.current = true;
     const client = io(socketOrigin, { autoConnect: false, reconnection: true, reconnectionAttempts: 3, reconnectionDelay: 1000, transports: ['websocket'], withCredentials: true, auth: { schemaVersion: 1, csrfToken: me.csrfToken } });
     socket.current = client;
     client.on('connect', () => { if (socket.current === client) void syncRef.current(true); });
@@ -133,34 +155,36 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
         if (!refreshed.ok || refreshed.result.type !== 'snapshot') throw new Error(explanation);
         recovery.current.acceptSnapshot(ticket, refreshed.result); publish(); setMessage(explanation); return;
       }
-      if (name === 'room.leave') { desired.current = false; client.close(); recovery.current = new RoomRecovery(); publish(); setMessage('You left the cafe.'); }
+      if (name === 'room.leave') { focusIntent.current = 'entry'; desired.current = false; client.close(); recovery.current = new RoomRecovery(); publish(); setMessage('You left the cafe.'); }
       else if (ack.result.type === 'snapshot') { recovery.current.acceptSnapshot(ticket, ack.result); publish(); setMessage(name === 'seat.claim' ? 'Your seat is confirmed.' : name === 'room.move' ? 'Your walk is confirmed.' : 'You stood up.'); }
     } catch (error) {
       if (alive.current && socket.current === client && run === sequence.current) { recovery.current.disconnect(); publish(); setMessage(error instanceof Error ? error.message : 'Change unconfirmed. Rejoin to check your place.'); }
     } finally { if (sequence.current === run) { inFlight.current = false; if (alive.current) setBusy(false); } }
   }
   claimRef.current = id => { void mutate('seat.claim', id); };
-  moveRef.current = point => { void mutate('room.move', undefined, point); };
+  moveRef.current = point => { if (!walking) void mutate('room.move', undefined, point); };
   const active = view.status === 'active' && view.snapshot !== null;
   const status = view.status === 'active' ? view.reason === 'membership-reset' ? 'Rejoined. Your previous place was interrupted.' : 'Connected' : view.status === 'syncing' ? 'Confirming your place...' : view.status === 'reconnecting' ? 'Connection lost. Your place is unconfirmed.' : view.status === 'interrupted' ? view.reason === 'authority-lost' || view.reason === 'server-stopping' ? 'The room was interrupted. Rejoin when it reopens.' : 'This room ended.' : available ? 'Ready to enter' : 'Cafe closed';
   return <main className="cafe-shell">
+    <a className="cafe-skip" href="#cafe-room-controls">Skip to room controls</a>
     <header className="cafe-nav"><Link href="/">Virtual Life Platform</Link><nav aria-label="Cafe navigation"><Link href="/identity">Identity</Link><Link href="/social">Your circle</Link></nav><span className="cafe-local">LOCAL TEST WORLD</span></header>
-    <div className="cafe-heading"><div><p className="cafe-eyebrow">SDK Sandbox</p><h1>Local Test Cafe</h1></div><div className="cafe-occupancy" aria-label="Room occupancy"><strong>{view.snapshot?.occupancy ?? 0}</strong><span>/ 8 present</span></div></div>
+    <div className="cafe-heading"><div><p className="cafe-eyebrow">SDK Sandbox</p><h1>Local Test Cafe</h1></div><div className="cafe-occupancy" aria-label={view.snapshot ? 'Room occupancy' : 'Room occupancy unconfirmed'}><strong>{view.snapshot?.occupancy ?? '—'}</strong><span>/ 8 present</span></div></div>
     <div className="cafe-main"><div className="cafe-scene-column">
-      <div className="cafe-scene" ref={host} role="img" aria-label="Cafe floor plan. Two shared tables, eight seats, an entrance and a counter. Seat controls follow below."/>
+      <div className="cafe-scene" ref={host} role="img" aria-busy={sceneState === 'loading'} aria-label="Cafe floor plan. Two shared tables, eight seats, an entrance and a counter. Movement and seat controls follow below."/>
       <div className="cafe-scene-caption"><span>WINDOW & GARDEN TABLES</span><span>{sceneState === 'loading' ? 'Loading scene...' : sceneState === 'failed' ? 'Scene unavailable. Seat controls remain available.' : 'Original starter art'}</span></div>
-      <section aria-label="Walk around"><h2>Walk around</h2><p className="cafe-note">Choose an open floor tile, or use a destination below. Tables and walls are solid.</p><div className="cafe-seat-grid">{[{ label: 'Entrance', x: 10, y: 11 }, { label: 'Window aisle', x: 2, y: 4 }, { label: 'Garden aisle', x: 11, y: 4 }, { label: 'Counter front', x: 15, y: 9 }].map(point => <button key={point.label} disabled={!active || busy || !!view.snapshot?.self.seatId} onClick={() => moveRef.current({ x: point.x, y: point.y })}>Walk to {point.label.toLowerCase()}</button>)}</div></section>
+      <section aria-label="Walk around"><h2 id="cafe-action-title" tabIndex={-1}>Walk around</h2><p className="cafe-note">Choose an open floor tile, or use a destination below. Tables and walls are solid.</p><div className="cafe-seat-grid">{[{ label: 'Entrance', x: 10, y: 11 }, { label: 'Window aisle', x: 2, y: 4 }, { label: 'Garden aisle', x: 11, y: 4 }, { label: 'Counter front', x: 15, y: 9 }].map(point => <button key={point.label} disabled={!active || busy || walking || !!view.snapshot?.self.seatId} onClick={() => moveRef.current({ x: point.x, y: point.y })}>Walk to {point.label.toLowerCase()}</button>)}</div></section>
       <section className="cafe-seats" aria-labelledby="cafe-seat-title"><div className="cafe-section-heading"><h2 id="cafe-seat-title">Choose a seat</h2>{view.snapshot?.self.seatId && <button disabled={busy} onClick={() => void mutate('seat.release', view.snapshot!.self.seatId!)}>Stand up</button>}</div>
         <div className="cafe-seat-grid">{sandboxScene.seats.map(point => {
           const seat = view.snapshot?.seats.find(seat => seat.seatId === point.seatId);
           return <button key={point.seatId} className={seat?.mine ? 'mine' : ''} disabled={!active || busy || seat?.state !== 'available' || !!view.snapshot?.self.seatId} aria-label={point.label + (seat?.mine ? ', your seat' : '')} onClick={() => void mutate('seat.claim', point.seatId)}><span>{point.seatId.slice(5).padStart(2, '0')}</span><span>{point.label.split(' ').slice(0, 2).join(' ')}<small>{seat?.mine ? 'Your seat' : !active ? 'Not connected' : seat?.state === 'held' ? 'Reconnecting' : seat?.state === 'occupied' ? 'Occupied' : 'Available'}</small></span></button>;
         })}</div>
-      </section></div>
-      <aside className="cafe-sidebar" aria-label="Your room"><h2>Your visit</h2><p className="cafe-connection" role="status" aria-live="polite">{loading ? 'Checking your session...' : status}</p>
-        {message && <p className="cafe-message" role="alert">{message}</p>}
-        {me ? <><p className="cafe-identity">{me.profile.displayName}</p><p className="cafe-note">{active ? view.snapshot?.self.seatId ? 'Seated at ' + sandboxScene.seats.find(seat => seat.seatId === view.snapshot?.self.seatId)?.label : 'On the cafe floor' : 'No confirmed place'}</p>
-          {active ? <button className="cafe-primary" disabled={busy} onClick={() => void mutate('room.leave')}>Leave cafe</button> : <button className="cafe-primary" disabled={!available || busy || loading || view.status === 'syncing'} onClick={enter}>{view.status === 'idle' ? 'Enter cafe' : 'Rejoin cafe'}</button>}
+      </section><a className="cafe-action-back" href="#cafe-room-controls">Back to visit controls</a></div>
+      <aside className="cafe-sidebar" id="cafe-room-controls" tabIndex={-1} aria-label="Your room"><h2>Your visit</h2><p className="cafe-connection" role="status" aria-live="polite">{loading ? 'Checking your session...' : status}</p>
+        {message && <p className="cafe-message" aria-live="polite">{message}</p>}
+        {me ? <><p className="cafe-identity">{me.profile.displayName}</p><p className="cafe-note" aria-live="polite">{active ? walking ? view.snapshot?.self.seatId ? 'Walking to your reserved seat.' : 'Walking across the cafe floor.' : view.snapshot?.self.seatId ? 'Seated at ' + sandboxScene.seats.find(seat => seat.seatId === view.snapshot?.self.seatId)?.label : 'On the cafe floor' : 'No confirmed place'}</p>
+          {active ? <button className="cafe-primary" disabled={busy} onClick={() => void mutate('room.leave')}>Leave cafe</button> : <button ref={entryButton} className="cafe-primary" disabled={!available || busy || loading || view.status === 'syncing'} onClick={enter}>{view.status === 'idle' ? 'Enter cafe' : 'Rejoin cafe'}</button>}
         </> : !loading && <Link href="/identity">Open identity</Link>}
+        <label className="cafe-motion"><input type="checkbox" checked={lowMotion} onChange={event => { const value = event.target.checked; userMotion.current = value; lowMotionRef.current = value; setLowMotion(value); scene.current?.setReducedMotion(value); }}/>Reduce room motion</label>
         <div className="cafe-present"><h2>Visible here</h2>{view.snapshot?.participants.length ? <ul>{view.snapshot.participants.map(person => <li key={person.profile.id}><span>{person.profile.displayName}</span><small>{person.state === 'reconnecting' ? 'Reconnecting' : person.seatId ? 'Seated' : 'Standing'}</small></li>)}</ul> : <p className="cafe-note">No confirmed visible visitors.</p>}</div><Link href="/worlds/sdk-sandbox/avatar-lab">Preview avatar styles</Link>
       </aside></div>
   </main>;

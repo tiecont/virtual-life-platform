@@ -1,0 +1,19 @@
+{
+  "taskID": "M07-05",
+  "verifiedAt": "2026-11-03T02:00:17Z",
+  "source": "workspace diff from 5813e6d; checkpoint commit in git log",
+  "environment": "Linux/Node26.9.0/pnpm11.28.5/Pixi8.22.0/PostgreSQL17.7-alpine/Playwright Chromium desktop and iPhone13 emulation",
+  "commands": [
+    { "command": "pnpm check", "exitCode": 0, "log": "m07-accessibility-check-attempt1.log", "governanceTests": 7, "unitTests": 43, "integrationTests": 75 },
+    { "command": "pnpm test:e2e", "exitCode": 1, "log": "m07-accessibility-e2e-attempt1.log", "passed": 13, "failed": 1, "reason": "leave focus attempted before entry button enabled; mobile not run after desktop failure" },
+    { "command": "pnpm test:e2e", "exitCode": 1, "log": "m07-accessibility-e2e-attempt2.log", "passed": 27, "failed": 1, "reason": "mobile unnamed offscreen Pixi touch accessibility hook has16x6px box; application targets44/72px" },
+    { "command": "node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/scene.spec.ts --project mobile -g 'room keyboard'", "exitCode": 1, "log": "m07-accessibility-mobile-diagnostic.log", "reason": "diagnostic confirmed injected mobile hook; no test condition weakened" },
+    { "command": "pnpm test:e2e", "exitCode": 0, "log": "m07-accessibility-e2e-attempt3.log", "tests": 28, "scope": "final focus/low-motion/Pixi hook fixes with fresh builds;desktop14/mobile14" },
+    { "command": "pnpm lint", "exitCode": 0, "scope": "final source68 file boundaries" },
+    { "command": "git diff --check", "exitCode": 0 }
+  ],
+  "verified": ["native keyboard entry/action/seat/exit alternatives and loader failure fallback", "skip/back links and manual entry focus; exit focus waits for enabled entry button", "system and explicit per-visit reduced motion stop animation; no idle redraw during sampled350ms", "computed small-text contrast minimum5.7288:1 on both profiles", "every exposed app button at least44px height/width; mobile injected Pixi hook hidden/nonfocusable through public API", "unconfirmed occupancy uses dash; polite walking/reserved-seat/connection text", "desktop/mobile no horizontal overflow; real screenshots inspected"],
+  "artifacts": "m07-05-visual/ (real cafe screenshots, computed contrast and target geometry JSON)",
+  "migrations": "none; motion preference not stored or transmitted",
+  "limits": ["Current sandbox capabilities only; hospitality service controls will be verified when M11/worlds add them", "Chromium emulation, not physical iPhone/Safari or screen-reader/WCAG certification", "M07-06 performance and W1 safety/travel gates incomplete", "Real/default flags OFF; no remote or public release"]
+}

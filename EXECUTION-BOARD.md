@@ -47,7 +47,7 @@
 | M07 | M07-02 · Implement Pixi scene loader, camera, sprite lifecycle and event-driven state render. | VERIFIED | m07-lifecycle-checks.json; keyed sprites/camera/cancellation and22 E2E; original multi-frame actions remain03 |
 | M07 | M07-03 · Implement avatar core + world outfit variants with a legal asset manifest. | VERIFIED | m07-avatar-checks.json; original idle/walk/sit/serve+2outfits,24 E2E; movement/service gameplay not claimed |
 | M07 | M07-04 · Implement destination click, path validation, movement interpolation. | VERIFIED | m07-movement-checks.json; final75 integration +26 E2E,server paths/legacy negotiation/privacy/freeze |
-| M07 | M07-05 · Implement accessibility/responsive fallback UI. | TODO | — |
+| M07 | M07-05 · Implement accessibility/responsive fallback UI. | VERIFIED | m07-accessibility-checks.json;28 E2E,contrast>=5.7288,44px targets,keyboard/focus/low-motion; future service controls gated |
 | M07 | M07-06 · Optimize asset bundles/loading/perf. | TODO | — |
 | M08 | M08-01 · Define content, harassment and privacy threat model by world, plus escalation protocol. | TODO | — |
 | M08 | M08-02 · Implement server-side chat/emote/moderation pipeline. | TODO | — |

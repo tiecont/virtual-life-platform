@@ -1,0 +1,77 @@
+ Network virtual-city-test-5a63a207_default Creating 
+ Network virtual-city-test-5a63a207_default Creating 
+ Network virtual-city-test-5a63a207_default Created 
+ Network virtual-city-test-5a63a207_default Created 
+ Container virtual-city-test-5a63a207-db-1 Creating 
+ Container virtual-city-test-5a63a207-db-1 Created 
+ Container virtual-city-test-5a63a207-db-1 Starting 
+ Container virtual-city-test-5a63a207-db-1 Started 
+ Container virtual-city-test-5a63a207-db-1 Waiting 
+ Container virtual-city-test-5a63a207-db-1 Healthy 
+[WebServer] (node:103171) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:103184) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:103184) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:103184) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:103170) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:103249) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:103353) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:103385) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:103440) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [mobile] › tests/e2e/scene.spec.ts:276:5 › room keyboard focus, reduced motion, readable text contrast and mobile targets remain usable (2.4s)
+
+
+  1) [mobile] › tests/e2e/scene.spec.ts:276:5 › room keyboard focus, reduced motion, readable text contrast and mobile targets remain usable 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 44
+    Received:    6
+
+      308 |   }));
+      309 |   await mkdir('artifacts', { recursive: true }); await writeFile(`artifacts/cafe-targets-${test.info().project.name}.json`, JSON.stringify(targets, null, 2));
+    > 310 |   for (const target of targets) { expect(target.height, target.label ?? '').toBeGreaterThanOrEqual(44); expect(target.width, target.label ?? '').toBeGreaterThanOrEqual(44); }
+          |                                                                             ^
+      311 |   await page.getByRole('link', { name: 'Back to visit controls', exact: true }).focus(); await page.keyboard.press('Enter');
+      312 |   await page.keyboard.press('Tab'); await expect(page.getByRole('button', { name: 'Leave cafe', exact: true })).toBeFocused();
+      313 |   await page.keyboard.press('Enter'); await expect(page.getByRole('button', { name: 'Enter cafe', exact: true })).toBeFocused();
+        at /home/tiecont/Projects/virtual-city/tests/e2e/scene.spec.ts:310:77
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scene-room-keyboard-focus--b90f3-obile-targets-remain-usable-mobile/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scene-room-keyboard-focus--b90f3-obile-targets-remain-usable-mobile/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scene-room-keyboard-focus--b90f3-obile-targets-remain-usable-mobile/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/scene-room-keyboard-focus--b90f3-obile-targets-remain-usable-mobile/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [mobile] › tests/e2e/scene.spec.ts:276:5 › room keyboard focus, reduced motion, readable text contrast and mobile targets remain usable 
+pnpm exited 1
+ Container virtual-city-test-5a63a207-db-1 Stopping 
+ Container virtual-city-test-5a63a207-db-1 Stopped 
+ Container virtual-city-test-5a63a207-db-1 Removing 
+ Container virtual-city-test-5a63a207-db-1 Removed 
+ Network virtual-city-test-5a63a207_default Removing 
+ Network virtual-city-test-5a63a207_default Removed 
+
+TOP_LEVEL_EXIT=1
