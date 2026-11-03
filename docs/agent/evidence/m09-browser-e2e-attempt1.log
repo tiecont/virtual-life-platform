@@ -1,0 +1,124 @@
+$ pnpm build && node scripts/run-browser-tests.mjs tests/e2e/travel.spec.ts
+$ pnpm -r build
+Scope: 6 of 7 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+apps/platform-api build$ tsc -p tsconfig.json && node ../../scripts/copy-migrations.mjs
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/pixi-scene build: Done
+apps/portal-web build$ next build --webpack
+apps/portal-web build: ▲ Next.js 16.4.4 (webpack)
+apps/portal-web build: ✓ Running next.config.ts took 32ms
+apps/portal-web build:   Creating an optimized production build ...
+apps/platform-api build: Done
+apps/portal-web build: ✓ Compiled successfully in 3.8s
+apps/portal-web build:   Running TypeScript ...
+apps/portal-web build:   Finished TypeScript in 1380ms ...
+apps/portal-web build:   Collecting page data using 12 workers ...
+apps/portal-web build:   Generating static pages using 12 workers (0/6) ...
+apps/portal-web build:   Generating static pages using 12 workers (1/6) 
+apps/portal-web build:   Generating static pages using 12 workers (2/6) 
+apps/portal-web build:   Generating static pages using 12 workers (4/6) 
+apps/portal-web build: ✓ Generating static pages using 12 workers (6/6) in 1304ms
+apps/portal-web build:   Finalizing page optimization ...
+apps/portal-web build:   Collecting build traces ...
+apps/portal-web build: Route (app)
+apps/portal-web build: ┌ ƒ /
+apps/portal-web build: ├ ○ /_not-found
+apps/portal-web build: ├ ○ /identity
+apps/portal-web build: ├ ƒ /invitations
+apps/portal-web build: ├ ○ /moderation
+apps/portal-web build: ├ ○ /safety
+apps/portal-web build: ├ ƒ /social
+apps/portal-web build: ├ ƒ /travel
+apps/portal-web build: ├ ƒ /worlds/sdk-sandbox
+apps/portal-web build: └ ○ /worlds/sdk-sandbox/avatar-lab
+apps/portal-web build: ○  (Static)   prerendered as static content
+apps/portal-web build: ƒ  (Dynamic)  server-rendered on demand
+apps/portal-web build: Done
+ Network virtual-city-test-0b601c86_default Creating 
+ Network virtual-city-test-0b601c86_default Creating 
+ Network virtual-city-test-0b601c86_default Created 
+ Network virtual-city-test-0b601c86_default Created 
+ Container virtual-city-test-0b601c86-db-1 Creating 
+ Container virtual-city-test-0b601c86-db-1 Created 
+ Container virtual-city-test-0b601c86-db-1 Starting 
+ Container virtual-city-test-0b601c86-db-1 Started 
+ Container virtual-city-test-0b601c86-db-1 Waiting 
+ Container virtual-city-test-0b601c86-db-1 Healthy 
+[WebServer] (node:220901) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:220934) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:220934) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:220934) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:220900) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:221040) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:221074) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:221094) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:221171) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/travel.spec.ts:5:5 › synthetic Deadline to Maid to Portal keeps identity through lost commit ACK, reconnect and concurrent source tab (2.7s)
+
+  1 passed (6.3s)
+ Container virtual-city-test-0b601c86-db-1 Stopping 
+ Container virtual-city-test-0b601c86-db-1 Stopped 
+ Container virtual-city-test-0b601c86-db-1 Removing 
+ Container virtual-city-test-0b601c86-db-1 Removed 
+ Network virtual-city-test-0b601c86_default Removing 
+ Network virtual-city-test-0b601c86_default Removed 
+ Network virtual-city-test-06f8c97c_default Creating 
+ Network virtual-city-test-06f8c97c_default Creating 
+ Network virtual-city-test-06f8c97c_default Created 
+ Network virtual-city-test-06f8c97c_default Created 
+ Container virtual-city-test-06f8c97c-db-1 Creating 
+ Container virtual-city-test-06f8c97c-db-1 Created 
+ Container virtual-city-test-06f8c97c-db-1 Starting 
+ Container virtual-city-test-06f8c97c-db-1 Started 
+ Container virtual-city-test-06f8c97c-db-1 Waiting 
+ Container virtual-city-test-06f8c97c-db-1 Healthy 
+[WebServer] (node:221971) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:222002) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:222002) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:222002) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:221970) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:222067) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:222138) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:222152) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:222234) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [mobile] › tests/e2e/travel.spec.ts:5:5 › synthetic Deadline to Maid to Portal keeps identity through lost commit ACK, reconnect and concurrent source tab (3.4s)
+
+  1 passed (7.0s)
+ Container virtual-city-test-06f8c97c-db-1 Stopping 
+ Container virtual-city-test-06f8c97c-db-1 Stopped 
+ Container virtual-city-test-06f8c97c-db-1 Removing 
+ Container virtual-city-test-06f8c97c-db-1 Removed 
+ Network virtual-city-test-06f8c97c_default Removing 
+ Network virtual-city-test-06f8c97c_default Removed 

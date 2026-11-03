@@ -1,4 +1,4 @@
 {
   "schemaVersion": 1,
-  "environments": { "development": { "sdk-sandbox": true }, "test": { "sdk-sandbox": true }, "production": {} }
+  "environments": { "development": { "sdk-sandbox": true }, "test": { "sdk-sandbox": true, "travel-deadline-fixture": true, "travel-maid-fixture": true, "travel-portal-fixture": true }, "production": {} }
 }

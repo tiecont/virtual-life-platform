@@ -305,6 +305,14 @@ it('quarantines failing source resource departure without creating a second acti
   expect(r.app.rooms.diagnostics()).toMatchObject({ memberships: 1, travelHolds: 0 }); expect((await r.app.worlds.registry.catalog(credential(r, u))).worlds.find(world => world.slug === 'maid')?.availability).toBe('offline');
 });
 
+it('reads only the authenticated account current room for reconnect reconciliation and never returns peer room authority', async () => {
+  const r = await open(), u = await guest(r), stranger = await guest(r);
+  const empty = await r.app.http.inject({ url: '/v1/me/room', headers: { cookie: u.cookie } }); expect(empty.statusCode).toBe(200); expect(empty.json().snapshot).toBeNull();
+  const peer = await join(r, u), response = await r.app.http.inject({ url: '/v1/me/room', headers: { cookie: u.cookie } }); expect(response.statusCode).toBe(200); expect(response.json()).toMatchObject({ schemaVersion: 1, snapshot: { membershipId: peer.state.membershipId, self: { accountId: u.me.profile.id } }, worldVersion: '1.0.0', sceneVersion: '1.0.0' });
+  expect((await r.app.http.inject({ url: '/v1/me/room', headers: { cookie: stranger.cookie } })).json().snapshot).toBeNull(); expect((await r.app.http.inject({ url: '/v1/me/room?accountId=' + u.me.profile.id, headers: { cookie: stranger.cookie } })).statusCode).toBe(422);
+  expect((await r.app.http.inject({ url: '/v1/me/room' })).statusCode).toBe(401);
+});
+
 it('travels over authenticated socket with same-key ACK replay and invalidates every old source tab', async () => {
   const r = await open(), u = await guest(r), first = await join(r, u), other = await join(r, u), issued = await create(r, u, first.source), key = randomUUID();
   const outcomes = await Promise.all([transfer(first, issued, key), transfer(first, issued, key)]); expect(outcomes.every(result => result.ok)).toBe(true);

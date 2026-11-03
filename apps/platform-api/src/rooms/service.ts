@@ -285,6 +285,14 @@ export class RoomService {
       return { schemaVersion: 1 as const, rooms: [...this.#rooms.values()].filter(room => room.slug === slug).map(room => ({ roomId: room.id, capacity: room.capacity, occupancy: room.members.size })) };
     });
   }
+  current(credential: string) {
+    return this.#run(async () => {
+      await this.#sweep(); const actor = await this.identity.authenticate(credential), room = this.#rooms.get(this.#accounts.get(actor.accountId) ?? ''), member = room?.members.get(actor.accountId);
+      if (!room || !member) return { schemaVersion: 1 as const, snapshot: null, worldVersion: null, sceneVersion: null };
+      await this.registry.authorizeWorld(credential, room.slug); await this.safety?.assert(actor.accountId, room.slug, room.id);
+      return { schemaVersion: 1 as const, snapshot: await this.#snapshot(room, member), worldVersion: member.worldVersion, sceneVersion: member.sceneVersion };
+    });
+  }
   travelContext(credential: string, source: TravelSource | null, destination: TravelDestination) {
     return this.#run(async () => {
       await this.#sweep();

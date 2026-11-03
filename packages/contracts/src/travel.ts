@@ -20,3 +20,4 @@ export const TravelAckSchema = z.discriminatedUnion('ok', [
 ]);
 export type TravelRequest = z.infer<typeof TravelRequestSchema>;
 export type TravelResult = z.infer<typeof TravelResultSchema>;
+export const OwnRoomSchema = z.strictObject({ schemaVersion: z.literal(1), snapshot: RoomSnapshotSchema.nullable(), worldVersion: WorldVersionSchema.nullable(), sceneVersion: WorldVersionSchema.nullable() }).refine(value => value.snapshot ? value.worldVersion !== null && value.sceneVersion !== null : value.worldVersion === null && value.sceneVersion === null);

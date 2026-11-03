@@ -63,6 +63,7 @@ export class TravelService {
     });
   }
   get(token: string, id: string) { return this.tx(token, async (db, actor) => this.receipt(await this.own(db, actor, uuid.parse(id)))); }
+  current(token: string) { return this.rooms.current(token); }
   async cancel(token: string, id: string, requestKey: string) {
     id = uuid.parse(id); const key = uuid.parse(requestKey);
     const result = await this.tx(token, async (db, actor) => {

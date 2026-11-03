@@ -9,7 +9,7 @@ export default defineConfig({
     { name: 'mobile', use: { ...devices['iPhone 13'], defaultBrowserType: 'chromium' } },
   ],
   webServer: [
-    { command: 'pnpm db:migrate && pnpm --filter @virtual-city/platform-api start', url: 'http://127.0.0.1:4300/health/ready', env: { WORLD_FLAGS_FILE: resolve('tests/fixtures/world-flags.json'), SAFETY_EVIDENCE_KEY: '67'.repeat(32), SAFETY_EVIDENCE_KEY_ID: 'browser-test-v1' }, reuseExistingServer: false, timeout: 60000 },
+    { command: 'pnpm db:migrate && pnpm --filter @virtual-city/platform-api start', url: 'http://127.0.0.1:4300/health/ready', env: { WORLD_FLAGS_FILE: resolve('tests/fixtures/world-flags.json'), LOCAL_TRAVEL_FIXTURES: '1', SAFETY_EVIDENCE_KEY: '67'.repeat(32), SAFETY_EVIDENCE_KEY_ID: 'browser-test-v1' }, reuseExistingServer: false, timeout: 60000 },
     { command: 'pnpm --filter @virtual-city/portal-web start', url: 'http://127.0.0.1:3300', reuseExistingServer: false, timeout: 60000 },
   ],
 });

@@ -43,14 +43,14 @@ pnpm bench:rooms
 
 `check` runs governance, ESLint/layer boundaries, strict types, unit tests, **real PostgreSQL integration tests**, and builds. Root `test` contains governance/unit tests; `test:integration` is separate and included in `check`. Without TEST_DATABASE_URL, the test harness creates a unique Compose project, random loopback port/password and tmpfs database, then cleans up its resources on success/failure. An explicit TEST_DATABASE_URL is accepted only for a loopback database named `virtual_city_test` or `virtual_city_test_*`. Never supply production credentials. Integration tests use isolated schemas, apply migrations repeatedly/concurrently, exercise HTTP/TCP readiness and transactional rollback. Test process kill -9 may leave a uniquely named container; inspect that project before manual cleanup.
 
-E2E runs built API/web on local :4300/:3300 with isolated PostgreSQL, covering real readiness and keyboard/mobile status UI. It refuses to reuse existing servers. Screenshots are real local artifacts under ignored `artifacts/`; HTML/traces under ignored playwright-report/test-results. It verifies the foundation only.
+E2E runs built API/web on local :4300/:3300 with isolated PostgreSQL, covering identity/social/safety, actual room scene, keyboard/mobile controls and synthetic travel/fault recovery. It refuses to reuse existing servers. Screenshots are real local artifacts under ignored `artifacts/`; retained checkpoint copies are in docs/agent/evidence, HTML/traces under ignored playwright-report/test-results. No real legacy integration or public release is inferred.
 
 ## Workspace and integration
 
 - apps/platform-api: one Nest/Fastify process, Drizzle-owned schema, SQL journal.
-- apps/portal-web: Next.js status and identity UI, same-origin API rewrite; worlds/travel are not implemented yet.
+- apps/portal-web: Next.js identity/social/safety UI, local cafe scene and travel confirmation, same-origin API rewrite.
 - packages/contracts: strict versioned status, identity, social and world wire shapes.
-- packages/world-sdk: definitions, guarded lifecycle/registry and a labeled local sandbox; authoritative rooms remain M06.
+- packages/world-sdk: definitions, guarded lifecycle/registry, recovery and nonpublic travel preparation for labeled local sandboxes.
 - packages/config: shared strict TypeScript baseline.
 - scripts/check-boundaries.mjs: static import and manifest-cycle enforcement. No cross-app, cross-world or world-to-domain internals. This supplements TypeScript; it is not a sandbox for arbitrary dynamic code.
 
@@ -60,7 +60,7 @@ Legacy repos remain independent at ../deadline-cafe and ../maid-cafe; they are n
 
 .github/workflows/quality.yml runs the same checks + E2E on pull requests, with cache, isolated PostgreSQL and seven-day failure artifacts. Per owner instruction, work stays offline: remote PRs, hosted CI and repository required-check settings are not executed here. After creating a remote, configure required status `Quality / quality`, run one failing/passing PR, and verify branch protection before merging. CI has read-only repository permission and no deployment step.
 
-No art/media imported; system fonts and code-native status UI only. Gameplay assets need a provenance manifest in M07. Public release, moderation operations, restricted-world access, production migrations, infrastructure and legal/content approvals remain gated. Read AGENTS.md before resuming. Use `pnpm plan:status` and update evidence/checkpoints after each verified slice.
+Original code-authored starter avatars/scene fixtures have reproducible provenance; no external media is imported or licensed here. Public release, moderation operations, restricted-world access, production migrations, infrastructure and legal/content approvals remain gated. Read AGENTS.md before resuming. Use `pnpm plan:status` and update evidence/checkpoints after each verified slice.
 
 ## Identity usage and limits
 
@@ -76,26 +76,28 @@ PUBLIC_SOCKET_ORIGIN is the trusted browser-reachable Socket.IO origin (default 
 
 ## Room Authority
 
-Room commands use authenticated Socket.IO with authoritative capacity, seats, privacy-filtered snapshots/deltas and bounded reconnect grace. The local sandbox has no browser scene yet. One room owner per database schema is enforced with a dedicated PostgreSQL advisory-lock connection; direct/session-affine DB connections are required. Lock loss interrupts rooms and requires process restart. Multiple API room replicas, transaction-pooling proxies and distributed failover are unsupported. See docs/architecture/ROOMS.md and ADR 0009. `pnpm bench:rooms` runs the measured local real-socket profile; results do not establish production capacity.
+Room commands use authenticated Socket.IO with authoritative capacity, seats, privacy-filtered snapshots/deltas and bounded reconnect grace. The local sandbox scene reflects these server snapshots. One room owner per database schema is enforced with a dedicated PostgreSQL advisory-lock connection; direct/session-affine DB connections are required. Lock loss interrupts rooms and requires process restart. Multiple API room replicas, transaction-pooling proxies and distributed failover are unsupported. See docs/architecture/ROOMS.md and ADR 0009. `pnpm bench:rooms` runs the measured local real-socket profile; results do not establish production capacity.
 
 ## World registry
 
-Authenticated GET /v1/worlds returns privacy-safe metadata. Only SDK Sandbox (local test world) is registered; disabled by default, no playable scene/room. Optional WORLD_FLAGS_FILE uses config/world-flags.example.json and the current NODE_ENV; SIGHUP reloads flags in the API process. Sandbox activation is denied in production. Invalid files/unknown flags disable worlds; permissions cannot be supplied by flags. All actual world rollout flags remain OFF. See docs/architecture/WORLD-SDK.md for lifecycle, errors, rollback and legacy adapter sequencing. Room/travel wire contracts remain M06/M09.
+Authenticated GET /v1/worlds returns privacy-safe metadata. SDK Sandbox is registered by default and closed until explicit flags; synthetic travel destinations require an additional local opt-in. Optional WORLD_FLAGS_FILE uses config/world-flags.example.json and the current NODE_ENV; SIGHUP reloads flags in the API process. Sandbox activation is denied in production. Invalid files/unknown flags disable worlds; permissions cannot be supplied by flags. All actual world rollout flags remain OFF. See docs/architecture/WORLD-SDK.md for lifecycle, errors, rollback and legacy adapter sequencing, and TRAVEL.md for current handoff contracts.
 
 M08-02 adds a default-OFF development/test-only [ephemeral chat backend](docs/architecture/CHAT-SAFETY.md) with bounded pre-broadcast moderation. Production chat is closed; related local safety workflows are described below, and public safety approval remains pending.
 
 M08-03 adds [confidential local reports](docs/architecture/REPORTS.md), encrypted evidence, assigned-case staff access and a room report/block dialog. A separate stable local evidence key is required; without it reporting truthfully stays unavailable. No staff is provisioned, and production remains closed.
 
-M08-04 adds [temporary sanctions and private appeals](docs/architecture/SANCTIONS.md). Assigned staff can issue bounded reasoned restrictions; committed bans/mutes apply across sessions at world/room/chat guards. Visit `/safety` for your own decisions and private appeal receipts, including while world access is suspended. Moderator UI and incident controls are in M08-05 below. M09 authorization uses the same safety guard; actual room handoff remains pending. Public/real-world flags remain OFF.
+M08-04 adds [temporary sanctions and private appeals](docs/architecture/SANCTIONS.md). Assigned staff can issue bounded reasoned restrictions; committed bans/mutes apply across sessions at world/room/chat guards. Visit `/safety` for your own decisions and private appeal receipts, including while world access is suspended. Moderator UI and incident controls are in M08-05 below. M09 handoff uses the same safety guard. Public/real-world flags remain OFF.
 
 `pnpm setup:safety` creates an ignored local evidence key without overwriting an existing one. `pnpm dev` loads it for local reports; chat and real world/public flags remain independently closed.
 
 M08-05 adds the local [moderation desk](docs/architecture/MODERATION.md) at `/moderation`, independent appeal disposition and durable scoped incident closure/recovery. Real staff grants are not provisioned by setup or any endpoint. The [runbook](docs/operations/MODERATION-RUNBOOK.md) documents the implemented local workflow and remaining operational gates; public activation remains denied.
 
-M09-01/02 adds [travel lifecycle and scoped authorization](docs/architecture/TRAVEL.md): authenticated short-lived intents, own read/cancel, durable retries and trusted one-time internal redemption. No room is moved or reserved and no travel UI exists yet. Invitations and membership handshake remain M09-03/04; access, source, safety and capacity must be current at the eventual switch.
+M09-01/02 adds [travel lifecycle and scoped authorization](docs/architecture/TRAVEL.md): authenticated short-lived intents, own read/cancel, durable retries and trusted one-time internal redemption. Issuing an intent alone never moves or reserves a room; the subsequent coordinator rechecks access/source/safety/capacity at its actual switch.
 
-M09-03 adds the [invitation inbox](docs/architecture/INVITATIONS.md) at `/invitations`: explicit recipient opt-in, current friendship/block checks, short-lived public-world offers and private live refresh. Accept records consent; your room does not change. Hidden/restricted destinations and arbitrary messages are unavailable. Membership handshake remains M09-04.
+M09-03 adds the [invitation inbox](docs/architecture/INVITATIONS.md) at `/invitations`: explicit recipient opt-in, current friendship/block checks, short-lived public-world offers and private live refresh. Accept records consent; your room does not change. Hidden/restricted destinations and arbitrary messages are unavailable. Travel confirmation is a separate action.
 
-M09-04 adds authenticated `travel.request` with separate target preparation and bounded holds before an authoritative room switch. Failed preparation retains source; a historical committed receipt never invents live membership. [Travel protocol and failure limits](docs/architecture/TRAVEL.md) describe verified socket scope; browser routing and group travel remain pending.
+M09-04 adds authenticated `travel.request` with separate target preparation and bounded holds before an authoritative room switch. Failed preparation retains source; a historical committed receipt never invents live membership. [Travel protocol and failure limits](docs/architecture/TRAVEL.md) describe the verified single-owner scope.
 
 M09-05 adds bounded group offers in `/invitations`, independent consent and explicit partial outcomes. Offline offers expire without holding seats; interrupted sends resume with durable child keys. Groups may split across available rooms when each member independently travels. No whole-group teleport or guaranteed shared seating is implied.
+
+M09-06 adds `/travel` confirmation, own-room read/rejoin and truthful recovery after a lost acknowledgement. Dedicated Synthetic Deadline/Maid/Portal adapters require `LOCAL_TRAVEL_FIXTURES=1` plus dev/test world flags and are rejected in production. They verify the travel protocol without claiming actual legacy integration or gameplay. Pending capabilities never enter URL/storage; real world rollout stays OFF.

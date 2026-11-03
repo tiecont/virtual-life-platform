@@ -1,0 +1,8 @@
+{
+  "syntheticTargetsOnly": true,
+  "actualConnections": 2,
+  "commitAckDropped": true,
+  "totalActiveOccupancy": 1,
+  "accountUnchanged": true,
+  "finalWorld": "travel-portal-fixture"
+}

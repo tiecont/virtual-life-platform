@@ -8,6 +8,7 @@ import { WindowLimiter } from '../identity/limits';
 import { DomainError } from '../common/errors';
 import { apiErrorHandler } from '../common/http-errors';
 import type { TravelService } from './service';
+import { OwnRoomSchema } from '@virtual-city/contracts';
 export function registerTravel(http: FastifyInstance, config: Config, identity: IdentityService, travel: TravelService, now = Date.now) {
   const limits = new WindowLimiter(now), uuid = z.uuid().transform(value => value.toLowerCase());
   const token = (req: FastifyRequest) => readSessionToken(req, config)!;
@@ -20,6 +21,7 @@ export function registerTravel(http: FastifyInstance, config: Config, identity: 
     api.addHook('preHandler', async req => { z.strictObject({}).parse(req.query); if (!limits.take('session:' + identity.hash(token(req)), 60)) throw new DomainError('RATE_LIMITED', 429, 'Please wait before trying again'); });
     api.post('/travel-intents', async (req, reply) => reply.code(201).send(await travel.create(write(req), key(req), req.body)));
     api.get('/travel-intents/:id', req => travel.get(token(req), id(req)));
+    api.get('/me/room', async req => OwnRoomSchema.parse(await travel.current(token(req))));
     api.post('/travel-intents/:id/cancel', req => { z.strictObject({}).parse(req.body ?? {}); return travel.cancel(write(req), id(req), key(req)); });
   }, { prefix: '/v1' });
 }

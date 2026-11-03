@@ -1,6 +1,6 @@
 # Travel Lifecycle and Admission Boundary
 
-M09-01 defines the lifecycle; M09-02 adds scoped durable authorization and HTTP issuance/read/cancel. M09-04 adds a socket coordinator with separate target preparation, bounded capacity holds and an owner-serialized membership switch. Browser travel routing remains M09-06. Ordinary room.join still rejects a different current membership. See ADR0017/0018/0020 and the M09 checkpoints for verified scope.
+M09-01 defines the lifecycle; M09-02 adds scoped durable authorization and HTTP issuance/read/cancel. M09-04 adds a socket coordinator with separate target preparation, bounded capacity holds and an owner-serialized membership switch. M09-06 adds browser confirmation and reconnect reconciliation at `/travel`. Ordinary room.join still rejects a different current membership. See ADR0017/0018/0020/0022 and the M09 checkpoints for verified scope.
 
 ## Audit
 
@@ -112,4 +112,12 @@ Source release invalidates all old tab commands; requesting connection receives 
 
 Migration0010 adds nullable target_room_id/target_membership_id constrained to COMMITTED records. ADR0020 documents linearization, failure recovery, rollback and trusted hook limitations. No real world is enabled. M09-03 invitation consent remains distinct; accept creates no automatic transfer. M09-05 group/offline behavior and M09-06 browser routing/network fault acceptance remain unfinished.
 
-One owner, synthetic fixtures and all real flagsOFF remain the current operating scope. No cross-process handshake, durable room recovery, real Deadline/Maid integration, party, public release or browser travel success is claimed here.
+## M09-06 Browser Confirmation and Recovery
+
+Visit `/travel` from invitations or the local cafe. A native destination select and Confirm travel action issue the scoped intent and authenticated socket request. Your name/avatar remain unchanged across visits. The page clears unconfirmed location on network loss and only restores it after own-room/session/epoch/member reconciliation; old callbacks cannot render a false destination. Pending capability/keys live only in component memory and never in URL/storage. Refresh, retry, request closure and return-to-lobby controls provide recovery without automatic arbitrary redirection. Account identity changes discard old pending state.
+
+`GET /v1/me/room` returns strict OwnRoomSchema for the authenticated account: filtered nullable snapshot,worldVersion,sceneVersion. Unknown query fields/foreign authority are rejected. It does not join or reserve a place. Reconnecting UI must use current guarded room.join before replaying a same-key committed observation; a historical receipt with no matching current snapshot cannot establish a visit. Existing multi-session identity policy applies, while intent consumption remains original-session scoped.
+
+The W1 E2E journey uses explicitly named Synthetic Deadline/Maid/Portal presence-only adapters. `LOCAL_TRAVEL_FIXTURES=1` plus independent dev/test flags is required; production configuration rejects it and normal setup leaves it off. No real legacy gameplay or new art/media is imported. The browser test intercepts and drops an actual committed server ACK, closes real transport, verifies unconfirmed UI and one actual target occupancy, then releases reconnect. A second tab loses source authority and refreshes to the same target. Portal travel retains one account occupancy/identity, and lobby return clears it. See ADR0022 and m09-browser evidence for actual results/limits.
+
+One owner, synthetic fixtures and all real flagsOFF remain the current operating scope. No cross-process handshake, durable room recovery, real Deadline/Maid integration, forced party transfer or public release is claimed here.

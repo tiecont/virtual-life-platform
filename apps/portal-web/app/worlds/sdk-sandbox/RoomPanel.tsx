@@ -189,7 +189,7 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
         </> : !loading && <Link href="/identity">Open identity</Link>}
         <label className="cafe-motion"><input type="checkbox" checked={lowMotion} onChange={event => { const value = event.target.checked; userMotion.current = value; lowMotionRef.current = value; setLowMotion(value); scene.current?.setReducedMotion(value); }}/>Reduce room motion</label>
         <div className="cafe-present"><h2>Visible here</h2>{view.snapshot?.participants.length ? <ul>{view.snapshot.participants.map(person => <li key={person.profile.id}><span>{person.profile.displayName}</span><small>{person.state === 'reconnecting' ? 'Reconnecting' : person.seatId ? 'Seated' : 'Standing'}</small></li>)}</ul> : <p className="cafe-note">No confirmed visible visitors.</p>}</div><Link href="/worlds/sdk-sandbox/avatar-lab">Preview avatar styles</Link>
-        {me && safetyRoom && <RoomSafety key={me.profile.id + ':' + safetyRoom.membershipId} me={me} room={safetyRoom} active={active}/>}
+        <Link href="/travel">Travel to another world</Link>{me && safetyRoom && <RoomSafety key={me.profile.id + ':' + safetyRoom.membershipId} me={me} room={safetyRoom} active={active}/>}
       </aside></div>
   </main>;
 }

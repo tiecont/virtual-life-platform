@@ -1,0 +1,203 @@
+$ pnpm governance:check && pnpm architecture:check && pnpm lint && pnpm typecheck && pnpm assets:check && pnpm test && pnpm test:integration && pnpm build
+$ node scripts/verify-governance.mjs
+{
+  "modules": {
+    "M00": "VERIFIED",
+    "M01": "VERIFIED",
+    "M02": "VERIFIED",
+    "M03": "VERIFIED",
+    "M04": "VERIFIED",
+    "M05": "VERIFIED",
+    "M06": "VERIFIED",
+    "M07": "VERIFIED",
+    "M08": "VERIFIED",
+    "M09": "PENDING",
+    "M10": "PENDING",
+    "M11": "PENDING",
+    "M12": "PENDING",
+    "M13": "PENDING",
+    "M14": "PENDING",
+    "M15": "PENDING",
+    "M16": "PENDING",
+    "M17": "PENDING",
+    "M18": "PENDING",
+    "M19": "PENDING",
+    "M20": "PENDING",
+    "M21": "PENDING",
+    "M22": "PENDING",
+    "M23": "PENDING",
+    "M24": "PENDING"
+  },
+  "ready": [
+    "M09-06",
+    "M10-01",
+    "M10-02",
+    "M10-03",
+    "M10-04",
+    "M10-05",
+    "M11-01",
+    "M11-02",
+    "M11-03",
+    "M11-04",
+    "M11-05",
+    "M11-06",
+    "M12-01",
+    "M12-02",
+    "M12-03",
+    "M12-04",
+    "M12-05",
+    "M12-06",
+    "M13-01",
+    "M13-02",
+    "M13-03",
+    "M13-04",
+    "M13-05",
+    "M21-01",
+    "M21-02",
+    "M21-03",
+    "M21-04",
+    "M21-05",
+    "M21-06"
+  ],
+  "blocked": []
+}
+Governance consistency verified; no gameplay or release claim.
+$ node scripts/verify-architecture.mjs
+Architecture consistency passed: 35 SQL tables + journal; 110 source files checked. Future gameplay invariants remain runtime gates.
+$ eslint . && node scripts/check-boundaries.mjs
+Boundary checks passed: 110 source files
+$ pnpm build:packages && pnpm -r typecheck && tsc -p tests/load/tsconfig.json
+$ pnpm --filter './packages/*' -r build
+Scope: 4 of 7 workspace projects
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+Scope: 6 of 7 workspace projects
+packages/contracts typecheck$ tsc -p tsconfig.json --noEmit
+packages/contracts typecheck: Done
+packages/world-sdk typecheck$ tsc -p tsconfig.json --noEmit
+packages/world-sdk typecheck: Done
+apps/platform-api typecheck$ tsc -p tsconfig.json --noEmit
+packages/pixi-scene typecheck$ tsc -p tsconfig.json --noEmit
+packages/pixi-scene typecheck: Done
+apps/portal-web typecheck$ tsc --noEmit
+apps/portal-web typecheck: Done
+apps/platform-api typecheck: Done
+$ node --import tsx scripts/build-avatar-assets.ts --check
+(node:211021) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Original avatar atlas and provenance reproduce exactly.
+$ pnpm build:packages && node --test tests/governance/*.test.mjs && vitest run --project unit
+$ pnpm --filter './packages/*' -r build
+Scope: 4 of 7 workspace projects
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+✔ worlds cannot import another world repository, platform internals or application code (1.155258ms)
+✔ contracts cannot import SDK and apps cannot import another application internals (4.580948ms)
+✔ the scanner rejects actual source imports and manifest cycles (11.782029ms)
+✔ audit ranges and conjunctive dependencies preserve the authoritative DAG (5.986203ms)
+✔ cycles, unknown dependencies and duplicate module IDs are rejected (0.783143ms)
+✔ checkpoint cannot assert verification without evidence or through an unmet gate (0.337671ms)
+✔ the supplied plan pack is accepted without changing its manifest shape (4.986755ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 84.987668
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+
+ Test Files  23 passed (23)
+      Tests  122 passed (122)
+   Start at  13:23:01
+   Duration  2.77s (transform 4.71s, setup 0ms, import 15.31s, tests 3.17s, environment 5ms)
+
+$ pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project integration
+$ pnpm --filter './packages/*' -r build
+Scope: 4 of 7 workspace projects
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+ Network virtual-city-test-4c0a3f6a_default Creating 
+ Network virtual-city-test-4c0a3f6a_default Creating 
+ Network virtual-city-test-4c0a3f6a_default Created 
+ Network virtual-city-test-4c0a3f6a_default Created 
+ Container virtual-city-test-4c0a3f6a-db-1 Creating 
+ Container virtual-city-test-4c0a3f6a-db-1 Created 
+ Container virtual-city-test-4c0a3f6a-db-1 Starting 
+ Container virtual-city-test-4c0a3f6a-db-1 Started 
+ Container virtual-city-test-4c0a3f6a-db-1 Waiting 
+ Container virtual-city-test-4c0a3f6a-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+(node:215331) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:215411) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:215445) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:215535) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:215598) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:215649) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:215738) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ Test Files  12 passed (12)
+      Tests  178 passed (178)
+   Start at  13:23:14
+   Duration  85.03s (transform 545ms, setup 0ms, import 6.27s, tests 77.02s, environment 1ms)
+
+ Container virtual-city-test-4c0a3f6a-db-1 Stopping 
+ Container virtual-city-test-4c0a3f6a-db-1 Stopped 
+ Container virtual-city-test-4c0a3f6a-db-1 Removing 
+ Container virtual-city-test-4c0a3f6a-db-1 Removed 
+ Network virtual-city-test-4c0a3f6a_default Removing 
+ Network virtual-city-test-4c0a3f6a_default Removed 
+$ pnpm -r build
+Scope: 6 of 7 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+apps/platform-api build$ tsc -p tsconfig.json && node ../../scripts/copy-migrations.mjs
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/pixi-scene build: Done
+apps/portal-web build$ next build --webpack
+apps/portal-web build: ▲ Next.js 16.4.4 (webpack)
+apps/portal-web build: ✓ Running next.config.ts took 29ms
+apps/portal-web build:   Creating an optimized production build ...
+apps/platform-api build: Done
+apps/portal-web build: ✓ Compiled successfully in 4.6s
+apps/portal-web build:   Running TypeScript ...
+apps/portal-web build:   Finished TypeScript in 3.0s ...
+apps/portal-web build:   Collecting page data using 12 workers ...
+apps/portal-web build:   Generating static pages using 12 workers (0/6) ...
+apps/portal-web build:   Generating static pages using 12 workers (1/6) 
+apps/portal-web build:   Generating static pages using 12 workers (2/6) 
+apps/portal-web build:   Generating static pages using 12 workers (4/6) 
+apps/portal-web build: ✓ Generating static pages using 12 workers (6/6) in 1353ms
+apps/portal-web build:   Finalizing page optimization ...
+apps/portal-web build:   Collecting build traces ...
+apps/portal-web build: Route (app)
+apps/portal-web build: ┌ ƒ /
+apps/portal-web build: ├ ○ /_not-found
+apps/portal-web build: ├ ○ /identity
+apps/portal-web build: ├ ƒ /invitations
+apps/portal-web build: ├ ○ /moderation
+apps/portal-web build: ├ ○ /safety
+apps/portal-web build: ├ ƒ /social
+apps/portal-web build: ├ ƒ /travel
+apps/portal-web build: ├ ƒ /worlds/sdk-sandbox
+apps/portal-web build: └ ○ /worlds/sdk-sandbox/avatar-lab
+apps/portal-web build: ○  (Static)   prerendered as static content
+apps/portal-web build: ƒ  (Dynamic)  server-rendered on demand
+apps/portal-web build: Done
