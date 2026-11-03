@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "core": "starter-v1",
-  "path": "/assets/avatars/starter-v1.svg",
+  "path": "/assets/avatars/7dee4545ce16/starter-v1.svg",
   "width": 512,
   "height": 768,
   "frameWidth": 32,
@@ -29,7 +29,7 @@
     "serve"
   ],
   "sha256": "7dee4545ce162f6583a1e60092607cb01735b2fd02f524711e859a48118e6775",
-  "source": "Original code-authored pixel geometry in packages/pixi-scene/src/avatar-art.ts",
+  "source": "Original code-authored pixel geometry in packages/pixi-scene/src/avatar-art-generator.ts",
   "authoring": "Created in this workspace for virtual-life-platform; no imported media or character references",
   "attribution": "No third-party attribution requirements identified; no external artwork used",
   "rights": "Project owner retains distribution/license decision; this manifest does not assign a media license",

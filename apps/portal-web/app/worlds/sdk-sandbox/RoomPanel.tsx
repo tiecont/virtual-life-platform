@@ -83,7 +83,7 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
   useEffect(() => {
     const element = host.current; if (!element) return;
     let cancelled = false; let owned: SceneView | undefined; const controller = new AbortController();
-    void import('@virtual-city/pixi-scene').then(module => module.createCafeScene(element, sandboxScene, id => claimRef.current(id), { signal: controller.signal, outfit: 'cafe-apron', onMove: point => moveRef.current(point) })).then(renderer => {
+    void import('@virtual-city/pixi-scene/renderer').then(module => module.createCafeScene(element, sandboxScene, id => claimRef.current(id), { signal: controller.signal, outfit: 'cafe-apron', onMove: point => moveRef.current(point) })).then(renderer => {
       owned = renderer;
       if (cancelled) { renderer.destroy(); return; }
       scene.current = renderer; renderer.setReducedMotion(lowMotionRef.current); renderer.update(recovery.current.view.snapshot); setSceneState('ready');

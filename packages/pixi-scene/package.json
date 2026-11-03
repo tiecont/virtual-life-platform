@@ -4,6 +4,8 @@
   "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }, "./renderer": { "types": "./dist/renderer.d.ts", "default": "./dist/renderer.js" } },
+  "typesVersions": { "*": { "renderer": ["dist/renderer.d.ts"] } },
   "scripts": { "build": "tsc -p tsconfig.json", "typecheck": "tsc -p tsconfig.json --noEmit" },
   "dependencies": { "@virtual-city/contracts": "workspace:*", "@virtual-city/world-sdk": "workspace:*", "pixi.js": "8.22.0" }
 }

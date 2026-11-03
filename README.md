@@ -8,6 +8,8 @@ A synthetic cafe scene is available at `/worlds/sdk-sandbox` only with explicit 
 
 The original starter avatar and outfit/action previews are at `/worlds/sdk-sandbox/avatar-lab`. Regenerate its atlas with `pnpm assets:avatars` after building packages; `pnpm assets:check` verifies reproducibility and provenance. Preview actions do not grant gameplay permissions. Public media/release approval remains pending.
 
+The scene renderer loads through its explicit client entry and uses a versioned immutable atlas cache. [Measured local scene budgets](docs/architecture/SCENE-PERFORMANCE.md) include real browser CPU/network emulation and lifecycle checks; they are not production or physical-device promises.
+
 ## Local setup
 
 Linux, Node **26.9.0** (`.node-version`), pnpm **11.28.5**, Docker Engine + Compose v2. Exact dependency pins and pnpm-lock.yaml are committed. The Node pin describes the verified environment, not an LTS claim.

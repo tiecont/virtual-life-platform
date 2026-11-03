@@ -1,0 +1,23 @@
+{
+  "taskID": "M07-06",
+  "verifiedAt": "2026-11-03T02:09:56Z",
+  "source": "workspace diff from fd8fabb; checkpoint commit in git log",
+  "environment": { "runtime": "Linux7.2.9-2-cachyos/Node26.9.0/pnpm11.28.5/Pixi8.22.0/PostgreSQL17.7-alpine/Playwright Chromium", "cpu": "AMD Ryzen7 4800HS with Radeon Graphics", "logicalCpus": 16, "totalMemoryBytes": 24573251584 },
+  "commands": [
+    { "command": "pnpm assets:avatars", "exitCode": 0 },
+    { "command": "pnpm check", "exitCode": 0, "log": "m07-performance-check-attempt1.log", "governanceTests": 7, "unitTests": 43, "integrationTests": 75 },
+    { "command": "node --test tests/governance/boundaries.test.mjs", "exitCode": 0, "tests": 3, "scope": "final public renderer entry guard assertions" },
+    { "command": "node model root require + require.cache Pixi-module assertion (cwd apps/portal-web)", "exitCode": 0, "pixiRendererModulesLoaded": 0 },
+    { "command": "pnpm lint", "exitCode": 0, "scope": "final source69 boundaries" },
+    { "command": "git diff --check", "exitCode": 2, "reason": "extra blank line at EOF after generator split" },
+    { "command": "git diff --check", "exitCode": 0, "scope": "final whitespace fixed" },
+    { "command": "pnpm test:e2e", "exitCode": 0, "log": "m07-performance-e2e-attempt1.log", "tests": 30, "scope": "desktop15/mobile15, fresh builds; actual CPU/network/cache/lifetime profile and previous regressions" }
+  ],
+  "profile": "CPU4x,40ms latency,12Mbps simulated download,actual local HTTP/socket scenes; three SPA remounts in same realm and forced GC",
+  "desktop": { "readyMs": 2169.6, "jsDecodedBytes": 2086490, "jsEncodedBytes": 592035, "avatarDecodedBytes": 415243, "avatarEncodedBytes": 5303, "warmAvatarTransferBytes": 0, "idleWindowMs": 1000, "idleRenders": 0, "rafSamples": 84, "rafP95GapMs": 33.4, "postGcHeapGrowthBytes": 955424 },
+  "mobile": { "readyMs": 2328.9, "jsDecodedBytes": 2086490, "jsEncodedBytes": 592035, "warmAvatarTransferBytes": 0, "idleWindowMs": 1000, "idleRenders": 0, "rafSamples": 130, "rafP95GapMs": 16.8, "postGcHeapGrowthBytes": 975676 },
+  "artifacts": "m07-06-performance/ (full actual resource/timing/heap JSON); visual regressions retain actual screenshots from scene tests/M07-05",
+  "budgets": "config/scene-performance.json; all local assertions pass",
+  "migrations": "none; explicit public renderer export and content-addressed static URL only; ADR0011",
+  "limits": ["Single short run per profile; canvas-ready is not a latency p95", "Chromium emulation not physical low-end mobile/Safari", "rAF cadence not GPU throughput; forced-GC heap excludes GPU/total browser memory and is not leak certification", "Atlas pixel byte estimate1,572,864 is not total GPU allocation", "Cafe layout is still local fixture; original starter art releaseApproved=false", "Real/default flags OFF; safety/travel/portal and public release incomplete"]
+}

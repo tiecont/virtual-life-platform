@@ -19,7 +19,8 @@ export function assertImportAllowed(from, specifier, root) {
       throw new Error(`Forbidden workspace package: ${path} → ${specifier}`);
     }
     if (path.startsWith('packages/contracts/') && targetPackage !== 'config') throw new Error(`Contracts must not import SDK/apps: ${specifier}`);
-    if (specifier.split('/').length > 2) throw new Error(`Workspace deep import: ${specifier}`);
+    const publicRenderer = specifier === '@virtual-city/pixi-scene/renderer' && path.startsWith('apps/portal-web/');
+    if (specifier.split('/').length > 2 && !publicRenderer) throw new Error(`Workspace deep import: ${specifier}`);
   }
 }
 export async function checkBoundaries(root) {

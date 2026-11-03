@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "profile": "Chromium desktop/mobile emulation, CPU4x, loopback latency40ms/12Mbps download; not physical low-end hardware",
+  "readyMaxMs": 12000,
+  "jsDecodedMaxBytes": 3145728,
+  "jsEncodedMaxBytes": 1048576,
+  "avatarDecodedMaxBytes": 524288,
+  "idleWindowMs": 1000,
+  "idleMaxRenders": 0,
+  "rafP95GapMaxMs": 100,
+  "remountCycles": 3,
+  "postGcHeapGrowthMaxBytes": 20971520
+}

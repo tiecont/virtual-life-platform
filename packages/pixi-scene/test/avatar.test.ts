@@ -1,6 +1,7 @@
 import { it, expect } from 'vitest';
 import { AvatarAppearanceSchema, AvatarKeySchema, AvatarOutfitSchema, AnimationStateSchema, ProfilePatchSchema } from '@virtual-city/contracts';
-import { avatarFrame, avatarAtlasSpec, avatarAtlasSvg } from '../src/avatar-art';
+import { avatarFrame, avatarAtlasSpec } from '../src/avatar-art';
+import { avatarAtlasSvg } from '../src/avatar-art-generator';
 
 it('maps every approved appearance/action/frame to a distinct bounded atlas cell', () => {
   const cells = new Set<string>();

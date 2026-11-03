@@ -15,6 +15,9 @@ test('contracts cannot import SDK and apps cannot import another application int
   assert.throws(() => assertImportAllowed('/repo/apps/portal-web/app/page.tsx', '../../platform-api/src/app', root));
   assert.throws(() => assertImportAllowed('/repo/apps/portal-web/app/page.tsx', '@virtual-city/contracts/src/private', root));
   assert.doesNotThrow(() => assertImportAllowed('/repo/apps/portal-web/app/page.tsx', '@virtual-city/contracts', root));
+  assert.doesNotThrow(() => assertImportAllowed('/repo/apps/portal-web/app/page.tsx', '@virtual-city/pixi-scene/renderer', root));
+  assert.throws(() => assertImportAllowed('/repo/apps/platform-api/src/app.ts', '@virtual-city/pixi-scene/renderer', root));
+  assert.throws(() => assertImportAllowed('/repo/apps/portal-web/app/page.tsx', '@virtual-city/pixi-scene/src/renderer', root));
 });
 test('the scanner rejects actual source imports and manifest cycles', async () => {
   const { mkdtemp, mkdir, writeFile, rm } = await import('node:fs/promises');
