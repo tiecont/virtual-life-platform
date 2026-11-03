@@ -1,5 +1,7 @@
 # Decisions
 
+M13-02 / ADR0040: no raw reward route;own focus ID is resolved by focus owner in SQL transaction,service grants from canonical source under account lock/unique key. Hospitality uses reviewed transactional outbox sink only when explicitly enabled. Private immutable ledger + entitlements;partner links separated for erasure/short retention. Full304integration/builds pass. Equip/role/appearance/reversal remain03..05.
+
 M13-01 / ADR0039: optional default-disabled completion-only XP;account20/day/world10/day/fixed2percompletion,partner2/day and60s cooldown;no dating/social/timeonline/monetary/trading rewards. Existing casual/apron art only;unlock does not imply staffing/equip permission. Pure policy model verified194unit/builds;ledger and engine consumers remain02.
 
 M12-06: acceptance combines independent TCP/Socket.IO sessions with actual SQL allocations and authorized timezone change across both DST transitions. CHECKED_IN attendance remains historical until end; tests cancel CONFIRMED consent before replacing allocation. No runtime change;full299integration/builds pass. EVENTS-VERIFICATION.md maps actual scope/limits.

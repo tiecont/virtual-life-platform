@@ -59,7 +59,10 @@
     "engine_event_performer_readiness": "engine.events",
     "engine_event_notices": "engine.events",
     "engine_event_invitations": "engine.events",
-    "engine_event_invite_mutations": "engine.events"
+    "engine_event_invite_mutations": "engine.events",
+    "engine_progression_ledger": "engine.progression",
+    "engine_progression_entitlements": "engine.progression",
+    "engine_progression_partners": "engine.progression"
   },
   "journalTable": "city_schema_migrations",
   "legacyDatabases": "not managed by city migrations",

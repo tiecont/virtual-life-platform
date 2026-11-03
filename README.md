@@ -6,6 +6,8 @@ The [shared hospitality engine](docs/architecture/HOSPITALITY.md) provides priva
 
 The [event engine](docs/architecture/EVENTS-RESERVATIONS.md) provides policy-gated silent schedules, private RSVPs, explicit calendar download, virtual table holds/check-in/FIFO and scoped controls/private cancellation notices. Concurrent effects use PostgreSQL transactions. Discovery/invitations and actual Restaurant integration remain later tasks; real event worlds remain disabled.
 
+The optional [progression engine](docs/architecture/PROGRESSION.md) now stores private source-unique completion grants and cosmetic entitlements. Progression defaults OFF; outfit restrictions/equip UI and compensating revocation remain subsequent tasks.
+
 Offline implementation of the supplied [master plan](MASTER-AGENT-PLAN.md). Current features and evidence are in [PROGRESS](docs/agent/PROGRESS.md); resume from [HANDOFF](docs/agent/HANDOFF.md). Guest/registered identity, session renewal, private settings and own-data export/delete are available at `/identity`. Consent-based friends, private contact codes and blocking are available at `/social`. A working identity is not a playable city. All worlds remain closed. Nothing is deployed or published.
 
 A synthetic cafe scene is available at `/worlds/sdk-sandbox` only with explicit local/test flags. It renders real room presence, original starter avatars and seat state with keyboard controls. Server-approved walking supports floor clicks and keyboard destinations around solid tables/walls. See [scene setup and limitations](docs/architecture/SCENES.md); real world rollout remains OFF.

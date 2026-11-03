@@ -53,6 +53,12 @@ export class FocusService {
     }));
   }
   current(token: string) { return this.tx(token, async (db, actor) => { const row = (await db.query<Row>("SELECT * FROM engine_focus_sessions WHERE account_id=$1 ORDER BY (phase IN ('active','paused')) DESC,creation_order DESC LIMIT 1 FOR UPDATE", [actor.accountId])).rows[0]; return this.result(row ? await this.transition(db, row) : null); }); }
+  completion<T>(token: string, id: string, work: (db: PoolClient, completion: { accountId: string; sourceId: string; worldSlug: string; completedAt: string }) => Promise<T>) {
+    id = uuid.parse(id); return this.tx(token, async (db, actor) => {
+      const row = await this.transition(db, await this.own(db, actor, id)); if (row.phase !== 'completed') throw unavailable();
+      return work(db, { accountId: actor.accountId, sourceId: row.id, worldSlug: row.world_slug, completedAt: row.changed_at.toISOString() });
+    });
+  }
   get(token: string, id: string) { id = uuid.parse(id); return this.tx(token, async (db, actor) => this.result(await this.transition(db, await this.own(db, actor, id)))); }
   history(token: string, raw: unknown) {
     const query = FocusHistoryQuerySchema.parse(raw);

@@ -7,16 +7,17 @@ import { defineWorld } from '@virtual-city/world-sdk';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/config';
 import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { DEFAULT_PROGRESSION_POLICY } from '../../apps/platform-api/src/progression/policy';
 const origin = 'http://127.0.0.1:3300'; let admin: Pool, serial = 0;
 const opened: { app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: string }[] = [], sockets = new Set<Socket>();
 beforeAll(async () => { const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database'); admin = new Pool({ connectionString: url.toString() }); });
 afterEach(async () => { for (const socket of sockets) socket.close(); sockets.clear(); for (const r of opened.splice(0)) { await r.app.app.close(); await r.pool.end(); await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`); } });
 afterAll(async () => { await admin.end(); });
-async function open(scopedWorlds = false) {
+async function open(scopedWorlds = false, progression = false) {
   const schema = 'focus_test_' + randomUUID().replaceAll('-', ''); await admin.query(`CREATE SCHEMA "${schema}"`); const url = new URL(process.env.TEST_DATABASE_URL!); url.searchParams.set('options', '-c search_path=' + schema); const pool = new Pool({ connectionString: url.toString() }); await migrate(pool); let now = Date.now();
   const module = defineWorld({ schemaVersion: 1, apiVersion: 1, slug: 'focus-library-fixture', version: '1.0.0', title: 'Synthetic focus library (not actual Library world)', kind: 'sandbox', sceneRef: { key: 'focus-fixture', version: '1.0.0' }, capacity: 2, seatIds: ['seat-1', 'seat-2'], capabilities: ['presence', 'seating', 'focus'], focusPolicy: { pauseAllowed: true }, accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'sandbox', position: { x: .5, y: .5 }, icon: 'flask' } }, { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {}, travel: { prepare: async () => {}, abort: async () => {}, depart: async () => {} } });
   const scoped = scopedWorlds ? ['deadline', 'library'].map(slug => defineWorld({ ...module.definition, slug, title: 'Synthetic ' + slug + ' focus fixture', focusPolicy: { pauseAllowed: slug === 'library' } }, { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {}, travel: { prepare: async () => {}, abort: async () => {}, depart: async () => {} } })) : [];
-  const config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'focus-local-test-only-session-secret-000001' }), options = { now: () => now, worlds: { modules: [module, ...scoped] } }, app = await createApp(config, pool, false, options); opened.push({ app, pool, schema }); await app.app.listen(0, '127.0.0.1'); for (const slug of app.worlds.registry.slugs()) await app.worlds.registry.setEnabled(slug, true);
+  const config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'focus-local-test-only-session-secret-000001' }), options = { now: () => now, worlds: { modules: [module, ...scoped] }, ...(progression ? { progression: { policy: { ...DEFAULT_PROGRESSION_POLICY, enabled: true } } } : {}) }, app = await createApp(config, pool, false, options); opened.push({ app, pool, schema }); await app.app.listen(0, '127.0.0.1'); for (const slug of app.worlds.registry.slugs()) await app.worlds.registry.setEnabled(slug, true);
   return { app, pool, options, config, url: await app.app.getUrl(), now: () => now, advance: (ms: number) => { now += ms; } };
 }
 type Runtime = Awaited<ReturnType<typeof open>>; type User = { me: Me; cookie: string };
@@ -35,6 +36,40 @@ async function seat(r: Runtime, user: User, worldSlug = 'sdk-sandbox', claim = t
 const input = (source: TravelSource, durationSeconds = 900) => ({ schemaVersion: 1, source, durationSeconds });
 async function start(r: Runtime, u: User, source: TravelSource, durationSeconds = 900, key = randomUUID()) { const response = await post(r, u, 'focus', input(source, durationSeconds), key); expect(response.statusCode).toBe(201); const result = FocusResultSchema.parse(response.json()); if (!result.session) throw new Error('Expected timer'); return result.session; }
 const action = (r: Runtime, u: User, id: string, operation: string, key = randomUUID()) => post(r, u, 'focus/' + id + '/' + operation, { schemaVersion: 1 }, key);
+const claimXp = (r: Runtime, u: User, id: string) => post(r,u,'me/progression/claim-focus',{schemaVersion:1,focusId:id});
+
+it('progression claims only an owned completed focus source and eight actual TCP replays mint once across restart', async () => {
+  const r=await open(true,true),u=await guest(r),other=await guest(r),visit=await seat(r,u,'deadline'),timer=await start(r,u,visit.source);
+  expect((await claimXp(r,u,timer.id)).statusCode).toBe(404);expect((await claimXp(r,other,timer.id)).statusCode).toBe(404);r.advance(900000);
+  const replies=await Promise.all(Array.from({length:8},()=>fetch(r.url+'/v1/me/progression/claim-focus',{method:'POST',headers:{...headers(u),'content-type':'application/json'},body:JSON.stringify({schemaVersion:1,focusId:timer.id}),signal:AbortSignal.timeout(5000)})));
+  expect(replies.every(reply=>reply.status===200)).toBe(true);for(const reply of replies)expect((await reply.json()).lifetimeXp).toBe(2);expect((await r.pool.query('SELECT 1 FROM engine_progression_ledger')).rowCount).toBe(1);
+  await restart(r);expect((await claimXp(r,u,timer.id)).json().lifetimeXp).toBe(2);expect((await get(r,other,'me/progression')).json().history).toEqual([]);expect((await get(r,u,'me/progression?accountId='+other.me.profile.id)).statusCode).toBe(422);
+  expect((await post(r,u,'me/progression/claim-focus',{schemaVersion:1,focusId:timer.id,amount:999})).statusCode).toBe(422);
+  await expect(r.pool.query('UPDATE engine_progression_ledger SET xp=1')).rejects.toMatchObject({code:'55000'});
+});
+
+it('progression world cap unlocks one cosmetic without spending and retains private immutable source history', async () => {
+  const r=await open(true,true),u=await guest(r),visit=await seat(r,u,'deadline');
+  for(let i=0;i<6;i++){const timer=await start(r,u,visit.source);r.advance(900000);expect((await claimXp(r,u,timer.id)).statusCode).toBe(200);}
+  const current=(await get(r,u,'me/progression')).json();expect(current.lifetimeXp).toBe(10);expect(current.entitlements).toContain('cafe-apron');expect(current.history).toHaveLength(5);expect(JSON.stringify(current)).not.toMatch(/partner|source_id|fingerprint|roomId|seatId/);
+  const exported=(await get(r,u,'me/export')).json().domains.progression;expect(exported.lifetimeXp).toBe(10);expect((await r.pool.query("SELECT 1 FROM engine_progression_entitlements WHERE cosmetic_key='cafe-apron'")).rowCount).toBe(1);
+  await r.app.http.inject({method:'DELETE',url:'/v1/me',headers:headers(u),payload:{}});expect((await r.pool.query('SELECT 1 FROM engine_progression_ledger')).rowCount).toBe(0);expect((await r.pool.query('SELECT 1 FROM engine_progression_entitlements')).rowCount).toBe(0);
+});
+
+it('progression entitlement failure rolls back the grant and focus transition, and default disabled app grants nothing', async () => {
+  const r=await open(true,true),u=await guest(r),visit=await seat(r,u,'deadline'),timer=await start(r,u,visit.source);r.advance(900000);
+  await r.pool.query("CREATE FUNCTION fail_xp_entitlement() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic entitlement failure'; END $$");await r.pool.query('CREATE TRIGGER fail_xp_entitlement BEFORE INSERT ON engine_progression_entitlements FOR EACH ROW EXECUTE FUNCTION fail_xp_entitlement()');
+  expect((await claimXp(r,u,timer.id)).statusCode).toBe(503);expect((await r.pool.query('SELECT 1 FROM engine_progression_ledger')).rowCount).toBe(0);expect((await r.pool.query('SELECT phase FROM engine_focus_sessions')).rows[0].phase).toBe('active');await r.pool.query('DROP TRIGGER fail_xp_entitlement ON engine_progression_entitlements');expect((await claimXp(r,u,timer.id)).json().lifetimeXp).toBe(2);
+  const closed=await open(true),guestUser=await guest(closed),seated=await seat(closed,guestUser,'deadline'),done=await start(closed,guestUser,seated.source);closed.advance(900000);expect((await claimXp(closed,guestUser,done.id)).json()).toMatchObject({enabled:false,lifetimeXp:0,entitlements:['casual']});
+});
+
+it('progression rejects current safety closure and forged claims without turning private timer reads into reward authority',async()=>{
+ const r=await open(true,true),u=await guest(r),visit=await seat(r,u,'deadline'),timer=await start(r,u,visit.source);r.advance(900000);
+ await r.pool.query("INSERT INTO safety_incident_controls VALUES('deadline','world',true,NULL,$1)",[new Date(r.now())]);expect((await claimXp(r,u,timer.id)).json().lifetimeXp).toBe(0);expect((await get(r,u,'focus/'+timer.id)).json().session.phase).toBe('completed');
+ expect((await r.app.http.inject({method:'POST',url:'/v1/me/progression/claim-focus',headers:{...headers(u),origin:'https://invalid.example'},payload:{schemaVersion:1,focusId:timer.id}})).statusCode).toBe(403);
+ expect((await r.app.http.inject({method:'POST',url:'/v1/me/progression/claim-focus',headers:{origin,cookie:u.cookie},payload:{schemaVersion:1,focusId:timer.id}})).statusCode).toBe(403);
+ expect((await post(r,u,'me/progression/claim-focus',{schemaVersion:1,focusId:timer.id,accountId:u.me.profile.id})).statusCode).toBe(422);await r.pool.query("UPDATE safety_incident_controls SET closed=false");expect((await claimXp(r,u,timer.id)).json().lifetimeXp).toBe(2);
+});
 async function restart(r: Runtime) { await r.app.app.close(); const old = r.app, app = await createApp(r.config, r.pool, false, r.options); opened.find(item => item.app === old)!.app = app; r.app = app; await app.app.listen(0, '127.0.0.1'); r.url = await app.app.getUrl(); for (const slug of app.worlds.registry.slugs()) await app.worlds.registry.setEnabled(slug, true); }
 
 it('starts one server-timestamped timer under concurrent actual HTTP retries with trusted seat association', async () => {

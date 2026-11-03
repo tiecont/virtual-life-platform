@@ -1,5 +1,11 @@
 # Agent progress
 
+## M13-02 - VERIFIED source-unique private XP ledger
+
+From9abb774;m13-ledger-checks.json/ADR0040. Fullcheck exit0:7governance,194unit,304integration including5newprogression,lint/types/architecture/assets/builds;additive0023localmigration/diff0. Targetedfocus3pass thencombined4pass;these were passing initial acceptance,not red-first evidence. Browser regression evidence recorded separately after completion.
+
+Canonical focus owner completion port and reviewed transactional hospitality sink feed account-locked source-unique ledger;actual8TCP replay1grant,restart,worldcap/uniqueunlock,entitlement rollback+focusrollback,samepartnerfarm cap/currentclosure/defaultdisabled/auth/privacy/erasure pass. Partnerlinks are separate FK records;counterparty deletion preserves survivorXP. Minimal grant history retained accountlifetime;partners bounded2daypurge,history/export100truncated;no hostileDBowner/identitycollusion certificate. Defaultdisabled/no consumers in normalapp;no equip/UI/reversal yet. Next M13-03 current-world outfit restrictions/server appearance/fallback,then04accessible inventory/equip UI,05compensation/abuse. AllflagsOFF,previewoff,cityDB0023.
+
 ## M13-01 - VERIFIED bounded nonmonetary policy model
 
 Fromf302867;m13-policy-checks.json/ADR0039/PROGRESSION.md. Actual194unit pass,packages/APItypecheck/lint/fullworkspacebuild/diff0. Missingmodule red and initial TypeScript never-union build failure retained;explicit kind-map typing fixed without schema relaxation. No disconnected-model DB/browser rerun claimed. Defaultdisabled perworld source policy,UTC account/world caps,partner repetition/self/cooldown/eligibility/time/forged-input guards verified. Casualfree/apron10lifetimeXP threshold defined only;no ledger/grant/consumer/equip functionality yet. Next M13-02 durable unique-source private SQL ledger/entitlements with account locks and reviewed engine completion ports;verify replay/restart/caps/rollback/privacy/erasure. AllflagsOFF,previewoff,DB0022.

@@ -1,0 +1,16 @@
+{
+ "taskID":"M13-02","source":"workspace from9abb774;checkpoint SHA followsgitlog","environment":"2026-11-03;Node26.9.0/pnpm11.28.5;disposable PostgreSQL/realHTTP/Socket.IO",
+ "commands":[
+  {"command":"pnpm build:packages","exitCode":0,"log":"m13-ledger-packages.log"},
+  {"command":"pnpm --filter @virtual-city/platform-api typecheck","exitCode":0,"log":"m13-ledger-typecheck.log"},
+  {"command":"node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/focus.test.ts -t 'progression'","exitCode":0,"log":"m13-ledger-focus-attempt1.log","scope":"3pass21filteredskips;initial implementation acceptance,not red-first evidence"},
+  {"command":"node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/focus.test.ts tests/integration/hospitality.test.ts -t 'progression'","exitCode":0,"log":"m13-ledger-integration-attempt2.log","scope":"4pass74filteredskips after separate partner FK privacy table"},
+  {"command":"pnpm lint","exitCode":0,"log":"m13-ledger-lint.log"},
+  {"command":"pnpm check","exitCode":0,"log":"m13-ledger-check.log","exitArtifact":"m13-ledger-check.exit","scope":"7governance,194unit,304integration including5newprogression;lint/types/architecture/assets/builds"},
+  {"command":"pnpm db:migrate","exitCode":0,"log":"m13-ledger-local-migration.log","scope":"additive0023 retained city DB,legacy unchanged"},
+  {"command":"node scripts/run-browser-tests.mjs tests/e2e/foundation.spec.ts tests/e2e/identity.spec.ts","exitCode":0,"log":"m13-ledger-browser.log","exitArtifact":"m13-ledger-browser.exit","scope":"6pass,3desktop/3mobile;existing startup/identity/export/deletion regression,no inventoryUI"},
+  {"command":"git diff --check","exitCode":0}
+ ],
+ "verified":["Eight realTCP same-source claims ->1grant,2XP acrossrestart","Focus owner port denies early/foreign source;strict payload/Origin/CSRF/privacy guards","World10XP cap yields5grants/oneapronentitlement;no spending","Injected entitlement failure rolls back grant and focus transition;originalsource retry succeeds","Reviewed hospitality outbox consumer grants both participants once;thirdsamepartnercompletion mintsnothing","Counterparty/account erasure removes pair links while preserving survivorXP","Current incident closure withholds new grants;defaultdisabled app grantsnothing;ledgerUPDATE rejects"],
+ "limits":["No red-first claim;initial acceptance commands already passed","No equip/appearance/marketplace/UI/reversal implemented;M13-03..05 remainpending","Defaultpolicydisabled,no sink registered;tests explicitly enable synthetic Deadline/Maidfixtures","Minimal immutable grant/balance retained for accountlifetime;export/history100truncated;ownererasure cascades","Partnerreceipts purge100olderthan2days;exact maintenancebatch stress test remainsfuture abuse verification","Out-of-order oldercompletions conservativelydeny;accountreset/realpersoncollusion not solved","DBadministrators trusted;triggerblocksUPDATE/TRUNCATE,not hostileDBowner tamperproof","AllrealflagsOFF,no legacy/public/rights/provisioning action"]
+}

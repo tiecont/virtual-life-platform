@@ -8,18 +8,20 @@ import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/config';
 import { migrate } from '../../apps/platform-api/src/db/migrations';
 import { HospitalityOutbox, type HospitalityCompletionSink } from '../../apps/platform-api/src/hospitality/outbox';
+import { DEFAULT_PROGRESSION_POLICY } from '../../apps/platform-api/src/progression/policy';
 const origin = 'http://127.0.0.1:3300'; let admin: Pool, serial = 0;
 const opened: { app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: string }[] = [], sockets = new Set<Socket>();
 beforeAll(async () => { const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database'); admin = new Pool({ connectionString: url.toString() }); });
 afterEach(async () => { for (const socket of sockets) socket.close(); sockets.clear(); for (const r of opened.splice(0)) { await r.app.app.close(); await r.pool.end(); await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`); } });
 afterAll(async () => { await admin.end(); });
-async function open(allowStaff = true, maxQueue = 50, voluntary = false, maxStaff = 32, service?: 'coffee' | 'dining' | 'mocktail') {
+async function open(allowStaff = true, maxQueue = 50, voluntary = false, maxStaff = 32, service?: 'coffee' | 'dining' | 'mocktail', progression = false) {
   const schema = 'hospitality_test_' + randomUUID().replaceAll('-', ''); await admin.query(`CREATE SCHEMA "${schema}"`); const url = new URL(process.env.TEST_DATABASE_URL!); url.searchParams.set('options', '-c search_path=' + schema); const pool = new Pool({ connectionString: url.toString() }); await migrate(pool); let now = Date.now();
   const menu = service ? { items: [{ key: service, label: 'Synthetic ' + service, workflowKey: service + '-workflow' }], workflows: [{ key: service + '-workflow', version: '1.0.0', kind: 'timed-courses', courses: (service === 'dining' ? ['starter', 'main', 'dessert'] : [service]).map(key => ({ key, label: 'Synthetic ' + key, prepareSeconds: 2 })) }] } : undefined;
   const module = defineWorld({ schemaVersion: 1, apiVersion: 1, slug: 'hospitality-fixture', version: '1.0.0', title: 'Synthetic hospitality test (not actual Maid world)', kind: 'sandbox', sceneRef: { key: 'hospitality-fixture', version: '1.0.0' }, capacity: 32, seatIds: ['seat-1', 'seat-2', 'seat-3'], capabilities: ['presence', 'seating', 'hospitality'], hospitalityPolicy: { version: '1.0.0', itemKeys: service ? [service] : ['coffee', 'tea'], maxActivePerStaff: 1, maxQueue, ...(menu ? { menu } : {}), ...(voluntary ? { staffing: { kind: 'voluntary', maxStaff } } : {}) }, accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'sandbox', position: { x: .5, y: .5 }, icon: 'flask' } }, { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {}, travel: { prepare: async () => {}, abort: async () => {}, depart: async () => {} } });
-  const staffIds = new Set<string>(), config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'hospitality-local-test-only-session-secret-000001' }), options = { now: () => now, worlds: { modules: [module] }, ...(allowStaff ? { hospitality: { staff: { permits: async (_db: unknown, actor: { accountId: string }) => staffIds.has(actor.accountId) } } } : {}) }, app = await createApp(config, pool, false, options);
-  opened.push({ app, pool, schema }); await app.app.listen(0, '127.0.0.1'); await app.worlds.registry.setEnabled('hospitality-fixture', true);
-  return { app, pool, options, config, staffIds, url: await app.app.getUrl(), now: () => now, advance: (ms: number) => { now += ms; } };
+  const chosen = progression ? defineWorld({ ...module.definition, slug: 'maid', title: 'Synthetic reward fixture, not actual Maid integration' }, { bootstrap:async()=>{},shutdown:async()=>{},onJoin:async()=>{},onLeave:async()=>{},onCommand:async()=>{} }) : module;
+  const staffIds = new Set<string>(), config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'hospitality-local-test-only-session-secret-000001' }), options = { now: () => now, worlds: { modules: [chosen] }, ...(progression ? { progression: { policy: { ...DEFAULT_PROGRESSION_POLICY, enabled: true } } } : {}), ...(allowStaff ? { hospitality: { staff: { permits: async (_db: unknown, actor: { accountId: string }) => staffIds.has(actor.accountId) } } } : {}) }, app = await createApp(config, pool, false, options);
+  opened.push({ app, pool, schema }); await app.app.listen(0, '127.0.0.1'); await app.worlds.registry.setEnabled(chosen.definition.slug, true);
+  return { app, pool, options, config, staffIds, slug:chosen.definition.slug, url: await app.app.getUrl(), now: () => now, advance: (ms: number) => { now += ms; } };
 }
 type Runtime = Awaited<ReturnType<typeof open>>; type User = { me: Me; cookie: string };
 const headers = (u: User, key = randomUUID()) => ({ origin, cookie: u.cookie, 'x-csrf-token': u.me.csrfToken, 'idempotency-key': key });
@@ -29,7 +31,7 @@ async function guest(r: Runtime, staff = false): Promise<User> { const n = seria
 async function join(r: Runtime, user: User, seatId?: string) {
   const n = serial++, socket = io(r.url, { autoConnect: false, forceNew: true, reconnection: false, transports: ['websocket'], transportOptions: { websocket: { localAddress: `127.72.${Math.floor(n / 250)}.${n % 250 + 1}` } }, extraHeaders: { origin, cookie: user.cookie }, auth: { schemaVersion: 1, csrfToken: user.me.csrfToken } }); sockets.add(socket);
   await new Promise<void>((resolve, reject) => { socket.once('connect', resolve); socket.once('connect_error', reject); socket.connect(); });
-  const joined = RoomAckSchema.parse(await socket.timeout(5000).emitWithAck('room.join', { schemaVersion: 1, requestId: randomUUID(), worldSlug: 'hospitality-fixture', worldVersion: '1.0.0', sceneVersion: '1.0.0' })); if (!joined.ok || joined.result.type !== 'snapshot') throw new Error('Fixture join failed');
+  const joined = RoomAckSchema.parse(await socket.timeout(5000).emitWithAck('room.join', { schemaVersion: 1, requestId: randomUUID(), worldSlug: r.slug, worldVersion: '1.0.0', sceneVersion: '1.0.0' })); if (!joined.ok || joined.result.type !== 'snapshot') throw new Error('Fixture join failed');
   const source = { epoch: joined.result.epoch, roomId: joined.result.roomId, membershipId: joined.result.membershipId }, command = () => ({ schemaVersion: 1, requestId: randomUUID(), ...source });
   if (seatId) expect(RoomAckSchema.parse(await socket.timeout(5000).emitWithAck('seat.claim', { ...command(), seatId })).ok).toBe(true);
   return { socket, source, command };
@@ -38,6 +40,15 @@ const input = (source: TravelSource) => ({ schemaVersion: 1, source, policyVersi
 const mutation = (source: TravelSource, expectedVersion = 0) => ({ schemaVersion: 1, source, expectedVersion });
 async function place(r: Runtime, u: User, source: TravelSource, key = randomUUID()) { const response = await post(r, u, 'orders', input(source), key); expect(response.statusCode).toBe(201); return OrderResultSchema.parse(response.json()).order; }
 const act = (r: Runtime, u: User, id: string, action: string, source: TravelSource, expectedVersion = 0, key = randomUUID()) => post(r, u, `orders/${id}/${action}`, mutation(source, expectedVersion), key);
+it('reviewed progression outbox consumer grants each participant once and bounds repeated partner farming', async()=>{
+  const r=await open(false,50,true,32,'coffee',true),customer=await guest(r),staff=await guest(r),c=await join(r,customer,'seat-1'),s=await join(r,staff);await shift(r,staff,s.source);
+  for(let n=0;n<3;n++){
+    const order=await place(r,customer,c.source);await act(r,staff,order.id,'claim',s.source,0);await act(r,staff,order.id,'prepare',s.source,1);r.advance(2000);await act(r,staff,order.id,'ready',s.source,2);await act(r,staff,order.id,'serve',s.source,3);expect((await post(r,customer,'orders/'+order.id+'/complete',{schemaVersion:1,expectedVersion:4})).statusCode).toBe(200);
+    await Promise.all([r.app.hospitalityOutbox.drain(),r.app.hospitalityOutbox.drain()]);r.advance(60000);
+  }
+  expect((await get(r,customer,'me/progression')).json().lifetimeXp).toBe(4);expect((await get(r,staff,'me/progression')).json().lifetimeXp).toBe(4);expect((await r.pool.query('SELECT 1 FROM engine_progression_ledger')).rowCount).toBe(4);expect((await r.pool.query("SELECT 1 FROM engine_hospitality_deliveries WHERE consumer_key='progression-completion-v1'")).rowCount).toBe(3);
+  await r.app.http.inject({method:'DELETE',url:'/v1/me',headers:headers(customer),payload:{}});expect((await r.pool.query('SELECT 1 FROM engine_progression_partners')).rowCount).toBe(0);expect((await get(r,staff,'me/progression')).json().lifetimeXp).toBe(4);
+});
 async function restart(r: Runtime) { await r.app.app.close(); const old = r.app, app = await createApp(r.config, r.pool, false, r.options); opened.find(item => item.app === old)!.app = app; r.app = app; await app.app.listen(0, '127.0.0.1'); r.url = await app.app.getUrl(); await app.worlds.registry.setEnabled('hospitality-fixture', true); }
 async function shift(r: Runtime, u: User, source: TravelSource, key = randomUUID()) { const response = await post(r, u, 'staff/shifts', { schemaVersion: 1, source, policyVersion: '1.0.0' }, key); expect(response.statusCode).toBe(201); return response.json().shift as { id: string; phase: string }; }
 
