@@ -7,11 +7,14 @@ describe('original library layout and adapter',()=>{
   for(const seat of libraryScene.seats)expect(findScenePath(libraryScene,libraryScene.spawn,seat)?.at(-1)).toEqual({x:seat.x,y:seat.y});
   expect(libraryAreas.map(area=>area.key)).toEqual(['reading','study']);
  });
- it('adapter has exact geometry and shared seating/focus without claiming unfinished event integration',()=>{
+ it('adapter has exact geometry and shared engine capabilities without chat authority',()=>{
   const world=createLibraryWorld();expect(world.definition.slug).toBe('library');expect(world.definition.scene).toEqual(libraryScene);expect(world.definition.capacity).toBe(8);
-  expect(world.definition.capabilities).toEqual(['presence','seating','focus','portals']);expect(world.definition.appearancePolicy).toEqual({apron:'forbidden'});
+  expect(world.definition.capabilities).toEqual(['presence','seating','focus','events','portals']);expect(world.definition.appearancePolicy).toEqual({apron:'forbidden'});
  });
  it('library offers shared seat-authorized focus with an explicit pause policy',()=>{
   const world=createLibraryWorld();expect(world.definition.capabilities).toContain('focus');expect(world.definition.focusPolicy).toEqual({pauseAllowed:true});
+ });
+ it('quiet study events fit one physical room and do not enable general chat',()=>{
+  const world=createLibraryWorld();expect(world.definition.eventPolicy).toMatchObject({schemaVersion:1,maxCapacity:8});expect(world.definition.capabilities).toContain('events');expect(world.definition.capabilities).not.toContain('chat');
  });
 });

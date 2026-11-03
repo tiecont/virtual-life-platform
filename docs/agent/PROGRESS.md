@@ -1,5 +1,11 @@
 # Agent progress
 
+## M17-03 — VERIFIED silent study schedules and RSVP UI
+
+From6c8149b;ADR0053/m17-events-checks.json. Unitred1fail3pass retained,targetLibrary6pass. Fullcheck0:7governance,211unit,323integration,lint/types/architecture/assets/allbuilds. BrowserLibrary+SDKfocus12pass(6/device),SDKscene24pass(12/device),finallint/provenance2hash/diff0. Initialbrowserdesktop4pass2fail invalidfixturecreated_at>=opens_at retained;corrected historicalfixturecreatedtime/poolcleanup,notruntime orDBconstraints. Newdesktop/mobileevent/fullpageimages inspected,nooverflow;older regeneratedM17scene/focusvisuals restored. No migration,cityDB0025/defaultrealflagsOFF/no workers/preview.
+
+Libraryworld1.2.0/scene1.0.0/eventpolicy1.0.0cap8 usesexistingM12ownerAPI,sharedWorldEvents max5listedcards/ownerIANA/ownRSVP,8sdeadline/30sdevice-observedTTL/unknownnotempty/visibilityofflineidentityclear/exactkeyretry andseparateexplicitroomreview. ActualownerAPIrequires trustedscoped syntheticorganizerport;ordinaryscheduling/cap9/interactiveaudience denied. Nine independent visitors race2places->2confirmed/7conflicts,withdrawreleasesone,privateeventsfiltered,RSVP0rooms. Withtestchatruntimeenabled,12text/canned/emote sendsallFORBIDDEN/0peerbroadcast. Browserkeyboardjoin/committedHTTPreplyabort/samekey/1row/withdraw/31sexpiry/outage/logoutheldreadpass. SQLbrowserrows are renderingfixtures,notauthcreation/realoperators;actualcreationverifiedseparatelybyownerAPI. No tasknotes/books/audio/progression/grants/publicactivation;notlivepushRSVPstateorroomseatguarantee. Next exact action M17-04 explicitper-study-group opt-in progress andconsented same-room invitations,usingRoom/Event/Focus/Socialownerports;donot repurposeanalyticspreference orleak durations/tasktext. ActuallegacyDeadlinejourney/publicrelease stillgated.
+
 ## M17-02 — VERIFIED shared canonical Library focus
 
 Fromee588dd;ADR0052/m17-focus-checks.json. Unitred1fail2pass retained;targetLibrary4pass0. Fullcheck0:7governance,210unit,321integration,lint/types/architecture/assets/allbuilds. Library+SDKfocus browser8pass(4/device),first run0. Sourceprovenance2hashes/diff0;timer desktop/mobile images inspected andearlierM17-01regeneratedscreenshots restored. No migration,cityDB0025/defaultrealflagsOFF/no workers/preview.

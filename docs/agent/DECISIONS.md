@@ -1,5 +1,7 @@
 # Decisions
 
+M17-03 / ADR0053: silentLibraryevents reuseM12owner;world1.2.0/scene1.0.0/policy1.0.0max8,nochat/canned/emotes/audio. Max5listedcards/ownRSVP/8sreaddeadline/30sTTL/explicitunknown/exactkeyretry;RSVPisnotroomadmission. Actualtrusted-test scheduling/9way2placeRSVP/quietfloodpass,notrealoperatorprovisioning. Full323integration/211unit/builds+36selectedbrowser0;initialSQLfixturetimestampfailure retained/fixedwithoutconstraintloosening. No migration/realflagactivation.
+
 M17-02 / ADR0052: Libraryfocus is a capability/policy andsharedUI integration,notanother timerowner. World1.1.0/scene1.0.0,explicitboundedpause,privateimmutableorigin throughleave/restart. Actual8Socketdesk race/8samekeyHTTPinjectretry andbrowserrealHTTPcommitloss pass;injectedserverclockonlyfortimedcompletion. Full321integration/210unit/builds/browser8,nomigration/reward/realflagactivation.
 
 M17-01 / ADR0051: independentworldpackage with originalgeometry,one quietroomtype/two clearly labeleddeskareas,reused Pixi readingstyle andsharedWorldRoomPanel/RoomSafety. No duplicatedowner/DB or ebookcontent. Explicit nonproductionmoduleopt-in+independentworldflag/defaultOFF;productionrejectslocaloption. Full319integration/209unit/builds +Library4/affected34browser pass;initialclosed-dialogdimensions andglobalidentityselector failuresretained/fixed precisely. Focus/groups later02..05.

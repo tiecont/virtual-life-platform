@@ -102,7 +102,7 @@
 | M16 | M16-06 · Run E2E, asset/legal audit, rollback & release gate. | BLOCKED_EXTERNAL | B-001/B-002 and02..05;no actual integrated service loop yet |
 | M17 | M17-01 · Design silent library theme, seating map, room categories and access UI. | VERIFIED | m17-scene-checks.json;209unit/319integration/4Library+34regression browser;one quiet layout/two desk areas/original art/shared shell |
 | M17 | M17-02 · Reuse platform room/seats and Focus Engine without copying code. | VERIFIED | m17-focus-checks.json;210unit/321integration/8browser;actual8visitorseat race/private canonical timer/retry/restart/shared engine |
-| M17 | M17-03 · Implement quiet mode/limited quick-chat and group study event. | TODO | — |
+| M17 | M17-03 · Implement quiet mode/limited quick-chat and group study event. | VERIFIED | m17-events-checks.json;211unit/323integration/12Library-focus+24SDKscene browser;silent policy/ownerRSVP/capacity/privacy/TTL/retry |
 | M17 | M17-04 · Implement opt-in group session progress and invitations. | TODO | — |
 | M17 | M17-05 · Test portal travel, reconnect, quiet moderation and mobile. | TODO | — |
 | M18 | M18-01 · Design restaurant scene, dining zones and role-based UI. | TODO | — |

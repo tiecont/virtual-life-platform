@@ -1,0 +1,112 @@
+ Network virtual-city-test-82d488ce_default Creating 
+ Network virtual-city-test-82d488ce_default Creating 
+ Network virtual-city-test-82d488ce_default Created 
+ Network virtual-city-test-82d488ce_default Created 
+ Container virtual-city-test-82d488ce-db-1 Creating 
+ Container virtual-city-test-82d488ce-db-1 Created 
+ Container virtual-city-test-82d488ce-db-1 Starting 
+ Container virtual-city-test-82d488ce-db-1 Started 
+ Container virtual-city-test-82d488ce-db-1 Waiting 
+ Container virtual-city-test-82d488ce-db-1 Healthy 
+[WebServer] (node:984691) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:984751) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:984751) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:984751) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:984690) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:984829) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:984919) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:984932) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 6 tests using 1 worker
+
+(node:985008) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/focus.spec.ts:6:5 › private focus recovers a lost start response and sleep,requires explicit sanitized sharing and clears on logout (5.4s)
+  ✓  2 [desktop] › tests/e2e/library.spec.ts:9:5 › original library scene and native desk areas work with actual identity and authoritative seating (2.1s)
+  ✓  3 [desktop] › tests/e2e/library.spec.ts:20:5 › library asset failure keeps keyboard desks usable and sessionless access never enters a room (1.2s)
+  ✓  4 [desktop] › tests/e2e/library.spec.ts:26:5 › Library uses the private shared timer with exact-key retry,pause and durable continuation after leaving (2.2s)
+  ✘  5 [desktop] › tests/e2e/library.spec.ts:43:5 › listed quiet study RSVP uses canonical receipts,private schedules stay hidden,and stale or failed reads show no fabricated empty state (149ms)
+(node:985776) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  6 [desktop] › tests/e2e/library.spec.ts:54:5 › late study schedules cannot restore the previous identity after logout (176ms)
+
+
+  1) [desktop] › tests/e2e/library.spec.ts:43:5 › listed quiet study RSVP uses canonical receipts,private schedules stay hidden,and stale or failed reads show no fabricated empty state 
+
+    error: new row for relation "engine_events" violates check constraint "engine_events_check1"
+
+      38 |  // Rendering fixtures only;authorized schedule creation is verified separately
+      39 |  // through the actual owner API and a scoped synthetic organizer port.
+    > 40 |  for(const [index,visibility] of ['listed','private'].entries())await db.query("INSERT INTO engine_events(id,organizer_id,world_slug,world_version,policy_version,title,audience,visibility,capacity,time_zone,opens_at,starts_at,check_in_closes_at,ends_at,phase,created_at,changed_at) VALUES($1,$2,'library',$3,'1.0.0',$4,'silent',$5,2,'Asia/Ho_Chi_Minh',$6,$7,$8,$9,'OPEN',$10,$10)",[ids[index],accountId,libraryWorldVersion,index===0?'Quiet study fixture':'Private reading secret',visibility,new Date(+at-60000),starts,new Date(+at+3600000),ends,at]);
+         |                                                                 ^
+      41 |  return {db,ids,close:async()=>{await db.query('DELETE FROM engine_events WHERE id=ANY($1::uuid[])',[ids]);await db.end();}};
+      42 | }
+      43 | test('listed quiet study RSVP uses canonical receipts,private schedules stay hidden,and stale or failed reads show no fabricated empty state',async({page,context})=>{
+        at /home/tiecont/Projects/virtual-city/node_modules/.pnpm/pg-pool@3.14.0_pg@8.23.1/node_modules/pg-pool/index.js:45:11
+        at scheduleFixtures (/home/tiecont/Projects/virtual-city/tests/e2e/library.spec.ts:40:65)
+        at /home/tiecont/Projects/virtual-city/tests/e2e/library.spec.ts:44:40
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/library-listed-quiet-study-8eafa-w-no-fabricated-empty-state-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/desktop/library-listed-quiet-study-8eafa-w-no-fabricated-empty-state-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/desktop/library-listed-quiet-study-8eafa-w-no-fabricated-empty-state-desktop/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/desktop/library-listed-quiet-study-8eafa-w-no-fabricated-empty-state-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [desktop] › tests/e2e/library.spec.ts:54:5 › late study schedules cannot restore the previous identity after logout 
+
+    error: new row for relation "engine_events" violates check constraint "engine_events_check1"
+
+      38 |  // Rendering fixtures only;authorized schedule creation is verified separately
+      39 |  // through the actual owner API and a scoped synthetic organizer port.
+    > 40 |  for(const [index,visibility] of ['listed','private'].entries())await db.query("INSERT INTO engine_events(id,organizer_id,world_slug,world_version,policy_version,title,audience,visibility,capacity,time_zone,opens_at,starts_at,check_in_closes_at,ends_at,phase,created_at,changed_at) VALUES($1,$2,'library',$3,'1.0.0',$4,'silent',$5,2,'Asia/Ho_Chi_Minh',$6,$7,$8,$9,'OPEN',$10,$10)",[ids[index],accountId,libraryWorldVersion,index===0?'Quiet study fixture':'Private reading secret',visibility,new Date(+at-60000),starts,new Date(+at+3600000),ends,at]);
+         |                                                                 ^
+      41 |  return {db,ids,close:async()=>{await db.query('DELETE FROM engine_events WHERE id=ANY($1::uuid[])',[ids]);await db.end();}};
+      42 | }
+      43 | test('listed quiet study RSVP uses canonical receipts,private schedules stay hidden,and stale or failed reads show no fabricated empty state',async({page,context})=>{
+        at /home/tiecont/Projects/virtual-city/node_modules/.pnpm/pg-pool@3.14.0_pg@8.23.1/node_modules/pg-pool/index.js:45:11
+        at scheduleFixtures (/home/tiecont/Projects/virtual-city/tests/e2e/library.spec.ts:40:65)
+        at /home/tiecont/Projects/virtual-city/tests/e2e/library.spec.ts:55:40
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/library-late-study-schedul-c7c69-vious-identity-after-logout-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/desktop/library-late-study-schedul-c7c69-vious-identity-after-logout-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/desktop/library-late-study-schedul-c7c69-vious-identity-after-logout-desktop/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/desktop/library-late-study-schedul-c7c69-vious-identity-after-logout-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [desktop] › tests/e2e/library.spec.ts:43:5 › listed quiet study RSVP uses canonical receipts,private schedules stay hidden,and stale or failed reads show no fabricated empty state 
+    [desktop] › tests/e2e/library.spec.ts:54:5 › late study schedules cannot restore the previous identity after logout 
+  4 passed (17.0s)
+pnpm exited 1
+ Container virtual-city-test-82d488ce-db-1 Stopping 
+ Container virtual-city-test-82d488ce-db-1 Stopped 
+ Container virtual-city-test-82d488ce-db-1 Removing 
+ Container virtual-city-test-82d488ce-db-1 Removed 
+ Network virtual-city-test-82d488ce_default Removing 
+ Network virtual-city-test-82d488ce_default Removed 

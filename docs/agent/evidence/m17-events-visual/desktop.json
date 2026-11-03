@@ -1,0 +1,8 @@
+{
+  "sameRetryKey": true,
+  "oneRsvp": true,
+  "privateScheduleHidden": true,
+  "noRoomAdmission": true,
+  "withdrawn": true,
+  "staleAndOutageClearCards": true
+}

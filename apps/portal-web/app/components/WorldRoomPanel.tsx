@@ -10,6 +10,7 @@ import './world-room.css';
 import RoomSafety from './RoomSafety';
 import FocusPanel from './FocusPanel';
 import Wardrobe from './Wardrobe';
+import WorldEvents from './WorldEvents';
 import { announceVisitChange } from './visit-hint';
 
 const idle: RoomRecoveryView = { status: 'idle', snapshot: null, reason: null };
@@ -24,7 +25,7 @@ const messages: Record<string, string> = {
 const ownInput = (state: RoomSnapshot) => ({ schemaVersion: 1, requestId: crypto.randomUUID(), epoch: state.epoch, roomId: state.roomId, membershipId: state.membershipId });
 export interface RoomExperience {
  slug:string;worldVersion:string;scene:SceneManifest;title:string;eyebrow:string;badge:string;noun:'cafe'|'library';theme:'cafe'|'reading-room';sceneLabel:string;caption:string;
- destinations:{label:string;x:number;y:number}[];areas?:readonly {key:string;title:string;description:string;seatIds:readonly string[]}[];focus:boolean;wardrobe:boolean;
+ destinations:{label:string;x:number;y:number}[];areas?:readonly {key:string;title:string;description:string;seatIds:readonly string[]}[];focus:boolean;wardrobe:boolean;events?:boolean;
 }
 const sandboxExperience:RoomExperience={slug:'sdk-sandbox',worldVersion:'1.0.0',scene:sandboxScene,title:'Local Test Cafe',eyebrow:'SDK Sandbox',badge:'LOCAL TEST WORLD',noun:'cafe',theme:'cafe',sceneLabel:'Cafe floor plan. Two shared tables, eight seats, an entrance and a counter. Movement and seat controls follow below.',caption:'WINDOW & GARDEN TABLES',destinations:[{label:'Entrance',x:10,y:11},{label:'Window aisle',x:2,y:4},{label:'Garden aisle',x:11,y:4},{label:'Counter front',x:15,y:9}],focus:true,wardrobe:true};
 export default function WorldRoomPanel({ socketOrigin,experience=sandboxExperience }: { socketOrigin: string;experience?:RoomExperience }) {
@@ -194,7 +195,7 @@ export default function WorldRoomPanel({ socketOrigin,experience=sandboxExperien
           const seat = view.snapshot?.seats.find(seat => seat.seatId === point.seatId);
           return <button key={point.seatId} className={seat?.mine ? 'mine' : ''} disabled={!active || busy || seat?.state !== 'available' || !!view.snapshot?.self.seatId} aria-label={point.label + (seat?.mine ? ', your seat' : '')} onClick={() => void mutate('seat.claim', point.seatId)}><span>{point.seatId.slice(5).padStart(2, '0')}</span><span>{point.label.split(' ').slice(0, 2).join(' ')}<small>{seat?.mine ? 'Your seat' : !active ? 'Not connected' : seat?.state === 'held' ? 'Reconnecting' : seat?.state === 'occupied' ? 'Occupied' : 'Available'}</small></span></button>;
         })}</div>
-      </section>{me && <>{experience.focus&&<FocusPanel key={me.profile.id + ':' + me.csrfToken} me={me} source={active && view.snapshot?.self.seatId ? { epoch: view.snapshot.epoch, roomId: view.snapshot.roomId, membershipId: view.snapshot.membershipId } : null}/ >}{experience.wardrobe&&<Wardrobe key={'wardrobe:'+me.profile.id+':'+me.csrfToken} me={me} source={active&&view.snapshot?{epoch:view.snapshot.epoch,roomId:view.snapshot.roomId,membershipId:view.snapshot.membershipId}:null} effective={active?view.snapshot?.participants.find(person=>person.profile.id===me.profile.id)?.outfit??'casual':null}/>}</>}<a className="cafe-action-back" href="#cafe-room-controls">Back to visit controls</a></div>
+      </section>{me && <>{experience.focus&&<FocusPanel key={me.profile.id + ':' + me.csrfToken} me={me} source={active && view.snapshot?.self.seatId ? { epoch: view.snapshot.epoch, roomId: view.snapshot.roomId, membershipId: view.snapshot.membershipId } : null}/ >}{experience.wardrobe&&<Wardrobe key={'wardrobe:'+me.profile.id+':'+me.csrfToken} me={me} source={active&&view.snapshot?{epoch:view.snapshot.epoch,roomId:view.snapshot.roomId,membershipId:view.snapshot.membershipId}:null} effective={active?view.snapshot?.participants.find(person=>person.profile.id===me.profile.id)?.outfit??'casual':null}/ >}{experience.events&&available&&<WorldEvents key={'events:'+me.profile.id+':'+me.csrfToken} me={me} worldSlug={experience.slug}/>}</>}<a className="cafe-action-back" href="#cafe-room-controls">Back to visit controls</a></div>
       <aside className="cafe-sidebar" id="cafe-room-controls" tabIndex={-1} aria-label="Your room"><h2>Your visit</h2><p className="cafe-connection" role="status" aria-live="polite">{loading ? 'Checking your session...' : status}</p>
         {message && <p className="cafe-message" aria-live="polite">{message}</p>}
         {me ? <><p className="cafe-identity">{me.profile.displayName}</p><p className="cafe-note" aria-live="polite">{active ? walking ? view.snapshot?.self.seatId ? 'Walking to your reserved seat.' : 'Walking across the '+experience.noun+' floor.' : view.snapshot?.self.seatId ? 'Seated at ' + manifest.seats.find(seat => seat.seatId === view.snapshot?.self.seatId)?.label : 'On the '+experience.noun+' floor' : 'No confirmed place'}</p>
