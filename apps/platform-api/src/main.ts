@@ -5,9 +5,9 @@ async function main() {
   const config = readConfig();
   const pool = new Pool({ connectionString: config.DATABASE_URL, max: 10, connectionTimeoutMillis: 2000 });
   pool.on('error', () => console.error('Database pool unavailable'));
-  const { app, identity, social, worlds, rooms, reports, sanctions } = await createApp(config, pool, true);
+  const { app, identity, social, worlds, rooms, reports, sanctions, travel } = await createApp(config, pool, true);
   await app.listen(config.PORT, config.HOST);
-  const maintenance = setInterval(() => { void identity.purgeExpired().then(() => social.purgeExpired()).then(() => rooms.maintain()).then(() => reports.maintain()).then(() => sanctions.maintain()).catch(() => console.error('Platform maintenance unavailable')); }, 300000);
+  const maintenance = setInterval(() => { void identity.purgeExpired().then(() => social.purgeExpired()).then(() => rooms.maintain()).then(() => reports.maintain()).then(() => sanctions.maintain()).then(() => travel.maintain()).catch(() => console.error('Platform maintenance unavailable')); }, 300000);
   maintenance.unref();
   const reloadWorlds = () => { void worlds.reloadFlags().catch(() => console.error('World flag reload failed; check local configuration and world health.')); };
   process.on('SIGHUP', reloadWorlds);

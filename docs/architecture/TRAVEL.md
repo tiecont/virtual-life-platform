@@ -1,6 +1,6 @@
 # Travel Lifecycle and Admission Boundary
 
-M09-01 implements an executable lifecycle model, strict shared phase vocabulary and the protocol below. It does not move a player. There is no travel endpoint, token, destination reservation or travel UI yet. Existing room.join still rejects a different current membership. See ADR0017 and the M09 checkpoints for verified scope.
+M09-01 implements the executable lifecycle model; M09-02 adds scoped durable authorization and HTTP issuance/read/cancel. Neither moves a player. There is no destination reservation, membership handoff or travel UI yet. Existing room.join still rejects a different current membership. See ADR0017/0018 and the M09 checkpoints for verified scope.
 
 ## Audit
 
@@ -14,7 +14,7 @@ M09-01 implements an executable lifecycle model, strict shared phase vocabulary 
 
 ## State Model
 
-`apps/platform-api/src/travel/lifecycle.ts` validates private schemaVersion1 state with phase,createdAt,expiresAt,changedAt in integer trusted milliseconds. Maximum preparation TTL30000ms is a local engineering default; the eventual service must also bound it by session expiry. Original expiry never extends on retry. A backwards/unsafe clock or malformed persisted state is rejected. States returned by the reducer are frozen.
+`apps/platform-api/src/travel/lifecycle.ts` validates private schemaVersion1 state with phase,createdAt,expiresAt,changedAt in integer trusted milliseconds. Maximum preparation TTL30000ms is a local engineering default; the service also bounds it by session expiry. Original expiry never extends on retry. A backwards/unsafe clock or malformed persisted state is rejected. States returned by the reducer are frozen.
 
 ```mermaid
 stateDiagram-v2
@@ -84,4 +84,20 @@ This diagram specifies obligations, not a completed room handoff. The eventual l
 | Another tab/session | Account remains in one active room, source tabs receive truthful invalidation or coordinated target snapshots; never keep stale source seats/commands alive. |
 | Hidden/dating presence or blocked invitation | No generic notification/global activity leaks source/target metadata; consent and current bilateral block priority. No query-string bearer tokens or raw token/body logging. |
 
-One owner, synthetic fixtures and all real flagsOFF remain the current operating scope. No cross-process handshake, durable room recovery, real Deadline/Maid integration, party, invitation, public release or browser travel success is claimed by M09-01.
+## M09-02 Authorization API
+
+| Endpoint | Behavior |
+| --- | --- |
+| POST /v1/travel-intents | Authenticated Origin/CSRF-protected create, UUID Idempotency-Key; strict schemaVersion1, source null or exact epoch/roomId/membershipId, destination worldSlug/worldVersion/sceneVersion with optional roomId. Returns201 with own current receipt and capability only before redemption while CREATED. |
+| GET /v1/travel-intents/:id | Same account AND session only; current phase, destination, createdAt/expiresAt, redeemed and capability:null. Other sessions, even the same registered account, get404. |
+| POST /v1/travel-intents/:id/cancel | Same authorization, Origin/CSRF and UUID key; empty body. Terminal/current observation is idempotent. No membership changes. |
+
+Unknown body/query/authority/redirect fields are rejected. There is no HTTP redeem route. Trusted `TravelService.redeem` requires the original session, intent UUID, UUID request key and exact capability. It rechecks current owner/source/target, atomically consumes once, returns a scoped coordinator observation and leaves CREATED unchanged. Replaying a different key conflicts; a matching retry rechecks current access and cannot create a second authorization. M09-04 must perform fresh final admission and persist subsequent lifecycle transitions; this port cannot prove target readiness.
+
+The capability uses a purpose-separated HMAC bound to account/session/intent/scope/epoch/expiry; only its hash is stored. Creation retries reproduce the same capability until consumption, then return a capability-free receipt. GET/export never returns one. No query bearer or raw request body is logged; intent IDs are redacted from route logs. Receipt replay conveys historical authorization, not proof that current target access still exists.
+
+Migration0008 stores one active intent/account and body-free mutation fingerprints, guarded by identity account transaction locks. Six creations/account/minute survive API restart while their sessions remain stored. Session/account deletion cascades authorization/receipts; session rotation/revocation independently fails authentication. Bounded maintenance expires live intents and purges terminal records older than24h; these local retention defaults require human policy review before public operation. Own export returns at most100 metadata-only receipts with explicit truncation. No peer activity/notification is emitted.
+
+Source membership and target checks execute through the existing serialized room owner; no capacity is reserved during HTTP/database latency. A source leave, full destination, access change or expiry can invalidate a previously issued capability. Actual switch authority must never rely on a stale observation. Additive rollback and remaining implementation obligations are documented in ADR0018.
+
+One owner, synthetic fixtures and all real flagsOFF remain the current operating scope. No cross-process handshake, durable room recovery, real Deadline/Maid integration, party, invitation, public release or browser travel success is claimed by M09-01/02.

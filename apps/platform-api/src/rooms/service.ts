@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { RoomSnapshotSchema, RoomEndedSchema, type RoomMotion, type RoomMove, type RoomJoin, type RoomOwnCommand, type RoomSnapshot, type RoomEnded, type SeatClaim, type SeatRelease, type PublicProfile } from '@virtual-city/contracts';
+import { RoomSnapshotSchema, RoomEndedSchema, type TravelSource, type TravelDestination, type RoomMotion, type RoomMove, type RoomJoin, type RoomOwnCommand, type RoomSnapshot, type RoomEnded, type SeatClaim, type SeatRelease, type PublicProfile } from '@virtual-city/contracts';
 import { findScenePath, motionPosition, type WorldRegistry, type WorldActor } from '@virtual-city/world-sdk';
 import type { IdentityService } from '../identity/service';
 import { DomainError } from '../common/errors';
@@ -278,6 +278,31 @@ export class RoomService {
     return this.#run(async () => {
       await this.#sweep(); await this.registry.authorizeWorld(credential, slug);
       return { schemaVersion: 1 as const, rooms: [...this.#rooms.values()].filter(room => room.slug === slug).map(room => ({ roomId: room.id, capacity: room.capacity, occupancy: room.members.size })) };
+    });
+  }
+  travelContext(credential: string, source: TravelSource | null, destination: TravelDestination) {
+    return this.#run(async () => {
+      await this.#sweep();
+      const generation = this.#worldGenerations.get(destination.worldSlug) ?? 0;
+      const { actor, definition } = await this.registry.authorizeWorld(credential, destination.worldSlug);
+      if (destination.worldVersion !== definition.version || destination.sceneVersion !== definition.sceneRef.version) throw new DomainError('WORLD_VERSION_MISMATCH', 409, 'Refresh world assets');
+      const current = this.#rooms.get(this.#accounts.get(actor.accountId) ?? ''), member = current?.members.get(actor.accountId);
+      if (!source && current) throw new DomainError('ALREADY_IN_ROOM', 409, 'Current room context is required');
+      if (source) {
+        if (source.epoch !== this.epoch || !current || !member || current.id !== source.roomId || member.id !== source.membershipId || ![...member.connections.values()].includes(actor.sessionId)) throw new DomainError('NOT_IN_ROOM', 409, 'Source membership changed');
+        await this.registry.authorizeWorld(credential, current.slug);
+        if (current.slug === destination.worldSlug && (!destination.roomId || destination.roomId === current.id)) throw new DomainError('INVALID_REQUEST', 422, 'Destination must differ from source');
+      }
+      const target = destination.roomId ? this.#rooms.get(destination.roomId) : undefined;
+      if (destination.roomId && (!target || target.slug !== destination.worldSlug)) throw new DomainError('NOT_FOUND', 404, 'Destination unavailable');
+      if (target && target.members.size >= target.capacity) throw new DomainError('ROOM_FULL', 409, 'Destination unavailable');
+      if (!destination.roomId) {
+        const candidates = [...this.#rooms.values()].filter(room => room.slug === destination.worldSlug);
+        if (!candidates.some(room => room.members.size < room.capacity) && (candidates.length >= 32 || this.#rooms.size >= 128)) throw new DomainError('ROOM_FULL', 409, 'Destination unavailable');
+      }
+      await this.safety?.assert(actor.accountId, destination.worldSlug, target?.id);
+      if (generation !== (this.#worldGenerations.get(destination.worldSlug) ?? 0)) throw new DomainError('WORLD_UNAVAILABLE', 503, 'Destination unavailable');
+      return { actor, epoch: this.epoch };
     });
   }
   async snapshotForConnection(connectionId: string): Promise<RoomSnapshot | null> {

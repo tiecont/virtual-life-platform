@@ -29,7 +29,9 @@
     "safety_sanction_mutations": "platform.safety",
     "safety_incident_controls": "platform.safety",
     "safety_incident_audit": "platform.safety",
-    "safety_incident_mutations": "platform.safety"
+    "safety_incident_mutations": "platform.safety",
+    "travel_intents": "platform.travel",
+    "travel_mutations": "platform.travel"
   },
   "journalTable": "city_schema_migrations",
   "legacyDatabases": "not managed by city migrations",

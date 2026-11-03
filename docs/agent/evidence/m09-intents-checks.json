@@ -1,0 +1,33 @@
+{
+  "taskID": "M09-02",
+  "verifiedAt": "2026-11-03T05:20:00Z",
+  "source": "workspace from be09b35; checkpoint commit follows git log",
+  "environment": "Linux, Node26.9.0, pnpm11.28.5, real disposable local PostgreSQL, Chromium desktop/mobile",
+  "commands": [
+    { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/travel.test.ts", "exitCode": 0, "tests": 14, "log": "m09-intents-targeted-final.log" },
+    { "command": "pnpm check", "exitCode": 0, "governanceTests": 7, "unitTests": 117, "integrationTests": 141, "log": "m09-intents-check-attempt1.log", "scope": "governance/architecture/lint/types/assets/unit/integration and production builds" },
+    { "command": "pnpm test:e2e", "exitCode": 0, "tests": 34, "log": "m09-intents-e2e.log", "scope": "existing desktop/mobile browser regressions; no travel UI claim" },
+    { "command": "pnpm db:migrate", "exitCode": 1, "log": "m09-intents-dev-migration.log", "reason": "retained development DB container was stopped" },
+    { "command": "pnpm db:up", "exitCode": 0, "log": "m09-intents-dev-db-up.log" },
+    { "command": "pnpm db:migrate", "exitCode": 0, "log": "m09-intents-dev-migration-final.log", "scope": "additive0008 in retained city development DB only" },
+    { "command": "git diff --check", "exitCode": 0 }
+  ],
+  "verified": [
+    "strict scoped authenticated HTTP issuance/read/cancel; Origin/CSRF/UUID idempotency/query/body guards",
+    "same real TCP creation retries persist one intent/receipt; independent concurrent internal redemptions consume exactly once",
+    "maximum30s and session-bounded immutable deadline, terminal cancellation/expiry and old-epoch failure",
+    "exact source session/epoch/membership plus current private/adult/flag/version/capacity/sanction/incident checks",
+    "six/account/minute durable budget, restart denial, metadata expiry/purge, capability-free own export, erasure cascades and transaction rollback",
+    "ordinary GET/export never discloses capability; scope hashed and intent route identifiers redacted from logs"
+  ],
+  "failuresRetained": [
+    "targeted-attempt1 test parsing failed due to an extra parenthesis; corrected test syntax",
+    "targeted-attempt2 passed12/13, export assertion used export.travel instead of existing export.domains.travel; corrected assertion, added capacity/logout cases; final14 passed"
+  ],
+  "limits": [
+    "redemption is trusted internal authorization only; no public redeem route, reservation, READY or membership handoff",
+    "M09-04 must revalidate again at actual target preparation/index switch; observations do not bridge asynchronous policy changes",
+    "no invitations/party/browser travel/legacy integration/distributed recovery or public release claimed",
+    "local24h terminal metadata retention is provisional; all real flagsOFF and production safety/operations gates remain pending"
+  ]
+}
