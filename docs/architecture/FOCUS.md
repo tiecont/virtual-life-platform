@@ -1,6 +1,6 @@
 # Trusted Focus Engine
 
-M10-01 source comparison is in FOCUS-COMPATIBILITY.md. M10-02 implements the private server lifecycle/API; no live browser timer is claimed until M10-04. SDK Sandbox is explicitly focus-capable with pause denied; synthetic integration tests additionally supply an opt-in paused-library policy. These are not integrated legacy worlds.
+M10-01 source comparison is in FOCUS-COMPATIBILITY.md. M10-02 implements the private server lifecycle/API and03 private history. M10-04 adds the reusable focus-ui package and live browser controller in SDK Sandbox,with pause denied; synthetic integration tests additionally supply an opt-in paused-library policy. These are not integrated legacy worlds.
 
 ## API and Authority
 
@@ -40,4 +40,10 @@ Migration0012 creates engine_focus_sessions/mutations,one running account partia
 
 History pagination uses engine-owned monotonic creation order,not mutable completion time. Each cursor must belong to the authenticated account and selected world; deleted/expired cursors return404. Bounded pages reconcile only their returned timers. A later insertion cannot reorder already traversed records. Per-world public/friends presence never implies consent to publish focus statistics: focus data has no peer endpoint or room projection. Hidden context stays private even when another world's presence is public; owners retain access to their own history when their origin is closed. Synthetic Deadline/Library test definitions verify policy and origin association without claiming legacy integration.
 
-Rollback closes entry points while retaining additive private history; no automatic destructive migration or legacy import. See ADR0024/0025 for transaction/SDK and private history decisions. M10-04 accessible UI/sharing and M10-05 timezone/DST summaries remain unfinished. All actual world rollout/public/staff flags remainOFF.
+## Browser Timer
+
+The focus-ui React package owns a native accessible timer,15/25/50minute radio choices and explicit local completion summary. Portal's FocusPanel owns abortable no-store requests,in-memory original-key retries,identity lifetime and30second/visibility/focus/online reconciliation. Monotonic local display uses trusted remainingMs; only a canonical server observation can show completed. Timer role has aria-live off; state changes are politely announced. A missing seat prevents a new start without cancelling an existing timer. Lost responses show unconfirmed time and permit only original-request retry or read reconciliation. Policy-enabled pause/resume controls appear only from trusted timer policy.
+
+Confirmed completion enables an initially unchecked local summary preview and separate Copy summary command. Text contains only duration; account,nickname,world,room,seat,time,notes,tokens and URLs are absent. No feed/publication endpoint or external service receives it. Choice clears on uncertainty,timer change and remount. Existing original cafe artwork is the visual context; timer uses no new art/audio or animations. See ADR0026 and actual browser evidence for limits.
+
+Rollback closes entry points while retaining additive private history; no automatic destructive migration or legacy import. See ADR0024/0025 for transaction/SDK and private history decisions. M10-05 timezone/DST summaries remain unfinished. All actual world rollout/public/staff flags remainOFF.

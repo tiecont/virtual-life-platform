@@ -11,6 +11,7 @@ test('recipient consent, live invitation retry and block privacy work on desktop
       const response = await client.request.post('/v1/session/guest', { headers: { origin }, data: { requestId: randomUUID(), displayName, avatarKey: 'mint' } }); expect(response.status()).toBe(201); users.push(await response.json());
     }
     const a = users[0], b = users[1];
+    const roomsBefore = (await (await context.request.get('/v1/worlds/sdk-sandbox/rooms')).json()).rooms;
     const code = (await (await peer.request.get('/v1/social/me')).json()).contactCode;
     const friendship = await context.request.post('/v1/friends/requests', { headers: { origin, 'x-csrf-token': a.csrfToken, 'idempotency-key': randomUUID() }, data: { contactCode: code } }); expect(friendship.status()).toBe(200);
     expect((await peer.request.post('/v1/friends/requests/' + (await friendship.json()).id + '/respond', { headers: { origin, 'x-csrf-token': b.csrfToken, 'idempotency-key': randomUUID() }, data: { action: 'accept' } })).status()).toBe(200);
@@ -33,7 +34,8 @@ test('recipient consent, live invitation retry and block privacy work on desktop
     await other.screenshot({ path: `artifacts/invitations-accepted-${info.project.name}.png`, fullPage: true });
     const data = await (await context.request.get('/v1/invitations')).json(); expect(data.items).toHaveLength(1); expect(data.items[0].state).toBe('ACCEPTED');
     expect((await context.request.get('/v1/worlds/sdk-sandbox/rooms')).status()).toBe(200);
-    const rooms = await (await context.request.get('/v1/worlds/sdk-sandbox/rooms')).json(); expect(rooms.rooms).toHaveLength(0);
+    const rooms = await (await context.request.get('/v1/worlds/sdk-sandbox/rooms')).json(); expect(rooms.rooms).toEqual(roomsBefore);
+    expect((await (await context.request.get('/v1/me/room')).json()).snapshot).toBeNull(); expect((await (await peer.request.get('/v1/me/room')).json()).snapshot).toBeNull();
     const offlineCreated = await offline.request.post('/v1/session/guest', { headers: { origin }, data: { requestId: randomUUID(), displayName: 'Invite Charlie', avatarKey: 'mint' } }); expect(offlineCreated.status()).toBe(201); const c = await offlineCreated.json();
     const offlineCode = (await (await offline.request.get('/v1/social/me')).json()).contactCode;
     const offlineFriendship = await context.request.post('/v1/friends/requests', { headers: { origin, 'x-csrf-token': a.csrfToken, 'idempotency-key': randomUUID() }, data: { contactCode: offlineCode } }); expect(offlineFriendship.status()).toBe(200);

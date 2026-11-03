@@ -15,7 +15,7 @@ export function assertImportAllowed(from, specifier, root) {
   if (layer === 'worlds' && target.startsWith('worlds/') && targetProject !== project) throw new Error(`Cross-world import: ${path} → ${target}`);
   if (specifier.startsWith('@virtual-city/')) {
     const targetPackage = specifier.split('/')[1];
-    if (['apps', 'packages', 'worlds'].includes(layer) && !['contracts', 'world-sdk', 'pixi-scene', 'config'].includes(targetPackage)) {
+    if (['apps', 'packages', 'worlds'].includes(layer) && !['contracts', 'world-sdk', 'pixi-scene', 'focus-ui', 'config'].includes(targetPackage)) {
       throw new Error(`Forbidden workspace package: ${path} → ${specifier}`);
     }
     if (path.startsWith('packages/contracts/') && targetPackage !== 'config') throw new Error(`Contracts must not import SDK/apps: ${specifier}`);

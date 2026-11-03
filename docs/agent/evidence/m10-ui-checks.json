@@ -1,0 +1,19 @@
+{
+  "taskID": "M10-04",
+  "source": "workspace fromecdfc0c; checkpoint SHA follows git log",
+  "environment": "2026-11-03;Node26.9.0/pnpm11.28.5;Chromium desktop/iPhone13 viewport;local disposable PostgreSQL",
+  "commands": [
+    { "command": "pnpm install --offline", "exitCode": 0, "log": "m10-ui-install.log", "scope": "Cached React/types workspace package;zero downloads" },
+    { "command": "pnpm check", "exitCode": 0, "log": "m10-ui-check-attempt1.log", "scope": "7governance,126unit,193integration/typecheck/lint/assets/builds;last UI identity/clipboard refinements separately built/browser verified" },
+    { "command": "pnpm build", "exitCode": 0, "log": "m10-ui-build-complete.log", "scope": "Final sequential build after lock rejection" },
+    { "command": "pnpm lint", "exitCode": 0, "log": "m10-ui-lint-complete.log" },
+    { "command": "pnpm exec vitest run --project unit packages/focus-ui/src/summary.test.ts", "exitCode": 0, "log": "m10-ui-summary-final.log", "scope": "1sanitized summary unit" },
+    { "command": "node scripts/run-browser-tests.mjs tests/e2e/focus.spec.ts", "exitCode": 0, "log": "m10-ui-e2e-attempt1.log", "scope": "2desktop/mobile focus flows before extended clipboard assertion" },
+    { "command": "node scripts/run-browser-tests.mjs", "exitCode": 0, "log": "m10-ui-full-e2e-final.log", "scope": "40total,20eachdevice;includes actual clipboard and existing scene pixel/a11y/performance regressions" },
+    { "command": "git diff --check", "exitCode": 0 }
+  ],
+  "verified": ["Reusable React-only focus-ui/native controls,strict existing server lifecycle", "Real committed HTTP start response aborted then original-key retry;onehistory row", "Leave/reload/visibility resync,monotonic countdown unaffected by browser Date.now override", "Canonical completion uses explicit shifted local test DB deadline fixture,not15minute wall wait", "Private initially-off duration-only share preview/copy,actual clipboard text,no identifiers,clear on reload/logout", "Reduced motion,keyboard start/checkbox,aria-live off ticks,min44px targets,nooverflow and nopageerrors"],
+  "artifacts": "m10-ui-visual:desktop/mobile completed fullpage,panel crops,recovery JSON;mobile panel and desktopfullpage visually inspected",
+  "failuresRetained": ["m10-ui-build-final.log:redundant overlapping build rejected by Next build lock;sequential finalbuild0", "m10-ui-full-e2e.log:19desktop pass/1old invitation emptycatalog assumption failed;assertion now compares before/after and checks both participants have no membership;unchanged runtime,timeouts;final40pass"],
+  "limits": ["SDK Sandbox live integration only;actual Deadline/Library integrations remain gated", "No focus notes,rewards,automatic public sharing or audio", "No migration/remote/rollout/public change", "Daily timezone summaries remainM10-05"]
+}

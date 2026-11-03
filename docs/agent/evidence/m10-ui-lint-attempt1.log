@@ -1,0 +1,2 @@
+$ eslint . && node scripts/check-boundaries.mjs
+Boundary checks passed: 119 source files

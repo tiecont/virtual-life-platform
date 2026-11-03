@@ -1,5 +1,11 @@
 # Agent progress
 
+## M10-04 - VERIFIED reusable accessible focus UI
+
+Workspace fromecdfc0c; m10-ui-checks.json/ADR0026. Offline install0/zero downloads,fullcheck0(7governance,126unit,193integration/builds),final sequentialbuild/lint/unit0. Targeted focus desktop/mobile2pass,then extended fullE2E40pass(20each). Initial fullbrowser19desktop+1failed old invitation emptycatalog assumption: new focus test leaves a valid empty room. Fixed before/after equality plus both invite actors have null membership; unchanged runtime/timeouts. Redundant concurrentbuild failedNextlock; sequentialbuild0. All logs retained.
+
+focus-ui React package owns native timer/durations/actions/private sanitized share preview;Portalcontroller owns abortable no-store HTTP,original-key uncertain retry,identity cleanup,visibility/focus/online/30s reconciliation. Monotonic display never completes without canonical API;role timer aria-live off,no sound/animation. Real HTTP committedresponse aborted/retried,leave/reload/dateoverride/visibility plus explicit shifted local testdeadline completion fixture pass. Opt-in duration-only copy actualclipboard,no identifier/task/location,safe reset/logout,44px targets/nooverflow/reducedmotion and existing canvaspixel/performance regressions pass. Current fullpage/crops/recoveryJSON retained;mobilepanel/desktopfullpage inspected. No new media/migration/rollout/legacy/remote/public action. Next exact action M10-05 UTC stored completion daily SQL summaries,explicit IANA timezone,23:59 Asia/Ho_Chi_Minh and23/25h DST boundaries,retention/no tick-write verification.
+
 ## M10-03 - VERIFIED own world-scoped focus history
 
 Workspace from9847bdf; m10-scope-checks.json/ADR0025. Full pnpm check exit0(7governance,125unit,193integration/builds),targeted focus15 exit0,typecheck/lint/diff0. Initial fixture accessed nonexistent public hooks; corrected explicit synthetic hooks. Next attempt expected403 for closed world but existing admission hides it with404; corrected assertion,policy unchanged. Both failed logs retained.

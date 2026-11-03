@@ -8,6 +8,7 @@ import { sandboxScene } from '@virtual-city/pixi-scene';
 import type { createCafeScene } from '@virtual-city/pixi-scene';
 import './room.css';
 import RoomSafety from './RoomSafety';
+import FocusPanel from '../../components/FocusPanel';
 
 const idle: RoomRecoveryView = { status: 'idle', snapshot: null, reason: null };
 type SceneView = Awaited<ReturnType<typeof createCafeScene>>;
@@ -181,7 +182,7 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
           const seat = view.snapshot?.seats.find(seat => seat.seatId === point.seatId);
           return <button key={point.seatId} className={seat?.mine ? 'mine' : ''} disabled={!active || busy || seat?.state !== 'available' || !!view.snapshot?.self.seatId} aria-label={point.label + (seat?.mine ? ', your seat' : '')} onClick={() => void mutate('seat.claim', point.seatId)}><span>{point.seatId.slice(5).padStart(2, '0')}</span><span>{point.label.split(' ').slice(0, 2).join(' ')}<small>{seat?.mine ? 'Your seat' : !active ? 'Not connected' : seat?.state === 'held' ? 'Reconnecting' : seat?.state === 'occupied' ? 'Occupied' : 'Available'}</small></span></button>;
         })}</div>
-      </section><a className="cafe-action-back" href="#cafe-room-controls">Back to visit controls</a></div>
+      </section>{me && <FocusPanel key={me.profile.id + ':' + me.csrfToken} me={me} source={active && view.snapshot?.self.seatId ? { epoch: view.snapshot.epoch, roomId: view.snapshot.roomId, membershipId: view.snapshot.membershipId } : null}/>}<a className="cafe-action-back" href="#cafe-room-controls">Back to visit controls</a></div>
       <aside className="cafe-sidebar" id="cafe-room-controls" tabIndex={-1} aria-label="Your room"><h2>Your visit</h2><p className="cafe-connection" role="status" aria-live="polite">{loading ? 'Checking your session...' : status}</p>
         {message && <p className="cafe-message" aria-live="polite">{message}</p>}
         {me ? <><p className="cafe-identity">{me.profile.displayName}</p><p className="cafe-note" aria-live="polite">{active ? walking ? view.snapshot?.self.seatId ? 'Walking to your reserved seat.' : 'Walking across the cafe floor.' : view.snapshot?.self.seatId ? 'Seated at ' + sandboxScene.seats.find(seat => seat.seatId === view.snapshot?.self.seatId)?.label : 'On the cafe floor' : 'No confirmed place'}</p>
