@@ -1,0 +1,11 @@
+{
+  "source": "apps/portal-web/app/components/PixelCityArt.tsx",
+  "sha256": "d3e0d339f8417988bcda85088efd6445ffe8ad2d11a5d61a1081473e775d07d4",
+  "rendering": "inline-svg",
+  "viewBox": [
+    48,
+    30
+  ],
+  "externalMedia": false,
+  "releaseApproved": false
+}

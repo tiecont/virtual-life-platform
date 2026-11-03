@@ -1,0 +1,50 @@
+{
+  "worlds": [
+    {
+      "slug": "sdk-sandbox",
+      "availability": "available"
+    },
+    {
+      "slug": "travel-deadline-fixture",
+      "availability": "available"
+    },
+    {
+      "slug": "travel-maid-fixture",
+      "availability": "available"
+    },
+    {
+      "slug": "travel-portal-fixture",
+      "availability": "available"
+    }
+  ],
+  "targets": [
+    {
+      "x": 130,
+      "y": -211.328125,
+      "width": 44,
+      "height": 44
+    },
+    {
+      "x": 216,
+      "y": -211.328125,
+      "width": 44,
+      "height": 44
+    },
+    {
+      "x": 130,
+      "y": -275.828125,
+      "width": 44,
+      "height": 44
+    },
+    {
+      "x": 216,
+      "y": -275.828125,
+      "width": 44,
+      "height": 44
+    }
+  ],
+  "noOverlap": true,
+  "noHiddenDating": true,
+  "sameIdentity": true,
+  "pageErrors": []
+}

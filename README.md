@@ -86,6 +86,8 @@ Room commands use authenticated Socket.IO with authoritative capacity, seats, pr
 
 ## World registry
 
+The home page includes an original [pixel city map and accessible catalog list](docs/architecture/CITY-PORTAL.md). Sign in or create a guest to see places approved for your session. Map selections focus matching list details; existing room/travel flows perform admission checks. The map shows no invented occupancy or hidden destinations, and real world rollout remains closed.
+
 Authenticated GET /v1/worlds returns privacy-safe metadata. SDK Sandbox is registered by default and closed until explicit flags; synthetic travel destinations require an additional local opt-in. Optional WORLD_FLAGS_FILE uses config/world-flags.example.json and the current NODE_ENV; SIGHUP reloads flags in the API process. Sandbox activation is denied in production. Invalid files/unknown flags disable worlds; permissions cannot be supplied by flags. All actual world rollout flags remain OFF. See docs/architecture/WORLD-SDK.md for lifecycle, errors, rollback and legacy adapter sequencing, and TRAVEL.md for current handoff contracts.
 
 M08-02 adds a default-OFF development/test-only [ephemeral chat backend](docs/architecture/CHAT-SAFETY.md) with bounded pre-broadcast moderation. Production chat is closed; related local safety workflows are described below, and public safety approval remains pending.

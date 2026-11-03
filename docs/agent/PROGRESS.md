@@ -1,5 +1,11 @@
 # Agent progress
 
+## M14-01 - VERIFIED original catalog-only city map
+
+From746ac6b;m14-map-checks.json/ADR0044/CITY-PORTAL.md. Actual197unit/7governance,webtypes/lint/architecture/webbuild/diff0;browser6(3eachdevice)exit0. No backend/schema/migration change,so full311integration baseline remains M13-05 separately. Initial acceptance passed,no red-first claim. SourceSHA/provenance and screenshots/targetJSON m14-map-visual retained;desktop/mobile visually inspected,no overflow/marker overlap,44pxtargets,noerrors.
+
+Original static SVG pixel-town,approved catalog-only numbered hotspots/native list,current metadata accessstate,keyboard focus and actual cafeentry sameidentity pass. Coincident fixture coordinates resolve distinct schematic slots;max12map/all100list bounds tested. Failed catalog clears navigation;retry/oldresponse-afterlogout failclosed. No invented real/hiddenworlds/occupancy/schedules. Browserusesavailablelocalfixtures;dedicatedclosed/offlineflag transition notclaimed. Next exact action M14-02 audited current roomdirectory/eventcatalog ports for bounded on-demand detailcards with explicit timestamp/unknown/offline/stale/privacy;then03sharedshell. AllrealflagsOFF,previewoff,DB0025;B-001/B-002/B-003 unchanged.
+
 ## M13-05 - VERIFIED immutable corrections and abuse bounds
 
 From2bf6ab0;m13-correction-checks.json/ADR0043/runbook. Fullcheck exit0:7governance,195unit,311integration,lint/types/architecture/assets/builds;browser8(4eachdevice),targeted12pass74filteredskips,0025localmigration/diff0. Missing-correct-method red retained1failed25skips;first acceptance1pass,finalcombined12pass. Documentation patch stale-context rejection was atomic and corrected;no runtime failure hidden.
