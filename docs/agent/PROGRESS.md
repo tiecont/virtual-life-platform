@@ -1,5 +1,11 @@
 # Agent progress
 
+## M14-02 - VERIFIED bounded activity/schedule details
+
+Froma41d3d3;m14-activity-checks.json/ADR0045. Finalfullcheck exit0:7governance,200unit,312integration,lint/types/architecture/assets/builds;browser6(3eachdevice),extra finalwebtypes/lint/targeted2/diff0. Initial closure test incorrectlyexpected403 while existingguard returned404;retainedfailure,correctedassertion withoutauthorizationchange. Firstfullcheck311pass1fail assumed sandboxneveroffered events;explicit no-eventfixture nowpreservesnegativeguard,finalfullsuite passes. No migration.
+
+Oneondemand expandedworldcard,actualdirectory allocations/places includinggrace,listed3eventmetadata/IANA labels,devicereceipttime/30sexpiry,knownvsunknown partial failures verified. Actualroom1/place1/listed+privateSQLevents,clock31s expiry,unsupportedworldemptydirectory,blockedworld404->catalogremoval,heldresponse/logout allpass. Screenshots m14-activity-visual inspected,no overflow. Sandboxofferssilenteventpolicy butorganizergrantsremainempty;SQLfixtures onlyproveUIreads,notauthorizedcreation/realadapter. AllrealflagsOFF,previewoff,DB0025. Next exact action M14-03 sharedheader/ownavatar/currentvisit and friend/invitecenter,with privacy-safe owncontext refresh/identity cleanup;then04routeUX and05concentration.
+
 ## M14-01 - VERIFIED original catalog-only city map
 
 From746ac6b;m14-map-checks.json/ADR0044/CITY-PORTAL.md. Actual197unit/7governance,webtypes/lint/architecture/webbuild/diff0;browser6(3eachdevice)exit0. No backend/schema/migration change,so full311integration baseline remains M13-05 separately. Initial acceptance passed,no red-first claim. SourceSHA/provenance and screenshots/targetJSON m14-map-visual retained;desktop/mobile visually inspected,no overflow/marker overlap,44pxtargets,noerrors.

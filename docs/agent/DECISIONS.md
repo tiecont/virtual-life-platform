@@ -1,5 +1,7 @@
 # Decisions
 
+M14-02 / ADR0045: reuse ownerdirectory/eventcatalog,one explicitly expandedcard,no100worldfanout. Counts meanallocatedplaces includinggrace,notpeopleonline/freecapacity. Device-receivedsnapshot expires30s;partialfailuresunknown,access401/403/404 clearsandrefreshescatalog. Existing safetyguard already404;no runtimeauthfix. Sandboxsilenteventpolicyexplicit/defaultorganizerdenied. Full312integration/builds/browser6 pass,nomigration.
+
 M14-01 / ADR0044: original inlineSVG schematic town,only authenticated catalog hotspots/native list. Stable nearest-free12plot display resolves coincident metadata;allcatalogentries remainlist. No invented occupancy/hiddenworlds/locationauthority. Abort/identity cleanup excludes oldcatalog afterlogout. Actual197unit/frontendbuild/browser6 pass;noAPI/migration/fullintegrationrerun,prior311baseline separate.
 
 M13-05 / ADR0043: immutable one-per-grant full corrections with SQL-bound account/amount;trusted in-process defaultempty operators,no public route. Gross source/day/cooldown/partner usage remains consumed;effectivebalance/entitlement revocation atomic. Own awardedXp+negativecorrections extend prerelease strict response,oldstrictreaders requireupgrade. Full311integration/builds/browser8 and rollback/races/privacy/cap/batch tests pass. No automatic report/refusal/sanction deduction or operator provisioning.

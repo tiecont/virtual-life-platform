@@ -1,0 +1,11 @@
+{
+  "onDemandInitialRequests": 0,
+  "actualUsedPlaces": 1,
+  "actualAllocatedRooms": 1,
+  "listedEvent": true,
+  "privateExcluded": true,
+  "expiredAt31seconds": true,
+  "partialOutagePreservesKnownRoomCount": true,
+  "noScheduleInvented": true,
+  "safetyClosureRemovesDestination": true
+}

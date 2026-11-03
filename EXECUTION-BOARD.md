@@ -84,7 +84,7 @@
 | M13 | M13-04 · Implement cosmetics UI and non-trading unlocks with accessibility. | VERIFIED | docs/agent/evidence/m13-wardrobe-checks.json; ADR0042 |
 | M13 | M13-05 · Implement abuse tests and rollback for incorrect rewards. | VERIFIED | docs/agent/evidence/m13-correction-checks.json; ADR0043 |
 | M14 | M14-01 · Create original pixel-art city map with clickable world hotspots and accessible text list. | VERIFIED | docs/agent/evidence/m14-map-checks.json; ADR0044 |
-| M14 | M14-02 · Build world detail cards with safe occupancy and schedules. | TODO | — |
+| M14 | M14-02 · Build world detail cards with safe occupancy and schedules. | VERIFIED | docs/agent/evidence/m14-activity-checks.json; ADR0045 |
 | M14 | M14-03 · Integrate shared header, avatar, current world, friend/invite center. | TODO | — |
 | M14 | M14-04 · Build route/portal UX (loading, full room, forbidden, cancelled, reconnect). | TODO | — |
 | M14 | M14-05 · Add initial activation strategy to concentrate activity. | TODO | — |

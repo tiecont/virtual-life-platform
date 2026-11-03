@@ -1,0 +1,13 @@
+# ADR0045 — Bounded activity snapshots, not live population claims
+
+Status: local implementation; actual verification in m14-activity-checks.json.
+
+The existing authenticated room directory already checks current shared world safety through registry authorization. An initial new test expected403 during closure but correctly received404; its expectation was corrected without changing runtime authorization. Portal details reuse this owner API and the event catalog, with no new counter database or discovery authority.
+
+One explicitly expanded world card may fetch details at a time. It requests rooms and, only when the manifest offers events, that world's listed event catalog. Opening another card aborts/unmounts the first. No eager100world fanout, peer enumeration or automatic poll loop is added. Duplicate/impossible rooms and foreign/malformed schedules fail closed. Rooms show occupied allocation places and number of allocated rooms, including reconnect holds, rather than claiming people online or guaranteed free seats.
+
+Responses are no-store with an8second deadline. Counts and schedules are independently known or unknown; an endpoint failure never becomes zero or an empty confirmed calendar. A successful empty directory/catalog is explicitly distinguished. A local device receipt time is labeled as such, not presented as a server timestamp. After30seconds, suspend/offline or wall/monotonic clock inconsistency, prior details are hidden until manual refresh. Entry still requires current server admission. A401/403/404 access change clears detail data and refreshes the authoritative catalog, closing the expansion to avoid a retry loop. Logout and identity/catalog replacement abort old work; late responses cannot restore a prior card.
+
+Only listed event title,phase-as-observed,start/end labels and IANA zone are rendered. RSVP,organizer,attendee,source and profile details are omitted. At most3returned events are displayed, with explicit remaining/truncation notice. Unsupported event capability is distinct from an unavailable schedule. Private event visibility remains enforced by the event owner even for the organizer's portal catalog.
+
+The local SDK sandbox now declares its silent-event policy, within its8place capacity. Organizer creation authority still defaults deny; the browser tests seed synthetic persisted listed/private events solely to verify real catalog rendering. No real organizer is provisioned, no real adapter changes, and production continues to reject sandbox activation. No migration or new API contract is required. Rollback removes detail UI and sandbox event capability while preserving underlying event records; actual adapters own their own policies.

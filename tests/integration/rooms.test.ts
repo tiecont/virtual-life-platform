@@ -61,6 +61,11 @@ async function block(actor: User, target: User) {
   const response = await app.http.inject({ method: 'POST', url: '/v1/blocks', headers: { origin, cookie: actor.cookie, 'x-csrf-token': actor.me.csrfToken, 'idempotency-key': randomUUID() }, payload: { targetId: target.me.profile.id, blocked: true } });
   expect(response.statusCode).toBe(200);
 }
+it('directory refuses activity reads during current world safety closure',async()=>{
+ const u=await guest();expect((await app.http.inject({url:'/v1/worlds/sdk-sandbox/rooms',headers:{cookie:u.cookie}})).statusCode).toBe(200);
+ await pool.query("INSERT INTO safety_incident_controls VALUES('sdk-sandbox','world',true,NULL,$1)",[new Date(now())]);
+ try{const response=await app.http.inject({url:'/v1/worlds/sdk-sandbox/rooms',headers:{cookie:u.cookie}});expect(response.statusCode).toBe(404);expect(response.json()).not.toHaveProperty('rooms');}finally{await pool.query("DELETE FROM safety_incident_controls WHERE world_slug='sdk-sandbox'");}
+});
 describe('M06-01 real PostgreSQL identity + Socket.IO authoritative room allocator slice', () => {
   it('joins, snapshots and leaves via guarded network commands without disclosing other profiles', async () => {
     const user = await guest(); const client = await connect(user); const snapshot = await join(client);

@@ -1,0 +1,45 @@
+ Network virtual-city-test-95a8a3df_default Creating 
+ Network virtual-city-test-95a8a3df_default Creating 
+ Network virtual-city-test-95a8a3df_default Created 
+ Network virtual-city-test-95a8a3df_default Created 
+ Container virtual-city-test-95a8a3df-db-1 Creating 
+ Container virtual-city-test-95a8a3df-db-1 Created 
+ Container virtual-city-test-95a8a3df-db-1 Starting 
+ Container virtual-city-test-95a8a3df-db-1 Started 
+ Container virtual-city-test-95a8a3df-db-1 Waiting 
+ Container virtual-city-test-95a8a3df-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/rooms.test.ts (22 tests | 1 failed | 21 skipped) 698ms
+   × directory refuses activity reads during current world safety closure 71ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/rooms.test.ts > directory refuses activity reads during current world safety closure
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/integration/rooms.test.ts:67:135
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 21 skipped (22)
+   Start at  21:50:18
+   Duration  1.79s (transform 427ms, setup 0ms, import 952ms, tests 698ms, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-95a8a3df-db-1 Stopping 
+ Container virtual-city-test-95a8a3df-db-1 Stopped 
+ Container virtual-city-test-95a8a3df-db-1 Removing 
+ Container virtual-city-test-95a8a3df-db-1 Removed 
+ Network virtual-city-test-95a8a3df_default Removing 
+ Network virtual-city-test-95a8a3df_default Removed 
