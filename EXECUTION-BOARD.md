@@ -49,7 +49,7 @@
 | M07 | M07-04 · Implement destination click, path validation, movement interpolation. | VERIFIED | m07-movement-checks.json; final75 integration +26 E2E,server paths/legacy negotiation/privacy/freeze |
 | M07 | M07-05 · Implement accessibility/responsive fallback UI. | VERIFIED | m07-accessibility-checks.json;28 E2E,contrast>=5.7288,44px targets,keyboard/focus/low-motion; future service controls gated |
 | M07 | M07-06 · Optimize asset bundles/loading/perf. | VERIFIED | m07-performance-checks.json;30 E2E,actual CPU4x/cache/idle/remount profile; M07 local sample task scope complete |
-| M08 | M08-01 · Define content, harassment and privacy threat model by world, plus escalation protocol. | TODO | — |
+| M08 | M08-01 · Define content, harassment and privacy threat model by world, plus escalation protocol. | VERIFIED | m08-policy-checks.json; audited definition/schema/config with45unit/75integration/builds; runtime02..06 pending |
 | M08 | M08-02 · Implement server-side chat/emote/moderation pipeline. | TODO | — |
 | M08 | M08-03 · Implement reporting with minimal evidence, immutable audit log and access RBAC. | TODO | — |
 | M08 | M08-04 · Implement sanction lifecycle, cross-world enforcement and appeal intake. | TODO | — |

@@ -10,6 +10,8 @@ The original starter avatar and outfit/action previews are at `/worlds/sdk-sandb
 
 The scene renderer loads through its explicit client entry and uses a versioned immutable atlas cache. [Measured local scene budgets](docs/architecture/SCENE-PERFORMANCE.md) include real browser CPU/network emulation and lifecycle checks; they are not production or physical-device promises.
 
+The [safety threat model and escalation contract](docs/product/SAFETY-THREAT-MODEL.md) and validated policy are local definitions. Chat/report/moderator/sanction workflows are still being implemented; the policy does not activate them or approve public social release.
+
 ## Local setup
 
 Linux, Node **26.9.0** (`.node-version`), pnpm **11.28.5**, Docker Engine + Compose v2. Exact dependency pins and pnpm-lock.yaml are committed. The Node pin describes the verified environment, not an LTS claim.

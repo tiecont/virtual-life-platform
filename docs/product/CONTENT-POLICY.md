@@ -9,3 +9,5 @@ Only original, owned, public-domain or explicitly licensed assets/media/material
 Dating release checklist: effective reviewed 18+ pathway; separate opt-in profile/consent; invisible-to-friends presence; mutual match; leave/block/report; staffed moderation and appeal; legal/operator review; flag OFF until all gates and explicit approval. Self-attestation alone is insufficient.
 
 Public release signoff: named operator and coverage, approved age/privacy/retention/contact, asset rights, security/a11y checks, backup restore, monitoring/incident drill, rollout/rollback owner, explicit authorization. All currently pending. Legal compliance is not certified by this plan.
+
+The detailed [M08 threat model and escalation contract](SAFETY-THREAT-MODEL.md) maps current enforcement to required runtime work. `config/safety-policy.json` is a strict versioned draft, not an activation switch or evidence that moderation is operating. At M08-01, leave/block/privacy controls exist; chat, mute/report, sanctions, appeals and moderator workflows remain M08-02..06. Public chat/release and coverage/retention approvals remain false.
