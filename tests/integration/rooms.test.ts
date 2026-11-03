@@ -6,7 +6,7 @@ import { RoomAckSchema, RoomsListSchema, MeSchema, type Me, type RoomSnapshot, t
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/config';
 import { migrate } from '../../apps/platform-api/src/db/migrations';
-import { defineWorld, applyRoomDelta } from '@virtual-city/world-sdk';
+import { defineWorld, applyRoomDelta, sandboxScene, isWalkable } from '@virtual-city/world-sdk';
 import { DISCONNECT_GRACE_MS } from '../../apps/platform-api/src/rooms/service';
 
 let pool: Pool; let admin: Pool; let app: Awaited<ReturnType<typeof createApp>>; let url: string; let offset = 0; let serial = 1;
@@ -279,5 +279,68 @@ describe('M06-01 real PostgreSQL identity + Socket.IO authoritative room allocat
       release(); expect((await joining).ok).toBe(true); await Promise.all(queued);
       expect(app.rooms.diagnostics().controlKeys).toBe(0); expect(app.rooms.diagnostics().pending).toBe(0);
     } finally { release(); await app.worlds.registry.setEnabled(world.definition.slug, false); }
+  });
+});
+
+describe('M07-04 authoritative scene movement', () => {
+  it('negotiates per connection, validates walls/forged paths and preserves request idempotency and legacy projections', async () => {
+    const user = await guest(); const legacy = await connect(user); const old = await join(legacy);
+    expect(old.self.motion).toBeUndefined(); expect(old.serverTime).toBeUndefined();
+    const modern = await connect(user); const state = await join(modern, { motionVersion: 1 });
+    expect(state.self.motion?.path).toEqual([sandboxScene.spawn]);
+    const denied = await command(legacy, 'room.move', ownInput(old, { destination: { x: 2, y: 3 } }));
+    expect(denied.ok).toBe(false); if (!denied.ok) expect(denied.error.code).toBe('FORBIDDEN');
+    for (const extra of [{ destination: { x: 3, y: 4 } }, { destination: { x: 64, y: 2 } }, { destination: { x: 2.5, y: 3 } }, { destination: { x: 2, y: 3 }, path: [{ x: 3, y: 4 }] }, { destination: { x: 2, y: 3 }, stepMs: 0 }]) {
+      expect((await command(modern, 'room.move', ownInput(state, extra))).ok).toBe(false);
+    }
+    const move = ownInput(state, { destination: { x: 2, y: 3 } });
+    const moved = await command(modern, 'room.move', move); expect(moved.ok).toBe(true);
+    if (!moved.ok || moved.result.type !== 'snapshot') throw new Error('Missing movement snapshot');
+    const path = moved.result.self.motion!.path;
+    expect(path.at(-1)).toEqual({ x: 2, y: 3 }); expect(path.every(point => isWalkable(sandboxScene, point))).toBe(true);
+    const replay = await command(modern, 'room.move', move);
+    expect(replay.ok && replay.result.type === 'snapshot' && replay.result.self.motion).toEqual(moved.result.self.motion);
+    expect((await command(modern, 'room.move', { ...move, destination: { x: 6, y: 3 } })).ok).toBe(false);
+    const overlap = await command(modern, 'room.move', ownInput(state, { destination: { x: 6, y: 3 } }));
+    expect(overlap.ok).toBe(false); if (!overlap.ok) expect(overlap.error.code).toBe('RATE_LIMITED');
+    const legacyUpdate = await command(legacy, 'room.snapshot', ownInput(old));
+    if (!legacyUpdate.ok || legacyUpdate.result.type !== 'snapshot') throw new Error();
+    expect(legacyUpdate.result.self.motion).toBeUndefined(); expect(legacyUpdate.result.serverTime).toBeUndefined();
+    expect(legacyUpdate.result.participants.every(person => person.motion === undefined)).toBe(true);
+    offset += path.length * 150;
+    expect((await command(modern, 'room.move', ownInput(state, { destination: { x: 6, y: 3 } }))).ok).toBe(true);
+    offset = 0;
+  });
+  it('filters peer motion through block privacy and freezes walking on final disconnect before re-admission', async () => {
+    const a = await guest(), b = await guest(); await setPresence(a, 'public'); await setPresence(b, 'public');
+    const ca = await connect(a), cb = await connect(b); const sa = await join(ca, { motionVersion: 1 }), sb = await join(cb, { motionVersion: 1 });
+    const moved = await command(ca, 'room.move', ownInput(sa, { destination: { x: 2, y: 3 } })); expect(moved.ok).toBe(true);
+    const observed = await command(cb, 'room.snapshot', ownInput(sb));
+    expect(observed.ok && observed.result.type === 'snapshot' && observed.result.participants.find(person => person.profile.id === a.me.profile.id)?.motion?.path.at(-1)).toEqual({ x: 2, y: 3 });
+    const stranger = await connect(await guest()); expect((await command(stranger, 'room.move', ownInput(sa, { destination: { x: 2, y: 3 } }))).ok).toBe(false);
+    await block(a, b); const hidden = await command(cb, 'room.snapshot', ownInput(sb)); expect(JSON.stringify(hidden)).not.toContain(a.me.profile.id);
+    ca.close(); await expect.poll(() => app.rooms.diagnostics().graceMemberships).toBe(1);
+    offset += 3000;
+    const restored = await join(await connect(a), { motionVersion: 1 });
+    expect(restored.membershipId).toBe(sa.membershipId); expect(restored.self.motion?.path).toHaveLength(1);
+    expect(isWalkable(sandboxScene, restored.self.motion!.path[0])).toBe(true); expect(restored.self.motion!.path[0]).not.toEqual({ x: 2, y: 3 });
+    offset = 0;
+  });
+  it('validates seat interaction points against trusted geometry, never client-supplied coordinates', async () => {
+    const user = await guest(); const client = await connect(user); const state = await join(client, { motionVersion: 1 });
+    expect((await command(client, 'seat.claim', ownInput(state, { seatId: 'seat-1', position: { x: 3, y: 4 } }))).ok).toBe(false);
+    const seated = await command(client, 'seat.claim', ownInput(state, { seatId: 'seat-1' }));
+    if (!seated.ok || seated.result.type !== 'snapshot') throw new Error('Seat claim failed');
+    expect(seated.result.self.motion?.path.at(-1)).toEqual({ x: 3, y: 3 }); expect(seated.result.self.motion!.path.every(point => isWalkable(sandboxScene, point))).toBe(true);
+    const walking = await command(client, 'room.move', ownInput(state, { destination: { x: 6, y: 3 } }));
+    expect(walking.ok).toBe(false); if (!walking.ok) expect(walking.error.code).toBe('ALREADY_SEATED');
+    const stood = await command(client, 'seat.release', ownInput(state, { seatId: 'seat-1' }));
+    expect(stood.ok && stood.result.type === 'snapshot' && stood.result.self.motion?.path.length).toBe(1);
+    const legacy = await connect(user); const old = await join(legacy);
+    expect((await command(legacy, 'seat.claim', ownInput(old, { seatId: 'seat-2' }))).ok).toBe(true);
+    const modernView = await command(client, 'room.snapshot', ownInput(state));
+    if (!modernView.ok || modernView.result.type !== 'snapshot') throw new Error();
+    expect(modernView.result.self.motion!.path.length).toBeGreaterThan(1);
+    expect(modernView.result.self.motion?.path.at(-1)).toEqual({ x: 5, y: 3 });
   });
 });

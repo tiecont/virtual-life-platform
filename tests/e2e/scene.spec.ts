@@ -3,6 +3,7 @@ import { randomUUID, createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { request } from 'node:http';
 import { MeSchema } from '@virtual-city/contracts';
+import { isWalkable, sandboxScene } from '@virtual-city/world-sdk';
 
 const origin = 'http://127.0.0.1:3300';
 let bootstrapSerial = 1;
@@ -238,4 +239,36 @@ test('original avatar action and outfit previews render distinct pixels and resp
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: `artifacts/avatars/lab-${test.info().project.name}.png`, fullPage: true });
   await writeFile(`artifacts/avatars/pixels-${test.info().project.name}.json`, JSON.stringify({ distinctPoseOutfitPngHashes: [...hashes], reducedMotion: true }, null, 2));
+});
+
+test('keyboard and canvas destinations follow approved paths around tables and reject solid tiles', async ({ page, context }) => {
+  const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
+  await guest(context, 'Walking Visitor'); await enter(page);
+  const canvas = page.locator('canvas[data-scene]'); await expect(canvas).toHaveAttribute('data-self-position', '10.00:11.00');
+  await page.getByRole('button', { name: 'Walk to window aisle', exact: true }).focus(); await page.keyboard.press('Enter');
+  await expect(page.getByText('Your walk is confirmed.', { exact: true })).toBeVisible();
+  await expect(canvas).toHaveAttribute('data-moving-count', '1');
+  await expect(canvas).toHaveAttribute('data-moving-count', '0', { timeout: 10000 });
+  await expect(canvas).toHaveAttribute('data-self-position', '2.00:4.00');
+  const bounds = (await canvas.boundingBox())!;
+  await canvas.click({ position: { x: bounds.width * 3.5 / 20, y: bounds.height * 4.5 / 14 } });
+  await expect(page.getByText('That destination or interaction is unavailable. Choose an open floor tile.', { exact: true })).toBeVisible();
+  await expect(page.getByRole('status')).toHaveText('Connected');
+  await expect(canvas).toHaveAttribute('data-self-position', '2.00:4.00');
+  await canvas.click({ position: { x: bounds.width * 6.5 / 20, y: bounds.height * 4.5 / 14 } });
+  await expect(canvas).toHaveAttribute('data-moving-count', '1');
+  const samples = await canvas.evaluate(element => new Promise<string[]>((resolve, reject) => {
+    const samples: string[] = []; const started = performance.now();
+    const timer = setInterval(() => {
+      samples.push((element as HTMLElement).dataset.selfPosition ?? '');
+      if ((element as HTMLElement).dataset.movingCount === '0') { clearInterval(timer); resolve(samples); }
+      else if (performance.now() - started > 8000) { clearInterval(timer); reject(new Error('Approved movement did not complete')); }
+    }, 30);
+  }));
+  expect(new Set(samples).size).toBeGreaterThan(4);
+  expect(samples.every(sample => { const [x, y] = sample.split(':').map(Number); return isWalkable(sandboxScene, { x: Math.round(x), y: Math.round(y) }); })).toBe(true);
+  await expect(canvas).toHaveAttribute('data-self-position', '6.00:4.00');
+  await mkdir('artifacts', { recursive: true });
+  await writeFile(`artifacts/cafe-movement-${test.info().project.name}.json`, JSON.stringify({ samples, final: await canvas.getAttribute('data-self-position'), crossedSolidTile: false }, null, 2));
+  await page.getByRole('button', { name: 'Leave cafe', exact: true }).click(); expect(errors).toEqual([]);
 });

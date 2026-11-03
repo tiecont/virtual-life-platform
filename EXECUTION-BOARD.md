@@ -46,7 +46,7 @@
 | M07 | M07-01 · Define isometric/2D coordinate/tile/map scene spec and collision zones. | VERIFIED | m07-scene-checks.json; actual cafe pixels/keyboard room/seats/privacy desktop+mobile; fixture art only |
 | M07 | M07-02 · Implement Pixi scene loader, camera, sprite lifecycle and event-driven state render. | VERIFIED | m07-lifecycle-checks.json; keyed sprites/camera/cancellation and22 E2E; original multi-frame actions remain03 |
 | M07 | M07-03 · Implement avatar core + world outfit variants with a legal asset manifest. | VERIFIED | m07-avatar-checks.json; original idle/walk/sit/serve+2outfits,24 E2E; movement/service gameplay not claimed |
-| M07 | M07-04 · Implement destination click, path validation, movement interpolation. | TODO | — |
+| M07 | M07-04 · Implement destination click, path validation, movement interpolation. | VERIFIED | m07-movement-checks.json; final75 integration +26 E2E,server paths/legacy negotiation/privacy/freeze |
 | M07 | M07-05 · Implement accessibility/responsive fallback UI. | TODO | — |
 | M07 | M07-06 · Optimize asset bundles/loading/perf. | TODO | — |
 | M08 | M08-01 · Define content, harassment and privacy threat model by world, plus escalation protocol. | TODO | — |

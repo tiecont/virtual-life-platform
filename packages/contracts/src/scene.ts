@@ -1,7 +1,8 @@
 import { z } from 'zod';
-import { SeatIdSchema, WorldVersionSchema } from './world';
+import { SeatIdSchema, WorldVersionSchema } from './world-primitives';
 
-const Point = z.strictObject({ x: z.number().int().nonnegative(), y: z.number().int().nonnegative() });
+export const TilePointSchema = z.strictObject({ x: z.number().int().min(0).max(63), y: z.number().int().min(0).max(63) });
+const Point = TilePointSchema;
 export const SceneManifestSchema = z.strictObject({
   schemaVersion: z.literal(1), key: z.string().regex(/^[a-z][a-z0-9-]{0,63}$/), version: WorldVersionSchema,
   projection: z.literal('orthogonal'), tileSize: z.number().int().min(16).max(128),

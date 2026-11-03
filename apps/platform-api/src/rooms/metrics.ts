@@ -1,6 +1,6 @@
 import { performance } from 'node:perf_hooks';
 
-export const ROOM_COMMANDS = ['room.join', 'room.leave', 'room.snapshot', 'seat.claim', 'seat.release'] as const;
+export const ROOM_COMMANDS = ['room.join', 'room.leave', 'room.snapshot', 'seat.claim', 'seat.release', 'room.move'] as const;
 export type RoomCommandName = typeof ROOM_COMMANDS[number];
 const buckets = [1, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, Infinity];
 const outcomes = new Set(['OK', 'INVALID_REQUEST', 'UNAUTHENTICATED', 'FORBIDDEN', 'NOT_FOUND', 'RATE_LIMITED', 'INTERNAL_ERROR', 'WORLD_UNAVAILABLE', 'WORLD_VERSION_MISMATCH', 'ROOM_FULL', 'ALREADY_IN_ROOM', 'NOT_IN_ROOM', 'IDEMPOTENCY_CONFLICT', 'SEAT_TAKEN', 'ALREADY_SEATED']);

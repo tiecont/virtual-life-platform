@@ -1,19 +1,26 @@
 import { z } from 'zod';
 import { WorldSlugSchema, WorldVersionSchema, SeatIdSchema } from './world';
 import { PublicProfileSchema } from './profiles';
+import { TilePointSchema } from './scene';
+
+export const RoomMotionSchema = z.strictObject({ path: z.array(TilePointSchema).min(1).max(256), startedAt: z.number().int().nonnegative(), stepMs: z.literal(150) })
+  .refine(motion => motion.path.every((point, index, path) => index === 0 || Math.abs(point.x - path[index - 1].x) + Math.abs(point.y - path[index - 1].y) === 1), 'Path must use adjacent orthogonal tiles');
+export type RoomMotion = z.infer<typeof RoomMotionSchema>;
 
 const CommandBase = z.strictObject({ schemaVersion: z.literal(1), requestId: z.uuid() });
 export const RoomJoinSchema = CommandBase.extend({
-  worldSlug: WorldSlugSchema, worldVersion: WorldVersionSchema, sceneVersion: WorldVersionSchema, roomId: z.uuid().optional(),
+  worldSlug: WorldSlugSchema, worldVersion: WorldVersionSchema, sceneVersion: WorldVersionSchema, roomId: z.uuid().optional(), motionVersion: z.literal(1).optional(),
 });
 export const RoomOwnCommandSchema = CommandBase.extend({ epoch: z.uuid(), roomId: z.uuid(), membershipId: z.uuid() });
 export const SeatClaimSchema = RoomOwnCommandSchema.extend({ seatId: SeatIdSchema });
 export const SeatReleaseSchema = RoomOwnCommandSchema.extend({ seatId: SeatIdSchema });
-export const RoomParticipantSchema = z.strictObject({ profile: PublicProfileSchema, seatId: SeatIdSchema.nullable(), state: z.enum(['active', 'reconnecting']) });
+export const RoomMoveSchema = RoomOwnCommandSchema.extend({ destination: TilePointSchema });
+export type RoomMove = z.infer<typeof RoomMoveSchema>;
+export const RoomParticipantSchema = z.strictObject({ profile: PublicProfileSchema, seatId: SeatIdSchema.nullable(), state: z.enum(['active', 'reconnecting']), motion: RoomMotionSchema.optional() });
 export const RoomSnapshotSchema = z.strictObject({
   schemaVersion: z.literal(1), type: z.literal('snapshot'), epoch: z.uuid(), roomId: z.uuid(), worldSlug: WorldSlugSchema,
   roomVersion: z.number().int().nonnegative(), capacity: z.number().int().min(1).max(100), occupancy: z.number().int().nonnegative().max(100),
-  membershipId: z.uuid(), self: z.strictObject({ accountId: z.uuid(), seatId: SeatIdSchema.nullable() }),
+  membershipId: z.uuid(), self: z.strictObject({ accountId: z.uuid(), seatId: SeatIdSchema.nullable(), motion: RoomMotionSchema.optional() }), serverTime: z.number().int().nonnegative().optional(),
   seats: z.array(z.strictObject({ seatId: SeatIdSchema, state: z.enum(['available', 'occupied', 'held']), mine: z.boolean() })).max(100),
   participants: z.array(RoomParticipantSchema).max(100),
 }).refine(snapshot => snapshot.occupancy <= snapshot.capacity

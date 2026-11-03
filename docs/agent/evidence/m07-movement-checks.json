@@ -1,0 +1,20 @@
+{
+  "taskID": "M07-04",
+  "verifiedAt": "2026-11-03T01:43:55Z",
+  "source": "workspace diff from ddf719d; checkpoint commit in git log",
+  "environment": "Linux/Node26.9.0/pnpm11.28.5/Pixi8.22.0/PostgreSQL17.7-alpine/Playwright Chromium",
+  "commands": [
+    { "command": "pnpm install --offline --lockfile-only", "exitCode": 0, "downloaded": 0 },
+    { "command": "pnpm install --offline --frozen-lockfile", "exitCode": 0, "downloaded": 0 },
+    { "command": "pnpm typecheck", "exitCode": 0 },
+    { "command": "pnpm check", "exitCode": 0, "log": "m07-movement-check-attempt1.log", "governanceTests": 7, "unitTests": 43, "integrationTests": 75 },
+    { "command": "pnpm test:e2e", "exitCode": 0, "log": "m07-movement-e2e-attempt1.log", "tests": 26, "scope": "desktop13/mobile13 with actual click+keyboard movement and all previous regressions" },
+    { "command": "pnpm check", "exitCode": 0, "log": "m07-movement-final-check.log", "governanceTests": 7, "unitTests": 43, "integrationTests": 75, "scope": "final legacy seat claims also retain internal timed path; strengthened real mixed-tab assertion; no subsequent frontend change" },
+    { "command": "git diff --check", "exitCode": 0 }
+  ],
+  "verified": ["bounded BFS rejects solid/outside/unreachable/forged destinations and routes around tables", "segment interpolation clamps early/late time and rejects diagonal wire paths", "trusted geometry matches registered version/seat IDs", "per-connection motion opt-in preserves original field set on legacy ACKs/deltas", "actual network idempotency/conflict/overlap/IDOR/seat/strict path+speed injection denial", "blocked motion projections omit the peer; final socket loss freezes a path before rejoin", "server time applies to legacy seat claims as well", "actual desktop/mobile sampled intermediate positions remain walkable and end at6:4; invalid solid-tile click returns error and authoritative live state"],
+  "artifacts": "m07-04-visual/ (actual cafe desktop/mobile screenshots and sampled motion JSON; inspected)",
+  "compatibility": "ADR0010; optional motionVersion1 join negotiation; no motion fields to legacy connections; existing M06 seat ownership remains atomic",
+  "migrations": "none; positions/paths ephemeral and cleared on owner loss/restart",
+  "limits": ["No avatar-to-avatar collision, giant continuous map or persistent position", "Seat reserved at acceptance while avatar walks; no delayed seat reservation model", "M07-05 text contrast/focus/explicit room low-motion control and M07-06 performance gates remain open", "Real/default world flags OFF; no public activation, push or deployment"]
+}

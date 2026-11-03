@@ -136,6 +136,9 @@ importers:
       '@virtual-city/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@virtual-city/world-sdk':
+        specifier: workspace:*
+        version: link:../world-sdk
       pixi.js:
         specifier: 8.22.0
         version: 8.22.0

@@ -1,11 +1,12 @@
 import { Application, Assets, Container, Graphics, Sprite, Text, Texture, Rectangle } from 'pixi.js';
-import { SceneManifestSchema, AvatarOutfitSchema, type AvatarAppearance, type AnimationState, type RoomSnapshot, type SceneManifest } from '@virtual-city/contracts';
+import { SceneManifestSchema, AvatarOutfitSchema, type RoomMotion, type AvatarAppearance, type AnimationState, type RoomSnapshot, type SceneManifest } from '@virtual-city/contracts';
+import { motionPosition } from '@virtual-city/world-sdk';
 import { tileCenter } from './spec';
 import { fitSceneCamera } from './camera';
 import { sceneEntities } from './entities';
 import { avatarAtlasSpec, avatarFrame } from './avatar-art';
 
-export async function createCafeScene(host: HTMLElement, input: SceneManifest, onSeat: (seatId: string) => void, options: { signal?: AbortSignal; outfit?: AvatarAppearance['outfit'] } = {}) {
+export async function createCafeScene(host: HTMLElement, input: SceneManifest, onSeat: (seatId: string) => void, options: { signal?: AbortSignal; outfit?: AvatarAppearance['outfit']; onMove?: (point: { x: number; y: number }) => void } = {}) {
   const scene = SceneManifestSchema.parse(input); const size = scene.tileSize;
   const outfit = AvatarOutfitSchema.parse(options.outfit ?? 'casual');
   options.signal?.throwIfAborted();
@@ -25,6 +26,11 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
   const canvas = app.canvas;
   canvas.setAttribute('aria-hidden', 'true'); canvas.dataset.scene = scene.key;
   const world = new Container(); app.stage.addChild(world);
+  world.eventMode = 'static'; world.hitArea = new Rectangle(0, 0, scene.columns * size, scene.rows * size);
+  world.on('pointertap', event => {
+    if (!current || current.self.seatId || !options.onMove) return;
+    const point = world.toLocal(event.global); options.onMove({ x: Math.floor(point.x / size), y: Math.floor(point.y / size) });
+  });
   const floor = new Graphics(); world.addChild(floor);
   for (let y = 0; y < scene.rows; y++) for (let x = 0; x < scene.columns; x++) floor.rect(x * size, y * size, size, size).fill((x + y) % 2 ? '#dbe7df' : '#e5eee8');
   function rect(g: Graphics, x: number, y: number, w: number, h: number, color: string) { g.rect(x, y, w, h).fill(color); }
@@ -65,7 +71,7 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
   world.addChild(label('LOCAL TEST CAFE', 9.5 * size, 1.8 * size, '#eff4ef', 14));
   let destroyed = false;
   let current: RoomSnapshot | null = null; let context = ''; let created = 0; let removed = 0; let frames = 0;
-  const avatars = new Map<string, { root: Container; sprite: Sprite; appearance: AvatarAppearance; pose: AnimationState; startedAt: number | null }>();
+  const avatars = new Map<string, { root: Container; sprite: Sprite; appearance: AvatarAppearance; pose: AnimationState; startedAt: number | null; motion?: RoomMotion; serverTime: number; receivedAt: number; settledPose: 'idle' | 'sit'; self: boolean }>();
   const framesCache = new Map<string, Texture>();
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let animationTimer: ReturnType<typeof setTimeout> | undefined;
@@ -80,7 +86,8 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
     chair.position.set(at.x, at.y);
     const back = new Graphics().rect(at.x - 18, at.y + (point.facing === 'south' ? -20 : 12), 36, 8).fill('#9c5149');
     const occupied = new Graphics().circle(at.x, at.y - 3, 6).fill('#e4e9e4'); occupied.visible = false;
-    chair.on('pointertap', () => {
+    chair.on('pointertap', event => {
+      event.stopPropagation();
       if (current && !current.self.seatId && current.seats.some(seat => seat.seatId === point.seatId && seat.state === 'available')) onSeat(point.seatId);
     });
     seats.addChild(chair, back, label(point.seatId.slice(5).padStart(2, '0'), at.x, at.y + 30, '#40584c', 12), occupied);
@@ -95,15 +102,24 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
   function animate() {
     animationTimer = undefined;
     if (destroyed || motion.matches || !people.visible) { stopAnimations(); return; }
-    let active = 0;
+    let active = 0; let walking = 0;
     for (const avatar of avatars.values()) {
+      if (avatar.motion) {
+        const point = motionPosition(avatar.motion, avatar.serverTime + performance.now() - avatar.receivedAt);
+        const at = tileCenter(scene, point); avatar.root.position.set(at.x, at.y); avatar.root.zIndex = at.y;
+        const pose = point.moving ? 'walk' : avatar.settledPose;
+        if (avatar.pose !== pose) { avatar.pose = pose; avatar.startedAt = performance.now(); }
+        if (point.moving) walking++;
+        if (avatar.self) canvas.dataset.selfPosition = point.x.toFixed(2) + ':' + point.y.toFixed(2);
+      }
       if (avatar.startedAt === null) continue;
       const frame = Math.floor((performance.now() - avatar.startedAt) / avatarAtlasSpec.frameDurationMs);
-      if (frame >= avatarAtlasSpec.frameCount) { avatar.startedAt = null; avatar.sprite.texture = frameTexture(avatar.appearance, avatar.pose, 0); }
-      else { active++; avatar.sprite.texture = frameTexture(avatar.appearance, avatar.pose, frame); }
+      if (frame >= avatarAtlasSpec.frameCount && avatar.pose !== 'walk') { avatar.startedAt = null; avatar.sprite.texture = frameTexture(avatar.appearance, avatar.pose, 0); }
+      else { active++; avatar.sprite.texture = frameTexture(avatar.appearance, avatar.pose, frame % avatarAtlasSpec.frameCount); }
     }
-    canvas.dataset.activeAnimations = String(active); render();
-    if (active) animationTimer = setTimeout(animate, avatarAtlasSpec.frameDurationMs);
+    canvas.dataset.sittingCount = String([...avatars.values()].filter(avatar => avatar.pose === 'sit').length);
+    canvas.dataset.activeAnimations = String(active); canvas.dataset.movingCount = String(walking); render();
+    if (active || walking) animationTimer = setTimeout(animate, walking ? 16 : avatarAtlasSpec.frameDurationMs);
   }
   function motionChanged() { if (motion.matches) { stopAnimations(); render(); } }
   motion.addEventListener('change', motionChanged);
@@ -139,10 +155,13 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
         const appearance: AvatarAppearance = { schemaVersion: 1, core: 'starter-v1', palette: entity.palette, outfit };
         const root = new Container(); const sprite = new Sprite(frameTexture(appearance, entity.pose, 0)); sprite.anchor.set(.5, .92); sprite.scale.set(1.2); root.addChild(sprite);
         if (entity.self) root.addChild(label('You', 0, -55, '#233d34', 13));
-        avatar = { root, sprite, appearance, pose: entity.pose, startedAt: null }; avatars.set(entity.id, avatar); people.addChild(root); created++;
+        avatar = { root, sprite, appearance, pose: entity.pose, startedAt: null, serverTime: 0, receivedAt: 0, settledPose: entity.settledPose, self: entity.self }; avatars.set(entity.id, avatar); people.addChild(root); created++;
       }
       avatar.root.position.set(entity.x, entity.y); avatar.root.zIndex = entity.y; avatar.root.alpha = entity.opacity;
       if (avatar.pose !== entity.pose) { avatar.pose = entity.pose; avatar.startedAt = motion.matches ? null : performance.now(); }
+      avatar.motion = entity.motion; avatar.serverTime = state?.serverTime ?? 0; avatar.receivedAt = performance.now(); avatar.settledPose = entity.settledPose;
+      if (entity.pose === 'walk' && !motion.matches && avatar.startedAt === null) avatar.startedAt = performance.now();
+      if (motion.matches && entity.motion) { const at = tileCenter(scene, entity.motion.path[entity.motion.path.length - 1]); avatar.root.position.set(at.x, at.y); avatar.pose = entity.settledPose; }
       avatar.appearance = { ...avatar.appearance, palette: entity.palette };
       avatar.sprite.texture = frameTexture(avatar.appearance, avatar.pose, 0);
     }
@@ -152,13 +171,16 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
     canvas.dataset.sittingCount = String(entities.filter(entity => entity.pose === 'sit').length); canvas.dataset.suspended = 'false';
     canvas.dataset.avatarCore = 'starter-v1'; canvas.dataset.avatarOutfit = outfit;
     canvas.dataset.avatarPalettes = [...new Set(entities.map(entity => entity.palette))].sort().join(',');
+    canvas.dataset.movingCount = String(entities.filter(entity => entity.pose === 'walk').length);
+    const selfEntity = entities.find(entity => entity.self);
+    canvas.dataset.selfPosition = selfEntity ? ((selfEntity.x / size - .5).toFixed(2) + ':' + (selfEntity.y / size - .5).toFixed(2)) : '';
     canvas.dataset.activeAnimations = String([...avatars.values()].filter(avatar => avatar.startedAt !== null).length);
     if (animationTimer === undefined && !motion.matches && [...avatars.values()].some(avatar => avatar.startedAt !== null)) animationTimer = setTimeout(animate, avatarAtlasSpec.frameDurationMs);
     render();
   }
   function suspend() {
     if (destroyed) return;
-    stopAnimations(); people.visible = false; updateSeats(null); canvas.dataset.entityCount = '0'; canvas.dataset.sittingCount = '0'; canvas.dataset.roomVersion = ''; canvas.dataset.suspended = 'true'; render();
+    stopAnimations(); people.visible = false; updateSeats(null); canvas.dataset.entityCount = '0'; canvas.dataset.sittingCount = '0'; canvas.dataset.movingCount = '0'; canvas.dataset.selfPosition = ''; canvas.dataset.roomVersion = ''; canvas.dataset.suspended = 'true'; render();
   }
   function resize() {
     if (destroyed || !host.clientWidth || !host.clientHeight) return;
