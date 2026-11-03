@@ -1,5 +1,7 @@
 # Decisions
 
+M11-05 / ADR0032: customerackfinalservice atomicallycommitsuniquecompletion/outbox/receipt;internaltrustedDB-onlyhooks commitDBeffect+uniquedeliverytogether,20eventbatch/durableboundedretry. ExactlyonceDBonly;defaultzeroconsumers/noM13rewardgrant. Internalpayloadprivate/erasurecascades,90daywindow;uncooperativehookreviewgate. Evidence m11-completion-checks.json.
+
 M11-04 / ADR0031: stricttrusted MenuPolicy/timed-course OrderWorkflowStrategy,order-snapshotted recipes with serverdeadlines andcourseledger;sameengine forsyntheticcoffee/dining/mocktail. prepare/ready/serve requirecurrentassignedshift/originalseatedcustomer/currentpolicy;requeue preservescompletedcourses andinvalidatesunfinishedpreparation. Completion/outbox remains05. Evidence m11-workflows-checks.json.
 
 M11-03 / ADR0030: policy-offered voluntary service shifts bound to current visit,oneopen/account,server4hlimit;no moderation privilege. Ownend/currentdisconnectgrace/restart requeues existing pre-serve work with newversion. Fair20rowSQLsequence batches/3stimer/endpointreconciliation,privateexport/erasure and bounded90dayretention. Actual24hospitality/223integration fullcheck evidence m11-shifts-checks.json;strandedcustomer cleanup remains06.

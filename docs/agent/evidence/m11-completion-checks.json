@@ -1,0 +1,22 @@
+{
+  "taskID": "M11-05",
+  "source": "workspace fromb472280;checkpoint SHA followsgitlog",
+  "environment": "2026-11-03;Node26.9.0/pnpm11.28.5;local disposable PostgreSQL,realHTTP/socket",
+  "commands": [
+    { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/hospitality.test.ts -t 'only the customer acknowledges'", "exitCode": 1, "log": "m11-completion-red.log", "scope": "1failed33filteredskips;completionroute404beforeimplementation" },
+    { "command": "pnpm build:packages", "exitCode": 0, "log": "m11-completion-packages.log" },
+    { "command": "pnpm --filter @virtual-city/platform-api typecheck", "exitCode": 0, "log": "m11-completion-typecheck.log" },
+    { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/hospitality.test.ts -t 'only the customer acknowledges'", "exitCode": 0, "log": "m11-completion-integration-attempt1.log", "scope": "1pass33filteredskips" },
+    { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/hospitality.test.ts", "exitCode": 0, "log": "m11-completion-integration-attempt2.log", "scope": "39tests;commentaryinitiallymisstated40,corrected" },
+    { "command": "pnpm check", "exitCode": 0, "log": "m11-completion-check.log", "scope": "7governance,178unit,238integration/builds;batchtestaddedlater" },
+    { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/hospitality.test.ts -t 'bounds outbox|failed transactional hook'", "exitCode": 1, "log": "m11-completion-batch.log", "scope": "1pass1failed38filteredskips;hash-castUUIDfixtureviolatedeventUUIDschema" },
+    { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/hospitality.test.ts -t 'bounds outbox|failed transactional hook'", "exitCode": 0, "log": "m11-completion-batch-attempt2.log", "scope": "2pass38filteredskips;fixtureusesvalidgen_random_uuid,runtimevalidationunchanged" },
+    { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/hospitality.test.ts", "exitCode": 0, "log": "m11-completion-integration-final.log", "scope": "40finalhospitalitytests;not239fullsuiteclaim" },
+    { "command": "node scripts/run-browser-tests.mjs tests/e2e/foundation.spec.ts tests/e2e/identity.spec.ts tests/e2e/travel.spec.ts", "exitCode": 0, "log": "m11-completion-browser.log", "scope": "8existingbrowserregressions,4eachdevice;notfull40rerun" },
+    { "command": "pnpm lint", "exitCode": 0, "log": "m11-completion-lint-final.log" },
+    { "command": "pnpm db:migrate", "exitCode": 0, "log": "m11-completion-local-migration.log", "scope": "citydevDBadditive0017;legacyDBunchanged" },
+    { "command": "git diff --check", "exitCode": 0 }
+  ],
+  "verified": ["8actualTCPcompletionretries->1completion/outbox/receipt;owncustomeronly/allcoursesrequired", "Completion/outbox/receiptfailureatomicrollback;restart/leave/closedworldprivateackretry", "Transactionalconsumerfailureanddeliveryreceiptfailurerollbackeffect;otherconsumercontinues", "Concurrentdispatchers->1committedDBeffect;retrybackoff1then2secondsdurableacrossrestart", "20then5batchdelivery,25eventretentioncascade,participantdeletioncascadespendingevents/retries", "Strictforgedreward/time/eventrejection,privateexports/noHTTPoutbox"],
+  "limits": ["ExactlyonceonlyforcommittedtransactionalDBeffects;noexternaldeliveryguarantee", "HooksaretrustedinprocessDB-onlycode;uncooperativeJSremainsreviewgate;defaultappzeroconsumers/noprogressiongrants", "M13ownsactualprogressionhandlers;futureconsumersowntheirownerasure/export", "Eventsboundedby90dayterminalretention,notinfinitearchive/SLA", "M11-06refusal/safetyreassignment/strandedcustomercleanupremainspending", "No hospitalityUI/realadapter/rollout/legacyorremoteaction;allrealflagsOFF"]
+}

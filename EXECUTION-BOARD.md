@@ -70,7 +70,7 @@
 | M11 | M11-02 · Implement core order state machine and atomic claim with per-world policy. | VERIFIED | m11-core-checks.json;check0(175unit/211integration/builds),actual20staffrace,browser40,0014local |
 | M11 | M11-03 · Implement staff shift, role permissions and reassignment on disconnect. | VERIFIED | m11-shifts-checks.json;check0(175unit/223integration/builds),24hospitality;0015local |
 | M11 | M11-04 · Implement menu/catalog and service actions extensible per world. | VERIFIED | m11-workflows-checks.json;check0(178unit/231integration/builds),scene24,0016local |
-| M11 | M11-05 · Add transaction/idempotency for order complete and progress hooks. | TODO | — |
+| M11 | M11-05 · Add transaction/idempotency for order complete and progress hooks. | VERIFIED | m11-completion-checks.json;check0(178unit/238integration/builds),finalhospitality40,browser8,0017local |
 | M11 | M11-06 · Test moderation of staff/customer interactions and service refusal. | TODO | — |
 | M12 | M12-01 · Define event and reservation state machines with timezone/overbooking policy. | TODO | — |
 | M12 | M12-02 · Implement scheduled events/catalog and RSVP with capacity checks. | TODO | — |

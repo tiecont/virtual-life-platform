@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
 import { z } from 'zod';
-import { HospitalityMenuSchema, OrderWorkflowStrategySchema, StaffShiftStartSchema, StaffShiftResultSchema, StaffShiftViewSchema, OrderPlaceSchema, OrderMutationSchema, OrderQueueSchema, OrderPageSchema, OrderResultSchema, OrderViewSchema, type OrderPhase, type HospitalityPolicy, type OrderWorkflowStrategy } from '@virtual-city/contracts';
+import { OrderCompleteSchema, HospitalityMenuSchema, OrderWorkflowStrategySchema, StaffShiftStartSchema, StaffShiftResultSchema, StaffShiftViewSchema, OrderPlaceSchema, OrderMutationSchema, OrderQueueSchema, OrderPageSchema, OrderResultSchema, OrderViewSchema, type OrderPhase, type HospitalityPolicy, type OrderWorkflowStrategy } from '@virtual-city/contracts';
 import type { IdentityService, IdentityContext } from '../identity/service';
 import type { RoomService } from '../rooms/service';
 import type { SocialService } from '../social/service';
@@ -86,6 +86,21 @@ export class HospitalityService {
       if (!context.policy.menu || !valid()) throw absent();
       return HospitalityMenuSchema.parse({ schemaVersion: 1, policyVersion: context.policy.version, items: context.policy.menu.items.map(item => ({ key: item.key, label: item.label, courseCount: context.policy.menu!.workflows.find(workflow => workflow.key === item.workflowKey)!.courses.length })) });
     }));
+  }
+  async complete(token: string, id: string, requestKey: string, raw: unknown) {
+    id = uuid.parse(id); const key = uuid.parse(requestKey), input = OrderCompleteSchema.parse(raw), fingerprint = this.identity.fingerprint({ operation: 'order.complete', id, input });
+    const known = (await this.pool.query<{ assignee_id: string | null }>('SELECT assignee_id FROM engine_hospitality_orders WHERE id=$1', [id])).rows[0];
+    return this.tx(token, known?.assignee_id ? [known.assignee_id] : [], async (db, actor) => {
+      const row = (await db.query<Row>('SELECT * FROM engine_hospitality_orders WHERE id=$1 AND customer_id=$2 FOR UPDATE', [id, actor.accountId])).rows[0]; if (!row) throw absent();
+      const prior = await this.prior(db, actor.accountId, key, fingerprint); if (prior) return this.result(prior, actor.accountId);
+      if (row.phase === 'COMPLETED') return this.result(row, actor.accountId);
+      if (row.version !== input.expectedVersion || !row.workflow || !row.assignee_id || row.assignee_id !== known?.assignee_id) throw new DomainError('IDEMPOTENCY_CONFLICT', 409, 'Refresh this order');
+      const workflow = OrderWorkflowStrategySchema.parse(row.workflow), count = (await db.query('SELECT count(*)::int AS n FROM engine_hospitality_courses WHERE order_id=$1', [id])).rows[0].n;
+      if (count !== workflow.courses.length || row.course_index !== count - 1) throw new DomainError('NOT_AVAILABLE', 409, 'Service has not finished');
+      const phase = nextOrderPhase(row.phase, 'complete'), at = new Date(this.now()); if (at < row.updated_at) throw new DomainError('WORLD_UNAVAILABLE', 503, 'Service clock unavailable'); await this.quota(db, actor.accountId, false);
+      const updated = (await db.query<Row>('UPDATE engine_hospitality_orders SET phase=$2,version=version+1,updated_at=$3 WHERE id=$1 RETURNING *', [id, phase, at])).rows[0], eventId = randomUUID();
+      await db.query('INSERT INTO engine_hospitality_completions VALUES($1,$2,$3)', [eventId, id, at]); await db.query('INSERT INTO engine_hospitality_outbox(event_id) VALUES($1)', [eventId]); await this.remember(db, actor.accountId, key, updated, fingerprint, 'complete'); return this.result(updated, actor.accountId);
+    });
   }
   get(token: string, id: string) { id = uuid.parse(id); return this.tx(token, [], async (db, actor) => { const row = (await db.query<Row>('SELECT * FROM engine_hospitality_orders WHERE id=$1 AND (customer_id=$2 OR assignee_id=$2)', [id, actor.accountId])).rows[0]; if (!row) throw absent(); return this.result(row, actor.accountId); }); }
   async queue(token: string, raw: unknown) {

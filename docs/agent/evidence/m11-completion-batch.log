@@ -1,0 +1,44 @@
+ Network virtual-city-test-58ca2808_default Creating 
+ Network virtual-city-test-58ca2808_default Creating 
+ Network virtual-city-test-58ca2808_default Created 
+ Network virtual-city-test-58ca2808_default Created 
+ Container virtual-city-test-58ca2808-db-1 Creating 
+ Container virtual-city-test-58ca2808-db-1 Created 
+ Container virtual-city-test-58ca2808-db-1 Starting 
+ Container virtual-city-test-58ca2808-db-1 Started 
+ Container virtual-city-test-58ca2808-db-1 Waiting 
+ Container virtual-city-test-58ca2808-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/hospitality.test.ts (40 tests | 1 failed | 38 skipped) 1641ms
+   × bounds outbox delivery to20 events per consumer batch and terminal retention cascades completion/consumer metadata 699ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/hospitality.test.ts > bounds outbox delivery to20 events per consumer batch and terminal retention cascades completion/consumer metadata
+Error: Hospitality completion delivery unavailable
+ ❯ HospitalityOutbox.deliver apps/platform-api/src/hospitality/outbox.ts:40:25
+     38|       }
+     39|     }
+     40|     if (failures) throw new Error('Hospitality completion delivery una…
+       |                         ^
+     41|   }
+     42|   async close() { this.#closed = true; await this.#running; }
+ ❯ tests/integration/hospitality.test.ts:329:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed | 38 skipped (40)
+   Start at  16:07:06
+   Duration  2.83s (transform 434ms, setup 0ms, import 1.04s, tests 1.64s, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-58ca2808-db-1 Stopping 
+ Container virtual-city-test-58ca2808-db-1 Stopped 
+ Container virtual-city-test-58ca2808-db-1 Removing 
+ Container virtual-city-test-58ca2808-db-1 Removed 
+ Network virtual-city-test-58ca2808_default Removing 
+ Network virtual-city-test-58ca2808_default Removed 

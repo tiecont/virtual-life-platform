@@ -1,5 +1,11 @@
 # Agent progress
 
+## M11-05 - VERIFIED transactional completion and progress outbox
+
+Workspace fromb472280;m11-completion-checks.json/ADR0032. Initialmissingroute1failed33filteredskips retained;targeted1then39pass. Fullcheck0(7governance,178unit,238integration/builds);finalhospitality40pass afternewbatchtest/finalretrybackoff. Initialbatch1pass1failed38skips duehash-castUUIDfixture,changedtogen_random_uuid(no runtimevalidationchange);finaltargeted2pass. Browserreadiness/identity/travel8(4eachdevice)pass,final lint/diff0;0017localcitymigration0. Commentarymistatedinitial39as40,corrected;no239fullsuiteclaim.
+
+Customer-onlyackfullySERVEDworkflow,account/orderlocks,uniquecompletion+outbox+mutreceiptatomictransaction,8TCPsamerequest1outcome,restart/leave/closedworldreplay,strictreward/event/timeforgery/privacyverified. TrustedDB-onlyconsumerport<=8,20eventbatch,account/outboxlocks,uniquedeliveryreceipts;hook/receipterrorrollbacksDBeffect,otherconsumercontinues,1..60s durablebackoff,concurrentdispatch/restartdoesnotduplicatecommit. Actual20+5batch/terminalcascadeandaccountdeletiontestpass. InternalpayloadneverHTTP/socket/export/log;defaultzeroconsumers,noprogressiongrant. ExactlyonceonlytransactionalDB,nouncooperativeJS/externalnetworkguarantee;M13ownsreviewedhandlers/privacy. Next exact actionM11-06 ownservice refusal/withdrawal,blocktransactionrequeue,sanction/customerabsence/grace/restart cleanup and20staff/safetyconcurrency regressions. AllrealflagsOFF,previewoff,legacy/remoteuntouched;devDB0017.
+
 ## M11-04 - VERIFIED trusted menus and reusable course service
 
 Workspace from63a7811;m11-workflows-checks.json/ADR0031/HOSPITALITY.md. Initial3schema-red failures retained(menuunsupported,notmissingroute). Targeted27then32integration0,unit3/typecheck/packages0. Firstfullcheck failedlint no-control-regex;character-code implementation keeps control-character policy;secondfullcheck0(7governance,178unit,231integration/builds). Final extra backwardsclock1pass32filteredskips0;not232fullsuite claim. Scene browser24(12each)0;no new hospitality UI. Additive0016 retainedcitydev DB0;diff0. Documentationpatch wrong context rejected atomically/reapplied.
