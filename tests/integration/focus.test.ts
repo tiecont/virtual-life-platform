@@ -163,3 +163,47 @@ it('denies new starts in a closed origin while retaining own private history and
   await r.app.worlds.registry.setEnabled('deadline', false); expect((await post(r, u, 'focus', input(seated.source))).statusCode).not.toBe(201); expect((await get(r, u, 'focus/' + timer.id)).json().session.phase).toBe('cancelled');
   expect((await action(r, u, timer.id, 'cancel')).statusCode).toBe(200); expect((await r.pool.query('SELECT 1 FROM engine_focus_sessions')).rowCount).toBe(1);
 });
+
+it('groups canonical completed deadlines across 23:59 UTC+7 and UTC storage,with private world filters and no tick writes', async () => {
+  const r = await open(true); r.advance(Date.parse('2026-11-01T16:44:59.999Z') - r.now()); const u = await guest(r), other = await guest(r), seated = await seat(r, u, 'deadline'), timer = await start(r, u, seated.source);
+  r.advance(900000); const before = (await get(r, u, 'focus/summary?from=2026-11-01&to=2026-11-01')).json(); expect(before.days[0]).toMatchObject({ date: '2026-11-01', completedCount: 1, focusSeconds: 900, startsAt: '2026-10-31T17:00:00.000Z', endsAt: '2026-11-01T17:00:00.000Z' }); expect(before.timeZone).toBe('Asia/Ho_Chi_Minh');
+  expect((await r.pool.query('SELECT changed_at FROM engine_focus_sessions WHERE id=$1', [timer.id])).rows[0].changed_at.toISOString()).toBe(timer.endsAt);
+  r.advance(1); await seated.socket.timeout(5000).emitWithAck('room.leave', seated.command()); const library = await seat(r, u, 'library'), reading = await start(r, u, library.source); r.advance(900000);
+  const query = 'focus/summary?from=2026-11-01&to=2026-11-02', summary = await get(r, u, query); expect(summary.statusCode).toBe(200); expect(summary.json().days.map((day: { completedCount: number }) => day.completedCount)).toEqual([1, 1]); expect(summary.json().totals).toEqual({ completedCount: 2, focusSeconds: 1800 });
+  expect((await get(r, u, query + '&worldSlug=deadline')).json().totals.completedCount).toBe(1); expect((await get(r, u, query + '&worldSlug=library')).json().totals.completedCount).toBe(1); expect((await get(r, other, query)).json().totals.completedCount).toBe(0);
+  expect((await get(r, u, 'focus/summary?from=2026-11-01&to=2026-11-01&timeZone=UTC')).json().totals.completedCount).toBe(2);
+  const versions = (await r.pool.query('SELECT id,xmin::text AS version FROM engine_focus_sessions ORDER BY id')).rows;
+  for (let i = 0; i < 3; i++) expect((await get(r, u, query)).json()).toEqual(summary.json());
+  expect((await r.pool.query('SELECT id,xmin::text AS version FROM engine_focus_sessions ORDER BY id')).rows).toEqual(versions); expect((await r.pool.query('SELECT 1 FROM engine_focus_mutations')).rowCount).toBe(2);
+  expect(JSON.stringify(summary.json())).not.toMatch(/seat|roomId|accountId|fingerprint/); expect(JSON.stringify(summary.json())).not.toContain(reading.id);
+});
+
+it.each([{ date: '2026-03-08', start: '2026-03-08T05:00:00.000Z', end: '2026-03-09T04:00:00.000Z', hours: 23 }, { date: '2026-11-01', start: '2026-11-01T04:00:00.000Z', end: '2026-11-02T05:00:00.000Z', hours: 25 }])('uses actual $hours-hour IANA calendar day for $date and assigns a late observation to its original completion day', async ({ date, start: begins, end, hours }) => {
+  const r = await open(); r.advance(Date.parse(end) - 900000 - r.now()); const u = await guest(r), seated = await seat(r, u), timer = await start(r, u, seated.source); r.advance(3600000);
+  const response = await get(r, u, `focus/summary?from=${date}&to=${date}&timeZone=America%2FNew_York`); expect(response.statusCode).toBe(200); expect(response.json().days[0]).toMatchObject({ startsAt: begins, endsAt: end, completedCount: 0, focusSeconds: 0 }); expect((Date.parse(end) - Date.parse(begins)) / 3600000).toBe(hours);
+  const nextDate = new Date(Date.parse(date) + 86400000).toISOString().slice(0, 10), next = await get(r, u, `focus/summary?from=${nextDate}&to=${nextDate}&timeZone=America%2FNew_York`); expect(next.json().totals.completedCount).toBe(1);
+  expect((await r.pool.query('SELECT changed_at FROM engine_focus_sessions WHERE id=$1', [timer.id])).rows[0].changed_at.toISOString()).toBe(end);
+});
+
+it('counts both repeated DST hours once each and excludes cancelled/active timers from private summaries', async () => {
+  const r = await open(); r.advance(Date.parse('2026-11-01T05:15:00.000Z') - r.now()); const u = await guest(r), seated = await seat(r, u); await start(r, u, seated.source); r.advance(900000); await get(r, u);
+  r.advance(2700000); await start(r, u, seated.source); r.advance(900000); await get(r, u); const cancelled = await start(r, u, seated.source); await action(r, u, cancelled.id, 'cancel'); await start(r, u, seated.source);
+  const summary = await get(r, u, 'focus/summary?from=2026-11-01&to=2026-11-01&timeZone=America%2FNew_York'); expect(summary.statusCode).toBe(200); expect(summary.json().totals).toEqual({ completedCount: 2, focusSeconds: 1800 });
+  expect((await r.pool.query("SELECT to_char(changed_at AT TIME ZONE 'America/New_York','YYYY-MM-DD HH24:MI:SS') AS local FROM engine_focus_sessions WHERE phase='completed' ORDER BY creation_order")).rows.map(row => row.local)).toEqual(['2026-11-01 01:30:00', '2026-11-01 01:30:00']);
+});
+
+it('validates calendar dates,IANA zones,max31day/recent retention range and forbids account overrides', async () => {
+  const r = await open(); r.advance(Date.parse('2026-11-03T12:00:00.000Z') - r.now()); const u = await guest(r);
+  for (const query of ['from=2026-02-30&to=2026-03-01', 'from=2026-11-03&to=2026-11-01', 'from=2026-10-01&to=2026-11-03', 'from=2026-01-01&to=2026-01-01', 'from=2026-11-04&to=2026-11-04', 'from=2026-11-03&to=2026-11-03&timeZone=Invalid%2FZone', 'from=2026-11-03&to=2026-11-03&timeZone=UTC%27%3BDROP', 'from=2026-11-03&to=2026-11-03&accountId=' + randomUUID()]) expect((await get(r, u, 'focus/summary?' + query)).statusCode).toBe(422);
+  expect((await get(r, u, 'focus/summary?from=2026-11-03&to=2026-11-03&timeZone=Etc%2FGMT%2B7')).statusCode).toBe(200);
+  expect((await r.app.http.inject({ url: '/v1/focus/summary?from=2026-11-03&to=2026-11-03' })).statusCode).toBe(401);
+});
+
+it('purges at most100 old terminal timers per maintenance batch and removes receipts without retaining aggregate copies', async () => {
+  const r = await open(), u = await guest(r), seated = await seat(r, u), timer = await start(r, u, seated.source); await action(r, u, timer.id, 'cancel');
+  await r.pool.query("UPDATE engine_focus_sessions SET started_at=$1,changed_at=$1,ends_at=$1::timestamptz+interval '15 minutes' WHERE id=$2", [new Date(r.now() - 91 * 86400000), timer.id]);
+  await r.pool.query(`INSERT INTO engine_focus_sessions(id,account_id,world_slug,room_id,seat_id,source_epoch,source_membership_id,phase,duration_seconds,started_at,changed_at,ends_at,paused_until,remaining_ms,can_pause,pause_budget_ms)
+    SELECT md5(n::text)::uuid,account_id,world_slug,room_id,seat_id,source_epoch,source_membership_id,phase,duration_seconds,started_at,changed_at,ends_at,paused_until,remaining_ms,can_pause,pause_budget_ms FROM engine_focus_sessions CROSS JOIN generate_series(1,104) n WHERE id=$1`, [timer.id]);
+  await r.app.focus.maintain(); expect((await r.pool.query('SELECT 1 FROM engine_focus_sessions')).rowCount).toBe(5); await r.app.focus.maintain(); expect((await r.pool.query('SELECT 1 FROM engine_focus_sessions')).rowCount).toBe(0); expect((await r.pool.query('SELECT 1 FROM engine_focus_mutations')).rowCount).toBe(0);
+  expect((await get(r, u, 'focus/history')).json().items).toEqual([]);
+});

@@ -1,5 +1,11 @@
 # Agent progress
 
+## M10-05 - VERIFIED calendar-day private SQL summaries
+
+Workspace from83227b9;m10-daily-checks.json/ADR0027. Finalfullcheck0(7governance,126unit,199integration/builds),focus21->0,actualdesktop/mobilefocus2->0,diff0. Initial5newsummary red retained;targeted19/20 and firstfullcheck failed only the repeated-hour fixture's driver timestamp-without-zone converted byhostTZ. AssertSQLformatted localtext instead;runtime summary unchanged. Additive0013 completed-account/timeindex applied retained localdevDB->0.
+
+Own inclusive max31day summaries use explicitIANA/defaultAsia_Ho_Chi_Minh,UTCstored instants and consecutive localmidnights. Canonical end-date assignment,23:59:59.999UTC+7/nextday/UTC filters,actual23/25hDST days/exclusive midnight/late observation and repeated01:30count2 pass. Scope/private/queryIDOR/timezone/calendar/retention guards pass. Active/cancelled not counted,no rowIDs/location/tasktext. Repeatedreads preserve xmin/no receipt/tick/aggregate writes;actual105oldterminalfixture purges100then5 plusreceipts. Only fully retained calendar days accepted;availableFrom disclosed. LocalM10allfive tasks VERIFIED,actuallegacy/Library adapters remainM15/M17;W1/W2notreleased. Next exact actionM11-01 finishreadonly Maidorder/shift/menu/protocol/sourcehash audit,thenM11-02 sharedcore20staffatomicclaim.
+
 ## M10-04 - VERIFIED reusable accessible focus UI
 
 Workspace fromecdfc0c; m10-ui-checks.json/ADR0026. Offline install0/zero downloads,fullcheck0(7governance,126unit,193integration/builds),final sequentialbuild/lint/unit0. Targeted focus desktop/mobile2pass,then extended fullE2E40pass(20each). Initial fullbrowser19desktop+1failed old invitation emptycatalog assumption: new focus test leaves a valid empty room. Fixed before/after equality plus both invite actors have null membership; unchanged runtime/timeouts. Redundant concurrentbuild failedNextlock; sequentialbuild0. All logs retained.
@@ -18,7 +24,7 @@ Own history uses account-checked world-filtered UUID cursor/creation order and m
 
 Trusted seat/source/epoch/member/focus policy and owner generation authorize start. Durable account transactions/receipts,one active/paused timer,server deadlines,exact completion precedence,terminal nonreactivation,optional cumulative10min pause and backward-clock denial verified. Existing timer survives leave/restart/login/logout; private own export/erasure,bounded quotas/90day cleanup and failed receipt rollback verified. No tick writes,notes,rewards or live UI claim. All actual rollout flagsOFF; no legacy/remote/public change. Next exact action M10-03: bounded own world-filtered history with account-owned cursor and synthetic Deadline/Library privacy/current-source tests.
 
-Current checkpoint: **W1 in progress; W0 + M03-M09 and M10-01/02 VERIFIED at their documented local task scope. Next M10-03 scoped focus history; M14 is also dependency-ready.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence; later entries supersede earlier runtime inventories. The cafe and travel destinations are synthetic local test worlds, not integrated legacy worlds.
+Current checkpoint: **W1 in progress; W0 + M03-M10 VERIFIED at their documented local task scope. Next M11-01 hospitality compatibility audit; M14 is also dependency-ready.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence; later entries supersede earlier runtime inventories. The cafe and travel destinations are synthetic local test worlds, not integrated legacy worlds.
 
 2026-11-02, Linux local host, Node v26.9.0, pnpm 11.28.5, Docker 29.9.0. Source of task status: task-state.json (checked by scripts/plan-status.mjs). No public release occurred.
 

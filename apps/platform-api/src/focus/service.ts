@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
 import { z } from 'zod';
-import { FocusStartSchema, FocusResultSchema, FocusSessionSchema, FocusHistoryQuerySchema, FocusHistorySchema, type FocusSession } from '@virtual-city/contracts';
+import { FocusStartSchema, FocusResultSchema, FocusSessionSchema, FocusHistoryQuerySchema, FocusHistorySchema, FocusSummaryQuerySchema, FocusSummarySchema, type FocusSession } from '@virtual-city/contracts';
 import type { IdentityContext, IdentityService } from '../identity/service';
 import type { RoomService } from '../rooms/service';
 import { DomainError } from '../common/errors';
@@ -72,6 +72,28 @@ export class FocusService {
     return this.tx(token, async (db, actor) => {
       const fingerprint = this.identity.fingerprint({ operation: 'focus.' + action, id }), old = await this.prior(db, actor, key, fingerprint); if (old) return this.result(old);
       await this.budget(db, actor); const row = await this.transition(db, await this.own(db, actor, id), action); await this.remember(db, actor, key, fingerprint, action, id); return this.result(row);
+    });
+  }
+  summary(token: string, raw: unknown) {
+    const query = FocusSummaryQuerySchema.parse(raw);
+    return this.tx(token, async (db, actor) => {
+      const invalid = () => new DomainError('INVALID_REQUEST', 422, 'Choose a valid recent date range and IANA time zone');
+      if (query.timeZone !== 'UTC' && !query.timeZone.includes('/')) throw invalid();
+      if (!(await db.query('SELECT 1 FROM pg_timezone_names WHERE name=$1', [query.timeZone])).rowCount) throw invalid();
+      const at = new Date(this.now()), dates = (await db.query<{ today: string; available_from: string }>("SELECT (($1::timestamptz AT TIME ZONE $2)::date)::text AS today, ((($1::timestamptz-interval '2160 hours') AT TIME ZONE $2)::date+1)::text AS available_from", [at, query.timeZone])).rows[0];
+      const span = (Date.parse(query.to) - Date.parse(query.from)) / DAY;
+      if (span < 0 || span >= 31 || query.to > dates.today || query.from < dates.available_from) throw invalid();
+      const active = (await db.query<Row>("SELECT * FROM engine_focus_sessions WHERE account_id=$1 AND phase IN ('active','paused') FOR UPDATE", [actor.accountId])).rows;
+      for (const row of active) await this.transition(db, row);
+      // Build consecutive local midnights before converting to UTC; DST days are not fixed24h intervals.
+      const rows = (await db.query<{ date: string; starts_at: Date; ends_at: Date; completed_count: number; focus_seconds: number }>(`WITH days AS (
+        SELECT ($2::date+n)::text AS date, ($2::date+n)::timestamp AT TIME ZONE $4 AS starts_at, ($2::date+n+1)::timestamp AT TIME ZONE $4 AS ends_at
+        FROM generate_series(0,$3::date-$2::date) AS n
+      ) SELECT d.date,d.starts_at,d.ends_at,count(f.id)::int AS completed_count,coalesce(sum(f.duration_seconds),0)::int AS focus_seconds
+      FROM days d LEFT JOIN engine_focus_sessions f ON f.account_id=$1 AND f.phase='completed' AND f.changed_at>=d.starts_at AND f.changed_at<d.ends_at AND ($5::text IS NULL OR f.world_slug=$5)
+      GROUP BY d.date,d.starts_at,d.ends_at ORDER BY d.date`, [actor.accountId, query.from, query.to, query.timeZone, query.worldSlug ?? null])).rows;
+      const days = rows.map(row => ({ date: row.date, startsAt: row.starts_at.toISOString(), endsAt: row.ends_at.toISOString(), completedCount: row.completed_count, focusSeconds: row.focus_seconds }));
+      return FocusSummarySchema.parse({ schemaVersion: 1, serverTime: at.toISOString(), from: query.from, to: query.to, availableFrom: dates.available_from, timeZone: query.timeZone, worldSlug: query.worldSlug ?? null, days, totals: days.reduce((sum, day) => ({ completedCount: sum.completedCount + day.completedCount, focusSeconds: sum.focusSeconds + day.focusSeconds }), { completedCount: 0, focusSeconds: 0 }) });
     });
   }
   async exportAccount(id: string, db: PoolClient) {

@@ -1,5 +1,7 @@
 # Decisions
 
+M10-05 / ADR0027: private calendar summaries derive from retained canonical completions,explicit IANA/defaultAsia_Ho_Chi_Minh,consecutive localmidnights and max31complete retained days;no per-second/aggregate copies,public productivity or rewards. Actual199integration/fullbuild andDST/retention evidence m10-daily-checks.json.
+
 M10-04 / ADR0026: React-only reusable native focus UI,Portal-owned abortable/retry transport,monotonic display with canonical server completion and explicit local duration-only sharing;no public publication. Actualbrowser40pass;invitationtest now asserts unchanged pre/postcatalog +nullmemberships rather than emptyglobalcatalog.
 
 M10-03 / ADR0025: focus history is always account-private,even with public room presence; immutable origin/creation order,own world-filtered cursor/max50 pages. Synthetic Deadline/Library verify scope without claiming integrated worlds; m10-scope-checks.json.

@@ -23,6 +23,7 @@ export function registerFocus(http: FastifyInstance, config: Config, identity: I
     api.post('/focus', async (req, reply) => { empty(req); return reply.code(201).send(await focus.start(write(req), key(req), req.body)); });
     api.get('/focus', req => { empty(req); return focus.current(token(req)); });
     api.get('/focus/history', req => focus.history(token(req), req.query));
+    api.get('/focus/summary', req => focus.summary(token(req), req.query));
     api.get('/focus/:id', req => { empty(req); return focus.get(token(req), id(req)); });
     for (const action of ['pause', 'resume', 'finish', 'cancel'] as const) api.post('/focus/:id/' + action, req => { empty(req); FocusMutationSchema.parse(req.body); return focus.mutate(write(req), id(req), key(req), action); });
   }, { prefix: '/v1' });

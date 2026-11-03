@@ -65,7 +65,7 @@
 | M10 | M10-02 · Implement trusted start/pause/finish/cancel rules with deterministic server clock. | VERIFIED | m10-engine-checks.json;125unit/190integration,build0,scene24;0012 local |
 | M10 | M10-03 · Implement room/world-scoped session association and privacy. | VERIFIED | m10-scope-checks.json;check0(125unit/193integration/builds),focus15 |
 | M10 | M10-04 · Provide accessible timer UI package and shareable completion summary. | VERIFIED | m10-ui-checks.json;check0(126unit/193integration),finalbuild0,E2E40 |
-| M10 | M10-05 · Add SQL queries/retention for daily summaries and test DST/timezone edge cases. | TODO | — |
+| M10 | M10-05 · Add SQL queries/retention for daily summaries and test DST/timezone edge cases. | VERIFIED | m10-daily-checks.json;check0(126unit/199integration/builds),focus21/browser2,0013local |
 | M11 | M11-01 · Audit legacy Maid order/shift semantics, extract shared vs maid-only behaviors. | TODO | — |
 | M11 | M11-02 · Implement core order state machine and atomic claim with per-world policy. | TODO | — |
 | M11 | M11-03 · Implement staff shift, role permissions and reassignment on disconnect. | TODO | — |
