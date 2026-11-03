@@ -4,6 +4,8 @@ Project repository: `git@github.com:tiecont/virtual-life-platform.git` (configur
 
 The [shared hospitality engine](docs/architecture/HOSPITALITY.md) provides private policy-gated orders, atomic claims, voluntary shifts, reusable timed courses, transactional completion hooks and service refusal/block/safety recovery. Actual progression consumers and real Maid integration remain subsequent modules. No public hospitality world is enabled.
 
+The [event engine](docs/architecture/EVENTS-RESERVATIONS.md) provides policy-gated silent schedules, a private RSVP catalog and explicit calendar download. Concurrent allocations use PostgreSQL transactions; table reservations and event governance remain later tasks. Real event worlds remain disabled.
+
 Offline implementation of the supplied [master plan](MASTER-AGENT-PLAN.md). Current features and evidence are in [PROGRESS](docs/agent/PROGRESS.md); resume from [HANDOFF](docs/agent/HANDOFF.md). Guest/registered identity, session renewal, private settings and own-data export/delete are available at `/identity`. Consent-based friends, private contact codes and blocking are available at `/social`. A working identity is not a playable city. All worlds remain closed. Nothing is deployed or published.
 
 A synthetic cafe scene is available at `/worlds/sdk-sandbox` only with explicit local/test flags. It renders real room presence, original starter avatars and seat state with keyboard controls. Server-approved walking supports floor clicks and keyboard destinations around solid tables/walls. See [scene setup and limitations](docs/architecture/SCENES.md); real world rollout remains OFF.

@@ -36,6 +36,8 @@ import { registerFocus } from './focus/http';
 import { HospitalityService, type HospitalityStaffPort } from './hospitality/service';
 import { registerHospitality } from './hospitality/http';
 import { HospitalityOutbox, type HospitalityCompletionSink } from './hospitality/outbox';
+import { EventService, type EventOrganizerPort } from './events/service';
+import { registerEvents } from './events/http';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -50,7 +52,7 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] } } = {}) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort } } = {}) {
   const safetyPolicy = await loadSafetyPolicy(options.safety?.policy);
   const requiredMigrations = await migrationNames();
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
@@ -85,8 +87,10 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const focus = new FocusService(db, identity, rooms, options.now);
   const hospitality = new HospitalityService(db, identity, rooms, social, options.hospitality?.staff, options.now);
   const hospitalityOutbox = new HospitalityOutbox(db, identity, options.hospitality?.completionSinks, options.now);
+  const events = new EventService(db, identity, social, worlds.registry, { permits: async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account, world) && await new SanctionPolicy(transaction, options.now).permits(account, world) }, options.events?.organizers, options.now);
   const unsubscribeInvitationWithdrawal = social.onContactWithdrawn((transaction, a, b) => invitations.withdrawContact(transaction, a, b));
   const unsubscribeHospitalityWithdrawal = social.onContactWithdrawn((transaction, a, b) => hospitality.withdrawContact(transaction, a, b));
+  const unsubscribeEventWithdrawal = social.onContactWithdrawn((transaction, a, b) => events.withdrawContact(transaction, a, b));
   const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, policy: safetyPolicy, evidence: reports.cache }, options.now);
   http.addHook('onClose', async () => { await worlds.registry.close(); });
   http.addHook('onClose', async () => { await rooms.close(); });
@@ -98,6 +102,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerInvitations(http, config, identity, invitations, options.now);
   registerFocus(http, config, identity, focus, options.now);
   registerHospitality(http, config, identity, hospitality, options.now);
+  registerEvents(http, config, identity, events, options.now);
+  identity.registerExportOwner('events', (id, transaction) => events.exportAccount(id, transaction));
   identity.registerExportOwner('hospitality', (id, transaction) => hospitality.exportAccount(id, transaction));
   identity.registerDeletionOwner('hospitality', (id, transaction) => hospitality.redactAccount(id, transaction));
   identity.registerExportOwner('focus', (id, transaction) => focus.exportAccount(id, transaction));
@@ -109,7 +115,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   identity.registerDeletionOwner('safety', (id, transaction) => reports.redactAccount(id, transaction));
   identity.registerExportOwner('social', (id, transaction) => social.exportAccount(id, transaction));
   // Emit truthful room interruption events while sockets are still connected; the gateway closes immediately after this hook.
-  http.addHook('preClose', async () => { chat.close(); await hospitalityOutbox.close(); await hospitality.close(); await focus.close(); await invitations.close(); await travel.close(); await reports.close(); await rooms.close(); roomAuthority.close(); });
+  http.addHook('preClose', async () => { chat.close(); await events.close(); await hospitalityOutbox.close(); await hospitality.close(); await focus.close(); await invitations.close(); await travel.close(); await reports.close(); await rooms.close(); roomAuthority.close(); });
   http.get('/health/live', async () => ({ status: 'ok' }));
   http.get('/health/ready', async (_req, reply) => {
     try {
@@ -131,8 +137,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const unsubscribeInvitations = invitations.onChanged((ids, event) => { for (const id of ids) gateway.emitToAccount(id, event, { schemaVersion: 1 }); });
   const unsubscribeRoomSocial = social.onChanged(ids => { void rooms.refreshAccounts(ids); });
   const unsubscribeRoomIdentity = identity.onChanged(id => { void rooms.refreshAccounts([id]); });
-  http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeInvitationWithdrawal(); unsubscribeHospitalityWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
+  http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeInvitationWithdrawal(); unsubscribeHospitalityWithdrawal(); unsubscribeEventWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, hospitality, hospitalityOutbox, diagnostics };
+  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, hospitality, hospitalityOutbox, events, diagnostics };
 }

@@ -167,6 +167,12 @@ export class WorldRegistry {
     this.#ready(entry);
     return { actor, definition: entry.adapter.definition };
   }
+  async authorizedContext<T>(credential: string, slug: string, work: (actor: WorldActor, definition: WorldDefinition, valid: () => boolean) => Promise<T>): Promise<T> {
+    const entry = this.#get(slug), generation = entry.generation, { actor, definition } = await this.authorizeWorld(credential, slug);
+    const valid = () => !this.#closed && entry.enabled && entry.phase === 'available' && entry.generation === generation;
+    if (!valid()) throw unavailable();
+    return work(actor, definition, valid);
+  }
   #card(entry: Entry): WorldCard {
     const world = entry.adapter.definition;
     return {

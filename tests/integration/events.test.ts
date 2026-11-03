@@ -1,0 +1,175 @@
+import { beforeAll, afterAll, afterEach, it, expect } from 'vitest';
+import { randomUUID } from 'node:crypto';
+import { Pool } from 'pg';
+import { MeSchema, type Me } from '@virtual-city/contracts';
+import { defineWorld } from '@virtual-city/world-sdk';
+import { createApp } from '../../apps/platform-api/src/app';
+import { readConfig } from '../../apps/platform-api/src/config';
+import { migrate } from '../../apps/platform-api/src/db/migrations';
+const origin = 'http://127.0.0.1:3300'; let admin: Pool, serial = 0;
+const opened: { app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: string }[] = [];
+beforeAll(async () => { const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database'); admin = new Pool({ connectionString: url.toString() }); });
+afterEach(async () => { for (const r of opened.splice(0)) { await r.app.app.close(); await r.pool.end(); await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`); } });
+afterAll(async () => { await admin.end(); });
+async function open() {
+  const schema = 'events_test_' + randomUUID().replaceAll('-', ''); await admin.query(`CREATE SCHEMA "${schema}"`); const url = new URL(process.env.TEST_DATABASE_URL!); url.searchParams.set('options', '-c search_path=' + schema); const pool = new Pool({ connectionString: url.toString() }); await migrate(pool); let now = Date.parse('2026-11-03T10:00:00.000Z');
+  const definition = { schemaVersion: 1, apiVersion: 1, slug: 'event-fixture', version: '1.0.0', title: 'Synthetic silent event fixture', kind: 'sandbox', sceneRef: { key: 'event-fixture', version: '1.0.0' }, capacity: 20, capabilities: ['presence', 'events'], eventPolicy: { schemaVersion: 1, version: '1.0.0', maxCapacity: 20 }, accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'sandbox', position: { x: .5, y: .5 }, icon: 'flask' } };
+  const hooks = { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {} };
+  const modules = [defineWorld(definition, hooks), defineWorld({ ...definition, slug: 'private-event-fixture', visibility: 'hidden', accessPolicy: { kind: 'private', policyKey: 'test.private' } }, hooks)];
+  const organizers = new Set<string>(), config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'events-local-only-test-session-secret-000001' }), options = { now: () => now, worlds: { modules }, events: { organizers: { permits: async (_db: unknown, actor: { accountId: string }) => organizers.has(actor.accountId) } } }, app = await createApp(config, pool, false, options); opened.push({ app, pool, schema }); await app.app.listen(0, '127.0.0.1'); for (const slug of app.worlds.registry.slugs()) await app.worlds.registry.setEnabled(slug, true);
+  return { app, pool, config, options, organizers, url: await app.app.getUrl(), now: () => now, advance: (ms: number) => { now += ms; } };
+}
+type Runtime = Awaited<ReturnType<typeof open>>; type User = { me: Me; cookie: string; token: string };
+const headers = (u: User, key = randomUUID()) => ({ origin, cookie: u.cookie, 'x-csrf-token': u.me.csrfToken, 'idempotency-key': key });
+const post = (r: Runtime, u: User, path: string, payload: unknown = { schemaVersion: 1 }, key = randomUUID()) => r.app.http.inject({ method: 'POST', url: '/v1/' + path, headers: headers(u, key), payload });
+const get = (r: Runtime, u: User, path = 'events?worldSlug=event-fixture') => r.app.http.inject({ url: '/v1/' + path, headers: { cookie: u.cookie } });
+async function guest(r: Runtime): Promise<User> { const n = serial++, response = await r.app.http.inject({ method: 'POST', url: '/v1/session/guest', remoteAddress: `127.71.${Math.floor(n / 250)}.${n % 250 + 1}`, headers: { origin }, payload: { requestId: randomUUID(), displayName: 'Event Visitor', avatarKey: 'mint' } }); expect(response.statusCode).toBe(201); const cookie = String(response.headers['set-cookie']).split(';')[0], unsigned = r.app.http.unsignCookie(decodeURIComponent(cookie.slice(cookie.indexOf('=') + 1))); if (!unsigned.valid || !unsigned.value) throw new Error('Invalid fixture cookie'); return { me: MeSchema.parse(response.json()), cookie, token: unsigned.value }; }
+const input = (r: Runtime, patch = {}) => ({ schemaVersion: 1, worldSlug: 'event-fixture', policyVersion: '1.0.0', title: 'Synthetic silent study', audience: 'silent', visibility: 'listed', capacity: 2, schedule: { schemaVersion: 1, timeZone: 'Asia/Ho_Chi_Minh', opensAt: new Date(r.now() + 60000).toISOString(), startsAt: new Date(r.now() + 120000).toISOString(), checkInClosesAt: new Date(r.now() + 180000).toISOString(), endsAt: new Date(r.now() + 3600000).toISOString() }, ...patch });
+async function schedule(r: Runtime, u: User, patch = {}, key = randomUUID()) { r.organizers.add(u.me.profile.id); return r.app.events.schedule(u.token, key, input(r, patch)); }
+async function restart(r: Runtime) { await r.app.app.close(); const old = r.app, app = await createApp(r.config, r.pool, false, r.options); opened.find(item => item.app === old)!.app = app; r.app = app; await app.app.listen(0, '127.0.0.1'); r.url = await app.app.getUrl(); for (const slug of app.worlds.registry.slugs()) await app.worlds.registry.setEnabled(slug, true); }
+
+it('serves an authenticated empty event catalog and exposes no public schedule or automatic calendar route', async () => {
+  const r = await open(), u = await guest(r); expect((await get(r, u)).statusCode).toBe(200); expect((await get(r, u)).json().items).toEqual([]);
+  expect((await r.app.http.inject({ url: '/v1/events?worldSlug=event-fixture' })).statusCode).toBe(401);
+  expect((await post(r, u, 'events', input(r))).statusCode).toBe(404);
+});
+
+it('twenty actual TCP accounts competing for two RSVP places never oversell and reveal no attendee list', async () => {
+  const r = await open(), owner = await guest(r), event = await schedule(r, owner), users = await Promise.all(Array.from({ length: 20 }, () => guest(r)));
+  const responses = await Promise.all(users.map(u => fetch(r.url + '/v1/events/' + event.event.id + '/rsvp', { method: 'POST', headers: { ...headers(u), 'content-type': 'application/json' }, body: JSON.stringify({ schemaVersion: 1 }), signal: AbortSignal.timeout(10000) })));
+  expect(responses.filter(response => response.status === 201)).toHaveLength(2); expect(responses.filter(response => response.status === 409)).toHaveLength(18);
+  expect((await r.pool.query("SELECT 1 FROM engine_event_rsvps WHERE phase='CONFIRMED'")).rowCount).toBe(2);
+  const catalog = await get(r, users[0]); expect(catalog.statusCode).toBe(200); expect(JSON.stringify(catalog.json())).not.toMatch(/accountId|organizerId|attendees|fingerprint|session/); expect(catalog.json().items[0].startsLabel).toContain('17:02:00');
+});
+
+it('durable same-key retries allocate once, changed key input conflicts, and withdrawal frees capacity without old-key resurrection', async () => {
+  const r = await open(), owner = await guest(r), event = await schedule(r, owner, { capacity: 1 }), a = await guest(r), b = await guest(r), key = randomUUID(), path = 'events/' + event.event.id;
+  const replies = await Promise.all(Array.from({ length: 8 }, () => post(r, a, path + '/rsvp', { schemaVersion: 1 }, key))); expect(replies.every(reply => reply.statusCode === 201)).toBe(true);
+  expect((await r.pool.query('SELECT 1 FROM engine_event_rsvps')).rowCount).toBe(1); expect((await r.pool.query("SELECT 1 FROM engine_event_mutations WHERE operation='rsvp'")).rowCount).toBe(1);
+  expect((await post(r, b, path + '/rsvp')).statusCode).toBe(409); await restart(r); expect((await post(r, a, path + '/rsvp', { schemaVersion: 1 }, key)).json()).toEqual(replies[0].json());
+  expect((await post(r, a, path + '/withdraw')).json().rsvp.phase).toBe('CANCELLED'); expect((await post(r, b, path + '/rsvp')).statusCode).toBe(201);
+  expect((await post(r, a, path + '/rsvp', { schemaVersion: 1 }, key)).json().rsvp.phase).toBe('CANCELLED'); expect((await post(r, a, path + '/withdraw', { schemaVersion: 1 }, key)).statusCode).toBe(409);
+});
+
+it('requires trusted organizer provisioning, explicit world policy and silent audience, with durable schedule retries', async () => {
+  const r = await open(), owner = await guest(r), other = await guest(r), key = randomUUID(), body = input(r);
+  await expect(r.app.events.schedule(owner.token, key, body)).rejects.toMatchObject({ status: 404 });
+  r.organizers.add(owner.me.profile.id);
+  const results = await Promise.all(Array.from({ length: 5 }, () => r.app.events.schedule(owner.token, key, body))); expect(results.every(result => result.event.id === results[0].event.id)).toBe(true); expect((await r.pool.query('SELECT 1 FROM engine_events')).rowCount).toBe(1);
+  await expect(r.app.events.schedule(owner.token, key, { ...body, title: 'Changed title' })).rejects.toMatchObject({ status: 409 });
+  for (const patch of [{ audience: 'interactive' }, { organizerId: other.me.profile.id }, { phase: 'LIVE' }, { address: 'real-world address' }]) await expect(r.app.events.schedule(owner.token, randomUUID(), { ...body, ...patch })).rejects.toThrow();
+  for (const patch of [{ capacity: 21 }, { worldSlug: 'sdk-sandbox' }, { worldSlug: 'private-event-fixture' }, { policyVersion: '2.0.0' }]) await expect(r.app.events.schedule(owner.token, randomUUID(), { ...body, ...patch })).rejects.toMatchObject({ status: 404 });
+  const privateEvent = await schedule(r, owner, { visibility: 'private' }); expect((await get(r, other, 'events/' + privateEvent.event.id)).statusCode).toBe(404); expect((await post(r, other, 'events/' + privateEvent.event.id + '/rsvp')).statusCode).toBe(404); expect((await get(r, other)).json().items).toHaveLength(1);
+  expect((await get(r, other, 'events?worldSlug=private-event-fixture')).statusCode).toBe(404);
+  await expect(r.pool.query('UPDATE engine_events SET capacity=0')).rejects.toMatchObject({ code: '23514' });
+});
+
+it('enforces auth, Origin, CSRF, strict mutation/query input and own withdrawal without leaking peer allocation IDs', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), b = await guest(r), event = await schedule(r, owner), path = 'events/' + event.event.id;
+  for (const body of [{ schemaVersion: 1, accountId: b.me.profile.id }, { schemaVersion: 1, places: 99 }, { schemaVersion: 1, role: 'organizer' }, { schemaVersion: 1, startsAt: '2000-01-01T00:00:00.000Z' }]) expect((await post(r, a, path + '/rsvp', body)).statusCode).toBe(422);
+  expect((await r.app.http.inject({ method: 'POST', url: '/v1/' + path + '/rsvp', headers: { ...headers(a), origin: 'https://invalid.example' }, payload: { schemaVersion: 1 } })).statusCode).toBe(403);
+  expect((await r.app.http.inject({ method: 'POST', url: '/v1/' + path + '/rsvp', headers: { cookie: a.cookie, origin, 'idempotency-key': randomUUID() }, payload: { schemaVersion: 1 } })).statusCode).toBe(403);
+  expect((await get(r, a, 'events?worldSlug=event-fixture&accountId=' + b.me.profile.id)).statusCode).toBe(422);
+  expect((await get(r, a, path + '?attendees=true')).statusCode).toBe(422);
+  const receipt = (await post(r, a, path + '/rsvp')).json(); expect((await get(r, b, path)).json().event.rsvp).toBeNull(); expect(JSON.stringify((await get(r, b, path)).json())).not.toContain(receipt.rsvp.id); expect((await post(r, b, path + '/withdraw')).statusCode).toBe(404);
+  await post(r, a, 'session/logout', {}); expect((await post(r, a, path + '/rsvp')).statusCode).toBe(401);
+});
+
+it('rolls back RSVP and schedule effects if mutation receipts fail, then retries the original key', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), event = await schedule(r, owner), key = randomUUID(), path = 'events/' + event.event.id;
+  await r.pool.query("CREATE FUNCTION fail_event_receipt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic event receipt failure'; END $$"); await r.pool.query('CREATE TRIGGER fail_event_receipt BEFORE INSERT ON engine_event_mutations FOR EACH ROW EXECUTE FUNCTION fail_event_receipt()');
+  expect((await post(r, a, path + '/rsvp', { schemaVersion: 1 }, key)).statusCode).toBe(503); expect((await r.pool.query('SELECT 1 FROM engine_event_rsvps')).rowCount).toBe(0);
+  await expect(schedule(r, owner)).rejects.toThrow(); expect((await r.pool.query('SELECT 1 FROM engine_events')).rowCount).toBe(1);
+  await r.pool.query('DROP TRIGGER fail_event_receipt ON engine_event_mutations'); expect((await post(r, a, path + '/rsvp', { schemaVersion: 1 }, key)).statusCode).toBe(201);
+  await expect(r.pool.query("INSERT INTO engine_event_rsvps SELECT $1,event_id,account_id,phase,created_at,changed_at FROM engine_event_rsvps", [randomUUID()])).rejects.toMatchObject({ code: '23505' });
+});
+
+it('current block cancels organizer contact in the same transaction and own withdrawal works after closure', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), event = await schedule(r, owner), path = 'events/' + event.event.id;
+  await post(r, a, path + '/rsvp');
+  await r.pool.query("CREATE FUNCTION fail_event_withdrawal() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.phase='CANCELLED' THEN RAISE EXCEPTION 'synthetic block rollback'; END IF; RETURN NEW; END $$"); await r.pool.query('CREATE TRIGGER fail_event_withdrawal BEFORE UPDATE ON engine_event_rsvps FOR EACH ROW EXECUTE FUNCTION fail_event_withdrawal()');
+  expect((await post(r, a, 'blocks', { targetId: owner.me.profile.id, blocked: true })).statusCode).toBe(503); expect((await r.pool.query('SELECT 1 FROM social_blocks')).rowCount).toBe(0); expect((await get(r, a, path)).statusCode).toBe(200);
+  await r.pool.query('DROP TRIGGER fail_event_withdrawal ON engine_event_rsvps'); expect((await post(r, a, 'blocks', { targetId: owner.me.profile.id, blocked: true })).statusCode).toBe(200);
+  expect((await get(r, a)).json().items).toEqual([]); expect((await get(r, a, path)).statusCode).toBe(404); expect((await post(r, a, path + '/rsvp')).statusCode).toBe(404); expect((await r.pool.query('SELECT phase FROM engine_event_rsvps')).rows[0].phase).toBe('CANCELLED');
+  await r.app.worlds.registry.setEnabled('event-fixture', false); const withdrawal = await post(r, a, path + '/withdraw'); expect(withdrawal.statusCode).toBe(200); expect(JSON.stringify(withdrawal.json())).not.toMatch(/title|worldSlug|organizer/);
+});
+
+it.each(['participant', 'organizer'] as const)('shared world-ban on %s prevents RSVP and event disclosure without automatic sanction creation', async subject => {
+  const r = await open(), owner = await guest(r), a = await guest(r), event = await schedule(r, owner), target = subject === 'organizer' ? owner : a, reporter = await guest(r), caseId = randomUUID();
+  await r.pool.query("INSERT INTO safety_cases(id,receipt_id,reporter_id,subject_id,request_id,fingerprint,world_slug,category,severity,created_at) VALUES($1,$2,$3,$4,$5,'synthetic-event-safety','event-fixture','harassment','high',$6)", [caseId, randomUUID(), reporter.me.profile.id, target.me.profile.id, randomUUID(), new Date(r.now())]);
+  await r.pool.query("INSERT INTO safety_sanctions(id,case_id,subject_id,kind,category,world_slug,effective_at,expires_at,appeal_until) VALUES($1,$2,$3,'world-ban','harassment','event-fixture',$4,$5,$5)", [randomUUID(), caseId, target.me.profile.id, new Date(r.now()), new Date(r.now() + 3600000)]);
+  expect((await post(r, a, 'events/' + event.event.id + '/rsvp')).statusCode).toBe(404); expect((await get(r, a, 'events/' + event.event.id)).statusCode).toBe(404); expect((await r.pool.query('SELECT 1 FROM engine_event_rsvps')).rowCount).toBe(0); expect((await r.pool.query('SELECT 1 FROM safety_sanctions')).rowCount).toBe(1);
+});
+
+it('observes server deadlines across restart, ends once, and old retries cannot invent attendance or room membership', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), b = await guest(r), event = await schedule(r, owner), key = randomUUID(), path = 'events/' + event.event.id;
+  await post(r, a, path + '/rsvp', { schemaVersion: 1 }, key); r.advance(60000); expect((await get(r, a, path)).json().event.phase).toBe('OPEN');
+  r.advance(60000); expect((await post(r, b, path + '/rsvp')).statusCode).toBe(409); expect((await get(r, a, path)).json().event.phase).toBe('LIVE'); await restart(r);
+  r.advance(3480000); await r.app.events.maintain(); const ended = await get(r, a, path); expect(ended.json().event).toMatchObject({ phase: 'ENDED', rsvp: { phase: 'EXPIRED' } });
+  expect((await post(r, a, path + '/rsvp', { schemaVersion: 1 }, key)).json().rsvp.phase).toBe('EXPIRED'); expect((await post(r, a, path + '/rsvp')).statusCode).toBe(409); expect(r.app.rooms.diagnostics().memberships).toBe(0);
+  const changed = (await r.pool.query('SELECT changed_at FROM engine_events')).rows[0].changed_at.toISOString(); r.advance(1000); await get(r, a, path); expect((await r.pool.query('SELECT changed_at FROM engine_events')).rows[0].changed_at.toISOString()).toBe(changed);
+});
+
+it('requires explicit calendar opt-in and confirmed RSVP, with escaped/folded UTF-8 and distinct DST offsets', async () => {
+  const r = await open(); r.advance(Date.parse('2026-11-01T04:00:00.000Z') - r.now()); const owner = await guest(r), a = await guest(r), b = await guest(r);
+  const event = await schedule(r, owner, { title: 'Sách Việt; ' + 'ă'.repeat(80) + ',study', schedule: { schemaVersion: 1, timeZone: 'America/New_York', opensAt: '2026-11-01T05:00:00.000Z', startsAt: '2026-11-01T05:30:00.123Z', checkInClosesAt: '2026-11-01T06:00:00.000Z', endsAt: '2026-11-01T06:30:00.123Z' } }), path = 'events/' + event.event.id;
+  expect(event.event.startsLabel).toContain('GMT-04:00'); expect(event.event.endsLabel).toContain('GMT-05:00'); await post(r, a, path + '/rsvp');
+  expect((await get(r, a, path + '/calendar')).statusCode).toBe(404); expect((await post(r, a, path + '/calendar')).statusCode).toBe(422); expect((await post(r, a, path + '/calendar', { schemaVersion: 1, optIn: false })).statusCode).toBe(422); expect((await post(r, b, path + '/calendar', { schemaVersion: 1, optIn: true })).statusCode).toBe(404);
+  const downloaded = await post(r, a, path + '/calendar', { schemaVersion: 1, optIn: true }); expect(downloaded.statusCode).toBe(200); expect(downloaded.headers['content-type']).toContain('text/calendar'); expect(downloaded.headers['content-disposition']).toContain('attachment');
+  expect((await post(r, a, path + '/calendar', { schemaVersion: 1, optIn: true })).body).toBe(downloaded.body); expect(downloaded.body).toContain('DTSTAMP:20261101T040000Z');
+  expect(downloaded.body).toContain('DTSTART:20261101T053000Z'); expect(downloaded.body).toContain('DTEND:20261101T063000Z'); expect(downloaded.body).toContain('X-WR-TIMEZONE:America/New_York'); expect(downloaded.body.replaceAll('\r\n ', '')).toContain('Sách Việt\\;'); expect(downloaded.body.replaceAll('\r\n ', '')).toContain('\\,study');
+  for (const line of downloaded.body.split('\r\n')) expect(Buffer.byteLength(line)).toBeLessThanOrEqual(75);
+  for (const u of [owner, a, b]) expect(downloaded.body).not.toContain(u.me.profile.id); expect(downloaded.body).not.toContain('ATTENDEE:'); expect((await r.pool.query('SELECT 1 FROM engine_event_mutations')).rowCount).toBe(2);
+});
+
+it('exports only own event participation and participant erasure immediately frees capacity without a leaked counter', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), b = await guest(r), event = await schedule(r, owner, { capacity: 1 }), path = 'events/' + event.event.id;
+  const joined = (await post(r, a, path + '/rsvp')).json().rsvp;
+  const own = (await get(r, a, 'me/export')).json().domains.events; expect(own.rsvps[0].id).toBe(joined.id); expect(own.events).toEqual([]); expect(JSON.stringify(own)).not.toMatch(/fingerprint|organizer_id|account_id/); expect((await get(r, b, 'me/export')).json().domains.events.rsvps).toEqual([]);
+  expect((await r.app.http.inject({ method: 'DELETE', url: '/v1/me', headers: headers(a), payload: {} })).statusCode).toBe(200); expect((await post(r, b, path + '/rsvp')).statusCode).toBe(201);
+  await r.app.http.inject({ method: 'DELETE', url: '/v1/me', headers: headers(owner), payload: {} }); expect((await r.pool.query('SELECT 1 FROM engine_events')).rowCount).toBe(0); expect((await r.pool.query('SELECT 1 FROM engine_event_rsvps')).rowCount).toBe(0); expect((await r.pool.query('SELECT 1 FROM engine_event_mutations')).rowCount).toBe(0);
+});
+
+it('invalidates the captured world generation during awaited registry authorization, even after re-enable', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), event = await schedule(r, owner); let began!: () => void, release!: () => void, intercept = true;
+  const started = new Promise<void>(resolve => { began = resolve; }), gate = new Promise<void>(resolve => { release = resolve; }), original = r.app.worlds.registry.authorizeWorld.bind(r.app.worlds.registry);
+  r.app.worlds.registry.authorizeWorld = async (...args) => { const result = await original(...args); if (intercept) { intercept = false; began(); await gate; } return result; };
+  const pending = post(r, a, 'events/' + event.event.id + '/rsvp').then(reply => reply);
+  await started; await r.app.worlds.registry.setEnabled('event-fixture', false); await r.app.worlds.registry.setEnabled('event-fixture', true); release();
+  expect((await pending).statusCode).toBe(503); expect((await r.pool.query('SELECT 1 FROM engine_event_rsvps')).rowCount).toBe(0);
+});
+
+it('rechecks the trusted schedule after waiting for an actual SQL event lock, and rejects backward time', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), event = await schedule(r, owner), key = randomUUID(), path = 'events/' + event.event.id, blocker = await r.pool.connect();
+  await blocker.query('BEGIN'); await blocker.query('SELECT 1 FROM engine_events WHERE id=$1 FOR UPDATE', [event.event.id]);
+  const pending = post(r, a, path + '/rsvp', { schemaVersion: 1 }, key).then(reply => reply);
+  try {
+    await expect.poll(async () => (await r.pool.query("SELECT count(*)::int AS n FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE 'SELECT * FROM engine_events WHERE id=%' AND pid<>pg_backend_pid()")).rows[0].n, { timeout: 800 }).toBeGreaterThan(0);
+    r.advance(120000); await blocker.query('COMMIT');
+  } finally { await blocker.query('ROLLBACK'); blocker.release(); }
+  expect((await pending).statusCode).toBe(409); expect((await r.pool.query('SELECT 1 FROM engine_event_rsvps')).rowCount).toBe(0);
+  r.advance(-120001); expect((await post(r, a, path + '/rsvp')).statusCode).toBe(409); expect((await r.pool.query('SELECT phase FROM engine_events')).rows[0].phase).toBe('SCHEDULED');
+});
+
+it('bounds durable new-key RSVP budgets while exact retries remain valid without duplicate allocation', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), event = await schedule(r, owner), path = 'events/' + event.event.id, firstKey = randomUUID();
+  expect((await post(r, a, path + '/rsvp', { schemaVersion: 1 }, firstKey)).statusCode).toBe(201);
+  for (let i = 1; i < 12; i++) expect((await post(r, a, path + '/rsvp')).statusCode).toBe(201);
+  expect((await post(r, a, path + '/rsvp')).statusCode).toBe(429); expect((await post(r, a, path + '/rsvp', { schemaVersion: 1 }, firstKey)).statusCode).toBe(201);
+  expect((await r.pool.query('SELECT 1 FROM engine_event_rsvps')).rowCount).toBe(1); expect((await r.pool.query("SELECT 1 FROM engine_event_mutations WHERE operation='rsvp'")).rowCount).toBe(12);
+});
+
+it('rotates fair twenty-row maintenance batches under frozen time and bounds ninety-day retention cascades', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), event = await schedule(r, owner); await post(r, a, 'events/' + event.event.id + '/rsvp');
+  await r.pool.query("INSERT INTO engine_events(id,organizer_id,world_slug,world_version,policy_version,title,audience,visibility,capacity,time_zone,opens_at,starts_at,check_in_closes_at,ends_at,phase,created_at,changed_at) SELECT gen_random_uuid(),organizer_id,world_slug,world_version,policy_version,title,audience,visibility,capacity,time_zone,opens_at,starts_at,check_in_closes_at,ends_at,phase,created_at,changed_at FROM engine_events CROSS JOIN generate_series(1,24) WHERE id=$1", [event.event.id]);
+  r.advance(3600000); await r.app.events.maintain(); expect((await r.pool.query("SELECT 1 FROM engine_events WHERE phase='ENDED'")).rowCount).toBe(20); await r.app.events.maintain(); expect((await r.pool.query("SELECT 1 FROM engine_events WHERE phase='ENDED'")).rowCount).toBe(25);
+  await r.pool.query("INSERT INTO engine_events(id,organizer_id,world_slug,world_version,policy_version,title,audience,visibility,capacity,time_zone,opens_at,starts_at,check_in_closes_at,ends_at,phase,created_at,changed_at) SELECT gen_random_uuid(),organizer_id,world_slug,world_version,policy_version,title,audience,visibility,capacity,time_zone,opens_at,starts_at,check_in_closes_at,ends_at,phase,created_at,changed_at FROM engine_events CROSS JOIN generate_series(1,80) WHERE id=$1", [event.event.id]);
+  r.advance(90 * 86400000 + 1); await r.app.events.maintain(); expect((await r.pool.query('SELECT 1 FROM engine_events')).rowCount).toBe(5); await r.app.events.maintain(); expect((await r.pool.query('SELECT 1 FROM engine_events')).rowCount).toBe(0); expect((await r.pool.query('SELECT 1 FROM engine_event_rsvps')).rowCount).toBe(0); expect((await r.pool.query('SELECT 1 FROM engine_event_mutations')).rowCount).toBe(0);
+});
+
+it('fails closed on current world kill switch or expired session but permits private consent withdrawal', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), b = await guest(r), event = await schedule(r, owner), path = 'events/' + event.event.id;
+  await post(r, a, path + '/rsvp'); await r.pool.query("INSERT INTO safety_incident_controls VALUES('event-fixture','world',true,NULL,$1)", [new Date(r.now())]);
+  expect((await post(r, b, path + '/rsvp')).statusCode).toBe(404); expect((await get(r, a, path)).statusCode).toBe(404); expect((await post(r, a, path + '/withdraw')).statusCode).toBe(200);
+  await r.pool.query("UPDATE safety_incident_controls SET closed=false"); await r.pool.query('UPDATE identity_sessions SET expires_at=$2 WHERE account_id=$1', [b.me.profile.id, new Date(r.now())]); expect((await post(r, b, path + '/rsvp')).statusCode).toBe(401); expect((await r.pool.query("SELECT 1 FROM engine_event_rsvps WHERE phase='CONFIRMED'")).rowCount).toBe(0);
+});

@@ -48,7 +48,10 @@
     "engine_hospitality_outbox": "engine.hospitality",
     "engine_hospitality_deliveries": "engine.hospitality",
     "engine_hospitality_delivery_retries": "engine.hospitality",
-    "engine_hospitality_refusals": "engine.hospitality"
+    "engine_hospitality_refusals": "engine.hospitality",
+    "engine_events": "engine.events",
+    "engine_event_rsvps": "engine.events",
+    "engine_event_mutations": "engine.events"
   },
   "journalTable": "city_schema_migrations",
   "legacyDatabases": "not managed by city migrations",

@@ -73,7 +73,7 @@
 | M11 | M11-05 · Add transaction/idempotency for order complete and progress hooks. | VERIFIED | m11-completion-checks.json;check0(178unit/238integration/builds),finalhospitality40,browser8,0017local |
 | M11 | M11-06 · Test moderation of staff/customer interactions and service refusal. | VERIFIED | m11-safety-checks.json;check0(178unit/252integration/builds),53hospitality,browser8,0018local |
 | M12 | M12-01 · Define event and reservation state machines with timezone/overbooking policy. | VERIFIED | m12-model-checks.json;12modeltests/check0(190unit/252integration/builds);no runtime claim |
-| M12 | M12-02 · Implement scheduled events/catalog and RSVP with capacity checks. | TODO | — |
+| M12 | M12-02 · Implement scheduled events/catalog and RSVP with capacity checks. | VERIFIED | m12-rsvp-checks.json;check0(190unit/269integration/builds),17events,browser8,0019local |
 | M12 | M12-03 · Implement reservation holds/expiry/check-in/waitlist policy. | TODO | — |
 | M12 | M12-04 · Implement organizer/performer/mod permissions and cancel notifications. | TODO | — |
 | M12 | M12-05 · Implement event discovery and invitations with privacy restrictions. | TODO | — |

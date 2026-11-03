@@ -1,5 +1,11 @@
 # Agent progress
 
+## M12-02 - VERIFIED durable silent events and private RSVP
+
+Workspace from1f5f671; m12-rsvp-checks.json/ADR0035. Final fullcheck exit0 with durable artifact:7governance,190unit,269integration including17events,lint/types/architecture/assets/builds. Browser8(4eachdevice) readiness/identity/social block regression pass; local DB restart/migration0019 exit0; diff0. Initial eventPolicy schema red and signed-cookie fixture failures retained; fixture corrected with Fastify unsignCookie, runtime auth unchanged. Targeted3/12/16 pass. Earlier fullcheck interrupted during integration by host restart, not claimed complete.
+
+Trusted internal default-deny silent scheduling with explicit world policy, future UTC/IANA/PG validation, private catalog/own RSVP, actual20TCP race for2places (2success/18full), account/event locks, durable retries/rollback/restart, block/safety/privacy/session/generation/deadline guards verified. Explicit opt-in UTF-8 calendar attachment with DST offsets/UTC seconds/stable UID+creation DTSTAMP; no automatic send. Quotas, fair20maintenance,100+5retention and erasure freeing capacity verified. No new event UI/table booking/room admission/real adapter/public release. Next exact action M12-03: add policy-declared virtual table resources with nonoverlapping slots, durable holds clipped to start, exact expiry/confirm/check-in, explicit FIFO waitlist and actual room-admission checks; race the same slot over HTTP. DevDB0019,previewoff,allrealflagsOFF.
+
 ## M12-01 - VERIFIED event/reservation lifecycle model
 
 Workspace from6dd10f0; m12-model-checks.json/ADR0034/EVENTS-RESERVATIONS.md. Missing-model suite red retained,packages/unit12 exit0. Original fullcheck log completed190unit/252integration/builds but expired process handle had no collected exit. Repeated fullcheck exit0 with durable exit artifact:7governance,190unit,252integration,lint/types/architecture/assets/builds; diff0. No UI change/browser rerun or DB migration.
