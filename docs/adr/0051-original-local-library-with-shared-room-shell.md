@@ -1,0 +1,11 @@
+# ADR0051 — Original local Library uses shared room authority and shell
+
+M17-01 implements an independently authored world package, `@virtual-city/library-world`, within the existing packages workspace/build graph. It depends only on public contracts/SDK and owns no database. Shared packages cannot import this world implementation; applications compose it through its public entry. No legacy code or art is copied.
+
+The manifest defines eight reachable desks,original solid shelves,tables and two labeled desk areas: Reading corner and Study alcove. These are areas of the same quiet layout,not isolated/private rooms or separate admission categories. This small first layout concentrates activity and does not eagerly allocate rooms. A reading-room graphical style reuses the existing Pixi renderer and original starter avatars,with deterministic decorative book spines and no book text/audio/media. Native controls are the complete keyboard/mobile alternative.
+
+Move the existing SDK RoomPanel/RoomSafety/CSS into shared components and parameterize trusted world/scene/presentation. Keep one connection/membership/recovery/seat/safety implementation. Versioned geometry and current server catalog govern entry;client layout/outfit never authorizes a role or place. Source errors and failed assets retain truthful native controls. Reuse the original HTTP/socket budgets;session/catalog reads now have an8second deadline.
+
+The actual Library module requires nonproduction `LOCAL_LIBRARY_WORLD=1` plus independent `library:true` in the trusted environment flag file. Default installation/real rollout remain OFF,and production rejects the local activation option. Library-specific browser batches use a separate flag fixture;other fixtures retain their catalog. Public operations remain B-003. No database migration,accounts,notes,books,staff grant or reward activation is added.
+
+This first slice offers presence,seating and portals. Focus integration is M17-02;quiet/event/group consent is03..04;the full timed cross-world journey is05. Do not claim those outcomes from the scene. Verification and original source hashes are in m17-scene-checks.json and library/provenance.json. Full source scene/focus integration with legacy Deadline remains externally gated M15.

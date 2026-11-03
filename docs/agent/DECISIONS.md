@@ -1,5 +1,7 @@
 # Decisions
 
+M17-01 / ADR0051: independentworldpackage with originalgeometry,one quietroomtype/two clearly labeleddeskareas,reused Pixi readingstyle andsharedWorldRoomPanel/RoomSafety. No duplicatedowner/DB or ebookcontent. Explicit nonproductionmoduleopt-in+independentworldflag/defaultOFF;productionrejectslocaloption. Full319integration/209unit/builds +Library4/affected34browser pass;initialclosed-dialogdimensions andglobalidentityselector failuresretained/fixed precisely. Focus/groups later02..05.
+
 M16-01 / ADR0050: current25file observation/10priorhashesunchanged remains health-only DTO/menu foundation;no working role/shift/order/safety/scene inferred. Dated11unit/4PGfoundation baseline separate. Preserve sourcepin/redistribution gates;never replace realintegration withsynthetic fixture orclaim shared timedcourses implementlegacyminigame/NPC. Advance independentM17.
 
 M15-01 / ADR0049: verified audit scope only;complete Deadline source observation52hashes/12APIfiles/9routes/all8priorfocusedunchanged,committedbackend distinct fromdirtyweb. No actualfocus/realtime/scene gameplay inferred. Preserve datedlintfailure/testgaps. ADR0001 clean full-world pin gates02..06;rights gate redistribution;independentM16audit/M17continue without sourceoverwrite.

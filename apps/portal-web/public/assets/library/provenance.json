@@ -1,0 +1,10 @@
+{
+ "schemaVersion":1,"asset":"Eternal Library original scene",
+ "origin":"Original project-authored geometry and deterministic Pixi graphics; decorative book spines contain no distributed text, external media, fonts or audio",
+ "sources":[
+  {"path":"packages/library-world/src/index.ts","sha256":"ce1805e02d8c00dea0e9f09dbb4cd55c8ea9543bfe6a1f9d1b8e9e6958810b1c"},
+  {"path":"packages/pixi-scene/src/renderer.ts","sha256":"bfcb82e34cb911a849f5a0b986acbef50bb6046450834229b961eaaa09cee8e6"}
+ ],
+ "avatar":"Existing original starter atlas;separate avatar provenance applies",
+ "releaseApproved":false
+}

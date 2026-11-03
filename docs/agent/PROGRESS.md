@@ -1,5 +1,13 @@
 # Agent progress
 
+## M17-01 — VERIFIED original local Library scene and shared shell
+
+From3095e5a;ADR0051/LIBRARY.md/m17-scene-checks.json. Offline workspace install0(downloads0),layout2cases/API2cases/types/lint0. Fullcheck0:7governance,209unit,319integration,architecture/assets/allbuilds. Final Library4browserpass and scene/focus/wardrobe/header34affectedbrowserpass(17/device,8isolatedlifetimes). Sourceprovenance2hashes match;desktop/mobile images inspected,no overflow/visiblebuttons>=44px. Older regenerated wardrobe/header visuals restored. No migration,cityDB0025/realflagsOFF/no workers/preview.
+
+Original8reachable desks/shelves/books-as-decoration,one shared quiet layout with Readingcorner/Studyalcove deskareas (no private/isolated-room promise). New worldpackage onlypublicSDK/contracts;sharedpackages cannotimportworld. Move existingRoomPanel/RoomSafety/CSS into sharedWorldRoomPanel;sameidentity/owner/connection/recovery/safety/seat behavior. Directload0membership,actualkeyboardsseatclaim/leave/header/identity/flagoff/currentversion/servercapacity andrealassetfailure fallback pass. Localinstallation+independentflagrequired,productionlocalactivation rejected. Focus/events/groupconsent/fulljourney remain02..05. No bookfiles/audio/notes/rewards/legacycopy/publicrelease.
+
+Initial wrong testpath0cases and missingmodule red retained. Browserfirst1pass1fail because closedreportdialogbuttons were included in dimensions;sanitizedactualtrace proves visiblebuttons>=44,selectorcorrected. First SDKregression11pass1fail globalidentitylocator matched validheader+room;assertion scoped toactualroom,final34pass,no runtime weakening. Next exact action M17-02 enable realLibraryfocus capability/explicitpausepolicy and sharedFocusPanel,verify actual8visitor same-desk race/currentseat/privatecanonical timer/retry/restart/completion/scope;keep no new timerDB/codecopy. Then03quiet study events.
+
 ## M16-01 — VERIFIED complete readonly Maid comparison
 
 From6124a1c;ADR0050/MAID-INTEGRATION-AUDIT.md/m16-audit-checks.json. Audit command0:25hashes,2healthroute refs,0transport imports,10/10prior focused files unchanged andsecondhash/status/HEAD unchanged. Manual actualsource/reference comparison confirms DTO/menu/schema/health/landing foundation,no order/shift/room/scene runtime. Prior2026-11-02baseline lint/types/test/build0(11unit/4PGfoundation) preserved asdated;no freshlegacygameplay/DB/browser result. Minigame/NPC/role/refusal/safety differences remain explicit futurework.

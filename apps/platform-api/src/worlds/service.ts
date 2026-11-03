@@ -5,6 +5,7 @@ import type { Config } from '../config';
 import type { IdentityService } from '../identity/service';
 import { AdmissionPolicy, type AdultEligibilityProvider } from '../identity/policy';
 import { createTravelFixtures } from './travel-fixtures';
+import { createLibraryWorld } from '@virtual-city/library-world';
 
 export interface WorldRuntimeOptions {
   modules?: WorldAdapter[];
@@ -26,6 +27,7 @@ export async function createWorldRuntime(config: Config, identity: IdentityServi
     hasMembership: (actor, slug, membershipId) => options.membership?.permits(actor, slug, membershipId) ?? Promise.resolve(false),
   });
   registry.register(createSandboxWorld());
+  if (config.NODE_ENV !== 'production' && config.LOCAL_LIBRARY_WORLD === '1') registry.register(createLibraryWorld());
   if (config.NODE_ENV !== 'production' && config.LOCAL_TRAVEL_FIXTURES === '1') for (const fixture of createTravelFixtures()) registry.register(fixture);
   for (const module of options.modules ?? []) registry.register(module);
   let reloadTail: Promise<void> = Promise.resolve();

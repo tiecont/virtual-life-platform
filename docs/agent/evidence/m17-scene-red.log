@@ -1,0 +1,13 @@
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+No test files found, exiting with code 1
+
+filter: tests/unit/library-scene.test.ts
+projects: unit
+
+|unit| 
+
+include: apps/**/*.unit.test.ts, packages/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+

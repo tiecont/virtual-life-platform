@@ -203,7 +203,9 @@ test('identity replacement clears sprites and a remounted scene owns only one ca
     await guest(context, 'New Scene Identity');
     // The real guest HTTP setup changed cookies; trigger the same identity notification as the identity UI.
     await identity.evaluate(() => { const bus = new BroadcastChannel('virtual-city-identity'); bus.postMessage({ type: 'session' }); bus.close(); });
-    await expect(page.getByText('New Scene Identity', { exact: true })).toBeVisible();
+    // The shared header also shows the current identity. Assert the room's own
+    // refreshed identity rather than racing two legitimate copies of the name.
+    await expect(page.getByRole('complementary',{name:'Your room'}).getByText('New Scene Identity', { exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Enter cafe', exact: true }).click();
     await expect(page.getByRole('status')).toHaveText('Connected'); await expect(canvas).toHaveAttribute('data-entity-count', '1');
     await page.getByRole('link', { name: 'Identity', exact: true }).click();

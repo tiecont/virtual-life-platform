@@ -8,6 +8,7 @@ export function assertImportAllowed(from, specifier, root) {
   const project = path.split('/').slice(0, 2).join('/');
   if (target.startsWith('../') || target.startsWith('/')) throw new Error(`Import escapes workspace: ${path} → ${target}`);
   const targetProject = target.split('/').slice(0, 2).join('/');
+  if (layer === 'packages' && target.startsWith('packages/library-world/') && !path.startsWith('packages/library-world/')) throw new Error(`Shared package imports world implementation: ${path}`);
   if (target.startsWith('apps/') && targetProject !== project) throw new Error(`Cross-app import: ${path} → ${target}`);
   if (path.startsWith('packages/contracts/') && target.startsWith('packages/') && !target.startsWith('packages/contracts/') && !target.startsWith('packages/config/')) throw new Error(`Contracts import higher package: ${path} → ${target}`);
   if (layer === 'packages' && /^(apps|domains|worlds)\//.test(target)) throw new Error(`Package imports higher layer: ${path} → ${target}`);
@@ -15,7 +16,8 @@ export function assertImportAllowed(from, specifier, root) {
   if (layer === 'worlds' && target.startsWith('worlds/') && targetProject !== project) throw new Error(`Cross-world import: ${path} → ${target}`);
   if (specifier.startsWith('@virtual-city/')) {
     const targetPackage = specifier.split('/')[1];
-    if (['apps', 'packages', 'worlds'].includes(layer) && !['contracts', 'world-sdk', 'pixi-scene', 'focus-ui', 'config'].includes(targetPackage)) {
+    if (layer === 'packages' && targetPackage === 'library-world' && !path.startsWith('packages/library-world/')) throw new Error(`Shared package imports world implementation: ${path}`);
+    if (['apps', 'packages', 'worlds'].includes(layer) && !['contracts', 'world-sdk', 'pixi-scene', 'focus-ui', 'config', 'library-world'].includes(targetPackage)) {
       throw new Error(`Forbidden workspace package: ${path} → ${specifier}`);
     }
     if (path.startsWith('packages/contracts/') && targetPackage !== 'config') throw new Error(`Contracts must not import SDK/apps: ${specifier}`);

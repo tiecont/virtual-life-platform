@@ -1,0 +1,24 @@
+{
+ "taskID":"M17-01","source":"workspace from3095e5a;checkpoint SHA follows git log",
+ "environment":"2026-11-03UTC/2026-11-04Asia_Ho_Chi_Minh;Node26.9.0/pnpm11.28.5;actual Chromium desktop/mobile,HTTP,Socket.IO and disposable PostgreSQL",
+ "commands":[
+  {"command":"pnpm exec vitest run --project unit tests/unit/library-scene.test.ts","exitCode":1,"log":"m17-scene-red.log","scope":"Initial wrong test location excluded by project include;0cases;not an implementation red"},
+  {"command":"pnpm exec vitest run --project unit packages/library-world/test/scene.test.ts","exitCode":1,"log":"m17-scene-red-module.log","scope":"After moving to included location,missing library-world module;1failed suite/no cases"},
+  {"command":"pnpm install --offline --ignore-scripts","exitCode":0,"log":"m17-scene-install.log","scope":"New local workspace package links;0downloads/no new external dependencies"},
+  {"command":"pnpm build:packages && pnpm exec vitest run --project unit packages/library-world/test/scene.test.ts","exitCode":0,"logs":["m17-scene-packages.log","m17-scene-policy.log"],"scope":"2layout/adapter cases;all8desks reachable and exact declared seating contract"},
+  {"command":"pnpm typecheck","exitCode":0,"log":"m17-scene-types.log"},
+  {"command":"pnpm lint && node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/library.test.ts","exitCode":0,"logs":["m17-scene-lint.log","m17-scene-integration.log"],"scope":"2actual library flag/geometry/identity/seat/disable cases"},
+  {"command":"pnpm check","exitCode":0,"log":"m17-scene-check.log","exitArtifact":"m17-scene-check.exit","scope":"7governance,209unit,319integration,types/lint/architecture/assets/allbuilds;final reading-room label placement compiled by final build"},
+  {"command":"node scripts/run-browser-tests.mjs tests/e2e/library.spec.ts","exitCode":1,"log":"m17-scene-browser.log","exitArtifact":"m17-scene-browser.exit","scope":"Desktop1pass1fail;dimensions assertion included closed report dialog buttons at0size;actual sanitized trace dimensions preserved in m17-scene-initial-controls.json"},
+  {"command":"node scripts/run-browser-tests.mjs tests/e2e/library.spec.ts","exitCode":0,"log":"m17-scene-browser-final.log","exitArtifact":"m17-scene-browser-final.exit","scope":"Final4browserpass,2eachdevice;visible control selector corrected,no runtime weakening"},
+  {"command":"Node SHA256 comparison against library/provenance.json","exitCode":0,"log":"m17-scene-provenance.log","scope":"2declared original source fingerprints match;releaseApprovedfalse"},
+  {"command":"node scripts/run-browser-tests.mjs tests/e2e/scene.spec.ts (first regression batch)","exitCode":1,"log":"m17-scene-regression.log","exitArtifact":"m17-scene-regression.exit","scope":"Desktop11pass1fail;global new-identity locator resolved legitimate header and room copies;scoped to actual room panel without runtime changes"},
+  {"command":"pnpm lint","exitCode":0,"log":"m17-scene-lint-final.log","exitArtifact":"m17-scene-lint-final.exit"},
+  {"command":"node scripts/run-browser-tests.mjs <spec> sequentially for scene,focus,wardrobe,city-header","exitCode":0,"log":"m17-scene-regression-final.log","exitArtifact":"m17-scene-regression-final.exit","batches":"m17-scene-regression-final-batches.json","scope":"34affected browser cases,17eachdevice,8isolated spec/device lifetimes;all4commands0"},
+  {"command":"git diff --check","exitCode":0}
+ ],
+ "verified":["Original responsive library scene with8unique reachable desks and native keyboard entry/claim/leave","Reading corner and Study alcove are clearly areas of the same layout,not isolated/private room categories","Actual server retains city identity/approved palette,current Library membership and shared header title","Direct page load creates0membership;sessionless access cannot enter","Independent installation+worldflag gates;production local activation rejected;disable ends actual membership","Real asset abort retains truthful native desk controls;no blank successful canvas claim","Visible browser controls>=44px,no horizontal overflow/pageerrors;desktop/mobile screenshots visually inspected","Shared room/safety/CSS extraction preserves one owner/connection/recovery/seat implementation;no copied gameplay or new SQL ownership"],
+ "visualArtifacts":"m17-library-visual/{desktop,mobile}{,-page}.png and actual identity/desk/control/error JSON",
+ "migration":"None;retained cityDB0025/defaultrealflagsOFF;no legacy mutation/copy",
+ "limits":["M17-01scene/access scope only;focus/events/group consent/full timed journey remain02..05","No library book files,audio,task notes,staff provisioning,reward activation or public release","Local/test-only activation and browser fixtures do not approve production;B-003remains","Original art provenance is source evidence,not owner release approval","PriorM14full68browser is separate;current regression commands must be reported at their actual scope"]
+}

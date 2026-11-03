@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { AvatarKeySchema, AvatarOutfitSchema, AnimationStateSchema, type AvatarAppearance, type AnimationState } from '@virtual-city/contracts';
 import { avatarFrame, avatarAtlasSpec } from '@virtual-city/pixi-scene';
-import '../room.css';
+import '../../../components/world-room.css';
 import './avatar.css';
 
 export default function AvatarLab() {

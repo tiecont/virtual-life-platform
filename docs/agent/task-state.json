@@ -250,6 +250,7 @@
     "M16-03": { "status": "BLOCKED_EXTERNAL", "evidence": "B-001;ADR0050", "verification": "Actual hospitality bridge awaits source pin;minigame/NPC differences remain work" },
     "M16-04": { "status": "BLOCKED_EXTERNAL", "evidence": "B-001;ADR0050", "verification": "Actual safety UX/handler binding awaits source adapter" },
     "M16-05": { "status": "BLOCKED_EXTERNAL", "evidence": "B-001;ADR0050", "verification": "Real role/shift departure callbacks await adapter" },
-    "M16-06": { "status": "BLOCKED_EXTERNAL", "evidence": "B-001/B-002;ADR0050", "verification": "Actual integrated service loop/reuse/rollback depends on02..05" }
+    "M16-06": { "status": "BLOCKED_EXTERNAL", "evidence": "B-001/B-002;ADR0050", "verification": "Actual integrated service loop/reuse/rollback depends on02..05" },
+    "M17-01": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m17-scene-checks.json; docs/adr/0051-original-local-library-with-shared-room-shell.md; docs/architecture/LIBRARY.md", "verification": "Fullcheck0(7gov/209unit/319integration/builds),4Library+34affectedbrowser0;original8reachable desks/onequietlayout/twoareas/sharedshell/flag+productionguards/identity/keyboard/assetfallback/44px/mobile;no migration" }
   }
 }

@@ -32,6 +32,9 @@ importers:
       '@virtual-city/contracts':
         specifier: workspace:*
         version: link:packages/contracts
+      '@virtual-city/library-world':
+        specifier: workspace:*
+        version: link:packages/library-world
       '@virtual-city/world-sdk':
         specifier: workspace:*
         version: link:packages/world-sdk
@@ -74,6 +77,9 @@ importers:
       '@virtual-city/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@virtual-city/library-world':
+        specifier: workspace:*
+        version: link:../../packages/library-world
       '@virtual-city/world-sdk':
         specifier: workspace:*
         version: link:../../packages/world-sdk
@@ -107,6 +113,9 @@ importers:
       '@virtual-city/focus-ui':
         specifier: workspace:*
         version: link:../../packages/focus-ui
+      '@virtual-city/library-world':
+        specifier: workspace:*
+        version: link:../../packages/library-world
       '@virtual-city/pixi-scene':
         specifier: workspace:*
         version: link:../../packages/pixi-scene
@@ -146,6 +155,15 @@ importers:
       '@types/react':
         specifier: 19.3.0
         version: 19.3.0
+
+  packages/library-world:
+    dependencies:
+      '@virtual-city/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@virtual-city/world-sdk':
+        specifier: workspace:*
+        version: link:../world-sdk
 
   packages/pixi-scene:
     dependencies:
