@@ -1,0 +1,81 @@
+{
+  "taskID": "M10-01",
+  "auditedAt": "2026-11-03T06:38:45.921Z",
+  "cityBase": "bcf21aee909ee3bdd4d86d67ce177c6958fda780",
+  "command": "node scripts/audit-deadline-focus.mjs ../deadline-cafe",
+  "exitCode": 0,
+  "legacy": {
+    "path": "../deadline-cafe",
+    "branch": "main",
+    "head": "f9475b4caa65813e9351aaa4598663df538116a3",
+    "status": [
+      "M .gitignore",
+      " M apps/web/app/globals.css",
+      " M apps/web/app/layout.tsx",
+      " M apps/web/app/page.tsx",
+      " M apps/web/next.config.ts",
+      "?? apps/web/app/cafe/",
+      "?? apps/web/app/error.tsx",
+      "?? apps/web/app/help/",
+      "?? apps/web/app/loading.tsx",
+      "?? apps/web/app/lobby/",
+      "?? apps/web/app/not-found.tsx",
+      "?? apps/web/app/privacy/",
+      "?? apps/web/app/stats/",
+      "?? apps/web/app/unavailable/",
+      "?? apps/web/public/",
+      "?? apps/web/src/",
+      "?? docs/ASSET-LICENSES.md",
+      "?? scripts/e2e-stack.ts",
+      "?? tests/"
+    ],
+    "sources": [
+      {
+        "path": "apps/api/src/db/schema.ts",
+        "sha256": "d69cb4b75a57a0221efadf39fb0dc133ca832dcdc240db1b493f49f10b0e0a6f"
+      },
+      {
+        "path": "apps/api/drizzle/0000_hot_slyde.sql",
+        "sha256": "d663bad6f4a1821909dddb020b9bb989237bfe9e8022984a8304b8100d8484b1"
+      },
+      {
+        "path": "apps/api/src/http.ts",
+        "sha256": "ba6df93ab9b77e8a66ce3070170e7c078a2908a52cddaba56e934d45a767edf8"
+      },
+      {
+        "path": "apps/api/src/app.ts",
+        "sha256": "e138cfc894ee8cae3e0d7afaadb674838f473b57b31d9b25a90390119908ef19"
+      },
+      {
+        "path": "packages/contracts/src/index.ts",
+        "sha256": "a16604b20fec484d370a7b8d55b3c9b42df5e4c2a9bb2b3d9324300f676dc4c2"
+      },
+      {
+        "path": "apps/web/src/components/FocusPanel.tsx",
+        "sha256": "929b30dac2f244db3d3caa83b700e111b919cca995de191c9aa5fe63d1cebd31"
+      },
+      {
+        "path": "apps/web/src/features/time.ts",
+        "sha256": "a51df107a9ccc75dc8d31330168284ee299e82076edfb241c4624982a3e8f1c4"
+      },
+      {
+        "path": "apps/web/app/stats/page.tsx",
+        "sha256": "f749ad703cf9494f7e3e384127afefc1d834a8617bed51c33840f99695c08c91"
+      }
+    ],
+    "moduleFiles": [
+      "catalog.ts",
+      "guests.ts"
+    ],
+    "focusHttpDeclarations": 0,
+    "focusWireLines": 0,
+    "focusStartButtonDisabled": true,
+    "sql": {
+      "timestampWithTimeZone": true,
+      "activeUniqueIndex": true,
+      "idempotencyUniqueIndex": true,
+      "allowedDurationConstraint": true
+    }
+  },
+  "scope": "Readonly source/SQL inspection; no legacy process/database/network/mutation/secret read, no runtime focus behavior claimed. Pattern counts support manual audit, not a security certificate."
+}

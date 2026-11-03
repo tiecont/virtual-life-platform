@@ -1,0 +1,12 @@
+{
+  "taskID": "M10-01",
+  "source": "workspace frombcf21ae; checkpoint commit follows git log",
+  "commands": [
+    { "command": "node --check scripts/audit-deadline-focus.mjs", "exitCode": 0 },
+    { "command": "node scripts/audit-deadline-focus.mjs", "exitCode": 0, "artifact": "m10-focus-audit.json", "scope": "8 source hashes,actual HEAD/branch/dirty state,SQL constraints and absent focus runtime/wire patterns; manual source/ref review completed" },
+    { "command": "pnpm lint", "exitCode": 0, "log": "m10-audit-lint.log" },
+    { "command": "git diff --check", "exitCode": 0 }
+  ],
+  "verified": ["Readonly actual Deadline schema+SQL+HTTP/contracts+disabled timer+empty stats audit", "Reference3.4 compared with current code,not inferred from plan alone", "UTC/schema/idempotency/one-active constraints distinguished from absent runtime implementation", "Planned strict city account/seat adapter and optional pause policy documented,legacy identity/import/rights gates preserved"],
+  "limits": ["No runtime focus implementation verified in this audit", "No legacy DB/server operation or test rerun,source/media copy,secret read or mutation", "Dirty revision and redistribution rights remain M15 gates", "Doc/script-only change; prior M09 runtime checks not represented as new focus tests"]
+}
