@@ -63,6 +63,70 @@ function gateModerator() {
   return { moderator, started, release, calls: () => calls };
 }
 
+it('applies the Vietnamese/Unicode corpus before real socket broadcast without turning withheld text into sanctions or cases', async () => {
+  const corpus = JSON.parse(readFileSync('tests/fixtures/chat-moderation-corpus.json', 'utf8')) as { id: string; text: string; decision: 'allow' | 'reject' | 'review' | 'invalid' }[];
+  const runtime = await open(), sender = await guest(runtime);
+  const a = await connect(runtime, sender), b = await connect(runtime, await guest(runtime)), sa = await join(a), sb = await join(b), seen = messages(b);
+  const elapsed: number[] = []; let delivered = 0;
+  for (const row of corpus) {
+    runtime.advance(10001);
+    const started = performance.now(), result = await send(a, chatInput(sa, { kind: 'text', text: row.text })); elapsed.push(performance.now() - started);
+    expect(result.ok, row.id).toBe(row.decision === 'allow');
+    if (!result.ok) expect(result.error.code, row.id).toBe(row.decision === 'invalid' ? 'INVALID_REQUEST' : 'CONTENT_REJECTED');
+    await flush(b, sb);
+    if (row.decision === 'allow') { delivered++; expect(seen.at(-1)?.sender.id, row.id).toBe(sender.me.profile.id); }
+    expect(seen, row.id).toHaveLength(delivered);
+  }
+  expect((await runtime.pool.query('SELECT 1 FROM safety_sanctions')).rowCount).toBe(0);
+  expect((await runtime.pool.query('SELECT 1 FROM safety_cases')).rowCount).toBe(0);
+  expect((await send(a, chatInput(sa, { kind: 'canned', id: 'thanks' }))).ok).toBe(true);
+  expect(a.connected).toBe(true);
+  const ordered = elapsed.toSorted((a, b) => a - b);
+  console.info('M08-06_LOCAL_CHAT_TIMING', JSON.stringify({ samples: ordered.length, p50Ms: ordered[Math.ceil(ordered.length * .5) - 1], p95Ms: ordered[Math.ceil(ordered.length * .95) - 1], maxMs: ordered.at(-1), allowed: delivered, withheld: corpus.length - delivered, profile: 'sequential loopback sockets; synthetic clock advances quota windows; not a load/production SLA' }));
+});
+
+it('shares a concurrent quick-action flood budget across independently signed-in sessions and recovers after the account window', async () => {
+  const runtime = await open(), original = await guest(runtime);
+  const loginName = 'flood' + randomUUID().replaceAll('-', '').slice(0, 12), password = 'synthetic-only-session-flood-password';
+  const upgraded = await runtime.app.http.inject({ method: 'POST', url: '/v1/session/upgrade', headers: { origin, cookie: original.cookie, 'x-csrf-token': original.me.csrfToken, 'idempotency-key': randomUUID() }, payload: { loginName, password } }); expect(upgraded.statusCode).toBe(200);
+  const first = { me: MeSchema.parse(upgraded.json()), cookie: String(upgraded.headers['set-cookie']).split(';')[0] };
+  const signedIn = await runtime.app.http.inject({ method: 'POST', url: '/v1/session/login', headers: { origin }, payload: { requestId: randomUUID(), loginName, password } }); expect(signedIn.statusCode).toBe(200);
+  const second = { me: MeSchema.parse(signedIn.json()), cookie: String(signedIn.headers['set-cookie']).split(';')[0] };
+  expect(first.me.profile.id).toBe(second.me.profile.id); expect(first.cookie).not.toBe(second.cookie);
+  const a = await connect(runtime, first), b = await connect(runtime, second), observer = await connect(runtime, await guest(runtime));
+  const sa = await join(a), sb = await join(b), so = await join(observer), seen = messages(observer);
+  const results = await Promise.all(Array.from({ length: 12 }, (_, i) => send(i % 2 ? a : b, chatInput(i % 2 ? sa : sb, { kind: 'emote', id: 'wave' }))));
+  const burstAccepted = results.filter(result => result.ok).length;
+  expect(burstAccepted).toBeGreaterThan(0); expect(burstAccepted).toBeLessThanOrEqual(6);
+  expect(results.filter(result => !result.ok).every(result => !result.ok && result.error.code === 'RATE_LIMITED')).toBe(true);
+  // The two-in-flight account cap can reject a burst before all six window
+  // slots are used. Fill remaining slots sequentially, then deny both sessions.
+  for (let i = burstAccepted; i < 6; i++) {
+    const result = await send(i % 2 ? a : b, chatInput(i % 2 ? sa : sb, { kind: 'emote', id: 'wave' })); expect(result.ok).toBe(true); results.push(result);
+  }
+  expect(results.filter(result => result.ok)).toHaveLength(6);
+  for (const [socket, state] of [[a, sa], [b, sb]] as const) expect(await send(socket, chatInput(state, { kind: 'canned', id: 'hello' }))).toMatchObject({ ok: false, error: { code: 'RATE_LIMITED' } });
+  await flush(observer, so);
+  const accepted = new Set(results.flatMap(result => result.ok ? [result.result.messageId] : []));
+  expect(seen.length).toBeLessThanOrEqual(6); expect(seen.every(event => accepted.has(event.messageId))).toBe(true);
+  expect(runtime.app.chat.diagnostics()).toMatchObject({ accepted: 6, pending: 0, workerSlots: 0 });
+  runtime.advance(10001); expect((await send(b, chatInput(sb, { kind: 'canned', id: 'thanks' }))).ok).toBe(true);
+  expect((await runtime.pool.query('SELECT 1 FROM safety_sanctions')).rowCount).toBe(0);
+});
+
+it('acknowledges a nonsettling moderation deadline within a bounded local response without any late delivery', async () => {
+  let release!: () => void;
+  const runtime = await open({ moderator: { inspect: () => new Promise(resolve => { release = () => resolve({ decision: 'allow' }); }) } });
+  const a = await connect(runtime, await guest(runtime)), sa = await join(a), seen = messages(a);
+  const started = performance.now(), result = await send(a, chatInput(sa, { kind: 'text', text: 'hello' })), elapsedMs = performance.now() - started;
+  expect(result).toMatchObject({ ok: false, error: { code: 'MODERATION_UNAVAILABLE', retryable: true } });
+  expect(elapsedMs).toBeGreaterThanOrEqual(450); expect(elapsedMs).toBeLessThan(1500);
+  expect(runtime.app.chat.diagnostics()).toMatchObject({ pending: 0, workerSlots: 1, receipts: 0 });
+  release(); await expect.poll(() => runtime.app.chat.diagnostics().workerSlots).toBe(0); await flush(a, sa); expect(seen).toEqual([]);
+  expect((await send(a, chatInput(sa, { kind: 'canned', id: 'hello' }))).ok).toBe(true);
+  console.info('M08-06_LOCAL_MODERATION_DEADLINE', JSON.stringify({ samples: 1, elapsedMs, providerDeadlineMs: 500, localRegressionCeilingMs: 1500, profile: 'loopback, nonsettling test provider, not a production latency guarantee' }));
+});
+
 it('keeps chat disabled by default and denies missing capabilities, malformed identity/target and private payload fields', async () => {
   const off = await open({ enabled: false }); const user = await guest(off), client = await connect(off, user), state = await join(client); const seen = messages(client);
   const denied = await send(client, chatInput(state, { kind: 'canned', id: 'hello' })); expect(denied.ok).toBe(false); if (!denied.ok) expect(denied.error.code).toBe('FORBIDDEN');

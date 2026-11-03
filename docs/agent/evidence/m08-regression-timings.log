@@ -1,0 +1,44 @@
+ Network virtual-city-test-e2bd71b6_default Creating 
+ Network virtual-city-test-e2bd71b6_default Creating 
+ Network virtual-city-test-e2bd71b6_default Created 
+ Network virtual-city-test-e2bd71b6_default Created 
+ Container virtual-city-test-e2bd71b6-db-1 Creating 
+ Container virtual-city-test-e2bd71b6-db-1 Created 
+ Container virtual-city-test-e2bd71b6-db-1 Starting 
+ Container virtual-city-test-e2bd71b6-db-1 Started 
+ Container virtual-city-test-e2bd71b6-db-1 Waiting 
+ Container virtual-city-test-e2bd71b6-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+M08-06_LOCAL_CHAT_TIMING {"samples":31,"p50Ms":6.576743000000079,"p95Ms":22.016730000000052,"maxMs":26.80400399999985,"allowed":11,"withheld":20,"profile":"sequential loopback sockets; synthetic clock advances quota windows; not a load/production SLA"}
+ ✓ |integration| tests/integration/chat.test.ts > applies the Vietnamese/Unicode corpus before real socket broadcast without turning withheld text into sanctions or cases 955ms
+ ↓ |integration| tests/integration/chat.test.ts > shares a concurrent quick-action flood budget across independently signed-in sessions and recovers after the account window
+M08-06_LOCAL_MODERATION_DEADLINE {"samples":1,"elapsedMs":506.02185199999985,"providerDeadlineMs":500,"localRegressionCeilingMs":1500,"profile":"loopback, nonsettling test provider, not a production latency guarantee"}
+ ✓ |integration| tests/integration/chat.test.ts > acknowledges a nonsettling moderation deadline within a bounded local response without any late delivery 824ms
+ ↓ |integration| tests/integration/chat.test.ts > keeps chat disabled by default and denies missing capabilities, malformed identity/target and private payload fields
+ ↓ |integration| tests/integration/chat.test.ts > broadcasts only approved normalized server-profile messages and deduplicates actual socket retries
+ ↓ |integration| tests/integration/chat.test.ts > does not broadcast before moderation, shares pending retries and rechecks bilateral block after a delayed decision
+ ↓ |integration| tests/integration/chat.test.ts > rejects abuse, ambiguous text and markup without broadcasting or automatically banning, while allowing explicit canned/emote choices
+ ↓ |integration| tests/integration/chat.test.ts > fails closed on classifier error or invalid decision and permits only separately requested safe fallback content
+ ↓ |integration| tests/integration/chat.test.ts > enforces silent world rules even with an injected allowing moderator
+ ↓ |integration| tests/integration/chat.test.ts > enforces canned world rules even with an injected allowing moderator
+ ↓ |integration| tests/integration/chat.test.ts > honors a deny-on-outage rule and recovers only after a validated moderation response
+ ↓ |integration| tests/integration/chat.test.ts > closes pending moderation without broadcast or retained acceptance and ignores a late provider completion
+ ↓ |integration| tests/integration/chat.test.ts > bounds timed-out underlying classifier work and never emits late successes after providers eventually resolve
+ ↓ |integration| tests/integration/chat.test.ts > shares quick-action flood limits across tabs and releases the account budget after its window
+ ↓ |integration| tests/integration/chat.test.ts > rechecks authority and admission after moderation when leave occurs
+ ↓ |integration| tests/integration/chat.test.ts > rechecks authority and admission after moderation when revoke occurs
+ ↓ |integration| tests/integration/chat.test.ts > rechecks authority and admission after moderation when disable occurs
+
+ Test Files  1 passed (1)
+      Tests  2 passed | 15 skipped (17)
+   Start at  11:42:10
+   Duration  2.71s (transform 314ms, setup 0ms, import 777ms, tests 1.80s, environment 0ms)
+
+ Container virtual-city-test-e2bd71b6-db-1 Stopping 
+ Container virtual-city-test-e2bd71b6-db-1 Stopped 
+ Container virtual-city-test-e2bd71b6-db-1 Removing 
+ Container virtual-city-test-e2bd71b6-db-1 Removed 
+ Network virtual-city-test-e2bd71b6_default Removing 
+ Network virtual-city-test-e2bd71b6_default Removed 

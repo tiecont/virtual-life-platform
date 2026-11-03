@@ -10,7 +10,7 @@ The original starter avatar and outfit/action previews are at `/worlds/sdk-sandb
 
 The scene renderer loads through its explicit client entry and uses a versioned immutable atlas cache. [Measured local scene budgets](docs/architecture/SCENE-PERFORMANCE.md) include real browser CPU/network emulation and lifecycle checks; they are not production or physical-device promises.
 
-The [safety threat model and escalation contract](docs/product/SAFETY-THREAT-MODEL.md) and validated policy are local definitions. Chat/report/moderator/sanction workflows are still being implemented; the policy does not activate them or approve public social release.
+The [safety threat model and escalation contract](docs/product/SAFETY-THREAT-MODEL.md) and validated policy have gated local chat/report/moderator/sanction workflows. [Safety verification and remaining limits](docs/architecture/SAFETY-VERIFICATION.md) distinguish implemented behavior from pending privacy, retention and staffed public operations. No public social release is approved.
 
 ## Local setup
 
@@ -82,11 +82,11 @@ Room commands use authenticated Socket.IO with authoritative capacity, seats, pr
 
 Authenticated GET /v1/worlds returns privacy-safe metadata. Only SDK Sandbox (local test world) is registered; disabled by default, no playable scene/room. Optional WORLD_FLAGS_FILE uses config/world-flags.example.json and the current NODE_ENV; SIGHUP reloads flags in the API process. Sandbox activation is denied in production. Invalid files/unknown flags disable worlds; permissions cannot be supplied by flags. All actual world rollout flags remain OFF. See docs/architecture/WORLD-SDK.md for lifecycle, errors, rollback and legacy adapter sequencing. Room/travel wire contracts remain M06/M09.
 
-M08-02 adds a default-OFF development/test-only [ephemeral chat backend](docs/architecture/CHAT-SAFETY.md) with bounded pre-broadcast moderation. Production chat is closed; sanctions/moderator UI and public safety approval remain pending.
+M08-02 adds a default-OFF development/test-only [ephemeral chat backend](docs/architecture/CHAT-SAFETY.md) with bounded pre-broadcast moderation. Production chat is closed; related local safety workflows are described below, and public safety approval remains pending.
 
 M08-03 adds [confidential local reports](docs/architecture/REPORTS.md), encrypted evidence, assigned-case staff access and a room report/block dialog. A separate stable local evidence key is required; without it reporting truthfully stays unavailable. No staff is provisioned, and production remains closed.
 
-M08-04 adds [temporary sanctions and private appeals](docs/architecture/SANCTIONS.md). Assigned staff can issue bounded reasoned restrictions; committed bans/mutes apply across sessions at world/room/chat guards. Visit `/safety` for your own decisions and private appeal receipts, including while world access is suspended. Moderator UI and incident controls remain M08-05. Actual M09 travel is not implemented; its target admission must use the shared safety guard. Public/real-world flags remain OFF.
+M08-04 adds [temporary sanctions and private appeals](docs/architecture/SANCTIONS.md). Assigned staff can issue bounded reasoned restrictions; committed bans/mutes apply across sessions at world/room/chat guards. Visit `/safety` for your own decisions and private appeal receipts, including while world access is suspended. Moderator UI and incident controls are in M08-05 below. Actual M09 travel is not implemented; its target admission must use the shared safety guard. Public/real-world flags remain OFF.
 
 `pnpm setup:safety` creates an ignored local evidence key without overwriting an existing one. `pnpm dev` loads it for local reports; chat and real world/public flags remain independently closed.
 

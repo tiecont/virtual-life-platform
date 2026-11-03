@@ -316,3 +316,51 @@ it('does not uphold a sanction already independently revoked or lose original ap
   const replay = await post(r, target, path, { note }, key); expect(replay.statusCode).toBe(201); expect(replay.json()).toEqual(original.json());
   expect((await get(r, target, 'me/sanctions')).json().appeals[0].status).toBe('revoked');
 });
+
+it.each(['assignment', 'grant-expiry', 'session-revoke'] as const)('rechecks confidential appeal read and disposition after %s changes while the reviewer has an open case', async change => {
+  const { r, target, id, reviewer, administrator } = await reported(); const issued = await issue(r, reviewer, id); expect(issued.statusCode).toBe(200);
+  const appeal = await post(r, target, `me/sanctions/${issued.json().sanction.id}/appeal`, { note: 'Private pending appeal for independent contextual review.' }); expect(appeal.statusCode).toBe(201);
+  expect((await assign(r, administrator, id, administrator)).statusCode).toBe(200);
+  const path = `moderation/cases/${id}/appeals`;
+  expect((await get(r, administrator, path)).json().items).toHaveLength(1);
+  if (change === 'assignment') expect((await assign(r, administrator, id, reviewer)).statusCode).toBe(200);
+  else if (change === 'grant-expiry') await r.pool.query('UPDATE safety_staff_grants SET expires_at=$2 WHERE account_id=$1', [administrator.me.profile.id, new Date(Date.now() - 1)]);
+  else await r.pool.query('UPDATE identity_sessions SET revoked_at=now() WHERE account_id=$1', [administrator.me.profile.id]);
+  const denied = await get(r, administrator, path), expected = change === 'session-revoke' ? 401 : 404;
+  expect(denied.statusCode).toBe(expected); expect(denied.body).not.toMatch(/Private pending|Private reporter|Reviewed context/);
+  const disposition = await post(r, administrator, `moderation/appeals/${appeal.json().receiptId}/review`, { decision: 'revoke', privateReason: 'Previously opened case does not confer current authority.' });
+  expect(disposition.statusCode).toBe(expected);
+  const own = (await get(r, target, 'me/sanctions')).json(); expect(own.appeals[0].status).toBe('received'); expect(own.items[0].state).toBe('active');
+  expect((await r.pool.query("SELECT 1 FROM safety_audit_events WHERE action='appeal.reviewed'")).rowCount).toBe(0);
+  if (change !== 'assignment') {
+    expect((await get(r, administrator, 'moderation/controls')).statusCode).toBe(expected);
+    expect((await post(r, administrator, 'moderation/controls/maid', { surface: 'world', closed: true, reason: 'incident' })).statusCode).toBe(expected);
+    expect((await r.pool.query('SELECT 1 FROM safety_incident_controls')).rowCount).toBe(0);
+  }
+});
+
+it('measures the actual local HTTP review and incident round trips with committed restrictions and drained memberships', async () => {
+  const { r, target, witness, peer, id, reviewer, administrator } = await reported();
+  const samples: { operation: string; elapsedMs: number }[] = [];
+  const http = async (operation: string, user: User, path: string, expected: number, body?: unknown) => {
+    const started = performance.now();
+    const response = await fetch(r.url + '/v1/' + path, { method: body === undefined ? 'GET' : 'POST', headers: { ...headers(user), 'content-type': 'application/json' }, ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: AbortSignal.timeout(2500) });
+    const result: unknown = await response.json(); samples.push({ operation, elapsedMs: performance.now() - started }); expect(response.status).toBe(expected); return result;
+  };
+  await http('assigned-case-read', reviewer, `moderation/cases/${id}`, 200);
+  const issued = SanctionResultSchema.parse(await http('issue-mute', reviewer, `moderation/cases/${id}/sanctions`, 200, { kind: 'mute', durationMinutes: 1, privateReason: reason }));
+  expect((await chat(peer.socket, peer.state)).ok).toBe(false);
+  await http('own-decisions-read', target, 'me/sanctions', 200);
+  const appeal = AppealReceiptSchema.parse(await http('private-appeal-intake', target, `me/sanctions/${issued.sanction.id}/appeal`, 201, { note: 'Synthetic context for independent human review.' }));
+  expect((await assign(r, administrator, id, administrator)).statusCode).toBe(200);
+  await http('independent-appeal-revoke', administrator, `moderation/appeals/${appeal.receiptId}/review`, 200, { decision: 'revoke', privateReason: 'Independent contextual review supports reversal.' });
+  expect((await chat(peer.socket, peer.state)).ok).toBe(true);
+  const ended = new Set<string>(); witness.socket.once('room.ended', () => ended.add('reporter')); peer.socket.once('room.ended', () => ended.add('target'));
+  await http('world-closure', administrator, 'moderation/controls/maid', 200, { surface: 'world', closed: true, reason: 'incident' });
+  expect(r.app.rooms.diagnostics().memberships).toBe(0); await expect.poll(() => ended.size).toBe(2);
+  const restorer = await staff(r, 'safety-admin');
+  await http('independent-world-recovery', restorer, 'moderation/controls/maid', 200, { surface: 'world', closed: false, reason: 'reviewed-recovery' });
+  expect(r.app.rooms.diagnostics().memberships).toBe(0);
+  expect((await command(peer.socket, 'room.join', joinInput())).ok).toBe(true);
+  console.info('M08-06_LOCAL_HTTP_TIMING', JSON.stringify({ samples, clientDeadlineMs: 2500, profile: 'one sample per operation, synthetic local TCP/DB, no production percentile/SLA claim' }));
+});

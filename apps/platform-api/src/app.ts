@@ -25,6 +25,7 @@ import { ReportService } from './safety/reports';
 import { registerReports } from './safety/http';
 import { SanctionPolicy, SanctionService } from './safety/sanctions';
 import { IncidentPolicy, IncidentService } from './safety/incidents';
+import { requestLog } from './common/request-log';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -44,7 +45,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const requiredMigrations = await migrationNames();
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
     bodyLimit: 8192, requestTimeout: 10000, genReqId: () => randomUUID(),
-    logger: logging ? { level: 'info', serializers: { req: (req: FastifyRequest) => ({ method: req.method, path: req.url.split('?')[0].replace(/^(\/v1\/(?:reports|moderation\/(?:cases|sanctions)|me\/sanctions))\/[^/]+/, '$1/[redacted]') }) }, redact: ['req.headers.cookie', 'req.headers.authorization', 'req.body', 'res.headers.set-cookie'] } : false,
+    logger: logging ? { level: 'info', serializers: { req: requestLog }, redact: ['req.headers.cookie', 'req.headers.authorization', 'req.body', 'res.headers.set-cookie'] } : false,
   }), { logger: false });
   const http = app.getHttpAdapter().getInstance() as FastifyInstance;
   http.addHook('onRequest', async (req, reply) => {
