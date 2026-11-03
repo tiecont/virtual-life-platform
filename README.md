@@ -64,6 +64,10 @@ Visit `/social`, share your own contact code privately, and accept or decline of
 
 PUBLIC_SOCKET_ORIGIN is the trusted browser-reachable Socket.IO origin (default local http://127.0.0.1:4300). Configure it with WEB_ORIGIN/edge TLS in a real deployment; no production configuration is verified here. Current world activity is unavailable until authoritative room/registry integration. Controlled source fixtures in tests are privacy checks, not proof of playable worlds. See docs/architecture/SOCIAL-API.md.
 
+## Room Authority
+
+Room commands use authenticated Socket.IO with authoritative capacity, seats, privacy-filtered snapshots/deltas and bounded reconnect grace. The local sandbox has no browser scene yet. One room owner per database schema is enforced with a dedicated PostgreSQL advisory-lock connection; direct/session-affine DB connections are required. Lock loss interrupts rooms and requires process restart. Multiple API room replicas, transaction-pooling proxies and distributed failover are unsupported. See docs/architecture/ROOMS.md and ADR 0009. `pnpm bench:rooms` runs the measured local real-socket profile; results do not establish production capacity.
+
 ## World registry
 
 Authenticated GET /v1/worlds returns privacy-safe metadata. Only SDK Sandbox (local test world) is registered; disabled by default, no playable scene/room. Optional WORLD_FLAGS_FILE uses config/world-flags.example.json and the current NODE_ENV; SIGHUP reloads flags in the API process. Sandbox activation is denied in production. Invalid files/unknown flags disable worlds; permissions cannot be supplied by flags. All actual world rollout flags remain OFF. See docs/architecture/WORLD-SDK.md for lifecycle, errors, rollback and legacy adapter sequencing. Room/travel wire contracts remain M06/M09.

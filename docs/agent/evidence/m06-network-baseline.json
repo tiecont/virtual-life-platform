@@ -1,5 +1,5 @@
 {
-  "recordedAt": "2026-11-02T18:07:53.738Z",
+  "recordedAt": "2026-11-02T18:30:19.664Z",
   "profile": "loopback synthetic SDK sandbox; real HTTP identity/privacy + Socket.IO; isolated child API process; PostgreSQL tmpfs",
   "command": "pnpm bench:rooms",
   "hardware": {
@@ -21,33 +21,34 @@
     "simultaneousJoinAttempts": 24,
     "reconnectBurst": 4,
     "steadyHoldMs": 2000,
-    "elapsedMs": 2835.905586
+    "elapsedMs": 3042.5493280000005
   },
   "latencyMs": {
     "join": {
       "samples": 24,
-      "p50": 197.150306,
-      "p95": 339.60623099999975,
-      "max": 358.22434
+      "p50": 218.429705,
+      "p95": 393.9889880000003,
+      "max": 421.72120599999994
     },
     "reconnectIncludingHandshake": {
       "samples": 4,
-      "p95": 149.62656499999957,
-      "max": 149.62656499999957
+      "p95": 151.19630299999972,
+      "max": 151.19630299999972
     }
   },
   "serverProcess": {
-    "cpuMs": 569.395,
-    "cpuPercentOfOneCore": 20.078066167326913,
-    "rssBefore": 166707200,
-    "rssPeakSampled": 174309376,
-    "rssAfter": 173608960,
-    "heapUsedPeakSampled": 45578424,
+    "cpuMs": 613.981,
+    "cpuPercentOfOneCore": 20.17982072959837,
+    "rssBefore": 150757376,
+    "rssPeakSampled": 161374208,
+    "rssAfter": 161374208,
+    "heapUsedPeakSampled": 46367248,
     "sampleIntervalMs": 100
   },
   "diagnostics": {
     "sockets": 24,
     "transportConnections": 24,
+    "authority": "held",
     "rooms": {
       "rooms": 3,
       "memberships": 0,
@@ -89,19 +90,19 @@
             },
             {
               "upperMs": 50,
-              "count": 1
+              "count": 0
             },
             {
               "upperMs": 100,
-              "count": 7
+              "count": 6
             },
             {
               "upperMs": 250,
-              "count": 11
+              "count": 12
             },
             {
               "upperMs": 500,
-              "count": 9
+              "count": 10
             },
             {
               "upperMs": 1000,
@@ -120,8 +121,8 @@
               "count": 0
             }
           ],
-          "totalMs": 5152.2912289999995,
-          "maxMs": 353.8475940000001
+          "totalMs": 5785.640207,
+          "maxMs": 413.4728930000001
         },
         "room.leave": {
           "count": 24,
@@ -147,19 +148,19 @@
             },
             {
               "upperMs": 50,
-              "count": 2
+              "count": 1
             },
             {
               "upperMs": 100,
-              "count": 5
+              "count": 4
             },
             {
               "upperMs": 250,
-              "count": 17
+              "count": 16
             },
             {
               "upperMs": 500,
-              "count": 0
+              "count": 3
             },
             {
               "upperMs": 1000,
@@ -178,8 +179,8 @@
               "count": 0
             }
           ],
-          "totalMs": 3393.745601999999,
-          "maxMs": 211.47137900000052
+          "totalMs": 4001.4662209999988,
+          "maxMs": 261.60537799999975
         },
         "room.snapshot": {
           "count": 24,
@@ -197,15 +198,15 @@
             },
             {
               "upperMs": 10,
-              "count": 1
+              "count": 0
             },
             {
               "upperMs": 25,
-              "count": 5
+              "count": 4
             },
             {
               "upperMs": 50,
-              "count": 7
+              "count": 6
             },
             {
               "upperMs": 100,
@@ -213,7 +214,7 @@
             },
             {
               "upperMs": 250,
-              "count": 0
+              "count": 3
             },
             {
               "upperMs": 500,
@@ -236,8 +237,8 @@
               "count": 0
             }
           ],
-          "totalMs": 1144.9835760000003,
-          "maxMs": 87.72790099999997
+          "totalMs": 1449.110464,
+          "maxMs": 112.05356400000005
         },
         "seat.claim": {
           "count": 0,

@@ -3,6 +3,7 @@ import { RoomSnapshotSchema, RoomEndedSchema, type RoomJoin, type RoomOwnCommand
 import type { WorldRegistry, WorldActor } from '@virtual-city/world-sdk';
 import type { IdentityService } from '../identity/service';
 import { DomainError } from '../common/errors';
+import type { RoomAuthority } from './authority';
 
 type Member = { id: string; accountId: string; worldVersion: string; sceneVersion: string; connections: Map<string, string>; sessions: Set<string>; disconnectedUntil: number | null; seatId: string | null };
 type Room = { id: string; slug: string; capacity: number; version: number; members: Map<string, Member>; emptySince: number; seats: Map<string, string | null> };
@@ -30,7 +31,9 @@ export class RoomService {
   #changed = new Set<(updates: RoomUpdate[]) => void>();
   #controls = new Map<string, { promise: Promise<void>; again: boolean }>();
   #refresh = new Set<string>();
-  constructor(private registry: WorldRegistry, private identity: IdentityService, private now = Date.now, private projection?: RoomProjection) {
+  #unsubscribeAuthority: () => void;
+  constructor(private registry: WorldRegistry, private identity: IdentityService, private authority: RoomAuthority, private now = Date.now, private projection?: RoomProjection) {
+    this.#unsubscribeAuthority = authority.onLost(() => { this.#abandon(); });
     this.#unsubscribe = registry.onUnavailable(slug => {
       this.#worldGenerations.set(slug, (this.#worldGenerations.get(slug) ?? 0) + 1);
       void this.#control('world:' + slug, async () => { for (const room of [...this.#rooms.values()]) if (room.slug === slug) this.#removeRoom(room, 'world-unavailable'); });
@@ -61,10 +64,18 @@ export class RoomService {
   }
   onEnded(listener: (connections: string[], event: RoomEnded) => void) { this.#ended.add(listener); return () => { this.#ended.delete(listener); }; }
   #run<T>(work: () => Promise<T>, control = false): Promise<T> {
-    if (!control && (this.#closed || this.#pending >= 256)) return Promise.reject(new DomainError('RATE_LIMITED', 429, 'Room service busy'));
+    if (!control && this.#closed) return Promise.reject(new DomainError('WORLD_UNAVAILABLE', 503, 'Room authority unavailable'));
+    if (!control && this.#pending >= 256) return Promise.reject(new DomainError('RATE_LIMITED', 429, 'Room service busy'));
     this.#pending++;
     this.#peakPending = Math.max(this.#peakPending, this.#pending);
-    const result = this.#tail.then(work).finally(() => { this.#pending--; }); this.#tail = result.then(() => {}, () => {}); return result;
+    const result = this.#tail.then(async () => {
+      if (!control) await this.authority.assert();
+      try {
+        const value = await work();
+        if (!control) await this.authority.assert();
+        return value;
+      } catch (error) { if (this.authority.state === 'lost') this.#abandon(); throw error; }
+    }).finally(() => { this.#pending--; }); this.#tail = result.then(() => {}, () => {}); return result;
   }
   #control(key: string, work: () => Promise<void>): Promise<void> {
     const pending = this.#controls.get(key); if (pending) { pending.again = true; return pending.promise; }
@@ -76,8 +87,12 @@ export class RoomService {
     this.#controls.set(key, entry); return entry.promise;
   }
   hasMembership(actor: WorldActor, slug: string, membershipId: string): boolean {
+    if (this.#closed || this.authority.state !== 'held') return false;
     const room = this.#rooms.get(this.#accounts.get(actor.accountId) ?? ''); const member = room?.members.get(actor.accountId);
     return Boolean(room?.slug === slug && member?.id === membershipId && [...member.connections.values()].includes(actor.sessionId));
+  }
+  async permits(actor: WorldActor, slug: string, membershipId: string): Promise<boolean> {
+    try { await this.authority.assert(); return this.hasMembership(actor, slug, membershipId); } catch { return false; }
   }
   #emitEnded(room: Room, member: Member, reason: RoomEnded['reason']) {
     const event = RoomEndedSchema.parse({ schemaVersion: 1, epoch: this.epoch, roomId: room.id, reason });
@@ -111,12 +126,13 @@ export class RoomService {
     return RoomSnapshotSchema.parse({ schemaVersion: 1, type: 'snapshot', epoch: this.epoch, roomId: room.id, worldSlug: room.slug, roomVersion: room.version, capacity: room.capacity, occupancy: room.members.size, membershipId: member.id, self: { accountId: member.accountId, seatId: member.seatId }, seats, participants });
   }
   async #notifyChanged(room: Room, fromVersion: number) {
-    if (!this.#changed.size || !room.members.size) return;
+    if (this.#closed || !this.#changed.size || !room.members.size) return;
     const updates: RoomUpdate[] = [];
     for (const member of room.members.values()) {
       const snapshot = await this.#snapshot(room, member);
       for (const connectionId of member.connections.keys()) updates.push({ connectionId, fromVersion, snapshot });
     }
+    await this.authority.assert();
     for (const listener of this.#changed) { try { listener(updates); } catch { /* The next snapshot remains authoritative. */ } }
   }
   #receipt(actor: WorldActor, requestId: string, operation: Receipt['operation'], input: unknown) {
@@ -162,6 +178,7 @@ export class RoomService {
       try {
         await this.registry.dispatch(credential, room.slug, { schemaVersion: 1, worldVersion: input.worldVersion, sceneVersion: input.sceneVersion, membershipId: member.id, action: 'join' });
         if (generation !== (this.#worldGenerations.get(input.worldSlug) ?? 0)) throw new DomainError('WORLD_UNAVAILABLE', 503, 'World unavailable');
+        await this.authority.assert();
         if (!connected()) throw new DomainError('UNAUTHENTICATED', 401, 'Connection closed');
       } catch (error) { this.#removeMember(room, member, 'disconnected'); if (created) this.#rooms.delete(room.id); throw error; }
       room.version++; this.#remember(actor, request, room, member, 'join'); await this.#notifyChanged(room, room.version - 1); return this.#snapshot(room, member);
@@ -229,9 +246,11 @@ export class RoomService {
     });
   }
   async snapshotForConnection(connectionId: string): Promise<RoomSnapshot | null> {
-    const connection = this.#connections.get(connectionId); if (!connection) return null;
-    const room = this.#rooms.get(connection.roomId); const member = room?.members.get(connection.accountId);
-    return room && member ? this.#snapshot(room, member) : null;
+    return this.#run(async () => {
+      const connection = this.#connections.get(connectionId); if (!connection) return null;
+      const room = this.#rooms.get(connection.roomId); const member = room?.members.get(connection.accountId);
+      return room && member ? this.#snapshot(room, member) : null;
+    });
   }
   refreshAccounts(accountIds: string[]) {
     for (const id of accountIds) if (this.#accounts.has(id)) this.#refresh.add(id);
@@ -248,8 +267,14 @@ export class RoomService {
     });
   }
   maintain() { return this.#control('maintenance', async () => { await this.#sweep(); }); }
+  #abandon() {
+    this.#closed = true;
+    for (const room of [...this.#rooms.values()]) this.#removeRoom(room, 'authority-lost');
+    this.#receipts.clear();
+  }
   async close() {
+    this.#unsubscribe(); this.#unsubscribeRevocations(); this.#unsubscribeAuthority();
     if (this.#closed) return this.#tail;
-    this.#closed = true; this.#unsubscribe(); this.#unsubscribeRevocations(); await this.#run(async () => { for (const room of [...this.#rooms.values()]) this.#removeRoom(room, 'server-stopping'); this.#receipts.clear(); this.#ended.clear(); }, true);
+    this.#closed = true; await this.#run(async () => { for (const room of [...this.#rooms.values()]) this.#removeRoom(room, 'server-stopping'); this.#receipts.clear(); this.#ended.clear(); }, true);
   }
 }

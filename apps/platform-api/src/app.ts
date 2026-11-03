@@ -18,6 +18,7 @@ import { registerWorlds } from './worlds/http';
 import { RoomService } from './rooms/service';
 import { registerRoomGateway } from './rooms/socket';
 import { RoomMetrics } from './rooms/metrics';
+import { RoomAuthority } from './rooms/authority';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -48,8 +49,9 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const identity = new IdentityService(db, config, options.now);
   const social = new SocialService(db, identity, options.socialPresence, options.now);
   let roomService: RoomService | undefined = undefined;
-  const worlds = await createWorldRuntime(config, identity, { ...options.worlds, membership: options.worlds?.membership ?? { permits: async (actor, slug, membershipId) => roomService?.hasMembership(actor, slug, membershipId) ?? false } });
-  roomService = new RoomService(worlds.registry, identity, options.now, {
+  const worlds = await createWorldRuntime(config, identity, { ...options.worlds, membership: options.worlds?.membership ?? { permits: async (actor, slug, membershipId) => roomService?.permits(actor, slug, membershipId) ?? false } });
+  const roomAuthority = new RoomAuthority(db);
+  roomService = new RoomService(worlds.registry, identity, roomAuthority, options.now, {
     relationships: (viewer, targets) => social.roomRelationships(viewer, targets),
     profiles: (viewer, targets, world, relationships) => identity.visibleRoomProfiles(viewer, targets, world, relationships),
   });
@@ -62,10 +64,11 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerSocial(http, config, identity, social, options.now);
   identity.registerExportOwner('social', (id, transaction) => social.exportAccount(id, transaction));
   // Emit truthful room interruption events while sockets are still connected; the gateway closes immediately after this hook.
-  http.addHook('preClose', async () => { await rooms.close(); });
+  http.addHook('preClose', async () => { await rooms.close(); roomAuthority.close(); });
   http.get('/health/live', async () => ({ status: 'ok' }));
   http.get('/health/ready', async (_req, reply) => {
     try {
+      if (['blocked', 'lost', 'closed'].includes(roomAuthority.state)) throw new Error('Room authority unavailable');
       const result = await db.query('SELECT schema_version FROM platform_metadata WHERE singleton=true AND (SELECT count(*) FROM city_schema_migrations WHERE name=ANY($1::text[]))=$2', [requiredMigrations, requiredMigrations.length]);
       if (result.rows.length !== 1 || result.rows[0].schema_version !== SCHEMA_VERSION) throw new Error('Incompatible database schema');
       return { status: 'ready', schemaVersion: SCHEMA_VERSION };
@@ -81,6 +84,6 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const unsubscribeRoomIdentity = identity.onChanged(id => { void rooms.refreshAccounts([id]); });
   http.addHook('onClose', async () => { unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
-  const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
+  const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
   return { app, http, identity, gateway, social, worlds, rooms, diagnostics };
 }

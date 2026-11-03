@@ -1,6 +1,6 @@
-# Authoritative rooms v1: M06 work in progress
+# Authoritative rooms v1
 
-Initial allocator: apps/platform-api/src/rooms/service.ts, one process/owner, per-instance epoch UUID, bounded room/membership/receipt maps and serialized command queue. Shipped sandbox capacity:8. This slice does not register actual worlds or authorize release. M06 is not complete.
+Implementation: apps/platform-api/src/rooms/service.ts, one process/owner, per-instance epoch UUID, bounded room/membership/receipt maps and serialized command queue. Shipped sandbox capacity:8. Task evidence for M06 is in docs/agent; this does not register actual worlds, render a browser scene or authorize release.
 
 Socket events reuse the origin/CSRF/cookie identity gateway. room.join, room.leave and room.snapshot require strict schemas/ACKs and real PostgreSQL session checks for every command. No accountId/role authority accepted. Max pending per socket:8; existing transport/session command budgets apply. Unknown events disconnect. No arbitrary world command passthrough.
 
@@ -44,4 +44,12 @@ RoomMetrics uses fixed command/error labels and12 fixed non-cumulative latency b
 
 External pending cap256 and8/socket/session60/minute remain active. Maintenance/refresh and trusted cleanup coalesce: keys restricted to existing room world/session/connection state; unknown disconnect/refresh/session identifiers do not allocate queue keys. Control jobs reserve cleanup capacity beyond admission cap; this is not a fixed256 cap on all cleanup. Deltas use volatile transport; non-writable peers lose replaceable updates,32 consecutive drops disconnect. Consumers must snapshot on gaps/reconnect and periodically reconcile even when no next delta arrives; M07 must implement this browser behavior. Reliable command budgets remain bounded by incoming rate/concurrency limits.
 
-See ROOM-BENCHMARK.md and m06-network-baseline.json for actual24socket baseline and limits. Controlled non-writable fixture verifies dropping,not WAN slow-reader capacity. Pending M06-07: exclusive owner/split-brain fail-safe. No scene/chat/movement/travel success claimed. Disconnected hook cleanup and lifecycle deadlines remain to address; sandbox currently holds no per-player resources.
+See ROOM-BENCHMARK.md and m06-network-baseline.json for the actual 24-socket baseline and limits. Controlled non-writable fixture verifies dropping, not WAN slow-reader capacity. No scene/chat/movement/travel success claimed. Disconnected world-hook cleanup and lifecycle deadlines must be addressed before enabling a resource-owning world; the synthetic sandbox holds no per-player resources. Lifecycle hooks are trusted application code, not arbitrary uploaded modules.
+
+## Exclusive Owner (M06-07)
+
+RoomAuthority acquires one PostgreSQL session advisory lock per current DB schema on a dedicated connection, lazily on first room operation. No second process can admit rooms with that key. Lock contention returns WORLD_UNAVAILABLE and makes readiness 503 after an attempted room operation. An idle process without room work does not acquire a lock merely for health checks. Identity/social can run independently, but multiple room replicas are unsupported.
+
+Every external room command checks authority before/after execution; viewer delta publication and SDK membership grants also verify it. Heartbeat checks idle authority every second. Query/acquisition deadlines are one/two seconds. On connection loss, timeout or missing lock, the process permanently loses room authority: discard ephemeral state, send authority-lost interruption to current room connections, disconnect them and deny further commands until process restart. No automatic reacquisition. Graceful close destroys the dedicated connection after room interruption cleanup.
+
+This is not a durable monotonic fencing token or distributed failover lease. See ADR 0009 for direct/session-affine PostgreSQL requirements, stale delivery limits and rollback; FUTURE-OWNERSHIP.md still gates horizontal scaling. Real tests pause an owner with SIGSTOP, terminate its isolated test DB lock backend, admit a competing process, resume the old one and verify denial. The test does not simulate multiple database primaries or certify a WAN partition protocol.

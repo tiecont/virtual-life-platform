@@ -1,0 +1,94 @@
+$ pnpm governance:check && pnpm architecture:check && pnpm lint && pnpm typecheck && pnpm test && pnpm test:integration && pnpm build
+$ node scripts/verify-governance.mjs
+{
+  "modules": {
+    "M00": "VERIFIED",
+    "M01": "VERIFIED",
+    "M02": "VERIFIED",
+    "M03": "VERIFIED",
+    "M04": "VERIFIED",
+    "M05": "VERIFIED",
+    "M06": "PENDING",
+    "M07": "PENDING",
+    "M08": "PENDING",
+    "M09": "PENDING",
+    "M10": "PENDING",
+    "M11": "PENDING",
+    "M12": "PENDING",
+    "M13": "PENDING",
+    "M14": "PENDING",
+    "M15": "PENDING",
+    "M16": "PENDING",
+    "M17": "PENDING",
+    "M18": "PENDING",
+    "M19": "PENDING",
+    "M20": "PENDING",
+    "M21": "PENDING",
+    "M22": "PENDING",
+    "M23": "PENDING",
+    "M24": "PENDING"
+  },
+  "ready": [
+    "M06-07",
+    "M10-01",
+    "M10-02",
+    "M10-03",
+    "M10-04",
+    "M10-05",
+    "M21-01",
+    "M21-02",
+    "M21-03",
+    "M21-04",
+    "M21-05",
+    "M21-06"
+  ],
+  "blocked": []
+}
+Governance consistency verified; no gameplay or release claim.
+$ node scripts/verify-architecture.mjs
+Architecture consistency passed: 16 SQL tables + journal; 49 source files checked. Future gameplay invariants remain runtime gates.
+$ eslint . && node scripts/check-boundaries.mjs
+Boundary checks passed: 49 source files
+$ pnpm build:packages && pnpm -r typecheck && tsc -p tests/load/tsconfig.json
+$ pnpm --filter './packages/*' -r build
+Scope: 3 of 6 workspace projects
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+Scope: 5 of 6 workspace projects
+packages/contracts typecheck$ tsc -p tsconfig.json --noEmit
+packages/contracts typecheck: Done
+apps/portal-web typecheck$ tsc --noEmit
+packages/world-sdk typecheck$ tsc -p tsconfig.json --noEmit
+packages/world-sdk typecheck: Done
+apps/platform-api typecheck$ tsc -p tsconfig.json --noEmit
+apps/portal-web typecheck: Done
+apps/platform-api typecheck: src/rooms/authority.ts(37,95): error TS2769: No overload matches this call.
+apps/platform-api typecheck:   The last overload gave the following error.
+apps/platform-api typecheck:     Object literal may only specify known properties, and 'query_timeout' does not exist in type 'QueryConfig<any[]>'.
+apps/platform-api typecheck: src/rooms/authority.ts(38,111): error TS2769: No overload matches this call.
+apps/platform-api typecheck:   Overload 1 of 7, '(queryConfig: QueryConfig<any>): Promise<QueryResult<{ key: number; }>>', gave the following error.
+apps/platform-api typecheck:     Object literal may only specify known properties, and 'query_timeout' does not exist in type 'QueryConfig<any>'.
+apps/platform-api typecheck:   Overload 2 of 7, '(queryTextOrConfig: string | QueryConfig<any[]>, values?: any[] | undefined): Promise<QueryResult<{ key: number; }>>', gave the following error.
+apps/platform-api typecheck:     Object literal may only specify known properties, and 'query_timeout' does not exist in type 'QueryConfig<any[]>'.
+apps/platform-api typecheck: src/rooms/authority.ts(39,27): error TS2339: Property 'rows' does not exist on type '{ key: number; }'.
+apps/platform-api typecheck: src/rooms/authority.ts(40,170): error TS2769: No overload matches this call.
+apps/platform-api typecheck:   Overload 1 of 7, '(queryConfig: QueryConfig<any>): Promise<QueryResult<{ held: boolean; }>>', gave the following error.
+apps/platform-api typecheck:     Object literal may only specify known properties, and 'query_timeout' does not exist in type 'QueryConfig<any>'.
+apps/platform-api typecheck:   Overload 2 of 7, '(queryTextOrConfig: string | QueryConfig<any[]>, values?: any[] | undefined): Promise<QueryResult<{ held: boolean; }>>', gave the following error.
+apps/platform-api typecheck:     Object literal may only specify known properties, and 'query_timeout' does not exist in type 'QueryConfig<any[]>'.
+apps/platform-api typecheck: src/rooms/authority.ts(41,21): error TS2339: Property 'rows' does not exist on type '{ held: boolean; }'.
+apps/platform-api typecheck: src/rooms/authority.ts(47,59): error TS2769: No overload matches this call.
+apps/platform-api typecheck:   Overload 1 of 7, '(queryConfig: QueryConfig<any>): Promise<QueryResult<{ held: boolean; }>>', gave the following error.
+apps/platform-api typecheck:     Object literal may only specify known properties, and 'query_timeout' does not exist in type 'QueryConfig<any>'.
+apps/platform-api typecheck:   Overload 2 of 7, '(queryTextOrConfig: string | QueryConfig<any[]>, values?: any[] | undefined): Promise<QueryResult<{ held: boolean; }>>', gave the following error.
+apps/platform-api typecheck:     Object literal may only specify known properties, and 'query_timeout' does not exist in type 'QueryConfig<any[]>'.
+apps/platform-api typecheck: src/rooms/authority.ts(49,19): error TS2339: Property 'rows' does not exist on type '{ held: boolean; }'.
+apps/platform-api typecheck: src/rooms/authority.ts(51,40): error TS2367: This comparison appears to be unintentional because the types '"idle" | "held"' and '"closed"' have no overlap.
+apps/platform-api typecheck: Failed
+/home/tiecont/Projects/virtual-city/apps/platform-api:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @virtual-city/platform-api@0.1.0 typecheck: `tsc -p tsconfig.json --noEmit`
+Exit status 2
+[ELIFECYCLE] Command failed with exit code 2.
+[ELIFECYCLE] Command failed with exit code 2.
+
+TOP_LEVEL_EXIT=2

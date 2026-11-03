@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-02T18:11:00Z",
+  "updatedAt": "2026-11-03T00:03:30Z",
   "tasks": {
     "AUD-01": {
       "status": "VERIFIED",
@@ -192,6 +192,7 @@
     "M06-03": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m06-security-checks.json; docs/architecture/ROOMS.md; IDENTITY-SOCKET.md", "verification": "pnpm check ->0 (7 governance,26 unit,63 PG/HTTP/socket integration); actual pending/rate cap, expiry cleanup, strict authority/schema checks, previous replay/IDOR/Origin/CSRF/revoke suites retained" },
     "M06-04": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m06-presence-checks.json; docs/architecture/ROOMS.md", "verification": "pnpm check ->0 (7 governance,28 unit,64 PG/HTTP/socket integration); viewer-safe privacy/block projection, live room.delta and SDK gap/duplicate/out-of-order reducer tests pass" },
     "M06-05": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m06-reconnect-checks.json; docs/architecture/ROOMS.md", "verification": "pnpm check ->0 (7 governance,30 unit,67 PG/HTTP/socket integration); real SIGKILL/same-port restart, graceful interruption, retained seat/multi-tab and contiguous recovery deltas; SDK recovery state verified, browser rendering remains M07" },
-    "M06-06": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m06-metrics-checks.json; docs/agent/evidence/m06-network-baseline.json; docs/architecture/ROOM-BENCHMARK.md", "verification": "pnpm check ->0 (7 governance,31 unit,69 integration/builds); bench:rooms ->0 with24 actual sockets/3rooms,p95join339.6ms,server CPU/RSS; final typecheck/lint ->0; fixed-label metrics, controlled slow transport and4000->2 control coalescing" }
+    "M06-06": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m06-metrics-checks.json; docs/agent/evidence/m06-network-baseline.json; docs/architecture/ROOM-BENCHMARK.md", "verification": "pnpm check ->0 (7 governance,31 unit,69 integration/builds); bench:rooms ->0 with24 actual sockets/3rooms,p95join339.6ms,server CPU/RSS; final typecheck/lint ->0; fixed-label metrics, controlled slow transport and4000->2 control coalescing" },
+    "M06-07": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m06-owner-checks.json; docs/adr/0009-single-room-owner-guard.md", "verification": "pnpm check ->0 (7 governance,33 unit,72 integration/builds); test:e2e ->0 (8 desktop/mobile); real competing processes/SIGSTOP/backend-loss takeover and in-flight loss fail closed; baseline rerun ->0; distributed fencing remains unimplemented and multi-replica release prohibited" }
   }
 }

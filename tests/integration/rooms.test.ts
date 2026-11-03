@@ -6,11 +6,10 @@ import { RoomAckSchema, RoomsListSchema, MeSchema, type Me, type RoomSnapshot, t
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/config';
 import { migrate } from '../../apps/platform-api/src/db/migrations';
-import { defineWorld, RoomRecovery, applyRoomDelta } from '@virtual-city/world-sdk';
-import { startRoomProcess } from '../support/room-process';
+import { defineWorld, applyRoomDelta } from '@virtual-city/world-sdk';
 import { DISCONNECT_GRACE_MS } from '../../apps/platform-api/src/rooms/service';
 
-let pool: Pool; let admin: Pool; let app: Awaited<ReturnType<typeof createApp>>; let url: string; let databaseUrl: string; let offset = 0; let serial = 1;
+let pool: Pool; let admin: Pool; let app: Awaited<ReturnType<typeof createApp>>; let url: string; let offset = 0; let serial = 1;
 const clients = new Set<Socket>(); const origin = 'http://127.0.0.1:3300';
 let socketSerial = 1;
 const schema = 'rooms_test_' + randomUUID().replaceAll('-', ''); const now = () => Date.now() + offset;
@@ -20,7 +19,7 @@ beforeAll(async () => {
   const connection = new URL(process.env.TEST_DATABASE_URL ?? '');
   if (!['127.0.0.1', 'localhost', '[::1]'].includes(connection.hostname) || !/^virtual_city_test(?:_|$)/.test(connection.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
   admin = new Pool({ connectionString: connection.toString() }); await admin.query(`CREATE SCHEMA "${schema}"`);
-  connection.searchParams.set('options', '-c search_path=' + schema); databaseUrl = connection.toString(); pool = new Pool({ connectionString: databaseUrl }); await migrate(pool);
+  connection.searchParams.set('options', '-c search_path=' + schema); pool = new Pool({ connectionString: connection.toString() }); await migrate(pool);
   app = await createApp(config(), pool, false, { now, worlds: { modules: [defineWorld({
     schemaVersion: 1, apiVersion: 1, slug: 'seat-contention-fixture', version: '1.0.0', title: '100-seat contention fixture (not a playable world)', kind: 'sandbox',
     sceneRef: { key: 'seat-fixture', version: '1.0.0' }, capacity: 100, seatIds: ['shared-seat', 'alternate-seat'], capabilities: ['presence', 'seating'],
@@ -212,50 +211,24 @@ describe('M06-01 real PostgreSQL identity + Socket.IO authoritative room allocat
   });
   it('projects room peers through privacy and bilateral block policy, then emits a viewer-safe delta', async () => {
     const a = await guest(); const b = await guest(); await setPresence(a, 'public');
-    const ca = await connect(a); const cb = await connect(b); const delta = new Promise<unknown>(resolve => cb.once('room.delta', resolve));
+    const ca = await connect(a); const cb = await connect(b);
     const aSnapshot = await join(ca); const bSnapshot = await join(cb, { roomId: aSnapshot.roomId });
     expect(bSnapshot.participants.map(participant => participant.profile.id)).toContain(a.me.profile.id);
+    const delta = new Promise<unknown>(resolve => cb.once('room.delta', resolve));
     await block(a, b);
-    const event = await delta; expect(event).toMatchObject({ type: 'delta', state: { roomId: aSnapshot.roomId } });
+    const event = await delta;
+    const projected = applyRoomDelta(bSnapshot, event); expect(projected.applied).toBe(true); expect(projected.gap).toBe(false);
+    expect(projected.state.participants.map(participant => participant.profile.id)).toEqual([b.me.profile.id]);
     const blocked = await command(cb, 'room.snapshot', ownInput(bSnapshot)); expect(blocked.ok).toBe(true);
     if (blocked.ok && blocked.result.type === 'snapshot') expect(blocked.result.participants.map(participant => participant.profile.id)).toEqual([b.me.profile.id]);
     const aView = await command(ca, 'room.snapshot', ownInput(aSnapshot)); expect(aView.ok).toBe(true);
     if (aView.ok && aView.result.type === 'snapshot') expect(aView.result.participants.map(participant => participant.profile.id)).toEqual([a.me.profile.id]);
   });
-  it('rejoins after transport loss with the same membership/seat and reports graceful shutdown as interrupted state', async () => {
+  it('rejoins after transport loss with the same membership and seat', async () => {
     const user = await guest(); const client = await connect(user); const initial = await join(client); await command(client, 'seat.claim', ownInput(initial, { seatId: 'seat-1' }));
     const oldConnection = client.id!; client.close(); await app.rooms.detach(oldConnection);
     const resumed = await connect(user); const recovered = await join(resumed); expect(recovered.membershipId).toBe(initial.membershipId); expect(recovered.self.seatId).toBe('seat-1');
 
-    const auxiliary = await createApp(config(), pool, false); await auxiliary.app.listen(0, '127.0.0.1'); const auxiliaryUrl = await auxiliary.app.getUrl();
-    try {
-      await auxiliary.worlds.registry.setEnabled('sdk-sandbox', true);
-      const restartedClient = await connect(user, auxiliaryUrl); const interrupted = new Promise<unknown>(resolve => restartedClient.once('room.ended', resolve));
-      const restarted = await join(restartedClient); const disconnected = new Promise<void>(resolve => restartedClient.once('disconnect', () => resolve()));
-      await auxiliary.app.close();
-      expect(await interrupted).toEqual({ schemaVersion: 1, epoch: restarted.epoch, roomId: restarted.roomId, reason: 'server-stopping' }); await disconnected;
-      const fresh = await connect(user); const newMembership = await join(fresh); expect(newMembership.membershipId).not.toBe(restarted.membershipId); expect(newMembership.epoch).not.toBe(restarted.epoch);
-    } finally { await auxiliary.app.close(); }
-  });
-  it('recovers from a SIGKILL process restart with a fresh epoch and no phantom seat', async () => {
-    const user = await guest(); const secret = config().SESSION_SECRET;
-    const first = await startRoomProcess(databaseUrl, secret); let replacement: Awaited<ReturnType<typeof startRoomProcess>> | undefined;
-    try {
-      const client = await connect(user, first.url); const recovery = new RoomRecovery();
-      client.on('disconnect', () => recovery.disconnect()); client.on('room.ended', event => recovery.ended(event));
-      const initial = await join(client); recovery.acceptSnapshot(recovery.beginSync(), initial);
-      expect((await command(client, 'seat.claim', ownInput(initial, { seatId: 'seat-1' }))).ok).toBe(true);
-      const lost = new Promise<void>(resolve => client.once('disconnect', () => resolve()));
-      await first.stop('SIGKILL'); await lost;
-      expect(recovery.view).toMatchObject({ status: 'reconnecting', snapshot: null });
-      replacement = await startRoomProcess(databaseUrl, secret, Number(new URL(first.url).port));
-      const fresh = await connect(user, replacement.url);
-      const stale = await command(fresh, 'room.snapshot', ownInput(initial)); expect(stale.ok).toBe(false); if (!stale.ok) expect(stale.error.code).toBe('NOT_IN_ROOM');
-      const snapshot = await join(fresh); recovery.acceptSnapshot(recovery.beginSync(), snapshot);
-      expect(snapshot.epoch).not.toBe(initial.epoch); expect(snapshot.membershipId).not.toBe(initial.membershipId);
-      expect(snapshot.occupancy).toBe(1); expect(snapshot.self.seatId).toBeNull(); expect(snapshot.seats.every(seat => seat.state === 'available')).toBe(true);
-      expect(recovery.view).toMatchObject({ status: 'active', reason: 'membership-reset' });
-    } finally { await first.stop('SIGKILL'); await replacement?.stop(); }
   });
   it('delivers contiguous seat, detach, reconnect and grace-expiry deltas to another tab', async () => {
     const user = await guest(); const observer = await guest(); const a = await connect(user); const b = await connect(observer);

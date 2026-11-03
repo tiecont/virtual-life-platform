@@ -1,5 +1,7 @@
 # Future multi-instance design — not implemented (M02-05)
 
+M06-07 now enforces the current single-process deployment with a dedicated PostgreSQL advisory-lock connection. See ADR 0009 and ROOMS.md. Real competing-process/SIGSTOP/backend-loss tests fail closed; this does not implement the distributed lease/fencing protocol below. Transaction-pooling proxies and multiple independent database primaries are not supported by the current guard.
+
 Trigger: measured room latency/memory/CPU or availability requirement exceeds one replica under documented load. Redis Pub/Sub and multiple Socket.IO adapters are insufficient by themselves. Do not enable replicas until the following protocol and failure tests are implemented.
 
 1. A consistent room directory grants one owner a bounded lease with monotonic fencing epoch. Every ownership mutation requires compare-and-swap on current epoch; old owner cannot write critical state even if it misses lease expiry. Persistent engine writes carry checked fencing token or transactionally lock the owner record.

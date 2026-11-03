@@ -10,7 +10,12 @@ import { RoomMetrics, type RoomCommandName } from './metrics';
 export function registerRoomGateway(gateway: ReturnType<typeof createIdentityGateway>, rooms: RoomService, metrics = new RoomMetrics()) {
   const stalled = new WeakMap<object, number>();
   for (const name of ['room.join', 'room.leave', 'room.snapshot', 'seat.claim', 'seat.release']) gateway.allowCommand(name);
-  const unsubscribe = rooms.onEnded((ids, event) => { for (const id of ids) gateway.io.of('/').sockets.get(id)?.emit('room.ended', event); });
+  const unsubscribe = rooms.onEnded((ids, event) => {
+    for (const id of ids) {
+      const socket = gateway.io.of('/').sockets.get(id); socket?.emit('room.ended', event);
+      if (event.reason === 'authority-lost') socket?.disconnect(true);
+    }
+  });
   const unsubscribeChanged = rooms.onChanged(updates => {
     for (const update of updates) {
       const socket = gateway.io.of('/').sockets.get(update.connectionId); if (!socket?.connected) continue;

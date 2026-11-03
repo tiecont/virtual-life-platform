@@ -1,0 +1,392 @@
+$ pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/rooms-baseline.ts
+$ pnpm --filter './packages/*' -r build
+Scope: 3 of 6 workspace projects
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+ Network virtual-city-test-3c91f8a5_default Creating 
+ Network virtual-city-test-3c91f8a5_default Creating 
+ Network virtual-city-test-3c91f8a5_default Created 
+ Network virtual-city-test-3c91f8a5_default Created 
+ Container virtual-city-test-3c91f8a5-db-1 Creating 
+ Container virtual-city-test-3c91f8a5-db-1 Created 
+ Container virtual-city-test-3c91f8a5-db-1 Starting 
+ Container virtual-city-test-3c91f8a5-db-1 Started 
+ Container virtual-city-test-3c91f8a5-db-1 Waiting 
+ Container virtual-city-test-3c91f8a5-db-1 Healthy 
+(node:303476) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:303523) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{
+  "recordedAt": "2026-11-02T18:30:19.664Z",
+  "profile": "loopback synthetic SDK sandbox; real HTTP identity/privacy + Socket.IO; isolated child API process; PostgreSQL tmpfs",
+  "command": "pnpm bench:rooms",
+  "hardware": {
+    "platform": "linux",
+    "release": "7.2.9-2-cachyos",
+    "node": "v26.9.0",
+    "cpuModel": "AMD Ryzen 7 4800HS with Radeon Graphics",
+    "logicalCpus": 16,
+    "availableParallelism": 16,
+    "hostMemoryBytes": 24573251584,
+    "cgroupCpuMax": "unavailable",
+    "cgroupMemoryMax": "unavailable"
+  },
+  "load": {
+    "uniqueAccounts": 24,
+    "peakActualSockets": 24,
+    "rooms": 3,
+    "capacityPerRoom": 8,
+    "simultaneousJoinAttempts": 24,
+    "reconnectBurst": 4,
+    "steadyHoldMs": 2000,
+    "elapsedMs": 3042.5493280000005
+  },
+  "latencyMs": {
+    "join": {
+      "samples": 24,
+      "p50": 218.429705,
+      "p95": 393.9889880000003,
+      "max": 421.72120599999994
+    },
+    "reconnectIncludingHandshake": {
+      "samples": 4,
+      "p95": 151.19630299999972,
+      "max": 151.19630299999972
+    }
+  },
+  "serverProcess": {
+    "cpuMs": 613.981,
+    "cpuPercentOfOneCore": 20.17982072959837,
+    "rssBefore": 150757376,
+    "rssPeakSampled": 161374208,
+    "rssAfter": 161374208,
+    "heapUsedPeakSampled": 46367248,
+    "sampleIntervalMs": 100
+  },
+  "diagnostics": {
+    "sockets": 24,
+    "transportConnections": 24,
+    "authority": "held",
+    "rooms": {
+      "rooms": 3,
+      "memberships": 0,
+      "connections": 0,
+      "occupiedSeats": 0,
+      "graceMemberships": 0,
+      "receipts": 52,
+      "pending": 0,
+      "peakPending": 24,
+      "controlKeys": 0
+    },
+    "realtime": {
+      "pendingCommands": 0,
+      "peakPendingCommands": 24,
+      "droppedDeltas": 0,
+      "slowConsumerDisconnects": 0,
+      "commands": {
+        "room.join": {
+          "count": 28,
+          "errors": {
+            "OK": 28
+          },
+          "buckets": [
+            {
+              "upperMs": 1,
+              "count": 0
+            },
+            {
+              "upperMs": 5,
+              "count": 0
+            },
+            {
+              "upperMs": 10,
+              "count": 0
+            },
+            {
+              "upperMs": 25,
+              "count": 0
+            },
+            {
+              "upperMs": 50,
+              "count": 0
+            },
+            {
+              "upperMs": 100,
+              "count": 6
+            },
+            {
+              "upperMs": 250,
+              "count": 12
+            },
+            {
+              "upperMs": 500,
+              "count": 10
+            },
+            {
+              "upperMs": 1000,
+              "count": 0
+            },
+            {
+              "upperMs": 2500,
+              "count": 0
+            },
+            {
+              "upperMs": 5000,
+              "count": 0
+            },
+            {
+              "upperMs": null,
+              "count": 0
+            }
+          ],
+          "totalMs": 5785.640207,
+          "maxMs": 413.4728930000001
+        },
+        "room.leave": {
+          "count": 24,
+          "errors": {
+            "OK": 24
+          },
+          "buckets": [
+            {
+              "upperMs": 1,
+              "count": 0
+            },
+            {
+              "upperMs": 5,
+              "count": 0
+            },
+            {
+              "upperMs": 10,
+              "count": 0
+            },
+            {
+              "upperMs": 25,
+              "count": 0
+            },
+            {
+              "upperMs": 50,
+              "count": 1
+            },
+            {
+              "upperMs": 100,
+              "count": 4
+            },
+            {
+              "upperMs": 250,
+              "count": 16
+            },
+            {
+              "upperMs": 500,
+              "count": 3
+            },
+            {
+              "upperMs": 1000,
+              "count": 0
+            },
+            {
+              "upperMs": 2500,
+              "count": 0
+            },
+            {
+              "upperMs": 5000,
+              "count": 0
+            },
+            {
+              "upperMs": null,
+              "count": 0
+            }
+          ],
+          "totalMs": 4001.4662209999988,
+          "maxMs": 261.60537799999975
+        },
+        "room.snapshot": {
+          "count": 24,
+          "errors": {
+            "OK": 24
+          },
+          "buckets": [
+            {
+              "upperMs": 1,
+              "count": 0
+            },
+            {
+              "upperMs": 5,
+              "count": 0
+            },
+            {
+              "upperMs": 10,
+              "count": 0
+            },
+            {
+              "upperMs": 25,
+              "count": 4
+            },
+            {
+              "upperMs": 50,
+              "count": 6
+            },
+            {
+              "upperMs": 100,
+              "count": 11
+            },
+            {
+              "upperMs": 250,
+              "count": 3
+            },
+            {
+              "upperMs": 500,
+              "count": 0
+            },
+            {
+              "upperMs": 1000,
+              "count": 0
+            },
+            {
+              "upperMs": 2500,
+              "count": 0
+            },
+            {
+              "upperMs": 5000,
+              "count": 0
+            },
+            {
+              "upperMs": null,
+              "count": 0
+            }
+          ],
+          "totalMs": 1449.110464,
+          "maxMs": 112.05356400000005
+        },
+        "seat.claim": {
+          "count": 0,
+          "errors": {},
+          "buckets": [
+            {
+              "upperMs": 1,
+              "count": 0
+            },
+            {
+              "upperMs": 5,
+              "count": 0
+            },
+            {
+              "upperMs": 10,
+              "count": 0
+            },
+            {
+              "upperMs": 25,
+              "count": 0
+            },
+            {
+              "upperMs": 50,
+              "count": 0
+            },
+            {
+              "upperMs": 100,
+              "count": 0
+            },
+            {
+              "upperMs": 250,
+              "count": 0
+            },
+            {
+              "upperMs": 500,
+              "count": 0
+            },
+            {
+              "upperMs": 1000,
+              "count": 0
+            },
+            {
+              "upperMs": 2500,
+              "count": 0
+            },
+            {
+              "upperMs": 5000,
+              "count": 0
+            },
+            {
+              "upperMs": null,
+              "count": 0
+            }
+          ],
+          "totalMs": 0,
+          "maxMs": 0
+        },
+        "seat.release": {
+          "count": 0,
+          "errors": {},
+          "buckets": [
+            {
+              "upperMs": 1,
+              "count": 0
+            },
+            {
+              "upperMs": 5,
+              "count": 0
+            },
+            {
+              "upperMs": 10,
+              "count": 0
+            },
+            {
+              "upperMs": 25,
+              "count": 0
+            },
+            {
+              "upperMs": 50,
+              "count": 0
+            },
+            {
+              "upperMs": 100,
+              "count": 0
+            },
+            {
+              "upperMs": 250,
+              "count": 0
+            },
+            {
+              "upperMs": 500,
+              "count": 0
+            },
+            {
+              "upperMs": 1000,
+              "count": 0
+            },
+            {
+              "upperMs": 2500,
+              "count": 0
+            },
+            {
+              "upperMs": 5000,
+              "count": 0
+            },
+            {
+              "upperMs": null,
+              "count": 0
+            }
+          ],
+          "totalMs": 0,
+          "maxMs": 0
+        }
+      }
+    }
+  },
+  "limits": [
+    "Single short local baseline, no TLS/WAN/browser rendering, not production capacity or maximum CCU",
+    "tsx test server; bootstrap outside measured window; client/DB CPU excluded from server CPU but share host",
+    "RSS high-water is sampled, not an OS-enforced peak; small sample p95 must not be extrapolated",
+    "No rate limits raised; unique loopback source addresses used for HTTP guest bootstrap",
+    "No public/restricted worlds, travel, chat or production deployment"
+  ]
+}
+ Container virtual-city-test-3c91f8a5-db-1 Stopping 
+ Container virtual-city-test-3c91f8a5-db-1 Stopped 
+ Container virtual-city-test-3c91f8a5-db-1 Removing 
+ Container virtual-city-test-3c91f8a5-db-1 Removed 
+ Network virtual-city-test-3c91f8a5_default Removing 
+ Network virtual-city-test-3c91f8a5_default Removed 
+
+TOP_LEVEL_EXIT=0

@@ -1,0 +1,16 @@
+{
+  "verifiedAt": "2026-11-03T00:03:30Z",
+  "source": "workspace diff from9cb0147; checkpoint commit in git log",
+  "environment": "Linux/Node26.9.0/pnpm11.28.5/PostgreSQL17.7-alpine disposable Docker; real child API processes",
+  "commands": [
+    { "command": "pnpm check", "exitCode": 2, "log": "m06-owner-check-attempt1.log", "reason": "pg QueryConfig timeout typing; implemented explicit bounded deadline instead" },
+    { "command": "pnpm check", "exitCode": 1, "log": "m06-owner-check-attempt2.log", "reason": "100seat contention test exceeded15seconds due to per-viewer lock checks; moved checks to command/publish boundaries" },
+    { "command": "pnpm check", "exitCode": 2, "log": "m06-owner-complete-check.log", "reason": "TypeScript async state narrowing; extracted runtime state assertion" },
+    { "command": "pnpm check", "exitCode": 0, "log": "m06-owner-final-check.log", "governanceTests": 7, "unitTests": 33, "integrationTests": 72 },
+    { "command": "pnpm bench:rooms", "exitCode": 0, "log": "m06-owner-network-baseline.log", "report": "m06-network-baseline.json", "actualSockets": 24, "joinP95Ms": 393.988988 },
+    { "command": "pnpm check", "exitCode": 0, "log": "m06-owner-verified-check.log", "governanceTests": 7, "unitTests": 33, "integrationTests": 72, "scope": "final strengthened post-block delta regression included" },
+    { "command": "pnpm test:e2e", "exitCode": 0, "log": "m06-owner-e2e.log", "tests": 8, "scope": "existing desktop/mobile foundation/identity/social; no room UI yet" }
+  ],
+  "verified": ["second actual room process denied with same DB schema lock", "SIGSTOP old owner,terminate only isolated lock backend,new owner admitted,resume old -> interruption/denial", "lost owner never reacquires even when replacement stops", "slow admission after lock loss emits neither success ACK nor delta and leaves0members", "query/acquisition timeout and late connection destroyed", "SIGTERM and SIGKILL actual same-port restart preserve identity/reset seats", "actual post-block privacy delta removes peer and applies contiguously"],
+  "limits": ["Single-primary/session-affine PG deployment guard,not a distributed lease/fencing protocol", "No WAN partition/multiple primary certification or linearizable network delivery", "No persistent engine fencing,auto failover or room replicas", "No rendered room/avatars/chat/travel/public release", "Trusted nonterminating lifecycle hooks remain a gate before resource-owning world activation", "Small short loopback benchmark,not sustained/maxCCU"]
+}

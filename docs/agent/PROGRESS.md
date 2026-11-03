@@ -1,6 +1,6 @@
 # Agent progress
 
-Current checkpoint: **W1 in progress; W0 + M03/M04/M05 + M06-01..06 VERIFIED locally. Next: M06-07 exclusive owner guard.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence.
+Current checkpoint: **W1 in progress; W0 + M03/M04/M05/M06 VERIFIED locally at their module task scope. Next: M07-01 scene specification and rendered local test cafe.** Project virtual-life-platform, local origin configured, no push/public release. Historical checkpoints below preserve their actual command evidence. M06 has no rendered browser room yet; M07 owns that acceptance.
 
 2026-11-02, Linux local host, Node v26.9.0, pnpm 11.28.5, Docker 29.9.0. Source of task status: task-state.json (checked by scripts/plan-status.mjs). No public release occurred.
 
@@ -190,3 +190,15 @@ Metrics use fixed event/outcome histograms/counts/max/total latency, in-flight/p
 Measured short loopback profile:24 real authenticated sockets,3 rooms/capacity8,24 concurrent joins,2-second hold,4 reconnect burst,24 leaves; final memberships/seats0. Ryzen7 4800HS/16 logical CPUs/24.57GB host RAM; p95join339.606ms,max358.224ms;p95reconnect149.627ms(4samples);server CPU569.395ms over2835.906ms(20.078% one core),sampled RSSpeak174309376bytes. Full hardware/values in report. No max CCU,sustained/WAN/TLS/production throughput claim. No flags/migrations/remote changes.
 
 Next exact action: M06-07 fail-safe single-owner guard and competing-owner/lost-authority tests, document future fencing protocol. Full M06 remains incomplete.
+
+## M06-07 - VERIFIED Single-Owner Guard; M06 Task Scope Complete
+
+Final `pnpm check` -> 0: 7 governance, 33 unit, 72 actual PG/HTTP/socket integration tests, lint/types/architecture and production builds (m06-owner-verified-check.log). `pnpm test:e2e` -> 0: 8 existing desktop/mobile identity/social/foundation browser regressions (m06-owner-e2e.log); no new scene/UI evidence claimed. Earlier final-check also passed; strengthened privacy regression now listens after join and verifies the actual post-block delta through the SDK, rather than accidentally accepting a prior join delta. Earlier type errors and the 100-seat test timeout are recorded: moved lock verification out of each viewer snapshot to command/publish boundaries, retained before/after command and SDK membership checks, then full regression passed. No timeout budget increased.
+
+RoomAuthority lazily holds one session advisory lock per DB schema on a dedicated PG connection; competing room owner denied, readiness503 after contention, query/acquisition deadlines1s/2s. Connection loss is irreversible for that process: discard ephemeral state, interrupt/disconnect room sockets, reject new commands until restart. Dedicated connection destroyed on close/loss. Actual child-process SIGTERM/SIGKILL same-port restart checks retained in isolated schema tests. Actual competing processes plus SIGSTOP/terminate only the disposable schema's lock backend/takeover/SIGCONT -> old owner emits authority-lost, cannot mutate/rejoin even after replacement stops. Slow in-flight admission loses lock -> no success ACK/delta and zero lingering membership. Unit fake-timer checks prove timeout/late-connection disposal, not WAN partition simulation. ADR0009 documents direct/session-affine PG requirement, single-primary assumption, check-to-output limitations and future fencing gate.
+
+`pnpm bench:rooms` ->0 after guard (m06-owner-network-baseline.log); latest m06-network-baseline.json supersedes the generated report while M06-06 original survives in9cb0147/attempt2 log. Same24sockets/3rooms/4reconnects: p95join393.989ms,max421.721ms,p95reconnect151.196ms; server613.981msCPU/3042.549mswall(20.180%core),RSSpeak161374208bytes. No errors/drops, final membership/seat/pending/control totals0, authority held. Short local baseline only, no maximum/sustained CCU inference.
+
+M06-01..07 verified at backend/contracts/SDK task scope. W1 remains incomplete: no rendered room/avatar, movement, chat/report/moderation, travel or playable legacy worlds. All flags OFF. No migration/remote/deploy/public release. Resource-owning world activation still needs lifecycle cleanup/deadline review; synthetic sandbox has no such per-player resources. Distributed leases/monotonic fencing not implemented; multiple room replicas remain prohibited.
+
+Next exact action: M07-01, read applicable portal Next guides and current UI/SDK, define strict scene coordinates/collision/seats then render local sample cafe with accessible room/seat controls; verify actual browser desktop/mobile pixels/network state before marking VERIFIED. Continue M07-02 afterward.

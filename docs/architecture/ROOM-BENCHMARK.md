@@ -22,3 +22,7 @@ Actual run2026-11-02T18:07:53Z,exit0:m06-network-baseline-attempt2.log + m06-net
 CPU is child user+system delta(client/DB excluded but share host). RSS/heap sampled every100ms over IPC,not OS-enforced high-water. Bootstrap/compilation outside timing. No TLS/WAN/rendering/gameplay/chat/travel. Single short baseline/small sample establishes neither sustained capacity,maximum CCU,production SLO nor cost forecast. Cgroup limits were unavailable,not assumed unlimited.
 
 Fail on command/schema/auth/invariant/cleanup errors; report measured latency/resources without10K claims. WAN/slow-reader/soak/reconnect-storm profiles and protected metrics export remain M21/M22 gates. Multiple replicas prohibited before fenced ownership is implemented.
+
+## After The Owner Guard
+
+Rerun 2026-11-02T18:30:19Z, `pnpm bench:rooms` -> 0, log m06-owner-network-baseline.log. The generated m06-network-baseline.json now contains this latest run; the original M06-06 values above remain evidenced in its attempt2 log and commit 9cb0147. Same host/profile and 24 actual sockets, 3 rooms, 4 reconnects, no command errors, final memberships/seats/pending/control keys zero; authority held. Join p50 218.430 ms, p95 393.989 ms, max 421.721 ms. Reconnect p95/max 151.196 ms (4 samples). Server CPU 613.981 ms over 3042.549 ms, 20.180% of one core. Sampled RSS peak 161374208 bytes, heap peak 46367248 bytes. Lock checks add work; these single runs do not establish statistical regression bounds. All original profile limitations still apply.

@@ -15,7 +15,7 @@ export function applyRoomDelta(current: RoomSnapshot, input: unknown): RoomSyncR
 export type RoomRecoveryView = {
   status: 'idle' | 'syncing' | 'active' | 'reconnecting' | 'interrupted';
   snapshot: RoomSnapshot | null;
-  reason: 'transport-lost' | 'sequence-gap' | 'membership-reset' | 'world-unavailable' | 'server-stopping' | 'disconnected' | null;
+  reason: 'transport-lost' | 'sequence-gap' | 'membership-reset' | 'world-unavailable' | 'server-stopping' | 'disconnected' | 'authority-lost' | null;
 };
 
 // Sync tickets invalidate late ACKs from a transport or membership that has ended.

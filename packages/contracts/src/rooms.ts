@@ -23,7 +23,7 @@ export const RoomSnapshotSchema = z.strictObject({
 export const RoomDeltaSchema = z.strictObject({ schemaVersion: z.literal(1), type: z.literal('delta'), fromVersion: z.number().int().nonnegative(), state: RoomSnapshotSchema })
   .refine(delta => delta.state.roomVersion >= delta.fromVersion, 'Delta cannot precede its base');
 export const RoomLeftSchema = z.strictObject({ schemaVersion: z.literal(1), type: z.literal('left'), epoch: z.uuid(), roomId: z.uuid() });
-export const RoomEndedSchema = z.strictObject({ schemaVersion: z.literal(1), epoch: z.uuid(), roomId: z.uuid(), reason: z.enum(['left', 'disconnected', 'world-unavailable', 'server-stopping']) });
+export const RoomEndedSchema = z.strictObject({ schemaVersion: z.literal(1), epoch: z.uuid(), roomId: z.uuid(), reason: z.enum(['left', 'disconnected', 'world-unavailable', 'server-stopping', 'authority-lost']) });
 export const RoomAckSchema = z.discriminatedUnion('ok', [
   z.strictObject({ schemaVersion: z.literal(1), requestId: z.uuid(), ok: z.literal(true), result: z.union([RoomSnapshotSchema, RoomLeftSchema]) }),
   z.strictObject({ schemaVersion: z.literal(1), requestId: z.uuid(), ok: z.literal(false), error: z.strictObject({ code: z.enum(['INVALID_REQUEST', 'UNAUTHENTICATED', 'FORBIDDEN', 'NOT_FOUND', 'RATE_LIMITED', 'INTERNAL_ERROR', 'WORLD_UNAVAILABLE', 'WORLD_VERSION_MISMATCH', 'ROOM_FULL', 'ALREADY_IN_ROOM', 'NOT_IN_ROOM', 'IDEMPOTENCY_CONFLICT', 'SEAT_TAKEN', 'ALREADY_SEATED']), retryable: z.boolean() }) }),
