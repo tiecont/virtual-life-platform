@@ -57,7 +57,7 @@
 | M08 | M08-06 · Test false positive handling, rate limits, privacy access and response latencies. | VERIFIED | m08-regression-checks.json; corpus, flood, current authority, measured local responses |
 | M09 | M09-01 · Define travel intent state machine: CREATED/READY/COMMITTED/EXPIRED/FAILED/CANCELLED. | VERIFIED | m09-lifecycle-checks.json; executable model and source/target diagrams, no runtime travel yet |
 | M09 | M09-02 · Implement scoped one-time, short-lived travel intents + validation. | VERIFIED | m09-intents-checks.json;14targeted/fullcheck141integration/E2E34; authorization only,no room switch |
-| M09 | M09-03 · Implement recipient invitation flows and notifications with consent. | TODO | — |
+| M09 | M09-03 · Implement recipient invitation flows and notifications with consent. | VERIFIED | m09-invitations-checks.json;targeted13/fullcheck154integration/E2E36;consent only,no teleport |
 | M09 | M09-04 · Implement handshake across source and destination room owners. | TODO | — |
 | M09 | M09-05 · Integrate party/group invite capacity logic and offline handling. | TODO | — |
 | M09 | M09-06 · Test cross-world transition with artificial network failure. | TODO | — |

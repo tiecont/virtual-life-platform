@@ -1,0 +1,16 @@
+import { z } from 'zod';
+import { TravelDestinationSchema } from './travel';
+import { PublicProfileSchema } from './profiles';
+const uuid = z.uuid().transform(value => value.toLowerCase());
+export const InvitationDestinationSchema = TravelDestinationSchema.omit({ roomId: true });
+export const InvitationStateSchema = z.enum(['PENDING', 'ACCEPTED', 'DECLINED', 'CANCELLED', 'EXPIRED']);
+export const InvitationSettingsSchema = z.strictObject({ schemaVersion: z.literal(1), allowInvitations: z.boolean() });
+export const InvitationInputSchema = z.strictObject({ schemaVersion: z.literal(1), recipientId: uuid, destination: InvitationDestinationSchema });
+export const InvitationRespondSchema = z.strictObject({ schemaVersion: z.literal(1), action: z.enum(['accept', 'decline', 'cancel']) });
+export const InvitationReceiptSchema = z.strictObject({ schemaVersion: z.literal(1), id: uuid, state: InvitationStateSchema, createdAt: z.iso.datetime(), expiresAt: z.iso.datetime() });
+export const InvitationsPageSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(InvitationReceiptSchema.extend({ direction: z.enum(['incoming', 'outgoing']), contact: PublicProfileSchema, destination: InvitationDestinationSchema })).max(50), nextCursor: uuid.nullable() });
+export const InvitationChangedSchema = z.strictObject({ schemaVersion: z.literal(1) });
+export type InvitationDestination = z.infer<typeof InvitationDestinationSchema>;
+export type InvitationReceipt = z.infer<typeof InvitationReceiptSchema>;
+export type InvitationSettings = z.infer<typeof InvitationSettingsSchema>;
+export type InvitationsPage = z.infer<typeof InvitationsPageSchema>;

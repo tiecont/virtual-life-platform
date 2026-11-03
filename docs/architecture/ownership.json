@@ -31,7 +31,10 @@
     "safety_incident_audit": "platform.safety",
     "safety_incident_mutations": "platform.safety",
     "travel_intents": "platform.travel",
-    "travel_mutations": "platform.travel"
+    "travel_mutations": "platform.travel",
+    "invitation_preferences": "platform.invitations",
+    "invitations": "platform.invitations",
+    "invitation_mutations": "platform.invitations"
   },
   "journalTable": "city_schema_migrations",
   "legacyDatabases": "not managed by city migrations",

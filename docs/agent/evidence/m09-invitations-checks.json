@@ -1,0 +1,33 @@
+{
+  "taskID": "M09-03",
+  "verifiedAt": "2026-11-03T05:39:39Z",
+  "source": "workspace from a5ccfa7; checkpoint commit follows git log",
+  "environment": "Linux, Node26.9.0, pnpm11.28.5, real disposable local PostgreSQL, Chromium desktop and iPhone13 viewport/touch",
+  "commands": [
+    { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/invitations.test.ts", "exitCode": 0, "tests": 10, "log": "m09-invitations-targeted-attempt1.log" },
+    { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/invitations.test.ts", "exitCode": 0, "tests": 13, "log": "m09-invitations-targeted-final.log" },
+    { "command": "pnpm check", "exitCode": 0, "governanceTests": 7, "unitTests": 117, "integrationTests": 154, "log": "m09-invitations-check-final.log", "scope": "governance/architecture/lint/types/assets/unit/integration and production builds" },
+    { "command": "pnpm test:e2e tests/e2e/invitations.spec.ts", "exitCode": 0, "tests": 2, "log": "m09-invitations-e2e-attempt1.log" },
+    { "command": "pnpm test:e2e", "exitCode": 0, "tests": 36, "log": "m09-invitations-e2e-final.log", "scope": "18 desktop +18 mobile; includes pending/accepted/post-block actual screenshots" },
+    { "command": "pnpm lint", "exitCode": 0, "log": "m09-invitations-lint-final.log" },
+    { "command": "pnpm db:migrate", "exitCode": 0, "log": "m09-invitations-dev-migration.log", "scope": "additive0009 applied to retained city development DB only" },
+    { "command": "git diff --check", "exitCode": 0 }
+  ],
+  "verified": [
+    "default-OFF explicit recipient preference, current mutual friendship/bilateral-block priority, actor-scoped private list/respond",
+    "12 concurrent actualTCP retries persist one invitation/mutation and one body-free account-scoped socket refresh",
+    "120s immutable expiry, terminal accept/decline/cancel/expire, changed key input conflicts, pair uniqueness, bounded paging and durable per-account rate across independent sessions/restart",
+    "hidden/private/adult targets reject even reviewed adults; public target version/baseflags and recipient sanctions rechecked",
+    "block/unfriend cancellation in same transaction via social port; injected cancellation failure rolls back both domains; re-friend/preference reenable never revives pending offer",
+    "minimal own export/account deletion/metadata cleanup and creation receipt failure rollback",
+    "actual browser recipient opt-in/reload, commit-then-lost-response retry, live private hints, keyboard accept, decline/cancel/block hide, no membership/room creation",
+    "desktop/mobile text/target/overflow checks and pending screenshots visually inspected; originals copied to m09-invitations-visual"
+  ],
+  "limits": [
+    "accepted records consent only; no reservation, scoped travel capability or membership handoff",
+    "public listed world destination only; room-specific/hidden/restricted/group invitation support deliberately unavailable",
+    "notifications are best-effort refresh hints; current policies can return empty inbox after a delayed hint",
+    "registry authorization observed before pair lock to avoid shared-pool deadlock, public availability rechecked inside; final travel must reauthorize independently",
+    "local24h metadata retention/default quotas remain provisional; all real world flagsOFF, no public operations, legacy or remote change"
+  ]
+}

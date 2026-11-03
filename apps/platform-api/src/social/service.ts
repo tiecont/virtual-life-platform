@@ -10,9 +10,16 @@ const unavailable = () => new DomainError('NOT_AVAILABLE', 404, 'This social act
 export class SocialService {
   private changes = new Set<(accounts: string[]) => void>();
   private abuse = new Set<(event: { actorId: string; code: 'REQUEST_LIMITED' }) => void>();
+  private withdrawals = new Set<(db: PoolClient, a: string, b: string) => Promise<void>>();
   constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private presence: SocialPresencePort = { visibleActivity: async () => null }, private now = Date.now) {}
   onChanged(listener: (accounts: string[]) => void) { this.changes.add(listener); return () => { this.changes.delete(listener); }; }
   onAbuse(listener: (event: { actorId: string; code: 'REQUEST_LIMITED' }) => void) { this.abuse.add(listener); return () => { this.abuse.delete(listener); }; }
+  onContactWithdrawn(listener: (db: PoolClient, a: string, b: string) => Promise<void>) { this.withdrawals.add(listener); return () => { this.withdrawals.delete(listener); }; }
+  async invitationRelationship(a: string, b: string, db: PoolClient): Promise<boolean> {
+    if (a === b || await this.isBlocked(a, b, db)) return false;
+    const [low, high] = this.pair(a, b);
+    return !!(await db.query('SELECT 1 FROM social_friendships WHERE low_id=$1 AND high_id=$2', [low, high])).rowCount;
+  }
   private notify(accounts: string[]) { if (!accounts.length) return; for (const listener of this.changes) { try { listener([...new Set(accounts)]); } catch { /* Readers query authoritative policy on every action. */ } } }
   private async actorTx<T>(token: string, targets: string[], work: (db: PoolClient, actor: IdentityContext) => Promise<T>): Promise<T> {
     const initial = await this.identity.authenticate(token); const db = await this.pool.connect();
@@ -129,6 +136,7 @@ export class SocialService {
   unfriend(token: string, key: string, targetId: string) {
     return this.mutation(token, key, 'unfriend', { targetId }, [targetId], async (db, actor) => {
       const [low, high] = this.pair(actor.accountId, targetId); await db.query('DELETE FROM social_friendships WHERE low_id=$1 AND high_id=$2', [low, high]);
+      for (const listener of this.withdrawals) await listener(db, actor.accountId, targetId);
       return { value: { removed: true }, changed: [actor.accountId, targetId] };
     });
   }
@@ -145,6 +153,7 @@ export class SocialService {
         }
         await db.query('DELETE FROM social_friendships WHERE low_id=$1 AND high_id=$2', [low, high]);
         await db.query("UPDATE social_friend_requests SET state='CANCELLED' WHERE pair_low=$1 AND pair_high=$2 AND state='PENDING'", [low, high]);
+        for (const listener of this.withdrawals) await listener(db, actor.accountId, targetId);
       } else await db.query('DELETE FROM social_blocks WHERE blocker_id=$1 AND blocked_id=$2', [actor.accountId, targetId]);
       return { value: { blocked }, changed: [actor.accountId, targetId] };
     });
