@@ -4,6 +4,7 @@ export * from './profiles';
 export * from './world';
 export * from './rooms';
 export * from './scene';
+export * from './avatar';
 // Foundation status only. World/session/room schemas belong to their gated modules.
 export const SCHEMA_VERSION = 1 as const;
 export const LivenessSchema = z.strictObject({ status: z.literal('ok') });

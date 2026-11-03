@@ -1,5 +1,5 @@
 import { test, expect, type Page, type BrowserContext, type WebSocketRoute } from '@playwright/test';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { request } from 'node:http';
 import { MeSchema } from '@virtual-city/contracts';
@@ -43,8 +43,14 @@ async function pixels(page: Page) {
 
 test('actual cafe scene and keyboard seat controls reflect authoritative rooms on desktop/mobile', async ({ page, context }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
-  await guest(context, 'Scene Visitor'); await enter(page);
+  const identity = await guest(context, 'Scene Visitor'); await enter(page);
   const canvas = page.locator('canvas[data-scene="sdk-sandbox"]'); await expect(canvas).toHaveAttribute('data-entity-count', '1');
+  await expect(canvas).toHaveAttribute('data-avatar-core', 'starter-v1'); await expect(canvas).toHaveAttribute('data-avatar-outfit', 'cafe-apron');
+  await expect(canvas).toHaveAttribute('data-avatar-palettes', 'mint');
+  const changed = await context.request.patch('/v1/me', { headers: { origin, 'x-csrf-token': identity.csrfToken, 'idempotency-key': randomUUID() }, data: { avatarKey: 'indigo' } });
+  expect(changed.status()).toBe(200); await expect(canvas).toHaveAttribute('data-avatar-palettes', 'indigo');
+  const forged = await context.request.patch('/v1/me', { headers: { origin, 'x-csrf-token': identity.csrfToken, 'idempotency-key': randomUUID() }, data: { avatarKey: 'indigo', outfit: 'staff' } });
+  expect(forged.status()).toBe(422);
   const seat = page.getByRole('button', { name: 'Window table 01', exact: true });
   await seat.focus(); await page.keyboard.press('Enter');
   await expect(page.getByText('Your seat is confirmed.', { exact: true })).toBeVisible();
@@ -92,6 +98,7 @@ test('keyed sprites follow real seat deltas, resize and leave without allocating
     await other.getByRole('button', { name: 'Stand up', exact: true }).click();
     await expect(canvas).toHaveAttribute('data-sitting-count', '0');
     await expect(canvas).toHaveAttribute('data-created-entities', created!);
+    await expect(canvas).toHaveAttribute('data-active-animations', '0');
     const frames = await canvas.getAttribute('data-render-count');
     await page.waitForTimeout(350); // An idle scene must not run a frame ticker.
     await expect(canvas).toHaveAttribute('data-render-count', frames!);
@@ -170,7 +177,7 @@ test('identity replacement clears sprites and a remounted scene owns only one ca
 });
 
 test('asset failure retains real room and keyboard controls without a blank successful scene', async ({ page, context }) => {
-  await page.route('**/assets/sandbox/fixture-avatar.svg', route => route.abort());
+  await page.route('**/assets/avatars/starter-v1.svg', route => route.abort());
   await guest(context, 'Fallback Visitor'); await enter(page);
   await expect(page.getByText('Scene unavailable. Seat controls remain available.', { exact: true })).toBeVisible();
   await expect(page.locator('canvas[data-scene]')).toHaveCount(0);
@@ -183,7 +190,7 @@ test('leaving while the actual asset is loading cancels the old scene before rem
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   let release: (() => void) | undefined; let requested = false;
   const gate = new Promise<void>(resolve => { release = resolve; });
-  await page.route('**/assets/sandbox/fixture-avatar.svg', async route => {
+  await page.route('**/assets/avatars/starter-v1.svg', async route => {
     requested = true; await gate; await route.continue();
   });
   try {
@@ -198,4 +205,37 @@ test('leaving while the actual asset is loading cancels the old scene before rem
     await expect(page.locator('canvas[data-scene]')).toHaveAttribute('data-entity-count', '1');
     await page.getByRole('button', { name: 'Leave cafe', exact: true }).click(); expect(errors).toEqual([]);
   } finally { release!(); }
+});
+
+test('original avatar action and outfit previews render distinct pixels and respect reduced motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' }); await page.goto('/worlds/sdk-sandbox/avatar-lab');
+  const crop = page.getByRole('img', { name: 'mint avatar, casual, idle', exact: true });
+  await expect(crop).toBeVisible(); await expect.poll(() => crop.locator('img').evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth === 512)).toBe(true);
+  await mkdir('artifacts/avatars', { recursive: true });
+  const hashes = new Set<string>();
+  for (const outfit of ['casual', 'cafe-apron']) {
+    await page.getByLabel('Outfit preview', { exact: true }).selectOption(outfit);
+    for (const action of ['Idle', 'Walk', 'Sit', 'Serve']) {
+      await page.getByRole('button', { name: action, exact: true }).click();
+      if (action === 'Walk') await page.getByRole('button', { name: 'Next pose frame', exact: true }).click();
+      const preview = page.getByRole('img', { name: `mint avatar, ${outfit}, ${action.toLowerCase()}`, exact: true });
+      const png = await preview.screenshot({ path: `artifacts/avatars/${test.info().project.name}-${outfit}-${action.toLowerCase()}.png` });
+      hashes.add(createHash('sha256').update(png).digest('hex'));
+    }
+  }
+  expect(hashes.size).toBe(8);
+  await page.getByRole('button', { name: 'Play animation', exact: true }).click();
+  const preview = page.getByRole('img', { name: 'mint avatar, cafe-apron, serve', exact: true });
+  await expect(preview).toHaveAttribute('data-frame', /[1-3]/);
+  await page.getByRole('button', { name: 'Pause animation', exact: true }).click();
+  await expect(preview).toHaveAttribute('data-playing', 'false');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(page.getByLabel('Reduce motion', { exact: true })).toBeChecked();
+  await expect(page.getByRole('button', { name: 'Play animation', exact: true })).toBeDisabled();
+  await expect(preview).toHaveAttribute('data-frame', '0');
+  await page.getByLabel('Color', { exact: true }).selectOption('rose');
+  await expect(page.getByRole('img', { name: 'rose avatar, cafe-apron, serve', exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.screenshot({ path: `artifacts/avatars/lab-${test.info().project.name}.png`, fullPage: true });
+  await writeFile(`artifacts/avatars/pixels-${test.info().project.name}.json`, JSON.stringify({ distinctPoseOutfitPngHashes: [...hashes], reducedMotion: true }, null, 2));
 });

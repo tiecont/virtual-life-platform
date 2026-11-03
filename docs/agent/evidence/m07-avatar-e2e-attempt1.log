@@ -1,0 +1,144 @@
+$ pnpm build && node scripts/run-browser-tests.mjs
+$ pnpm -r build
+Scope: 6 of 7 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+apps/platform-api build$ tsc -p tsconfig.json && node ../../scripts/copy-migrations.mjs
+packages/pixi-scene build: Done
+apps/portal-web build$ next build --webpack
+apps/portal-web build: ▲ Next.js 16.4.4 (webpack)
+apps/portal-web build: ✓ Running next.config.ts took 39ms
+apps/portal-web build:   Creating an optimized production build ...
+apps/platform-api build: Done
+apps/portal-web build: ✓ Compiled successfully in 4.1s
+apps/portal-web build:   Running TypeScript ...
+apps/portal-web build:   Finished TypeScript in 1288ms ...
+apps/portal-web build:   Collecting page data using 8 workers ...
+apps/portal-web build:   Generating static pages using 8 workers (0/4) ...
+apps/portal-web build:   Generating static pages using 8 workers (1/4) 
+apps/portal-web build:   Generating static pages using 8 workers (2/4) 
+apps/portal-web build:   Generating static pages using 8 workers (3/4) 
+apps/portal-web build: ✓ Generating static pages using 8 workers (4/4) in 723ms
+apps/portal-web build:   Finalizing page optimization ...
+apps/portal-web build:   Collecting build traces ...
+apps/portal-web build: Route (app)
+apps/portal-web build: ┌ ƒ /
+apps/portal-web build: ├ ○ /_not-found
+apps/portal-web build: ├ ○ /identity
+apps/portal-web build: ├ ƒ /social
+apps/portal-web build: ├ ƒ /worlds/sdk-sandbox
+apps/portal-web build: └ ○ /worlds/sdk-sandbox/avatar-lab
+apps/portal-web build: ○  (Static)   prerendered as static content
+apps/portal-web build: ƒ  (Dynamic)  server-rendered on demand
+apps/portal-web build: Done
+ Network virtual-city-test-1bc8ca1f_default Creating 
+ Network virtual-city-test-1bc8ca1f_default Creating 
+ Network virtual-city-test-1bc8ca1f_default Created 
+ Network virtual-city-test-1bc8ca1f_default Created 
+ Container virtual-city-test-1bc8ca1f-db-1 Creating 
+ Container virtual-city-test-1bc8ca1f-db-1 Created 
+ Container virtual-city-test-1bc8ca1f-db-1 Starting 
+ Container virtual-city-test-1bc8ca1f-db-1 Started 
+ Container virtual-city-test-1bc8ca1f-db-1 Waiting 
+ Container virtual-city-test-1bc8ca1f-db-1 Healthy 
+[WebServer] (node:44226) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:44260) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:44260) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:44260) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:44225) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:44317) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:44425) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:44457) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 12 tests using 1 worker
+
+(node:44513) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/e2e/foundation.spec.ts:2:5 › portal displays real API/database readiness and truthful availability on desktop/mobile (440ms)
+  ✓   2 [desktop] › tests/e2e/identity.spec.ts:3:5 › guest profile, private settings, session renewal and deletion survive reload and synchronize tabs (1.7s)
+  ✓   3 [desktop] › tests/e2e/identity.spec.ts:30:5 › upgrading retains identity and permits sign-in from a separate browser context (1.8s)
+  ✓   4 [desktop] › tests/e2e/scene.spec.ts:44:5 › actual cafe scene and keyboard seat controls reflect authoritative rooms on desktop/mobile (1.8s)
+  ✓   5 [desktop] › tests/e2e/scene.spec.ts:69:5 › viewer-filtered scene never fabricates peers and a bilateral block clears the visible visitor (2.3s)
+  ✓   6 [desktop] › tests/e2e/scene.spec.ts:86:5 › keyed sprites follow real seat deltas, resize and leave without allocating duplicate avatars (3.9s)
+  ✓   7 [desktop] › tests/e2e/scene.spec.ts:118:5 › actual transport interruption hides stale seats then reconnects to one retained avatar and seat (2.4s)
+  ✓   8 [desktop] › tests/e2e/scene.spec.ts:154:5 › identity replacement clears sprites and a remounted scene owns only one canvas (2.6s)
+  ✓   9 [desktop] › tests/e2e/scene.spec.ts:179:5 › asset failure retains real room and keyboard controls without a blank successful scene (636ms)
+  ✓  10 [desktop] › tests/e2e/scene.spec.ts:189:5 › leaving while the actual asset is loading cancels the old scene before remount (1.7s)
+  ✓  11 [desktop] › tests/e2e/scene.spec.ts:210:5 › original avatar action and outfit previews render distinct pixels and respect reduced motion (2.0s)
+  ✓  12 [desktop] › tests/e2e/social.spec.ts:4:5 › two browser contexts consent to friendship, receive live updates and enforce private blocks (2.7s)
+
+  12 passed (29.1s)
+ Container virtual-city-test-1bc8ca1f-db-1 Stopping 
+ Container virtual-city-test-1bc8ca1f-db-1 Stopped 
+ Container virtual-city-test-1bc8ca1f-db-1 Removing 
+ Container virtual-city-test-1bc8ca1f-db-1 Removed 
+ Network virtual-city-test-1bc8ca1f_default Removing 
+ Network virtual-city-test-1bc8ca1f_default Removed 
+ Network virtual-city-test-d13bdb66_default Creating 
+ Network virtual-city-test-d13bdb66_default Creating 
+ Network virtual-city-test-d13bdb66_default Created 
+ Network virtual-city-test-d13bdb66_default Created 
+ Container virtual-city-test-d13bdb66-db-1 Creating 
+ Container virtual-city-test-d13bdb66-db-1 Created 
+ Container virtual-city-test-d13bdb66-db-1 Starting 
+ Container virtual-city-test-d13bdb66-db-1 Started 
+ Container virtual-city-test-d13bdb66-db-1 Waiting 
+ Container virtual-city-test-d13bdb66-db-1 Healthy 
+[WebServer] (node:46436) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:46469) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:46469) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:46469) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:46435) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:46535) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:46568) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:46581) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 12 tests using 1 worker
+
+(node:46637) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [mobile] › tests/e2e/foundation.spec.ts:2:5 › portal displays real API/database readiness and truthful availability on desktop/mobile (525ms)
+  ✓   2 [mobile] › tests/e2e/identity.spec.ts:3:5 › guest profile, private settings, session renewal and deletion survive reload and synchronize tabs (1.7s)
+  ✓   3 [mobile] › tests/e2e/identity.spec.ts:30:5 › upgrading retains identity and permits sign-in from a separate browser context (2.0s)
+  ✓   4 [mobile] › tests/e2e/scene.spec.ts:44:5 › actual cafe scene and keyboard seat controls reflect authoritative rooms on desktop/mobile (2.0s)
+  ✓   5 [mobile] › tests/e2e/scene.spec.ts:69:5 › viewer-filtered scene never fabricates peers and a bilateral block clears the visible visitor (2.1s)
+  ✓   6 [mobile] › tests/e2e/scene.spec.ts:86:5 › keyed sprites follow real seat deltas, resize and leave without allocating duplicate avatars (3.6s)
+  ✓   7 [mobile] › tests/e2e/scene.spec.ts:118:5 › actual transport interruption hides stale seats then reconnects to one retained avatar and seat (2.3s)
+  ✓   8 [mobile] › tests/e2e/scene.spec.ts:154:5 › identity replacement clears sprites and a remounted scene owns only one canvas (2.1s)
+  ✓   9 [mobile] › tests/e2e/scene.spec.ts:179:5 › asset failure retains real room and keyboard controls without a blank successful scene (627ms)
+  ✓  10 [mobile] › tests/e2e/scene.spec.ts:189:5 › leaving while the actual asset is loading cancels the old scene before remount (1.5s)
+  ✓  11 [mobile] › tests/e2e/scene.spec.ts:210:5 › original avatar action and outfit previews render distinct pixels and respect reduced motion (2.1s)
+  ✓  12 [mobile] › tests/e2e/social.spec.ts:4:5 › two browser contexts consent to friendship, receive live updates and enforce private blocks (2.6s)
+
+  12 passed (26.9s)
+ Container virtual-city-test-d13bdb66-db-1 Stopping 
+ Container virtual-city-test-d13bdb66-db-1 Stopped 
+ Container virtual-city-test-d13bdb66-db-1 Removing 
+ Container virtual-city-test-d13bdb66-db-1 Removed 
+ Network virtual-city-test-d13bdb66_default Removing 
+ Network virtual-city-test-d13bdb66_default Removed 
+
+TOP_LEVEL_EXIT=0

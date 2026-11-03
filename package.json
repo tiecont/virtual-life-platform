@@ -18,11 +18,13 @@
     "db:migrate": "node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts",
     "plan:status": "node scripts/plan-status.mjs",
     "governance:check": "node scripts/verify-governance.mjs",
-    "check": "pnpm governance:check && pnpm architecture:check && pnpm lint && pnpm typecheck && pnpm test && pnpm test:integration && pnpm build",
+    "check": "pnpm governance:check && pnpm architecture:check && pnpm lint && pnpm typecheck && pnpm assets:check && pnpm test && pnpm test:integration && pnpm build",
     "setup:local": "node scripts/create-local-env.mjs",
     "db:up": "docker compose --env-file .env -f infra/compose/dev.yml up -d --wait",
     "db:stop": "docker compose --env-file .env -f infra/compose/dev.yml stop",
     "architecture:check": "node scripts/verify-architecture.mjs",
+    "assets:avatars": "node --import tsx scripts/build-avatar-assets.ts",
+    "assets:check": "node --import tsx scripts/build-avatar-assets.ts --check",
     "bench:rooms": "pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/rooms-baseline.ts"
   },
   "devDependencies": {

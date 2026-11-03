@@ -16,7 +16,7 @@ export function sceneEntities(scene: SceneManifest, input: RoomSnapshot) {
   const entities = [...profiles.values()].sort((a, b) => a.profile.id.localeCompare(b.profile.id)).map(person => {
     const seat = scene.seats.find(seat => seat.seatId === person.seatId);
     const point = seat ?? { x: scene.spawn.x + (standing++ % 4) - 2, y: scene.spawn.y - Math.floor((standing - 1) / 4) };
-    return { id: person.profile.id, ...tileCenter(scene, point), pose: seat ? 'sit' as const : 'idle' as const,
+    return { id: person.profile.id, palette: person.profile.avatarKey, ...tileCenter(scene, point), pose: seat ? 'sit' as const : 'idle' as const,
       self: person.profile.id === state.self.accountId, opacity: person.state === 'reconnecting' ? .4 : 1 };
   });
   return { state, entities };

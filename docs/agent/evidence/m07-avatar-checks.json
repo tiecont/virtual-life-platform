@@ -1,0 +1,21 @@
+{
+  "taskID": "M07-03",
+  "verifiedAt": "2026-11-03T01:29:01Z",
+  "source": "workspace diff from 227795c; checkpoint commit in git log",
+  "environment": "Linux/Node26.9.0/pnpm11.28.5/Pixi8.22.0/PostgreSQL17.7-alpine/Playwright Chromium",
+  "commands": [
+    { "command": "node --import tsx scripts/build-avatar-assets.ts", "exitCode": 1, "reason": "initial top-level await incompatible with CJS; replaced with async main" },
+    { "command": "node --import tsx scripts/build-avatar-assets.ts", "exitCode": 0 },
+    { "command": "pnpm check", "exitCode": 0, "log": "m07-avatar-check-attempt1.log", "governanceTests": 7, "unitTests": 40, "integrationTests": 72 },
+    { "command": "pnpm assets:check", "exitCode": 0, "scope": "final sit breathing/blink artwork; exact SVG+provenance SHA reproduction" },
+    { "command": "pnpm exec vitest run --project unit packages/pixi-scene/test", "exitCode": 0, "tests": 7, "scope": "final artwork" },
+    { "command": "pnpm lint", "exitCode": 0, "scope": "final source;65 source boundaries" },
+    { "command": "pnpm test:e2e", "exitCode": 0, "log": "m07-avatar-e2e-attempt1.log", "tests": 24, "scope": "final artwork/nearest sampling with fresh builds; desktop12+mobile12" },
+    { "command": "git diff --check", "exitCode": 0 }
+  ],
+  "verified": ["256 bounded unique atlas cells:8 colors/2 outfits/4 actions/4 frames", "strict unknown appearance/action/frame and privilege-injection rejection", "live HTTP profile color update propagates to real room sprite; client outfit injection rejected422", "8 distinct actual pose/outfit PNG hashes on each device", "preview play/pause/manual frames and system reduced motion", "room idle/sit finite animations stop; previous recovery/privacy/cancellation suites retained"],
+  "artifacts": "m07-03-visual/ (actual lab/cafe screenshots, cropped action images and PNG hash reports; inspected)",
+  "provenance": "apps/portal-web/public/assets/avatars/provenance.json; original code-authored source; no imported media/license assignment;releaseApproved=false",
+  "migrations": "none; existing free profile palette/validation unchanged; new presentation-only schemas",
+  "limits": ["Walk/serve rendered in explicit art preview; live movement remains M07-04, service gameplay M11", "No cosmetic economy/earned entitlement introduced; future M13", "No low-end FPS/heap certificate; M07-06 open", "Real/default world flags OFF; no public release, remote push or deployment"]
+}

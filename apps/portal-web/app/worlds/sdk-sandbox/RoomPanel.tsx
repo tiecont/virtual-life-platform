@@ -59,7 +59,7 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
   useEffect(() => {
     const element = host.current; if (!element) return;
     let cancelled = false; let owned: SceneView | undefined; const controller = new AbortController();
-    void import('@virtual-city/pixi-scene').then(module => module.createCafeScene(element, sandboxScene, id => claimRef.current(id), { signal: controller.signal })).then(renderer => {
+    void import('@virtual-city/pixi-scene').then(module => module.createCafeScene(element, sandboxScene, id => claimRef.current(id), { signal: controller.signal, outfit: 'cafe-apron' })).then(renderer => {
       owned = renderer;
       if (cancelled) { renderer.destroy(); return; }
       scene.current = renderer; renderer.update(recovery.current.view.snapshot); setSceneState('ready');
@@ -139,7 +139,7 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
     <div className="cafe-heading"><div><p className="cafe-eyebrow">SDK Sandbox</p><h1>Local Test Cafe</h1></div><div className="cafe-occupancy" aria-label="Room occupancy"><strong>{view.snapshot?.occupancy ?? 0}</strong><span>/ 8 present</span></div></div>
     <div className="cafe-main"><div className="cafe-scene-column">
       <div className="cafe-scene" ref={host} role="img" aria-label="Cafe floor plan. Two shared tables, eight seats, an entrance and a counter. Seat controls follow below."/>
-      <div className="cafe-scene-caption"><span>WINDOW & GARDEN TABLES</span><span>{sceneState === 'loading' ? 'Loading scene...' : sceneState === 'failed' ? 'Scene unavailable. Seat controls remain available.' : 'Original fixture art'}</span></div>
+      <div className="cafe-scene-caption"><span>WINDOW & GARDEN TABLES</span><span>{sceneState === 'loading' ? 'Loading scene...' : sceneState === 'failed' ? 'Scene unavailable. Seat controls remain available.' : 'Original starter art'}</span></div>
       <section className="cafe-seats" aria-labelledby="cafe-seat-title"><div className="cafe-section-heading"><h2 id="cafe-seat-title">Choose a seat</h2>{view.snapshot?.self.seatId && <button disabled={busy} onClick={() => void mutate('seat.release', view.snapshot!.self.seatId!)}>Stand up</button>}</div>
         <div className="cafe-seat-grid">{sandboxScene.seats.map(point => {
           const seat = view.snapshot?.seats.find(seat => seat.seatId === point.seatId);
@@ -151,7 +151,7 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
         {me ? <><p className="cafe-identity">{me.profile.displayName}</p><p className="cafe-note">{active ? view.snapshot?.self.seatId ? 'Seated at ' + sandboxScene.seats.find(seat => seat.seatId === view.snapshot?.self.seatId)?.label : 'Standing near the entrance' : 'No confirmed place'}</p>
           {active ? <button className="cafe-primary" disabled={busy} onClick={() => void mutate('room.leave')}>Leave cafe</button> : <button className="cafe-primary" disabled={!available || busy || loading || view.status === 'syncing'} onClick={enter}>{view.status === 'idle' ? 'Enter cafe' : 'Rejoin cafe'}</button>}
         </> : !loading && <Link href="/identity">Open identity</Link>}
-        <div className="cafe-present"><h2>Visible here</h2>{view.snapshot?.participants.length ? <ul>{view.snapshot.participants.map(person => <li key={person.profile.id}><span>{person.profile.displayName}</span><small>{person.state === 'reconnecting' ? 'Reconnecting' : person.seatId ? 'Seated' : 'Standing'}</small></li>)}</ul> : <p className="cafe-note">No confirmed visible visitors.</p>}</div>
+        <div className="cafe-present"><h2>Visible here</h2>{view.snapshot?.participants.length ? <ul>{view.snapshot.participants.map(person => <li key={person.profile.id}><span>{person.profile.displayName}</span><small>{person.state === 'reconnecting' ? 'Reconnecting' : person.seatId ? 'Seated' : 'Standing'}</small></li>)}</ul> : <p className="cafe-note">No confirmed visible visitors.</p>}</div><Link href="/worlds/sdk-sandbox/avatar-lab">Preview avatar styles</Link>
       </aside></div>
   </main>;
 }

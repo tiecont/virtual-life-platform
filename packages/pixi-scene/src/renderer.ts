@@ -1,18 +1,21 @@
-import { Application, Assets, Container, Graphics, Sprite, Text, type Texture } from 'pixi.js';
-import { SceneManifestSchema, type RoomSnapshot, type SceneManifest } from '@virtual-city/contracts';
+import { Application, Assets, Container, Graphics, Sprite, Text, Texture, Rectangle } from 'pixi.js';
+import { SceneManifestSchema, AvatarOutfitSchema, type AvatarAppearance, type AnimationState, type RoomSnapshot, type SceneManifest } from '@virtual-city/contracts';
 import { tileCenter } from './spec';
 import { fitSceneCamera } from './camera';
 import { sceneEntities } from './entities';
+import { avatarAtlasSpec, avatarFrame } from './avatar-art';
 
-export async function createCafeScene(host: HTMLElement, input: SceneManifest, onSeat: (seatId: string) => void, options: { signal?: AbortSignal } = {}) {
+export async function createCafeScene(host: HTMLElement, input: SceneManifest, onSeat: (seatId: string) => void, options: { signal?: AbortSignal; outfit?: AvatarAppearance['outfit'] } = {}) {
   const scene = SceneManifestSchema.parse(input); const size = scene.tileSize;
+  const outfit = AvatarOutfitSchema.parse(options.outfit ?? 'casual');
   options.signal?.throwIfAborted();
   const app = new Application();
   let texture: Texture;
   try {
     await app.init({ width: scene.columns * size, height: scene.rows * size, background: '#e4ebe7', antialias: false, autoStart: false, resolution: Math.min(window.devicePixelRatio || 1, 2), preference: 'webgl' });
     options.signal?.throwIfAborted();
-    texture = await Assets.load<Texture>('/assets/sandbox/fixture-avatar.svg');
+    texture = await Assets.load<Texture>(avatarAtlasSpec.path);
+    texture.source.scaleMode = 'nearest';
     options.signal?.throwIfAborted();
   } catch (error) {
     if (app.renderer) app.destroy(true, { children: true });
@@ -62,7 +65,16 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
   world.addChild(label('LOCAL TEST CAFE', 9.5 * size, 1.8 * size, '#eff4ef', 14));
   let destroyed = false;
   let current: RoomSnapshot | null = null; let context = ''; let created = 0; let removed = 0; let frames = 0;
-  const avatars = new Map<string, { root: Container; sprite: Sprite }>();
+  const avatars = new Map<string, { root: Container; sprite: Sprite; appearance: AvatarAppearance; pose: AnimationState; startedAt: number | null }>();
+  const framesCache = new Map<string, Texture>();
+  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let animationTimer: ReturnType<typeof setTimeout> | undefined;
+  function frameTexture(appearance: AvatarAppearance, pose: AnimationState, frame: number) {
+    const key = [appearance.palette, appearance.outfit, pose, frame].join(':');
+    let cached = framesCache.get(key);
+    if (!cached) { const at = avatarFrame(appearance, pose, frame); cached = new Texture({ source: texture.source, frame: new Rectangle(at.x, at.y, at.width, at.height) }); framesCache.set(key, cached); }
+    return cached;
+  }
   const chairs = scene.seats.map(point => {
     const at = tileCenter(scene, point); const chair = new Graphics().roundRect(-18, -17, 36, 33, 4).fill('#ffffff');
     chair.position.set(at.x, at.y);
@@ -75,6 +87,26 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
     return { point, chair, occupied };
   });
   function render() { if (!destroyed) { canvas.dataset.renderCount = String(++frames); app.render(); } }
+  function stopAnimations() {
+    if (animationTimer !== undefined) clearTimeout(animationTimer); animationTimer = undefined;
+    for (const avatar of avatars.values()) { avatar.startedAt = null; avatar.sprite.texture = frameTexture(avatar.appearance, avatar.pose, 0); }
+    canvas.dataset.activeAnimations = '0';
+  }
+  function animate() {
+    animationTimer = undefined;
+    if (destroyed || motion.matches || !people.visible) { stopAnimations(); return; }
+    let active = 0;
+    for (const avatar of avatars.values()) {
+      if (avatar.startedAt === null) continue;
+      const frame = Math.floor((performance.now() - avatar.startedAt) / avatarAtlasSpec.frameDurationMs);
+      if (frame >= avatarAtlasSpec.frameCount) { avatar.startedAt = null; avatar.sprite.texture = frameTexture(avatar.appearance, avatar.pose, 0); }
+      else { active++; avatar.sprite.texture = frameTexture(avatar.appearance, avatar.pose, frame); }
+    }
+    canvas.dataset.activeAnimations = String(active); render();
+    if (active) animationTimer = setTimeout(animate, avatarAtlasSpec.frameDurationMs);
+  }
+  function motionChanged() { if (motion.matches) { stopAnimations(); render(); } }
+  motion.addEventListener('change', motionChanged);
   function updateSeats(state: RoomSnapshot | null) {
     current = state;
     for (const { point, chair, occupied } of chairs) {
@@ -104,22 +136,29 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
     for (const entity of entities) {
       let avatar = avatars.get(entity.id);
       if (!avatar) {
-        const root = new Container(); const sprite = new Sprite(texture); sprite.anchor.set(.5, .85); root.addChild(sprite);
+        const appearance: AvatarAppearance = { schemaVersion: 1, core: 'starter-v1', palette: entity.palette, outfit };
+        const root = new Container(); const sprite = new Sprite(frameTexture(appearance, entity.pose, 0)); sprite.anchor.set(.5, .92); sprite.scale.set(1.2); root.addChild(sprite);
         if (entity.self) root.addChild(label('You', 0, -55, '#233d34', 13));
-        avatar = { root, sprite }; avatars.set(entity.id, avatar); people.addChild(root); created++;
+        avatar = { root, sprite, appearance, pose: entity.pose, startedAt: null }; avatars.set(entity.id, avatar); people.addChild(root); created++;
       }
       avatar.root.position.set(entity.x, entity.y); avatar.root.zIndex = entity.y; avatar.root.alpha = entity.opacity;
-      avatar.sprite.scale.set(1.2, entity.pose === 'sit' ? .98 : 1.2);
+      if (avatar.pose !== entity.pose) { avatar.pose = entity.pose; avatar.startedAt = motion.matches ? null : performance.now(); }
+      avatar.appearance = { ...avatar.appearance, palette: entity.palette };
+      avatar.sprite.texture = frameTexture(avatar.appearance, avatar.pose, 0);
     }
     people.visible = true; updateSeats(state);
     canvas.dataset.entityCount = String(entities.length); canvas.dataset.roomVersion = state ? String(state.roomVersion) : '';
     canvas.dataset.createdEntities = String(created); canvas.dataset.removedEntities = String(removed);
     canvas.dataset.sittingCount = String(entities.filter(entity => entity.pose === 'sit').length); canvas.dataset.suspended = 'false';
+    canvas.dataset.avatarCore = 'starter-v1'; canvas.dataset.avatarOutfit = outfit;
+    canvas.dataset.avatarPalettes = [...new Set(entities.map(entity => entity.palette))].sort().join(',');
+    canvas.dataset.activeAnimations = String([...avatars.values()].filter(avatar => avatar.startedAt !== null).length);
+    if (animationTimer === undefined && !motion.matches && [...avatars.values()].some(avatar => avatar.startedAt !== null)) animationTimer = setTimeout(animate, avatarAtlasSpec.frameDurationMs);
     render();
   }
   function suspend() {
     if (destroyed) return;
-    people.visible = false; updateSeats(null); canvas.dataset.entityCount = '0'; canvas.dataset.sittingCount = '0'; canvas.dataset.roomVersion = ''; canvas.dataset.suspended = 'true'; render();
+    stopAnimations(); people.visible = false; updateSeats(null); canvas.dataset.entityCount = '0'; canvas.dataset.sittingCount = '0'; canvas.dataset.roomVersion = ''; canvas.dataset.suspended = 'true'; render();
   }
   function resize() {
     if (destroyed || !host.clientWidth || !host.clientHeight) return;
@@ -130,8 +169,9 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
   const observer = new ResizeObserver(resize);
   function destroy() {
     if (destroyed) return;
-    destroyed = true; observer.disconnect(); options.signal?.removeEventListener('abort', destroy);
+    stopAnimations(); destroyed = true; observer.disconnect(); options.signal?.removeEventListener('abort', destroy); motion.removeEventListener('change', motionChanged);
     avatars.clear(); current = null; app.destroy(true, { children: true });
+    for (const frame of framesCache.values()) frame.destroy(false); framesCache.clear();
   }
   host.appendChild(canvas); observer.observe(host); options.signal?.addEventListener('abort', destroy, { once: true });
   if (options.signal?.aborted) { destroy(); options.signal.throwIfAborted(); }
