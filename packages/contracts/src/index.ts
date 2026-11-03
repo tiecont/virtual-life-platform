@@ -78,3 +78,4 @@ export * from './travel';
 export * from './invitations';
 export * from './focus';
 export * from './hospitality';
+export * from './events';

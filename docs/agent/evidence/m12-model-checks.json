@@ -1,0 +1,15 @@
+{
+  "taskID": "M12-01",
+  "source": "workspace from6dd10f0; checkpoint SHA followsgitlog",
+  "environment": "2026-11-03; Node26.9.0/pnpm11.28.5; local Linux/disposable PostgreSQL",
+  "commands": [
+    { "command": "pnpm exec vitest run --project unit apps/platform-api/src/events/lifecycle.unit.test.ts", "exitCode": 1, "log": "m12-model-red.log", "scope": "Missing lifecycle module; suite could not load" },
+    { "command": "pnpm build:packages", "exitCode": 0, "log": "m12-model-packages.log" },
+    { "command": "pnpm exec vitest run --project unit apps/platform-api/src/events/lifecycle.unit.test.ts", "exitCode": 0, "log": "m12-model-unit.log", "scope": "12tests" },
+    { "command": "pnpm check", "exitCode": null, "log": "m12-model-check.log", "scope": "Complete log includes190unit/252integration/builds; original process handle expired before exit collection; rerun below supplies exit" },
+    { "command": "pnpm check", "exitCode": 0, "log": "m12-model-check-final.log", "exitArtifact": "m12-model-check-final.exit", "scope": "7governance,190unit,252integration; lint/types/architecture/assets/builds" },
+    { "command": "git diff --check", "exitCode": 0 }
+  ],
+  "verified": ["Scheduled/open/live/ended/cancelled observation and terminal guards", "Held/confirmed/expired/checked-in/cancelled deadlines and event cancellation", "Expiry at exact deadline precedes late actions; retries cannot renew/reactivate", "Strict UTC/IANA schemas, frozen schedule and clock rollback rejection", "America/New_York spring gap/repeated fall01:30 with independent GMT offsets and UTC+7 display", "Zero-overbooking policy and whole-party capacity arithmetic reject invalid/oversold input"],
+  "limits": ["Pure model/contracts only; no new API/migration/UI/scheduler/allocator", "No concurrent capacity guarantee until M12-02/03 SQL runtime tests", "Organizer permissions/live-audience approval/notifications/discovery remain later M12 tasks", "No real adapter/rollout/legacy mutation; all real flags OFF", "Two earlier M11 targeted filter expressions were not retained; evidence now states that explicitly rather than inferring exact arguments"]
+}

@@ -1,5 +1,11 @@
 # Agent progress
 
+## M12-01 - VERIFIED event/reservation lifecycle model
+
+Workspace from6dd10f0; m12-model-checks.json/ADR0034/EVENTS-RESERVATIONS.md. Missing-model suite red retained,packages/unit12 exit0. Original fullcheck log completed190unit/252integration/builds but expired process handle had no collected exit. Repeated fullcheck exit0 with durable exit artifact:7governance,190unit,252integration,lint/types/architecture/assets/builds; diff0. No UI change/browser rerun or DB migration.
+
+Strict UTC instants + IANA display zone, ordered24hour window, event/reservation states, exact deadline precedence, terminal/no-extension/clock guards, whole-party zero-overbooking policy and actual Intl DST gap/repeated01:30 offsets verified. This is model scope; no HTTP/scheduler/RSVP/SQL allocator yet. Next exact action M12-02 durable trusted silent-event scheduling/catalog and own RSVP with actual competing TCP requests, receipt rollback/restart/privacy, explicit opt-in calendar download. AllrealflagsOFF,previewoff,localDB0018. M11 evidence corrected two targeted command filters absent from continuation record; subsequent full53hospitality check remains evidenced.
+
 ## M11-06 - VERIFIED service consent and safety recovery
 
 Workspace from b0ff06c; m11-safety-checks.json/ADR0033. Full `pnpm check` exit0:7governance,178unit,252integration including53hospitality,lint/types/architecture/assets/builds. Existing safety/report/block/moderation browser8(4eachdevice) pass; additive0018 local migration0; diff0. Initial2route/requeue reds and38pass4obsolete restart/expiry expectations retained. Updated cancellation semantics plus independent seat/session/block tests pass50,final consent4pass49filteredskips; final fullcheck includes all53.

@@ -1,5 +1,7 @@
 # Decisions
 
+M12-01 / ADR0034: UTC millisecond instants with explicit IANA display zone, no ambiguous local-time inference; immutable deadline state machines and zero-overbooking/whole-party policy. Model does not authorize room admission or prove concurrent SQL allocation. Runtime/safety/organizer approval remains later tasks; fullcheck190unit/252integration exit0 in m12-model-checks.json.
+
 M11-06 / ADR0033: staff refusal is private/durable per order; customer withdrawal needs no current room. Block atomically requeues unserved work; current safety still denies service immediately. Fair recovery ends restricted staff and cancels abandoned/expired original customer work (including restart), preserving served courses/completion semantics. Actual full252integration/browser8 evidence m11-safety-checks.json; no new report UI or real adapter/public activation.
 
 M11-05 / ADR0032: customerackfinalservice atomicallycommitsuniquecompletion/outbox/receipt;internaltrustedDB-onlyhooks commitDBeffect+uniquedeliverytogether,20eventbatch/durableboundedretry. ExactlyonceDBonly;defaultzeroconsumers/noM13rewardgrant. Internalpayloadprivate/erasurecascades,90daywindow;uncooperativehookreviewgate. Evidence m11-completion-checks.json.
