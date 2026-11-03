@@ -1,0 +1,45 @@
+ Network virtual-city-test-ca8399f5_default Creating 
+ Network virtual-city-test-ca8399f5_default Creating 
+ Network virtual-city-test-ca8399f5_default Created 
+ Network virtual-city-test-ca8399f5_default Created 
+ Container virtual-city-test-ca8399f5-db-1 Creating 
+ Container virtual-city-test-ca8399f5-db-1 Created 
+ Container virtual-city-test-ca8399f5-db-1 Starting 
+ Container virtual-city-test-ca8399f5-db-1 Started 
+ Container virtual-city-test-ca8399f5-db-1 Waiting 
+ Container virtual-city-test-ca8399f5-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/events.test.ts (45 tests | 1 failed | 40 skipped) 3823ms
+   × private invitations reject IDOR and expire at the original deadline without revealing later schedule changes 896ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/events.test.ts > private invitations reject IDOR and expire at the original deadline without revealing later schedule changes
+AssertionError: expected 409 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 409
+
+ ❯ tests/integration/events.test.ts:397:160
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed | 40 skipped (45)
+   Start at  20:27:46
+   Duration  5.13s (transform 456ms, setup 0ms, import 1.18s, tests 3.82s, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-ca8399f5-db-1 Stopping 
+ Container virtual-city-test-ca8399f5-db-1 Stopped 
+ Container virtual-city-test-ca8399f5-db-1 Removing 
+ Container virtual-city-test-ca8399f5-db-1 Removed 
+ Network virtual-city-test-ca8399f5_default Removing 
+ Network virtual-city-test-ca8399f5_default Removed 

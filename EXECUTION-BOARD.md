@@ -76,7 +76,7 @@
 | M12 | M12-02 · Implement scheduled events/catalog and RSVP with capacity checks. | VERIFIED | m12-rsvp-checks.json;check0(190unit/269integration/builds),17events,browser8,0019local |
 | M12 | M12-03 · Implement reservation holds/expiry/check-in/waitlist policy. | VERIFIED | m12-reservations-checks.json;check0(190unit/281integration/builds),29event/reservation,browser6,0020local |
 | M12 | M12-04 · Implement organizer/performer/mod permissions and cancel notifications. | VERIFIED | m12-governance-checks.json;check0(190unit/290integration/builds),38event/reservation,browser4,0021local;interactive denied |
-| M12 | M12-05 · Implement event discovery and invitations with privacy restrictions. | TODO | — |
+| M12 | M12-05 · Implement event discovery and invitations with privacy restrictions. | VERIFIED | m12-discovery-checks.json;check0(190unit/297integration/builds),45event/reservation,0022local |
 | M12 | M12-06 · Write concurrency and timezone integration tests. | TODO | — |
 | M13 | M13-01 · Define XP and cosmetics policies for each world with cap and abuse prevention. | TODO | — |
 | M13 | M13-02 · Implement entitlement service and ledger/unique source id. | TODO | — |

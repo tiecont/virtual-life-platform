@@ -16,8 +16,11 @@ const conflict = () => new DomainError('IDEMPOTENCY_CONFLICT', 409, 'Request key
 export class InvitationService {
   #listeners = new Set<(ids: string[], event: 'invitation.received' | 'invitation.responded') => void>();
   #maintenance?: Promise<void>; #closed = false;
+  #consentWithdrawals = new Set<(db: PoolClient, account: string) => Promise<void>>();
   constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private social: SocialService, private registry: WorldRegistry, private now = Date.now) {}
   onChanged(listener: (ids: string[], event: 'invitation.received' | 'invitation.responded') => void) { this.#listeners.add(listener); return () => { this.#listeners.delete(listener); }; }
+  permitsContact(db: PoolClient, sender: string, recipient: string) { return this.allowed(db, sender, recipient); }
+  onConsentWithdrawn(listener: (db: PoolClient, account: string) => Promise<void>) { this.#consentWithdrawals.add(listener); return () => { this.#consentWithdrawals.delete(listener); }; }
   private notify(ids: string[], event: 'invitation.received' | 'invitation.responded' = 'invitation.responded') { for (const listener of this.#listeners) { try { listener([...new Set(ids)], event); } catch { /* Refresh hints never grant authority. */ } } }
   private async tx<T>(token: string, ids: string[], work: (db: PoolClient, actor: IdentityContext) => Promise<T>) {
     if (this.#closed) throw new DomainError('WORLD_UNAVAILABLE', 503, 'Invitations unavailable');
@@ -57,6 +60,7 @@ export class InvitationService {
       if (previous) return InvitationSettingsSchema.parse(previous.result);
       await db.query('INSERT INTO invitation_preferences VALUES($1,$2) ON CONFLICT(account_id) DO UPDATE SET allow_invitations=$2', [actor.accountId, input.allowInvitations]);
       if (!input.allowInvitations) await db.query("UPDATE invitations SET state='CANCELLED',changed_at=$2 WHERE recipient_id=$1 AND state='PENDING'", [actor.accountId, new Date(this.now())]);
+      if (!input.allowInvitations) for (const listener of this.#consentWithdrawals) await listener(db, actor.accountId);
       await this.remember(db, actor, key, 'settings', fingerprint, null, input); changed = true; return input;
     }); if (changed) this.notify([accountId]); return result;
   }

@@ -41,6 +41,7 @@ import { registerEvents } from './events/http';
 import { ReservationService } from './events/reservations';
 import { registerReservations } from './events/reservations-http';
 import { EventPermissions } from './events/permissions';
+import { EventInvitationService } from './events/invitations';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -93,10 +94,13 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const eventPermissions = new EventPermissions(reports, options.now);
   const events = new EventService(db, identity, social, worlds.registry, { permits: async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account, world) && await new SanctionPolicy(transaction, options.now).permits(account, world) }, options.events?.organizers ?? eventPermissions, options.now, eventPermissions);
   const reservations = new ReservationService(db, identity, social, rooms, events, options.now); events.attachReservations(reservations);
+  const eventInvitations = new EventInvitationService(db, identity, invitations, events, options.now); events.attachInvitations(eventInvitations);
   const unsubscribeInvitationWithdrawal = social.onContactWithdrawn((transaction, a, b) => invitations.withdrawContact(transaction, a, b));
   const unsubscribeHospitalityWithdrawal = social.onContactWithdrawn((transaction, a, b) => hospitality.withdrawContact(transaction, a, b));
   const unsubscribeEventWithdrawal = social.onContactWithdrawn((transaction, a, b) => events.withdrawContact(transaction, a, b));
   const unsubscribeReservationWithdrawal = social.onContactWithdrawn((transaction, a, b) => reservations.withdrawContact(transaction, a, b));
+  const unsubscribeEventInvitationWithdrawal = social.onContactWithdrawn((transaction, a, b) => eventInvitations.withdrawContact(transaction, a, b));
+  const unsubscribeEventConsent = invitations.onConsentWithdrawn((transaction, account) => eventInvitations.withdrawAll(transaction, account));
   const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, policy: safetyPolicy, evidence: reports.cache }, options.now);
   http.addHook('onClose', async () => { await worlds.registry.close(); });
   http.addHook('onClose', async () => { await rooms.close(); });
@@ -108,7 +112,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerInvitations(http, config, identity, invitations, options.now);
   registerFocus(http, config, identity, focus, options.now);
   registerHospitality(http, config, identity, hospitality, options.now);
-  registerEvents(http, config, identity, events, options.now);
+  registerEvents(http, config, identity, events, eventInvitations, options.now);
+  identity.registerExportOwner('eventInvitations', (id, transaction) => eventInvitations.exportAccount(id, transaction));
   registerReservations(http, config, identity, reservations, options.now);
   identity.registerExportOwner('reservations', (id, transaction) => reservations.exportAccount(id, transaction));
   identity.registerExportOwner('events', (id, transaction) => events.exportAccount(id, transaction));
@@ -144,10 +149,11 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const unsubscribeSocial = social.onChanged(ids => { for (const id of ids) gateway.emitToAccount(id, 'friendship.changed', { schemaVersion: 1 }); });
   const unsubscribeInvitations = invitations.onChanged((ids, event) => { for (const id of ids) gateway.emitToAccount(id, event, { schemaVersion: 1 }); });
   const unsubscribeEventNotices = events.onNotice(ids => { for (const id of ids) gateway.emitToAccount(id, 'event.notice', { schemaVersion: 1 }); });
+  const unsubscribeEventInvitations = eventInvitations.onChanged(ids => { for (const id of ids) gateway.emitToAccount(id, 'event.invitation', { schemaVersion: 1 }); });
   const unsubscribeRoomSocial = social.onChanged(ids => { void rooms.refreshAccounts(ids); });
   const unsubscribeRoomIdentity = identity.onChanged(id => { void rooms.refreshAccounts([id]); });
-  http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeEventNotices(); unsubscribeInvitationWithdrawal(); unsubscribeHospitalityWithdrawal(); unsubscribeEventWithdrawal(); unsubscribeReservationWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
+  http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeEventNotices(); unsubscribeEventInvitations(); unsubscribeEventInvitationWithdrawal(); unsubscribeEventConsent(); unsubscribeInvitationWithdrawal(); unsubscribeHospitalityWithdrawal(); unsubscribeEventWithdrawal(); unsubscribeReservationWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, hospitality, hospitalityOutbox, events, reservations, diagnostics };
+  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, hospitality, hospitalityOutbox, events, eventInvitations, reservations, diagnostics };
 }

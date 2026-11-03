@@ -29,7 +29,7 @@ const title = z.string().trim().min(1).max(120).refine(value => ![...value].some
 export const EventScheduleInputSchema = z.strictObject({ schemaVersion: z.literal(1), worldSlug: WorldSlugSchema, policyVersion: WorldVersionSchema, title, audience: z.literal('silent'), visibility: z.enum(['listed', 'private']), capacity: z.number().int().min(1).max(100), schedule: EventScheduleSchema, resourceKey: WorldSlugSchema.optional() });
 export const EventRsvpInputSchema = z.strictObject({ schemaVersion: z.literal(1) });
 export const EventCalendarInputSchema = z.strictObject({ schemaVersion: z.literal(1), optIn: z.literal(true) });
-export const EventCatalogQuerySchema = z.strictObject({ worldSlug: WorldSlugSchema });
+export const EventCatalogQuerySchema = z.strictObject({ worldSlug: WorldSlugSchema.optional() });
 export const EventRsvpViewSchema = z.strictObject({ id: uuid, phase: z.enum(['CONFIRMED', 'CANCELLED', 'EXPIRED']), createdAt: z.iso.datetime(), changedAt: z.iso.datetime() });
 export const EventRsvpResultSchema = z.strictObject({ schemaVersion: z.literal(1), rsvp: EventRsvpViewSchema });
 export const EventViewSchema = z.strictObject({ id: uuid, worldSlug: WorldSlugSchema, title, phase: EventPhaseSchema, version: z.number().int().nonnegative(), createdAt: z.iso.datetime(), schedule: EventScheduleSchema, startsLabel: z.string(), endsLabel: z.string(), capacity: z.number().int().min(1).max(100), mine: z.boolean(), rsvp: EventRsvpViewSchema.nullable(), resourceKey: WorldSlugSchema.nullable() });
@@ -40,3 +40,7 @@ export const EventCancelSchema = z.strictObject({ schemaVersion: z.literal(1), e
 export const EventPerformerReadySchema = z.strictObject({ schemaVersion: z.literal(1), ready: z.boolean() });
 export const EventControlsSchema = z.strictObject({ schemaVersion: z.literal(1), canAdjust: z.boolean(), canCancel: z.boolean(), canPerform: z.boolean(), ready: z.boolean() });
 export const EventNoticesSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(z.strictObject({ id: uuid, eventId: uuid, kind: z.literal('cancelled'), createdAt: z.iso.datetime() })).max(100), truncated: z.boolean() });
+export const EventInviteInputSchema = z.strictObject({ schemaVersion: z.literal(1), recipientId: uuid });
+export const EventInviteRespondSchema = z.strictObject({ schemaVersion: z.literal(1), action: z.enum(['accept', 'decline', 'cancel']) });
+export const EventInviteReceiptSchema = z.strictObject({ schemaVersion: z.literal(1), id: uuid, eventId: uuid, phase: z.enum(['PENDING','ACCEPTED','DECLINED','EXPIRED','CANCELLED']), expiresAt: z.iso.datetime() });
+export const EventInvitesPageSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(EventInviteReceiptSchema.extend({ direction: z.enum(['incoming','outgoing']), event: z.strictObject({ title, worldSlug: WorldSlugSchema, schedule: EventScheduleSchema }) })).max(50), truncated: z.boolean() });

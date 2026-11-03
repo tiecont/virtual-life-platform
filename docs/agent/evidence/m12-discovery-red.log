@@ -1,0 +1,60 @@
+ Network virtual-city-test-84ae559c_default Creating 
+ Network virtual-city-test-84ae559c_default Creating 
+ Network virtual-city-test-84ae559c_default Created 
+ Network virtual-city-test-84ae559c_default Created 
+ Container virtual-city-test-84ae559c-db-1 Creating 
+ Container virtual-city-test-84ae559c-db-1 Created 
+ Container virtual-city-test-84ae559c-db-1 Starting 
+ Container virtual-city-test-84ae559c-db-1 Started 
+ Container virtual-city-test-84ae559c-db-1 Waiting 
+ Container virtual-city-test-84ae559c-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/events.test.ts (40 tests | 2 failed | 38 skipped) 1286ms
+   × global event discovery lists eligible public events while private and adult-gated rows remain hidden 703ms
+   × private event invitation needs current friendship/opt-in and explicit acceptance without allocating RSVP/table/room 578ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/events.test.ts > global event discovery lists eligible public events while private and adult-gated rows remain hidden
+AssertionError: expected 422 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 422
+
+ ❯ tests/integration/events.test.ts:374:84
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  |integration| tests/integration/events.test.ts > private event invitation needs current friendship/opt-in and explicit acceptance without allocating RSVP/table/room
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/integration/events.test.ts:381:145
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 38 skipped (40)
+   Start at  19:56:15
+   Duration  2.36s (transform 459ms, setup 0ms, import 952ms, tests 1.29s, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-84ae559c-db-1 Stopping 
+ Container virtual-city-test-84ae559c-db-1 Stopped 
+ Container virtual-city-test-84ae559c-db-1 Removing 
+ Container virtual-city-test-84ae559c-db-1 Removed 
+ Network virtual-city-test-84ae559c_default Removing 
+ Network virtual-city-test-84ae559c_default Removed 

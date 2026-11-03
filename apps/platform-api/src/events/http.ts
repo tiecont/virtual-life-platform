@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
-import { EventCalendarInputSchema, EventRsvpInputSchema, EventPerformerReadySchema } from '@virtual-city/contracts';
+import { EventCalendarInputSchema, EventRsvpInputSchema, EventPerformerReadySchema, EventInviteRespondSchema } from '@virtual-city/contracts';
 import { WorldError } from '@virtual-city/world-sdk';
 import type { Config } from '../config';
 import type { IdentityService } from '../identity/service';
@@ -9,7 +9,8 @@ import { WindowLimiter } from '../identity/limits';
 import { apiErrorHandler } from '../common/http-errors';
 import { DomainError } from '../common/errors';
 import type { EventService } from './service';
-export function registerEvents(http: FastifyInstance, config: Config, identity: IdentityService, events: EventService, now = Date.now) {
+import type { EventInvitationService } from './invitations';
+export function registerEvents(http: FastifyInstance, config: Config, identity: IdentityService, events: EventService, invitations: EventInvitationService, now = Date.now) {
   const limits = new WindowLimiter(now), uuid = z.uuid().transform(value => value.toLowerCase());
   const token = (req: FastifyRequest) => readSessionToken(req, config)!;
   const id = (req: FastifyRequest) => z.strictObject({ id: uuid }).parse(req.params).id;
@@ -25,6 +26,9 @@ export function registerEvents(http: FastifyInstance, config: Config, identity: 
     api.get('/events/notices', req => { empty(req); return events.notices(token(req)); });
     api.get('/events/:id', req => { empty(req); return events.get(token(req), id(req)); });
     api.get('/events/:id/controls', req => { empty(req); return events.controls(token(req), id(req)); });
+    api.post('/events/:id/invitations', async (req, reply) => reply.code(201).send(await invitations.create(write(req), id(req), key(req), req.body)));
+    api.get('/event-invitations', req => { empty(req); return invitations.list(token(req)); });
+    api.post('/event-invitations/:id/respond', req => invitations.respond(write(req), id(req), key(req), EventInviteRespondSchema.parse(req.body).action));
     for (const action of ['adjust', 'cancel'] as const) api.post('/events/:id/' + action, req => events.govern(write(req), id(req), key(req), action, req.body));
     api.post('/events/:id/performer-ready', req => { const input = EventPerformerReadySchema.parse(req.body); return events.performerReady(write(req), id(req), key(req), input.ready); });
     api.post('/events/:id/rsvp', async (req, reply) => { EventRsvpInputSchema.parse(req.body); return reply.code(201).send(await events.rsvp(write(req), id(req), key(req))); });

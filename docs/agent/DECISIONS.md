@@ -1,5 +1,7 @@
 # Decisions
 
+M12-05 / ADR0038: event-private consent reuses platform friendship/opt-in via an owner port and transactional opt-out callback; explicit acceptance grants viewing only and revocation cancels private participation. Global discovery excludes private/hidden/restricted/dating. Expired offers cannot disclose later metadata. Evidence full297integration/builds exit0;allrealflagsOFF.
+
 M12-04 / ADR0037: registered expiring organizer/performer roles remain separate from M08 moderator authority; only original organizer adjusts unoccupied schedules. Cancellation works during closure and atomically releases participation/unique private notices/receipt with sorted recipient locks and retry on snapshot growth. Socket hints contain schemaVersion only. Interactive audience stays denied; independent approval/stage coverage remains mandatory M19 gate, not a completed workflow. Evidence final290integration/browser4 pass.
 
 M12-03 / ADR0036: optional trusted resourceKey chooses whole-table slots, with nonoverlap under schedule lock and one active allocation SQL index. Server holds clip to start; check-in requires actual room authority; explicit FIFO never auto-confirms. Event-owned transaction ports avoid direct reservation reads of event repositories. Actual full281integration/browser6 pass; party count/booking is separate from physical group seats or actual Restaurant integration.

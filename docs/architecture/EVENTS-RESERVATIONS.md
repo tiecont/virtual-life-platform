@@ -1,5 +1,13 @@
 # Events and reservations
 
+## Discovery and private invitations — M12-05
+
+GET `/v1/events` may omit worldSlug to discover up to50 upcoming listed events across eligible available public worlds. Each row repeats current block/safety/version checks; private sessions, hidden/restricted worlds and dating never enter this catalog. Accepted private invitations do not make an event public.
+
+POST `/v1/events/:id/invitations` is original-organizer-only, requires current friendship/recipient opt-in and strict schemaVersion/recipientId with Origin/CSRF/key. Offers expire within120seconds clipped at start. GET `/v1/event-invitations` privately previews active offered title/world/schedule; no roster/contact IDs. POST `/v1/event-invitations/:id/respond` accepts/declines/withdraws. Acceptance permits private-event access until its end, continuously gated by current consent/world/safety, and allocates no RSVP/table/room. Terminal offers disclose no updated event metadata.
+
+Block/unfriend/opt-out transactionally revoke accepted access and private participation. Callback failure rolls all effects back. Re-enabled settings/friendship and old retry keys cannot resurrect grants. Event cancellation includes invited recipients in private cancellation notices. Version-only postcommit socket hints reveal no event details. Mutation receipts, quotas, bounded inbox/export, erasure and90day event-retention cascades apply; migration0022/ADR0038 document scope and rollback. No event UI, adult access or public rollout is enabled.
+
 ## Scoped controls and private cancellation — M12-04
 
 Default organizer/performer grants are persisted, registered-account-only, scoped and expiring; migrations provision nobody and no self-grant endpoint exists. POST events now exposes guarded scheduling to authorized organizers. POST events/:id/adjust requires the original organizer, expectedVersion and an unoccupied SCHEDULED event; time/zone/slot checks repeat. After participation, cancel and create a new schedule. Control version tracks adjust/cancel.

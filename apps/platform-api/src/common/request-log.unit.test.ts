@@ -13,6 +13,7 @@ it('omits safety object IDs, query filters and request secrets from request logg
     ['/v1/focus/private-timer/finish?note=private-note', '/v1/focus/[redacted]/finish'],
     ['/v1/orders/private-order/claim?customer=private-customer', '/v1/orders/[redacted]/claim'],
     ['/v1/events/private-event/calendar?account=private-attendee', '/v1/events/[redacted]/calendar'],
+    ['/v1/event-invitations/private-event-offer/respond?recipient=private-contact', '/v1/event-invitations/[redacted]/respond'],
     ['/v1/reservations/private-booking/confirm?guest=private-guest', '/v1/reservations/[redacted]/confirm'],
     ['/v1/reservations/waitlist/private-entry/leave', '/v1/reservations/waitlist/[redacted]/leave'],
     ['/v1/staff/shifts/private-shift/end?staff=private-staff', '/v1/staff/shifts/[redacted]/end'],

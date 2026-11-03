@@ -16,7 +16,7 @@ async function open(trustedOrganizerPort = true) {
   const schema = 'events_test_' + randomUUID().replaceAll('-', ''); await admin.query(`CREATE SCHEMA "${schema}"`); const url = new URL(process.env.TEST_DATABASE_URL!); url.searchParams.set('options', '-c search_path=' + schema); const pool = new Pool({ connectionString: url.toString() }); await migrate(pool); let now = Date.parse('2026-11-03T10:00:00.000Z');
   const definition = { schemaVersion: 1, apiVersion: 1, slug: 'event-fixture', version: '1.0.0', title: 'Synthetic silent event fixture', kind: 'sandbox', sceneRef: { key: 'event-fixture', version: '1.0.0' }, capacity: 20, capabilities: ['presence', 'events'], eventPolicy: { schemaVersion: 1, version: '1.0.0', maxCapacity: 20, reservations: { holdSeconds: 30, maxPartySize: 4, waitlist: 'fifo', resources: [{ key: 'table-one', capacity: 4 }] } }, accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'sandbox', position: { x: .5, y: .5 }, icon: 'flask' } };
   const hooks = { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {} };
-  const modules = [defineWorld(definition, hooks), defineWorld({ ...definition, slug: 'private-event-fixture', visibility: 'hidden', accessPolicy: { kind: 'private', policyKey: 'test.private' } }, hooks)];
+  const modules = [defineWorld(definition, hooks), defineWorld({ ...definition, slug: 'private-event-fixture', visibility: 'hidden', accessPolicy: { kind: 'private', policyKey: 'test.private' } }, hooks), defineWorld({ ...definition, slug: 'dating', visibility: 'hidden', accessPolicy: { kind: 'restricted', policyKey: 'test.adult', requiresAdult: true } }, hooks)];
   const organizers = new Set<string>(), config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'events-local-only-test-session-secret-000001' }), options = { now: () => now, worlds: { modules }, events: trustedOrganizerPort ? { organizers: { permits: async (_db: unknown, actor: { accountId: string }) => organizers.has(actor.accountId) } } : {} }, app = await createApp(config, pool, false, options); opened.push({ app, pool, schema }); await app.app.listen(0, '127.0.0.1'); for (const slug of app.worlds.registry.slugs()) await app.worlds.registry.setEnabled(slug, true);
   return { app, pool, config, options, organizers, url: await app.app.getUrl(), now: () => now, advance: (ms: number) => { now += ms; } };
 }
@@ -39,6 +39,8 @@ async function registered(r: Runtime, u?: User): Promise<User> {
   user.me = MeSchema.parse(response.json()); user.cookie = String(response.headers['set-cookie']).split(';')[0]; const signed = r.app.http.unsignCookie(decodeURIComponent(user.cookie.slice(user.cookie.indexOf('=') + 1))); if (!signed.value) throw new Error('Invalid registered fixture'); user.token = signed.value; return user;
 }
 async function grant(r: Runtime, u: User, role: 'organizer' | 'performer', eventId: string | null = null, world = 'event-fixture') { await r.pool.query('INSERT INTO engine_event_grants VALUES($1,$2,$3,$4,$5,$6)', [randomUUID(), u.me.profile.id, world, eventId, role, new Date(r.now() + 7200000)]); }
+async function befriend(r: Runtime, a: User, b: User) { const code = (await get(r, b, 'social/me')).json().contactCode, request = await post(r, a, 'friends/requests', { contactCode: code }); expect(request.statusCode).toBe(200); expect((await post(r, b, 'friends/requests/' + request.json().id + '/respond', { action: 'accept' })).json().state).toBe('ACCEPTED'); }
+const inviteOptIn = (r: Runtime, u: User, enabled: boolean) => r.app.http.inject({ method: 'PATCH', url: '/v1/me/invitations/settings', headers: headers(u), payload: { schemaVersion: 1, allowInvitations: enabled } });
 
 it('serves an authenticated empty catalog and denies ungranted scheduling or automatic calendar access', async () => {
   const r = await open(), u = await guest(r); expect((await get(r, u)).statusCode).toBe(200); expect((await get(r, u)).json().items).toEqual([]);
@@ -364,4 +366,82 @@ it('participant erasure racing cancellation leaves no private notice or booking 
   const r = await open(), owner = await guest(r), a = await guest(r), event = await schedule(r, owner, { resourceKey: 'table-one' }); await post(r, a, 'reservations', { schemaVersion: 1, eventId: event.event.id, partySize: 1 }); const key = randomUUID(), body = { schemaVersion: 1, expectedVersion: 0 };
   const [cancelled, erased] = await Promise.all([post(r, owner, 'events/' + event.event.id + '/cancel', body, key), r.app.http.inject({ method: 'DELETE', url: '/v1/me', headers: headers(a), payload: {} })]); expect(erased.statusCode).toBe(200); expect(cancelled.statusCode).toBe(200);
   expect((await r.pool.query('SELECT 1 FROM engine_event_notices WHERE account_id=$1', [a.me.profile.id])).rowCount).toBe(0); expect((await r.pool.query('SELECT 1 FROM engine_reservations WHERE account_id=$1', [a.me.profile.id])).rowCount).toBe(0);
+});
+
+it('global event discovery lists eligible public events while private and adult-gated rows remain hidden', async () => {
+  const r = await open(), owner = await guest(r), viewer = await guest(r), publicEvent = await schedule(r, owner); await schedule(r, owner, { visibility: 'private' });
+  const adultId = randomUUID(); await r.pool.query("INSERT INTO engine_events(id,organizer_id,world_slug,world_version,policy_version,title,audience,visibility,capacity,time_zone,opens_at,starts_at,check_in_closes_at,ends_at,phase,created_at,changed_at) SELECT $1,organizer_id,'dating',world_version,policy_version,'Private adult fixture',audience,visibility,capacity,time_zone,opens_at,starts_at,check_in_closes_at,ends_at,phase,created_at,changed_at FROM engine_events WHERE id=$2", [adultId, publicEvent.event.id]);
+  const discovered = await get(r, viewer, 'events'); expect(discovered.statusCode).toBe(200); expect(discovered.json().items.map((event: { id: string }) => event.id)).toEqual([publicEvent.event.id]); expect(discovered.body).not.toMatch(/dating|Private adult/);
+  expect((await get(r, viewer, 'events/' + adultId)).statusCode).toBe(404); expect((await get(r, viewer, 'events?worldSlug=dating')).statusCode).toBe(404);
+});
+
+it('private event invitation needs current friendship/opt-in and explicit acceptance without allocating RSVP/table/room', async () => {
+  const r = await open(), owner = await guest(r), recipient = await guest(r), stranger = await guest(r), event = await schedule(r, owner, { visibility: 'private' }), path = 'events/' + event.event.id;
+  expect((await post(r, owner, path + '/invitations', { schemaVersion: 1, recipientId: recipient.me.profile.id })).statusCode).toBe(404); await befriend(r, owner, recipient); await inviteOptIn(r, recipient, true);
+  const sent = await post(r, owner, path + '/invitations', { schemaVersion: 1, recipientId: recipient.me.profile.id }); expect(sent.statusCode).toBe(201); expect(sent.json().phase).toBe('PENDING');
+  expect((await get(r, recipient, path)).statusCode).toBe(404); const inbox = await get(r, recipient, 'event-invitations'); expect(inbox.json().items[0]).toMatchObject({ direction: 'incoming', event: { title: 'Synthetic silent study' } }); expect((await get(r, stranger, 'event-invitations')).json().items).toEqual([]);
+  const accepted = await post(r, recipient, 'event-invitations/' + sent.json().id + '/respond', { schemaVersion: 1, action: 'accept' }); expect(accepted.statusCode).toBe(200); expect((await get(r, recipient, path)).statusCode).toBe(200); expect((await get(r, recipient, 'events')).json().items).toEqual([]);
+  expect((await r.pool.query('SELECT 1 FROM engine_event_rsvps')).rowCount).toBe(0); expect((await r.pool.query('SELECT 1 FROM engine_reservations')).rowCount).toBe(0); expect(r.app.rooms.diagnostics().memberships).toBe(0);
+});
+
+it('private invitations reject IDOR and expire at the original deadline without revealing later schedule changes', async () => {
+  const r = await open(), owner = await guest(r), recipient = await guest(r), stranger = await guest(r), base = input(r).schedule;
+  const event = await schedule(r, owner, { visibility: 'private', schedule: { ...base, opensAt: new Date(r.now() + 300000).toISOString(), startsAt: new Date(r.now() + 600000).toISOString(), checkInClosesAt: new Date(r.now() + 900000).toISOString() } });
+  await befriend(r, owner, recipient); await inviteOptIn(r, recipient, true); const key = randomUUID(), body = { schemaVersion: 1, recipientId: recipient.me.profile.id }, path = 'events/' + event.event.id;
+  const sent = await post(r, owner, path + '/invitations', body, key); expect(sent.statusCode).toBe(201); const id = sent.json().id;
+  expect((await post(r, stranger, 'event-invitations/' + id + '/respond', { schemaVersion: 1, action: 'accept' })).statusCode).toBe(404);
+  expect((await post(r, owner, 'event-invitations/' + id + '/respond', { schemaVersion: 1, action: 'accept' })).statusCode).toBe(404);
+  expect((await post(r, owner, path + '/invitations', { ...body, recipientId: stranger.me.profile.id }, key)).statusCode).toBe(404);
+  r.advance(120000); const expired = await post(r, recipient, 'event-invitations/' + id + '/respond', { schemaVersion: 1, action: 'accept' }); expect(expired.statusCode).toBe(200); expect(expired.json().phase).toBe('EXPIRED');
+  expect((await post(r, owner, path + '/invitations', body, key)).json().phase).toBe('EXPIRED'); expect((await get(r, recipient, path)).statusCode).toBe(404); expect((await get(r, recipient, 'event-invitations')).json().items).toEqual([]);
+  const edited = await post(r, owner, path + '/adjust', { schemaVersion: 1, expectedVersion: 0, title: 'Changed private details' }); expect(edited.statusCode).toBe(200); expect((await get(r, recipient, 'event-invitations')).body).not.toContain('Changed private details');
+});
+
+it('acceptance crossing its deadline while SQL is blocked expires instead of granting private access', async () => {
+  const r = await open(), owner = await guest(r), recipient = await guest(r), base = input(r).schedule;
+  const event = await schedule(r, owner, { visibility: 'private', schedule: { ...base, startsAt: new Date(r.now() + 600000).toISOString(), checkInClosesAt: new Date(r.now() + 900000).toISOString() } }); await befriend(r, owner, recipient); await inviteOptIn(r, recipient, true);
+  const sent = await post(r, owner, 'events/' + event.event.id + '/invitations', { schemaVersion: 1, recipientId: recipient.me.profile.id }); const id = sent.json().id;
+  await r.pool.query("CREATE FUNCTION pause_event_acceptance() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.phase='ACCEPTED' THEN PERFORM pg_advisory_xact_lock(7369281); END IF; RETURN NEW; END $$");
+  await r.pool.query('CREATE TRIGGER pause_event_acceptance BEFORE UPDATE ON engine_event_invitations FOR EACH ROW EXECUTE FUNCTION pause_event_acceptance()');
+  const blocker = await r.pool.connect(); await blocker.query('BEGIN'); await blocker.query('SELECT pg_advisory_xact_lock(7369281)');
+  const pending = post(r, recipient, 'event-invitations/' + id + '/respond', { schemaVersion: 1, action: 'accept' });
+  try {
+    await expect.poll(async () => (await r.pool.query("SELECT count(*)::int AS n FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE 'UPDATE engine_event_invitations SET phase=%' AND pid<>pg_backend_pid()")).rows[0].n, { timeout: 800 }).toBeGreaterThan(0);
+    r.advance(120000); await blocker.query('COMMIT');
+  } finally { await blocker.query('ROLLBACK'); blocker.release(); }
+  const result = await pending; expect(result.statusCode).toBe(200); expect(result.json().phase).toBe('EXPIRED'); expect((await get(r, recipient, 'events/' + event.event.id)).statusCode).toBe(404);
+});
+
+it('revoking invitation consent atomically cancels accepted private table work and cannot revive old keys', async () => {
+  const r = await open(), owner = await guest(r), recipient = await guest(r), other = await guest(r), event = await schedule(r, owner, { visibility: 'private', resourceKey: 'table-one' }), path = 'events/' + event.event.id;
+  await befriend(r, owner, recipient); await befriend(r, owner, other); await inviteOptIn(r, recipient, true); await inviteOptIn(r, other, true);
+  const sendKey = randomUUID(), offer = await post(r, owner, path + '/invitations', { schemaVersion: 1, recipientId: recipient.me.profile.id }, sendKey), acceptKey = randomUUID(), accept = { schemaVersion: 1, action: 'accept' };
+  await post(r, recipient, 'event-invitations/' + offer.json().id + '/respond', accept, acceptKey); const booking = await post(r, recipient, 'reservations', { schemaVersion: 1, eventId: event.event.id, partySize: 1 }); expect(booking.statusCode).toBe(201);
+  await r.pool.query("CREATE FUNCTION fail_private_revocation() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.phase='CANCELLED' THEN RAISE EXCEPTION 'synthetic consent withdrawal failure'; END IF; RETURN NEW; END $$"); await r.pool.query('CREATE TRIGGER fail_private_revocation BEFORE UPDATE ON engine_reservations FOR EACH ROW EXECUTE FUNCTION fail_private_revocation()');
+  expect((await inviteOptIn(r, recipient, false)).statusCode).toBe(503); expect((await get(r, recipient, path)).statusCode).toBe(200); expect((await r.pool.query('SELECT phase FROM engine_event_invitations')).rows[0].phase).toBe('ACCEPTED');
+  await r.pool.query('DROP TRIGGER fail_private_revocation ON engine_reservations'); expect((await inviteOptIn(r, recipient, false)).statusCode).toBe(200); expect((await get(r, recipient, path)).statusCode).toBe(404); expect((await get(r, recipient, 'reservations/' + booking.json().reservation.id)).json().reservation.phase).toBe('CANCELLED');
+  await inviteOptIn(r, recipient, true); expect((await post(r, recipient, 'event-invitations/' + offer.json().id + '/respond', accept, acceptKey)).json().phase).toBe('CANCELLED'); expect((await get(r, recipient, path)).statusCode).toBe(404);
+  const offer2 = await post(r, owner, path + '/invitations', { schemaVersion: 1, recipientId: other.me.profile.id }); await post(r, other, 'event-invitations/' + offer2.json().id + '/respond', accept); expect((await post(r, other, 'reservations', { schemaVersion: 1, eventId: event.event.id, partySize: 1 })).statusCode).toBe(201);
+});
+
+it('blocking or unfriending serializes with acceptance and withdraws private RSVP without later resurrection', async () => {
+  const r = await open(), owner = await guest(r);
+  for (const method of ['block', 'unfriend'] as const) {
+    const recipient = await guest(r), event = await schedule(r, owner, { visibility: 'private' }), path = 'events/' + event.event.id; await befriend(r, owner, recipient); await inviteOptIn(r, recipient, true);
+    const offer = await post(r, owner, path + '/invitations', { schemaVersion: 1, recipientId: recipient.me.profile.id }), id = offer.json().id, key = randomUUID(), accept = { schemaVersion: 1, action: 'accept' };
+    const withdrawal = () => method === 'block' ? post(r, recipient, 'blocks', { targetId: owner.me.profile.id, blocked: true }) : r.app.http.inject({ method: 'DELETE', url: '/v1/friends/' + owner.me.profile.id, headers: headers(recipient) });
+    const [accepted, withdrawn] = await Promise.all([post(r, recipient, 'event-invitations/' + id + '/respond', accept, key), withdrawal()]); expect(withdrawn.statusCode).toBe(200); expect([200,404]).toContain(accepted.statusCode);
+    expect((await get(r, recipient, path)).statusCode).toBe(404); expect((await r.pool.query('SELECT phase FROM engine_event_invitations WHERE id=$1', [id])).rows[0].phase).toBe('CANCELLED');
+    if (method === 'block') await post(r, recipient, 'blocks', { targetId: owner.me.profile.id, blocked: false }); await befriend(r, owner, recipient);
+    expect((await get(r, recipient, path)).statusCode).toBe(404); expect((await post(r, owner, path + '/invitations', { schemaVersion: 1, recipientId: recipient.me.profile.id })).json().phase).toBe('PENDING');
+  }
+});
+
+it('event cancellation reaches invited accounts with private notices and cancels pending consent once', async () => {
+  const r = await open(), owner = await guest(r), recipient = await guest(r), event = await schedule(r, owner, { visibility: 'private' }), path = 'events/' + event.event.id; await befriend(r, owner, recipient); await inviteOptIn(r, recipient, true);
+  const key = randomUUID(), input = { schemaVersion: 1, recipientId: recipient.me.profile.id }, offers = await Promise.all(Array.from({ length: 6 }, () => post(r, owner, path + '/invitations', input, key)));
+  expect(offers.every(reply => reply.statusCode === 201 && reply.json().id === offers[0].json().id)).toBe(true); expect((await r.pool.query('SELECT 1 FROM engine_event_invitations')).rowCount).toBe(1); expect((await r.pool.query('SELECT 1 FROM engine_event_invite_mutations')).rowCount).toBe(1);
+  expect((await post(r, owner, path + '/cancel', { schemaVersion: 1, expectedVersion: 0 })).statusCode).toBe(200); expect((await r.pool.query('SELECT phase FROM engine_event_invitations')).rows[0].phase).toBe('CANCELLED'); expect((await get(r, recipient, 'events/notices')).json().items).toHaveLength(1); expect((await get(r, recipient, 'event-invitations')).json().items).toEqual([]);
+  const exported = (await get(r, recipient, 'me/export')).json().domains.eventInvitations; expect(exported.items[0]).toMatchObject({ id: offers[0].json().id, phase: 'CANCELLED', direction: 'incoming' }); expect(JSON.stringify(exported)).not.toMatch(/fingerprint|sender_id|recipient_id/);
+  await r.app.http.inject({ method: 'DELETE', url: '/v1/me', headers: headers(recipient), payload: {} }); expect((await r.pool.query('SELECT 1 FROM engine_event_invitations')).rowCount).toBe(0); expect((await r.pool.query('SELECT 1 FROM engine_event_invite_mutations')).rowCount).toBe(0);
 });

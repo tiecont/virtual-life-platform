@@ -1,0 +1,18 @@
+{
+  "taskID": "M12-05",
+  "source": "workspace from7be8d9a; checkpoint SHA followsgitlog",
+  "environment": "2026-11-03;Node26.9.0/pnpm11.28.5;local disposable PostgreSQL/HTTP",
+  "commands": [
+    {"command":"node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/events.test.ts -t 'global event discovery|private event invitation needs'","exitCode":1,"log":"m12-discovery-red.log","scope":"2failed38filteredskips; missing optional global query/invitation route"},
+    {"command":"pnpm build:packages","exitCode":0,"log":"m12-discovery-packages.log"},
+    {"command":"pnpm --filter @virtual-city/platform-api typecheck","exitCode":0,"log":"m12-discovery-typecheck.log"},
+    {"command":"node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/events.test.ts -t 'global event discovery|private event invitation needs'","exitCode":0,"log":"m12-discovery-integration-attempt1.log","scope":"2pass38filteredskips; continuation log complete, exit originally collected in prior tool turn"},
+    {"command":"node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/events.test.ts -t 'private invitations reject|acceptance crossing|revoking invitation consent|blocking or unfriending|event cancellation reaches'","exitCode":1,"log":"m12-discovery-integration-attempt2.log","scope":"4pass1failed40filteredskips; fixture attempted schedule adjustment after OPEN, corrected opensAt to preserve intended SCHEDULED test"},
+    {"command":"pnpm check","exitCode":0,"log":"m12-discovery-check.log","exitArtifact":"m12-discovery-check.exit","scope":"7governance,190unit,297integration including45event/reservation;lint/types/architecture/assets/builds"},
+    {"command":"pnpm db:migrate","exitCode":0,"log":"m12-discovery-local-migration.log","scope":"additive0022 retained city DB;legacy unchanged"},
+    {"command":"node scripts/run-browser-tests.mjs tests/e2e/invitations.spec.ts tests/e2e/social.spec.ts","exitCode":0,"log":"m12-discovery-browser.log","exitArtifact":"m12-discovery-browser.exit","scope":"4pass,2eachdevice;existing invitation/social regression,no new event UI"},
+    {"command":"git diff --check","exitCode":0}
+  ],
+  "verified":["Global public discovery excludes private and seeded adult event/IDOR","Friendship/opt-in/explicit acceptance;no implicit RSVP/table/room","SQL-blocked deadline prevents late acceptance","Opt-out callback rollback/cancellation/private table release;old keys do not revive","Block/unfriend versus acceptance serialized;new friendship does not restore access","Six same-key sends produce one invitation/receipt;event cancel notifies invited recipient once","Metadata inbox hides terminal invitations/later private changes;own export/erasure cascades"],
+  "limits":["No event UI/actual world adapter/public release;all flags OFF","Hidden/restricted worlds remain excluded;no adult access authority","Invitation inbox50/export100 truncated;receipts cascade under event90day retention","Version-only hints are replaceable;no guaranteed delivery/email/calendar or automatic attendance"]
+}

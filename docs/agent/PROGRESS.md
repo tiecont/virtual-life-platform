@@ -1,5 +1,9 @@
 # Agent progress
 
+## M12-05 - VERIFIED consented private invitations and global discovery
+
+From7be8d9a; m12-discovery-checks.json/ADR0038. Fullcheck exit0:7governance,190unit,297integration including45event/reservation,lint/types/architecture/assets/builds;0022localmigration/diff0. Initial2query/route reds retained;targeted2pass. Expanded target4pass1failed because fixture attempted schedule adjustment after OPEN; corrected opensAt to exercise SCHEDULED,final fullsuite passes. Current consent port, private invite preview/acceptance/expiry/revocation, SQL-blocked deadline, block/unfriend races, callback rollback/private booking release, old-key nonreactivation, metadata hiding/erasure and seeded adult-discovery denial verified. Acceptance creates no allocation. Browser evidence recorded separately when complete. Next M12-06 actual independent network sessions/DST/reservation acceptance; allrealflagsOFF/no actualworld/UI/public rollout,cityDB0022.
+
 ## M12-04 - VERIFIED scoped silent-event governance and cancellation
 
 Workspace fromf2c9e0d; m12-governance-checks.json/ADR0037/EVENT-OPERATIONS.md. Final fullcheck exit0:7governance,190unit,290integration including38event/reservation cases,lint/types/architecture/assets/builds. Earlier full288pass before final hint/block additions; final targeted2pass36filteredskips confirms extra assertions. Browser final4(2eachdevice) moderation/social regression pass; additive0021localmigration/diff0. Initial cancel acceptance red retained; targeted1/35pass, adjustment+erasure2pass. Documentation patch stale-context rejection was atomic and reapplied; no code/check failure hidden.

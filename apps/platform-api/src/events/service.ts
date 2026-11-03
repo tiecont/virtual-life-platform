@@ -10,8 +10,9 @@ import { advanceEvent, createEvent, formatEventSchedule } from './lifecycle';
 import type { EventPermissions } from './permissions';
 
 type Row = { id: string; organizer_id: string; world_slug: string; world_version: string; policy_version: string; title: string; audience: 'silent'; visibility: 'listed' | 'private'; capacity: number; time_zone: string; opens_at: Date; starts_at: Date; check_in_closes_at: Date; ends_at: Date; phase: EventPhase; created_at: Date; changed_at: Date; resource_key: string | null; version: number };
-export type EventBookingContext = Readonly<{ id: string; organizerId: string; worldSlug: string; resourceKey: string | null; capacity: number; phase: EventPhase; schedule: EventSchedule; definition?: WorldDefinition }>;
-export interface EventReservationObserver { observed(db: PoolClient, context: EventBookingContext, now: number): Promise<void>; participants(db: Pick<Pool, 'query'>, eventId: string): Promise<string[]> }
+export type EventBookingContext = Readonly<{ id: string; organizerId: string; title: string; visibility: 'listed' | 'private'; worldSlug: string; resourceKey: string | null; capacity: number; phase: EventPhase; schedule: EventSchedule; definition?: WorldDefinition }>;
+export interface EventReservationObserver { observed(db: PoolClient, context: EventBookingContext, now: number): Promise<void>; participants(db: Pick<Pool, 'query'>, eventId: string): Promise<string[]>; revoke(db: PoolClient, ids: string[], account: string): Promise<void> }
+export interface EventInvitationAccess { permits(db: PoolClient, eventId: string, owner: string, viewer: string): Promise<boolean>; observed(db: PoolClient, context: EventBookingContext, now: number): Promise<void>; participants(db: Pick<Pool, 'query'>, id: string): Promise<string[]> }
 type Rsvp = { id: string; event_id: string; account_id: string; phase: 'CONFIRMED' | 'CANCELLED' | 'EXPIRED'; created_at: Date; changed_at: Date };
 export interface EventOrganizerPort { permits(db: PoolClient, actor: IdentityContext, worldSlug: string): Promise<boolean> }
 export interface EventSafetyPort { permits(db: PoolClient, accountId: string, worldSlug: string): Promise<boolean> }
@@ -21,12 +22,14 @@ const conflict = () => new DomainError('IDEMPOTENCY_CONFLICT', 409, 'Request key
 export class EventService {
   #closed = false; #maintenance?: Promise<void>;
   #reservations?: EventReservationObserver;
+  #invitations?: EventInvitationAccess;
   #noticeListeners = new Set<(accounts: string[]) => void>();
   constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private social: SocialService, private registry: WorldRegistry, private safety: EventSafetyPort, private organizers?: EventOrganizerPort, private now = Date.now, private permissions?: EventPermissions) {}
   attachReservations(port: EventReservationObserver) { if (this.#reservations) throw new Error('Reservation observer already attached'); this.#reservations = port; }
+  attachInvitations(port: EventInvitationAccess) { if (this.#invitations) throw new Error('Invitation access already attached'); this.#invitations = port; }
   onNotice(listener: (accounts: string[]) => void) { this.#noticeListeners.add(listener); return () => { this.#noticeListeners.delete(listener); }; }
   async forOrganizer(db: PoolClient, organizer: string, work: (ids: string[]) => Promise<void>) { const rows = (await db.query<{ id: string }>("SELECT id FROM engine_events WHERE organizer_id=$1 AND phase NOT IN ('ENDED','CANCELLED')", [organizer])).rows; await work(rows.map(row => row.id)); }
-  private bookingContext(row: Row, definition?: WorldDefinition): EventBookingContext { return { id: row.id, organizerId: row.organizer_id, worldSlug: row.world_slug, resourceKey: row.resource_key, capacity: row.capacity, phase: row.phase, schedule: this.scheduleOf(row), definition }; }
+  private bookingContext(row: Row, definition?: WorldDefinition): EventBookingContext { return { id: row.id, organizerId: row.organizer_id, title: row.title, visibility: row.visibility, worldSlug: row.world_slug, resourceKey: row.resource_key, capacity: row.capacity, phase: row.phase, schedule: this.scheduleOf(row), definition }; }
   private async tx<T>(token: string, targets: string[], work: (db: PoolClient, actor: IdentityContext) => Promise<T>) {
     if (this.#closed) throw new DomainError('WORLD_UNAVAILABLE', 503, 'Events unavailable');
     const initial = await this.identity.authenticate(token), db = await this.pool.connect();
@@ -38,7 +41,7 @@ export class EventService {
   }
   private async context<T>(token: string, slug: string, work: (world: WorldDefinition, valid: () => boolean) => Promise<T>) {
     try { return await this.registry.authorizedContext(token, slug, (_actor, world, valid) => {
-      // Restricted/private-world discovery is deliberately closed until M12-05.
+      // Restricted worlds remain closed; private sessions in eligible public worlds use invitation consent.
       if (!world.eventPolicy || !world.capabilities.includes('events') || world.accessPolicy.kind !== 'public' || world.visibility !== 'listed' || slug === 'dating') throw unavailable();
       return work(world, valid);
     }); } catch (error) { if (error instanceof WorldError && ['NOT_FOUND', 'FORBIDDEN'].includes(error.code)) throw unavailable(); throw error; }
@@ -65,11 +68,12 @@ export class EventService {
     await db.query("UPDATE engine_events SET phase=$2,changed_at=$3,checked_order=nextval('engine_event_recovery_sequence') WHERE id=$1", [row.id, row.phase, row.changed_at]);
     if (row.phase === 'ENDED' || row.phase === 'CANCELLED') await db.query("UPDATE engine_event_rsvps SET phase=$2,changed_at=greatest(changed_at,$3) WHERE event_id=$1 AND phase='CONFIRMED'", [row.id, row.phase === 'ENDED' ? 'EXPIRED' : 'CANCELLED', row.changed_at]);
     await this.#reservations?.observed(db, this.bookingContext(row), this.now());
+    await this.#invitations?.observed(db, this.bookingContext(row), this.now());
     if (['ENDED', 'CANCELLED'].includes(row.phase)) await db.query('UPDATE engine_event_performer_readiness SET ready=false WHERE event_id=$1 AND ready', [row.id]);
     return row;
   }
-  private async allowed(db: PoolClient, actor: IdentityContext, row: Row, world: WorldDefinition) {
-    if (row.world_version !== world.version || row.policy_version !== world.eventPolicy?.version || row.capacity > world.eventPolicy.maxCapacity || row.visibility === 'private' && row.organizer_id !== actor.accountId || await this.social.isBlocked(actor.accountId, row.organizer_id, db)
+  private async allowed(db: PoolClient, actor: IdentityContext, row: Row, world: WorldDefinition, preview = false) {
+    if (row.world_version !== world.version || row.policy_version !== world.eventPolicy?.version || row.capacity > world.eventPolicy.maxCapacity || !preview && row.visibility === 'private' && row.organizer_id !== actor.accountId && !await this.#invitations?.permits(db, row.id, row.organizer_id, actor.accountId) || await this.social.isBlocked(actor.accountId, row.organizer_id, db)
       || !await this.safety.permits(db, actor.accountId, row.world_slug) || !await this.safety.permits(db, row.organizer_id, row.world_slug)) throw unavailable();
   }
   // Invoked only by trusted server adapters, with a separately reviewed organizer port.
@@ -95,17 +99,31 @@ export class EventService {
     const id = uuid.parse(rawId); await this.identity.authenticate(token); const row = (await this.pool.query<Row>('SELECT * FROM engine_events WHERE id=$1', [id])).rows[0]; if (!row) throw unavailable(); return row;
   }
   // Internal transaction boundary for reservation-owned SQL, never a public callback.
-  async withBooking<T>(token: string, id: string, work: (db: PoolClient, actor: IdentityContext, context: EventBookingContext) => Promise<T>, withdraw = false, admissionValid?: () => boolean): Promise<T> {
+  async withBooking<T>(token: string, id: string, work: (db: PoolClient, actor: IdentityContext, context: EventBookingContext) => Promise<T>, withdraw = false, admissionValid?: () => boolean, targets: string[] = []): Promise<T> {
     const known = await this.reference(token, id);
-    const run = (world?: WorldDefinition, valid?: () => boolean) => this.tx(token, [known.organizer_id], async (db, actor) => {
+    const run = (world?: WorldDefinition, valid?: () => boolean) => this.tx(token, [known.organizer_id, ...targets], async (db, actor) => {
       const row = (await db.query<Row>('SELECT * FROM engine_events WHERE id=$1 FOR UPDATE', [known.id])).rows[0]; if (!row) throw unavailable();
       if (world) await this.allowed(db, actor, row, world); await this.observe(db, row); const result = await work(db, actor, this.bookingContext(row, world)); if (valid) this.check(valid); if (admissionValid && !admissionValid()) throw new DomainError('NOT_IN_ROOM', 409, 'Your visit changed'); return result;
     });
     return withdraw ? run() : this.context(token, known.world_slug, (world, valid) => run(world, valid));
   }
+  async withInvitation<T>(token: string, id: string, targets: string[], work: (db: PoolClient, actor: IdentityContext, context: EventBookingContext) => Promise<T>) {
+    const known = await this.reference(token, id);
+    return this.context(token, known.world_slug, (world, valid) => this.tx(token, [known.organizer_id, ...targets], async (db, actor) => {
+      const row = (await db.query<Row>('SELECT * FROM engine_events WHERE id=$1 FOR UPDATE', [known.id])).rows[0]; if (!row) throw unavailable(); await this.allowed(db, actor, row, world, true); await this.observe(db, row);
+      const result = await work(db, actor, this.bookingContext(row, world)); this.check(valid); return result;
+    }));
+  }
+  canOrganize(db: PoolClient, actor: IdentityContext, context: EventBookingContext) { return context.organizerId === actor.accountId ? this.organizers?.permits(db, actor, context.worldSlug) ?? Promise.resolve(false) : Promise.resolve(false); }
+  eligible(db: PoolClient, account: string, world: string) { return this.safety.permits(db, account, world); }
+  async revokePrivate(db: PoolClient, ids: string[], account: string) {
+    const rows = (await db.query<{ id: string }>("SELECT id FROM engine_events WHERE id=ANY($1::uuid[]) AND visibility='private'", [ids])).rows, privateIds = rows.map(row => row.id);
+    await db.query("UPDATE engine_event_rsvps SET phase='CANCELLED',changed_at=greatest(changed_at,$3) WHERE event_id=ANY($1::uuid[]) AND account_id=$2 AND phase='CONFIRMED'", [privateIds, account, new Date(this.now())]);
+    await db.query('UPDATE engine_event_performer_readiness SET ready=false WHERE event_id=ANY($1::uuid[]) AND account_id=$2', [privateIds, account]); await this.#reservations?.revoke(db, privateIds, account);
+  }
   private async participants(db: Pick<Pool, 'query'>, id: string) {
     const rows = (await db.query<{ account_id: string }>("SELECT account_id FROM engine_event_rsvps WHERE event_id=$1 AND phase='CONFIRMED' UNION SELECT account_id FROM engine_event_performer_readiness WHERE event_id=$1 AND ready", [id])).rows;
-    return [...new Set([...rows.map(row => row.account_id), ...await this.#reservations?.participants(db, id) ?? []])];
+    return [...new Set([...rows.map(row => row.account_id), ...await this.#reservations?.participants(db, id) ?? [], ...await this.#invitations?.participants(db, id) ?? []])];
   }
   async controls(token: string, id: string) {
     return this.withBooking(token, id, async (db, actor, context) => {
@@ -176,11 +194,14 @@ export class EventService {
   }
   async catalog(token: string, raw: unknown) {
     const input = EventCatalogQuerySchema.parse(raw);
-    return this.context(token, input.worldSlug, async (_world, valid) => {
-      const rows = (await this.pool.query<{ id: string }>("SELECT id FROM engine_events WHERE world_slug=$1 AND visibility='listed' AND ends_at>$2 AND phase NOT IN ('ENDED','CANCELLED') ORDER BY starts_at,id LIMIT 51", [input.worldSlug, new Date(this.now())])).rows, items = [];
+    const read = async (slugs: string[], valid: () => boolean) => {
+      const rows = (await this.pool.query<{ id: string }>("SELECT id FROM engine_events WHERE world_slug=ANY($1::text[]) AND visibility='listed' AND ends_at>$2 AND phase NOT IN ('ENDED','CANCELLED') ORDER BY starts_at,id LIMIT 51", [slugs, new Date(this.now())])).rows, items = [];
       for (const row of rows.slice(0, 50)) { try { items.push((await this.get(token, row.id)).event); } catch (error) { if (!(error instanceof DomainError && error.status === 404)) throw error; } }
       this.check(valid); return EventCatalogSchema.parse({ schemaVersion: 1, items, truncated: rows.length > 50 });
-    });
+    };
+    if (input.worldSlug) return this.context(token, input.worldSlug, (_world, valid) => read([input.worldSlug!], valid));
+    const catalog = await this.registry.catalog(token), slugs = catalog.worlds.filter(world => world.availability === 'available' && world.accessHint === 'session-required' && world.capabilities.includes('events') && world.slug !== 'dating').map(world => world.slug);
+    return read(slugs, () => !this.#closed && slugs.every(slug => this.registry.permitsActivityDisclosure(slug)));
   }
   async rsvp(token: string, id: string, requestKey: string) {
     const known = await this.reference(token, id), key = uuid.parse(requestKey), fingerprint = this.identity.fingerprint({ operation: 'event.rsvp', id: known.id });
