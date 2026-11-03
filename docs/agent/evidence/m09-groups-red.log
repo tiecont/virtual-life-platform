@@ -1,0 +1,50 @@
+ Network virtual-city-test-8d334151_default Creating 
+ Network virtual-city-test-8d334151_default Creating 
+ Network virtual-city-test-8d334151_default Created 
+ Network virtual-city-test-8d334151_default Created 
+ Container virtual-city-test-8d334151-db-1 Creating 
+ Container virtual-city-test-8d334151-db-1 Created 
+ Container virtual-city-test-8d334151-db-1 Starting 
+ Container virtual-city-test-8d334151-db-1 Started 
+ Container virtual-city-test-8d334151-db-1 Waiting 
+ Container virtual-city-test-8d334151-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/invitations.test.ts (14 tests | 1 failed | 13 skipped) 627ms
+   × creates a bounded group with explicit partial consent, offline pending expiry and no reserved room capacity 624ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/invitations.test.ts > creates a bounded group with explicit partial consent, offline pending expiry and no reserved room capacity
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/integration/invitations.test.ts:156:94
+    154|   const r = await open(), { a, b } = await pair(r), c = await guest(r)…
+    155|   const key = randomUUID(), payload = { schemaVersion: 1, recipientIds…
+    156|   const sent = await write(r, a, 'invitation-groups', payload, key); e…
+       |                                                                                              ^
+    157|   const group = sent.json(); expect(group.items.map((item: { status: s…
+    158|   expect((await respond(r, b, group.items[0].invitationId, 'accept')).…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 13 skipped (14)
+   Start at  13:08:00
+   Duration  1.90s (transform 314ms, setup 0ms, import 1.11s, tests 627ms, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-8d334151-db-1 Stopping 
+ Container virtual-city-test-8d334151-db-1 Stopped 
+ Container virtual-city-test-8d334151-db-1 Removing 
+ Container virtual-city-test-8d334151-db-1 Removed 
+ Network virtual-city-test-8d334151_default Removing 
+ Network virtual-city-test-8d334151_default Removed 

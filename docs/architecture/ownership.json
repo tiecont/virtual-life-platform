@@ -34,7 +34,9 @@
     "travel_mutations": "platform.travel",
     "invitation_preferences": "platform.invitations",
     "invitations": "platform.invitations",
-    "invitation_mutations": "platform.invitations"
+    "invitation_mutations": "platform.invitations",
+    "invitation_groups": "platform.invitations",
+    "invitation_group_items": "platform.invitations"
   },
   "journalTable": "city_schema_migrations",
   "legacyDatabases": "not managed by city migrations",

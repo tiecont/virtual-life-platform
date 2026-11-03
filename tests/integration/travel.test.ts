@@ -239,6 +239,20 @@ it('prepares a destination without public membership, retains source seat, then 
 
 const transfer = async (peer: Awaited<ReturnType<typeof join>>, intent: Awaited<ReturnType<typeof create>>, key = randomUUID()) => TravelAckSchema.parse(await peer.socket.timeout(5000).emitWithAck('travel.request', { schemaVersion: 1, requestId: key, intentId: intent.intentId, capability: intent.capability! }));
 
+it('accepted group members race for one remaining target slot without overfilling or holding places for an offline invite', async () => {
+  const r = await open(1), leader = await guest(r), a = await guest(r), b = await guest(r);
+  for (const user of [a, b]) {
+    const code = (await r.app.social.settings(credential(r, user))).contactCode;
+    const friendship = await r.app.social.request(credential(r, leader), randomUUID(), code); await r.app.social.respond(credential(r, user), randomUUID(), friendship.id, 'accept'); await r.app.invitations.updateSettings(credential(r, user), randomUUID(), true);
+  }
+  const group = await r.app.invitations.createGroup(credential(r, leader), randomUUID(), { schemaVersion: 1, recipientIds: [a.me.profile.id, b.me.profile.id], destination: destination() });
+  for (const [index, user] of [a, b].entries()) await r.app.invitations.respond(credential(r, user), randomUUID(), group.items[index].invitationId!, 'accept');
+  const targetSeed = await join(r, await guest(r), 'maid'); expect(RoomAckSchema.parse(await targetSeed.socket.timeout(5000).emitWithAck('room.leave', own(targetSeed.state))).ok).toBe(true);
+  const first = await join(r, a), second = await join(r, b), intentA = await create(r, a, first.source, destination('maid', targetSeed.state.roomId)), intentB = await create(r, b, second.source, destination('maid', targetSeed.state.roomId));
+  const results = await Promise.all([transfer(first, intentA), transfer(second, intentB)]); expect(results.filter(result => result.ok)).toHaveLength(1); expect(results.filter(result => !result.ok)).toHaveLength(1);
+  expect((await r.app.rooms.list(credential(r, leader), 'maid')).rooms.find(room => room.roomId === targetSeed.state.roomId)?.occupancy).toBe(1); expect(r.app.rooms.diagnostics()).toMatchObject({ memberships: 2, travelHolds: 0 });
+});
+
 it('rechecks reviewed adult eligibility and committed target sanctions after preparation, retaining valid source', async () => {
   for (const change of ['adult', 'sanction']) {
     let release!: () => void, started = false;

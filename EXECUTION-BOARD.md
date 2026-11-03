@@ -59,7 +59,7 @@
 | M09 | M09-02 · Implement scoped one-time, short-lived travel intents + validation. | VERIFIED | m09-intents-checks.json;14targeted/fullcheck141integration/E2E34; authorization only,no room switch |
 | M09 | M09-03 · Implement recipient invitation flows and notifications with consent. | VERIFIED | m09-invitations-checks.json;targeted13/fullcheck154integration/E2E36;consent only,no teleport |
 | M09 | M09-04 · Implement handshake across source and destination room owners. | VERIFIED | m09-handoff-checks.json;fullcheck169integration,targeted31,E2E36;single owner |
-| M09 | M09-05 · Integrate party/group invite capacity logic and offline handling. | TODO | — |
+| M09 | M09-05 · Integrate party/group invite capacity logic and offline handling. | VERIFIED | m09-groups-checks.json;fullcheck177integration/E2E2;partial consent,capacity race,no forced travel |
 | M09 | M09-06 · Test cross-world transition with artificial network failure. | TODO | — |
 | M10 | M10-01 · Compare legacy Deadline focus contracts and persistence. | TODO | — |
 | M10 | M10-02 · Implement trusted start/pause/finish/cancel rules with deterministic server clock. | TODO | — |

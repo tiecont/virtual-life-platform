@@ -22,6 +22,8 @@ export function registerInvitations(http: FastifyInstance, config: Config, ident
     api.patch('/me/invitations/settings', req => { emptyQuery(req); return invitations.updateSettings(write(req), key(req), InvitationSettingsSchema.parse(req.body).allowInvitations); });
     api.get('/invitations', req => { const query = SocialPageSchema.parse(req.query); return invitations.list(token(req), query.cursor, query.limit); });
     api.post('/invitations', async (req, reply) => { emptyQuery(req); return reply.code(201).send(await invitations.create(write(req), key(req), req.body)); });
+    api.post('/invitation-groups', async (req, reply) => { emptyQuery(req); return reply.code(201).send(await invitations.createGroup(write(req), key(req), req.body)); });
+    api.get('/invitation-groups/:id', req => { emptyQuery(req); const id = z.strictObject({ id: uuid }).parse(req.params).id; return invitations.group(token(req), id); });
     api.post('/invitations/:id/respond', req => { emptyQuery(req); const id = z.strictObject({ id: uuid }).parse(req.params).id; return invitations.respond(write(req), key(req), id, InvitationRespondSchema.parse(req.body).action); });
   }, { prefix: '/v1' });
 }

@@ -149,3 +149,57 @@ it('exports minimal own invitation metadata, erases dependent data and rolls bac
   await r.pool.query("CREATE FUNCTION fail_invitation_receipt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic invitation receipt failure'; END $$"); await r.pool.query('CREATE TRIGGER fail_invitation BEFORE INSERT ON invitation_mutations FOR EACH ROW EXECUTE FUNCTION fail_invitation_receipt()');
   expect((await send(r, a, c)).statusCode).toBe(503); expect((await r.pool.query('SELECT 1 FROM invitations')).rowCount).toBe(0);
 });
+
+it('creates a bounded group with explicit partial consent, offline pending expiry and no reserved room capacity', async () => {
+  const r = await open(), { a, b } = await pair(r), c = await guest(r), d = await guest(r); await friends(r, a, c); await friends(r, a, d); await settings(r, c, true);
+  const key = randomUUID(), payload = { schemaVersion: 1, recipientIds: [b.me.profile.id, c.me.profile.id, d.me.profile.id], destination: dest() };
+  const sent = await write(r, a, 'invitation-groups', payload, key); expect(sent.statusCode).toBe(201);
+  const group = sent.json(); expect(group.items.map((item: { status: string }) => item.status)).toEqual(['PENDING', 'PENDING', 'UNAVAILABLE']);
+  expect((await respond(r, b, group.items[0].invitationId, 'accept')).json().state).toBe('ACCEPTED');
+  const refreshed = await r.app.http.inject({ url: '/v1/invitation-groups/' + group.id, headers: { cookie: a.cookie } }); expect(refreshed.json()).toMatchObject({ completion: 'PARTIAL', acceptedCount: 1, pendingCount: 1 });
+  expect((await write(r, a, 'invitation-groups', payload, key)).json().id).toBe(group.id); expect((await r.pool.query('SELECT 1 FROM invitations')).rowCount).toBe(2);
+  expect(r.app.rooms.diagnostics()).toMatchObject({ memberships: 0, travelHolds: 0 });
+  r.advance(120001); const expired = await r.app.http.inject({ url: '/v1/invitation-groups/' + group.id, headers: { cookie: a.cookie } }); expect(expired.json()).toMatchObject({ completion: 'PARTIAL', acceptedCount: 1, pendingCount: 0 }); expect(expired.json().items[1].status).toBe('EXPIRED');
+});
+
+it('same-key concurrent group retries persist one root and one invitation per recipient, with no peer cohort disclosure', async () => {
+  const r = await open(), { a, b } = await pair(r), c = await guest(r); await friends(r, a, c); await settings(r, c, true);
+  const key = randomUUID(), input = { schemaVersion: 1, recipientIds: [b.me.profile.id, c.me.profile.id], destination: dest() };
+  const responses = await Promise.all(Array.from({ length: 4 }, () => write(r, a, 'invitation-groups', input, key))); expect(responses.every(response => response.statusCode === 201)).toBe(true); expect(responses.every(response => JSON.stringify(response.json()) === JSON.stringify(responses[0].json()))).toBe(true);
+  const group = responses[0].json(); expect((await r.pool.query('SELECT 1 FROM invitation_groups')).rowCount).toBe(1); expect((await r.pool.query('SELECT 1 FROM invitations')).rowCount).toBe(2);
+  for (const user of [b, c, await guest(r)]) expect((await r.app.http.inject({ url: '/v1/invitation-groups/' + group.id, headers: { cookie: user.cookie } })).statusCode).toBe(404);
+  const inbox = await list(r, b); expect(JSON.stringify(inbox)).not.toContain(group.id); expect(JSON.stringify(inbox)).not.toContain(c.me.profile.id); expect(inbox.items).toHaveLength(1);
+  expect((await write(r, a, 'invitation-groups', { ...input, recipientIds: [...input.recipientIds].reverse() }, key)).statusCode).toBe(409);
+});
+
+it('resumes partial fan-out after a committed child loses its group linkage without duplicate invitations, including restart', async () => {
+  const r = await open(), { a, b } = await pair(r), c = await guest(r); await friends(r, a, c); await settings(r, c, true);
+  const key = randomUUID(), input = { schemaVersion: 1, recipientIds: [b.me.profile.id, c.me.profile.id], destination: dest() };
+  await r.pool.query("CREATE FUNCTION fail_group_link() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic linkage failure'; END $$"); await r.pool.query('CREATE TRIGGER fail_group_link BEFORE UPDATE ON invitation_group_items FOR EACH ROW EXECUTE FUNCTION fail_group_link()');
+  expect((await write(r, a, 'invitation-groups', input, key)).statusCode).toBe(503); expect((await r.pool.query('SELECT 1 FROM invitations')).rowCount).toBe(1); const original = (await r.pool.query('SELECT id FROM invitations')).rows[0].id;
+  await r.pool.query('DROP TRIGGER fail_group_link ON invitation_group_items'); await restart(r);
+  const result = await write(r, a, 'invitation-groups', input, key); expect(result.statusCode).toBe(201); expect(result.json().items[0].invitationId).toBe(original); expect((await r.pool.query('SELECT 1 FROM invitations')).rowCount).toBe(2); expect((await r.pool.query('SELECT 1 FROM invitation_groups')).rowCount).toBe(1);
+});
+
+it('group retries recheck blocks/preferences, budgets count every child and expired roots cannot resend unfinished entries', async () => {
+  const r = await open(), { a, b } = await pair(r), c = await guest(r); await friends(r, a, c); await settings(r, c, true);
+  const input = { schemaVersion: 1, recipientIds: [b.me.profile.id, c.me.profile.id], destination: dest() }, key = randomUUID(), first = (await write(r, a, 'invitation-groups', input, key)).json();
+  await write(r, b, 'blocks', { targetId: a.me.profile.id, blocked: true }); const current = (await write(r, a, 'invitation-groups', input, key)).json(); expect(current.items[0]).toMatchObject({ status: 'UNAVAILABLE', invitationId: null }); expect(current.items[1].status).toBe('PENDING');
+  await respond(r, c, first.items[1].invitationId, 'decline');
+  for (let i = 0; i < 2; i++) { const group = await write(r, a, 'invitation-groups', input); expect(group.statusCode).toBe(201); if (group.json().items[1].invitationId) await respond(r, c, group.json().items[1].invitationId, 'decline'); }
+  expect((await write(r, a, 'invitation-groups', input)).statusCode).toBe(429);
+  await r.pool.query('UPDATE invitation_group_items SET outcome=NULL,invitation_id=NULL WHERE group_id=$1 AND position=0', [first.id]);
+  r.advance(120001); expect((await write(r, a, 'invitation-groups', input, key)).json().items[0].status).toBe('EXPIRED');
+  expect((await r.pool.query('SELECT 1 FROM invitations')).rowCount).toBe(4);
+  r.advance(86400001); await r.app.invitations.maintain(); expect((await r.pool.query('SELECT 1 FROM invitation_groups')).rowCount).toBe(0); expect((await r.pool.query('SELECT 1 FROM invitation_group_items')).rowCount).toBe(0);
+});
+
+it('rejects oversized/duplicate/forged group input and exports/deletes group metadata without recipient identities', async () => {
+  const r = await open(), { a, b } = await pair(r), c = await guest(r); await friends(r, a, c); await settings(r, c, true);
+  const input = { schemaVersion: 1, recipientIds: [b.me.profile.id, c.me.profile.id], destination: dest() };
+  for (const raw of [{ ...input, recipientIds: [b.me.profile.id, b.me.profile.id] }, { ...input, recipientIds: Array.from({ length: 5 }, () => randomUUID()) }, { ...input, recipientIds: [b.me.profile.id] }, { ...input, actorId: a.me.profile.id }, { ...input, capacity: 999 }, { ...input, message: 'arbitrary text' }]) expect((await write(r, a, 'invitation-groups', raw)).statusCode).toBe(422);
+  expect((await write(r, a, 'invitation-groups', { ...input, destination: dest('dating') })).statusCode).toBe(404);
+  const group = (await write(r, a, 'invitation-groups', input)).json(); const exported = (await r.app.http.inject({ url: '/v1/me/export', headers: { cookie: a.cookie } })).json().domains.invitations.groups; expect(exported[0].id).toBe(group.id); expect(JSON.stringify(exported)).not.toContain(b.me.profile.id); expect(JSON.stringify(exported)).not.toContain(c.me.profile.id);
+  expect((await write(r, b, 'me', {}, randomUUID(), 'DELETE')).statusCode).toBe(200); expect((await r.app.http.inject({ url: '/v1/invitation-groups/' + group.id, headers: { cookie: a.cookie } })).json().items[0].status).toBe('UNAVAILABLE');
+  expect((await write(r, a, 'me', {}, randomUUID(), 'DELETE')).statusCode).toBe(200); expect((await r.pool.query('SELECT 1 FROM invitation_groups')).rowCount).toBe(0); expect((await r.pool.query('SELECT 1 FROM invitation_group_items')).rowCount).toBe(0);
+});

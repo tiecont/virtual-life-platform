@@ -4,6 +4,7 @@ const origin = 'http://127.0.0.1:3300';
 test('recipient consent, live invitation retry and block privacy work on desktop/mobile without teleporting', async ({ page, context, browser }, info) => {
   const profile = info.project.name === 'mobile' ? devices['iPhone 13'] : devices['Desktop Chrome'];
   const peer = await browser.newContext({ ...profile, baseURL: origin });
+  const offline = await browser.newContext({ ...profile, baseURL: origin });
   try {
     const users = [];
     for (const [client, displayName] of [[context, 'Invite Alice'], [peer, 'Invite Bob']] as const) {
@@ -33,6 +34,16 @@ test('recipient consent, live invitation retry and block privacy work on desktop
     const data = await (await context.request.get('/v1/invitations')).json(); expect(data.items).toHaveLength(1); expect(data.items[0].state).toBe('ACCEPTED');
     expect((await context.request.get('/v1/worlds/sdk-sandbox/rooms')).status()).toBe(200);
     const rooms = await (await context.request.get('/v1/worlds/sdk-sandbox/rooms')).json(); expect(rooms.rooms).toHaveLength(0);
+    const offlineCreated = await offline.request.post('/v1/session/guest', { headers: { origin }, data: { requestId: randomUUID(), displayName: 'Invite Charlie', avatarKey: 'mint' } }); expect(offlineCreated.status()).toBe(201); const c = await offlineCreated.json();
+    const offlineCode = (await (await offline.request.get('/v1/social/me')).json()).contactCode;
+    const offlineFriendship = await context.request.post('/v1/friends/requests', { headers: { origin, 'x-csrf-token': a.csrfToken, 'idempotency-key': randomUUID() }, data: { contactCode: offlineCode } }); expect(offlineFriendship.status()).toBe(200);
+    expect((await offline.request.post('/v1/friends/requests/' + (await offlineFriendship.json()).id + '/respond', { headers: { origin, 'x-csrf-token': c.csrfToken, 'idempotency-key': randomUUID() }, data: { action: 'accept' } })).status()).toBe(200);
+    const groupPanel = page.getByRole('region', { name: 'Invite a group', exact: true }); await expect(groupPanel.getByRole('checkbox', { name: 'Invite Charlie', exact: true })).toBeVisible();
+    await groupPanel.getByRole('checkbox', { name: 'Invite Bob', exact: true }).check(); await groupPanel.getByRole('checkbox', { name: 'Invite Charlie', exact: true }).check(); await groupPanel.getByLabel('Group destination', { exact: true }).selectOption('sdk-sandbox');
+    await groupPanel.getByRole('button', { name: 'Send group invitations', exact: true }).click(); await expect(groupPanel.getByText('Group invitations processed. Each friend responds separately.', { exact: true })).toBeVisible(); await expect(groupPanel.getByText('0 accepted · 1 pending · 1 closed or unavailable', { exact: true })).toBeVisible();
+    await page.screenshot({ path: `artifacts/invitation-group-pending-${info.project.name}.png`, fullPage: true });
+    await expect(other.getByRole('button', { name: 'Accept invitation', exact: true })).toBeEnabled(); await other.getByRole('button', { name: 'Accept invitation', exact: true }).click(); await expect(groupPanel.getByText('1 accepted · 0 pending · 1 closed or unavailable', { exact: true })).toBeVisible();
+    await page.screenshot({ path: `artifacts/invitation-group-partial-${info.project.name}.png`, fullPage: true });
     await page.getByRole('button', { name: 'Send invitation', exact: true }).click(); await expect(page.getByRole('status')).toHaveText('Invitation sent.');
     await expect(other.getByRole('button', { name: 'Decline invitation', exact: true })).toBeVisible(); await other.getByRole('button', { name: 'Decline invitation', exact: true }).click(); await expect(other.getByRole('status')).toHaveText('Invitation declined.');
     await page.getByRole('button', { name: 'Send invitation', exact: true }).click(); await expect(page.getByRole('status')).toHaveText('Invitation sent.');
@@ -46,5 +57,5 @@ test('recipient consent, live invitation retry and block privacy work on desktop
     }
     await other.screenshot({ path: `artifacts/invitations-${info.project.name}.png`, fullPage: true });
     expect(dropped).toBe(true);
-  } finally { await peer.close(); }
+  } finally { await peer.close(); await offline.close(); }
 });

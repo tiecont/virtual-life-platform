@@ -97,3 +97,5 @@ M09-01/02 adds [travel lifecycle and scoped authorization](docs/architecture/TRA
 M09-03 adds the [invitation inbox](docs/architecture/INVITATIONS.md) at `/invitations`: explicit recipient opt-in, current friendship/block checks, short-lived public-world offers and private live refresh. Accept records consent; your room does not change. Hidden/restricted destinations and arbitrary messages are unavailable. Membership handshake remains M09-04.
 
 M09-04 adds authenticated `travel.request` with separate target preparation and bounded holds before an authoritative room switch. Failed preparation retains source; a historical committed receipt never invents live membership. [Travel protocol and failure limits](docs/architecture/TRAVEL.md) describe verified socket scope; browser routing and group travel remain pending.
+
+M09-05 adds bounded group offers in `/invitations`, independent consent and explicit partial outcomes. Offline offers expire without holding seats; interrupted sends resume with durable child keys. Groups may split across available rooms when each member independently travels. No whole-group teleport or guaranteed shared seating is implied.

@@ -14,3 +14,6 @@ export type InvitationDestination = z.infer<typeof InvitationDestinationSchema>;
 export type InvitationReceipt = z.infer<typeof InvitationReceiptSchema>;
 export type InvitationSettings = z.infer<typeof InvitationSettingsSchema>;
 export type InvitationsPage = z.infer<typeof InvitationsPageSchema>;
+export const InvitationGroupInputSchema = z.strictObject({ schemaVersion: z.literal(1), recipientIds: z.array(uuid).min(2).max(4).refine(ids => new Set(ids).size === ids.length, 'Choose distinct friends'), destination: InvitationDestinationSchema });
+export const InvitationGroupSchema = z.strictObject({ schemaVersion: z.literal(1), id: uuid, expiresAt: z.iso.datetime(), completion: z.enum(['PENDING', 'ALL_ACCEPTED', 'PARTIAL', 'CLOSED']), acceptedCount: z.number().int().min(0).max(4), pendingCount: z.number().int().min(0).max(4), items: z.array(z.strictObject({ position: z.number().int().min(0).max(3), status: z.enum(['PENDING', 'ACCEPTED', 'DECLINED', 'CANCELLED', 'EXPIRED', 'UNAVAILABLE', 'RATE_LIMITED', 'CONFLICT']), invitationId: uuid.nullable() })).min(2).max(4) });
+export type InvitationGroup = z.infer<typeof InvitationGroupSchema>;
