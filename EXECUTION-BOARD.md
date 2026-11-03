@@ -82,7 +82,7 @@
 | M13 | M13-02 · Implement entitlement service and ledger/unique source id. | VERIFIED | m13-ledger-checks.json;check0(194unit/304integration/builds),sourceunique grants/entitlements;0023local |
 | M13 | M13-03 · Implement world outfit restrictions and appearance validation. | VERIFIED | docs/agent/evidence/m13-outfit-checks.json; ADR0041 |
 | M13 | M13-04 · Implement cosmetics UI and non-trading unlocks with accessibility. | VERIFIED | docs/agent/evidence/m13-wardrobe-checks.json; ADR0042 |
-| M13 | M13-05 · Implement abuse tests and rollback for incorrect rewards. | TODO | — |
+| M13 | M13-05 · Implement abuse tests and rollback for incorrect rewards. | VERIFIED | docs/agent/evidence/m13-correction-checks.json; ADR0043 |
 | M14 | M14-01 · Create original pixel-art city map with clickable world hotspots and accessible text list. | TODO | — |
 | M14 | M14-02 · Build world detail cards with safe occupancy and schedules. | TODO | — |
 | M14 | M14-03 · Integrate shared header, avatar, current world, friend/invite center. | TODO | — |

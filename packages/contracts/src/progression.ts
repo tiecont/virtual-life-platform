@@ -19,4 +19,11 @@ export const RewardObservationSchema = z.strictObject({ schemaVersion: z.literal
 export type RewardObservation = z.infer<typeof RewardObservationSchema>;
 export const ProgressionClaimFocusSchema = z.strictObject({ schemaVersion: z.literal(1), focusId: z.uuid() });
 export const CosmeticsInventorySchema = z.strictObject({ schemaVersion:z.literal(1),enabled:z.boolean(),items:z.array(z.strictObject({key:z.enum(['casual','cafe-apron']),requiredXp:z.number().int().nonnegative(),owned:z.boolean()})).length(2) });
-export const ProgressionViewSchema = z.strictObject({ schemaVersion: z.literal(1), enabled: z.boolean(), lifetimeXp: z.number().int().nonnegative(), entitlements: z.array(z.enum(['casual','cafe-apron'])).max(2), history: z.array(z.strictObject({ id: z.uuid(), kind: RewardKindSchema, worldSlug: ProgressionWorldSchema, xp: z.number().int().min(1).max(2), completedAt: z.iso.datetime() })).max(100), truncated: z.boolean() });
+export const ProgressionCorrectionReasonSchema = z.enum(['incorrect-source','policy-error','duplicate-import']);
+export const ProgressionViewSchema = z.strictObject({
+ schemaVersion: z.literal(1), enabled: z.boolean(), lifetimeXp: z.number().int().nonnegative(), awardedXp:z.number().int().nonnegative(),
+ entitlements: z.array(z.enum(['casual','cafe-apron'])).max(2),
+ history: z.array(z.strictObject({ id: z.uuid(), kind: RewardKindSchema, worldSlug: ProgressionWorldSchema, xp: z.number().int().min(1).max(2), completedAt: z.iso.datetime() })).max(100),
+ corrections:z.array(z.strictObject({id:z.uuid(),grantId:z.uuid(),xp:z.number().int().min(-2).max(-1),reason:ProgressionCorrectionReasonSchema,createdAt:z.iso.datetime()})).max(100),
+ truncated: z.boolean(),
+});

@@ -13,11 +13,11 @@ const opened: { app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: 
 beforeAll(async () => { const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database'); admin = new Pool({ connectionString: url.toString() }); });
 afterEach(async () => { for (const socket of sockets) socket.close(); sockets.clear(); for (const r of opened.splice(0)) { await r.app.app.close(); await r.pool.end(); await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`); } });
 afterAll(async () => { await admin.end(); });
-async function open(scopedWorlds = false, progression = false) {
+async function open(scopedWorlds = false, progression = false,accountDailyXp=20) {
   const schema = 'focus_test_' + randomUUID().replaceAll('-', ''); await admin.query(`CREATE SCHEMA "${schema}"`); const url = new URL(process.env.TEST_DATABASE_URL!); url.searchParams.set('options', '-c search_path=' + schema); const pool = new Pool({ connectionString: url.toString() }); await migrate(pool); let now = Date.now();
   const module = defineWorld({ schemaVersion: 1, apiVersion: 1, slug: 'focus-library-fixture', version: '1.0.0', title: 'Synthetic focus library (not actual Library world)', kind: 'sandbox', sceneRef: { key: 'focus-fixture', version: '1.0.0' }, capacity: 2, seatIds: ['seat-1', 'seat-2'], capabilities: ['presence', 'seating', 'focus'], focusPolicy: { pauseAllowed: true }, accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'sandbox', position: { x: .5, y: .5 }, icon: 'flask' } }, { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {}, travel: { prepare: async () => {}, abort: async () => {}, depart: async () => {} } });
-  const scoped = scopedWorlds ? ['deadline', 'library'].map(slug => defineWorld({ ...module.definition, slug, title: 'Synthetic ' + slug + ' focus fixture', focusPolicy: { pauseAllowed: slug === 'library' } }, { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {}, travel: { prepare: async () => {}, abort: async () => {}, depart: async () => {} } })) : [];
-  const config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'focus-local-test-only-session-secret-000001' }), options = { now: () => now, worlds: { modules: [module, ...scoped] }, ...(progression ? { progression: { policy: { ...DEFAULT_PROGRESSION_POLICY, enabled: true } } } : {}) }, app = await createApp(config, pool, false, options); opened.push({ app, pool, schema }); await app.app.listen(0, '127.0.0.1'); for (const slug of app.worlds.registry.slugs()) await app.worlds.registry.setEnabled(slug, true);
+  const scoped = scopedWorlds ? ['deadline', 'library'].map(slug => defineWorld({ ...module.definition, slug, title: 'Synthetic ' + slug + ' focus fixture', appearancePolicy:{apron:'allowed'}, focusPolicy: { pauseAllowed: slug === 'library' } }, { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {}, travel: { prepare: async () => {}, abort: async () => {}, depart: async () => {} } })) : [];
+  const config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'focus-local-test-only-session-secret-000001' }), options = { now: () => now, worlds: { modules: [module, ...scoped] }, ...(progression ? { progression: { policy: { ...DEFAULT_PROGRESSION_POLICY, enabled: true,accountDailyXp },correctionOperators:['local-correction-test'] } } : {}) }, app = await createApp(config, pool, false, options); opened.push({ app, pool, schema }); await app.app.listen(0, '127.0.0.1'); for (const slug of app.worlds.registry.slugs()) await app.worlds.registry.setEnabled(slug, true);
   return { app, pool, options, config, url: await app.app.getUrl(), now: () => now, advance: (ms: number) => { now += ms; } };
 }
 type Runtime = Awaited<ReturnType<typeof open>>; type User = { me: Me; cookie: string };
@@ -37,6 +37,52 @@ const input = (source: TravelSource, durationSeconds = 900) => ({ schemaVersion:
 async function start(r: Runtime, u: User, source: TravelSource, durationSeconds = 900, key = randomUUID()) { const response = await post(r, u, 'focus', input(source, durationSeconds), key); expect(response.statusCode).toBe(201); const result = FocusResultSchema.parse(response.json()); if (!result.session) throw new Error('Expected timer'); return result.session; }
 const action = (r: Runtime, u: User, id: string, operation: string, key = randomUUID()) => post(r, u, 'focus/' + id + '/' + operation, { schemaVersion: 1 }, key);
 const claimXp = (r: Runtime, u: User, id: string) => post(r,u,'me/progression/claim-focus',{schemaVersion:1,focusId:id});
+
+it('progression corrections retain immutable source history and cannot refund a spent abuse budget',async()=>{
+ const r=await open(true,true),u=await guest(r),v=await seat(r,u,'deadline');const ids:string[]=[];
+ for(let n=0;n<5;n++){const timer=await start(r,u,v.source);ids.push(timer.id);r.advance(900000);expect((await claimXp(r,u,timer.id)).statusCode).toBe(200);}
+ const before=(await get(r,u,'me/progression')).json(),grantId=before.history[0].id,requestId=randomUUID(),command={schemaVersion:1,accountId:u.me.profile.id,grantId,requestId,reason:'incorrect-source'};
+ const service=r.app.progression as typeof r.app.progression & {correct:(operator:string,input:unknown)=>Promise<unknown>};
+ await expect(service.correct('unregistered',command)).rejects.toMatchObject({status:403});
+ const corrected=await service.correct('local-correction-test',command);expect(await service.correct('local-correction-test',command)).toEqual(corrected);
+ const current=(await get(r,u,'me/progression')).json();expect(current).toMatchObject({lifetimeXp:8,awardedXp:10});expect(current.history).toHaveLength(5);expect(current.corrections).toHaveLength(1);expect(current.entitlements).not.toContain('cafe-apron');
+ expect((await claimXp(r,u,ids[4])).json().lifetimeXp).toBe(8);const extra=await start(r,u,v.source);r.advance(900000);expect((await claimXp(r,u,extra.id)).json().lifetimeXp).toBe(8);
+ await restart(r);expect(await (r.app.progression as typeof service).correct('local-correction-test',command)).toEqual(corrected);expect((await get(r,u,'me/export')).json().domains.progression.corrections).toHaveLength(1);
+});
+
+it('progression correction and entitlement revocation are atomic under retries, preserve privacy and remove current uniform',async()=>{
+ const r=await open(true,true),u=await guest(r),other=await guest(r),v=await seat(r,u,'deadline');
+ for(let n=0;n<5;n++){const timer=await start(r,u,v.source);r.advance(900000);await claimXp(r,u,timer.id);}
+ const view=(await get(r,u,'me/progression')).json(),grantId=view.history[0].id,command={schemaVersion:1,accountId:u.me.profile.id,grantId,requestId:randomUUID(),reason:'policy-error'};
+ const outfit={schemaVersion:1,source:v.source,outfit:'cafe-apron'};expect((await post(r,u,'me/appearance',outfit)).statusCode).toBe(200);
+ await r.pool.query("CREATE FUNCTION fail_revoke_apron() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF OLD.cosmetic_key='cafe-apron' THEN RAISE EXCEPTION 'synthetic revoke failure'; END IF; RETURN OLD; END $$");await r.pool.query('CREATE TRIGGER fail_revoke_apron BEFORE DELETE ON engine_progression_entitlements FOR EACH ROW EXECUTE FUNCTION fail_revoke_apron()');
+ await expect(r.app.progression.correct('local-correction-test',command)).rejects.toMatchObject({code:'P0001'});expect((await get(r,u,'me/progression')).json()).toMatchObject({lifetimeXp:10,corrections:[]});expect((await r.pool.query('SELECT 1 FROM engine_progression_corrections')).rowCount).toBe(0);await r.pool.query('DROP TRIGGER fail_revoke_apron ON engine_progression_entitlements');
+ const outcomes=await Promise.all(Array.from({length:8},()=>r.app.progression.correct('local-correction-test',command)));expect(outcomes.every(result=>JSON.stringify(result)===JSON.stringify(outcomes[0]))).toBe(true);expect((await r.pool.query('SELECT 1 FROM engine_progression_corrections')).rowCount).toBe(1);
+ await expect(r.app.progression.correct('local-correction-test',{...command,reason:'incorrect-source'})).rejects.toMatchObject({status:409});await expect(r.app.progression.correct('local-correction-test',{...command,requestId:randomUUID()})).rejects.toMatchObject({status:409});await expect(r.app.progression.correct('local-correction-test',{...command,requestId:randomUUID(),accountId:other.me.profile.id})).rejects.toMatchObject({status:404});await expect(r.app.progression.correct('local-correction-test',{...command,amount:100})).rejects.toThrow();
+ expect((await post(r,u,'me/progression/correct',command)).statusCode).toBe(404);expect((await post(r,u,'me/appearance',outfit)).statusCode).toBe(404);
+ const ack=RoomAckSchema.parse(await v.socket.timeout(5000).emitWithAck('room.snapshot',{schemaVersion:1,requestId:randomUUID(),...v.source}));expect(ack.ok&&ack.result.type==='snapshot'&&ack.result.participants.find(p=>p.profile.id===u.me.profile.id)?.outfit).toBe('casual');
+ const own=(await get(r,u,'me/export')).json().domains.progression;expect(own.corrections[0]).toMatchObject({grantId,xp:-2,reason:'policy-error'});expect(JSON.stringify(own)).not.toMatch(/operator_key|fingerprint|source_id|local-correction-test/);expect((await get(r,other,'me/progression')).json().corrections).toEqual([]);
+ await expect(r.pool.query('UPDATE engine_progression_corrections SET revoked_xp=1')).rejects.toMatchObject({code:'55000'});await expect(r.pool.query('TRUNCATE engine_progression_corrections')).rejects.toMatchObject({code:'55000'});
+ await r.app.http.inject({method:'DELETE',url:'/v1/me',headers:headers(u),payload:{}});expect((await r.pool.query('SELECT 1 FROM engine_progression_corrections')).rowCount).toBe(0);
+});
+
+it('progression account cap spans worlds and original UTC completion day cannot be moved by a late retry',async()=>{
+ const r=await open(true,true,12);r.advance(Date.parse(new Date(r.now()+86400000).toISOString().slice(0,10)+'T12:00:00.000Z')-r.now());const u=await guest(r),first=await seat(r,u,'deadline');
+ for(let n=0;n<5;n++){const timer=await start(r,u,first.source);r.advance(900000);await claimXp(r,u,timer.id);}
+ expect(RoomAckSchema.parse(await first.socket.timeout(5000).emitWithAck('room.leave',{schemaVersion:1,requestId:randomUUID(),...first.source})).ok).toBe(true);const second=await seat(r,u,'library'),allowed=await start(r,u,second.source);r.advance(900000);expect((await claimXp(r,u,allowed.id)).json().lifetimeXp).toBe(12);
+ const blocked=await start(r,u,second.source);r.advance(900000);expect((await claimXp(r,u,blocked.id)).json().lifetimeXp).toBe(12);r.advance(Date.parse(new Date(r.now()+86400000).toISOString().slice(0,10)+'T00:01:00.000Z')-r.now());expect((await claimXp(r,u,blocked.id)).json().lifetimeXp).toBe(12);
+ const fresh=await start(r,u,second.source);r.advance(900000);expect((await claimXp(r,u,fresh.id)).json().lifetimeXp).toBe(14);
+ const closed=await open(true);await expect(closed.app.progression.correct('local-correction-test',{schemaVersion:1,accountId:u.me.profile.id,grantId:randomUUID(),requestId:randomUUID(),reason:'policy-error'})).rejects.toMatchObject({status:403});
+});
+
+it('progression maintenance bounds old partner and appearance receipts while retaining replay-safe history',async()=>{
+ const r=await open(true,true),u=await guest(r),other=await guest(r),old=new Date(r.now()-92*86400000);
+ // SQL fixtures exercise retention/truncation bounds, not valid source minting or cap bypass.
+ await r.pool.query("WITH grants AS (INSERT INTO engine_progression_ledger(id,account_id,source_kind,source_id,world_slug,xp,completed_at,recorded_at,policy_version) SELECT gen_random_uuid(),$1,'hospitality-completed',gen_random_uuid(),'maid',2,$3,$3,'1.0.0' FROM generate_series(1,105) RETURNING id) INSERT INTO engine_progression_partners SELECT id,$1,$2,$3 FROM grants",[u.me.profile.id,other.me.profile.id,old]);
+ await r.pool.query("INSERT INTO engine_progression_appearance_mutations SELECT $1,gen_random_uuid(),'synthetic-retention',$2 FROM generate_series(1,105)",[u.me.profile.id,old]);
+ await r.app.progression.maintain();expect((await r.pool.query('SELECT 1 FROM engine_progression_partners')).rowCount).toBe(5);expect((await r.pool.query('SELECT 1 FROM engine_progression_appearance_mutations')).rowCount).toBe(5);await r.app.progression.maintain();expect((await r.pool.query('SELECT 1 FROM engine_progression_partners')).rowCount).toBe(0);expect((await r.pool.query('SELECT 1 FROM engine_progression_appearance_mutations')).rowCount).toBe(0);
+ expect((await get(r,u,'me/progression')).json()).toMatchObject({lifetimeXp:210,awardedXp:210,truncated:true});expect((await r.pool.query('SELECT 1 FROM engine_progression_ledger')).rowCount).toBe(105);
+});
 
 it('progression claims only an owned completed focus source and eight actual TCP replays mint once across restart', async () => {
   const r=await open(true,true),u=await guest(r),other=await guest(r),visit=await seat(r,u,'deadline'),timer=await start(r,u,visit.source);

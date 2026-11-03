@@ -64,7 +64,8 @@
     "engine_progression_entitlements": "engine.progression",
     "engine_progression_partners": "engine.progression",
     "engine_progression_appearance": "engine.progression",
-    "engine_progression_appearance_mutations": "engine.progression"
+    "engine_progression_appearance_mutations": "engine.progression",
+    "engine_progression_corrections": "engine.progression"
   },
   "journalTable": "city_schema_migrations",
   "legacyDatabases": "not managed by city migrations",

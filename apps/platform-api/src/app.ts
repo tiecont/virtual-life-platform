@@ -59,7 +59,7 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown } } = {}) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] } } = {}) {
   const safetyPolicy = await loadSafetyPolicy(options.safety?.policy);
   const requiredMigrations = await migrationNames();
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
@@ -93,7 +93,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const invitations = new InvitationService(db, identity, social, worlds.registry, options.now);
   const focus = new FocusService(db, identity, rooms, options.now);
   const hospitality = new HospitalityService(db, identity, rooms, social, options.hospitality?.staff, options.now);
-  const progression = new ProgressionService(db, identity, focus, async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account,world) && await new SanctionPolicy(transaction, options.now).permits(account,world), options.progression?.policy, options.now);
+  const progression = new ProgressionService(db, identity, focus, async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account,world) && await new SanctionPolicy(transaction, options.now).permits(account,world), options.progression?.policy, options.now,options.progression?.correctionOperators);
   const appearance=new AppearanceService(db,identity,rooms,hospitality,options.now);rooms.setAppearanceProjection((account,world,source,connected)=>appearance.project(account,world,source,connected));
   const hospitalityOutbox = new HospitalityOutbox(db, identity, [...options.hospitality?.completionSinks ?? [], ...progression.policy.enabled ? [progression.hospitalitySink()] : []], options.now);
   const eventPermissions = new EventPermissions(reports, options.now);

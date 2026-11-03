@@ -1,5 +1,11 @@
 # Agent progress
 
+## M13-05 - VERIFIED immutable corrections and abuse bounds
+
+From2bf6ab0;m13-correction-checks.json/ADR0043/runbook. Fullcheck exit0:7governance,195unit,311integration,lint/types/architecture/assets/builds;browser8(4eachdevice),targeted12pass74filteredskips,0025localmigration/diff0. Missing-correct-method red retained1failed25skips;first acceptance1pass,finalcombined12pass. Documentation patch stale-context rejection was atomic and corrected;no runtime failure hidden.
+
+Trusted default-empty in-process operator registry,no public correction route;immutable full correction/account+amount FK/source uniqueness/effective nonnegative balance and atomic entitlement revocation verified. Eight concurrent retries/restart ->one deduction;delete failure rolls back both;fresh Socket.IO casual/equip denial;gross cap not refunded/original UTC-day retries/current account crossworldcap/privacy/erasure/UPDATE+TRUNCATE guards pass. SQL105rowfixtures prove100batch retention/truncation,not runtimecap bypass. No restore/undo or real operator UI/provisioning;DBadmins trusted,accountreset/realpersoncollusion remain limits. AllM13localtasks verified;defaultrewardsoff/realflagsOFF/previewoff/DB0025. Next exact action M14-01 original code-authored pixel city map with catalog-only clickable hotspots and native accessible list;then02freshness-safe occupancy/schedules. Actual world adapters/rights/operator/release gates remain pending.
+
 ## M13-04 - VERIFIED private accessible wardrobe
 
 From ca59502;m13-wardrobe-checks.json/ADR0042. Fullcheck exit0:7governance,195unit,307integration,lint/types/architecture/assets/builds;targeted inventory1pass56filteredskips;browser4(2eachdevice)exit0,diff0. Initial acceptance passed,no red-first claim. Desktop/mobile screenshots and recovery JSON retained/visually inspected in m13-wardrobe-visual;no overflow,buttons>=44px,no pageerrors.
