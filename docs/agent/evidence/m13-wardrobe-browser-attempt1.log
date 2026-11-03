@@ -1,0 +1,86 @@
+ Network virtual-city-test-8cbe67dd_default Creating 
+ Network virtual-city-test-8cbe67dd_default Creating 
+ Network virtual-city-test-8cbe67dd_default Created 
+ Network virtual-city-test-8cbe67dd_default Created 
+ Container virtual-city-test-8cbe67dd-db-1 Creating 
+ Container virtual-city-test-8cbe67dd-db-1 Created 
+ Container virtual-city-test-8cbe67dd-db-1 Starting 
+ Container virtual-city-test-8cbe67dd-db-1 Started 
+ Container virtual-city-test-8cbe67dd-db-1 Waiting 
+ Container virtual-city-test-8cbe67dd-db-1 Healthy 
+[WebServer] (node:428019) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:428054) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:428054) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:428054) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:428018) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:428099) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:428190) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:428203) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:428306) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/wardrobe.spec.ts:6:5 › private wardrobe previews locked styles, equips with a durable retry and reconciles revocation and logout (16.1s)
+  ✓  2 [desktop] › tests/e2e/wardrobe.spec.ts:31:5 › late wardrobe reads cannot repopulate the previous identity after logout (939ms)
+
+  2 passed (21.8s)
+ Container virtual-city-test-8cbe67dd-db-1 Stopping 
+ Container virtual-city-test-8cbe67dd-db-1 Stopped 
+ Container virtual-city-test-8cbe67dd-db-1 Removing 
+ Container virtual-city-test-8cbe67dd-db-1 Removed 
+ Network virtual-city-test-8cbe67dd_default Removing 
+ Network virtual-city-test-8cbe67dd_default Removed 
+ Network virtual-city-test-c85d493f_default Creating 
+ Network virtual-city-test-c85d493f_default Creating 
+ Network virtual-city-test-c85d493f_default Created 
+ Network virtual-city-test-c85d493f_default Created 
+ Container virtual-city-test-c85d493f-db-1 Creating 
+ Container virtual-city-test-c85d493f-db-1 Created 
+ Container virtual-city-test-c85d493f-db-1 Starting 
+ Container virtual-city-test-c85d493f-db-1 Started 
+ Container virtual-city-test-c85d493f-db-1 Waiting 
+ Container virtual-city-test-c85d493f-db-1 Healthy 
+[WebServer] (node:429859) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:429892) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:429892) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:429892) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:429858) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:429955) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:430017) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:430049) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:430125) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [mobile] › tests/e2e/wardrobe.spec.ts:6:5 › private wardrobe previews locked styles, equips with a durable retry and reconciles revocation and logout (16.4s)
+  ✓  2 [mobile] › tests/e2e/wardrobe.spec.ts:31:5 › late wardrobe reads cannot repopulate the previous identity after logout (994ms)
+
+  2 passed (22.0s)
+ Container virtual-city-test-c85d493f-db-1 Stopping 
+ Container virtual-city-test-c85d493f-db-1 Stopped 
+ Container virtual-city-test-c85d493f-db-1 Removing 
+ Container virtual-city-test-c85d493f-db-1 Removed 
+ Network virtual-city-test-c85d493f_default Removing 
+ Network virtual-city-test-c85d493f_default Removed 

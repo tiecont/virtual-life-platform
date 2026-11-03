@@ -1,5 +1,11 @@
 # Agent progress
 
+## M13-04 - VERIFIED private accessible wardrobe
+
+From ca59502;m13-wardrobe-checks.json/ADR0042. Fullcheck exit0:7governance,195unit,307integration,lint/types/architecture/assets/builds;targeted inventory1pass56filteredskips;browser4(2eachdevice)exit0,diff0. Initial acceptance passed,no red-first claim. Desktop/mobile screenshots and recovery JSON retained/visually inspected in m13-wardrobe-visual;no overflow,buttons>=44px,no pageerrors.
+
+Private catalog supplies trusted thresholds/ownership,locked-style static preview,native disclosure/radios/equip,current server outfit,exact-key retry after actual committed-response loss,livecanvas apron/revocationcasual,logout/held-read cleanup pass. Sandbox explicitly permits owned apron;no staff power or reward enablement. Rewards defaultdisabled/realflagsOFF/previewoff/DB0024;no migration. Next exact action M13-05 immutable compensating corrections for incorrect rewards under account serialization,derived nonnegative balance/entitlement revocation without freeing gross abuse budgets;test correction/replay/restart/rollback/caps/privacy and refresh fallback. No public correction/mint route or real operator provisioning.
+
 ## M13-03 - VERIFIED server-approved visit appearance
 
 From b172c91;m13-outfit-checks.json/ADR0041. Actual fullcheck0:7governance,195unit,306integration,lint/types/architecture/assets/builds;browser6(3eachdevice),0024localmigration/diff0. Initial isolated2tests passed but process handle expired across continuation; no isolated exit/red-first claim. Rootcheck independently verifies final code.

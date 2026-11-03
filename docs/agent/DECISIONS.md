@@ -1,5 +1,7 @@
 # Decisions
 
+M13-04 / ADR0042: private server catalog separates owned entitlement from XP threshold;static preview can show locked art. Room wardrobe uses native controls,current visit server equip and durable same-key retry;transient snapshot sync preserves interrupted request. Abort/identity cleanup excludes late old reads. Explicit sandbox appearance permission creates no shift authority. Full307integration/builds/browser4 pass;actual screenshots inspected,no migration/reward activation.
+
 M13-03 / ADR0041: effective outfit belongs to each privacy-filtered room participant,not a room-wide renderer option. Exact current visit + entitlement + explicit world/shift policy authorizes appearance;clothing never grants staffing. Account-locked selection/receipt;old key observes current selection. Missing policy/field ->casual;15s active snapshot refresh reconciles shift loss with transport/queue delay. Actual full306integration/builds/browser6 pass,0024local0.
 
 M13-02 / ADR0040: no raw reward route;own focus ID is resolved by focus owner in SQL transaction,service grants from canonical source under account lock/unique key. Hospitality uses reviewed transactional outbox sink only when explicitly enabled. Private immutable ledger + entitlements;partner links separated for erasure/short retention. Full304integration/builds pass. Equip/role/appearance/reversal remain03..05.

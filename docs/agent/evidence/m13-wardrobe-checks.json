@@ -1,0 +1,14 @@
+{
+ "taskID":"M13-04","source":"workspace from ca59502; checkpoint SHA follows git log",
+ "environment":"2026-11-03; Node26.9.0/pnpm11.28.5; disposable PostgreSQL/HTTP/Socket.IO/Chromium desktop-mobile",
+ "commands":[
+  {"command":"pnpm build:packages && pnpm --filter @virtual-city/platform-api typecheck && pnpm --filter @virtual-city/portal-web typecheck","exitCode":0,"logs":["m13-wardrobe-packages.log","m13-wardrobe-api-types.log","m13-wardrobe-web-types.log"]},
+  {"command":"node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/hospitality.test.ts -t 'private cosmetics'","exitCode":0,"log":"m13-wardrobe-inventory.log","scope":"1pass56filteredskips; initial implementation acceptance, not red-first evidence"},
+  {"command":"pnpm check","exitCode":0,"log":"m13-wardrobe-check.log","exitArtifact":"m13-wardrobe-check.exit","scope":"7governance,195unit,307integration; lint/types/architecture/assets/builds"},
+  {"command":"node scripts/run-browser-tests.mjs tests/e2e/wardrobe.spec.ts","exitCode":0,"log":"m13-wardrobe-browser-attempt1.log","exitArtifact":"m13-wardrobe-browser-attempt1.exit","scope":"4pass,2desktop/2mobile; actual lost committed response/retry,revocation,logout/late read,keyboard and44pixel buttons"},
+  {"command":"git diff --check","exitCode":0}
+ ],
+ "verified":["Catalog derives thresholds from trusted policy and ownership from entitlements, not client XP","Own inventory denies unauthenticated/query-target reads and does not disclose owner IDs","Keyboard disclosure/radio/equip and static locked-style preview work on desktop/mobile","Actual committed equip response aborted; same-key retry leaves one receipt and confirms apron in live Pixi scene","Erased entitlement reconciles to casual;locked equip disabled after inventory refresh","Logout removes private UI;held real catalog response cannot repopulate old identity","Desktop/mobile wardrobe screenshots visually inspected; no horizontal overflow,button targets>=44px,no page errors"],
+ "visualArtifacts":"m13-wardrobe-visual/{desktop,mobile}.png,fullpage screenshots and actual recovery JSON",
+ "limits":["No red-first claim","New rewards default disabled; tests seed synthetic entitlement solely for wardrobe gate","Original static artwork, no new licensing or public release approval","No marketplace/trading/payment/role provisioning","Current outfit derives from snapshots; preview never proves equip permission","No real-world adapter or public activation; no new migration"]
+}

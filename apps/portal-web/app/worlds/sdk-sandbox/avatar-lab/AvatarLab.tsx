@@ -39,7 +39,7 @@ export default function AvatarLab() {
         <button disabled={playing || failed} onClick={() => setFrame(value => (value + 1) % avatarAtlasSpec.frameCount)}>Next pose frame</button>
         <p className="avatar-note" role="status">{reduced ? 'Reduced motion: still poses.' : playing ? 'Playing preview.' : 'Still preview.'}</p>
       </div></div>
-    <p className="avatar-note">Preview only. Your saved color comes from Identity. The cafe applies its own visual outfit; clothing grants no staff permissions.</p>
+    <p className="avatar-note">Preview only. Your saved color comes from Identity. Open Your wardrobe in the cafe to equip an owned style with server approval; clothing grants no staff permissions.</p>
     <p className="avatar-note">Original artwork created for this project. Release approval is pending. <a href="/assets/avatars/provenance.json">Asset provenance</a></p>
   </main>;
 }

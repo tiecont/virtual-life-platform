@@ -40,6 +40,15 @@ const input = (source: TravelSource) => ({ schemaVersion: 1, source, policyVersi
 const mutation = (source: TravelSource, expectedVersion = 0) => ({ schemaVersion: 1, source, expectedVersion });
 async function place(r: Runtime, u: User, source: TravelSource, key = randomUUID()) { const response = await post(r, u, 'orders', input(source), key); expect(response.statusCode).toBe(201); return OrderResultSchema.parse(response.json()).order; }
 const act = (r: Runtime, u: User, id: string, action: string, source: TravelSource, expectedVersion = 0, key = randomUUID()) => post(r, u, `orders/${id}/${action}`, mutation(source, expectedVersion), key);
+it('private cosmetics inventory uses trusted policy and entitlement rather than client XP and hides other owners',async()=>{
+ const r=await open(false,50,true,32,'coffee',true),u=await guest(r),other=await guest(r);
+ expect((await r.app.http.inject({url:'/v1/me/cosmetics'})).statusCode).toBe(401);
+ const first=await get(r,u,'me/cosmetics');expect(first.statusCode).toBe(200);expect(first.json()).toEqual({schemaVersion:1,enabled:true,items:[{key:'casual',requiredXp:0,owned:true},{key:'cafe-apron',requiredXp:10,owned:false}]});
+ await r.pool.query("INSERT INTO engine_progression_entitlements VALUES($1,'cafe-apron',$2)",[u.me.profile.id,new Date(r.now())]);
+ expect((await get(r,u,'me/cosmetics')).json().items[1].owned).toBe(true);expect((await get(r,u,'me/progression')).json().lifetimeXp).toBe(0);expect((await get(r,other,'me/cosmetics')).json().items[1].owned).toBe(false);
+ expect((await get(r,other,'me/cosmetics?accountId='+u.me.profile.id)).statusCode).toBe(422);
+ expect((await get(r,other,'me/cosmetics')).body).not.toContain(u.me.profile.id);
+});
 it('approved outfit requires entitlement and current voluntary shift, falls back per participant and never grants service authority',async()=>{
  const r=await open(false,50,true,32,'coffee',true),u=await guest(r),other=await guest(r),v=await join(r,u),peer=await join(r,other),body={schemaVersion:1,source:v.source,outfit:'cafe-apron'};
  const snapshot=async()=>{const ack=RoomAckSchema.parse(await v.socket.timeout(5000).emitWithAck('room.snapshot',v.command()));if(!ack.ok||ack.result.type!=='snapshot')throw Error('Snapshot unavailable');return ack.result;};
