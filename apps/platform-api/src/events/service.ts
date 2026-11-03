@@ -8,7 +8,9 @@ import type { SocialService } from '../social/service';
 import { DomainError } from '../common/errors';
 import { advanceEvent, createEvent, formatEventSchedule } from './lifecycle';
 
-type Row = { id: string; organizer_id: string; world_slug: string; world_version: string; policy_version: string; title: string; audience: 'silent'; visibility: 'listed' | 'private'; capacity: number; time_zone: string; opens_at: Date; starts_at: Date; check_in_closes_at: Date; ends_at: Date; phase: EventPhase; created_at: Date; changed_at: Date };
+type Row = { id: string; organizer_id: string; world_slug: string; world_version: string; policy_version: string; title: string; audience: 'silent'; visibility: 'listed' | 'private'; capacity: number; time_zone: string; opens_at: Date; starts_at: Date; check_in_closes_at: Date; ends_at: Date; phase: EventPhase; created_at: Date; changed_at: Date; resource_key: string | null };
+export type EventBookingContext = Readonly<{ id: string; organizerId: string; worldSlug: string; resourceKey: string | null; capacity: number; phase: EventPhase; schedule: EventSchedule; definition?: WorldDefinition }>;
+export interface EventReservationObserver { observed(db: PoolClient, context: EventBookingContext, now: number): Promise<void> }
 type Rsvp = { id: string; event_id: string; account_id: string; phase: 'CONFIRMED' | 'CANCELLED' | 'EXPIRED'; created_at: Date; changed_at: Date };
 export interface EventOrganizerPort { permits(db: PoolClient, actor: IdentityContext, worldSlug: string): Promise<boolean> }
 export interface EventSafetyPort { permits(db: PoolClient, accountId: string, worldSlug: string): Promise<boolean> }
@@ -17,7 +19,11 @@ const unavailable = () => new DomainError('NOT_AVAILABLE', 404, 'This event is u
 const conflict = () => new DomainError('IDEMPOTENCY_CONFLICT', 409, 'Request key conflicts with an earlier action');
 export class EventService {
   #closed = false; #maintenance?: Promise<void>;
+  #reservations?: EventReservationObserver;
   constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private social: SocialService, private registry: WorldRegistry, private safety: EventSafetyPort, private organizers?: EventOrganizerPort, private now = Date.now) {}
+  attachReservations(port: EventReservationObserver) { if (this.#reservations) throw new Error('Reservation observer already attached'); this.#reservations = port; }
+  async forOrganizer(db: PoolClient, organizer: string, work: (ids: string[]) => Promise<void>) { const rows = (await db.query<{ id: string }>("SELECT id FROM engine_events WHERE organizer_id=$1 AND phase NOT IN ('ENDED','CANCELLED')", [organizer])).rows; await work(rows.map(row => row.id)); }
+  private bookingContext(row: Row, definition?: WorldDefinition): EventBookingContext { return { id: row.id, organizerId: row.organizer_id, worldSlug: row.world_slug, resourceKey: row.resource_key, capacity: row.capacity, phase: row.phase, schedule: this.scheduleOf(row), definition }; }
   private async tx<T>(token: string, targets: string[], work: (db: PoolClient, actor: IdentityContext) => Promise<T>) {
     if (this.#closed) throw new DomainError('WORLD_UNAVAILABLE', 503, 'Events unavailable');
     const initial = await this.identity.authenticate(token), db = await this.pool.connect();
@@ -39,7 +45,7 @@ export class EventService {
   private rsvpView(row: Rsvp) { return EventRsvpViewSchema.parse({ id: row.id, phase: row.phase, createdAt: row.created_at.toISOString(), changedAt: row.changed_at.toISOString() }); }
   private async view(db: PoolClient, row: Row, actor: string) {
     const rsvp = (await db.query<Rsvp>('SELECT * FROM engine_event_rsvps WHERE event_id=$1 AND account_id=$2', [row.id, actor])).rows[0], labels = formatEventSchedule(this.scheduleOf(row));
-    return EventViewSchema.parse({ id: row.id, worldSlug: row.world_slug, title: row.title, phase: row.phase, createdAt: row.created_at.toISOString(), schedule: this.scheduleOf(row), startsLabel: labels.startsLabel, endsLabel: labels.endsLabel, capacity: row.capacity, mine: row.organizer_id === actor, rsvp: rsvp ? this.rsvpView(rsvp) : null });
+    return EventViewSchema.parse({ id: row.id, worldSlug: row.world_slug, title: row.title, phase: row.phase, createdAt: row.created_at.toISOString(), schedule: this.scheduleOf(row), startsLabel: labels.startsLabel, endsLabel: labels.endsLabel, capacity: row.capacity, mine: row.organizer_id === actor, rsvp: rsvp ? this.rsvpView(rsvp) : null, resourceKey: row.resource_key });
   }
   private async prior(db: PoolClient, actor: string, key: string, fingerprint: string) {
     const previous = (await db.query<{ event_id: string; fingerprint: string }>('SELECT event_id,fingerprint FROM engine_event_mutations WHERE actor_id=$1 AND request_id=$2', [actor, key])).rows[0];
@@ -55,6 +61,7 @@ export class EventService {
     row.phase = next.phase; row.changed_at = new Date(next.changedAt);
     await db.query("UPDATE engine_events SET phase=$2,changed_at=$3,checked_order=nextval('engine_event_recovery_sequence') WHERE id=$1", [row.id, row.phase, row.changed_at]);
     if (row.phase === 'ENDED' || row.phase === 'CANCELLED') await db.query("UPDATE engine_event_rsvps SET phase=$2,changed_at=greatest(changed_at,$3) WHERE event_id=$1 AND phase='CONFIRMED'", [row.id, row.phase === 'ENDED' ? 'EXPIRED' : 'CANCELLED', row.changed_at]);
+    await this.#reservations?.observed(db, this.bookingContext(row), this.now());
     return row;
   }
   private async allowed(db: PoolClient, actor: IdentityContext, row: Row, world: WorldDefinition) {
@@ -67,19 +74,30 @@ export class EventService {
     return this.context(token, input.worldSlug, (world, valid) => this.tx(token, [], async (db, actor) => {
       if (!await this.organizers?.permits(db, actor, input.worldSlug) || !await this.safety.permits(db, actor.accountId, input.worldSlug)) throw unavailable();
       if (input.policyVersion !== world.eventPolicy!.version || input.capacity > world.eventPolicy!.maxCapacity) throw unavailable();
+      if (input.resourceKey && (!world.eventPolicy!.reservations?.resources.some(resource => resource.key === input.resourceKey && resource.capacity >= input.capacity))) throw unavailable();
       const previous = await this.prior(db, actor.accountId, key, fingerprint);
       if (previous) { const row = (await db.query<Row>('SELECT * FROM engine_events WHERE id=$1 AND organizer_id=$2 FOR UPDATE', [previous.event_id, actor.accountId])).rows[0]; if (!row) throw unavailable(); const result = EventResultSchema.parse({ schemaVersion: 1, event: await this.view(db, await this.observe(db, row), actor.accountId) }); this.check(valid); return result; }
       createEvent(input.schedule, this.now()); if (Date.parse(input.schedule.opensAt) > this.now() + 30 * DAY) throw unavailable();
       if (!(await db.query('SELECT 1 FROM pg_timezone_names WHERE name=$1', [input.schedule.timeZone])).rowCount) throw unavailable();
       await db.query("SELECT pg_advisory_xact_lock(hashtextextended(current_schema()||':events:'||$1,0))", [input.worldSlug]);
+      if (input.resourceKey && (await db.query("SELECT 1 FROM engine_events WHERE world_slug=$1 AND resource_key=$2 AND phase<>'CANCELLED' AND tstzrange(opens_at,ends_at,'[)') && tstzrange($3::timestamptz,$4::timestamptz,'[)') LIMIT 1", [input.worldSlug, input.resourceKey, input.schedule.opensAt, input.schedule.endsAt])).rowCount) throw new DomainError('NOT_AVAILABLE', 409, 'This table already has a time slot');
       if ((await db.query("SELECT count(*)::int AS n FROM engine_events WHERE world_slug=$1 AND phase NOT IN ('ENDED','CANCELLED')", [input.worldSlug])).rows[0].n >= 100) throw new DomainError('RATE_LIMITED', 429, 'The schedule is full');
       await this.quota(db, actor.accountId, 'schedule'); const at = new Date(this.now()), s = input.schedule;
-      const row = (await db.query<Row>("INSERT INTO engine_events(id,organizer_id,world_slug,world_version,policy_version,title,audience,visibility,capacity,time_zone,opens_at,starts_at,check_in_closes_at,ends_at,phase,created_at,changed_at) VALUES($1,$2,$3,$4,$5,$6,'silent',$7,$8,$9,$10,$11,$12,$13,'SCHEDULED',$14,$14) RETURNING *", [randomUUID(), actor.accountId, input.worldSlug, world.version, input.policyVersion, input.title, input.visibility, input.capacity, s.timeZone, s.opensAt, s.startsAt, s.checkInClosesAt, s.endsAt, at])).rows[0];
+      const row = (await db.query<Row>("INSERT INTO engine_events(id,organizer_id,world_slug,world_version,policy_version,title,audience,visibility,capacity,time_zone,opens_at,starts_at,check_in_closes_at,ends_at,phase,created_at,changed_at,resource_key) VALUES($1,$2,$3,$4,$5,$6,'silent',$7,$8,$9,$10,$11,$12,$13,'SCHEDULED',$14,$14,$15) RETURNING *", [randomUUID(), actor.accountId, input.worldSlug, world.version, input.policyVersion, input.title, input.visibility, input.capacity, s.timeZone, s.opensAt, s.startsAt, s.checkInClosesAt, s.endsAt, at, input.resourceKey ?? null])).rows[0];
       await this.remember(db, actor.accountId, key, row.id, 'schedule', fingerprint); const result = EventResultSchema.parse({ schemaVersion: 1, event: await this.view(db, row, actor.accountId) }); this.check(valid); if (this.now() >= row.opens_at.getTime()) throw unavailable(); return result;
     }));
   }
   private async reference(token: string, rawId: string) {
     const id = uuid.parse(rawId); await this.identity.authenticate(token); const row = (await this.pool.query<Row>('SELECT * FROM engine_events WHERE id=$1', [id])).rows[0]; if (!row) throw unavailable(); return row;
+  }
+  // Internal transaction boundary for reservation-owned SQL, never a public callback.
+  async withBooking<T>(token: string, id: string, work: (db: PoolClient, actor: IdentityContext, context: EventBookingContext) => Promise<T>, withdraw = false, admissionValid?: () => boolean): Promise<T> {
+    const known = await this.reference(token, id);
+    const run = (world?: WorldDefinition, valid?: () => boolean) => this.tx(token, [known.organizer_id], async (db, actor) => {
+      const row = (await db.query<Row>('SELECT * FROM engine_events WHERE id=$1 FOR UPDATE', [known.id])).rows[0]; if (!row) throw unavailable();
+      if (world) await this.allowed(db, actor, row, world); await this.observe(db, row); const result = await work(db, actor, this.bookingContext(row, world)); if (valid) this.check(valid); if (admissionValid && !admissionValid()) throw new DomainError('NOT_IN_ROOM', 409, 'Your visit changed'); return result;
+    });
+    return withdraw ? run() : this.context(token, known.world_slug, (world, valid) => run(world, valid));
   }
   async get(token: string, id: string) {
     const known = await this.reference(token, id);
@@ -100,6 +118,7 @@ export class EventService {
     const known = await this.reference(token, id), key = uuid.parse(requestKey), fingerprint = this.identity.fingerprint({ operation: 'event.rsvp', id: known.id });
     return this.context(token, known.world_slug, (world, valid) => this.tx(token, [known.organizer_id], async (db, actor) => {
       const row = (await db.query<Row>('SELECT * FROM engine_events WHERE id=$1 FOR UPDATE', [known.id])).rows[0]; if (!row) throw unavailable(); await this.allowed(db, actor, row, world); await this.observe(db, row);
+      if (row.resource_key) throw new DomainError('NOT_AVAILABLE', 409, 'Use a table reservation for this slot');
       const previous = await this.prior(db, actor.accountId, key, fingerprint), current = (await db.query<Rsvp>('SELECT * FROM engine_event_rsvps WHERE event_id=$1 AND account_id=$2', [row.id, actor.accountId])).rows[0];
       if (current && this.now() < current.changed_at.getTime()) throw new DomainError('WORLD_UNAVAILABLE', 503, 'Event clock unavailable');
       if (previous) { if (!current) throw unavailable(); this.check(valid); return EventRsvpResultSchema.parse({ schemaVersion: 1, rsvp: this.rsvpView(current) }); }

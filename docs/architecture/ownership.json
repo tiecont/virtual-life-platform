@@ -51,7 +51,10 @@
     "engine_hospitality_refusals": "engine.hospitality",
     "engine_events": "engine.events",
     "engine_event_rsvps": "engine.events",
-    "engine_event_mutations": "engine.events"
+    "engine_event_mutations": "engine.events",
+    "engine_reservations": "engine.reservations",
+    "engine_reservation_waitlist": "engine.reservations",
+    "engine_reservation_mutations": "engine.reservations"
   },
   "journalTable": "city_schema_migrations",
   "legacyDatabases": "not managed by city migrations",

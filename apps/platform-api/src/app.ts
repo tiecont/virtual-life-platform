@@ -38,6 +38,8 @@ import { registerHospitality } from './hospitality/http';
 import { HospitalityOutbox, type HospitalityCompletionSink } from './hospitality/outbox';
 import { EventService, type EventOrganizerPort } from './events/service';
 import { registerEvents } from './events/http';
+import { ReservationService } from './events/reservations';
+import { registerReservations } from './events/reservations-http';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -88,9 +90,11 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const hospitality = new HospitalityService(db, identity, rooms, social, options.hospitality?.staff, options.now);
   const hospitalityOutbox = new HospitalityOutbox(db, identity, options.hospitality?.completionSinks, options.now);
   const events = new EventService(db, identity, social, worlds.registry, { permits: async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account, world) && await new SanctionPolicy(transaction, options.now).permits(account, world) }, options.events?.organizers, options.now);
+  const reservations = new ReservationService(db, identity, social, rooms, events, options.now); events.attachReservations(reservations);
   const unsubscribeInvitationWithdrawal = social.onContactWithdrawn((transaction, a, b) => invitations.withdrawContact(transaction, a, b));
   const unsubscribeHospitalityWithdrawal = social.onContactWithdrawn((transaction, a, b) => hospitality.withdrawContact(transaction, a, b));
   const unsubscribeEventWithdrawal = social.onContactWithdrawn((transaction, a, b) => events.withdrawContact(transaction, a, b));
+  const unsubscribeReservationWithdrawal = social.onContactWithdrawn((transaction, a, b) => reservations.withdrawContact(transaction, a, b));
   const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, policy: safetyPolicy, evidence: reports.cache }, options.now);
   http.addHook('onClose', async () => { await worlds.registry.close(); });
   http.addHook('onClose', async () => { await rooms.close(); });
@@ -103,6 +107,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerFocus(http, config, identity, focus, options.now);
   registerHospitality(http, config, identity, hospitality, options.now);
   registerEvents(http, config, identity, events, options.now);
+  registerReservations(http, config, identity, reservations, options.now);
+  identity.registerExportOwner('reservations', (id, transaction) => reservations.exportAccount(id, transaction));
   identity.registerExportOwner('events', (id, transaction) => events.exportAccount(id, transaction));
   identity.registerExportOwner('hospitality', (id, transaction) => hospitality.exportAccount(id, transaction));
   identity.registerDeletionOwner('hospitality', (id, transaction) => hospitality.redactAccount(id, transaction));
@@ -137,8 +143,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const unsubscribeInvitations = invitations.onChanged((ids, event) => { for (const id of ids) gateway.emitToAccount(id, event, { schemaVersion: 1 }); });
   const unsubscribeRoomSocial = social.onChanged(ids => { void rooms.refreshAccounts(ids); });
   const unsubscribeRoomIdentity = identity.onChanged(id => { void rooms.refreshAccounts([id]); });
-  http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeInvitationWithdrawal(); unsubscribeHospitalityWithdrawal(); unsubscribeEventWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
+  http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeInvitationWithdrawal(); unsubscribeHospitalityWithdrawal(); unsubscribeEventWithdrawal(); unsubscribeReservationWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, hospitality, hospitalityOutbox, events, diagnostics };
+  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, hospitality, hospitalityOutbox, events, reservations, diagnostics };
 }

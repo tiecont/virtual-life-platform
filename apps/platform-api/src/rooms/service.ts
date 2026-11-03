@@ -304,6 +304,15 @@ export class RoomService {
       return work(actor, { worldSlug: room.slug, roomId: room.id, seatId, epoch: this.epoch, membershipId: member.id, canPause: definition.focusPolicy.pauseAllowed }, valid);
     });
   }
+  reservationCheckIn<T>(credential: string, source: TravelSource, worldSlug: string, work: (valid: () => boolean) => Promise<T>) {
+    return this.#run(async () => {
+      await this.#sweep(); const actor = await this.identity.authenticate(credential), room = this.#rooms.get(this.#accounts.get(actor.accountId) ?? ''), member = room?.members.get(actor.accountId);
+      if (!room || !member || room.slug !== worldSlug || source.epoch !== this.epoch || source.roomId !== room.id || source.membershipId !== member.id || ![...member.connections.values()].includes(actor.sessionId)) throw new DomainError('NOT_IN_ROOM', 409, 'Join the event world before checking in');
+      const generation = this.#worldGenerations.get(worldSlug) ?? 0; await this.registry.authorizeWorld(credential, worldSlug); await this.safety?.assert(actor.accountId, worldSlug, room.id);
+      const valid = () => !this.#closed && this.authority.state === 'held' && this.#rooms.get(room.id)?.members.get(actor.accountId) === member && [...member.connections.values()].includes(actor.sessionId) && generation === (this.#worldGenerations.get(worldSlug) ?? 0);
+      const result = await work(valid); if (!valid()) throw new DomainError('NOT_IN_ROOM', 409, 'Your visit changed'); return result;
+    });
+  }
   hospitalityContext<T>(credential: string, source: TravelSource, seated: boolean, work: (actor: WorldActor, context: { worldSlug: string; roomId: string; seatId: string | null; epoch: string; membershipId: string; policy: NonNullable<import('@virtual-city/contracts').WorldDefinition['hospitalityPolicy']> }, valid: () => boolean) => Promise<T>) {
     return this.#run(async () => {
       await this.#sweep(); const actor = await this.identity.authenticate(credential), room = this.#rooms.get(this.#accounts.get(actor.accountId) ?? ''), member = room?.members.get(actor.accountId);

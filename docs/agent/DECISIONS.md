@@ -1,5 +1,7 @@
 # Decisions
 
+M12-03 / ADR0036: optional trusted resourceKey chooses whole-table slots, with nonoverlap under schedule lock and one active allocation SQL index. Server holds clip to start; check-in requires actual room authority; explicit FIFO never auto-confirms. Event-owned transaction ports avoid direct reservation reads of event repositories. Actual full281integration/browser6 pass; party count/booking is separate from physical group seats or actual Restaurant integration.
+
 M12-02 / ADR0035: trusted silent-only schedules, explicit world event policy and captured registry generation; private own RSVP under account/event SQL locks with unique participant and durable receipt. One RSVP place is separate from future table/room admission. Calendar requires explicit opt-in/current confirmation and emits an attachment only. Default organizer port denies; restricted/private worlds remain closed; evidence m12-rsvp-checks.json/full269integration/browser8 pass.
 
 M12-01 / ADR0034: UTC millisecond instants with explicit IANA display zone, no ambiguous local-time inference; immutable deadline state machines and zero-overbooking/whole-party policy. Model does not authorize room admission or prove concurrent SQL allocation. Runtime/safety/organizer approval remains later tasks; fullcheck190unit/252integration exit0 in m12-model-checks.json.

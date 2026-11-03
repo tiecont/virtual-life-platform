@@ -1,0 +1,52 @@
+ Network virtual-city-test-372318a0_default Creating 
+ Network virtual-city-test-372318a0_default Creating 
+ Network virtual-city-test-372318a0_default Created 
+ Network virtual-city-test-372318a0_default Created 
+ Container virtual-city-test-372318a0-db-1 Creating 
+ Container virtual-city-test-372318a0-db-1 Created 
+ Container virtual-city-test-372318a0-db-1 Starting 
+ Container virtual-city-test-372318a0-db-1 Started 
+ Container virtual-city-test-372318a0-db-1 Waiting 
+ Container virtual-city-test-372318a0-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/events.test.ts (20 tests | 1 failed | 19 skipped) 304ms
+   × table hold competition commits one slot and confirmation retries do not create a second booking 300ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/events.test.ts > table hold competition commits one slot and confirmation retries do not create a second booking
+ZodError: [
+  {
+    "code": "unrecognized_keys",
+    "keys": [
+      "reservations"
+    ],
+    "path": [
+      "eventPolicy"
+    ],
+    "message": "Unrecognized key: \"reservations\""
+  }
+]
+ ❯ new WorldAdapter packages/world-sdk/dist/registry.js:27:97
+ ❯ defineWorld packages/world-sdk/dist/registry.js:51:44
+ ❯ open tests/integration/events.test.ts:19:20
+
+ ❯ tests/integration/events.test.ts:179:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 19 skipped (20)
+   Start at  18:41:13
+   Duration  1.58s (transform 477ms, setup 0ms, import 1.12s, tests 304ms, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-372318a0-db-1 Stopping 
+ Container virtual-city-test-372318a0-db-1 Stopped 
+ Container virtual-city-test-372318a0-db-1 Removing 
+ Container virtual-city-test-372318a0-db-1 Removed 
+ Network virtual-city-test-372318a0_default Removing 
+ Network virtual-city-test-372318a0_default Removed 

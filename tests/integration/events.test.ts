@@ -1,19 +1,20 @@
 import { beforeAll, afterAll, afterEach, it, expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
-import { MeSchema, type Me } from '@virtual-city/contracts';
+import { MeSchema, RoomAckSchema, type Me } from '@virtual-city/contracts';
+import { io, type Socket } from 'socket.io-client';
 import { defineWorld } from '@virtual-city/world-sdk';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/config';
 import { migrate } from '../../apps/platform-api/src/db/migrations';
 const origin = 'http://127.0.0.1:3300'; let admin: Pool, serial = 0;
-const opened: { app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: string }[] = [];
+const opened: { app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: string }[] = [], sockets = new Set<Socket>();
 beforeAll(async () => { const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database'); admin = new Pool({ connectionString: url.toString() }); });
-afterEach(async () => { for (const r of opened.splice(0)) { await r.app.app.close(); await r.pool.end(); await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`); } });
+afterEach(async () => { for (const socket of sockets) socket.close(); sockets.clear(); for (const r of opened.splice(0)) { await r.app.app.close(); await r.pool.end(); await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`); } });
 afterAll(async () => { await admin.end(); });
 async function open() {
   const schema = 'events_test_' + randomUUID().replaceAll('-', ''); await admin.query(`CREATE SCHEMA "${schema}"`); const url = new URL(process.env.TEST_DATABASE_URL!); url.searchParams.set('options', '-c search_path=' + schema); const pool = new Pool({ connectionString: url.toString() }); await migrate(pool); let now = Date.parse('2026-11-03T10:00:00.000Z');
-  const definition = { schemaVersion: 1, apiVersion: 1, slug: 'event-fixture', version: '1.0.0', title: 'Synthetic silent event fixture', kind: 'sandbox', sceneRef: { key: 'event-fixture', version: '1.0.0' }, capacity: 20, capabilities: ['presence', 'events'], eventPolicy: { schemaVersion: 1, version: '1.0.0', maxCapacity: 20 }, accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'sandbox', position: { x: .5, y: .5 }, icon: 'flask' } };
+  const definition = { schemaVersion: 1, apiVersion: 1, slug: 'event-fixture', version: '1.0.0', title: 'Synthetic silent event fixture', kind: 'sandbox', sceneRef: { key: 'event-fixture', version: '1.0.0' }, capacity: 20, capabilities: ['presence', 'events'], eventPolicy: { schemaVersion: 1, version: '1.0.0', maxCapacity: 20, reservations: { holdSeconds: 30, maxPartySize: 4, waitlist: 'fifo', resources: [{ key: 'table-one', capacity: 4 }] } }, accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'sandbox', position: { x: .5, y: .5 }, icon: 'flask' } };
   const hooks = { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {} };
   const modules = [defineWorld(definition, hooks), defineWorld({ ...definition, slug: 'private-event-fixture', visibility: 'hidden', accessPolicy: { kind: 'private', policyKey: 'test.private' } }, hooks)];
   const organizers = new Set<string>(), config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'events-local-only-test-session-secret-000001' }), options = { now: () => now, worlds: { modules }, events: { organizers: { permits: async (_db: unknown, actor: { accountId: string }) => organizers.has(actor.accountId) } } }, app = await createApp(config, pool, false, options); opened.push({ app, pool, schema }); await app.app.listen(0, '127.0.0.1'); for (const slug of app.worlds.registry.slugs()) await app.worlds.registry.setEnabled(slug, true);
@@ -27,6 +28,12 @@ async function guest(r: Runtime): Promise<User> { const n = serial++, response =
 const input = (r: Runtime, patch = {}) => ({ schemaVersion: 1, worldSlug: 'event-fixture', policyVersion: '1.0.0', title: 'Synthetic silent study', audience: 'silent', visibility: 'listed', capacity: 2, schedule: { schemaVersion: 1, timeZone: 'Asia/Ho_Chi_Minh', opensAt: new Date(r.now() + 60000).toISOString(), startsAt: new Date(r.now() + 120000).toISOString(), checkInClosesAt: new Date(r.now() + 180000).toISOString(), endsAt: new Date(r.now() + 3600000).toISOString() }, ...patch });
 async function schedule(r: Runtime, u: User, patch = {}, key = randomUUID()) { r.organizers.add(u.me.profile.id); return r.app.events.schedule(u.token, key, input(r, patch)); }
 async function restart(r: Runtime) { await r.app.app.close(); const old = r.app, app = await createApp(r.config, r.pool, false, r.options); opened.find(item => item.app === old)!.app = app; r.app = app; await app.app.listen(0, '127.0.0.1'); r.url = await app.app.getUrl(); for (const slug of app.worlds.registry.slugs()) await app.worlds.registry.setEnabled(slug, true); }
+async function join(r: Runtime, u: User, roomId?: string) {
+  const n = serial++, socket = io(r.url, { autoConnect: false, forceNew: true, reconnection: false, transports: ['websocket'], transportOptions: { websocket: { localAddress: `127.72.${Math.floor(n / 250)}.${n % 250 + 1}` } }, extraHeaders: { origin, cookie: u.cookie }, auth: { schemaVersion: 1, csrfToken: u.me.csrfToken } }); sockets.add(socket);
+  await new Promise<void>((resolve, reject) => { socket.once('connect', resolve); socket.once('connect_error', reject); socket.connect(); });
+  const ack = RoomAckSchema.parse(await socket.timeout(5000).emitWithAck('room.join', { schemaVersion: 1, requestId: randomUUID(), worldSlug: 'event-fixture', worldVersion: '1.0.0', sceneVersion: '1.0.0', ...(roomId ? { roomId } : {}) }));
+  return { socket, ack, source: ack.ok && ack.result.type === 'snapshot' ? { epoch: ack.result.epoch, roomId: ack.result.roomId, membershipId: ack.result.membershipId } : null };
+}
 
 it('serves an authenticated empty event catalog and exposes no public schedule or automatic calendar route', async () => {
   const r = await open(), u = await guest(r); expect((await get(r, u)).statusCode).toBe(200); expect((await get(r, u)).json().items).toEqual([]);
@@ -172,4 +179,105 @@ it('fails closed on current world kill switch or expired session but permits pri
   await post(r, a, path + '/rsvp'); await r.pool.query("INSERT INTO safety_incident_controls VALUES('event-fixture','world',true,NULL,$1)", [new Date(r.now())]);
   expect((await post(r, b, path + '/rsvp')).statusCode).toBe(404); expect((await get(r, a, path)).statusCode).toBe(404); expect((await post(r, a, path + '/withdraw')).statusCode).toBe(200);
   await r.pool.query("UPDATE safety_incident_controls SET closed=false"); await r.pool.query('UPDATE identity_sessions SET expires_at=$2 WHERE account_id=$1', [b.me.profile.id, new Date(r.now())]); expect((await post(r, b, path + '/rsvp')).statusCode).toBe(401); expect((await r.pool.query("SELECT 1 FROM engine_event_rsvps WHERE phase='CONFIRMED'")).rowCount).toBe(0);
+});
+
+it('table hold competition commits one slot and confirmation retries do not create a second booking', async () => {
+  const r = await open(), owner = await guest(r), event = await schedule(r, owner, { resourceKey: 'table-one', capacity: 4 }), users = await Promise.all(Array.from({ length: 12 }, () => guest(r)));
+  const responses = await Promise.all(users.map(u => fetch(r.url + '/v1/reservations', { method: 'POST', headers: { ...headers(u), 'content-type': 'application/json' }, body: JSON.stringify({ schemaVersion: 1, eventId: event.event.id, partySize: 2 }), signal: AbortSignal.timeout(10000) })));
+  expect(responses.filter(reply => reply.status === 201)).toHaveLength(1); expect(responses.filter(reply => reply.status === 409)).toHaveLength(11); const winnerIndex = responses.findIndex(reply => reply.status === 201), booking = (await responses[winnerIndex].json()).reservation, winner = users[winnerIndex], key = randomUUID();
+  const confirmed = await Promise.all(Array.from({ length: 8 }, () => post(r, winner, 'reservations/' + booking.id + '/confirm', { schemaVersion: 1 }, key))); expect(confirmed.every(reply => reply.statusCode === 200 && reply.json().reservation.phase === 'CONFIRMED')).toBe(true);
+  expect((await r.pool.query('SELECT 1 FROM engine_reservations')).rowCount).toBe(1); expect((await post(r, owner, 'events/' + event.event.id + '/rsvp')).statusCode).toBe(409);
+});
+
+it('table holds expire at exact TTL, old retries cannot revive them and a cancelled hold releases the slot', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), b = await guest(r), event = await schedule(r, owner, { resourceKey: 'table-one' }), key = randomUUID(), body = { schemaVersion: 1, eventId: event.event.id, partySize: 2 };
+  const held = (await post(r, a, 'reservations', body, key)).json().reservation; r.advance(30000);
+  const expired = await post(r, a, 'reservations/' + held.id + '/confirm'); expect(expired.statusCode).toBe(200); expect(expired.json().reservation.phase).toBe('EXPIRED');
+  const next = await post(r, b, 'reservations', body); expect(next.statusCode).toBe(201); expect((await post(r, a, 'reservations', body, key)).json().reservation.phase).toBe('EXPIRED');
+  const cancelled = await post(r, b, 'reservations/' + next.json().reservation.id + '/cancel'); expect(cancelled.json().reservation.phase).toBe('CANCELLED'); expect((await post(r, a, 'reservations', body)).statusCode).toBe(201);
+});
+
+it('FIFO waitlist requires an explicit claim and cannot silently confirm or jump the first eligible entry', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), b = await guest(r), c = await guest(r), event = await schedule(r, owner, { resourceKey: 'table-one' }), body = { schemaVersion: 1, eventId: event.event.id, partySize: 1 };
+  const first = (await post(r, a, 'reservations', body)).json().reservation;
+  const waiting = await post(r, b, 'reservations/waitlist', body); expect(waiting.statusCode).toBe(201); expect(waiting.json().entry.phase).toBe('WAITING'); await post(r, c, 'reservations/waitlist', body);
+  await post(r, a, 'reservations/' + first.id + '/cancel'); expect((await post(r, c, 'reservations', body)).statusCode).toBe(409); expect((await r.pool.query("SELECT 1 FROM engine_reservations WHERE phase='CONFIRMED'")).rowCount).toBe(0);
+  expect((await post(r, b, 'reservations', body)).statusCode).toBe(201); expect((await r.pool.query("SELECT phase FROM engine_reservation_waitlist WHERE account_id=$1", [b.me.profile.id])).rows[0].phase).toBe('CLAIMED');
+});
+
+it('check-in requires actual current room admission, a confirmed booking and the original trusted interval', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), b = await guest(r), event = await schedule(r, owner, { resourceKey: 'table-one' }), held = (await post(r, a, 'reservations', { schemaVersion: 1, eventId: event.event.id, partySize: 2 })).json().reservation, path = 'reservations/' + held.id;
+  const admitted = await join(r, a); expect(admitted.source).not.toBeNull();
+  expect((await post(r, a, path + '/check-in', { schemaVersion: 1, source: admitted.source })).statusCode).toBe(409);
+  await post(r, a, path + '/confirm'); expect((await post(r, a, path + '/check-in', { schemaVersion: 1, source: admitted.source })).statusCode).toBe(409);
+  r.advance(60000); const forged = { ...admitted.source, membershipId: randomUUID() }; expect((await post(r, a, path + '/check-in', { schemaVersion: 1, source: forged })).statusCode).toBe(409); expect((await post(r, b, path + '/check-in', { schemaVersion: 1, source: admitted.source })).statusCode).toBe(404);
+  const key = randomUUID(), body = { schemaVersion: 1, source: admitted.source }; const replies = await Promise.all(Array.from({ length: 6 }, () => post(r, a, path + '/check-in', body, key))); expect(replies.every(reply => reply.statusCode === 200 && reply.json().reservation.phase === 'CHECKED_IN')).toBe(true);
+  await restart(r); expect((await post(r, a, path + '/check-in', body, key)).json().reservation.phase).toBe('CHECKED_IN'); expect(r.app.rooms.diagnostics().memberships).toBe(0); expect((await r.pool.query("SELECT 1 FROM engine_reservation_mutations WHERE operation='check-in'")).rowCount).toBe(1);
+});
+
+it('a full specified room cannot be bypassed by a reservation; failed check-in retains the confirmed booking', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), event = await schedule(r, owner, { resourceKey: 'table-one' }), held = (await post(r, a, 'reservations', { schemaVersion: 1, eventId: event.event.id, partySize: 1 })).json().reservation;
+  await post(r, a, 'reservations/' + held.id + '/confirm'); let fullRoom = '';
+  for (let i = 0; i < 20; i++) { const visitor = await guest(r), admitted = await join(r, visitor, fullRoom || undefined); expect(admitted.source).not.toBeNull(); fullRoom = admitted.source!.roomId; }
+  r.advance(60000); const failed = await join(r, a, fullRoom); expect(failed.ack).toMatchObject({ ok: false, error: { code: 'ROOM_FULL' } });
+  const forged = { epoch: r.app.rooms.epoch, roomId: fullRoom, membershipId: randomUUID() }; expect((await post(r, a, 'reservations/' + held.id + '/check-in', { schemaVersion: 1, source: forged })).statusCode).toBe(409); expect((await get(r, a, 'reservations/' + held.id)).json().reservation.phase).toBe('CONFIRMED');
+});
+
+it('late or expired booking cannot check in and a hold near start is clipped without clock extension', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), event = await schedule(r, owner, { resourceKey: 'table-one' }); r.advance(115000);
+  const held = (await post(r, a, 'reservations', { schemaVersion: 1, eventId: event.event.id, partySize: 1 })).json().reservation; expect(Date.parse(held.holdExpiresAt) - r.now()).toBe(5000); const admitted = await join(r, a);
+  r.advance(5000); expect((await post(r, a, 'reservations/' + held.id + '/confirm')).json().reservation.phase).toBe('EXPIRED'); expect((await post(r, a, 'reservations/' + held.id + '/check-in', { schemaVersion: 1, source: admitted.source })).json().reservation.phase).toBe('EXPIRED');
+  expect((await r.pool.query("SELECT 1 FROM engine_reservations WHERE phase='CHECKED_IN'")).rowCount).toBe(0);
+});
+
+it('rejects overlapping table windows under concurrent trusted schedule creation and permits adjacent windows', async () => {
+  const r = await open(), owner = await guest(r); r.organizers.add(owner.me.profile.id); const body = input(r, { resourceKey: 'table-one' });
+  const results = await Promise.allSettled(Array.from({ length: 6 }, () => r.app.events.schedule(owner.token, randomUUID(), body))); expect(results.filter(result => result.status === 'fulfilled')).toHaveLength(1); expect(results.filter(result => result.status === 'rejected')).toHaveLength(5);
+  const s = body.schedule, adjacent = { ...s, opensAt: s.endsAt, startsAt: new Date(Date.parse(s.endsAt) + 60000).toISOString(), checkInClosesAt: new Date(Date.parse(s.endsAt) + 120000).toISOString(), endsAt: new Date(Date.parse(s.endsAt) + 3600000).toISOString() };
+  expect((await schedule(r, owner, { resourceKey: 'table-one', schedule: adjacent })).event.resourceKey).toBe('table-one');
+  await expect(schedule(r, owner, { resourceKey: 'forged-table' })).rejects.toMatchObject({ status: 404 });
+});
+
+it('reservation receipt failure rolls back holds/confirmation and own privacy/erasure cascades allocation', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), b = await guest(r), event = await schedule(r, owner, { resourceKey: 'table-one' }), key = randomUUID(), body = { schemaVersion: 1, eventId: event.event.id, partySize: 2 };
+  await r.pool.query("CREATE FUNCTION fail_booking_receipt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic reservation receipt failure'; END $$"); await r.pool.query('CREATE TRIGGER fail_booking_receipt BEFORE INSERT ON engine_reservation_mutations FOR EACH ROW EXECUTE FUNCTION fail_booking_receipt()');
+  expect((await post(r, a, 'reservations', body, key)).statusCode).toBe(503); expect((await r.pool.query('SELECT 1 FROM engine_reservations')).rowCount).toBe(0);
+  await r.pool.query('DROP TRIGGER fail_booking_receipt ON engine_reservation_mutations'); const held = (await post(r, a, 'reservations', body, key)).json().reservation;
+  await r.pool.query('CREATE TRIGGER fail_booking_receipt BEFORE INSERT ON engine_reservation_mutations FOR EACH ROW EXECUTE FUNCTION fail_booking_receipt()'); expect((await post(r, a, 'reservations/' + held.id + '/confirm')).statusCode).toBe(503); expect((await get(r, a, 'reservations/' + held.id)).json().reservation.phase).toBe('HELD'); await r.pool.query('DROP TRIGGER fail_booking_receipt ON engine_reservation_mutations');
+  expect((await get(r, b, 'reservations/' + held.id)).statusCode).toBe(404); expect((await get(r, b, 'reservations')).json().items).toEqual([]); const exported = (await get(r, a, 'me/export')).json().domains.reservations; expect(exported.items[0].id).toBe(held.id); expect(JSON.stringify(exported)).not.toMatch(/account_id|organizer|fingerprint/);
+  expect((await post(r, a, 'reservations', { ...body, partySize: 1 }, key)).statusCode).toBe(409); expect((await post(r, a, 'reservations', { ...body, holdSeconds: 999 })).statusCode).toBe(422);
+  await r.app.http.inject({ method: 'DELETE', url: '/v1/me', headers: headers(a), payload: {} }); expect((await r.pool.query('SELECT 1 FROM engine_reservation_mutations')).rowCount).toBe(0); expect((await post(r, b, 'reservations', body)).statusCode).toBe(201);
+});
+
+it('FIFO entry withdrawal is private and block cancels pending bookings atomically', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), b = await guest(r), event = await schedule(r, owner, { resourceKey: 'table-one' }), body = { schemaVersion: 1, eventId: event.event.id, partySize: 1 };
+  const held = (await post(r, a, 'reservations', body)).json().reservation, waitingKey = randomUUID(), waiting = (await post(r, b, 'reservations/waitlist', body, waitingKey)).json().entry;
+  expect((await post(r, a, 'reservations/waitlist/' + waiting.id + '/leave')).statusCode).toBe(404);
+  expect((await post(r, b, 'reservations/waitlist/' + waiting.id + '/leave')).json().entry.phase).toBe('CANCELLED'); expect((await post(r, b, 'reservations/waitlist', body, waitingKey)).json().entry.phase).toBe('CANCELLED');
+  await r.pool.query("CREATE FUNCTION fail_booking_block() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.phase='CANCELLED' THEN RAISE EXCEPTION 'synthetic reservation block rollback'; END IF; RETURN NEW; END $$"); await r.pool.query('CREATE TRIGGER fail_booking_block BEFORE UPDATE ON engine_reservations FOR EACH ROW EXECUTE FUNCTION fail_booking_block()');
+  expect((await post(r, a, 'blocks', { targetId: owner.me.profile.id, blocked: true })).statusCode).toBe(503); expect((await r.pool.query('SELECT 1 FROM social_blocks')).rowCount).toBe(0);
+  await r.pool.query('DROP TRIGGER fail_booking_block ON engine_reservations'); expect((await post(r, a, 'blocks', { targetId: owner.me.profile.id, blocked: true })).statusCode).toBe(200); expect((await get(r, a, 'reservations/' + held.id)).json().reservation.phase).toBe('CANCELLED');
+  await r.app.worlds.registry.setEnabled('event-fixture', false); expect((await post(r, a, 'reservations/' + held.id + '/cancel')).statusCode).toBe(200);
+});
+
+it('expired FIFO consent cannot renew through an old key or block a new explicit claimant', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), b = await guest(r), c = await guest(r), base = input(r).schedule, event = await schedule(r, owner, { resourceKey: 'table-one', schedule: { ...base, startsAt: new Date(r.now() + 600000).toISOString(), checkInClosesAt: new Date(r.now() + 900000).toISOString() } }), body = { schemaVersion: 1, eventId: event.event.id, partySize: 1 }, key = randomUUID();
+  await post(r, a, 'reservations', body); const waiting = await post(r, b, 'reservations/waitlist', body, key); expect(waiting.statusCode).toBe(201); r.advance(300000);
+  expect((await post(r, c, 'reservations', body)).statusCode).toBe(201); const old = await post(r, b, 'reservations/waitlist', body, key); expect(old.json().entry.phase).toBe('EXPIRED'); expect(old.json().entry.expiresAt).toBe(waiting.json().entry.expiresAt);
+});
+
+it('durable reservation command budgets and SQL constraints reject replay churn and duplicate slot ownership', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), event = await schedule(r, owner, { resourceKey: 'table-one' }), body = { schemaVersion: 1, eventId: event.event.id, partySize: 1 }, key = randomUUID();
+  const held = (await post(r, a, 'reservations', body, key)).json().reservation;
+  for (let i = 1; i < 30; i++) expect((await post(r, a, 'reservations', body)).statusCode).toBe(201);
+  expect((await post(r, a, 'reservations', body)).statusCode).toBe(429); expect((await post(r, a, 'reservations', body, key)).json().reservation.id).toBe(held.id);
+  await expect(r.pool.query("INSERT INTO engine_reservations(id,event_id,account_id,phase,party_size,schedule,world_slug,resource_key,created_at,changed_at,hold_expires_at,allocation_ends_at) SELECT gen_random_uuid(),event_id,account_id,phase,party_size,schedule,world_slug,resource_key,created_at,changed_at,hold_expires_at,allocation_ends_at FROM engine_reservations")).rejects.toMatchObject({ code: '23505' });
+  await expect(r.pool.query('UPDATE engine_reservations SET hold_expires_at=created_at')).rejects.toMatchObject({ code: '23514' });
+});
+
+it('restart preserves original hold expiry while confirmed no-shows expire without phantom attendance', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), event = await schedule(r, owner, { resourceKey: 'table-one' }), body = { schemaVersion: 1, eventId: event.event.id, partySize: 1 }, key = randomUUID();
+  const held = (await post(r, a, 'reservations', body, key)).json().reservation; r.advance(10000); await restart(r);
+  const retry = (await post(r, a, 'reservations', body, key)).json().reservation; expect(retry.id).toBe(held.id); expect(retry.holdExpiresAt).toBe(held.holdExpiresAt); expect(retry.phase).toBe('HELD');
+  await post(r, a, 'reservations/' + held.id + '/confirm'); r.advance(170000); const own = await get(r, a, 'reservations/' + held.id); expect(own.json().reservation.phase).toBe('EXPIRED'); expect(r.app.rooms.diagnostics().memberships).toBe(0); expect((await r.pool.query("SELECT 1 FROM engine_reservations WHERE phase='CHECKED_IN'")).rowCount).toBe(0);
 });

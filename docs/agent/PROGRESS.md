@@ -1,5 +1,11 @@
 # Agent progress
 
+## M12-03 - VERIFIED virtual table holds/check-in/FIFO
+
+Workspace fromb061a03; m12-reservations-checks.json/ADR0036. Final fullcheck exit0:7governance,190unit,281integration including29event/reservation cases,lint/types/architecture/assets/builds; browser6(3eachdevice) room/scene/reconnect/travel regressions pass; local additive0020 migration/diff0. Initial policy schema red retained; targeted3 then26pass,bounds2pass; first lint/check failed unused type import, removed and final fullcheck passes. No tests/timeouts/rate caps relaxed.
+
+Policy-declared resource slots reject overlapping windows under world SQL schedule lock; whole-table partial unique allocation, atomic hold/confirm/TTL/retry/receipt, explicit bounded FIFO/claim/withdrawal verified. Actual12TCP contenders->1held/11conflicts,eight confirm retries1receipt;six simultaneous overlapping schedules1success. Actual connected check-in/forgery/expiry/restart/no-show and20occupant ROOM_FULL preservation pass; six check-in retries1receipt and no room resurrection after restart. Block transaction rollback/own cancel after closure/export/erasure/quotas/SQL guards pass. PartySize is virtual count; no forced party admission/physical group seats, actual Restaurant remainsM18. No booking UI/public activation; calendar stays RSVP-only. Next exact action M12-04: durable organizer/performer grants and independent moderator audience approval, authorized event adjust/cancel, atomic reservation release + deduplicated private cancellation notices/runbook. Default real staff unprovisioned/allflagsOFF,previewoff,cityDB0020.
+
 ## M12-02 - VERIFIED durable silent events and private RSVP
 
 Workspace from1f5f671; m12-rsvp-checks.json/ADR0035. Final fullcheck exit0 with durable artifact:7governance,190unit,269integration including17events,lint/types/architecture/assets/builds. Browser8(4eachdevice) readiness/identity/social block regression pass; local DB restart/migration0019 exit0; diff0. Initial eventPolicy schema red and signed-cookie fixture failures retained; fixture corrected with Fastify unsignCookie, runtime auth unchanged. Targeted3/12/16 pass. Earlier fullcheck interrupted during integration by host restart, not claimed complete.

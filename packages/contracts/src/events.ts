@@ -22,15 +22,16 @@ export const EventCapacityPolicySchema = z.strictObject({
 export type EventCapacityPolicy = Readonly<z.infer<typeof EventCapacityPolicySchema>>;
 
 const uuid = z.uuid().transform(value => value.toLowerCase());
-export const WorldEventPolicySchema = z.strictObject({ schemaVersion: z.literal(1), version: WorldVersionSchema, maxCapacity: z.number().int().min(1).max(100) });
+export const TableReservationPolicySchema = z.strictObject({ holdSeconds: z.number().int().min(1).max(300), maxPartySize: z.number().int().min(1).max(100), waitlist: z.enum(['disabled', 'fifo']), resources: z.array(z.strictObject({ key: WorldSlugSchema, capacity: z.number().int().min(1).max(100) })).min(1).max(20).refine(items => new Set(items.map(item => item.key)).size === items.length, 'Unique table resources required') });
+export const WorldEventPolicySchema = z.strictObject({ schemaVersion: z.literal(1), version: WorldVersionSchema, maxCapacity: z.number().int().min(1).max(100), reservations: TableReservationPolicySchema.optional() });
 const title = z.string().trim().min(1).max(120).refine(value => ![...value].some(char => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127), 'Control characters are forbidden');
 // Trusted server provisioning only; no public schedule endpoint in M12-02.
-export const EventScheduleInputSchema = z.strictObject({ schemaVersion: z.literal(1), worldSlug: WorldSlugSchema, policyVersion: WorldVersionSchema, title, audience: z.literal('silent'), visibility: z.enum(['listed', 'private']), capacity: z.number().int().min(1).max(100), schedule: EventScheduleSchema });
+export const EventScheduleInputSchema = z.strictObject({ schemaVersion: z.literal(1), worldSlug: WorldSlugSchema, policyVersion: WorldVersionSchema, title, audience: z.literal('silent'), visibility: z.enum(['listed', 'private']), capacity: z.number().int().min(1).max(100), schedule: EventScheduleSchema, resourceKey: WorldSlugSchema.optional() });
 export const EventRsvpInputSchema = z.strictObject({ schemaVersion: z.literal(1) });
 export const EventCalendarInputSchema = z.strictObject({ schemaVersion: z.literal(1), optIn: z.literal(true) });
 export const EventCatalogQuerySchema = z.strictObject({ worldSlug: WorldSlugSchema });
 export const EventRsvpViewSchema = z.strictObject({ id: uuid, phase: z.enum(['CONFIRMED', 'CANCELLED', 'EXPIRED']), createdAt: z.iso.datetime(), changedAt: z.iso.datetime() });
 export const EventRsvpResultSchema = z.strictObject({ schemaVersion: z.literal(1), rsvp: EventRsvpViewSchema });
-export const EventViewSchema = z.strictObject({ id: uuid, worldSlug: WorldSlugSchema, title, phase: EventPhaseSchema, createdAt: z.iso.datetime(), schedule: EventScheduleSchema, startsLabel: z.string(), endsLabel: z.string(), capacity: z.number().int().min(1).max(100), mine: z.boolean(), rsvp: EventRsvpViewSchema.nullable() });
+export const EventViewSchema = z.strictObject({ id: uuid, worldSlug: WorldSlugSchema, title, phase: EventPhaseSchema, createdAt: z.iso.datetime(), schedule: EventScheduleSchema, startsLabel: z.string(), endsLabel: z.string(), capacity: z.number().int().min(1).max(100), mine: z.boolean(), rsvp: EventRsvpViewSchema.nullable(), resourceKey: WorldSlugSchema.nullable() });
 export const EventResultSchema = z.strictObject({ schemaVersion: z.literal(1), event: EventViewSchema });
 export const EventCatalogSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(EventViewSchema).max(50), truncated: z.boolean() });

@@ -1,0 +1,13 @@
+import { z } from 'zod';
+import { ReservationPhaseSchema, EventScheduleSchema } from './events';
+import { TravelSourceSchema } from './travel';
+import { WorldSlugSchema } from './world-primitives';
+const uuid = z.uuid().transform(value => value.toLowerCase());
+export const ReservationPlaceSchema = z.strictObject({ schemaVersion: z.literal(1), eventId: uuid, partySize: z.number().int().min(1).max(100) });
+export const ReservationMutationSchema = z.strictObject({ schemaVersion: z.literal(1) });
+export const ReservationCheckInSchema = z.strictObject({ schemaVersion: z.literal(1), source: TravelSourceSchema });
+export const ReservationViewSchema = z.strictObject({ id: uuid, eventId: uuid, worldSlug: WorldSlugSchema, resourceKey: WorldSlugSchema, phase: ReservationPhaseSchema, partySize: z.number().int().min(1).max(100), createdAt: z.iso.datetime(), changedAt: z.iso.datetime(), holdExpiresAt: z.iso.datetime(), schedule: EventScheduleSchema });
+export const ReservationResultSchema = z.strictObject({ schemaVersion: z.literal(1), reservation: ReservationViewSchema });
+export const ReservationPageSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(ReservationViewSchema).max(50), truncated: z.boolean() });
+export const WaitlistViewSchema = z.strictObject({ id: uuid, eventId: uuid, partySize: z.number().int().min(1).max(100), phase: z.enum(['WAITING', 'CLAIMED', 'EXPIRED', 'CANCELLED']), expiresAt: z.iso.datetime() });
+export const WaitlistResultSchema = z.strictObject({ schemaVersion: z.literal(1), entry: WaitlistViewSchema });
