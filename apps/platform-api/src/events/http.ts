@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
-import { EventCalendarInputSchema, EventRsvpInputSchema } from '@virtual-city/contracts';
+import { EventCalendarInputSchema, EventRsvpInputSchema, EventPerformerReadySchema } from '@virtual-city/contracts';
 import { WorldError } from '@virtual-city/world-sdk';
 import type { Config } from '../config';
 import type { IdentityService } from '../identity/service';
@@ -21,7 +21,12 @@ export function registerEvents(http: FastifyInstance, config: Config, identity: 
     api.addHook('onRequest', async req => { if (!limits.take('ip:' + req.ip, 300)) throw new DomainError('RATE_LIMITED', 429, 'Please wait before trying again'); });
     api.addHook('preHandler', async req => { if (!limits.take('session:' + identity.hash(token(req)), 60)) throw new DomainError('RATE_LIMITED', 429, 'Please wait before trying again'); });
     api.get('/events', req => events.catalog(token(req), req.query));
+    api.post('/events', async (req, reply) => reply.code(201).send(await events.schedule(write(req), key(req), req.body)));
+    api.get('/events/notices', req => { empty(req); return events.notices(token(req)); });
     api.get('/events/:id', req => { empty(req); return events.get(token(req), id(req)); });
+    api.get('/events/:id/controls', req => { empty(req); return events.controls(token(req), id(req)); });
+    for (const action of ['adjust', 'cancel'] as const) api.post('/events/:id/' + action, req => events.govern(write(req), id(req), key(req), action, req.body));
+    api.post('/events/:id/performer-ready', req => { const input = EventPerformerReadySchema.parse(req.body); return events.performerReady(write(req), id(req), key(req), input.ready); });
     api.post('/events/:id/rsvp', async (req, reply) => { EventRsvpInputSchema.parse(req.body); return reply.code(201).send(await events.rsvp(write(req), id(req), key(req))); });
     api.post('/events/:id/withdraw', req => { EventRsvpInputSchema.parse(req.body); return events.withdraw(write(req), id(req), key(req)); });
     api.post('/events/:id/calendar', async (req, reply) => { EventCalendarInputSchema.parse(req.body); const value = write(req); key(req); const content = await events.calendar(value, id(req)); return reply.type('text/calendar; charset=utf-8').header('content-disposition', 'attachment; filename="virtual-life-event.ics"').send(content); });

@@ -1,0 +1,45 @@
+ Network virtual-city-test-c4f60f9d_default Creating 
+ Network virtual-city-test-c4f60f9d_default Creating 
+ Network virtual-city-test-c4f60f9d_default Created 
+ Network virtual-city-test-c4f60f9d_default Created 
+ Container virtual-city-test-c4f60f9d-db-1 Creating 
+ Container virtual-city-test-c4f60f9d-db-1 Created 
+ Container virtual-city-test-c4f60f9d-db-1 Starting 
+ Container virtual-city-test-c4f60f9d-db-1 Started 
+ Container virtual-city-test-c4f60f9d-db-1 Waiting 
+ Container virtual-city-test-c4f60f9d-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/events.test.ts (30 tests | 1 failed | 29 skipped) 687ms
+   × event cancellation atomically releases table/waitlist consent and leaves one private notice per participant 684ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/events.test.ts > event cancellation atomically releases table/waitlist consent and leaves one private notice per participant
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/integration/events.test.ts:288:275
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 29 skipped (30)
+   Start at  18:59:24
+   Duration  1.72s (transform 413ms, setup 0ms, import 903ms, tests 687ms, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-c4f60f9d-db-1 Stopping 
+ Container virtual-city-test-c4f60f9d-db-1 Stopped 
+ Container virtual-city-test-c4f60f9d-db-1 Removing 
+ Container virtual-city-test-c4f60f9d-db-1 Removed 
+ Network virtual-city-test-c4f60f9d_default Removing 
+ Network virtual-city-test-c4f60f9d_default Removed 

@@ -12,12 +12,12 @@ const opened: { app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: 
 beforeAll(async () => { const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database'); admin = new Pool({ connectionString: url.toString() }); });
 afterEach(async () => { for (const socket of sockets) socket.close(); sockets.clear(); for (const r of opened.splice(0)) { await r.app.app.close(); await r.pool.end(); await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`); } });
 afterAll(async () => { await admin.end(); });
-async function open() {
+async function open(trustedOrganizerPort = true) {
   const schema = 'events_test_' + randomUUID().replaceAll('-', ''); await admin.query(`CREATE SCHEMA "${schema}"`); const url = new URL(process.env.TEST_DATABASE_URL!); url.searchParams.set('options', '-c search_path=' + schema); const pool = new Pool({ connectionString: url.toString() }); await migrate(pool); let now = Date.parse('2026-11-03T10:00:00.000Z');
   const definition = { schemaVersion: 1, apiVersion: 1, slug: 'event-fixture', version: '1.0.0', title: 'Synthetic silent event fixture', kind: 'sandbox', sceneRef: { key: 'event-fixture', version: '1.0.0' }, capacity: 20, capabilities: ['presence', 'events'], eventPolicy: { schemaVersion: 1, version: '1.0.0', maxCapacity: 20, reservations: { holdSeconds: 30, maxPartySize: 4, waitlist: 'fifo', resources: [{ key: 'table-one', capacity: 4 }] } }, accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'sandbox', position: { x: .5, y: .5 }, icon: 'flask' } };
   const hooks = { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {} };
   const modules = [defineWorld(definition, hooks), defineWorld({ ...definition, slug: 'private-event-fixture', visibility: 'hidden', accessPolicy: { kind: 'private', policyKey: 'test.private' } }, hooks)];
-  const organizers = new Set<string>(), config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'events-local-only-test-session-secret-000001' }), options = { now: () => now, worlds: { modules }, events: { organizers: { permits: async (_db: unknown, actor: { accountId: string }) => organizers.has(actor.accountId) } } }, app = await createApp(config, pool, false, options); opened.push({ app, pool, schema }); await app.app.listen(0, '127.0.0.1'); for (const slug of app.worlds.registry.slugs()) await app.worlds.registry.setEnabled(slug, true);
+  const organizers = new Set<string>(), config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'events-local-only-test-session-secret-000001' }), options = { now: () => now, worlds: { modules }, events: trustedOrganizerPort ? { organizers: { permits: async (_db: unknown, actor: { accountId: string }) => organizers.has(actor.accountId) } } : {} }, app = await createApp(config, pool, false, options); opened.push({ app, pool, schema }); await app.app.listen(0, '127.0.0.1'); for (const slug of app.worlds.registry.slugs()) await app.worlds.registry.setEnabled(slug, true);
   return { app, pool, config, options, organizers, url: await app.app.getUrl(), now: () => now, advance: (ms: number) => { now += ms; } };
 }
 type Runtime = Awaited<ReturnType<typeof open>>; type User = { me: Me; cookie: string; token: string };
@@ -34,8 +34,13 @@ async function join(r: Runtime, u: User, roomId?: string) {
   const ack = RoomAckSchema.parse(await socket.timeout(5000).emitWithAck('room.join', { schemaVersion: 1, requestId: randomUUID(), worldSlug: 'event-fixture', worldVersion: '1.0.0', sceneVersion: '1.0.0', ...(roomId ? { roomId } : {}) }));
   return { socket, ack, source: ack.ok && ack.result.type === 'snapshot' ? { epoch: ack.result.epoch, roomId: ack.result.roomId, membershipId: ack.result.membershipId } : null };
 }
+async function registered(r: Runtime, u?: User): Promise<User> {
+  const user = u ?? await guest(r), response = await post(r, user, 'session/upgrade', { loginName: 'event_' + randomUUID().replaceAll('-', '').slice(0, 12), password: 'events-only-local-test-password-123!' }); expect(response.statusCode).toBe(200);
+  user.me = MeSchema.parse(response.json()); user.cookie = String(response.headers['set-cookie']).split(';')[0]; const signed = r.app.http.unsignCookie(decodeURIComponent(user.cookie.slice(user.cookie.indexOf('=') + 1))); if (!signed.value) throw new Error('Invalid registered fixture'); user.token = signed.value; return user;
+}
+async function grant(r: Runtime, u: User, role: 'organizer' | 'performer', eventId: string | null = null, world = 'event-fixture') { await r.pool.query('INSERT INTO engine_event_grants VALUES($1,$2,$3,$4,$5,$6)', [randomUUID(), u.me.profile.id, world, eventId, role, new Date(r.now() + 7200000)]); }
 
-it('serves an authenticated empty event catalog and exposes no public schedule or automatic calendar route', async () => {
+it('serves an authenticated empty catalog and denies ungranted scheduling or automatic calendar access', async () => {
   const r = await open(), u = await guest(r); expect((await get(r, u)).statusCode).toBe(200); expect((await get(r, u)).json().items).toEqual([]);
   expect((await r.app.http.inject({ url: '/v1/events?worldSlug=event-fixture' })).statusCode).toBe(401);
   expect((await post(r, u, 'events', input(r))).statusCode).toBe(404);
@@ -280,4 +285,83 @@ it('restart preserves original hold expiry while confirmed no-shows expire witho
   const held = (await post(r, a, 'reservations', body, key)).json().reservation; r.advance(10000); await restart(r);
   const retry = (await post(r, a, 'reservations', body, key)).json().reservation; expect(retry.id).toBe(held.id); expect(retry.holdExpiresAt).toBe(held.holdExpiresAt); expect(retry.phase).toBe('HELD');
   await post(r, a, 'reservations/' + held.id + '/confirm'); r.advance(170000); const own = await get(r, a, 'reservations/' + held.id); expect(own.json().reservation.phase).toBe('EXPIRED'); expect(r.app.rooms.diagnostics().memberships).toBe(0); expect((await r.pool.query("SELECT 1 FROM engine_reservations WHERE phase='CHECKED_IN'")).rowCount).toBe(0);
+});
+
+it('event cancellation atomically releases table/waitlist consent and leaves one private notice per participant', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), b = await guest(r), stranger = await guest(r), event = await schedule(r, owner, { resourceKey: 'table-one' }), body = { schemaVersion: 1, eventId: event.event.id, partySize: 1 }, key = randomUUID();
+  await post(r, a, 'reservations', body); await post(r, b, 'reservations/waitlist', body);
+  const aSocket = await join(r, a), bSocket = await join(r, b), aHints: unknown[] = [], bHints: unknown[] = []; aSocket.socket.on('event.notice', hint => aHints.push(hint)); bSocket.socket.on('event.notice', hint => bHints.push(hint));
+  const replies = await Promise.all(Array.from({ length: 8 }, () => post(r, owner, 'events/' + event.event.id + '/cancel', { schemaVersion: 1, expectedVersion: 0 }, key))); expect(replies.every(reply => reply.statusCode === 200 && reply.json().event.phase === 'CANCELLED')).toBe(true);
+  expect((await r.pool.query('SELECT phase FROM engine_reservations')).rows[0].phase).toBe('CANCELLED'); expect((await r.pool.query('SELECT phase FROM engine_reservation_waitlist')).rows[0].phase).toBe('CANCELLED'); expect((await r.pool.query('SELECT 1 FROM engine_event_notices')).rowCount).toBe(2);
+  const own = (await get(r, a, 'events/notices')).json(); expect(own.items).toHaveLength(1); expect(own.items[0].kind).toBe('cancelled'); expect(JSON.stringify(own)).not.toMatch(/organizer|account|fingerprint|reason|title/); expect((await get(r, stranger, 'events/notices')).json().items).toEqual([]);
+  await expect.poll(() => aHints.length).toBe(1); await expect.poll(() => bHints.length).toBe(1); expect(aHints).toEqual([{ schemaVersion: 1 }]); expect(bHints).toEqual([{ schemaVersion: 1 }]);
+  await restart(r); expect((await post(r, owner, 'events/' + event.event.id + '/cancel', { schemaVersion: 1, expectedVersion: 0 }, key)).statusCode).toBe(200); expect((await r.pool.query('SELECT 1 FROM engine_event_notices')).rowCount).toBe(2);
+  expect((await get(r, a, 'me/export')).json().domains.events.notices).toHaveLength(1); await r.app.http.inject({ method: 'DELETE', url: '/v1/me', headers: headers(a), payload: {} }); expect((await r.pool.query('SELECT 1 FROM engine_event_notices')).rowCount).toBe(1);
+});
+
+it('default persistent organizer grants require current registered scope and do not grant moderation or performer authority', async () => {
+  const r = await open(false), owner = await registered(r), other = await registered(r), g = await guest(r);
+  expect((await post(r, owner, 'events', input(r))).statusCode).toBe(404); await grant(r, g, 'organizer'); expect((await post(r, g, 'events', input(r))).statusCode).toBe(404);
+  await grant(r, owner, 'organizer'); const created = await post(r, owner, 'events', input(r)); expect(created.statusCode).toBe(201); const id = created.json().event.id;
+  expect((await get(r, owner, 'events/' + id + '/controls')).json()).toMatchObject({ canAdjust: true, canCancel: true, canPerform: false });
+  expect((await post(r, other, 'events/' + id + '/cancel', { schemaVersion: 1, expectedVersion: 0 })).statusCode).toBe(404); expect((await post(r, owner, 'events/' + id + '/performer-ready', { schemaVersion: 1, ready: true })).statusCode).toBe(404);
+  await r.pool.query('UPDATE engine_event_grants SET expires_at=$2 WHERE account_id=$1', [owner.me.profile.id, new Date(r.now())]); expect((await post(r, owner, 'events/' + id + '/adjust', { schemaVersion: 1, expectedVersion: 0, title: 'Changed' })).statusCode).toBe(404);
+  expect((await post(r, owner, 'event-grants', { role: 'organizer' })).statusCode).toBe(404); expect((await post(r, other, 'events', { ...input(r), role: 'organizer' })).statusCode).toBe(422);
+});
+
+it('only the current organizer adjusts an unoccupied scheduled event; stale versions and participant rescheduling reject', async () => {
+  const r = await open(false), owner = await registered(r), other = await registered(r), attendee = await guest(r); await grant(r, owner, 'organizer'); await grant(r, other, 'organizer'); const event = (await post(r, owner, 'events', input(r))).json().event, path = 'events/' + event.id;
+  expect((await post(r, other, path + '/adjust', { schemaVersion: 1, expectedVersion: 0, title: 'Hijacked' })).statusCode).toBe(404);
+  const key = randomUUID(), body = { schemaVersion: 1, expectedVersion: 0, title: 'Reviewed silent schedule' }; const adjusted = await post(r, owner, path + '/adjust', body, key); expect(adjusted.statusCode).toBe(200); expect(adjusted.json().event).toMatchObject({ version: 1, title: body.title }); expect((await post(r, owner, path + '/adjust', body, key)).json()).toEqual(adjusted.json());
+  expect((await post(r, owner, path + '/adjust', body)).statusCode).toBe(409); await post(r, attendee, path + '/rsvp'); expect((await post(r, owner, path + '/adjust', { ...body, expectedVersion: 1 })).statusCode).toBe(409);
+  expect((await post(r, owner, 'events', { ...input(r), audience: 'interactive' })).statusCode).toBe(422); expect((await r.pool.query('SELECT 1 FROM engine_events')).rowCount).toBe(1);
+});
+
+it('performer readiness is voluntary, event-scoped and cannot adjust/cancel or become a moderation privilege', async () => {
+  const r = await open(false), owner = await registered(r), performer = await registered(r); await grant(r, owner, 'organizer'); const event = (await post(r, owner, 'events', input(r))).json().event, path = 'events/' + event.id; await grant(r, performer, 'performer', event.id);
+  expect((await post(r, performer, path + '/performer-ready', { schemaVersion: 1, ready: true })).statusCode).toBe(404); r.advance(60000);
+  const key = randomUUID(); expect((await post(r, performer, path + '/performer-ready', { schemaVersion: 1, ready: true }, key)).json().ready).toBe(true); expect((await post(r, performer, path + '/performer-ready', { schemaVersion: 1, ready: true }, key)).json().ready).toBe(true);
+  expect((await post(r, performer, path + '/cancel', { schemaVersion: 1, expectedVersion: 0 })).statusCode).toBe(404); expect((await get(r, performer, path + '/controls')).json()).toMatchObject({ canAdjust: false, canCancel: false, canPerform: true, ready: true });
+  expect((await post(r, performer, 'blocks', { targetId: owner.me.profile.id, blocked: true })).statusCode).toBe(200); expect((await r.pool.query('SELECT ready FROM engine_event_performer_readiness WHERE event_id=$1 AND account_id=$2', [event.id, performer.me.profile.id])).rows[0].ready).toBe(false);
+  await post(r, performer, 'blocks', { targetId: owner.me.profile.id, blocked: false }); expect((await post(r, performer, path + '/performer-ready', { schemaVersion: 1, ready: true })).json().ready).toBe(true);
+  await r.pool.query("DELETE FROM engine_event_grants WHERE role='performer'"); expect((await get(r, performer, path + '/controls')).json()).toMatchObject({ canPerform: false, ready: false }); await r.app.worlds.registry.setEnabled('event-fixture', false); expect((await post(r, performer, path + '/performer-ready', { schemaVersion: 1, ready: false })).json().ready).toBe(false);
+});
+
+it('scoped registered safety moderator cancels during world closure without organizer/performer grants', async () => {
+  const r = await open(false), owner = await registered(r), mod = await registered(r), wrongScope = await registered(r), a = await guest(r); await grant(r, owner, 'organizer'); const event = (await post(r, owner, 'events', input(r))).json().event, path = 'events/' + event.id;
+  await post(r, a, path + '/rsvp'); await r.pool.query('INSERT INTO safety_staff_grants VALUES($1,$2,$3,$4),($5,$6,$3,$4)', [mod.me.profile.id, 'event-fixture', 'moderator', new Date(r.now() + 7200000), wrongScope.me.profile.id, 'sdk-sandbox']);
+  expect((await post(r, wrongScope, path + '/cancel', { schemaVersion: 1, expectedVersion: 0 })).statusCode).toBe(404);
+  await r.pool.query("INSERT INTO safety_incident_controls VALUES('event-fixture','world',true,NULL,$1)", [new Date(r.now())]); await r.app.worlds.registry.setEnabled('event-fixture', false);
+  const cancelled = await post(r, mod, path + '/cancel', { schemaVersion: 1, expectedVersion: 0 }); expect(cancelled.statusCode).toBe(200); expect(cancelled.json().event.phase).toBe('CANCELLED'); expect((await get(r, a, 'events/notices')).json().items).toHaveLength(1); expect(r.app.rooms.diagnostics().memberships).toBe(0);
+});
+
+it('notice insertion failure rolls back cancellation, booking release and idempotency receipt together', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), event = await schedule(r, owner, { resourceKey: 'table-one' }), held = (await post(r, a, 'reservations', { schemaVersion: 1, eventId: event.event.id, partySize: 1 })).json().reservation, key = randomUUID(), body = { schemaVersion: 1, expectedVersion: 0 };
+  await r.pool.query("CREATE FUNCTION fail_event_notice() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic cancellation notice failure'; END $$"); await r.pool.query('CREATE TRIGGER fail_event_notice BEFORE INSERT ON engine_event_notices FOR EACH ROW EXECUTE FUNCTION fail_event_notice()');
+  expect((await post(r, owner, 'events/' + event.event.id + '/cancel', body, key)).statusCode).toBe(503); expect((await r.pool.query('SELECT phase,version FROM engine_events')).rows[0]).toMatchObject({ phase: 'SCHEDULED', version: 0 }); expect((await get(r, a, 'reservations/' + held.id)).json().reservation.phase).toBe('HELD'); expect((await r.pool.query("SELECT 1 FROM engine_event_mutations WHERE operation='cancel'")).rowCount).toBe(0);
+  await r.pool.query('DROP TRIGGER fail_event_notice ON engine_event_notices'); expect((await post(r, owner, 'events/' + event.event.id + '/cancel', body, key)).statusCode).toBe(200); expect((await r.pool.query('SELECT 1 FROM engine_event_notices')).rowCount).toBe(1);
+});
+
+it('RSVP racing cancellation either rejects admission or receives a single durable private notice after retry', async () => {
+  const r = await open(), owner = await guest(r);
+  for (let i = 0; i < 4; i++) {
+    const a = await guest(r), event = await schedule(r, owner), key = randomUUID(), payload = { schemaVersion: 1, expectedVersion: 0 }, path = 'events/' + event.event.id;
+    const [joinReply, initialCancel] = await Promise.all([post(r, a, path + '/rsvp'), post(r, owner, path + '/cancel', payload, key)]);
+    const cancelled = initialCancel.statusCode === 503 ? await post(r, owner, path + '/cancel', payload, key) : initialCancel; expect(cancelled.statusCode).toBe(200); expect(cancelled.json().event.phase).toBe('CANCELLED'); expect([201, 409]).toContain(joinReply.statusCode);
+    const notices = (await get(r, a, 'events/notices')).json().items; expect(notices).toHaveLength(joinReply.statusCode === 201 ? 1 : 0); expect((await r.pool.query("SELECT 1 FROM engine_event_rsvps WHERE event_id=$1 AND phase='CONFIRMED'", [event.event.id])).rowCount).toBe(0);
+  }
+});
+
+it('authorized schedule adjustment persists an explicit timezone and cannot overlap another table slot', async () => {
+  const r = await open(false), owner = await registered(r); await grant(r, owner, 'organizer'); const s = input(r).schedule, first = await schedule(r, owner, { resourceKey: 'table-one' });
+  await schedule(r, owner, { resourceKey: 'table-one', schedule: { ...s, opensAt: s.endsAt, startsAt: new Date(Date.parse(s.endsAt) + 60000).toISOString(), checkInClosesAt: new Date(Date.parse(s.endsAt) + 120000).toISOString(), endsAt: new Date(Date.parse(s.endsAt) + 3600000).toISOString() } });
+  const adjusted = await post(r, owner, 'events/' + first.event.id + '/adjust', { schemaVersion: 1, expectedVersion: 0, schedule: { ...s, timeZone: 'America/New_York' } }); expect(adjusted.statusCode).toBe(200); expect(adjusted.json().event).toMatchObject({ version: 1, schedule: { timeZone: 'America/New_York' } }); expect(adjusted.json().event.startsLabel).toContain('05:02:00');
+  const overlap = { ...s, opensAt: new Date(r.now() + 1800000).toISOString(), startsAt: new Date(r.now() + 2700000).toISOString(), checkInClosesAt: new Date(r.now() + 3000000).toISOString(), endsAt: new Date(r.now() + 5400000).toISOString() };
+  expect((await post(r, owner, 'events/' + first.event.id + '/adjust', { schemaVersion: 1, expectedVersion: 1, schedule: overlap })).statusCode).toBe(409); expect((await get(r, owner, 'events/' + first.event.id)).json().event.version).toBe(1);
+});
+
+it('participant erasure racing cancellation leaves no private notice or booking tied to the erased account', async () => {
+  const r = await open(), owner = await guest(r), a = await guest(r), event = await schedule(r, owner, { resourceKey: 'table-one' }); await post(r, a, 'reservations', { schemaVersion: 1, eventId: event.event.id, partySize: 1 }); const key = randomUUID(), body = { schemaVersion: 1, expectedVersion: 0 };
+  const [cancelled, erased] = await Promise.all([post(r, owner, 'events/' + event.event.id + '/cancel', body, key), r.app.http.inject({ method: 'DELETE', url: '/v1/me', headers: headers(a), payload: {} })]); expect(erased.statusCode).toBe(200); expect(cancelled.statusCode).toBe(200);
+  expect((await r.pool.query('SELECT 1 FROM engine_event_notices WHERE account_id=$1', [a.me.profile.id])).rowCount).toBe(0); expect((await r.pool.query('SELECT 1 FROM engine_reservations WHERE account_id=$1', [a.me.profile.id])).rowCount).toBe(0);
 });

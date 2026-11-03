@@ -32,6 +32,11 @@ export const EventCalendarInputSchema = z.strictObject({ schemaVersion: z.litera
 export const EventCatalogQuerySchema = z.strictObject({ worldSlug: WorldSlugSchema });
 export const EventRsvpViewSchema = z.strictObject({ id: uuid, phase: z.enum(['CONFIRMED', 'CANCELLED', 'EXPIRED']), createdAt: z.iso.datetime(), changedAt: z.iso.datetime() });
 export const EventRsvpResultSchema = z.strictObject({ schemaVersion: z.literal(1), rsvp: EventRsvpViewSchema });
-export const EventViewSchema = z.strictObject({ id: uuid, worldSlug: WorldSlugSchema, title, phase: EventPhaseSchema, createdAt: z.iso.datetime(), schedule: EventScheduleSchema, startsLabel: z.string(), endsLabel: z.string(), capacity: z.number().int().min(1).max(100), mine: z.boolean(), rsvp: EventRsvpViewSchema.nullable(), resourceKey: WorldSlugSchema.nullable() });
+export const EventViewSchema = z.strictObject({ id: uuid, worldSlug: WorldSlugSchema, title, phase: EventPhaseSchema, version: z.number().int().nonnegative(), createdAt: z.iso.datetime(), schedule: EventScheduleSchema, startsLabel: z.string(), endsLabel: z.string(), capacity: z.number().int().min(1).max(100), mine: z.boolean(), rsvp: EventRsvpViewSchema.nullable(), resourceKey: WorldSlugSchema.nullable() });
 export const EventResultSchema = z.strictObject({ schemaVersion: z.literal(1), event: EventViewSchema });
 export const EventCatalogSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(EventViewSchema).max(50), truncated: z.boolean() });
+export const EventAdjustSchema = z.strictObject({ schemaVersion: z.literal(1), expectedVersion: z.number().int().nonnegative(), title: title.optional(), schedule: EventScheduleSchema.optional() }).refine(input => input.title !== undefined || input.schedule !== undefined, 'An adjustment is required');
+export const EventCancelSchema = z.strictObject({ schemaVersion: z.literal(1), expectedVersion: z.number().int().nonnegative() });
+export const EventPerformerReadySchema = z.strictObject({ schemaVersion: z.literal(1), ready: z.boolean() });
+export const EventControlsSchema = z.strictObject({ schemaVersion: z.literal(1), canAdjust: z.boolean(), canCancel: z.boolean(), canPerform: z.boolean(), ready: z.boolean() });
+export const EventNoticesSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(z.strictObject({ id: uuid, eventId: uuid, kind: z.literal('cancelled'), createdAt: z.iso.datetime() })).max(100), truncated: z.boolean() });

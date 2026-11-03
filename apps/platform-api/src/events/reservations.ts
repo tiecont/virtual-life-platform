@@ -16,6 +16,7 @@ const absent = () => new DomainError('NOT_AVAILABLE', 404, 'This reservation is 
 const conflict = () => new DomainError('IDEMPOTENCY_CONFLICT', 409, 'Refresh this reservation before trying again');
 export class ReservationService {
   constructor(private pool: Pick<Pool, 'query'>, private identity: IdentityService, private social: SocialService, private rooms: RoomService, private events: EventService, private now = Date.now) {}
+  async participants(db: Pick<Pool, 'query'>, eventId: string) { return (await db.query<{ account_id: string }>("SELECT account_id FROM engine_reservations WHERE event_id=$1 AND phase IN ('HELD','CONFIRMED','CHECKED_IN') UNION SELECT account_id FROM engine_reservation_waitlist WHERE event_id=$1 AND phase='WAITING'", [eventId])).rows.map(row => row.account_id); }
   private state(row: Row): ReservationState { return { schemaVersion: 1, phase: row.phase, partySize: row.party_size, schedule: row.schedule, createdAt: row.created_at.getTime(), changedAt: row.changed_at.getTime(), holdExpiresAt: row.hold_expires_at.getTime() }; }
   private view(row: Row) { return ReservationViewSchema.parse({ id: row.id, eventId: row.event_id, worldSlug: row.world_slug, resourceKey: row.resource_key, phase: row.phase, partySize: row.party_size, schedule: row.schedule, createdAt: row.created_at.toISOString(), changedAt: row.changed_at.toISOString(), holdExpiresAt: row.hold_expires_at.toISOString() }); }
   private result(row: Row) { return ReservationResultSchema.parse({ schemaVersion: 1, reservation: this.view(row) }); }

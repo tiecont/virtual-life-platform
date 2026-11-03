@@ -1,5 +1,11 @@
 # Agent progress
 
+## M12-04 - VERIFIED scoped silent-event governance and cancellation
+
+Workspace fromf2c9e0d; m12-governance-checks.json/ADR0037/EVENT-OPERATIONS.md. Final fullcheck exit0:7governance,190unit,290integration including38event/reservation cases,lint/types/architecture/assets/builds. Earlier full288pass before final hint/block additions; final targeted2pass36filteredskips confirms extra assertions. Browser final4(2eachdevice) moderation/social regression pass; additive0021localmigration/diff0. Initial cancel acceptance red retained; targeted1/35pass, adjustment+erasure2pass. Documentation patch stale-context rejection was atomic and reapplied; no code/check failure hidden.
+
+Registered scoped expiring organizer/performer grants(defaultempty), guarded HTTP create/adjust/controlversion, voluntary readiness, separate existing safety moderator cancellation verified. Interactive audience still schema/SQL rejected; no audience approval workflow/stage activation claimed. M19 must implement independent approval/coverage before accepting it. Atomic cancellation releases RSVP/table/waitlist/readiness and stores unique private notices/receipt; failure rolls back. Eight retries/restart, RSVP/deletion races, own inbox/export/erasure, actual timezone adjustment/overlap and Socket.IO version-only postcommit hint pass. No real staffing/UI/public activation; allflagsOFF. Next exact action M12-05: audit shared invitation consent port, add versioned private-event invitations with current friendship/opt-in/block and explicit acceptance, filter discovery across registry worlds, test privacy/IDOR/revocation/ineligible dating; acceptance never grants RSVP/table/room. Then M12-06 final integration. DevDB0021,previewoff; B-001/B-002/B-003 unchanged.
+
 ## M12-03 - VERIFIED virtual table holds/check-in/FIFO
 
 Workspace fromb061a03; m12-reservations-checks.json/ADR0036. Final fullcheck exit0:7governance,190unit,281integration including29event/reservation cases,lint/types/architecture/assets/builds; browser6(3eachdevice) room/scene/reconnect/travel regressions pass; local additive0020 migration/diff0. Initial policy schema red retained; targeted3 then26pass,bounds2pass; first lint/check failed unused type import, removed and final fullcheck passes. No tests/timeouts/rate caps relaxed.

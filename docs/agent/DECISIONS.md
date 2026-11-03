@@ -1,5 +1,7 @@
 # Decisions
 
+M12-04 / ADR0037: registered expiring organizer/performer roles remain separate from M08 moderator authority; only original organizer adjusts unoccupied schedules. Cancellation works during closure and atomically releases participation/unique private notices/receipt with sorted recipient locks and retry on snapshot growth. Socket hints contain schemaVersion only. Interactive audience stays denied; independent approval/stage coverage remains mandatory M19 gate, not a completed workflow. Evidence final290integration/browser4 pass.
+
 M12-03 / ADR0036: optional trusted resourceKey chooses whole-table slots, with nonoverlap under schedule lock and one active allocation SQL index. Server holds clip to start; check-in requires actual room authority; explicit FIFO never auto-confirms. Event-owned transaction ports avoid direct reservation reads of event repositories. Actual full281integration/browser6 pass; party count/booking is separate from physical group seats or actual Restaurant integration.
 
 M12-02 / ADR0035: trusted silent-only schedules, explicit world event policy and captured registry generation; private own RSVP under account/event SQL locks with unique participant and durable receipt. One RSVP place is separate from future table/room admission. Calendar requires explicit opt-in/current confirmation and emits an attachment only. Default organizer port denies; restricted/private worlds remain closed; evidence m12-rsvp-checks.json/full269integration/browser8 pass.

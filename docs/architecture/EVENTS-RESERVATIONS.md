@@ -1,6 +1,14 @@
 # Events and reservations
 
-M12-01 implements strict time/capacity contracts and pure server lifecycle models. M12-02 adds durable silent schedules, private catalog/RSVP and opt-in calendar API; M12-03 adds virtual table holds/check-in/FIFO below. Existing registry events capability was audited; there was no pre-existing schedule/RSVP/reservation runtime to replace. Dependencies M04/M05/M06/M08 are locally verified. No event UI or actual Restaurant adapter is claimed yet.
+## Scoped controls and private cancellation — M12-04
+
+Default organizer/performer grants are persisted, registered-account-only, scoped and expiring; migrations provision nobody and no self-grant endpoint exists. POST events now exposes guarded scheduling to authorized organizers. POST events/:id/adjust requires the original organizer, expectedVersion and an unoccupied SCHEDULED event; time/zone/slot checks repeat. After participation, cancel and create a new schedule. Control version tracks adjust/cancel.
+
+GET events/:id/controls returns own capability hints. Performer-ready is voluntary metadata in OPEN/LIVE, with no stage/media/chat/moderation power. Block/end/cancel clears it; existing own readiness can be withdrawn after role/world closure. Existing M08 registered/scoped moderator grants are independent and may cancel covered events even during world disable/incident closure.
+
+Cancellation atomically changes state/version, releases RSVP/table/waitlist allocations, clears readiness, stores unique participant notices and a mutation receipt. Sorted recipient-account locks precede event rows; changed recipient snapshot requests an original-key retry instead of missing notice/lock inversion. Failures roll back all effects. Durable private GET events/notices is bounded100; connected recipients receive only schemaVersion refresh hints after commit. Inbox/export/erasure and event90day cascades apply; no delivery/read/email/calendar-recall guarantee. Interactive audience remains schema/SQL denied; independent moderator approval and actual stage coverage remain a mandatory M19 gate. No real staff, public flag or new event UI. See ADR0037 and EVENT-OPERATIONS.md.
+
+M12-01 implements strict time/capacity contracts and pure server lifecycle models. M12-02 adds durable silent schedules, private catalog/RSVP and opt-in calendar API; M12-03 adds virtual table holds/check-in/FIFO; M12-04 adds scoped controls/private cancel notices below. Existing registry events capability was audited; there was no pre-existing schedule/RSVP/reservation runtime to replace. Dependencies M04/M05/M06/M08 are locally verified. No event UI or actual Restaurant adapter is claimed yet.
 
 ```mermaid
 stateDiagram-v2
