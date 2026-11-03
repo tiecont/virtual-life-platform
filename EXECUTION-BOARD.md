@@ -67,7 +67,7 @@
 | M10 | M10-04 · Provide accessible timer UI package and shareable completion summary. | VERIFIED | m10-ui-checks.json;check0(126unit/193integration),finalbuild0,E2E40 |
 | M10 | M10-05 · Add SQL queries/retention for daily summaries and test DST/timezone edge cases. | VERIFIED | m10-daily-checks.json;check0(126unit/199integration/builds),focus21/browser2,0013local |
 | M11 | M11-01 · Audit legacy Maid order/shift semantics, extract shared vs maid-only behaviors. | VERIFIED | m11-audit-checks.json;10source hashes/AST/SQL,syntax/audit/lint/diff0;no runtime claimed |
-| M11 | M11-02 · Implement core order state machine and atomic claim with per-world policy. | TODO | — |
+| M11 | M11-02 · Implement core order state machine and atomic claim with per-world policy. | VERIFIED | m11-core-checks.json;check0(175unit/211integration/builds),actual20staffrace,browser40,0014local |
 | M11 | M11-03 · Implement staff shift, role permissions and reassignment on disconnect. | TODO | — |
 | M11 | M11-04 · Implement menu/catalog and service actions extensible per world. | TODO | — |
 | M11 | M11-05 · Add transaction/idempotency for order complete and progress hooks. | TODO | — |

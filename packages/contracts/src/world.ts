@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { SceneManifestSchema } from './scene';
 import { WorldSlugSchema, WorldVersionSchema, SeatIdSchema } from './world-primitives';
+import { HospitalityPolicySchema } from './hospitality-policy';
 export { WorldSlugSchema, WorldVersionSchema, SeatIdSchema } from './world-primitives';
 
 export const WORLD_API_VERSION = 1 as const;
@@ -27,9 +28,11 @@ export const WorldDefinitionSchema = z.strictObject({
   capabilities: z.array(WorldCapabilitySchema).min(1).max(7)
     .refine(items => new Set(items).size === items.length && items.includes('presence'), 'Unique capabilities including presence required'),
   focusPolicy: z.strictObject({ pauseAllowed: z.boolean() }).optional(),
+  hospitalityPolicy: HospitalityPolicySchema.optional(),
   accessPolicy: WorldAccessPolicySchema, visibility: z.enum(['listed', 'hidden']), map: WorldMapSchema,
 }).superRefine((world, ctx) => {
   if (world.capabilities.includes('focus') !== !!world.focusPolicy) ctx.addIssue({ code: 'custom', path: ['focusPolicy'], message: 'Focus capability requires an explicit trusted timer policy' });
+  if (world.capabilities.includes('hospitality') !== !!world.hospitalityPolicy) ctx.addIssue({ code: 'custom', path: ['hospitalityPolicy'], message: 'Hospitality capability requires an explicit trusted service policy' });
   if (world.scene && (world.scene.key !== world.sceneRef.key || world.scene.version !== world.sceneRef.version || [...world.scene.seats.map(seat => seat.seatId)].sort().join(',') !== [...world.seatIds].sort().join(','))) ctx.addIssue({ code: 'custom', path: ['scene'], message: 'Scene geometry must match the versioned world seat contract' });
   if (new Set(world.seatIds).size !== world.seatIds.length || world.seatIds.length > world.capacity || (world.capabilities.includes('seating') !== (world.seatIds.length > 0))) {
     ctx.addIssue({ code: 'custom', path: ['seatIds'], message: 'Unique seat IDs within capacity must match seating capability' });

@@ -77,3 +77,4 @@ export * from './moderation';
 export * from './travel';
 export * from './invitations';
 export * from './focus';
+export * from './hospitality';

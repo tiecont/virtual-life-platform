@@ -1,0 +1,13 @@
+import { z } from 'zod';
+import { TravelSourceSchema } from './travel';
+import { WorldSlugSchema, WorldVersionSchema } from './world-primitives';
+const uuid = z.uuid().transform(value => value.toLowerCase());
+export const OrderPhaseSchema = z.enum(['PENDING', 'ASSIGNED', 'PREPARING', 'READY', 'SERVED', 'COMPLETED', 'CANCELLED']);
+export { HospitalityPolicySchema, type HospitalityPolicy } from './hospitality-policy';
+export const OrderPlaceSchema = z.strictObject({ schemaVersion: z.literal(1), source: TravelSourceSchema, policyVersion: WorldVersionSchema, itemKey: WorldSlugSchema });
+export const OrderMutationSchema = z.strictObject({ schemaVersion: z.literal(1), source: TravelSourceSchema, expectedVersion: z.number().int().nonnegative() });
+export const OrderQueueSchema = z.strictObject({ schemaVersion: z.literal(1), source: TravelSourceSchema });
+export const OrderViewSchema = z.strictObject({ schemaVersion: z.literal(1), id: uuid, phase: OrderPhaseSchema, version: z.number().int().nonnegative(), worldSlug: WorldSlugSchema, roomId: uuid, itemKey: WorldSlugSchema, policyVersion: WorldVersionSchema, mine: z.boolean(), assignedToMe: z.boolean(), createdAt: z.iso.datetime(), updatedAt: z.iso.datetime() });
+export const OrderResultSchema = z.strictObject({ schemaVersion: z.literal(1), order: OrderViewSchema });
+export const OrderPageSchema = z.strictObject({ schemaVersion: z.literal(1), items: z.array(OrderViewSchema).max(50), truncated: z.boolean() });
+export type OrderPhase = z.infer<typeof OrderPhaseSchema>;

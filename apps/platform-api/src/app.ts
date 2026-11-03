@@ -33,6 +33,8 @@ import { InvitationService } from './invitations/service';
 import { registerInvitations } from './invitations/http';
 import { FocusService } from './focus/service';
 import { registerFocus } from './focus/http';
+import { HospitalityService, type HospitalityStaffPort } from './hospitality/service';
+import { registerHospitality } from './hospitality/http';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -47,7 +49,7 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions } = {}) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff: HospitalityStaffPort } } = {}) {
   const safetyPolicy = await loadSafetyPolicy(options.safety?.policy);
   const requiredMigrations = await migrationNames();
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
@@ -80,6 +82,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const travel = new TravelService(db, identity, rooms, options.now);
   const invitations = new InvitationService(db, identity, social, worlds.registry, options.now);
   const focus = new FocusService(db, identity, rooms, options.now);
+  const hospitality = new HospitalityService(db, identity, rooms, social, options.hospitality?.staff, options.now);
   const unsubscribeInvitationWithdrawal = social.onContactWithdrawn((transaction, a, b) => invitations.withdrawContact(transaction, a, b));
   const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, policy: safetyPolicy, evidence: reports.cache }, options.now);
   http.addHook('onClose', async () => { await worlds.registry.close(); });
@@ -91,6 +94,9 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerTravel(http, config, identity, travel, options.now);
   registerInvitations(http, config, identity, invitations, options.now);
   registerFocus(http, config, identity, focus, options.now);
+  registerHospitality(http, config, identity, hospitality, options.now);
+  identity.registerExportOwner('hospitality', (id, transaction) => hospitality.exportAccount(id, transaction));
+  identity.registerDeletionOwner('hospitality', (id, transaction) => hospitality.redactAccount(id, transaction));
   identity.registerExportOwner('focus', (id, transaction) => focus.exportAccount(id, transaction));
   identity.registerExportOwner('invitations', (id, transaction) => invitations.exportAccount(id, transaction));
   identity.registerExportOwner('travel', (id, transaction) => travel.exportAccount(id, transaction));
@@ -125,5 +131,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeInvitationWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, diagnostics };
+  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, hospitality, diagnostics };
 }

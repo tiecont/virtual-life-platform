@@ -1,5 +1,11 @@
 # Agent progress
 
+## M11-02 - VERIFIED atomic hospitality order core
+
+Workspace from3e6bcc4; m11-core-checks.json/ADR0029/HOSPITALITY.md. Full pnpm check0(7governance,175unit,211integration/builds),targeted12realPG/HTTP/socket0,typecheck/packages0,browser40(20eachdevice)0,diff0. Twenty actualTCPstaff claims yield1assignee/version1/claimreceipt. All49phase/action model cases pass;historical m11-core-red.log is passing,not red-first evidence. Additive0014 retained localcity DB migration0;legacy DBs untouched. A documentation patch with nonexistent README context was rejected atomically and reapplied with actual context.
+
+Strict per-world policy/current owner+epoch+member+session+seat source;durable account/row locks,expectedversion/fingerprints/receipts,oneactivecustomer,staffcap/queue and durable quotas. Place/claim/pendingcancel work;other phase edges are model-only. Cancel/claim race,receiptrollback,restartretry,defaultdeniedstaff,authority injection/CSRF/Origin/privacy/export/erasure,block/closure/disablegeneration pass. Staff erasure requeues pre-serve customerwork/version rather than deleting it. No hospitality UI,actualshifts/fullworkflow/completion/outbox/realMaid integration or rollout claimed. Next exact actionM11-03 voluntary current-visit shifts,offshift denial,disconnect grace/requeue and stale assignment invalidation;then04menu/actions. AllrealflagsOFF,previewoff,no remote/legacy mutation;B-001/B-002/B-003 unchanged.
+
 ## M11-01 - VERIFIED readonly hospitality compatibility audit
 
 Workspace from54d9572;m11-audit-checks.json/m11-hospitality-audit.json/ADR0028/HOSPITALITY-COMPATIBILITY.md. Actual MaidHEAD33180a920505a6e0f3998dbf0367be0b72727710/master+dirtyuntracked unchanged. TenSHA256 sourcefiles,TypeScriptAST7states/9serviceDTO/2healthroutes,SQL6tables and source/webinventory recorded;syntax/audit/lint/diff0. Manualreference3.4..3.7 comparison establishes sevenphases,voluntary shifts,max2work,requeue/version/minigame invalidation,uniquecompletion/outbox requirements. Actualsource has menu/identity schema,noorders/shifts/runtimegateway/playpage. No legacyruntime/test/DB/process/mutation/secret/copy or newgameplay verification claimed.
