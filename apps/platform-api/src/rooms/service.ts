@@ -284,6 +284,19 @@ export class RoomService {
     });
   }
   maintain() { return this.#control('maintenance', async () => { await this.#sweep(); }); }
+  reportContext(credential: string, input: { epoch: string; roomId: string; membershipId: string; targetId: string }) {
+    return this.#run(async () => {
+      await this.#sweep(); const actor = await this.identity.authenticate(credential);
+      const room = this.#rooms.get(input.roomId); const member = room?.members.get(actor.accountId);
+      if (input.epoch !== this.epoch || !room || !member || member.id !== input.membershipId || ![...member.connections.values()].includes(actor.sessionId) || input.targetId === actor.accountId) throw new DomainError('NOT_AVAILABLE', 404, 'Report context is unavailable');
+      const generation = this.#worldGenerations.get(room.slug) ?? 0; await this.registry.authorizeWorld(credential, room.slug);
+      const snapshot = await this.#snapshot(room, member);
+      if (!snapshot.participants.some(person => person.profile.id === input.targetId)) throw new DomainError('NOT_AVAILABLE', 404, 'Report context is unavailable');
+      await this.authority.assert();
+      if (generation !== (this.#worldGenerations.get(room.slug) ?? 0)) throw new DomainError('WORLD_UNAVAILABLE', 503, 'World unavailable');
+      return { worldSlug: room.slug, subjectId: input.targetId };
+    });
+  }
   authorizeChat(credential: string, connectionId: string, input: RoomOwnCommand) {
     return this.#run(async () => {
       await this.#sweep(); const actor = await this.identity.authenticate(credential); const { room } = this.#own(actor, connectionId, input);
@@ -293,17 +306,17 @@ export class RoomService {
       return { actor, worldSlug: room.slug };
     });
   }
-  publishChat(credential: string, connectionId: string, input: RoomOwnCommand, emit: (recipient: { connectionId: string; profile: PublicProfile }) => void) {
+  publishChat(credential: string, connectionId: string, input: RoomOwnCommand, emit: (recipient: { connectionId: string; accountId: string; worldSlug: string; profile: PublicProfile }) => void) {
     return this.#run(async () => {
       await this.#sweep(); const actor = await this.identity.authenticate(credential); const { room } = this.#own(actor, connectionId, input);
       const generation = this.#worldGenerations.get(room.slug) ?? 0; const { definition } = await this.registry.authorizeWorld(credential, room.slug);
       if (generation !== (this.#worldGenerations.get(room.slug) ?? 0)) throw new DomainError('WORLD_UNAVAILABLE', 503, 'World unavailable');
       if (!definition.capabilities.includes('chat')) throw new DomainError('FORBIDDEN', 403, 'Chat capability unavailable');
-      const recipients: { connectionId: string; profile: PublicProfile }[] = [];
+      const recipients: { connectionId: string; accountId: string; worldSlug: string; profile: PublicProfile }[] = [];
       for (const member of room.members.values()) {
         if (!member.connections.size) continue;
         const snapshot = await this.#snapshot(room, member); const sender = snapshot.participants.find(person => person.profile.id === actor.accountId);
-        if (sender) for (const id of member.connections.keys()) recipients.push({ connectionId: id, profile: sender.profile });
+        if (sender) for (const id of member.connections.keys()) recipients.push({ connectionId: id, accountId: member.accountId, worldSlug: room.slug, profile: sender.profile });
       }
       await this.identity.authenticate(credential); await this.authority.assert();
       if (generation !== (this.#worldGenerations.get(room.slug) ?? 0)) throw new DomainError('WORLD_UNAVAILABLE', 503, 'World unavailable');

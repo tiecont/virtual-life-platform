@@ -4,6 +4,8 @@ M08-01 defines and validates policy. It does not implement chat moderation, repo
 
 M08-02 update: the default-OFF local [chat backend](../architecture/CHAT-SAFETY.md) now enforces pre-broadcast checks, bounded moderation and fresh audience filtering. Production is closed; reporting and staff runtime remain pending. The following table preserves the M08-01 audit baseline.
 
+M08-03 update: separately keyed local [confidential report intake](../architecture/REPORTS.md), encrypted evidence, append-only audit, assigned-case access and room report/block controls now have their own implementation/verification scope. No real staff is created; production remains closed. Sanctions/appeals/moderator UI and reviewed metadata retention/holds remain pending. The table below is historical, not the current runtime inventory.
+
 ## M08-01 audit baseline: enforced then versus required next
 
 | Surface | Current evidence-backed control | Missing runtime gate |

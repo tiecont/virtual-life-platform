@@ -8,7 +8,7 @@ import { LocalChatModerator, normalizeChatText, type ChatModerator } from './mod
 export class ChatError extends Error { constructor(readonly code: ChatErrorCode) { super(code); } }
 type Receipt = { sessionId: string; fingerprint: string; until: number; result: ChatAccepted };
 type Pending = { sessionId: string; fingerprint: string; promise: Promise<ChatAccepted> };
-export interface ChatOptions { enabled?: boolean; policy: unknown; moderator?: ChatModerator }
+export interface ChatOptions { evidence?: { record(event: ChatMessage, viewerId: string, worldSlug: string): void }; enabled?: boolean; policy: unknown; moderator?: ChatModerator }
 function freezePolicy<T>(value: T): T { if (value && typeof value === 'object') { Object.values(value).forEach(freezePolicy); Object.freeze(value); } return value; }
 export class ChatService {
   readonly policy: SafetyPolicy;
@@ -16,10 +16,11 @@ export class ChatService {
   #accounts = new Map<string, number>(); #workers = new Set<AbortController>(); #limits: WindowLimiter; #moderator: ChatModerator;
   #outcomes = { accepted: 0, rejected: 0, unavailable: 0, droppedRecipients: 0 };
   #moderatorUnavailable = false;
+  #evidence?: ChatOptions['evidence'];
   constructor(private rooms: RoomService, private identity: IdentityService, environment: 'development' | 'test' | 'production', options: ChatOptions, private now = Date.now) {
     this.policy = freezePolicy(SafetyPolicySchema.parse(options.policy));
     this.#enabled = environment !== 'production' && options.enabled === true;
-    this.#moderator = options.moderator ?? new LocalChatModerator(); this.#limits = new WindowLimiter(now);
+    this.#evidence = options.evidence; this.#moderator = options.moderator ?? new LocalChatModerator(); this.#limits = new WindowLimiter(now);
   }
   diagnostics() { return { enabled: this.#enabled && !this.#closed, moderationAvailable: !this.#moderatorUnavailable, pending: this.#pending.size, workerSlots: this.#workers.size, receipts: this.#receipts.size, ...this.#outcomes }; }
   dropRecipient() { this.#outcomes.droppedRecipients++; }
@@ -42,7 +43,7 @@ export class ChatService {
     } catch (error) { if (error instanceof ChatError && error.code === 'CONTENT_REJECTED') throw error; this.#moderatorUnavailable = true; throw new ChatError('MODERATION_UNAVAILABLE'); }
     finally { if (timer) clearTimeout(timer); if (abort) controller.signal.removeEventListener('abort', abort); }
   }
-  async send(credential: string, connectionId: string, raw: ChatSend, emit: (connectionId: string, event: ChatMessage) => void): Promise<ChatAccepted> {
+  async send(credential: string, connectionId: string, raw: ChatSend, emit: (connectionId: string, event: ChatMessage) => boolean | void): Promise<ChatAccepted> {
     const input = ChatSendSchema.parse(raw);
     if (!this.#enabled || this.#closed) throw new ChatError('FORBIDDEN');
     const { actor, worldSlug } = await this.rooms.authorizeChat(credential, connectionId, input);
@@ -64,7 +65,7 @@ export class ChatService {
     }).finally(() => { this.#pending.delete(key); const count = (this.#accounts.get(actor.accountId) ?? 1) - 1; if (count) this.#accounts.set(actor.accountId, count); else this.#accounts.delete(actor.accountId); });
     this.#pending.set(key, { sessionId: actor.sessionId, fingerprint, promise }); return promise;
   }
-  async #deliver(credential: string, connectionId: string, input: ChatSend, worldSlug: string, emit: (connectionId: string, event: ChatMessage) => void): Promise<ChatAccepted> {
+  async #deliver(credential: string, connectionId: string, input: ChatSend, worldSlug: string, emit: (connectionId: string, event: ChatMessage) => boolean | void): Promise<ChatAccepted> {
     const rule = this.policy.contexts[worldSlug]; let content: ChatMessage['content'];
     if (input.content.kind === 'text') {
       if (rule.mode !== 'moderated') throw new ChatError('FORBIDDEN');
@@ -81,7 +82,7 @@ export class ChatService {
     await this.rooms.publishChat(credential, connectionId, input, recipient => {
       if (this.#closed) return;
       const message = ChatMessageSchema.parse({ schemaVersion: 1, messageId: result.messageId, epoch: input.epoch, roomId: input.roomId, createdAt: result.createdAt, sender: recipient.profile, content });
-      try { emit(recipient.connectionId, message); } catch { this.dropRecipient(); }
+      try { const delivered = emit(recipient.connectionId, message); if (delivered !== false) this.#evidence?.record(message, recipient.accountId, recipient.worldSlug); } catch { this.dropRecipient(); }
     });
     return result;
   }

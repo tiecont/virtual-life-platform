@@ -12,6 +12,8 @@ const defaults: Privacy = { presence: 'hidden', analyticsConsent: false, worldVi
 export class IdentityService {
   private exportOwners = new Map<string, (accountId: string, db: PoolClient) => Promise<unknown>>();
   registerExportOwner(owner: string, reader: (accountId: string, db: PoolClient) => Promise<unknown>) { if (this.exportOwners.has(owner)) throw new Error('Duplicate export owner'); this.exportOwners.set(owner, reader); }
+  private deletionOwners = new Map<string, (id: string, db: PoolClient) => Promise<void>>();
+  registerDeletionOwner(owner: string, handler: (id: string, db: PoolClient) => Promise<void>) { if (this.deletionOwners.has(owner)) throw new Error('Duplicate deletion owner'); this.deletionOwners.set(owner, handler); }
   private passwords = new PasswordHasher();
   private subscribers = new Set<(event: { accountId: string; sessionIds: string[] }) => void>();
   private changes = new Set<(accountId: string) => void>();
@@ -181,6 +183,7 @@ export class IdentityService {
       const s = await this.lockedSession(db, token);
       const sessions = (await db.query<{ id: string }>('SELECT id FROM identity_sessions WHERE account_id=$1', [s.account_id])).rows.map(row => row.id);
       await db.query('INSERT INTO identity_deletion_receipts VALUES($1,$2,$3)', [this.hash(token), receiptHash, new Date(this.now() + 86400000)]);
+      for (const handler of this.deletionOwners.values()) await handler(s.account_id, db);
       await db.query('DELETE FROM identity_accounts WHERE id=$1', [s.account_id]);
       return { accountId: s.account_id, sessions };
     });
@@ -267,7 +270,14 @@ export class IdentityService {
       await db.query('DELETE FROM identity_bootstraps WHERE expires_at <= $1', [new Date(this.now())]);
       await db.query('DELETE FROM identity_deletion_receipts WHERE expires_at <= $1', [new Date(this.now())]);
       await db.query('DELETE FROM identity_mutations WHERE created_at < $1', [new Date(this.now() - 86400000)]);
-      await db.query("DELETE FROM identity_accounts a WHERE kind='guest' AND NOT EXISTS(SELECT 1 FROM identity_sessions s WHERE s.account_id=a.id AND s.revoked_at IS NULL AND s.expires_at>$1)", [new Date(this.now())]);
+      const stale = (await db.query<{ id: string }>("SELECT a.id FROM identity_accounts a WHERE kind='guest' AND NOT EXISTS(SELECT 1 FROM identity_sessions s WHERE s.account_id=a.id AND s.revoked_at IS NULL AND s.expires_at>$1) ORDER BY a.id", [new Date(this.now())])).rows;
+      for (const account of stale) {
+        await this.lockAccounts(db, [account.id]);
+        const stillStale = (await db.query("SELECT 1 FROM identity_accounts a WHERE a.id=$1 AND a.kind='guest' AND NOT EXISTS(SELECT 1 FROM identity_sessions s WHERE s.account_id=a.id AND s.revoked_at IS NULL AND s.expires_at>$2)", [account.id, new Date(this.now())])).rowCount;
+        if (!stillStale) continue;
+        for (const handler of this.deletionOwners.values()) await handler(account.id, db);
+        await db.query('DELETE FROM identity_accounts WHERE id=$1', [account.id]);
+      }
       return expired;
     });
     for (const session of expired) this.notify(session.account_id, [session.id]);

@@ -85,6 +85,42 @@ test('viewer-filtered scene never fabricates peers and a bilateral block clears 
   } finally { await peer.close(); }
 });
 
+test('private report receipt and block flow works with keyboard focus on desktop/mobile without target disclosure', async ({ page, context, browser }) => {
+  test.setTimeout(45000); // Includes the real 15-second room resync while drafting.
+  const peer = await browser.newContext({ baseURL: origin });
+  try {
+    const a = await guest(context, 'Safety Reporter'); const b = await guest(peer, 'Safety Visitor');
+    await visible(context, a.csrfToken); await visible(peer, b.csrfToken);
+    const other = await peer.newPage(); await enter(page); await enter(other);
+    const trigger = page.getByRole('button', { name: 'Report or block Safety Visitor', exact: true }); await expect(trigger).toBeVisible();
+    await trigger.focus(); await page.keyboard.press('Enter');
+    const dialog = page.getByRole('dialog', { name: 'Report or block Safety Visitor', exact: true }); await expect(dialog).toBeVisible();
+    await dialog.getByLabel('Reason', { exact: true }).selectOption('harassment'); await dialog.getByLabel('Note (optional)', { exact: true }).fill('Private browser allegation, not a finding.');
+    await page.waitForTimeout(15500); await expect(dialog).toBeVisible(); await expect(dialog.getByLabel('Note (optional)', { exact: true })).toHaveValue('Private browser allegation, not a finding.');
+    let interrupted = false; let firstReceipt: unknown;
+    await page.route('**/v1/reports', async route => {
+      if (interrupted) { await route.continue(); return; } interrupted = true;
+      const accepted = await route.fetch(); expect(accepted.status()).toBe(201); firstReceipt = await accepted.json(); await route.abort('failed');
+    });
+    await dialog.getByRole('button', { name: 'Send private report', exact: true }).click();
+    await expect(dialog.getByText('Your report was not confirmed. Try again.', { exact: true })).toBeVisible();
+    await expect(dialog.getByLabel('Note (optional)', { exact: true })).toHaveValue('Private browser allegation, not a finding.');
+    const responsePromise = page.waitForResponse(response => response.url().endsWith('/v1/reports') && response.request().method() === 'POST');
+    await dialog.getByRole('button', { name: 'Send private report', exact: true }).click(); const response = await responsePromise; expect(response.status()).toBe(201);
+    const receipt = await response.json(); expect(receipt).toEqual(firstReceipt); await expect(dialog.getByText(/Report received. Receipt:/)).toBeFocused();
+    const exported = await context.request.get('/v1/me/export'); expect((await exported.json()).domains.safety.submittedReports).toEqual([receipt]);
+    expect((await peer.request.get('/v1/reports/' + receipt.receiptId)).status()).toBe(404);
+    expect(await other.getByText('Private browser allegation, not a finding.', { exact: true }).count()).toBe(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    const bounds = await dialog.boundingBox(); expect(bounds).not.toBeNull(); expect(bounds!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+    await mkdir('artifacts', { recursive: true }); await page.screenshot({ path: `artifacts/report-${test.info().project.name}.png`, fullPage: true }); await page.screenshot({ path: `artifacts/report-viewport-${test.info().project.name}.png` });
+    await dialog.getByRole('button', { name: 'Block visitor', exact: true }).click(); await expect(dialog.getByText('Blocked. Your contact settings were updated.', { exact: true })).toBeVisible();
+    await expect(page.locator('canvas[data-scene]')).toHaveAttribute('data-entity-count', '1'); await expect(other.locator('canvas[data-scene]')).toHaveAttribute('data-entity-count', '1');
+    await dialog.getByRole('button', { name: 'Close', exact: true }).click(); await expect(page.locator('#cafe-action-title')).toBeFocused();
+    await page.getByRole('button', { name: 'Leave cafe', exact: true }).click(); await other.getByRole('button', { name: 'Leave cafe', exact: true }).click();
+  } finally { await peer.close(); }
+});
+
 test('keyed sprites follow real seat deltas, resize and leave without allocating duplicate avatars', async ({ page, context, browser }) => {
   const peer = await browser.newContext({ baseURL: origin });
   try {

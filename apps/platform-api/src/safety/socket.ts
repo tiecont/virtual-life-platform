@@ -21,10 +21,10 @@ export function registerChatGateway(gateway: ReturnType<typeof createIdentityGat
       try {
         const result = await gateway.withSession(socket, (_context, credential) => chat.send(credential, socket.id, parsed.data, (id, event) => {
           const recipient = gateway.io.of('/').sockets.get(id);
-          if (!recipient?.connected || !recipient.conn.transport.writable) { chat.dropRecipient(); return; }
+          if (!recipient?.connected || !recipient.conn.transport.writable) { chat.dropRecipient(); return false; }
           // Ephemeral delivery has no offline history or per-recipient guarantee;
           // replaceable transport buffers must not grow for a slow observer.
-          recipient.volatile.emit('chat.message', event);
+          recipient.volatile.emit('chat.message', event); return true;
         }));
         if (socket.connected) reply(ChatAckSchema.parse({ schemaVersion: 1, requestId, ok: true, result }));
       } catch (error) {

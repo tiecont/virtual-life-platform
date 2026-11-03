@@ -17,7 +17,12 @@
     "social_friend_requests": "platform.social",
     "social_friendships": "platform.social",
     "social_blocks": "platform.social",
-    "social_mutations": "platform.social"
+    "social_mutations": "platform.social",
+    "safety_staff_grants": "platform.safety",
+    "safety_cases": "platform.safety",
+    "safety_report_evidence": "platform.safety",
+    "safety_audit_events": "platform.safety",
+    "safety_case_mutations": "platform.safety"
   },
   "journalTable": "city_schema_migrations",
   "legacyDatabases": "not managed by city migrations",

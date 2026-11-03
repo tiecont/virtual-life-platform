@@ -21,6 +21,8 @@ import { RoomMetrics } from './rooms/metrics';
 import { RoomAuthority } from './rooms/authority';
 import { createSafetyRuntime, loadSafetyPolicy, type SafetyRuntimeOptions } from './safety/runtime';
 import { registerChatGateway } from './safety/socket';
+import { ReportService } from './safety/reports';
+import { registerReports } from './safety/http';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -40,7 +42,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const requiredMigrations = await migrationNames();
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
     bodyLimit: 8192, requestTimeout: 10000, genReqId: () => randomUUID(),
-    logger: logging ? { level: 'info', serializers: { req: (req: FastifyRequest) => ({ method: req.method, path: req.url.split('?')[0] }) }, redact: ['req.headers.cookie', 'req.headers.authorization', 'req.body', 'res.headers.set-cookie'] } : false,
+    logger: logging ? { level: 'info', serializers: { req: (req: FastifyRequest) => ({ method: req.method, path: req.url.split('?')[0].replace(/^(\/v1\/(?:reports|moderation\/cases))\/[^/]+/, '$1/[redacted]') }) }, redact: ['req.headers.cookie', 'req.headers.authorization', 'req.body', 'res.headers.set-cookie'] } : false,
   }), { logger: false });
   const http = app.getHttpAdapter().getInstance() as FastifyInstance;
   http.addHook('onRequest', async (req, reply) => {
@@ -60,15 +62,19 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   });
   if (!roomService) throw new Error('Room service failed to initialize');
   const rooms = roomService;
-  const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, policy: safetyPolicy }, options.now);
+  const reports = new ReportService(db, identity, rooms, safetyPolicy, config.NODE_ENV, config.SAFETY_EVIDENCE_KEY, config.SAFETY_EVIDENCE_KEY_ID, options.now);
+  const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, policy: safetyPolicy, evidence: reports.cache }, options.now);
   http.addHook('onClose', async () => { await worlds.registry.close(); });
   http.addHook('onClose', async () => { await rooms.close(); });
   registerWorlds(http, config, worlds.registry, options.now, rooms);
   registerIdentity(http, config, identity, options.now);
   registerSocial(http, config, identity, social, options.now);
+  registerReports(http, config, identity, reports, options.now);
+  identity.registerExportOwner('safety', (id, transaction) => reports.exportAccount(id, transaction));
+  identity.registerDeletionOwner('safety', (id, transaction) => reports.redactAccount(id, transaction));
   identity.registerExportOwner('social', (id, transaction) => social.exportAccount(id, transaction));
   // Emit truthful room interruption events while sockets are still connected; the gateway closes immediately after this hook.
-  http.addHook('preClose', async () => { chat.close(); await rooms.close(); roomAuthority.close(); });
+  http.addHook('preClose', async () => { chat.close(); await reports.close(); await rooms.close(); roomAuthority.close(); });
   http.get('/health/live', async () => ({ status: 'ok' }));
   http.get('/health/ready', async (_req, reply) => {
     try {
@@ -90,5 +96,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => { unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity, gateway, social, worlds, rooms, chat, diagnostics };
+  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, diagnostics };
 }

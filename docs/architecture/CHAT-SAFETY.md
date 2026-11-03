@@ -10,6 +10,8 @@ Before publishing, RoomService rechecks owner generation, authenticated session,
 
 Delivery is volatile, best-effort and ephemeral. A successful ACK means an event was accepted, not that every recipient received it; disconnected/nonwritable observers are dropped with aggregate-only diagnostics. There is no offline history. Success receipts retain metadata/fingerprints only, bounded to 10,000 entries for five minutes; matching pending retries share one broadcast, conflicts fail. Deduplication is in memory and does not survive restart. No raw ordinary/rejected chat is persisted or logged. Shutdown aborts inspection and prevents late acceptance/emission.
 
+M08-03 adds an explicit separately keyed report opt-in: up to 1,000 approved message delivery attempts may be retained encrypted in volatile memory for five-minute recipient-bound report references. Only a submitted report persists its minimal encrypted evidence. There is still no durable ordinary/rejected chat history. See REPORTS.md for eviction, audience, key and deletion limits.
+
 Policy JSON is validated before allocating app resources, copied to the built API's safety directory and loaded there; source execution falls back to the repository config. Missing/invalid configuration fails startup. Existing clients keep their room contract; chat is an additive registered command.
 
 Actual verification is in `docs/agent/evidence/m08-chat-checks.json`. Synthetic tests use a known policy context with a sandbox world definition, not an integrated/activated Maid world. M08-03..06 still need confidential reports/encrypted evidence, audit/RBAC, sanctions, appeals, moderator UI, retention and broader false-positive tests. Named coverage, privacy/retention review and public approval remain absent.

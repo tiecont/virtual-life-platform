@@ -7,6 +7,7 @@ import { RoomRecovery, type RoomRecoveryView } from '@virtual-city/world-sdk';
 import { sandboxScene } from '@virtual-city/pixi-scene';
 import type { createCafeScene } from '@virtual-city/pixi-scene';
 import './room.css';
+import RoomSafety from './RoomSafety';
 
 const idle: RoomRecoveryView = { status: 'idle', snapshot: null, reason: null };
 type SceneView = Awaited<ReturnType<typeof createCafeScene>>;
@@ -24,6 +25,7 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
   const [sceneState, setSceneState] = useState<'loading' | 'ready' | 'failed'>('loading');
   const [lowMotion, setLowMotion] = useState(false); const lowMotionRef = useRef(false); const userMotion = useRef<boolean | null>(null);
   const [walking, setWalking] = useState(false);
+  const [safetyRoom, setSafetyRoom] = useState<RoomSnapshot | null>(null);
   const focusIntent = useRef<'actions' | 'entry' | null>(null); const entryButton = useRef<HTMLButtonElement>(null);
   const host = useRef<HTMLDivElement>(null); const scene = useRef<SceneView | null>(null);
   const socket = useRef<Socket | null>(null); const recovery = useRef(new RoomRecovery()); const latest = useRef<RoomSnapshot | null>(null);
@@ -52,6 +54,7 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
   function publish() {
     if (!alive.current) return;
     const next = recovery.current.view; latest.current = next.snapshot; setView(next);
+    if (next.snapshot) setSafetyRoom(next.snapshot); else if (next.status !== 'syncing') setSafetyRoom(null);
     if (next.status === 'syncing') scene.current?.suspend(); else scene.current?.update(next.snapshot);
   }
   function closeConnection() {
@@ -186,6 +189,7 @@ export default function RoomPanel({ socketOrigin }: { socketOrigin: string }) {
         </> : !loading && <Link href="/identity">Open identity</Link>}
         <label className="cafe-motion"><input type="checkbox" checked={lowMotion} onChange={event => { const value = event.target.checked; userMotion.current = value; lowMotionRef.current = value; setLowMotion(value); scene.current?.setReducedMotion(value); }}/>Reduce room motion</label>
         <div className="cafe-present"><h2>Visible here</h2>{view.snapshot?.participants.length ? <ul>{view.snapshot.participants.map(person => <li key={person.profile.id}><span>{person.profile.displayName}</span><small>{person.state === 'reconnecting' ? 'Reconnecting' : person.seatId ? 'Seated' : 'Standing'}</small></li>)}</ul> : <p className="cafe-note">No confirmed visible visitors.</p>}</div><Link href="/worlds/sdk-sandbox/avatar-lab">Preview avatar styles</Link>
+        {me && safetyRoom && <RoomSafety key={me.profile.id + ':' + safetyRoom.membershipId} me={me} room={safetyRoom} active={active}/>}
       </aside></div>
   </main>;
 }

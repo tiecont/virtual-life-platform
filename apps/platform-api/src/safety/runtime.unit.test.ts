@@ -4,6 +4,8 @@ import { loadSafetyPolicy } from './runtime';
 import { ChatService } from './chat';
 import type { RoomService } from '../rooms/service';
 import type { IdentityService } from '../identity/service';
+import { ReportService } from './reports';
+import type { Pool } from 'pg';
 
 it('loads validated server-owned defaults, rejects unsafe config and cannot activate production via local override', async () => {
   const policy = await loadSafetyPolicy(); expect(policy.defaults.chatEnabled).toBe(false);
@@ -13,4 +15,9 @@ it('loads validated server-owned defaults, rejects unsafe config and cannot acti
   expect(chat.diagnostics().enabled).toBe(false);
   await expect(chat.send('not-a-credential', 'not-a-connection', { schemaVersion: 1, requestId: randomUUID(), epoch: randomUUID(), roomId: randomUUID(), membershipId: randomUUID(), content: { kind: 'canned', id: 'hello' } }, () => { throw new Error('must never emit'); })).rejects.toMatchObject({ code: 'FORBIDDEN' });
   chat.close();
+});
+
+it('report evidence keys cannot enable production reporting or privileged case access', async () => {
+  const reports = new ReportService({} as Pool, {} as IdentityService, {} as RoomService, await loadSafetyPolicy(), 'production', '89'.repeat(32));
+  expect(reports.available()).toBe(false); expect(reports.cache).toBeUndefined(); await reports.close();
 });

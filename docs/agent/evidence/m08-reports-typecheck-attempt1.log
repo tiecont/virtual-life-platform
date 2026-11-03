@@ -1,0 +1,21 @@
+$ pnpm build:packages && pnpm -r typecheck && tsc -p tests/load/tsconfig.json
+$ pnpm --filter './packages/*' -r build
+Scope: 4 of 7 workspace projects
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+Scope: 6 of 7 workspace projects
+packages/contracts typecheck$ tsc -p tsconfig.json --noEmit
+packages/contracts typecheck: Done
+packages/world-sdk typecheck$ tsc -p tsconfig.json --noEmit
+packages/world-sdk typecheck: Done
+apps/platform-api typecheck$ tsc -p tsconfig.json --noEmit
+packages/pixi-scene typecheck$ tsc -p tsconfig.json --noEmit
+packages/pixi-scene typecheck: Done
+apps/portal-web typecheck$ tsc --noEmit
+apps/platform-api typecheck: src/safety/reports.ts(19,68): error TS2345: Argument of type '"SAFETY_UNAVAILABLE"' is not assignable to parameter of type '"INVALID_REQUEST" | "UNAUTHENTICATED" | "FORBIDDEN" | "NOT_FOUND" | "RATE_LIMITED" | "INTERNAL_ERROR" | "WORLD_UNAVAILABLE" | "WORLD_VERSION_MISMATCH" | "ROOM_FULL" | "ALREADY_IN_ROOM" | ... 5 more ... | "NOT_AVAILABLE"'.
+apps/platform-api typecheck: Failed
+/home/tiecont/Projects/virtual-city/apps/platform-api:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @virtual-city/platform-api@0.1.0 typecheck: `tsc -p tsconfig.json --noEmit`
+Exit status 2
+[ELIFECYCLE] Command failed with exit code 2.
