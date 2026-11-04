@@ -47,6 +47,8 @@ import { StageService } from './events/stage';
 import { registerStage } from './events/stage-http';
 import { AudienceService } from './events/audience';
 import { registerAudience } from './events/audience-http';
+import { MediaClearanceGate,loadMediaClearance } from './events/media-clearance';
+import { registerMedia } from './events/media-http';
 import { EventInvitationService } from './events/invitations';
 import { ProgressionService } from './progression/service';
 import { registerProgression } from './progression/http';
@@ -70,6 +72,7 @@ class AppModule {}
 Module({})(AppModule);
 export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] } } = {}) {
   const safetyPolicy = await loadSafetyPolicy(options.safety?.policy);
+  const mediaClearance=await MediaClearanceGate.create(await loadMediaClearance(),[],options.now);
   const requiredMigrations = await migrationNames();
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
     bodyLimit: 8192, requestTimeout: 10000, genReqId: () => randomUUID(),
@@ -154,6 +157,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerEvents(http, config, identity, events, eventInvitations, options.now);
   registerStage(http,config,identity,stage,options.now);
   registerAudience(http,config,identity,audience,options.now);
+  registerMedia(http,config,identity,audience,mediaClearance,options.now);
   identity.registerExportOwner('eventInvitations', (id, transaction) => eventInvitations.exportAccount(id, transaction));
   registerReservations(http, config, identity, reservations, options.now,reservationParties);
   identity.registerExportOwner('reservations', (id, transaction) => reservations.exportAccount(id, transaction));

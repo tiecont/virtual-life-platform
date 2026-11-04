@@ -51,6 +51,7 @@ export class AudienceService{
   },false,valid,known?.approved_by?[known.approved_by]:[]);});
  }
  async read(token:string,raw:unknown){const input=AudienceReadSchema.parse(raw);return this.inRoom(token,input.eventId,input.source,(db,actor,row,context)=>this.view(db,actor,row,context));}
+ async mediaAuthority(token:string,raw:unknown){const input=AudienceReadSchema.parse(raw);return this.inRoom(token,input.eventId,input.source,async(db,actor,row,context)=>{const view=await this.view(db,actor,row,context);return {worldSlug:context.worldSlug,eventId:context.id,permitted:view.canReact,expiresAt:view.expiresAt};});}
  async send(token:string,key:string,raw:unknown){const input=AudienceSendSchema.parse(raw),fingerprint=this.identity.fingerprint({operation:'audience.send',input});return this.inRoom(token,input.eventId,input.source,async(db,actor,row,context,visit)=>{
   const previous=await this.prior(db,actor.accountId,key,fingerprint),eligible=await this.eligible(db,actor,row,context);
   if(previous)return AudienceResultSchema.parse({schemaVersion:1,applied:eligible&&previous.version===row.version&&previous.window_started_at.getTime()===row.window_started_at.getTime(),view:await this.view(db,actor,row,context)});

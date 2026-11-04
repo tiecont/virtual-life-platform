@@ -1,0 +1,9 @@
+# Lounge media clearance records
+
+No media is cleared and no streaming provider is registered. `config/lounge-media-clearance.json` deliberately contains an empty catalog. The local application always renders silent text and visual sets;even a reviewed catalog entry is not playback authorization.
+
+Before an owner supplies a real clearance record,document the original source and its SHA256,creator/rights holder,rights basis,permitted redistribution/performance/streaming uses,attribution,territory and audience restrictions,exact Lounge event UUID,reviewer,review date,valid-from/expiry and revocation contact. Retain the actual permission evidence in a controlled owner-approved location;this repository may hold a minimal reviewed reference rather than confidential agreements. Human review must confirm the referenced evidence is sufficient. A hash only verifies document bytes;it does not establish legal permission.
+
+Any optional provider needs its own reviewed adapter record and hash,an exact HTTPS delivery origin,expiry,appropriate external transport,privacy/access design,current moderator coverage and revocation/failure behavior. The strict runtime registry accepts `external-https-hls` declarations only. No provider implementation,playback lease or socket transport is shipped. Provider readiness alone never enables playback;delivery requires a separately verified implementation and explicit operator/owner approval.
+
+Records must use a lowercase `docs/media-clearance/<record>.md` reference. Runtime startup checks nonempty evidence bytes<=64KiB and SHA256;symlinks escaping this directory are rejected. Missing/tampered/malformed records prevent startup. Trusted catalog replacement verifies documents before atomically applying a strictly increasing revision;revocation/removal takes effect on the next status read. Deploy/restart must distribute the matching reviewed documents with the catalog. Do not invent approval records to make a check pass.

@@ -1,0 +1,26 @@
+{
+  "taskID":"M19-05",
+  "status":"VERIFIED",
+  "source":"Local workspace from85708b9;implementation SHA recorded by the following local commit",
+  "environment":"2026-11-04;Node26.9.0/pnpm11.28.5;disposable local PostgreSQL,actual Socket.IO/HTTP and Chromium desktop/mobile viewport",
+  "commands":[
+    {"command":"pnpm build:packages","exitCode":0,"log":"m19-media-packages.log"},
+    {"command":"pnpm exec vitest run --project unit apps/platform-api/src/events/media-clearance.unit.test.ts","exitCode":0,"log":"m19-media-unit.log","scope":"Initial7passed"},
+    {"command":"node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/lounge.test.ts -t 'media clearance'","exitCode":1,"log":"m19-media-api.log","scope":"1failed/7filtered skips:all guards passed until the final expected503;closed-world membership correctly returned409. Corrected assertion,not runtime/limits. No missing-route red-first claim."},
+    {"command":"node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/lounge.test.ts tests/integration/audience.test.ts","exitCode":0,"log":"m19-media-api-final.log","scope":"21passed:8realLounge+13Audience cases"},
+    {"command":"pnpm exec vitest run --project unit apps/platform-api/src/events/media-clearance.unit.test.ts","exitCode":0,"log":"m19-media-unit-final.log","scope":"Final9passed;adds actual filesystem evidence hash/symlink escape rejection and delayed lower revision defeated by later revocation. Synthetic rights/provider declarations are unit fixtures only."},
+    {"command":"pnpm --filter @virtual-city/platform-api typecheck","exitCode":0,"logs":["m19-media-api-types.log","m19-media-api-types-final.log"],"scope":"Final includes the two additional unit cases"},
+    {"command":"pnpm lint","exitCode":0,"log":"m19-media-lint.log","scope":"Before the two extra unit cases and final spoof-reply browser synchronization"},
+    {"command":"pnpm check","exitCode":0,"log":"m19-media-check.log","scope":"7governance,242unit,418integration,lint/types/architecture/assets/allbuilds. Two extra unit cases were added after this root unit phase;the final9case targeted suite/API typecheck above verifies those additions,not a244-fullsuite claim. Browser synchronization-only edit followed the root lint/type phase."},
+    {"command":"node scripts/run-browser-tests.mjs tests/e2e/lounge.spec.ts","exitCode":0,"log":"m19-media-browser.log","scope":"24passed(12/device) on the initial built UI label;all earlier Lounge flows plus actual RSVP/current-moderator-open/no-rights silent status,strict forged playable-reply rejection,and real media-src/frame-src CSP violations. The final plain-language status-label-only edit is verified separately after rebuilding."},
+    {"command":"pnpm lint","exitCode":0,"log":"m19-media-lint-final.log","scope":"Final code/tests except subsequent plain-language JSX text-only change"},
+    {"command":"pnpm --filter @virtual-city/portal-web build","exitCode":0,"log":"m19-media-web-build-final.log","scope":"Final plain-language UI label;Next build and TypeScript"},
+    {"command":"node scripts/run-browser-tests.mjs tests/e2e/lounge.spec.ts -g 'Lounge media remains silent'","exitCode":0,"log":"m19-media-browser-final.log","scope":"Final2passed(1/device) on rebuilt plain-language UI;both final screenshots inspected/readable/no overflow. Actual current moderator+RSVP still cannot play without rights;forged playable response rejected;media-src/frame-src violations verified."},
+    {"command":"git diff --check -- . ':!docs/agent/evidence/*.log'","exitCode":0,"scope":"Source/docs/JSON;known regenerated historical scene/stage/mocktail/audience artifacts restored;new media artifacts retained"}
+  ],
+  "runtime":"Strict server-owned empty catalog,document/evidence hashing/exact event and HTTPS origin/expiry/revocation/trusted monotonic replacement;optional reviewed adapter registration contract only. Actual app registers zero providers. Authenticated source-bound no-store status route rejects client URLs/rights/transport claims and always returns SILENT/playbackEnabled:false. No playback or streaming endpoint/Socket.IO channel exists. Native manual status expires<=3s and rejects playable/URL-bearing responses;global media/frame/object denial and capture Permissions-Policy preserve baseline across client navigation.",
+  "migration":"None;retained local DB remains0032/stopped. Disposable tests apply all existing migrations. No original asset/config-world version changes.",
+  "limits":"Review hashes establish bytes,not licensing/legal permission. No real rights,provider implementation,live uplink,media lease or third-party playback was supplied/exercised. Optional registration is readiness metadata only and never enables playback. No public rollout,real operator provisioning,remote action or legacy change. M19-06 fanout/reports/emergency acceptance remains separate;B-001/B-002/B-003 persist.",
+  "artifacts":["m19-media-visual/desktop-silent.png","m19-media-visual/mobile-silent.png","m19-media-visual/desktop.json","m19-media-visual/mobile.json"],
+  "nextExactAction":"M19-06 actual bounded fanout benchmark/report/cancel/emergency/recovery runbook. No streaming provider is configured or tested;all public/operator/media gates stay closed."
+}

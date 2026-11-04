@@ -1,0 +1,12 @@
+{
+  "actualModeratorOpen": true,
+  "ownRsvp": true,
+  "noRightsSilent": true,
+  "noPlayerOrUrlInput": true,
+  "forgedPlayableReplyRejected": true,
+  "actualCspViolations": [
+    "media-src",
+    "frame-src"
+  ],
+  "viewportOverflow": false
+}

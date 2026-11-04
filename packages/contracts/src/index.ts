@@ -85,3 +85,4 @@ export * from './reservations';
 export * from './progression';
 export * from './stage';
 export * from './audience';
+export * from './media';

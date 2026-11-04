@@ -115,7 +115,7 @@
 | M19 | M19-02 · Implement performer/host role and stage queue with operator controls. | VERIFIED | m19-stage-checks.json;root232unit/401integration/build0;final14browser/webbuild/lint0;actualFIFO/currentgrants/explicitaccept/cap1/deadlineSQLwait/Stop/revoke/recovery/privacy;0030local0/flagsOFF |
 | M19 | M19-03 · Implement virtual mocktail service via Hospitality Engine. | VERIFIED | m19-mocktail-checks.json;root232unit/404integration/build0,target98;18Lounge+8Restaurantbrowser0;actual bartender role/one-course ledger/retry/race/refuse/block/withdraw/Stop;no migration/realflags |
 | M19 | M19-04 · Integrate ticket-free events/RSVP, crowd reactions and moderation throttles. | VERIFIED | m19-audience-checks.json;post-budget root235unit/416integration/build0,final13AudienceAPI/APIbuild+22Loungebrowser0;RSVP/noadmission/moderated bounded counts/independent mute-disable/rollback/restart/privacy;0032local0/stopped/flagsOFF |
-| M19 | M19-05 · Implement media licensing gate and optional preapproved streaming adapter. | TODO | — |
+| M19 | M19-05 · Implement media licensing gate and optional preapproved streaming adapter. | VERIFIED | ADR0065/m19-media-checks.json;root242unit/418integration/build0,final9gate unit/21API,24Lounge browser plus final2media after text-only rebuild. Empty rights/adapter registry;always SILENT/CSP;no provider/playback implementation claimed. |
 | M19 | M19-06 · Test high fan-out, reports, event cancellation and emergency shutdown. | TODO | — |
 | M20 | M20-01 · Define product and legal/trust-safety gate for adult dating before code release. | TODO | — |
 | M20 | M20-02 · Implement separate dating profile with mutual preferences and no global visibility. | TODO | — |
