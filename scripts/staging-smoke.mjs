@@ -27,6 +27,8 @@ const port=await unusedPort(),subnet=100+randomBytes(1)[0]%140,origin='https://l
 const values={CITY_STACK_NAME:project,CITY_APP_IMAGE:process.env.CITY_SMOKE_IMAGE??'virtual-life-platform:m21-local',CITY_NETWORK_SUBNET:`172.30.${subnet}.0/24`,CITY_DYNAMIC_RANGE:`172.30.${subnet}.128/25`,CITY_PROXY_IP:`172.30.${subnet}.2`,CITY_TLS_PORT:String(port),WEB_ORIGIN:origin,CITY_TLS_CERT_FILE:resolve(dir,'cert.pem'),CITY_TLS_KEY_FILE:resolve(dir,'key.pem'),POSTGRES_USER:'city_stage_test',POSTGRES_DB:'city_stage_test',POSTGRES_PASSWORD:randomBytes(24).toString('base64url'),SESSION_SECRET:randomBytes(48).toString('base64url'),OPERATOR_TELEMETRY_TOKEN:randomBytes(32).toString('hex')};
 const env={...process.env,...values},envPath=resolve(dir,'.env.staging'),composeArgs=['compose','--project-name',project,'--env-file',envPath,'-f','infra/compose/stack.yml'];
 const compose=(args,allowFailure=false)=>run('docker',[...composeArgs,...args],env,allowFailure);
+const rollbackImage=process.env.CITY_SMOKE_ROLLBACK_IMAGE;
+const replaceAPI=(image,allowFailure=false,override={})=>run('docker',[...composeArgs,'up','-d','--no-deps','--wait','--wait-timeout','60','api'],{...env,CITY_APP_IMAGE:image,...override},allowFailure);
 let cert;
 function request(path,method='GET',headers={},body){
  return new Promise((ok,no)=>{
@@ -34,9 +36,17 @@ function request(path,method='GET',headers={},body){
   req.once('error',no);req.setTimeout(8000,()=>req.destroy(Error('TLS request timeout')));if(body)req.write(body);req.end();
  });
 }
-const facts={taskID:'M21-01',scope:'Disposable local production-mode Compose/Caddy staging equivalent;not external staging/public deployment',publicRelease:false};
+const facts={taskID:rollbackImage?'M21-04':'M21-01',scope:'Disposable local production-mode Compose/Caddy staging equivalent;not external staging/public deployment',publicRelease:false};
 try{
  verifyStackEnv(values);
+ if(rollbackImage){
+  stage='rollback-compatibility';verifyStackEnv({...values,CITY_APP_IMAGE:rollbackImage});
+  const inspectManifest=async image=>{
+   const result=await run('docker',['run','--rm','--network','none','--read-only','--entrypoint','node',image,'--input-type=module','-e',"import{readdirSync,readFileSync}from'node:fs';import{createHash}from'node:crypto';const dir='apps/platform-api/dist/db/migrations',names=readdirSync(dir).filter(n=>/^\\d+.*\\.sql$/.test(n)).sort();if(!names.length)throw Error('No migration files');const entries=names.map(n=>[n,createHash('sha256').update(readFileSync(dir+'/'+n)).digest('hex')]);console.log(JSON.stringify({count:names.length,digest:createHash('sha256').update(JSON.stringify(entries)).digest('hex')}));"]);return JSON.parse(result.output.trim());
+  };
+  const currentManifest=await inspectManifest(values.CITY_APP_IMAGE),previousManifest=await inspectManifest(rollbackImage);assert.deepEqual(currentManifest,previousManifest,'Rollback requires identical bundled migrations');
+  facts.rollbackCompatibility={...currentManifest,previousImage:(await run('docker',['image','inspect','--format','{{.Id}}',rollbackImage])).output.trim()};
+ }
  await writeFile(envPath,Object.entries(values).map(([k,v])=>k+'='+v).join('\n')+'\n',{mode:0o600});
  await run('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-keyout',values.CITY_TLS_KEY_FILE,'-out',values.CITY_TLS_CERT_FILE,'-days','1','-subj','/CN=localhost','-addext','subjectAltName=DNS:localhost,IP:127.0.0.1']);
  cert=await readFile(values.CITY_TLS_CERT_FILE);
@@ -75,7 +85,22 @@ try{
  }
  const wrong=await connect({origin:'https://attacker.invalid','x-forwarded-for':'198.51.100.2'});assert.equal(wrong.ok,false);wrong.socket.close();
  const live=await connect({origin});assert.equal(live.ok,true);
- const ack=await live.socket.timeout(5000).emitWithAck('session.check',{schemaVersion:1,requestId:randomUUID()});assert.equal(ack.ok,true);live.socket.close();facts.verifiedTLSWebsocketAndOriginGuard=true;
+ const ack=await live.socket.timeout(5000).emitWithAck('session.check',{schemaVersion:1,requestId:randomUUID()});assert.equal(ack.ok,true);facts.verifiedTLSWebsocketAndOriginGuard=true;
+ if(rollbackImage){
+  stage='graceful-api-stop';
+  let timeout;const disconnected=new Promise(ok=>{timeout=setTimeout(()=>ok(false),8000);live.socket.once('disconnect',()=>{clearTimeout(timeout);ok(true);});});
+  await compose(['stop','--timeout','12','api']);assert.equal(await disconnected,true,'Deployment socket must close');
+  const cid=(await compose(['ps','-a','-q','api'])).output.trim(),exitCode=Number((await run('docker',['inspect','--format','{{.State.ExitCode}}',cid])).output.trim());assert.equal(exitCode,0,'Graceful API stop must exit0,not forced137');
+  stage='reject-bad-candidate';const bad=await replaceAPI(values.CITY_APP_IMAGE,true,{SESSION_SECRET:'invalid-test-candidate'});assert.notEqual(bad.code,0);assert.notEqual((await request('/health/ready')).status,200);
+  stage='compatible-api-rollback';await replaceAPI(rollbackImage);
+  assert.equal((await request('/health/ready')).status,200);const restored=await request('/v1/me','GET',{cookie:'__Host-city_session='+rotated.value});assert.equal(restored.status,200);assert(JSON.parse(restored.body).profile.id===me.profile.id);
+  const previous=await connect({origin});assert.equal(previous.ok,true);assert.equal((await previous.socket.timeout(5000).emitWithAck('session.check',{schemaVersion:1,requestId:randomUUID()})).ok,true);previous.socket.close();
+  stage='api-roll-forward';await replaceAPI(values.CITY_APP_IMAGE);assert.equal((await request('/health/ready')).status,200);
+  const latest=await connect({origin});assert.equal(latest.ok,true);assert.equal((await latest.socket.timeout(5000).emitWithAck('session.check',{schemaVersion:1,requestId:randomUUID()})).ok,true);latest.socket.close();
+  const refreshed=await browser.newContext({baseURL:origin});await refreshed.addCookies([rotated]);const recoveredPage=await refreshed.newPage();await recoveredPage.goto('/identity');await expect(recoveredPage.getByRole('status')).toHaveText('Welcome, Local TLS fixture.');await recoveredPage.screenshot({path:resolve(dir,'deployment-identity-https.png'),fullPage:true});await refreshed.close();
+  facts.deployment={gracefulExitCode:exitCode,existingSocketClosed:true,badCandidateExitCode:bad.code,badCandidateNeverReady:true,rollbackReady:true,sessionIdentityPreserved:true,rollbackSocketReauthenticated:true,rollForwardReady:true,rollForwardBrowserReload:true,sameMigrationsOnly:true,databaseRollback:false};
+ }
+ live.socket.close();
  // Each rejected handshake spends a trusted edge-derived IP budget before
  // cookie/schema checks. Forging a new forwarded IP must not buy31attempts.
  let accepted=0,rejected=0,transportDenied=0;

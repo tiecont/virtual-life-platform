@@ -7,6 +7,10 @@ export async function migrationNames(directory = resolve(__dirname, 'migrations'
   if (names.length === 0) throw new Error('No migration files found');
   return names;
 }
+export async function migrationManifest(directory = resolve(__dirname, 'migrations')):Promise<Readonly<Record<string,string>>> {
+  const names=await migrationNames(directory);
+  return Object.fromEntries(await Promise.all(names.map(async name=>[name,createHash('sha256').update(await readFile(resolve(directory,name),'utf8')).digest('hex')])));
+}
 // Transactional, checksum-verified, additive migrations; never share a legacy journal.
 export async function migrate(pool: Pool, directory = resolve(__dirname, 'migrations')): Promise<void> {
   const client = await pool.connect();

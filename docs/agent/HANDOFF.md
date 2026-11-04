@@ -6,7 +6,15 @@ Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;bran
 
 Node26.9.0/pnpm11.28.5. RetaineddevDB0036/stopped;latestjournal/9privatecounts0. No preview/verificationworker remains. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
 
-## Current work — M21-03 VERIFIED; continue M21-04
+## Current work — M21-04 VERIFIED; continue M21-05
+
+From d29d9bb; ADR0074/DEPLOYMENT-RECOVERY.md/m21-deployment-checks.json. Final root0:11governance/263unit/496integration/allbuilds,439 frozen hashes unchanged. Final12API0 across5readiness/foundation/real SIGTERM-SIGKILL epoch/no-phantom-seat cases;healthunit1/types/lint0. Exact migration journal+real owner readiness;coalesced checkout/query/response bounds,late checkout discarded,read-only server500ms statement/200ms lock deadlines. Actual leftoverSQLwaiter red after client-only timeout retained/fixed. Trusted irreversible HTTP/socket drain and retryable session ACK;main12second failing shutdown deadline. Forced deadline exhaustion NOT_RUN.
+
+Final image virtual-life-platform:m21-deployment ID sha256:d149e0d33a3fc854d2079f1bbe524ea7515604b60e7d828fbe3d49c2ed3900dd;323 current image-source hashes match0. Actual production-mode TLS smoke0:graceful exit0/socket closure,bad candidate config exits1/neverready,API rollback to previous telemetry image(session identity/fresh socket auth),rollforward/browser reload ready,36same migration manifest. Synthetic37manifest image refused before stack start then removed;failure retained. Existing Securecookie/rotation/Origin/IPspoof/private8spans-edge404/502privacy regressions0. Recovered screenshot inspected. This is local API rollback only,no frontend/schema/public/zero-downtime claim.
+
+Final2desktop/mobile browser0 on completed host build:transport loss clears confirmed sprites/seats/disables controls;real reconnect2connections/1entity/1seat. Both interruption screenshots inspected;current facts saved in m21-deployment-visual,tracked historical evidence unchanged. All root/browser/stack/image workers finished;no preview remains. No migration/retained0036/stopped change. All real flags/8Datingapprovalsfalse/B-001/B-002/B-003 remain. Whole plan incomplete.
+
+## Prior slice — M21-03 VERIFIED
 
 From c0019cc; ADR0073/OBSERVABILITY.md/m21-telemetry-checks.json. Actual final root0:11governance/263unit/491integration/allbuilds,437 unchanged frozen hashes. Targeted3unit/5API/types/lint/APIbuild0. Real per-app SDK spans with128active/100records/5monotonic-minute retention, finite metrics, safe Pino logs, server request IDs/ephemeral room HMACs. Optional independent operator token defaults collection OFF; internal JSON/Prometheus endpoints denied at public edge. Native dating excluded. Owner gauges count online excluding grace and one order despite retries; SQL outage503/private operator budget does not disable players.
 
@@ -76,7 +84,7 @@ Failure history is retained in evidence:missing menu/role2reds;outbox test used 
 
 ## Next exact action
 
-M21-04 lowest ready. Read M21/audited app.ts/main.ts/RoomAuthority/identity gateway and tests/integration/foundation.test.ts,room-owner.test.ts/tests/support/room-runtime.ts. Existing readiness checks schema+known authority state but DB query has no explicit wait bound; idle competing owners may look ready. Existing real SIGTERM/SIGKILL tests prove fresh epoch/no phantom seat and interruption. Implement bounded/coalesced readiness and truthful draining, verify actual deployment/rollback with compatible same-migration local images and preserved sessions. No destructive down migration/public deploy. Then M21-05 backup/restore and disk/connections,06 budgets; continue M22/M23/M24 DAG. Rebuild image after backend changes; old m21-local is M21-01, telemetry image is M21-03. HostedCI/PR/branchprotection and real legacy/pilot/public gates remain external.
+M21-05 lowest ready. Read M21 and audit infra/scripts/operations: no backup/restore tooling exists. Implement private encrypted Postgres backup,authenticated empty disposable restore,and actual DB-volume disk/connection aggregate observations. Separate ignored mode600 key,no plaintext dump/logs;authenticate ciphertext before any restore writes;never --clean or restore into nonempty/persistent/legacy targets. Verify actual non-prod restored data/session/migrations,tamper/wrong-key and unsafe-target denial;measure local timings and document RPO/RTO targets separately from guarantees. Retaineddev0036 stays stopped. Then M21-06 budgets,continue M22/M23/M24 per DAG. Public/hostedCI/PR/legacy/rights/adult/operator gates remain external. Rebuild app image after backend changes;current deployed-test image is M21-04,not the older telemetry/local tags.
 
 ## External gates
 

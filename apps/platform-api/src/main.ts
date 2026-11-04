@@ -5,7 +5,7 @@ async function main() {
   const config = readConfig();
   const pool = new Pool({ connectionString: config.DATABASE_URL, max: 10, connectionTimeoutMillis: 2000 });
   pool.on('error', () => console.error('Database pool unavailable'));
-  const { app, identity, social, worlds, rooms, reports, sanctions, travel, invitations, focus, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, progression } = await createApp(config, pool, true);
+  const { app, beginDrain,identity, social, worlds, rooms, reports, sanctions, travel, invitations, focus, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, progression } = await createApp(config, pool, true);
   await app.listen(config.PORT, config.HOST);
   const maintenance = setInterval(() => { void identity.purgeExpired().then(() => social.purgeExpired()).then(() => rooms.maintain()).then(() => reports.maintain()).then(() => sanctions.maintain()).then(() => travel.maintain()).then(() => invitations.maintain()).then(() => focus.maintain()).catch(() => console.error('Platform maintenance unavailable')); }, 300000);
   maintenance.unref();
@@ -17,10 +17,12 @@ async function main() {
   const stop = async () => {
     if (stopping) return;
     stopping = true;
+    beginDrain();
+    const deadline=setTimeout(()=>{console.error('Platform shutdown deadline exceeded');process.exit(1);},12000);
     clearInterval(maintenance);
     clearInterval(serviceMaintenance);
     process.removeListener('SIGHUP', reloadWorlds);
-    try { await app.close(); await pool.end(); } catch { process.exitCode = 1; }
+    try { await app.close(); await pool.end(); } catch { console.error('Platform shutdown failed');process.exit(1); } finally {clearTimeout(deadline);}
   };
   process.once('SIGTERM', () => { void stop(); });
   process.once('SIGINT', () => { void stop(); });

@@ -9,7 +9,7 @@ import { sessionCookieName } from './http';
 import { WindowLimiter } from './limits';
 import { clientAddress } from '../common/proxy';
 type Lease = { token: string; context: IdentityContext; cleanup: () => void; armExpiry: () => void };
-export function createIdentityGateway(http: FastifyInstance, config: Config, identity: IdentityService, now = Date.now) {
+export function createIdentityGateway(http: FastifyInstance, config: Config, identity: IdentityService, now = Date.now,available=()=>true) {
   const limits = new WindowLimiter(now);
   const leases = new WeakMap<Socket, Lease>();
   const sessions = new Map<string, Set<Socket>>();
@@ -20,7 +20,7 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
     cors: { origin: config.WEB_ORIGIN, credentials: true },
     allowRequest: (request, done) => {
       const address=clientAddress(request.socket.remoteAddress,request.headers['x-forwarded-for'],config.TRUSTED_PROXY_IP);
-      const allowed = request.headers.origin === config.WEB_ORIGIN && limits.take('handshake:' + address, 30) && io.engine.clientsCount < 1000;
+      const allowed = available()&&request.headers.origin === config.WEB_ORIGIN && limits.take('handshake:' + address, 30) && io.engine.clientsCount < 1000;
       done(null, allowed);
     },
   });
@@ -30,15 +30,18 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
     socket.emit('session.revoked', { schemaVersion: 1, reason }); socket.disconnect(true);
   }
   async function authorize(socket: Socket): Promise<IdentityContext> {
+    if(!available())throw new IdentityError('WORLD_UNAVAILABLE',503,'Server is stopping');
     const lease = leases.get(socket);
     if (!lease || !socket.connected) throw unauthorized();
     if (!limits.take('commands:' + lease.context.sessionId, 60)) throw new IdentityError('RATE_LIMITED', 429, 'Please wait before trying again');
     const current = await identity.authenticate(lease.token);
+    if(!available())throw new IdentityError('WORLD_UNAVAILABLE',503,'Server is stopping');
     if (current.accountId !== lease.context.accountId || current.sessionId !== lease.context.sessionId) throw unauthorized();
     return current;
   }
   io.use(async (socket, next) => {
     try {
+      if(!available())return next(new Error('WORLD_UNAVAILABLE'));
       const handshake = SessionHandshakeSchema.parse(socket.handshake.auth);
       const header = socket.handshake.headers.cookie ?? '';
       if (header.length > 4096) throw unauthorized();
@@ -48,6 +51,7 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
       if (!parsed.valid || !parsed.value) throw unauthorized();
       identity.verifyCsrf(parsed.value, handshake.csrfToken);
       const context = await identity.authenticate(parsed.value);
+      if(!available())return next(new Error('WORLD_UNAVAILABLE'));
       if (socket.conn.readyState !== 'open') throw unauthorized();
       const current = sessions.get(context.sessionId) ?? new Set<Socket>();
       if (current.size >= 4) return next(new Error('RATE_LIMITED'));
@@ -84,9 +88,9 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
         const context = await authorize(socket);
         ack(SessionCheckAckSchema.parse({ schemaVersion: 1, requestId, ok: true, result: { accountId: context.accountId, kind: context.kind } }));
       } catch (error) {
-        const code = error instanceof IdentityError ? (error.code === 'RATE_LIMITED' ? 'RATE_LIMITED' : 'UNAUTHENTICATED') : 'INTERNAL_ERROR';
+        const code = !available()?'INTERNAL_ERROR':error instanceof IdentityError ? (error.code === 'RATE_LIMITED' ? 'RATE_LIMITED' : 'UNAUTHENTICATED') : 'INTERNAL_ERROR';
         ack(SessionCheckAckSchema.parse({ schemaVersion: 1, requestId, ok: false, error: { code, retryable: code !== 'UNAUTHENTICATED' } }));
-        if (code !== 'RATE_LIMITED') disconnect(socket);
+        if (available()&&code !== 'RATE_LIMITED') disconnect(socket);
       }
     });
   });

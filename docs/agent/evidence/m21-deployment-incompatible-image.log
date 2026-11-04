@@ -1,0 +1,30 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 229B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/virtual-life-platform:m21-telemetry
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/2] FROM docker.io/library/virtual-life-platform:m21-telemetry@sha256:d078f79a67d5ed9238e8ba84e28056b0036e4a41acf6411165bbe2dcae6129a5
+#4 resolve docker.io/library/virtual-life-platform:m21-telemetry@sha256:d078f79a67d5ed9238e8ba84e28056b0036e4a41acf6411165bbe2dcae6129a5 0.0s done
+#4 DONE 0.1s
+
+#5 [2/2] RUN node -e "require('node:fs').writeFileSync('apps/platform-api/dist/db/migrations/9999_local_rollback_probe.sql','SELECT 1;')"
+#5 DONE 0.1s
+
+#6 exporting to image
+#6 exporting layers
+#6 exporting layers 0.2s done
+#6 exporting manifest sha256:65a6cb018f833312ae56139825de90d186a03bf5850c86c758902ced2454de14 0.0s done
+#6 exporting config sha256:5991cd3eb055e4d61f77d68d81095431b916056c37132ca3c55fa974b7ef545f 0.0s done
+#6 exporting attestation manifest sha256:633028092cad7e16bb53582e8999cad5ad47617f0146e3f34a41651c0844c62b 0.0s done
+#6 exporting manifest list sha256:65a9d0ccd1a474340a45ee1deada6120b1de325c366a3fcd79b9520e0bdd23f0 0.0s done
+#6 naming to docker.io/library/virtual-life-platform:m21-incompatible done
+#6 unpacking to docker.io/library/virtual-life-platform:m21-incompatible 0.0s done
+#6 DONE 0.3s
