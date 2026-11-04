@@ -1,5 +1,13 @@
 # Agent progress
 
+## M21-02 — VERIFIED offline CI gates and scoped reports
+
+Fromb4edb6d;ADR0002offlineacceptance/ADR0072/CI.md/m21-ci-checks.json. Replace monolithic15min core+allbrowser workflow with core30min/validated19spec5browsergroups30min(maxparallel2,failfastfalse)/stable always-quality gate. Every spec once/no omissions/duplicates/foreign/traversal;eachspec/deviceownAPI/DB/quotas. Aggregate requires bothcore+browser success;failure/cancel/skip/missing/malformed/extra metadatafail. Read-onlycontents/pull_request/checkoutcredentialsoff/immutable official v4 pins/no productionsecret/deploy. Scoped ci/group/spec/device reports+traces+summaries7days,not wholeartifact/env/TLS/tool/infra/containerimage dirs;synthetictraces private diagnostics,not sanitizedpublicreports.
+
+Actualinitialpolicyimportred(no testbodies),then3governancecases0;actionlint1.7.12SHA256verified/workflow0(externalShellCheck unavailable/NOT_RUN). Actualrootpnpmcheck with explicit-anyprobe exits1atlint,probe removed. Actualgatefailure+skip1/success+success0. Initialprivategroup22browser0 thenfinal22browser0 with batchmetadatafreshness/exactspec/2device validation;bothspecsummariesprocess0/result0/reportValidtrue,4distinctHTMLreports observed.7historicalregeneratedPNGs saved in m21-ci-visual then originalsrestored. Allothergroups coveragevalidated/priorproductevidence only,notnewmatrixrun;no newUI/visualstyleclaim.
+
+Finalstable pnpmcheck0:11governance/260unit/486integration/lint/types/architecture/CI-env-policy-assets/allbuilds;420source/config/test/infra/workflowhashes unchanged. Apps/productruntime unchangedfromb4edb6d;no migration/retainedDB/worldflag/provider/legacy/userremote change. HostedCI/PR/branchprotection/upload NOT_RUN underexplicitownerofflineinstruction;required quality setting remainsownerfuturework. Allrealflags/all8Datingapprovalsfalse/B-001/B-002/B-003closed. Next exact action M21-03audit existing structuredlogs/requestIDs/RoomMetrics/diagnostics/Hospitality ownerports,then protected traces/basicmetrics with privacy/cardinality bounds. Wholeplan incomplete.
+
 ## M21-01 — VERIFIED local environment and TLS staging equivalent
 
 From95fe11c;ADR0071/ENVIRONMENTS.md/m21-env-checks.json. Explicit dev/test/staging/prod matrix;production-mode independent env templates,Node26.9/pnpm11.28.5 app image,nonroot/read-only API/web/private DB,loopback-only Caddy edge. Optional exact trusted IPv4 peer shared by Fastify/Socket.IO;singlevalid forwarded IP only fromthatpeer,defaultuntrusted. Edge overwritesforwarding/stripsForwarded;Origin/CSRF/session/world authority unchanged. No Caddyadmin/accesslogs;errorURI/headers/IP filters. Upper-/25 dynamic network pool separates staticedgeIP. Env/registry credentials/TLS/testartifacts excludedfrombuildcontext.

@@ -59,6 +59,8 @@ pnpm bench:rooms
 
 `check` runs governance, ESLint/layer boundaries, strict types, unit tests, **real PostgreSQL integration tests**, and builds. Root `test` contains governance/unit tests; `test:integration` is separate and included in `check`. Without TEST_DATABASE_URL, the test harness creates a unique Compose project, random loopback port/password and tmpfs database, then cleans up its resources on success/failure. An explicit TEST_DATABASE_URL is accepted only for a loopback database named `virtual_city_test` or `virtual_city_test_*`. Never supply production credentials. Integration tests use isolated schemas, apply migrations repeatedly/concurrently, exercise HTTP/TCP readiness and transactional rollback. Test process kill -9 may leave a uniquely named container; inspect that project before manual cleanup.
 
+The [offline CI contract](docs/operations/CI.md) validates full browser-spec coverage and a fail-closed `quality` aggregate,with scoped per-spec/device reports. `pnpm ci:browser private` runs one actual group after a build. Hosted CI,PR/branch protection and remote artifact uploads have not been run;the owner must configure them when creating the repository.
+
 E2E runs built API/web on local :4300/:3300 with isolated PostgreSQL, covering identity/social/safety, actual room scene, keyboard/mobile controls and synthetic travel/fault recovery. It refuses to reuse existing servers. Screenshots are real local artifacts under ignored `artifacts/`; retained checkpoint copies are in docs/agent/evidence, HTML/traces under ignored playwright-report/test-results. No real legacy integration or public release is inferred.
 
 ## Workspace and integration

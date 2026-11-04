@@ -6,22 +6,24 @@ Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;bran
 
 Node26.9.0/pnpm11.28.5. RetaineddevDB0036/stopped;latestjournal/9privatecounts0. No preview/verificationworker remains. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
 
-## Current work — M21-01 VERIFIED;continueM21-02
+## Current work — M21-02 VERIFIED;continueM21-03
 
-From95fe11c;ADR0071/ENVIRONMENTS.md/m21-env-checks.json. Explicit dev/test/staging/prod matrix;production-mode independent env templates,Node26.9/pnpm11.28.5 app image,nonroot/read-only API/web/private DB,loopback-only Caddy edge. Optional exact trusted IPv4 peer shared by Fastify/Socket.IO;singlevalid forwarded IP only fromthatpeer,defaultuntrusted. Edge overwritesforwarding/stripsForwarded;Origin/CSRF/session/world authority unchanged. No Caddyadmin/accesslogs;errorURI/headers/IP filters. Upper-/25 dynamic network pool separates staticedgeIP. Env/registry credentials/TLS/testartifacts excludedfrombuildcontext.
+Fromb4edb6d;ADR0002offlineacceptance/ADR0072/CI.md/m21-ci-checks.json. Replace monolithic15min core+allbrowser workflow with core30min/validated19spec5browsergroups30min(maxparallel2,failfastfalse)/stable always-quality gate. Every spec once/no omissions/duplicates/foreign/traversal;eachspec/deviceownAPI/DB/quotas. Aggregate requires bothcore+browser success;failure/cancel/skip/missing/malformed/extra metadatafail. Read-onlycontents/pull_request/checkoutcredentialsoff/immutable official v4 pins/no productionsecret/deploy. Scoped ci/group/spec/device reports+traces+summaries7days,not wholeartifact/env/TLS/tool/infra/containerimage dirs;synthetictraces private diagnostics,not sanitizedpublicreports.
 
-Actual localCompose productionmode DB→additive migrator→healthyAPI/web→Caddy2.11.7 TLS smoke0:upstreamsnotpublished,trusted localTLS,Chromium __Host Secure HttpOnly Lax host-onlycookie/reload/rotation(oldcookie401),Origin403,verifiedTLSsocket/sessionACK,31forgedIPattempts29accepted2transportdenials,and stoppedAPI502logs omitprivatepath/cookie. Testprojectvolume/network/containers andgeneratedenv/cert/key cleaned;retaineddev0036/stopped untouched. ActualTLSidentityscreenshot inspected. Actualappimagebuild0/316runtime sourcehashesmatchhost0,imageIDf962630b.../2561842791bytes;build/devdepsretained,notminimizedreleaseimage.
+Actualinitialpolicyimportred(no testbodies),then3governancecases0;actionlint1.7.12SHA256verified/workflow0(externalShellCheck unavailable/NOT_RUN). Actualrootpnpmcheck with explicit-anyprobe exits1atlint,probe removed. Actualgatefailure+skip1/success+success0. Initialprivategroup22browser0 thenfinal22browser0 with batchmetadatafreshness/exactspec/2device validation;bothspecsummariesprocess0/result0/reportValidtrue,4distinctHTMLreports observed.7historicalregeneratedPNGs saved in m21-ci-visual then originalsrestored. Allothergroups coveragevalidated/priorproductevidence only,notnewmatrixrun;no newUI/visualstyleclaim.
 
-Finalstable pnpmcheck0:8governance/260unit/486integration/lint/types/architecture/policy/assets/allbuilds;412source/config/test/infra/workflowhashes unchanged. Proxyunit2pass(aftermissinghelperimportred/no testbodies),envgovernance1pass. Preparationfailuresretained:SHA256againstSHA512manifestinner1butold shellcontinued/versionouter0,correctedfailfastSHA512verified;officialbinary2.11.8Docker tagabsent(firstgenericdiagnosticgap,secondexacterror),selectedverifiedavailable2.11.7;thirdComposeedgeIPcollision afterDB/API/webhealthy,fixeddisjointdynamicpool,noguardrelaxation. Finalsmoke fourthattempt0. Tooling/docs/image retrieval only,no Gitremote/userrepo/public/provider/rights operation.
+Finalstable pnpmcheck0:11governance/260unit/486integration/lint/types/architecture/CI-env-policy-assets/allbuilds;420source/config/test/infra/workflowhashes unchanged. Apps/productruntime unchangedfromb4edb6d;no migration/retainedDB/worldflag/provider/legacy/userremote change. HostedCI/PR/branchprotection/upload NOT_RUN underexplicitownerofflineinstruction;required quality setting remainsownerfuturework. Allrealflags/all8Datingapprovalsfalse/B-001/B-002/B-003closed. Next exact action M21-03audit existing structuredlogs/requestIDs/RoomMetrics/diagnostics/Hospitality ownerports,then protected traces/basicmetrics with privacy/cardinality bounds. Wholeplan incomplete.
 
-No newmigration;disposableCompose appliedbundled0001..0036 before readiness. No actual externalstaging/prod/DNS/publicCA/renewal/backuprestore/rollback/monitoring/operator approval,allrealflags/all8Datingapprovalsfalse. Rateprofile notthroughputbenchmark;initial2.56GBimage needsreleasehardening. Next exact action M21-02 auditworkflow15minbudget/artifact safety andimplementlocallyverifiedCIgates;do notclaimrealGitHubPR/run/branchprotection offline. Wholeplan incomplete.
+No preview/verification worker remains. Rootcheck20674 andbrowser39170bothfinished0;no further polling needed. Appimagevirtual-life-platform:m21-local remains M21-01artifact,not automatically rebuilt by CItoolingchanges. After any futurebackendchanges,rebuildandverifyimage source beforeclaimingnew TLSsmoke. No userrepo remote action authorized.
 
-No preview/verification worker remains. Current app image virtual-life-platform:m21-local retained as an ignored/local Docker artifact only;neverpushit. Newsourcework may now proceed after final412hashstablecheck. No userrepo remote operation authorized.
 
 
 
 
 ## Latest verified slices
+
+M21-01 commitb4edb6d:stable root8gov/260unit/486integration/build0/412unchangedhashes;actualproduction-mode localCompose/CaddyTLS/browserSecurecookie/rotation/socket/Origin/IPspoof/502logprivacy/cleanup0,316image-runtimehashesmatch. Imagevirtual-life-platform:m21-local size2561842791bytesnotminimized;retaineddev0036untouched. Caddy2.11.8tagabsent→available2.11.7,IPcollision→disjointdynamicpool,initialhashalgorithm corrected;allfailuresretained. ADR0071/ENVIRONMENTS.md/m21-env-checks.json. Noactualexternalstaging/prod/publicops.
+
 
 M20-06 commit95fe11c:6newadversarialAPI/2desktopmobilebrowser/lint/audit0;16pinnedhashes,runtime unchangedf6e3a69. Nineinvalidproof decisions/HTTPsockettravel/known-stolenhandles/friendsprivacy/sessiongrant/logout/accountworldban/heldread. InitialmissingfixtureSafetykey3fail retained/fixedonlyfixture. Synthetic-only,no realage/identityuniqueness/humanprivacy/publicapproval;07external. DATING-VERIFICATION.md/m20-adversarial-checks.json.
 
@@ -66,7 +68,8 @@ Failure history is retained in evidence:missing menu/role2reds;outbox test used 
 
 ## Next exact action
 
-M21-02 is lowest ready. Read21plan/currentquality.yml and currentroot/browser runtimes/artifact paths. Existingworkflow has15minbudget for pnpmcheck+allbrowser specs and broad artifact uploads;audit beforechanging. Implement locally verifiable lint/type/unit/integration/browser gates and safe artifact archival;actual remote PR/run/branchprotection still needs owner repo setup and mustnotbeclaimed. Preserve no production secrets/fork minimal permissions/no automatic deploy. Continue21-03..06/M22/M23/M24 in DAG;legacy M15/M16/M17actualintegration andM20-07 remainexternalB-001/B-002/B-003.
+M21-03lowestready. Read21plan and audit apps/platform-api/src/rooms/metrics.ts/app.ts/common/request-log.ts/main.ts/currenthealth/logtests/Hospitality owners. ExistingPino hasreqID/redaction;RoomMetrics fixedlabels/histograms/diagnostics areprocesslocal,not an exposedprotected operator endpoint/HTTPtrace/ordergauge. Design one vertical slice for structuredlogs/traces/basicmetrics with requestID/pseudonymousroomID/p95/online/orders/errors,finitecardinality and no private dating/user fields. Preferexistingstack/ADRbefore addingtelemetry dependencies;actualtraces mustnotbe no-op stubs. Keepoperator exportdefaultclosed/private,not publicCaddyroute. Then21-04gracefulshutdown/rollback/health,05backuprestore,06budgets;continueM22/M23/M24perDAG. HostedCI/requiredsettings NOT_RUNunderADR0002;legacyintegration andM20-07 externalgatesremain.
+
 
 
 ## External gates

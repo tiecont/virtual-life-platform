@@ -5,11 +5,13 @@ import { readdir,mkdir,writeFile } from 'node:fs/promises';
 // unrelated loopback scenarios consume real guest/catalog/handshake IP budgets.
 // Explicit filtered invocations keep their requested batch together.
 const filters = process.argv.slice(2);
+const reportPrefix=process.env.BROWSER_REPORT_SCOPE;
+if(reportPrefix&&!/^ci\/[a-z][a-z0-9-]{0,39}\/[a-z][a-z0-9-]{0,79}$/.test(reportPrefix))throw Error('Invalid browser report scope');
 const batches=filters.length?[filters]:(await readdir('tests/e2e')).filter(name=>name.endsWith('.spec.ts')).sort().map(name=>['tests/e2e/'+name]);
 const results=[];
 for (const project of ['desktop', 'mobile']) {
  for(const [index,batch] of batches.entries()){
-  const scope=filters.length?project:`${project}/${batch[0].split('/').at(-1).replace('.spec.ts','')}`;
+  const baseScope=filters.length?project:`${project}/${batch[0].split('/').at(-1).replace('.spec.ts','')}`,scope=reportPrefix?reportPrefix+'/'+baseScope:baseScope;
   const code = await new Promise((resolve, reject) => {
     const child = spawn(process.execPath, ['scripts/with-test-db.mjs', 'pnpm', 'exec', 'playwright', 'test', '--project', project, '--output', `test-results/${scope}`, ...batch], {
       stdio: 'inherit', env: { ...process.env, BROWSER_LIBRARY_WORLD:batch.some(value=>value.endsWith('/library.spec.ts'))?'1':'0', BROWSER_RESTAURANT_WORLD:batch.some(value=>value.endsWith('/restaurant.spec.ts'))?'1':'0', BROWSER_LOUNGE_WORLD:batch.some(value=>value.endsWith('/lounge.spec.ts'))?'1':'0',BROWSER_DATING_PROFILE:batch.some(value=>value.endsWith('/dating-profile.spec.ts')||value.endsWith('/dating-continuation.spec.ts'))?'1':'0', PLAYWRIGHT_HTML_OUTPUT_DIR: `playwright-report/${scope}` },

@@ -1,0 +1,10 @@
+{
+ "schemaVersion":1,
+ "groups":{
+  "city":["city-activity.spec.ts","city-header.spec.ts","city-map.spec.ts","discovery.spec.ts","foundation.spec.ts","portal-route.spec.ts"],
+  "social":["identity.spec.ts","invitations.spec.ts","safety.spec.ts","social.spec.ts","travel.spec.ts"],
+  "study":["focus.spec.ts","library.spec.ts","scene.spec.ts","wardrobe.spec.ts"],
+  "hospitality":["lounge.spec.ts","restaurant.spec.ts"],
+  "private":["dating-continuation.spec.ts","dating-profile.spec.ts"]
+ }
+}

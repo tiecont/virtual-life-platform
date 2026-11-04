@@ -1,0 +1,98 @@
+{
+  "taskID": "M21-02",
+  "status": "VERIFIED",
+  "source": "Workspace fromb4edb6d;offline CI acceptance per owner instruction/ADR0002,not a hosted PR or required-check setting",
+  "environment": "Local Node26.9.0/pnpm11.28.5/disposable PostgreSQL/Chromium;official actionlint1.7.12 checksum verified into ignored tool cache;reviewed official v4 action commits pinned",
+  "commands": [
+    {
+      "command": "node --test tests/governance/ci.test.mjs",
+      "exitCode": 1,
+      "log": "m21-ci-policy-red.log",
+      "scope": "Missing new ci-policy import;no test bodies executed,not failing assertion proof"
+    },
+    {
+      "command": "pnpm ci:check",
+      "exitCode": 0,
+      "logs": [
+        "m21-ci-contract.log",
+        "m21-ci-contract-final.log",
+        "m21-ci-contract-verified.log"
+      ],
+      "scope": "5groups cover all19actualbrowser specs exactly once;reviewed action pins/minimal permissions/fail-closed aggregate and scoped archival contract"
+    },
+    {
+      "command": "node --test tests/governance/ci.test.mjs",
+      "exitCode": 0,
+      "log": "m21-ci-policy-final.log",
+      "scope": "3cases:success-only core/browser statuses,all-spec coverage rejects omissions/duplicates/foreign/traversal,report metadata rejects stale/foreign/duplicate/incomplete successful devices"
+    },
+    {
+      "command": "artifacts/tools/actionlint-1.7.12/actionlint .github/workflows/quality.yml",
+      "exitCode": 0,
+      "logs": [
+        "m21-ci-actionlint.log",
+        "m21-ci-actionlint-final.log"
+      ],
+      "scope": "Actual local workflow/action/expression checks;external ShellCheck unavailable/not run. Not a GitHub run."
+    },
+    {
+      "command": "pnpm check [with deliberately added root quality-gate-probe.ts explicit-any lint violation]",
+      "exitCode": 1,
+      "log": "m21-ci-negative-check.log",
+      "scope": "Same core command reaches lint and rejects actual synthetic source violation. Probe removed after observation before positive verification;not an actual remote PR."
+    },
+    {
+      "command": "CI_NEEDS_JSON=[core failure/browser skipped] node scripts/ci-gate.mjs",
+      "exitCode": 1,
+      "log": "m21-ci-gate-negative.log"
+    },
+    {
+      "command": "CI_NEEDS_JSON=[core success/browser success] node scripts/ci-gate.mjs",
+      "exitCode": 0,
+      "log": "m21-ci-gate-positive.log"
+    },
+    {
+      "command": "pnpm ci:browser private",
+      "exitCode": 0,
+      "log": "m21-ci-private-browser.log",
+      "scope": "Initial22passed across2specs/2devices,prior to additional report metadata freshness guard"
+    },
+    {
+      "command": "pnpm ci:browser private",
+      "exitCode": 0,
+      "log": "m21-ci-private-browser-final.log",
+      "scope": "Final22passed across2specs/2devices;both spec summaries process0/result0/reportValid:true.4separate HTML report index files observed;per-spec2device batch facts retained."
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "log": "m21-ci-lint-final.log",
+      "scope": "Before report metadata guard;later final source lint below"
+    },
+    {
+      "command": "pnpm exec eslint [new CI scripts/runner/governance test]",
+      "exitCode": 0,
+      "log": "m21-ci-final-source-lint.log"
+    },
+    {
+      "command": "pnpm check [probe removed;stable final source]",
+      "exitCode": 0,
+      "log": "m21-ci-check.log",
+      "scope": "11governance/260unit/486integration/lint/types/architecture/CI+env+datingpolicy/assets/allbuilds"
+    },
+    {
+      "command": "sha256sum420source/config/test/infra/workflow paths beforeafter;cmp",
+      "exitCode": 0,
+      "logs": [
+        "m21-ci-source-before.log",
+        "m21-ci-source-after.log"
+      ],
+      "scope": "All420hashes byte-identical;no mixed-source final check"
+    }
+  ],
+  "artifacts": "m21-ci-report-isolation.json/m21-ci-private-summary.json/per-spec batch JSON prove separate ci/group/spec/device reports.7regenerated historicalPNG files copied to m21-ci-visual then committed originals restored. No new UI/visual-style assertion or all-five-groups run is claimed. Actual tool hash in m21-ci-actionlint-tool.json and official action pin resolution in m21-ci-action-pins.json.",
+  "implementation": "Core root checks with isolated SQL,validated19spec/5group plan,browser groups max-parallel2/fail-fastfalse/30min limits,eachspec/device separate API/DB/quotas. Stable quality job always evaluates core+browser and only both success pass. Missing/cancelled/skipped/malformed/extra statuses fail. Read-only contents/pull_request/checkout credentials not persisted/immutable action pins/no prodsecret or deploy. Scoped seven-day report/trace/summary archives avoid whole artifacts/env/TLS/tool/infra directories;synthetic traces are private diagnostics,not sanitized public reports.",
+  "limits": "Locally VERIFIED underADR0002;stable positive root0/420hashes unchanged. HostedCI/PR/branchprotection/remote artifact upload NOT_RUN by explicit offline scope. Only private browser group executed in this slice;othergroups have prior separate product evidence and validated coverage,not new matrix execution.30min budgets/grouping are unmeasured hosted limits,not timing guarantees. No runtime/schema/worldflag/provider/legacy/public/remote userrepo changes. All external B-001/B-002/B-003 remain.",
+  "migration": "None;application/runtime code unchanged fromb4edb6d. Retained0036/stopped untouched;browser/core SQL harnesses disposable.",
+  "nextExactAction": "M21-03:audit Pino/requestID/redaction/RoomMetrics/currentdiagnostics/Hospitality owners;implement protected structuredtraces/basicmetrics without private dating/user-field/cardinality leakage;then next ready task. No hostedCI/branchprotection claim."
+}

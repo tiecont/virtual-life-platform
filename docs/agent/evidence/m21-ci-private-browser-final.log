@@ -1,0 +1,189 @@
+$ node scripts/run-ci-browser.mjs private
+CI browser group private: dating-continuation.spec.ts
+ Network virtual-city-test-c00ef904_default Creating 
+ Network virtual-city-test-c00ef904_default Creating 
+ Network virtual-city-test-c00ef904_default Created 
+ Network virtual-city-test-c00ef904_default Created 
+ Container virtual-city-test-c00ef904-db-1 Creating 
+ Container virtual-city-test-c00ef904-db-1 Created 
+ Container virtual-city-test-c00ef904-db-1 Starting 
+ Container virtual-city-test-c00ef904-db-1 Started 
+ Container virtual-city-test-c00ef904-db-1 Waiting 
+ Container virtual-city-test-c00ef904-db-1 Healthy 
+[WebServer] (node:221779) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:221793) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:221793) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:221793) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:221778) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:221911) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:221956) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:221969) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:222024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/dating-continuation.spec.ts:19:5 › mutual private choice uses native keyboard and two fresh return choices before another timed date;withdraw ends the kept source and current private round (6.6s)
+  ✓  2 [desktop] › tests/e2e/dating-continuation.spec.ts:23:5 › connection withdrawal defeats a held committed private return reply and original-key replay cannot rejoin (9.8s)
+  ✓  3 [desktop] › tests/e2e/dating-continuation.spec.ts:26:5 › standalone private connection withdrawal remains available after proof loss and the positive page is denied (4.3s)
+  ✓  4 [desktop] › tests/e2e/dating-continuation.spec.ts:30:5 › logout defeats a held private connection read and denied deep links cannot restore aliases or expose source handles through public navigation (4.6s)
+
+  4 passed (30.3s)
+ Container virtual-city-test-c00ef904-db-1 Stopping 
+ Container virtual-city-test-c00ef904-db-1 Stopped 
+ Container virtual-city-test-c00ef904-db-1 Removing 
+ Container virtual-city-test-c00ef904-db-1 Removed 
+ Network virtual-city-test-c00ef904_default Removing 
+ Network virtual-city-test-c00ef904_default Removed 
+ Network virtual-city-test-81d4ca6f_default Creating 
+ Network virtual-city-test-81d4ca6f_default Creating 
+ Network virtual-city-test-81d4ca6f_default Created 
+ Network virtual-city-test-81d4ca6f_default Created 
+ Container virtual-city-test-81d4ca6f-db-1 Creating 
+ Container virtual-city-test-81d4ca6f-db-1 Created 
+ Container virtual-city-test-81d4ca6f-db-1 Starting 
+ Container virtual-city-test-81d4ca6f-db-1 Started 
+ Container virtual-city-test-81d4ca6f-db-1 Waiting 
+ Container virtual-city-test-81d4ca6f-db-1 Healthy 
+[WebServer] (node:223795) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:223809) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:223809) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:223809) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:223794) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:223889) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:223990) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:224004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:224084) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [mobile] › tests/e2e/dating-continuation.spec.ts:19:5 › mutual private choice uses native keyboard and two fresh return choices before another timed date;withdraw ends the kept source and current private round (7.3s)
+  ✓  2 [mobile] › tests/e2e/dating-continuation.spec.ts:23:5 › connection withdrawal defeats a held committed private return reply and original-key replay cannot rejoin (10.2s)
+  ✓  3 [mobile] › tests/e2e/dating-continuation.spec.ts:26:5 › standalone private connection withdrawal remains available after proof loss and the positive page is denied (4.0s)
+  ✓  4 [mobile] › tests/e2e/dating-continuation.spec.ts:30:5 › logout defeats a held private connection read and denied deep links cannot restore aliases or expose source handles through public navigation (4.7s)
+
+  4 passed (31.1s)
+ Container virtual-city-test-81d4ca6f-db-1 Stopping 
+ Container virtual-city-test-81d4ca6f-db-1 Stopped 
+ Container virtual-city-test-81d4ca6f-db-1 Removing 
+ Container virtual-city-test-81d4ca6f-db-1 Removed 
+ Network virtual-city-test-81d4ca6f_default Removing 
+ Network virtual-city-test-81d4ca6f_default Removed 
+CI browser group private: dating-profile.spec.ts
+ Network virtual-city-test-c04b4ccb_default Creating 
+ Network virtual-city-test-c04b4ccb_default Creating 
+ Network virtual-city-test-c04b4ccb_default Created 
+ Network virtual-city-test-c04b4ccb_default Created 
+ Container virtual-city-test-c04b4ccb-db-1 Creating 
+ Container virtual-city-test-c04b4ccb-db-1 Created 
+ Container virtual-city-test-c04b4ccb-db-1 Starting 
+ Container virtual-city-test-c04b4ccb-db-1 Started 
+ Container virtual-city-test-c04b4ccb-db-1 Waiting 
+ Container virtual-city-test-c04b4ccb-db-1 Healthy 
+[WebServer] (node:225881) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:225895) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:225895) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:225895) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:225880) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:225961) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:226081) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:226095) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 7 tests using 1 worker
+
+(node:226150) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/dating-profile.spec.ts:15:5 › private timed conversation uses separate native consent,canned retry,confidential report and private block without global identity disclosure (4.3s)
+  ✓  2 [desktop] › tests/e2e/dating-profile.spec.ts:18:5 › independent private Leave defeats held committed chat reply and retains private reporting without restoring conversation (3.1s)
+  ✓  3 [desktop] › tests/e2e/dating-profile.spec.ts:21:5 › profile withdrawal invalidates held matching reply and suppresses queue controls until the withdrawal is confirmed (888ms)
+  ✓  4 [desktop] › tests/e2e/dating-profile.spec.ts:24:5 › private matching requires two independent native acceptances and Stop ends both logical allocations without entering a Room (2.5s)
+  ✓  5 [desktop] › tests/e2e/dating-profile.spec.ts:27:5 › private matching Stop defeats held committed queue reply and old request replay cannot rejoin (6.4s)
+  ✓  6 [desktop] › tests/e2e/dating-profile.spec.ts:31:5 › private profile requires explicit synthetic eligibility;lost save retry stays encrypted and separate;withdraw works after proof loss (3.8s)
+  ✓  7 [desktop] › tests/e2e/dating-profile.spec.ts:36:5 › independent private withdrawal defeats a held committed save reply and logout clears the former private view (1.3s)
+
+  7 passed (27.4s)
+ Container virtual-city-test-c04b4ccb-db-1 Stopping 
+ Container virtual-city-test-c04b4ccb-db-1 Stopped 
+ Container virtual-city-test-c04b4ccb-db-1 Removing 
+ Container virtual-city-test-c04b4ccb-db-1 Removed 
+ Network virtual-city-test-c04b4ccb_default Removing 
+ Network virtual-city-test-c04b4ccb_default Removed 
+ Network virtual-city-test-ca407697_default Creating 
+ Network virtual-city-test-ca407697_default Creating 
+ Network virtual-city-test-ca407697_default Created 
+ Network virtual-city-test-ca407697_default Created 
+ Container virtual-city-test-ca407697-db-1 Creating 
+ Container virtual-city-test-ca407697-db-1 Created 
+ Container virtual-city-test-ca407697-db-1 Starting 
+ Container virtual-city-test-ca407697-db-1 Started 
+ Container virtual-city-test-ca407697-db-1 Waiting 
+ Container virtual-city-test-ca407697-db-1 Healthy 
+[WebServer] (node:227857) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:227893) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:227893) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:227893) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:227856) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:227965) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:228069) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:228084) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 7 tests using 1 worker
+
+(node:228165) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [mobile] › tests/e2e/dating-profile.spec.ts:15:5 › private timed conversation uses separate native consent,canned retry,confidential report and private block without global identity disclosure (4.5s)
+  ✓  2 [mobile] › tests/e2e/dating-profile.spec.ts:18:5 › independent private Leave defeats held committed chat reply and retains private reporting without restoring conversation (3.2s)
+  ✓  3 [mobile] › tests/e2e/dating-profile.spec.ts:21:5 › profile withdrawal invalidates held matching reply and suppresses queue controls until the withdrawal is confirmed (888ms)
+  ✓  4 [mobile] › tests/e2e/dating-profile.spec.ts:24:5 › private matching requires two independent native acceptances and Stop ends both logical allocations without entering a Room (2.6s)
+  ✓  5 [mobile] › tests/e2e/dating-profile.spec.ts:27:5 › private matching Stop defeats held committed queue reply and old request replay cannot rejoin (6.6s)
+  ✓  6 [mobile] › tests/e2e/dating-profile.spec.ts:31:5 › private profile requires explicit synthetic eligibility;lost save retry stays encrypted and separate;withdraw works after proof loss (4.0s)
+  ✓  7 [mobile] › tests/e2e/dating-profile.spec.ts:36:5 › independent private withdrawal defeats a held committed save reply and logout clears the former private view (1.2s)
+
+  7 passed (28.1s)
+ Container virtual-city-test-ca407697-db-1 Stopping 
+ Container virtual-city-test-ca407697-db-1 Stopped 
+ Container virtual-city-test-ca407697-db-1 Removing 
+ Container virtual-city-test-ca407697-db-1 Removed 
+ Network virtual-city-test-ca407697_default Removing 
+ Network virtual-city-test-ca407697_default Removed 

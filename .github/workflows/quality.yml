@@ -5,11 +5,18 @@ on:
     branches: [main]
 permissions:
   contents: read
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  NEXT_TELEMETRY_DISABLED: '1'
 jobs:
-  quality:
-    name: quality
+  core:
+    name: core-checks
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
+    outputs:
+      groups: ${{ steps.browser-plan.outputs.groups }}
     services:
       postgres:
         image: postgres:17.7-alpine
@@ -23,26 +30,85 @@ jobs:
           --health-interval 2s --health-timeout 3s --health-retries 30
     env:
       TEST_DATABASE_URL: postgresql://virtual_city_test:ci_ephemeral_only@127.0.0.1:5432/virtual_city_test
-      NEXT_TELEMETRY_DISABLED: '1'
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
           version: 11.28.5
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm check
-      - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm test:e2e
-      - uses: actions/upload-artifact@v4
-        if: always()
+      - id: browser-plan
+        run: node scripts/ci-browser-plan.mjs >> "$GITHUB_OUTPUT"
+      - name: Lint,types,unit,integration and builds
+        run: |
+          mkdir -p artifacts/ci/core
+          set -o pipefail
+          pnpm check 2>&1 | tee artifacts/ci/core/check.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: ${{ always() }}
         with:
-          name: quality-evidence
-          path: |
-            playwright-report/
-            test-results/
-            artifacts/
+          name: core-evidence
+          path: artifacts/ci/core/
+          if-no-files-found: warn
           retention-days: 7
+
+  browser:
+    name: browser (${{ matrix.group }})
+    needs: core
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        group: ${{ fromJSON(needs.core.outputs.groups || '["invalid-plan"]') }}
+    env:
+      CI_BROWSER_GROUP: ${{ matrix.group }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 11.28.5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium
+      # Each spec/device still gets a disposable DB/API;never combine IP budgets.
+      - run: pnpm ci:browser "$CI_BROWSER_GROUP"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: ${{ always() }}
+        with:
+          name: browser-${{ matrix.group }}-evidence
+          path: |
+            playwright-report/ci/${{ matrix.group }}/
+            test-results/ci/${{ matrix.group }}/
+            artifacts/ci/${{ matrix.group }}/
+          if-no-files-found: warn
+          retention-days: 7
+
+  quality:
+    name: quality
+    needs: [core, browser]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      CI_NEEDS_JSON: ${{ toJSON(needs) }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+      - run: node scripts/ci-gate.mjs
