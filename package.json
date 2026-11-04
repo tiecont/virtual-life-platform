@@ -26,7 +26,8 @@
     "architecture:check": "node scripts/verify-architecture.mjs",
     "assets:avatars": "node --import tsx scripts/build-avatar-assets.ts",
     "assets:check": "node --import tsx scripts/build-avatar-assets.ts --check",
-    "bench:rooms": "pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/rooms-baseline.ts"
+    "bench:rooms": "pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/rooms-baseline.ts",
+    "bench:restaurant": "pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/restaurant-baseline.ts"
   },
   "devDependencies": {
     "@eslint/js": "9.39.1",

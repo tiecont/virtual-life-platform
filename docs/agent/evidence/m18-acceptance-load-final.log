@@ -1,0 +1,135 @@
+$ pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/restaurant-baseline.ts
+$ pnpm --filter './packages/*' -r build
+Scope: 7 of 10 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+packages/library-world build$ tsc -p tsconfig.json
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/restaurant-world build: Done
+packages/library-world build: Done
+packages/pixi-scene build: Done
+ Network virtual-city-test-4f81dc3c_default Creating 
+ Network virtual-city-test-4f81dc3c_default Creating 
+ Network virtual-city-test-4f81dc3c_default Created 
+ Network virtual-city-test-4f81dc3c_default Created 
+ Container virtual-city-test-4f81dc3c-db-1 Creating 
+ Container virtual-city-test-4f81dc3c-db-1 Created 
+ Container virtual-city-test-4f81dc3c-db-1 Starting 
+ Container virtual-city-test-4f81dc3c-db-1 Started 
+ Container virtual-city-test-4f81dc3c-db-1 Waiting 
+ Container virtual-city-test-4f81dc3c-db-1 Healthy 
+(node:456378) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:456471) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{
+  "recordedAt": "2026-11-04T04:25:09.313Z",
+  "command": "pnpm bench:restaurant",
+  "profile": "16 actual loopback HTTP actors,four sequential waves of16 concurrent whole-table hold attempts,isolated child API/SQL test fixture,no browser or sockets",
+  "hardware": {
+    "platform": "linux",
+    "release": "7.2.9-2-cachyos",
+    "node": "v26.9.0",
+    "cpuModel": "AMD Ryzen 7 4800HS with Radeon Graphics",
+    "logicalCpus": 16,
+    "availableParallelism": 16,
+    "hostMemoryBytes": 24573251584,
+    "cgroupCpuMax": "unavailable",
+    "cgroupMemoryMax": "unavailable"
+  },
+  "load": {
+    "uniqueAccounts": 16,
+    "waves": 4,
+    "concurrentAttemptsPerWave": 16,
+    "holdAttempts": 64,
+    "measuredRequests": 76,
+    "elapsedMs": 1318.2526650000002,
+    "expectedConflicts": 60,
+    "unexpectedErrors": 0,
+    "outcomes": [
+      {
+        "wave": 1,
+        "held": 1,
+        "conflicts": 15,
+        "confirmed": 1,
+        "cancelled": 1
+      },
+      {
+        "wave": 2,
+        "held": 1,
+        "conflicts": 15,
+        "confirmed": 1,
+        "cancelled": 1
+      },
+      {
+        "wave": 3,
+        "held": 1,
+        "conflicts": 15,
+        "confirmed": 1,
+        "cancelled": 1
+      },
+      {
+        "wave": 4,
+        "held": 1,
+        "conflicts": 15,
+        "confirmed": 1,
+        "cancelled": 1
+      }
+    ]
+  },
+  "latencyMs": {
+    "all": {
+      "samples": 76,
+      "p50": 114.21269800000005,
+      "p95": 320.520262,
+      "max": 352.2769979999998
+    },
+    "holdsIncludingExpectedConflicts": {
+      "samples": 64,
+      "p50": 132.66491799999994,
+      "p95": 320.520262,
+      "max": 352.2769979999998
+    }
+  },
+  "serverProcess": {
+    "cpuMs": 737.804,
+    "cpuPercentOfOneCore": 55.96832986489733,
+    "rssBefore": 166944768,
+    "rssPeakSampled": 189620224,
+    "rssAfter": 189620224,
+    "heapUsedPeakSampled": 56316000,
+    "sampleIntervalMs": 100,
+    "samples": 19
+  },
+  "network": {
+    "measuredResponseBodyBytes": 17784,
+    "responseBodyBytesPerSecond": 13490.585281691805,
+    "scope": "JSON response bodies only;headers/TLS/socket/bootstrap excluded"
+  },
+  "invariants": {
+    "singleAllocationEveryWave": true,
+    "confirmCancelAndOldKeyRetry": true,
+    "activeAllocationsAfterEachWave": 0,
+    "roomsAllocated": 0,
+    "membershipsAllocated": 0
+  },
+  "limits": [
+    "Short local contention baseline,not100/1000CCU/ramp/soak or production capacity",
+    "No TLS/WAN/browser/rendering or service fanout measurement",
+    "Child API CPU excludes load generator/DB,which still share the host;RSS peak is sampled",
+    "Trusted SQL schedule fixture;organizer permissions are not benchmarked",
+    "No request budgets raised;unique loopback guest/source identities;expected409conflicts are reported separately",
+    "Local independent Restaurant flag only;no legacy or public world activated"
+  ]
+}
+ Container virtual-city-test-4f81dc3c-db-1 Stopping 
+ Container virtual-city-test-4f81dc3c-db-1 Stopped 
+ Container virtual-city-test-4f81dc3c-db-1 Removing 
+ Container virtual-city-test-4f81dc3c-db-1 Removed 
+ Network virtual-city-test-4f81dc3c_default Removing 
+ Network virtual-city-test-4f81dc3c_default Removed 

@@ -1,0 +1,41 @@
+$ pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/restaurant-baseline.ts
+$ pnpm --filter './packages/*' -r build
+Scope: 7 of 10 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+packages/library-world build$ tsc -p tsconfig.json
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/library-world build: Done
+packages/restaurant-world build: Done
+packages/pixi-scene build: Done
+ Network virtual-city-test-3c7d5bd1_default Creating 
+ Network virtual-city-test-3c7d5bd1_default Creating 
+ Network virtual-city-test-3c7d5bd1_default Created 
+ Network virtual-city-test-3c7d5bd1_default Created 
+ Container virtual-city-test-3c7d5bd1-db-1 Creating 
+ Container virtual-city-test-3c7d5bd1-db-1 Created 
+ Container virtual-city-test-3c7d5bd1-db-1 Starting 
+ Container virtual-city-test-3c7d5bd1-db-1 Started 
+ Container virtual-city-test-3c7d5bd1-db-1 Waiting 
+ Container virtual-city-test-3c7d5bd1-db-1 Healthy 
+(node:451554) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:451640) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Expected values to be strictly equal:
+
+422 !== 201
+
+node exited 1
+ Container virtual-city-test-3c7d5bd1-db-1 Stopping 
+ Container virtual-city-test-3c7d5bd1-db-1 Stopped 
+ Container virtual-city-test-3c7d5bd1-db-1 Removing 
+ Container virtual-city-test-3c7d5bd1-db-1 Removed 
+ Network virtual-city-test-3c7d5bd1_default Removing 
+ Network virtual-city-test-3c7d5bd1_default Removed 
+[ELIFECYCLE] Command failed with exit code 1.
