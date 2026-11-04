@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-03T04:54:47Z",
+  "updatedAt": "2026-11-04T02:39:33Z",
   "tasks": {
     "AUD-01": {
       "status": "VERIFIED",
@@ -256,6 +256,7 @@
     "M17-03": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m17-events-checks.json; docs/adr/0053-silent-library-study-events.md", "verification": "Fullcheck0(7gov/211unit/323integration/builds),browser12+SDKscene24;actualowner scheduling/synthetic scoped authority/9way2placeRSVP/withdraw/privatefilter/noadmission/12quietdenials,realHTTPsamekeyretry/30sTTL/outage/logout;no migration" },
     "M17-04": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m17-sharing-checks.json; docs/adr/0054-visit-scoped-study-consent-and-public-room-offers.md", "verification": "Fullcheck0(7gov/211unit/333integration/builds),finalLibrary17/boundary+APIbuild/lint0;browser16+40regression executions incl4repeats;pervisitconsent/phaseonly/withdrawalraces/privacy/block/session/restart/expiry/erasure andactualacceptedroomtravel;no migration" },
     "M17-05": { "status": "BLOCKED_EXTERNAL", "evidence": "docs/agent/evidence/m17-journey-checks.json; docs/architecture/LIBRARY-VERIFICATION.md; B-001/M15-02..06", "verification": "LocaltargetAPI1pass17filteredskips/browser20pass/lint0;canonicalLibrarycompletion/history/actualSDKtravel/LibraryWSrecovery/reportblock/mobile verified locally;actualDeadline return notimplemented/verified" },
-    "M18-01": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m18-scene-checks.json; docs/adr/0055-original-restaurant-layout-and-service-perspectives.md; docs/architecture/RESTAURANT.md", "verification": "Fullcheck0(7governance,213unit,337integration/builds),4Restaurant+24Cafe+4Library browser0;original8reachable chairs/10places/2tables/nativecontrols/currentidentity/flag+prodguards/no role grant;no migration" }
+    "M18-01": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m18-scene-checks.json; docs/adr/0055-original-restaurant-layout-and-service-perspectives.md; docs/architecture/RESTAURANT.md", "verification": "Fullcheck0(7governance,213unit,337integration/builds),4Restaurant+24Cafe+4Library browser0;original8reachable chairs/10places/2tables/nativecontrols/currentidentity/flag+prodguards/no role grant;no migration" },
+    "M18-02": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m18-booking-checks.json; docs/adr/0056-restaurant-bookings-and-voluntary-room-bound-parties.md", "verification": "Fullcheck0(7gov/213unit/345integration/builds),final11Restaurant incllateheaderlockproof;8Restaurant+4selectedLibrary browser0;actual tablehold/TTL/confirm/privatebookings/roomcheckin/individualpartyconsent/revisionwithdrawal/races/block/expiry/restart/export/cascade;0026local0;no realflag" }
   }
 }

@@ -1,0 +1,5 @@
+$ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+(node:185361) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+City migration failed; check configuration, database availability and migration integrity.
+[ELIFECYCLE] Command failed with exit code 1.

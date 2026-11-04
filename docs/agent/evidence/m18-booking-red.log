@@ -1,0 +1,45 @@
+ Network virtual-city-test-18ec8d4a_default Creating 
+ Network virtual-city-test-18ec8d4a_default Creating 
+ Network virtual-city-test-18ec8d4a_default Created 
+ Network virtual-city-test-18ec8d4a_default Created 
+ Container virtual-city-test-18ec8d4a-db-1 Creating 
+ Container virtual-city-test-18ec8d4a-db-1 Created 
+ Container virtual-city-test-18ec8d4a-db-1 Starting 
+ Container virtual-city-test-18ec8d4a-db-1 Started 
+ Container virtual-city-test-18ec8d4a-db-1 Waiting 
+ Container virtual-city-test-18ec8d4a-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/restaurant.test.ts (3 tests | 1 failed | 2 skipped) 716ms
+   × dining party observations require authentication 25ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/restaurant.test.ts > dining party observations require authentication
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/integration/restaurant.test.ts:23:238
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 skipped (3)
+   Start at  09:05:54
+   Duration  2.06s (transform 491ms, setup 0ms, import 1.20s, tests 716ms, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-18ec8d4a-db-1 Stopping 
+ Container virtual-city-test-18ec8d4a-db-1 Stopped 
+ Container virtual-city-test-18ec8d4a-db-1 Removing 
+ Container virtual-city-test-18ec8d4a-db-1 Removed 
+ Network virtual-city-test-18ec8d4a_default Removing 
+ Network virtual-city-test-18ec8d4a_default Removed 

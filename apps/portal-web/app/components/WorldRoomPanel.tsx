@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState,type ReactNode } from 'react';
 import { io, type Socket } from 'socket.io-client';
-import { MeSchema, RoomAckSchema, WorldCatalogSchema, type Me, type RoomSnapshot,type SceneManifest } from '@virtual-city/contracts';
+import { MeSchema, RoomAckSchema, WorldCatalogSchema, type Me, type RoomSnapshot,type SceneManifest,type TravelSource } from '@virtual-city/contracts';
 import { RoomRecovery, type RoomRecoveryView } from '@virtual-city/world-sdk';
 import { sandboxScene } from '@virtual-city/pixi-scene';
 import type { createCafeScene } from '@virtual-city/pixi-scene';
@@ -29,7 +29,7 @@ export interface RoomExperience {
  destinations:{label:string;x:number;y:number}[];areas?:readonly {key:string;title:string;description:string;seatIds:readonly string[]}[];areaLabel?:string;areaHeading?:string;areaDescription?:string;provenance?:string;focus:boolean;wardrobe:boolean;events?:boolean;
 }
 const sandboxExperience:RoomExperience={slug:'sdk-sandbox',worldVersion:'1.0.0',scene:sandboxScene,title:'Local Test Cafe',eyebrow:'SDK Sandbox',badge:'LOCAL TEST WORLD',noun:'cafe',theme:'cafe',sceneLabel:'Cafe floor plan. Two shared tables, eight seats, an entrance and a counter. Movement and seat controls follow below.',caption:'WINDOW & GARDEN TABLES',destinations:[{label:'Entrance',x:10,y:11},{label:'Window aisle',x:2,y:4},{label:'Garden aisle',x:11,y:4},{label:'Counter front',x:15,y:9}],focus:true,wardrobe:true};
-export default function WorldRoomPanel({ socketOrigin,experience=sandboxExperience,children }: { socketOrigin: string;experience?:RoomExperience;children?:ReactNode }) {
+export default function WorldRoomPanel({ socketOrigin,experience=sandboxExperience,children }: { socketOrigin: string;experience?:RoomExperience;children?:ReactNode|((context:{me:Me|null;source:TravelSource|null})=>ReactNode) }) {
   const manifest=experience.scene;
   const [me, setMe] = useState<Me | null>(null); const [available, setAvailable] = useState(false); const [loading, setLoading] = useState(true);
   const [view, setView] = useState(idle); const [message, setMessage] = useState(''); const [busy, setBusy] = useState(false);
@@ -190,7 +190,7 @@ export default function WorldRoomPanel({ socketOrigin,experience=sandboxExperien
       <div className="cafe-scene" ref={host} role="img" aria-busy={sceneState === 'loading'} aria-label={experience.sceneLabel}/>
       <div className="cafe-scene-caption"><span>{experience.caption}</span><span>{sceneState === 'loading' ? 'Loading scene...' : sceneState === 'failed' ? 'Scene unavailable. Seat controls remain available.' : 'Original starter art'}</span></div>
       {experience.areas&&<section className="room-areas" aria-label={experience.areaLabel??'Library desk areas'}><h2>{experience.areaHeading??'A quiet place to read'}</h2><p>{experience.areaDescription??'Both desk areas share the same quiet room. No audio, book files or automatic social sharing.'}</p>{experience.areas.map(area=><div key={area.key}><h3>{area.title}</h3><p>{area.description}</p></div>)}<a href={experience.provenance??'/assets/library/provenance.json'}>Original {experience.noun} art provenance</a></section>}
-      {children}
+      {typeof children==='function'?children({me,source:active&&view.snapshot?{epoch:view.snapshot.epoch,roomId:view.snapshot.roomId,membershipId:view.snapshot.membershipId}:null}):children}
       <section aria-label="Walk around"><h2 id="cafe-action-title" tabIndex={-1}>Walk around</h2><p className="cafe-note">Choose an open floor tile, or use a destination below. Tables and walls are solid.</p><div className="cafe-seat-grid">{experience.destinations.map(point => <button key={point.label} disabled={!active || busy || walking || !!view.snapshot?.self.seatId} onClick={() => moveRef.current({ x: point.x, y: point.y })}>Walk to {point.label.toLowerCase()}</button>)}</div></section>
       <section className="cafe-seats" aria-labelledby="cafe-seat-title"><div className="cafe-section-heading"><h2 id="cafe-seat-title">Choose a seat</h2>{view.snapshot?.self.seatId && <button disabled={busy} onClick={() => void mutate('seat.release', view.snapshot!.self.seatId!)}>Stand up</button>}</div>
         <div className="cafe-seat-grid">{manifest.seats.map(point => {

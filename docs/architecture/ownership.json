@@ -1,6 +1,8 @@
 {
   "schemaVersion": 1,
   "tables": {
+    "engine_reservation_members": "engine.reservations",
+    "engine_reservation_consent": "engine.reservations",
     "platform_metadata": "platform.foundation",
     "city_schema_migrations": "platform.foundation",
     "identity_accounts": "platform.identity",

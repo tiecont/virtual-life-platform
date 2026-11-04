@@ -1,0 +1,45 @@
+ Network virtual-city-test-2ca78a36_default Creating 
+ Network virtual-city-test-2ca78a36_default Creating 
+ Network virtual-city-test-2ca78a36_default Created 
+ Network virtual-city-test-2ca78a36_default Created 
+ Container virtual-city-test-2ca78a36-db-1 Creating 
+ Container virtual-city-test-2ca78a36-db-1 Created 
+ Container virtual-city-test-2ca78a36-db-1 Starting 
+ Container virtual-city-test-2ca78a36-db-1 Started 
+ Container virtual-city-test-2ca78a36-db-1 Waiting 
+ Container virtual-city-test-2ca78a36-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/restaurant.test.ts (7 tests | 1 failed) 3220ms
+   × each same-room diner explicitly joins;two peers race the final party place and retries cannot bypass block withdrawal 417ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/restaurant.test.ts > each same-room diner explicitly joins;two peers race the final party place and retries cannot bypass block withdrawal
+AssertionError: expected 422 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 422
+
+ ❯ tests/integration/restaurant.test.ts:63:143
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  09:12:47
+   Duration  4.89s (transform 658ms, setup 0ms, import 1.48s, tests 3.22s, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-2ca78a36-db-1 Stopping 
+ Container virtual-city-test-2ca78a36-db-1 Stopped 
+ Container virtual-city-test-2ca78a36-db-1 Removing 
+ Container virtual-city-test-2ca78a36-db-1 Removed 
+ Network virtual-city-test-2ca78a36_default Removing 
+ Network virtual-city-test-2ca78a36_default Removed 

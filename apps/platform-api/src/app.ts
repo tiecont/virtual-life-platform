@@ -40,6 +40,7 @@ import { EventService, type EventOrganizerPort } from './events/service';
 import { registerEvents } from './events/http';
 import { ReservationService } from './events/reservations';
 import { registerReservations } from './events/reservations-http';
+import { ReservationParties } from './events/parties';
 import { EventPermissions } from './events/permissions';
 import { EventInvitationService } from './events/invitations';
 import { ProgressionService } from './progression/service';
@@ -102,6 +103,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const eventPermissions = new EventPermissions(reports, options.now);
   const events = new EventService(db, identity, social, worlds.registry, { permits: async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account, world) && await new SanctionPolicy(transaction, options.now).permits(account, world) }, options.events?.organizers ?? eventPermissions, options.now, eventPermissions);
   const reservations = new ReservationService(db, identity, social, rooms, events, options.now); events.attachReservations(reservations);
+  const reservationParties=new ReservationParties(db,identity,social,rooms,events,options.now);
   const eventInvitations = new EventInvitationService(db, identity, invitations, events, options.now); events.attachInvitations(eventInvitations);
   const study=new LibraryStudyService(identity,rooms,events,focus,options.now);
   const unsubscribeStudyContact=social.onContactWithdrawn(async(_transaction,a,b)=>{study.revoke(a);study.revoke(b);});
@@ -132,7 +134,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerHospitality(http, config, identity, hospitality, options.now);
   registerEvents(http, config, identity, events, eventInvitations, options.now);
   identity.registerExportOwner('eventInvitations', (id, transaction) => eventInvitations.exportAccount(id, transaction));
-  registerReservations(http, config, identity, reservations, options.now);
+  registerReservations(http, config, identity, reservations, options.now,reservationParties);
   identity.registerExportOwner('reservations', (id, transaction) => reservations.exportAccount(id, transaction));
   identity.registerExportOwner('events', (id, transaction) => events.exportAccount(id, transaction));
   identity.registerExportOwner('hospitality', (id, transaction) => hospitality.exportAccount(id, transaction));

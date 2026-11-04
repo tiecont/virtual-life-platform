@@ -1,0 +1,94 @@
+ Network virtual-city-test-f93b33a3_default Creating 
+ Network virtual-city-test-f93b33a3_default Creating 
+ Network virtual-city-test-f93b33a3_default Created 
+ Network virtual-city-test-f93b33a3_default Created 
+ Container virtual-city-test-f93b33a3-db-1 Creating 
+ Container virtual-city-test-f93b33a3-db-1 Created 
+ Container virtual-city-test-f93b33a3-db-1 Starting 
+ Container virtual-city-test-f93b33a3-db-1 Started 
+ Container virtual-city-test-f93b33a3-db-1 Waiting 
+ Container virtual-city-test-f93b33a3-db-1 Healthy 
+[WebServer] (node:193200) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:193250) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:193250) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:193250) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:193199) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:193314) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:193354) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:193386) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:193454) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/restaurant.spec.ts:10:5 › original Restaurant tables,native chair controls and perspectives preserve actual identity without granting a service role (2.6s)
+  ✓  2 [desktop] › tests/e2e/restaurant.spec.ts:20:5 › asset failure preserves native dining controls and unavailable shift reads never fabricate permission (1.4s)
+  ✘  3 [desktop] › tests/e2e/restaurant.spec.ts:30:5 › actual virtual booking uses an exact-key interrupted retry and two diners voluntarily check into one current-room party (10.1s)
+(node:194212) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  4 [desktop] › tests/e2e/restaurant.spec.ts:42:5 › stop remains available during a committed pending party response and late replies cannot restore consent (2.4s)
+
+
+  1) [desktop] › tests/e2e/restaurant.spec.ts:30:5 › actual virtual booking uses an exact-key interrupted retry and two diners voluntarily check into one current-room party 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('region', { name: 'Virtual table reservations' }).getByRole('article', { name: 'Your booking: Garden dining' })
+    Expected substring: "Booking state: CANCELLED"
+    Received string:    "Garden dining · 2 placesBooking state: CHECKED_INHold deadline: 04/11/2026, 9:33:28 GMT+7 · Asia/Ho_Chi_MinhCancel virtual bookingShare party with visitors in this room"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('region', { name: 'Virtual table reservations' }).getByRole('article', { name: 'Your booking: Garden dining' }) with timeout 5000ms
+      - waiting for getByRole('region', { name: 'Virtual table reservations' }).getByRole('article', { name: 'Your booking: Garden dining' })
+        13 × locator resolved to <article aria-label="Your booking: Garden dining">…</article>
+           - unexpected value "Garden dining · 2 placesBooking state: CHECKED_INHold deadline: 04/11/2026, 9:33:28 GMT+7 · Asia/Ho_Chi_MinhCancel virtual bookingShare party with visitors in this room"
+
+
+      37 |   const a=(await (await context.request.get('/v1/me/room')).json()).snapshot,b=(await (await peer.request.get('/v1/me/room')).json()).snapshot;expect(a.roomId).toBe(b.roomId);expect(a.self.accountId).toBe(owner.profile.id);expect(b.self.accountId).toBe(other.profile.id);expect(a.self.seatId).toBeNull();expect(b.self.seatId).toBeNull();const rows=await fixture.db.query('SELECT id FROM engine_reservations WHERE event_id=$1',[fixture.ids[0]]);expect(rows.rows).toHaveLength(1);expect((await fixture.db.query("SELECT count(*)::int AS n FROM engine_reservation_members WHERE reservation_id=$1 AND phase='IN'",[rows.rows[0].id])).rows[0].n).toBe(2);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(await otherPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+      38 |   const dir='docs/agent/evidence/m18-booking-visual';await mkdir(dir,{recursive:true});await otherPanel.screenshot({path:`${dir}/${info.project.name}.png`});await writeFile(`${dir}/${info.project.name}.json`,JSON.stringify({sameRetryKey:true,oneBooking:true,actualConsentingDiners:2,sameRoom:true,separatelyAdmitted:true,noAutomaticChair:true,privateScheduleHidden:true},null,2));
+    > 39 |   await otherPage.route(/\/v1\/events\?worldSlug=restaurant$/,route=>route.abort('failed'));await otherPanel.getByRole('button',{name:'Refresh dining availability',exact:true}).click();await expect(otherPanel.getByText('Table schedules unavailable or expired. Refresh to check.',{exact:true})).toBeVisible();await otherPanel.getByRole('button',{name:'Stop dining party participation',exact:true}).click();await expect(otherPanel.getByText(/Dining party participation stopped\./)).toBeVisible();expect((await fixture.db.query("SELECT count(*)::int AS n FROM engine_reservation_members WHERE account_id=$1 AND phase='IN'",[other.profile.id])).rows[0].n).toBe(0);await panel.getByRole('button',{name:'Refresh dining availability',exact:true}).click();await expect(panel.getByRole('article',{name:'Open party: Garden dining'})).toContainText('Currently confirmed: 1 / 2');await booking.getByRole('button',{name:'Cancel virtual booking',exact:true}).click();await expect(booking).toContainText('Booking state: CANCELLED');await page.getByRole('button',{name:'Leave restaurant',exact:true}).click();await otherPage.getByRole('button',{name:'Leave restaurant',exact:true}).click();
+         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ^
+      40 |  }finally{await peer.close();await fixture.close();}
+      41 | });
+      42 | test('stop remains available during a committed pending party response and late replies cannot restore consent',async({page,context},info)=>{
+        at /home/tiecont/Projects/virtual-city/tests/e2e/restaurant.spec.ts:39:976
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/restaurant-actual-virtual--85e59-into-one-current-room-party-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/restaurant-actual-virtual--85e59-into-one-current-room-party-desktop/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/desktop/restaurant-actual-virtual--85e59-into-one-current-room-party-desktop/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/desktop/restaurant-actual-virtual--85e59-into-one-current-room-party-desktop/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/desktop/restaurant-actual-virtual--85e59-into-one-current-room-party-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [desktop] › tests/e2e/restaurant.spec.ts:30:5 › actual virtual booking uses an exact-key interrupted retry and two diners voluntarily check into one current-room party 
+  3 passed (22.7s)
+pnpm exited 1
+ Container virtual-city-test-f93b33a3-db-1 Stopping 
+ Container virtual-city-test-f93b33a3-db-1 Stopped 
+ Container virtual-city-test-f93b33a3-db-1 Removing 
+ Container virtual-city-test-f93b33a3-db-1 Removed 
+ Network virtual-city-test-f93b33a3_default Removing 
+ Network virtual-city-test-f93b33a3_default Removed 

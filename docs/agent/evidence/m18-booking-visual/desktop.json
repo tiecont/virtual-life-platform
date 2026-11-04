@@ -1,0 +1,9 @@
+{
+  "sameRetryKey": true,
+  "oneBooking": true,
+  "actualConsentingDiners": 2,
+  "sameRoom": true,
+  "separatelyAdmitted": true,
+  "noAutomaticChair": true,
+  "privateScheduleHidden": true
+}

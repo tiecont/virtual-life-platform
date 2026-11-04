@@ -1,0 +1,80 @@
+ Network virtual-city-test-29357053_default Creating 
+ Network virtual-city-test-29357053_default Creating 
+ Network virtual-city-test-29357053_default Created 
+ Network virtual-city-test-29357053_default Created 
+ Container virtual-city-test-29357053-db-1 Creating 
+ Container virtual-city-test-29357053-db-1 Created 
+ Container virtual-city-test-29357053-db-1 Starting 
+ Container virtual-city-test-29357053-db-1 Started 
+ Container virtual-city-test-29357053-db-1 Waiting 
+ Container virtual-city-test-29357053-db-1 Healthy 
+[WebServer] (node:185504) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:185536) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:185536) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:185536) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:185503) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:185584) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:185673) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:185688) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:185774) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/restaurant.spec.ts:10:5 › original Restaurant tables,native chair controls and perspectives preserve actual identity without granting a service role (2.6s)
+  ✓  2 [desktop] › tests/e2e/restaurant.spec.ts:20:5 › asset failure preserves native dining controls and unavailable shift reads never fabricate permission (1.3s)
+  ✘  3 [desktop] › tests/e2e/restaurant.spec.ts:30:5 › actual virtual booking uses an exact-key interrupted retry and two diners voluntarily check into one current-room party (1.0m)
+
+
+  1) [desktop] › tests/e2e/restaurant.spec.ts:30:5 › actual virtual booking uses an exact-key interrupted retry and two diners voluntarily check into one current-room party 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.selectOption: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for getByRole('region', { name: 'Virtual table reservations' }).getByRole('article', { name: 'Table slot: Garden dinner fixture' }).getByLabel('Party size', { exact: true })
+
+
+      30 | test('actual virtual booking uses an exact-key interrupted retry and two diners voluntarily check into one current-room party',async({page,context,browser},info)=>{
+      31 |  test.setTimeout(60000);const peer=await browser.newContext({...devices[info.project.name==='mobile'?'iPhone 13':'Desktop Chrome'],baseURL:origin}),owner=await guest(context),other=await guest(peer),fixture=await scheduleFixture(owner.profile.id);
+    > 32 |  try{await page.goto('/worlds/restaurant');const panel=page.getByRole('region',{name:'Virtual table reservations'}),slot=panel.getByRole('article',{name:'Table slot: Garden dinner fixture'});await expect(slot).toBeVisible();await expect(panel).not.toContainText('Private dinner secret');await slot.getByLabel('Party size',{exact:true}).selectOption('2');
+         |                                                                                                                                                                                                                                                                                                                                                 ^
+      33 |   let first=true;const keys:string[]=[];await page.route('**/v1/reservations',async route=>{if(route.request().method()!=='POST')return route.continue();keys.push(route.request().headers()['idempotency-key']);if(first){first=false;const response=await route.fetch();expect(response.status()).toBe(201);await route.abort('failed');}else await route.continue();});await slot.getByRole('button',{name:'Hold virtual table',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.getByRole('button',{name:'Retry last dining change',exact:true})).toBeEnabled();await panel.getByRole('button',{name:'Retry last dining change',exact:true}).click();await expect(panel.getByRole('button',{name:'Retry last dining change',exact:true})).toHaveCount(0);expect(keys).toHaveLength(2);expect(keys[0]).toBe(keys[1]);await page.unroute('**/v1/reservations');
+      34 |   const booking=panel.getByRole('article',{name:'Your booking: Garden dining'});await expect(booking).toContainText('Booking state: HELD');expect((await (await context.request.get('/v1/me/room')).json()).snapshot).toBeNull();await booking.getByRole('button',{name:'Confirm virtual table',exact:true}).click();await expect(booking).toContainText('Booking state: CONFIRMED');await expect(booking.getByRole('button',{name:'Check in my booking',exact:true})).toBeDisabled();
+      35 |   await page.getByRole('button',{name:'Enter restaurant',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');await booking.getByRole('button',{name:'Check in my booking',exact:true}).click();await expect(booking).toContainText('Booking state: CHECKED_IN');await booking.getByRole('button',{name:'Share party with visitors in this room',exact:true}).click();await expect(panel.getByRole('article',{name:'Open party: Garden dining'})).toContainText('Currently confirmed: 1 / 2');
+        at /home/tiecont/Projects/virtual-city/tests/e2e/restaurant.spec.ts:32:337
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/restaurant-actual-virtual--85e59-into-one-current-room-party-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/desktop/restaurant-actual-virtual--85e59-into-one-current-room-party-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/desktop/restaurant-actual-virtual--85e59-into-one-current-room-party-desktop/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/desktop/restaurant-actual-virtual--85e59-into-one-current-room-party-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [desktop] › tests/e2e/restaurant.spec.ts:30:5 › actual virtual booking uses an exact-key interrupted retry and two diners voluntarily check into one current-room party 
+  2 passed (1.2m)
+pnpm exited 1
+ Container virtual-city-test-29357053-db-1 Stopping 
+ Container virtual-city-test-29357053-db-1 Stopped 
+ Container virtual-city-test-29357053-db-1 Removing 
+ Container virtual-city-test-29357053-db-1 Removed 
+ Network virtual-city-test-29357053_default Removing 
+ Network virtual-city-test-29357053_default Removed 

@@ -349,13 +349,14 @@ export class RoomService {
       const projection=this.registry.projectionContext(room.slug);await this.registry.authorizeWorld(credential,room.slug);await this.safety?.assert(actor.accountId,room.slug,room.id);return work(actor,projection.definition,()=>projection.valid()&&!this.#closed&&this.authority.state==='held'&&member.connections.size>0&&[...member.connections.values()].includes(actor.sessionId));
     });
   }
-  reservationCheckIn<T>(credential: string, source: TravelSource, worldSlug: string, work: (valid: () => boolean) => Promise<T>) {
+  reservationCheckIn<T>(credential: string, source: TravelSource, worldSlug: string, work: (valid: () => boolean,visit:(accountId:string,source:TravelSource)=>string[]) => Promise<T>) {
     return this.#run(async () => {
       await this.#sweep(); const actor = await this.identity.authenticate(credential), room = this.#rooms.get(this.#accounts.get(actor.accountId) ?? ''), member = room?.members.get(actor.accountId);
       if (!room || !member || room.slug !== worldSlug || source.epoch !== this.epoch || source.roomId !== room.id || source.membershipId !== member.id || ![...member.connections.values()].includes(actor.sessionId)) throw new DomainError('NOT_IN_ROOM', 409, 'Join the event world before checking in');
       const generation = this.#worldGenerations.get(worldSlug) ?? 0; await this.registry.authorizeWorld(credential, worldSlug); await this.safety?.assert(actor.accountId, worldSlug, room.id);
       const valid = () => !this.#closed && this.authority.state === 'held' && this.#rooms.get(room.id)?.members.get(actor.accountId) === member && [...member.connections.values()].includes(actor.sessionId) && generation === (this.#worldGenerations.get(worldSlug) ?? 0);
-      const result = await work(valid); if (!valid()) throw new DomainError('NOT_IN_ROOM', 409, 'Your visit changed'); return result;
+      const visit=(accountId:string,context:TravelSource)=>{const target=room.members.get(accountId);return context.epoch===this.epoch&&context.roomId===room.id&&target?.id===context.membershipId?[...target.connections.values()]:[];};
+      const result = await work(valid,visit); if (!valid()) throw new DomainError('NOT_IN_ROOM', 409, 'Your visit changed'); return result;
     });
   }
   hospitalityContext<T>(credential: string, source: TravelSource, seated: boolean, work: (actor: WorldActor, context: { worldSlug: string; roomId: string; seatId: string | null; epoch: string; membershipId: string; policy: NonNullable<import('@virtual-city/contracts').WorldDefinition['hospitalityPolicy']> }, valid: () => boolean) => Promise<T>) {
@@ -376,10 +377,11 @@ export class RoomService {
     if (!await this.identity.hasConnectedSession(accountId, [...member.connections.values()])) throw new DomainError('NOT_AVAILABLE', 404, 'This order is unavailable');
     await this.safety?.assert(accountId, room.slug, room.id);
   }
-  async hospitalityAllowed(accountId: string, world: string, room: string) {
+  async activityAllowed(accountId: string, world: string, room: string) {
     try { await this.safety?.assert(accountId, world, room); return true; }
     catch (error) { if (error instanceof DomainError && [403, 404].includes(error.status)) return false; throw error; }
   }
+  hospitalityAllowed(accountId:string,world:string,room:string){return this.activityAllowed(accountId,world,room);}
   hospitalityRecovery<T>(work: (visit: (accountId: string, source: TravelSource) => { state: 'connected' | 'grace' | 'gone' | 'restart'; disconnectedAt: number | null; seated: boolean; sessionIds: string[] }) => Promise<T>) {
     return this.#run(async () => work((accountId, source) => {
       if (source.epoch !== this.epoch) return { state: 'restart', disconnectedAt: null, seated: false, sessionIds: [] };

@@ -16,10 +16,13 @@ const absent = () => new DomainError('NOT_AVAILABLE', 404, 'This reservation is 
 const conflict = () => new DomainError('IDEMPOTENCY_CONFLICT', 409, 'Refresh this reservation before trying again');
 export class ReservationService {
   constructor(private pool: Pick<Pool, 'query'>, private identity: IdentityService, private social: SocialService, private rooms: RoomService, private events: EventService, private now = Date.now) {}
-  async participants(db: Pick<Pool, 'query'>, eventId: string) { return (await db.query<{ account_id: string }>("SELECT account_id FROM engine_reservations WHERE event_id=$1 AND phase IN ('HELD','CONFIRMED','CHECKED_IN') UNION SELECT account_id FROM engine_reservation_waitlist WHERE event_id=$1 AND phase='WAITING'", [eventId])).rows.map(row => row.account_id); }
+  async participants(db: Pick<Pool, 'query'>, eventId: string) { return (await db.query<{ account_id: string }>("SELECT account_id FROM engine_reservations WHERE event_id=$1 AND phase IN ('HELD','CONFIRMED','CHECKED_IN') UNION SELECT account_id FROM engine_reservation_waitlist WHERE event_id=$1 AND phase='WAITING' UNION SELECT m.account_id FROM engine_reservation_members m JOIN engine_reservations r ON r.id=m.reservation_id WHERE r.event_id=$1 AND m.phase='IN'", [eventId])).rows.map(row => row.account_id); }
+  private async closeParties(db:PoolClient,eventId:string,terminal=false){await db.query("UPDATE engine_reservations SET party_open=false WHERE event_id=$1 AND (phase<>'CHECKED_IN' OR $2)",[eventId,terminal]);await db.query("UPDATE engine_reservation_members m SET phase='REVOKED',changed_at=greatest(m.changed_at,$2) FROM engine_reservations r WHERE r.id=m.reservation_id AND r.event_id=$1 AND (r.phase<>'CHECKED_IN' OR $3) AND m.phase='IN'",[eventId,new Date(this.now()),terminal]);}
   async revoke(db: PoolClient, ids: string[], account: string) {
     await db.query("UPDATE engine_reservations SET phase='CANCELLED',changed_at=greatest(changed_at,$3) WHERE event_id=ANY($1::uuid[]) AND account_id=$2 AND phase IN ('HELD','CONFIRMED','CHECKED_IN')", [ids, account, new Date(this.now())]);
     await db.query("UPDATE engine_reservation_waitlist SET phase='CANCELLED' WHERE event_id=ANY($1::uuid[]) AND account_id=$2 AND phase='WAITING'", [ids, account]);
+    await db.query("UPDATE engine_reservation_members SET phase='REVOKED',changed_at=greatest(changed_at,$3) WHERE reservation_id IN(SELECT id FROM engine_reservations WHERE event_id=ANY($1::uuid[])) AND account_id=$2 AND phase='IN'",[ids,account,new Date(this.now())]);
+    for(const id of ids)await this.closeParties(db,id);
   }
   private state(row: Row): ReservationState { return { schemaVersion: 1, phase: row.phase, partySize: row.party_size, schedule: row.schedule, createdAt: row.created_at.getTime(), changedAt: row.changed_at.getTime(), holdExpiresAt: row.hold_expires_at.getTime() }; }
   private view(row: Row) { return ReservationViewSchema.parse({ id: row.id, eventId: row.event_id, worldSlug: row.world_slug, resourceKey: row.resource_key, phase: row.phase, partySize: row.party_size, schedule: row.schedule, createdAt: row.created_at.toISOString(), changedAt: row.changed_at.toISOString(), holdExpiresAt: row.hold_expires_at.toISOString() }); }
@@ -46,6 +49,7 @@ export class ReservationService {
     const rows = (await db.query<Row>("SELECT * FROM engine_reservations WHERE event_id=$1 AND phase IN ('HELD','CONFIRMED','CHECKED_IN') FOR UPDATE", [context.id])).rows;
     for (const row of rows) { const next = advanceReservation(this.state(row), 'observe', now, context.phase); if (next.phase !== row.phase) await db.query('UPDATE engine_reservations SET phase=$2,changed_at=$3 WHERE id=$1', [row.id, next.phase, new Date(next.changedAt)]); }
     await db.query("UPDATE engine_reservation_waitlist SET phase=$2 WHERE event_id=$1 AND phase='WAITING' AND (expires_at<=$3 OR $4)", [context.id, context.phase === 'CANCELLED' ? 'CANCELLED' : 'EXPIRED', new Date(now), ['ENDED', 'CANCELLED'].includes(context.phase)]);
+    await this.closeParties(db,context.id,['ENDED','CANCELLED'].includes(context.phase));
   }
   async place(token: string, requestKey: string, raw: unknown) {
     const input = ReservationPlaceSchema.parse(raw), key = uuid.parse(requestKey), fingerprint = this.identity.fingerprint({ operation: 'reservation.hold', input });
@@ -81,7 +85,7 @@ export class ReservationService {
       const cutoff = operation === 'confirm' && row.phase === 'HELD' ? row.hold_expires_at.getTime() : operation === 'check-in' && row.phase === 'CONFIRMED' ? Date.parse(row.schedule.checkInClosesAt) : null;
       if (cutoff !== null && this.now() >= cutoff) { updated.phase = 'EXPIRED'; updated.changed_at = new Date(cutoff); await db.query("UPDATE engine_reservations SET phase='EXPIRED',changed_at=$2 WHERE id=$1", [row.id, updated.changed_at]); return this.result(updated); }
       if (final.phase !== updated.phase) { updated.phase = final.phase; updated.changed_at = new Date(final.changedAt); await db.query('UPDATE engine_reservations SET phase=$2,changed_at=$3 WHERE id=$1', [row.id, final.phase, updated.changed_at]); }
-      return this.result(updated);
+      await this.closeParties(db,context.id);return this.result(updated);
     }, operation === 'cancel', valid);
     return operation === 'check-in' ? this.rooms.reservationCheckIn(token, TravelSourceSchema.parse(source), reference.world_slug, run) : run();
   }
@@ -117,15 +121,24 @@ export class ReservationService {
   }
   async withdrawContact(db: PoolClient, a: string, b: string) {
     if (!await this.social.isBlocked(a, b, db)) return;
+    // Match observation/stop ordering: headers before member rows. A block may
+    // race the event scheduler, which already owns the event then its header.
+    await db.query("SELECT id FROM engine_reservations WHERE id IN(SELECT id FROM engine_reservations WHERE account_id=ANY($1::uuid[]) AND party_open UNION SELECT reservation_id FROM engine_reservation_members WHERE account_id=ANY($1::uuid[]) AND phase='IN') ORDER BY id FOR UPDATE",[[a,b]]);
+    for(const account of [a,b])await db.query('INSERT INTO engine_reservation_consent VALUES($1,1) ON CONFLICT(account_id) DO UPDATE SET revision=engine_reservation_consent.revision+1',[account]);
+    await db.query("UPDATE engine_reservation_members m SET phase='REVOKED',changed_at=greatest(m.changed_at,$3) FROM engine_reservations r WHERE r.id=m.reservation_id AND m.phase='IN' AND ((r.account_id=$1 AND m.account_id=$2) OR (r.account_id=$2 AND m.account_id=$1) OR (m.account_id=ANY($4::uuid[]) AND EXISTS(SELECT 1 FROM engine_reservation_members other WHERE other.reservation_id=m.reservation_id AND other.account_id=ANY($4::uuid[]) AND other.account_id<>m.account_id AND other.phase='IN')))",[a,b,new Date(this.now()),[a,b]]);
+    await db.query("UPDATE engine_reservations r SET party_open=false WHERE account_id=ANY($1::uuid[]) AND party_open AND NOT EXISTS(SELECT 1 FROM engine_reservation_members m WHERE m.reservation_id=r.id AND m.account_id=r.account_id AND m.phase='IN')",[[a,b]]);
+    await db.query("UPDATE engine_reservation_members m SET phase='REVOKED',changed_at=greatest(m.changed_at,$1) FROM engine_reservations r WHERE r.id=m.reservation_id AND r.account_id=ANY($2::uuid[]) AND NOT r.party_open AND m.phase='IN'",[new Date(this.now()),[a,b]]);
     // Event owner supplies IDs through its port, rather than reading its tables here.
     for (const [owner, participant] of [[a, b], [b, a]]) await this.events.forOrganizer(db, owner, async ids => {
       await db.query("UPDATE engine_reservations SET phase='CANCELLED',changed_at=greatest(changed_at,$3) WHERE event_id=ANY($1::uuid[]) AND account_id=$2 AND phase IN ('HELD','CONFIRMED','CHECKED_IN')", [ids, participant, new Date(this.now())]);
       await db.query("UPDATE engine_reservation_waitlist SET phase='CANCELLED' WHERE event_id=ANY($1::uuid[]) AND account_id=$2 AND phase='WAITING'", [ids, participant]);
+      for(const id of ids)await this.closeParties(db,id);
     });
   }
   async exportAccount(id: string, db: PoolClient) {
+    const members=(await db.query<{reservation_id:string;phase:string;created_at:Date;changed_at:Date}>('SELECT reservation_id,phase,created_at,changed_at FROM engine_reservation_members WHERE account_id=$1 ORDER BY changed_at DESC,reservation_id LIMIT 101',[id])).rows;
     const rows = (await db.query<Row>('SELECT * FROM engine_reservations WHERE account_id=$1 ORDER BY creation_order DESC LIMIT 101', [id])).rows, waiters = (await db.query<Waiter>('SELECT * FROM engine_reservation_waitlist WHERE account_id=$1 ORDER BY queue_order DESC LIMIT 101', [id])).rows;
-    return { schemaVersion: 1, items: rows.slice(0, 100).map(row => {
+    return { schemaVersion: 1, partyMemberships:members.slice(0,100).map(row=>({reservationId:row.reservation_id,consent:row.phase,createdAt:row.created_at.toISOString(),changedAt:row.changed_at.toISOString()})),partyMembershipsTruncated:members.length>100,items: rows.slice(0, 100).map(row => {
       const phase = this.now() >= Date.parse(row.schedule.endsAt) ? 'ENDED' : this.now() >= Date.parse(row.schedule.startsAt) ? 'LIVE' : this.now() >= Date.parse(row.schedule.opensAt) ? 'OPEN' : 'SCHEDULED', next = advanceReservation(this.state(row), 'observe', this.now(), phase);
       return this.view({ ...row, phase: next.phase, changed_at: new Date(next.changedAt) });
     }), truncated: rows.length > 100, waitlist: waiters.slice(0, 100).map(row => this.waitResult(row.phase === 'WAITING' && row.expires_at.getTime() <= this.now() ? { ...row, phase: 'EXPIRED' } : row).entry), waitlistTruncated: waiters.length > 100 };
