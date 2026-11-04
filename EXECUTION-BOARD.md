@@ -107,7 +107,7 @@
 | M17 | M17-05 · Test portal travel, reconnect, quiet moderation and mobile. | BLOCKED_EXTERNAL | m17-journey-checks.json;local1API+20browser pass;actualDeadline return requiresM15-02..06/B-001;SDKnotasubstitute |
 | M18 | M18-01 · Design restaurant scene, dining zones and role-based UI. | VERIFIED | m18-scene-checks.json;213unit/337integration/4Restaurant+24Cafe+4Library browser;8reachable chairs/10places/original art/role presentation without authority/defaultOFF |
 | M18 | M18-02 · Implement virtual table reservation and group check-in. | VERIFIED | m18-booking-checks.json;full213unit/345integration/builds+final11Restaurant;8Restaurant+4Library browser;actual holds/TTL/private history/voluntary room-bound consent/withdrawal revision/rollback/restart/end/block;0026 |
-| M18 | M18-03 · Implement waiter/chef shifts using Hospitality Engine. | TODO | — |
+| M18 | M18-03 · Implement waiter/chef shifts using Hospitality Engine. | VERIFIED | m18-roles-checks.json;stable full214unit/352integration/builds+74target/10Restaurant+4Library browser;policy roles/atomic requeue/revision stop/recovery/rollback/clock/export/erasure;0027 |
 | M18 | M18-04 · Implement multi-course menu and coordination minigame. | TODO | — |
 | M18 | M18-05 · Add dinner invitation, consent, private table policy and report tools. | TODO | — |
 | M18 | M18-06 · E2E/load and visual/accessibility acceptance. | TODO | — |

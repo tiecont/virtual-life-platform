@@ -1,0 +1,45 @@
+ Network virtual-city-test-fd97e970_default Creating 
+ Network virtual-city-test-fd97e970_default Creating 
+ Network virtual-city-test-fd97e970_default Created 
+ Network virtual-city-test-fd97e970_default Created 
+ Container virtual-city-test-fd97e970-db-1 Creating 
+ Container virtual-city-test-fd97e970-db-1 Created 
+ Container virtual-city-test-fd97e970-db-1 Starting 
+ Container virtual-city-test-fd97e970-db-1 Started 
+ Container virtual-city-test-fd97e970-db-1 Waiting 
+ Container virtual-city-test-fd97e970-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/restaurant.test.ts (15 tests | 1 failed) 6229ms
+   × role change receipt failure rolls back role and requeue;stop beats pending start and stale role changes 108ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/restaurant.test.ts > role change receipt failure rolls back role and requeue;stop beats pending start and stale role changes
+AssertionError: expected 503 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 503
+
+ ❯ tests/integration/restaurant.test.ts:115:149
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 14 passed (15)
+   Start at  09:51:36
+   Duration  8.58s (transform 823ms, setup 0ms, import 2.01s, tests 6.23s, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-fd97e970-db-1 Stopping 
+ Container virtual-city-test-fd97e970-db-1 Stopped 
+ Container virtual-city-test-fd97e970-db-1 Removing 
+ Container virtual-city-test-fd97e970-db-1 Removed 
+ Network virtual-city-test-fd97e970_default Removing 
+ Network virtual-city-test-fd97e970_default Removed 

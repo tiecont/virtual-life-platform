@@ -1,0 +1,92 @@
+ Network virtual-city-test-78c493fd_default Creating 
+ Network virtual-city-test-78c493fd_default Creating 
+ Network virtual-city-test-78c493fd_default Created 
+ Network virtual-city-test-78c493fd_default Created 
+ Container virtual-city-test-78c493fd-db-1 Creating 
+ Container virtual-city-test-78c493fd-db-1 Created 
+ Container virtual-city-test-78c493fd-db-1 Starting 
+ Container virtual-city-test-78c493fd-db-1 Started 
+ Container virtual-city-test-78c493fd-db-1 Waiting 
+ Container virtual-city-test-78c493fd-db-1 Healthy 
+[WebServer] (node:269988) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:270051) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:270051) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:270051) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:269987) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:270179) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:270215) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:270246) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 5 tests using 1 worker
+
+(node:270303) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/restaurant.spec.ts:11:5 › original Restaurant tables,native chair controls and perspectives preserve actual identity without granting a service role (2.8s)
+  ✓  2 [desktop] › tests/e2e/restaurant.spec.ts:21:5 › asset failure preserves native dining controls and unavailable shift reads never fabricate permission (1.4s)
+  ✓  3 [desktop] › tests/e2e/restaurant.spec.ts:31:5 › actual virtual booking uses an exact-key interrupted retry and two diners voluntarily check into one current-room party (5.2s)
+  ✓  4 [desktop] › tests/e2e/restaurant.spec.ts:44:5 › stop remains available during a committed pending party response and late replies cannot restore consent (2.5s)
+  ✓  5 [desktop] › tests/e2e/restaurant.spec.ts:53:5 › voluntary Server/Cook shift uses canonical lost-response retry and a pending role change cannot override stop (2.2s)
+
+  5 passed (20.0s)
+ Container virtual-city-test-78c493fd-db-1 Stopping 
+ Container virtual-city-test-78c493fd-db-1 Stopped 
+ Container virtual-city-test-78c493fd-db-1 Removing 
+ Container virtual-city-test-78c493fd-db-1 Removed 
+ Network virtual-city-test-78c493fd_default Removing 
+ Network virtual-city-test-78c493fd_default Removed 
+ Network virtual-city-test-a4880c9e_default Creating 
+ Network virtual-city-test-a4880c9e_default Creating 
+ Network virtual-city-test-a4880c9e_default Created 
+ Network virtual-city-test-a4880c9e_default Created 
+ Container virtual-city-test-a4880c9e-db-1 Creating 
+ Container virtual-city-test-a4880c9e-db-1 Created 
+ Container virtual-city-test-a4880c9e-db-1 Starting 
+ Container virtual-city-test-a4880c9e-db-1 Started 
+ Container virtual-city-test-a4880c9e-db-1 Waiting 
+ Container virtual-city-test-a4880c9e-db-1 Healthy 
+[WebServer] (node:271667) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:271680) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:271680) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:271680) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:271666) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:271749) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:271861) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:271884) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 5 tests using 1 worker
+
+(node:271939) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [mobile] › tests/e2e/restaurant.spec.ts:11:5 › original Restaurant tables,native chair controls and perspectives preserve actual identity without granting a service role (2.6s)
+  ✓  2 [mobile] › tests/e2e/restaurant.spec.ts:21:5 › asset failure preserves native dining controls and unavailable shift reads never fabricate permission (1.6s)
+  ✓  3 [mobile] › tests/e2e/restaurant.spec.ts:31:5 › actual virtual booking uses an exact-key interrupted retry and two diners voluntarily check into one current-room party (5.2s)
+  ✓  4 [mobile] › tests/e2e/restaurant.spec.ts:44:5 › stop remains available during a committed pending party response and late replies cannot restore consent (2.6s)
+  ✓  5 [mobile] › tests/e2e/restaurant.spec.ts:53:5 › voluntary Server/Cook shift uses canonical lost-response retry and a pending role change cannot override stop (2.1s)
+
+  5 passed (19.1s)
+ Container virtual-city-test-a4880c9e-db-1 Stopping 
+ Container virtual-city-test-a4880c9e-db-1 Stopped 
+ Container virtual-city-test-a4880c9e-db-1 Removing 
+ Container virtual-city-test-a4880c9e-db-1 Removed 
+ Network virtual-city-test-a4880c9e_default Removing 
+ Network virtual-city-test-a4880c9e_default Removed 

@@ -20,6 +20,9 @@ export function registerHospitality(http: FastifyInstance, config: Config, ident
     api.addHook('preHandler', async req => { z.strictObject({}).parse(req.query); if (!limiter.take('session:' + identity.hash(token(req)), 60)) throw new DomainError('RATE_LIMITED', 429, 'Please wait'); });
     api.post('/orders', async (req, reply) => reply.code(201).send(await service.place(write(req), uuid.parse(req.headers['idempotency-key']), req.body)));
     api.get('/staff/shift', req => service.currentShift(token(req)));
+    api.get('/staff/state',req=>service.staffState(token(req)));
+    api.post('/staff/stop',req=>{StaffShiftEndSchema.parse(req.body);return service.stopStaff(write(req));});
+    api.post('/staff/shifts/:id/role',req=>service.changeRole(write(req),id(req),uuid.parse(req.headers['idempotency-key']),req.body));
     api.post('/staff/shifts', async (req, reply) => reply.code(201).send(await service.startShift(write(req), uuid.parse(req.headers['idempotency-key']), req.body)));
     api.post('/staff/shifts/:id/end', req => { StaffShiftEndSchema.parse(req.body); return service.endShift(write(req), id(req), uuid.parse(req.headers['idempotency-key'])); });
     api.get('/orders/:id', req => service.get(token(req), id(req)));

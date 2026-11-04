@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
 import { z } from 'zod';
-import { OrderRefusedSchema, OrderCompleteSchema, HospitalityMenuSchema, OrderWorkflowStrategySchema, StaffShiftStartSchema, StaffShiftResultSchema, StaffShiftViewSchema, OrderPlaceSchema, OrderMutationSchema, OrderQueueSchema, OrderPageSchema, OrderResultSchema, OrderViewSchema, type OrderPhase, type HospitalityPolicy, type OrderWorkflowStrategy } from '@virtual-city/contracts';
+import { StaffStateSchema,StaffStoppedSchema,StaffShiftRoleSchema,OrderRefusedSchema, OrderCompleteSchema, HospitalityMenuSchema, OrderWorkflowStrategySchema, StaffShiftStartSchema, StaffShiftResultSchema, StaffShiftViewSchema, OrderPlaceSchema, OrderMutationSchema, OrderQueueSchema, OrderPageSchema, OrderResultSchema, OrderViewSchema, type OrderPhase, type HospitalityPolicy, type OrderWorkflowStrategy } from '@virtual-city/contracts';
 import type { IdentityService, IdentityContext } from '../identity/service';
 import type { RoomService } from '../rooms/service';
 import type { SocialService } from '../social/service';
@@ -9,7 +9,7 @@ import { DomainError } from '../common/errors';
 import { nextOrderPhase } from './lifecycle';
 import { advanceService, type ServiceAction } from './workflow';
 type Row = { id: string; customer_id: string; assignee_id: string | null; customer_epoch: string; customer_membership_id: string; world_slug: string; room_id: string; item_key: string; policy_version: string; phase: OrderPhase; version: number; created_at: Date; updated_at: Date; workflow: OrderWorkflowStrategy | null; course_index: number; ready_at: Date | null };
-type Shift = { id: string; account_id: string; world_slug: string; room_id: string; owner_epoch: string; membership_id: string; policy_version: string; started_at: Date; expires_at: Date; interrupted_at: Date | null; ended_at: Date | null; reason: 'voluntary' | 'disconnected' | 'visit-ended' | 'restart' | 'expired' | 'restricted' | null };
+type Shift = { id: string;role_key:string; account_id: string; world_slug: string; room_id: string; owner_epoch: string; membership_id: string; policy_version: string; started_at: Date; expires_at: Date; interrupted_at: Date | null; ended_at: Date | null; reason: 'voluntary' | 'disconnected' | 'visit-ended' | 'restart' | 'expired' | 'restricted' | null };
 type Context = { worldSlug: string; roomId: string; seatId: string | null; epoch: string; membershipId: string; policy: HospitalityPolicy };
 export interface HospitalityStaffPort { permits(db: PoolClient, actor: IdentityContext, context: Readonly<Context>): Promise<boolean> }
 const uuid = z.uuid().transform(value => value.toLowerCase());
@@ -18,10 +18,11 @@ export class HospitalityService {
   async permitsUniform(account:string,world:string,source:{epoch:string;roomId:string;membershipId:string},policyVersion:string) { return !!(await this.pool.query('SELECT 1 FROM engine_hospitality_shifts WHERE account_id=$1 AND world_slug=$2 AND room_id=$3 AND owner_epoch=$4 AND membership_id=$5 AND policy_version=$6 AND ended_at IS NULL AND interrupted_at IS NULL AND expires_at>$7',[account,world,source.roomId,source.epoch,source.membershipId,policyVersion,new Date(this.now())])).rowCount; }
   #maintenance?: Promise<void>; #closed = false;
   constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private rooms: RoomService, private social: SocialService, private staff?: HospitalityStaffPort, private now = Date.now) {}
-  private async permits(db: PoolClient, actor: IdentityContext, context: Context) {
-    if (this.staff) return this.staff.permits(db, actor, context);
+  private async permits(db: PoolClient, actor: IdentityContext, context: Context,action?:'claim'|ServiceAction) {
+    if (this.staff&&!context.policy.staffing?.roles) return this.staff.permits(db, actor, context);
     if (!context.policy.staffing) return false;
-    return Boolean((await db.query('SELECT 1 FROM engine_hospitality_shifts WHERE account_id=$1 AND world_slug=$2 AND room_id=$3 AND owner_epoch=$4 AND membership_id=$5 AND policy_version=$6 AND ended_at IS NULL AND expires_at>$7 AND interrupted_at IS NULL', [actor.accountId, context.worldSlug, context.roomId, context.epoch, context.membershipId, context.policy.version, new Date(this.now())])).rowCount);
+    const row=(await db.query<Shift>('SELECT * FROM engine_hospitality_shifts WHERE account_id=$1 AND world_slug=$2 AND room_id=$3 AND owner_epoch=$4 AND membership_id=$5 AND policy_version=$6 AND ended_at IS NULL AND expires_at>$7 AND interrupted_at IS NULL', [actor.accountId, context.worldSlug, context.roomId, context.epoch, context.membershipId, context.policy.version, new Date(this.now())])).rows[0];if(!row)return false;
+    const roles=context.policy.staffing.roles;return !roles||roles.some(role=>role.key===row.role_key&&(!action||role.actions.includes(action)));
   }
   private view(row: Row, actor: string) {
     const workflow = row.workflow ? OrderWorkflowStrategySchema.parse(row.workflow) : null;
@@ -66,7 +67,7 @@ export class HospitalityService {
       const row = (await db.query<Row>('SELECT * FROM engine_hospitality_orders WHERE id=$1 FOR UPDATE', [id])).rows[0];
       if (!row || row.room_id !== context.roomId || row.world_slug !== context.worldSlug || row.customer_id !== known.customer_id) throw absent();
       const prior = await this.prior(db, actor.accountId, key, fingerprint); if (prior) return this.result(prior, actor.accountId);
-      if (action === 'cancel' ? row.customer_id !== actor.accountId : row.customer_id === actor.accountId || !await this.permits(db, actor, context) || await this.social.isBlocked(actor.accountId, row.customer_id, db)) throw absent();
+      if (action === 'cancel' ? row.customer_id !== actor.accountId : row.customer_id === actor.accountId || !await this.permits(db, actor, context,action) || await this.social.isBlocked(actor.accountId, row.customer_id, db)) throw absent();
       if (action === 'claim' && (await db.query('SELECT 1 FROM engine_hospitality_refusals WHERE order_id=$1 AND staff_id=$2', [id, actor.accountId])).rowCount) throw absent();
       if (action !== 'cancel') { if (row.policy_version !== context.policy.version) throw absent(); await this.rooms.hospitalityCustomer(row.customer_id, { epoch: row.customer_epoch, roomId: row.room_id, membershipId: row.customer_membership_id }); }
       if (row.version !== input.expectedVersion) throw new DomainError('IDEMPOTENCY_CONFLICT', 409, 'Refresh this order before trying again');
@@ -145,7 +146,7 @@ export class HospitalityService {
     await db.query("DELETE FROM engine_hospitality_orders WHERE assignee_id=$1 AND phase IN ('SERVED','COMPLETED')", [id]);
     await db.query("UPDATE engine_hospitality_orders SET assignee_id=NULL,phase='PENDING',version=version+1,ready_at=NULL,updated_at=greatest(updated_at,$2) WHERE assignee_id=$1", [id, new Date(this.now())]);
   }
-  private shiftView(row: Shift) { return StaffShiftViewSchema.parse({ schemaVersion: 1, id: row.id, worldSlug: row.world_slug, roomId: row.room_id, phase: row.ended_at ? 'ended' : row.interrupted_at ? 'interrupted' : 'active', startedAt: row.started_at.toISOString(), expiresAt: row.expires_at.toISOString(), interruptedAt: row.interrupted_at?.toISOString() ?? null, endsAt: row.ended_at?.toISOString() ?? null, reason: row.reason }); }
+  private shiftView(row: Shift) { return StaffShiftViewSchema.parse({ schemaVersion: 1, id: row.id, worldSlug: row.world_slug, roomId: row.room_id, phase: row.ended_at ? 'ended' : row.interrupted_at ? 'interrupted' : 'active', startedAt: row.started_at.toISOString(), expiresAt: row.expires_at.toISOString(), interruptedAt: row.interrupted_at?.toISOString() ?? null, endsAt: row.ended_at?.toISOString() ?? null, reason: row.reason,...row.role_key!=='staff'?{role:row.role_key}:{} }); }
   private shiftResult(row: Shift | null) { return StaffShiftResultSchema.parse({ schemaVersion: 1, shift: row ? this.shiftView(row) : null }); }
   private async shiftPrior(db: PoolClient, actor: string, key: string, fingerprint: string) {
     const receipt = (await db.query<{ fingerprint: string; shift_id: string }>('SELECT fingerprint,shift_id FROM engine_hospitality_shift_mutations WHERE actor_id=$1 AND request_id=$2', [actor, key])).rows[0];
@@ -153,16 +154,21 @@ export class HospitalityService {
     return receipt ? (await db.query<Shift>('SELECT * FROM engine_hospitality_shifts WHERE id=$1 AND account_id=$2', [receipt.shift_id, actor])).rows[0] ?? null : null;
   }
   private async shiftBudget(db: PoolClient, actor: string) { if ((await db.query('SELECT count(*)::int AS n FROM engine_hospitality_shift_mutations WHERE actor_id=$1 AND created_at>$2', [actor, new Date(this.now() - 3600000)])).rows[0].n >= 24) throw new DomainError('RATE_LIMITED', 429, 'Please wait before changing your shift'); }
-  private shiftRemember(db: PoolClient, actor: string, key: string, id: string, fingerprint: string, operation: 'start' | 'end') { return db.query('INSERT INTO engine_hospitality_shift_mutations VALUES($1,$2,$3,$4,$5,$6)', [actor, key, id, fingerprint, operation, new Date(this.now())]); }
+  private shiftRemember(db: PoolClient, actor: string, key: string, id: string, fingerprint: string, operation: 'start' | 'end'|'role') { return db.query('INSERT INTO engine_hospitality_shift_mutations VALUES($1,$2,$3,$4,$5,$6)', [actor, key, id, fingerprint, operation, new Date(this.now())]); }
+  private async staffRevision(db:Pick<Pool,'query'>,account:string){return (await db.query<{revision:number}>('SELECT revision FROM engine_hospitality_consent WHERE account_id=$1',[account])).rows[0]?.revision??0;}
+  private async advanceStaffRevision(db:PoolClient,account:string){return (await db.query<{revision:number}>('INSERT INTO engine_hospitality_consent VALUES($1,1) ON CONFLICT(account_id) DO UPDATE SET revision=engine_hospitality_consent.revision+1 RETURNING revision',[account])).rows[0].revision;}
+  private async roleInput(db:PoolClient,actor:IdentityContext,context:Context,input:{role?:string;expectedRevision?:number}){const roles=context.policy.staffing?.roles;if(roles){if(!roles.some(role=>role.key===input.role)||input.expectedRevision!==await this.staffRevision(db,actor.accountId))throw new DomainError('IDEMPOTENCY_CONFLICT',409,'Refresh your role and consent before trying again');return input.role!;}if(input.role!==undefined||input.expectedRevision!==undefined)throw new DomainError('INVALID_REQUEST',422,'This world does not offer role fields');return 'staff';}
   async startShift(token: string, requestKey: string, raw: unknown) {
     const input = StaffShiftStartSchema.parse(raw), key = uuid.parse(requestKey), fingerprint = this.identity.fingerprint({ operation: 'shift.start', input }); await this.maintain();
     const old = await this.tx(token, [], async (db, actor) => { const prior = await this.shiftPrior(db, actor.accountId, key, fingerprint); return prior ? this.shiftResult(prior) : null; }); if (old) return old;
     return this.rooms.hospitalityContext(token, input.source, false, (_actor, context, valid) => this.tx(token, [], async (db, actor) => {
       const prior = await this.shiftPrior(db, actor.accountId, key, fingerprint); if (prior) return this.shiftResult(prior);
+      const role=await this.roleInput(db,actor,context,input);
       if (!context.policy.staffing || input.policyVersion !== context.policy.version) throw absent();
       if ((await db.query('SELECT 1 FROM engine_hospitality_shifts WHERE account_id=$1 AND ended_at IS NULL', [actor.accountId])).rowCount) throw new DomainError('IDEMPOTENCY_CONFLICT', 409, 'End your current shift first');
       if ((await db.query('SELECT count(*)::int AS n FROM engine_hospitality_shifts WHERE room_id=$1 AND ended_at IS NULL', [context.roomId])).rows[0].n >= context.policy.staffing.maxStaff) throw new DomainError('NOT_AVAILABLE', 409, 'Staff capacity is full');
-      await this.shiftBudget(db, actor.accountId); const at = new Date(this.now()), row = (await db.query<Shift>('INSERT INTO engine_hospitality_shifts(id,account_id,world_slug,room_id,owner_epoch,membership_id,policy_version,started_at,expires_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *', [randomUUID(), actor.accountId, context.worldSlug, context.roomId, context.epoch, context.membershipId, context.policy.version, at, new Date(this.now() + 4 * 3600000)])).rows[0];
+      await this.shiftBudget(db, actor.accountId); const at = new Date(this.now()), row = (await db.query<Shift>('INSERT INTO engine_hospitality_shifts(id,account_id,world_slug,room_id,owner_epoch,membership_id,policy_version,started_at,expires_at,role_key) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *', [randomUUID(), actor.accountId, context.worldSlug, context.roomId, context.epoch, context.membershipId, context.policy.version, at, new Date(at.getTime() + 4 * 3600000),role])).rows[0];
+      if(context.policy.staffing.roles)await this.advanceStaffRevision(db,actor.accountId);
       await this.shiftRemember(db, actor.accountId, key, row.id, fingerprint, 'start'); if (!valid() || this.now() >= actor.expiresAt) throw new DomainError('NOT_IN_ROOM', 409, 'Your visit changed'); return this.shiftResult(row);
     }));
   }
@@ -175,11 +181,21 @@ export class HospitalityService {
       const prior = await this.shiftPrior(db, actor.accountId, key, fingerprint); if (prior) return this.shiftResult(prior);
       const row = (await db.query<Shift>('SELECT * FROM engine_hospitality_shifts WHERE id=$1 AND account_id=$2 FOR UPDATE', [id, actor.accountId])).rows[0]; if (!row) throw absent();
       await this.shiftBudget(db, actor.accountId);
-      if (!row.ended_at) { await this.requeue(db, actor.accountId); row.ended_at = new Date(this.now()); row.reason = 'voluntary'; await db.query('UPDATE engine_hospitality_shifts SET ended_at=$2,reason=$3 WHERE id=$1', [id, row.ended_at, row.reason]); }
+      if (!row.ended_at) { await this.requeue(db, actor.accountId);await this.advanceStaffRevision(db,actor.accountId); row.ended_at = new Date(this.now()); row.reason = 'voluntary'; await db.query('UPDATE engine_hospitality_shifts SET ended_at=$2,reason=$3 WHERE id=$1', [id, row.ended_at, row.reason]); }
       await this.shiftRemember(db, actor.accountId, key, id, fingerprint, 'end'); return this.shiftResult(row);
     }));
   }
   async currentShift(token: string) { await this.identity.authenticate(token); await this.maintain(); return this.tx(token, [], async (db, actor) => this.shiftResult((await db.query<Shift>('SELECT * FROM engine_hospitality_shifts WHERE account_id=$1 ORDER BY creation_order DESC LIMIT 1', [actor.accountId])).rows[0] ?? null)); }
+  async staffState(token:string){await this.identity.authenticate(token);await this.maintain();return this.tx(token,[],async(db,actor)=>StaffStateSchema.parse({...this.shiftResult((await db.query<Shift>('SELECT * FROM engine_hospitality_shifts WHERE account_id=$1 ORDER BY creation_order DESC LIMIT 1',[actor.accountId])).rows[0]??null),revision:await this.staffRevision(db,actor.accountId)}));}
+  async changeRole(token:string,id:string,requestKey:string,raw:unknown){
+    id=uuid.parse(id);const input=StaffShiftRoleSchema.parse(raw),key=uuid.parse(requestKey),fingerprint=this.identity.fingerprint({operation:'shift.role',id,input}),initial=await this.identity.authenticate(token);await this.maintain();
+    const old=await this.tx(token,[],async(db,actor)=>{const prior=await this.shiftPrior(db,actor.accountId,key,fingerprint);return prior?this.shiftResult(prior):null;});if(old)return old;
+    return this.rooms.hospitalityContext(token,input.source,false,async(_actor,context,valid)=>this.tx(token,await this.customers(initial.accountId),async(db,actor)=>{
+      const prior=await this.shiftPrior(db,actor.accountId,key,fingerprint);if(prior)return this.shiftResult(prior);if(!context.policy.staffing?.roles||input.policyVersion!==context.policy.version)throw absent();const role=await this.roleInput(db,actor,context,input),row=(await db.query<Shift>('SELECT * FROM engine_hospitality_shifts WHERE id=$1 AND account_id=$2 FOR UPDATE',[id,actor.accountId])).rows[0];
+      if(!row||row.ended_at||row.interrupted_at||row.expires_at.getTime()<=this.now()||row.world_slug!==context.worldSlug||row.room_id!==context.roomId||row.owner_epoch!==context.epoch||row.membership_id!==context.membershipId||row.policy_version!==context.policy.version)throw absent();await this.shiftBudget(db,actor.accountId);if(row.role_key!==role){await this.requeue(db,actor.accountId);row.role_key=role;await db.query('UPDATE engine_hospitality_shifts SET role_key=$2 WHERE id=$1',[id,role]);}await this.advanceStaffRevision(db,actor.accountId);await this.shiftRemember(db,actor.accountId,key,id,fingerprint,'role');if(!valid()||this.now()>=actor.expiresAt)throw absent();return this.shiftResult(row);
+    }));
+  }
+  async stopStaff(token:string){const initial=await this.identity.authenticate(token);return this.rooms.hospitalityRecovery(async()=>this.tx(token,await this.customers(initial.accountId),async(db,actor)=>{const revision=await this.advanceStaffRevision(db,actor.accountId);await this.requeue(db,actor.accountId);await db.query("UPDATE engine_hospitality_shifts SET ended_at=greatest(started_at,$2),reason='voluntary' WHERE account_id=$1 AND ended_at IS NULL",[actor.accountId,new Date(this.now())]);return StaffStoppedSchema.parse({schemaVersion:1,stopped:true,revision});}));}
   maintain() {
     if (this.#closed) return Promise.resolve(); if (this.#maintenance) return this.#maintenance;
     this.#maintenance = this.rooms.hospitalityRecovery(async visit => {
@@ -194,7 +210,7 @@ export class HospitalityService {
         try {
           await db.query('BEGIN'); await db.query("SET LOCAL statement_timeout='2000ms'"); await db.query("SET LOCAL lock_timeout='1000ms'"); await this.identity.lockAccounts(db, [row.account_id, ...await this.customers(row.account_id)]);
           const still = (await db.query('SELECT 1 FROM engine_hospitality_shifts WHERE id=$1 AND ended_at IS NULL FOR UPDATE', [row.id])).rowCount;
-          if (still) { if (reason) await this.requeue(db, row.account_id); await db.query("UPDATE engine_hospitality_shifts SET interrupted_at=$2,ended_at=$3,reason=$4,checked_order=nextval('engine_hospitality_recovery_sequence') WHERE id=$1", [row.id, interrupted === null ? null : new Date(interrupted), reason ? new Date(at) : null, reason]); }
+          if (still) { if (reason){await this.requeue(db, row.account_id);if(row.role_key!=='staff')await this.advanceStaffRevision(db,row.account_id);} await db.query("UPDATE engine_hospitality_shifts SET interrupted_at=$2,ended_at=$3,reason=$4,checked_order=nextval('engine_hospitality_recovery_sequence') WHERE id=$1", [row.id, interrupted === null ? null : new Date(interrupted), reason ? new Date(at) : null, reason]); }
           await db.query('COMMIT');
         } catch (error) { await db.query('ROLLBACK'); throw error; } finally { db.release(); }
       }

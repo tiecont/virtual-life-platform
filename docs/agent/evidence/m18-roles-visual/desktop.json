@@ -1,0 +1,6 @@
+{
+  "sameStartRetryKey": true,
+  "pendingRoleCommittedThenStopped": true,
+  "lateReplyCannotReactivate": true,
+  "sameOriginalDeadline": true
+}
