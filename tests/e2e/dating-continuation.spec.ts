@@ -27,3 +27,32 @@ test('standalone private connection withdrawal remains available after proof los
  test.setTimeout(90000);const other=await browser.newContext({...devices[info.project.name==='mobile'?'iPhone 13':'Desktop Chrome'],baseURL:origin}),peer=await other.newPage();let db:Pool|undefined,db2:Pool|undefined;try{const s=await keptPair(page,peer,context,other);db=s.db;db2=s.db2;await db.query('UPDATE restricted_dating_test_eligibility SET revoked=true WHERE account_id=$1',[s.a.profile.id]);const denied=await page.goto('/private/profile');expect(denied!.status()).toBe(404);await page.goto('/private/withdraw');await page.getByRole('region',{name:'Private connection withdrawal',exact:true}).getByRole('button',{name:'Withdraw private connection choices',exact:true}).focus();await page.keyboard.press('Enter');await expect(page.getByRole('region',{name:'Private connection withdrawal',exact:true})).toContainText('Private connection withdrawal recorded.');expect((await db.query('SELECT count(*)::int AS n FROM restricted_dating_continuation_members')).rows[0].n).toBe(0);const dir='docs/agent/evidence/m20-continuation-visual';await mkdir(dir,{recursive:true});await writeFile(dir+'/'+info.project.name+'-proofloss.json',JSON.stringify({positiveDeepLinkDenied:true,standaloneNegativeAfterProofLoss:true,keyboardWithdrawal:true,allChoiceMembershipsGone:true},null,2));}finally{await other.close();await db?.end();await db2?.end();}
 });
 
+test('logout defeats a held private connection read and denied deep links cannot restore aliases or expose source handles through public navigation',async({page,context,browser},info)=>{
+ test.setTimeout(90000);
+ const other=await browser.newContext({...devices[info.project.name==='mobile'?'iPhone 13':'Desktop Chrome'],baseURL:origin}),peer=await other.newPage();
+ let db:Pool|undefined,db2:Pool|undefined,release=()=>{},seen=()=>{};
+ const held=new Promise<void>(resolve=>release=resolve),observed=new Promise<void>(resolve=>seen=resolve);
+ try{
+  const s=await keptPair(page,peer,context,other);db=s.db;db2=s.db2;
+  const {p}=await sourceView(page,s.id);await expect(p).toContainText('Partner private alias:');
+  expect(page.url()).not.toContain(s.id);
+  const storage=await page.evaluate(()=>JSON.stringify({local:{...localStorage},session:{...sessionStorage}}));
+  expect(storage).not.toMatch(new RegExp(s.id+'|returnGrant|aliasKey|preferredTopics'));
+  await page.route('**/v1/dating/continuations/'+s.id,async route=>{const response=await route.fetch();expect(response.status()).toBe(200);seen();await held;await route.fulfill({response}).catch(()=>{});});
+  await p.getByRole('button',{name:'Check private connections',exact:true}).click();
+  await p.getByLabel('Private conversation choice',{exact:true}).selectOption(s.id);
+  await p.getByRole('button',{name:'Check selected connection',exact:true}).click();await observed;
+  expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':s.a.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);
+  await expect(p.getByRole('button',{name:'Check private connections',exact:true})).toBeDisabled();
+  release();await page.unrouteAll({behavior:'wait'});
+  await expect(p).not.toContainText('Partner private alias:');await expect(p.getByRole('button',{name:'Join private return queue',exact:true})).toHaveCount(0);
+  expect((await context.request.get('/v1/dating/continuations/'+s.id)).status()).toBe(401);
+  const denied=await page.goto('/private/profile');expect(denied!.status()).toBe(404);
+  await expect(page.getByRole('heading',{name:'Private introduction profile',exact:true})).toHaveCount(0);
+  await page.goto('/');expect(await page.locator('body').innerText()).not.toMatch(new RegExp(s.id+'|Partner private alias:|maple|willow'));
+  const dir='docs/agent/evidence/m20-adversarial-visual';await mkdir(dir,{recursive:true});
+  await page.screenshot({path:dir+'/'+info.project.name+'-public-after-denial.png',fullPage:true});
+  await writeFile(dir+'/'+info.project.name+'.json',JSON.stringify({syntheticMutualConnection:true,noSourceInURLOrStorage:true,heldCommittedPrivateRead:true,logoutClearedPrivateControls:true,lateReplyNoAliasRestoration:true,positiveHTTP401:true,positiveDeepLink404:true,publicNavigationNoPrivateAliasOrSource:true},null,2));
+ }finally{release();await page.unrouteAll({behavior:'wait'});await other.close();await db?.end();await db2?.end();}
+});
+

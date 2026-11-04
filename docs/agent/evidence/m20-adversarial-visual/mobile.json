@@ -1,0 +1,10 @@
+{
+  "syntheticMutualConnection": true,
+  "noSourceInURLOrStorage": true,
+  "heldCommittedPrivateRead": true,
+  "logoutClearedPrivateControls": true,
+  "lateReplyNoAliasRestoration": true,
+  "positiveHTTP401": true,
+  "positiveDeepLink404": true,
+  "publicNavigationNoPrivateAliasOrSource": true
+}

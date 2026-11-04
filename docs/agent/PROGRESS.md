@@ -1,5 +1,13 @@
 # Agent progress
 
+## M20-06 — VERIFIED local adversarial access/privacy matrix
+
+Fromf6e3a69;DATING-VERIFICATION.md/m20-adversarial-checks.json. Read-only16baseline source/policy hashes/manual threat findings. New6API cases verify9invalid synthetic proof decisions across3privatepositiveowners;forged claims/generic adult permission cannot bypass directory/socketroom/travel;known/stolen handles/grants/foreign Report attribution deny;alternate real session cannot reuse returngrant,original logout401;friend activitynull/sharedprojection privacy;current persisted account-world-ban applies after another login while independent revoke works. Friend socket observation ends at actual same-socket session.check ACK. No gender/exactage matching fields or realidentityassurance claim.
+
+New2desktop/mobilebrowser0 hold committed privateGET acrosslogout,clear/disableprivatecontrols,discardlatealias,HTTP401/SSR404/publicnavigation and no source/preferences/grants in URL/storage. Both actual public-after-denial images inspected. Final6API0,full/source lint0,audit syntax/run0;apps/packages/config diff againstf6e3a69 is0. Prior root258unit/480integration/build0 remains separate baseline;no486fullsuite/newbuild claim for test-onlyslice. Initial2pass/3fail because fixture omitted Safety evidencekey;Dateentry503failclosed,syntheticfixturekeycorrectedwithout runtimechanges,failures retained. Later sessionACK observer barrier final6API0.
+
+No migration;retained0036/stopped/9counts0 from05 checkpoint,newdisposabletestschemas cleaned. No runtime/realprovider/key/proof/participant/staff/legacy/remote/rights/public action. Allrealflags/all8approvalsfalse/provider null;M20-07/B-003external and independent humanprivacy/retention/coverage/opaqueprivateblockmanagement stillbefore realuse. Next exact action M21-01:read21plan/directfoundation/architecture/runtimeinfra,define envmatrix/local Compose+Caddy,verify HTTPSforwarding/cookies with no public deployment. Continue dependency-ready tasks;wholeplan incomplete.
+
 ## M20-05 — VERIFIED private mutual connections and fresh return consent
 
 Fromaff4b2f;ADR0070/DATING-CONTINUATIONS.md/m20-continuation-checks.json. One own keptchoice/account/global100members;unilateral choice leaves peer NONE byte-identical including own revisions/times/grants. Two explicit likes show neutral alias/MUTUAL720hours;pending originalDate+24h. Both fresh source queues→newproposal→two accepts→two Date entries reuse one-allocation matcher;no general/other-source mixing,DM,friends,globalnotification/score/reward. Minimal source consent survives24hDatepurge.

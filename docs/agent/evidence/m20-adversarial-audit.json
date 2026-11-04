@@ -1,0 +1,99 @@
+{
+  "taskID": "M20-06",
+  "scope": "Read-only baseline inventory/manual threat findings;actual acceptance in separate logs",
+  "baseline": "f6e3a6940c0fd602f1425add0c366d769d10e8dd",
+  "files": [
+    {
+      "path": "plans/20-dating-world.md",
+      "sha256": "9efeeff8f8747a304670ed65f140473f360ad3787ef54e053ca76b449b1a999e"
+    },
+    {
+      "path": "apps/platform-api/src/app.ts",
+      "sha256": "40c55cc62fc4f3c049a6e108e70529bdaa67da851eadb2e885f565670bd6543d"
+    },
+    {
+      "path": "apps/platform-api/src/dating/profiles.ts",
+      "sha256": "79007f7e962020c07d63743791f4483edd81cafe396ae1c67917d7d15de514c9"
+    },
+    {
+      "path": "apps/platform-api/src/dating/matching.ts",
+      "sha256": "ed8322f3ce4e07d9fe34bf08035436ec44ca26654c69f68d984cb5d182c1441e"
+    },
+    {
+      "path": "apps/platform-api/src/dating/dates.ts",
+      "sha256": "0f1ee9cd531165f452478fba99e12a6a47c4e48fee10ecd2ecca7be610c34637"
+    },
+    {
+      "path": "apps/platform-api/src/dating/continuations.ts",
+      "sha256": "de328092e5de49f7e0009fab96eaef8bdad96e3e854c71eba08ab020222a51c8"
+    },
+    {
+      "path": "apps/platform-api/src/dating/continuation-http.ts",
+      "sha256": "d98d6fcaf515fb5da10b540a80e80e1e879956606cf8e26393ea461a395ea64b"
+    },
+    {
+      "path": "apps/platform-api/src/identity/socket.ts",
+      "sha256": "873dea09050116ac8086c4e41a2c1b6b706a750e5f01c6dddfb073a3ef3122db"
+    },
+    {
+      "path": "apps/platform-api/src/identity/policy.ts",
+      "sha256": "593e6e60ec1f3f64603ec4cae729adccaf7d8f623d3a27500a8f7d7fbcbb7b94"
+    },
+    {
+      "path": "apps/platform-api/src/rooms/service.ts",
+      "sha256": "92567b0dc25c35f75ae9a559b3418e15b06956d181e9c62d4f07c571d91b760d"
+    },
+    {
+      "path": "apps/platform-api/src/travel/service.ts",
+      "sha256": "6ba902fef00460e2ecbd9f675f307befaf73a8597d82ae2ae3757cc2de3f0757"
+    },
+    {
+      "path": "apps/platform-api/src/social/service.ts",
+      "sha256": "3d8e8089dd60c4b6cce8176bf157c1db169b14fc70f8bc24fcc2b726fb79ea9f"
+    },
+    {
+      "path": "apps/platform-api/src/common/request-log.ts",
+      "sha256": "e4fcaf87ef1a23d862470ec41cfb5eba597daa78fcb610483ac954051b88362b"
+    },
+    {
+      "path": "apps/portal-web/app/private/profile/page.tsx",
+      "sha256": "1cf2d9ffe39180cd341312af139769fa8a4891d6ffe524634c2d31cef087c4d4"
+    },
+    {
+      "path": "config/dating-policy.json",
+      "sha256": "e31255f956479ab42a4860b717a7307dd173633a4d38d451def2182b78f891b7"
+    },
+    {
+      "path": "config/rollout.json",
+      "sha256": "5382de05d3a76309bf74542e367b30bd7feeaf9b8b5320d3fabc45d19d0f9aae"
+    }
+  ],
+  "manualFindings": [
+    "Private positive eligibility is test-only,registered and strict account-bound synthetic proof;generic reviewedAdult permission is not private chat authority.",
+    "Generic dating directory/join/travel deny even a trusted generic adult permission. No socket dating command or generic private room exists.",
+    "HTTP profile/matching/continuation owners must all reject underage,self-attested,wrong-account,wrong-policy,future,expired,overlong or revoked synthetic proofs.",
+    "Known private handles must not grant outsiders attribution or access;continuation404 message normalization hides known-vs-unknown existence.",
+    "Passive current connection metadata may survive logout;all positive current commands still require a real session and fresh scoped grants. Another session must not reuse a return grant.",
+    "General friend activity filters dating even if a trusted presence port returns it. Shared projections and logs must omit private aliases/source handles.",
+    "Source consent survives logout intentionally;held private replies must not repopulate the logged-out native UI.",
+    "No gender/exact-age matching fields are collected;tests cannot claim demographic compatibility,real identity uniqueness or effective age assurance."
+  ],
+  "remainingExternal": [
+    "Real18+provider/process and assurance/evasion review",
+    "Independent human privacy/retention assessment",
+    "Opaque private block management and staffed coverage",
+    "Legal/operator/pilot/public approval"
+  ],
+  "realApprovals": {
+    "publicLaunch": false,
+    "controlledPilot": false,
+    "legalJurisdictionReviewed": false,
+    "adultVerificationReviewed": false,
+    "moderatorCoverageApproved": false,
+    "privacyRetentionReviewed": false,
+    "independentPrivacyAssessment": false,
+    "operatorSignoff": false
+  },
+  "provider": null,
+  "publicDatingEnabled": false
+}
