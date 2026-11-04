@@ -1,0 +1,60 @@
+ Network virtual-city-test-1c9804ec_default Creating 
+ Network virtual-city-test-1c9804ec_default Creating 
+ Network virtual-city-test-1c9804ec_default Created 
+ Network virtual-city-test-1c9804ec_default Created 
+ Container virtual-city-test-1c9804ec-db-1 Creating 
+ Container virtual-city-test-1c9804ec-db-1 Created 
+ Container virtual-city-test-1c9804ec-db-1 Starting 
+ Container virtual-city-test-1c9804ec-db-1 Started 
+ Container virtual-city-test-1c9804ec-db-1 Waiting 
+ Container virtual-city-test-1c9804ec-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/lounge.test.ts (6 tests | 2 failed | 4 skipped) 888ms
+   × actual seated Lounge mocktail order uses one shared course ledger and one acknowledged completion despite retries 134ms
+   × mocktail policy rejects unseated orders,unoffered roles,chosen alcohol/payment/score fields and forged visit authority 107ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/lounge.test.ts > actual seated Lounge mocktail order uses one shared course ledger and one acknowledged completion despite retries
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/integration/lounge.test.ts:29:405
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  |integration| tests/integration/lounge.test.ts > mocktail policy rejects unseated orders,unoffered roles,chosen alcohol/payment/score fields and forged visit authority
+AssertionError: expected 404 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 404
+
+ ❯ tests/integration/lounge.test.ts:30:861
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 4 skipped (6)
+   Start at  12:48:31
+   Duration  1.92s (transform 424ms, setup 0ms, import 898ms, tests 888ms, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-1c9804ec-db-1 Stopping 
+ Container virtual-city-test-1c9804ec-db-1 Stopped 
+ Container virtual-city-test-1c9804ec-db-1 Removing 
+ Container virtual-city-test-1c9804ec-db-1 Removed 
+ Network virtual-city-test-1c9804ec_default Removing 
+ Network virtual-city-test-1c9804ec_default Removed 

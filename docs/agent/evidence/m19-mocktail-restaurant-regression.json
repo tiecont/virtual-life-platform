@@ -1,0 +1,55 @@
+{
+  "source": "Fresh separate Restaurant spec/device API/DB lifetime after the shared UI controller extraction;copied before restoring historical M18 evidence artifacts",
+  "devices": {
+    "desktop": {
+      "actualDiner": true,
+      "actualServiceWorkers": 2,
+      "coursesServed": 3,
+      "completed": true,
+      "wrongCourseRejected": true,
+      "committedPickupSameKeyRetry": true,
+      "realServerPreparationWait": true,
+      "workerRequestBudgets": [
+        {
+          "role": "cook",
+          "requests": 39,
+          "rateLimited": 0
+        },
+        {
+          "role": "server",
+          "requests": 43,
+          "rateLimited": 0
+        }
+      ]
+    },
+    "mobile": {
+      "actualDiner": true,
+      "actualServiceWorkers": 2,
+      "coursesServed": 3,
+      "completed": true,
+      "wrongCourseRejected": true,
+      "committedPickupSameKeyRetry": true,
+      "realServerPreparationWait": true,
+      "workerRequestBudgets": [
+        {
+          "role": "cook",
+          "requests": 39,
+          "rateLimited": 0
+        },
+        {
+          "role": "server",
+          "requests": 43,
+          "rateLimited": 0
+        }
+      ]
+    }
+  },
+  "mixedBatchFailure": {
+    "scope": "Desktop combined Lounge+Restaurant spec lifetime",
+    "passed": 11,
+    "failed": 2,
+    "cookServiceRequests": 29,
+    "cookRateLimited": 4,
+    "diagnosis": "Inferred aggregate IP budget pressure from combining traffic-heavy specs;fresh separate Restaurant spec passes without changing rate limits or app code. New Lounge stop assertion corrected to the existing inactive-shift summary and still checks canonical ended API state."
+  }
+}

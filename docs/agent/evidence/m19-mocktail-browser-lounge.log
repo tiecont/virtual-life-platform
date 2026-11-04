@@ -1,0 +1,100 @@
+ Network virtual-city-test-5bbf4dd3_default Creating 
+ Network virtual-city-test-5bbf4dd3_default Creating 
+ Network virtual-city-test-5bbf4dd3_default Created 
+ Network virtual-city-test-5bbf4dd3_default Created 
+ Container virtual-city-test-5bbf4dd3-db-1 Creating 
+ Container virtual-city-test-5bbf4dd3-db-1 Created 
+ Container virtual-city-test-5bbf4dd3-db-1 Starting 
+ Container virtual-city-test-5bbf4dd3-db-1 Started 
+ Container virtual-city-test-5bbf4dd3-db-1 Waiting 
+ Container virtual-city-test-5bbf4dd3-db-1 Healthy 
+[WebServer] (node:643472) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:643486) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:643486) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:643486) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:643471) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:643569) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:643630) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:643682) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 9 tests using 1 worker
+
+(node:643736) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/lounge.spec.ts:14:5 › original silent Lounge renders a closed stage,authoritative audience seating and reduced-motion native controls without media (2.4s)
+  ✓  2 [desktop] › tests/e2e/lounge.spec.ts:17:5 › Lounge asset failure retains native audience seats and anonymous access never enters (1.2s)
+  ✓  3 [desktop] › tests/e2e/lounge.spec.ts:18:5 › listed Lounge sets show canonical states and timezone,private sets stay hidden and expired/failed reads stay unknown (1.3s)
+  ✓  4 [desktop] › tests/e2e/lounge.spec.ts:19:5 › late Lounge schedule response cannot restore the former identity after logout (886ms)
+  ✓  5 [desktop] › tests/e2e/lounge.spec.ts:28:5 › native host and performer consent controls allocate one real slot and host revocation ends it without moving the avatar (5.1s)
+  ✓  6 [desktop] › tests/e2e/lounge.spec.ts:34:5 › independent Stop defeats a held committed acceptance reply and source loss keeps it available (4.5s)
+  ✓  7 [desktop] › tests/e2e/lounge.spec.ts:39:5 › lost queue reply retries the same key and stale stage observations cannot offer controls (4.0s)
+  ✓  8 [desktop] › tests/e2e/lounge.spec.ts:45:5 › a consenting bartender serves one real virtual mocktail and customer acknowledges once after a lost placement reply (6.8s)
+  ✓  9 [desktop] › tests/e2e/lounge.spec.ts:50:5 › voluntary bartender Stop remains available while a committed claim response is held and customer can withdraw (3.8s)
+
+  9 passed (35.0s)
+ Container virtual-city-test-5bbf4dd3-db-1 Stopping 
+ Container virtual-city-test-5bbf4dd3-db-1 Stopped 
+ Container virtual-city-test-5bbf4dd3-db-1 Removing 
+ Container virtual-city-test-5bbf4dd3-db-1 Removed 
+ Network virtual-city-test-5bbf4dd3_default Removing 
+ Network virtual-city-test-5bbf4dd3_default Removed 
+ Network virtual-city-test-85676eb8_default Creating 
+ Network virtual-city-test-85676eb8_default Creating 
+ Network virtual-city-test-85676eb8_default Created 
+ Network virtual-city-test-85676eb8_default Created 
+ Container virtual-city-test-85676eb8-db-1 Creating 
+ Container virtual-city-test-85676eb8-db-1 Created 
+ Container virtual-city-test-85676eb8-db-1 Starting 
+ Container virtual-city-test-85676eb8-db-1 Started 
+ Container virtual-city-test-85676eb8-db-1 Waiting 
+ Container virtual-city-test-85676eb8-db-1 Healthy 
+[WebServer] (node:645842) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:645855) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:645855) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:645855) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:645841) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:645930) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:646031) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:646045) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 9 tests using 1 worker
+
+(node:646135) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [mobile] › tests/e2e/lounge.spec.ts:14:5 › original silent Lounge renders a closed stage,authoritative audience seating and reduced-motion native controls without media (2.7s)
+  ✓  2 [mobile] › tests/e2e/lounge.spec.ts:17:5 › Lounge asset failure retains native audience seats and anonymous access never enters (1.3s)
+  ✓  3 [mobile] › tests/e2e/lounge.spec.ts:18:5 › listed Lounge sets show canonical states and timezone,private sets stay hidden and expired/failed reads stay unknown (1.4s)
+  ✓  4 [mobile] › tests/e2e/lounge.spec.ts:19:5 › late Lounge schedule response cannot restore the former identity after logout (1.0s)
+  ✓  5 [mobile] › tests/e2e/lounge.spec.ts:28:5 › native host and performer consent controls allocate one real slot and host revocation ends it without moving the avatar (5.2s)
+  ✓  6 [mobile] › tests/e2e/lounge.spec.ts:34:5 › independent Stop defeats a held committed acceptance reply and source loss keeps it available (4.6s)
+  ✓  7 [mobile] › tests/e2e/lounge.spec.ts:39:5 › lost queue reply retries the same key and stale stage observations cannot offer controls (3.9s)
+  ✓  8 [mobile] › tests/e2e/lounge.spec.ts:45:5 › a consenting bartender serves one real virtual mocktail and customer acknowledges once after a lost placement reply (6.8s)
+  ✓  9 [mobile] › tests/e2e/lounge.spec.ts:50:5 › voluntary bartender Stop remains available while a committed claim response is held and customer can withdraw (3.7s)
+
+  9 passed (35.5s)
+ Container virtual-city-test-85676eb8-db-1 Stopping 
+ Container virtual-city-test-85676eb8-db-1 Stopped 
+ Container virtual-city-test-85676eb8-db-1 Removing 
+ Container virtual-city-test-85676eb8-db-1 Removed 
+ Network virtual-city-test-85676eb8_default Removing 
+ Network virtual-city-test-85676eb8_default Removed 

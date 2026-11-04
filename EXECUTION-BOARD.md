@@ -113,7 +113,7 @@
 | M18 | M18-06 · E2E/load and visual/accessibility acceptance. | VERIFIED | m18-acceptance-checks.json;18browser/type/lint/16actor HTTP profile+4socket SDK smoke0;one table winner/mobile fallback/keyboard/contrast/motion;local only |
 | M19 | M19-01 · Design lounge stage, seating, mocktail counter and event states. | VERIFIED | m19-scene-checks.json;full216unit/373integration/builds,8Lounge+32rendererbrowser0;10chairs/12places/closedstage0occupancy/nativefallback/currentphases;actualperformer02pending |
 | M19 | M19-02 · Implement performer/host role and stage queue with operator controls. | VERIFIED | m19-stage-checks.json;root232unit/401integration/build0;final14browser/webbuild/lint0;actualFIFO/currentgrants/explicitaccept/cap1/deadlineSQLwait/Stop/revoke/recovery/privacy;0030local0/flagsOFF |
-| M19 | M19-03 · Implement virtual mocktail service via Hospitality Engine. | TODO | — |
+| M19 | M19-03 · Implement virtual mocktail service via Hospitality Engine. | VERIFIED | m19-mocktail-checks.json;root232unit/404integration/build0,target98;18Lounge+8Restaurantbrowser0;actual bartender role/one-course ledger/retry/race/refuse/block/withdraw/Stop;no migration/realflags |
 | M19 | M19-04 · Integrate ticket-free events/RSVP, crowd reactions and moderation throttles. | TODO | — |
 | M19 | M19-05 · Implement media licensing gate and optional preapproved streaming adapter. | TODO | — |
 | M19 | M19-06 · Test high fan-out, reports, event cancellation and emergency shutdown. | TODO | — |
