@@ -1,0 +1,6 @@
+$ node scripts/verify-ci.mjs
+{"groups":["city","social","study","hospitality","private"],"specs":19,"requiredCheck":"quality","scope":"Local workflow contract only;hosted run/required-check settings NOT_RUN"}
+$ node scripts/verify-infra.mjs
+Environment matrix/examples/build exclusions verified;not a deployment or secret scan certification
+$ node scripts/verify-architecture.mjs
+Architecture consistency passed: 88 SQL tables + journal; 249 source files checked. Future gameplay invariants remain runtime gates.

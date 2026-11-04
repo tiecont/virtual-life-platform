@@ -1,0 +1,16 @@
+{
+ "schemaVersion":1,
+ "status":"Owner-review template;not an installed schedule,retention job or production guarantee",
+ "source":"Reviewed local Unix Docker Compose PostgreSQL17.7 service",
+ "archiveFormat":"VLCB1 AES-256-GCM custom logical dump;64MiB maximum plaintext archive",
+ "proposedCadenceSeconds":3600,
+ "rpoTargetSeconds":3600,
+ "rtoTargetSeconds":1800,
+ "keyCustodian":null,
+ "retentionDays":null,
+ "offsiteDestination":null,
+ "scheduleInstalled":false,
+ "alertDeliveryConfigured":false,
+ "productionApproved":false,
+ "automaticDeletionEnabled":false
+}

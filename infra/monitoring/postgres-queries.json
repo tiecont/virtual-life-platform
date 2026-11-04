@@ -1,0 +1,10 @@
+{
+ "schemaVersion":1,
+ "status":"Private postgres-backup observe CLI exposition only;collector,schedule,dashboard and alert delivery not installed",
+ "panels":[
+  {"title":"Database disk free ratio","query":"virtual_life_postgres_disk_available_bytes / virtual_life_postgres_disk_total_bytes","unit":"ratio;PGDATA filesystem,shared storage may include other workloads"},
+  {"title":"Database disk free bytes","query":"virtual_life_postgres_disk_available_bytes","unit":"bytes;alert below1GiB or20percent free"},
+  {"title":"PostgreSQL client connection ratio","query":"virtual_life_postgres_connections / virtual_life_postgres_connection_limit","unit":"ratio;alert at0.8,capacity target not a load benchmark"},
+  {"title":"Logical database size","query":"virtual_life_postgres_database_bytes","unit":"bytes;not whole PostgreSQL volume usage"}
+ ]
+}

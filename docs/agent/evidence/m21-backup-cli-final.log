@@ -1,0 +1,61 @@
+(node:404660) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{
+  "taskID": "M21-05",
+  "scope": "Disposable local logical backup/restore;not production/offsite/PITR or operated schedule",
+  "publicRelease": false,
+  "actualBackupRestoreMetricsCLI": true,
+  "result": "PASS",
+  "backup": {
+    "schemaVersion": 1,
+    "operation": "backup",
+    "encrypted": true,
+    "bytes": 284223,
+    "sha256": "a5e5447ff9c2ed5943ba9007b16eff943c9ebb5c67178ab2177403e477af793a",
+    "durationMs": 279.360819,
+    "maximumPlaintextBytes": 67108864
+  },
+  "restore": {
+    "schemaVersion": 1,
+    "operation": "restore",
+    "authenticatedBeforeSQL": true,
+    "emptyDisposableTarget": true,
+    "singleTransaction": true,
+    "durationMs": 626.853608
+  },
+  "journal": {
+    "count": 36,
+    "sha256": "62ebb22ce35fc8ccec31b058343c75f0a366be3799dfd768755635e3a56e03b3"
+  },
+  "snapshotExcludesLaterTable": true,
+  "restoredAuthenticatedIdentity": true,
+  "restoredPendingOrder": true,
+  "restartCancelsStrandedOrderWithoutCompletion": true,
+  "noPhantomMembership": true,
+  "wrongKeyAndTamperBeforeSQL": true,
+  "insecureKeyAndSymlinkDenied": true,
+  "existingArchiveUnchanged": true,
+  "occupiedEnumOrRestoredDatabaseOrWrongTargetDenied": true,
+  "observations": {
+    "schemaVersion": 1,
+    "observedAt": 1793815006246,
+    "scope": "single PostgreSQL container PGDATA filesystem and aggregate server/database connections",
+    "databaseBytes": 12045459,
+    "databaseConnections": 3,
+    "databaseActiveConnections": 1,
+    "serverConnections": 3,
+    "connectionLimit": 100,
+    "disk": {
+      "totalBytes": 166313963520,
+      "availableBytes": 49472188416,
+      "usedRatio": 0.6187597304156894
+    },
+    "alerts": []
+  },
+  "recoveryExerciseMs": 2223,
+  "rpoTargetSeconds": 3600,
+  "rtoTargetSeconds": 1800,
+  "targetsGuaranteed": false,
+  "cleanupComplete": true,
+  "artifactDirectory": "/home/tiecont/Projects/virtual-city/artifacts/virtual-city-backup-test-f4108828"
+}

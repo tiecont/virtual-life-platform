@@ -6,7 +6,15 @@ Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;bran
 
 Node26.9.0/pnpm11.28.5. RetaineddevDB0036/stopped;latestjournal/9privatecounts0. No preview/verificationworker remains. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
 
-## Current work — M21-04 VERIFIED; continue M21-05
+## Current work — M21-05 VERIFIED; continue M21-06
+
+From167eeae;ADR0075/POSTGRES-RECOVERY.md/m21-backup-checks.json. Host-only Linux/local Unix Docker private operator CLI. Exact Compose labels/testedPG17.7 selection;64MiB AES-GCM authenticated snapshot/custom dump,private nonsymlink key,fsynced mode600 atomic no-overwrite archive. Authenticate before SQL;restore only empty generated test DB/single transaction,no clean/persistent restore. Actual database size/connections/PGDATA filesystem JSON/Prometheus metrics;collector/schedule templates uninstalled.
+
+Actual final backup/restore/metrics CLI0:284220encrypted bytes/303.731ms backup/580.440ms restore/2224ms recovery validation/36journal entries. Restored original HTTP identity/session/PENDING order,no post-snapshot table/no phantom membership;maintenance cancels stranded order/no completion. Negative key/tamper/privatefile/no-overwrite/occupied enum/restoredDB/wrong target guards0. Final14governance/source lint/policies0;initial import-no-test red/lint5errors/CJS named-export beforeDB failure retained. Apps/packages/config unchanged from167eeae baseline263unit/496integration/build0;no new fullsuite/build/browser claim. Current app image still M21-04.
+
+All own backup-test DBs/volumes/env/keys/archives cleaned beforePASS;latest raw artifacts virtual-city-backup-test-7498108f contain only start/cleanup logs/facts. No preview/verification worker remains. Retained0036/stopped untouched;all real flags/8Datingapprovalsfalse and B-001/B-002/B-003 remain. No operated schedule/offsite/keycustody/retention/collector/alerts/production restore;1hRPO/30minRTO are targets,not measured guarantees. Whole plan incomplete.
+
+## Prior slice — M21-04 VERIFIED
 
 From d29d9bb; ADR0074/DEPLOYMENT-RECOVERY.md/m21-deployment-checks.json. Final root0:11governance/263unit/496integration/allbuilds,439 frozen hashes unchanged. Final12API0 across5readiness/foundation/real SIGTERM-SIGKILL epoch/no-phantom-seat cases;healthunit1/types/lint0. Exact migration journal+real owner readiness;coalesced checkout/query/response bounds,late checkout discarded,read-only server500ms statement/200ms lock deadlines. Actual leftoverSQLwaiter red after client-only timeout retained/fixed. Trusted irreversible HTTP/socket drain and retryable session ACK;main12second failing shutdown deadline. Forced deadline exhaustion NOT_RUN.
 
@@ -84,7 +92,7 @@ Failure history is retained in evidence:missing menu/role2reds;outbox test used 
 
 ## Next exact action
 
-M21-05 lowest ready. Read M21 and audit infra/scripts/operations: no backup/restore tooling exists. Implement private encrypted Postgres backup,authenticated empty disposable restore,and actual DB-volume disk/connection aggregate observations. Separate ignored mode600 key,no plaintext dump/logs;authenticate ciphertext before any restore writes;never --clean or restore into nonempty/persistent/legacy targets. Verify actual non-prod restored data/session/migrations,tamper/wrong-key and unsafe-target denial;measure local timings and document RPO/RTO targets separately from guarantees. Retaineddev0036 stays stopped. Then M21-06 budgets,continue M22/M23/M24 per DAG. Public/hostedCI/PR/legacy/rights/adult/operator gates remain external. Rebuild app image after backend changes;current deployed-test image is M21-04,not the older telemetry/local tags.
+M21-06 lowest ready. Read M21 and audit actual M06/M18/M19 benchmark artifacts,scene budgets,current app image size/host resources. Document a hypothetical low-cost resource plan/monthly spending ceiling and measurable CPU/RAM/disk/network/latency investigation thresholds. Prices are unquoted planning allocations,not current vendor offers or purchases. Enforce budget sums/one Room owner and explicit criteria before service split/Redis;PubSub alone cannot fence authority. Do not invent production CCU/cost guarantees. Then M22 continuous tests/security/performance, M23 dependencies remain gated by actual M15/M16, and M24 per DAG. Offline userrepo/legacy/rights/adult/operator gates unchanged.
 
 ## External gates
 

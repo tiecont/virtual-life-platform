@@ -4,6 +4,8 @@
 
 [Deployment recovery](docs/operations/DEPLOYMENT-RECOVERY.md) adds bounded exact-migration/single-owner readiness and irreversible HTTP/socket drain. The disposable local TLS harness can exercise API rollback between explicitly selected images with identical migration manifests. Production rollout and schema rollback remain gated.
 
+[PostgreSQL recovery](docs/operations/POSTGRES-RECOVERY.md) provides authenticated encrypted backups, guarded empty disposable restore and private disk/connection metrics. Run `node --import tsx scripts/backup-smoke.mjs` for the local recovery exercise. Production scheduling, offsite storage, key custody and alert delivery remain unconfigured.
+
 Project repository: `git@github.com:tiecont/virtual-life-platform.git` (configured locally; no push performed). The Virtual City plan is the product specification.
 
 The [shared hospitality engine](docs/architecture/HOSPITALITY.md) provides private policy-gated orders, atomic claims, voluntary shifts, reusable timed courses, transactional completion hooks and service refusal/block/safety recovery. Optional progression consumers are implemented; real Maid integration remains gated. No public hospitality world is enabled.
