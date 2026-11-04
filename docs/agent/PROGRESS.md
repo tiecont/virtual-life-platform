@@ -1,5 +1,9 @@
 # Agent progress
 
+## Next task M19-04 — initial read-only audit;no implementation claim
+
+After commits6f8d126(M19-02) andc51c5f1(M19-03),read current WorldEvents/EventService/Events contracts/lifecycle and M12 direct plan. RSVP is SCHEDULED/OPEN before startsAt;current study UI's OPEN/LIVE eligibility should not be copied. Withdraw works outside world availability but needs a recorded own RSVP;no durable pending-join Stop revision exists. Preserve exact-key uncertain resolution or add the required fence before promising independent pending withdrawal. LoungeSchedule still has no native RSVP or reactions. Next exact action is the M19-04 native RSVP/bounded anonymous reaction/operator mute slice documented in HANDOFF. Task remains TODO until acceptance/code work starts;not VERIFIED. No workers/preview remain and the implementation working tree was clean afterc51c5f1.
+
 ## M19-03 — VERIFIED local original virtual mocktail service
 
 From6f8d126;ADR0063/LOUNGE.md/m19-mocktail-checks.json. Lounge1.2.0/scene1.0.0 offers policy1.0.0:original Moonlit mint-lime/Berry spark,one2sserver-timed course,explicit voluntary bartender only(claim/prepare/ready/serve),max2staff/2assignments/10orders. Uses existing Hospitality receipts/course/completion/outbox/consent/refusal/safety owners;no engine fork or migration. Extracted app-level VoluntaryStaffControls/useHospitalityOrders from Restaurant;each venue keeps its own policy/view. Native private menu/order/ticket/prep/serve/ack/refusal/withdraw and independent shift Stop work. No real alcohol/payment/tip/score/media/reward/operator grant or public activation.
