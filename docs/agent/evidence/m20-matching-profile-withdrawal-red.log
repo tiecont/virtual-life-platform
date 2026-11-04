@@ -1,0 +1,126 @@
+ Network virtual-city-test-5dfb20e3_default Creating 
+ Network virtual-city-test-5dfb20e3_default Creating 
+ Network virtual-city-test-5dfb20e3_default Created 
+ Network virtual-city-test-5dfb20e3_default Created 
+ Container virtual-city-test-5dfb20e3-db-1 Creating 
+ Container virtual-city-test-5dfb20e3-db-1 Created 
+ Container virtual-city-test-5dfb20e3-db-1 Starting 
+ Container virtual-city-test-5dfb20e3-db-1 Started 
+ Container virtual-city-test-5dfb20e3-db-1 Waiting 
+ Container virtual-city-test-5dfb20e3-db-1 Healthy 
+[WebServer] (node:94093) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:94171) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:94171) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:94171) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:94092) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:94279) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:94392) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:94454) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:94626) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/dating-profile.spec.ts:13:5 › profile withdrawal invalidates held matching reply and suppresses queue controls until the withdrawal is confirmed (1.1s)
+
+  1 passed (8.3s)
+ Container virtual-city-test-5dfb20e3-db-1 Stopping 
+ Container virtual-city-test-5dfb20e3-db-1 Stopped 
+ Container virtual-city-test-5dfb20e3-db-1 Removing 
+ Container virtual-city-test-5dfb20e3-db-1 Removed 
+ Network virtual-city-test-5dfb20e3_default Removing 
+ Network virtual-city-test-5dfb20e3_default Removed 
+ Network virtual-city-test-90d9dbfd_default Creating 
+ Network virtual-city-test-90d9dbfd_default Creating 
+ Network virtual-city-test-90d9dbfd_default Created 
+ Network virtual-city-test-90d9dbfd_default Created 
+ Container virtual-city-test-90d9dbfd-db-1 Creating 
+ Container virtual-city-test-90d9dbfd-db-1 Created 
+ Container virtual-city-test-90d9dbfd-db-1 Starting 
+ Container virtual-city-test-90d9dbfd-db-1 Started 
+ Container virtual-city-test-90d9dbfd-db-1 Waiting 
+ Container virtual-city-test-90d9dbfd-db-1 Healthy 
+[WebServer] (node:95457) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:95489) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:95489) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:95489) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:95456) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:95628) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:95726) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:95744) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:95802) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [mobile] › tests/e2e/dating-profile.spec.ts:13:5 › profile withdrawal invalidates held matching reply and suppresses queue controls until the withdrawal is confirmed (6.3s)
+
+
+  1) [mobile] › tests/e2e/dating-profile.spec.ts:13:5 › profile withdrawal invalidates held matching reply and suppresses queue controls until the withdrawal is confirmed 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByRole('region', { name: 'Private matching', exact: true }).getByText('Matching state as observed: QUEUED', { exact: true })
+    Expected: 0
+    Received: 1
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" getByRole('region', { name: 'Private matching', exact: true }).getByText('Matching state as observed: QUEUED', { exact: true }) with timeout 5000ms
+      - waiting for getByRole('region', { name: 'Private matching', exact: true }).getByText('Matching state as observed: QUEUED', { exact: true })
+        14 × locator resolved to 1 element
+           - unexpected value "1"
+
+
+      12 | async function joinQueue(page:Page){const p=await matching(page);await p.getByLabel('I choose to join the private matching queue.',{exact:true}).check();await p.getByRole('button',{name:'Join private queue',exact:true}).focus();await page.keyboard.press('Enter');return p;}
+      13 | test('profile withdrawal invalidates held matching reply and suppresses queue controls until the withdrawal is confirmed',async({page,context},info)=>{
+    > 14 |  test.setTimeout(60000);const me=await registered(context),db=await fixture(me);let release=()=>{},seen=()=>{},releaseWithdrawal=()=>{},withdrawing=()=>{};const held=new Promise<void>(resolve=>release=resolve),observed=new Promise<void>(resolve=>seen=resolve),withdrawalHeld=new Promise<void>(resolve=>releaseWithdrawal=resolve),withdrawalObserved=new Promise<void>(resolve=>withdrawing=resolve);try{await savedProfile(context,me);await page.goto('/private/profile');const p=await matching(page);await page.route('**/v1/dating/queue',async route=>{const response=await route.fetch();expect(response.status()).toBe(200);seen();await held;await route.fulfill({response}).catch(()=>{});});await p.getByLabel('I choose to join the private matching queue.',{exact:true}).check();await p.getByRole('button',{name:'Join private queue',exact:true}).click();await observed;await page.route('**/v1/dating/profile/withdraw',async route=>{const response=await route.fetch();expect(response.status()).toBe(200);withdrawing();await withdrawalHeld;await route.fulfill({response}).catch(()=>{});});await page.getByRole('region',{name:'Private withdrawal',exact:true}).getByRole('button',{name:'Withdraw private consent',exact:true}).click();await withdrawalObserved;await expect(p.getByRole('button',{name:'Check matching state',exact:true})).toBeDisabled();release();await expect(p.getByText('Matching state as observed: QUEUED',{exact:true})).toHaveCount(0);releaseWithdrawal();await page.unrouteAll({behavior:'wait'});await expect(page.getByRole('region',{name:'Private withdrawal',exact:true})).toContainText('Private withdrawal recorded.');expect((await db.query('SELECT count(*)::int AS n FROM restricted_dating_enrollments')).rows[0].n).toBe(0);expect((await db.query('SELECT active FROM restricted_dating_profiles WHERE account_id=$1',[me.profile.id])).rows[0].active).toBe(false);const dir='docs/agent/evidence/m20-matching-visual';await mkdir(dir,{recursive:true});await writeFile(`${dir}/${info.project.name}-profile-withdrawal.json`,JSON.stringify({heldCommittedQueueReply:true,heldCommittedProfileWithdrawalReply:true,positiveMatchingDisabledWhileUnconfirmed:true,lateQueueReplyNoRestoration:true,matchingAndProfileWithdrawn:true},null,2));}finally{release();releaseWithdrawal();await page.unrouteAll({behavior:'wait'});await db.end();}
+         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^
+      15 | });
+      16 | test('private matching requires two independent native acceptances and Stop ends both logical allocations without entering a Room',async({page,context,browser},info)=>{
+      17 |  test.setTimeout(60000);const other=await browser.newContext({...devices[info.project.name==='mobile'?'iPhone 13':'Desktop Chrome'],baseURL:origin}),a=await registered(context),b=await registered(other),db=await fixture(a),db2=await fixture(b),peer=await other.newPage();try{await savedProfile(context,a);await savedProfile(other,b);await page.goto('/private/profile');await peer.goto('/private/profile');const ap=await joinQueue(page);await expect(ap).toContainText('Matching state as observed: QUEUED');const bp=await joinQueue(peer);await expect(bp).toContainText('Matching state as observed: PROPOSED');await matching(page);await ap.getByRole('button',{name:'Accept private proposal',exact:true}).click();await expect(ap).toContainText('Your acceptance was recorded.');await matching(peer);await bp.getByRole('button',{name:'Accept private proposal',exact:true}).click();await expect(bp).toContainText('Matching state as observed: ACCEPTED');await matching(page);await expect(ap).toContainText('Matching state as observed: ACCEPTED');expect(await ap.innerText()).not.toMatch(new RegExp(a.profile.id+'|'+b.profile.id));expect((await (await context.request.get('/v1/me/room')).json()).snapshot).toBeNull();expect((await (await other.request.get('/v1/me/room')).json()).snapshot).toBeNull();const targets=await ap.locator('button,label:has(input[type=checkbox])').evaluateAll(elements=>elements.map(e=>({w:e.getBoundingClientRect().width,h:e.getBoundingClientRect().height})));expect(targets.every(t=>t.w>=44&&t.h>=44)).toBe(true);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);const dir='docs/agent/evidence/m20-matching-visual';await mkdir(dir,{recursive:true});await ap.screenshot({path:`${dir}/${info.project.name}-accepted.png`});await ap.getByRole('button',{name:'Stop private matching',exact:true}).click();await expect(ap).toContainText('Matching Stop recorded.');await matching(peer);await expect(bp).toContainText('Matching state as observed: NONE');expect((await db.query('SELECT count(*)::int AS n FROM restricted_dating_enrollments')).rows[0].n).toBe(0);await writeFile(`${dir}/${info.project.name}.json`,JSON.stringify({independentContexts:true,explicitQueueAndTwoAccepts:true,noPeerAccountIds:true,noRoomOrCommunication:true,minimum44pxTargets:true,noOverflow:true,stopEndsBothAllocations:true},null,2));}finally{await other.close();await db.end();await db2.end();}
+        at /home/tiecont/Projects/virtual-city/tests/e2e/dating-profile.spec.ts:14:1430
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/mobile/dating-profile-profile-wit-23fed-the-withdrawal-is-confirmed-mobile/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/mobile/dating-profile-profile-wit-23fed-the-withdrawal-is-confirmed-mobile/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/mobile/dating-profile-profile-wit-23fed-the-withdrawal-is-confirmed-mobile/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/mobile/dating-profile-profile-wit-23fed-the-withdrawal-is-confirmed-mobile/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [mobile] › tests/e2e/dating-profile.spec.ts:13:5 › profile withdrawal invalidates held matching reply and suppresses queue controls until the withdrawal is confirmed 
+pnpm exited 1
+ Container virtual-city-test-90d9dbfd-db-1 Stopping 
+ Container virtual-city-test-90d9dbfd-db-1 Stopped 
+ Container virtual-city-test-90d9dbfd-db-1 Removing 
+ Container virtual-city-test-90d9dbfd-db-1 Removed 
+ Network virtual-city-test-90d9dbfd_default Removing 
+ Network virtual-city-test-90d9dbfd_default Removed 

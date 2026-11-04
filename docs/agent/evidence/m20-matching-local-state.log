@@ -1,0 +1,9 @@
+{
+  "latest": "0034_private_dating_matching.sql",
+  "localPrivateCounts": {
+    "profiles": 0,
+    "proofs": 0,
+    "enrollments": 0,
+    "proposals": 0
+  }
+}

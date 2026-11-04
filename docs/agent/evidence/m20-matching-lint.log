@@ -1,0 +1,8 @@
+$ eslint . && node scripts/check-boundaries.mjs
+
+/home/tiecont/Projects/virtual-city/apps/platform-api/src/dating/matching.ts
+  11:6  error  'Profile' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 1 problem (1 error, 0 warnings)
+
+[ELIFECYCLE] Command failed with exit code 1.

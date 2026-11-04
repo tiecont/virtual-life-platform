@@ -1,0 +1,65 @@
+ Network virtual-city-test-12c615ad_default Creating 
+ Network virtual-city-test-12c615ad_default Creating 
+ Network virtual-city-test-12c615ad_default Created 
+ Network virtual-city-test-12c615ad_default Created 
+ Container virtual-city-test-12c615ad-db-1 Creating 
+ Container virtual-city-test-12c615ad-db-1 Created 
+ Container virtual-city-test-12c615ad-db-1 Starting 
+ Container virtual-city-test-12c615ad-db-1 Started 
+ Container virtual-city-test-12c615ad-db-1 Waiting 
+ Container virtual-city-test-12c615ad-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/dating-matching.test.ts (2 tests | 2 failed) 2522ms
+   × private queue creates one opaque proposal;only both explicit current participants may accept without any Room/contact disclosure 1513ms
+   × queue matching requires mutual topics and compatible pace and Stop cannot be undone by old join retry 1005ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/dating-matching.test.ts > private queue creates one opaque proposal;only both explicit current participants may accept without any Room/contact disclosure
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ view tests/integration/dating-matching.test.ts:17:98
+
+ ❯ join tests/integration/dating-matching.test.ts:19:64
+ ❯ pair tests/integration/dating-matching.test.ts:22:78
+ ❯ tests/integration/dating-matching.test.ts:23:168
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  |integration| tests/integration/dating-matching.test.ts > queue matching requires mutual topics and compatible pace and Stop cannot be undone by old join retry
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ view tests/integration/dating-matching.test.ts:17:98
+
+ ❯ join tests/integration/dating-matching.test.ts:19:64
+ ❯ tests/integration/dating-matching.test.ts:24:230
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  18:16:24
+   Duration  4.62s (transform 770ms, setup 0ms, import 1.94s, tests 2.52s, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-12c615ad-db-1 Stopping 
+ Container virtual-city-test-12c615ad-db-1 Stopped 
+ Container virtual-city-test-12c615ad-db-1 Removing 
+ Container virtual-city-test-12c615ad-db-1 Removed 
+ Network virtual-city-test-12c615ad_default Removing 
+ Network virtual-city-test-12c615ad_default Removed 

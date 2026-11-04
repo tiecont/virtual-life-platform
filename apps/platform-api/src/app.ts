@@ -51,6 +51,8 @@ import { MediaClearanceGate,loadMediaClearance } from './events/media-clearance'
 import { registerMedia } from './events/media-http';
 import { DatingProfiles,testDatingEligibility,type SyntheticDatingEligibility } from './dating/profiles';
 import { registerDatingProfiles } from './dating/http';
+import { DatingMatching } from './dating/matching';
+import { registerDatingMatching } from './dating/matching-http';
 import { EventInvitationService } from './events/invitations';
 import { ProgressionService } from './progression/service';
 import { registerProgression } from './progression/http';
@@ -92,6 +94,12 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   identity.registerExportOwner('privateProfile',(account,transaction)=>datingProfiles.exportAccount(account,transaction));
   http.addHook('preClose',async()=>{await datingProfiles.close();});
   const social = new SocialService(db, identity, options.socialPresence, options.now);
+  const datingMatching=new DatingMatching(db,identity,social,datingProfiles,options.now);
+  datingProfiles.attachWithdrawal((transaction,account)=>datingMatching.invalidate(transaction,account));
+  identity.registerDeletionOwner('privateMatching',(account,transaction)=>datingMatching.invalidate(transaction,account));
+  identity.registerExportOwner('privateMatching',(account,transaction)=>datingMatching.exportAccount(account,transaction));
+  const unsubscribeDatingContact=social.onContactWithdrawn((transaction,a,b)=>datingMatching.block(transaction,a,b));
+  http.addHook('preClose',async()=>{unsubscribeDatingContact();await datingMatching.close();});
   const sanctionsPolicy = new SanctionPolicy(db, options.now), incidentPolicy = new IncidentPolicy(db);
   const safetyGuard = { permits: async (id: string, world: string) => await incidentPolicy.permits(id, world) && await sanctionsPolicy.permits(id, world), assert: async (id: string, world: string, room?: string, chat?: boolean) => { await incidentPolicy.assert(id, world, room, chat); await sanctionsPolicy.assert(id, world, room, chat); } };
   let roomService: RoomService | undefined = undefined;
@@ -150,6 +158,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerWorlds(http, config, worlds.registry, options.now, rooms,discovery);
   registerIdentity(http, config, identity, options.now);
   registerDatingProfiles(http,config,identity,datingProfiles,options.now);
+  registerDatingMatching(http,config,identity,datingMatching,options.now);
   registerSocial(http, config, identity, social, options.now);
   registerReports(http, config, identity, reports, sanctions, incidents, options.now);
   registerTravel(http, config, identity, travel, options.now);
@@ -206,5 +215,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeEventNotices(); unsubscribeEventInvitations(); unsubscribeEventInvitationWithdrawal(); unsubscribeEventConsent(); unsubscribeInvitationWithdrawal(); unsubscribeHospitalityWithdrawal(); unsubscribeEventWithdrawal(); unsubscribeReservationWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, eventInvitations, reservations, progression, diagnostics };
+  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, eventInvitations, reservations, progression, diagnostics };
 }

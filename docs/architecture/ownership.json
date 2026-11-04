@@ -1,6 +1,10 @@
 {
   "schemaVersion": 1,
   "tables": {
+    "restricted_dating_match_consent":"restricted.dating",
+    "restricted_dating_proposals":"restricted.dating",
+    "restricted_dating_enrollments":"restricted.dating",
+    "restricted_dating_match_mutations":"restricted.dating",
     "restricted_dating_profiles":"restricted.dating",
     "restricted_dating_profile_mutations":"restricted.dating",
     "restricted_dating_test_eligibility":"restricted.dating-test-fixtures",

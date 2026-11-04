@@ -1,0 +1,10 @@
+$ tsc -p tsconfig.json --noEmit
+src/dating/matching-http.ts(3,10): error TS2724: '"@virtual-city/contracts"' has no exported member named 'DatingMatchStopSchema'. Did you mean 'DatingTopicSchema'?
+src/dating/matching.ts(3,10): error TS2305: Module '"@virtual-city/contracts"' has no exported member 'DatingMatchViewSchema'.
+src/dating/matching.ts(3,32): error TS2305: Module '"@virtual-city/contracts"' has no exported member 'DatingQueueJoinSchema'.
+src/dating/matching.ts(3,54): error TS2305: Module '"@virtual-city/contracts"' has no exported member 'DatingMatchAcceptSchema'.
+src/dating/matching.ts(3,78): error TS2305: Module '"@virtual-city/contracts"' has no exported member 'DatingMatchStoppedSchema'.
+src/dating/matching.ts(32,554): error TS2322: Type 'undefined' is not assignable to type 'Enrollment'.
+/home/tiecont/Projects/virtual-city/apps/platform-api:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @virtual-city/platform-api@0.1.0 typecheck: `tsc -p tsconfig.json --noEmit`
+Exit status 2
