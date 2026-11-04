@@ -10,21 +10,23 @@
     "db:migrate": "tsx src/db/migrate.ts"
   },
   "dependencies": {
-    "@virtual-city/world-sdk": "workspace:*",
-    "@virtual-city/library-world": "workspace:*",
-    "@virtual-city/restaurant-world": "workspace:*",
-    "@virtual-city/lounge-world": "workspace:*",
-    "@virtual-city/contracts": "workspace:*",
+    "@fastify/cookie": "11.0.2",
     "@nestjs/common": "11.2.8",
     "@nestjs/core": "11.2.8",
     "@nestjs/platform-fastify": "11.2.8",
-    "fastify": "5.12.8",
+    "@opentelemetry/api": "1.10.0",
+    "@opentelemetry/sdk-trace": "3.0.0",
+    "@virtual-city/contracts": "workspace:*",
+    "@virtual-city/library-world": "workspace:*",
+    "@virtual-city/lounge-world": "workspace:*",
+    "@virtual-city/restaurant-world": "workspace:*",
+    "@virtual-city/world-sdk": "workspace:*",
     "drizzle-orm": "0.45.4",
+    "fastify": "5.12.8",
     "pg": "8.23.1",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2",
-    "zod": "4.6.7",
-    "@fastify/cookie": "11.0.2",
-    "socket.io": "4.8.4"
+    "socket.io": "4.8.4",
+    "zod": "4.6.7"
   }
 }

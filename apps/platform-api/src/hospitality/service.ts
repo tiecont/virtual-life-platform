@@ -8,6 +8,7 @@ import type { SocialService } from '../social/service';
 import { DomainError } from '../common/errors';
 import { nextOrderPhase } from './lifecycle';
 import { advanceService, type ServiceAction } from './workflow';
+import { OrderPhaseSchema } from '@virtual-city/contracts';
 type Row = { id: string; customer_id: string; assignee_id: string | null; customer_epoch: string; customer_membership_id: string; world_slug: string; room_id: string; item_key: string; policy_version: string; phase: OrderPhase; version: number; created_at: Date; updated_at: Date; workflow: OrderWorkflowStrategy | null; course_index: number; ready_at: Date | null };
 type Shift = { id: string;role_key:string; account_id: string; world_slug: string; room_id: string; owner_epoch: string; membership_id: string; policy_version: string; started_at: Date; expires_at: Date; interrupted_at: Date | null; ended_at: Date | null; reason: 'voluntary' | 'disconnected' | 'visit-ended' | 'restart' | 'expired' | 'restricted' | null };
 type Context = { worldSlug: string; roomId: string; seatId: string | null; epoch: string; membershipId: string; policy: HospitalityPolicy };
@@ -15,6 +16,18 @@ export interface HospitalityStaffPort { permits(db: PoolClient, actor: IdentityC
 const uuid = z.uuid().transform(value => value.toLowerCase());
 const absent = () => new DomainError('NOT_AVAILABLE', 404, 'This order is unavailable');
 export class HospitalityService {
+  // Read-only owner port for protected operational counts;no participant/world
+  // projection or infrastructure-owned direct access to hospitality tables.
+  async operationalSummary(){
+    if(this.#closed)throw new DomainError('WORLD_UNAVAILABLE',503,'Order gauges unavailable');
+    const db=await this.pool.connect();try{
+      await db.query('BEGIN READ ONLY');await db.query("SET LOCAL statement_timeout='500ms'");await db.query("SET LOCAL lock_timeout='200ms'");
+      const phases=Object.fromEntries(OrderPhaseSchema.options.map(phase=>[phase,0])) as Record<OrderPhase,number>;
+      const rows=await db.query<{phase:OrderPhase;n:string}>("SELECT phase,count(*)::text AS n FROM engine_hospitality_orders WHERE world_slug<>'dating' GROUP BY phase");
+      for(const row of rows.rows){const n=Number(row.n);if(!Object.hasOwn(phases,row.phase)||!Number.isSafeInteger(n)||n<0)throw Error('Gauge outside bounded schema');phases[row.phase]=n;}
+      await db.query('COMMIT');return {observedAt:this.now(),phases};
+    }catch{await db.query('ROLLBACK');throw new DomainError('WORLD_UNAVAILABLE',503,'Order gauges unavailable');}finally{db.release();}
+  }
   async permitsUniform(account:string,world:string,source:{epoch:string;roomId:string;membershipId:string},policyVersion:string) { return !!(await this.pool.query('SELECT 1 FROM engine_hospitality_shifts WHERE account_id=$1 AND world_slug=$2 AND room_id=$3 AND owner_epoch=$4 AND membership_id=$5 AND policy_version=$6 AND ended_at IS NULL AND interrupted_at IS NULL AND expires_at>$7',[account,world,source.roomId,source.epoch,source.membershipId,policyVersion,new Date(this.now())])).rowCount; }
   #maintenance?: Promise<void>; #closed = false;
   constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private rooms: RoomService, private social: SocialService, private staff?: HospitalityStaffPort, private now = Date.now) {}

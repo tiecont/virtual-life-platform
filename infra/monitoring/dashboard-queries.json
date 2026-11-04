@@ -1,0 +1,13 @@
+{
+ "schemaVersion":1,
+ "status":"local query definitions;no hosted dashboard or collector installed",
+ "panels":[
+  {"title":"HTTP requests per second","query":"sum(rate(virtual_life_http_requests_total[5m]))","unit":"requests/second"},
+  {"title":"HTTP error ratio","query":"sum(rate(virtual_life_http_errors_total[5m])) / clamp_min(sum(rate(virtual_life_http_requests_total[5m])), 0.001)","unit":"ratio"},
+  {"title":"HTTP histogram p95 estimate","query":"histogram_quantile(0.95, sum by (le) (rate(virtual_life_http_duration_ms_bucket[5m])))","unit":"milliseconds;histogram estimate"},
+  {"title":"Confirmed generic online memberships","query":"virtual_life_online_memberships","unit":"memberships;excludes reconnect holds and native private dates"},
+  {"title":"Retained hospitality orders by phase","query":"virtual_life_orders","unit":"orders;retained current states,not command retries"},
+  {"title":"Room command p95 upper bound since process start","query":"virtual_life_room_command_p95_upper_bound_ms","unit":"milliseconds;fixed histogram bound"},
+  {"title":"Dropped spans per second","query":"rate(virtual_life_trace_dropped_total[5m])","unit":"spans/second"}
+ ]
+}

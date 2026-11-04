@@ -1,0 +1,4 @@
+{
+  "stage": "browser-secure-cookie",
+  "message": "locator.fill: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('Display name')\u001b[22m\n"
+}

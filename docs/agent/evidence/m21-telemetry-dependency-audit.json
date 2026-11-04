@@ -1,0 +1,30 @@
+[
+  {
+    "name": "@opentelemetry/api",
+    "version": "1.10.0",
+    "publishedAt": "2026-10-20T18:23:17.360Z",
+    "engines": {
+      "node": ">=8.0.0"
+    },
+    "license": "Apache-2.0",
+    "integrity": "sha512-lMkyes8iHrG+mk6WH7X70MdCLI2RS0FwNBY1PyQ8UemaijE2m5mv5A0Niy3HtbYTFrgkUEQjFMXmSAk2hQDuPQ=="
+  },
+  {
+    "name": "@opentelemetry/sdk-trace",
+    "version": "3.0.0",
+    "publishedAt": "2026-10-20T18:27:15.327Z",
+    "engines": {
+      "node": ">=22.15.0"
+    },
+    "peerDependencies": {
+      "@opentelemetry/api": ">=1.10.0 <1.11.0"
+    },
+    "dependencies": {
+      "@opentelemetry/core": "3.0.0",
+      "@opentelemetry/resources": "3.0.0",
+      "@opentelemetry/semantic-conventions": "^1.29.0"
+    },
+    "license": "Apache-2.0",
+    "integrity": "sha512-4T0DbDGdtsjNmYK5/lNalHro4fsMZ0UZ3JE+C8fcqYP25xaJC22FHg8kdJNJ21srjJY5XoT7WNFCtj88NNTl4Q=="
+  }
+]

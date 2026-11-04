@@ -1,0 +1,28 @@
+{
+  "taskID": "M21-01",
+  "scope": "Disposable local production-mode Compose/Caddy staging equivalent;not external staging/public deployment",
+  "publicRelease": false,
+  "composeHealthy": true,
+  "apiWebDatabaseUnpublished": true,
+  "tlsVerifiedWithGeneratedLocalCertificate": true,
+  "forgedOriginDenied": true,
+  "browserHostSecureHttpOnlyLaxCookie": true,
+  "reloadIdentityPreserved": true,
+  "rotationInvalidatesOriginalCookie": true,
+  "verifiedTLSWebsocketAndOriginGuard": true,
+  "forwardedIPCannotResetHandshakeBudget": {
+    "attempts": 31,
+    "accepted": 29,
+    "rejected": 2,
+    "transportDenied": 2
+  },
+  "privateOperatorTelemetry": {
+    "publicEdgeDenied": true,
+    "actualSpans": 25,
+    "online": 0,
+    "metrics": true
+  },
+  "upstreamErrorOmitsPrivateURIAndCookie": true,
+  "appImage": "sha256:d078f79a67d5ed9238e8ba84e28056b0036e4a41acf6411165bbe2dcae6129a5",
+  "result": "PASS"
+}

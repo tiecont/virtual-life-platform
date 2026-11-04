@@ -25,7 +25,6 @@ import { ReportService } from './safety/reports';
 import { registerReports } from './safety/http';
 import { SanctionPolicy, SanctionService } from './safety/sanctions';
 import { IncidentPolicy, IncidentService } from './safety/incidents';
-import { requestLog } from './common/request-log';
 import { DomainError } from './common/errors';
 import { TravelService } from './travel/service';
 import { registerTravel } from './travel/http';
@@ -58,6 +57,9 @@ import { registerDatingDates } from './dating/date-http';
 import { DatingContinuations } from './dating/continuations';
 import { registerDatingContinuations } from './dating/continuation-http';
 import { isTrustedProxy } from './common/proxy';
+import { OperationalTelemetry } from './operations/telemetry';
+import { registerOperations } from './operations/http';
+import { operationalRequestLog,operationalErrorLog } from './operations/log';
 import { EventInvitationService } from './events/invitations';
 import { ProgressionService } from './progression/service';
 import { registerProgression } from './progression/http';
@@ -79,16 +81,22 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility} } = {}) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility} } = {}) {
   const safetyPolicy = await loadSafetyPolicy(options.safety?.policy);
   const mediaClearance=await MediaClearanceGate.create(await loadMediaClearance(),[],options.now);
   const requiredMigrations = await migrationNames();
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
     trustProxy:config.TRUSTED_PROXY_IP?(address=>isTrustedProxy(address,config.TRUSTED_PROXY_IP)):false,
     bodyLimit: 8192, requestTimeout: 10000, genReqId: () => randomUUID(),
-    logger: logging ? { level: 'info', serializers: { req: requestLog }, redact: ['req.headers.cookie', 'req.headers.authorization', 'req.body', 'res.headers.set-cookie'] } : false,
+    logger: logging ? { level: 'info', ...(options.logStream?{stream:options.logStream}:{}), serializers: { req: operationalRequestLog,err:operationalErrorLog }, redact: ['req.headers.cookie', 'req.headers.authorization', 'req.body', 'res.headers.set-cookie'] } : false,
   }), { logger: false });
   const http = app.getHttpAdapter().getInstance() as FastifyInstance;
+  const telemetry=new OperationalTelemetry(!!config.OPERATOR_TELEMETRY_TOKEN,options.now,trace=>{http.log.info({event:'operational.span',...trace},'Operational span completed');});
+  const requests=new WeakMap<FastifyRequest,(status:number)=>void>();
+  http.addHook('onRequest',async req=>{requests.set(req,telemetry.beginHttp(req.id,req.routeOptions.url??'',req.url,req.method));});
+  http.addHook('onResponse',async(req,reply)=>{requests.get(req)?.(reply.statusCode);requests.delete(req);});
+  http.addHook('onRequestAbort',async req=>{requests.get(req)?.(499);requests.delete(req);});
+  http.addHook('onClose',async()=>{await telemetry.close();});
   http.addHook('onRequest', async (req, reply) => {
     reply.header('x-request-id', req.id).header('x-content-type-options', 'nosniff').header('cache-control', 'no-store').header('referrer-policy', 'same-origin');
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) && req.headers.origin !== config.WEB_ORIGIN) {
@@ -224,7 +232,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const unsubscribePrivateDates=config.NODE_ENV==='test'&&config.LOCAL_DATING_PROTOTYPE==='1'?datingDates.attachGateway(gateway):()=>{};
   http.addHook('preClose',async()=>{unsubscribePrivateDates();});
   const roomMetrics = new RoomMetrics();
-  const unsubscribeRooms = registerRoomGateway(gateway, rooms, roomMetrics);
+  const unsubscribeRooms = registerRoomGateway(gateway, rooms, roomMetrics,telemetry);
+  registerOperations(http,config.OPERATOR_TELEMETRY_TOKEN,telemetry,{online:()=>rooms.diagnostics(),rooms:()=>roomMetrics.snapshot(),orders:()=>hospitality.operationalSummary()},options.now);
   registerChatGateway(gateway, chat);
   registerTravelGateway(gateway, travel);
   const unsubscribeSanctions = sanctions.onChanged(id => gateway.emitToAccount(id, 'sanction.changed', SanctionChangedSchema.parse({ schemaVersion: 1 })));

@@ -1,5 +1,7 @@
 # virtual-life-platform
 
+[Private operational telemetry](docs/operations/OBSERVABILITY.md) provides bounded process-local traces, metrics and sanitized logs. Collection defaults OFF; operator endpoints require an independent secret and stay outside the public edge. External monitoring is not provisioned.
+
 Project repository: `git@github.com:tiecont/virtual-life-platform.git` (configured locally; no push performed). The Virtual City plan is the product specification.
 
 The [shared hospitality engine](docs/architecture/HOSPITALITY.md) provides private policy-gated orders, atomic claims, voluntary shifts, reusable timed courses, transactional completion hooks and service refusal/block/safety recovery. Optional progression consumers are implemented; real Maid integration remains gated. No public hospitality world is enabled.

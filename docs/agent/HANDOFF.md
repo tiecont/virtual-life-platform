@@ -6,7 +6,15 @@ Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;bran
 
 Node26.9.0/pnpm11.28.5. RetaineddevDB0036/stopped;latestjournal/9privatecounts0. No preview/verificationworker remains. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
 
-## Current work — M21-02 VERIFIED;continueM21-03
+## Current work — M21-03 VERIFIED; continue M21-04
+
+From c0019cc; ADR0073/OBSERVABILITY.md/m21-telemetry-checks.json. Actual final root0:11governance/263unit/491integration/allbuilds,437 unchanged frozen hashes. Targeted3unit/5API/types/lint/APIbuild0. Real per-app SDK spans with128active/100records/5monotonic-minute retention, finite metrics, safe Pino logs, server request IDs/ephemeral room HMACs. Optional independent operator token defaults collection OFF; internal JSON/Prometheus endpoints denied at public edge. Native dating excluded. Owner gauges count online excluding grace and one order despite retries; SQL outage503/private operator budget does not disable players.
+
+Actual Docker image build0; virtual-life-platform:m21-telemetry ID sha256:d078f79a67d5ed9238e8ba84e28056b0036e4a41acf6411165bbe2dcae6129a5,322 current image-source hashes match. TLS smoke attempt1 Display name locator timeout30s remains unexplained/retained. Same-source attempt2 passed browser secure session/rotation/Origin/socket/IPspoof/502log privacy, private25realspans/online0/Prometheus200/public-edge404 and scoped cleanup. Screenshot inspected. Monitoring7query definitions parsed only; collector/promtool/Grafana/OTLP/distributed propagation/realalerts NOT_RUN. Local trace retention does not delete written logs; operational retention/access review remains necessary.
+
+No migration or retained0036/stopped change. No verification/preview worker remains; root session36220 and smoke sessions27138/32531 finished (1/0 for smokes). All real flags/8Datingapprovalsfalse/B-001/B-002/B-003 remain. No userrepo remote action authorized. Whole plan incomplete.
+
+## Prior slice — M21-02 VERIFIED
 
 Fromb4edb6d;ADR0002offlineacceptance/ADR0072/CI.md/m21-ci-checks.json. Replace monolithic15min core+allbrowser workflow with core30min/validated19spec5browsergroups30min(maxparallel2,failfastfalse)/stable always-quality gate. Every spec once/no omissions/duplicates/foreign/traversal;eachspec/deviceownAPI/DB/quotas. Aggregate requires bothcore+browser success;failure/cancel/skip/missing/malformed/extra metadatafail. Read-onlycontents/pull_request/checkoutcredentialsoff/immutable official v4 pins/no productionsecret/deploy. Scoped ci/group/spec/device reports+traces+summaries7days,not wholeartifact/env/TLS/tool/infra/containerimage dirs;synthetictraces private diagnostics,not sanitizedpublicreports.
 
@@ -68,9 +76,7 @@ Failure history is retained in evidence:missing menu/role2reds;outbox test used 
 
 ## Next exact action
 
-M21-03lowestready. Read21plan and audit apps/platform-api/src/rooms/metrics.ts/app.ts/common/request-log.ts/main.ts/currenthealth/logtests/Hospitality owners. ExistingPino hasreqID/redaction;RoomMetrics fixedlabels/histograms/diagnostics areprocesslocal,not an exposedprotected operator endpoint/HTTPtrace/ordergauge. Design one vertical slice for structuredlogs/traces/basicmetrics with requestID/pseudonymousroomID/p95/online/orders/errors,finitecardinality and no private dating/user fields. Preferexistingstack/ADRbefore addingtelemetry dependencies;actualtraces mustnotbe no-op stubs. Keepoperator exportdefaultclosed/private,not publicCaddyroute. Then21-04gracefulshutdown/rollback/health,05backuprestore,06budgets;continueM22/M23/M24perDAG. HostedCI/requiredsettings NOT_RUNunderADR0002;legacyintegration andM20-07 externalgatesremain.
-
-
+M21-04 lowest ready. Read M21/audited app.ts/main.ts/RoomAuthority/identity gateway and tests/integration/foundation.test.ts,room-owner.test.ts/tests/support/room-runtime.ts. Existing readiness checks schema+known authority state but DB query has no explicit wait bound; idle competing owners may look ready. Existing real SIGTERM/SIGKILL tests prove fresh epoch/no phantom seat and interruption. Implement bounded/coalesced readiness and truthful draining, verify actual deployment/rollback with compatible same-migration local images and preserved sessions. No destructive down migration/public deploy. Then M21-05 backup/restore and disk/connections,06 budgets; continue M22/M23/M24 DAG. Rebuild image after backend changes; old m21-local is M21-01, telemetry image is M21-03. HostedCI/PR/branchprotection and real legacy/pilot/public gates remain external.
 
 ## External gates
 

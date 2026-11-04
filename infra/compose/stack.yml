@@ -9,6 +9,7 @@ x-app-env: &app-env
   PUBLIC_SOCKET_ORIGIN: ${WEB_ORIGIN:?}
   API_INTERNAL_URL: http://api:4300
   TRUSTED_PROXY_IP: ${CITY_PROXY_IP:?Choose the private edge IPv4 address}
+  OPERATOR_TELEMETRY_TOKEN: ${OPERATOR_TELEMETRY_TOKEN:-}
   NEXT_TELEMETRY_DISABLED: '1'
 services:
   db:

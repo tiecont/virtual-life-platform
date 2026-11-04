@@ -24,7 +24,7 @@ async function run(command,args,env=process.env,allowFailure=false){
 }
 async function unusedPort(){const server=net.createServer();await new Promise((ok,no)=>{server.once('error',no);server.listen(0,'127.0.0.1',ok);});const port=server.address().port;await new Promise(ok=>server.close(ok));return port;}
 const port=await unusedPort(),subnet=100+randomBytes(1)[0]%140,origin='https://localhost:'+port;
-const values={CITY_STACK_NAME:project,CITY_APP_IMAGE:process.env.CITY_SMOKE_IMAGE??'virtual-life-platform:m21-local',CITY_NETWORK_SUBNET:`172.30.${subnet}.0/24`,CITY_DYNAMIC_RANGE:`172.30.${subnet}.128/25`,CITY_PROXY_IP:`172.30.${subnet}.2`,CITY_TLS_PORT:String(port),WEB_ORIGIN:origin,CITY_TLS_CERT_FILE:resolve(dir,'cert.pem'),CITY_TLS_KEY_FILE:resolve(dir,'key.pem'),POSTGRES_USER:'city_stage_test',POSTGRES_DB:'city_stage_test',POSTGRES_PASSWORD:randomBytes(24).toString('base64url'),SESSION_SECRET:randomBytes(48).toString('base64url')};
+const values={CITY_STACK_NAME:project,CITY_APP_IMAGE:process.env.CITY_SMOKE_IMAGE??'virtual-life-platform:m21-local',CITY_NETWORK_SUBNET:`172.30.${subnet}.0/24`,CITY_DYNAMIC_RANGE:`172.30.${subnet}.128/25`,CITY_PROXY_IP:`172.30.${subnet}.2`,CITY_TLS_PORT:String(port),WEB_ORIGIN:origin,CITY_TLS_CERT_FILE:resolve(dir,'cert.pem'),CITY_TLS_KEY_FILE:resolve(dir,'key.pem'),POSTGRES_USER:'city_stage_test',POSTGRES_DB:'city_stage_test',POSTGRES_PASSWORD:randomBytes(24).toString('base64url'),SESSION_SECRET:randomBytes(48).toString('base64url'),OPERATOR_TELEMETRY_TOKEN:randomBytes(32).toString('hex')};
 const env={...process.env,...values},envPath=resolve(dir,'.env.staging'),composeArgs=['compose','--project-name',project,'--env-file',envPath,'-f','infra/compose/stack.yml'];
 const compose=(args,allowFailure=false)=>run('docker',[...composeArgs,...args],env,allowFailure);
 let cert;
@@ -81,6 +81,10 @@ try{
  let accepted=0,rejected=0,transportDenied=0;
  for(let i=0;i<31;i++){const result=await connect({origin,'x-forwarded-for':'198.51.100.'+(i+10)});if(result.ok)accepted++;else{rejected++;if(result.reason==='websocket error')transportDenied++;assert.notEqual(result.reason,'RATE_LIMITED');}result.socket.close();}
  assert(accepted>=20&&accepted<31&&transportDenied>0);facts.forwardedIPCannotResetHandshakeBudget={attempts:31,accepted,rejected,transportDenied};
+ stage='private-operator-telemetry';
+ const publicOps=await request('/internal/telemetry','GET',{authorization:'Bearer '+values.OPERATOR_TELEMETRY_TOKEN});assert.equal(publicOps.status,404);
+ const privateOps=await compose(['exec','-T','api','node','--input-type=module','-e',"const headers={authorization:'Bearer '+process.env.OPERATOR_TELEMETRY_TOKEN};const response=await fetch('http://127.0.0.1:4300/internal/telemetry',{headers});if(response.status!==200)throw Error('Internal telemetry failed');const data=await response.json();if(!data.traces.length||data.gauges.online.memberships!==0)throw Error('Internal telemetry is not actual/isolated');const text=await fetch('http://127.0.0.1:4300/internal/metrics',{headers});if(!text.ok||!(await text.text()).includes('virtual_life_http_duration_ms_bucket'))throw Error('Internal metrics failed');console.log(JSON.stringify({actualSpans:data.traces.length,online:data.gauges.online.memberships,metrics:true}));"]);
+ facts.privateOperatorTelemetry={publicEdgeDenied:true,...JSON.parse(privateOps.output.trim())};
  stage='proxy-error-redaction';await compose(['stop','api']);
  const marker='private-path-'+randomUUID(),secret='private-cookie-'+randomUUID(),failed=await request('/v1/dating/continuations/'+marker,'GET',{cookie:secret});assert.equal(failed.status,502);
  const edgeLog=(await compose(['logs','--no-color','edge'])).output;assert(!edgeLog.includes(marker)&&!edgeLog.includes(secret));facts.upstreamErrorOmitsPrivateURIAndCookie=true;

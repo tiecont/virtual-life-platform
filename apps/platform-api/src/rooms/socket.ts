@@ -6,8 +6,9 @@ import { DomainError } from '../common/errors';
 import { IdentityError } from '../identity/errors';
 import type { RoomService } from './service';
 import { RoomMetrics, type RoomCommandName } from './metrics';
+import type { OperationalTelemetry } from '../operations/telemetry';
 
-export function registerRoomGateway(gateway: ReturnType<typeof createIdentityGateway>, rooms: RoomService, metrics = new RoomMetrics()) {
+export function registerRoomGateway(gateway: ReturnType<typeof createIdentityGateway>, rooms: RoomService, metrics = new RoomMetrics(),telemetry?:OperationalTelemetry) {
   const stalled = new WeakMap<object, number>();
   for (const name of ['room.join', 'room.leave', 'room.snapshot', 'seat.claim', 'seat.release', 'room.move']) gateway.allowCommand(name);
   const unsubscribe = rooms.onEnded((ids, event) => {
@@ -39,15 +40,16 @@ export function registerRoomGateway(gateway: ReturnType<typeof createIdentityGat
         if (!parsed.success) { metrics.observe(name, 'INVALID_REQUEST', 0); reject('INVALID_REQUEST'); return; }
         if (pending >= 8) { metrics.observe(name, 'RATE_LIMITED', 0); reject('RATE_LIMITED'); return; }
         pending++;
-        const finish = metrics.begin(); let outcome = 'OK';
+        const finish = metrics.begin(),finishTrace=telemetry?.beginRoom(name); let outcome = 'OK',roomId:string|undefined;
         try {
           const result = await gateway.withSession(socket, (_context, credential) => run(credential, parsed.data));
+          if(result&&typeof result==='object'&&'roomId'in result&&typeof result.roomId==='string')roomId=result.roomId;
           if (socket.connected) ack(RoomAckSchema.parse({ schemaVersion: 1, requestId, ok: true, result }));
         } catch (error) {
           const code = error instanceof DomainError || error instanceof IdentityError || error instanceof WorldError ? error.code : 'INTERNAL_ERROR';
           outcome = code;
           reject(code); if (code === 'UNAUTHENTICATED') gateway.endSession(socket);
-        } finally { pending--; finish(name, outcome); }
+        } finally { pending--; finish(name, outcome);finishTrace?.(outcome,roomId); }
       });
     }
     handle('room.join', RoomJoinSchema, (credential, input) => rooms.join(credential, socket.id, input, () => socket.connected));
