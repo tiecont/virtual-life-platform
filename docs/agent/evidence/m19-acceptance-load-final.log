@@ -1,0 +1,137 @@
+$ pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/lounge-baseline.ts
+$ pnpm --filter './packages/*' -r build
+Scope: 8 of 11 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/world-sdk build: Done
+packages/library-world build$ tsc -p tsconfig.json
+packages/lounge-world build$ tsc -p tsconfig.json
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/library-world build: Done
+packages/lounge-world build: Done
+packages/restaurant-world build: Done
+packages/pixi-scene build: Done
+ Network virtual-city-test-206be520_default Creating 
+ Network virtual-city-test-206be520_default Creating 
+ Network virtual-city-test-206be520_default Created 
+ Network virtual-city-test-206be520_default Created 
+ Container virtual-city-test-206be520-db-1 Creating 
+ Container virtual-city-test-206be520-db-1 Created 
+ Container virtual-city-test-206be520-db-1 Starting 
+ Container virtual-city-test-206be520-db-1 Started 
+ Container virtual-city-test-206be520-db-1 Waiting 
+ Container virtual-city-test-206be520-db-1 Healthy 
+(node:838964) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:839021) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"wave":1,"elapsedMs":1086.4863240000013,"serverWindowElapsedMs":1143,"statuses":[200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200],"errorCodes":[]}
+{"wave":2,"elapsedMs":4182.880892000001,"serverWindowElapsedMs":4239,"statuses":[200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200],"errorCodes":[]}
+{"wave":3,"elapsedMs":7782.690763000002,"serverWindowElapsedMs":7839,"statuses":[429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429,429],"errorCodes":["RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED","RATE_LIMITED"]}
+{
+  "recordedAt": "2026-11-04T07:37:29.031Z",
+  "command": "pnpm bench:lounge",
+  "profile": "4rooms/48actual connected sockets(40RSVP audience+4hosts+4registered moderators),3waves of40concurrent actualTCP reactions and one40spectator manual aggregate read wave,one real ten-second window",
+  "hardware": {
+    "platform": "linux",
+    "release": "7.2.9-2-cachyos",
+    "node": "v26.9.0",
+    "cpuModel": "AMD Ryzen 7 4800HS with Radeon Graphics",
+    "logicalCpus": 16,
+    "availableParallelism": 16,
+    "hostMemoryBytes": 24573251584,
+    "cgroupCpuMax": "unavailable",
+    "cgroupMemoryMax": "unavailable"
+  },
+  "load": {
+    "rooms": 4,
+    "connectedSockets": 48,
+    "rsvpAudience": 40,
+    "measuredRequests": 160,
+    "reactionAttempts": 120,
+    "aggregateReads": 40,
+    "elapsedMs": 7914.324834999999,
+    "unexpectedErrors": 0,
+    "outcomes": [
+      {
+        "wave": 1,
+        "accepted": 40,
+        "limited": 0
+      },
+      {
+        "wave": 2,
+        "accepted": 40,
+        "limited": 0
+      },
+      {
+        "wave": 3,
+        "accepted": 0,
+        "limited": 40
+      }
+    ],
+    "expected429": 40
+  },
+  "latencyMs": {
+    "all": {
+      "samples": 160,
+      "p50": 464.0536230000034,
+      "p95": 948.671456,
+      "max": 1078.6725349999997
+    },
+    "reactionIncludingExpected429": {
+      "samples": 120,
+      "p50": 493.8786650000002,
+      "p95": 971.3341899999996,
+      "max": 1078.6725349999997
+    },
+    "aggregateRead": {
+      "samples": 40,
+      "p50": 376.95264000000134,
+      "p95": 692.9311109999999,
+      "max": 726.3160509999998
+    }
+  },
+  "serverProcess": {
+    "cpuMs": 1706.054,
+    "cpuPercentOfOneCore": 21.556532434140355,
+    "rssBefore": 201674752,
+    "rssPeakSampled": 212422656,
+    "rssAfter": 212422656,
+    "heapUsedPeakSampled": 68749640,
+    "sampleIntervalMs": 100,
+    "samples": 80
+  },
+  "network": {
+    "responseBodyBytes": 35244,
+    "responseBodyBytesPerSecond": 4453.190984041787,
+    "spectatorApplicationEventsDuringMeasuredTraffic": {},
+    "scope": "HTTP JSON bodies and application Socket.IO events only;headers/TLS/engine heartbeat/transport framing/bootstrap/cleanup excluded"
+  },
+  "invariants": {
+    "roomCapacity12": true,
+    "accepted20PerRoomRealWindow": true,
+    "aggregateUnder500Bytes": true,
+    "noPerReactionSpectatorBroadcast": true,
+    "grantRemovalNextReadDisables": true,
+    "socketsAfterCleanup": 0,
+    "membershipsAfterCleanup": 0
+  },
+  "limits": [
+    "Short local48socket burst with real server clock,not100/1000CCU/ramp/soak or production capacity",
+    "No browser/GPU/TLS/WAN or streaming-provider measurement;no media adapter exists",
+    "Child API CPU excludes DB/load generator but all share this host;RSS peak sampled",
+    "SQL schedule/moderator provisioning are synthetic fixtures;actual auth,RSVP,Room admission,moderator approval and reaction paths run over network",
+    "No per-reaction spectator broadcast by architecture;manual aggregate reads are measured instead;no slow-client uplink claim",
+    "No request limits raised,real world/public flags changed or legacy data accessed"
+  ]
+}
+ Container virtual-city-test-206be520-db-1 Stopping 
+ Container virtual-city-test-206be520-db-1 Stopped 
+ Container virtual-city-test-206be520-db-1 Removing 
+ Container virtual-city-test-206be520-db-1 Removed 
+ Network virtual-city-test-206be520_default Removing 
+ Network virtual-city-test-206be520_default Removed 

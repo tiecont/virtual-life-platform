@@ -1,0 +1,11 @@
+{
+  "actualNativePrivateRoomReport": true,
+  "explicitSubjectPublicOptIn": true,
+  "peerDidNotSeeAllegation": true,
+  "noAutomaticSanction": true,
+  "keyboardReport": true,
+  "actualHostEventCancel": true,
+  "stageEnded": true,
+  "audienceDisabled": true,
+  "viewportOverflow": false
+}

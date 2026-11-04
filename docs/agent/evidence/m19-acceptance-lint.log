@@ -1,0 +1,8 @@
+$ eslint . && node scripts/check-boundaries.mjs
+
+/home/tiecont/Projects/virtual-city/tests/integration/lounge-operations.test.ts
+  5:46  error  'TravelSource' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 1 problem (1 error, 0 warnings)
+
+[ELIFECYCLE] Command failed with exit code 1.

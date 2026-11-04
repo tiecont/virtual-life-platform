@@ -1,0 +1,69 @@
+ Network virtual-city-test-2a4a77b8_default Creating 
+ Network virtual-city-test-2a4a77b8_default Creating 
+ Network virtual-city-test-2a4a77b8_default Created 
+ Network virtual-city-test-2a4a77b8_default Created 
+ Container virtual-city-test-2a4a77b8-db-1 Creating 
+ Container virtual-city-test-2a4a77b8-db-1 Created 
+ Container virtual-city-test-2a4a77b8-db-1 Starting 
+ Container virtual-city-test-2a4a77b8-db-1 Started 
+ Container virtual-city-test-2a4a77b8-db-1 Waiting 
+ Container virtual-city-test-2a4a77b8-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+stdout | tests/integration/lounge-operations.test.ts > real Lounge private report retries create one encrypted allegation without exposing reporter or automatically sanctioning performer
+{"scope":"Lounge report TCP failure","status":404,"code":"NOT_AVAILABLE"}
+
+stdout | tests/integration/lounge-operations.test.ts > real Lounge private report retries create one encrypted allegation without exposing reporter or automatically sanctioning performer
+{"scope":"Lounge report TCP failure","status":404,"code":"NOT_AVAILABLE"}
+
+stdout | tests/integration/lounge-operations.test.ts > real Lounge private report retries create one encrypted allegation without exposing reporter or automatically sanctioning performer
+{"scope":"Lounge report TCP failure","status":404,"code":"NOT_AVAILABLE"}
+
+stdout | tests/integration/lounge-operations.test.ts > real Lounge private report retries create one encrypted allegation without exposing reporter or automatically sanctioning performer
+{"scope":"Lounge report TCP failure","status":404,"code":"NOT_AVAILABLE"}
+
+stdout | tests/integration/lounge-operations.test.ts > real Lounge private report retries create one encrypted allegation without exposing reporter or automatically sanctioning performer
+{"scope":"Lounge report TCP failure","status":404,"code":"NOT_AVAILABLE"}
+
+stdout | tests/integration/lounge-operations.test.ts > real Lounge private report retries create one encrypted allegation without exposing reporter or automatically sanctioning performer
+{"scope":"Lounge report TCP failure","status":404,"code":"NOT_AVAILABLE"}
+
+stdout | tests/integration/lounge-operations.test.ts > real Lounge private report retries create one encrypted allegation without exposing reporter or automatically sanctioning performer
+{"scope":"Lounge report TCP failure","status":404,"code":"NOT_AVAILABLE"}
+
+stdout | tests/integration/lounge-operations.test.ts > real Lounge private report retries create one encrypted allegation without exposing reporter or automatically sanctioning performer
+{"scope":"Lounge report TCP failure","status":404,"code":"NOT_AVAILABLE"}
+
+ ❯ |integration| tests/integration/lounge-operations.test.ts (3 tests | 1 failed | 2 skipped) 2167ms
+   × real Lounge private report retries create one encrypted allegation without exposing reporter or automatically sanctioning performer 2163ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/lounge-operations.test.ts > real Lounge private report retries create one encrypted allegation without exposing reporter or automatically sanctioning performer
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/integration/lounge-operations.test.ts:22:671
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 skipped (3)
+   Start at  14:31:20
+   Duration  3.69s (transform 586ms, setup 0ms, import 1.35s, tests 2.17s, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-2a4a77b8-db-1 Stopping 
+ Container virtual-city-test-2a4a77b8-db-1 Stopped 
+ Container virtual-city-test-2a4a77b8-db-1 Removing 
+ Container virtual-city-test-2a4a77b8-db-1 Removed 
+ Network virtual-city-test-2a4a77b8_default Removing 
+ Network virtual-city-test-2a4a77b8_default Removed 

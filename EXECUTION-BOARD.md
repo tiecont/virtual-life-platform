@@ -116,7 +116,7 @@
 | M19 | M19-03 · Implement virtual mocktail service via Hospitality Engine. | VERIFIED | m19-mocktail-checks.json;root232unit/404integration/build0,target98;18Lounge+8Restaurantbrowser0;actual bartender role/one-course ledger/retry/race/refuse/block/withdraw/Stop;no migration/realflags |
 | M19 | M19-04 · Integrate ticket-free events/RSVP, crowd reactions and moderation throttles. | VERIFIED | m19-audience-checks.json;post-budget root235unit/416integration/build0,final13AudienceAPI/APIbuild+22Loungebrowser0;RSVP/noadmission/moderated bounded counts/independent mute-disable/rollback/restart/privacy;0032local0/stopped/flagsOFF |
 | M19 | M19-05 · Implement media licensing gate and optional preapproved streaming adapter. | VERIFIED | ADR0065/m19-media-checks.json;root242unit/418integration/build0,final9gate unit/21API,24Lounge browser plus final2media after text-only rebuild. Empty rights/adapter registry;always SILENT/CSP;no provider/playback implementation claimed. |
-| M19 | M19-06 · Test high fan-out, reports, event cancellation and emergency shutdown. | TODO | — |
+| M19 | M19-06 · Test high fan-out, reports, event cancellation and emergency shutdown. | VERIFIED | m19-acceptance-checks.json/LOUNGE-VERIFICATION/LOUNGE-RUNBOOK;3API/2browser/48socket160request real-clock burst0,SDKsmoke/types/lint0. Heavier read workload failures retained;no sustainedCCU/provider/public claim. |
 | M20 | M20-01 · Define product and legal/trust-safety gate for adult dating before code release. | TODO | — |
 | M20 | M20-02 · Implement separate dating profile with mutual preferences and no global visibility. | TODO | — |
 | M20 | M20-03 · Implement queue/match proposal and atomic two-party acceptance. | TODO | — |
