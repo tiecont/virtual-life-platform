@@ -103,6 +103,9 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
   };
   return {
     io, authorize, withSession, emitToAccount, endSession: (socket: Socket) => disconnect(socket),
+    // Liveness observers receive only the authenticated handshake context.
+    // Every command must still reauthenticate against the current session DB.
+    connectionContext:(socket:Socket)=>socket.connected?leases.get(socket)?.context:undefined,
     onSessionEnded: (listener: (context: IdentityContext) => void) => { endedListeners.add(listener); return () => { endedListeners.delete(listener); }; },
     allowCommand: (name: string) => { commands.add(name); },
   };

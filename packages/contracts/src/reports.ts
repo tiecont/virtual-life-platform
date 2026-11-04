@@ -7,6 +7,7 @@ export const ReportInputSchema = z.strictObject({ schemaVersion: z.literal(1), c
   z.strictObject({ kind: z.literal('room'), epoch: uuid, roomId: uuid, membershipId: uuid, targetId: uuid }),
   z.strictObject({ kind: z.literal('messages'), messageIds: z.array(uuid).min(1).max(5).refine(ids => new Set(ids).size === ids.length) }),
   z.strictObject({kind:z.literal('reservation-invitation'),invitationId:uuid}),
+  z.strictObject({kind:z.literal('private-date'),dateId:uuid}),
 ]) });
 export type ReportInput = z.infer<typeof ReportInputSchema>;
 export const ReportReceiptSchema = z.strictObject({ schemaVersion: z.literal(1), receiptId: uuid, status: z.literal('received'), createdAt: z.iso.datetime() });
@@ -19,6 +20,7 @@ export const ReportEvidenceSchema = z.strictObject({ schemaVersion: z.literal(1)
   z.strictObject({ kind: z.literal('room'), epoch: uuid, roomId: uuid, targetId: uuid }),
   z.strictObject({ kind: z.literal('messages'), messages: z.array(ChatMessageSchema).min(1).max(5) }),
   z.strictObject({kind:z.literal('reservation-invitation'),invitationId:uuid,reservationId:uuid}),
+  z.strictObject({kind:z.literal('private-date'),dateId:uuid}),
 ]) });
 export type ReportEvidence = z.infer<typeof ReportEvidenceSchema>;
 export const CaseDetailSchema = z.strictObject({ schemaVersion: z.literal(1), case: CaseSummarySchema, subjectId: uuid.nullable(), evidence: ReportEvidenceSchema.nullable(), evidenceExpiresAt: z.iso.datetime().nullable() });

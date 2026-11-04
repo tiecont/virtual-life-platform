@@ -1,0 +1,16 @@
+{
+  "twoIndependentConversationChoices": true,
+  "keyboardEntry": true,
+  "cannedOnly": true,
+  "sameChatRetryKey": true,
+  "onePeerMessage": true,
+  "privateAliasOnly": true,
+  "reportAndBlockAfterProofLoss": true,
+  "noAutomaticSanction": true,
+  "historicalBlockRetryIsRecordedOnly": true,
+  "freshBlockChoice": true,
+  "noGlobalPeerIdInBlocks": true,
+  "noGenericRoom": true,
+  "minimum44px": true,
+  "noOverflow": true
+}

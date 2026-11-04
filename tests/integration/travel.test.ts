@@ -26,7 +26,9 @@ async function open(capacity = 8, prepare: (signal: AbortSignal) => Promise<void
   const url = new URL(process.env.TEST_DATABASE_URL!); url.searchParams.set('options', '-c search_path=' + schema);
   const pool = new Pool({ connectionString: url.toString() }); await migrate(pool); let offset = 0;
   const access = { private: false, adult: false };
-  const modules = ['maid', 'private-room', 'dating'].map(slug => defineWorld({ schemaVersion: 1, apiVersion: 1, slug, version: '1.0.0', title: 'Synthetic travel target (not integrated world)', kind: 'sandbox', sceneRef: { key: 'travel-fixture', version: '1.0.0' }, capacity, capabilities: ['presence'], accessPolicy: slug === 'maid' ? { kind: 'public' } : slug === 'dating' ? { kind: 'restricted', policyKey: 'travel.adult', requiresAdult: true } : { kind: 'private', policyKey: 'travel.private' }, visibility: slug === 'maid' ? 'listed' : 'hidden', map: { region: 'sandbox', position: { x: .5, y: .5 }, icon: 'flask' } }, { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {}, travel: { prepare: context => prepare(context.signal), abort: async () => {}, depart: async () => depart() } }));
+  // Generic reviewed-adult travel remains supported outside the isolated dating
+  // product. Dating itself must never admit through these generic paths.
+  const modules = ['maid', 'private-room', 'dating','adult-fixture'].map(slug => defineWorld({ schemaVersion: 1, apiVersion: 1, slug, version: '1.0.0', title: 'Synthetic travel target (not integrated world)', kind: 'sandbox', sceneRef: { key: 'travel-fixture', version: '1.0.0' }, capacity, capabilities: ['presence'], accessPolicy: slug === 'maid' ? { kind: 'public' } : ['dating','adult-fixture'].includes(slug) ? { kind: 'restricted', policyKey: 'travel.adult', requiresAdult: true } : { kind: 'private', policyKey: 'travel.private' }, visibility: slug === 'maid' ? 'listed' : 'hidden', map: { region: 'sandbox', position: { x: .5, y: .5 }, icon: 'flask' } }, { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {}, travel: { prepare: context => prepare(context.signal), abort: async () => {}, depart: async () => depart() } }));
   const config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'travel-local-test-session-secret-000000001' });
   const now = () => Date.now() + offset;
   const options = { now, worlds: { modules, policy: { permits: async () => access.private }, adultProof: { hasReviewedProof: async () => access.adult } } };
@@ -163,10 +165,10 @@ it('denies private/unreviewed adult/offline/version-mismatched and full targets 
 
 it('revalidates private/adult/base flags after issuance; a scoped token never bypasses current access', async () => {
   const r = await open(), u = await guest(r); r.access.private = true; r.access.adult = true;
-  const issued = await create(r, u, null, destination('dating')), key = randomUUID();
+  const issued = await create(r, u, null, destination('adult-fixture')), key = randomUUID();
   r.access.adult = false; await expect(r.app.travel.redeem(credential(r, u), issued.intentId, key, issued.capability!)).rejects.toMatchObject({ code: 'NOT_FOUND' });
   r.access.adult = true; r.access.private = false; await expect(r.app.travel.redeem(credential(r, u), issued.intentId, key, issued.capability!)).rejects.toMatchObject({ code: 'NOT_FOUND' });
-  r.access.private = true; await r.app.worlds.registry.setEnabled('dating', false); await expect(r.app.travel.redeem(credential(r, u), issued.intentId, key, issued.capability!)).rejects.toMatchObject({ code: 'WORLD_UNAVAILABLE' });
+  r.access.private = true; await r.app.worlds.registry.setEnabled('adult-fixture', false); await expect(r.app.travel.redeem(credential(r, u), issued.intentId, key, issued.capability!)).rejects.toMatchObject({ code: 'WORLD_UNAVAILABLE' });
   expect((await r.pool.query('SELECT redeemed_at FROM travel_intents')).rows[0].redeemed_at).toBeNull(); expect(r.app.rooms.diagnostics().memberships).toBe(0);
 });
 
@@ -257,7 +259,7 @@ it('rechecks reviewed adult eligibility and committed target sanctions after pre
   for (const change of ['adult', 'sanction']) {
     let release!: () => void, started = false;
     const r = await open(1, async () => { started = true; await new Promise<void>(resolve => { release = resolve; }); }), u = await guest(r), reporter = await guest(r), peer = await join(r, u); r.access.private = true; r.access.adult = true;
-    const target = change === 'adult' ? 'dating' : 'maid', issued = await create(r, u, peer.source, destination(target)), pending = transfer(peer, issued); await expect.poll(() => started).toBe(true);
+    const target = change === 'adult' ? 'adult-fixture' : 'maid', issued = await create(r, u, peer.source, destination(target)), pending = transfer(peer, issued); await expect.poll(() => started).toBe(true);
     if (change === 'adult') r.access.adult = false;
     else {
       const caseId = randomUUID(); await r.pool.query("INSERT INTO safety_cases(id,receipt_id,reporter_id,subject_id,request_id,fingerprint,world_slug,category,severity,created_at) VALUES($1,$2,$3,$4,$5,$6,'maid','harassment','high',$7)", [caseId, randomUUID(), reporter.me.profile.id, u.me.profile.id, randomUUID(), r.app.identity.fingerprint({ syntheticHandoff: true }), new Date(r.now())]);

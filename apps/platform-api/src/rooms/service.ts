@@ -179,6 +179,7 @@ export class RoomService {
   }
   join(credential: string, connectionId: string, input: RoomJoin, connected: () => boolean) {
     return this.#run(async () => {
+      if(input.worldSlug==='dating')throw new DomainError('NOT_FOUND',404,'Private admission is unavailable here');
       await this.#sweep();
       const generation = this.#worldGenerations.get(input.worldSlug) ?? 0;
       const { actor, definition } = await this.registry.authorizeWorld(credential, input.worldSlug);
@@ -288,6 +289,7 @@ export class RoomService {
   }
   list(credential: string, slug: string) {
     return this.#run(async () => {
+      if(slug==='dating')throw new DomainError('NOT_FOUND',404,'Private admission is unavailable here');
       await this.#sweep(); await this.registry.authorizeWorld(credential, slug);
       return { schemaVersion: 1 as const, rooms: [...this.#rooms.values()].filter(room => room.slug === slug).map(room => ({ roomId: room.id, capacity: room.capacity, occupancy: room.members.size })) };
     });
@@ -396,6 +398,7 @@ export class RoomService {
   hospitalityRecovery<T>(work:(visit:(accountId:string,source:TravelSource)=>{state:'connected'|'grace'|'gone'|'restart';disconnectedAt:number|null;seated:boolean;sessionIds:string[]})=>Promise<T>){return this.visitRecovery(work);}
   travelContext(credential: string, source: TravelSource | null, destination: TravelDestination) {
     return this.#run(async () => {
+      if(destination.worldSlug==='dating')throw new DomainError('NOT_FOUND',404,'Private admission is unavailable here');
       await this.#sweep();
       const generation = this.#worldGenerations.get(destination.worldSlug) ?? 0;
       const { actor, definition } = await this.registry.authorizeWorld(credential, destination.worldSlug);

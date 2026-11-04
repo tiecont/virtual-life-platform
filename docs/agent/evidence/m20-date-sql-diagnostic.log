@@ -1,0 +1,44 @@
+ Network virtual-city-test-c30f8146_default Creating 
+ Network virtual-city-test-c30f8146_default Creating 
+ Network virtual-city-test-c30f8146_default Created 
+ Network virtual-city-test-c30f8146_default Created 
+ Container virtual-city-test-c30f8146-db-1 Creating 
+ Container virtual-city-test-c30f8146-db-1 Created 
+ Container virtual-city-test-c30f8146-db-1 Starting 
+ Container virtual-city-test-c30f8146-db-1 Started 
+ Container virtual-city-test-c30f8146-db-1 Waiting 
+ Container virtual-city-test-c30f8146-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/dating-date.test.ts (2 tests | 1 failed | 1 skipped) 1420ms
+   × requires separate two-party date consent,keeps peer identities private,and delivers bounded canned messages once before independent Leave 1415ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/dating-date.test.ts > requires separate two-party date consent,keeps peer identities private,and delivers bounded canned messages once before independent Leave
+error: inconsistent types deduced for parameter $3
+ ❯ node_modules/.pnpm/pg@8.23.1/node_modules/pg/lib/client.js:694:17
+ ❯ apps/platform-api/src/dating/dates.ts:45:101
+
+ ❯ apps/platform-api/src/dating/matching.ts:51:635
+ ❯ DatingMatching.transaction apps/platform-api/src/dating/matching.ts:19:393
+ ❯ DatingDates.enter apps/platform-api/src/dating/dates.ts:44:199
+ ❯ enter tests/integration/dating-date.test.ts:21:307
+ ❯ tests/integration/dating-date.test.ts:22:367
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 skipped (2)
+   Start at  19:00:28
+   Duration  2.88s (transform 592ms, setup 0ms, import 1.28s, tests 1.42s, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-c30f8146-db-1 Stopping 
+ Container virtual-city-test-c30f8146-db-1 Stopped 
+ Container virtual-city-test-c30f8146-db-1 Removing 
+ Container virtual-city-test-c30f8146-db-1 Removed 
+ Network virtual-city-test-c30f8146_default Removing 
+ Network virtual-city-test-c30f8146_default Removed 

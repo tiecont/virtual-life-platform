@@ -1,0 +1,11 @@
+{
+  "latest": "0035_private_date_rooms.sql",
+  "localPrivateCounts": {
+    "profiles": 0,
+    "proofs": 0,
+    "enrollments": 0,
+    "proposals": 0,
+    "dates": 0,
+    "dateReceipts": 0
+  }
+}

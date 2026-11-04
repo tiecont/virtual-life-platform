@@ -1,0 +1,86 @@
+ Network virtual-city-test-04e09eac_default Creating 
+ Network virtual-city-test-04e09eac_default Creating 
+ Network virtual-city-test-04e09eac_default Created 
+ Network virtual-city-test-04e09eac_default Created 
+ Container virtual-city-test-04e09eac-db-1 Creating 
+ Container virtual-city-test-04e09eac-db-1 Created 
+ Container virtual-city-test-04e09eac-db-1 Starting 
+ Container virtual-city-test-04e09eac-db-1 Started 
+ Container virtual-city-test-04e09eac-db-1 Waiting 
+ Container virtual-city-test-04e09eac-db-1 Healthy 
+[WebServer] (node:226531) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:226567) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:226567) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:226567) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:226530) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:226641) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:226693) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:226746) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:226886) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/dating-profile.spec.ts:15:5 › private timed conversation uses separate native consent,canned retry,confidential report and private block without global identity disclosure (4.9s)
+  ✓  2 [desktop] › tests/e2e/dating-profile.spec.ts:18:5 › independent private Leave defeats held committed chat reply and retains private reporting without restoring conversation (3.7s)
+
+  2 passed (16.0s)
+ Container virtual-city-test-04e09eac-db-1 Stopping 
+ Container virtual-city-test-04e09eac-db-1 Stopped 
+ Container virtual-city-test-04e09eac-db-1 Removing 
+ Container virtual-city-test-04e09eac-db-1 Removed 
+ Network virtual-city-test-04e09eac_default Removing 
+ Network virtual-city-test-04e09eac_default Removed 
+ Network virtual-city-test-6d698335_default Creating 
+ Network virtual-city-test-6d698335_default Creating 
+ Network virtual-city-test-6d698335_default Created 
+ Network virtual-city-test-6d698335_default Created 
+ Container virtual-city-test-6d698335-db-1 Creating 
+ Container virtual-city-test-6d698335-db-1 Created 
+ Container virtual-city-test-6d698335-db-1 Starting 
+ Container virtual-city-test-6d698335-db-1 Started 
+ Container virtual-city-test-6d698335-db-1 Waiting 
+ Container virtual-city-test-6d698335-db-1 Healthy 
+[WebServer] (node:227992) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:228025) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:228025) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:228025) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:227991) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:228069) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:228102) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:228136) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:228273) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [mobile] › tests/e2e/dating-profile.spec.ts:15:5 › private timed conversation uses separate native consent,canned retry,confidential report and private block without global identity disclosure (4.6s)
+  ✓  2 [mobile] › tests/e2e/dating-profile.spec.ts:18:5 › independent private Leave defeats held committed chat reply and retains private reporting without restoring conversation (3.7s)
+
+  2 passed (13.6s)
+ Container virtual-city-test-6d698335-db-1 Stopping 
+ Container virtual-city-test-6d698335-db-1 Stopped 
+ Container virtual-city-test-6d698335-db-1 Removing 
+ Container virtual-city-test-6d698335-db-1 Removed 
+ Network virtual-city-test-6d698335_default Removing 
+ Network virtual-city-test-6d698335_default Removed 

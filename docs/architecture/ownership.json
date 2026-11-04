@@ -5,6 +5,8 @@
     "restricted_dating_proposals":"restricted.dating",
     "restricted_dating_enrollments":"restricted.dating",
     "restricted_dating_match_mutations":"restricted.dating",
+    "restricted_dating_dates":"restricted.dating",
+    "restricted_dating_date_mutations":"restricted.dating",
     "restricted_dating_profiles":"restricted.dating",
     "restricted_dating_profile_mutations":"restricted.dating",
     "restricted_dating_test_eligibility":"restricted.dating-test-fixtures",

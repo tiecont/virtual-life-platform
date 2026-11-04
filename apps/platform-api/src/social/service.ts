@@ -140,8 +140,8 @@ export class SocialService {
       return { value: { removed: true }, changed: [actor.accountId, targetId] };
     });
   }
-  block(token: string, key: string, targetId: string, blocked: boolean) {
-    return this.mutation(token, key, 'block', { targetId, blocked }, [targetId], async (db, actor) => {
+  block(token: string, key: string, targetId: string, blocked: boolean, discloseTarget=true) {
+    return this.mutation(token, key, 'block', { targetId, blocked,...(!discloseTarget?{private:true}:{}) }, [targetId], async (db, actor) => {
       if (actor.accountId === targetId) throw new DomainError('INVALID_REQUEST', 422, 'Choose another contact');
       const [low, high] = this.pair(actor.accountId, targetId);
       if (blocked) {
@@ -149,13 +149,13 @@ export class SocialService {
         if (exists) {
           if (Number((await db.query('SELECT count(*) FROM social_blocks WHERE blocker_id=$1', [actor.accountId])).rows[0].count) >= 500 && !(await db.query('SELECT 1 FROM social_blocks WHERE blocker_id=$1 AND blocked_id=$2', [actor.accountId, targetId])).rows.length) throw new DomainError('RATE_LIMITED', 429, 'Block list limit reached');
           const known = (await db.query("SELECT 1 FROM social_friendships WHERE low_id=$1 AND high_id=$2 UNION ALL SELECT 1 FROM social_friend_requests WHERE from_id=$3 AND to_id=$4 AND state='PENDING' LIMIT 1", [low, high, targetId, actor.accountId])).rows.length > 0;
-          await db.query('INSERT INTO social_blocks VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING', [actor.accountId, targetId, known ? exists.displayName : null, new Date(this.now())]);
+          await db.query('INSERT INTO social_blocks VALUES($1,$2,$3,$4,$5) ON CONFLICT(blocker_id,blocked_id) DO UPDATE SET disclose_target=social_blocks.disclose_target OR EXCLUDED.disclose_target,display_name_snapshot=coalesce(social_blocks.display_name_snapshot,EXCLUDED.display_name_snapshot)', [actor.accountId, targetId, discloseTarget&&known ? exists.displayName : null, new Date(this.now()),discloseTarget]);
         }
         await db.query('DELETE FROM social_friendships WHERE low_id=$1 AND high_id=$2', [low, high]);
         await db.query("UPDATE social_friend_requests SET state='CANCELLED' WHERE pair_low=$1 AND pair_high=$2 AND state='PENDING'", [low, high]);
         for (const listener of this.withdrawals) await listener(db, actor.accountId, targetId);
       } else await db.query('DELETE FROM social_blocks WHERE blocker_id=$1 AND blocked_id=$2', [actor.accountId, targetId]);
-      return { value: { blocked }, changed: [actor.accountId, targetId] };
+      return { value: { blocked }, changed: discloseTarget?[actor.accountId, targetId]:[] };
     });
   }
   requests(token: string, cursor: string | undefined, limit: number) {
@@ -184,12 +184,13 @@ export class SocialService {
       return { schemaVersion: 1, items, nextCursor: ids.length > limit ? page.at(-1)! : null };
     });
   }
-  blocks(token: string) { return this.actorTx(token, [], async (db, actor) => ({ schemaVersion: 1, items: (await db.query('SELECT blocked_id AS "targetId",display_name_snapshot AS label FROM social_blocks WHERE blocker_id=$1 ORDER BY created_at DESC LIMIT 500', [actor.accountId])).rows })); }
+  blocks(token: string) { return this.actorTx(token, [], async (db, actor) => ({ schemaVersion: 1, items: (await db.query('SELECT blocked_id AS "targetId",display_name_snapshot AS label FROM social_blocks WHERE blocker_id=$1 AND disclose_target ORDER BY created_at DESC LIMIT 500', [actor.accountId])).rows })); }
   async exportAccount(accountId: string, db: PoolClient) {
     return { settings: (await db.query('SELECT contact_code,request_policy FROM social_preferences WHERE account_id=$1', [accountId])).rows[0] ?? null,
       requests: (await db.query('SELECT id,from_id,to_id,state,created_at,expires_at FROM social_friend_requests WHERE from_id=$1 OR to_id=$1', [accountId])).rows,
       friends: (await db.query('SELECT low_id,high_id,created_at FROM social_friendships WHERE low_id=$1 OR high_id=$1', [accountId])).rows,
-      blocks: (await db.query('SELECT blocked_id,display_name_snapshot,created_at FROM social_blocks WHERE blocker_id=$1', [accountId])).rows };
+      blocks: (await db.query('SELECT blocked_id,display_name_snapshot,created_at FROM social_blocks WHERE blocker_id=$1 AND disclose_target', [accountId])).rows,
+      privateBlocks:(await db.query('SELECT created_at FROM social_blocks WHERE blocker_id=$1 AND NOT disclose_target ORDER BY created_at DESC LIMIT 500',[accountId])).rows };
   }
   async purgeExpired() {
     await this.pool.query("UPDATE social_friend_requests SET state='EXPIRED' WHERE state='PENDING' AND expires_at<=$1", [new Date(this.now())]);

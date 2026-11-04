@@ -10,7 +10,10 @@ type CaseRow = { id: string; receipt_id: string; reporter_id: string | null; sub
 const unavailable = () => new DomainError('NOT_AVAILABLE', 404, 'This safety action is unavailable');
 const HOUR = 3600000;
 export interface ReservationInvitationReportPort {resolve(token:string,id:string):Promise<{worldSlug:string;subjectId:string;reservationId:string;invitationId:string}>}
+export interface PrivateDateReportPort {resolve(token:string,id:string):Promise<{worldSlug:string;subjectId:string;dateId:string}>}
 export class ReportService {
+  #privateDate?:PrivateDateReportPort;
+  setPrivateDateContext(port:PrivateDateReportPort){if(this.#privateDate)throw Error('Private report context already attached');this.#privateDate=port;}
   #reservationInvitation?:ReservationInvitationReportPort;
   setReservationInvitationContext(port:ReservationInvitationReportPort){if(this.#reservationInvitation)throw Error('Reservation report context already attached');this.#reservationInvitation=port;}
   readonly cache?: MessageEvidenceCache;
@@ -49,6 +52,8 @@ export class ReportService {
     } else if(input.source.kind==='messages') {
       const context = this.cache!.read(initial.accountId, input.source.messageIds); worldSlug = context.worldSlug; subjectId = context.messages[0].sender.id;
       source = { kind: 'messages', messages: context.messages };
+    }else if(input.source.kind==='private-date'){
+      if(!this.#privateDate)throw unavailable();const context=await this.#privateDate.resolve(token,input.source.dateId);worldSlug=context.worldSlug;subjectId=context.subjectId;source={kind:'private-date',dateId:context.dateId};
     }else{
       if(!this.#reservationInvitation)throw unavailable();const context=await this.#reservationInvitation.resolve(token,input.source.invitationId);worldSlug=context.worldSlug;subjectId=context.subjectId;source={kind:'reservation-invitation',invitationId:context.invitationId,reservationId:context.reservationId};
     }

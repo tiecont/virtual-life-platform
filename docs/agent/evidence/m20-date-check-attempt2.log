@@ -1,0 +1,245 @@
+$ pnpm governance:check && pnpm architecture:check && pnpm lint && pnpm typecheck && pnpm dating:check && pnpm assets:check && pnpm test && pnpm test:integration && pnpm build
+$ node scripts/verify-governance.mjs
+{
+  "modules": {
+    "M00": "VERIFIED",
+    "M01": "VERIFIED",
+    "M02": "VERIFIED",
+    "M03": "VERIFIED",
+    "M04": "VERIFIED",
+    "M05": "VERIFIED",
+    "M06": "VERIFIED",
+    "M07": "VERIFIED",
+    "M08": "VERIFIED",
+    "M09": "VERIFIED",
+    "M10": "VERIFIED",
+    "M11": "VERIFIED",
+    "M12": "VERIFIED",
+    "M13": "VERIFIED",
+    "M14": "VERIFIED",
+    "M15": "PENDING",
+    "M16": "PENDING",
+    "M17": "PENDING",
+    "M18": "VERIFIED",
+    "M19": "VERIFIED",
+    "M20": "PENDING",
+    "M21": "PENDING",
+    "M22": "PENDING",
+    "M23": "PENDING",
+    "M24": "PENDING"
+  },
+  "ready": [
+    "M20-04",
+    "M20-05",
+    "M20-06",
+    "M21-01",
+    "M21-02",
+    "M21-03",
+    "M21-04",
+    "M21-05",
+    "M21-06",
+    "M24-01",
+    "M24-02",
+    "M24-03",
+    "M24-04",
+    "M24-05"
+  ],
+  "blocked": [
+    "M15-02",
+    "M15-03",
+    "M15-04",
+    "M15-05",
+    "M15-06",
+    "M16-02",
+    "M16-03",
+    "M16-04",
+    "M16-05",
+    "M16-06",
+    "M17-05",
+    "M20-07"
+  ]
+}
+Governance consistency verified; no gameplay or release claim.
+$ node scripts/verify-architecture.mjs
+Architecture consistency passed: 84 SQL tables + journal; 237 source files checked. Future gameplay invariants remain runtime gates.
+$ eslint . && node scripts/check-boundaries.mjs
+Boundary checks passed: 237 source files
+$ pnpm build:packages && pnpm -r typecheck && tsc -p tests/load/tsconfig.json
+$ pnpm --filter './packages/*' -r build
+Scope: 8 of 11 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/world-sdk build: Done
+packages/library-world build$ tsc -p tsconfig.json
+packages/lounge-world build$ tsc -p tsconfig.json
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/library-world build: Done
+packages/restaurant-world build: Done
+packages/lounge-world build: Done
+packages/pixi-scene build: Done
+Scope: 10 of 11 workspace projects
+packages/contracts typecheck$ tsc -p tsconfig.json --noEmit
+packages/contracts typecheck: Done
+packages/focus-ui typecheck$ tsc -p tsconfig.json --noEmit
+packages/world-sdk typecheck$ tsc -p tsconfig.json --noEmit
+packages/world-sdk typecheck: Done
+packages/library-world typecheck$ tsc -p tsconfig.json --noEmit
+packages/lounge-world typecheck$ tsc -p tsconfig.json --noEmit
+packages/pixi-scene typecheck$ tsc -p tsconfig.json --noEmit
+packages/focus-ui typecheck: Done
+packages/restaurant-world typecheck$ tsc -p tsconfig.json --noEmit
+packages/restaurant-world typecheck: Done
+packages/library-world typecheck: Done
+packages/lounge-world typecheck: Done
+apps/platform-api typecheck$ tsc -p tsconfig.json --noEmit
+packages/pixi-scene typecheck: Done
+apps/portal-web typecheck$ tsc --noEmit
+apps/portal-web typecheck: Done
+apps/platform-api typecheck: Done
+$ node --import tsx scripts/verify-dating-policy.ts
+(node:166492) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{
+  "task": "M20-01",
+  "policy": "1.0.0",
+  "state": "closed-draft",
+  "approvalState": {
+    "publicLaunch": false,
+    "controlledPilot": false,
+    "legalJurisdictionReviewed": false,
+    "adultVerificationReviewed": false,
+    "moderatorCoverageApproved": false,
+    "privacyRetentionReviewed": false,
+    "independentPrivacyAssessment": false,
+    "operatorSignoff": false
+  },
+  "verificationProvider": null,
+  "scope": "Strict definition/gate consistency only;does not verify private runtime,real eligibility,operator signoff or public/pilot approval"
+}
+$ node --import tsx scripts/build-avatar-assets.ts --check
+(node:166544) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Original avatar atlas and provenance reproduce exactly.
+$ pnpm build:packages && node --test tests/governance/*.test.mjs && vitest run --project unit
+$ pnpm --filter './packages/*' -r build
+Scope: 8 of 11 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+packages/library-world build$ tsc -p tsconfig.json
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/lounge-world build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/library-world build: Done
+packages/restaurant-world build: Done
+packages/lounge-world build: Done
+packages/pixi-scene build: Done
+✔ worlds cannot import another world repository, platform internals or application code (6.363488ms)
+✔ contracts cannot import SDK and apps cannot import another application internals (0.365706ms)
+✔ the scanner rejects actual source imports and manifest cycles (10.28042ms)
+✔ audit ranges and conjunctive dependencies preserve the authoritative DAG (2.850272ms)
+✔ cycles, unknown dependencies and duplicate module IDs are rejected (0.501981ms)
+✔ checkpoint cannot assert verification without evidence or through an unmet gate (0.250499ms)
+✔ the supplied plan pack is accepted without changing its manifest shape (5.773562ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 84.455917
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+
+ Test Files  48 passed (48)
+      Tests  257 passed (257)
+   Start at  19:11:53
+   Duration  3.63s (transform 7.38s, setup 0ms, import 25.36s, tests 3.71s, environment 11ms)
+
+$ pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project integration
+$ pnpm --filter './packages/*' -r build
+Scope: 8 of 11 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+packages/library-world build$ tsc -p tsconfig.json
+packages/lounge-world build$ tsc -p tsconfig.json
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/library-world build: Done
+packages/lounge-world build: Done
+packages/restaurant-world build: Done
+packages/pixi-scene build: Done
+ Network virtual-city-test-674f5c8b_default Creating 
+ Network virtual-city-test-674f5c8b_default Creating 
+ Network virtual-city-test-674f5c8b_default Created 
+ Network virtual-city-test-674f5c8b_default Created 
+ Container virtual-city-test-674f5c8b-db-1 Creating 
+ Container virtual-city-test-674f5c8b-db-1 Created 
+ Container virtual-city-test-674f5c8b-db-1 Starting 
+ Container virtual-city-test-674f5c8b-db-1 Started 
+ Container virtual-city-test-674f5c8b-db-1 Waiting 
+ Container virtual-city-test-674f5c8b-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/dating-date.test.ts (13 tests | 1 failed) 19736ms
+   × assigned independent synthetic reviewer can eject only the proven private date;revocation never restores ended consent 1342ms
+(node:187099) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:187233) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:187288) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:187322) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:187466) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:187517) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:187612) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/dating-date.test.ts > assigned independent synthetic reviewer can eject only the proven private date;revocation never restores ended consent
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/integration/dating-date.test.ts:34:1376
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 24 passed (25)
+      Tests  1 failed | 460 passed (461)
+   Start at  19:12:07
+   Duration  417.15s (transform 1.46s, setup 0ms, import 16.10s, tests 397.43s, environment 2ms)
+
+pnpm exited 1
+ Container virtual-city-test-674f5c8b-db-1 Stopping 
+ Container virtual-city-test-674f5c8b-db-1 Stopped 
+ Container virtual-city-test-674f5c8b-db-1 Removing 
+ Container virtual-city-test-674f5c8b-db-1 Removed 
+ Network virtual-city-test-674f5c8b_default Removing 
+ Network virtual-city-test-674f5c8b_default Removed 
+[ELIFECYCLE] Command failed with exit code 1.
+[ELIFECYCLE] Command failed with exit code 1.
