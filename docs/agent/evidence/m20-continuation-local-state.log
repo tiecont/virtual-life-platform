@@ -1,0 +1,14 @@
+{
+  "latest": "0036_private_mutual_continuations.sql",
+  "counts": {
+    "restricted_dating_profiles": 0,
+    "restricted_dating_test_eligibility": 0,
+    "restricted_dating_enrollments": 0,
+    "restricted_dating_proposals": 0,
+    "restricted_dating_dates": 0,
+    "restricted_dating_continuations": 0,
+    "restricted_dating_continuation_members": 0,
+    "restricted_dating_continuation_consent": 0,
+    "restricted_dating_continuation_mutations": 0
+  }
+}

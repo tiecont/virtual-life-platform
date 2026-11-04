@@ -4,7 +4,19 @@
 
 Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;branch main;origin git@github.com:tiecont/virtual-life-platform.git. User authorizes offline/local implementation and local commits only. Do not push/fetch/deploy/provision real staff/copy legacy sources/license media. No subagents requested. Follow MASTER and AGENTS,dependency-ready tasks,actual verification and honest checkpoints. Manual source edits use apply_patch;never print .env/.env.safety or session secrets.
 
-Node26.9.0/pnpm11.28.5. Retained dev DB is0035/stopped;latest query confirms profiles/proofs/enrollments/proposals/dates/dateReceipts all0. No preview/verification worker/session remains running. All real world rollout flags remain OFF;production rejects local world options. No real dating provider/key/proof/grant/participant has been provisioned.
+Node26.9.0/pnpm11.28.5. RetaineddevDB0036/stopped;latestjournal/9privatecounts0. No preview/verificationworker remains. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
+
+## Current work — M20-05 VERIFIED;continueM20-06
+
+Fromaff4b2f;ADR0070/DATING-CONTINUATIONS.md/m20-continuation-checks.json. One own keptchoice/account/global100members;unilateral choice leaves peer NONE byte-identical including own revisions/times/grants. Two explicit likes show neutral alias/MUTUAL720hours;pending originalDate+24h. Both fresh source queues→newproposal→two accepts→two Date entries reuse one-allocation matcher;no general/other-source mixing,DM,friends,globalnotification/score/reward. Minimal source consent survives24hDatepurge.
+
+Positive mutex→captured sorted accounts→sorted union related headers before profiles/proposals;negative continuation-first callbacks→sorted headers→proposal/date→members,no newpeer/global/Roomlock. Passive current peer proof/profile invents no session;newDate actualsessions. Independent revoke survives positiveproof/flag/key/report/quotaloss;oldnegativeack records history,not laterchoices. Canonical returnretry after grant expiry/DateStop neverrenewsqueue/TTL;revokedsource404. Native5sviews/heldreplyfences/standalone withdrawal. Own100metadataexport/100cleanup/20recovery,provisional24h/90dretention.
+
+Actual stable pnpmcheck0:7governance/258unit/480integration(incl16continuation)/lint/types/architecture/policy/assets/allbuilds;395source/config/test/lock hashes unchanged. Final16API0,existing14profile-matching-Datebrowser0 then separate6continuationbrowser0 on finalbuild. All4finalimages inspected/readable/44px/nooverflow;7regeneratedhistoricalPNGs saved in currentregression then originalsrestored. Initial2route404reds,Identitycallbacktype2,preferconstlint1,privacy404message1red retained;uniform404 fixes foreign/nonexistent existence leak without hiding outages. Caps/SQLfixtures are not load/ageefficacy certification.
+
+0036 additive appliedretained0/latestconfirmed/all9privatecounts0/stopped0. No realprovider/key/proof/participant/operator/legacy/remote/public action;allrealflags/all8approvalsfalse,M20-07/B-003external. Opaque privateblockmanagement/humanprivacy-retention/coverage review remain before realuse. Next exact action M20-06 consolidated adversarial matrix;then nextdependency-readytask. Wholeplan incomplete.
+
+No preview/testworker remains. Next exact action:read full20plan/current access/Profiles/Matching/Dates/Continuations/Worlds/Room/travel/socket/logging owners;consolidate existing cases and add meaningful synthetic proof/HTTPsockettraveldeeplink/stalking/alternate-session/privacy/logging gaps,then execute. Existing14+6browser is baseline,not newadversarialtests. Preserve ADR0070 lockorder. No migration unless actualdefect requiresit. No effectiveage/demographic matching claim from synthetic minimumAge18proofs;no gender/exactage preference fields exist. Keep07external/allrealflagsOFF;then lowestreadyM21 etc. Respect B-001/B-002/B-003.
 
 
 

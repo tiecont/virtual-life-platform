@@ -90,3 +90,4 @@ export * from './dating-policy';
 export * from './dating-profile';
 export * from './dating-match';
 export * from './dating-date';
+export * from './dating-continuation';

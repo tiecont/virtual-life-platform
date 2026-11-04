@@ -55,6 +55,8 @@ import { DatingMatching } from './dating/matching';
 import { registerDatingMatching } from './dating/matching-http';
 import { DatingDates } from './dating/dates';
 import { registerDatingDates } from './dating/date-http';
+import { DatingContinuations } from './dating/continuations';
+import { registerDatingContinuations } from './dating/continuation-http';
 import { EventInvitationService } from './events/invitations';
 import { ProgressionService } from './progression/service';
 import { registerProgression } from './progression/http';
@@ -97,10 +99,12 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('preClose',async()=>{await datingProfiles.close();});
   const social = new SocialService(db, identity, options.socialPresence, options.now);
   const datingMatching=new DatingMatching(db,identity,social,datingProfiles,options.now);
-  datingProfiles.attachWithdrawal((transaction,account)=>datingMatching.invalidate(transaction,account));
-  identity.registerDeletionOwner('privateMatching',(account,transaction)=>datingMatching.invalidate(transaction,account));
+  const continuationOwner:{current?:DatingContinuations}={};
+  const withdrawPrivate=async(transaction:Parameters<DatingMatching['invalidate']>[0],account:string)=>{await continuationOwner.current?.invalidate(transaction,account);await datingMatching.invalidate(transaction,account);};
+  datingProfiles.attachWithdrawal(withdrawPrivate);
+  identity.registerDeletionOwner('privateMatching',(account,transaction)=>withdrawPrivate(transaction,account));
   identity.registerExportOwner('privateMatching',(account,transaction)=>datingMatching.exportAccount(account,transaction));
-  const unsubscribeDatingContact=social.onContactWithdrawn((transaction,a,b)=>datingMatching.block(transaction,a,b));
+  const unsubscribeDatingContact=social.onContactWithdrawn(async(transaction,a,b)=>{await continuationOwner.current?.block(transaction,a,b);await datingMatching.block(transaction,a,b);});
   http.addHook('preClose',async()=>{unsubscribeDatingContact();await datingMatching.close();});
   const sanctionsPolicy = new SanctionPolicy(db, options.now), incidentPolicy = new IncidentPolicy(db);
   const safetyGuard = { permits: async (id: string, world: string) => await incidentPolicy.permits(id, world) && await sanctionsPolicy.permits(id, world), assert: async (id: string, world: string, room?: string, chat?: boolean) => { await incidentPolicy.assert(id, world, room, chat); await sanctionsPolicy.assert(id, world, room, chat); } };
@@ -115,6 +119,12 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const rooms = roomService;
   const reports = new ReportService(db, identity, rooms, safetyPolicy, config.NODE_ENV, config.SAFETY_EVIDENCE_KEY, config.SAFETY_EVIDENCE_KEY_ID, options.now);
   const datingDates=new DatingDates(db,identity,social,datingMatching,reports,safetyPolicy,options.now);
+  const datingContinuations=new DatingContinuations(db,identity,social,datingProfiles,datingDates,datingMatching,options.now);
+  continuationOwner.current=datingContinuations;
+  datingMatching.attachContinuations(datingContinuations);
+  identity.registerExportOwner('privateContinuations',(account,transaction)=>datingContinuations.exportAccount(account,transaction));
+  registerDatingContinuations(http,config,identity,datingContinuations,datingMatching,options.now);
+  http.addHook('preClose',async()=>{await datingContinuations.close();});
   datingMatching.attachDates(datingDates);
   reports.setPrivateDateContext({resolve:(token,id)=>datingDates.contact(token,id)});
   identity.registerExportOwner('privateDates',(account,transaction)=>datingDates.exportAccount(account,transaction));
@@ -225,5 +235,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeEventNotices(); unsubscribeEventInvitations(); unsubscribeEventInvitationWithdrawal(); unsubscribeEventConsent(); unsubscribeInvitationWithdrawal(); unsubscribeHospitalityWithdrawal(); unsubscribeEventWithdrawal(); unsubscribeReservationWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, eventInvitations, reservations, progression, diagnostics };
+  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics };
 }

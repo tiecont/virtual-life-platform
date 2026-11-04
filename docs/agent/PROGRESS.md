@@ -1,5 +1,15 @@
 # Agent progress
 
+## M20-05 — VERIFIED private mutual connections and fresh return consent
+
+Fromaff4b2f;ADR0070/DATING-CONTINUATIONS.md/m20-continuation-checks.json. One own keptchoice/account/global100members;unilateral choice leaves peer NONE byte-identical including own revisions/times/grants. Two explicit likes show neutral alias/MUTUAL720hours;pending originalDate+24h. Both fresh source queues→newproposal→two accepts→two Date entries reuse one-allocation matcher;no general/other-source mixing,DM,friends,globalnotification/score/reward. Minimal source consent survives24hDatepurge.
+
+Positive mutex→captured sorted accounts→sorted union related headers before profiles/proposals;negative continuation-first callbacks→sorted headers→proposal/date→members,no newpeer/global/Roomlock. Passive current peer proof/profile invents no session;newDate actualsessions. Independent revoke survives positiveproof/flag/key/report/quotaloss;oldnegativeack records history,not laterchoices. Canonical returnretry after grant expiry/DateStop neverrenewsqueue/TTL;revokedsource404. Native5sviews/heldreplyfences/standalone withdrawal. Own100metadataexport/100cleanup/20recovery,provisional24h/90dretention.
+
+Actual stable pnpmcheck0:7governance/258unit/480integration(incl16continuation)/lint/types/architecture/policy/assets/allbuilds;395source/config/test/lock hashes unchanged. Final16API0,existing14profile-matching-Datebrowser0 then separate6continuationbrowser0 on finalbuild. All4finalimages inspected/readable/44px/nooverflow;7regeneratedhistoricalPNGs saved in currentregression then originalsrestored. Initial2route404reds,Identitycallbacktype2,preferconstlint1,privacy404message1red retained;uniform404 fixes foreign/nonexistent existence leak without hiding outages. Caps/SQLfixtures are not load/ageefficacy certification.
+
+0036 additive appliedretained0/latestconfirmed/all9privatecounts0/stopped0. No realprovider/key/proof/participant/operator/legacy/remote/public action;allrealflags/all8approvalsfalse,M20-07/B-003external. Opaque privateblockmanagement/humanprivacy-retention/coverage review remain before realuse. Next exact action M20-06 consolidated adversarial matrix;then nextdependency-readytask. Wholeplan incomplete.
+
 ## M20-04 — VERIFIED native private date and independent safety
 
 Fromb2621ba;ADR0069/DATING-DATES.md/m20-date-checks.json. Dedicated restricted DateRoom rendered with native controls,not a generic Room/Pixi world/travel/Socket.IO room. Exact accepted pair/original registered sessions/current synthetic proof/profile/safety/block plus two separate conversation choices. Original deadline<=300s;server connection generations/process epoch prevent reconnect consent restoration while another same-session tab preserves liveness. Inherited positive lock order;negative proposal→date closure with no new peer/global/Room locks. Profile/block/erase/expiry close contact;date-close failure rolls back initiating profile/block mutations.

@@ -1,0 +1,13 @@
+{
+  "unilateralPeerNONE": true,
+  "keyboardLike": true,
+  "mutualAliasOnly": true,
+  "oneOwnChoice": true,
+  "twoFreshReturnChoices": true,
+  "newProposalAndTwoEntries": true,
+  "oneCurrentRound": true,
+  "noGeneralFriendshipOrRoom": true,
+  "independentWithdrawEndsRound": true,
+  "minimum44px": true,
+  "noOverflow": true
+}

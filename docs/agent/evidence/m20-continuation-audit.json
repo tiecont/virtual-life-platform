@@ -1,0 +1,81 @@
+{
+  "taskID": "M20-05",
+  "phase": "read-only-audit-not-runtime-verification",
+  "head": "aff4b2fb1a354a2a8cbb26fea9aecfc1a73a4b8b",
+  "files": [
+    {
+      "path": "plans/20-dating-world.md",
+      "sha256": "9efeeff8f8747a304670ed65f140473f360ad3787ef54e053ca76b449b1a999e"
+    },
+    {
+      "path": "apps/platform-api/src/app.ts",
+      "sha256": "58f980d98d1d074d0ac9e380cfa96baa28f5333dc644616d8ec886620b5029a3"
+    },
+    {
+      "path": "apps/platform-api/src/dating/profiles.ts",
+      "sha256": "4229236401e96474781d88bc4096c7e5187ac85d014d6eaede0321e7f27bc097"
+    },
+    {
+      "path": "apps/platform-api/src/dating/matching.ts",
+      "sha256": "73a6b41d996de02f01bb9cd1291cddb9724c34cc62ed03a38188a51771b25775"
+    },
+    {
+      "path": "apps/platform-api/src/dating/dates.ts",
+      "sha256": "9ee8fdc46bbc1449a7c70db681a21a51a96281bf83b126f2dea3e1c7280fa7dc"
+    },
+    {
+      "path": "apps/platform-api/src/dating/date-http.ts",
+      "sha256": "0e1608f39ed0cceb4b827cd1366e26b167219de6b1344fc7de07160f857ff2a6"
+    },
+    {
+      "path": "apps/platform-api/src/identity/service.ts",
+      "sha256": "f5f7523b1d6c69eeb7bc2e977209373e5e4e23fad552050ae56d2200121394c7"
+    },
+    {
+      "path": "apps/platform-api/src/social/service.ts",
+      "sha256": "3d8e8089dd60c4b6cce8176bf157c1db169b14fc70f8bc24fcc2b726fb79ea9f"
+    },
+    {
+      "path": "apps/platform-api/src/db/migrations/0034_private_dating_matching.sql",
+      "sha256": "b6fb30d23122a3476d11314b4ee3c8b7c00c342a009eb66a1e5f2fef2cc4c2a3"
+    },
+    {
+      "path": "apps/platform-api/src/db/migrations/0035_private_date_rooms.sql",
+      "sha256": "718e174cd9516b0ad812f4ff334078715df59b041a7e3921c29fdc9f0b9cf6a0"
+    },
+    {
+      "path": "config/dating-policy.json",
+      "sha256": "e31255f956479ab42a4860b717a7307dd173633a4d38d451def2182b78f891b7"
+    },
+    {
+      "path": "config/rollout.json",
+      "sha256": "5382de05d3a76309bf74542e367b30bd7feeaf9b8b5320d3fabc45d19d0f9aae"
+    }
+  ],
+  "observedMarkers": {
+    "currentMatcherMutex": "dating-matcher:v1",
+    "profileWithdrawalRegistration": "one matcher callback",
+    "dateReportContact": "historical reporting port;not positive continuation authority",
+    "allocation": "one primary-key enrollment/account"
+  },
+  "manualAuditFindings": [
+    "Current matching invalidation follows active enrollment only;cannot revoke historical kept connections by itself.",
+    "Date contact provenance does not establish current adult/profile eligibility.",
+    "Independent negative continuation hooks must precede proposal/date invalidation to avoid header/proposal inversion.",
+    "Positive work must prelock sorted union of related active continuation headers before profile callbacks;independent per-profile header sets can cycle across two actors.",
+    "General/private return queue source isolation and actual fresh two-party consent are not implemented."
+  ],
+  "realApprovals": {
+    "publicLaunch": false,
+    "controlledPilot": false,
+    "legalJurisdictionReviewed": false,
+    "adultVerificationReviewed": false,
+    "moderatorCoverageApproved": false,
+    "privacyRetentionReviewed": false,
+    "independentPrivacyAssessment": false,
+    "operatorSignoff": false
+  },
+  "provider": null,
+  "publicDatingEnabled": false,
+  "nextExactAction": "Implement actual red acceptance for mutual continuation/return/revoke,then closed private runtime/ports/queue isolation and verification. M20-05 remains IN_PROGRESS."
+}

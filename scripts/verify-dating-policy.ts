@@ -17,6 +17,7 @@ assert.equal(policy.interaction.queueSeconds,120);
 assert.equal(policy.interaction.proposalSeconds,45);
 assert.equal(policy.interaction.dateSeconds,300);
 assert.equal(policy.draftRetentionHours.proposalAndDateHistory,24);
+assert.equal(policy.draftRetentionHours.continuation,720);
 console.log(JSON.stringify({task:'M20-01',policy:policy.version,state:policy.state,approvalState:policy.approvals,verificationProvider:policy.eligibility.provider,scope:'Strict definition/gate consistency only;does not verify private runtime,real eligibility,operator signoff or public/pilot approval'},null,2));
 }
 void main().catch(()=>{console.error('Dating draft policy or release/safety gate is inconsistent');process.exitCode=1;});

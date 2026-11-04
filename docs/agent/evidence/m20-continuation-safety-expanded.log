@@ -1,0 +1,25 @@
+ Network virtual-city-test-7df622e3_default Creating 
+ Network virtual-city-test-7df622e3_default Creating 
+ Network virtual-city-test-7df622e3_default Created 
+ Network virtual-city-test-7df622e3_default Created 
+ Container virtual-city-test-7df622e3-db-1 Creating 
+ Container virtual-city-test-7df622e3-db-1 Created 
+ Container virtual-city-test-7df622e3-db-1 Starting 
+ Container virtual-city-test-7df622e3-db-1 Started 
+ Container virtual-city-test-7df622e3-db-1 Waiting 
+ Container virtual-city-test-7df622e3-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  21:54:11
+   Duration  30.07s (transform 775ms, setup 0ms, import 1.62s, tests 28.30s, environment 0ms)
+
+ Container virtual-city-test-7df622e3-db-1 Stopping 
+ Container virtual-city-test-7df622e3-db-1 Stopped 
+ Container virtual-city-test-7df622e3-db-1 Removing 
+ Container virtual-city-test-7df622e3-db-1 Removed 
+ Network virtual-city-test-7df622e3_default Removing 
+ Network virtual-city-test-7df622e3_default Removed 
