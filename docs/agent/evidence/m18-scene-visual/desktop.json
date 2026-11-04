@@ -1,0 +1,80 @@
+{
+  "sameIdentity": true,
+  "world": "restaurant",
+  "seat": "seat-1",
+  "capacity": 10,
+  "noServiceMutations": true,
+  "controls": [
+    {
+      "label": "Walk to entrance",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "Walk to garden aisle",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "Walk to window aisle",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "Walk to service counter",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "Stand up",
+      "height": 44,
+      "width": 85.375
+    },
+    {
+      "label": "01Garden diningYour seat",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "02Garden diningAvailable",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "03Garden diningAvailable",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "04Garden diningAvailable",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "05Window diningAvailable",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "06Window diningAvailable",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "07Window diningAvailable",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "08Window diningAvailable",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "Leave restaurant",
+      "height": 44,
+      "width": 215
+    }
+  ],
+  "errors": []
+}

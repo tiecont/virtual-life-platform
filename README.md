@@ -16,6 +16,8 @@ A synthetic cafe scene is available at `/worlds/sdk-sandbox` only with explicit 
 
 The independently authored [Eternal Library](docs/architecture/LIBRARY.md) has an original reading-room scene,native desks,the shared private focus timer,silent study RSVPs and opt-in group phase counts at `/worlds/library`. Friends can accept an offer for the same public room and separately confirm travel. Its local module installation and world flag both default OFF;production rejects the local activation option. Reading corner and Study alcove share one quiet layout;no books or audio are distributed.
 
+The local [Grand Restaurant](docs/architecture/RESTAURANT.md) scene at `/worlds/restaurant` has two four-chair tables in a ten-place room, original dining art and native chair controls. Diner/Server/Cook perspectives do not grant service permissions. Module installation and its independent flag default OFF and local activation is rejected in production. Reservations, actual staffing and course workflows are separate follow-up slices.
+
 The original starter avatar and outfit/action previews are at `/worlds/sdk-sandbox/avatar-lab`. Regenerate its atlas with `pnpm assets:avatars` after building packages; `pnpm assets:check` verifies reproducibility and provenance. Preview actions do not grant gameplay permissions. Public media/release approval remains pending.
 
 The scene renderer loads through its explicit client entry and uses a versioned immutable atlas cache. [Measured local scene budgets](docs/architecture/SCENE-PERFORMANCE.md) include real browser CPU/network emulation and lifecycle checks; they are not production or physical-device promises.

@@ -1,0 +1,1 @@
+{"schemaVersion":1,"environments":{"development":{},"test":{"restaurant":true,"sdk-sandbox":true,"travel-deadline-fixture":true,"travel-maid-fixture":true,"travel-portal-fixture":true},"production":{}}}

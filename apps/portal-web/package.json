@@ -11,6 +11,7 @@
   "dependencies": {
     "@virtual-city/focus-ui": "workspace:*",
     "@virtual-city/library-world": "workspace:*",
+    "@virtual-city/restaurant-world": "workspace:*",
     "@virtual-city/contracts": "workspace:*",
     "@virtual-city/world-sdk": "workspace:*",
     "@virtual-city/pixi-scene": "workspace:*",

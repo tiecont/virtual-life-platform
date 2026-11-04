@@ -3,7 +3,7 @@
  "origin":"Original project-authored geometry and deterministic Pixi graphics; decorative book spines contain no distributed text, external media, fonts or audio",
  "sources":[
   {"path":"packages/library-world/src/index.ts","sha256":"4b2c432fcfedfe3049e6943116724a211fb0a11b1f4822d0ca0e87c289884a8f"},
-  {"path":"packages/pixi-scene/src/renderer.ts","sha256":"bfcb82e34cb911a849f5a0b986acbef50bb6046450834229b961eaaa09cee8e6"}
+  {"path":"packages/pixi-scene/src/renderer.ts","sha256":"926d018ef5298e128a400c3e851ec380dd181c2f52d81bda8480429b6728460b"}
  ],
  "avatar":"Existing original starter atlas;separate avatar provenance applies",
  "releaseApproved":false

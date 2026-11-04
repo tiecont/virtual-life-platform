@@ -6,9 +6,9 @@ import { fitSceneCamera } from './camera';
 import { sceneEntities } from './entities';
 import { avatarAtlasSpec, avatarFrame } from './avatar-art';
 
-export async function createCafeScene(host: HTMLElement, input: SceneManifest, onSeat: (seatId: string) => void, options: { signal?: AbortSignal; outfit?: AvatarAppearance['outfit'];theme?:'cafe'|'reading-room'; onMove?: (point: { x: number; y: number }) => void } = {}) {
+export async function createCafeScene(host: HTMLElement, input: SceneManifest, onSeat: (seatId: string) => void, options: { signal?: AbortSignal; outfit?: AvatarAppearance['outfit'];theme?:'cafe'|'reading-room'|'dining-room'; onMove?: (point: { x: number; y: number }) => void } = {}) {
   const scene = SceneManifestSchema.parse(input); const size = scene.tileSize;
-  const reading=options.theme==='reading-room';
+  const reading=options.theme==='reading-room',dining=options.theme==='dining-room';
   AvatarOutfitSchema.parse(options.outfit ?? 'casual');
   options.signal?.throwIfAborted();
   const app = new Application();
@@ -38,12 +38,16 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
     const point = world.toLocal(event.global); options.onMove({ x: Math.floor(point.x / size), y: Math.floor(point.y / size) });
   });
   const floor = new Graphics(); world.addChild(floor);
-  for (let y = 0; y < scene.rows; y++) for (let x = 0; x < scene.columns; x++) floor.rect(x * size, y * size, size, size).fill((x + y) % 2 ? reading?'#e1ddce':'#dbe7df' : reading?'#e9e5d9':'#e5eee8');
+  for (let y = 0; y < scene.rows; y++) for (let x = 0; x < scene.columns; x++) floor.rect(x * size, y * size, size, size).fill((x + y) % 2 ? dining?'#ded0bf':reading?'#e1ddce':'#dbe7df' : dining?'#eee3d5':reading?'#e9e5d9':'#e5eee8');
   function rect(g: Graphics, x: number, y: number, w: number, h: number, color: string) { g.rect(x, y, w, h).fill(color); }
   for (const zone of scene.collisionZones) {
     const x = zone.x * size, y = zone.y * size, w = zone.width * size, h = zone.height * size;
     if (zone.kind === 'wall') {
       rect(floor, x, y, w, h, reading?'#4a453c':'#354944'); rect(floor, x + 8, y + 8, Math.max(8, w - 16), Math.max(8, h - 16), reading?'#6a6353':'#465f57');
+    } else if (zone.kind === 'table'&&dining) {
+      rect(floor,x+6,y+9,w,h-5,'#aa927f');rect(floor,x,y,w,h-6,'#fff8e9');rect(floor,x+6,y+6,w-12,h-18,'#e7ded1');
+      for(const offset of [24,w-24]){floor.circle(x+offset,y+h/2-4,13).fill('#faf9f3');floor.circle(x+offset,y+h/2-4,9).stroke({color:'#bca979',width:2});rect(floor,x+offset-20,y+h/2-12,2,19,'#867b69');rect(floor,x+offset+18,y+h/2-12,3,19,'#867b69');}
+      rect(floor,x+w/2-4,y+20,8,24,'#a07377');floor.circle(x+w/2,y+17,9).fill('#c9a1a0');floor.circle(x+w/2+5,y+12,5).fill('#6e8763');
     } else if (zone.kind === 'table') {
       rect(floor, x + 7, y + 13, w, h - 8, '#a4b8aa'); rect(floor, x, y, w, h - 10, '#f7f8ef');
       rect(floor, x + 8, y + 8, w - 16, h - 26, '#e9ebe2');
@@ -64,6 +68,9 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
         }
         rect(floor,x+4,base,w-8,4,'#ac8863');
       }
+    } else if (zone.kind === 'counter'&&dining) {
+      rect(floor,x+6,y+9,w,h-6,'#a98f78');rect(floor,x,y,w,h-8,'#584642');rect(floor,x,y,w,12,'#e9d2a9');
+      for(let offset=24;offset<w-16;offset+=54){floor.ellipse(x+offset,y+34,18,7).fill('#e9e6dc');floor.ellipse(x+offset,y+28,16,6).fill('#faf6ec');rect(floor,x+offset-2,y+16,4,7,'#a88d65');}
     } else if (zone.kind === 'counter') {
       rect(floor, x + 5, y + 9, w, h, '#adbbb0'); rect(floor, x, y, w, h - 5, '#566c67');
       rect(floor, x, y, w, 17, '#f2f3ed'); rect(floor, x + 18, y + 31, 54, 31, '#293b37');
@@ -79,14 +86,15 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
     rect(floor, x * size + 4, 18, 3 * size - 24, 20, '#d7e9ed');
     rect(floor, x * size + 61, 14, 6, 61, '#eff4ef');
   }
-  const rug = new Graphics().rect(6 * size, 9 * size, 7 * size, 3 * size).fill(reading?'#b8a8ab':'#a7c2c6');
-  rug.rect(6 * size + 8, 9 * size + 8, 7 * size - 16, 3 * size - 16).stroke({ color: '#e6eee8', width: 2 }); world.addChild(rug);
+  const rugX=(dining?8:6)*size,rugY=(dining?4:9)*size,rugHeight=(dining?4:3)*size;
+  const rug = new Graphics().rect(rugX,rugY,7*size,rugHeight).fill(dining?'#a77b79':reading?'#b8a8ab':'#a7c2c6');
+  rug.rect(rugX+8,rugY+8,7*size-16,rugHeight-16).stroke({ color: '#e6eee8', width: 2 }); world.addChild(rug);
   const seats = new Container(); const people = new Container({ sortableChildren: true }); world.addChild(seats, people);
   function label(text: string, x: number, y: number, color = '#354944', fontSize = 14) {
     const element = new Text({ text, style: { fontFamily: 'system-ui, sans-serif', fontSize, fill: color, fontWeight: '600' } }); element.anchor.set(.5); element.position.set(x, y); return element;
   }
-  world.addChild(label(reading?'READING CORNER':'WINDOW TABLE', 4.5 * size, 8 * size), label(reading?'STUDY ALCOVE':'GARDEN TABLE', 13.5 * size, (reading?9:8) * size));
-  world.addChild(label(reading?'ETERNAL LIBRARY':'LOCAL TEST CAFE', 9.5 * size, 1.8 * size, '#eff4ef', 14));
+  world.addChild(label(dining?'GARDEN DINING':reading?'READING CORNER':'WINDOW TABLE', (dining?5:4.5) * size, (dining?8.8:8) * size), label(dining?'WINDOW DINING':reading?'STUDY ALCOVE':'GARDEN TABLE', (dining?18:13.5) * size, (dining?8.8:reading?9:8) * size));
+  world.addChild(label(dining?'GRAND RESTAURANT':reading?'ETERNAL LIBRARY':'LOCAL TEST CAFE', (dining?12:9.5) * size, 1.8 * size, '#eff4ef', 14));
   let destroyed = false;
   let current: RoomSnapshot | null = null; let context = ''; let created = 0; let removed = 0; let frames = 0;
   const avatars = new Map<string, { root: Container; sprite: Sprite; appearance: AvatarAppearance; pose: AnimationState; startedAt: number | null; motion?: RoomMotion; serverTime: number; receivedAt: number; settledPose: 'idle' | 'sit'; self: boolean }>();

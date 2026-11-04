@@ -43,6 +43,7 @@
     "pg": "8.23.1",
     "@virtual-city/contracts": "workspace:*",
     "@virtual-city/library-world": "workspace:*",
+    "@virtual-city/restaurant-world": "workspace:*",
     "@virtual-city/world-sdk": "workspace:*",
     "socket.io-client": "4.8.4"
   }

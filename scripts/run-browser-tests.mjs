@@ -12,7 +12,7 @@ for (const project of ['desktop', 'mobile']) {
   const scope=filters.length?project:`${project}/${batch[0].split('/').at(-1).replace('.spec.ts','')}`;
   const code = await new Promise((resolve, reject) => {
     const child = spawn(process.execPath, ['scripts/with-test-db.mjs', 'pnpm', 'exec', 'playwright', 'test', '--project', project, '--output', `test-results/${scope}`, ...batch], {
-      stdio: 'inherit', env: { ...process.env, BROWSER_LIBRARY_WORLD:batch.some(value=>value.endsWith('/library.spec.ts'))?'1':'0', PLAYWRIGHT_HTML_OUTPUT_DIR: `playwright-report/${scope}` },
+      stdio: 'inherit', env: { ...process.env, BROWSER_LIBRARY_WORLD:batch.some(value=>value.endsWith('/library.spec.ts'))?'1':'0', BROWSER_RESTAURANT_WORLD:batch.some(value=>value.endsWith('/restaurant.spec.ts'))?'1':'0', PLAYWRIGHT_HTML_OUTPUT_DIR: `playwright-report/${scope}` },
     });
     child.once('error', reject);
     child.once('exit', code => resolve(code ?? 1));

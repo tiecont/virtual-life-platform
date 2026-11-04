@@ -1,0 +1,24 @@
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |unit| packages/restaurant-world/test/scene.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| packages/restaurant-world/test/scene.test.ts [ packages/restaurant-world/test/scene.test.ts ]
+Error: Cannot find package '@virtual-city/restaurant-world' imported from /home/tiecont/Projects/virtual-city/packages/restaurant-world/test/scene.test.ts
+ ❯ packages/restaurant-world/test/scene.test.ts:2:1
+      1| import { it,expect } from 'vitest';
+      2| import { restaurantScene,restaurantTables,createRestaurantWorld } from…
+       | ^
+      3| import { findScenePath } from '@virtual-city/world-sdk';
+      4| it('two original dining tables map exactly to eight reachable chairs w…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  08:44:59
+   Duration  178ms (transform 26ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+

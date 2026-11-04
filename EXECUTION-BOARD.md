@@ -105,7 +105,7 @@
 | M17 | M17-03 · Implement quiet mode/limited quick-chat and group study event. | VERIFIED | m17-events-checks.json;211unit/323integration/12Library-focus+24SDKscene browser;silent policy/ownerRSVP/capacity/privacy/TTL/retry |
 | M17 | M17-04 · Implement opt-in group session progress and invitations. | VERIFIED | m17-sharing-checks.json;full333integration/211unit;final17Library;browser16+regression40;ephemeral consent/phase-only/privacy/withdrawal/exact publicroom offers |
 | M17 | M17-05 · Test portal travel, reconnect, quiet moderation and mobile. | BLOCKED_EXTERNAL | m17-journey-checks.json;local1API+20browser pass;actualDeadline return requiresM15-02..06/B-001;SDKnotasubstitute |
-| M18 | M18-01 · Design restaurant scene, dining zones and role-based UI. | TODO | — |
+| M18 | M18-01 · Design restaurant scene, dining zones and role-based UI. | VERIFIED | m18-scene-checks.json;213unit/337integration/4Restaurant+24Cafe+4Library browser;8reachable chairs/10places/original art/role presentation without authority/defaultOFF |
 | M18 | M18-02 · Implement virtual table reservation and group check-in. | TODO | — |
 | M18 | M18-03 · Implement waiter/chef shifts using Hospitality Engine. | TODO | — |
 | M18 | M18-04 · Implement multi-course menu and coordination minigame. | TODO | — |
