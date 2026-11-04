@@ -1,0 +1,10 @@
+{
+  "schemaVersion":1,"version":"1.0.0","state":"closed-draft",
+  "approvals":{"publicLaunch":false,"controlledPilot":false,"legalJurisdictionReviewed":false,"adultVerificationReviewed":false,"moderatorCoverageApproved":false,"privacyRetentionReviewed":false,"independentPrivacyAssessment":false,"operatorSignoff":false},
+  "eligibility":{"minimumAge":18,"registeredOnly":true,"selfAttestationSufficient":false,"unknownOrUnderage":"deny","proofRequired":"current-account-bound-reviewed-provider","provider":null,"maxProofAgeSeconds":86400,"recheckEveryCommand":true,"rawAgeDocumentsStored":false},
+  "privacy":{"globalPresence":"hidden","friendActivity":false,"globalDiscovery":false,"globalInvitations":false,"globalProfileFields":false,"globalNotifications":false,"analytics":"none","preciseLocation":false,"clientPeerAccountIds":false,"ownExport":"authenticated-private","erasure":"withdraw-consent-then-erase"},
+  "consent":{"profileOptInDefault":false,"queueOptInDefault":false,"proposalRequiresBoth":true,"chatRequiresBoth":true,"continuationRequiresBoth":true,"independentLeave":true,"blockOverridesConsent":true,"reconnectRestoresConsent":false,"publicMatchScoreboard":false,"sharedFriendshipAutomatic":false},
+  "interaction":{"mode":"timed-private-canned","maxParticipants":2,"maxConcurrentMatchesPerAccount":1,"queueSeconds":120,"proposalSeconds":45,"dateSeconds":300,"media":false,"freeText":false,"uploads":false,"voiceVideo":false,"payments":false,"contactDetails":false},
+  "draftRetentionHours":{"inactiveProfile":720,"eligibilityMetadata":24,"proposalAndDateHistory":24,"mutationReceipts":24,"continuation":720,"negativeConsent":2160,"reportEvidenceOwner":"platform.safety"},
+  "operations":{"operator":"unassigned","safetyLead":"unassigned","privacyOwner":"unassigned","jurisdiction":null,"appealContact":null,"staffGrantFromClient":false,"independentAppealReview":true,"reportCreatesAutomaticSanction":false,"incidentRecoveryByIndependentAdmin":true,"externalMessagesAutomatic":false}
+}

@@ -1,0 +1,24 @@
+$ node --import tsx scripts/verify-dating-policy.ts
+
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+Error: Transform failed with 3 errors:
+/home/tiecont/Projects/virtual-city/scripts/verify-dating-policy.ts:4:49: ERROR: Top-level await is currently not supported with the "cjs" output format
+/home/tiecont/Projects/virtual-city/scripts/verify-dating-policy.ts:4:145: ERROR: Top-level await is currently not supported with the "cjs" output format
+/home/tiecont/Projects/virtual-city/scripts/verify-dating-policy.ts:4:217: ERROR: Top-level await is currently not supported with the "cjs" output format
+    at failureErrorWithLog (/home/tiecont/Projects/virtual-city/node_modules/.pnpm/esbuild@0.27.7/node_modules/esbuild/lib/main.js:1748:15)
+    at /home/tiecont/Projects/virtual-city/node_modules/.pnpm/esbuild@0.27.7/node_modules/esbuild/lib/main.js:1017:50
+    at responseCallbacks.<computed> (/home/tiecont/Projects/virtual-city/node_modules/.pnpm/esbuild@0.27.7/node_modules/esbuild/lib/main.js:884:9)
+    at handleIncomingPacket (/home/tiecont/Projects/virtual-city/node_modules/.pnpm/esbuild@0.27.7/node_modules/esbuild/lib/main.js:939:12)
+    at Socket.readFromStdout (/home/tiecont/Projects/virtual-city/node_modules/.pnpm/esbuild@0.27.7/node_modules/esbuild/lib/main.js:862:7)
+    at Socket.emit (node:events:514:20)
+    at addChunk (node:internal/streams/readable:576:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:527:3)
+    at Readable.push (node:internal/streams/readable:407:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23) {
+  name: 'TransformError'
+}
+
+Node.js v26.9.0
+[ELIFECYCLE] Command failed with exit code 1.
