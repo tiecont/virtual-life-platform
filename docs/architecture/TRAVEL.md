@@ -1,5 +1,7 @@
 # Travel Lifecycle and Admission Boundary
 
+M17-04adds an accepted public room-offer link to the existing explicit confirmation flow. The optional UUID identifies an authorized public room;it grants no admission or reservation. After canonical Library admission,the travel view offers Open Library room. Its shared room shell reattaches the same account/membership under current owner checks. Neither invitation acceptance nor opening the link creates a study RSVP. ADR0054/m17-sharing-checks.json records the actual friend/accept/review/same-room journey.
+
 M09-01 defines the lifecycle; M09-02 adds scoped durable authorization and HTTP issuance/read/cancel. M09-04 adds a socket coordinator with separate target preparation, bounded capacity holds and an owner-serialized membership switch. M09-06 adds browser confirmation and reconnect reconciliation at `/travel`. Ordinary room.join still rejects a different current membership. See ADR0017/0018/0020/0022 and the M09 checkpoints for verified scope.
 
 ## Audit

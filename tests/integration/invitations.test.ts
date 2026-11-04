@@ -99,7 +99,7 @@ it('never sends hidden/private/adult world details even to reviewed adults; rech
 it('rejects forged authority/room/free text, Origin/CSRF failures, arbitrary keys and query bearer input', async () => {
   const r = await open(), { a, b } = await pair(r), input = { schemaVersion: 1, recipientId: b.me.profile.id, destination: dest() };
   for (const extra of [{ senderId: a.me.profile.id }, { role: 'staff' }, { text: 'unreviewed arbitrary message' }, { ttlMs: 999999 }, { redirect: 'https://example.invalid' }]) expect((await write(r, a, 'invitations', { ...input, ...extra })).statusCode).toBe(422);
-  expect((await write(r, a, 'invitations', { ...input, destination: { ...dest(), roomId: randomUUID() } })).statusCode).toBe(422);
+  expect((await write(r, a, 'invitations', { ...input, destination: { ...dest(), roomId: randomUUID() } })).statusCode).toBe(404);
   expect((await r.app.http.inject({ method: 'POST', url: '/v1/invitations', headers: { ...headers(a), origin: 'https://example.invalid' }, payload: input })).statusCode).toBe(403);
   expect((await r.app.http.inject({ method: 'POST', url: '/v1/invitations', headers: { origin, cookie: a.cookie, 'idempotency-key': randomUUID() }, payload: input })).statusCode).toBe(403);
   expect((await write(r, a, 'invitations', input, 'unsafe-key')).statusCode).toBe(422); expect((await r.app.http.inject({ url: '/v1/invitations?token=ignored', headers: { cookie: a.cookie } })).statusCode).toBe(422);

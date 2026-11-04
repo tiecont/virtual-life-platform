@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { io, type Socket } from 'socket.io-client';
 import { ApiErrorSchema, MeSchema, OwnRoomSchema, RoomAckSchema, RoomDeltaSchema, TravelAckSchema, TravelIntentReceiptSchema, WorldCatalogSchema, type Me, type RoomSnapshot, type TravelIntentInput, type WorldCard } from '@virtual-city/contracts';
@@ -115,6 +116,7 @@ export default function TravelPanel({ socketOrigin,preferred={kind:'none'} }: { 
       <p className="travel-identity" data-account-id={me.profile.id}>{me.profile.displayName} · Avatar: {me.profile.avatarKey}</p>
       <section aria-labelledby="current-visit"><h2 id="current-visit">Your visit</h2><div data-world={current?.worldSlug ?? ''} data-membership-id={current?.membershipId ?? ''} className="travel-location">{connection !== 'ready' ? 'No confirmed place' : current ? worlds.find(world => world.slug === current.worldSlug)?.title ?? 'Private world' : 'City lobby'}</div>
         {current && <p className="muted">{current.occupancy} / {current.capacity} present · {current.self.seatId ? 'Your seat is retained.' : 'On the floor'}</p>}
+        {connection==='ready'&&current?.worldSlug==='library'&&<Link href="/worlds/library">Open Library room</Link>}
         <button disabled={busy} onClick={() => { if (client.current?.connected) void refresh.current(); else client.current?.connect(); }}>Refresh your visit</button>{current && <button className="secondary" disabled={busy} onClick={() => void leave()}>Return to lobby</button>}
       </section>
       <form onSubmit={event => { event.preventDefault(); void travel(); }}><h2>Choose your destination</h2><label htmlFor="travel-destination">Destination</label><select id="travel-destination" value={destination} disabled={busy || hasPending || connection !== 'ready'} onChange={event => {setDestination(event.target.value);setTargetRoom(null);setLinkTouched(true);}} required><option value="">Choose a world</option>{worlds.filter(world => world.slug !== current?.worldSlug||world.slug===destination&&!!targetRoom&&targetRoom!==current.roomId).map(world => <option key={world.slug} value={world.slug}>{world.title}</option>)}</select>

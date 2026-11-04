@@ -46,6 +46,8 @@ import { ProgressionService } from './progression/service';
 import { registerProgression } from './progression/http';
 import { AppearanceService } from './progression/appearance';
 import { DiscoveryService } from './discovery/service';
+import { LibraryStudyService } from './library/study';
+import { registerStudy } from './library/http';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -91,7 +93,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const sanctions = new SanctionService(db, identity, reports, rooms, safetyPolicy, config.NODE_ENV, config.SAFETY_EVIDENCE_KEY, config.SAFETY_EVIDENCE_KEY_ID, options.now);
   const incidents = new IncidentService(db, identity, reports, rooms, () => worlds.registry.slugs(), options.now);
   const travel = new TravelService(db, identity, rooms, options.now);
-  const invitations = new InvitationService(db, identity, social, worlds.registry, options.now);
+  const invitations = new InvitationService(db, identity, social, worlds.registry, options.now,rooms);
   const focus = new FocusService(db, identity, rooms, options.now);
   const hospitality = new HospitalityService(db, identity, rooms, social, options.hospitality?.staff, options.now);
   const progression = new ProgressionService(db, identity, focus, async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account,world) && await new SanctionPolicy(transaction, options.now).permits(account,world), options.progression?.policy, options.now,options.progression?.correctionOperators);
@@ -101,6 +103,11 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const events = new EventService(db, identity, social, worlds.registry, { permits: async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account, world) && await new SanctionPolicy(transaction, options.now).permits(account, world) }, options.events?.organizers ?? eventPermissions, options.now, eventPermissions);
   const reservations = new ReservationService(db, identity, social, rooms, events, options.now); events.attachReservations(reservations);
   const eventInvitations = new EventInvitationService(db, identity, invitations, events, options.now); events.attachInvitations(eventInvitations);
+  const study=new LibraryStudyService(identity,rooms,events,focus,options.now);
+  const unsubscribeStudyContact=social.onContactWithdrawn(async(_transaction,a,b)=>{study.revoke(a);study.revoke(b);});
+  const unsubscribeStudyConsent=invitations.onConsentWithdrawn(async(_transaction,account)=>{study.revoke(account);});
+  identity.registerExportOwner('study',async id=>study.exportAccount(id));identity.registerDeletionOwner('study',async id=>study.revoke(id));
+  http.addHook('preClose',async()=>{study.close();unsubscribeStudyContact();unsubscribeStudyConsent();});
   const discovery=new DiscoveryService(identity,rooms,events,options.now);http.addHook('preClose',async()=>discovery.close());
   const unsubscribeInvitationWithdrawal = social.onContactWithdrawn((transaction, a, b) => invitations.withdrawContact(transaction, a, b));
   const unsubscribeHospitalityWithdrawal = social.onContactWithdrawn((transaction, a, b) => hospitality.withdrawContact(transaction, a, b));
@@ -118,6 +125,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerTravel(http, config, identity, travel, options.now);
   registerInvitations(http, config, identity, invitations, options.now);
   registerFocus(http, config, identity, focus, options.now);
+  registerStudy(http,config,identity,study,options.now);
   registerProgression(http, config, identity, progression, appearance, options.now);
   identity.registerExportOwner('appearance',(id,transaction)=>appearance.exportAccount(id,transaction));
   identity.registerExportOwner('progression', (id, transaction) => progression.exportAccount(id,transaction));
@@ -165,5 +173,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeEventNotices(); unsubscribeEventInvitations(); unsubscribeEventInvitationWithdrawal(); unsubscribeEventConsent(); unsubscribeInvitationWithdrawal(); unsubscribeHospitalityWithdrawal(); unsubscribeEventWithdrawal(); unsubscribeReservationWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, hospitality, hospitalityOutbox, events, eventInvitations, reservations, progression, diagnostics };
+  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, eventInvitations, reservations, progression, diagnostics };
 }

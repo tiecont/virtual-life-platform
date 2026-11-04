@@ -24,10 +24,13 @@ export class EventService {
   #reservations?: EventReservationObserver;
   #invitations?: EventInvitationAccess;
   #noticeListeners = new Set<(accounts: string[]) => void>();
+  #participationEnded=new Set<(eventId:string,accounts:string[])=>void>();
   constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private social: SocialService, private registry: WorldRegistry, private safety: EventSafetyPort, private organizers?: EventOrganizerPort, private now = Date.now, private permissions?: EventPermissions) {}
   attachReservations(port: EventReservationObserver) { if (this.#reservations) throw new Error('Reservation observer already attached'); this.#reservations = port; }
   attachInvitations(port: EventInvitationAccess) { if (this.#invitations) throw new Error('Invitation access already attached'); this.#invitations = port; }
   onNotice(listener: (accounts: string[]) => void) { this.#noticeListeners.add(listener); return () => { this.#noticeListeners.delete(listener); }; }
+  onParticipationEnded(listener:(eventId:string,accounts:string[])=>void){this.#participationEnded.add(listener);return()=>{this.#participationEnded.delete(listener);};}
+  private invalidateParticipation(eventId:string,accounts:string[]){for(const listener of this.#participationEnded){try{listener(eventId,accounts);}catch{/* Canonical eligibility is also rechecked on every projection. */}}}
   async forOrganizer(db: PoolClient, organizer: string, work: (ids: string[]) => Promise<void>) { const rows = (await db.query<{ id: string }>("SELECT id FROM engine_events WHERE organizer_id=$1 AND phase NOT IN ('ENDED','CANCELLED')", [organizer])).rows; await work(rows.map(row => row.id)); }
   private bookingContext(row: Row, definition?: WorldDefinition): EventBookingContext { return { id: row.id, organizerId: row.organizer_id, title: row.title, visibility: row.visibility, worldSlug: row.world_slug, resourceKey: row.resource_key, capacity: row.capacity, phase: row.phase, schedule: this.scheduleOf(row), definition }; }
   private async tx<T>(token: string, targets: string[], work: (db: PoolClient, actor: IdentityContext) => Promise<T>) {
@@ -178,6 +181,7 @@ export class EventService {
     // Cancellation is consent withdrawal and remains possible while a world is
     // disabled/closed. It never grants admission or new audience interaction.
     const result = await (action === 'cancel' ? run() : this.context(token, known.world_slug, (world, valid) => run(world, valid)));
+    if(action==='cancel')this.invalidateParticipation(known.id,notified);
     if (notified.length) for (const listener of this.#noticeListeners) { try { listener(notified); } catch { /* Durable inbox remains authoritative; hints are replaceable. */ } }
     return result;
   }
@@ -203,6 +207,12 @@ export class EventService {
     const catalog = await this.registry.catalog(token), slugs = catalog.worlds.filter(world => world.availability === 'available' && world.accessHint === 'session-required' && world.capabilities.includes('events') && world.slug !== 'dating').map(world => world.slug);
     return read(slugs, () => !this.#closed && slugs.every(slug => this.registry.permitsActivityDisclosure(slug)));
   }
+  async studyParticipants(token:string,id:string,worldSlug:string,accounts:readonly string[]){
+    if(accounts.length>8)throw unavailable();const actor=await this.identity.authenticate(token),{event}=await this.get(token,id);
+    if(event.worldSlug!==worldSlug||!['OPEN','LIVE'].includes(event.phase)||event.rsvp?.phase!=='CONFIRMED')throw unavailable();
+    const confirmed=(await this.pool.query<{account_id:string}>("SELECT account_id FROM engine_event_rsvps WHERE event_id=$1 AND account_id=ANY($2::uuid[]) AND phase='CONFIRMED'",[event.id,[...new Set([...accounts,actor.accountId])]])).rows.map(row=>row.account_id);
+    if(!confirmed.includes(actor.accountId))throw unavailable();return {confirmed:new Set(confirmed),opensAt:event.schedule.opensAt,endsAt:event.schedule.endsAt};
+  }
   async rsvp(token: string, id: string, requestKey: string) {
     const known = await this.reference(token, id), key = uuid.parse(requestKey), fingerprint = this.identity.fingerprint({ operation: 'event.rsvp', id: known.id });
     return this.context(token, known.world_slug, (world, valid) => this.tx(token, [known.organizer_id], async (db, actor) => {
@@ -223,13 +233,14 @@ export class EventService {
   }
   async withdraw(token: string, id: string, requestKey: string) {
     const known = await this.reference(token, id), key = uuid.parse(requestKey), fingerprint = this.identity.fingerprint({ operation: 'event.withdraw', id: known.id });
-    return this.tx(token, [known.organizer_id], async (db, actor) => {
+    let account='';const result=await this.tx(token, [known.organizer_id], async (db, actor) => {
+      account=actor.accountId;
       const row = (await db.query<Row>('SELECT * FROM engine_events WHERE id=$1 FOR UPDATE', [known.id])).rows[0]; if (!row) throw unavailable(); await this.observe(db, row);
       const previous = await this.prior(db, actor.accountId, key, fingerprint), rsvp = (await db.query<Rsvp>('SELECT * FROM engine_event_rsvps WHERE event_id=$1 AND account_id=$2 FOR UPDATE', [row.id, actor.accountId])).rows[0]; if (!rsvp) throw unavailable();
       if (this.now() < rsvp.changed_at.getTime()) throw new DomainError('WORLD_UNAVAILABLE', 503, 'Event clock unavailable');
       if (!previous) { await this.quota(db, actor.accountId, 'withdraw'); if (rsvp.phase === 'CONFIRMED') { rsvp.phase = 'CANCELLED'; rsvp.changed_at = new Date(this.now()); await db.query("UPDATE engine_event_rsvps SET phase='CANCELLED',changed_at=$2 WHERE id=$1", [rsvp.id, rsvp.changed_at]); } await this.remember(db, actor.accountId, key, row.id, 'withdraw', fingerprint); }
       return EventRsvpResultSchema.parse({ schemaVersion: 1, rsvp: this.rsvpView(rsvp) });
-    });
+    });if(result.rsvp.phase!=='CONFIRMED')this.invalidateParticipation(known.id,[account]);return result;
   }
   async calendar(token: string, id: string) {
     const { event } = await this.get(token, id); if (event.rsvp?.phase !== 'CONFIRMED' || ['ENDED', 'CANCELLED'].includes(event.phase)) throw unavailable();

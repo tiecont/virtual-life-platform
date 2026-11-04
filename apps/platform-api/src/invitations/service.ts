@@ -17,7 +17,7 @@ export class InvitationService {
   #listeners = new Set<(ids: string[], event: 'invitation.received' | 'invitation.responded') => void>();
   #maintenance?: Promise<void>; #closed = false;
   #consentWithdrawals = new Set<(db: PoolClient, account: string) => Promise<void>>();
-  constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private social: SocialService, private registry: WorldRegistry, private now = Date.now) {}
+  constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private social: SocialService, private registry: WorldRegistry, private now = Date.now,private roomTargets?:{invitationTarget(token:string,destination:InvitationDestination):Promise<void>}) {}
   onChanged(listener: (ids: string[], event: 'invitation.received' | 'invitation.responded') => void) { this.#listeners.add(listener); return () => { this.#listeners.delete(listener); }; }
   permitsContact(db: PoolClient, sender: string, recipient: string) { return this.allowed(db, sender, recipient); }
   onConsentWithdrawn(listener: (db: PoolClient, account: string) => Promise<void>) { this.#consentWithdrawals.add(listener); return () => { this.#consentWithdrawals.delete(listener); }; }
@@ -38,6 +38,7 @@ export class InvitationService {
     this.publicTarget(destination);
     const { definition } = await this.registry.authorizeWorld(token, destination.worldSlug).catch(error => { if (error instanceof WorldError) throw unavailable(); throw error; });
     if (destination.worldVersion !== definition.version || destination.sceneVersion !== definition.sceneRef.version) throw new DomainError('WORLD_VERSION_MISMATCH', 409, 'Refresh world assets');
+    if(destination.roomId){if(!this.roomTargets)throw unavailable();await this.roomTargets.invitationTarget(token,destination);}
     this.publicTarget(destination);
   }
   private async expire(db: PoolClient, row: Row) {

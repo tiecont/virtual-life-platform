@@ -19,6 +19,7 @@ export type RoomUpdate = { connectionId: string; fromVersion: number; snapshot: 
 export interface RoomSafetyPort { assert(accountId: string, worldSlug: string, roomId?: string, chat?: boolean): Promise<void> }
 export type RoomAppearanceReader=(account:string,world:WorldDefinition,source:TravelSource,connected:boolean)=>Promise<AvatarAppearance['outfit']>;
 export type RoomDiscoveryObservation={observedAt:string;worlds:WorldCard[];rooms:{worldSlug:string;roomId:string;capacity:number;occupancy:number}[]};
+export type StudyRoomProjection={worldSlug:string;source:TravelSource;actor:WorldActor;capacity:number;exists:()=>boolean;valid:()=>boolean;members:{accountId:string;membershipId:string;valid:()=>boolean;allowed:()=>Promise<boolean>}[]};
 export class RoomService {
   #appearance?: RoomAppearanceReader;
   setAppearanceProjection(reader: RoomAppearanceReader) { this.#appearance=reader; }
@@ -310,6 +311,25 @@ export class RoomService {
       if (!room || !member) return { schemaVersion: 1 as const, snapshot: null, worldVersion: null, sceneVersion: null };
       await this.registry.authorizeWorld(credential, room.slug); await this.safety?.assert(actor.accountId, room.slug, room.id);
       return { schemaVersion: 1 as const, snapshot: await this.#snapshot(room, member), worldVersion: member.worldVersion, sceneVersion: member.sceneVersion };
+    });
+  }
+  invitationTarget(credential:string,destination:TravelDestination){
+    return this.#run(async()=>{await this.#sweep();const {definition}=await this.registry.authorizeWorld(credential,destination.worldSlug),actor=await this.identity.authenticate(credential),room=this.#rooms.get(destination.roomId??'');
+      if(!room||room.slug!==destination.worldSlug||definition.accessPolicy.kind!=='public'||definition.visibility!=='listed'||definition.slug==='dating')throw new DomainError('NOT_AVAILABLE',404,'This invitation is unavailable');
+      if(definition.version!==destination.worldVersion||definition.sceneRef.version!==destination.sceneVersion)throw new DomainError('WORLD_VERSION_MISMATCH',409,'Refresh world assets');await this.safety?.assert(actor.accountId,room.slug,room.id);
+    });
+  }
+  studyProjection(credential:string,source:TravelSource):Promise<StudyRoomProjection>{
+    return this.#run(async()=>{await this.#sweep();const actor=await this.identity.authenticate(credential),room=this.#rooms.get(this.#accounts.get(actor.accountId)??''),member=room?.members.get(actor.accountId);
+      if(!room||!member||source.epoch!==this.epoch||source.roomId!==room.id||source.membershipId!==member.id||![...member.connections.values()].includes(actor.sessionId))throw new DomainError('NOT_IN_ROOM',409,'An active study visit is required');
+      const context=this.registry.projectionContext(room.slug);await this.registry.authorizeWorld(credential,room.slug);await this.safety?.assert(actor.accountId,room.slug,room.id);
+      if(!context.definition.capabilities.includes('focus')||!context.definition.capabilities.includes('events'))throw new DomainError('NOT_AVAILABLE',404,'Study progress unavailable');
+      const exists=()=>!this.#closed&&this.authority.state==='held'&&context.valid()&&this.#rooms.get(room.id)?.members.get(actor.accountId)===member;
+      const visible=new Set((await this.#snapshot(room,member)).participants.map(person=>person.profile.id));
+      return {actor,worldSlug:room.slug,source:{epoch:this.epoch,roomId:room.id,membershipId:member.id},capacity:room.capacity,exists,valid:()=>exists()&&this.now()<actor.expiresAt&&[...member.connections.values()].includes(actor.sessionId),members:[...room.members.values()].filter(person=>person.connections.size>0&&visible.has(person.accountId)).map(person=>({accountId:person.accountId,membershipId:person.id,valid:()=>exists()&&room.members.get(person.accountId)===person&&person.connections.size>0,allowed:async()=>{
+        if(!await this.identity.hasConnectedSession(person.accountId,[...new Set(person.connections.values())]))return false;
+        try{await this.safety?.assert(person.accountId,room.slug,room.id);return true;}catch(error){if(error instanceof DomainError&&[403,404].includes(error.status))return false;throw error;}
+      }}))};
     });
   }
   focusStart<T>(credential: string, source: TravelSource, work: (actor: WorldActor, context: { worldSlug: string; roomId: string; seatId: string; epoch: string; membershipId: string; canPause: boolean }, valid: () => boolean) => Promise<T>) {

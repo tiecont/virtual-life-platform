@@ -1,0 +1,25 @@
+ Network virtual-city-test-ebf307dc_default Creating 
+ Network virtual-city-test-ebf307dc_default Creating 
+ Network virtual-city-test-ebf307dc_default Created 
+ Network virtual-city-test-ebf307dc_default Created 
+ Container virtual-city-test-ebf307dc-db-1 Creating 
+ Container virtual-city-test-ebf307dc-db-1 Created 
+ Container virtual-city-test-ebf307dc-db-1 Starting 
+ Container virtual-city-test-ebf307dc-db-1 Started 
+ Container virtual-city-test-ebf307dc-db-1 Waiting 
+ Container virtual-city-test-ebf307dc-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+
+ Test Files  1 passed (1)
+      Tests  16 passed (16)
+   Start at  08:24:29
+   Duration  8.60s (transform 492ms, setup 0ms, import 1.08s, tests 7.39s, environment 0ms)
+
+ Container virtual-city-test-ebf307dc-db-1 Stopping 
+ Container virtual-city-test-ebf307dc-db-1 Stopped 
+ Container virtual-city-test-ebf307dc-db-1 Removing 
+ Container virtual-city-test-ebf307dc-db-1 Removed 
+ Network virtual-city-test-ebf307dc_default Removing 
+ Network virtual-city-test-ebf307dc_default Removed 

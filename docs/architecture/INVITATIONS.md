@@ -1,6 +1,12 @@
 # Invitations
 
-M09-03 adds a consent inbox at `/invitations`, linked from `/social`. Recipient opt-in is OFF by default. Current friendship and bilateral block priority are checked on create/respond/list. Sending proposes an available listed public world; it does not expose where the sender is. Hidden/private/adult targets and room-specific invitation metadata are unavailable. No arbitrary message/URL payload is accepted.
+M09-03 adds a consent inbox at `/invitations`, linked from `/social`. Recipient opt-in is OFF by default. Current friendship and bilateral block priority are checked on create/respond/list. Sending proposes an available listed public world. M17-04extends this with an optional exact public room offer,explicitly selected by the sender. Hidden/private/adult targets remain unavailable. No arbitrary message/URL payload is accepted.
+
+## Public room offers — M17-04
+
+InvitationDestination may carry an optional roomId UUID. Existing world-only inputs are unchanged;this is a prerelease schema extension and older strict readers must upgrade with the portal. The destination remains in the existing JSONB field,with no migration. A trusted room-owner port verifies current public listed world/room association,actor permission and asset versions for creation and acceptance. A missing/foreign room fails404. Capacity is checked only during actual admission;an invitation holds no place or desk.
+
+Library's current-visit form sends this explicit room offer to a friend who permits invitations. Sender chooses to share that public room metadata;it does not make general presence tracking public. Recipient accepts,then sees Review invited room linking to strict travel confirmation. Acceptance creates no membership or RSVP. The same server validates current scope/capacity again,so a stale/full room preserves the source and has no silent fallback. A later block or invitation opt-out removes contact authorization even for earlier offers. Actual tests and limits are in ADR0054/m17-sharing-checks.json.
 
 ## API
 

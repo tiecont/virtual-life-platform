@@ -21,6 +21,15 @@ export class FocusService {
   private state(row: Row): FocusState { return { phase: row.phase, durationSeconds: row.duration_seconds, startedAt: row.started_at.getTime(), changedAt: row.changed_at.getTime(), endsAt: row.ends_at?.getTime() ?? null, pausedUntil: row.paused_until?.getTime() ?? null, remainingMs: row.remaining_ms, canPause: row.can_pause, pauseBudgetMs: row.pause_budget_ms }; }
   private view(row: Row) { return FocusSessionSchema.parse({ schemaVersion: 1, id: row.id, phase: row.phase, durationSeconds: row.duration_seconds, startedAt: row.started_at.toISOString(), changedAt: row.changed_at.toISOString(), endsAt: row.ends_at?.toISOString() ?? null, pausedUntil: row.paused_until?.toISOString() ?? null, remainingMs: remainingFocus(this.state(row), this.now()), canPause: row.can_pause, pauseBudgetMs: row.pause_budget_ms, origin: { worldSlug: row.world_slug, roomId: row.room_id, seatId: row.seat_id } }); }
   private result(row: Row | null) { return FocusResultSchema.parse({ schemaVersion: 1, serverTime: new Date(this.now()).toISOString(), session: row ? this.view(row) : null }); }
+  // Trusted owner port: only phase labels leave this engine. No timer IDs,
+  // timestamps, durations, task text or completion writes are exposed here.
+  async studyPhases(scope:{worldSlug:string;roomId:string;epoch:string;opensAt:string;endsAt:string},members:readonly {accountId:string;membershipId:string}[]){
+    if(this.#closed||members.length>8)throw new DomainError('WORLD_UNAVAILABLE',503,'Study progress unavailable');
+    const result=new Map<string,'active'|'paused'|'completed'|'idle'>();if(!members.length)return result;
+    const rows=(await this.pool.query<Row>('SELECT DISTINCT ON(account_id) * FROM engine_focus_sessions WHERE account_id=ANY($1::uuid[]) AND world_slug=$2 AND room_id=$3 AND source_epoch=$4 ORDER BY account_id,creation_order DESC',[members.map(member=>member.accountId),scope.worldSlug,scope.roomId,scope.epoch])).rows;
+    for(const member of members){const row=rows.find(row=>row.account_id===member.accountId&&row.source_membership_id===member.membershipId&&row.started_at.getTime()>=Date.parse(scope.opensAt)&&row.started_at.getTime()<Date.parse(scope.endsAt));const phase=row?advanceFocus(this.state(row),'read',this.now()).phase:'cancelled';result.set(member.accountId,phase==='cancelled'?'idle':phase);}
+    return result;
+  }
   private async transition(db: PoolClient, row: Row, action: FocusAction = 'read') {
     const next = advanceFocus(this.state(row), action, this.now());
     if (next.phase !== row.phase || next.changedAt !== row.changed_at.getTime()) {

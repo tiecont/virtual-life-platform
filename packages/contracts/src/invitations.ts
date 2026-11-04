@@ -2,7 +2,9 @@ import { z } from 'zod';
 import { TravelDestinationSchema } from './travel';
 import { PublicProfileSchema } from './profiles';
 const uuid = z.uuid().transform(value => value.toLowerCase());
-export const InvitationDestinationSchema = TravelDestinationSchema.omit({ roomId: true });
+// Optional public room navigation hint. The owner rechecks scope; this is not
+// admission, a seat hold, or permission to enter a protected room.
+export const InvitationDestinationSchema = TravelDestinationSchema;
 export const InvitationStateSchema = z.enum(['PENDING', 'ACCEPTED', 'DECLINED', 'CANCELLED', 'EXPIRED']);
 export const InvitationSettingsSchema = z.strictObject({ schemaVersion: z.literal(1), allowInvitations: z.boolean() });
 export const InvitationInputSchema = z.strictObject({ schemaVersion: z.literal(1), recipientId: uuid, destination: InvitationDestinationSchema });

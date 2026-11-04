@@ -1,0 +1,34 @@
+[
+  {
+    "args": [
+      "tests/e2e/library.spec.ts",
+      "-g",
+      "study progress is opt-in|friend accepts"
+    ],
+    "exitCode": 0
+  },
+  {
+    "args": [
+      "tests/e2e/invitations.spec.ts"
+    ],
+    "exitCode": 0
+  },
+  {
+    "args": [
+      "tests/e2e/travel.spec.ts"
+    ],
+    "exitCode": 0
+  },
+  {
+    "args": [
+      "tests/e2e/portal-route.spec.ts"
+    ],
+    "exitCode": 0
+  },
+  {
+    "args": [
+      "tests/e2e/scene.spec.ts"
+    ],
+    "exitCode": 0
+  }
+]
