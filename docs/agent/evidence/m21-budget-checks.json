@@ -1,0 +1,17 @@
+{
+ "taskID":"M21-06",
+ "status":"VERIFIED",
+ "source":"Workspace from9bfe054,after exact offline Git object recovery;application/package/config runtime unchanged",
+ "commands":[
+  {"command":"node --test tests/governance/*.test.mjs","exitCode":0,"log":"m21-budget-tests-final.log","scope":"16passed;2resource-budget cases reject cost/memory/disk overallocations,missing allocations,insufficient reserves/invalid thresholds and silent purchase/Redis/multi-owner activation"},
+  {"command":"pnpm infra:check","exitCode":0,"log":"m21-budget-infra-final.log","scope":"Existing CI infra entrypoint now validates the resource ceiling/reserves/review gates as well as environment/build exclusions"},
+  {"command":"node scripts/verify-resource-budget.mjs","exitCode":0,"log":"m21-budget-validation.log","scope":"USD25unpriced monthly ceiling/4096MiB memory/80GiBdisk accounting,not vendor prices or runtime enforcement"},
+  {"command":"pnpm exec eslint [initial budget helper/test/infra hook]","exitCode":1,"log":"m21-budget-lint.log","scope":"3structuredClone global-name errors;fixed explicit globalThis access,no lint relaxation"},
+  {"command":"pnpm lint","exitCode":0,"log":"m21-budget-lint-final.log"},
+  {"command":"git diff --exit-code 9bfe054 -- apps packages config","exitCode":0,"log":"m21-budget-runtime.log","scope":"No app/schema/runtime delta;prior167eeae root263unit/496integration/build0 remains separate,not newly rerun"}
+ ],
+ "audit":"m21-budget-audit.json records actual local16CPU/about24.57GB RAM/image2610849769bytes andSHA256 of4historical evidence files. Existing24socket/booking/48socket/backup measurements were audited,not rerun. No new load/VM/capacity/egress/vendor quote claim.",
+ "implementation":"Executable unpriced spending/resource model wired into infra checks;USD25ceiling,2vCPU4GiB80GiB250GiB monthlyegress hypothesis,explicit cost/memory/disk sums/reserves.15minute investigation thresholds for CPU/memory/DBconnections/latency/errors,free-space/egress ceilings and heap-growth trigger. Service extraction/Redis needs measured bottleneck,reviewedADR,privacy/rollback/failure/concurrency tests and actual owner fencing;single Room owner/RedisOFF/purchasesOFF/automaticScalingOFF remain enforced in planning checks.",
+ "limits":"Accounting validation does not install cgroups,cloud billing alarms,collectors,resource meters or autoscaling. Hypothetical smaller host unbenchmarked;no prices/purchases/CCU/production SLO guarantees. Existing short loopback results exclude important WAN/TLS/client/DB costs. Backup/offsite/schedule/alerts/operator/legacy/rights/adult gates remain external;no new migration/image/browser/whole-app suite. Exact Git recovery preservesHEAD9bfe054 andhistory;cause of zero objects unknown,fsck0 evidence separate.",
+ "nextExactAction":"M22-01:read22plan/direct verifiedM06/M08/M21 evidence;audit existing isolated SQL/HTTP/socket/browser/CI harnesses before adding anything. Verify negative isolation/cleanup and deterministic metadata,then continue dependency-ready M22 tasks;actual legacy E2E remains external."
+}

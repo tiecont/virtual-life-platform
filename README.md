@@ -6,6 +6,8 @@
 
 [PostgreSQL recovery](docs/operations/POSTGRES-RECOVERY.md) provides authenticated encrypted backups, guarded empty disposable restore and private disk/connection metrics. Run `node --import tsx scripts/backup-smoke.mjs` for the local recovery exercise. Production scheduling, offsite storage, key custody and alert delivery remain unconfigured.
 
+[Resource budgets](docs/operations/RESOURCE-BUDGETS.md) define unpriced spending/resource ceilings and measured investigation thresholds. `pnpm infra:check` rejects over-allocation or silent activation of purchases,Redis or multiple Room owners;no infrastructure is provisioned.
+
 Project repository: `git@github.com:tiecont/virtual-life-platform.git` (configured locally; no push performed). The Virtual City plan is the product specification.
 
 The [shared hospitality engine](docs/architecture/HOSPITALITY.md) provides private policy-gated orders, atomic claims, voluntary shifts, reusable timed courses, transactional completion hooks and service refusal/block/safety recovery. Optional progression consumers are implemented; real Maid integration remains gated. No public hospitality world is enabled.

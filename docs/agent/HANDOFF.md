@@ -6,7 +6,15 @@ Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;bran
 
 Node26.9.0/pnpm11.28.5. RetaineddevDB0036/stopped;latestjournal/9privatecounts0. No preview/verificationworker remains. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
 
-## Current work — M21-05 VERIFIED; continue M21-06
+## Current work — M21-06 VERIFIED; M21 locally complete; continue M22-01
+
+From9bfe054;ADR0076/RESOURCE-BUDGETS.md/m21-budget-checks.json. Executable unpriced USD25monthly ceiling/2vCPU4GiB80GiB250GiBegress hypothesis,cost/memory/disk allocations/reserves. Existinginfra gate checks accounting and closed purchase/Redis/multiowner/automatic-scale flags. Measurable sustained investigation thresholds and reviewed bottleneck/ADR/privacy/ownerfencing/failure tests before extraction/Redis.16governance/infra/budget/full lint0;initial3structuredClone globals lint errors retained/fixed explicit globalThis. Host16CPU/about24.57GB/image2610849769bytes and4historical artifact hashes audited;no fresh load/price/CCU/VM capacity claim. Apps/packages/config unchanged9bfe054;prior167eeae263unit/496integration/build0 remains separate baseline.
+
+Git recovery:48zero loose objects preventedHEAD reads. Full58MiB.git private backup/quarantine preserved under ignored artifacts/git-recovery-20261105.35unique blobs/12trees/commit recovered to exact existing hashes;HEAD9bfe054 preserved,no ref movement/history rewrite/remote.2agent-owned truncated governance artifacts restored from recovered commit;no code overwritten. gitfsckfull0/clean at recovery;17unreachable blobs retained,no prune. Root cause unknown. repository-object-recovery-20261105.json contains evidence;recheck fsck after commit.
+
+All6M21tasks locally VERIFIED;actual hostedCI/public deployment/offsite/scheduling/keycustody/collector/alerts/operator/legacy/rights/adult gates remain. No migration/retained0036/stopped change or preview/verificationworker. Current application image remains M21-04,host budget/backup tooling does not create a newer runtime image. Whole plan incomplete.
+
+## Prior slice — M21-05 VERIFIED
 
 From167eeae;ADR0075/POSTGRES-RECOVERY.md/m21-backup-checks.json. Host-only Linux/local Unix Docker private operator CLI. Exact Compose labels/testedPG17.7 selection;64MiB AES-GCM authenticated snapshot/custom dump,private nonsymlink key,fsynced mode600 atomic no-overwrite archive. Authenticate before SQL;restore only empty generated test DB/single transaction,no clean/persistent restore. Actual database size/connections/PGDATA filesystem JSON/Prometheus metrics;collector/schedule templates uninstalled.
 
@@ -92,7 +100,7 @@ Failure history is retained in evidence:missing menu/role2reds;outbox test used 
 
 ## Next exact action
 
-M21-06 lowest ready. Read M21 and audit actual M06/M18/M19 benchmark artifacts,scene budgets,current app image size/host resources. Document a hypothetical low-cost resource plan/monthly spending ceiling and measurable CPU/RAM/disk/network/latency investigation thresholds. Prices are unquoted planning allocations,not current vendor offers or purchases. Enforce budget sums/one Room owner and explicit criteria before service split/Redis;PubSub alone cannot fence authority. Do not invent production CCU/cost guarantees. Then M22 continuous tests/security/performance, M23 dependencies remain gated by actual M15/M16, and M24 per DAG. Offline userrepo/legacy/rights/adult/operator gates unchanged.
+M22-01 lowest ready. Full22plan was read duringM21-06. Read directM06/M08 verified plans/evidence as needed and audit scripts/with-test-db.mjs,run-browser-tests.mjs,CIgroup runner,playwright/vitest configs/test support before scaffolding. Existing isolation/cleanup/realunit-contract-API-socket-browser/CI wiring already exists;verify actual negative isolation and deterministic seed cleanup. Investigate inherited environment contamination:with-test-db currently uses parent SESSION_SECRET ifpresent and spreadsallprocess.env to children,so ensure tests cannot silently reuse real keys/world/runtime settings. Keep Docker/CI/local tool needs and explicit browser test toggles. Test forged/nonlocal/non-test DB inputs/failed child/scoped cleanup,not only helper strings. Then22-02concurrency,03security,04actuallegacy browser(B-001/B-002 cannot fake),05load hypotheses,06accessibility. M23 actualM15/M16 dependencies remain external;M24 independent perDAG. No userrepo remote operation.
 
 ## External gates
 

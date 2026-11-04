@@ -1,0 +1,17 @@
+{
+ "schemaVersion":1,
+ "status":"planning-only;unpriced;not purchased or capacity certified",
+ "currency":"USD",
+ "monthlyCeilingCents":2500,
+ "allocationsCents":{"compute":1800,"encryptedBackup":500,"domain":200},
+ "vendorQuotesVerified":false,
+ "purchasesApproved":false,
+ "resources":{"vcpu":2,"ramMiB":4096,"diskGiB":80,"monthlyEgressGiB":250},
+ "memoryMiB":{"os":512,"postgres":1024,"api":768,"web":512,"edge":128,"maintenance":512,"reserve":640},
+ "diskGiB":{"os":8,"images":12,"postgres":20,"logs":2,"archives":5,"temporary":4,"reserve":29},
+ "investigationThresholds":{"sustainedSeconds":900,"cpuRatio":0.7,"memoryRatio":0.8,"diskFreeRatio":0.2,"databaseConnectionRatio":0.8,"httpP95Ms":1000,"unexpectedErrorRatio":0.01,"egressProjectedRatio":0.8,"heapGrowthMiBPerHour":64},
+ "singleRoomOwner":true,
+ "automaticScaling":false,
+ "redisEnabled":false,
+ "redisPrerequisites":["measured bottleneck","approved ADR","explicit owner fencing","no lost SQL authority","privacy review","concurrency and failover tests"]
+}

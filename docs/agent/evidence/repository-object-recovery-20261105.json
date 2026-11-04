@@ -1,0 +1,8 @@
+{
+ "scope":"Offline repository metadata repair;no remote access,history rewrite or code changes",
+ "observation":"HEAD9bfe054 and47other newly written loose objects were zero-length;root cause unknown. Git log/status failed. Reflog retained prior167eeae;working files/index and commit edit message remained.",
+ "backup":"Entire58MiB .git copied to private ignored artifacts/git-recovery-20261105/metadata before object mutations;zero files quarantined,no pruning",
+ "recovery":"35unique blob payloads reproduced exact indexed hashes from working files and a deterministic governance-output replay;fresh temporary index rebuilt12tree objects. Commit reconstructed from exact tree,parent,identity,timestamp,message and verified to match existing HEAD9bfe0541d89087ad3694b74b4ce756364a6e11c3 before writing. Branch/ref never moved. Two agent-owned zero-length working governance log/exit artifacts restored from the recovered commit;no source file overwritten.",
+ "verification":{"gitFsckFullExitCode":0,"gitStatusClean":true,"head":"9bfe0541d89087ad3694b74b4ce756364a6e11c3","retainedDanglingBlobs":17,"zeroLengthObjectsAfter":0},
+ "limits":"No hardware/filesystem cause diagnosed or recurrence guarantee. Raw metadata/index/object backup stays local and ignored. Recheck fsck after next commit."
+}

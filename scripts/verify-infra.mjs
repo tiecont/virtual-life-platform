@@ -4,6 +4,7 @@ import { isIP } from 'node:net';
 import { parseEnv } from 'node:util';
 import { resolve,relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { checkResourceBudget } from './verify-resource-budget.mjs';
 
 // Return only public configuration. Errors name fields,never secret values.
 export function verifyStackEnv(env){
@@ -25,6 +26,7 @@ export function verifyStackEnv(env){
 }
 
 async function main(){
+ await checkResourceBudget();
  const matrix=JSON.parse(await readFile('infra/environments/matrix.json','utf8'));
  assert.deepEqual(matrix.environments.map(value=>value.name),['dev','test','staging','prod']);assert.equal(matrix.publicRelease,false);
  for(const value of matrix.environments.filter(value=>['staging','prod'].includes(value.name))){assert.equal(value.nodeEnv,'production');assert.equal(value.cookie,'__Host-city_session');}

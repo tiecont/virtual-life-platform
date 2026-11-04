@@ -1,5 +1,13 @@
 # Agent progress
 
+## M21-06 — VERIFIED executable resource planning; M21 locally complete
+
+From9bfe054;ADR0076/[runbook](../operations/RESOURCE-BUDGETS.md)/[ledger](evidence/m21-budget-checks.json). Unpriced USD25/month ceiling,2vCPU/4GiB/80GiB/250GiB egress hypothesis,explicit memory/disk reserves. Existing infra entrypoint validates accounting and prevents silent purchase/Redis/multi-owner/automatic-scale activation. Finite sustained CPU/memory/DBconnections/latency/errors/disk/network investigation thresholds and reviewed bottleneck/owner-fencing/privacy/failure-test gates precede service extraction or Redis. No provisioning,cgroups,quotes,billing alarms or capacity claim.
+
+Actual16governance/infra/budget validator/full lint0;initial3global structuredClone lint errors fixed explicit globalThis,not waived. Actual current16CPU/about24.57GB host/image2610849769bytes and4historical evidence hashes audited;24socket/booking/48socket/backup results retain original short-loopback/hardware/exclusion limits,not fresh benchmarks or predictions for the smaller host. Apps/packages/config unchanged9bfe054;no new full-app suite/build/browser/migration claim. All6M21tasks locally VERIFIED;operated public/offsite/scheduling/coverage/alerts/legacy/adult gates remain external. Next exact action M22-01 audit/verify isolated test and CI harness before continuing22tasks;whole plan incomplete.
+
+Repository recovery during continuation:48zero-length loose objects preventedHEAD reading. Private full.git backup made;35unique blobs/12trees/commit reproduced exact existing hashes from index/working content/deterministic governance output. HEAD9bfe054 restored without moving refs/history;only2agent-owned truncated governance artifacts restored. gitfsckfull0,working tree clean at recovery point;17unreachable blobs retained,no pruning. Root cause unknown. See repository-object-recovery-20261105.json;no source/remote loss claim beyond verified hashes.
+
 ## M21-05 — VERIFIED local encrypted backup and guarded recovery
 
 From167eeae;ADR0075/[runbook](../operations/POSTGRES-RECOVERY.md)/[ledger](evidence/m21-backup-checks.json). Host-only Linux/local Unix Docker operator CLI,reviewed Compose labels/exact testedPG17.7 tag. Consistent custom logical dump,AES-256-GCM/versionAAD/randomnonce,independent private nonsymlink key,64MiB bound,fsync/mode600/atomic no-overwrite. Restore authenticates before SQL and allows only empty generated disposable restore DB;checks relations/functions/types/namespaces/extensions,single transaction/no clean. Actual PGDATA filesystem/database-size/connection aggregates produce private JSON/Prometheus;monitoring/backup-policy templates do not install schedules/collectors.

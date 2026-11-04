@@ -1,0 +1,44 @@
+{
+  "recordedAt": "2026-11-04T23:41:52.231Z",
+  "host": {
+    "availableParallelism": 16,
+    "cpu": "AMD Ryzen 7 4800HS with Radeon Graphics",
+    "memoryBytes": 24573243392,
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "image": {
+    "id": "sha256:d149e0d33a3fc854d2079f1bbe524ea7515604b60e7d828fbe3d49c2ed3900dd",
+    "bytes": 2610849769,
+    "scope": "M21-04 image,no fresh image build in budget task"
+  },
+  "evidence": [
+    {
+      "path": "docs/agent/evidence/m06-network-baseline.json",
+      "sha256": "fad1ec724d9b0a1fbc7cee766fe34b170fd9717503ef8587224041edbecb87cb",
+      "recordedAt": "2026-11-02T18:30:19.664Z",
+      "scope": "Existing evidence audited,not a newly executed benchmark"
+    },
+    {
+      "path": "docs/agent/evidence/m18-restaurant-load.json",
+      "sha256": "799bad06b9e448f0ad0b96a52373ce95044ce737cbf84b76a4f8bf587be95550",
+      "recordedAt": "2026-11-04T04:26:08.713Z",
+      "scope": "Existing evidence audited,not a newly executed benchmark"
+    },
+    {
+      "path": "docs/agent/evidence/m19-lounge-load.json",
+      "sha256": "b315bae94ff210b6fdc8805cc604ca019a18d3d763e9b33dc51954d274c149f4",
+      "recordedAt": "2026-11-04T07:37:29.031Z",
+      "scope": "Existing evidence audited,not a newly executed benchmark"
+    },
+    {
+      "path": "docs/agent/evidence/m21-backup-facts.json",
+      "sha256": "5c64be6dfbca0914ca6fb223a616a9b68f2b0e2495528c6d9bbd94bd1695ac55",
+      "recordedAt": null,
+      "scope": "Existing evidence audited,not a newly executed benchmark"
+    }
+  ],
+  "capacityCertified": false,
+  "vendorQuotesVerified": false,
+  "purchased": false
+}
