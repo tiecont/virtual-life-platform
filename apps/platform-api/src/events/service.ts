@@ -119,6 +119,7 @@ export class EventService {
   }
   canOrganize(db: PoolClient, actor: IdentityContext, context: EventBookingContext) { return context.organizerId === actor.accountId ? this.organizers?.permits(db, actor, context.worldSlug) ?? Promise.resolve(false) : Promise.resolve(false); }
   eligible(db: PoolClient, account: string, world: string) { return this.safety.permits(db, account, world); }
+  activityDisclosure(world:string){return this.registry.permitsActivityDisclosure(world);}
   async revokePrivate(db: PoolClient, ids: string[], account: string) {
     const rows = (await db.query<{ id: string }>("SELECT id FROM engine_events WHERE id=ANY($1::uuid[]) AND visibility='private'", [ids])).rows, privateIds = rows.map(row => row.id);
     await db.query("UPDATE engine_event_rsvps SET phase='CANCELLED',changed_at=greatest(changed_at,$3) WHERE event_id=ANY($1::uuid[]) AND account_id=$2 AND phase='CONFIRMED'", [privateIds, account, new Date(this.now())]);

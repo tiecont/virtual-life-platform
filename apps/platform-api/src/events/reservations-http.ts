@@ -23,6 +23,10 @@ export function registerReservations(http: FastifyInstance, config: Config, iden
     api.addHook('preHandler', async req => { if (!limits.take('session:' + identity.hash(token(req)), 60)) throw new DomainError('RATE_LIMITED', 429, 'Please wait before trying again'); });
     api.get('/reservations', req => { empty(req); return reservations.list(token(req)); });
     if(parties){
+      api.get('/reservations/dinner-invitations',req=>{empty(req);return parties.offers(token(req));});
+      api.post('/reservations/:id/party/invitations',async(req,reply)=>reply.code(201).send(await parties.createOffer(write(req),id(req),key(req),req.body)));
+      api.post('/reservations/dinner-invitations/:id/respond',req=>parties.respondOffer(write(req),id(req),key(req),req.body));
+      api.post('/reservations/dinner-invitations/:id/block',req=>{ReservationMutationSchema.parse(req.body);return parties.blockOffer(write(req),id(req),key(req));});
       api.post('/reservations/parties/stop',req=>{ReservationMutationSchema.parse(req.body);return parties.stop(write(req));});
       api.get('/reservations/parties/me',req=>{empty(req);return parties.own(token(req));});
       api.post('/reservations/parties/view',req=>parties.view(write(req),req.body));

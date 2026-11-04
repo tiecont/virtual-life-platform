@@ -9,7 +9,10 @@ import { EvidenceCipher, MessageEvidenceCache } from './evidence';
 type CaseRow = { id: string; receipt_id: string; reporter_id: string | null; subject_id: string | null; fingerprint: string; world_slug: string; category: ReportInput['category']; severity: 'low' | 'medium' | 'high' | 'critical'; status: 'open'; assigned_to: string | null; created_at: Date };
 const unavailable = () => new DomainError('NOT_AVAILABLE', 404, 'This safety action is unavailable');
 const HOUR = 3600000;
+export interface ReservationInvitationReportPort {resolve(token:string,id:string):Promise<{worldSlug:string;subjectId:string;reservationId:string;invitationId:string}>}
 export class ReportService {
+  #reservationInvitation?:ReservationInvitationReportPort;
+  setReservationInvitationContext(port:ReservationInvitationReportPort){if(this.#reservationInvitation)throw Error('Reservation report context already attached');this.#reservationInvitation=port;}
   readonly cache?: MessageEvidenceCache;
   #cipher?: EvidenceCipher; #closed = false; #maintenance?: Promise<number>;
   constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private rooms: RoomService, private policy: SafetyPolicy, environment: 'development' | 'test' | 'production', key?: string, keyId = 'local-v1', private now = Date.now) {
@@ -43,9 +46,11 @@ export class ReportService {
     if (input.source.kind === 'room') {
       const context = await this.rooms.reportContext(token, input.source); worldSlug = context.worldSlug; subjectId = context.subjectId;
       source = { kind: 'room', epoch: input.source.epoch, roomId: input.source.roomId, targetId: subjectId };
-    } else {
+    } else if(input.source.kind==='messages') {
       const context = this.cache!.read(initial.accountId, input.source.messageIds); worldSlug = context.worldSlug; subjectId = context.messages[0].sender.id;
       source = { kind: 'messages', messages: context.messages };
+    }else{
+      if(!this.#reservationInvitation)throw unavailable();const context=await this.#reservationInvitation.resolve(token,input.source.invitationId);worldSlug=context.worldSlug;subjectId=context.subjectId;source={kind:'reservation-invitation',invitationId:context.invitationId,reservationId:context.reservationId};
     }
     if (!this.policy.contexts[worldSlug] || input.note.length > this.policy.evidence.maxReporterNoteChars || (source.kind === 'messages' && source.messages.length > this.policy.evidence.maxMessageReferences)) throw unavailable();
     return this.tx(token, [subjectId], async (db, actor) => {

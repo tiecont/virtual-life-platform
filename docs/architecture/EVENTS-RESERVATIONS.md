@@ -1,5 +1,9 @@
 # Events and reservations
 
+Restaurant integration adds reservation-owned voluntary parties and dinner offers (M18-02/05;ADR0056/0059). A holder explicitly chooses room-public or invite-only party disclosure. Invite-only viewing/joining requires a current accepted friend offer and recipient invitation opt-in;acceptance does not allocate attendance,room,chair or RSVP. The listed slot remains public. Each diner must independently enter the actual room and join. Audience changes,block/unfriend,opt-out,closure and independent Stop withdraw existing consent. Private party identifiers/counts/rosters never enter event discovery or uninvited party views.
+
+`GET /v1/reservations/dinner-invitations` returns at most20 own receipts with currently permitted metadata or null;`POST /:id/party/invitations` belongs to the actual checked-in holder,not the schedule organizer. Dinner respond/block routes require own-contact proof,Origin/CSRF and durable keys. Pending120second TTL and accepted check-in-close access are separate. Current host visit/session/safety and world disclosure are rechecked;historical receipts grant no authority. Native inbox snapshots expire after30seconds,party counts after5seconds. Migration0029 owns visibility/offers/receipts;parent90day retention/account erasure cascades. See [Restaurant scope](RESTAURANT.md) and m18-private-checks.json for verification and limits. Older sections below describe their original task boundaries.
+
 ## Discovery and private invitations — M12-05
 
 GET `/v1/events` may omit worldSlug to discover up to50 upcoming listed events across eligible available public worlds. Each row repeats current block/safety/version checks; private sessions, hidden/restricted worlds and dating never enter this catalog. Accepted private invitations do not make an event public.

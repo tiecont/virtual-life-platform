@@ -103,7 +103,11 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const eventPermissions = new EventPermissions(reports, options.now);
   const events = new EventService(db, identity, social, worlds.registry, { permits: async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account, world) && await new SanctionPolicy(transaction, options.now).permits(account, world) }, options.events?.organizers ?? eventPermissions, options.now, eventPermissions);
   const reservations = new ReservationService(db, identity, social, rooms, events, options.now); events.attachReservations(reservations);
-  const reservationParties=new ReservationParties(db,identity,social,rooms,events,options.now);
+  const reservationParties=new ReservationParties(db,identity,social,rooms,events,options.now,invitations);
+  reports.setReservationInvitationContext({resolve:(token,id)=>reservationParties.reportOfferContext(token,id)});
+  const unsubscribeDinnerConsent=invitations.onConsentWithdrawn((transaction,account)=>reservationParties.withdrawAllOffers(transaction,account));
+  identity.registerExportOwner('dinnerOffers',(account,transaction)=>reservationParties.exportOffers(account,transaction));
+  http.addHook('preClose',async()=>{unsubscribeDinnerContact();unsubscribeDinnerConsent();});
   const eventInvitations = new EventInvitationService(db, identity, invitations, events, options.now); events.attachInvitations(eventInvitations);
   const study=new LibraryStudyService(identity,rooms,events,focus,options.now);
   const unsubscribeStudyContact=social.onContactWithdrawn(async(_transaction,a,b)=>{study.revoke(a);study.revoke(b);});
@@ -115,6 +119,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const unsubscribeHospitalityWithdrawal = social.onContactWithdrawn((transaction, a, b) => hospitality.withdrawContact(transaction, a, b));
   const unsubscribeEventWithdrawal = social.onContactWithdrawn((transaction, a, b) => events.withdrawContact(transaction, a, b));
   const unsubscribeReservationWithdrawal = social.onContactWithdrawn((transaction, a, b) => reservations.withdrawContact(transaction, a, b));
+  const unsubscribeDinnerContact=social.onContactWithdrawn((transaction,a,b)=>reservationParties.withdrawOfferContact(transaction,a,b));
   const unsubscribeEventInvitationWithdrawal = social.onContactWithdrawn((transaction, a, b) => eventInvitations.withdrawContact(transaction, a, b));
   const unsubscribeEventConsent = invitations.onConsentWithdrawn((transaction, account) => eventInvitations.withdrawAll(transaction, account));
   const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, policy: safetyPolicy, evidence: reports.cache }, options.now);

@@ -1,0 +1,53 @@
+ Network virtual-city-test-21178fc4_default Creating 
+ Network virtual-city-test-21178fc4_default Creating 
+ Network virtual-city-test-21178fc4_default Created 
+ Network virtual-city-test-21178fc4_default Created 
+ Container virtual-city-test-21178fc4-db-1 Creating 
+ Container virtual-city-test-21178fc4-db-1 Created 
+ Container virtual-city-test-21178fc4-db-1 Starting 
+ Container virtual-city-test-21178fc4-db-1 Started 
+ Container virtual-city-test-21178fc4-db-1 Waiting 
+ Container virtual-city-test-21178fc4-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/restaurant.test.ts (29 tests | 2 failed) 10618ms
+   × private dinner requires friendship and recipient opt-in;acceptance allocates no attendance,room,chair or RSVP and discovery excludes the private party 458ms
+   × own dinner contact can be privately reported after blocking,without room proof,profile disclosure or automatic sanctions 346ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/restaurant.test.ts > private dinner requires friendship and recipient opt-in;acceptance allocates no attendance,room,chair or RSVP and discovery excludes the private party
+AssertionError: expected 200 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 200
+
+ ❯ tests/integration/restaurant.test.ts:70:287
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  |integration| tests/integration/restaurant.test.ts > own dinner contact can be privately reported after blocking,without room proof,profile disclosure or automatic sanctions
+TypeError: Cannot read properties of undefined (reading 'items')
+ ❯ tests/integration/restaurant.test.ts:94:1297
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 27 passed (29)
+   Start at  10:57:19
+   Duration  11.95s (transform 568ms, setup 0ms, import 1.19s, tests 10.62s, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-21178fc4-db-1 Stopping 
+ Container virtual-city-test-21178fc4-db-1 Stopped 
+ Container virtual-city-test-21178fc4-db-1 Removing 
+ Container virtual-city-test-21178fc4-db-1 Removed 
+ Network virtual-city-test-21178fc4_default Removing 
+ Network virtual-city-test-21178fc4_default Removed 

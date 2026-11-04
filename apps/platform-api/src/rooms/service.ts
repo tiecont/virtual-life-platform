@@ -384,7 +384,7 @@ export class RoomService {
     catch (error) { if (error instanceof DomainError && [403, 404].includes(error.status)) return false; throw error; }
   }
   hospitalityAllowed(accountId:string,world:string,room:string){return this.activityAllowed(accountId,world,room);}
-  hospitalityRecovery<T>(work: (visit: (accountId: string, source: TravelSource) => { state: 'connected' | 'grace' | 'gone' | 'restart'; disconnectedAt: number | null; seated: boolean; sessionIds: string[] }) => Promise<T>) {
+  visitRecovery<T>(work: (visit: (accountId: string, source: TravelSource) => { state: 'connected' | 'grace' | 'gone' | 'restart'; disconnectedAt: number | null; seated: boolean; sessionIds: string[] }) => Promise<T>) {
     return this.#run(async () => work((accountId, source) => {
       if (source.epoch !== this.epoch) return { state: 'restart', disconnectedAt: null, seated: false, sessionIds: [] };
       const room = this.#rooms.get(source.roomId), member = room?.members.get(accountId);
@@ -393,6 +393,7 @@ export class RoomService {
       return { state: 'connected', disconnectedAt: null, seated: Boolean(member.seatId), sessionIds: [...member.connections.values()] };
     }));
   }
+  hospitalityRecovery<T>(work:(visit:(accountId:string,source:TravelSource)=>{state:'connected'|'grace'|'gone'|'restart';disconnectedAt:number|null;seated:boolean;sessionIds:string[]})=>Promise<T>){return this.visitRecovery(work);}
   travelContext(credential: string, source: TravelSource | null, destination: TravelDestination) {
     return this.#run(async () => {
       await this.#sweep();

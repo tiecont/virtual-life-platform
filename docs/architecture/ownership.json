@@ -1,6 +1,8 @@
 {
   "schemaVersion": 1,
   "tables": {
+    "engine_reservation_invitations": "engine.reservations",
+    "engine_reservation_invite_mutations": "engine.reservations",
     "engine_hospitality_consent": "engine.hospitality",
     "engine_reservation_members": "engine.reservations",
     "engine_reservation_consent": "engine.reservations",

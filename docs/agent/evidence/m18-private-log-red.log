@@ -1,0 +1,36 @@
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |unit| apps/platform-api/src/common/request-log.unit.test.ts (1 test | 1 failed) 28ms
+   × omits safety object IDs, query filters and request secrets from request logging 26ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| apps/platform-api/src/common/request-log.unit.test.ts > omits safety object IDs, query filters and request secrets from request logging
+AssertionError: expected { method: 'POST', …(1) } to deeply equal { method: 'POST', …(1) }
+
+- Expected
++ Received
+
+  {
+    "method": "POST",
+-   "path": "/v1/reservations/dinner-invitations/[redacted]/respond",
++   "path": "/v1/reservations/[redacted]/private-offer/respond",
+  }
+
+ ❯ apps/platform-api/src/common/request-log.unit.test.ts:27:20
+     25|   ]) {
+     26|     const result = requestLog({ method: 'POST', url, headers: { cookie…
+     27|     expect(result).toEqual({ method: 'POST', path: expected });
+       |                    ^
+     28|     expect(JSON.stringify(result)).not.toMatch(/private-/);
+     29|   }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  11:05:11
+   Duration  277ms (transform 32ms, setup 0ms, import 46ms, tests 28ms, environment 0ms)
+

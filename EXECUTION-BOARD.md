@@ -109,7 +109,7 @@
 | M18 | M18-02 · Implement virtual table reservation and group check-in. | VERIFIED | m18-booking-checks.json;full213unit/345integration/builds+final11Restaurant;8Restaurant+4Library browser;actual holds/TTL/private history/voluntary room-bound consent/withdrawal revision/rollback/restart/end/block;0026 |
 | M18 | M18-03 · Implement waiter/chef shifts using Hospitality Engine. | VERIFIED | m18-roles-checks.json;stable full214unit/352integration/builds+74target/10Restaurant+4Library browser;policy roles/atomic requeue/revision stop/recovery/rollback/clock/export/erasure;0027 |
 | M18 | M18-04 · Implement multi-course menu and coordination minigame. | VERIFIED | m18-courses-checks.json;full214unit/357integration/builds+79target;finalUIbuild/lint/12Restaurant+8shell browser;3courses/two serviceworkers+diner/canonicalpass/completiononce/unchanged requestbudgets;0028 |
-| M18 | M18-05 · Add dinner invitation, consent, private table policy and report tools. | TODO | — |
+| M18 | M18-05 · Add dinner invitation, consent, private table policy and report tools. | VERIFIED | m18-private-checks.json;stable full368integration/214unit/builds,14Restaurant+6shared browser pass;city-discovery1separate;0029local0/private membership not room isolation |
 | M18 | M18-06 · E2E/load and visual/accessibility acceptance. | TODO | — |
 | M19 | M19-01 · Design lounge stage, seating, mocktail counter and event states. | TODO | — |
 | M19 | M19-02 · Implement performer/host role and stage queue with operator controls. | TODO | — |

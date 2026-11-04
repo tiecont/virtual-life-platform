@@ -1,0 +1,12 @@
+{
+  "sameOfferRetryKey": true,
+  "offers": 1,
+  "acceptanceDidNotMoveOrEnroll": true,
+  "explicitTravelThenVoluntaryJoin": true,
+  "uninvitedGroups": 0,
+  "publicScheduleStillListed": true,
+  "blockRevokedAttendance": true,
+  "ownEncryptedReport": 1,
+  "automaticSanctions": 0,
+  "errors": []
+}
