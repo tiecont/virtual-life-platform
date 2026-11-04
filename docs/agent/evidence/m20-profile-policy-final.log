@@ -1,0 +1,20 @@
+$ node --import tsx scripts/verify-dating-policy.ts
+(node:1010801) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{
+  "task": "M20-01",
+  "policy": "1.0.0",
+  "state": "closed-draft",
+  "approvalState": {
+    "publicLaunch": false,
+    "controlledPilot": false,
+    "legalJurisdictionReviewed": false,
+    "adultVerificationReviewed": false,
+    "moderatorCoverageApproved": false,
+    "privacyRetentionReviewed": false,
+    "independentPrivacyAssessment": false,
+    "operatorSignoff": false
+  },
+  "verificationProvider": null,
+  "scope": "Strict definition/gate consistency only;does not verify private runtime,real eligibility,operator signoff or public/pilot approval"
+}

@@ -1,0 +1,3 @@
+import { cookies } from 'next/headers';
+import { MeSchema } from '@virtual-city/contracts';
+export async function privateSession(){const store=await cookies(),cookie=store.get('__Host-city_session')??store.get('city_session');if(!cookie)return null;const value=process.env.API_INTERNAL_URL??'http://127.0.0.1:4300',origin=new URL(value);if(!['http:','https:'].includes(origin.protocol)||origin.origin!==value)throw Error('Invalid internal origin');const headers={cookie:cookie.name+'='+cookie.value};try{const response=await fetch(new URL('/v1/me',origin),{headers,cache:'no-store',signal:AbortSignal.timeout(3000)});if(!response.ok)return null;return {me:MeSchema.parse(await response.json()),headers,origin};}catch{return null;}}

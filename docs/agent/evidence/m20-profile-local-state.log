@@ -1,0 +1,7 @@
+{
+  "latest": "0033_private_dating_profiles.sql",
+  "emptyLocalPrivateState": {
+    "profiles": 0,
+    "syntheticproofs": 0
+  }
+}

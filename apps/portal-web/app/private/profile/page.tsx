@@ -1,0 +1,6 @@
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import { privateSession } from '../session';
+import PrivateProfilePanel from './PrivateProfilePanel';
+export const dynamic='force-dynamic';
+export default async function PrivateProfilePage(){const session=await privateSession();if(!session)return notFound();let allowed=false;try{allowed=(await fetch(new URL('/v1/dating/profile',session.origin),{headers:session.headers,cache:'no-store',signal:AbortSignal.timeout(3000)})).ok;}catch{allowed=false;}if(!allowed)return notFound();const socketOrigin=process.env.PUBLIC_SOCKET_ORIGIN??'http://127.0.0.1:4300';if(new URL(socketOrigin).origin!==socketOrigin||!['http:','https:'].includes(new URL(socketOrigin).protocol))throw Error('Invalid socket origin');return <main><header><Link href="/">← City</Link><span className="tag">SYNTHETIC LOCAL PREVIEW</span></header><section className="identity-section"><h1>Private introduction profile</h1><p>Real dating access remains closed. This preview uses synthetic eligibility. Your choices stay separate from your city profile and create no queue,match or conversation.</p><PrivateProfilePanel key={session.me.profile.id+':'+session.me.csrfToken} me={session.me} socketOrigin={socketOrigin}/><Link href="/private/withdraw">Private consent controls</Link></section></main>;}

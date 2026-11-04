@@ -49,6 +49,8 @@ import { AudienceService } from './events/audience';
 import { registerAudience } from './events/audience-http';
 import { MediaClearanceGate,loadMediaClearance } from './events/media-clearance';
 import { registerMedia } from './events/media-http';
+import { DatingProfiles,testDatingEligibility,type SyntheticDatingEligibility } from './dating/profiles';
+import { registerDatingProfiles } from './dating/http';
 import { EventInvitationService } from './events/invitations';
 import { ProgressionService } from './progression/service';
 import { registerProgression } from './progression/http';
@@ -70,7 +72,7 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] } } = {}) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility} } = {}) {
   const safetyPolicy = await loadSafetyPolicy(options.safety?.policy);
   const mediaClearance=await MediaClearanceGate.create(await loadMediaClearance(),[],options.now);
   const requiredMigrations = await migrationNames();
@@ -86,6 +88,9 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
     }
   });
   const identity = new IdentityService(db, config, options.now);
+  const datingProfiles=new DatingProfiles(db,identity,config,options.dating?.eligibility??(config.DATING_TEST_PROOFS==='1'?testDatingEligibility:undefined),options.now);
+  identity.registerExportOwner('privateProfile',(account,transaction)=>datingProfiles.exportAccount(account,transaction));
+  http.addHook('preClose',async()=>{await datingProfiles.close();});
   const social = new SocialService(db, identity, options.socialPresence, options.now);
   const sanctionsPolicy = new SanctionPolicy(db, options.now), incidentPolicy = new IncidentPolicy(db);
   const safetyGuard = { permits: async (id: string, world: string) => await incidentPolicy.permits(id, world) && await sanctionsPolicy.permits(id, world), assert: async (id: string, world: string, room?: string, chat?: boolean) => { await incidentPolicy.assert(id, world, room, chat); await sanctionsPolicy.assert(id, world, room, chat); } };
@@ -144,6 +149,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => { await rooms.close(); });
   registerWorlds(http, config, worlds.registry, options.now, rooms,discovery);
   registerIdentity(http, config, identity, options.now);
+  registerDatingProfiles(http,config,identity,datingProfiles,options.now);
   registerSocial(http, config, identity, social, options.now);
   registerReports(http, config, identity, reports, sanctions, incidents, options.now);
   registerTravel(http, config, identity, travel, options.now);
@@ -200,5 +206,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeEventNotices(); unsubscribeEventInvitations(); unsubscribeEventInvitationWithdrawal(); unsubscribeEventConsent(); unsubscribeInvitationWithdrawal(); unsubscribeHospitalityWithdrawal(); unsubscribeEventWithdrawal(); unsubscribeReservationWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, eventInvitations, reservations, progression, diagnostics };
+  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, eventInvitations, reservations, progression, diagnostics };
 }

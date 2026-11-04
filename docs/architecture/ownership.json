@@ -1,6 +1,9 @@
 {
   "schemaVersion": 1,
   "tables": {
+    "restricted_dating_profiles":"restricted.dating",
+    "restricted_dating_profile_mutations":"restricted.dating",
+    "restricted_dating_test_eligibility":"restricted.dating-test-fixtures",
     "engine_event_audience": "engine.events",
     "engine_event_audience_rates": "engine.events",
     "engine_event_audience_mutations": "engine.events",

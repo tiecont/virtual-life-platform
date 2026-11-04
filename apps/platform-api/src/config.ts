@@ -17,6 +17,10 @@ const Env = z.object({
   LOCAL_LIBRARY_WORLD: z.enum(['0', '1']).default('0'),
   LOCAL_RESTAURANT_WORLD: z.enum(['0', '1']).default('0'),
   LOCAL_LOUNGE_WORLD: z.enum(['0', '1']).default('0'),
+  LOCAL_DATING_PROTOTYPE:z.enum(['0','1']).default('0'),
+  DATING_TEST_PROOFS:z.enum(['0','1']).default('0'),
+  DATING_PROFILE_KEY:z.string().regex(/^[a-f0-9]{64}$/i).optional(),
+  DATING_PROFILE_KEY_ID:z.string().regex(/^[a-z0-9-]{1,32}$/).default('local-v1'),
 }).superRefine((env, ctx) => {
   const origin = new URL(env.WEB_ORIGIN);
   if (origin.origin !== env.WEB_ORIGIN || !['http:', 'https:'].includes(origin.protocol)) {
@@ -29,6 +33,8 @@ const Env = z.object({
   if (env.NODE_ENV === 'production' && env.LOCAL_LIBRARY_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_LIBRARY_WORLD'], message: 'Local library activation cannot run in production' });
   if (env.NODE_ENV === 'production' && env.LOCAL_RESTAURANT_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_RESTAURANT_WORLD'], message: 'Local restaurant activation cannot run in production' });
   if (env.NODE_ENV === 'production' && env.LOCAL_LOUNGE_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_LOUNGE_WORLD'], message: 'Local lounge activation cannot run in production' });
+  if(env.NODE_ENV==='production'&&env.LOCAL_DATING_PROTOTYPE==='1')ctx.addIssue({code:'custom',path:['LOCAL_DATING_PROTOTYPE'],message:'Local dating prototype cannot run in production'});
+  if(env.DATING_TEST_PROOFS==='1'){const url=new URL(env.DATABASE_URL);if(env.NODE_ENV!=='test'||!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))ctx.addIssue({code:'custom',path:['DATING_TEST_PROOFS'],message:'Synthetic proofs require disposable local test runtime'});}
 });
 export type Config = z.infer<typeof Env>;
 export function readConfig(env: Record<string, string | undefined> = process.env): Config {

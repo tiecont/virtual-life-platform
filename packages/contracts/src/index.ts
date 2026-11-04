@@ -87,3 +87,4 @@ export * from './stage';
 export * from './audience';
 export * from './media';
 export * from './dating-policy';
+export * from './dating-profile';

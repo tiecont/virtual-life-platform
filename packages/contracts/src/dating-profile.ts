@@ -1,0 +1,10 @@
+import { z } from 'zod';
+export const DatingAliasSchema=z.enum(['willow','maple','cedar','bluejay']);
+export const DatingTopicSchema=z.enum(['books','art','games','nature']);
+const topics=z.array(DatingTopicSchema).min(1).max(3).refine(value=>new Set(value).size===value.length);
+export const DatingProfileDataSchema=z.strictObject({aliasKey:DatingAliasSchema,topics,preferredTopics:topics,pace:z.enum(['calm','lively','either'])});
+export const DatingProfileWriteSchema=DatingProfileDataSchema.extend({schemaVersion:z.literal(1),expectedRevision:z.number().int().nonnegative(),writeGrant:z.string().regex(/^\d{13}\.\d{13}\.[a-f0-9]{64}$/),consent:z.literal(true)});
+export const DatingProfileWithdrawSchema=z.strictObject({schemaVersion:z.literal(1)});
+export const DatingProfileWithdrawnSchema=z.strictObject({schemaVersion:z.literal(1),withdrawn:z.literal(true)});
+export const DatingProfileViewSchema=z.strictObject({schemaVersion:z.literal(1),revision:z.number().int().nonnegative(),profile:DatingProfileDataSchema.nullable(),serverTime:z.number().int().nonnegative(),expiresAt:z.number().int().nonnegative(),writeGrant:z.strictObject({value:z.string().regex(/^\d{13}\.\d{13}\.[a-f0-9]{64}$/),expiresAt:z.number().int().nonnegative()})}).refine(value=>value.expiresAt>=value.serverTime&&value.expiresAt<=value.serverTime+30000&&value.expiresAt<=value.writeGrant.expiresAt&&value.writeGrant.expiresAt>value.serverTime&&value.writeGrant.expiresAt<=value.serverTime+30000);
+export type DatingProfileData=z.infer<typeof DatingProfileDataSchema>;
