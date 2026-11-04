@@ -73,7 +73,7 @@ export class ReportService {
     });
   }
   private async grant(db: PoolClient, actorId: string, world?: string) {
-    const grants = (await db.query<{ world_slug: string; role: 'moderator' | 'safety-admin' }>(`SELECT g.world_slug,g.role FROM safety_staff_grants g JOIN identity_accounts a ON a.id=g.account_id WHERE g.account_id=$1 AND a.kind='registered' AND g.expires_at>$2 AND ($3::text IS NULL OR g.world_slug=$3) FOR SHARE OF g`, [actorId, new Date(this.now()), world ?? null])).rows;
+    const grants = (await db.query<{ world_slug: string; role: 'moderator' | 'safety-admin'; expires_at: Date }>(`SELECT g.world_slug,g.role,g.expires_at FROM safety_staff_grants g JOIN identity_accounts a ON a.id=g.account_id WHERE g.account_id=$1 AND a.kind='registered' AND g.expires_at>$2 AND ($3::text IS NULL OR g.world_slug=$3) FOR SHARE OF g`, [actorId, new Date(this.now()), world ?? null])).rows;
     if (!grants.length) throw unavailable(); return grants;
   }
   // Trusted staff gate remains usable for emergency closure when evidence access is unavailable.

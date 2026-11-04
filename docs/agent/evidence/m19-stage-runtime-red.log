@@ -1,0 +1,149 @@
+ Network virtual-city-test-787f3bfb_default Creating 
+ Network virtual-city-test-787f3bfb_default Creating 
+ Network virtual-city-test-787f3bfb_default Created 
+ Network virtual-city-test-787f3bfb_default Created 
+ Container virtual-city-test-787f3bfb-db-1 Creating 
+ Container virtual-city-test-787f3bfb-db-1 Created 
+ Container virtual-city-test-787f3bfb-db-1 Starting 
+ Container virtual-city-test-787f3bfb-db-1 Started 
+ Container virtual-city-test-787f3bfb-db-1 Waiting 
+ Container virtual-city-test-787f3bfb-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/stage.test.ts (4 tests | 4 failed) 1305ms
+   × Stage HTTP authenticates and strictly rejects untrusted input without allocating anything 353ms
+   × actual registered performer explicitly accepts the FIFO host offer;ordinary users cannot hijack it 323ms
+   × durable Stop works outside admission and canonical old keys cannot reactivate or reset withdrawal 318ms
+   × server slot expiry releases the sole allocation and the next FIFO request is offered 309ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/stage.test.ts > Stage HTTP authenticates and strictly rejects untrusted input without allocating anything
+ZodError: [
+  {
+    "code": "unrecognized_keys",
+    "keys": [
+      "schemaVersion"
+    ],
+    "path": [
+      "stagePolicy"
+    ],
+    "message": "Unrecognized key: \"schemaVersion\""
+  },
+  {
+    "code": "custom",
+    "path": [
+      "scene"
+    ],
+    "message": "Scene geometry must match the versioned world seat contract"
+  }
+]
+ ❯ new WorldAdapter packages/world-sdk/dist/registry.js:27:97
+ ❯ defineWorld packages/world-sdk/dist/registry.js:51:44
+ ❯ open tests/integration/stage.test.ts:17:15
+
+ ❯ tests/integration/stage.test.ts:30:114
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  |integration| tests/integration/stage.test.ts > actual registered performer explicitly accepts the FIFO host offer;ordinary users cannot hijack it
+ZodError: [
+  {
+    "code": "unrecognized_keys",
+    "keys": [
+      "schemaVersion"
+    ],
+    "path": [
+      "stagePolicy"
+    ],
+    "message": "Unrecognized key: \"schemaVersion\""
+  },
+  {
+    "code": "custom",
+    "path": [
+      "scene"
+    ],
+    "message": "Scene geometry must match the versioned world seat contract"
+  }
+]
+ ❯ new WorldAdapter packages/world-sdk/dist/registry.js:27:97
+ ❯ defineWorld packages/world-sdk/dist/registry.js:51:44
+ ❯ open tests/integration/stage.test.ts:17:15
+
+ ❯ setup tests/integration/stage.test.ts:26:32
+ ❯ tests/integration/stage.test.ts:31:123
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  |integration| tests/integration/stage.test.ts > durable Stop works outside admission and canonical old keys cannot reactivate or reset withdrawal
+ZodError: [
+  {
+    "code": "unrecognized_keys",
+    "keys": [
+      "schemaVersion"
+    ],
+    "path": [
+      "stagePolicy"
+    ],
+    "message": "Unrecognized key: \"schemaVersion\""
+  },
+  {
+    "code": "custom",
+    "path": [
+      "scene"
+    ],
+    "message": "Scene geometry must match the versioned world seat contract"
+  }
+]
+ ❯ new WorldAdapter packages/world-sdk/dist/registry.js:27:97
+ ❯ defineWorld packages/world-sdk/dist/registry.js:51:44
+ ❯ open tests/integration/stage.test.ts:17:15
+
+ ❯ setup tests/integration/stage.test.ts:26:32
+ ❯ tests/integration/stage.test.ts:32:122
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  |integration| tests/integration/stage.test.ts > server slot expiry releases the sole allocation and the next FIFO request is offered
+ZodError: [
+  {
+    "code": "unrecognized_keys",
+    "keys": [
+      "schemaVersion"
+    ],
+    "path": [
+      "stagePolicy"
+    ],
+    "message": "Unrecognized key: \"schemaVersion\""
+  },
+  {
+    "code": "custom",
+    "path": [
+      "scene"
+    ],
+    "message": "Scene geometry must match the versioned world seat contract"
+  }
+]
+ ❯ new WorldAdapter packages/world-sdk/dist/registry.js:27:97
+ ❯ defineWorld packages/world-sdk/dist/registry.js:51:44
+ ❯ open tests/integration/stage.test.ts:17:15
+
+ ❯ setup tests/integration/stage.test.ts:26:32
+ ❯ tests/integration/stage.test.ts:33:109
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  12:19:57
+   Duration  2.49s (transform 532ms, setup 0ms, import 1.06s, tests 1.30s, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-787f3bfb-db-1 Stopping 
+ Container virtual-city-test-787f3bfb-db-1 Stopped 
+ Container virtual-city-test-787f3bfb-db-1 Removing 
+ Container virtual-city-test-787f3bfb-db-1 Removed 
+ Network virtual-city-test-787f3bfb_default Removing 
+ Network virtual-city-test-787f3bfb_default Removed 

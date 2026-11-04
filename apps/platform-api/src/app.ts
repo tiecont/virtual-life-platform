@@ -42,6 +42,8 @@ import { ReservationService } from './events/reservations';
 import { registerReservations } from './events/reservations-http';
 import { ReservationParties } from './events/parties';
 import { EventPermissions } from './events/permissions';
+import { StageService } from './events/stage';
+import { registerStage } from './events/stage-http';
 import { EventInvitationService } from './events/invitations';
 import { ProgressionService } from './progression/service';
 import { registerProgression } from './progression/http';
@@ -103,6 +105,11 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const eventPermissions = new EventPermissions(reports, options.now);
   const events = new EventService(db, identity, social, worlds.registry, { permits: async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account, world) && await new SanctionPolicy(transaction, options.now).permits(account, world) }, options.events?.organizers ?? eventPermissions, options.now, eventPermissions);
   const reservations = new ReservationService(db, identity, social, rooms, events, options.now); events.attachReservations(reservations);
+  const stage=new StageService(db,identity,social,rooms,events,eventPermissions,worlds.registry,options.now);events.attachStage(stage);
+  const unsubscribeStageContact=social.onContactWithdrawn((transaction,a,b)=>stage.withdrawContact(transaction,a,b));
+  identity.registerExportOwner('stage',(account,transaction)=>stage.exportAccount(account,transaction));
+  identity.registerDeletionOwner('stage',(account,transaction)=>stage.redactAccount(account,transaction));
+  http.addHook('preClose',async()=>{unsubscribeStageContact();await stage.close();});
   const reservationParties=new ReservationParties(db,identity,social,rooms,events,options.now,invitations);
   reports.setReservationInvitationContext({resolve:(token,id)=>reservationParties.reportOfferContext(token,id)});
   const unsubscribeDinnerConsent=invitations.onConsentWithdrawn((transaction,account)=>reservationParties.withdrawAllOffers(transaction,account));
@@ -138,6 +145,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   identity.registerExportOwner('progression', (id, transaction) => progression.exportAccount(id,transaction));
   registerHospitality(http, config, identity, hospitality, options.now);
   registerEvents(http, config, identity, events, eventInvitations, options.now);
+  registerStage(http,config,identity,stage,options.now);
   identity.registerExportOwner('eventInvitations', (id, transaction) => eventInvitations.exportAccount(id, transaction));
   registerReservations(http, config, identity, reservations, options.now,reservationParties);
   identity.registerExportOwner('reservations', (id, transaction) => reservations.exportAccount(id, transaction));
@@ -180,5 +188,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeEventNotices(); unsubscribeEventInvitations(); unsubscribeEventInvitationWithdrawal(); unsubscribeEventConsent(); unsubscribeInvitationWithdrawal(); unsubscribeHospitalityWithdrawal(); unsubscribeEventWithdrawal(); unsubscribeReservationWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, eventInvitations, reservations, progression, diagnostics };
+  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, eventInvitations, reservations, progression, diagnostics };
 }

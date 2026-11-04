@@ -1,5 +1,7 @@
 # ADR0061 — Timed stage consent foundation
 
+Historical foundation checkpoint at83fc369. The subsequent implemented runtime and verification are recorded in ADR0062 and m19-stage-checks.json;the foundation-only limits below describe this earlier checkpoint.
+
 Status: foundation implemented and tested;M19-02 remains IN_PROGRESS. No Stage service/controller/UI is implemented or enabled by this checkpoint. M19-01's audience stage remains closed. This decision is not permission to provision real operators or publish a Lounge.
 
 Audit:Events already supplies registered world-scoped organizer grants,per-event performer grants,current readiness,scoped moderator checks,account/event serialization and cancellation observation. Room already owns admission,seats and movement. Reuse those permissions and owners instead of granting role from a scene,client field or appearance. No real grant is provisioned here. Source references:events/permissions.ts,events/service.ts,rooms/service.ts and the M09 commit/unknown-receipt protocol.

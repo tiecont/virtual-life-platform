@@ -4,6 +4,7 @@ import { requestLog } from './request-log';
 it('omits safety object IDs, query filters and request secrets from request logging', () => {
   for (const [url, expected] of [
     ['/v1/reports/private-receipt', '/v1/reports/[redacted]'],
+    ['/v1/stage/slots/private-slot/accept?performer=private-person','/v1/stage/slots/[redacted]/accept'],
     ['/v1/moderation/cases/private-case/appeals?cursor=private-cursor', '/v1/moderation/cases/[redacted]/appeals'],
     ['/v1/moderation/sanctions/private-sanction/revoke', '/v1/moderation/sanctions/[redacted]/revoke'],
     ['/v1/moderation/appeals/private-appeal/review', '/v1/moderation/appeals/[redacted]/review'],

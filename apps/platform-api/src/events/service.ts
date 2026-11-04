@@ -23,11 +23,13 @@ export class EventService {
   #closed = false; #maintenance?: Promise<void>;
   #reservations?: EventReservationObserver;
   #invitations?: EventInvitationAccess;
+  #stage?: Pick<EventInvitationAccess,'observed'|'participants'>;
   #noticeListeners = new Set<(accounts: string[]) => void>();
   #participationEnded=new Set<(eventId:string,accounts:string[])=>void>();
   constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private social: SocialService, private registry: WorldRegistry, private safety: EventSafetyPort, private organizers?: EventOrganizerPort, private now = Date.now, private permissions?: EventPermissions) {}
   attachReservations(port: EventReservationObserver) { if (this.#reservations) throw new Error('Reservation observer already attached'); this.#reservations = port; }
   attachInvitations(port: EventInvitationAccess) { if (this.#invitations) throw new Error('Invitation access already attached'); this.#invitations = port; }
+  attachStage(port: Pick<EventInvitationAccess,'observed'|'participants'>) { if(this.#stage)throw new Error('Stage observer already attached');this.#stage=port; }
   onNotice(listener: (accounts: string[]) => void) { this.#noticeListeners.add(listener); return () => { this.#noticeListeners.delete(listener); }; }
   onParticipationEnded(listener:(eventId:string,accounts:string[])=>void){this.#participationEnded.add(listener);return()=>{this.#participationEnded.delete(listener);};}
   private invalidateParticipation(eventId:string,accounts:string[]){for(const listener of this.#participationEnded){try{listener(eventId,accounts);}catch{/* Canonical eligibility is also rechecked on every projection. */}}}
@@ -72,6 +74,7 @@ export class EventService {
     if (row.phase === 'ENDED' || row.phase === 'CANCELLED') await db.query("UPDATE engine_event_rsvps SET phase=$2,changed_at=greatest(changed_at,$3) WHERE event_id=$1 AND phase='CONFIRMED'", [row.id, row.phase === 'ENDED' ? 'EXPIRED' : 'CANCELLED', row.changed_at]);
     await this.#reservations?.observed(db, this.bookingContext(row), this.now());
     await this.#invitations?.observed(db, this.bookingContext(row), this.now());
+    await this.#stage?.observed(db, this.bookingContext(row), this.now());
     if (['ENDED', 'CANCELLED'].includes(row.phase)) await db.query('UPDATE engine_event_performer_readiness SET ready=false WHERE event_id=$1 AND ready', [row.id]);
     return row;
   }
@@ -127,7 +130,7 @@ export class EventService {
   }
   private async participants(db: Pick<Pool, 'query'>, id: string) {
     const rows = (await db.query<{ account_id: string }>("SELECT account_id FROM engine_event_rsvps WHERE event_id=$1 AND phase='CONFIRMED' UNION SELECT account_id FROM engine_event_performer_readiness WHERE event_id=$1 AND ready", [id])).rows;
-    return [...new Set([...rows.map(row => row.account_id), ...await this.#reservations?.participants(db, id) ?? [], ...await this.#invitations?.participants(db, id) ?? []])];
+    return [...new Set([...rows.map(row => row.account_id), ...await this.#reservations?.participants(db, id) ?? [], ...await this.#invitations?.participants(db, id) ?? [], ...await this.#stage?.participants(db,id)??[]])];
   }
   async controls(token: string, id: string) {
     return this.withBooking(token, id, async (db, actor, context) => {

@@ -1,0 +1,6 @@
+$ tsc -p tsconfig.json --noEmit
+src/events/stage.ts(52,81): error TS2367: This comparison appears to be unintentional because the types '"QUEUED" | "OFFERED" | "ACTIVE"' and '"ENDED"' have no overlap.
+src/events/stage.ts(88,53): error TS2367: This comparison appears to be unintentional because the types '"OFFERED"' and '"ENDED"' have no overlap.
+/home/tiecont/Projects/virtual-city/apps/platform-api:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @virtual-city/platform-api@0.1.0 typecheck: `tsc -p tsconfig.json --noEmit`
+Exit status 2
