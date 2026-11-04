@@ -45,6 +45,7 @@
     "@virtual-city/contracts": "workspace:*",
     "@virtual-city/library-world": "workspace:*",
     "@virtual-city/restaurant-world": "workspace:*",
+    "@virtual-city/lounge-world": "workspace:*",
     "@virtual-city/world-sdk": "workspace:*",
     "socket.io-client": "4.8.4"
   }

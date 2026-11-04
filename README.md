@@ -20,6 +20,8 @@ The local [Grand Restaurant](docs/architecture/RESTAURANT.md) at `/worlds/restau
 
 The original starter avatar and outfit/action previews are at `/worlds/sdk-sandbox/avatar-lab`. Regenerate its atlas with `pnpm assets:avatars` after building packages; `pnpm assets:check` verifies reproducibility and provenance. Preview actions do not grant gameplay permissions. Public media/release approval remains pending.
 
+The [Moonlight Lounge](docs/architecture/LOUNGE.md) scene slice is locally verified at `/worlds/lounge`:ten audience chairs,a closed text/visual stage and decorative virtual mocktail counter. It consumes canonical read-only event states and the shared native room controls. Stage performance,service and media remain closed in this preview. Both local installation and registry activation default OFF;production rejects the local option.
+
 The scene renderer loads through its explicit client entry and uses a versioned immutable atlas cache. [Measured local scene budgets](docs/architecture/SCENE-PERFORMANCE.md) include real browser CPU/network emulation and lifecycle checks; they are not production or physical-device promises.
 
 The [safety threat model and escalation contract](docs/product/SAFETY-THREAT-MODEL.md) and validated policy have gated local chat/report/moderator/sanction workflows. [Safety verification and remaining limits](docs/architecture/SAFETY-VERIFICATION.md) distinguish implemented behavior from pending privacy, retention and staffed public operations. No public social release is approved.

@@ -6,9 +6,9 @@ import { fitSceneCamera } from './camera';
 import { sceneEntities } from './entities';
 import { avatarAtlasSpec, avatarFrame } from './avatar-art';
 
-export async function createCafeScene(host: HTMLElement, input: SceneManifest, onSeat: (seatId: string) => void, options: { signal?: AbortSignal; outfit?: AvatarAppearance['outfit'];theme?:'cafe'|'reading-room'|'dining-room'; onMove?: (point: { x: number; y: number }) => void } = {}) {
+export async function createCafeScene(host: HTMLElement, input: SceneManifest, onSeat: (seatId: string) => void, options: { signal?: AbortSignal; outfit?: AvatarAppearance['outfit'];theme?:'cafe'|'reading-room'|'dining-room'|'lounge'; onMove?: (point: { x: number; y: number }) => void } = {}) {
   const scene = SceneManifestSchema.parse(input); const size = scene.tileSize;
-  const reading=options.theme==='reading-room',dining=options.theme==='dining-room';
+  const reading=options.theme==='reading-room',dining=options.theme==='dining-room',lounge=options.theme==='lounge';
   AvatarOutfitSchema.parse(options.outfit ?? 'casual');
   options.signal?.throwIfAborted();
   const app = new Application();
@@ -38,12 +38,16 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
     const point = world.toLocal(event.global); options.onMove({ x: Math.floor(point.x / size), y: Math.floor(point.y / size) });
   });
   const floor = new Graphics(); world.addChild(floor);
-  for (let y = 0; y < scene.rows; y++) for (let x = 0; x < scene.columns; x++) floor.rect(x * size, y * size, size, size).fill((x + y) % 2 ? dining?'#ded0bf':reading?'#e1ddce':'#dbe7df' : dining?'#eee3d5':reading?'#e9e5d9':'#e5eee8');
+  for (let y = 0; y < scene.rows; y++) for (let x = 0; x < scene.columns; x++) floor.rect(x * size, y * size, size, size).fill((x + y) % 2 ? lounge?'#e2dfeb':dining?'#ded0bf':reading?'#e1ddce':'#dbe7df' : lounge?'#eeeaf1':dining?'#eee3d5':reading?'#e9e5d9':'#e5eee8');
   function rect(g: Graphics, x: number, y: number, w: number, h: number, color: string) { g.rect(x, y, w, h).fill(color); }
   for (const zone of scene.collisionZones) {
     const x = zone.x * size, y = zone.y * size, w = zone.width * size, h = zone.height * size;
     if (zone.kind === 'wall') {
       rect(floor, x, y, w, h, reading?'#4a453c':'#354944'); rect(floor, x + 8, y + 8, Math.max(8, w - 16), Math.max(8, h - 16), reading?'#6a6353':'#465f57');
+    } else if(zone.kind==='stage'){
+      rect(floor,x,y,w,h,'#514464');rect(floor,x+8,y+8,w-16,h-24,'#786785');rect(floor,x,y+h-16,w,16,'#cfba8d');
+      for(const side of [x,x+w-40]){rect(floor,side,y,40,h-16,'#70516e');for(let offset=8;offset<40;offset+=12)rect(floor,side+offset,y,4,h-16,'#94748c');}
+      floor.circle(x+w/2,y+40,26).fill('#efe1ae');floor.circle(x+w/2+11,y+32,25).fill('#786785');for(const offset of [70,115,w-115,w-70]){rect(floor,x+offset,y+24,4,12,'#eee2b3');rect(floor,x+offset-4,y+28,12,4,'#eee2b3');}
     } else if (zone.kind === 'table'&&dining) {
       rect(floor,x+6,y+9,w,h-5,'#aa927f');rect(floor,x,y,w,h-6,'#fff8e9');rect(floor,x+6,y+6,w-12,h-18,'#e7ded1');
       for(const offset of [24,w-24]){floor.circle(x+offset,y+h/2-4,13).fill('#faf9f3');floor.circle(x+offset,y+h/2-4,9).stroke({color:'#bca979',width:2});rect(floor,x+offset-20,y+h/2-12,2,19,'#867b69');rect(floor,x+offset+18,y+h/2-12,3,19,'#867b69');}
@@ -56,6 +60,9 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
         rect(floor, x + offset + 6, y + 28, 12, 4, '#cf6f5f');
       }
       floor.circle(x + w / 2, y + 34, 10).fill('#4f765c');
+    } else if(zone.kind==='counter'&&lounge){
+      rect(floor,x+5,y+8,w,h-5,'#a396a8');rect(floor,x,y,w,h-10,'#66576d');rect(floor,x,y,w,12,'#e8d7b3');
+      for(let offset=24;offset<w-12;offset+=48){rect(floor,x+offset,y+26,18,28,'#f8f2e7');rect(floor,x+offset+3,y+34,12,17,offset%3?'#93b7a3':'#cf9fa5');rect(floor,x+offset+12,y+18,3,26,'#aa8a70');floor.circle(x+offset+5,y+29,6).fill('#d7cf8a');}
     } else if (zone.kind === 'counter'&&reading) {
       // Original deterministic pixel books: decorative spines only, no text or media.
       rect(floor,x+4,y+6,w,h,'#b7aa93');rect(floor,x,y,w,h,'#6a5542');rect(floor,x+5,y+5,w-10,h-10,'#443d35');
@@ -86,15 +93,15 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
     rect(floor, x * size + 4, 18, 3 * size - 24, 20, '#d7e9ed');
     rect(floor, x * size + 61, 14, 6, 61, '#eff4ef');
   }
-  const rugX=(dining?8:6)*size,rugY=(dining?4:9)*size,rugHeight=(dining?4:3)*size;
-  const rug = new Graphics().rect(rugX,rugY,7*size,rugHeight).fill(dining?'#a77b79':reading?'#b8a8ab':'#a7c2c6');
+  const rugX=(dining?8:6)*size,rugY=(lounge?12:dining?4:9)*size,rugHeight=(dining?4:3)*size;
+  const rug = new Graphics().rect(rugX,rugY,7*size,rugHeight).fill(lounge?'#b3a1b6':dining?'#a77b79':reading?'#b8a8ab':'#a7c2c6');
   rug.rect(rugX+8,rugY+8,7*size-16,rugHeight-16).stroke({ color: '#e6eee8', width: 2 }); world.addChild(rug);
   const seats = new Container(); const people = new Container({ sortableChildren: true }); world.addChild(seats, people);
   function label(text: string, x: number, y: number, color = '#354944', fontSize = 14) {
     const element = new Text({ text, style: { fontFamily: 'system-ui, sans-serif', fontSize, fill: color, fontWeight: '600' } }); element.anchor.set(.5); element.position.set(x, y); return element;
   }
-  world.addChild(label(dining?'GARDEN DINING':reading?'READING CORNER':'WINDOW TABLE', (dining?5:4.5) * size, (dining?8.8:8) * size), label(dining?'WINDOW DINING':reading?'STUDY ALCOVE':'GARDEN TABLE', (dining?18:13.5) * size, (dining?8.8:reading?9:8) * size));
-  world.addChild(label(dining?'GRAND RESTAURANT':reading?'ETERNAL LIBRARY':'LOCAL TEST CAFE', (dining?12:9.5) * size, 1.8 * size, '#eff4ef', 14));
+  world.addChild(label(lounge?'TEXT / VISUAL STAGE':dining?'GARDEN DINING':reading?'READING CORNER':'WINDOW TABLE', (lounge?12:dining?5:4.5) * size, (lounge?5.7:dining?8.8:8) * size), label(lounge?'VIRTUAL MOCKTAILS':dining?'WINDOW DINING':reading?'STUDY ALCOVE':'GARDEN TABLE', (lounge?19.5:dining?18:13.5) * size, (lounge?12.7:dining?8.8:reading?9:8) * size));
+  world.addChild(label(lounge?'MOONLIGHT LOUNGE':dining?'GRAND RESTAURANT':reading?'ETERNAL LIBRARY':'LOCAL TEST CAFE', (lounge||dining?12:9.5) * size, 1.8 * size, '#eff4ef', 14));
   let destroyed = false;
   let current: RoomSnapshot | null = null; let context = ''; let created = 0; let removed = 0; let frames = 0;
   const avatars = new Map<string, { root: Container; sprite: Sprite; appearance: AvatarAppearance; pose: AnimationState; startedAt: number | null; motion?: RoomMotion; serverTime: number; receivedAt: number; settledPose: 'idle' | 'sit'; self: boolean }>();

@@ -7,6 +7,7 @@ import { AdmissionPolicy, type AdultEligibilityProvider } from '../identity/poli
 import { createTravelFixtures } from './travel-fixtures';
 import { createLibraryWorld } from '@virtual-city/library-world';
 import { createRestaurantWorld } from '@virtual-city/restaurant-world';
+import { createLoungeWorld } from '@virtual-city/lounge-world';
 
 export interface WorldRuntimeOptions {
   modules?: WorldAdapter[];
@@ -30,6 +31,7 @@ export async function createWorldRuntime(config: Config, identity: IdentityServi
   registry.register(createSandboxWorld());
   if (config.NODE_ENV !== 'production' && config.LOCAL_LIBRARY_WORLD === '1') registry.register(createLibraryWorld());
   if (config.NODE_ENV !== 'production' && config.LOCAL_RESTAURANT_WORLD === '1') registry.register(createRestaurantWorld());
+  if (config.NODE_ENV !== 'production' && config.LOCAL_LOUNGE_WORLD === '1') registry.register(createLoungeWorld());
   if (config.NODE_ENV !== 'production' && config.LOCAL_TRAVEL_FIXTURES === '1') for (const fixture of createTravelFixtures()) registry.register(fixture);
   for (const module of options.modules ?? []) registry.register(module);
   let reloadTail: Promise<void> = Promise.resolve();

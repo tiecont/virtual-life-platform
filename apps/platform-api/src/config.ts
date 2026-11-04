@@ -16,6 +16,7 @@ const Env = z.object({
   LOCAL_TRAVEL_FIXTURES: z.enum(['0', '1']).default('0'),
   LOCAL_LIBRARY_WORLD: z.enum(['0', '1']).default('0'),
   LOCAL_RESTAURANT_WORLD: z.enum(['0', '1']).default('0'),
+  LOCAL_LOUNGE_WORLD: z.enum(['0', '1']).default('0'),
 }).superRefine((env, ctx) => {
   const origin = new URL(env.WEB_ORIGIN);
   if (origin.origin !== env.WEB_ORIGIN || !['http:', 'https:'].includes(origin.protocol)) {
@@ -27,6 +28,7 @@ const Env = z.object({
   if (env.NODE_ENV === 'production' && env.LOCAL_TRAVEL_FIXTURES === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_TRAVEL_FIXTURES'], message: 'Local travel fixtures cannot run in production' });
   if (env.NODE_ENV === 'production' && env.LOCAL_LIBRARY_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_LIBRARY_WORLD'], message: 'Local library activation cannot run in production' });
   if (env.NODE_ENV === 'production' && env.LOCAL_RESTAURANT_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_RESTAURANT_WORLD'], message: 'Local restaurant activation cannot run in production' });
+  if (env.NODE_ENV === 'production' && env.LOCAL_LOUNGE_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_LOUNGE_WORLD'], message: 'Local lounge activation cannot run in production' });
 });
 export type Config = z.infer<typeof Env>;
 export function readConfig(env: Record<string, string | undefined> = process.env): Config {

@@ -1,0 +1,6 @@
+library: packages/library-world/src/index.ts matches
+library: packages/pixi-scene/src/renderer.ts matches
+restaurant: packages/restaurant-world/src/index.ts matches
+restaurant: packages/pixi-scene/src/renderer.ts matches
+lounge: packages/lounge-world/src/index.ts matches
+lounge: packages/pixi-scene/src/renderer.ts matches

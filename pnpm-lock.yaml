@@ -35,6 +35,9 @@ importers:
       '@virtual-city/library-world':
         specifier: workspace:*
         version: link:packages/library-world
+      '@virtual-city/lounge-world':
+        specifier: workspace:*
+        version: link:packages/lounge-world
       '@virtual-city/restaurant-world':
         specifier: workspace:*
         version: link:packages/restaurant-world
@@ -83,6 +86,9 @@ importers:
       '@virtual-city/library-world':
         specifier: workspace:*
         version: link:../../packages/library-world
+      '@virtual-city/lounge-world':
+        specifier: workspace:*
+        version: link:../../packages/lounge-world
       '@virtual-city/restaurant-world':
         specifier: workspace:*
         version: link:../../packages/restaurant-world
@@ -122,6 +128,9 @@ importers:
       '@virtual-city/library-world':
         specifier: workspace:*
         version: link:../../packages/library-world
+      '@virtual-city/lounge-world':
+        specifier: workspace:*
+        version: link:../../packages/lounge-world
       '@virtual-city/pixi-scene':
         specifier: workspace:*
         version: link:../../packages/pixi-scene
@@ -166,6 +175,15 @@ importers:
         version: 19.3.0
 
   packages/library-world:
+    dependencies:
+      '@virtual-city/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@virtual-city/world-sdk':
+        specifier: workspace:*
+        version: link:../world-sdk
+
+  packages/lounge-world:
     dependencies:
       '@virtual-city/contracts':
         specifier: workspace:*

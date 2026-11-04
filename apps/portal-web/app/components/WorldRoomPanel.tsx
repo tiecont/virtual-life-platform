@@ -25,7 +25,7 @@ const messages: Record<string, string> = {
 };
 const ownInput = (state: RoomSnapshot) => ({ schemaVersion: 1, requestId: crypto.randomUUID(), epoch: state.epoch, roomId: state.roomId, membershipId: state.membershipId });
 export interface RoomExperience {
- slug:string;worldVersion:string;scene:SceneManifest;title:string;eyebrow:string;badge:string;noun:'cafe'|'library'|'restaurant';theme:'cafe'|'reading-room'|'dining-room';sceneLabel:string;caption:string;capacity?:number;
+ slug:string;worldVersion:string;scene:SceneManifest;title:string;eyebrow:string;badge:string;noun:'cafe'|'library'|'restaurant'|'lounge';theme:'cafe'|'reading-room'|'dining-room'|'lounge';sceneLabel:string;caption:string;capacity?:number;
  destinations:{label:string;x:number;y:number}[];areas?:readonly {key:string;title:string;description:string;seatIds:readonly string[]}[];areaLabel?:string;areaHeading?:string;areaDescription?:string;provenance?:string;focus:boolean;wardrobe:boolean;events?:boolean;
 }
 const sandboxExperience:RoomExperience={slug:'sdk-sandbox',worldVersion:'1.0.0',scene:sandboxScene,title:'Local Test Cafe',eyebrow:'SDK Sandbox',badge:'LOCAL TEST WORLD',noun:'cafe',theme:'cafe',sceneLabel:'Cafe floor plan. Two shared tables, eight seats, an entrance and a counter. Movement and seat controls follow below.',caption:'WINDOW & GARDEN TABLES',destinations:[{label:'Entrance',x:10,y:11},{label:'Window aisle',x:2,y:4},{label:'Garden aisle',x:11,y:4},{label:'Counter front',x:15,y:9}],focus:true,wardrobe:true};

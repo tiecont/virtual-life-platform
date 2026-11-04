@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "asset": "Moonlight Lounge original silent scene",
+  "origin": "Original project-authored stage,curtains,crescent,stars,audience layout and virtual mocktail geometry;no external media,music,video,distributed imagery or fonts",
+  "sources": [
+    {
+      "path": "packages/lounge-world/src/index.ts",
+      "sha256": "ebdc2ad21e7d746f96ec7afe17a31757b4b36eeb6cbca512fed653280bc3eb98"
+    },
+    {
+      "path": "packages/pixi-scene/src/renderer.ts",
+      "sha256": "4d8c62290f080ef85769e9cafc140276c03dfc4ee6e317da1984f4e0ae773be7"
+    }
+  ],
+  "avatar": "Existing original starter atlas;separate avatar provenance applies",
+  "releaseApproved": false
+}
