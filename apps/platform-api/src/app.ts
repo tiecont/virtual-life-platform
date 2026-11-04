@@ -26,6 +26,7 @@ import { registerReports } from './safety/http';
 import { SanctionPolicy, SanctionService } from './safety/sanctions';
 import { IncidentPolicy, IncidentService } from './safety/incidents';
 import { requestLog } from './common/request-log';
+import { DomainError } from './common/errors';
 import { TravelService } from './travel/service';
 import { registerTravel } from './travel/http';
 import { registerTravelGateway } from './travel/socket';
@@ -44,6 +45,8 @@ import { ReservationParties } from './events/parties';
 import { EventPermissions } from './events/permissions';
 import { StageService } from './events/stage';
 import { registerStage } from './events/stage-http';
+import { AudienceService } from './events/audience';
+import { registerAudience } from './events/audience-http';
 import { EventInvitationService } from './events/invitations';
 import { ProgressionService } from './progression/service';
 import { registerProgression } from './progression/http';
@@ -106,6 +109,10 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const events = new EventService(db, identity, social, worlds.registry, { permits: async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account, world) && await new SanctionPolicy(transaction, options.now).permits(account, world) }, options.events?.organizers ?? eventPermissions, options.now, eventPermissions);
   const reservations = new ReservationService(db, identity, social, rooms, events, options.now); events.attachReservations(reservations);
   const stage=new StageService(db,identity,social,rooms,events,eventPermissions,worlds.registry,options.now);events.attachStage(stage);
+  const audience=new AudienceService(db,identity,social,rooms,events,eventPermissions,worlds.registry,{permits:async(transaction,account,world,room)=>{if(!await new SanctionPolicy(transaction,options.now).permits(account,world,room,true))return false;try{await new IncidentPolicy(transaction).assert(account,world,room,true);return true;}catch(error){if(error instanceof DomainError&&error.status===403)return false;throw error;}}},options.now);events.attachAudience(audience);
+  const unsubscribeAudienceContact=social.onContactWithdrawn((transaction,a,b)=>audience.withdrawContact(transaction,a,b));
+  identity.registerExportOwner('audience',(account,transaction)=>audience.exportAccount(account,transaction));identity.registerDeletionOwner('audience',(account,transaction)=>audience.redactAccount(account,transaction));
+  http.addHook('preClose',async()=>{unsubscribeAudienceContact();await audience.close();});
   const unsubscribeStageContact=social.onContactWithdrawn((transaction,a,b)=>stage.withdrawContact(transaction,a,b));
   identity.registerExportOwner('stage',(account,transaction)=>stage.exportAccount(account,transaction));
   identity.registerDeletionOwner('stage',(account,transaction)=>stage.redactAccount(account,transaction));
@@ -146,6 +153,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerHospitality(http, config, identity, hospitality, options.now);
   registerEvents(http, config, identity, events, eventInvitations, options.now);
   registerStage(http,config,identity,stage,options.now);
+  registerAudience(http,config,identity,audience,options.now);
   identity.registerExportOwner('eventInvitations', (id, transaction) => eventInvitations.exportAccount(id, transaction));
   registerReservations(http, config, identity, reservations, options.now,reservationParties);
   identity.registerExportOwner('reservations', (id, transaction) => reservations.exportAccount(id, transaction));
@@ -188,5 +196,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeEventNotices(); unsubscribeEventInvitations(); unsubscribeEventInvitationWithdrawal(); unsubscribeEventConsent(); unsubscribeInvitationWithdrawal(); unsubscribeHospitalityWithdrawal(); unsubscribeEventWithdrawal(); unsubscribeReservationWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, eventInvitations, reservations, progression, diagnostics };
+  return { app, http, identity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, eventInvitations, reservations, progression, diagnostics };
 }

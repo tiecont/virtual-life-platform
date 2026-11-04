@@ -4,6 +4,7 @@ import { WorldSlugSchema, WorldVersionSchema, SeatIdSchema } from './world-primi
 import { HospitalityPolicySchema } from './hospitality-policy';
 import { WorldEventPolicySchema } from './events';
 import { StagePolicySchema } from './stage-policy';
+import { AudiencePolicySchema } from './audience-policy';
 export { WorldSlugSchema, WorldVersionSchema, SeatIdSchema } from './world-primitives';
 
 export const WORLD_API_VERSION = 1 as const;
@@ -33,9 +34,11 @@ export const WorldDefinitionSchema = z.strictObject({
   hospitalityPolicy: HospitalityPolicySchema.optional(),
   eventPolicy: WorldEventPolicySchema.optional(),
   stagePolicy: StagePolicySchema.optional(),
+  audiencePolicy: AudiencePolicySchema.optional(),
   appearancePolicy: z.strictObject({ apron: z.enum(['forbidden','allowed','on-shift']) }).optional(),
   accessPolicy: WorldAccessPolicySchema, visibility: z.enum(['listed', 'hidden']), map: WorldMapSchema,
 }).superRefine((world, ctx) => {
+  if(world.audiencePolicy&&!world.stagePolicy)ctx.addIssue({code:'custom',path:['audiencePolicy'],message:'Audience reactions require a reviewed stage venue'});
   if (world.appearancePolicy?.apron === 'on-shift' && !world.hospitalityPolicy?.staffing) ctx.addIssue({ code: 'custom', path: ['appearancePolicy'], message: 'Uniform policy requires explicit voluntary staffing' });
   if (world.capabilities.includes('focus') !== !!world.focusPolicy) ctx.addIssue({ code: 'custom', path: ['focusPolicy'], message: 'Focus capability requires an explicit trusted timer policy' });
   if (world.capabilities.includes('hospitality') !== !!world.hospitalityPolicy) ctx.addIssue({ code: 'custom', path: ['hospitalityPolicy'], message: 'Hospitality capability requires an explicit trusted service policy' });

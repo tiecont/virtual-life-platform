@@ -1,0 +1,3 @@
+$ docker compose --env-file .env -f infra/compose/dev.yml stop
+ Container virtual-city-dev-db-1 Stopping 
+ Container virtual-city-dev-db-1 Stopped 

@@ -1,0 +1,5 @@
+$ tsc --noEmit
+app/worlds/lounge/LoungeAudience.tsx(4,24): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+/home/tiecont/Projects/virtual-city/apps/portal-web:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @virtual-city/portal-web@0.1.0 typecheck: `tsc --noEmit`
+Exit status 2

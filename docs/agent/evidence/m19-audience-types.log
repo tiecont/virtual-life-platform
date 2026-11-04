@@ -1,0 +1,6 @@
+$ tsc -p tsconfig.json --noEmit
+src/app.ts(111,372): error TS2304: Cannot find name 'DomainError'.
+src/app.ts(111,385): error TS18046: 'error' is of type 'unknown'.
+/home/tiecont/Projects/virtual-city/apps/platform-api:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @virtual-city/platform-api@0.1.0 typecheck: `tsc -p tsconfig.json --noEmit`
+Exit status 2

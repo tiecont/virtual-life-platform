@@ -5,7 +5,7 @@
   "sources": [
     {
       "path": "packages/lounge-world/src/index.ts",
-      "sha256": "6d7aa913d47e9f09d7cddfa90ccdd9f7b5c57728276d949b0f2cc3493d779991"
+      "sha256": "01d446437c9e8bf5408689d04a6670281ace39a164cc019c44e5afc006d0b4a1"
     },
     {
       "path": "packages/pixi-scene/src/renderer.ts",

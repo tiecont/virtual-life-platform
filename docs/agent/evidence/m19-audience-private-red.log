@@ -1,0 +1,45 @@
+ Network virtual-city-test-d259d7f8_default Creating 
+ Network virtual-city-test-d259d7f8_default Creating 
+ Network virtual-city-test-d259d7f8_default Created 
+ Network virtual-city-test-d259d7f8_default Created 
+ Container virtual-city-test-d259d7f8-db-1 Creating 
+ Container virtual-city-test-d259d7f8-db-1 Created 
+ Container virtual-city-test-d259d7f8-db-1 Starting 
+ Container virtual-city-test-d259d7f8-db-1 Started 
+ Container virtual-city-test-d259d7f8-db-1 Waiting 
+ Container virtual-city-test-d259d7f8-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/audience.test.ts (13 tests | 1 failed | 12 skipped) 1441ms
+   × private event IDs are unavailable before room-proof checks and never allocate an audience header 1438ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/audience.test.ts > private event IDs are unavailable before room-proof checks and never allocate an audience header
+AssertionError: expected 409 to be 404 // Object.is equality
+
+- Expected
++ Received
+
+- 404
++ 409
+
+ ❯ tests/integration/audience.test.ts:43:777
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 12 skipped (13)
+   Start at  13:55:20
+   Duration  2.77s (transform 529ms, setup 0ms, import 1.17s, tests 1.44s, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-d259d7f8-db-1 Stopping 
+ Container virtual-city-test-d259d7f8-db-1 Stopped 
+ Container virtual-city-test-d259d7f8-db-1 Removing 
+ Container virtual-city-test-d259d7f8-db-1 Removed 
+ Network virtual-city-test-d259d7f8_default Removing 
+ Network virtual-city-test-d259d7f8_default Removed 

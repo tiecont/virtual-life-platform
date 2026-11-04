@@ -1,0 +1,10 @@
+import { z } from 'zod';
+import { TravelSourceSchema } from './travel';
+export { AudiencePolicySchema } from './audience-policy';
+const uuid=z.uuid().transform(value=>value.toLowerCase());
+export const AudienceModeSchema=z.enum(['OPEN','MUTED','DISABLED']);
+export const AudienceReadSchema=z.strictObject({schemaVersion:z.literal(1),eventId:uuid,source:TravelSourceSchema});
+export const AudienceSendSchema=AudienceReadSchema.extend({expectedVersion:z.number().int().nonnegative(),reaction:z.enum(['clap','star','wave'])});
+export const AudienceControlSchema=z.strictObject({schemaVersion:z.literal(1),eventId:uuid,roomId:uuid,mode:AudienceModeSchema,expectedVersion:z.number().int().nonnegative(),source:TravelSourceSchema.optional()}).refine(value=>value.mode!=='OPEN'||value.source?.roomId===value.roomId,'Opening requires current room proof');
+export const AudienceViewSchema=z.strictObject({schemaVersion:z.literal(1),mode:AudienceModeSchema,version:z.number().int().nonnegative(),serverTime:z.number().int().nonnegative(),expiresAt:z.number().int().nonnegative(),counts:z.strictObject({clap:z.number().int().min(0).max(20),star:z.number().int().min(0).max(20),wave:z.number().int().min(0).max(20)}),canReact:z.boolean(),retryAfterMs:z.number().int().min(0).max(10000),permissions:z.strictObject({canOpen:z.boolean(),canClose:z.boolean()})}).refine(value=>value.counts.clap+value.counts.star+value.counts.wave<=20&&value.expiresAt>=value.serverTime&&value.expiresAt<=value.serverTime+3000);
+export const AudienceResultSchema=z.strictObject({schemaVersion:z.literal(1),applied:z.boolean(),view:AudienceViewSchema});

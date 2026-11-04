@@ -1,0 +1,173 @@
+{
+  "taskID": "M19-04",
+  "status": "VERIFIED",
+  "source": "Local workspace from08d3eea;commit recorded by git and the following checkpoint",
+  "environment": "2026-11-04;Node26.9.0/pnpm11.28.5;disposable local PostgreSQL,actual TCP/Socket.IO,and Chromium desktop/iPhone13 viewport;API boundary tests use an injected trusted clock,browser journeys use real time",
+  "commands": [
+    {
+      "command": "pnpm build:packages",
+      "exitCode": 0,
+      "log": "m19-audience-packages.log"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/audience.test.ts",
+      "exitCode": 1,
+      "log": "m19-audience-red.log",
+      "scope": "3fail before Audience HTTP routes;real missing-route behavioral acceptance,not a fixture import failure."
+    },
+    {
+      "command": "pnpm --filter @virtual-city/platform-api typecheck",
+      "exitCode": 2,
+      "log": "m19-audience-types.log",
+      "scope": "Missing DomainError import in new safety wiring;fixed import."
+    },
+    {
+      "command": "Audience integration iterations",
+      "exitCodes": [
+        1,
+        1,
+        0
+      ],
+      "logs": [
+        "m19-audience-api-attempt1.log",
+        "m19-audience-api-attempt2.log",
+        "m19-audience-api-attempt3.log"
+      ],
+      "scope": "First2pass/1fail:anonymous POST omitted Origin and correctly got403;added Origin to reach expected401 auth guard. Then6pass/1fail:actual receipt SQL wait exposed late200 after shortened moderator grant expiry. Added downward approval clipping and final post-receipt approval/safety/window checks;7pass. Five further lifecycle/privacy tests are covered in the fullcheck below."
+    },
+    {
+      "command": "pnpm --filter @virtual-city/portal-web typecheck",
+      "exitCode": 2,
+      "log": "m19-audience-web-types.log",
+      "scope": "Unnecessary direct zod type import was unavailable in web package;replaced with ReturnType of the existing contracts schema. No dependency added."
+    },
+    {
+      "command": "pnpm --filter @virtual-city/platform-api typecheck",
+      "exitCode": 0,
+      "log": "m19-audience-api-types-final.log"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/contracts/test/audience.test.ts",
+      "exitCode": 0,
+      "log": "m19-audience-contracts.log",
+      "scope": "3pass:finite whitelist/strict actor-score-time-bound rejection,source-bound positive control/independent negative control,and hard aggregate/TTL limits."
+    },
+    {
+      "command": "pnpm check",
+      "exitCode": 0,
+      "log": "m19-audience-check.log",
+      "scope": "7governance,235unit,416integration including12Audience runtime cases,lint/types/architecture/assets/allbuilds before the review-found0032 same-window quota hardening."
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "logs": [
+        "m19-audience-lint.log",
+        "m19-audience-lint-final.log"
+      ]
+    },
+    {
+      "command": "node scripts/run-browser-tests.mjs tests/e2e/lounge.spec.ts -g 'ticket-free Lounge|staff disable outside'",
+      "exitCode": 0,
+      "log": "m19-audience-browser-target.log",
+      "scope": "4pass:2new journeys/device,actual lost RSVP reply/exact-key retry without admission,current connected moderator approval,anonymous Clap,cooldown,mute,expiry,own withdrawal during catalog outage,and held committed OPEN reply defeated by outside-room disable."
+    },
+    {
+      "command": "node scripts/run-browser-tests.mjs tests/e2e/lounge.spec.ts",
+      "exitCode": 0,
+      "log": "m19-audience-browser-lounge.log",
+      "scope": "22pass(11/device):all original scene/quiet/seating/asset fallback/identity/phase privacy/Stage/Mocktail cases plus2Audience journeys. Native keyboard/mobile/no overflow/no players. Counts are scoped browser executions,not entire browser suite. Four target cases above are separate repeated executions."
+    },
+    {
+      "command": "pnpm db:up;pnpm db:migrate;retained journal query;pnpm db:stop (sequential)",
+      "exitCodes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "logs": [
+        "m19-audience-local-up.log",
+        "m19-audience-local-migration.log",
+        "m19-audience-local-state.log",
+        "m19-audience-local-stop.log"
+      ],
+      "scope": "Additive0031 applied to retained local DB;query confirms0031_event_audience.sql;DB restored stopped. No real grants/world flags enabled."
+    },
+    {
+      "command": "Original source provenance verification with node:crypto/readFile",
+      "exitCode": 0,
+      "log": "m19-audience-provenance.log",
+      "scope": "6Lounge/Library/Restaurant source hashes match;releaseApproved:false. Lounge source fingerprint changes for config only;no new runtime imagery/media."
+    },
+    {
+      "command": "git diff --check -- . ':!docs/agent/evidence/*.log'",
+      "exitCode": 0,
+      "scope": "Source/docs/JSON;raw Docker logs excluded. Known historical m19scene/stage/mocktail visual regeneration restored;new Audience artifacts kept."
+    },
+    {
+      "command": "pnpm check",
+      "exitCode": 0,
+      "log": "m19-audience-check-final.log",
+      "scope": "Full post-0032 budget-hardening check:7governance/235unit/416integration(including12Audience)/allbuilds. The ten-person TCP case now proves same-window mute/reopen preserves exhausted20 budget with visible0. Subsequent change is the stricter private-event lookup filter,verified by the separate13case suite and API build below;not a417-fullsuite claim."
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/audience.test.ts -t 'private event IDs'",
+      "exitCode": 1,
+      "log": "m19-audience-private-red.log",
+      "scope": "1fail/12filtered skips:known private event UUID yielded409 room-proof failure instead of generic404. Filtered public listed events before room checks."
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/audience.test.ts",
+      "exitCode": 0,
+      "log": "m19-audience-api-final.log",
+      "scope": "Final13pass including private event IDs404 with no header allocation;all reaction/quota/reopen/current-safety/rollback/restart/privacy cases."
+    },
+    {
+      "command": "pnpm --filter @virtual-city/platform-api build",
+      "exitCode": 0,
+      "log": "m19-audience-api-build-final.log",
+      "scope": "Final private lookup filter;TypeScript and migration copying"
+    },
+    {
+      "command": "node scripts/run-browser-tests.mjs tests/e2e/lounge.spec.ts",
+      "exitCode": 0,
+      "log": "m19-audience-browser-final.log",
+      "scope": "Final22pass(11/device) after0032 and private lookup filter. Earlier full22 and target4 are separate repeated executions,not additional unique coverage."
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "log": "m19-audience-lint-checkpoint.log"
+    },
+    {
+      "command": "pnpm db:up;pnpm db:migrate;journal query;pnpm db:stop (sequential follow-up)",
+      "exitCodes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "logs": [
+        "m19-audience-budget-up.log",
+        "m19-audience-budget-migration.log",
+        "m19-audience-budget-state.log",
+        "m19-audience-budget-stop.log"
+      ],
+      "scope": "0032_audience_window_budget.sql confirmed as latest retained migration;0031 checksum unchanged;DB restored stopped."
+    }
+  ],
+  "runtimeProof": "Default disabled/current scoped moderator only positive approval,current RSVP+original attached room required,strict finite reactions,8same-key retries=1effect,actual10-person TCP waves accept20 reactions and reject the next10 with429 in one10s room window,aggregate body<500bytes,mute/reset/old send and OPEN key fences,outside-world disable,grant loss/disconnect/actual API restart,receipt/cooldown rollback,post-await grant expiry,RSVP no allocation/withdraw replay noncurrent,mute sanctions/chat incident closure,event-cancel/feed atomic rollback+commit,moderator erasure/source redaction,private own export,and100row bounded daily receipt cleanup. Review-found moderator clear/reopen budget reset is closed by separate accepted_total in additive0032;no separate red run is claimed for that review-found gap. Final source also returns404 for private event IDs before any room-proof distinction.",
+  "artifacts": [
+    "m19-audience-visual/desktop-muted.png",
+    "m19-audience-visual/mobile-muted.png",
+    "m19-audience-visual/desktop-disabled.png",
+    "m19-audience-visual/mobile-disabled.png",
+    "m19-audience-visual/desktop.json",
+    "m19-audience-visual/mobile.json"
+  ],
+  "implementation": "Lounge1.3.0/scene1.0.0/audiencePolicy1.0.0. Events-owned durable mode/three counters/account cooldown/receipts;Room→sortedaccounts→event/feed locks;current moderator grant/session/visit/safety approval<=5min. Three native choices,20/room/10s,2s account cooldown,5/account/window,120sends/account/hour. Host/mod negative suppression is outside-room and version-fenced against delayed opens. Native RSVP uses existing SCHEDULED/OPEN contract,serialize-first uncertain retry and known-own withdrawal during catalog outage;it grants no room/chair/stage. Reactions use explicit aggregate refresh,no per-reaction spectator broadcast or general chat/media. Snapshot expiry<=3s and local generations prevent stale OPEN replies from restoring UI authority.",
+  "limits": "Server suppression is immediate at SQL serialization;other clients' old observations expire/refresh within<=3s,not guaranteed instantaneous device delivery. Maintenance is20open feeds/batch on3s scheduler;positive calls independently authorize. Send receipts/cooldowns24h,control audit90d,100row cleanup/table/batch. Small groups can infer contributions despite no identity list;UI discloses this. This is not production CCU/latency or full Lounge report/emergency/media acceptance;M19-05/06 remain. All actual rollout/public/operator gates OFF;B-001/B-002/B-003 unchanged. Header-visible counts may clear on suppression,but accepted_total remains spent until the server window expires,including across moderator reopen. No raw reaction history or peer identities are exported.",
+  "nextExactAction": "M19-05:audit existing media absence/assets/provenance and safety/release gates;implement authoritative default-deny media clearance and only reviewed optional adapter registration,no client URL or Socket.IO stream. Verify no third-party playback without current documented rights;retain silent/text fallback. Then M19-06 actual bounded-load/report/cancel/emergency runbook acceptance.",
+  "migration": "0031 plus additive0032 verified on disposable DBs and applied to retained local DB;latest journal0032/stopped.0032 backfills accepted_total from existing counts and constrains it;no destructive downgrade or altered0031 checksum."
+}

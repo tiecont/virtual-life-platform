@@ -1,0 +1,8 @@
+{
+  "sameRsvpRetryKey": true,
+  "noAdmissionFromRsvp": true,
+  "explicitModeratorOpen": true,
+  "anonymousClapCount": 1,
+  "muteClearedCounts": true,
+  "noAutomaticSeatOrMedia": true
+}

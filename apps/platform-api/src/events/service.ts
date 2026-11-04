@@ -24,12 +24,14 @@ export class EventService {
   #reservations?: EventReservationObserver;
   #invitations?: EventInvitationAccess;
   #stage?: Pick<EventInvitationAccess,'observed'|'participants'>;
+  #audience?: Pick<EventInvitationAccess,'observed'>;
   #noticeListeners = new Set<(accounts: string[]) => void>();
   #participationEnded=new Set<(eventId:string,accounts:string[])=>void>();
   constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private social: SocialService, private registry: WorldRegistry, private safety: EventSafetyPort, private organizers?: EventOrganizerPort, private now = Date.now, private permissions?: EventPermissions) {}
   attachReservations(port: EventReservationObserver) { if (this.#reservations) throw new Error('Reservation observer already attached'); this.#reservations = port; }
   attachInvitations(port: EventInvitationAccess) { if (this.#invitations) throw new Error('Invitation access already attached'); this.#invitations = port; }
   attachStage(port: Pick<EventInvitationAccess,'observed'|'participants'>) { if(this.#stage)throw new Error('Stage observer already attached');this.#stage=port; }
+  attachAudience(port: Pick<EventInvitationAccess,'observed'>) { if(this.#audience)throw new Error('Audience observer already attached');this.#audience=port; }
   onNotice(listener: (accounts: string[]) => void) { this.#noticeListeners.add(listener); return () => { this.#noticeListeners.delete(listener); }; }
   onParticipationEnded(listener:(eventId:string,accounts:string[])=>void){this.#participationEnded.add(listener);return()=>{this.#participationEnded.delete(listener);};}
   private invalidateParticipation(eventId:string,accounts:string[]){for(const listener of this.#participationEnded){try{listener(eventId,accounts);}catch{/* Canonical eligibility is also rechecked on every projection. */}}}
@@ -75,6 +77,7 @@ export class EventService {
     await this.#reservations?.observed(db, this.bookingContext(row), this.now());
     await this.#invitations?.observed(db, this.bookingContext(row), this.now());
     await this.#stage?.observed(db, this.bookingContext(row), this.now());
+    await this.#audience?.observed(db, this.bookingContext(row), this.now());
     if (['ENDED', 'CANCELLED'].includes(row.phase)) await db.query('UPDATE engine_event_performer_readiness SET ready=false WHERE event_id=$1 AND ready', [row.id]);
     return row;
   }
