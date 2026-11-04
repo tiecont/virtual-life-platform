@@ -2,7 +2,7 @@
  "schemaVersion":1,"asset":"Grand Restaurant original scene",
  "origin":"Original project-authored geometry and deterministic Pixi graphics; virtual dining decor, no external media, distributed food imagery, fonts or audio",
  "sources":[
-  {"path":"packages/restaurant-world/src/index.ts","sha256":"6b133019edee88681d293104ef58f3e41b8cdfc57d23e58cc2fd74bdfcd26481"},
+  {"path":"packages/restaurant-world/src/index.ts","sha256":"68f59dd0358683693c69cbb97dad7ebf178203571722cb91c7c21480adf16a4b"},
   {"path":"packages/pixi-scene/src/renderer.ts","sha256":"926d018ef5298e128a400c3e851ec380dd181c2f52d81bda8480429b6728460b"}
  ],
  "avatar":"Existing original starter atlas; separate avatar provenance applies",

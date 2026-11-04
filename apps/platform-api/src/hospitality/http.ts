@@ -26,6 +26,8 @@ export function registerHospitality(http: FastifyInstance, config: Config, ident
     api.post('/staff/shifts', async (req, reply) => reply.code(201).send(await service.startShift(write(req), uuid.parse(req.headers['idempotency-key']), req.body)));
     api.post('/staff/shifts/:id/end', req => { StaffShiftEndSchema.parse(req.body); return service.endShift(write(req), id(req), uuid.parse(req.headers['idempotency-key'])); });
     api.get('/orders/:id', req => service.get(token(req), id(req)));
+    api.get('/orders/mine',req=>service.ownOrders(token(req)));
+    api.post('/orders/:id/pick-up',req=>service.pickUp(write(req),id(req),uuid.parse(req.headers['idempotency-key']),req.body));
     api.post('/orders/queue', req => service.queue(write(req), req.body));
     api.post('/orders/menu', req => service.menu(write(req), req.body));
     api.post('/orders/:id/complete', req => service.complete(write(req), id(req), uuid.parse(req.headers['idempotency-key']), req.body));

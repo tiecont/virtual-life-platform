@@ -1,0 +1,32 @@
+$ pnpm build:packages && pnpm -r typecheck && tsc -p tests/load/tsconfig.json
+$ pnpm --filter './packages/*' -r build
+Scope: 7 of 10 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+packages/library-world build$ tsc -p tsconfig.json
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/restaurant-world build: Done
+packages/library-world build: Done
+packages/pixi-scene build: Done
+Scope: 9 of 10 workspace projects
+packages/contracts typecheck$ tsc -p tsconfig.json --noEmit
+packages/contracts typecheck: Done
+packages/focus-ui typecheck$ tsc -p tsconfig.json --noEmit
+packages/world-sdk typecheck$ tsc -p tsconfig.json --noEmit
+packages/world-sdk typecheck: Done
+packages/library-world typecheck$ tsc -p tsconfig.json --noEmit
+packages/pixi-scene typecheck$ tsc -p tsconfig.json --noEmit
+packages/restaurant-world typecheck$ tsc -p tsconfig.json --noEmit
+packages/focus-ui typecheck: Done
+packages/library-world typecheck: Done
+packages/restaurant-world typecheck: Done
+apps/platform-api typecheck$ tsc -p tsconfig.json --noEmit
+packages/pixi-scene typecheck: Done
+apps/portal-web typecheck$ tsc --noEmit
+apps/platform-api typecheck: Done
+apps/portal-web typecheck: Done

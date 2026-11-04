@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-04T02:39:33Z",
+  "updatedAt": "2026-11-04T03:38:33Z",
   "tasks": {
     "AUD-01": {
       "status": "VERIFIED",
@@ -258,6 +258,7 @@
     "M17-05": { "status": "BLOCKED_EXTERNAL", "evidence": "docs/agent/evidence/m17-journey-checks.json; docs/architecture/LIBRARY-VERIFICATION.md; B-001/M15-02..06", "verification": "LocaltargetAPI1pass17filteredskips/browser20pass/lint0;canonicalLibrarycompletion/history/actualSDKtravel/LibraryWSrecovery/reportblock/mobile verified locally;actualDeadline return notimplemented/verified" },
     "M18-01": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m18-scene-checks.json; docs/adr/0055-original-restaurant-layout-and-service-perspectives.md; docs/architecture/RESTAURANT.md", "verification": "Fullcheck0(7governance,213unit,337integration/builds),4Restaurant+24Cafe+4Library browser0;original8reachable chairs/10places/2tables/nativecontrols/currentidentity/flag+prodguards/no role grant;no migration" },
     "M18-02": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m18-booking-checks.json; docs/adr/0056-restaurant-bookings-and-voluntary-room-bound-parties.md", "verification": "Fullcheck0(7gov/213unit/345integration/builds),final11Restaurant incllateheaderlockproof;8Restaurant+4selectedLibrary browser0;actual tablehold/TTL/confirm/privatebookings/roomcheckin/individualpartyconsent/revisionwithdrawal/races/block/expiry/restart/export/cascade;0026local0;no realflag" },
-    "M18-03": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m18-roles-checks.json; docs/adr/0057-policy-bound-voluntary-hospitality-roles.md", "verification": "Stable fullcheck0(7gov/214unit/352integration/builds),74target/10Restaurant+4Library browser0;current persisted server/cook action allowlists,atomic switch/requeue,consent revision/stop/retry/recovery/rollback/clock/privateexport/erasure;0027local0;no menu/realflag" }
+    "M18-03": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m18-roles-checks.json; docs/adr/0057-policy-bound-voluntary-hospitality-roles.md", "verification": "Stable fullcheck0(7gov/214unit/352integration/builds),74target/10Restaurant+4Library browser0;current persisted server/cook action allowlists,atomic switch/requeue,consent revision/stop/retry/recovery/rollback/clock/privateexport/erasure;0027local0;no menu/realflag" },
+    "M18-04": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m18-courses-checks.json; docs/adr/0058-course-match-kitchen-pass-on-shared-service-ledger.md", "verification": "Fullcheck0(7gov/214unit/357integration/builds),79target;laterUIbudget/visibility fixes finalwebbuild+lint0 and12Restaurant+8shellbrowser0. Threecourses/twoactualworkers+diner/serverdeadlines/course-matchpass/onecompletionoutbox/rollback/block/withdrawrace/restart;Cook39+Server43requests/0rateLimitedeachdevice;0028local0" }
   }
 }

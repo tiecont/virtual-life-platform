@@ -377,6 +377,8 @@ export class RoomService {
     if (!await this.identity.hasConnectedSession(accountId, [...member.connections.values()])) throw new DomainError('NOT_AVAILABLE', 404, 'This order is unavailable');
     await this.safety?.assert(accountId, room.slug, room.id);
   }
+  // Internal only within an existing serialized hospitality owner callback.
+  async hospitalityWorker(accountId:string,source:TravelSource){const room=this.#rooms.get(source.roomId),member=room?.members.get(accountId);if(source.epoch!==this.epoch||!room||!member||member.id!==source.membershipId||!member.connections.size||!await this.identity.hasConnectedSession(accountId,[...member.connections.values()]))throw new DomainError('NOT_AVAILABLE',404,'This kitchen pass is unavailable');await this.safety?.assert(accountId,room.slug,room.id);}
   async activityAllowed(accountId: string, world: string, room: string) {
     try { await this.safety?.assert(accountId, world, room); return true; }
     catch (error) { if (error instanceof DomainError && [403, 404].includes(error.status)) return false; throw error; }

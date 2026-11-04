@@ -1,0 +1,45 @@
+ Network virtual-city-test-d5dd6460_default Creating 
+ Network virtual-city-test-d5dd6460_default Creating 
+ Network virtual-city-test-d5dd6460_default Created 
+ Network virtual-city-test-d5dd6460_default Created 
+ Container virtual-city-test-d5dd6460-db-1 Creating 
+ Container virtual-city-test-d5dd6460-db-1 Created 
+ Container virtual-city-test-d5dd6460-db-1 Starting 
+ Container virtual-city-test-d5dd6460-db-1 Started 
+ Container virtual-city-test-d5dd6460-db-1 Waiting 
+ Container virtual-city-test-d5dd6460-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/restaurant.test.ts (18 tests | 1 failed | 17 skipped) 764ms
+   × kitchen pass actions require authentication and do not accept anonymous course choices 39ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/restaurant.test.ts > kitchen pass actions require authentication and do not accept anonymous course choices
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/integration/restaurant.test.ts:30:258
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 17 skipped (18)
+   Start at  10:10:48
+   Duration  2.23s (transform 565ms, setup 0ms, import 1.33s, tests 764ms, environment 0ms)
+
+pnpm exited 1
+ Container virtual-city-test-d5dd6460-db-1 Stopping 
+ Container virtual-city-test-d5dd6460-db-1 Stopped 
+ Container virtual-city-test-d5dd6460-db-1 Removing 
+ Container virtual-city-test-d5dd6460-db-1 Removed 
+ Network virtual-city-test-d5dd6460_default Removing 
+ Network virtual-city-test-d5dd6460_default Removed 

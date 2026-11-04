@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
 import { z } from 'zod';
-import { StaffStateSchema,StaffStoppedSchema,StaffShiftRoleSchema,OrderRefusedSchema, OrderCompleteSchema, HospitalityMenuSchema, OrderWorkflowStrategySchema, StaffShiftStartSchema, StaffShiftResultSchema, StaffShiftViewSchema, OrderPlaceSchema, OrderMutationSchema, OrderQueueSchema, OrderPageSchema, OrderResultSchema, OrderViewSchema, type OrderPhase, type HospitalityPolicy, type OrderWorkflowStrategy } from '@virtual-city/contracts';
+import { OrderPickUpSchema,StaffStateSchema,StaffStoppedSchema,StaffShiftRoleSchema,OrderRefusedSchema, OrderCompleteSchema, HospitalityMenuSchema, OrderWorkflowStrategySchema, StaffShiftStartSchema, StaffShiftResultSchema, StaffShiftViewSchema, OrderPlaceSchema, OrderMutationSchema, OrderQueueSchema, OrderPageSchema, OrderResultSchema, OrderViewSchema, type OrderPhase, type HospitalityPolicy, type OrderWorkflowStrategy } from '@virtual-city/contracts';
 import type { IdentityService, IdentityContext } from '../identity/service';
 import type { RoomService } from '../rooms/service';
 import type { SocialService } from '../social/service';
@@ -26,7 +26,7 @@ export class HospitalityService {
   }
   private view(row: Row, actor: string) {
     const workflow = row.workflow ? OrderWorkflowStrategySchema.parse(row.workflow) : null;
-    return OrderViewSchema.parse({ schemaVersion: 1, id: row.id, phase: row.phase, version: row.version, worldSlug: row.world_slug, roomId: row.room_id, itemKey: row.item_key, policyVersion: row.policy_version, mine: row.customer_id === actor, assignedToMe: row.assignee_id === actor, createdAt: row.created_at.toISOString(), updatedAt: row.updated_at.toISOString(), ...(workflow ? { service: { workflowKey: workflow.key, workflowVersion: workflow.version, courseNumber: row.course_index + 1, courseCount: workflow.courses.length, coursesServed: row.course_index + (['SERVED', 'COMPLETED'].includes(row.phase) ? 1 : 0), courseLabel: workflow.courses[row.course_index].label, readyAt: row.ready_at?.toISOString() ?? null } } : {}) });
+    return OrderViewSchema.parse({ schemaVersion: 1, id: row.id, phase: row.phase, version: row.version, worldSlug: row.world_slug, roomId: row.room_id, itemKey: row.item_key, policyVersion: row.policy_version, mine: row.customer_id === actor, assignedToMe: row.assignee_id === actor, createdAt: row.created_at.toISOString(), updatedAt: row.updated_at.toISOString(), ...(workflow ? { service: { workflowKey: workflow.key, workflowVersion: workflow.version, courseNumber: row.course_index + 1, courseCount: workflow.courses.length, coursesServed: row.course_index + (['SERVED', 'COMPLETED'].includes(row.phase) ? 1 : 0), courseLabel: workflow.courses[row.course_index].label, readyAt: row.ready_at?.toISOString() ?? null,...workflow.handoff?{passChoices:workflow.courses.map(course=>({key:course.key,label:course.label}))}:{} } } : {}) });
   }
   private result(row: Row, actor: string) { return OrderResultSchema.parse({ schemaVersion: 1, order: this.view(row, actor) }); }
   private async tx<T>(token: string, targets: string[], work: (db: PoolClient, actor: IdentityContext) => Promise<T>) {
@@ -79,7 +79,8 @@ export class HospitalityService {
       await this.quota(db, actor.accountId, false);
       if (action === 'claim' && (await db.query("SELECT count(*)::int AS n FROM engine_hospitality_orders WHERE assignee_id=$1 AND phase IN ('ASSIGNED','PREPARING','READY')", [actor.accountId])).rows[0].n >= context.policy.maxActivePerStaff) throw new DomainError('NOT_AVAILABLE', 409, 'Your service queue is full');
       if (action === 'serve') await db.query('INSERT INTO engine_hospitality_courses VALUES($1,$2,$3,$4,$5)', [id, row.course_index, workflow!.courses[row.course_index].key, new Date(at), row.version + 1]);
-      const updated = (await db.query<Row>('UPDATE engine_hospitality_orders SET phase=$2,assignee_id=$3,version=version+1,updated_at=$4,course_index=$5,ready_at=$6 WHERE id=$1 RETURNING *', [id, step.phase, action === 'claim' ? actor.accountId : action === 'cancel' ? null : row.assignee_id, new Date(at), step.course, step.readyAt === null ? null : new Date(step.readyAt)])).rows[0];
+      const nextKitchen=action==='serve'&&!!workflow?.handoff&&step.phase==='ASSIGNED';
+      const updated = (await db.query<Row>('UPDATE engine_hospitality_orders SET phase=$2,assignee_id=$3,version=version+1,updated_at=$4,course_index=$5,ready_at=$6 WHERE id=$1 RETURNING *', [id, nextKitchen?'PENDING':step.phase, action === 'claim' ? actor.accountId : action === 'cancel'||nextKitchen ? null : row.assignee_id, new Date(at), step.course, step.readyAt === null ? null : new Date(step.readyAt)])).rows[0];
       await this.remember(db, actor.accountId, key, updated, fingerprint, action); if (!valid() || this.now() >= actor.expiresAt) throw new DomainError('NOT_IN_ROOM', 409, 'Your visit changed'); return this.result(updated, actor.accountId);
     }));
   }
@@ -90,6 +91,23 @@ export class HospitalityService {
       return HospitalityMenuSchema.parse({ schemaVersion: 1, policyVersion: context.policy.version, items: context.policy.menu.items.map(item => ({ key: item.key, label: item.label, courseCount: context.policy.menu!.workflows.find(workflow => workflow.key === item.workflowKey)!.courses.length })) });
     }));
   }
+  async pickUp(token:string,id:string,requestKey:string,raw:unknown){
+    id=uuid.parse(id);const input=OrderPickUpSchema.parse(raw),key=uuid.parse(requestKey),fingerprint=this.identity.fingerprint({operation:'order.pick-up',id,input});await this.identity.authenticate(token);await this.maintain();
+    const known=(await this.pool.query<Row>('SELECT * FROM engine_hospitality_orders WHERE id=$1',[id])).rows[0];if(!known)throw absent();
+    return this.rooms.hospitalityContext(token,input.source,false,(_actor,context,valid)=>this.tx(token,[known.customer_id,...known.assignee_id?[known.assignee_id]:[]],async(db,actor)=>{
+      const row=(await db.query<Row>('SELECT * FROM engine_hospitality_orders WHERE id=$1 FOR UPDATE',[id])).rows[0];if(!row||row.room_id!==context.roomId||row.world_slug!==context.worldSlug||row.policy_version!==context.policy.version||row.customer_id===actor.accountId||!await this.permits(db,actor,context,'serve'))throw absent();
+      const prior=await this.prior(db,actor.accountId,key,fingerprint);if(prior)return this.result(prior,actor.accountId);
+      if(row.assignee_id!==known.assignee_id||!row.assignee_id||row.assignee_id===actor.accountId||row.version!==input.expectedVersion||row.phase!=='READY'||!row.workflow)throw new DomainError('IDEMPOTENCY_CONFLICT',409,'Refresh the kitchen pass');const workflow=OrderWorkflowStrategySchema.parse(row.workflow),handoff=workflow.handoff;if(!handoff)throw absent();
+      const server=(await db.query<Shift>('SELECT * FROM engine_hospitality_shifts WHERE account_id=$1 AND ended_at IS NULL',[actor.accountId])).rows[0],kitchen=(await db.query<Shift>('SELECT * FROM engine_hospitality_shifts WHERE account_id=$1 AND ended_at IS NULL',[row.assignee_id])).rows[0];
+      if(!server||server.role_key!==handoff.toRole||!kitchen||kitchen.role_key!==handoff.fromRole||kitchen.interrupted_at||kitchen.world_slug!==context.worldSlug||kitchen.room_id!==context.roomId||kitchen.owner_epoch!==context.epoch||kitchen.policy_version!==context.policy.version||kitchen.expires_at.getTime()<=this.now())throw absent();
+      if(await this.social.isBlocked(actor.accountId,row.customer_id,db)||await this.social.isBlocked(actor.accountId,kitchen.account_id,db)||await this.social.isBlocked(kitchen.account_id,row.customer_id,db))throw absent();
+      const customer={epoch:row.customer_epoch,roomId:row.room_id,membershipId:row.customer_membership_id},worker={epoch:kitchen.owner_epoch,roomId:kitchen.room_id,membershipId:kitchen.membership_id};await this.rooms.hospitalityCustomer(row.customer_id,customer);await this.rooms.hospitalityWorker(kitchen.account_id,worker);
+      if(workflow.courses[row.course_index]?.key!==input.courseKey)throw new DomainError('NOT_AVAILABLE',409,'That course does not match the kitchen call');const at=this.now();if(at<row.updated_at.getTime()||row.ready_at===null||at<row.ready_at.getTime())throw new DomainError('NOT_AVAILABLE',409,'The kitchen pass is not ready');
+      if((await db.query("SELECT count(*)::int AS n FROM engine_hospitality_orders WHERE assignee_id=$1 AND phase IN ('ASSIGNED','PREPARING','READY')",[actor.accountId])).rows[0].n>=context.policy.maxActivePerStaff)throw new DomainError('NOT_AVAILABLE',409,'Your service queue is full');await this.quota(db,actor.accountId,false);
+      const updated=(await db.query<Row>('UPDATE engine_hospitality_orders SET assignee_id=$2,version=version+1,updated_at=$3 WHERE id=$1 RETURNING *',[id,actor.accountId,new Date(at)])).rows[0];await this.remember(db,actor.accountId,key,updated,fingerprint,'pick-up');await this.rooms.hospitalityWorker(kitchen.account_id,worker);await this.rooms.hospitalityCustomer(row.customer_id,customer);if(!valid()||this.now()>=actor.expiresAt||this.now()>=kitchen.expires_at.getTime())throw absent();return this.result(updated,actor.accountId);
+    }));
+  }
+  ownOrders(token:string){return this.tx(token,[],async(db,actor)=>{const rows=(await db.query<Row>('SELECT * FROM engine_hospitality_orders WHERE customer_id=$1 ORDER BY creation_order DESC LIMIT 21',[actor.accountId])).rows;return OrderPageSchema.parse({schemaVersion:1,items:rows.slice(0,20).map(row=>this.view(row,actor.accountId)),truncated:rows.length>20});});}
   async complete(token: string, id: string, requestKey: string, raw: unknown) {
     id = uuid.parse(id); const key = uuid.parse(requestKey), input = OrderCompleteSchema.parse(raw), fingerprint = this.identity.fingerprint({ operation: 'order.complete', id, input });
     const known = (await this.pool.query<{ assignee_id: string | null }>('SELECT assignee_id FROM engine_hospitality_orders WHERE id=$1', [id])).rows[0];
@@ -135,8 +153,9 @@ export class HospitalityService {
     await this.maintain();
     return this.rooms.hospitalityContext(token, input.source, false, (_actor, context, valid) => this.tx(token, [], async (db, actor) => {
       if (!await this.permits(db, actor, context)) throw absent();
-      const rows = (await db.query<Row>("SELECT * FROM engine_hospitality_orders o WHERE room_id=$1 AND (phase='PENDING' OR assignee_id=$2) AND phase NOT IN ('COMPLETED','CANCELLED') AND NOT EXISTS(SELECT 1 FROM engine_hospitality_refusals r WHERE r.order_id=o.id AND r.staff_id=$2) ORDER BY creation_order LIMIT 51", [context.roomId, actor.accountId])).rows, items = [];
-      for (const row of rows.slice(0, 50)) if (!await this.social.isBlocked(actor.accountId, row.customer_id, db)) items.push(this.view(row, actor.accountId));
+      const role=(await db.query<Shift>('SELECT * FROM engine_hospitality_shifts WHERE account_id=$1 AND ended_at IS NULL',[actor.accountId])).rows[0];
+      const rows = (await db.query<Row>("SELECT * FROM engine_hospitality_orders o WHERE room_id=$1 AND (phase='PENDING' OR assignee_id=$2 OR (phase='READY' AND workflow->'handoff'->>'toRole'=$3)) AND phase NOT IN ('COMPLETED','CANCELLED') AND NOT EXISTS(SELECT 1 FROM engine_hospitality_refusals r WHERE r.order_id=o.id AND r.staff_id=$2) ORDER BY creation_order LIMIT 51", [context.roomId, actor.accountId,role?.role_key??null])).rows, items = [];
+      for (const row of rows.slice(0, 50)) if (!await this.social.isBlocked(actor.accountId, row.customer_id, db)&&(!row.assignee_id||!await this.social.isBlocked(actor.accountId,row.assignee_id,db))) items.push(this.view(row, actor.accountId));
       if (!valid()) throw absent(); return OrderPageSchema.parse({ schemaVersion: 1, items, truncated: rows.length > 50 });
     }));
   }

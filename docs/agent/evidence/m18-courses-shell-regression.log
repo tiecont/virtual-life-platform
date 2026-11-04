@@ -1,0 +1,90 @@
+ Network virtual-city-test-a0afcf44_default Creating 
+ Network virtual-city-test-a0afcf44_default Creating 
+ Network virtual-city-test-a0afcf44_default Created 
+ Network virtual-city-test-a0afcf44_default Created 
+ Container virtual-city-test-a0afcf44-db-1 Creating 
+ Container virtual-city-test-a0afcf44-db-1 Created 
+ Container virtual-city-test-a0afcf44-db-1 Starting 
+ Container virtual-city-test-a0afcf44-db-1 Started 
+ Container virtual-city-test-a0afcf44-db-1 Waiting 
+ Container virtual-city-test-a0afcf44-db-1 Healthy 
+[WebServer] (node:350121) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:350135) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:350135) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:350135) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:350120) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:350201) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:350237) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:350268) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:350430) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/library.spec.ts:16:5 › original library scene and native desk areas work with actual identity and authoritative seating (2.7s)
+  ✓  2 [desktop] › tests/e2e/library.spec.ts:27:5 › library asset failure keeps keyboard desks usable and sessionless access never enters a room (1.5s)
+  ✓  3 [desktop] › tests/e2e/scene.spec.ts:46:5 › actual cafe scene and keyboard seat controls reflect authoritative rooms on desktop/mobile (4.8s)
+  ✓  4 [desktop] › tests/e2e/scene.spec.ts:156:5 › actual transport interruption hides stale seats then reconnects to one retained avatar and seat (5.7s)
+
+  4 passed (20.8s)
+ Container virtual-city-test-a0afcf44-db-1 Stopping 
+ Container virtual-city-test-a0afcf44-db-1 Stopped 
+ Container virtual-city-test-a0afcf44-db-1 Removing 
+ Container virtual-city-test-a0afcf44-db-1 Removed 
+ Network virtual-city-test-a0afcf44_default Removing 
+ Network virtual-city-test-a0afcf44_default Removed 
+ Network virtual-city-test-ee7293c7_default Creating 
+ Network virtual-city-test-ee7293c7_default Creating 
+ Network virtual-city-test-ee7293c7_default Created 
+ Network virtual-city-test-ee7293c7_default Created 
+ Container virtual-city-test-ee7293c7-db-1 Creating 
+ Container virtual-city-test-ee7293c7-db-1 Created 
+ Container virtual-city-test-ee7293c7-db-1 Starting 
+ Container virtual-city-test-ee7293c7-db-1 Started 
+ Container virtual-city-test-ee7293c7-db-1 Waiting 
+ Container virtual-city-test-ee7293c7-db-1 Healthy 
+[WebServer] (node:351671) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:351741) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:351741) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:351741) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:351670) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:351819) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:351856) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:351869) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:351942) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [mobile] › tests/e2e/library.spec.ts:16:5 › original library scene and native desk areas work with actual identity and authoritative seating (2.6s)
+  ✓  2 [mobile] › tests/e2e/library.spec.ts:27:5 › library asset failure keeps keyboard desks usable and sessionless access never enters a room (1.4s)
+  ✓  3 [mobile] › tests/e2e/scene.spec.ts:46:5 › actual cafe scene and keyboard seat controls reflect authoritative rooms on desktop/mobile (4.8s)
+  ✓  4 [mobile] › tests/e2e/scene.spec.ts:156:5 › actual transport interruption hides stale seats then reconnects to one retained avatar and seat (6.0s)
+
+  4 passed (20.1s)
+ Container virtual-city-test-ee7293c7-db-1 Stopping 
+ Container virtual-city-test-ee7293c7-db-1 Stopped 
+ Container virtual-city-test-ee7293c7-db-1 Removing 
+ Container virtual-city-test-ee7293c7-db-1 Removed 
+ Network virtual-city-test-ee7293c7_default Removing 
+ Network virtual-city-test-ee7293c7_default Removed 
