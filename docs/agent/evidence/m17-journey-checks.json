@@ -1,0 +1,15 @@
+{
+ "taskID":"M17-05","status":"BLOCKED_EXTERNAL","source":"workspace from2358df5;checkpoint SHA follows git log",
+ "environment":"2026-11-04;Node26.9.0/pnpm11.28.5;actual HTTP/Socket.IO/Chromium desktop-mobile and disposable PostgreSQL",
+ "commands":[
+  {"command":"node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/library.test.ts -t 'canonical Library completion remains private'","exitCode":0,"log":"m17-journey-integration.log","scope":"1new case passed/17filtered skips;trusted server clock completes15minute Library timer,six finish attempts,actual travelSDK,one canonical private history/summary andforeign404"},
+  {"command":"pnpm lint","exitCode":0,"log":"m17-journey-lint.log","exitArtifact":"m17-journey-lint.exit"},
+  {"command":"node scripts/run-browser-tests.mjs tests/e2e/library.spec.ts tests/e2e/focus.spec.ts","exitCode":0,"log":"m17-journey-browser-attempt1.log","exitArtifact":"m17-journey-browser-attempt1.exit","scope":"20browserpass,10eachdevice;9Library+1SDKfocus/device;firstjourneyrunpassed"},
+  {"command":"git diff --check","exitCode":0}
+ ],
+ "locallyVerified":["Real Library transport termination/reconnect retains exactmembership/account/seat/privatefocus andonecanvas","Explicit actual travel toSDK retainsidentity/timerandprivateLibrary history withoutsourceoccupancy","Actual privateLibraryreport receipt not shown topeer;blockremoves target fromcurrentroomprojection","Desktop/mobile fullLibrary regression includes scene/keyboard/assets/focus/RSVP/consent/same-roomfriendoffer/safety;newjourney images inspected","Guestfixture uses realHTTPsignedsessionswith independentloopbackaddresses;applicationIPbudgets unchanged"],
+ "remainingAcceptance":"ActualLibrary->Deadline return andhistory through realDeadlineadapter;M15-02..06unimplemented/blockedB-001cleanlegacyrevision andB-002redistribution scope. SDK/syntheticDeadline doesnot satisfy this acceptance.",
+ "migration":"None;test-only slice;retained cityDB0025/allrealflagsOFF",
+ "visualArtifacts":"m17-journey-visual/{desktop,mobile}.png andactualrecovery/history JSON;mobileheader may show last-checked Library duringfreshSDK travel observation",
+ "limits":["WholeM17-05notVERIFIED;only listed local checks pass","Completion uses trustedinjectedserverclock,not15minuteswalltime;browserjourney cancels the continuingtimer","No freshfullcheck/integrationcountclaim;prior211unit/333integration andfinal17Library belongM17-04","No realstaff/media/legacy mutation/publicrelease;B-003unchanged;continueindependentM18-01"]
+}

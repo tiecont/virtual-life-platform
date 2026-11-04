@@ -1,5 +1,7 @@
 # Decisions
 
+M17-05: acceptlocalLibraryQA evidence withoutmarkingwhole taskverified. ActualSDKtravel/completionhistory/LibraryWSrecovery/reportblock/mobile pass(1API+20browser),butexplicitactualDeadlineacceptanceawaitsM15/B-001. No synthetic substitution/newruntime/migration. LIBRARY-VERIFICATION.md records exactresumption;continueM18independently.
+
 M17-04 / ADR0054: per-visit studyconsent isboundedephemeralstate/defaultOFF,notSQLprivacy/analyticsgrant. Viewerandcurrentvisibleconnectedconfirmedpeers optin;onlyphasecounts/5sTTL viaownerports. Revisions/oldkeycurrentstate/withdrawalcallbacks preventlateenable/readrevival. No newmigration. Optional publicroom invitationhint expands prereleasev1JSONB;actualfriendaccept+explicittravel required,noRSVP/admissionfromaccept. Full333integration/211unit +finalboundary17/APIbuild andbrowser16+40executions pass;limits/race/fixturefailures explicit.
 
 M17-03 / ADR0053: silentLibraryevents reuseM12owner;world1.2.0/scene1.0.0/policy1.0.0max8,nochat/canned/emotes/audio. Max5listedcards/ownRSVP/8sreaddeadline/30sTTL/explicitunknown/exactkeyretry;RSVPisnotroomadmission. Actualtrusted-test scheduling/9way2placeRSVP/quietfloodpass,notrealoperatorprovisioning. Full323integration/211unit/builds+36selectedbrowser0;initialSQLfixturetimestampfailure retained/fixedwithoutconstraintloosening. No migration/realflagactivation.

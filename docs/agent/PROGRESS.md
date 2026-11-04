@@ -1,5 +1,11 @@
 # Agent progress
 
+## M17-05 — local journey checks pass; full task BLOCKED_EXTERNAL
+
+From2358df5;m17-journey-checks.json/LIBRARY-VERIFICATION.md. TargetnewAPI1pass17filteredskips:actualLibrary15mintimer completedbyinjectedtrustedclock,sixfinishattempts,actualSockettravelSDK,oneprivateLibraryhistory/900ssummary/foreign404. BrowserLibrary+SDKfocus20pass(10/device),firstjourneyrun0;newactualLibraryWSdisconnect/grace reconnect exactmembership/seat/account/onecanvas/timer;explicitSDKtravel retainsprivateorigin;Libraryreportprivate/blocktargethidden/mobile pass. Browsertimeriscancelled aftertravel;notclaiming15minwalltime/browsercompletion. GuestsetupnowrealHTTPindependentloopbackaliases,appIPbudgetsunchanged. Lint/diff0,imagesinspected;olderregeneratedM17visualsrestored. No runtime/migrationchange/fullcheckrerun;priorM17-04evidence separate.
+
+WholeM17-05 remainsBLOCKED_EXTERNAL:acceptance explicitlyrequiresreturntoactualDeadline,whoseadapterM15-02..06awaitscleanintegrationpin/B-001;SDKorSyntheticDeadline isnotasubstitute. Module17thereforedoesnotbecomeVERIFIED. ResumeexactrealLibrary->Deadlinehistory/recoveryjourneyafterM15verified;rights/publicgatesremain. No workers/preview,cityDB0025/realflagsOFF. Next exact action lowestreadyM18-01originalRestaurantscene/diningzones/tableinventory/accessandrolepresentationusingexistingRoomAuthority/sharedshell;M11/12/14depsverified/read. Do notblockindependentRestaurantonM17-05.
+
 ## M17-04 — VERIFIED visit consent and explicit same-room offers
 
 From3149e31;ADR0054/m17-sharing-checks.json. Fullcheck0:7governance,211unit,333integration,lint/types/architecture/assets/allbuilds. ExpandedLibrary+Invitations32pass;finalLibrary17pass separately includes event-end boundary after rootcheck;finalAPIbuild/lint0. Browserthirdattempt16pass(8/device);finalAPIaffectedregression40pass(10isolatedlifetimes),including4repeatedLibrarycases. These are56executions,not56distinctcases/full-defaultsuite. Desktop/mobile progress images inspected;oldergeneratedM14route/M17scene/focus/eventsvisuals restored. No migration,cityDB0025/realflagsOFF/no workers/preview.
