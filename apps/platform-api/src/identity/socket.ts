@@ -7,6 +7,7 @@ import { IdentityService, type IdentityContext } from './service';
 import { IdentityError, unauthorized } from './errors';
 import { sessionCookieName } from './http';
 import { WindowLimiter } from './limits';
+import { clientAddress } from '../common/proxy';
 type Lease = { token: string; context: IdentityContext; cleanup: () => void; armExpiry: () => void };
 export function createIdentityGateway(http: FastifyInstance, config: Config, identity: IdentityService, now = Date.now) {
   const limits = new WindowLimiter(now);
@@ -18,7 +19,8 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
     transports: ['websocket'], serveClient: false, maxHttpBufferSize: 8192, connectTimeout: 5000,
     cors: { origin: config.WEB_ORIGIN, credentials: true },
     allowRequest: (request, done) => {
-      const allowed = request.headers.origin === config.WEB_ORIGIN && limits.take('handshake:' + request.socket.remoteAddress, 30) && io.engine.clientsCount < 1000;
+      const address=clientAddress(request.socket.remoteAddress,request.headers['x-forwarded-for'],config.TRUSTED_PROXY_IP);
+      const allowed = request.headers.origin === config.WEB_ORIGIN && limits.take('handshake:' + address, 30) && io.engine.clientsCount < 1000;
       done(null, allowed);
     },
   });

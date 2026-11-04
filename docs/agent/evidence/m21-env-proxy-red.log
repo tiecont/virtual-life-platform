@@ -1,0 +1,25 @@
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |unit| apps/platform-api/src/common/proxy.unit.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| apps/platform-api/src/common/proxy.unit.test.ts [ apps/platform-api/src/common/proxy.unit.test.ts ]
+Error: Cannot find module './proxy' imported from /home/tiecont/Projects/virtual-city/apps/platform-api/src/common/proxy.unit.test.ts
+ ❯ apps/platform-api/src/common/proxy.unit.test.ts:3:1
+      1| import { it,expect } from 'vitest';
+      2| import Fastify from 'fastify';
+      3| import { clientAddress,isTrustedProxy } from './proxy';
+       | ^
+      4|
+      5| it('trusts one configured IPv4 proxy including mapped peers and never …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  22:50:01
+   Duration  243ms (transform 33ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+

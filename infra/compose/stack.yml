@@ -1,0 +1,94 @@
+name: ${CITY_STACK_NAME:?Choose an isolated stack name}
+x-app-env: &app-env
+  NODE_ENV: production
+  SESSION_SECRET: ${SESSION_SECRET:?Supply an independently generated secret}
+  DATABASE_URL: postgresql://${POSTGRES_USER:?}:${POSTGRES_PASSWORD:?}@db:5432/${POSTGRES_DB:?}
+  HOST: 0.0.0.0
+  PORT: '4300'
+  WEB_ORIGIN: ${WEB_ORIGIN:?Exact HTTPS origin required}
+  PUBLIC_SOCKET_ORIGIN: ${WEB_ORIGIN:?}
+  API_INTERNAL_URL: http://api:4300
+  TRUSTED_PROXY_IP: ${CITY_PROXY_IP:?Choose the private edge IPv4 address}
+  NEXT_TELEMETRY_DISABLED: '1'
+services:
+  db:
+    image: postgres:17.7-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?}
+      POSTGRES_DB: ${POSTGRES_DB:?}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+    volumes: [city-db:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks: [city]
+  migrate:
+    image: ${CITY_APP_IMAGE:?Build and select the local app image}
+    environment: *app-env
+    command: [node, apps/platform-api/dist/db/migrate.js]
+    depends_on:
+      db: {condition: service_healthy}
+    networks: [city]
+  api:
+    image: ${CITY_APP_IMAGE:?}
+    environment: *app-env
+    read_only: true
+    tmpfs: [/tmp]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:4300/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    stop_grace_period: 15s
+    networks: [city]
+  web:
+    image: ${CITY_APP_IMAGE:?}
+    working_dir: /app/apps/portal-web
+    command: [node, node_modules/next/dist/bin/next, start, --hostname, 0.0.0.0, --port, '3300']
+    environment: *app-env
+    read_only: true
+    tmpfs: [/tmp, /app/apps/portal-web/.next/cache]
+    depends_on:
+      api: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3300').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    stop_grace_period: 15s
+    networks: [city]
+  edge:
+    image: caddy:2.11.7-alpine
+    environment:
+      CITY_SITE_ADDRESS: ${WEB_ORIGIN:?}
+      CITY_TLS_CERT: /run/city-tls/cert.pem
+      CITY_TLS_KEY: /run/city-tls/key.pem
+      XDG_DATA_HOME: /tmp/caddy-data
+      XDG_CONFIG_HOME: /tmp/caddy-config
+    volumes:
+      - ../caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ${CITY_TLS_CERT_FILE:?Supply reviewed TLS certificate}:/run/city-tls/cert.pem:ro
+      - ${CITY_TLS_KEY_FILE:?Supply TLS private key outside build context}:/run/city-tls/key.pem:ro
+    # Loopback only by default. Public ingress is a separate owner release step.
+    ports: ['127.0.0.1:${CITY_TLS_PORT:?}:${CITY_TLS_PORT:?}']
+    read_only: true
+    tmpfs: [/tmp]
+    depends_on:
+      api: {condition: service_healthy}
+      web: {condition: service_healthy}
+    stop_grace_period: 15s
+    networks:
+      city:
+        ipv4_address: ${CITY_PROXY_IP:?}
+networks:
+  city:
+    ipam:
+      config:
+        - subnet: ${CITY_NETWORK_SUBNET:?Choose a nonconflicting private IPv4 subnet}
+          ip_range: ${CITY_DYNAMIC_RANGE:?Reserve the upper half for dynamic services}
+volumes:
+  city-db:

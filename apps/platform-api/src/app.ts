@@ -57,6 +57,7 @@ import { DatingDates } from './dating/dates';
 import { registerDatingDates } from './dating/date-http';
 import { DatingContinuations } from './dating/continuations';
 import { registerDatingContinuations } from './dating/continuation-http';
+import { isTrustedProxy } from './common/proxy';
 import { EventInvitationService } from './events/invitations';
 import { ProgressionService } from './progression/service';
 import { registerProgression } from './progression/http';
@@ -83,6 +84,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const mediaClearance=await MediaClearanceGate.create(await loadMediaClearance(),[],options.now);
   const requiredMigrations = await migrationNames();
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
+    trustProxy:config.TRUSTED_PROXY_IP?(address=>isTrustedProxy(address,config.TRUSTED_PROXY_IP)):false,
     bodyLimit: 8192, requestTimeout: 10000, genReqId: () => randomUUID(),
     logger: logging ? { level: 'info', serializers: { req: requestLog }, redact: ['req.headers.cookie', 'req.headers.authorization', 'req.body', 'res.headers.set-cookie'] } : false,
   }), { logger: false });

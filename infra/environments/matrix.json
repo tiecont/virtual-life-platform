@@ -1,0 +1,13 @@
+{
+ "schemaVersion":1,
+ "environments":[
+  {"name":"dev","nodeEnv":"development","database":"retained local dev only","transport":"loopback HTTP","cookie":"city_session","proxy":"none by default","entry":"pnpm dev"},
+  {"name":"test","nodeEnv":"test","database":"isolated disposable loopback test only","transport":"loopback HTTP or explicit TLS fixture","cookie":"city_session","proxy":"none unless explicit test","entry":"node scripts/with-test-db.mjs <test command>"},
+  {"name":"staging","nodeEnv":"production","database":"independent staging volume and credentials","transport":"HTTPS via one explicit private edge","cookie":"__Host-city_session","proxy":"exact CITY_PROXY_IP;API/DB not published","entry":"infra/compose/stack.yml;local equivalent only verified"},
+  {"name":"prod","nodeEnv":"production","database":"independent production volume and credentials","transport":"reviewed HTTPS via one explicit private edge","cookie":"__Host-city_session","proxy":"exact CITY_PROXY_IP;API/DB not published","entry":"owner approval required;Compose ingress remains loopback"}
+ ],
+ "publicRelease":false,
+ "worldRollout":"all real flags OFF;environment choice never supplies world/adult/operator authority",
+ "secretHandling":"examples contain empty secrets;ignored files outside build context;never print expanded Compose config",
+ "verificationBoundary":"local staging-equivalent TLS/forwarding/cookies can be verified without claiming a real domain,public CA,external staging or production deployment"
+}

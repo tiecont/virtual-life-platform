@@ -1,5 +1,7 @@
 # Decisions
 
+M21-01 / ADR0071:production-mode local staging equivalent,not public deployment. One explicit trustedproxyIP,defaultuntrusted;separate dynamicallocation range for fixededge;independent env/volume/cert/secrets,nonroot/read-only app and loopback-only ingress. ActualComposeTLS/browserSecurecookie/rotation/socket/IPspoof/errorprivacy0,stable root8gov/260unit/486integration/build0/412unchangedhashes/316imagehashes. Caddy missingtag/IPcollision/checksumalgorithm failures retained/fixed;image2.56GBnotminimized. RetainedDBuntouched/realgatesclosed;next21-02.
+
 M20-06:test-only adversarial matrix,not human safety approval. Keep runtimef6e3a69 unchanged;add6API/2browser0 for malformed/account-bound proof,multiple entrypaths,known/stolenhandles,current-session grants,account-world-ban,existingfriend privacy and held privateGET/logout. Actual first fixturemissingSafetykey503 fixed onlyinfixture;baseline root258/480 stays separate. No demographic/realage/new-account fraud/privacy/legal certification;07B-003external. Next21-01.
 
 M20-05 / ADR0070:one own choice,identical peer NONE until two likes,alias-only MUTUAL,fresh source returnqueues through existing matcher/Date. Positive sortedunion headers before profiles;negative continuation-first callbacks before proposal/date. History-independent minimal consent/nonrenewing retries/uniform404/independent negative lanes. Stable root258unit/480integration/build0/395unchangedhashes;final16API/14existing+6newbrowser0,0036empty/stopped. Synthetic-only/realgatesfalse;continue06,07external.

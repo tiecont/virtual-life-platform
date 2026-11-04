@@ -1,0 +1,65 @@
+ Image caddy:2.11.7-alpine Pulling 
+ 4f4fb700ef54 Pulling fs layer 0B
+ 7c06d09d8244 Pulling fs layer 0B
+ 5e9b4a97f639 Pulling fs layer 0B
+ eae0290468fa Pulling fs layer 0B
+ 45f0829a46db Pulling fs layer 0B
+ 4f4fb700ef54 Already exists 0B
+ 7c06d09d8244 Downloading 1.049MB
+ 7c06d09d8244 Download complete 0B
+ 45f0829a46db Downloading 4.194MB
+ eae0290468fa Download complete 0B
+ 45f0829a46db Downloading 8.389MB
+ 45f0829a46db Downloading 12.58MB
+ 45f0829a46db Downloading 15.73MB
+ 45f0829a46db Download complete 0B
+ 5e9b4a97f639 Downloading 1.049MB
+ 707bcf3a411e Download complete 0B
+ 5e9b4a97f639 Download complete 0B
+ 5e9b4a97f639 Pull complete 0B
+ 50dfc88401f1 Download complete 0B
+ 7c06d09d8244 Pull complete 0B
+ eae0290468fa Pull complete 0B
+ 45f0829a46db Extracting 1B
+ 45f0829a46db Extracting 1B
+ 4f4fb700ef54 Pull complete 0B
+ 45f0829a46db Pull complete 0B
+ Image caddy:2.11.7-alpine Pulled 
+ Network virtual-city-stage-test-d062931a_city Creating 
+ Network virtual-city-stage-test-d062931a_city Creating 
+ Volume virtual-city-stage-test-d062931a_city-db Creating 
+ Volume virtual-city-stage-test-d062931a_city-db Creating 
+ Volume virtual-city-stage-test-d062931a_city-db Created 
+ Volume virtual-city-stage-test-d062931a_city-db Created 
+ Network virtual-city-stage-test-d062931a_city Created 
+ Network virtual-city-stage-test-d062931a_city Created 
+ Container virtual-city-stage-test-d062931a-db-1 Creating 
+ Container virtual-city-stage-test-d062931a-db-1 Created 
+ Container virtual-city-stage-test-d062931a-migrate-1 Creating 
+ Container virtual-city-stage-test-d062931a-migrate-1 Created 
+ Container virtual-city-stage-test-d062931a-api-1 Creating 
+ Container virtual-city-stage-test-d062931a-api-1 Created 
+ Container virtual-city-stage-test-d062931a-web-1 Creating 
+ Container virtual-city-stage-test-d062931a-web-1 Created 
+ Container virtual-city-stage-test-d062931a-edge-1 Creating 
+ Container virtual-city-stage-test-d062931a-edge-1 Created 
+ Container virtual-city-stage-test-d062931a-db-1 Starting 
+ Container virtual-city-stage-test-d062931a-db-1 Started 
+ Container virtual-city-stage-test-d062931a-db-1 Waiting 
+ Container virtual-city-stage-test-d062931a-db-1 Healthy 
+ Container virtual-city-stage-test-d062931a-migrate-1 Starting 
+ Container virtual-city-stage-test-d062931a-migrate-1 Started 
+ Container virtual-city-stage-test-d062931a-migrate-1 Waiting 
+ Container virtual-city-stage-test-d062931a-migrate-1 Exited 
+ Container virtual-city-stage-test-d062931a-api-1 Starting 
+ Container virtual-city-stage-test-d062931a-api-1 Started 
+ Container virtual-city-stage-test-d062931a-api-1 Waiting 
+ Container virtual-city-stage-test-d062931a-api-1 Healthy 
+ Container virtual-city-stage-test-d062931a-web-1 Starting 
+ Container virtual-city-stage-test-d062931a-web-1 Started 
+ Container virtual-city-stage-test-d062931a-web-1 Waiting 
+ Container virtual-city-stage-test-d062931a-api-1 Waiting 
+ Container virtual-city-stage-test-d062931a-api-1 Healthy 
+ Container virtual-city-stage-test-d062931a-web-1 Healthy 
+ Container virtual-city-stage-test-d062931a-edge-1 Starting 
+Error response from daemon: failed to set up container networking: Address already in use

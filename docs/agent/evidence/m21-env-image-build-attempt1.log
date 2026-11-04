@@ -1,0 +1,192 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 543B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/node:26.9.0-bookworm-slim
+#2 DONE 5.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 229B done
+#3 DONE 0.0s
+
+#4 [build 1/6] FROM docker.io/library/node:26.9.0-bookworm-slim@sha256:582460f614631b59b824ac6020533b9bf339c7fdf3a6d7db31abb6b4065f0212
+#4 resolve docker.io/library/node:26.9.0-bookworm-slim@sha256:582460f614631b59b824ac6020533b9bf339c7fdf3a6d7db31abb6b4065f0212 0.0s done
+#4 ...
+
+#5 [internal] load build context
+#5 transferring context: 2.06MB 0.1s done
+#5 DONE 0.1s
+
+#4 [build 1/6] FROM docker.io/library/node:26.9.0-bookworm-slim@sha256:582460f614631b59b824ac6020533b9bf339c7fdf3a6d7db31abb6b4065f0212
+#4 sha256:59fe650a915a5d4912dd6814343cb7f0f0f4cf3912ada9af0b78245ca3e2d9f6 0B / 446B 0.2s
+#4 sha256:d9725eec777276fe9e723b499a5d51d2d011ac337174330346a52aa2c4b0add9 0B / 55.47MB 0.2s
+#4 sha256:a31bc5c542441b9959d4488e1cd1913af698ad6c14d44484f5ad4bee3ab506de 0B / 3.31kB 0.2s
+#4 sha256:774043ccc8ccd0d0833a9ee0792142ab7ad93df971e59dd248fbf82db16d0150 0B / 28.24MB 0.2s
+#4 sha256:59fe650a915a5d4912dd6814343cb7f0f0f4cf3912ada9af0b78245ca3e2d9f6 446B / 446B 1.1s done
+#4 sha256:774043ccc8ccd0d0833a9ee0792142ab7ad93df971e59dd248fbf82db16d0150 4.19MB / 28.24MB 1.7s
+#4 sha256:774043ccc8ccd0d0833a9ee0792142ab7ad93df971e59dd248fbf82db16d0150 9.44MB / 28.24MB 1.8s
+#4 sha256:774043ccc8ccd0d0833a9ee0792142ab7ad93df971e59dd248fbf82db16d0150 15.73MB / 28.24MB 2.0s
+#4 sha256:774043ccc8ccd0d0833a9ee0792142ab7ad93df971e59dd248fbf82db16d0150 22.02MB / 28.24MB 2.1s
+#4 sha256:774043ccc8ccd0d0833a9ee0792142ab7ad93df971e59dd248fbf82db16d0150 28.24MB / 28.24MB 2.3s done
+#4 extracting sha256:774043ccc8ccd0d0833a9ee0792142ab7ad93df971e59dd248fbf82db16d0150
+#4 sha256:a31bc5c542441b9959d4488e1cd1913af698ad6c14d44484f5ad4bee3ab506de 3.31kB / 3.31kB 2.6s done
+#4 extracting sha256:774043ccc8ccd0d0833a9ee0792142ab7ad93df971e59dd248fbf82db16d0150 0.9s done
+#4 extracting sha256:a31bc5c542441b9959d4488e1cd1913af698ad6c14d44484f5ad4bee3ab506de
+#4 extracting sha256:a31bc5c542441b9959d4488e1cd1913af698ad6c14d44484f5ad4bee3ab506de 0.2s done
+#4 sha256:d9725eec777276fe9e723b499a5d51d2d011ac337174330346a52aa2c4b0add9 3.15MB / 55.47MB 3.6s
+#4 sha256:d9725eec777276fe9e723b499a5d51d2d011ac337174330346a52aa2c4b0add9 6.29MB / 55.47MB 3.8s
+#4 sha256:d9725eec777276fe9e723b499a5d51d2d011ac337174330346a52aa2c4b0add9 13.63MB / 55.47MB 4.2s
+#4 sha256:d9725eec777276fe9e723b499a5d51d2d011ac337174330346a52aa2c4b0add9 16.78MB / 55.47MB 4.4s
+#4 sha256:d9725eec777276fe9e723b499a5d51d2d011ac337174330346a52aa2c4b0add9 22.02MB / 55.47MB 4.7s
+#4 sha256:d9725eec777276fe9e723b499a5d51d2d011ac337174330346a52aa2c4b0add9 25.17MB / 55.47MB 5.0s
+#4 sha256:d9725eec777276fe9e723b499a5d51d2d011ac337174330346a52aa2c4b0add9 29.36MB / 55.47MB 5.1s
+#4 sha256:d9725eec777276fe9e723b499a5d51d2d011ac337174330346a52aa2c4b0add9 32.51MB / 55.47MB 5.3s
+#4 sha256:d9725eec777276fe9e723b499a5d51d2d011ac337174330346a52aa2c4b0add9 36.70MB / 55.47MB 5.6s
+#4 sha256:d9725eec777276fe9e723b499a5d51d2d011ac337174330346a52aa2c4b0add9 40.89MB / 55.47MB 6.0s
+#4 sha256:d9725eec777276fe9e723b499a5d51d2d011ac337174330346a52aa2c4b0add9 45.09MB / 55.47MB 6.2s
+#4 sha256:d9725eec777276fe9e723b499a5d51d2d011ac337174330346a52aa2c4b0add9 49.28MB / 55.47MB 6.3s
+#4 sha256:d9725eec777276fe9e723b499a5d51d2d011ac337174330346a52aa2c4b0add9 55.47MB / 55.47MB 6.8s done
+#4 extracting sha256:d9725eec777276fe9e723b499a5d51d2d011ac337174330346a52aa2c4b0add9
+#4 extracting sha256:d9725eec777276fe9e723b499a5d51d2d011ac337174330346a52aa2c4b0add9 1.0s done
+#4 DONE 8.0s
+
+#4 [build 1/6] FROM docker.io/library/node:26.9.0-bookworm-slim@sha256:582460f614631b59b824ac6020533b9bf339c7fdf3a6d7db31abb6b4065f0212
+#4 extracting sha256:59fe650a915a5d4912dd6814343cb7f0f0f4cf3912ada9af0b78245ca3e2d9f6 0.0s done
+#4 DONE 8.0s
+
+#6 [build 2/6] WORKDIR /app
+#6 DONE 0.4s
+
+#7 [build 3/6] RUN npm install --global pnpm@11.28.5
+#7 1.269 
+#7 1.269 added 1 package in 1s
+#7 1.269 
+#7 1.269 1 package is looking for funding
+#7 1.269   run `npm fund` for details
+#7 1.271 npm notice
+#7 1.271 npm notice New major version of npm available! 11.19.1 -> 12.2.1
+#7 1.271 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+#7 1.271 npm notice To update run: npm install -g npm@12.2.1
+#7 1.271 npm notice
+#7 DONE 1.5s
+
+#8 [build 4/6] COPY . .
+#8 DONE 0.1s
+
+#9 [build 5/6] RUN pnpm install --frozen-lockfile
+#9 0.799 Scope: all 11 workspace projects
+#9 0.879 ? Verifying lockfile against supply-chain policies (385 entries)...
+#9 0.916 Lockfile is up to date, resolution step is skipped
+#9 1.018 Progress: resolved 1, reused 0, downloaded 0, added 0
+#9 1.048 Packages: +303
+#9 1.048 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#9 1.474 Packages are cloned from the content-addressable store to the virtual store.
+#9 1.474   Content-addressable store is at: /root/.local/share/pnpm/store/v11
+#9 1.474   Virtual store is at:             node_modules/.pnpm
+#9 2.026 Progress: resolved 303, reused 0, downloaded 93, added 89
+#9 2.221 Update available! 11.28.5 → 12.16.1.
+#9 2.221 Changelog: https://pnpm.io/v/12.16.1
+#9 2.221 To update, run: curl -fsSL https://get.pnpm.io/install.sh | sh -
+#9 3.029 Progress: resolved 303, reused 0, downloaded 199, added 198
+#9 4.030 Progress: resolved 303, reused 0, downloaded 293, added 292
+#9 5.083 Progress: resolved 303, reused 0, downloaded 295, added 295
+#9 6.084 Progress: resolved 303, reused 0, downloaded 299, added 298
+#9 7.084 Progress: resolved 303, reused 0, downloaded 301, added 301
+#9 8.127 ✓ Lockfile passes supply-chain policies (385 entries in 7.2s)
+#9 8.737 Progress: resolved 303, reused 0, downloaded 302, added 301
+#9 9.738 Progress: resolved 303, reused 0, downloaded 302, added 302
+#9 9.816 Progress: resolved 303, reused 0, downloaded 303, added 303, done
+#9 9.928 .../esbuild@0.27.7/node_modules/esbuild postinstall$ node install.js
+#9 10.04 .../esbuild@0.27.7/node_modules/esbuild postinstall: Done
+#9 10.16 
+#9 10.16 devDependencies:
+#9 10.16 + @eslint/js 9.39.1
+#9 10.16 + @playwright/test 1.64.1
+#9 10.16 + @types/node 26.0.0
+#9 10.16 + @types/pg 8.23.1
+#9 10.16 + @types/react 19.3.0
+#9 10.16 + @types/react-dom 19.3.0
+#9 10.16 + @virtual-city/contracts 0.1.0 <- packages/contracts
+#9 10.16 + @virtual-city/library-world 0.1.0 <- packages/library-world
+#9 10.16 + @virtual-city/lounge-world 0.1.0 <- packages/lounge-world
+#9 10.16 + @virtual-city/restaurant-world 0.1.0 <- packages/restaurant-world
+#9 10.16 + @virtual-city/world-sdk 0.1.0 <- packages/world-sdk
+#9 10.16 + eslint 9.39.1
+#9 10.16 + pg 8.23.1
+#9 10.16 + socket.io-client 4.8.4
+#9 10.16 + tsx 4.21.0
+#9 10.16 + typescript 5.9.3
+#9 10.16 + typescript-eslint 8.57.1
+#9 10.16 + vitest 4.1.12
+#9 10.16 
+#9 10.21 Done in 10s using pnpm v11.28.5
+#9 DONE 10.6s
+
+#10 [build 6/6] RUN pnpm build
+#10 0.932 $ pnpm -r build
+#10 1.427 Scope: 10 of 11 workspace projects
+#10 1.445 packages/contracts build$ tsc -p tsconfig.json
+#10 3.251 packages/contracts build: Done
+#10 3.253 packages/world-sdk build$ tsc -p tsconfig.json
+#10 3.253 packages/focus-ui build$ tsc -p tsconfig.json
+#10 4.709 packages/focus-ui build: Done
+#10 4.713 packages/world-sdk build: Done
+#10 4.715 packages/library-world build$ tsc -p tsconfig.json
+#10 4.715 packages/lounge-world build$ tsc -p tsconfig.json
+#10 4.715 packages/pixi-scene build$ tsc -p tsconfig.json
+#10 4.715 packages/restaurant-world build$ tsc -p tsconfig.json
+#10 6.223 packages/library-world build: Done
+#10 6.269 packages/lounge-world build: Done
+#10 6.288 packages/restaurant-world build: Done
+#10 6.289 apps/platform-api build$ tsc -p tsconfig.json && node ../../scripts/copy-migrations.mjs
+#10 7.012 packages/pixi-scene build: Done
+#10 7.012 apps/portal-web build$ next build --webpack
+#10 7.471 apps/portal-web build: ▲ Next.js 16.4.4 (webpack)
+#10 7.569 apps/portal-web build: ✓ Running next.config.ts took 98ms
+#10 7.604 apps/portal-web build:   Creating an optimized production build ...
+#10 12.30 apps/platform-api build: Done
+#10 21.98 apps/portal-web build: ✓ Compiled successfully in 12.2s
+#10 21.98 apps/portal-web build:   Running TypeScript ...
+#10 26.23 apps/portal-web build:   Finished TypeScript in 4.2s ...
+#10 26.23 apps/portal-web build:   Collecting page data using 15 workers ...
+#10 27.47 apps/portal-web build:   Generating static pages using 15 workers (0/6) ...
+#10 28.30 apps/portal-web build:   Generating static pages using 15 workers (1/6) 
+#10 28.30 apps/portal-web build:   Generating static pages using 15 workers (2/6) 
+#10 28.30 apps/portal-web build:   Generating static pages using 15 workers (4/6) 
+#10 28.30 apps/portal-web build: ✓ Generating static pages using 15 workers (6/6) in 836ms
+#10 29.12 apps/portal-web build:   Finalizing page optimization ...
+#10 29.12 apps/portal-web build:   Collecting build traces ...
+#10 36.99 apps/portal-web build: Route (app)
+#10 36.99 apps/portal-web build: ┌ ƒ /
+#10 36.99 apps/portal-web build: ├ ○ /_not-found
+#10 36.99 apps/portal-web build: ├ ○ /identity
+#10 36.99 apps/portal-web build: ├ ƒ /invitations
+#10 36.99 apps/portal-web build: ├ ○ /moderation
+#10 36.99 apps/portal-web build: ├ ƒ /private/profile
+#10 36.99 apps/portal-web build: ├ ƒ /private/withdraw
+#10 36.99 apps/portal-web build: ├ ○ /safety
+#10 36.99 apps/portal-web build: ├ ƒ /social
+#10 36.99 apps/portal-web build: ├ ƒ /travel
+#10 36.99 apps/portal-web build: ├ ƒ /worlds/library
+#10 36.99 apps/portal-web build: ├ ƒ /worlds/lounge
+#10 36.99 apps/portal-web build: ├ ƒ /worlds/restaurant
+#10 36.99 apps/portal-web build: ├ ƒ /worlds/sdk-sandbox
+#10 36.99 apps/portal-web build: └ ○ /worlds/sdk-sandbox/avatar-lab
+#10 36.99 apps/portal-web build: ○  (Static)   prerendered as static content
+#10 36.99 apps/portal-web build: ƒ  (Dynamic)  server-rendered on demand
+#10 37.06 apps/portal-web build: Done
+#10 DONE 37.2s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 30.5s done
+#11 exporting manifest sha256:7bbb85a2194b032bd26d7d714ee41d42da61c2fdbf0632cb52502eea066dd0dd 0.0s done
+#11 exporting config sha256:d2a1d483ca0518e2fdf5494764326b15e40d0034cd2e96387664977b39caf700 0.0s done
+#11 exporting attestation manifest sha256:32001f65face9ec2a248709663ae635b7ae8ee2bd3b653ccc10a185420bb7e7e 0.0s done
+#11 exporting manifest list sha256:f962630bab6dc631d18698499d7820de104ccc6d97c430a92e85ea6b304c6c4f 0.0s done
+#11 naming to docker.io/library/virtual-life-platform:m21-local done
+#11 unpacking to docker.io/library/virtual-life-platform:m21-local
+#11 unpacking to docker.io/library/virtual-life-platform:m21-local 14.2s done
+#11 DONE 44.9s

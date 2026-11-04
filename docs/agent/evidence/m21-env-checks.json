@@ -1,0 +1,101 @@
+{
+  "taskID": "M21-01",
+  "status": "VERIFIED",
+  "source": "Workspace from95fe11c;actual local application image/runtime plus Compose/Caddy/environment verification",
+  "environment": "Local Node26.9.0/pnpm11.28.5/Docker Compose/PostgreSQL17.7/Caddy2.11.7-alpine/Chromium. No public deployment or actual external staging.",
+  "commands": [
+    {
+      "command": "pnpm exec vitest run --project unit apps/platform-api/src/common/proxy.unit.test.ts",
+      "exitCode": 1,
+      "log": "m21-env-proxy-red.log",
+      "scope": "Actual missing-helper import red;no test bodies ran,not two failing assertions"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit apps/platform-api/src/common/proxy.unit.test.ts",
+      "exitCode": 0,
+      "log": "m21-env-proxy-green.log",
+      "scope": "2passed:strict single-peer/mapped-address forwarding and actual Fastify trusted-vs-untrusted IP/protocol/host"
+    },
+    {
+      "command": "docker build -f infra/docker/Dockerfile -t virtual-life-platform:m21-local .",
+      "exitCode": 0,
+      "log": "m21-env-image-build-attempt1.log",
+      "scope": "Actual container pnpm frozen-lockfile install/all package+API+Next builds/nonroot runtime image;no push"
+    },
+    {
+      "command": "node scripts/staging-smoke.mjs",
+      "exitCode": 1,
+      "log": "m21-env-staging-attempt1.log",
+      "scope": "Unavailable caddy2.11.8-alpine Docker tag. First harness retained only generic stage error,not detailed child output;diagnostics gap fixed in harness."
+    },
+    {
+      "command": "node scripts/staging-smoke.mjs",
+      "exitCode": 1,
+      "logs": [
+        "m21-env-staging-attempt2.log",
+        "m21-env-staging-attempt2-detail.log"
+      ],
+      "scope": "Repeated exact missing Docker tag error now retained. Official release binary2.11.8 was available but registry tag absent;actual2.11.7 tag verified and selected."
+    },
+    {
+      "command": "node scripts/staging-smoke.mjs",
+      "exitCode": 1,
+      "logs": [
+        "m21-env-staging-attempt3.log",
+        "m21-env-staging-attempt3-detail.log"
+      ],
+      "scope": "Real DB/migrator/API/web healthy;edge startup IP collision because Docker dynamically allocated chosen static edge address. Fixed disjoint upper-/25 dynamic allocation/lower-half edge and validator;no app gate relaxed."
+    },
+    {
+      "command": "node scripts/staging-smoke.mjs",
+      "exitCode": 0,
+      "log": "m21-env-staging-attempt4.log",
+      "facts": "m21-env-staging-facts.json",
+      "scope": "Actual unique production-mode local Compose/Caddy TLS stack:private upstream ports,trusted TLS,Origin403,real __Host/Secure/HttpOnly/Lax browser cookie/reload/rotation,verified TLS Socket.IO/origin,31forged-IP attempts29accepted2transportdenials,upstream502 private URI/cookie log suppression;scoped cleanup0"
+    },
+    {
+      "command": "docker run --rm --network none --read-only [source manifest mount] --entrypoint node virtual-life-platform:m21-local [compare316source hashes]",
+      "exitCode": 0,
+      "log": "m21-env-image-source.log",
+      "scope": "All316apps/packages/config TS/TSX/JSON/SQL/SVG source files match current host bytes. Other image scripts/metadata are not asserted identical."
+    },
+    {
+      "command": "node scripts/verify-infra.mjs",
+      "exitCode": 0,
+      "log": "m21-env-matrix-final.log"
+    },
+    {
+      "command": "node --test tests/governance/infra.test.mjs",
+      "exitCode": 0,
+      "log": "m21-env-matrix-final-test.log",
+      "scope": "1case includes invalid Origin/port/private network/dynamic allocation/TLS/secret/image boundaries;no secret values returned"
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "log": "m21-env-lint-attempt1.log",
+      "scope": "Earlier implementation/harness version;final stable root check still pending"
+    },
+    {
+      "command": "pnpm check",
+      "exitCode": 0,
+      "log": "m21-env-check.log",
+      "scope": "8governance/260unit/486integration/lint/types/architecture/datingpolicy/assets/allbuilds"
+    },
+    {
+      "command": "sha256sum412source/config/test/infra/workflow paths before and after pnpmcheck;cmp",
+      "exitCode": 0,
+      "logs": [
+        "m21-env-source-before.log",
+        "m21-env-source-after.log"
+      ],
+      "scope": "All412hashes byte-identical;no source edits during final check"
+    }
+  ],
+  "toolPreparationHistory": "Downloaded official Caddy2.11.8 binary into ignored local artifacts,not global install. First checksum command used SHA256 against128hex SHA512 manifest and failed internally1;its shell continued to print binary version and returned0. This was not accepted verification. Corrected fail-fast SHA512 comparison passed against official manifest before staging verification;archive hash/source in m21-env-caddy-tool.json. Actual Compose uses available2.11.7 image with digest in m21-env-caddy-image.log. No tool signature/security certification claimed.",
+  "implementation": "Dev/test existing stack retained. Production-mode local staging/prod templates require independent credentials/volumes/external TLS files,one explicit private proxy IPv4;no API/web/DB hostports,edge loopback only. Optional exact trusted peer for HTTP/Socket.IO;single valid forwarded IP only,default untrusted. Nonroot/read-only app image,secret build-context exclusions,no Caddy admin/access log,private error field suppression. No real world/adult/staff/provider authority supplied.",
+  "visual": "Actual production-mode TLS identity reload/rotation screenshot saved m21-env-visual/identity-https.png and directly inspected;readable native identity UI. Not a mobile/accessibility certification for this infra slice.",
+  "migration": "No new schema. Actual disposable Compose migrator applied bundled0001..0036 before API readiness;smoke removed only its own generated test project volume/network/containers. Retained local city0036/stopped/empty checkpoint untouched.",
+  "limits": "Locally VERIFIED only. No external staging/prod/DNS/public CA/renewal/backup-restore/rollback/monitoring/operator approval or public ingress. Initial image retains build/dev dependencies;minimization/vulnerability/signing review remains. Rate profile is invariant evidence,not load benchmark. Allrealflags/all8Datingapprovalsfalse/provider null/B-001/B-002/B-003 unchanged. Actual initial app image size2561842791bytes;not a minimized release image.",
+  "nextExactAction": "M21-02:read current quality workflow/timing/artifact handling,implement and locally verify CI gates;no remote PR/run/branch-protection claim without actual evidence."
+}

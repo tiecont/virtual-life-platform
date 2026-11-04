@@ -1,0 +1,3 @@
+ Image caddy:2.11.8-alpine Pulling 
+ Image caddy:2.11.8-alpine Error failed to resolve reference "docker.io/library/caddy:2.11.8-alpine": docker.io/library/caddy:2.11.8-alpine: not found
+Error response from daemon: failed to resolve reference "docker.io/library/caddy:2.11.8-alpine": docker.io/library/caddy:2.11.8-alpine: not found

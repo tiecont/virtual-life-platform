@@ -43,6 +43,8 @@ Open http://127.0.0.1:3300. API liveness is http://127.0.0.1:4300/health/live; r
 
 `pnpm db:stop` stops only city development containers and retains data. Re-run `pnpm db:up` to resume. Normal setup/migrations are additive and idempotent. Do not delete volumes or reset a developer/production database as a debugging step. Migration errors intentionally omit secrets; inspect connectivity, schema/journal and checksums locally without printing credentials.
 
+[Environment and TLS setup](docs/operations/ENVIRONMENTS.md) covers dev/test and independent production-mode staging/prod templates. `pnpm infra:smoke` runs a disposable loopback-only Compose/Caddy TLS stack with actual browser cookies and WebSocket guards;it never deploys publicly or touches the retained dev database. Build its local image first as documented. External staging/production,certificate renewal,release and operator approvals remain separate gates.
+
 ## Checks
 
 `test:e2e` runs desktop and mobile in separate API/database lifetimes to keep unrelated device cases from sharing a loopback handshake rate budget. API limits remain unchanged. Reports are under `playwright-report/{desktop,mobile}` and failure artifacts under `test-results/{desktop,mobile}`. Run filtered browser cases with `pnpm test:e2e tests/e2e/scene.spec.ts`.

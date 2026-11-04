@@ -10,6 +10,7 @@ const Env = z.object({
     return ['postgres:', 'postgresql:'].includes(url.protocol);
   }),
   WEB_ORIGIN: z.string().url().default('http://127.0.0.1:3300'),
+  TRUSTED_PROXY_IP:z.ipv4().refine(value=>!['0.0.0.0','255.255.255.255'].includes(value)).optional(),
   SAFETY_EVIDENCE_KEY: z.string().regex(/^[a-f0-9]{64}$/i).optional(),
   SAFETY_EVIDENCE_KEY_ID: z.string().regex(/^[a-z0-9-]{1,32}$/).default('local-v1'),
   WORLD_FLAGS_FILE: z.string().min(1).max(4096).optional(),

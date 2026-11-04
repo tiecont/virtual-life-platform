@@ -1,0 +1,39 @@
+{
+	admin off
+	auto_https disable_redirects
+	grace_period 5s
+	log default {
+		level ERROR
+		format filter {
+			wrap json
+			fields {
+				request>uri delete
+				request>headers delete
+				request>remote_ip delete
+				request>client_ip delete
+			}
+		}
+	}
+}
+
+{$CITY_SITE_ADDRESS} {
+	tls {$CITY_TLS_CERT} {$CITY_TLS_KEY}
+	header -Server
+	@api path /v1 /v1/* /socket.io /socket.io/* /health/live /health/ready
+	handle @api {
+		reverse_proxy {$CITY_API_UPSTREAM:api:4300} {
+			header_up -Forwarded
+			header_up X-Forwarded-For {remote_host}
+			header_up X-Forwarded-Proto https
+			header_up X-Forwarded-Host {hostport}
+		}
+	}
+	handle {
+		reverse_proxy {$CITY_WEB_UPSTREAM:web:3300} {
+			header_up -Forwarded
+			header_up X-Forwarded-For {remote_host}
+			header_up X-Forwarded-Proto https
+			header_up X-Forwarded-Host {hostport}
+		}
+	}
+}
