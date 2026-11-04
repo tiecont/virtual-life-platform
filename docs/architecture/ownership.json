@@ -1,6 +1,9 @@
 {
   "schemaVersion": 1,
   "tables": {
+    "engine_event_stage_consent": "engine.events",
+    "engine_event_stage_slots": "engine.events",
+    "engine_event_stage_mutations": "engine.events",
     "engine_reservation_invitations": "engine.reservations",
     "engine_reservation_invite_mutations": "engine.reservations",
     "engine_hospitality_consent": "engine.hospitality",

@@ -3,6 +3,7 @@ import { SceneManifestSchema } from './scene';
 import { WorldSlugSchema, WorldVersionSchema, SeatIdSchema } from './world-primitives';
 import { HospitalityPolicySchema } from './hospitality-policy';
 import { WorldEventPolicySchema } from './events';
+import { StagePolicySchema } from './stage-policy';
 export { WorldSlugSchema, WorldVersionSchema, SeatIdSchema } from './world-primitives';
 
 export const WORLD_API_VERSION = 1 as const;
@@ -31,6 +32,7 @@ export const WorldDefinitionSchema = z.strictObject({
   focusPolicy: z.strictObject({ pauseAllowed: z.boolean() }).optional(),
   hospitalityPolicy: HospitalityPolicySchema.optional(),
   eventPolicy: WorldEventPolicySchema.optional(),
+  stagePolicy: StagePolicySchema.optional(),
   appearancePolicy: z.strictObject({ apron: z.enum(['forbidden','allowed','on-shift']) }).optional(),
   accessPolicy: WorldAccessPolicySchema, visibility: z.enum(['listed', 'hidden']), map: WorldMapSchema,
 }).superRefine((world, ctx) => {
@@ -39,6 +41,7 @@ export const WorldDefinitionSchema = z.strictObject({
   if (world.capabilities.includes('hospitality') !== !!world.hospitalityPolicy) ctx.addIssue({ code: 'custom', path: ['hospitalityPolicy'], message: 'Hospitality capability requires an explicit trusted service policy' });
   if (world.capabilities.includes('events') !== !!world.eventPolicy || world.eventPolicy && world.eventPolicy.maxCapacity > world.capacity) ctx.addIssue({ code: 'custom', path: ['eventPolicy'], message: 'Events require an explicit policy within world capacity' });
   if (world.eventPolicy?.reservations && (world.eventPolicy.reservations.maxPartySize > world.capacity || world.eventPolicy.reservations.resources.some(resource => resource.capacity > world.capacity))) ctx.addIssue({ code: 'custom', path: ['eventPolicy', 'reservations'], message: 'Table policy must fit world capacity' });
+  if(world.stagePolicy&&(!world.eventPolicy||!world.scene?.collisionZones.some(zone=>zone.kind==='stage')||world.stagePolicy.maxQueue>world.capacity||world.accessPolicy.kind!=='public'||world.visibility!=='listed'))ctx.addIssue({code:'custom',path:['stagePolicy'],message:'Stage policy requires a public listed event venue,solid stage and bounded room queue'});
   if (world.scene && (world.scene.key !== world.sceneRef.key || world.scene.version !== world.sceneRef.version || [...world.scene.seats.map(seat => seat.seatId)].sort().join(',') !== [...world.seatIds].sort().join(','))) ctx.addIssue({ code: 'custom', path: ['scene'], message: 'Scene geometry must match the versioned world seat contract' });
   if (new Set(world.seatIds).size !== world.seatIds.length || world.seatIds.length > world.capacity || (world.capabilities.includes('seating') !== (world.seatIds.length > 0))) {
     ctx.addIssue({ code: 'custom', path: ['seatIds'], message: 'Unique seat IDs within capacity must match seating capability' });

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-04T04:55:01Z",
+  "updatedAt": "2026-11-04T05:13:59Z",
   "tasks": {
     "AUD-01": {
       "status": "VERIFIED",
@@ -262,6 +262,7 @@
     "M18-04": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m18-courses-checks.json; docs/adr/0058-course-match-kitchen-pass-on-shared-service-ledger.md", "verification": "Fullcheck0(7gov/214unit/357integration/builds),79target;laterUIbudget/visibility fixes finalwebbuild+lint0 and12Restaurant+8shellbrowser0. Threecourses/twoactualworkers+diner/serverdeadlines/course-matchpass/onecompletionoutbox/rollback/block/withdrawrace/restart;Cook39+Server43requests/0rateLimitedeachdevice;0028local0" },
     "M18-05": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m18-private-checks.json; docs/adr/0059-private-dinner-consent.md", "verification": "Stable fullcheck0(7gov/214unit/368integration/builds),14Restaurant+6sharedbrowser0;latercitydiscovery1pass33skips(not369fullsuite). Current friend/opt-in/source consent/private membership,independent accept/travel/join,withdrawal/races/rollback/deadline/privacy/report/block/logging;0029local0/realflagsOFF" },
     "M18-06": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m18-acceptance-checks.json; docs/architecture/RESTAURANT-VERIFICATION.md", "verification": "FullRestaurant18browser/target4/type/lint0;two real parties->one201/one409/onecheckin/nativeassetfallback/mobile/a11y.16HTTPactors/fourwaves/76requests/60expectedconflicts/0unexpected,p95328.233ms local;4socket SDK smoke0. Test/docs only,no app/migration/publicchange" },
-    "M19-01": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m19-scene-checks.json; docs/adr/0060-silent-lounge-with-closed-stage.md; docs/architecture/LOUNGE.md", "verification": "Fullcheck0(7gov/216unit/373integration/builds),8Lounge+32rendererbrowser0,API4/unit2/6provenancehash0. Original10chairs/12places/closedstageaudienceoccupancy0/quiet/nativefallback/currentphaseprivacy/TTL/identity;openperformerallocator02pending;no migration/publicactivation" }
+    "M19-01": { "status": "VERIFIED", "evidence": "docs/agent/evidence/m19-scene-checks.json; docs/adr/0060-silent-lounge-with-closed-stage.md; docs/architecture/LOUNGE.md", "verification": "Fullcheck0(7gov/216unit/373integration/builds),8Lounge+32rendererbrowser0,API4/unit2/6provenancehash0. Original10chairs/12places/closedstageaudienceoccupancy0/quiet/nativefallback/currentphaseprivacy/TTL/identity;openperformerallocator02pending;no migration/publicactivation" },
+    "M19-02": { "status": "IN_PROGRESS", "evidence": "docs/agent/evidence/m19-stage-foundation-checks.json; docs/adr/0061-stage-slot-consent-foundation.md", "verification": "Foundation only:16unit/5storage+4Lounge/types/lint/architecture/allbuilds0,draft0030 only disposableDB. No Stage controller/FIFO/actual permission/source/independent Stop/recovery/UI implemented;task notVERIFIED. Current Lounge stage closed,dev0029stopped/realflagsOFF" }
   }
 }

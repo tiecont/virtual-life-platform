@@ -112,7 +112,7 @@
 | M18 | M18-05 · Add dinner invitation, consent, private table policy and report tools. | VERIFIED | m18-private-checks.json;stable full368integration/214unit/builds,14Restaurant+6shared browser pass;city-discovery1separate;0029local0/private membership not room isolation |
 | M18 | M18-06 · E2E/load and visual/accessibility acceptance. | VERIFIED | m18-acceptance-checks.json;18browser/type/lint/16actor HTTP profile+4socket SDK smoke0;one table winner/mobile fallback/keyboard/contrast/motion;local only |
 | M19 | M19-01 · Design lounge stage, seating, mocktail counter and event states. | VERIFIED | m19-scene-checks.json;full216unit/373integration/builds,8Lounge+32rendererbrowser0;10chairs/12places/closedstage0occupancy/nativefallback/currentphases;actualperformer02pending |
-| M19 | M19-02 · Implement performer/host role and stage queue with operator controls. | TODO | — |
+| M19 | M19-02 · Implement performer/host role and stage queue with operator controls. | IN_PROGRESS | m19-stage-foundation-checks.json;16unit/5storage+4Lounge/build0 foundation only;0030disposable,no Stage API/FIFO/grant/source/Stop/UI authority yet |
 | M19 | M19-03 · Implement virtual mocktail service via Hospitality Engine. | TODO | — |
 | M19 | M19-04 · Integrate ticket-free events/RSVP, crowd reactions and moderation throttles. | TODO | — |
 | M19 | M19-05 · Implement media licensing gate and optional preapproved streaming adapter. | TODO | — |

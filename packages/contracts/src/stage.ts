@@ -1,0 +1,16 @@
+import { z } from 'zod';
+import { TravelSourceSchema } from './travel';
+import { WorldSlugSchema } from './world-primitives';
+export { StagePolicySchema } from './stage-policy';
+const uuid=z.uuid().transform(value=>value.toLowerCase());
+export const StagePhaseSchema=z.enum(['QUEUED','OFFERED','ACTIVE','ENDED']);
+export const StageReasonSchema=z.enum(['expired','declined','withdrawn','revoked','event-ended','authority-lost']);
+export const StageSlotSchema=z.strictObject({id:uuid,eventId:uuid,worldSlug:WorldSlugSchema,phase:StagePhaseSchema,version:z.number().int().nonnegative(),createdAt:z.iso.datetime(),queueExpiresAt:z.iso.datetime(),offerExpiresAt:z.iso.datetime().nullable(),startedAt:z.iso.datetime().nullable(),endsAt:z.iso.datetime().nullable(),closedAt:z.iso.datetime().nullable(),reason:StageReasonSchema.nullable()});
+export const StageResultSchema=z.strictObject({schemaVersion:z.literal(1),slot:StageSlotSchema});
+export const StageReadSchema=z.strictObject({schemaVersion:z.literal(1),eventId:uuid,source:TravelSourceSchema});
+export const StageJoinSchema=StageReadSchema.extend({expectedRevision:z.number().int().nonnegative(),consent:z.literal(true)});
+export const StageAcceptSchema=z.strictObject({schemaVersion:z.literal(1),source:TravelSourceSchema,expectedVersion:z.number().int().nonnegative(),expectedRevision:z.number().int().nonnegative()});
+export const StageEndSchema=z.strictObject({schemaVersion:z.literal(1),expectedVersion:z.number().int().nonnegative()});
+export const StageOwnSchema=z.strictObject({schemaVersion:z.literal(1),revision:z.number().int().nonnegative(),items:z.array(StageSlotSchema).max(20),truncated:z.boolean()});
+export const StageStoppedSchema=z.strictObject({schemaVersion:z.literal(1),stopped:z.literal(true),revision:z.number().int().nonnegative()});
+export const StageViewSchema=z.strictObject({schemaVersion:z.literal(1),serverTime:z.number().int().nonnegative(),occupied:z.boolean(),own:StageSlotSchema.nullable(),permissions:z.strictObject({performer:z.boolean(),host:z.boolean(),moderator:z.boolean()}),controls:z.strictObject({items:z.array(StageSlotSchema).max(10),truncated:z.boolean()}).optional()});

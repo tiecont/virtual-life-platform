@@ -83,3 +83,4 @@ export * from './discovery';
 export * from './study';
 export * from './reservations';
 export * from './progression';
+export * from './stage';
