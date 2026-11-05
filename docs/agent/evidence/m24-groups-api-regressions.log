@@ -1,0 +1,40 @@
+ Network virtual-city-test-88411c67_default Creating 
+ Network virtual-city-test-88411c67_default Creating 
+ Network virtual-city-test-88411c67_default Created 
+ Network virtual-city-test-88411c67_default Created 
+ Container virtual-city-test-88411c67-db-1 Creating 
+ Container virtual-city-test-88411c67-db-1 Created 
+ Container virtual-city-test-88411c67-db-1 Starting 
+ Container virtual-city-test-88411c67-db-1 Started 
+ Container virtual-city-test-88411c67-db-1 Waiting 
+ Container virtual-city-test-88411c67-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ✓ |integration| tests/integration/travel.test.ts (33 tests | 25 skipped) 9338ms
+   ✓ revalidates private/adult/base flags after issuance; a scoped token never bypasses current access  1001ms
+   ✓ rechecks a specific destination capacity after issuance without consuming a full target or releasing source  1134ms
+   ✓ accepted group members race for one remaining target slot without overfilling or holding places for an offline invite  1323ms
+   ✓ rechecks reviewed adult eligibility and committed target sanctions after preparation, retaining valid source  1871ms
+   ✓ counts pending holds in target capacity and never activates two users into a last slot  958ms
+   ✓ revalidates target-disable after preparation started and cannot publish a stale target  1303ms
+   ✓ revalidates disconnect after preparation started and cannot publish a stale target  904ms
+   ✓ revalidates logout after preparation started and cannot publish a stale target  840ms
+ ✓ |integration| tests/integration/invitations.test.ts (18 tests | 13 skipped) 5958ms
+   ✓ creates a bounded group with explicit partial consent, offline pending expiry and no reserved room capacity  1792ms
+   ✓ same-key concurrent group retries persist one root and one invitation per recipient, with no peer cohort disclosure  938ms
+   ✓ resumes partial fan-out after a committed child loses its group linkage without duplicate invitations, including restart  1078ms
+   ✓ group retries recheck blocks/preferences, budgets count every child and expired roots cannot resend unfinished entries  1155ms
+   ✓ rejects oversized/duplicate/forged group input and exports/deletes group metadata without recipient identities  992ms
+
+ Test Files  2 passed (2)
+      Tests  13 passed | 38 skipped (51)
+   Start at  04:14:34
+   Duration  17.70s (transform 659ms, setup 0ms, import 2.09s, tests 15.30s, environment 0ms)
+
+ Container virtual-city-test-88411c67-db-1 Stopping 
+ Container virtual-city-test-88411c67-db-1 Stopped 
+ Container virtual-city-test-88411c67-db-1 Removing 
+ Container virtual-city-test-88411c67-db-1 Removed 
+ Network virtual-city-test-88411c67_default Removing 
+ Network virtual-city-test-88411c67_default Removed 

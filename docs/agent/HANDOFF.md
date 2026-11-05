@@ -6,7 +6,17 @@ Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;bran
 
 Node26.9.0/pnpm11.28.5. RetaineddevDB0036/stopped;latestjournal/9privatecounts0. Current verification workers are listed below;completed slices leave no preview running. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
 
-## Current work — M24-03 VERIFIED;continue M24-04
+## Current work — M24-04 VERIFIED;continue M24-05
+
+From11dbef0;ADR0084/CENTRAL-PARK.md/m24-groups-checks.json. ParkGather wraps existingGroupInvitations withcurrentFriendsPage/WorldCatalog/InvitationsPage,activeParksource/sessionkey/currentRoomSocket events/manualrefresh/noextrasocket. Unknownreadclearsprivatechoices/senddisabled;optionsKnown defaulttrue preservesinboxcaller/canonicalkeyswhileunknown/freshremovedfriend deselection. Source/sessionremountdiscarts latecommittedofferreply;Leave doesnotimplicitlycanceloffers/manageinbox. No newpartyDB/API/backend/package/schema/realflag/forcedcontact.
+
+Initialdesktopred1missinggatherregion/mobileNOT_RUN. Final18Parkbrowser0(9perdevice) plus2existingM09inboxbrowser0. Newactual3Parkvisitors/explicitfriend-optinsetup/lostcommittedrootreply/samekeyretry/SQL1root2children/accept-decline/allsourcesretained/noLibraryallocationbeforetravel/onlyBobmovesPark→actualLibrary/sameidentity/currentblockdeselection/senddisabled/oneRoomSocket;failedfriendreadclearschoices/recovery/heldcommittedreplyindependentLeave/lateReplydiscard/no recipientteleport. ExistinginboxUIoptin/retry/livepartial/accept-decline-cancel/block/nativecontrols pass. Relevant13API0/38filteredskips/sharedM09groupTTL-retry-fanoutrestart-currentblock-capacityraces-disable-disconnect-logoutrecovery (syntheticM09targets separate). Web-fixturetypes/wholelint/allbuilds0.
+
+473frozenhashesunchanged/201API-sharedpackage paths match11dbef0;earlierfull19gov/266unit/512integrationbaseline separate.37freshParkfiles/12historicalrestored plus10freshinboxPNGs/separatebatchreport;4selectedParkgroupPNGsinspected(desktop-mobilepartial/mobilepending/desktoptravel). Allownedbrowser-DB-API-webworkersfinished/no preview/no retained0036/stopped/realflag/provider/staff/legacy/remote/public/imagechange. Oldimage stale.
+
+Next exact actionM24-05:verify nativeParkconfidentialreport/canonicalreceipt/noautosanction andblockpersistsacrossactualPark→Librarytravel;verifycoldstartnewguestapprovedgreetingwithoutfriend/contactoptin andlistedLibraryeventboard→separatetravel→explicitRSVP/withdraw/leave. ReuseexistingRoomSafety/Report/Room/Events/WorldEvents,actualPG/browser/receiptprivacy/noallocation/currentvisibility. Reportspolicyalreadyincludespark;browserharnesshasseparate synthetic encryptedEvidencekey;no staffissuance/provider/reallegalreview. ExistingM24APIcap/quota/blockscope +M09capacity/recovery +M22security remainprovenowners. Need testsfirst/relevantSafetyAPI/browser/wholequalityasappropriate/evidence/commit,thenrunactualplanstatus/DAG toidentifyonlyexternalremainingtasks;neverclaimwholeplan/publiccomplete. No othermodule becomesreadybeforelegacy B-001/B-002 andpublic B-003 gates.
+
+## Prior slice — M24-03 VERIFIED
 
 Fromb79b3de;ADR0083/CENTRAL-PARK.md/m24-board-checks.json. ParkActivities wraps existingWorldCatalog/WorldActivity/travelHref;otheravailablelisted session-admissible eventspaces/currentAPI/3rows/30sTTL/IANA/truthfulheldplaces/partialunknown/separateconfirmation. Parentidentitykey/abortsupersededreads/offline-backgroundclear/lateLogoutdiscard. BrowserParkprofileexplicitLibraryinstallation+testflag only;guestfixtureuniquephysicalIPs retainsIPquota. No newAPI/queryowner/eventcapability/Parkorganizer/SQL/migration.
 

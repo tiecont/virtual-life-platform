@@ -1,0 +1,46 @@
+{
+  "startedAt": "2026-11-05T04:18:33.762447+00:00",
+  "freshFiles": [
+    {
+      "path": "docs/agent/evidence/m24-groups-visual/regression-invitations-pending-desktop.png",
+      "sha256": "ec93bda673f9f6cf9628712bc3e434239274175aae4b1e66927b9afaec463db8"
+    },
+    {
+      "path": "docs/agent/evidence/m24-groups-visual/regression-invitations-accepted-desktop.png",
+      "sha256": "12aca0b8c60aaf68905bc7697382fd0d20e26107e234577edb7a2f451c01cde8"
+    },
+    {
+      "path": "docs/agent/evidence/m24-groups-visual/regression-invitation-group-pending-desktop.png",
+      "sha256": "7946d43f70fae46f1d1c672f1325a7e4835995128ca3eb2bd0b290f9a953c01a"
+    },
+    {
+      "path": "docs/agent/evidence/m24-groups-visual/regression-invitation-group-partial-desktop.png",
+      "sha256": "61ddc312645aea43f27e80e2e970a464a5468b4b9ce7a8235acf0399e53d2f47"
+    },
+    {
+      "path": "docs/agent/evidence/m24-groups-visual/regression-invitations-desktop.png",
+      "sha256": "87480057330b1542f9dcf776d8503622ccc09487175c8d83c4c0c9526ad400ca"
+    },
+    {
+      "path": "docs/agent/evidence/m24-groups-visual/regression-invitations-pending-mobile.png",
+      "sha256": "8addd1b8cb340239cab6e32566d232c3332c95e32a6f71eddfec9b6b5a6405d9"
+    },
+    {
+      "path": "docs/agent/evidence/m24-groups-visual/regression-invitations-accepted-mobile.png",
+      "sha256": "75bc129cf12c86dfa245e67bdcaa2bed2dcea2a349fb700b36a975bc194a79dc"
+    },
+    {
+      "path": "docs/agent/evidence/m24-groups-visual/regression-invitation-group-pending-mobile.png",
+      "sha256": "caf0d75ead09f361441b4804f1cb815b8282e9e17cf3bd254884d698a2fb1eab"
+    },
+    {
+      "path": "docs/agent/evidence/m24-groups-visual/regression-invitation-group-partial-mobile.png",
+      "sha256": "1c4c34be55a747fdd536bfcd524bbf625db4afc26a06d905a4ea2be074eafb0a"
+    },
+    {
+      "path": "docs/agent/evidence/m24-groups-visual/regression-invitations-mobile.png",
+      "sha256": "79428bc53d50f0fbe85644a0b2499cb6d8d44309c07c1d1e3e1a4948fe77b083"
+    }
+  ],
+  "sourcePathsUnchanged": 473
+}

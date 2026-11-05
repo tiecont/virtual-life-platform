@@ -1,0 +1,14 @@
+{
+  "actualParkVisitors": 3,
+  "sameRequestRetried": true,
+  "durableGroupRoots": 1,
+  "durableChildren": 2,
+  "independentAcceptDecline": true,
+  "acceptanceDidNotMoveAnyone": true,
+  "libraryNotAllocatedBeforeTravel": true,
+  "onlyConsentingTravelerMoved": true,
+  "sameIdentity": true,
+  "blockRemovedSelectedContact": true,
+  "senderRoomConnections": 1,
+  "noOverflow": true
+}

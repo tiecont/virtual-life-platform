@@ -1,0 +1,9 @@
+{
+  "failedReadClearedChoices": true,
+  "positiveSendDisabledUntilFresh": true,
+  "recovered": true,
+  "actualOfferCommittedBeforeHeldReply": true,
+  "leaveIndependent": true,
+  "lateReplyDidNotRestoreGroup": true,
+  "noForcedRecipientTravel": true
+}
