@@ -41,6 +41,9 @@ importers:
       '@virtual-city/lounge-world':
         specifier: workspace:*
         version: link:packages/lounge-world
+      '@virtual-city/maid-world':
+        specifier: workspace:*
+        version: link:packages/maid-world
       '@virtual-city/park-world':
         specifier: workspace:*
         version: link:packages/park-world
@@ -104,6 +107,9 @@ importers:
       '@virtual-city/lounge-world':
         specifier: workspace:*
         version: link:../../packages/lounge-world
+      '@virtual-city/maid-world':
+        specifier: workspace:*
+        version: link:../../packages/maid-world
       '@virtual-city/park-world':
         specifier: workspace:*
         version: link:../../packages/park-world
@@ -217,6 +223,15 @@ importers:
         version: link:../world-sdk
 
   packages/lounge-world:
+    dependencies:
+      '@virtual-city/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@virtual-city/world-sdk':
+        specifier: workspace:*
+        version: link:../world-sdk
+
+  packages/maid-world:
     dependencies:
       '@virtual-city/contracts':
         specifier: workspace:*

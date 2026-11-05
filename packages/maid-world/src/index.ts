@@ -1,0 +1,30 @@
+import { defineWorld,WorldError } from '@virtual-city/world-sdk';
+import { HospitalityPolicySchema } from '@virtual-city/contracts';
+
+// Owner-selected foundation configuration. No legacy identity/room/shift/order
+// runtime exists;City's shared services remain the only active authority.
+export const maidSourceCommit='f676298fdab6cd3f2d54ad422f409538c4bdf52a';
+export const maidCatalog={id:'cafe-sakura',slug:'cafe-sakura',maxTotal:30,maxCustomer:24,maxMaid:6} as const;
+export const maidSourceAvatarSuggestions={sakura:'rose',mint:'mint',lavender:'plum',amber:'amber'} as const;
+export const maidMenu=[
+ {key:'coffee',label:'Coffee'},{key:'iced-latte',label:'Iced Latte'},
+ {key:'milk-tea',label:'Milk Tea'},{key:'matcha',label:'Matcha'},
+ {key:'cake',label:'Cake'},{key:'omurice',label:'Omurice'},
+] as const;
+export const maidWorldVersion='1.0.0';
+export const maidSeatIds=Array.from({length:maidCatalog.maxCustomer},(_,i)=>'seat-'+String(i+1).padStart(2,'0'));
+export const maidServicePolicy=HospitalityPolicySchema.parse({version:'1.0.0',itemKeys:maidMenu.map(item=>item.key),maxActivePerStaff:1,maxQueue:24,
+ staffing:{kind:'voluntary',maxStaff:maidCatalog.maxMaid,roles:[{key:'maid',label:'Maid',actions:['claim','prepare','ready','serve']}]},
+ menu:{items:maidMenu.map(item=>({...item,workflowKey:item.key})),workflows:maidMenu.map(item=>({key:item.key,version:'1.0.0',kind:'timed-courses',courses:[{key:item.key,label:item.label,prepareSeconds:2}]}))},
+});
+export function createMaidWorld(){
+ let started=false;const current=()=>{if(!started)throw new WorldError('WORLD_UNAVAILABLE','Maid Cafe unavailable');};
+ return defineWorld({schemaVersion:1,apiVersion:1,slug:'maid',version:maidWorldVersion,title:'Maid Cafe Social',kind:'world',
+  sceneRef:{key:'maid',version:'1.0.0'},capacity:maidCatalog.maxTotal,seatIds:maidSeatIds,
+  capabilities:['presence','seating','hospitality','portals'],hospitalityPolicy:maidServicePolicy,appearancePolicy:{apron:'on-shift'},
+  accessPolicy:{kind:'public'},visibility:'listed',map:{region:'social',position:{x:.58,y:.48},icon:'coffee'},
+ },{bootstrap:async()=>{started=true;},shutdown:async()=>{started=false;},onJoin:async()=>{current();},onLeave:async()=>{},
+  onCommand:async()=>{throw new WorldError('INVALID_REQUEST','Use shared room and service commands');},
+  travel:{prepare:async context=>{current();if(context.signal.aborted)throw new WorldError('WORLD_UNAVAILABLE','Maid Cafe unavailable');},abort:async()=>{},depart:async()=>{}},
+ });
+}

@@ -1,0 +1,12 @@
+$ eslint . && node scripts/check-boundaries.mjs
+file:///home/tiecont/Projects/virtual-city/scripts/check-boundaries.mjs:22
+      throw new Error(`Forbidden workspace package: ${path} → ${specifier}`);
+            ^
+
+Error: Forbidden workspace package: apps/platform-api/src/worlds/service.ts → @virtual-city/maid-world
+    at assertImportAllowed (file:///home/tiecont/Projects/virtual-city/scripts/check-boundaries.mjs:22:13)
+    at checkBoundaries (file:///home/tiecont/Projects/virtual-city/scripts/check-boundaries.mjs:63:7)
+    at async file:///home/tiecont/Projects/virtual-city/scripts/check-boundaries.mjs:69:42
+
+Node.js v26.9.0
+[ELIFECYCLE] Command failed with exit code 1.

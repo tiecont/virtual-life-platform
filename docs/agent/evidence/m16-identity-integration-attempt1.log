@@ -1,0 +1,48 @@
+ Network virtual-city-test-1a5289da_default Creating 
+ Network virtual-city-test-1a5289da_default Creating 
+ Network virtual-city-test-1a5289da_default Created 
+ Network virtual-city-test-1a5289da_default Created 
+ Container virtual-city-test-1a5289da-db-1 Creating 
+ Container virtual-city-test-1a5289da-db-1 Created 
+ Container virtual-city-test-1a5289da-db-1 Starting 
+ Container virtual-city-test-1a5289da-db-1 Started 
+ Container virtual-city-test-1a5289da-db-1 Waiting 
+ Container virtual-city-test-1a5289da-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/maid-identity.test.ts (4 tests | 1 failed) 3536ms
+   ✓ actual source catalog/role metadata has a separate default-off City module and no invented source authentication 169ms
+   × current City identity alone enters;voluntary Maid role cannot forge administration,profile ownership or an outfit entitlement 465ms
+   ✓ seven actual volunteers cannot exceed six active Maid shifts;stopped consent defeats an old positive receipt  928ms
+   ✓ entitled on-shift apron projects only in Maid while the same City identity/palette and selected outfit survive actual socket world changes  506ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/maid-identity.test.ts > current City identity alone enters;voluntary Maid role cannot forge administration,profile ownership or an outfit entitlement
+AssertionError: expected 503 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 503
+
+ ❯ tests/integration/maid-identity.test.ts:34:534
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  08:06:41
+   Duration  5.73s (transform 893ms, setup 0ms, import 2.06s, tests 3.54s, environment 0ms)
+
+Test harness failed during command;no raw URL or configuration emitted
+ Container virtual-city-test-1a5289da-db-1 Stopping 
+ Container virtual-city-test-1a5289da-db-1 Stopped 
+ Container virtual-city-test-1a5289da-db-1 Removing 
+ Container virtual-city-test-1a5289da-db-1 Removed 
+ Network virtual-city-test-1a5289da_default Removing 
+ Network virtual-city-test-1a5289da_default Removed 

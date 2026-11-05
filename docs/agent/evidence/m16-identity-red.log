@@ -1,0 +1,48 @@
+ Network virtual-city-test-606601d6_default Creating 
+ Network virtual-city-test-606601d6_default Creating 
+ Network virtual-city-test-606601d6_default Created 
+ Network virtual-city-test-606601d6_default Created 
+ Container virtual-city-test-606601d6-db-1 Creating 
+ Container virtual-city-test-606601d6-db-1 Created 
+ Container virtual-city-test-606601d6-db-1 Starting 
+ Container virtual-city-test-606601d6-db-1 Started 
+ Container virtual-city-test-606601d6-db-1 Waiting 
+ Container virtual-city-test-606601d6-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/maid-identity.test.ts (4 tests | 1 failed | 3 skipped) 923ms
+   × actual source catalog/role metadata has a separate default-off City module and no invented source authentication 90ms
+   ↓ current City identity alone enters;voluntary Maid role cannot forge administration,profile ownership or an outfit entitlement
+   ↓ seven actual volunteers cannot exceed six active Maid shifts;stopped consent defeats an old positive receipt
+   ↓ entitled on-shift apron projects only in Maid while the same City identity/palette and selected outfit survive actual socket world changes
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/maid-identity.test.ts > actual source catalog/role metadata has a separate default-off City module and no invented source authentication
+AssertionError: expected 404 to be 503 // Object.is equality
+
+- Expected
++ Received
+
+- 503
++ 404
+
+ ❯ tests/integration/maid-identity.test.ts:29:124
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 skipped (4)
+   Start at  08:04:46
+   Duration  2.25s (transform 587ms, setup 0ms, import 1.20s, tests 923ms, environment 0ms)
+
+Test harness failed during command;no raw URL or configuration emitted
+ Container virtual-city-test-606601d6-db-1 Stopping 
+ Container virtual-city-test-606601d6-db-1 Stopped 
+ Container virtual-city-test-606601d6-db-1 Removing 
+ Container virtual-city-test-606601d6-db-1 Removed 
+ Network virtual-city-test-606601d6_default Removing 
+ Network virtual-city-test-606601d6_default Removed 

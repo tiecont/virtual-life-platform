@@ -1,0 +1,17 @@
+{
+  "lostCommittedResponse": true,
+  "sameRetryKey": true,
+  "revokedEntitlementFallback": true,
+  "privateInventoryRemovedOnLogout": true,
+  "targets": [
+    {
+      "width": 136.421875,
+      "height": 44
+    },
+    {
+      "width": 140.8125,
+      "height": 44
+    }
+  ],
+  "pageErrors": []
+}

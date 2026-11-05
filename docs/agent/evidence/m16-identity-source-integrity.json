@@ -1,0 +1,20 @@
+{
+  "recordedAt": "2026-11-05T08:12:53.385786+00:00",
+  "sources": [
+    {
+      "source": "deadline",
+      "files": 88,
+      "originalAndCopyMatch": true,
+      "originalHeadStatusUnchanged": true
+    },
+    {
+      "source": "maid",
+      "files": 59,
+      "originalAndCopyMatch": true,
+      "originalHeadStatusUnchanged": true
+    }
+  ],
+  "deadlineProvenanceSources": 3,
+  "allRealRolloutFlagsOff": true,
+  "originalDataProcessesNotAccessed": true
+}
