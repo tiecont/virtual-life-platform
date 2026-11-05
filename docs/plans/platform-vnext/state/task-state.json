@@ -1,0 +1,630 @@
+{
+  "schema_version": "2.0",
+  "updated_at": "2026-11-05",
+  "scope": "vNext implementation",
+  "release_status": "NOT_REQUESTED",
+  "module_activation": {
+    "N00": {
+      "state": "ACTIVE",
+      "evidence_ref": null
+    },
+    "N01": {
+      "state": "ACTIVE",
+      "evidence_ref": null
+    },
+    "N02": {
+      "state": "ACTIVE",
+      "evidence_ref": null
+    },
+    "N03": {
+      "state": "ACTIVE",
+      "evidence_ref": null
+    },
+    "N04": {
+      "state": "ACTIVE",
+      "evidence_ref": null
+    },
+    "N05": {
+      "state": "ACTIVE",
+      "evidence_ref": null
+    },
+    "N06": {
+      "state": "ACTIVE",
+      "evidence_ref": null
+    },
+    "N07": {
+      "state": "ACTIVE",
+      "evidence_ref": null
+    },
+    "N08": {
+      "state": "ACTIVE",
+      "evidence_ref": null
+    },
+    "N09": {
+      "state": "ACTIVE",
+      "evidence_ref": null
+    },
+    "N10": {
+      "state": "ACTIVE",
+      "evidence_ref": null
+    },
+    "N11": {
+      "state": "ACTIVE",
+      "evidence_ref": null
+    },
+    "N12": {
+      "state": "ACTIVE",
+      "evidence_ref": null
+    },
+    "N13": {
+      "state": "CONDITIONAL_NOT_ACTIVE",
+      "evidence_ref": null
+    },
+    "N14": {
+      "state": "CONDITIONAL_NOT_ACTIVE",
+      "evidence_ref": null
+    }
+  },
+  "tasks": {
+    "N00-01": {
+      "status": "VERIFIED",
+      "owner": "Codex coordinator",
+      "branch": "codex/vnext-n00-01-baseline",
+      "evidence_refs": [
+        "n00-01-baseline-2026-11-05"
+      ],
+      "blocker": null,
+      "next_action": "Audit complete (not a release pass). Run the scheduler, reserve N00-02, integrate the AGENTS addendum/root links and reconcile current architecture/evidence docs; retain the hosted Deadline cadence failure."
+    },
+    "N00-02": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Link root master tới vNext; current architecture/evidence index; old-doc history labels"
+    },
+    "N00-03": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Server/device/region/runtime matrix; unresolved assumptions có owner"
+    },
+    "N00-04": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "ADR cho modular monolith/images/GitOps/authority/mobile/admin/admission; owner matrix"
+    },
+    "N01-01": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Keep/move/archive/remove inventory với hash, size và consumer"
+    },
+    "N01-02": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Evidence schema/index loader; private archive với content hash và restore report"
+    },
+    "N01-03": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Loader adapters cho governance/release/ops watch và docs links"
+    },
+    "N01-04": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "PR cleanup riêng; .gitignore; compact evidence summaries"
+    },
+    "N01-05": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Clean-checkout build/test log; canonical docs index"
+    },
+    "N02-01": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Current-to-target ownership map, public module ports và forbidden imports"
+    },
+    "N02-02": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Một module/PR chuyển boundary/exports; worker-ready composition seams"
+    },
+    "N02-03": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Versioned release policy + runtime config model; updated guard tests"
+    },
+    "N02-04": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Compatibility manifest, checksum-prefix policy, expand/contract ADR"
+    },
+    "N03-01": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Toolchain compatibility matrix, frozen lock build, workspace target map"
+    },
+    "N03-02": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "vlp-api runtime image; migrations và runtime dependency closure"
+    },
+    "N03-03": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "vlp-web image; Next runtime assets/standalone phù hợp"
+    },
+    "N03-04": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "PR validation + trusted-main image publish, SBOM/provenance, source/digest manifest"
+    },
+    "N03-05": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "vlp-admin image, publish target và image tests"
+    },
+    "N04-01": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Manifests staging/prod, resource budget, prerequisites inventory"
+    },
+    "N04-02": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Release/promotion workflow và immutable tested release set"
+    },
+    "N04-03": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Argo Applications, migration hooks, PostSync smoke, rollback runbook"
+    },
+    "N04-04": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Observed Argo revision/digests, TLS/WS browser smoke và failure logs"
+    },
+    "N05-01": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Authority invariant table, protocol schemas, concurrency regression"
+    },
+    "N05-02": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Latency histograms by bounded command type/outcome; profiling report"
+    },
+    "N05-03": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Comparison report; indexed projections/batching/true deltas hoặc mailbox nếu justified"
+    },
+    "N05-04": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Bounded drain lifecycle, readiness/live split, reconnect contract"
+    },
+    "N05-05": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Worker entrypoint, transactional outbox jobs, retry/dead-letter controls"
+    },
+    "N05-06": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Version negotiation, feature capabilities, stable errors và resync behavior"
+    },
+    "N06-01": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Flows first-play/return/room/queue/reconnect; visual direction board với asset provenance"
+    },
+    "N06-02": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Tokens/components, desktop/mobile prototype, keyboard/reduced-motion alternatives"
+    },
+    "N06-03": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Scene-first shell, onboarding, navigation và shared state"
+    },
+    "N06-04": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Complete room scenes/animations/sound settings/interactions + first return journey"
+    },
+    "N06-05": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Usability observations, a11y report, privacy-aware activation/return event spec"
+    },
+    "N07-01": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Singleton operator bootstrap, separate session, passkey/MFA/step-up và audit model"
+    },
+    "N07-02": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "apps/admin-web, navigation/design, authenticated BFF/proxy"
+    },
+    "N07-03": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Event calendar draft/publish/cancel; account suspend/revoke; flags/maintenance/audit UI"
+    },
+    "N07-04": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Operational dashboard: metrics, topology, versions, queue state và freshness"
+    },
+    "N07-05": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Private admin deployment, audit evidence và release/backup status view"
+    },
+    "N08-01": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Histogram/counter metrics, bounded labels, safe tracing, health/traffic schemas"
+    },
+    "N08-02": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Prometheus/collector cấu hình theo resource budget, alert rules và ops panels"
+    },
+    "N08-03": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Socket.IO-aware workload runner image, staging Job templates và start/cancel API/UI"
+    },
+    "N08-04": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Step/ramp/burst/soak/reconnect profile reports với hardware/network/digest"
+    },
+    "N08-05": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "C_sustainable/C_recommended/C_hard report; admin capacity history/approval view"
+    },
+    "N09-01": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Queue/offer/slot schema, state machine, policy versions"
+    },
+    "N09-02": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Queue tickets, allocation transaction, TTL janitor, idempotent claim/release"
+    },
+    "N09-03": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Waiting UI rank/ETA range/leave/ready countdown, accessible updates"
+    },
+    "N09-04": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Versioned caps, queue pause/maintenance, DRAINING_LIMIT view và audit"
+    },
+    "N09-05": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Admission invariant/fairness/failure report and queue recovery runbook"
+    },
+    "N10-01": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "CachyOS/Android toolchain inventory, one-device baseline matrix, proposed performance budgets và Capacitor ADR với iOS applicability riêng"
+    },
+    "N10-02": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "game-client/client-sdk/platform interfaces; Next mounts package; Vite+Capacitor shell"
+    },
+    "N10-03": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Versioned native auth/refresh/logout/device-session/ticket contracts"
+    },
+    "N10-04": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Physical Android results với model/OS/WebView/build/source/profile; ADR có phạm vi thiết bị đã chứng minh và iOS chưa kiểm chứng"
+    },
+    "N11-01": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Linux CI tạo signed APK để cài thử và signed AAB candidate cho Google Play; build/protocol/assets/source mapping"
+    },
+    "N11-02": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Safearea/keyboard/back/deeplinks, notifications opt-in nếu cần, cache/error UX"
+    },
+    "N11-03": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "In-app deletion request + web resource, report/block, privacy/data safety/age policy docs"
+    },
+    "N11-04": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Google Play internal/closed track artifacts khi có quyền; Android crash/perf/UX findings, tested-device matrix và release decision"
+    },
+    "N12-01": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "15-scenario matrix theo architecture02 với source/digest/environment artifacts"
+    },
+    "N12-02": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Encrypted off-host backup/restore exercise, alert/incident runbooks, observed RPO/RTO"
+    },
+    "N12-03": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Android supported N/N-1 binary matrix với server candidate và rollback; iOS matrix thuộc N14-04"
+    },
+    "N12-04": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Concrete release candidate source/digests/cap config/risk/rollback dossier"
+    },
+    "N12-05": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Approved promotion PR merged when authorized, Argo actual rollout, observation report"
+    },
+    "N13-01": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Bottleneck evidence, required workload target, cost/failure model"
+    },
+    "N13-02": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Per-room authority, monotonic epoch lease, gateway routing, handoff protocol"
+    },
+    "N13-03": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Multi-owner capacity+chaos+rollout report and updated admission policy"
+    },
+    "N14-01": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Environment dossier: macOS local/remote/CI provider, supported Xcode, signing path, physical iPhone/testing access, cost/owner"
+    },
+    "N14-02": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "iOS Capacitor target, Keychain/session bridge, platform lifecycle adapters, signed archive/IPA và source mapping"
+    },
+    "N14-03": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "iPhone model/OS/build/source profiles, gameplay/performance/security evidence và iOS architecture ADR"
+    },
+    "N14-04": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "iOS supported binary matrix với backend candidate/rollback và content/protocol revisions"
+    },
+    "N14-05": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "TestFlight beta khi được phép, Apple disclosures/UGC/deletion dossier, device coverage và exact store release status"
+    }
+  },
+  "runtime_context": {
+    "mobile_clients_distributed": false,
+    "android_clients_distributed": false,
+    "ios_clients_distributed": false
+  },
+  "plan_revision": "2.1-android-first"
+}

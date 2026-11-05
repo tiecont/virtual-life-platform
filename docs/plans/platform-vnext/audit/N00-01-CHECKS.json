@@ -1,0 +1,817 @@
+{
+  "taskId": "N00-01",
+  "sourceRevision": "cef7dc17172f7c6cda930c99648a5e3ad609cc55",
+  "recordedAt": "2026-11-05T14:54:25.184372+00:00",
+  "scope": "Baseline audit only; no runtime edits or release acceptance",
+  "artifactRefBase": "Repository root; raw local artifact directory mode 0700",
+  "environment": {
+    "os": "Linux",
+    "arch": "x64",
+    "node": "v26.9.0",
+    "pnpm": "11.28.5",
+    "git": "2.56.0",
+    "docker": "29.9.0",
+    "compose": "5.6.0",
+    "postgresTestImage": "postgres:17.7-alpine",
+    "playwright": "1.64.1",
+    "chromium": "156.0.8078.4"
+  },
+  "initialStatus": {
+    "branch": "main",
+    "trackedChanges": [],
+    "untracked": [
+      "docs/plans/"
+    ],
+    "headEqualsDesignAudit": true
+  },
+  "trackedTree": {
+    "files": 4365,
+    "bytes": 157991008,
+    "evidenceFiles": 3586,
+    "evidenceBytes": 151876136
+  },
+  "workspaceProjects": [
+    ".",
+    "apps/platform-api",
+    "apps/portal-web",
+    "packages/config",
+    "packages/contracts",
+    "packages/deadline-world",
+    "packages/focus-ui",
+    "packages/library-world",
+    "packages/lounge-world",
+    "packages/maid-world",
+    "packages/park-world",
+    "packages/pixi-scene",
+    "packages/restaurant-world",
+    "packages/world-sdk"
+  ],
+  "migrations": [
+    {
+      "name": "0001_foundation.sql",
+      "sha256": "099761978bacbdd89080e42a9a2689be6477c381d949f5198f4c0349586048ac"
+    },
+    {
+      "name": "0002_identity.sql",
+      "sha256": "b4095a6baaba47da6bd93f5ca344c90c8264ffda517818fb972be49321d0c4fc"
+    },
+    {
+      "name": "0003_registered_identity.sql",
+      "sha256": "88e6dbf8df76bf23cc64193e9d56ca411b5f2b45b9ba98d023a2077e25942aa8"
+    },
+    {
+      "name": "0004_social.sql",
+      "sha256": "087a2c4c3cb230046691328034b7437ce1c103632184dda82fe832882e394eb8"
+    },
+    {
+      "name": "0005_reports.sql",
+      "sha256": "d34cec7bc6aa5b251c19ced1696521b21fd21b009d6a9290ed06bb24f805fb8d"
+    },
+    {
+      "name": "0006_sanctions.sql",
+      "sha256": "953c321a25c3ad91d93639ccd077a3a32c4ab9c62730a4089e7e307d0eada568"
+    },
+    {
+      "name": "0007_moderation_operations.sql",
+      "sha256": "9067ca731bb3ebafda08607fe4b324f5c462c7f8033cdb73daaecccc32760064"
+    },
+    {
+      "name": "0008_travel_intents.sql",
+      "sha256": "d98bc86645c87983328c04340e10e5c6ebfe24e047d7ce1a2beba1bcc066db38"
+    },
+    {
+      "name": "0009_invitations.sql",
+      "sha256": "4ce947a4a9374d390307c616f2a38ab5daf442c8ee35e3d0ffcd8e411cb0672f"
+    },
+    {
+      "name": "0010_travel_handoff.sql",
+      "sha256": "747c93b0cb69751c97f3cd98d7c9ebe13c3e00d9eccd368ca619e37258c5128e"
+    },
+    {
+      "name": "0011_invitation_groups.sql",
+      "sha256": "613c28338978865882945a616fe964161901d625790c7acd57b9fc3c3749082d"
+    },
+    {
+      "name": "0012_focus_engine.sql",
+      "sha256": "f484a146fd55e66d4faaaaf81c66f413ddd40a42c5277911bd84ccb08d178dce"
+    },
+    {
+      "name": "0013_focus_daily_index.sql",
+      "sha256": "1926843c9332404b13d9ac738fd43d0149d6026195847110df5e5337a6fdc7e5"
+    },
+    {
+      "name": "0014_hospitality_core.sql",
+      "sha256": "d4f7a058a7035059614c1d85be6e4f575136a744bfbb218d3262d704e68eef0d"
+    },
+    {
+      "name": "0015_hospitality_shifts.sql",
+      "sha256": "9061476891acee4f01deb648d7d30d24ea4b112075c56be089c2dde3bde750e3"
+    },
+    {
+      "name": "0016_hospitality_workflows.sql",
+      "sha256": "673f3c172e6a9f033f082bbb1e2ec047706d9258aafe99a9d82b86881330a5d8"
+    },
+    {
+      "name": "0017_hospitality_completion_outbox.sql",
+      "sha256": "1d52e16ce1c4cc68ff97fd625e74e3c218cda04da438da4507f8436b95622fbc"
+    },
+    {
+      "name": "0018_hospitality_service_consent.sql",
+      "sha256": "7e107ef384c0e05ea3707aa5cc8366921d511d2c02205c5ef6fd503b9bffd3de"
+    },
+    {
+      "name": "0019_events_and_rsvps.sql",
+      "sha256": "753d0fa0b74815737bb076088607487d4f8a282d2fa2003a4d9a89308f0fad37"
+    },
+    {
+      "name": "0020_reservation_slots_and_waitlist.sql",
+      "sha256": "d7641c192a2f04489b85b5dc8ca734021a76cdd68192864bb86fc1a2a0deaf62"
+    },
+    {
+      "name": "0021_event_governance_and_notices.sql",
+      "sha256": "ca11e518595ff05adde05c767443950a6d55cb55bfdda0ad6921143d98095f12"
+    },
+    {
+      "name": "0022_private_event_invitations.sql",
+      "sha256": "46b7fc51a943232cc5f224979bd8ea18ed46488e5880d0908eef4ef97119b20b"
+    },
+    {
+      "name": "0023_progression_ledger.sql",
+      "sha256": "e348d75170e25224d0ab4f66e921b7547a547a708c58779ee665e71af53486c7"
+    },
+    {
+      "name": "0024_selected_cosmetic.sql",
+      "sha256": "f30f30944c86ac45d1bb4ca14d1836bd51cfc0031f968885b438fc5f42adc6e6"
+    },
+    {
+      "name": "0025_progression_corrections.sql",
+      "sha256": "7bef90a912eb23fceaf1cf838c97f610162476892af5dbda4e8f72db03c66c38"
+    },
+    {
+      "name": "0026_reservation_parties.sql",
+      "sha256": "8f2b667316b5c6a03338e127f43d4cb60f5a3b0ee899f22f48a9dcca4505687b"
+    },
+    {
+      "name": "0027_hospitality_roles.sql",
+      "sha256": "943fa478826fcd6932eb47398f011368e0be05a5472a784ff3d34095e3ad5641"
+    },
+    {
+      "name": "0028_hospitality_kitchen_pass.sql",
+      "sha256": "cd81d8b177ef478571539079466e53c830b833977522d8a1addb98178f2aabe6"
+    },
+    {
+      "name": "0029_private_dinner_offers.sql",
+      "sha256": "792e1c61fc5e2ec42080773adaa6de0a83bc5c6b38af219fc7f1c4f7699c4f8c"
+    },
+    {
+      "name": "0030_event_stage_slots.sql",
+      "sha256": "edf8e9be2c16a9594ad27f859b12600a5f563a78e18274ad44157249b4f278d2"
+    },
+    {
+      "name": "0031_event_audience.sql",
+      "sha256": "93ee7f540b65f08869594fec5653f24c7a6dc3164e3d9189e0e72c19b1bcb691"
+    },
+    {
+      "name": "0032_audience_window_budget.sql",
+      "sha256": "bdaae7ec0a82c1fe043b0adfdc2c8cc3b7cab1b47ad99b4c2a4268abdc108e6f"
+    },
+    {
+      "name": "0033_private_dating_profiles.sql",
+      "sha256": "e99094b1a3200abf711c0fd7088c8282c3cba895bc8e10f6f8d5eef1a87caee9"
+    },
+    {
+      "name": "0034_private_dating_matching.sql",
+      "sha256": "b6fb30d23122a3476d11314b4ee3c8b7c00c342a009eb66a1e5f2fef2cc4c2a3"
+    },
+    {
+      "name": "0035_private_date_rooms.sql",
+      "sha256": "718e174cd9516b0ad812f4ff334078715df59b041a7e3921c29fdc9f0b9cf6a0"
+    },
+    {
+      "name": "0036_private_mutual_continuations.sql",
+      "sha256": "f44b5ecfed12f0011dd4174acad01132d61390caabfd95d9350b92cfdf17cd8d"
+    },
+    {
+      "name": "0037_legacy_identity_links.sql",
+      "sha256": "c602c7b25bb0d7ba0b3f297249e573ce662e99400b62cd444e59214a89d3b233"
+    },
+    {
+      "name": "0038_hospitality_recipe_compatibility.sql",
+      "sha256": "7989943f85f33ec6b3691126597a8a00ef44a80707919a94ea9f791378e40dec"
+    }
+  ],
+  "commands": [
+    {
+      "command": "pnpm install --frozen-lockfile",
+      "exitCode": 0,
+      "startedAt": "2026-11-05T14:33:29.088Z",
+      "endedAt": "2026-11-05T14:33:29.558Z",
+      "log": "artifacts/vnext/n00-01/install-fresh.log",
+      "sha256": "13d6320427bac0e5c5c6a8aa9b4cd2ad8e33b885350a0c6bf10232d96519cd5e"
+    },
+    {
+      "command": "pnpm check",
+      "exitCode": 0,
+      "startedAt": "2026-11-05T14:33:29.627Z",
+      "endedAt": "2026-11-05T14:44:11.249Z",
+      "log": "artifacts/vnext/n00-01/check.log",
+      "sha256": "ff0963efebb16f76c278d7c657802dd270eecbddc840189456da765cfd425491"
+    },
+    {
+      "command": "pnpm ci:browser legacy",
+      "exitCode": 0,
+      "startedAt": "2026-11-05T14:44:18.624Z",
+      "endedAt": "2026-11-05T14:50:56.937Z",
+      "log": "artifacts/vnext/n00-01/browser-legacy.log",
+      "sha256": "ba2dc2b1edc2cf43b377030420f0d914cb87cbfcb887d60728640270656951b3"
+    },
+    {
+      "command": "node scripts/ops-watch.mjs",
+      "exitCode": 0,
+      "startedAt": "2026-11-05T14:34:17.761Z",
+      "endedAt": "2026-11-05T14:34:17.824Z",
+      "log": "artifacts/vnext/n00-01/ops-watch.log",
+      "sha256": "2434a1b21f7bdf10a5fef0c54d7754ee46da5049955e32aed56c36051a284d84"
+    },
+    {
+      "command": "pnpm exec playwright --version",
+      "exitCode": 0,
+      "startedAt": "2026-11-05T14:34:17.913Z",
+      "endedAt": "2026-11-05T14:34:19.044Z",
+      "log": "artifacts/vnext/n00-01/playwright-version.log",
+      "sha256": "4901ec0877db7d2570d7a819257096c4fd2f395fa3c64fa700eb4af1468def59"
+    },
+    {
+      "command": "node --input-type=module -e import {chromium} from \"@playwright/test\"; const browser=await chromium.launch(); console.log(JSON.stringify({version:browser.version(),executable:chromium.executablePath()})); await browser.close();",
+      "exitCode": 0,
+      "startedAt": "2026-11-05T14:35:19.124Z",
+      "endedAt": "2026-11-05T14:35:19.895Z",
+      "log": "artifacts/vnext/n00-01/chromium-version.log",
+      "sha256": "6265872ba368d7b38ad5c021a5bc456da9812fc1490be4f3af640263b6d466a9"
+    },
+    {
+      "command": "python3 /tmp/vnext-n00-preserve.py",
+      "exitCode": 0,
+      "startedAt": "2026-11-05T14:51:26.625Z",
+      "endedAt": "2026-11-05T14:51:28.410Z",
+      "log": "artifacts/vnext/n00-01/preservation.log",
+      "sha256": "246672d8890c68a23e756bd2b7934d18081a7e31eeec5987c9ab37a23c2ef952"
+    },
+    {
+      "command": "python3 /tmp/vnext-n00-preserve.py",
+      "exitCode": 0,
+      "startedAt": "2026-11-05T14:54:14.644Z",
+      "endedAt": "2026-11-05T14:54:15.302Z",
+      "log": "artifacts/vnext/n00-01/preservation-final.log",
+      "sha256": "246672d8890c68a23e756bd2b7934d18081a7e31eeec5987c9ab37a23c2ef952"
+    },
+    {
+      "command": "python3 /tmp/vnext-n00-cleanup.py",
+      "exitCode": 0,
+      "startedAt": "2026-11-05T14:51:35.709Z",
+      "endedAt": "2026-11-05T14:51:35.886Z",
+      "log": "artifacts/vnext/n00-01/cleanup.log",
+      "sha256": "6245d8f75d05bcce243bee1d18d8189bb7b280c262333fb0109c569e7998d22e"
+    },
+    {
+      "command": "node docs/plans/platform-vnext/tools/validate-plan.mjs",
+      "exitCode": 0,
+      "startedAt": "2026-11-05T14:38:33.564Z",
+      "endedAt": "2026-11-05T14:38:33.625Z",
+      "log": "artifacts/vnext/n00-01/plan-validation-before-browser.log",
+      "sha256": "a393c51cbd6dc8fb5ac2de426210394e1148394274025f08037092a906cffb90"
+    },
+    {
+      "command": "gh api repos/tiecont/virtual-life-platform/actions/runs/42037215254 (and /jobs, failed job /logs)",
+      "exitCode": 0,
+      "purpose": "Read-only hosted result observation; no run triggered"
+    }
+  ],
+  "freshCore": {
+    "exitCode": 0,
+    "governance": 28,
+    "unit": 278,
+    "unitFiles": 58,
+    "integration": 553,
+    "integrationFiles": 38,
+    "builds": "All shared packages, API and portal",
+    "standaloneSecurityRun": false
+  },
+  "freshBrowser": {
+    "group": "legacy",
+    "exitCode": 0,
+    "specs": 8,
+    "deviceLifetimes": 16,
+    "executions": 40,
+    "validatedBatchReports": 8,
+    "deadlinePerformance": {
+      "desktop": {
+        "rafP95GapMs": 33.399999999999636,
+        "readyMs": 3397.800000000745,
+        "idleRenders": 0,
+        "warmAssetTransferBytes": 0,
+        "heapGrowthBytes": 1093460
+      },
+      "mobile": {
+        "rafP95GapMs": 16.700000000000728,
+        "readyMs": 3339.10000000149,
+        "idleRenders": 0,
+        "warmAssetTransferBytes": 0,
+        "heapGrowthBytes": 1119228
+      }
+    },
+    "otherGroupsFreshlyRun": false
+  },
+  "hostedObservation": {
+    "observedAt": "2026-11-05T14:38:33.711Z",
+    "command": "gh api repos/tiecont/virtual-life-platform/actions/runs/42037215254 (and /jobs, failed job /logs)",
+    "exitCode": 0,
+    "run": {
+      "id": 42037215254,
+      "name": "Quality",
+      "head_sha": "cef7dc17172f7c6cda930c99648a5e3ad609cc55",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "updated_at": "2026-11-05T14:23:40Z",
+      "html_url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42037215254"
+    },
+    "jobs": [
+      {
+        "id": 127278363887,
+        "name": "core-checks",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 127285856230,
+        "name": "browser (hospitality)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 127285856244,
+        "name": "browser (city)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 127285856340,
+        "name": "browser (legacy)",
+        "status": "completed",
+        "conclusion": "failure",
+        "failedSteps": [
+          "Run pnpm ci:browser \"$CI_BROWSER_GROUP\""
+        ]
+      },
+      {
+        "id": 127285856382,
+        "name": "browser (private)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 127285856435,
+        "name": "browser (social)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 127285856489,
+        "name": "browser (study)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 127303684889,
+        "name": "quality",
+        "status": "completed",
+        "conclusion": "failure",
+        "failedSteps": [
+          "Run node scripts/ci-gate.mjs"
+        ]
+      }
+    ],
+    "failure": {
+      "spec": "tests/e2e/deadline-acceptance.spec.ts",
+      "project": "desktop",
+      "line": 76,
+      "metric": "rafP95GapMs",
+      "expected": "<100",
+      "observed": 133.30000000000018,
+      "laterLegacySpecs": "NOT_RUN after fail-fast"
+    },
+    "rawLog": {
+      "ref": "artifacts/vnext/n00-01/hosted-legacy.log",
+      "sha256": "bef64aceef37112c31c6840b3a7dfac18c4fd207eca9e626cfb18b402802b02a"
+    },
+    "limitations": [
+      "Read-only observation; no hosted run initiated or retried",
+      "Rulesets/required checks not revalidated"
+    ]
+  },
+  "preservation": {
+    "trackedFilesUnchanged": 4365,
+    "historicalEvidenceFiles": 3586,
+    "freshGeneratedFilesSaved": 50,
+    "changedHistoricalFilesRestored": 15,
+    "legacy": [
+      {
+        "source": "deadline",
+        "scope": "original",
+        "files": 88,
+        "unchanged": true
+      },
+      {
+        "source": "deadline",
+        "scope": "copy",
+        "files": 88,
+        "unchanged": true
+      },
+      {
+        "source": "maid",
+        "scope": "original",
+        "files": 59,
+        "unchanged": true
+      },
+      {
+        "source": "maid",
+        "scope": "copy",
+        "files": 59,
+        "unchanged": true
+      }
+    ]
+  },
+  "cleanup": {
+    "ownedProjects": [
+      "virtual-city-test-08641758",
+      "virtual-city-test-17fbb3c2",
+      "virtual-city-test-1933d574",
+      "virtual-city-test-1c685545",
+      "virtual-city-test-2bd36655",
+      "virtual-city-test-2c5f7ae6",
+      "virtual-city-test-43808b60",
+      "virtual-city-test-4f50382d",
+      "virtual-city-test-6856007b",
+      "virtual-city-test-68aa1547",
+      "virtual-city-test-6c4c2f09",
+      "virtual-city-test-7737f6fe",
+      "virtual-city-test-7ed12afa",
+      "virtual-city-test-7f64f417",
+      "virtual-city-test-a976b212",
+      "virtual-city-test-c7bd18d0",
+      "virtual-city-test-dcee0988"
+    ],
+    "remainingContainers": [],
+    "remainingNetworks": [],
+    "testPorts": {
+      "3300": "FREE",
+      "4300": "FREE",
+      "4400": "FREE"
+    }
+  },
+  "rawArtifacts": [
+    {
+      "ref": "artifacts/vnext/n00-01/install-fresh.log",
+      "sha256": "13d6320427bac0e5c5c6a8aa9b4cd2ad8e33b885350a0c6bf10232d96519cd5e",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/check.log",
+      "sha256": "ff0963efebb16f76c278d7c657802dd270eecbddc840189456da765cfd425491",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/browser-legacy.log",
+      "sha256": "ba2dc2b1edc2cf43b377030420f0d914cb87cbfcb887d60728640270656951b3",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/ops-watch.log",
+      "sha256": "2434a1b21f7bdf10a5fef0c54d7754ee46da5049955e32aed56c36051a284d84",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/playwright-version.log",
+      "sha256": "4901ec0877db7d2570d7a819257096c4fd2f395fa3c64fa700eb4af1468def59",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/chromium-version.log",
+      "sha256": "6265872ba368d7b38ad5c021a5bc456da9812fc1490be4f3af640263b6d466a9",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/preservation.log",
+      "sha256": "246672d8890c68a23e756bd2b7934d18081a7e31eeec5987c9ab37a23c2ef952",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/preservation-final.log",
+      "sha256": "246672d8890c68a23e756bd2b7934d18081a7e31eeec5987c9ab37a23c2ef952",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/cleanup.log",
+      "sha256": "6245d8f75d05bcce243bee1d18d8189bb7b280c262333fb0109c569e7998d22e",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/plan-validation-before-browser.log",
+      "sha256": "a393c51cbd6dc8fb5ac2de426210394e1148394274025f08037092a906cffb90",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/hosted-summary.json",
+      "sha256": "3fee372f3a16288d8d7e7d795a5746396f92af08d8b67bfc334050075fe5d004",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/hosted-legacy.log",
+      "sha256": "bef64aceef37112c31c6840b3a7dfac18c4fd207eca9e626cfb18b402802b02a",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/inventory.json",
+      "sha256": "ea3bae537187f4fada75f280ccc60d104cca625cd599518a763ff5c485bceb09",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/pre-snapshot.json",
+      "sha256": "d2ea91dee958ced8cfa744f6481e1a379ce38a04b32cd9e069c0e07061339100",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/preservation-facts.json",
+      "sha256": "3d87904f23d60c6019f2e574a7869e7e02ecb05801543a4537343fdc11c82860",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/cleanup-facts.json",
+      "sha256": "7aa21926970289f7c480e92f1b606c220b9f4cebecf7d8c48023acdf5d876d8f",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/command-recorder.mjs.txt",
+      "sha256": "89f1a019a91d74f4524d95d99fc8df7cf789b09a094b31a79c8cd38baea17e4e",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/preflight-snapshot.py.txt",
+      "sha256": "5862c95696b3624da059fb795367eec476e0a9afa14789654c891e97aca3527d",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/preserve-generated.py.txt",
+      "sha256": "e6792cec9f37116aa1fdaa08330cd4f0a618e3b30a125ccd2f77b64159c8579a",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/cleanup-audit.py.txt",
+      "sha256": "ea10aa7b6682682e4d6bb153f8bb2abe9d87cd8f0ac630af97e4b35b1de1ab73",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/evidence-assembly.py.txt",
+      "sha256": "f7d03f0af9b7a96a28921e810f07ba59d47f9e08c6d800729b01ace76d5f6f38",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/browser-reports/deadline-acceptance-batches.json",
+      "sha256": "632e798a3e0b5bb3d77e7aaee12296c2ded7b734157db865aa1ea31a16632329",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/browser-reports/deadline-batches.json",
+      "sha256": "125832b036dec2ec47191461184ac31d4fde73775f2f496af8ae7238e00e3548",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/browser-reports/deadline-identity-batches.json",
+      "sha256": "17486dee2c596d1a1d4ce81481c8c33a399f44316ec57db123f2227e8deba1c3",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/browser-reports/deadline-safety-batches.json",
+      "sha256": "fdf7d2844f0e6843418cf0d5494dbf7d041887b161ee1123ea09aa09e976508a",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/browser-reports/maid-acceptance-batches.json",
+      "sha256": "ce67323b3cb463a7b821a0eeb6ae098305b3efd52e7aa0b45525c2c87adcdb89",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/browser-reports/maid-batches.json",
+      "sha256": "63db4616293633d571f3b11967dc2e419d7ba34da8c7406b05c13292c2a33b75",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/browser-reports/maid-safety-batches.json",
+      "sha256": "f8c1a16a1d3331d880c8d2ccffe9e80c4c6be1744c6d03846944abe361d7c163",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/browser-reports/maid-travel-batches.json",
+      "sha256": "2cc15041e80af41154ef8bd772629446f20d38d5a57129a8ed7ffd98cb51e0a3",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/browser-reports/summary.json",
+      "sha256": "cf3f5c4850b50608aea2a35040a24eabf93d40f27197e08bb6d595f62e066ac1",
+      "access": "private",
+      "retention": "Local until owner cleanup; not an off-host archive"
+    }
+  ],
+  "notRun": [
+    "Other five local browser groups",
+    "Hosted workflow trigger/rerun or branch policy validation",
+    "New load/capacity/deployment/TLS/backup/Argo gates",
+    "Physical Android/iPhone, native build, store submission"
+  ],
+  "acceptance_met": true,
+  "acceptance": [
+    "Pinned revision and initial dirty state",
+    "Read actual scripts, migrations and test harnesses",
+    "Recorded fresh lane outcomes and existing hosted failure without changing thresholds",
+    "Restored all pre-existing tracked evidence and checked legacy sources",
+    "Recorded next dependency-ready action without implying release"
+  ],
+  "limitations": [
+    "Hosted cadence failure remains unresolved despite scoped local pass",
+    "Frozen install used existing dependency store, not a clean checkout",
+    "Local raw artifacts are private and retained until cleanup, not archived off-host",
+    "No fresh production capacity, physical-device or human approval claim"
+  ],
+  "postAuditChecks": [
+    {
+      "command": "node docs/plans/platform-vnext/tools/validate-plan.mjs",
+      "exitCode": 0,
+      "startedAt": "2026-11-05T14:56:46.444Z",
+      "endedAt": "2026-11-05T14:56:46.491Z",
+      "log": "artifacts/vnext/n00-01/final-plan-validation.log",
+      "sha256": "a10e719e6a968553834073b2681f57d8bc4b5b01f066f5e1c3110a6a242d36d7"
+    },
+    {
+      "command": "node docs/plans/platform-vnext/tools/next-task.mjs",
+      "exitCode": 0,
+      "startedAt": "2026-11-05T14:56:46.572Z",
+      "endedAt": "2026-11-05T14:56:46.621Z",
+      "log": "artifacts/vnext/n00-01/final-scheduler.log",
+      "sha256": "5f7970568afeee02d844a2e00cb169c3d38e21d56e7a50c2bdd23897cc6bef65"
+    },
+    {
+      "command": "python3 /tmp/vnext-n00-validate-evidence.py",
+      "exitCode": 1,
+      "startedAt": "2026-11-05T14:57:25.209Z",
+      "endedAt": "2026-11-05T14:57:25.275Z",
+      "log": "artifacts/vnext/n00-01/evidence-validation.log",
+      "sha256": "28bde5531551897745dc33eb78ec911f2991eb6228b68bbb8633bba18cb64e48",
+      "purpose": "Optional JSON Schema engine unavailable (ModuleNotFoundError); dependency-free checks subsequently passed"
+    },
+    {
+      "command": "python3 /tmp/vnext-n00-validate-evidence.py",
+      "exitCode": 0,
+      "startedAt": "2026-11-05T14:59:05.288Z",
+      "endedAt": "2026-11-05T14:59:06.874Z",
+      "log": "artifacts/vnext/n00-01/evidence-validation-fallback.log",
+      "sha256": "cf607fad403d66dfe0686cf02da892d11243275b64857f1a5d0a1e7be080e7c6"
+    },
+    {
+      "command": "node docs/plans/platform-vnext/tools/validate-plan.mjs",
+      "exitCode": 0,
+      "startedAt": "2026-11-05T15:02:03.149Z",
+      "endedAt": "2026-11-05T15:02:03.219Z",
+      "log": "artifacts/vnext/n00-01/revision21-plan-validation.log",
+      "sha256": "8889af02488fbb46c007a8e5a89e3e8a84b57584e4fc99c053e6dbf6a7e92356"
+    },
+    {
+      "command": "node docs/plans/platform-vnext/tools/next-task.mjs",
+      "exitCode": 0,
+      "startedAt": "2026-11-05T15:02:03.314Z",
+      "endedAt": "2026-11-05T15:02:03.376Z",
+      "log": "artifacts/vnext/n00-01/revision21-scheduler.log",
+      "sha256": "0e033fed80766ea0cfcee1d4f05421a258964b8246d38b2b06babd8e900a1ba0"
+    },
+    {
+      "command": "pnpm exec eslint docs/plans/platform-vnext/tools/validate-plan.mjs docs/plans/platform-vnext/tools/next-task.mjs",
+      "exitCode": 0,
+      "startedAt": "2026-11-05T15:02:03.504Z",
+      "endedAt": "2026-11-05T15:02:05.833Z",
+      "log": "artifacts/vnext/n00-01/revision21-helper-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "git diff --cached --check",
+      "exitCode": 2,
+      "purpose": "Supplied Markdown hard line breaks/EOF blanks retained"
+    },
+    {
+      "command": "git -c core.whitespace=-blank-at-eof,-blank-at-eol diff --cached --check",
+      "exitCode": 0,
+      "purpose": "Scoped Markdown whitespace conventions; no persisted Git configuration"
+    }
+  ],
+  "postAuditArtifacts": [
+    {
+      "ref": "artifacts/vnext/n00-01/final-plan-validation.log",
+      "sha256": "a10e719e6a968553834073b2681f57d8bc4b5b01f066f5e1c3110a6a242d36d7",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/final-scheduler.log",
+      "sha256": "5f7970568afeee02d844a2e00cb169c3d38e21d56e7a50c2bdd23897cc6bef65",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/evidence-validation.log",
+      "sha256": "28bde5531551897745dc33eb78ec911f2991eb6228b68bbb8633bba18cb64e48",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/evidence-validation-fallback.log",
+      "sha256": "cf607fad403d66dfe0686cf02da892d11243275b64857f1a5d0a1e7be080e7c6",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/revision21-plan-validation.log",
+      "sha256": "8889af02488fbb46c007a8e5a89e3e8a84b57584e4fc99c053e6dbf6a7e92356",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/revision21-scheduler.log",
+      "sha256": "0e033fed80766ea0cfcee1d4f05421a258964b8246d38b2b06babd8e900a1ba0",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/revision21-helper-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/declared-evidence-validation.py.txt",
+      "sha256": "596f06a2fd06d5898f12d168358a0c84f5213e1fb4574c1ec7516c8de897c2a6",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n00-01/incoming-v2.1-manifest.json",
+      "sha256": "f042d46e06fbf7bf672e3e647bc9f34428ba795e6dce23a12bad61df40804fcd",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    }
+  ],
+  "planReconciliation": {
+    "revision": "2.1-android-first",
+    "modules": 15,
+    "tasks": 69,
+    "verified": 1,
+    "todo": 68,
+    "N0001AcceptanceChanged": false,
+    "runtimeSourceChanged": false,
+    "androidAndIosDistributed": false,
+    "incomingTemplateManifest": "artifacts/vnext/n00-01/incoming-v2.1-manifest.json"
+  }
+}

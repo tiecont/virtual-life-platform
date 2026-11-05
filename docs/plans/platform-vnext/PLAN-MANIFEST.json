@@ -1,0 +1,2424 @@
+{
+  "schema_version": "2.0",
+  "project": "virtual-life-platform",
+  "review_date": "2026-11-05",
+  "timezone": "Asia/Saigon",
+  "audited_source_sha": "cef7dc17172f7c6cda930c99648a5e3ad609cc55",
+  "installation_path": "docs/plans/platform-vnext",
+  "status_values": [
+    "TODO",
+    "IN_PROGRESS",
+    "VERIFIED",
+    "BLOCKED_TECHNICAL",
+    "BLOCKED_EXTERNAL",
+    "DEFERRED_APPROVED"
+  ],
+  "modules": [
+    {
+      "id": "N00",
+      "title": "Baseline và nguồn sự thật hiện hành",
+      "owner": "Coordinator",
+      "priority": 1,
+      "goal": "Khóa phạm vi mới trên code hiện hữu, phân biệt chất lượng lịch sử với kết quả tại HEAD, tránh scaffold lại hoặc reset công việc đã làm.",
+      "paths": [
+        "AGENTS.md",
+        "MASTER-AGENT-PLAN.md",
+        "docs/agent/*",
+        "docs/architecture/*",
+        "docs/plans/platform-vnext/*"
+      ],
+      "activation": "active",
+      "file": "plans/N00-baseline.md"
+    },
+    {
+      "id": "N01",
+      "title": "Repository sạch và evidence bền vững",
+      "owner": "Foundation",
+      "priority": 20,
+      "goal": "Giảm noise/checkout cost nhưng giữ truy vết, fixtures và khả năng chạy clean checkout.",
+      "paths": [
+        "docs/agent/evidence/*",
+        "docs/evidence/*",
+        "scripts/verify-*.mjs",
+        "scripts/ops-watch.mjs",
+        ".gitignore",
+        "integrations/legacy-snapshots/*"
+      ],
+      "activation": "active",
+      "file": "plans/N01-repository.md"
+    },
+    {
+      "id": "N02",
+      "title": "Domain boundaries và lifecycle cấu hình",
+      "owner": "Runtime + Coordinator",
+      "priority": 30,
+      "goal": "Tạo ranh giới rõ trong monolith và chính sách cấu hình/migration đủ để triển khai, không mở dịch vụ rỗng.",
+      "paths": [
+        "apps/platform-api/src/*",
+        "packages/contracts/*",
+        "packages/world-sdk/*",
+        "scripts/check-boundaries.mjs",
+        "config/*",
+        "docs/adr/*"
+      ],
+      "activation": "active",
+      "file": "plans/N02-boundaries.md"
+    },
+    {
+      "id": "N03",
+      "title": "Build images và CI đáng tin",
+      "owner": "Foundation/CI",
+      "priority": 40,
+      "goal": "Build once, verify artifact thật, publish immutable images và giữ quality gate mọi loại PR.",
+      "paths": [
+        "infra/docker/*",
+        ".github/workflows/*",
+        "package.json",
+        "pnpm-lock.yaml",
+        "apps/*/next.config.*",
+        "scripts/ci-*"
+      ],
+      "activation": "active",
+      "file": "plans/N03-build-ci.md"
+    },
+    {
+      "id": "N04",
+      "title": "Kubernetes và ArgoCD cùng repository",
+      "owner": "Foundation/CI",
+      "priority": 60,
+      "goal": "Git desired state trên cùng repo; singleton rollout đúng và promotion traceable; không custom reconciler.",
+      "paths": [
+        "infra/k8s/*",
+        "infra/argocd/*",
+        ".github/workflows/*",
+        "docs/runbooks/*"
+      ],
+      "activation": "active",
+      "file": "plans/N04-argocd.md"
+    },
+    {
+      "id": "N05",
+      "title": "Authoritative runtime và protocol",
+      "owner": "Runtime",
+      "priority": 50,
+      "goal": "Nâng chất lượng authority sẵn có, giảm bottleneck có số đo và chuẩn bị deployment/native compatibility.",
+      "paths": [
+        "apps/platform-api/src/rooms/*",
+        "apps/platform-api/src/identity/*",
+        "apps/platform-api/src/travel/*",
+        "apps/platform-api/src/main.ts",
+        "apps/platform-api/src/entrypoints/*",
+        "packages/contracts/*"
+      ],
+      "activation": "active",
+      "file": "plans/N05-authority.md"
+    },
+    {
+      "id": "N06",
+      "title": "UI/UX và playable vertical slice",
+      "owner": "Experience",
+      "priority": 80,
+      "goal": "Chuyển từ giao diện kiểm chứng nền tảng thành game social 2D đẹp, rõ, dễ trở lại, có kiểm tra usability.",
+      "paths": [
+        "apps/portal-web/*",
+        "packages/game-client/*",
+        "packages/ui/*",
+        "packages/pixi-scene/*",
+        "packages/*-world/*"
+      ],
+      "activation": "active",
+      "file": "plans/N06-ux.md"
+    },
+    {
+      "id": "N07",
+      "title": "Một tài khoản admin và điều hành platform",
+      "owner": "Admin + Runtime",
+      "priority": 70,
+      "goal": "Dashboard có thể quản trị nghiệp vụ và nhìn trạng thái live nhưng không mang quyền cluster/DB ra browser.",
+      "paths": [
+        "apps/admin-web/*",
+        "apps/platform-api/src/operations/*",
+        "apps/platform-api/src/identity/*",
+        "packages/contracts/*"
+      ],
+      "activation": "active",
+      "file": "plans/N07-admin.md"
+    },
+    {
+      "id": "N08",
+      "title": "Observability, load lab và capacity",
+      "owner": "Operations + Runtime",
+      "priority": 90,
+      "goal": "Biết hệ thống đang làm gì và đo sustainable capacity trên workload/hardware thực, không nhầm socket cap với CCU.",
+      "paths": [
+        "apps/platform-api/src/operations/*",
+        "infra/observability/*",
+        "tests/load/*",
+        "apps/admin-web/*",
+        "docs/evidence/index/*"
+      ],
+      "activation": "active",
+      "file": "plans/N08-capacity.md"
+    },
+    {
+      "id": "N09",
+      "title": "Admission và hàng chờ toàn platform",
+      "owner": "Runtime + Experience",
+      "priority": 100,
+      "goal": "Bảo vệ server và cho người chơi chờ công bằng, tách global slot với room/booking capacity.",
+      "paths": [
+        "apps/platform-api/src/modules/admission/*",
+        "apps/platform-api/src/rooms/*",
+        "apps/platform-api/src/travel/*",
+        "apps/admin-web/*",
+        "packages/game-client/*",
+        "packages/contracts/*"
+      ],
+      "activation": "active",
+      "file": "plans/N09-admission.md"
+    },
+    {
+      "id": "N10",
+      "title": "Shared client và Android architecture spike",
+      "owner": "Experience/Mobile",
+      "priority": 110,
+      "goal": "Chốt shared React/Pixi + Capacitor trên Android vật lý hiện có; iOS được kiểm chứng riêng ở N14, không chặn nhánh Android.",
+      "paths": [
+        "packages/game-client/*",
+        "packages/client-sdk/*",
+        "apps/mobile/*",
+        "apps/portal-web/*",
+        "apps/platform-api/src/identity/*",
+        "packages/contracts/*"
+      ],
+      "activation": "active",
+      "file": "plans/N10-mobile-spike.md"
+    },
+    {
+      "id": "N11",
+      "title": "Android app và Google Play release lane",
+      "owner": "Mobile",
+      "priority": 120,
+      "goal": "Từ Android spike sang app dùng hàng ngày, signed artifacts và Play beta; phân biệt local install, store testing và public approval.",
+      "paths": [
+        "apps/mobile/*",
+        ".github/workflows/*",
+        "packages/client-sdk/*",
+        "apps/platform-api/src/identity/*",
+        "docs/runbooks/*"
+      ],
+      "activation": "active",
+      "file": "plans/N11-mobile-release.md"
+    },
+    {
+      "id": "N12",
+      "title": "Regression, recovery và release",
+      "owner": "Coordinator + QA/Operations",
+      "priority": 130,
+      "goal": "Chứng minh platform từ image đến gameplay/ops/recovery; tách technical readiness khỏi phát hành thật.",
+      "paths": [
+        "tests/deployment/*",
+        "tests/e2e/*",
+        "docs/runbooks/*",
+        "docs/evidence/index/*",
+        "config/*"
+      ],
+      "activation": "active",
+      "file": "plans/N12-release-regression.md"
+    },
+    {
+      "id": "N13",
+      "title": "Tăng quy mô theo evidence",
+      "owner": "Runtime/Operations",
+      "priority": 200,
+      "activation": "conditional",
+      "goal": "Chỉ thêm multi-owner khi sustainable capacity/latency thực tế không đáp ứng mục tiêu đã xác định sau tối ưu.",
+      "paths": [
+        "apps/platform-api/src/rooms/*",
+        "apps/room-runtime/*",
+        "packages/contracts/*",
+        "infra/k8s/*",
+        "tests/load/*"
+      ],
+      "file": "plans/N13-scaling.md"
+    },
+    {
+      "id": "N14",
+      "title": "iOS toolchain, physical validation và release lane",
+      "owner": "Mobile/Operations",
+      "priority": 210,
+      "activation": "conditional",
+      "goal": "Giữ mục tiêu App Store nhưng chỉ thực thi native iOS lane khi có macOS/Xcode access và đường kiểm thử iPhone thật; không chặn Android/web.",
+      "paths": [
+        "apps/mobile/ios/*",
+        "apps/mobile/*",
+        ".github/workflows/*",
+        "packages/client-sdk/*",
+        "docs/runbooks/*"
+      ],
+      "file": "plans/N14-ios-release.md"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "N00-01",
+      "title": "Xác minh baseline tại HEAD đang làm",
+      "depends_on": [],
+      "deliverables": [
+        "Repository inventory, versions, clean/dirty status, CI run và baseline report"
+      ],
+      "acceptance": [
+        "Pin SHA/diff; đọc scripts thật và migrations; ghi kết quả từng lane, cả lỗi sẵn có/blocker.",
+        "Audit task có thể hoàn tất với baseline failures được ghi đúng; không biến nó thành release pass.",
+        "Không sửa source hoặc dữ liệu legacy/production để ép baseline xanh."
+      ],
+      "verification": {
+        "existing": [
+          "git status --short",
+          "git rev-parse HEAD",
+          "pnpm install --frozen-lockfile",
+          "pnpm check",
+          "pnpm ci:browser"
+        ],
+        "planned": [],
+        "manual": [
+          "Browser/DB lanes chỉ chạy trong môi trường test được cấu hình; báo rõ nếu chưa chạy."
+        ]
+      },
+      "rollback": "Chỉ thêm báo cáo baseline; revert documentation nếu sai, giữ logs gốc.",
+      "module": "N00",
+      "priority": 1,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N00-02",
+      "title": "Tích hợp plan vNext và sửa docs drift",
+      "depends_on": [
+        "N00-01"
+      ],
+      "deliverables": [
+        "Link root master tới vNext; current architecture/evidence index; old-doc history labels"
+      ],
+      "acceptance": [
+        "151 task Mxx và mọi evidence cũ được giữ.",
+        "Mobile/Kubernetes mới thuộc scope được chủ dự án yêu cầu; offline handoff cũ không ngăn scope mới.",
+        "Không ghi APPROVED cho public/store release chưa được duyệt."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm governance:check",
+          "pnpm architecture:check"
+        ],
+        "planned": [],
+        "manual": [
+          "Đối chiếu current source với docs ARCHITECTURE/JOURNEY/HANDOFF; ghi date/SHA.",
+          "Chạy helper đã có sẵn trong gói sau integration: node docs/plans/platform-vnext/tools/validate-plan.mjs."
+        ]
+      },
+      "rollback": "Revert links/labels; không sửa task-state Mxx.",
+      "module": "N00",
+      "priority": 2,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N00-03",
+      "title": "Inventory môi trường đích và assumptions",
+      "depends_on": [
+        "N00-01"
+      ],
+      "deliverables": [
+        "Server/device/region/runtime matrix; unresolved assumptions có owner"
+      ],
+      "acceptance": [
+        "Ghi CPU/RAM/disk/network/cluster/ingress, load generator host, target Android/iOS nếu biết.",
+        "Thông tin chưa được cung cấp là UNKNOWN, không tự gán máy 2vCPU/4GB hay CCU.",
+        "Thiếu credentials không chặn design/local validation.",
+        "Ghi profile CachyOS + một Android là thông tin user cung cấp; CPU/RAM/GPU/model/OS chưa đo thì UNKNOWN. Thiếu Mac/iPhone không chặn baseline web/backend/Android."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [],
+        "manual": [
+          "Read-only inventory trên server chỉ khi có access; không install hoặc mua tài nguyên."
+        ]
+      },
+      "rollback": "Không có runtime mutation.",
+      "module": "N00",
+      "priority": 3,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N00-04",
+      "title": "Ghi ADR baseline và ownership",
+      "depends_on": [
+        "N00-02"
+      ],
+      "deliverables": [
+        "ADR cho modular monolith/images/GitOps/authority/mobile/admin/admission; owner matrix"
+      ],
+      "acceptance": [
+        "Giữ stack audited; quyết định có lý do/tradeoff/trigger xem lại.",
+        "Một operator user; service accounts không bị nhầm thành user admin.",
+        "Current restrictions được xử lý theo yêu cầu mới, không tạo approval gate vô ích cho code preparation."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm architecture:check"
+        ],
+        "planned": [],
+        "manual": [
+          "Review contracts và quyết định trong architecture/00, không yêu cầu owner phê duyệt lại các bước routine."
+        ]
+      },
+      "rollback": "Supersede ADR bằng lý do; không rewrite ADR lịch sử.",
+      "module": "N00",
+      "priority": 4,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N01-01",
+      "title": "Phân loại file và consumer map",
+      "depends_on": [
+        "N00-01"
+      ],
+      "deliverables": [
+        "Keep/move/archive/remove inventory với hash, size và consumer"
+      ],
+      "acceptance": [
+        "Phân biệt runtime source, raw output, evidence JSON dùng bởi verifier, generated assets và legacy fixtures.",
+        "Không suy ra unused chỉ bằng extension hoặc không có direct import."
+      ],
+      "verification": {
+        "existing": [
+          "rg --files"
+        ],
+        "planned": [],
+        "manual": [
+          "Rà dynamic imports, fixtures, file-reading scripts và relative documentation links."
+        ]
+      },
+      "rollback": "Inventory-only.",
+      "module": "N01",
+      "priority": 20,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N01-02",
+      "title": "Thiết kế evidence index và archive/restore",
+      "depends_on": [
+        "N01-01"
+      ],
+      "deliverables": [
+        "Evidence schema/index loader; private archive với content hash và restore report"
+      ],
+      "acceptance": [
+        "Raw evidence không chứa secrets/PII ngoài policy; access/retention được nêu.",
+        "Hash inventory bao phủ toàn bộ file dự định archive; ít nhất một restore sample thật và kiểm đủ manifest.",
+        "Không dùng artifact URL hết hạn làm bản lưu duy nhất."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm evidence:check",
+          "pnpm evidence:restore-smoke"
+        ],
+        "manual": [
+          "Hai scripts mới cần được implement; storage access thiếu thì giữ file cũ và đánh blocker riêng."
+        ]
+      },
+      "rollback": "Giữ originals đến khi restore và consumers đạt; archive không tự xóa nguồn.",
+      "module": "N01",
+      "priority": 21,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N01-03",
+      "title": "Chuyển validators sang evidence index",
+      "depends_on": [
+        "N01-02"
+      ],
+      "deliverables": [
+        "Loader adapters cho governance/release/ops watch và docs links"
+      ],
+      "acceptance": [
+        "Không mất gate cũ; artifact missing/hash mismatch gây fail rõ.",
+        "Historical VERIFIED vẫn gắn đúng SHA/environment, không được dùng thay fresh test của source đổi."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm governance:check",
+          "pnpm test"
+        ],
+        "planned": [
+          "pnpm evidence:check"
+        ],
+        "manual": [
+          "Chạy release/ops scripts phù hợp scope cũ và test missing/tampered evidence."
+        ]
+      },
+      "rollback": "Rollback loaders trước khi bỏ raw originals.",
+      "module": "N01",
+      "priority": 22,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N01-04",
+      "title": "Bỏ output đã archive khỏi current tree",
+      "depends_on": [
+        "N01-03"
+      ],
+      "deliverables": [
+        "PR cleanup riêng; .gitignore; compact evidence summaries"
+      ],
+      "acceptance": [
+        "Không rewrite Git history.",
+        "Không xóa SQL, lockfile, provenance, .tar fixtures đang dùng.",
+        "Diff không thay runtime behavior; archive IDs/hash có thể truy vết."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm legacy:check",
+          "pnpm governance:check",
+          "pnpm architecture:check"
+        ],
+        "planned": [
+          "pnpm evidence:check"
+        ],
+        "manual": [
+          "Review classification và restore coverage trước remove."
+        ]
+      },
+      "rollback": "Git revert PR cleanup, restore originals bằng verified archive nếu cần.",
+      "module": "N01",
+      "priority": 23,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N01-05",
+      "title": "Chứng minh clean checkout và docs hiện hành",
+      "depends_on": [
+        "N01-04"
+      ],
+      "deliverables": [
+        "Clean-checkout build/test log; canonical docs index"
+      ],
+      "acceptance": [
+        "Build không cần artifact ẩn từ máy tác giả.",
+        "Current docs không mâu thuẫn checkpoint lịch sử.",
+        "Kích thước current tree trước/sau có số thật, không coi Git history đã giảm."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm install --frozen-lockfile",
+          "pnpm check",
+          "pnpm legacy:prepare"
+        ],
+        "planned": [
+          "pnpm evidence:check"
+        ],
+        "manual": [
+          "Đọc root entrypoints và path links sau cleanup."
+        ]
+      },
+      "rollback": "Revert move/remove phạm vi làm hỏng clean checkout.",
+      "module": "N01",
+      "priority": 24,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N02-01",
+      "title": "Lập module API và dependency graph",
+      "depends_on": [
+        "N00-04"
+      ],
+      "deliverables": [
+        "Current-to-target ownership map, public module ports và forbidden imports"
+      ],
+      "acceptance": [
+        "Accounts/social/safety/rooms/travel/engines/worlds/operations có owner.",
+        "Giữ một DB và migration journal; world không đọc repo/SQL world khác."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm architecture:check",
+          "pnpm lint"
+        ],
+        "planned": [],
+        "manual": [
+          "Kiểm callgraph thực, đặc biệt app.ts và room-dependent engines."
+        ]
+      },
+      "rollback": "Chỉ đổi map/rules; rollback rule mới nếu chặn import hợp lệ có lý do.",
+      "module": "N02",
+      "priority": 30,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N02-02",
+      "title": "Refactor module từng vertical slice",
+      "depends_on": [
+        "N02-01"
+      ],
+      "deliverables": [
+        "Một module/PR chuyển boundary/exports; worker-ready composition seams"
+      ],
+      "acceptance": [
+        "Không đổi behavior cùng rename hàng loạt.",
+        "Giữ compatibility exports khi consumer chưa chuyển.",
+        "Không tạo domains/ và modules/ chứa bản sao implementation."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm lint",
+          "pnpm typecheck",
+          "pnpm test",
+          "pnpm test:integration",
+          "pnpm build"
+        ],
+        "planned": [],
+        "manual": [
+          "Chạy subsets phù hợp mỗi PR; full regression khi chạm composition root/shared contracts."
+        ]
+      },
+      "rollback": "Revert từng PR/module, giữ DB schema không đổi.",
+      "module": "N02",
+      "priority": 31,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N02-03",
+      "title": "Chuyển offline guards thành policy theo environment",
+      "depends_on": [
+        "N02-01"
+      ],
+      "deliverables": [
+        "Versioned release policy + runtime config model; updated guard tests"
+      ],
+      "acceptance": [
+        "Default deny; production installer thật, không chỉ flip false.",
+        "GitOps entitlement giới hạn runtime switches; admin không bypass gates.",
+        "Old offline fixtures tiếp tục được test; một admin principal thay vì yêu cầu giả sáu người mới."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm governance:check",
+          "pnpm infra:check",
+          "pnpm test",
+          "pnpm test:security"
+        ],
+        "planned": [
+          "pnpm release-policy:check"
+        ],
+        "manual": [
+          "Test dev/staging/prod và missing policy/version/unknown world => deny."
+        ]
+      },
+      "rollback": "Revert policy writer/readers, giữ effective world OFF khi mismatch.",
+      "module": "N02",
+      "priority": 32,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N02-04",
+      "title": "Schema compatibility cho migration và rollback",
+      "depends_on": [
+        "N02-01"
+      ],
+      "deliverables": [
+        "Compatibility manifest, checksum-prefix policy, expand/contract ADR"
+      ],
+      "acceptance": [
+        "Giải quyết readiness exact manifest hiện tại bằng policy có test, không bỏ checksum guard.",
+        "Image N-1 phải chạy trên schema N khi được khai tương thích.",
+        "Unknown incompatible schema fail closed; destructive contract migration là phase riêng."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm test:integration",
+          "pnpm infra:check"
+        ],
+        "planned": [
+          "pnpm test:migration-compat"
+        ],
+        "manual": [
+          "Dùng DB test disposable với schema38, N expand và N-1 runtime; xác minh rollback thật."
+        ]
+      },
+      "rollback": "Rollback code tới compatible image; không tự down-migrate dữ liệu.",
+      "module": "N02",
+      "priority": 33,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N03-01",
+      "title": "Pin và tái lập toolchain/build graph",
+      "depends_on": [
+        "N01-05",
+        "N02-02"
+      ],
+      "deliverables": [
+        "Toolchain compatibility matrix, frozen lock build, workspace target map"
+      ],
+      "acceptance": [
+        "Giữ pins được audit; mọi upgrade riêng lý do/test.",
+        "Shared package changes ảnh hưởng mọi consumer; ban đầu build all.",
+        "PR fork không có secrets/publish permission."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm install --frozen-lockfile",
+          "pnpm ci:check",
+          "pnpm check"
+        ],
+        "planned": [],
+        "manual": [
+          "Xác minh package graph và phiên bản thực có thể cài trong CI."
+        ]
+      },
+      "rollback": "Revert tooling PR độc lập, không hoán đổi stack.",
+      "module": "N03",
+      "priority": 40,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N03-02",
+      "title": "Harden API image và migrator target",
+      "depends_on": [
+        "N03-01"
+      ],
+      "deliverables": [
+        "vlp-api runtime image; migrations và runtime dependency closure"
+      ],
+      "acceptance": [
+        "Multi-stage, non-root, production dependencies; không FROM build giữ toàn workspace.",
+        "API và migrate dùng cùng digest; worker entrypoint chỉ thêm khi N05-05 có code.",
+        "Image smoke khởi động thật với DB test và signals."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm build"
+        ],
+        "planned": [
+          "pnpm image:check --target=api"
+        ],
+        "manual": [
+          "SBOM/secret scan/runtime file inspection; SIGTERM + owner release test."
+        ]
+      },
+      "rollback": "Giữ previous digest; revert Docker target, không schema rollback tự động.",
+      "module": "N03",
+      "priority": 41,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N03-03",
+      "title": "Harden portal web image",
+      "depends_on": [
+        "N03-01"
+      ],
+      "deliverables": [
+        "vlp-web image; Next runtime assets/standalone phù hợp"
+      ],
+      "acceptance": [
+        "Runtime chứa đúng assets/server files cần; API origin runtime-config phù hợp.",
+        "Không bake secrets hoặc build-time internal-only URL vào client bundle.",
+        "HTTPS/socket proxy behavior giữ tương thích."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm build"
+        ],
+        "planned": [
+          "pnpm image:check --target=web"
+        ],
+        "manual": [
+          "Chạy portal thực bằng image, kiểm browser runtime và asset cache headers."
+        ]
+      },
+      "rollback": "Rollback portal digest; giữ asset compatibility cho client cũ.",
+      "module": "N03",
+      "priority": 42,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N03-04",
+      "title": "Quality CI, registry publish và release manifest",
+      "depends_on": [
+        "N03-02",
+        "N03-03"
+      ],
+      "deliverables": [
+        "PR validation + trusted-main image publish, SBOM/provenance, source/digest manifest"
+      ],
+      "acceptance": [
+        "Required aggregate luôn kết thúc đúng; skipped unrelated jobs không để Pending và không fail-open.",
+        "Mọi digest có source SHA/test run; không dùng latest trong deploy.",
+        "Docs/overlay-only commit không publish vòng lặp; security lane hiện hữu được giữ.",
+        "Enforcement preflight ghi rõ required checks/rulesets thực sự khả dụng. Nếu chưa có hoặc chưa xác minh, tắt auto-merge/prod auto-promotion và dùng owner promotion xác minh đúng SHA/checks/digests; không gọi đó là technical branch protection."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm ci:check",
+          "pnpm check"
+        ],
+        "planned": [
+          "pnpm release-manifest:check"
+        ],
+        "manual": [
+          "Test source/shared-dep/lockfile/docs/overlay-only PR matrix và workflow failure."
+        ]
+      },
+      "rollback": "Disable publish job bằng config, giữ verification; không xóa released digests.",
+      "module": "N03",
+      "priority": 43,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N03-05",
+      "title": "Thêm admin build vào cùng quality contract",
+      "depends_on": [
+        "N03-04",
+        "N07-02"
+      ],
+      "deliverables": [
+        "vlp-admin image, publish target và image tests"
+      ],
+      "acceptance": [
+        "Admin secret/query tokens không nằm trong browser bundle.",
+        "Build/CI có admin source closure và route smoke.",
+        "Release set ghi từng artifact và source SHA; không yêu cầu admin image trước khi code tồn tại."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm typecheck",
+          "pnpm build",
+          "pnpm ci:check"
+        ],
+        "planned": [
+          "pnpm image:check --target=admin"
+        ],
+        "manual": [
+          "Unauthenticated route protection và sanitized config test."
+        ]
+      },
+      "rollback": "Rollback admin-only digest; API contracts vẫn tương thích.",
+      "module": "N03",
+      "priority": 44,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N04-01",
+      "title": "Kustomize base/overlays và cluster preflight",
+      "depends_on": [
+        "N03-04",
+        "N02-03",
+        "N02-04"
+      ],
+      "deliverables": [
+        "Manifests staging/prod, resource budget, prerequisites inventory"
+      ],
+      "acceptance": [
+        "Replicas API=1; Recreate, probes, shutdown grace và private network defaults.",
+        "Database/PVC/secrets có lifecycle riêng, không nằm trong prune destructive mặc định.",
+        "Manifests render/schema validate được; architecture node/ingress/pull secrets xác minh."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm infra:check"
+        ],
+        "planned": [
+          "pnpm k8s:validate"
+        ],
+        "manual": [
+          "Kustomize render + schema validation/local cluster dry-run; live cluster credentials là blocker riêng."
+        ]
+      },
+      "rollback": "Revert manifest PR; không xóa persistent resources.",
+      "module": "N04",
+      "priority": 60,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N04-02",
+      "title": "Promotion digest trong cùng repo không loop",
+      "depends_on": [
+        "N04-01"
+      ],
+      "deliverables": [
+        "Release/promotion workflow và immutable tested release set"
+      ],
+      "acceptance": [
+        "Image publish không tự làm cluster update; overlay digest commit mới kích hoạt desired state.",
+        "GitHub App/bot quyền hẹp; required CI thực chạy trên bot PR.",
+        "Staging/prod promote cùng digest, không rebuild khác artifact.",
+        "Local bot-event fixtures không chứng minh hosted CI trên bot PR đã chạy. Phải có run/commit thật trước khi bật automatic promotion; enforcement unavailable dùng fallback owner review, không tự mua gói hoặc public repo."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm ci:check"
+        ],
+        "planned": [
+          "pnpm release-manifest:check",
+          "pnpm k8s:validate"
+        ],
+        "manual": [
+          "Exercise bot PR hoặc local event fixtures; không dùng skip-ci che required gate."
+        ]
+      },
+      "rollback": "Revert promotion commit tới previous compatible release set.",
+      "module": "N04",
+      "priority": 61,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N04-03",
+      "title": "Full sync lifecycle và singleton drain",
+      "depends_on": [
+        "N04-02",
+        "N05-04"
+      ],
+      "deliverables": [
+        "Argo Applications, migration hooks, PostSync smoke, rollback runbook"
+      ],
+      "acceptance": [
+        "Secrets/DB prerequisites tồn tại trước PreSync; hook idempotent/locked/bounded.",
+        "Không selective-sync bypass migration gate; PostSync failure không tự coi rollback đã diễn ra.",
+        "UI/players thấy reconnect/maintenance đúng khi Recreate gián đoạn ngắn."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm test:deploy"
+        ],
+        "manual": [
+          "Test full sync success/failure/duplicate hook/old owner shutdown bằng local hoặc staging cluster."
+        ]
+      },
+      "rollback": "Git revert digest compatible; schema forward fix nếu không tương thích.",
+      "module": "N04",
+      "priority": 62,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N04-04",
+      "title": "Chạy staging deployment thật và ghi release evidence",
+      "depends_on": [
+        "N04-03"
+      ],
+      "deliverables": [
+        "Observed Argo revision/digests, TLS/WS browser smoke và failure logs"
+      ],
+      "acceptance": [
+        "No Kubernetes access => BLOCKED_EXTERNAL cho task này, không fabricate deploy success.",
+        "Healthy pods + gameplay flow + private ops edge + migration actual đều đạt.",
+        "Có first-bootstrap, image-pull failure và rollback rehearsal phù hợp."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm test:deploy"
+        ],
+        "manual": [
+          "Actual authorized staging, không production/public release; capture sanitized Argo events/status."
+        ]
+      },
+      "rollback": "Revert desired release set; preserve DB and evidence.",
+      "module": "N04",
+      "priority": 63,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N05-01",
+      "title": "Khóa invariants và contract envelope",
+      "depends_on": [
+        "N02-01"
+      ],
+      "deliverables": [
+        "Authority invariant table, protocol schemas, concurrency regression"
+      ],
+      "acceptance": [
+        "Seat/order/reward/travel không double apply; session revoke/blocks lập tức có hiệu lực.",
+        "requestId gắn actor/action/payload; duplicate payload khác phải conflict.",
+        "ACK durable business effect chỉ sau commit; room movement có epoch/seq rõ."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm test",
+          "pnpm test:integration",
+          "pnpm test:security"
+        ],
+        "planned": [
+          "pnpm test:protocol"
+        ],
+        "manual": [
+          "Replay/out-of-order/double-click/stale membership/malicious move/seat race."
+        ]
+      },
+      "rollback": "Giữ current protocol adapter và rollback changes từng slice.",
+      "module": "N05",
+      "priority": 50,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N05-02",
+      "title": "Instrument queue wait, fanout và event-loop",
+      "depends_on": [
+        "N05-01"
+      ],
+      "deliverables": [
+        "Latency histograms by bounded command type/outcome; profiling report"
+      ],
+      "acceptance": [
+        "Tách wait/compute/DB/fanout/network và successful/rejected outcomes.",
+        "Không raw account/room IDs vào metrics labels.",
+        "Đo actual room.delta payload hiện còn snapshot, không giả delta tiết kiệm."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm bench:rooms",
+          "pnpm test"
+        ],
+        "planned": [
+          "pnpm profile:runtime"
+        ],
+        "manual": [
+          "Chạy local isolated profile, chưa gọi đó là capacity production."
+        ]
+      },
+      "rollback": "Tắt instrumentation không thiết yếu nếu overhead vượt budget, giữ basic metrics.",
+      "module": "N05",
+      "priority": 51,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N05-03",
+      "title": "Tối ưu theo profiling và giữ consistency",
+      "depends_on": [
+        "N05-02"
+      ],
+      "deliverables": [
+        "Comparison report; indexed projections/batching/true deltas hoặc mailbox nếu justified"
+      ],
+      "acceptance": [
+        "Chỉ thay global serialization khi bottleneck đã được đo; nếu chưa cần thì ghi quyết định giữ cùng evidence.",
+        "Per-room mailbox phải giữ per-account travel coordinator và lock ordering.",
+        "Block/revoke invalidates cached recipients; performance không đổi privacy."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm test:integration",
+          "pnpm test:security",
+          "pnpm bench:rooms"
+        ],
+        "planned": [
+          "pnpm test:protocol",
+          "pnpm profile:runtime"
+        ],
+        "manual": [
+          "Compare workload/hardware/source pinned, include failure/correctness results."
+        ]
+      },
+      "rollback": "Feature flag hoặc revert optimization về verified global-owner path.",
+      "module": "N05",
+      "priority": 52,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N05-04",
+      "title": "Drain, owner loss và reconnect recovery",
+      "depends_on": [
+        "N05-01",
+        "N02-04"
+      ],
+      "deliverables": [
+        "Bounded drain lifecycle, readiness/live split, reconnect contract"
+      ],
+      "acceptance": [
+        "Stop new admissions, preserve/settle critical commits, release authority then stop.",
+        "PG lock connection loss fences commands; old owner không tiếp tục broadcast authority.",
+        "Crash/restart nói rõ ephemeral state mất; không có phantom successful order/reward/visit."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm test:integration",
+          "pnpm infra:check"
+        ],
+        "planned": [
+          "pnpm test:runtime-faults"
+        ],
+        "manual": [
+          "SIGTERM, hard kill, DB outage, lock loss, old socket and changed epoch resync."
+        ]
+      },
+      "rollback": "Revert runtime lifecycle change; singleton/reconnect remains explicit.",
+      "module": "N05",
+      "priority": 53,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N05-05",
+      "title": "Tách durable worker bootstrap",
+      "depends_on": [
+        "N02-02",
+        "N05-01"
+      ],
+      "deliverables": [
+        "Worker entrypoint, transactional outbox jobs, retry/dead-letter controls"
+      ],
+      "acceptance": [
+        "Không createApp/RoomAuthority/socket ownership trong worker.",
+        "Room-bound maintenance giữ owner; durable notifications/retention/schedules có idempotency.",
+        "At-least-once jobs retry an toàn và không duplicate rewards."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm test:integration",
+          "pnpm build"
+        ],
+        "planned": [
+          "pnpm worker:check"
+        ],
+        "manual": [
+          "Kill worker sau effect/trước ack; resume, bounded attempts, poison-message handling."
+        ]
+      },
+      "rollback": "Stop worker, quay lại verified dispatcher path nếu compatible; không chạy song song hai unsafe consumers.",
+      "module": "N05",
+      "priority": 54,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N05-06",
+      "title": "Protocol/content compatibility cho client N và N-1",
+      "depends_on": [
+        "N05-01",
+        "N02-04"
+      ],
+      "deliverables": [
+        "Version negotiation, feature capabilities, stable errors và resync behavior"
+      ],
+      "acceptance": [
+        "Old mobile/web client tương thích hoặc nhận upgrade-required rõ, không xử lý schema sai.",
+        "Không phá legacy/current contracts khi thêm fields; content hash/schema version độc lập.",
+        "Socket.IO retry không được hiểu là exactly-once."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm typecheck",
+          "pnpm test:integration"
+        ],
+        "planned": [
+          "pnpm test:protocol"
+        ],
+        "manual": [
+          "Run N/N-1 client fixtures với new server, gap/epoch mismatch và token revoke."
+        ]
+      },
+      "rollback": "Giữ adapter/N-1 window; rollback protocol chỉ khi client support matrix cho phép.",
+      "module": "N05",
+      "priority": 55,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N06-01",
+      "title": "Product journey và art direction",
+      "depends_on": [
+        "N00-02"
+      ],
+      "deliverables": [
+        "Flows first-play/return/room/queue/reconnect; visual direction board với asset provenance"
+      ],
+      "acceptance": [
+        "Home dẫn vào hoạt động meaningful; server/schema details chuyển admin.",
+        "Chốt một core loop Deadline focus và Maid service; không mở thêm worlds để che UX mỏng.",
+        "First meaningful action <60s là target nháp, không achievement/retention claim."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [],
+        "manual": [
+          "Review stakeholder/product flows và source screenshots có nhãn historical."
+        ]
+      },
+      "rollback": "Documentation/prototype only.",
+      "module": "N06",
+      "priority": 10,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N06-02",
+      "title": "Design system và prototype có trạng thái lỗi",
+      "depends_on": [
+        "N06-01"
+      ],
+      "deliverables": [
+        "Tokens/components, desktop/mobile prototype, keyboard/reduced-motion alternatives"
+      ],
+      "acceptance": [
+        "Các state loading/empty/full/wait/offline/reconnect/denied đều có thiết kế.",
+        "HUD và bottom sheets ưu tiên scene; text/UI scalable, safe area/keyboard rõ.",
+        "Có motion/audio opt-in phù hợp, không bỏ accessible DOM path."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [],
+        "manual": [
+          "Inspect 360px mobile + desktop; task walkthrough keyboard/screen reader prototype."
+        ]
+      },
+      "rollback": "Version prototype/tokens; giữ current UI cho đến slice mới đạt.",
+      "module": "N06",
+      "priority": 11,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N06-03",
+      "title": "Implement shared game shell và điều hướng",
+      "depends_on": [
+        "N06-02",
+        "N10-02",
+        "N05-06"
+      ],
+      "deliverables": [
+        "Scene-first shell, onboarding, navigation và shared state"
+      ],
+      "acceptance": [
+        "Next portal mount shared game-client; không nhúng Next dependencies vào shared package.",
+        "Identity/travel/queue status rõ và không duplicate authoritative state.",
+        "Không full reload/refresh form thủ công để cập nhật critical gameplay."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm lint",
+          "pnpm typecheck",
+          "pnpm build"
+        ],
+        "planned": [
+          "pnpm test:ux-core"
+        ],
+        "manual": [
+          "Desktop/mobile browser flows gồm error/permission/loading và stale events."
+        ]
+      },
+      "rollback": "Feature-flag new shell, retain verified route adapter.",
+      "module": "N06",
+      "priority": 82,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N06-04",
+      "title": "Polish hai vòng chơi Deadline/Maid",
+      "depends_on": [
+        "N06-03",
+        "N05-04"
+      ],
+      "deliverables": [
+        "Complete room scenes/animations/sound settings/interactions + first return journey"
+      ],
+      "acceptance": [
+        "Ngồi/focus/leave/resume và order/service/reward diễn ra bằng intent validated server.",
+        "Travel giữ identity, report/block ở đúng ngữ cảnh và không mở unsolicited interaction.",
+        "Asset budgets, original/licensed provenance; không giả art approved."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm assets:check",
+          "pnpm test:integration"
+        ],
+        "planned": [
+          "pnpm test:ux-core"
+        ],
+        "manual": [
+          "Browser journey thật và visual QA; responsive network/reconnect states."
+        ]
+      },
+      "rollback": "Roll back new scenes/shell bằng feature flag, keep asset version for old clients.",
+      "module": "N06",
+      "priority": 83,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N06-05",
+      "title": "Usability, accessibility và product instrumentation",
+      "depends_on": [
+        "N06-04"
+      ],
+      "deliverables": [
+        "Usability observations, a11y report, privacy-aware activation/return event spec"
+      ],
+      "acceptance": [
+        "Tối thiểu 5 target users do owner cung cấp: heuristic >=4/5 bắt đầu activity trong90s không hướng dẫn từng bước; report failures.",
+        "Keyboard/touch/screenreader core tasks, reduced motion, no focus traps.",
+        "D1/D7 retention chỉ đo sau có user/cohort đủ và consent; không dùng synthetic tests chứng minh hay/giữ chân."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm ci:browser"
+        ],
+        "planned": [
+          "pnpm test:ux-core"
+        ],
+        "manual": [
+          "Physical usability là lane riêng; chưa có testers => ghi blocker, không tự gửi lời mời."
+        ]
+      },
+      "rollback": "Tắt analytics không consent; iterate UX theo findings không đổi backend authority.",
+      "module": "N06",
+      "priority": 84,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N07-01",
+      "title": "Operator identity, MFA và audit",
+      "depends_on": [
+        "N02-03",
+        "N05-01"
+      ],
+      "deliverables": [
+        "Singleton operator bootstrap, separate session, passkey/MFA/step-up và audit model"
+      ],
+      "acceptance": [
+        "Đúng một operator human account; không public admin signup hoặc hidden second admin.",
+        "Player session không trở thành admin; moderator/game role không nâng quyền.",
+        "Recovery cho cùng identity; revoke/CSRF/rate limits/idle expiry tested."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm test:security",
+          "pnpm test:integration"
+        ],
+        "planned": [
+          "pnpm test:admin"
+        ],
+        "manual": [
+          "Authz deny matrix, replay, step-up expiry, redacted immutable audit."
+        ]
+      },
+      "rollback": "Disable admin ingress; revoke operator sessions; giữ audit append-only.",
+      "module": "N07",
+      "priority": 70,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N07-02",
+      "title": "Admin shell và backend proxy boundaries",
+      "depends_on": [
+        "N07-01",
+        "N06-02"
+      ],
+      "deliverables": [
+        "apps/admin-web, navigation/design, authenticated BFF/proxy"
+      ],
+      "acceptance": [
+        "Không telemetry/Argo/Kube token trong browser bundle.",
+        "Metrics proxy only allowlisted queries/ranges, read-only credentials, cache và query budget.",
+        "Operator UI có error/stale/unauthorized states."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm lint",
+          "pnpm typecheck",
+          "pnpm build"
+        ],
+        "planned": [
+          "pnpm test:admin"
+        ],
+        "manual": [
+          "Unauth access, direct API bypass và token exposure inspections."
+        ]
+      },
+      "rollback": "Private ingress off hoặc previous admin image.",
+      "module": "N07",
+      "priority": 71,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N07-03",
+      "title": "Events/accounts/runtime controls",
+      "depends_on": [
+        "N07-01",
+        "N02-03"
+      ],
+      "deliverables": [
+        "Event calendar draft/publish/cancel; account suspend/revoke; flags/maintenance/audit UI"
+      ],
+      "acceptance": [
+        "All writes server-validated, versioned, reason+before/after audit; no arbitrary SQL/shell.",
+        "Account views minimize private data; deletion/export workflow có status và retention policy.",
+        "Admin runtime switch không vượt Git release entitlement; single operator có thể thao tác scope cho phép."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm test:integration",
+          "pnpm test:security"
+        ],
+        "planned": [
+          "pnpm test:admin"
+        ],
+        "manual": [
+          "Concurrency edits/optimistic conflict, expired auth, double-click và revoked user sockets."
+        ]
+      },
+      "rollback": "Compensating config/event version qua audited command; không xóa audit/reward history.",
+      "module": "N07",
+      "priority": 72,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N07-04",
+      "title": "Overview, live system map và traffic",
+      "depends_on": [
+        "N07-02",
+        "N08-01"
+      ],
+      "deliverables": [
+        "Operational dashboard: metrics, topology, versions, queue state và freshness"
+      ],
+      "acceptance": [
+        "Configured edges và observed traffic phân biệt; traffic0 khác datasource unreachable.",
+        "Metrics gồmHTTP/WS/player/admitted counts, DB health/pool/waits, event-loop, latency/error, worker backlog.",
+        "Missing/stale metrics hiển thị UNKNOWN, không tự fill0/healthy."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm test:admin"
+        ],
+        "manual": [
+          "Feed synthetic fresh/stale/error/zero traffic fixtures rồi actual scrape staging."
+        ]
+      },
+      "rollback": "Read-only page fallback; không ảnh hưởng gameplay khi datasource timeout.",
+      "module": "N07",
+      "priority": 73,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N07-05",
+      "title": "Triển khai admin riêng với access boundary",
+      "depends_on": [
+        "N03-05",
+        "N04-04",
+        "N07-03",
+        "N07-04"
+      ],
+      "deliverables": [
+        "Private admin deployment, audit evidence và release/backup status view"
+      ],
+      "acceptance": [
+        "Ingress/TLS/session headers và role checks thật đều đạt.",
+        "Argo/GitHub release view read-only; infrastructure writes qua GitOps workflow.",
+        "Một operator account được kiểm chứng; service creds không dùng như interactive login."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm test:deploy",
+          "pnpm test:admin"
+        ],
+        "manual": [
+          "Public edge denial, player auth denial, operator positive flow, logout and revoke."
+        ]
+      },
+      "rollback": "Rollback admin image/ingress; keep API admin guards deny-by-default.",
+      "module": "N07",
+      "priority": 74,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N08-01",
+      "title": "Metrics/traces/logs contracts có freshness",
+      "depends_on": [
+        "N05-02",
+        "N02-03"
+      ],
+      "deliverables": [
+        "Histogram/counter metrics, bounded labels, safe tracing, health/traffic schemas"
+      ],
+      "acceptance": [
+        "Thay lifetime upper-bound p95 bằng percentile theo cửa sổ đúng hoặc label rõ approximation.",
+        "No account/session/private-room identifiers trong labels và no tokens/chat dumps.",
+        "Metric sample timestamp/source/version có trong dashboard contract."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm test",
+          "pnpm test:integration"
+        ],
+        "planned": [
+          "pnpm observability:check"
+        ],
+        "manual": [
+          "Cardinality, redaction, time-window histogram và missing-source cases."
+        ]
+      },
+      "rollback": "Giữ original endpoint adapter; tắt expensive tracing trước nếu overhead vượt budget.",
+      "module": "N08",
+      "priority": 90,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N08-02",
+      "title": "Collector, dashboards, alerts và backup visibility",
+      "depends_on": [
+        "N08-01",
+        "N04-04"
+      ],
+      "deliverables": [
+        "Prometheus/collector cấu hình theo resource budget, alert rules và ops panels"
+      ],
+      "acceptance": [
+        "Actual staging scrape + deliberately triggered test sink alert chứng minh plumbing.",
+        "Freshness, disk/DB connection pressure, unavailable owner, queue age và backup/restore age monitored.",
+        "External alert recipient/delivery chỉ thiết lập khi owner đã cho scope; không gọi rule file là alert delivered."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm observability:check"
+        ],
+        "manual": [
+          "Budget includes Argo/K8s/DB/web/telemetry overhead trên cùng host nếu có; test stale collector."
+        ]
+      },
+      "rollback": "Disable/shed noncritical collector load; keep local logs and essential health.",
+      "module": "N08",
+      "priority": 91,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N08-03",
+      "title": "Load runner và admin launch controls",
+      "depends_on": [
+        "N07-01",
+        "N08-01",
+        "N04-04",
+        "N07-02"
+      ],
+      "deliverables": [
+        "Socket.IO-aware workload runner image, staging Job templates và start/cancel API/UI"
+      ],
+      "acceptance": [
+        "Fixed signed/pinned runner image và profiles; no arbitrary URL/command/namespace.",
+        "Quota/NetworkPolicy/activeDeadline/TTL/kill switch; load generator tách khỏi API và target host khi đo capacity.",
+        "Giữ local bench guards; tạo staging harness riêng có allowlist, fake accounts và cleanup."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm test:load-control"
+        ],
+        "manual": [
+          "Forbidden target/prod/localhost/private credential injection, cancel idempotency, job crash cleanup."
+        ]
+      },
+      "rollback": "Disable launch permission; cancel bounded owned jobs; retain report.",
+      "module": "N08",
+      "priority": 92,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N08-04",
+      "title": "Đo mixed workload trên môi trường mục tiêu",
+      "depends_on": [
+        "N08-02",
+        "N08-03",
+        "N05-03",
+        "N05-05"
+      ],
+      "deliverables": [
+        "Step/ramp/burst/soak/reconnect profile reports với hardware/network/digest"
+      ],
+      "acceptance": [
+        "Mix movement/focus/orders/travel/joins/NAT reconnect/DB+TLS, accepted vs rejected rõ.",
+        "Proposed gate: mỗi step đủ ổn định, >=30min steady capacity, >=2h soak release; không coi120s là leak test.",
+        "Điểm dừng resource/SLO bounded; highest connected khác highest admitted/active; no fabricated CCU."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm load:staging --profile=mixed-capacity"
+        ],
+        "manual": [
+          "Đo host thực hoặc tương đương có disclosure; không production stress mặc định."
+        ]
+      },
+      "rollback": "Stop run khi threshold; reset fake test data đúng namespace/schema đã tạo.",
+      "module": "N08",
+      "priority": 93,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N08-05",
+      "title": "Capacity recommendation có version và expiry",
+      "depends_on": [
+        "N08-04"
+      ],
+      "deliverables": [
+        "C_sustainable/C_recommended/C_hard report; admin capacity history/approval view"
+      ],
+      "acceptance": [
+        "C_recommended mặc định floor0.70*C_sustainable chỉ là policy headroom; C_hard<=measured sustainable.",
+        "Kết quả bind hardware/workload/digests/SLOs; thay shape/protocol/version đáng kể đánh stale.",
+        "Không auto-raise cap từ missing/stale/noisy metrics; đề xuất không phải capacity đã áp dụng."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm capacity:check"
+        ],
+        "manual": [
+          "Reject invalid/stale measurement and fast-rejection percentile tricks."
+        ]
+      },
+      "rollback": "Revert active recommendation to last valid lower bound; disable new admissions if unsafe.",
+      "module": "N08",
+      "priority": 94,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N09-01",
+      "title": "Contract queue/lease và capacity state machine",
+      "depends_on": [
+        "N05-01",
+        "N08-01"
+      ],
+      "deliverables": [
+        "Queue/offer/slot schema, state machine, policy versions"
+      ],
+      "acceptance": [
+        "Disjoint active+reconnect_grace+reserved<=C_hard; new grant only occupancy<C_target<=C_hard.",
+        "One account one slot/ticket; travel reuses global slot, target room hold riêng.",
+        "Cap target hạ dưới occupancy => DRAINING_LIMIT no kick; hard decrease pending until occupancy fits."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm test:admission-contract"
+        ],
+        "manual": [
+          "Model duplicate tabs/reconnect/offer expiry/returning user/room full."
+        ]
+      },
+      "rollback": "Contract additive adapter, queue feature stays disabled until full implementation.",
+      "module": "N09",
+      "priority": 100,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N09-02",
+      "title": "PostgreSQL queue và atomic grant",
+      "depends_on": [
+        "N09-01",
+        "N05-04"
+      ],
+      "deliverables": [
+        "Queue tickets, allocation transaction, TTL janitor, idempotent claim/release"
+      ],
+      "acceptance": [
+        "FIFO+aging with deterministic tie-break; offer expires và slot trả đúng once.",
+        "Concurrent claim/session duplicate/worker retry không oversubscribe.",
+        "DB/owner failure fail closed; reconnect grace có bound, hết hạn phải requeue."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm test:integration",
+          "pnpm test:security"
+        ],
+        "planned": [
+          "pnpm test:admission"
+        ],
+        "manual": [
+          ">=2xcap concurrent claims in disposable environment; kill between reserve/claim/release."
+        ]
+      },
+      "rollback": "Stop new grants, let held slots expire safely; keep existing sessions, no destructive reset.",
+      "module": "N09",
+      "priority": 101,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N09-03",
+      "title": "Queue UX web/mobile và reconnect states",
+      "depends_on": [
+        "N09-02",
+        "N06-03"
+      ],
+      "deliverables": [
+        "Waiting UI rank/ETA range/leave/ready countdown, accessible updates"
+      ],
+      "acceptance": [
+        "Không fake exact ETA; show own ticket, no other-user identity.",
+        "Lightweight polling/SSE with jitter/backoff budget, waiting users không giữ game socket vô hạn.",
+        "Background/resume/reconnect/hard expired states có action rõ."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm test:queue-ux"
+        ],
+        "manual": [
+          "Multiple tabs, network loss, ready offer missed, cancel and return."
+        ]
+      },
+      "rollback": "Fallback friendly full/try-later screen with server gates retained.",
+      "module": "N09",
+      "priority": 102,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N09-04",
+      "title": "Admin cap policy và queue controls",
+      "depends_on": [
+        "N09-02",
+        "N07-03",
+        "N08-05"
+      ],
+      "deliverables": [
+        "Versioned caps, queue pause/maintenance, DRAINING_LIMIT view và audit"
+      ],
+      "acceptance": [
+        "Default target=recommended; target<=hard; hard reduction pending, no hidden kick.",
+        "Raising bound needs fresh capacity evidence; operator step-up/reason recorded.",
+        "Room/reservation waitlists cannot be mistaken for platform queue."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm test:admission",
+          "pnpm test:admin"
+        ],
+        "manual": [
+          "Target lowered under occupancy, grace reconnect, emergency pause, stale evidence deny."
+        ]
+      },
+      "rollback": "Audited rollback to previous safer policy, preserve tickets/leases.",
+      "module": "N09",
+      "priority": 103,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N09-05",
+      "title": "Fault/concurrency/load acceptance",
+      "depends_on": [
+        "N09-03",
+        "N09-04",
+        "N05-04"
+      ],
+      "deliverables": [
+        "Admission invariant/fairness/failure report and queue recovery runbook"
+      ],
+      "acceptance": [
+        "Race/expired offer/restart/duplicate claim never exceeds hard bound.",
+        "No queue starvation under stated policy; max ticket count/TTL protects DB/API.",
+        "Fresh mixed profile includes waiting users + admitted players; compare to N08 capacity before release."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm test:admission",
+          "pnpm test:queue-ux",
+          "pnpm load:staging --profile=queue-storm"
+        ],
+        "manual": [
+          "Realistic shared NAT, jittered reconnect and DB outage/recovery."
+        ]
+      },
+      "rollback": "Disable admission controller grants; maintenance mode, reconcile leases against owner before reopen.",
+      "module": "N09",
+      "priority": 104,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N10-01",
+      "title": "Thiết kế spike và device/performance budgets",
+      "depends_on": [
+        "N00-04",
+        "N06-01"
+      ],
+      "deliverables": [
+        "CachyOS/Android toolchain inventory, one-device baseline matrix, proposed performance budgets và Capacitor ADR với iOS applicability riêng"
+      ],
+      "acceptance": [
+        "Không coi ReactNative chạy native được DOM/Pixi cũ trực tiếp; Expo DOM vẫn có WebView boundary.",
+        "Không assume mobile browser/SSR tương đương bundle cài sẵn.",
+        "FPS/memory/battery/cold-start budgets là proposed và khóa trước đo, không chỉnh sau để xanh.",
+        "Không gọi điện thoại hiện có là support-floor nếu chưa có dữ liệu model/OS; tách device-baseline PASS khỏi broad Android coverage. N14 conditional giữ mục tiêu iOS."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [],
+        "manual": [
+          "Ghi CPU/RAM/GPU, Android Studio/SDK/JDK/Gradle pins, adb authorization và phone model/OS/WebView; emulator/KVM là supplemental. Mac/iPhone access ghi riêng cho N14."
+        ]
+      },
+      "rollback": "Design-only; giữ backend/protocol independent renderer.",
+      "module": "N10",
+      "priority": 12,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N10-02",
+      "title": "Tách browser-only game client và bundle mobile đầu tiên",
+      "depends_on": [
+        "N10-01",
+        "N02-02",
+        "N06-02"
+      ],
+      "deliverables": [
+        "game-client/client-sdk/platform interfaces; Next mounts package; Vite+Capacitor shell"
+      ],
+      "acceptance": [
+        "Shared package không Next/Node/server-env dependencies.",
+        "Local assets bundle includes index.html, lifecycle/navigation adapters và safe fallback.",
+        "Chưa thêm deployment game-web; web behavior không regress."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm lint",
+          "pnpm typecheck",
+          "pnpm build"
+        ],
+        "planned": [
+          "pnpm mobile:build:dev",
+          "pnpm test:client-boundaries"
+        ],
+        "manual": [
+          "Run browser và Android local bundled build trên Linux/điện thoại hiện có. iOS native build chưa áp dụng ở task này; không ghi iOS PASS."
+        ]
+      },
+      "rollback": "Next adapter keeps previous game paths until shared shell verified.",
+      "module": "N10",
+      "priority": 111,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N10-03",
+      "title": "Native sessions và one-time socket ticket",
+      "depends_on": [
+        "N10-02",
+        "N05-06",
+        "N02-03"
+      ],
+      "deliverables": [
+        "Versioned native auth/refresh/logout/device-session/ticket contracts"
+      ],
+      "acceptance": [
+        "Android refresh credential trong Keystore-backed encrypted storage qua native bridge đã review; tokens không URL/logs/localStorage. Contract có secure-store adapter; iOS Keychain implementation được gate tại N14-02.",
+        "Browser cookie+Origin+CSRF unchanged; ticket bound subject/session/audience/expiry/protocol, atomic single use.",
+        "Session revoke/logout closes access; bridge minimizes credential exposure."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm test:security",
+          "pnpm test:integration"
+        ],
+        "planned": [
+          "pnpm test:native-auth"
+        ],
+        "manual": [
+          "Wrong Origin/browser path, replay/expired ticket/stolen refresh rotation/device revoke."
+        ]
+      },
+      "rollback": "Disable native login flag; keep browser auth intact and invalidate native sessions.",
+      "module": "N10",
+      "priority": 112,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N10-04",
+      "title": "Physical Android spike và quyết định kiến trúc theo thiết bị",
+      "depends_on": [
+        "N10-03",
+        "N06-04",
+        "N05-04"
+      ],
+      "deliverables": [
+        "Physical Android results với model/OS/WebView/build/source/profile; ADR có phạm vi thiết bị đã chứng minh và iOS chưa kiểm chứng"
+      ],
+      "acceptance": [
+        "30min gameplay,20enter/leave,10background/resume; test keyboard/safeareas/WiFi-cellular/process kill.",
+        "Renderer pauses; focus time from server; resync before commands after foreground.",
+        "Một Android thật đủ cho device-baseline gate; ghi giới hạn coverage, không suy rộng tới mọi Android hoặc iOS. Thiếu iPhone không chặn N10-04; iOS physical gate là N14-03. Nếu fail sau tối ưu có timebox, ADR so sánh renderer theo nhu cầu."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm mobile:smoke"
+        ],
+        "manual": [
+          "Đo/ghi hình trên Android hiện có; 30 phút chơi, 20 enter/leave, 10 background/resume. Emulator chỉ bổ sung API/screen coverage; không thay số đo nhiệt/pin/GPU thiết bị."
+        ]
+      },
+      "rollback": "Keep shared contracts/backend; discard failed shell spike without rewriting platform.",
+      "module": "N10",
+      "priority": 113,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N11-01",
+      "title": "Android signed build pipeline và artifact traceability",
+      "depends_on": [
+        "N10-04",
+        "N03-04"
+      ],
+      "deliverables": [
+        "Linux CI tạo signed APK để cài thử và signed AAB candidate cho Google Play; build/protocol/assets/source mapping"
+      ],
+      "acceptance": [
+        "Signing keys protected; pinned toolchain và least privilege.",
+        "Mobile binary/client protocol/assets linked to backend release compatibility.",
+        "Argo/GHCR không được dùng để gọi mobile store đã deploy.",
+        "Local APK/AAB build không phụ thuộc Play account hay macOS. Signing identity phải được quản lý bền vững; chưa gọi artifact là Play-distributed hoặc Play-approved.",
+        "Kiểm APKs sinh từ AAB bằng bundletool hoặc Play test delivery khi có access; không adb install AAB. Install/update evidence ghi signing track; local APK và Play App Signing có thể khác certificate."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm mobile:verify"
+        ],
+        "manual": [
+          "Signed APK install/update trên Android; kiểm AAB artifact/signature/mapping. Play account/track access chỉ cần ở N11-04; missing secrets của signing CI chỉ chặn bước tương ứng."
+        ]
+      },
+      "rollback": "Revoke compromised signing access per provider procedure; retain previous signed releases.",
+      "module": "N11",
+      "priority": 120,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N11-02",
+      "title": "Android interaction và lifecycle hoàn chỉnh",
+      "depends_on": [
+        "N10-04",
+        "N09-03"
+      ],
+      "deliverables": [
+        "Safearea/keyboard/back/deeplinks, notifications opt-in nếu cần, cache/error UX"
+      ],
+      "acceptance": [
+        "Không remote-website wrapper đơn thuần; gameplay local bundle hoạt động app-like.",
+        "Foreground session refresh/resync, offline truth, stale asset fallback, memory cleanup.",
+        "External URL/deep link allowlist; unsupported old client upgrade flow rõ."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm mobile:smoke"
+        ],
+        "manual": [
+          "Android thật: keyboard/back/safe area/TalkBack, denied permissions, airplane mode, low-memory/process kill và suspended timer; iOS behavior thuộc N14."
+        ]
+      },
+      "rollback": "Feature flags/previous compatible binary; server retains old client support window.",
+      "module": "N11",
+      "priority": 121,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N11-03",
+      "title": "Account deletion, UGC và Google Play dossier",
+      "depends_on": [
+        "N07-03",
+        "N10-03"
+      ],
+      "deliverables": [
+        "In-app deletion request + web resource, report/block, privacy/data safety/age policy docs"
+      ],
+      "acceptance": [
+        "Users có report/block và enforcement thật; deletion status/timeline/required retention disclosed.",
+        "Rating/privacy/permission manifest phù hợp features thật; review current store docs tại submission.",
+        "Dating/random matching giữ ngoài initial mobile public scope cho tới gate riêng; không chỉ bật remote flag.",
+        "Kiểm loại/ngày tạo Play account và testing requirements hiện hành. Chưa có account/testers không chặn local Android development; ghi đúng blocker cho store production access."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm test:security"
+        ],
+        "planned": [
+          "pnpm test:mobile-policy"
+        ],
+        "manual": [
+          "Owner validates actual disclosures/assets/support details; no invented legal approvals."
+        ]
+      },
+      "rollback": "Keep restricted features off; correct docs/workflows before submission.",
+      "module": "N11",
+      "priority": 122,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N11-04",
+      "title": "Android internal/closed beta và review findings",
+      "depends_on": [
+        "N11-01",
+        "N11-02",
+        "N11-03",
+        "N06-05",
+        "N12-03"
+      ],
+      "deliverables": [
+        "Google Play internal/closed track artifacts khi có quyền; Android crash/perf/UX findings, tested-device matrix và release decision"
+      ],
+      "acceptance": [
+        "Build install/update, login/delete/report/block/queue/background flows pass trên Android thật. Coverage bổ sung qua emulator/beta users hoặc device service theo support claim; một máy không chứng nhận toàn bộ hệ Android.",
+        "Owner/store access explicit at actual upload; no hidden purchase/submission.",
+        "Beta delivered khác store approved/public launched; record exact statuses.",
+        "Ngay khi phân phối Android binary đầu tiên cho tester/user (kể cả private APK), đặt android_clients_distributed=true và mobile_clients_distributed=true; không chờ task VERIFIED. Record build/support window; ios_clients_distributed vẫn false khi chưa có iOS được phân phối."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm mobile:verify"
+        ],
+        "manual": [
+          "Play test track khi đã được phép; local APK install được ghi riêng, không thay bằng chứng Play beta. Ghi tester eligibility/opt-in requirements từ Play Console khi tới public release."
+        ]
+      },
+      "rollback": "Halt rollout/test track, retain backend protocol for installed clients.",
+      "module": "N11",
+      "priority": 123,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N12-01",
+      "title": "Deployment regression end-to-end",
+      "depends_on": [
+        "N04-04",
+        "N05-04",
+        "N07-05",
+        "N09-05"
+      ],
+      "deliverables": [
+        "15-scenario matrix theo architecture02 với source/digest/environment artifacts"
+      ],
+      "acceptance": [
+        "Cover bootstrap/TLS/session/socket/old-new/migration fail/lock loss/drain/revert/private ops/assets/workflows.",
+        "Không dùng health200 thay gameplay smoke.",
+        "Failures không hidden bằng retry-only report; retain attempts and final outcomes.",
+        "CD-10 native subcases được đánh applicability theo platform. Android supported/distributed yêu cầu N12-03; iOS supported/distributed yêu cầu N14-04. Platform chưa tồn tại là NOT_APPLICABLE kèm lý do, không PASS."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm ci:browser"
+        ],
+        "planned": [
+          "pnpm test:deploy"
+        ],
+        "manual": [
+          "Staging full sync from immutable artifact, actual player/admin/queue flows."
+        ]
+      },
+      "rollback": "Revert release set, collect incident/evidence, keep data integrity.",
+      "module": "N12",
+      "priority": 130,
+      "initial_status": "TODO",
+      "conditional_gates": [
+        {
+          "when_field": "android_clients_distributed",
+          "requires_task": "N12-03",
+          "rule": "Required when Android context true or unknown; false only while no supported/distributed Android binary exists."
+        },
+        {
+          "when_field": "ios_clients_distributed",
+          "requires_task": "N14-04",
+          "rule": "Required when iOS context true or unknown; false only while no supported/distributed iOS binary exists."
+        }
+      ]
+    },
+    {
+      "id": "N12-02",
+      "title": "Backup restore, failure drills và operational handoff",
+      "depends_on": [
+        "N08-05",
+        "N12-01",
+        "N05-05"
+      ],
+      "deliverables": [
+        "Encrypted off-host backup/restore exercise, alert/incident runbooks, observed RPO/RTO"
+      ],
+      "acceptance": [
+        "Restore vào target trống có checksum/schema/business invariants và cleanup.",
+        "RPO/RTO là kết quả thực và target riêng; local2.9s historical không làm production SLA.",
+        "No false live status khi alert destination/rotation/backup cadence chưa configured."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm ops:recovery-check"
+        ],
+        "manual": [
+          "DB outage/full disk/owner crash/worker poison/failed migration; chosen scopes bounded staging."
+        ]
+      },
+      "rollback": "Execute documented recovery; no overwrite occupied database.",
+      "module": "N12",
+      "priority": 131,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N12-03",
+      "title": "Android/server version compatibility gate",
+      "depends_on": [
+        "N11-01",
+        "N11-02",
+        "N11-03"
+      ],
+      "deliverables": [
+        "Android supported N/N-1 binary matrix với server candidate và rollback; iOS matrix thuộc N14-04"
+      ],
+      "acceptance": [
+        "Install/update/mixed client, expired auth/ticket, old asset manifest và protocol error đúng.",
+        "Breaking backend change không phát hành trước compatible mobile availability/window.",
+        "Android physical install/update/reconnect evidence bắt buộc; iOS chưa supported/distributed là NOT_APPLICABLE kèm lý do, không PASS. N14-04 bắt buộc riêng khi ios_clients_distributed=true hoặc unknown.",
+        "First native release chưa có N-1 thật: ghi NOT_APPLICABLE cho previous released build, chạy current candidate và lưu làm baseline. Từ build sau thử toàn bộ supported window; không tạo số liệu N-1 giả."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm test:protocol",
+          "pnpm mobile:verify"
+        ],
+        "manual": [
+          "Android signed candidates có thể cài tại máy trước store beta, nên gate này không chờ N11-04. Evidence phải gắn đúng backend candidate/rollback và actual supported binaries."
+        ]
+      },
+      "rollback": "Keep previous supported protocol endpoints/assets; postpone breaking change.",
+      "module": "N12",
+      "priority": 132,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N12-04",
+      "title": "Web beta/production readiness dossier",
+      "depends_on": [
+        "N06-05",
+        "N12-02",
+        "N09-05"
+      ],
+      "deliverables": [
+        "Concrete release candidate source/digests/cap config/risk/rollback dossier"
+      ],
+      "acceptance": [
+        "All relevant gates satisfied with fresh evidence; current hardware capacity measured.",
+        "One-operator operating policy explicit: maintenance/disable higher-risk features when unattended.",
+        "Technically ready not public released; owner sees exact candidate to approve at release step."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm release:readiness"
+        ],
+        "manual": [
+          "Verify every gate/evidence validity; no need wait for optional scaling N13 or mobile if web release scope separate."
+        ]
+      },
+      "rollback": "Candidate stays staging/closed until release action authorized.",
+      "module": "N12",
+      "priority": 133,
+      "initial_status": "TODO",
+      "conditional_gates": [
+        {
+          "when_field": "android_clients_distributed",
+          "requires_task": "N12-03",
+          "rule": "Required when Android context true or unknown; false only while no supported/distributed Android binary exists."
+        },
+        {
+          "when_field": "ios_clients_distributed",
+          "requires_task": "N14-04",
+          "rule": "Required when iOS context true or unknown; false only while no supported/distributed iOS binary exists."
+        }
+      ]
+    },
+    {
+      "id": "N12-05",
+      "title": "Phát hành có scope và theo dõi sau deploy",
+      "depends_on": [
+        "N12-04"
+      ],
+      "deliverables": [
+        "Approved promotion PR merged when authorized, Argo actual rollout, observation report"
+      ],
+      "acceptance": [
+        "Only actual approved environment/candidate; verify smoke/capacity/alerts after promotion.",
+        "No auto scaling API singleton, no hidden public worlds.",
+        "Observe rollback triggers and execute documented Git revert if needed; report actual live status."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm test:deploy"
+        ],
+        "manual": [
+          "External release approval applies here, not to earlier implementation; if absent BLOCKED_EXTERNAL and report candidate complete."
+        ]
+      },
+      "rollback": "Git revert to compatible prior digests; runtime disable/admission pause if emergency.",
+      "module": "N12",
+      "priority": 134,
+      "initial_status": "TODO",
+      "conditional_gates": [
+        {
+          "when_field": "android_clients_distributed",
+          "requires_task": "N12-03",
+          "rule": "Required when Android context true or unknown; false only while no supported/distributed Android binary exists."
+        },
+        {
+          "when_field": "ios_clients_distributed",
+          "requires_task": "N14-04",
+          "rule": "Required when iOS context true or unknown; false only while no supported/distributed iOS binary exists."
+        }
+      ]
+    },
+    {
+      "id": "N13-01",
+      "title": "Xác nhận trigger và ADR split runtime",
+      "depends_on": [
+        "N08-05",
+        "N12-02"
+      ],
+      "deliverables": [
+        "Bottleneck evidence, required workload target, cost/failure model"
+      ],
+      "acceptance": [
+        "Module chỉ activate bằng measured trigger và owner của decision; chưa đo thì không làm vì dự đoán.",
+        "So sánh optimize/scale-up/per-room mailboxes/worker với multi-owner.",
+        "N13 chưa active không chặn web/mobile beta."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm profile:runtime"
+        ],
+        "manual": [
+          "Capacity profile hardware/source pinned; business need đã ghi."
+        ]
+      },
+      "rollback": "Giữ singleton; disable conditional module nếu trigger không tồn tại.",
+      "module": "N13",
+      "priority": 200,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N13-02",
+      "title": "Room directory, routing và fencing",
+      "depends_on": [
+        "N13-01"
+      ],
+      "deliverables": [
+        "Per-room authority, monotonic epoch lease, gateway routing, handoff protocol"
+      ],
+      "acceptance": [
+        "Redis Pub/Sub một mình không chứng minh exclusivity; stale owner cannot write/broadcast valid authority.",
+        "Cross-room/per-account consistency giữ qua partition/retry; durable DB remains source.",
+        "Nếu thêm Redis, nêu outage/fallback/operational budget và no critical-state-only storage."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm test:distributed-authority"
+        ],
+        "manual": [
+          "Two owners race, expired lease, partition, failover and stale connections."
+        ]
+      },
+      "rollback": "Route all rooms back to one verified owner via safe drain; preserve protocol compatibility.",
+      "module": "N13",
+      "priority": 201,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N13-03",
+      "title": "Shard/load/rolling failure acceptance",
+      "depends_on": [
+        "N13-02"
+      ],
+      "deliverables": [
+        "Multi-owner capacity+chaos+rollout report and updated admission policy"
+      ],
+      "acceptance": [
+        "No duplicate membership/reward/seat across owners; N/N-1 compatibility.",
+        "Horizontal scale policy based on admitted workload not raw transports only.",
+        "Measured improvement outweighs operational cost; no linear-scaling promise."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm test:distributed-authority",
+          "pnpm load:staging --profile=multi-owner"
+        ],
+        "manual": [
+          "Rolling upgrade/missing shard/crash/Redis-DB outages, bounded chaos stage."
+        ]
+      },
+      "rollback": "Drain/route rollback by verified plan, never overlap uncontrolled owners.",
+      "module": "N13",
+      "priority": 202,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N14-01",
+      "title": "Xác minh macOS/Xcode, signing và iPhone access",
+      "depends_on": [
+        "N10-01"
+      ],
+      "deliverables": [
+        "Environment dossier: macOS local/remote/CI provider, supported Xcode, signing path, physical iPhone/testing access, cost/owner"
+      ],
+      "acceptance": [
+        "N14 chỉ ACTIVE khi có evidence về macOS build access và physical-iPhone testing path khả dụng; dùng N10-01 hoặc N00 evidence record để activation, không chờ task trong module tự hoàn tất.",
+        "Linux vẫn là máy viết shared code. Không gọi Linux WebKit/browser simulation là iOS Simulator hoặc physical iPhone.",
+        "Hosted macOS chạy Xcode để build; cần xem quota/cost và account provisioning thật, không tự mua dịch vụ."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [],
+        "manual": [
+          "Kiểm quyền runner/macOS, Xcode matrix, signing/test distribution route và người/thiết bị nhận thử."
+        ]
+      },
+      "rollback": "Chưa đủ resources thì giữ module conditional; Android/web tiếp tục. Không xóa mục tiêu iOS.",
+      "module": "N14",
+      "priority": 211,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N14-02",
+      "title": "iOS native adapters và signed build trên macOS",
+      "depends_on": [
+        "N14-01",
+        "N10-03",
+        "N11-01"
+      ],
+      "deliverables": [
+        "iOS Capacitor target, Keychain/session bridge, platform lifecycle adapters, signed archive/IPA và source mapping"
+      ],
+      "acceptance": [
+        "Pin Xcode/SDK/Capacitor/plugin toolchain; kiểm Keychain, native refresh/ticket, browser Origin/CSRF regression.",
+        "Navigation/safe area/keyboard/deep links/permissions có iOS implementations; không ghi Android PASS thay iOS.",
+        "Signing secrets chỉ trong protected build environment; build artifact không được ghi thành store approval."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm mobile:verify:ios",
+          "pnpm test:native-auth"
+        ],
+        "manual": [
+          "Build/archive/sign bằng macOS Xcode phù hợp; simulator smoke là supplemental, physical gate tiếp theo."
+        ]
+      },
+      "rollback": "Giữ native iOS distribution đóng và backend contracts tương thích; sửa adapter/build mà không chặn Android.",
+      "module": "N14",
+      "priority": 212,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N14-03",
+      "title": "Physical iPhone spike và iOS UX/lifecycle gate",
+      "depends_on": [
+        "N14-02",
+        "N10-04",
+        "N11-02"
+      ],
+      "deliverables": [
+        "iPhone model/OS/build/source profiles, gameplay/performance/security evidence và iOS architecture ADR"
+      ],
+      "acceptance": [
+        "30 phút gameplay, 20 enter/leave, 10 background/resume; keyboard/safe area/VoiceOver, Wi-Fi-cellular, process kill và foreground resync được kiểm.",
+        "Đo native/JS memory, frame-time, startup và thermal/energy theo device budget chốt trước; thiếu số đo ghi thiếu, không PASS.",
+        "Thiếu physical-iPhone evidence thì gate iOS chưa đạt; kết quả Android hoặc cloud build không thay thế. Bounded optimization trước đổi stack."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm mobile:smoke:ios"
+        ],
+        "manual": [
+          "Cài signed app lên iPhone thật, trực tiếp/thiết bị mượn/tester hoặc dịch vụ có đủ thao tác và telemetry; ghi coverage còn thiếu."
+        ]
+      },
+      "rollback": "Dừng phân phối thêm nếu spike fail; giữ hỗ trợ/compatibility cho binary đã trao cho tester, không reset ios_clients_distributed; Android tiếp tục trong scope đã kiểm chứng.",
+      "module": "N14",
+      "priority": 213,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N14-04",
+      "title": "iOS/server version compatibility gate",
+      "depends_on": [
+        "N14-03",
+        "N11-03"
+      ],
+      "deliverables": [
+        "iOS supported binary matrix với backend candidate/rollback và content/protocol revisions"
+      ],
+      "acceptance": [
+        "Current và mọi client còn trong support window được thử install/update/auth/ticket/reconnect/travel trên iPhone; giữ old protocol/assets khi rollback.",
+        "First iOS release chưa có N-1 thật thì ghi NOT_APPLICABLE có lý do và lưu candidate baseline; không fake previous-release evidence.",
+        "Từ lần phân phối iOS đầu tiên, backend N12-01/04/05 yêu cầu gate này bên cạnh gate Android khi Android còn supported. Evidence phải được revalidate cho release candidate hiện hành."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm test:protocol",
+          "pnpm mobile:verify:ios"
+        ],
+        "manual": [
+          "Có thể cài signed candidate qua development/ad-hoc route hợp lệ trước TestFlight; không tạo dependency cycle với N14-05."
+        ]
+      },
+      "rollback": "Giữ protocol/assets trước, hoãn breaking backend change cho đến khi installed iOS clients có upgrade window.",
+      "module": "N14",
+      "priority": 214,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N14-05",
+      "title": "TestFlight, App Store dossier và review findings",
+      "depends_on": [
+        "N14-04",
+        "N06-05"
+      ],
+      "deliverables": [
+        "TestFlight beta khi được phép, Apple disclosures/UGC/deletion dossier, device coverage và exact store release status"
+      ],
+      "acceptance": [
+        "Kiểm chính sách Apple hiện hành, account/support/privacy và gameplay value; Android dossier không thay Apple-specific review.",
+        "Ngay khi gửi iOS binary đầu tiên tới tester/user, đặt ios_clients_distributed=true và mobile_clients_distributed=true, không chờ task VERIFIED.",
+        "Owner/store authorization chỉ cần ở upload/publication thực tế; technical work tiếp tục trước. Beta delivered, review approved và public published được ghi riêng."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm mobile:verify:ios"
+        ],
+        "manual": [
+          "TestFlight installation/update và feedback từ người thử; QA phạm vi thiết bị trước broad release."
+        ]
+      },
+      "rollback": "Dừng rollout khi cần, giữ backend hỗ trợ installed iOS clients; không thể rollback máy người dùng chỉ bằng Argo.",
+      "module": "N14",
+      "priority": 215,
+      "initial_status": "TODO"
+    }
+  ],
+  "implementation_state_at_generation": "NOT_STARTED",
+  "runtime_context_rules": {
+    "android_clients_distributed": "false only before supported/distributed Android binaries exist; true from first distribution, including private beta; null means unknown and requires Android compatibility evidence.",
+    "ios_clients_distributed": "false while iOS has not been distributed/supported; true from first iOS distribution; null means unknown and requires iOS compatibility evidence. Do not mark iOS PASS using Android results.",
+    "mobile_clients_distributed": "Aggregate: true if either platform is true, false if both are false, otherwise null. Never reset a platform to false while its clients remain supported."
+  },
+  "plan_revision": "2.1-android-first",
+  "execution_profile": {
+    "source": "User-reported environment in this conversation, 2026-11-05; not independently inspected",
+    "developer_os": "CachyOS Linux",
+    "physical_android_devices_available": 1,
+    "physical_android_model_and_os": "UNKNOWN; collect in N10-01",
+    "workstation_cpu_ram_gpu": "UNKNOWN; collect in N00-03",
+    "macos_xcode_access": "NOT_CONFIRMED",
+    "physical_iphone_access": "NOT_AVAILABLE_IN_REPORTED_SETUP",
+    "initial_mobile_platform": "android",
+    "future_ios_lane": "N14; conditional, not removed from product scope"
+  }
+}
