@@ -1,0 +1,33 @@
+ Network virtual-city-test-660d34e8_default Creating 
+ Network virtual-city-test-660d34e8_default Creating 
+ Network virtual-city-test-660d34e8_default Created 
+ Network virtual-city-test-660d34e8_default Created 
+ Container virtual-city-test-660d34e8-db-1 Creating 
+ Container virtual-city-test-660d34e8-db-1 Created 
+ Container virtual-city-test-660d34e8-db-1 Starting 
+ Container virtual-city-test-660d34e8-db-1 Started 
+ Container virtual-city-test-660d34e8-db-1 Waiting 
+ Container virtual-city-test-660d34e8-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ✓ |integration| tests/integration/events.test.ts (52 tests | 45 skipped) 6725ms
+   ✓ discovery concentrates confirmed empty city into one eligible place without allocating rooms or exposing hidden metadata  1038ms
+   ✓ discovery ranks actual room allocations before listed schedules,excludes private schedules and rechecks current access  1007ms
+   ✓ discovery preserves known occupied counts during schedule outage and refuses unknown room snapshots  960ms
+   ✓ discovery bounds held reads per account and globally over actual TCP and releases permits after completion  1106ms
+   ✓ discovery leaves realtime commands unblocked by a slow catalog and rejects the resulting old snapshot  948ms
+   ✓ serves an authenticated empty catalog and denies ungranted scheduling or automatic calendar access  818ms
+   ✓ global event discovery lists eligible public events while private and adult-gated rows remain hidden  845ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed | 45 skipped (52)
+   Start at  04:06:00
+   Duration  8.18s (transform 651ms, setup 0ms, import 1.30s, tests 6.73s, environment 0ms)
+
+ Container virtual-city-test-660d34e8-db-1 Stopping 
+ Container virtual-city-test-660d34e8-db-1 Stopped 
+ Container virtual-city-test-660d34e8-db-1 Removing 
+ Container virtual-city-test-660d34e8-db-1 Removed 
+ Network virtual-city-test-660d34e8_default Removing 
+ Network virtual-city-test-660d34e8_default Removed 

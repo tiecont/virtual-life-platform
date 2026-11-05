@@ -6,7 +6,17 @@ Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;bran
 
 Node26.9.0/pnpm11.28.5. RetaineddevDB0036/stopped;latestjournal/9privatecounts0. Current verification workers are listed below;completed slices leave no preview running. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
 
-## Current work — M24-02 VERIFIED;continue M24-03
+## Current work — M24-03 VERIFIED;continue M24-04
+
+Fromb79b3de;ADR0083/CENTRAL-PARK.md/m24-board-checks.json. ParkActivities wraps existingWorldCatalog/WorldActivity/travelHref;otheravailablelisted session-admissible eventspaces/currentAPI/3rows/30sTTL/IANA/truthfulheldplaces/partialunknown/separateconfirmation. Parentidentitykey/abortsupersededreads/offline-backgroundclear/lateLogoutdiscard. BrowserParkprofileexplicitLibraryinstallation+testflag only;guestfixtureuniquephysicalIPs retainsIPquota. No newAPI/queryowner/eventcapability/Parkorganizer/SQL/migration.
+
+Initialbrowserfailed atENDEDfixturefutureendsAt/SQLengine_events_check2 beforeanyboardassertion;notapplicationred-firstproof. Fixedpastcompletefixture/currentchangedAt,keptconstraints. Final14Parkbrowser0(7perdevice):allpreviousParkcases plusactualLibrarylistedOPEN/IANA/private-ended-restrictedsentinelsabsent/currentAPIandUI/noallocation/ownnull/separatetravel/outageunknown/recovery/31sclockexpiry/catalogfailureclear/recovery/actualLogout/heldreplydiscard. Relevant5unit/7discoveryAPI(45filteredskips)/web-fixturetypes/wholelint/CIpolicy/allbuilds0.472frozenhashesunchanged/201API-sharedpackage runtimepaths matchb79b3de. Earlierfull19gov/266unit/512integrationbaseline separate;no newwhole512suite/full20specbrowser/certificate.
+
+27freshfiles savedm24-board-visual/10changedhistoricalfiles restored;4selectedboardPNGsinspected(desktop-mobilelisted/mobileexpired/desktoplogout). Allownedroot-browser-DB-API-webworkersfinished/no preview;no retained0036/stopped/realflag/provider/staff/legacy/remote/public/imagechange. OldM21-04image stale.
+
+Next exact actionM24-04:embedexistingGroupInvitations withcurrentfriends/catalog/inbox revision/manualorcurrentRoomSocket refresh;reuseM09 groupreceipts/recipientchoices/expiry/block/capacity/travel handshake. AvoidsecondpartyDB/forcedteleport/extraRoomtransport. VerifyactualPark→Library groupoffer withindependentaccept-decline/sourcepreservation andcanonicalinterruptedreceipt retry,blocked/ineligible/currentcapacity/negativeLeave contexts. ExistingInvitationPanel alreadyownsrecipientacceptance+review-link;linktoinbox forrecipientdecisions,do not cloneit. GroupInvitations currentlyneedsme/friends/worlds/revision props;friends GET alreadyfiltersblocked,serverchecksconsent everyoffer. Continue05publicsafetycoldstart after04verified. Wholeplanincomplete.
+
+## Prior slice — M24-02 VERIFIED
 
 From4450dcf;ADR0082/CENTRAL-PARK.md/m24-quick-checks.json. SharedChatService trustedlocalquickOnlyWorlds scope permitsParkapprovedcanned/emote IDs withoutglobalchat/free text;world1.1.0/scene1.0.0. CurrentRoomSocket/native8buttons/volatile20entry60monotonicsecondfeed/visiblepeerpurge/source-sessionremount/canonicalretry/independentnegativecontrols. Initialred1failed4filteredskips retained. Packages/API-web-fixturetypes/wholelint/fullbuild0;new5PGsockettests0/focusedchat-Library-Park44tests0. Actualseed+20targetedrace11admit9full/cap12/one room,account6/10sacross2sockets/7thlimited/no sanction,otherworldscope/defaultprivacy/block/foreignmembership/endedsource guards.
 

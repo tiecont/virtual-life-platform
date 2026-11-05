@@ -1,0 +1,9 @@
+{
+  "freshFiles": 27,
+  "restoredHistorical": 10,
+  "frozenSourcePaths": 472,
+  "changedSourcePaths": 0,
+  "backendAndSharedPackageRuntimePathsUnchangedFromB79b3de": 201,
+  "newDatabaseTables": 0,
+  "migration": null
+}

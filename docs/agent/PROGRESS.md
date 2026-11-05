@@ -1,5 +1,13 @@
 # Agent progress
 
+## M24-03 — VERIFIED authorized cross-world activity board
+
+Fromb79b3de;ADR0083/[guide](../architecture/CENTRAL-PARK.md)/[ledger](evidence/m24-board-checks.json). NewParkActivities wraps existingWorldCatalog/WorldActivity/travelHref,otheravailablelisted session-admissibleeventspaces only. Oneexpandedworld/threeeventrows/30sTTL/IANA labels/truthful held-roomplaces/partialoutage/explicitconfirmation;currentidentitykey/abortsupersededreads/offline-backgroundclear/lateLogoutdiscard. No new API/query/SQL owner/Parkeventcapability/organizer/migration. BrowserParkprofileexplicitlyinstalls+flags Library in own disposable runtime;realflagsunchanged. Guestfixtures now useuniquephysical loopbacks rather than weakening guestIP quotas.
+
+Initialattempt1failed beforeboardassertion:ENDEDfixturefutureendsAt violated engine_events_check2. Correctedpastcomplete schedule/currentchangedAt,keptSQLconstraints;notapplicationred-firstproof. Final14Parkbrowser0(7perdevice),includingallpreviousParkcases pluscurrentactualLibrarylistedOPEN/IANA schedule/private-ended-restrictedAPI-UIsentinelsabsent/noRoomallocation/currentownnull/separatetravel;outageunknownnotempty/recovery/31sclockexpiry;catalogfailureclear/recovery/actualLogout/heldreplydiscard. Relevant5unit/7discoveryAPI(45filteredskips)/types/lint/CIpolicy/allbuilds0.
+
+472source-config-assets-ownership hashesunchanged;201API/sharedpackage sourcepaths matchb79b3de. Earlierfull19gov/266unit/512integrationbaseline remainsseparate,no newwhole512suite/full20specbrowser/certificate.27freshfiles saved/10changedhistoricalfiles restored;4selectedboardPNGsinspected. Allownedworkersfinished/no preview/no retained0036/stopped/realflag/provider/staff/legacy/remote/public/imagechange. Oldimage stale. Next exact actionM24-04reuseGroupInvitations/M09 consent/block/capacity/travel recovery inPark,currentRoomSocket/manualrefresh,no newpartyDB/forcedteleport. Wholeplanincomplete.
+
 ## M24-02 — VERIFIED scoped Park quick interactions
 
 From4450dcf;ADR0082/[world guide](../architecture/CENTRAL-PARK.md)/[ledger](evidence/m24-quick-checks.json). Reuse sharedChatService/currentRoomSocket rather than opening globalchat:four approved server-resolved canned IDs/four schema emotes only,world1.1.0/scene1.0.0;existing admission/safety/block/privacy/accountquota/canonicalreceipt guards. Native8buttons/bounded20entry60monotonicsecond volatilefeed/currentvisiblepurge/source-sessionremount/unknownACKsamekeyretry/independentLeave/report/block;no textentry/storage/contactfield/newSQL/migration.
