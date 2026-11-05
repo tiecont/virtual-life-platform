@@ -157,12 +157,14 @@
       "next_action": "Reserve N02-01; publish audited current-to-target API ownership/public entry map and enforce private imports/world persistence boundaries, keep the one-DB journal and room-dependent lifecycle intact, run architecture/lint and negative boundary checks."
     },
     "N02-01": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex Runtime + Coordinator",
+      "branch": "codex/vnext-n02-01-module-map",
+      "evidence_refs": [
+        "n02-01-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "Current-to-target ownership map, public module ports và forbidden imports"
+      "next_action": "Reserve N02-02; extract the hospitality durable outbox behind a minimal account-lock/DB/sink port and compatibility exports, preserve API invocation and SQL exactly, run affected concurrency/rollback integration, types, unit and production builds."
     },
     "N02-02": {
       "status": "TODO",

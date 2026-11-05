@@ -1,13 +1,13 @@
 # Current architecture and evidence index
 
-Updated 2026-11-05 for N01-05 at base `6a7ae9328cb64e76fc1ec5c4ffa4df1ce1815a75`. Application runtime still matches `cef7dc17172f7c6cda930c99648a5e3ad609cc55`; vNext adds evidence tooling, isolated test-output paths, pure CSS UI tokens and a mock UX prototype. This index documents source and scoped evidence, not production readiness. Use the [current documentation index](../README.md) for entrypoints.
+Updated 2026-11-06 (Asia/Ho_Chi_Minh) for N02-01 at base `b5b5202`. Application runtime still matches `cef7dc17172f7c6cda930c99648a5e3ad609cc55`; vNext adds evidence tooling, isolated test-output paths, pure CSS UI tokens, a mock UX prototype and static API ownership/import guards. This index documents source and scoped evidence, not production readiness. Use the [current documentation index](../README.md) for entrypoints.
 
 ## Implemented local architecture
 
 | Boundary | Current source | Scope and limits |
 |---|---|---|
 | Web client | `apps/portal-web/app/components/WorldRoomPanel.tsx`; `packages/pixi-scene/src/renderer.ts` | Dynamic client-only Pixi scene mount plus native keyboard/DOM controls; room state comes from authenticated server snapshots. |
-| API composition | `apps/platform-api/src/app.ts` | Nest/Fastify modular monolith composes identity, social, rooms, safety, travel, focus, hospitality, events/reservations, progression and discovery. Current module directories are incremental boundaries, not separate deployed services. |
+| API composition | `apps/platform-api/src/app.ts`; [API module map](API-MODULES.md) | Nest/Fastify modular monolith composes identity, social, rooms, safety, travel, focus, hospitality, events/reservations, progression and discovery. Static owner/public-entry checks cover 19 current areas; concrete service interfaces and type/metrics cycles remain incremental extraction work. |
 | Room ownership | `apps/platform-api/src/rooms/authority.ts`, `rooms/service.ts` | One schema/process owner, PostgreSQL advisory lock and serialized authority. No multi-replica/fenced routing or production CCU claim. |
 | Persistence | `apps/platform-api/src/db/migrations.ts`, `db/migrations/` | PostgreSQL/Drizzle; 38 checksum migrations, transactional journal and exact readiness. Do not edit historical SQL or down-migrate existing data. |
 | World integration | `packages/{deadline,maid,library,restaurant,lounge,park}-world`; API world/engine adapters | Actual local scenes and rules exist; installation/rollout remain default OFF and local installers reject production. Dating remains a distinct synthetic gated prototype. |

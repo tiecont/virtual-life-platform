@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N02-01 VERIFIED
+
+Mapped90productionAPI files/19areas/84cross-area import edges and all91SQL table+journal owners. Enforced current public-entry files, foundation/composition/migration isolation and world persistence import guards while retaining existing workspace rules and type/metrics coupling. Initial2red assertions retained; final5boundary cases,46governance/278unit,architecture/lint pass. No runtime/SQL changes.
+
+Actual commands: 11; retained failed attempts: 1; required final checks passed. Evidence: `n02-01-2026-11-05`; [checks](../audit/N02-01-CHECKS.json). Current counts: `{"VERIFIED": 13, "TODO": 56}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N02-02; extract the hospitality durable outbox behind a minimal account-lock/DB/sink port and compatibility exports, preserve API invocation and SQL exactly, run affected concurrency/rollback integration, types, unit and production builds.
+
 ## 2026-11-05 — N01-05 VERIFIED
 
 Completed N01 clean checkout from committed6a7ae93 with no author artifacts/env/archive/key/node_modules. Frozen install, explicit network-enabled selected-source prep, required prep rerun,3586-file evidence retrieval and full check pass(44governance/278unit/553integration/API+portal builds). Tracked clone clean;38historicalSQL and151-task ledger preserved. Canonical docs/index and exact committed current-tree measurements added.

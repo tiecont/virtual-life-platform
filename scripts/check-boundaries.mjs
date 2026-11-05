@@ -1,9 +1,12 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { resolve, relative, dirname, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import {assertApiModuleImport,assertWorldPersistenceImport} from './api-module-policy.mjs';
 export function assertImportAllowed(from, specifier, root) {
   const path = relative(root, from).split(sep).join('/');
   const target = specifier.startsWith('.') ? relative(root, resolve(dirname(from), specifier)).split(sep).join('/') : specifier;
+  assertApiModuleImport(path,target);
+  assertWorldPersistenceImport(path,specifier,target);
   const layer = path.split('/')[0];
   const project = path.split('/').slice(0, 2).join('/');
   if (target.startsWith('../') || target.startsWith('/')) throw new Error(`Import escapes workspace: ${path} → ${target}`);

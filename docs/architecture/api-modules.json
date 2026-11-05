@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "scope": "Current transitional API file ports, not a claim of complete domain extraction",
+  "database": {
+    "engine": "PostgreSQL",
+    "journal": "city_schema_migrations",
+    "migrationRoot": "apps/platform-api/src/db/migrations",
+    "apiReplicas": 1
+  },
+  "modules": {
+    "composition": {
+      "owner": "Coordinator",
+      "responsibility": "app.ts and main.ts lifecycle wiring",
+      "currentPublicEntryFiles": [],
+      "targetBoundary": "Keep API and future durable-worker roots separate"
+    },
+    "config": {
+      "owner": "platform.foundation",
+      "responsibility": "Validated runtime environment",
+      "currentPublicEntryFiles": [
+        "config"
+      ],
+      "targetBoundary": "Versioned environment policy; no feature entitlement bypass"
+    },
+    "common": {
+      "owner": "platform.foundation",
+      "responsibility": "Domain errors, proxy and request log utilities",
+      "currentPublicEntryFiles": [
+        "common/errors",
+        "common/http-errors",
+        "common/proxy",
+        "common/request-log"
+      ],
+      "targetBoundary": "No imports of application/domain implementations"
+    },
+    "db": {
+      "owner": "platform.foundation",
+      "responsibility": "PostgreSQL migration journal and metadata",
+      "currentPublicEntryFiles": [
+        "db/migrations"
+      ],
+      "targetBoundary": "One DB/journal; no module-private schema imports"
+    },
+    "identity": {
+      "owner": "platform.identity",
+      "responsibility": "Account/session/privacy/credential/legacy-link authority",
+      "currentPublicEntryFiles": [
+        "identity/errors",
+        "identity/http",
+        "identity/legacy/deadline-port",
+        "identity/legacy/http",
+        "identity/legacy/service",
+        "identity/limits",
+        "identity/policy",
+        "identity/service",
+        "identity/socket"
+      ],
+      "targetBoundary": "Public account/auth/locking/export/deletion ports; never client-supplied authority"
+    },
+    "social": {
+      "owner": "platform.social",
+      "responsibility": "Friendship/preferences/blocks/contact withdrawal",
+      "currentPublicEntryFiles": [
+        "social/http",
+        "social/service"
+      ],
+      "targetBoundary": "SocialPresencePort and transactional contact callbacks"
+    },
+    "safety": {
+      "owner": "platform.safety",
+      "responsibility": "Chat/report/sanction/incident/moderator authority",
+      "currentPublicEntryFiles": [
+        "safety/http",
+        "safety/incidents",
+        "safety/reports",
+        "safety/runtime",
+        "safety/sanctions",
+        "safety/socket"
+      ],
+      "targetBoundary": "Current report-context and policy ports; all revocation checks remain"
+    },
+    "rooms": {
+      "owner": "platform.rooms",
+      "responsibility": "Single room owner, live membership/seat/projection",
+      "currentPublicEntryFiles": [
+        "rooms/authority",
+        "rooms/metrics",
+        "rooms/service",
+        "rooms/socket"
+      ],
+      "targetBoundary": "RoomSafetyPort and RoomProjection; owner stays API-local"
+    },
+    "travel": {
+      "owner": "platform.travel",
+      "responsibility": "Travel intents/holds/retry receipts",
+      "currentPublicEntryFiles": [
+        "travel/http",
+        "travel/service",
+        "travel/socket"
+      ],
+      "targetBoundary": "Room transfer port preserving one membership and publication semantics"
+    },
+    "invitations": {
+      "owner": "platform.invitations",
+      "responsibility": "Group invitation and consent authority",
+      "currentPublicEntryFiles": [
+        "invitations/http",
+        "invitations/service"
+      ],
+      "targetBoundary": "Transactional consent withdrawal and registry access"
+    },
+    "focus": {
+      "owner": "engine.focus",
+      "responsibility": "Server-time timers and private history",
+      "currentPublicEntryFiles": [
+        "focus/http",
+        "focus/service"
+      ],
+      "targetBoundary": "Focus lifecycle port; no client timer authority"
+    },
+    "hospitality": {
+      "owner": "engine.hospitality",
+      "responsibility": "Orders/shifts/courses/completions/outbox",
+      "currentPublicEntryFiles": [
+        "hospitality/http",
+        "hospitality/outbox",
+        "hospitality/service"
+      ],
+      "targetBoundary": "HospitalityStaffPort and HospitalityCompletionSink; isolated durable job seam"
+    },
+    "events": {
+      "owner": "engine.events / engine.reservations",
+      "responsibility": "Schedules/RSVP/reservations/party/stage/audience/media gates",
+      "currentPublicEntryFiles": [
+        "events/audience",
+        "events/audience-http",
+        "events/http",
+        "events/invitations",
+        "events/media-clearance",
+        "events/media-http",
+        "events/parties",
+        "events/permissions",
+        "events/reservations",
+        "events/reservations-http",
+        "events/service",
+        "events/stage",
+        "events/stage-http"
+      ],
+      "targetBoundary": "Existing organizer/safety/reservation/invitation observers; retain transactions"
+    },
+    "progression": {
+      "owner": "engine.progression",
+      "responsibility": "Reward ledger and appearance projection",
+      "currentPublicEntryFiles": [
+        "progression/appearance",
+        "progression/http",
+        "progression/service"
+      ],
+      "targetBoundary": "Transactional hospitality completion sink; no animation awards"
+    },
+    "dating": {
+      "owner": "restricted.dating",
+      "responsibility": "Synthetic-only private matching/dates/continuations",
+      "currentPublicEntryFiles": [
+        "dating/continuation-http",
+        "dating/continuations",
+        "dating/date-http",
+        "dating/dates",
+        "dating/http",
+        "dating/matching",
+        "dating/matching-http",
+        "dating/profiles"
+      ],
+      "targetBoundary": "Existing lifecycle/continuation ports; real eligibility remains closed"
+    },
+    "worlds": {
+      "owner": "platform.world-registry",
+      "responsibility": "Registry composition, local installers and access-policy wiring",
+      "currentPublicEntryFiles": [
+        "worlds/http",
+        "worlds/service"
+      ],
+      "targetBoundary": "WorldAdapter through world-sdk; no cross-world SQL"
+    },
+    "library": {
+      "owner": "world.library-adapter",
+      "responsibility": "Ephemeral shared study using focus/events/rooms",
+      "currentPublicEntryFiles": [
+        "library/http",
+        "library/study"
+      ],
+      "targetBoundary": "Consumer of shared engines, no independent timer authority"
+    },
+    "discovery": {
+      "owner": "platform.discovery",
+      "responsibility": "Authorized catalog/activity projection",
+      "currentPublicEntryFiles": [
+        "discovery/service"
+      ],
+      "targetBoundary": "Read models from owner services, no cross-world repository"
+    },
+    "operations": {
+      "owner": "platform.operations",
+      "responsibility": "Private telemetry/readiness/log projections",
+      "currentPublicEntryFiles": [
+        "operations/http",
+        "operations/log",
+        "operations/readiness",
+        "operations/telemetry"
+      ],
+      "targetBoundary": "Separate read ports from room owner before durable-worker bootstrap"
+    }
+  },
+  "worldPackages": [
+    "library-world",
+    "restaurant-world",
+    "lounge-world",
+    "park-world",
+    "deadline-world",
+    "maid-world"
+  ],
+  "limitations": [
+    "Static literal imports are a lower bound; not a runtime call graph or security sandbox",
+    "Current public files export concrete service classes; smaller ports are follow-up extraction",
+    "Existing room/operations type and metrics coupling is retained, not declared acyclic"
+  ],
+  "tableOwnerModules": {
+    "platform.foundation": "db",
+    "platform.identity": "identity",
+    "platform.social": "social",
+    "platform.safety": "safety",
+    "platform.invitations": "invitations",
+    "platform.travel": "travel",
+    "engine.focus": "focus",
+    "engine.hospitality": "hospitality",
+    "engine.events": "events",
+    "engine.reservations": "events",
+    "engine.progression": "progression",
+    "restricted.dating": "dating",
+    "restricted.dating-test-fixtures": "dating"
+  }
+}

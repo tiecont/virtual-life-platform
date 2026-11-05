@@ -1,0 +1,387 @@
+{
+  "taskId": "N02-01",
+  "sourceRevision": "b5b5202961f8e7b1eea14d4a0f76883b332a6fe4",
+  "scope": "Static current API imports/exports and composition call sites; not a dynamic runtime call graph",
+  "productionFiles": 90,
+  "owners": {
+    "composition": 2,
+    "common": 4,
+    "config": 1,
+    "dating": 10,
+    "db": 3,
+    "discovery": 2,
+    "events": 15,
+    "focus": 3,
+    "hospitality": 6,
+    "identity": 10,
+    "invitations": 2,
+    "library": 2,
+    "operations": 4,
+    "progression": 4,
+    "rooms": 4,
+    "safety": 9,
+    "social": 2,
+    "travel": 4,
+    "worlds": 3
+  },
+  "imports": 643,
+  "exports": 170,
+  "crossModuleEdges": [
+    {
+      "edge": "composition \u2192 common",
+      "references": 2
+    },
+    {
+      "edge": "composition \u2192 config",
+      "references": 2
+    },
+    {
+      "edge": "composition \u2192 dating",
+      "references": 8
+    },
+    {
+      "edge": "composition \u2192 db",
+      "references": 1
+    },
+    {
+      "edge": "composition \u2192 discovery",
+      "references": 1
+    },
+    {
+      "edge": "composition \u2192 events",
+      "references": 13
+    },
+    {
+      "edge": "composition \u2192 focus",
+      "references": 2
+    },
+    {
+      "edge": "composition \u2192 hospitality",
+      "references": 3
+    },
+    {
+      "edge": "composition \u2192 identity",
+      "references": 6
+    },
+    {
+      "edge": "composition \u2192 invitations",
+      "references": 2
+    },
+    {
+      "edge": "composition \u2192 library",
+      "references": 2
+    },
+    {
+      "edge": "composition \u2192 operations",
+      "references": 4
+    },
+    {
+      "edge": "composition \u2192 progression",
+      "references": 3
+    },
+    {
+      "edge": "composition \u2192 rooms",
+      "references": 4
+    },
+    {
+      "edge": "composition \u2192 safety",
+      "references": 6
+    },
+    {
+      "edge": "composition \u2192 social",
+      "references": 2
+    },
+    {
+      "edge": "composition \u2192 travel",
+      "references": 3
+    },
+    {
+      "edge": "composition \u2192 worlds",
+      "references": 2
+    },
+    {
+      "edge": "dating \u2192 common",
+      "references": 12
+    },
+    {
+      "edge": "dating \u2192 config",
+      "references": 5
+    },
+    {
+      "edge": "dating \u2192 identity",
+      "references": 17
+    },
+    {
+      "edge": "dating \u2192 safety",
+      "references": 5
+    },
+    {
+      "edge": "dating \u2192 social",
+      "references": 3
+    },
+    {
+      "edge": "db \u2192 config",
+      "references": 1
+    },
+    {
+      "edge": "discovery \u2192 common",
+      "references": 2
+    },
+    {
+      "edge": "discovery \u2192 events",
+      "references": 1
+    },
+    {
+      "edge": "discovery \u2192 identity",
+      "references": 2
+    },
+    {
+      "edge": "discovery \u2192 rooms",
+      "references": 2
+    },
+    {
+      "edge": "events \u2192 common",
+      "references": 18
+    },
+    {
+      "edge": "events \u2192 config",
+      "references": 5
+    },
+    {
+      "edge": "events \u2192 identity",
+      "references": 22
+    },
+    {
+      "edge": "events \u2192 invitations",
+      "references": 1
+    },
+    {
+      "edge": "events \u2192 rooms",
+      "references": 4
+    },
+    {
+      "edge": "events \u2192 safety",
+      "references": 1
+    },
+    {
+      "edge": "events \u2192 social",
+      "references": 5
+    },
+    {
+      "edge": "focus \u2192 common",
+      "references": 4
+    },
+    {
+      "edge": "focus \u2192 config",
+      "references": 1
+    },
+    {
+      "edge": "focus \u2192 identity",
+      "references": 4
+    },
+    {
+      "edge": "focus \u2192 rooms",
+      "references": 1
+    },
+    {
+      "edge": "hospitality \u2192 common",
+      "references": 6
+    },
+    {
+      "edge": "hospitality \u2192 config",
+      "references": 1
+    },
+    {
+      "edge": "hospitality \u2192 identity",
+      "references": 5
+    },
+    {
+      "edge": "hospitality \u2192 rooms",
+      "references": 1
+    },
+    {
+      "edge": "hospitality \u2192 social",
+      "references": 1
+    },
+    {
+      "edge": "identity \u2192 common",
+      "references": 7
+    },
+    {
+      "edge": "identity \u2192 config",
+      "references": 4
+    },
+    {
+      "edge": "invitations \u2192 common",
+      "references": 3
+    },
+    {
+      "edge": "invitations \u2192 config",
+      "references": 1
+    },
+    {
+      "edge": "invitations \u2192 identity",
+      "references": 4
+    },
+    {
+      "edge": "invitations \u2192 social",
+      "references": 1
+    },
+    {
+      "edge": "library \u2192 common",
+      "references": 3
+    },
+    {
+      "edge": "library \u2192 config",
+      "references": 1
+    },
+    {
+      "edge": "library \u2192 events",
+      "references": 1
+    },
+    {
+      "edge": "library \u2192 focus",
+      "references": 1
+    },
+    {
+      "edge": "library \u2192 identity",
+      "references": 5
+    },
+    {
+      "edge": "library \u2192 rooms",
+      "references": 1
+    },
+    {
+      "edge": "operations \u2192 common",
+      "references": 4
+    },
+    {
+      "edge": "operations \u2192 identity",
+      "references": 1
+    },
+    {
+      "edge": "operations \u2192 rooms",
+      "references": 2
+    },
+    {
+      "edge": "progression \u2192 common",
+      "references": 4
+    },
+    {
+      "edge": "progression \u2192 config",
+      "references": 1
+    },
+    {
+      "edge": "progression \u2192 focus",
+      "references": 1
+    },
+    {
+      "edge": "progression \u2192 hospitality",
+      "references": 2
+    },
+    {
+      "edge": "progression \u2192 identity",
+      "references": 5
+    },
+    {
+      "edge": "progression \u2192 rooms",
+      "references": 1
+    },
+    {
+      "edge": "rooms \u2192 common",
+      "references": 3
+    },
+    {
+      "edge": "rooms \u2192 identity",
+      "references": 3
+    },
+    {
+      "edge": "rooms \u2192 operations",
+      "references": 1
+    },
+    {
+      "edge": "safety \u2192 common",
+      "references": 7
+    },
+    {
+      "edge": "safety \u2192 config",
+      "references": 2
+    },
+    {
+      "edge": "safety \u2192 identity",
+      "references": 10
+    },
+    {
+      "edge": "safety \u2192 rooms",
+      "references": 5
+    },
+    {
+      "edge": "social \u2192 common",
+      "references": 3
+    },
+    {
+      "edge": "social \u2192 config",
+      "references": 1
+    },
+    {
+      "edge": "social \u2192 identity",
+      "references": 4
+    },
+    {
+      "edge": "travel \u2192 common",
+      "references": 4
+    },
+    {
+      "edge": "travel \u2192 config",
+      "references": 1
+    },
+    {
+      "edge": "travel \u2192 identity",
+      "references": 6
+    },
+    {
+      "edge": "travel \u2192 rooms",
+      "references": 1
+    },
+    {
+      "edge": "worlds \u2192 common",
+      "references": 2
+    },
+    {
+      "edge": "worlds \u2192 config",
+      "references": 2
+    },
+    {
+      "edge": "worlds \u2192 discovery",
+      "references": 1
+    },
+    {
+      "edge": "worlds \u2192 identity",
+      "references": 4
+    },
+    {
+      "edge": "worlds \u2192 rooms",
+      "references": 1
+    }
+  ],
+  "sqlTablesAndJournal": 91,
+  "currentPublicEntryFiles": 70,
+  "applicationSourceChanged": false,
+  "schemaProtocolChanged": false,
+  "verification": {
+    "architecture": 0,
+    "fullLint": 0,
+    "boundaryCases": 5,
+    "governanceCases": 46,
+    "unitCases": 278,
+    "initialRedCases": 2,
+    "negativeScannerFixture": "Actual temporary API private import rejected; public entry accepted; existing world/cycle fixtures retained"
+  },
+  "limitations": [
+    "Static imports/exports/call sites, not a dynamic call graph or security sandbox",
+    "Existing room/operations type/metrics coupling retained",
+    "Current service-file entry surface is transitional, not minimal interfaces everywhere",
+    "Durable worker and N02-02 outbox extraction not implemented by this map",
+    "No fresh integration/E2E run for this tooling-only slice; clean-checkout full regression is separately pinned to6a7ae93"
+  ]
+}

@@ -1,6 +1,7 @@
 import { readdir, readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { checkBoundaries } from './check-boundaries.mjs';
+import {inspectApiModules} from './api-module-graph.mjs';
 const ownership = JSON.parse(await readFile('docs/architecture/ownership.json', 'utf8'));
 assert.equal(ownership.apiReplicas, 1, 'Multi-instance ownership is not implemented');
 assert.equal(ownership.redisRequired, false);
@@ -22,3 +23,5 @@ for (const file of ['ARCHITECTURE.md', 'PERSISTENCE.md', 'FUTURE-OWNERSHIP.md', 
   assert((await readFile('docs/architecture/' + file, 'utf8')).length > 300);
 }
 console.log(`Architecture consistency passed: ${tables.size} SQL tables + journal; ${await checkBoundaries(process.cwd())} source files checked. Future gameplay invariants remain runtime gates.`);
+const graph=await inspectApiModules();
+console.log(`API ownership checked: ${graph.productionFiles} production files, ${Object.keys(graph.owners).length} areas, ${graph.crossModuleEdges.length} static cross-area edges; existing type/metrics cycles retained.`);
