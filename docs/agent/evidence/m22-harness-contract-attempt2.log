@@ -1,0 +1,27 @@
+✔ archive is authenticated and versioned before any restore,with independent random nonces (3.191932ms)
+✔ restore targets are disposable exact DB/service only,and disk observations reject invalid data (0.70182ms)
+✔ offline backup tools accept local Unix Docker sockets and reject remote TCP/SSH/named-pipe contexts (0.226837ms)
+✔ worlds cannot import another world repository, platform internals or application code (8.381069ms)
+✔ contracts cannot import SDK and apps cannot import another application internals (0.470525ms)
+✔ the scanner rejects actual source imports and manifest cycles (12.246046ms)
+✔ quality succeeds only for both successful required jobs;failure,cancellation,skip,missing or malformed results cannot pass (1.958002ms)
+✔ browser groups cover every existing spec exactly once and reject omitted,duplicated,foreign or traversing paths (10.42413ms)
+✔ successful reports require both devices for the exact spec and reject stale,foreign,duplicated or incomplete metadata (10.647341ms)
+✔ stack env requires HTTPS,explicit peer,isolated names and URL-safe secrets without echoing secret values (2.836223ms)
+✔ audit ranges and conjunctive dependencies preserve the authoritative DAG (6.263097ms)
+✔ cycles, unknown dependencies and duplicate module IDs are rejected (0.776611ms)
+✔ checkpoint cannot assert verification without evidence or through an unmet gate (0.418196ms)
+✔ the supplied plan pack is accepted without changing its manifest shape (4.825033ms)
+✔ resource ceiling accounts for memory,disk reserves and unpriced monthly allocations (4.072668ms)
+✔ budget edits cannot silently enable purchases,Redis or multiple room owners (1.443474ms)
+✔ database target rejects remote/non-test/scheme/query overrides without echoing credentials (1.57416ms)
+✔ fixture environment uses independent keys and excludes inherited runtime,PG and preload state (1.023905ms)
+✔ only explicit finite test fixtures/report scopes survive environment filtering (1.275729ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 100.237426

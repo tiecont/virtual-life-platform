@@ -1,0 +1,28 @@
+ Network virtual-city-test-e95bae9d_default Creating 
+ Network virtual-city-test-e95bae9d_default Creating 
+ Network virtual-city-test-e95bae9d_default Created 
+ Network virtual-city-test-e95bae9d_default Created 
+ Container virtual-city-test-e95bae9d-db-1 Creating 
+ Container virtual-city-test-e95bae9d-db-1 Created 
+ Container virtual-city-test-e95bae9d-db-1 Starting 
+ Container virtual-city-test-e95bae9d-db-1 Started 
+ Container virtual-city-test-e95bae9d-db-1 Waiting 
+ Container virtual-city-test-e95bae9d-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ✓ |integration| tests/integration/hospitality.test.ts (58 tests | 56 skipped) 3013ms
+   ✓ reviewed progression outbox consumer grants each participant once and bounds repeated partner farming ('2026-11-05T12:00:00.000Z')  1651ms
+   ✓ reviewed progression outbox consumer grants each participant once and bounds repeated partner farming ('2026-11-05T23:59:00.000Z')  1358ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed | 56 skipped (58)
+   Start at  00:10:35
+   Duration  4.49s (transform 633ms, setup 0ms, import 1.33s, tests 3.01s, environment 0ms)
+
+ Container virtual-city-test-e95bae9d-db-1 Stopping 
+ Container virtual-city-test-e95bae9d-db-1 Stopped 
+ Container virtual-city-test-e95bae9d-db-1 Removing 
+ Container virtual-city-test-e95bae9d-db-1 Removed 
+ Network virtual-city-test-e95bae9d_default Removing 
+ Network virtual-city-test-e95bae9d_default Removed 

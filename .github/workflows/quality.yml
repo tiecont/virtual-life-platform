@@ -44,6 +44,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - id: browser-plan
         run: node scripts/ci-browser-plan.mjs >> "$GITHUB_OUTPUT"
+      - name: Verify disposable test isolation and cleanup
+        run: node scripts/test-harness-smoke.mjs
       - name: Lint,types,unit,integration and builds
         run: |
           mkdir -p artifacts/ci/core

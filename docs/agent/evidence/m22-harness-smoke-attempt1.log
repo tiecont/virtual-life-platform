@@ -1,0 +1,14 @@
+{
+  "taskID": "M22-01",
+  "scope": "Actual disposable local harness;not hosted CI",
+  "ownedParallelRuns": 2,
+  "distinctDatabasePorts": true,
+  "independentSessionSecrets": true,
+  "nestedExternalPreserved": true,
+  "failedChildExit": 7,
+  "signalExit": 143,
+  "noRunningDescendant": true,
+  "ownedResourcesRemoved": true,
+  "unsafeTargetsRejected": 4,
+  "seedIsolation": true
+}

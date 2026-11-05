@@ -1,0 +1,12 @@
+{
+  "anonymousAndUnknownProof404": true,
+  "explicitSyntheticFixture": true,
+  "keyboardSave": true,
+  "sameRetryKey": true,
+  "encryptedPrivateFields": true,
+  "globalProfileUnchanged": true,
+  "noRoomAdmission": true,
+  "offlineClearedPrivateFields": true,
+  "withdrawAfterProofLoss": true,
+  "noViewportOverflow": true
+}

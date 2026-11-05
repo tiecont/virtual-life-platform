@@ -1,0 +1,22 @@
+[
+  {
+    "project": "desktop",
+    "batch": 1,
+    "filters": [
+      "tests/e2e/scene.spec.ts",
+      "-g",
+      "actual transport interruption"
+    ],
+    "exitCode": 0
+  },
+  {
+    "project": "mobile",
+    "batch": 1,
+    "filters": [
+      "tests/e2e/scene.spec.ts",
+      "-g",
+      "actual transport interruption"
+    ],
+    "exitCode": 0
+  }
+]
