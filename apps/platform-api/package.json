@@ -19,6 +19,7 @@
     "@virtual-city/contracts": "workspace:*",
     "@virtual-city/library-world": "workspace:*",
     "@virtual-city/park-world": "workspace:*",
+    "@virtual-city/deadline-world":"workspace:*",
     "@virtual-city/lounge-world": "workspace:*",
     "@virtual-city/restaurant-world": "workspace:*",
     "@virtual-city/world-sdk": "workspace:*",

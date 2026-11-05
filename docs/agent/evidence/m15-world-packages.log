@@ -1,0 +1,20 @@
+$ pnpm --filter './packages/*' -r build
+Scope: 10 of 13 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/world-sdk build: Done
+packages/deadline-world build$ tsc -p tsconfig.json
+packages/library-world build$ tsc -p tsconfig.json
+packages/park-world build$ tsc -p tsconfig.json
+packages/lounge-world build$ tsc -p tsconfig.json
+packages/deadline-world build: Done
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/library-world build: Done
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/park-world build: Done
+packages/lounge-world build: Done
+packages/restaurant-world build: Done
+packages/pixi-scene build: Done

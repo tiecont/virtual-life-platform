@@ -1,0 +1,20 @@
+[
+  {
+    "source": "deadline",
+    "selectedCommit": "6d2ca6a4e00505b2df1d6f41f1041fa14a227c5b",
+    "files": 88,
+    "copyUnchanged": true,
+    "originalUnchanged": true,
+    "originalHead": "f9475b4caa65813e9351aaa4598663df538116a3",
+    "dirtyEntries": 28
+  },
+  {
+    "source": "maid",
+    "selectedCommit": "f676298fdab6cd3f2d54ad422f409538c4bdf52a",
+    "files": 59,
+    "copyUnchanged": true,
+    "originalUnchanged": true,
+    "originalHead": "33180a920505a6e0f3998dbf0367be0b72727710",
+    "dirtyEntries": 46
+  }
+]

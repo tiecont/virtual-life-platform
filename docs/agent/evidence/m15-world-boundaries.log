@@ -1,0 +1,11 @@
+✔ worlds cannot import another world repository, platform internals or application code (6.743016ms)
+✔ contracts cannot import SDK and apps cannot import another application internals (0.368122ms)
+✔ the scanner rejects actual source imports and manifest cycles (13.503225ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 75.666416

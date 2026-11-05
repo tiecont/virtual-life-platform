@@ -1,0 +1,53 @@
+[WARN] Unsupported engine: wanted: {"node":"26.13.x"} (current: {"node":"v26.9.0","pnpm":"11.28.5"})
+$ pnpm -r test
+.                                        | [WARN] Unsupported engine: wanted: {"node":"26.13.x"} (current: {"node":"v26.9.0","pnpm":"11.28.5"})
+Scope: 4 of 5 workspace projects
+packages/contracts test$ vitest run --passWithNoTests
+packages/scene-data test$ vitest run --passWithNoTests
+packages/scene-data test:  RUN  v4.1.12 /home/tiecont/Projects/virtual-city/artifacts/legacy-runtime/deadline/packages/scene-data
+packages/contracts test:  RUN  v4.1.12 /home/tiecont/Projects/virtual-city/artifacts/legacy-runtime/deadline/packages/contracts
+packages/scene-data test: No test files found, exiting with code 0
+packages/scene-data test: |unit| 
+packages/scene-data test: include: apps/**/*.unit.test.ts, packages/**/*.test.ts
+packages/scene-data test: exclude:  **/node_modules/**, **/.git/**
+packages/scene-data test: |integration| 
+packages/scene-data test: include: tests/integration/**/*.test.ts
+packages/scene-data test: exclude:  **/node_modules/**, **/.git/**
+packages/scene-data test: |security| 
+packages/scene-data test: include: tests/integration/security-network.test.ts, tests/integration/identity.test.ts, tests/integration/identity-socket.test.ts, tests/integration/rooms.test.ts, tests/integration/social.test.ts, tests/integration/reports.test.ts, tests/integration/sanctions.test.ts, tests/integration/travel.test.ts, tests/integration/dating-adversarial.test.ts
+packages/scene-data test: exclude:  **/node_modules/**, **/.git/**
+packages/contracts test: No test files found, exiting with code 0
+packages/contracts test: |unit| 
+packages/contracts test: include: apps/**/*.unit.test.ts, packages/**/*.test.ts
+packages/contracts test: exclude:  **/node_modules/**, **/.git/**
+packages/contracts test: |integration| 
+packages/contracts test: include: tests/integration/**/*.test.ts
+packages/contracts test: exclude:  **/node_modules/**, **/.git/**
+packages/contracts test: |security| 
+packages/contracts test: include: tests/integration/security-network.test.ts, tests/integration/identity.test.ts, tests/integration/identity-socket.test.ts, tests/integration/rooms.test.ts, tests/integration/social.test.ts, tests/integration/reports.test.ts, tests/integration/sanctions.test.ts, tests/integration/travel.test.ts, tests/integration/dating-adversarial.test.ts
+packages/contracts test: exclude:  **/node_modules/**, **/.git/**
+packages/scene-data test: Done
+packages/contracts test: Done
+apps/api test$ jest --runInBand --passWithNoTests
+apps/web test$ vitest run --passWithNoTests
+apps/web test:  RUN  v4.1.12 /home/tiecont/Projects/virtual-city/artifacts/legacy-runtime/deadline/apps/web
+apps/web test: No test files found, exiting with code 0
+apps/web test: |unit| 
+apps/web test: include: apps/**/*.unit.test.ts, packages/**/*.test.ts
+apps/web test: exclude:  **/node_modules/**, **/.git/**
+apps/web test: |integration| 
+apps/web test: include: tests/integration/**/*.test.ts
+apps/web test: exclude:  **/node_modules/**, **/.git/**
+apps/web test: |security| 
+apps/web test: include: tests/integration/security-network.test.ts, tests/integration/identity.test.ts, tests/integration/identity-socket.test.ts, tests/integration/rooms.test.ts, tests/integration/social.test.ts, tests/integration/reports.test.ts, tests/integration/sanctions.test.ts, tests/integration/travel.test.ts, tests/integration/dating-adversarial.test.ts
+apps/web test: exclude:  **/node_modules/**, **/.git/**
+apps/web test: Done
+apps/api test: PASS test/health.spec.ts (5.708 s)
+apps/api test: PASS test/limits.spec.ts
+apps/api test: PASS test/config.spec.ts
+apps/api test: Test Suites: 3 passed, 3 total
+apps/api test: Tests:       4 passed, 4 total
+apps/api test: Snapshots:   0 total
+apps/api test: Time:        6.966 s
+apps/api test: Ran all test suites.
+apps/api test: Done

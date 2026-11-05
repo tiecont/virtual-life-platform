@@ -1,0 +1,33 @@
+ Network virtual-city-test-dc130732_default Creating 
+ Network virtual-city-test-dc130732_default Creating 
+ Network virtual-city-test-dc130732_default Created 
+ Network virtual-city-test-dc130732_default Created 
+ Container virtual-city-test-dc130732-db-1 Creating 
+ Container virtual-city-test-dc130732-db-1 Created 
+ Container virtual-city-test-dc130732-db-1 Starting 
+ Container virtual-city-test-dc130732-db-1 Started 
+ Container virtual-city-test-dc130732-db-1 Waiting 
+ Container virtual-city-test-dc130732-db-1 Healthy 
+[WARN] Unsupported engine: wanted: {"node":"26.13.x"} (current: {"node":"v26.9.0","pnpm":"11.28.5"})
+$ pnpm --filter @deadline/api test:integration
+.                                        | [WARN] Unsupported engine: wanted: {"node":"26.13.x"} (current: {"node":"v26.9.0","pnpm":"11.28.5"})
+$ jest --config jest.integration.cjs --runInBand
+PASS test/guests.integration.ts (5.992 s)
+  real HTTP and PostgreSQL guest lifecycle
+    ✓ migrates and seeds idempotently without fake people (24 ms)
+    ✓ sets HttpOnly cookie, hashes token, restores and isolates guests (97 ms)
+    ✓ rejects expired and revoked identities, purges expiry (10 ms)
+    ✓ returns real empty room configuration and safe missing-room error (14 ms)
+    ✓ requires Origin, limits bootstrap and rejects oversized payloads (37 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       5 passed, 5 total
+Snapshots:   0 total
+Time:        6.321 s
+Ran all test suites.
+ Container virtual-city-test-dc130732-db-1 Stopping 
+ Container virtual-city-test-dc130732-db-1 Stopped 
+ Container virtual-city-test-dc130732-db-1 Removing 
+ Container virtual-city-test-dc130732-db-1 Removed 
+ Network virtual-city-test-dc130732_default Removing 
+ Network virtual-city-test-dc130732_default Removed 

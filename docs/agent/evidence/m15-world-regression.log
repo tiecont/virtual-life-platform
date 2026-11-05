@@ -1,0 +1,83 @@
+ Network virtual-city-test-0ecd992a_default Creating 
+ Network virtual-city-test-0ecd992a_default Creating 
+ Network virtual-city-test-0ecd992a_default Created 
+ Network virtual-city-test-0ecd992a_default Created 
+ Container virtual-city-test-0ecd992a-db-1 Creating 
+ Container virtual-city-test-0ecd992a-db-1 Created 
+ Container virtual-city-test-0ecd992a-db-1 Starting 
+ Container virtual-city-test-0ecd992a-db-1 Started 
+ Container virtual-city-test-0ecd992a-db-1 Waiting 
+ Container virtual-city-test-0ecd992a-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ✓ |integration| tests/integration/focus.test.ts (29 tests) 31244ms
+   ✓ progression corrections retain immutable source history and cannot refund a spent abuse budget  2157ms
+   ✓ progression correction and entitlement revocation are atomic under retries, preserve privacy and remove current uniform  1708ms
+   ✓ progression account cap spans worlds and original UTC completion day cannot be moved by a late retry  2243ms
+   ✓ progression maintenance bounds old partner and appearance receipts while retaining replay-safe history  2099ms
+   ✓ progression claims only an owned completed focus source and eight actual TCP replays mint once across restart  1849ms
+   ✓ progression world cap unlocks one cosmetic without spending and retains private immutable source history  989ms
+   ✓ progression entitlement failure rolls back the grant and focus transition, and default disabled app grants nothing  1553ms
+   ✓ progression rejects current safety closure and forged claims without turning private timer reads into reward authority  819ms
+   ✓ starts one server-timestamped timer under concurrent actual HTTP retries with trusted seat association  882ms
+   ✓ requires current authenticated room/seat, exact source epoch/member and does not accept arbitrary authority/time/reward  804ms
+   ✓ denies Origin/CSRF/unknown query and hides timer identifiers/content from other accounts  794ms
+   ✓ rejects early finish, completes exactly at the trusted deadline, and repeated finish/cancel never doubles completion  819ms
+   ✓ continues through seat release, leave and API restart; sleep does not write ticks and current read finalizes persistent deadline  793ms
+   ✓ cancels before deadline without counting completion and old start receipt cannot resurrect it  762ms
+   ✓ only explicit origin policy can pause/resume and cumulative pause budget expires without awarding completion  841ms
+   ✓ same account across registration/login sees one timer, logout denies old session but does not fabricate cancellation  997ms
+   ✓ rolls back start when mutation receipt cannot commit, and account erasure cascades own timer/history receipts  806ms
+   ✓ bounds durable start budget, rejects database invalid states and purges terminal history/receipts in batches  980ms
+   ✓ trusted clock moving backwards rejects transition and preserves the original deadline  775ms
+   ✓ invalidates a source flag generation that changes during awaited focus authorization, even after re-enable  738ms
+   ✓ pages private world-scoped history in stable creation order across synthetic Deadline and Library without changing origin  840ms
+   ✓ keeps focus history private under public/hidden per-world presence and rejects foreign or forged history cursors  914ms
+   ✓ denies new starts in a closed origin while retaining own private history and independent timer cancellation  796ms
+   ✓ groups canonical completed deadlines across 23:59 UTC+7 and UTC storage,with private world filters and no tick writes  1030ms
+   ✓ uses actual 23-hour IANA calendar day for '2026-03-08' and assigns a late observation to its original completion day  789ms
+   ✓ uses actual 25-hour IANA calendar day for '2026-11-01' and assigns a late observation to its original completion day  852ms
+   ✓ counts both repeated DST hours once each and excludes cancelled/active timers from private summaries  925ms
+   ✓ validates calendar dates,IANA zones,max31day/recent retention range and forbids account overrides  906ms
+   ✓ purges at most100 old terminal timers per maintenance batch and removes receipts without retaining aggregate copies  778ms
+ ✓ |integration| tests/integration/library.test.ts (18 tests) 6837ms
+   ✓ eight actual Library visitors race one desk,then only its owner starts one private canonical focus session  504ms
+   ✓ Library silent study schedules require trusted authority and atomic RSVPs cannot exceed the declared room policy  373ms
+   ✓ study counts require per-visit opt-in and expose only phases of current consenting visible participants  411ms
+   ✓ current block,privacy change,leave and actual restart revoke study consent with no old-key revival  544ms
+   ✓ study source outages,stale observations and expired session cannot publish a successful phase count  303ms
+   ✓ hidden or erased peers never contribute and old simultaneous enable retries cannot restore stopped consent  669ms
+   ✓ study pending read slots stay bounded and an actual disconnection suppresses peer counts until valid same-visit reconnect  467ms
+   ✓ friends explicitly accept the exact public Library room hint then travel without automatic RSVP or forced admission  399ms
+   ✓ withdrawal during an in-flight phase read prevents both own and peer stale contribution publication  406ms
+   ✓ canonical event cancellation revokes study sharing even when the control URI uses an upper-case UUID  386ms
+   ✓ study output is denied if the event ends during otherwise fresh owner work  337ms
+   ✓ canonical Library completion remains private and appears once after actual travel to the shared SDK world  321ms
+ ✓ |integration| tests/integration/rooms.test.ts (23 tests) 9202ms
+     ✓ waits for every in-flight private projection on failure before releasing the owner queue and publishes no partial batch  343ms
+     ✓ serializes 100 simultaneous real-session joins into one target room without overcapacity  1094ms
+     ✓ a disconnected older session plus logout of the last live session cannot hold a seat forever  321ms
+     ✓ one hundred simultaneous real-session seat claims produce exactly one owner  2127ms
+     ✓ shares one session command budget across room and seat events and rejects invalid action/role claims  540ms
+     ✓ idle session expiry immediately frees ownership instead of extending a disconnected seat hold  1066ms
+     ✓ filters peer motion through block privacy and freezes walking on final disconnect before re-admission  424ms
+ ✓ |integration| tests/integration/deadline-identity.test.ts (16 tests) 7063ms
+   ✓ uncooperative trusted source work stays bounded while an independent withdrawal succeeds without a source cookie  2028ms
+   ✓ persistent daily budget survives negative receipt pruning and frozen clocks; latest canonical receipts stay bounded  1946ms
+ ✓ |integration| tests/integration/deadline-world.test.ts (7 tests) 4736ms
+   ✓ sixteen actual Socket contenders produce one zero-padded seat owner and retries never add a second seat  785ms
+   ✓ thirty-five controlled owner memberships plus six actual Socket admissions cannot overfill the forty-place source contract  853ms
+   ✓ only a current seat starts one private canonical focus;source durations work and Deadline pause/task-note authority is rejected  329ms
+
+ Test Files  5 passed (5)
+      Tests  93 passed (93)
+   Start at  06:01:38
+   Duration  64.99s (transform 1.06s, setup 0ms, import 5.10s, tests 59.08s, environment 1ms)
+
+ Container virtual-city-test-0ecd992a-db-1 Stopping 
+ Container virtual-city-test-0ecd992a-db-1 Stopped 
+ Container virtual-city-test-0ecd992a-db-1 Removing 
+ Container virtual-city-test-0ecd992a-db-1 Removed 
+ Network virtual-city-test-0ecd992a_default Removing 
+ Network virtual-city-test-0ecd992a_default Removed 

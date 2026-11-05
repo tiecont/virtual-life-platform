@@ -1,0 +1,48 @@
+$ pnpm build:packages && pnpm -r typecheck && tsc -p tests/load/tsconfig.json && tsc -p tests/legacy-tsconfig.json
+$ pnpm --filter './packages/*' -r build
+Scope: 10 of 13 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/world-sdk build: Done
+packages/deadline-world build$ tsc -p tsconfig.json
+packages/library-world build$ tsc -p tsconfig.json
+packages/lounge-world build$ tsc -p tsconfig.json
+packages/park-world build$ tsc -p tsconfig.json
+packages/deadline-world build: Done
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/lounge-world build: Done
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/park-world build: Done
+packages/library-world build: Done
+packages/restaurant-world build: Done
+packages/pixi-scene build: Done
+Scope: 12 of 13 workspace projects
+packages/contracts typecheck$ tsc -p tsconfig.json --noEmit
+packages/contracts typecheck: Done
+packages/focus-ui typecheck$ tsc -p tsconfig.json --noEmit
+packages/world-sdk typecheck$ tsc -p tsconfig.json --noEmit
+packages/world-sdk typecheck: Done
+packages/library-world typecheck$ tsc -p tsconfig.json --noEmit
+packages/deadline-world typecheck$ tsc -p tsconfig.json --noEmit
+packages/lounge-world typecheck$ tsc -p tsconfig.json --noEmit
+packages/focus-ui typecheck: Done
+packages/park-world typecheck$ tsc -p tsconfig.json --noEmit
+packages/deadline-world typecheck: Done
+packages/pixi-scene typecheck$ tsc -p tsconfig.json --noEmit
+packages/park-world typecheck: Done
+packages/restaurant-world typecheck$ tsc -p tsconfig.json --noEmit
+packages/lounge-world typecheck: Done
+packages/library-world typecheck: Done
+packages/restaurant-world typecheck: Done
+apps/platform-api typecheck$ tsc -p tsconfig.json --noEmit
+packages/pixi-scene typecheck: Done
+apps/portal-web typecheck$ tsc --noEmit
+apps/portal-web typecheck: Done
+apps/platform-api typecheck: Done
+tests/integration/deadline-world.test.ts(45,106): error TS2345: Argument of type '{ roomId?: string | undefined; schemaVersion: number; requestId: `${string}-${string}-${string}-${string}-${string}`; worldSlug: string; worldVersion: string; sceneVersion: string; }' is not assignable to parameter of type '{ schemaVersion: 1; requestId: string; worldSlug: string; worldVersion: string; sceneVersion: string; roomId?: string | undefined; motionVersion?: 1 | undefined; }'.
+  Types of property 'schemaVersion' are incompatible.
+    Type 'number' is not assignable to type '1'.
+[ELIFECYCLE] Command failed with exit code 2.

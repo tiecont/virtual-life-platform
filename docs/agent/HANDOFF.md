@@ -6,7 +6,19 @@ Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;bran
 
 Node26.9.0/pnpm11.28.5. RetaineddevDB0037/stopped;latestjournal/9privatecounts0. Current verification workers are listed below;completed slices leave no preview running. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
 
-## Current work — M15-02 VERIFIED;next M15-03
+## Current work — M15-03 VERIFIED;next M15-04
+
+From88432dc;ADR0087/DEADLINE-WORLD.md/m15-world-checks.json. New pure deadline-world package pins selected source6d2ca6a4,30zero-padded IDs/source960x640 positions/cap40/non-pause shared focus. No legacy WS/seat authority or focus service exists;shared City owners supply gameplay. Source exports/real seeded legacy HTTP catalog are actual,not a synthetic M09world. Optional source-cookie association remains separate/private;City login/admission authoritative. All real/localflags OFF,productionrejects localworld option. No table/migration/retainedDB change:0037stopped.
+
+Actual final7newSocketPG0,93related5fileintegration0 before final stronger privacy assertion (final7includes corrected successful public-presence peer snapshot/no focus fields),22gov/272unit/wholetypes/lint266boundaries/allbuild0.16real seat contenders→1/15;capacityfixture35controlled memberships+6actualSocket→5accepted1full/40total,not40realSocketload. Three source durations/canonical starts/nonpause/private history/restart6finishonce/grace reconnect-expiry/shared one-active timer across Deadline and Library. No Deadline UI/browser/scene route yet;04 follows. Previous full528 root belongs to M15-02;no fresh full535claim.
+
+Initial fixture/type errors retained:wrong disabled-world404 rather than503/missing controlled connection predicate;schemaVersion inferrednumber needed literal1;public-peer snapshot mistakenly used owner membership and correctly got NOT_IN_ROOM,then corrected peer context+requiredACK. Source Jest4unit/5actualHTTPPG0;generic nested Vitest inherited ancestorCityconfig/no-tests,so explicit source-root config/passWithNoTestsfalse proved1actual contracts test0. Source scene-data/web have no unit tests.147source/copyhashes/HEAD/status unchanged,originalDeadlinef9475b4/28dirty,Maid33180a9/46dirty. Offline newworkspace lock links only/no dependency version upgrade or downloads. All verification processes finished/no preview/background promise.
+
+Next exact action M15-04:read webAGENTS/relevant localNextdocs and shared RoomSceneClient/renderer/native controls. Convert actual960x640 source positions with40px tiles into24x16 scene (round<=20px),retain30IDs,add original collision/table/spawn geometry avoiding seats. Embed as real Deadline route/sharedavatar/header/native controls with defaultOFF installation+registry flags. Verify actual Portal→Deadline→Portal sameaccount/avatar/one-membership,keyboard/mobile/nooverflow,disconnect/rejoin and truthful unavailable/fallback. No old playable scene exists to extract (sourceCafeShell is a placeholder);record that in nextADR rather than pretending it was embedded unchanged. Preserve selectedsource88hashes and originallegacydata/processes. One verified slice/localcommit before05;actual Maid and wholelegacyjourneys/B-003 remain pending.
+
+## Prior verified slice — M15-02
+
+### M15-02 identity association
 
 Local slice from4c5e2ee implements explicit private Deadline session association,not automatic login. ADR0086/DEADLINE-IDENTITY.md/evidence m15-identity-checks.json describe strict actual selected GETme proof,unique account/subject mapping,expected revisions/durable retries,independent withdrawal and bounded provider/quota/receipts. Native identity panel discards late positives after withdrawal/session/logout;guest upgrade/rotation retain City account;own export/City erasure preserve independent source guest and focus history. Original legacy repos/DBs/processes stay untouched. All real rollout flags OFF;production rejects local activation.
 

@@ -14,6 +14,10 @@ test('worlds cannot import another world repository, platform internals or appli
   assert.throws(()=>assertImportAllowed('/repo/packages/restaurant-world/src/index.ts','@virtual-city/library-world',root),/Shared package imports/);
   assert.throws(()=>assertImportAllowed('/repo/packages/pixi-scene/src/renderer.ts','@virtual-city/lounge-world',root),/Shared package imports/);
   assert.throws(()=>assertImportAllowed('/repo/packages/lounge-world/src/index.ts','@virtual-city/restaurant-world',root),/Shared package imports/);
+  assert.throws(()=>assertImportAllowed('/repo/packages/pixi-scene/src/renderer.ts','@virtual-city/deadline-world',root),/Shared package imports/);
+  assert.throws(()=>assertImportAllowed('/repo/packages/deadline-world/src/index.ts','@virtual-city/library-world',root),/Shared package imports/);
+  assert.throws(()=>assertImportAllowed('/repo/packages/deadline-world/src/index.ts','../../../apps/platform-api/src/focus/service',root),/Cross-app|higher layer/);
+  assert.doesNotThrow(()=>assertImportAllowed('/repo/apps/platform-api/src/worlds/service.ts','@virtual-city/deadline-world',root));
 });
 test('contracts cannot import SDK and apps cannot import another application internals', () => {
   assert.throws(() => assertImportAllowed('/repo/packages/contracts/src/index.ts', '@virtual-city/world-sdk', root));

@@ -32,6 +32,9 @@ importers:
       '@virtual-city/contracts':
         specifier: workspace:*
         version: link:packages/contracts
+      '@virtual-city/deadline-world':
+        specifier: workspace:*
+        version: link:packages/deadline-world
       '@virtual-city/library-world':
         specifier: workspace:*
         version: link:packages/library-world
@@ -92,6 +95,9 @@ importers:
       '@virtual-city/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@virtual-city/deadline-world':
+        specifier: workspace:*
+        version: link:../../packages/deadline-world
       '@virtual-city/library-world':
         specifier: workspace:*
         version: link:../../packages/library-world
@@ -175,6 +181,15 @@ importers:
       zod:
         specifier: 4.6.7
         version: 4.6.7
+
+  packages/deadline-world:
+    dependencies:
+      '@virtual-city/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@virtual-city/world-sdk':
+        specifier: workspace:*
+        version: link:../world-sdk
 
   packages/focus-ui:
     dependencies:
