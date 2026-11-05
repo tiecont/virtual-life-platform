@@ -1,0 +1,18 @@
+{
+ "task":"M22-04","status":"VERIFIED","cityBase":"da26919",
+ "environment":"Linux/Node26.9.0/pnpm11.28.5/disposablePostgreSQL17.7/Chromium desktop-mobile/offline",
+ "commands":[
+  {"command":"BROWSER_REPORT_SCOPE=ci/social/actual-city-journey node scripts/run-browser-tests.mjs tests/e2e/travel.spec.ts","exitCode":0,"log":"m22-actual-city-browser.log","batches":"m22-actual-city-browser-batches.json","result":"4pass,2perdevice:actual4world native journey plus original explicitlysynthetic lostintent/commitACK/reconnect/multitab/logout protocolcase"},
+  {"command":"pnpm exec tsc -p tests/legacy-tsconfig.json","exitCode":0,"log":"m22-actual-city-types.log","result":"Travel spec now in explicit typecheck"},
+  {"command":"pnpm lint","exitCode":0,"log":"m22-actual-city-lint.log","result":"283source boundaries"},
+  {"command":"node --test tests/governance/*.test.mjs","exitCode":0,"log":"m22-actual-city-harness.log","result":"22pass including disposable environment isolation/finite fixture filtering"},
+  {"command":"pnpm build","exitCode":0,"log":"m22-actual-city-build.log","result":"All package/API/web builds"},
+  {"command":"node scripts/verify-ci.mjs","exitCode":0,"log":"m22-actual-city-ci-policy.log","result":"29specs/6bounded groups;hostedCI/requiredsettings NOT_RUN"},
+  {"command":"Readonly product-code status and complete batch validation","exitCode":0,"result":"No application/API/package code delta fromda26919;complete actual+synthetic desktop/mobile batch report validated;no tracked historical evidence changed"}
+ ],
+ "actualJourney":"Real City Portal→Deadline1.1.0(40places30seats)→Maid1.2.0(30/24)→Library1.2.0(8/8)→Restaurant1.2.0(10/8)→confirmedlobby/City. Same account/amber avatar/current expectedworld versions/one admitted membership/no automatic seat or shift,actualnative scenes and keyboard seats. Fouractual-world directory occupancy sum1 eachhop,final ownvisitnull. Deadline/Library start-cancel,Maid place-withdraw,Restaurant entry/seating/perspectives. Dating not offered/no page errors/no overflow. No synthetic target in this actual case.",
+ "artifacts":{"actual":"m22-actual-city-journey/:12actualPNG+2JSON","synthetic":"m22-actual-city-protocol-artifacts/:4PNG+2JSON,explicitly labelled synthetic protocol evidence","selectedImagesActuallyInspected":["m22-actual-city-journey/mobile-maid.png","m22-actual-city-journey/desktop-restaurant.png"]},
+ "boundaries":"Dedicated sanitized finite test-only profile/ownedflags;no runtime/Room/Travel/domain/DDL or realrollout changes. No fresh whole553API/unit/all29spec browser run;priorM16whole+individualworld evidence retained. Complete service/booking/staffing/eligibility loops are separately verified module cases,not inferred from single-visitor tour.",
+ "release":"No public/production/hostedCI/realstaff-provider activation. B-003/M20-07 remains external;retained0038stopped.",
+ "nextExactAction":"Checkpoint/localcommit/fsck;execute M23-01..06 local release operations and record explicit no-public-release decision/gates."
+}
