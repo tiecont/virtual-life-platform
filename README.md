@@ -1,5 +1,7 @@
 # virtual-life-platform
 
+Continue implementation from the [vNext 2.1 master](docs/plans/platform-vnext/MASTER-AGENT-PLAN.md) and [current handoff](docs/plans/platform-vnext/state/HANDOFF.md). The [current architecture/evidence index](docs/architecture/CURRENT-STATE.md) separates implemented local gameplay, fresh baseline results, historical evidence and proposed work. The original Mxx ledger remains intact. Android comes first on CachyOS; iOS is a separate conditional lane. No public/store release is approved.
+
 [Release trains](docs/operations/RELEASE-TRAINS.md) enumerate independently assessed waves,flag ownership and unassigned public responsibilities. `node scripts/verify-release.mjs` audits the offline candidate;all public gates remain closed.
 
 [Offline handoff](docs/agent/OFFLINE-HANDOFF.md) records the final local scope and remaining external gates. `node scripts/ops-watch.mjs` reports current task/world status and measured local observations with explicit unknown retention/costs. No public release or live monitoring is installed.
@@ -32,7 +34,7 @@ The optional [progression engine](docs/architecture/PROGRESSION.md) stores priva
 
 The [city portal](docs/architecture/CITY-PORTAL.md) has original schematic art, catalog-only links, a shared private header and explicit travel confirmation. Bounded discovery suggests occupied places and listed events, with one real fallback for a confirmed empty city. Observed counts expire after30seconds; failed sources stay unknown. Discovery creates no rooms.
 
-Offline implementation of the supplied [master plan](MASTER-AGENT-PLAN.md). Current features and evidence are in [PROGRESS](docs/agent/PROGRESS.md); resume from [HANDOFF](docs/agent/HANDOFF.md). Guest/registered identity, session renewal, private settings and own-data export/delete are available at `/identity`. Consent-based friends, private contact codes and blocking are available at `/social`. A working identity is not a playable city. All worlds remain closed. Nothing is deployed or published.
+The supplied [original master plan](MASTER-AGENT-PLAN.md) has a preserved [Mxx progress ledger](docs/agent/PROGRESS.md) and [offline handoff](docs/agent/HANDOFF.md). Guest/registered identity, renewal, private settings and own-data export/delete are available at `/identity`; consent-based friends, contact codes and blocking at `/social`. Actual local world gameplay is described below. Default rollout flags remain OFF; nothing is publicly deployed or published.
 
 A synthetic cafe scene is available at `/worlds/sdk-sandbox` only with explicit local/test flags. It renders real room presence, original starter avatars and seat state with keyboard controls. Server-approved walking supports floor clicks and keyboard destinations around solid tables/walls. See [scene setup and limitations](docs/architecture/SCENES.md); real world rollout remains OFF.
 
@@ -89,7 +91,7 @@ pnpm bench:rooms
 
 `check` runs governance, ESLint/layer boundaries, strict types, unit tests, **real PostgreSQL integration tests**, and builds. Root `test` contains governance/unit tests; `test:integration` is separate and included in `check`. Without TEST_DATABASE_URL, the test harness creates a unique Compose project, random loopback port/password and tmpfs database, then cleans up its resources on success/failure. An explicit TEST_DATABASE_URL is accepted only for a loopback database named `virtual_city_test` or `virtual_city_test_*`. Never supply production credentials. Integration tests use isolated schemas, apply migrations repeatedly/concurrently, exercise HTTP/TCP readiness and transactional rollback. Test process kill -9 may leave a uniquely named container; inspect that project before manual cleanup.
 
-The [offline CI contract](docs/operations/CI.md) validates full browser-spec coverage and a fail-closed `quality` aggregate,with scoped per-spec/device reports. `pnpm ci:browser private` runs one actual group after a build. Hosted CI,PR/branch protection and remote artifact uploads have not been run;the owner must configure them when creating the repository.
+The [CI contract](docs/operations/CI.md) validates browser-spec coverage and a fail-closed `quality` aggregate, with scoped per-spec/device reports. `pnpm ci:browser private` runs one group after a build. N00-01 observed an existing hosted Quality failure at the pinned baseline, separately from successful fresh local core/legacy checks; see the [current index](docs/architecture/CURRENT-STATE.md). No hosted run, branch-policy change or upload was initiated by that audit.
 
 E2E runs built API/web on local :4300/:3300 with isolated PostgreSQL, covering identity/social/safety, actual room scene, keyboard/mobile controls and synthetic travel/fault recovery. It refuses to reuse existing servers. Screenshots are real local artifacts under ignored `artifacts/`; retained checkpoint copies are in docs/agent/evidence, HTML/traces under ignored playwright-report/test-results. No real legacy integration or public release is inferred.
 
@@ -106,7 +108,7 @@ Legacy repos remain independent at ../deadline-cafe and ../maid-cafe; they are n
 
 ## CI and release
 
-.github/workflows/quality.yml runs the same checks + E2E on pull requests, with cache, isolated PostgreSQL and seven-day failure artifacts. Per owner instruction, work stays offline: remote PRs, hosted CI and repository required-check settings are not executed here. After creating a remote, configure required status `Quality / quality`, run one failing/passing PR, and verify branch protection before merging. CI has read-only repository permission and no deployment step.
+.github/workflows/quality.yml runs checks + E2E on pull requests with isolated PostgreSQL and seven-day failure artifacts. The remote already exists; N00-01 read its existing Quality result without triggering it. Required-check/branch-policy configuration is unverified and must be checked before a remote merge. vNext adds build/CD preparation; no production/store publication follows from passing local tests. Current CI has read-only repository permission and no deployment step.
 
 Original code-authored starter avatars/scene fixtures have reproducible provenance; no external media is imported or licensed here. Public release, moderation operations, restricted-world access, production migrations, infrastructure and legal/content approvals remain gated. Read AGENTS.md before resuming. Use `pnpm plan:status` and update evidence/checkpoints after each verified slice.
 
@@ -120,7 +122,7 @@ SESSION_SECRET is required (>=32 random characters). setup:local generates it; e
 
 Visit `/social`, share your own contact code privately, and accept or decline offers. No global user search or DM. Opposite explicit requests are mutual consent; block removes friendship and pending offers in both directions, and unblock does not restore friendship. Turn off new requests or replace your code to close pending incoming offers. Live account-scoped notifications contain only a refresh signal; the API applies privacy/block policy before returning data.
 
-PUBLIC_SOCKET_ORIGIN is the trusted browser-reachable Socket.IO origin (default local http://127.0.0.1:4300). Configure it with WEB_ORIGIN/edge TLS in a real deployment; no production configuration is verified here. Current world activity is unavailable until authoritative room/registry integration. Controlled source fixtures in tests are privacy checks, not proof of playable worlds. See docs/architecture/SOCIAL-API.md.
+PUBLIC_SOCKET_ORIGIN is the trusted browser-reachable Socket.IO origin (default local http://127.0.0.1:4300). Configure it with WEB_ORIGIN/edge TLS for deployment; no production configuration is verified here. Authorized world activity now comes from the room/registry/discovery owners. Synthetic fixtures remain labelled separately from actual integrated journeys. See docs/architecture/SOCIAL-API.md and the current evidence index.
 
 ## Room Authority
 

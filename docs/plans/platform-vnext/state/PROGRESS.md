@@ -1,3 +1,13 @@
+# Current vNext progress
+
+## 2026-11-05 — N00-02 VERIFIED
+
+Integrated vNext entrypoints and Android-first instructions, added source-pinned current architecture/evidence index, corrected stale README claims and labelled early M02/M22 and offline handoffs as historical. No runtime, schema, rollout, Mxx ledger or raw historical evidence change.
+
+Actual commands: 4, all exit 0. Evidence: `n00-02-2026-11-05`; [checks](../audit/N00-02-CHECKS.json). Current counts: `{"VERIFIED": 2, "TODO": 67}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N00-03; inspect local host/toolchain/ADB read-only, document target server/device/region unknowns with owners, and keep Android/web work independent of iOS access.
+
 # Progress — vNext execution
 
 ## 2026-11-05 — N00-01 VERIFIED (baseline audit)

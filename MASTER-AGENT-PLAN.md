@@ -1,5 +1,7 @@
 # virtual-life-platform — MASTER AGENT ORCHESTRATOR PLAN
 
+> **Continuation (2026-11-05):** New work follows the [vNext 2.1 Android-first master](docs/plans/platform-vnext/MASTER-AGENT-PLAN.md), [Nxx state](docs/plans/platform-vnext/state/task-state.json) and [current architecture/evidence index](docs/architecture/CURRENT-STATE.md). This original M00–M24 product/dependency specification and its historical evidence are preserved. vNext adds mobile/Kubernetes scope; public, restricted-world and production-data gates still apply. The old offline handoff is a completed scope checkpoint, not a stop on authorized vNext work.
+
 > **Version:** 1.0 | **Language:** Vietnamese | **Status:** PLAN ONLY — NOT IMPLEMENTED  
 > **Role:** Master orchestration contract for a coding agent.  
 > **Mission:** Từ hai dự án Deadline Cafe và Maid Cafe Social đang được triển khai, phát triển **Virtual City** — nền tảng thế giới ảo 2D chạy browser với shared identity, world travel, social safety và các world có liên kết; không làm mất công trình hiện hữu.

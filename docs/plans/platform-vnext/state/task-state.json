@@ -77,12 +77,14 @@
       "next_action": "Audit complete (not a release pass). Run the scheduler, reserve N00-02, integrate the AGENTS addendum/root links and reconcile current architecture/evidence docs; retain the hosted Deadline cadence failure."
     },
     "N00-02": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex coordinator",
+      "branch": "codex/vnext-n00-02-docs",
+      "evidence_refs": [
+        "n00-02-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "Link root master tới vNext; current architecture/evidence index; old-doc history labels"
+      "next_action": "Reserve N00-03; inspect local host/toolchain/ADB read-only, document target server/device/region unknowns with owners, and keep Android/web work independent of iOS access."
     },
     "N00-03": {
       "status": "TODO",

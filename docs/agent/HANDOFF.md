@@ -1,5 +1,7 @@
 # Session handoff — authorized offline work exhausted
 
+> **Historical Mxx checkpoint.** This handoff records the completed offline scope at `cef7dc1`. Continue newly authorized work from the [vNext handoff](../plans/platform-vnext/state/HANDOFF.md) and [current source/evidence index](../architecture/CURRENT-STATE.md). The exhausted Mxx scheduler does not block Nxx tasks. Public/restricted/production-data approvals below remain applicable; no historical result is promoted to a fresh vNext pass.
+
 Workspace: `/home/tiecont/Projects/virtual-city`. Project: `virtual-life-platform`. Branch: `main`. Origin: `git@github.com:tiecont/virtual-life-platform.git`. All implementation commits remain local; no push, public deployment, purchase, real staff/provider provisioning or original legacy source/data/process change is authorized by the offline request.
 
 Read MASTER, AGENTS, this handoff and the relevant evidence before any new work. User explicitly authorized selected current-source snapshots in independent private copies. B-001/B-002 are resolved for that offline scope; do not ask again. Public B-003 remains external. No subagents were requested or used. Manual edits use `apply_patch`. Never print environment secrets, cookies, CSRF/session/nonce values, raw network/evidence or expanded Compose configuration.

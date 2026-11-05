@@ -1,5 +1,7 @@
 # Context, containers and module ownership (M02-01)
 
+> **Historical M02 design:** The “not yet mounted” statements and future-scene diagram below describe the early foundation, not current runtime. Read [CURRENT-STATE.md](CURRENT-STATE.md) for the dated source/evidence index: Pixi/native room controls, shared engines and actual local world adapters are now implemented. Ownership principles below remain useful; vNext evolution follows its own task ledger.
+
 Current executable containers: Next status/identity/social UI → Nest/Fastify HTTP + authenticated identity/social Socket.IO → independent PostgreSQL. Identity and social are verified; registry/rooms/engines/world adapters below remain target boundaries. One API process is a modular monolith, not microservices. Pixi and room gameplay are not yet mounted.
 
 ```mermaid

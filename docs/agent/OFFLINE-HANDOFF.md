@@ -1,5 +1,7 @@
 # Offline implementation handoff
 
+> **Historical scope report.** Source-pinned Mxx completion and remaining gates below are retained. For ongoing vNext implementation read the [current handoff](../plans/platform-vnext/state/HANDOFF.md) and [architecture/evidence index](../architecture/CURRENT-STATE.md). Mobile/Kubernetes preparation is authorized separately; public/store release and production-data operations remain gated.
+
 Project:`virtual-life-platform`;workspace:`/home/tiecont/Projects/virtual-city`;branch:`main`;configured origin:`git@github.com:tiecont/virtual-life-platform.git`. All commits are local. No push,public deployment,external staging,purchase,real staff/provider provisioning or original legacy source/data/process mutation occurred.
 
 **PUBLIC_RELEASE=false.** All dependency-ready offline tasks have been handled through M23-06. Of151audit/module tasks,148are VERIFIED and3are BLOCKED_EXTERNAL;there are no TODO/IN_PROGRESS/ready tasks. Three explicit public/real-world gates remain external. Do not report the complete platform or public beta as released.
