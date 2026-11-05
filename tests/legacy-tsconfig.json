@@ -1,5 +1,5 @@
 {
   "extends":"../packages/config/tsconfig.json",
   "compilerOptions":{"noEmit":true,"module":"ESNext","moduleResolution":"Bundler","experimentalDecorators":true,"emitDecoratorMetadata":true},
-  "include":["integration/deadline-identity.test.ts","integration/deadline-world.test.ts","integration/maid-identity.test.ts","integration/maid-service.test.ts","e2e/deadline-identity.spec.ts","e2e/deadline.spec.ts","e2e/deadline-safety.spec.ts","e2e/deadline-acceptance.spec.ts","e2e/maid.spec.ts","e2e/maid-safety.spec.ts","support/deadline-legacy-fixture.ts","support/deadline-browser-runtime.ts","support/deadline-safety-fixtures.ts"]
+  "include":["integration/deadline-identity.test.ts","integration/deadline-world.test.ts","integration/maid-identity.test.ts","integration/maid-service.test.ts","e2e/deadline-identity.spec.ts","e2e/deadline.spec.ts","e2e/deadline-safety.spec.ts","e2e/deadline-acceptance.spec.ts","e2e/maid.spec.ts","e2e/maid-safety.spec.ts","e2e/maid-travel.spec.ts","support/deadline-legacy-fixture.ts","support/deadline-browser-runtime.ts","support/deadline-safety-fixtures.ts"]
 }

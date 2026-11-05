@@ -1,0 +1,86 @@
+ Network virtual-city-test-698f65ed_default Creating 
+ Network virtual-city-test-698f65ed_default Creating 
+ Network virtual-city-test-698f65ed_default Created 
+ Network virtual-city-test-698f65ed_default Created 
+ Container virtual-city-test-698f65ed-db-1 Creating 
+ Container virtual-city-test-698f65ed-db-1 Created 
+ Container virtual-city-test-698f65ed-db-1 Starting 
+ Container virtual-city-test-698f65ed-db-1 Started 
+ Container virtual-city-test-698f65ed-db-1 Waiting 
+ Container virtual-city-test-698f65ed-db-1 Healthy 
+[WebServer] (node:182570) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:182605) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:182605) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:182605) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:182569) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:182727) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:182778) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:182811) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:182896) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/deadline-safety.spec.ts:4:5 › actual Library visitor opts into a Deadline offer,accepts privately and separately confirms travel to the offered room (7.3s)
+  ✓  2 [desktop] › tests/e2e/deadline-safety.spec.ts:23:5 › unknown friends disable positive sends and a committed held invitation reply cannot restore the panel after Leave (2.3s)
+
+  2 passed (15.8s)
+ Container virtual-city-test-698f65ed-db-1 Stopping 
+ Container virtual-city-test-698f65ed-db-1 Stopped 
+ Container virtual-city-test-698f65ed-db-1 Removing 
+ Container virtual-city-test-698f65ed-db-1 Removed 
+ Network virtual-city-test-698f65ed_default Removing 
+ Network virtual-city-test-698f65ed_default Removed 
+ Network virtual-city-test-fcee2488_default Creating 
+ Network virtual-city-test-fcee2488_default Creating 
+ Network virtual-city-test-fcee2488_default Created 
+ Network virtual-city-test-fcee2488_default Created 
+ Container virtual-city-test-fcee2488-db-1 Creating 
+ Container virtual-city-test-fcee2488-db-1 Created 
+ Container virtual-city-test-fcee2488-db-1 Starting 
+ Container virtual-city-test-fcee2488-db-1 Started 
+ Container virtual-city-test-fcee2488-db-1 Waiting 
+ Container virtual-city-test-fcee2488-db-1 Healthy 
+[WebServer] (node:184119) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:184170) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:184170) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:184170) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:184118) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:184217) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:184281) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:184315) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:184395) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [mobile] › tests/e2e/deadline-safety.spec.ts:4:5 › actual Library visitor opts into a Deadline offer,accepts privately and separately confirms travel to the offered room (7.4s)
+  ✓  2 [mobile] › tests/e2e/deadline-safety.spec.ts:23:5 › unknown friends disable positive sends and a committed held invitation reply cannot restore the panel after Leave (2.2s)
+
+  2 passed (14.7s)
+ Container virtual-city-test-fcee2488-db-1 Stopping 
+ Container virtual-city-test-fcee2488-db-1 Stopped 
+ Container virtual-city-test-fcee2488-db-1 Removing 
+ Container virtual-city-test-fcee2488-db-1 Removed 
+ Network virtual-city-test-fcee2488_default Removing 
+ Network virtual-city-test-fcee2488_default Removed 

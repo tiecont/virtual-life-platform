@@ -118,6 +118,7 @@ export default function TravelPanel({ socketOrigin,preferred={kind:'none'} }: { 
         {current && <p className="muted">{current.occupancy} / {current.capacity} present · {current.self.seatId ? 'Your seat is retained.' : 'On the floor'}</p>}
         {connection==='ready'&&current?.worldSlug==='library'&&<Link href="/worlds/library">Open Library room</Link>}
         {connection==='ready'&&current?.worldSlug==='deadline'&&<Link href="/worlds/deadline">Open Deadline room</Link>}
+        {connection==='ready'&&current?.worldSlug==='maid'&&<Link href="/worlds/maid">Open Maid room</Link>}
         {connection==='ready'&&current?.worldSlug==='park'&&<Link href="/worlds/park">Open Park room</Link>}
         {connection==='ready'&&current?.worldSlug==='restaurant'&&<Link href="/worlds/restaurant">Open Restaurant room</Link>}
         <button disabled={busy} onClick={() => { if (client.current?.connected) void refresh.current(); else client.current?.connect(); }}>Refresh your visit</button>{current && <button className="secondary" disabled={busy} onClick={() => void leave()}>Return to lobby</button>}

@@ -1,0 +1,9 @@
+# ADR0094 — Maid invitations and travel cleanup
+
+Status: M16-05 VERIFIED from732a7e9;actual evidence `docs/agent/evidence/m16-travel-checks.json`.
+
+Use the existing RoomInvitation for the current public Maid room with social-cafe wording;an offer reserves no seat,service or gameplay role. Recipient default-OFF invitation settings,current friendship/block checks,private same-key receipts and explicit acceptance remain platform-owned. Accepted offers link to the existing travel review;only the recipient confirms movement. A confirmed Maid visit exposes an explicit native scene link,without a second admission or automatic seat/shift.
+
+Keep the shared single Room owner and canonical Hospitality owner. Travel retains the source until authoritative commit;old source memberships lose authority immediately afterwards. Existing fair bounded Hospitality recovery observes the ended original visit,ends its voluntary shift,requeues unfinished assigned work and clears its unfinished deadline. This is not an atomic SQL shift transition inside travel or an instantaneous maintenance SLA. Main schedules service recovery every3seconds;fair20row batches and transient failures may delay observation. No world hook imports another domain repository or creates a second order/role authority.
+
+Prove actual native Maid/Deadline room offers,explicit opt-in/acceptance/own confirmation,interrupted HTTP replies with same-key retries,source/shift/preparation retention before commit,one committed worker trip,requeue after departure,old membership/challenge denial and a replacement's fresh voluntary shift requirement. Independent Stop/customer withdrawal and confirmed departure must remain available. No original source/data/process mutation,source-account import,new migration,real staff/provider provisioning,hosted/public action or rollout activation.
