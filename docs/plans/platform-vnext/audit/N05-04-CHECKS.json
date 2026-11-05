@@ -1,0 +1,597 @@
+{
+  "taskId": "N05-04",
+  "sourceRevision": "82f0f187e50bd0f7cbf421ff484971248ae66dcf+workspace-sha256:c148715d032bb201b30319d17c9eaf84d099fc7fd3a4d2335116b7ef17e9e15b",
+  "executedAt": "2026-11-05T23:33:26.827043+00:00",
+  "commands": [
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/runtime-main.test.ts",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "integration",
+        "tests/integration/runtime-main.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:17:18.160Z",
+      "endedAt": "2026-11-05T23:17:44.917Z",
+      "log": "artifacts/vnext/n05-04/actual-main.log",
+      "sha256": "9cd5487723902117051b056b080309f4049ad64eeb53c92749cbc03e268598f5"
+    },
+    {
+      "command": "pnpm architecture:check",
+      "argv": [
+        "pnpm",
+        "architecture:check"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:17:37.560Z",
+      "endedAt": "2026-11-05T23:17:38.857Z",
+      "log": "artifacts/vnext/n05-04/architecture.log",
+      "sha256": "7d436a5671ae97de42177ca4eb4b225692d8767924b875c4d052623e619dc396"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/runtime-drain.test.ts",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "integration",
+        "tests/integration/runtime-drain.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:16:04.335Z",
+      "endedAt": "2026-11-05T23:16:11.834Z",
+      "log": "artifacts/vnext/n05-04/drain-integration-fixed.log",
+      "sha256": "8a5a7b9a2a9fdddfb6e0b49ae372084769a1e28d65cbf002516a3413d4f04178"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/runtime-drain.test.ts",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "integration",
+        "tests/integration/runtime-drain.test.ts"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-05T23:14:39.580Z",
+      "endedAt": "2026-11-05T23:14:52.663Z",
+      "log": "artifacts/vnext/n05-04/drain-integration.log",
+      "sha256": "b5023f5e28dd6c20bf38a3e7a41a9cb2a060cee092b37195a22c2ebf71757e49"
+    },
+    {
+      "command": "pnpm exec eslint apps/platform-api/src/main.ts apps/platform-api/src/operations/runtime-lifecycle.ts apps/platform-api/src/operations/runtime-lifecycle.unit.test.ts tests/integration/runtime-drain.test.ts tests/integration/runtime-main.test.ts tests/integration/hospitality.test.ts vitest.config.mts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "eslint",
+        "apps/platform-api/src/main.ts",
+        "apps/platform-api/src/operations/runtime-lifecycle.ts",
+        "apps/platform-api/src/operations/runtime-lifecycle.unit.test.ts",
+        "tests/integration/runtime-drain.test.ts",
+        "tests/integration/runtime-main.test.ts",
+        "tests/integration/hospitality.test.ts",
+        "vitest.config.mts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:18:08.101Z",
+      "endedAt": "2026-11-05T23:18:10.143Z",
+      "log": "artifacts/vnext/n05-04/final-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "node artifacts/vnext/n05-04/preservation.mjs",
+      "argv": [
+        "node",
+        "artifacts/vnext/n05-04/preservation.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:22:21.021Z",
+      "endedAt": "2026-11-05T23:22:21.142Z",
+      "log": "artifacts/vnext/n05-04/final-preservation-staged.log",
+      "sha256": "fe5589df5027777f49579de7cc6f6bfc9b0d5e78ec1852bd11fe53a78efb010e"
+    },
+    {
+      "command": "node artifacts/vnext/n05-04/preservation.mjs",
+      "argv": [
+        "node",
+        "artifacts/vnext/n05-04/preservation.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:21:03.247Z",
+      "endedAt": "2026-11-05T23:21:03.338Z",
+      "log": "artifacts/vnext/n05-04/final-preservation.log",
+      "sha256": "c33aacec89ca2433143513228a7de0047321980776b9bfbc8552c2a9b44fe01b"
+    },
+    {
+      "command": "pnpm check",
+      "argv": [
+        "pnpm",
+        "check"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:20:27.416Z",
+      "endedAt": "2026-11-05T23:32:48.034Z",
+      "log": "artifacts/vnext/n05-04/full-check.log",
+      "sha256": "fafedc6a11fd8c76f6518c552bcc3aa0bb58cd17c00fb1d624b4da8adc323c87"
+    },
+    {
+      "command": "pnpm infra:check",
+      "argv": [
+        "pnpm",
+        "infra:check"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:17:38.738Z",
+      "endedAt": "2026-11-05T23:17:39.344Z",
+      "log": "artifacts/vnext/n05-04/infra.log",
+      "sha256": "2439aba54f518bc84e8ff6df169a4762c4ef2f9ac17357e99001a3fece9fa962"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit apps/platform-api/src/operations/runtime-lifecycle.unit.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "apps/platform-api/src/operations/runtime-lifecycle.unit.test.ts"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-05T23:11:30.340Z",
+      "endedAt": "2026-11-05T23:11:31.353Z",
+      "log": "artifacts/vnext/n05-04/lifecycle-before.log",
+      "sha256": "90019765cc9c5f7ee4193b63769db0192c0b35b41bb4439ba053466d0ece248b"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit apps/platform-api/src/operations/runtime-lifecycle.unit.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "apps/platform-api/src/operations/runtime-lifecycle.unit.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:13:26.888Z",
+      "endedAt": "2026-11-05T23:13:27.937Z",
+      "log": "artifacts/vnext/n05-04/lifecycle-final-unit.log",
+      "sha256": "c950e971c0988fdfc4a42725b6ac8f398731d958438481a495337708323b53d0"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit apps/platform-api/src/operations/runtime-lifecycle.unit.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "apps/platform-api/src/operations/runtime-lifecycle.unit.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:12:07.637Z",
+      "endedAt": "2026-11-05T23:12:08.640Z",
+      "log": "artifacts/vnext/n05-04/lifecycle-unit.log",
+      "sha256": "ecdaea1ae6be021b7fe870114e96e13742b6b42dc799fcdae4b73d970e5180f2"
+    },
+    {
+      "command": "pnpm exec eslint apps/platform-api/src/main.ts apps/platform-api/src/operations/runtime-lifecycle.ts apps/platform-api/src/operations/runtime-lifecycle.unit.test.ts tests/integration/runtime-drain.test.ts tests/integration/hospitality.test.ts vitest.config.mts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "eslint",
+        "apps/platform-api/src/main.ts",
+        "apps/platform-api/src/operations/runtime-lifecycle.ts",
+        "apps/platform-api/src/operations/runtime-lifecycle.unit.test.ts",
+        "tests/integration/runtime-drain.test.ts",
+        "tests/integration/hospitality.test.ts",
+        "vitest.config.mts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:16:23.466Z",
+      "endedAt": "2026-11-05T23:16:25.180Z",
+      "log": "artifacts/vnext/n05-04/lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "node artifacts/vnext/n05-04/preservation.mjs",
+      "argv": [
+        "node",
+        "artifacts/vnext/n05-04/preservation.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:20:17.462Z",
+      "endedAt": "2026-11-05T23:20:17.537Z",
+      "log": "artifacts/vnext/n05-04/preservation.log",
+      "sha256": "c33aacec89ca2433143513228a7de0047321980776b9bfbc8552c2a9b44fe01b"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/hospitality.test.ts -t drain settles a real progression",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "integration",
+        "tests/integration/hospitality.test.ts",
+        "-t",
+        "drain settles a real progression"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:15:17.530Z",
+      "endedAt": "2026-11-05T23:15:26.159Z",
+      "log": "artifacts/vnext/n05-04/reward-drain.log",
+      "sha256": "1dcc0e908f6a207970db0c33d75147d9a4e041d0a97a1090249fd07723fc7d70"
+    },
+    {
+      "command": "pnpm test:runtime-faults",
+      "argv": [
+        "pnpm",
+        "test:runtime-faults"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:18:06.925Z",
+      "endedAt": "2026-11-05T23:20:15.768Z",
+      "log": "artifacts/vnext/n05-04/runtime-faults.log",
+      "sha256": "931b826583acb83fdc32023f0b0d26170128585c420ccc2a8090d0b559e18aea"
+    },
+    {
+      "command": "pnpm exec tsc -p apps/platform-api/tsconfig.json --noEmit",
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "-p",
+        "apps/platform-api/tsconfig.json",
+        "--noEmit"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:15:18.695Z",
+      "endedAt": "2026-11-05T23:15:25.743Z",
+      "log": "artifacts/vnext/n05-04/static.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "pnpm exec tsc -p artifacts/vnext/n05-04/test-tsconfig.json",
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "-p",
+        "artifacts/vnext/n05-04/test-tsconfig.json"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:21:02.027Z",
+      "endedAt": "2026-11-05T23:21:09.682Z",
+      "log": "artifacts/vnext/n05-04/test-types-fixed.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "pnpm exec tsc -p artifacts/vnext/n05-04/test-tsconfig.json",
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "-p",
+        "artifacts/vnext/n05-04/test-tsconfig.json"
+      ],
+      "exitCode": 2,
+      "signal": null,
+      "startedAt": "2026-11-05T23:20:16.284Z",
+      "endedAt": "2026-11-05T23:20:22.087Z",
+      "log": "artifacts/vnext/n05-04/test-types.log",
+      "sha256": "6b9e62f0fa741133b1d7636bd1ee0f90c5fdde3c25628d67bb619ebeaf9efe2c"
+    },
+    {
+      "command": "pnpm exec eslint tests/integration/runtime-drain.test.ts tests/integration/hospitality.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "eslint",
+        "tests/integration/runtime-drain.test.ts",
+        "tests/integration/hospitality.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:22:21.256Z",
+      "endedAt": "2026-11-05T23:22:24.451Z",
+      "log": "artifacts/vnext/n05-04/types-final-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "acceptance": [
+    "Immediate irreversible drain refuses new player work through existing availability guards; tracked periodic/signal work settles before existing app/authority and pool close sequence. Same12s total budget and explicit failed-stop semantics.",
+    "Actual main processes blocked on real owned PG table locks exit0 when released and exit1 at deadline when stuck, with no owner remaining. Existing real SIGKILL/SIGSTOP/takeover and paused-publication tests pass.",
+    "Actual scoped API DB-access failure fences old room commands/broadcasts and disconnects old socket; restoring credentials cannot reacquire old authority. Same identity can join a replacement with fresh epoch/membership after mandatory resync.",
+    "Actual durable reward effect and delivery receipt COMMIT drain together; restart does not duplicate rewards/completion/delivery. Full integration includes current transaction/travel/privacy/revoke/order/reward cases.",
+    "Proposed runtime-fault command implemented before execution; original tests/thresholds and production12s deadline unchanged. Additional strict fixture types fixed without removing expectations or altering production domain behavior."
+  ],
+  "limitations": [
+    "Local source/tsx processes and disposable PG17.7; no fresh image/TLS/cluster/staging downtime or release certification. Singleton guard is not distributed fencing or zero downtime.",
+    "Role-scoped DB-access failure is not an entire PG server/network outage. Actual SIGINT and SIGHUP-in-flight process cases not independently exercised; helper ordering covers admitted signal work.",
+    "At deadline uncompleted transactions may abort or have uncertain client outcome; durable receipts/reconciliation remain authoritative. No guarantee every business operation finishes before process exit.",
+    "Full check started before type-only test fixture annotations were refined; final application/test source is pinned and all final cases/types pass. Initial failed attempts retained.",
+    "No standalone worker/admin/mobile/published release or public/store/adult/media/operator approval. Hosted Deadline cadence/enforcement unresolved, N13/N14 inactive. Raw evidence private local, not off-host archived."
+  ],
+  "artifacts": [
+    {
+      "ref": "apps/platform-api/src/main.ts",
+      "sha256": "17de7d96da726eeb8b6312b3ed045ad22340a9ee48b9cffc6c7d5a338aeb44b0",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "apps/platform-api/src/operations/runtime-lifecycle.ts",
+      "sha256": "3640fcaf8de468946eb7257fb5687e32c38922dbf17100f5238378cf4f78002f",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "apps/platform-api/src/operations/runtime-lifecycle.unit.test.ts",
+      "sha256": "8ed0d812bbb6b4c8e5dd3ad8f8bde13826604584273c4b0f95b782a005901531",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/README.md",
+      "sha256": "292b9abc1a89fe91976596942dc09fa701089aee08e38407f2f0679332c48b22",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/adr/0111-settle-maintenance-before-owner-shutdown.md",
+      "sha256": "5b4bd0599dcfa689aa1c61db6d5aed6bec08a8b6ab04a070373520ff2f9dd290",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/API-MODULES.md",
+      "sha256": "9b900bc643b2fa29d058ab6c8610ff145dcbf2a1991a858d37e744bb556f3ee6",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/CURRENT-STATE.md",
+      "sha256": "daac71ba6ff1412798adeaca6130c24831d6ad7b7694b45060bfbcbda43c61f9",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/api-modules.json",
+      "sha256": "67994f90fc460f69e2bfa81ccf900e29aa57004812d47f23011f07a316b5bf1e",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/N05-04-RUNTIME-RECOVERY.json",
+      "sha256": "7e6b9a8eff562fcaa7cf91a5ab9d8acc65195af75e7c59fb70ef89be7db6ece0",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/operations/DEPLOYMENT-RECOVERY.md",
+      "sha256": "d12079717bbf1b4d3b2f519c370c28ac2673d92c0f5e95d23b1c85013fad1650",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "package.json",
+      "sha256": "63688a7866703441d3870852040255a3e1214cdca65e3f67129ae56e63cbc131",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "vitest.config.mts",
+      "sha256": "b632e4e3d13adf41822610eeae9176a25411548b2019cde3dd4754624170e23a",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "tests/integration/runtime-drain.test.ts",
+      "sha256": "1b8237503c856c8493d3e426b54a50b3cab5c998d9262627db6952dd763530fb",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "tests/integration/runtime-main.test.ts",
+      "sha256": "a48f53f013d1747b7775891e66a17037eab4ad7392d9fc1436585978daa654ff",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "tests/integration/hospitality.test.ts",
+      "sha256": "a73cc07283ea9523b23bc4ef154c0d530346e6994f85d90325be48e2806670e4",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/source.patch",
+      "sha256": "9b639a0874d98ce0848fb7ecc2537c6e421a0802214119db50f57eae60375097",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/source.json",
+      "sha256": "1012667139c8957234c57a35c513af8b416566f9f5a98bc5129ebd8034da7045",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/preservation.mjs",
+      "sha256": "f72a92b42e186da8be8e18ed36697e1e0c8d80509011145c7373f662f2b2ac3a",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/test-tsconfig.json",
+      "sha256": "0cf5d2b021a25e7226c2cb758e6b896dda26afd0c0230cfd44763d2d60bf07b4",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/full-network-races.json",
+      "sha256": "0d077f2d2e947c4cac36211471db08ef337253ee1b545d3044330efdbf846ca7",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/actual-main.log",
+      "sha256": "9cd5487723902117051b056b080309f4049ad64eeb53c92749cbc03e268598f5",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/architecture.log",
+      "sha256": "7d436a5671ae97de42177ca4eb4b225692d8767924b875c4d052623e619dc396",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/drain-integration-fixed.log",
+      "sha256": "8a5a7b9a2a9fdddfb6e0b49ae372084769a1e28d65cbf002516a3413d4f04178",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/drain-integration.log",
+      "sha256": "b5023f5e28dd6c20bf38a3e7a41a9cb2a060cee092b37195a22c2ebf71757e49",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/final-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/final-preservation-staged.log",
+      "sha256": "fe5589df5027777f49579de7cc6f6bfc9b0d5e78ec1852bd11fe53a78efb010e",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/final-preservation.log",
+      "sha256": "c33aacec89ca2433143513228a7de0047321980776b9bfbc8552c2a9b44fe01b",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/full-check.log",
+      "sha256": "fafedc6a11fd8c76f6518c552bcc3aa0bb58cd17c00fb1d624b4da8adc323c87",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/infra.log",
+      "sha256": "2439aba54f518bc84e8ff6df169a4762c4ef2f9ac17357e99001a3fece9fa962",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/lifecycle-before.log",
+      "sha256": "90019765cc9c5f7ee4193b63769db0192c0b35b41bb4439ba053466d0ece248b",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/lifecycle-final-unit.log",
+      "sha256": "c950e971c0988fdfc4a42725b6ac8f398731d958438481a495337708323b53d0",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/lifecycle-unit.log",
+      "sha256": "ecdaea1ae6be021b7fe870114e96e13742b6b42dc799fcdae4b73d970e5180f2",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/preservation.log",
+      "sha256": "c33aacec89ca2433143513228a7de0047321980776b9bfbc8552c2a9b44fe01b",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/reward-drain.log",
+      "sha256": "1dcc0e908f6a207970db0c33d75147d9a4e041d0a97a1090249fd07723fc7d70",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/runtime-faults.log",
+      "sha256": "931b826583acb83fdc32023f0b0d26170128585c420ccc2a8090d0b559e18aea",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/static.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/test-types-fixed.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/test-types.log",
+      "sha256": "6b9e62f0fa741133b1d7636bd1ee0f90c5fdde3c25628d67bb619ebeaf9efe2c",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/types-final-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    }
+  ],
+  "nextExactAction": "Reserve N05-05; use the existing hospitality/jobs transaction/account-lock seam, extract the progression completion sink into a room-free reusable ledger port if needed, and implement a separate durable worker bootstrap/config/DB lifetime that never calls createApp or constructs RoomAuthority/socket ownership. Keep room-bound maintenance in API, preserve default behavior/closed gates, add bounded retry/dead-letter controls and actual worker kill/resume/effect-receipt tests; implement worker:check before executing it, then run applicable full verification and checkpoint."
+}

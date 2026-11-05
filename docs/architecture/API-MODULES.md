@@ -46,3 +46,5 @@ The current 300-second maintenance chain includes identity/legacy/social/rooms/r
 N05-02 adds a foundation database-observation port and composition-owned pg adapter (`common/database-observation`, `db/observe-pool`) plus bounded six-command room phase metrics. The DB adapter remains unavailable as a domain import; foundation imports no domain implementation. [Runtime profile](RUNTIME-PROFILE.md) describes actual coverage and nested span semantics.
 
 No migration, runtime flag, replica count or real operator assignment changes here. Revert this policy/map slice independently if a documented legitimate import is blocked; do not bypass safety or duplicate implementation trees to satisfy a new rule.
+
+The operations lifecycle port `operations/runtime-lifecycle` tracks API-owned maintenance and trusted signal reloads, then settles them before the existing app/authority and pool close sequence. It imports no domain/SQL implementation and does not construct an owner or worker. See [ADR0111](../adr/0111-settle-maintenance-before-owner-shutdown.md).

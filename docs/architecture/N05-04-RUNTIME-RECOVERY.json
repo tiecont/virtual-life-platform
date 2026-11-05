@@ -1,0 +1,165 @@
+{
+  "taskId": "N05-04",
+  "result": "PASS",
+  "scope": "API-owned maintenance settlement and unchanged singleton recovery/epoch/durable-effect guards",
+  "source": {
+    "baseRevision": "82f0f187e50bd0f7cbf421ff484971248ae66dcf",
+    "snapshotRevision": "fd3e64e36dbe6cbbb57fc7c37d44dbd658a8d7c9",
+    "ref": "refs/vnext/candidates/n05-04-runtime-drain",
+    "workspaceSha256": "9b639a0874d98ce0848fb7ecc2537c6e421a0802214119db50f57eae60375097",
+    "scope": "Final application/test source; public verification summary/checkpoint follows. Full check started before test-only type annotations were refined; no application change during checks."
+  },
+  "runtimeChanges": [
+    "Main tracks complete admitted300000ms/3000ms maintenance chains and SIGHUP reloads; same chain does not overlap itself.",
+    "SIGTERM/SIGINT begins irreversible drain synchronously, clears intervals/listener, settles admitted work, closes app/authority through existing hooks, then pool.",
+    "Same12000ms total stop deadline; failure exits1, repeated stop shares one promise, expired helper cannot start a later close step."
+  ],
+  "preserved": [
+    "RoomAuthority, RoomService, identity, business transactions, readiness implementation and app hook order unchanged.",
+    "Protocol/metadata1,38 production SQL, all dependency versions, original151-task ledger, quotas and public/restricted gates unchanged.",
+    "Every old hospitality assertion remains. Its post helper has a type-only unknown-to-object annotation so the optional widened test typecheck chooses the existing Promise inject overload."
+  ],
+  "verification": {
+    "runtimeFaults": {
+      "exitCode": 0,
+      "files": 7,
+      "cases": 81
+    },
+    "actualMainFaultFacts": [
+      {
+        "stuck": false,
+        "exitCode": 0,
+        "signal": null,
+        "stopElapsedMs": 172.29197899999963,
+        "shutdownBudgetMs": 12000,
+        "readinessDuringDrain": 503,
+        "livenessDuringDrain": 200,
+        "ownerCountDuringDrain": 1,
+        "ownerCountAfterExit": 0
+      },
+      {
+        "stuck": true,
+        "exitCode": 1,
+        "signal": null,
+        "stopElapsedMs": 12029.096857,
+        "shutdownBudgetMs": 12000,
+        "readinessDuringDrain": 503,
+        "livenessDuringDrain": 200,
+        "ownerCountDuringDrain": 1,
+        "ownerCountAfterExit": 0
+      }
+    ],
+    "rewardDrain": {
+      "exitCode": 0,
+      "cases": 1,
+      "actualProgressionRows": 2,
+      "xpPerParticipant": 2,
+      "deliveryRowsAfterRestart": 1,
+      "completionRowsAfterRestart": 1,
+      "fixture": "Synthetic Maid-policy world using actual hospitality/progression/outbox code and deferred PostgreSQL commit barrier; not a live Maid or production policy"
+    },
+    "databaseAccessOutage": {
+      "exitCode": 0,
+      "cases": 2,
+      "scope": "Unique disposable API login role denied; only that role backends terminated. Liveness200/readiness503; old socket disconnected, old owner stays lost after login restored, old snapshot denied, fresh epoch/membership required."
+    },
+    "lifecycleUnitCases": 5,
+    "apiTypes": 0,
+    "testTypes": {
+      "exitCode": 0,
+      "files": [
+        "runtime-drain.test.ts",
+        "runtime-main.test.ts",
+        "hospitality.test.ts"
+      ],
+      "scope": "Explicit strict additional fixture compilation; initial errors retained and corrected with type-only annotations"
+    },
+    "architecture": 0,
+    "infra": 0,
+    "fullCheck": {
+      "exitCode": 0,
+      "governance": 60,
+      "unit": 313,
+      "unitFiles": 64,
+      "integration": 574,
+      "integrationFiles": 43,
+      "allWorkspaceBuilds": true
+    },
+    "fullCheckMainFaultFacts": [
+      {
+        "stuck": false,
+        "exitCode": 0,
+        "signal": null,
+        "stopElapsedMs": 113.56351899999936,
+        "shutdownBudgetMs": 12000,
+        "readinessDuringDrain": 503,
+        "livenessDuringDrain": 200,
+        "ownerCountDuringDrain": 1,
+        "ownerCountAfterExit": 0
+      },
+      {
+        "stuck": true,
+        "exitCode": 1,
+        "signal": null,
+        "stopElapsedMs": 12020.416337000002,
+        "shutdownBudgetMs": 12000,
+        "readinessDuringDrain": 503,
+        "livenessDuringDrain": 200,
+        "ownerCountDuringDrain": 1,
+        "ownerCountAfterExit": 0
+      }
+    ]
+  },
+  "retainedFailures": [
+    {
+      "label": "lifecycle-before",
+      "exitCode": 1,
+      "cause": "New lifecycle tests before helper implementation, missing module."
+    },
+    {
+      "label": "drain-integration",
+      "exitCode": 1,
+      "cause": "New test wrongly expected maintain() to reject after terminal owner loss; existing behavior is a safe no-op. Replaced by actual old-socket command rejection/new-epoch checks; no production change."
+    },
+    {
+      "label": "test-types",
+      "exitCode": 2,
+      "cause": "Optional widened fixture typecheck exposed existing unknown inject payload overload and new circular helper inference. Type-only annotations corrected; original assertions retained."
+    }
+  ],
+  "limitations": [
+    "Local source/tsx process and Docker PG17.7, Node26.9.0/pnpm11.28.5 on CachyOS x64; no container/TLS/cluster/staging drain or downtime qualification.",
+    "Actual SIGTERM/12s deadline and existing SIGKILL/SIGSTOP/takeover tested; SIGINT and real SIGHUP-in-flight are not independently exercised process cases. Signal work ordering has helper tests.",
+    "API-role DB-access failure is not a whole PostgreSQL/server/network outage or distributed fencing proof.",
+    "Full check began before test-only type annotations were refined; final application source stayed unchanged. The runtime-fault lane also records fresh final main diagnostic facts.",
+    "Unrecoverable in-flight work at deadline leads to process failure; no promise of successful business completion or zero downtime. Durable transactions/reconciliation remain authoritative.",
+    "No worker/admin/native/published artifacts or public/store/adult/media/operator entitlement. Hosted Deadline cadence/enforcement remain unresolved; N13/N14 inactive.",
+    "Raw evidence private local until owner cleanup, not off-host archive."
+  ],
+  "artifacts": [
+    {
+      "ref": "artifacts/vnext/n05-04/source.patch",
+      "sha256": "9b639a0874d98ce0848fb7ecc2537c6e421a0802214119db50f57eae60375097",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/source.json",
+      "sha256": "1012667139c8957234c57a35c513af8b416566f9f5a98bc5129ebd8034da7045",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/preservation.mjs",
+      "sha256": "f72a92b42e186da8be8e18ed36697e1e0c8d80509011145c7373f662f2b2ac3a",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-04/test-tsconfig.json",
+      "sha256": "0cf5d2b021a25e7226c2cb758e6b896dda26afd0c0230cfd44763d2d60bf07b4",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    }
+  ]
+}

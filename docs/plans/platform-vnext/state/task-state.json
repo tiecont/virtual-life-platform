@@ -307,12 +307,14 @@
       "next_action": "Reserve N05-04; audit existing main shutdown/preClose/authority/readiness and owner tests, implement bounded lifecycle handling for in-flight maintenance/critical work without releasing authority early, add actual drain/owner-loss/DB-outage and reconnect evidence as needed, implement test:runtime-faults before running it, preserve durable effects/epoch resync and update checkpoint."
     },
     "N05-04": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Runtime",
+      "branch": "codex/vnext-n05-04-runtime-drain",
+      "evidence_refs": [
+        "n05-04-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "Bounded drain lifecycle, readiness/live split, reconnect contract"
+      "next_action": "Reserve N05-05; use the existing hospitality/jobs transaction/account-lock seam, extract the progression completion sink into a room-free reusable ledger port if needed, and implement a separate durable worker bootstrap/config/DB lifetime that never calls createApp or constructs RoomAuthority/socket ownership. Keep room-bound maintenance in API, preserve default behavior/closed gates, add bounded retry/dead-letter controls and actual worker kill/resume/effect-receipt tests; implement worker:check before executing it, then run applicable full verification and checkpoint."
     },
     "N05-05": {
       "status": "TODO",

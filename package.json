@@ -7,6 +7,7 @@
     "node": "26.9.x"
   },
   "scripts": {
+    "test:runtime-faults": "pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project runtime-faults",
     "profile:runtime": "pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/runtime-profile.ts",
     "test:protocol": "pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project protocol",
     "release-manifest:check": "node scripts/release-manifest.mjs",

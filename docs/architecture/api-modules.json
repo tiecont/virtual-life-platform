@@ -211,6 +211,7 @@
         "operations/http",
         "operations/log",
         "operations/readiness",
+        "operations/runtime-lifecycle",
         "operations/telemetry"
       ],
       "targetBoundary": "Separate read ports from room owner before durable-worker bootstrap"

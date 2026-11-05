@@ -2,6 +2,12 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({ test: { projects: [
   { test: { name: 'unit', include: ['apps/**/*.unit.test.ts', 'packages/**/*.test.ts'], environment: 'node' } },
   { test: { name: 'integration', include: ['tests/integration/**/*.test.ts'], environment: 'node', testTimeout: 15000, hookTimeout: 15000, fileParallelism: false } },
+  { test: { name: 'runtime-faults', include: [
+    'apps/platform-api/src/operations/runtime-lifecycle.unit.test.ts',
+    'tests/integration/runtime-drain.test.ts', 'tests/integration/runtime-main.test.ts', 'tests/integration/room-owner.test.ts',
+    'tests/integration/readiness.test.ts', 'tests/integration/hospitality.test.ts',
+    'packages/world-sdk/test/room-sync.test.ts',
+  ], environment: 'node', testTimeout: 15000, hookTimeout: 15000, fileParallelism: false } },
   // Focused replay/concurrency suite; every integration file also stays in the complete gate.
   { test: { name: 'protocol', include: [
     'packages/contracts/test/protocol.test.ts',
