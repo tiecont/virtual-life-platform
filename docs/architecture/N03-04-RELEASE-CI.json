@@ -1,0 +1,267 @@
+{
+  "taskId": "N03-04",
+  "result": "PASS",
+  "scope": "Local CI/event/trust validation, fresh frozen source-built image bundle and real disposable loopback registry rehearsal. Hosted candidate/GHCR publication and staging/production NOT_RUN.",
+  "imageSourceSnapshot": "6ccabd37ca63cbf5157c01402f457ccd4cbf1b33",
+  "imageSourceRef": "refs/vnext/candidates/n03-04",
+  "runtimeSourceDelta": "Application/shared code, runtime image definitions, legacy fixture configuration and dependency versions unchanged; subsequent changes outside image runtime are tooling, tests and documentation.",
+  "images": {
+    "api": {
+      "localDockerImageId": "sha256:571977ca059dcceb367d86493d62c453ae403ffaa7b98735c919f9e37be5bfc9",
+      "archiveSha256": "7bd21f5919e13be6f2c297c5ff1bf32ed9948eef16ba7f0211a2d6eecfc27b85",
+      "independentlyObservedLoopbackRegistryDigest": "sha256:571977ca059dcceb367d86493d62c453ae403ffaa7b98735c919f9e37be5bfc9",
+      "sbom": {
+        "file": "api-sbom.cdx.json",
+        "sha256": "ec98a4e05eb493e1bbe6f41c00f3853da4c44d6c526c40028d7a84f1aa122178"
+      }
+    },
+    "web": {
+      "localDockerImageId": "sha256:8c2592a5901be97edcf8d7d5a7a2071514966b3ff2e15ab56218ed200872182d",
+      "archiveSha256": "687a0c9cd574e38acb4f7b0394e0bda98e6b3afef246b4999284c20d63a1c502",
+      "independentlyObservedLoopbackRegistryDigest": "sha256:8c2592a5901be97edcf8d7d5a7a2071514966b3ff2e15ab56218ed200872182d",
+      "sbom": {
+        "file": "web-sbom.cdx.json",
+        "sha256": "75d25f5563bfdeb6b90dec3c910bda5268ed0bc6e50327742bfeb9834eaaa67f"
+      }
+    }
+  },
+  "compatibility": {
+    "protocol": {
+      "minimum": 1,
+      "current": 1,
+      "maximum": 1
+    },
+    "schema": {
+      "metadataVersion": 1,
+      "minimumMigrations": 38,
+      "maximumMigrations": 38,
+      "manifestSha256": "29e43babe66b757cc8d8cf18b31b7bebf9d43c84e6651310b991503e43a097dc",
+      "policySha256": "b014f7e561f20f0a576d70cf8341fd16291b45379fa8e27efd2c8af3c54154ab"
+    },
+    "assets": {
+      "manifestSha256": "3754413506863ff6b8d65ecfeb4d5924a3b2259737fa70ed8a399382457a0dae"
+    }
+  },
+  "actualImageChecks": {
+    "sourceRevision": "6ccabd37ca63cbf5157c01402f457ccd4cbf1b33",
+    "result": "PASS",
+    "apiScenarios": 6,
+    "webScenarios": 6,
+    "cleanupComplete": true,
+    "images": {
+      "api": "sha256:571977ca059dcceb367d86493d62c453ae403ffaa7b98735c919f9e37be5bfc9",
+      "web": "sha256:8c2592a5901be97edcf8d7d5a7a2071514966b3ff2e15ab56218ed200872182d"
+    },
+    "inspection": {
+      "api": {
+        "uid": 1000,
+        "node": "26.9.0",
+        "firstPartyPackages": [
+          "@virtual-city/contracts",
+          "@virtual-city/deadline-world",
+          "@virtual-city/library-world",
+          "@virtual-city/lounge-world",
+          "@virtual-city/maid-world",
+          "@virtual-city/park-world",
+          "@virtual-city/platform-api",
+          "@virtual-city/restaurant-world",
+          "@virtual-city/world-sdk"
+        ],
+        "files": 11217,
+        "inventorySha256": "b680969e4f68537a81454c0970279f7a2cc774725323183719d0c44642b1dace",
+        "migrations": 38,
+        "credentialScan": {
+          "scannedTextFiles": 7317,
+          "patterns": [
+            "PEM private key body",
+            "AWS access key ID",
+            "GitHub classic token",
+            "credential filenames"
+          ],
+          "findings": 0,
+          "scope": "Application dependency filesystem; bounded text files; not a CVE or universal secret certification"
+        },
+        "filesystemWriteDenied": true
+      },
+      "web": {
+        "uid": 1000,
+        "node": "26.9.0",
+        "filesystemWriteDenied": true,
+        "buildId": "5FmAOWpK_kJ1s-wNvvVYu",
+        "files": 2253,
+        "inventorySha256": "e3fc69bab778e1774580c7ec7bd9c287e29e4067637a5900bbeeb167f99a4bfd",
+        "clientJs": 42,
+        "clientCss": 11,
+        "scannedTextFiles": 2197,
+        "definedCredentialFindings": 0,
+        "browserBuildOriginAbsent": true
+      }
+    }
+  },
+  "registryRehearsal": {
+    "result": "PASS",
+    "registryImage": [
+      "registry@sha256:6c5666b861f3505b116bb9aa9b25175e71210414bd010d92035ff64018f9457e"
+    ],
+    "sameTestedImageIds": true,
+    "registryDescriptorAndPulledImageVerified": true,
+    "daemonAndRegistryIdentityEqual": {
+      "api": true,
+      "web": true
+    },
+    "corruptSbomDenied": true,
+    "mutableTagDenied": true,
+    "notUsableAsProductionCandidate": true,
+    "cleanupComplete": true
+  },
+  "enforcement": {
+    "observedAt": "2026-11-05T21:37:51.720Z",
+    "repository": "tiecont/virtual-life-platform",
+    "repo": {
+      "status": "AVAILABLE",
+      "value": {
+        "private": true,
+        "defaultBranch": "main",
+        "allowAutoMerge": false
+      }
+    },
+    "branch": {
+      "status": "AVAILABLE",
+      "value": {
+        "sourceRevision": "cef7dc17172f7c6cda930c99648a5e3ad609cc55",
+        "protected": false,
+        "checks": []
+      }
+    },
+    "rulesets": {
+      "status": "UNAVAILABLE_403",
+      "httpStatus": "403"
+    },
+    "protection": {
+      "status": "UNAVAILABLE_403",
+      "httpStatus": "403"
+    },
+    "publishVariable": {
+      "status": "ABSENT_404",
+      "httpStatus": "404"
+    },
+    "committedPublishEnabled": false,
+    "observedTechnicalProtection": false,
+    "requiredCheck": "quality",
+    "policy": {
+      "autoMerge": false,
+      "productionAutoPromotion": false,
+      "ownerPromotionRequired": true
+    },
+    "fallback": "Owner verifies exact source, successful hosted checks, registry digests and staging evidence before promotion; this is not technical branch protection"
+  },
+  "publication": {
+    "committedPolicyEnabled": false,
+    "repositoryVariableEnabled": "UNSET_404",
+    "hostedNewWorkflow": "NOT_RUN",
+    "ghcr": "NOT_RUN",
+    "signedAttestations": "NOT_RUN",
+    "unsignedProjectProvenance": "VERIFIED_LOCAL_REHEARSAL",
+    "vulnerabilityAnalysis": "NOT_RUN",
+    "productionPromotionAuthorized": false
+  },
+  "verification": {
+    "focusedFinal": 11,
+    "finalGovernance": 58,
+    "actualGitEventMatrix": {
+      "events": [
+        "pull_request",
+        "push"
+      ],
+      "changes": [
+        "portal source",
+        "shared contracts",
+        "lockfile",
+        "docs",
+        "overlay YAML",
+        "unknown overlay code"
+      ],
+      "unknownBaseRequiresImages": true
+    },
+    "workflowLint": {
+      "version": "1.7.12",
+      "releaseArchiveSha256": "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8",
+      "shellcheck": "NOT_RUN",
+      "pyflakes": "NOT_RUN"
+    },
+    "existingFailedHostedRun": {
+      "id": 42037215254,
+      "attempt": 1,
+      "conclusion": "failure",
+      "publicationProof": "REJECTED"
+    },
+    "fullCheck": {
+      "exitCode": 0,
+      "governance": 57,
+      "unit": 304,
+      "integration": 559,
+      "productionBuilds": [
+        "platform-api",
+        "portal-web"
+      ],
+      "finalToolingVerification": "58 governance cases plus final lint/CI/manifest/preflight checks exit0"
+    },
+    "commands": {
+      "initial-ci": 1,
+      "focused": 1,
+      "lint": 1,
+      "focused-fixed": 1,
+      "lint-fixed": 0,
+      "focused-final": 0,
+      "ci-check": 0,
+      "enforcement-preflight": 0,
+      "manifest-policy": 0,
+      "workflow-lint": 0,
+      "final-tool-lint": 0,
+      "final-ci": 0,
+      "verified-bundle": 0,
+      "failed-hosted-proof": 0,
+      "registry-rehearsal": 1,
+      "registry-rehearsal-fixed": 0,
+      "final-governance": 0,
+      "preservation": 0,
+      "final-release-lint": 0,
+      "final-manifest-policy": 0,
+      "final-ci-after-review": 0,
+      "full-check": 0,
+      "final-enforcement-preflight": 0,
+      "preflight-lint": 0,
+      "environment": 0
+    }
+  },
+  "preservation": {
+    "baseline": "cc70e66447226fac667e03ec111d697ed244139a",
+    "protectedFiles": 76,
+    "publicAssets": 11,
+    "dependencyManifests": 15,
+    "applicationAndSharedSourceUnchanged": true,
+    "allDependencyVersionsUnchanged": true,
+    "protectedSha256": "84e357e5a31b02c8d4d57411e44c6d68f2381564f56fcdf9f114b1ac2fa7a46e"
+  },
+  "limitations": [
+    "No new hosted workflow, actual PR/fork job, GHCR upload, signed GitHub attestation, promotion bot or deployment has run; publisher remains disabled.",
+    "Observed main unprotected; rulesets/protection403; fallback owner review is not technical branch protection.",
+    "Unsigned project-specific in-toto provenance is not SLSA certification. Package SBOM/defined credential scan do not certify OS/vendored/CVE completeness.",
+    "Failed initial workflow-regex assertions, lint and adversarial authorization test are retained. First local registry smoke failed an incorrect unequal-digest assumption; archive and actual independent descriptor correction/rehearsal retained.",
+    "Full application core is separately reported from final tooling refinements; no new legacy/five other full browser group run. Image scenarios use desktop/mobile Chromium emulation, not physical mobile.",
+    "One-day image/90-day metadata/30-day candidate workflow retention is expiring CI storage, not durable archival; private local raw evidence is not off-host archived.",
+    "All public/store/adult/media/operator gates remain closed; N13/N14 inactive."
+  ],
+  "environment": {
+    "node": "26.9.0",
+    "pnpm": "11.28.5",
+    "docker": "29.9.0",
+    "buildx": "github.com/docker/buildx 0.38.0 0dbe87f36ed472fe36b6796c3f70b4210a731fc5",
+    "playwright": "1.64.1",
+    "chromium": "Google Chrome for Testing 156.0.8078.4",
+    "platform": "linux",
+    "architecture": "x64",
+    "kernel": "7.2.9-2-cachyos",
+    "physicalDevice": false
+  }
+}

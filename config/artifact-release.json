@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "repository": "tiecont/virtual-life-platform",
+  "branch": "main",
+  "qualityWorkflow": ".github/workflows/quality.yml",
+  "publishEnabled": false,
+  "autoMerge": false,
+  "productionAutoPromotion": false,
+  "ownerPromotionRequired": true,
+  "images": {
+    "api": "ghcr.io/tiecont/vlp-api",
+    "web": "ghcr.io/tiecont/vlp-web"
+  },
+  "candidate": null
+}

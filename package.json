@@ -7,6 +7,8 @@
     "node": "26.9.x"
   },
   "scripts": {
+    "release-manifest:check": "node scripts/release-manifest.mjs",
+    "release:preflight": "node scripts/enforcement-preflight.mjs",
     "image:check": "node scripts/image-check.mjs",
     "toolchain:check": "node scripts/verify-toolchain.mjs",
     "toolchain:map": "node scripts/verify-toolchain.mjs --write-map",

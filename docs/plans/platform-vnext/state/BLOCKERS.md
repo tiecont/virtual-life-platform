@@ -1,3 +1,7 @@
+# Current CI enforcement limitation — 2026-11-05 (N03-04)
+
+Actual read-only repository preflight observes private repository, `main` at `cef7dc1`, `protected:false`, no required checks, rulesets/protection HTTP403 and auto-merge false. Owner: Foundation/CI and repository owner. Do not describe owner review as technical branch protection; keep auto-merge and production auto-promotion disabled. Publishing also remains default-disabled, with no GHCR/hosted run claimed. Exact-SHA hosted checks, registry access/private visibility and later staging evidence are needed before owner promotion. This limitation does not block local CI/artifact preparation or independent N05-01; do not buy a plan or change repository visibility. See `docs/operations/ARTIFACT-RELEASE.md` and N03-04 actual checks.
+
 # Current baseline finding — 2026-11-05
 
 Hosted Quality 42037215254 at cef7dc1 failed at desktop Deadline rAF p95 133.3 ms vs <100 ms; the aggregate failed closed. Fresh local core and legacy browser lanes exited 0 (28 governance/278 unit/553 integration; 40 browser executions), and local cadence passed 33.4/16.7 ms. Cause remains unresolved; no budget changed or hosted rerun was triggered. Owner: Foundation/CI and Experience lanes in N03/N06. This baseline finding does not block the completed N00-01 audit or next independent N00-02. See [baseline](../audit/N00-01-BASELINE.md).

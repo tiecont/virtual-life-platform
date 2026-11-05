@@ -2,7 +2,7 @@
 
 Các contract dưới đây là **đề xuất vNext**, chưa phải endpoints đang chạy. Agent phải đọc `packages/contracts` hiện tại, chọn additive evolution và giữ adapters. Không tạo parallel API trái với existing semantics chỉ vì tài liệu minh họa tên mới.
 
-Implemented source pointers: N02-03's environment policy (`docs/operations/ENVIRONMENT-POLICY.md`) and N02-04's schema compatibility manifest (`docs/operations/SCHEMA-COMPATIBILITY.md`) are file-backed runtime contracts with scoped task evidence. They do not implement the proposed durable admin policy, admission, release-set or native contracts below. Schema metadata remains version 1; migration count, network protocol and asset version remain distinct.
+Implemented source pointers: N02-03's environment policy (`docs/operations/ENVIRONMENT-POLICY.md`) and N02-04's schema compatibility manifest (`docs/operations/SCHEMA-COMPATIBILITY.md`) are file-backed runtime contracts with scoped task evidence. N03-04 also implements the CI release-candidate contract and validator (`docs/operations/ARTIFACT-RELEASE.md`), with default-disabled publication and explicit hosted/registry verification. These do not implement proposed durable admin policy, admission, native or staging/production promotion contracts below. Schema metadata remains version 1; migration count, network protocol and asset version remain distinct.
 
 ## 1. Nhóm hợp đồng
 

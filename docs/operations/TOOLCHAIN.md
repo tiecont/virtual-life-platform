@@ -5,7 +5,7 @@ N03-01 preserves the audited versions. No dependency, lockfile, compiler target 
 | Component | Pin | Verification scope |
 |---|---|---|
 | Node | 26.9.0; root engine 26.9.x | Actual local runtime; `.node-version` is used by all current Quality jobs. N02-04 also source-built and exercised an image with this runtime. |
-| pnpm | 11.28.5 | Actual local executable, `packageManager`, both Quality install jobs and the existing Docker build agree. Frozen root install is checked separately. |
+| pnpm | 11.28.5 | Actual local executable, `packageManager`, all three Quality install jobs and the existing Docker build agree. Frozen root install is checked separately. |
 | TypeScript | 5.9.3 | Installed root dependency; shared compiler configuration retains ES2022/CommonJS where applicable. |
 | API | Nest 11.2.8, Fastify 5.12.8, Drizzle 0.45.4, pg 8.23.1, Socket.IO 4.8.4 | Installed direct declarations, type checks, real PostgreSQL/HTTP/socket integration and API build. |
 | Web | Next 16.4.4, React/React DOM 19.3.1, Pixi 8.22.0 | Installed direct declarations and portal/shared package production builds. Physical mobile compatibility is a separate gate. |
@@ -20,4 +20,4 @@ Run `pnpm toolchain:check` after install. It checks the source map, exact instal
 
 When adding a workspace or changing dependencies, regenerate with `pnpm toolchain:map`, inspect the graph/pin/lock diff, then run frozen install and applicable verification. Generation is not verification. A version upgrade needs its own rationale and tests; do not regenerate the map merely to conceal an unexplained change. Future native/admin source must acquire an explicit target before being called built.
 
-Current evidence is Linux x64 on the local CachyOS workstation. Root install may reuse the local store; N01-05's clean clone and N02-04's source-built image are separate, scoped prior evidence. No new hosted run, fork execution, branch protection, alternate CPU/OS or device certification follows from local checks. Quality remains read-only with no production secrets or publish job. Trusted publishing and hardened split images remain N03-02…04.
+Current evidence is Linux x64 on the local CachyOS workstation. Root install may reuse the local store; N01-05's clean clone and N02-04's source-built image are separate, scoped prior evidence. No new hosted run, fork execution, branch protection, alternate CPU/OS or device certification follows from local checks. Quality remains read-only with no production secrets. N03-02/03 implement separate hardened API/web images; N03-04 adds a separately guarded, default-disabled trusted-main publisher. See [artifact release](ARTIFACT-RELEASE.md) for current limits.

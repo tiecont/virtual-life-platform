@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N03-04 VERIFIED
+
+Implemented read-only Quality change planning and fail-closed required aggregate, preserving full integration/security and all six browser groups. New default-disabled trusted-main publisher verifies exact repository/workflow/event/SHA/run attempt/jobs and transfers already tested images without rebuilding. Fresh frozen immutable-source API/web build passes all six API and six TLS/browser scenarios. Actual disposable loopback registry load/push/independent-descriptor/digest-pull and metadata corruption/mutable-tag rejection pass with cleanup; unsigned source/run/digest/SBOM/provenance release validation implemented and executed. Actual Git PR/push change matrix and final 58 governance tests pass. Full check exits0 with 57 governance/304 unit/559 integration and all builds; final tooling refinements separately pass58 governance/lint/CI. Preflight confirms main unprotected and rulesets/protection403, with auto-merge and production auto-promotion disabled; historical failed hosted run is rejected as publication proof. No hosted new workflow or GHCR publication is claimed.
+
+Actual commands: 25; retained failed attempts: 5; required final checks passed. Evidence: `n03-04-2026-11-05`; [checks](../audit/N03-04-CHECKS.json). Current counts: `{"VERIFIED": 20, "TODO": 49}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N05-01 on a new branch; read current authority/contract and N02-01 dependency evidence, audit actor/action/payload receipts, socket adapters and seat/order/reward/travel concurrency/privacy guards. Implement one compatible protocol/envelope vertical slice with bounded sequencing and explicit current adapters; implement test:protocol before executing it, run applicable unit/integration/security verification, preserve the singleton/global serialization/38 SQL and prior evidence, then update exact state/action.
+
 ## 2026-11-05 — N03-03 VERIFIED
 
 Verified a separate nonroot standalone web artifact and same-source API image with six generated-certificate TLS/browser/runtime-origin scenarios plus six API scenarios. Runtime API forwarding and public socket configuration change on the identical web image; secure cookies, asset hashes/cache/privacy headers and WSS/Origin protection pass. Full check: 52 governance, 304 unit, 559 integration and production builds exit0. Final legacy browser group: 40 executions across eight specs/16 isolated lifetimes, retries0. An earlier async readiness failure and controlled delayed-catalog diagnostic remain preserved; only test readiness synchronization changed, with all original assertions/budgets retained. Protected 75 files, 11 public assets and 15 dependency manifests unchanged.

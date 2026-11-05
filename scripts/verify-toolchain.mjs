@@ -69,10 +69,10 @@ export function workspaceGraph(projects) {
 export function assertQualityToolchain(workflow, pnpm) {
   assert(!/pull_request_target|secrets\.|write-all|^\s*secrets:|^\s+[a-z][a-z-]*:\s*["']?write\b|permissions:\s*\{[^}]*\bwrite\b/m.test(workflow), 'Untrusted quality workflow cannot publish or receive secrets');
   assert(/permissions:\s*\n\s+contents: read/.test(workflow), 'Quality needs explicit read-only contents permission');
-  assert.equal((workflow.match(/pnpm install --frozen-lockfile/g) ?? []).length, 2, 'Core and browser require frozen install');
+  assert.equal((workflow.match(/pnpm install --frozen-lockfile/g) ?? []).length, 3, 'Core, browser and runtime images require frozen install');
   const versions = [...workflow.matchAll(/^\s+version:\s*([^\s]+)\s*$/gm)].map(match => match[1]);
-  assert.deepEqual(versions, [pnpm, pnpm], 'CI pnpm must match packageManager');
-  assert.equal((workflow.match(/node-version-file: \.node-version/g) ?? []).length, 3, 'Every current job uses the same Node pin');
+  assert.deepEqual(versions, [pnpm, pnpm, pnpm], 'CI pnpm must match packageManager');
+  assert.equal((workflow.match(/node-version-file: \.node-version/g) ?? []).length, 5, 'Every current job uses the same Node pin');
   assert(workflow.includes('pnpm check') && workflow.includes('- run: pnpm build'), 'Core and browser build all');
 }
 
