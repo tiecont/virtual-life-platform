@@ -2,6 +2,7 @@ import { Pool } from 'pg';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/config';
 import { defineWorld } from '@virtual-city/world-sdk';
+import type { Socket as TcpSocket } from 'node:net';
 
 function raceWorld(slug:string,capacity:number){return defineWorld({schemaVersion:1,apiVersion:1,slug,title:'Synthetic TCP race fixture',version:'1.0.0',sceneRef:{key:slug,version:'1.0.0'},capacity,seatIds:['shared-seat'],capabilities:['presence','seating'],kind:'sandbox',accessPolicy:{kind:'public'},visibility:'listed',map:{region:'sandbox',position:{x:.5,y:.5},icon:'flask'}},{bootstrap:async()=>{},shutdown:async()=>{},onJoin:async()=>{},onLeave:async()=>{},onCommand:async()=>{}});}
 
@@ -12,11 +13,15 @@ async function main() {
   const pool = new Pool({ connectionString: config.DATABASE_URL, max: 10 });
   const modules=world==='race'?[raceWorld('race-capacity',8),raceWorld('race-seats',100)]:undefined;
   const runtime = await createApp(config, pool,false,modules?{worlds:{modules}}:{});
+  // Private test IPC only: application-facing TCP totals,including HTTP/WS headers.
+  // No endpoint,address,payload or DB network counters are exported.
+  const tcp=new Set<TcpSocket>();let closedRead=0,closedWritten=0;
+  runtime.http.server.on('connection',(socket:TcpSocket)=>{tcp.add(socket);socket.once('close',()=>{closedRead+=socket.bytesRead;closedWritten+=socket.bytesWritten;tcp.delete(socket);});});
   for(const slug of world==='race'?['race-capacity','race-seats']:[world])await runtime.worlds.registry.setEnabled(slug, true);
   await runtime.app.listen(Number(process.env.ROOM_TEST_PORT ?? 0), '127.0.0.1');
   process.on('message', (message: unknown) => {
     if (typeof message !== 'object' || !message || !('type' in message) || message.type !== 'sample' || !('id' in message)) return;
-    process.send?.({ type: 'sample', id: message.id, cpu: process.cpuUsage(), memory: process.memoryUsage(), diagnostics: runtime.diagnostics() });
+    process.send?.({ type: 'sample', id: message.id, cpu: process.cpuUsage(), memory: process.memoryUsage(), diagnostics: runtime.diagnostics(),traffic:{readBytes:closedRead+[...tcp].reduce((n,s)=>n+s.bytesRead,0),writtenBytes:closedWritten+[...tcp].reduce((n,s)=>n+s.bytesWritten,0)} });
   });
   process.send?.({ type: 'ready', url: await runtime.app.getUrl() });
   process.once('SIGTERM', () => { void runtime.app.close().then(() => pool.end()).then(() => { process.disconnect?.(); }); });

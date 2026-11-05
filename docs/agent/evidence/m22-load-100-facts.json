@@ -1,0 +1,253 @@
+{
+  "recordedAt": "2026-11-05T02:37:35.989Z",
+  "mode": "bounded-ramp-stress-120second-soak",
+  "profile": "Actual loopback HTTP/public-consent/Socket.IO Node clients and separate single-owner SDK API child;disposablePG",
+  "hardware": {
+    "node": "v26.9.0",
+    "platform": "linux",
+    "release": "7.2.9-2-cachyos",
+    "cpu": "AMD Ryzen 7 4800HS with Radeon Graphics",
+    "logicalCpus": 16,
+    "availableParallelism": 16,
+    "hostMemoryBytes": 24573251584
+  },
+  "configuration": {
+    "targetClients": 100,
+    "roomCapacity": 8,
+    "roomsPerWorldMax": 32,
+    "socketCeiling": 1000,
+    "ackDeadlineMs": 5000,
+    "rampBatch": 10,
+    "rampPauseMs": 100,
+    "soakSeconds": 120,
+    "snapshotIntervalPerAdmittedClientMs": 30000,
+    "guards": {
+      "apiRssMiB": 720,
+      "clientRssMiB": 768,
+      "hostAvailableMinMiB": 2048
+    }
+  },
+  "harnessComplete": true,
+  "counts": {
+    "createdAndConnected": 100,
+    "admitted": 100,
+    "unadmitted": 0,
+    "unexpected": 0
+  },
+  "hypothesis": {
+    "met": true,
+    "status": "MET_LOCAL_ONLY",
+    "criteria": "all target clients admitted;zero command rejections/unexpected errors;successful ACKp95<=1000ms/API RSS<=768MiB;120ssoak;not real VM/public capacity"
+  },
+  "phases": [
+    {
+      "name": "ramp",
+      "elapsedMs": 3338.8444149999996,
+      "operations": [
+        {
+          "operation": "http.guest",
+          "allAttemptLatencyMs": {
+            "samples": 100,
+            "p50": 26.155109000000266,
+            "p95": 73.32076099999995,
+            "max": 79.1821789999999
+          },
+          "successfulLatencyMs": {
+            "samples": 100,
+            "p50": 26.155109000000266,
+            "p95": 73.32076099999995,
+            "max": 79.1821789999999
+          },
+          "outcomes": {
+            "OK": 100
+          }
+        },
+        {
+          "operation": "http.privacy",
+          "allAttemptLatencyMs": {
+            "samples": 100,
+            "p50": 24.864860000000135,
+            "p95": 31.262913000000026,
+            "max": 34.41009200000008
+          },
+          "successfulLatencyMs": {
+            "samples": 100,
+            "p50": 24.864860000000135,
+            "p95": 31.262913000000026,
+            "max": 34.41009200000008
+          },
+          "outcomes": {
+            "OK": 100
+          }
+        },
+        {
+          "operation": "handshake",
+          "allAttemptLatencyMs": {
+            "samples": 100,
+            "p50": 9.50810300000012,
+            "p95": 23.11562099999992,
+            "max": 29.11997599999995
+          },
+          "successfulLatencyMs": {
+            "samples": 100,
+            "p50": 9.50810300000012,
+            "p95": 23.11562099999992,
+            "max": 29.11997599999995
+          },
+          "outcomes": {
+            "OK": 100
+          }
+        },
+        {
+          "operation": "room.join",
+          "allAttemptLatencyMs": {
+            "samples": 100,
+            "p50": 86.29844799999955,
+            "p95": 174.45981900000015,
+            "max": 225.51110600000015
+          },
+          "successfulLatencyMs": {
+            "samples": 100,
+            "p50": 86.29844799999955,
+            "p95": 174.45981900000015,
+            "max": 225.51110600000015
+          },
+          "outcomes": {
+            "OK": 100
+          }
+        }
+      ],
+      "unexpected": 0,
+      "unexpectedRatio": 0,
+      "rejectedRatio": 0,
+      "counts": {
+        "sockets": 100,
+        "admitted": 100,
+        "rooms": 13,
+        "pending": 0
+      },
+      "server": {
+        "cpuMs": 1723.812,
+        "cpuPercentOfOneCore": 51.62900050854871,
+        "rssPeakSampled": 205197312,
+        "heapBefore": 44271504,
+        "heapAfter": 68458368
+      },
+      "apiTcp": {
+        "readBytes": 147720,
+        "writtenBytes": 1090140
+      },
+      "sampledClientRssPeak": 163500032,
+      "hostMemAvailableMin": 9072390144
+    },
+    {
+      "name": "stress",
+      "elapsedMs": 553.1629079999993,
+      "operations": [
+        {
+          "operation": "room.join",
+          "allAttemptLatencyMs": {
+            "samples": 100,
+            "p50": 297.6695580000005,
+            "p95": 517.9361939999999,
+            "max": 542.0100109999994
+          },
+          "successfulLatencyMs": {
+            "samples": 100,
+            "p50": 297.6695580000005,
+            "p95": 517.9361939999999,
+            "max": 542.0100109999994
+          },
+          "outcomes": {
+            "OK": 100
+          }
+        }
+      ],
+      "unexpected": 0,
+      "unexpectedRatio": 0,
+      "rejectedRatio": 0,
+      "counts": {
+        "sockets": 100,
+        "admitted": 100,
+        "rooms": 13,
+        "pending": 0
+      },
+      "server": {
+        "cpuMs": 282.336,
+        "cpuPercentOfOneCore": 51.04029860223389,
+        "rssPeakSampled": 207556608,
+        "heapBefore": 68499632,
+        "heapAfter": 49461616
+      },
+      "apiTcp": {
+        "readBytes": 16700,
+        "writtenBytes": 215692
+      },
+      "sampledClientRssPeak": 167694336,
+      "hostMemAvailableMin": 9019191296
+    },
+    {
+      "name": "soak",
+      "elapsedMs": 120197.814407,
+      "operations": [
+        {
+          "operation": "room.snapshot",
+          "allAttemptLatencyMs": {
+            "samples": 400,
+            "p50": 13.227404999999635,
+            "p95": 16.564329999993788,
+            "max": 20.90664000000106
+          },
+          "successfulLatencyMs": {
+            "samples": 400,
+            "p50": 13.227404999999635,
+            "p95": 16.564329999993788,
+            "max": 20.90664000000106
+          },
+          "outcomes": {
+            "OK": 400
+          }
+        }
+      ],
+      "unexpected": 0,
+      "unexpectedRatio": 0,
+      "rejectedRatio": 0,
+      "counts": {
+        "sockets": 100,
+        "admitted": 100,
+        "rooms": 13,
+        "pending": 0
+      },
+      "server": {
+        "cpuMs": 1928.427,
+        "cpuPercentOfOneCore": 1.6043777580432392,
+        "rssPeakSampled": 208998400,
+        "heapBefore": 49513112,
+        "heapAfter": 63844312
+      },
+      "apiTcp": {
+        "readBytes": 102000,
+        "writtenBytes": 863968
+      },
+      "sampledClientRssPeak": 173010944,
+      "hostMemAvailableMin": 8945254400
+    }
+  ],
+  "cleanup": {
+    "completed": true,
+    "sockets": 0,
+    "transports": 0,
+    "memberships": 0,
+    "seats": 0,
+    "emptyRoomsUntilOwnerStop": 13
+  },
+  "sampleCount": 131,
+  "limits": [
+    "CPU/RSS are API process only;client/DB share larger host;no2vCPU4GiB deployment proof",
+    "API TCP bytes include HTTP/WS framing,exclude DB/TLS/WAN/browser assets;not billed egress",
+    "Samples every1s and phase boundaries;not OS peak or long-term leak certification",
+    "Node clients do not render scenes,chat,travel,orders or actual legacy/adult worlds",
+    "Configured256SDKmembership cap remains;1000connections is not1000admitted players",
+    "No quota/transport/pending/session limits changed;no hosted load/public release"
+  ]
+}

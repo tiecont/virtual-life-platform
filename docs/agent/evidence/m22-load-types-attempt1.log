@@ -1,0 +1,2 @@
+tests/load/city-profiles.ts(30,373): error TS2352: Conversion of type 'object & Record<"id", unknown>' to type 'Sample' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'object & Record<"id", unknown>' is missing the following properties from type 'Sample': cpu, memory, traffic, diagnostics

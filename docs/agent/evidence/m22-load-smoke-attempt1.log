@@ -1,0 +1,21 @@
+ Network virtual-city-test-f2e2b413_default Creating 
+ Network virtual-city-test-f2e2b413_default Creating 
+ Network virtual-city-test-f2e2b413_default Created 
+ Network virtual-city-test-f2e2b413_default Created 
+ Container virtual-city-test-f2e2b413-db-1 Creating 
+ Container virtual-city-test-f2e2b413-db-1 Created 
+ Container virtual-city-test-f2e2b413-db-1 Starting 
+ Container virtual-city-test-f2e2b413-db-1 Started 
+ Container virtual-city-test-f2e2b413-db-1 Waiting 
+ Container virtual-city-test-f2e2b413-db-1 Healthy 
+(node:115039) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:115116) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"targetClients":100,"harnessComplete":true,"hypothesis":"NOT_EVALUATED_SMOKE","admitted":100,"cleanup":true,"abortReason":null}
+ Container virtual-city-test-f2e2b413-db-1 Stopping 
+ Container virtual-city-test-f2e2b413-db-1 Stopped 
+ Container virtual-city-test-f2e2b413-db-1 Removing 
+ Container virtual-city-test-f2e2b413-db-1 Removed 
+ Network virtual-city-test-f2e2b413_default Removing 
+ Network virtual-city-test-f2e2b413_default Removed 

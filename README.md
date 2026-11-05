@@ -14,6 +14,8 @@ The [concurrency matrix](docs/architecture/CONCURRENCY-VERIFICATION.md) exercise
 
 Run `pnpm test:security` for the [security regression matrix](docs/architecture/SECURITY-REGRESSIONS.md): session/CSRF/socket guards,private projections,current restrictions and closed adult access. Local protocol tests do not establish real eligibility or public release approval.
 
+The [city load profiles](docs/architecture/CITY-LOAD-PROFILES.md) run guarded local ramp/stress/soak experiments with `pnpm bench:city --clients=100 --soak=120` or1000clients. Reports separate socket connections from admitted players and preserve configured capacity limits;read the hypothesis result as well as the command exit.
+
 Project repository: `git@github.com:tiecont/virtual-life-platform.git` (configured locally; no push performed). The Virtual City plan is the product specification.
 
 The [shared hospitality engine](docs/architecture/HOSPITALITY.md) provides private policy-gated orders, atomic claims, voluntary shifts, reusable timed courses, transactional completion hooks and service refusal/block/safety recovery. Optional progression consumers are implemented; real Maid integration remains gated. No public hospitality world is enabled.

@@ -6,7 +6,17 @@ Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;bran
 
 Node26.9.0/pnpm11.28.5. RetaineddevDB0036/stopped;latestjournal/9privatecounts0. No preview/verificationworker remains. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
 
-## Current work — M22-04 BLOCKED_EXTERNAL;continue M22-05
+## Current work — M22-05 VERIFIED;continue M22-06
+
+Implemented tests/load/city-profiles.ts/pnpm bench:city and count-only applicationTCP read/write bytes in testchild IPC. CLIclients100/1000,soak2smokeor120full;strictloopback disposablePG/separatechild/uniquephysicalIPs/publicfixtureconsent,unchangedcap8/max32rooms/1000transport. Ramp10/batch100mspause,stressallconcurrentjoins,soakstaggered30sprivateauthoritativesnapshots. API720MiB/client768MiB/hostavailable2GiBguards,startavailable3GiB,5minuteabort,child20sstopthenownSIGKILLifneeded. Phasep50/p95/outcomes/CPU/RSS/APIbytes separatefrombrowser/DB/WAN;profilecount-onlyJSON,noIDs/cookies.
+
+Actual firsttypecheck2:samplecastneededcheckedcpu/memory/diagnostics/trafficfields;fixedguard0/lint0. Smoke100/2s0:100admitted/cleanup0,NOT_EVALUATED_SMOKE. Final100/120s0/MET_LOCAL_ONLY/100admitted/13rooms/stressp95517.9ms/soak400snapshotp9516.6ms/APIpeak199.32MiB. Final1000/120sexperiment0butNOT_MET:1000sockets/256admitted/32rooms,ramp744ROOM_FULL,stress744RATE_LIMITED+2ROOM_FULL/254OK/successp951479.6ms,soak1023snapshotp9532.3ms/APIpeak239.95MiB. Bothfull120ssoaks/zero-member/socket/transport/seatcleanup/childexit0/ownedDBremoved. Reports m22-load-100-facts.json/m22-load-1000-facts.json;456sourcehashesunchanged. InvalidCLI10000exit1beforeDBselection;finaltypes/wholelint/5actualnetworkregressions/governance/CIpolicy0. No workersremain;no app/schema/realflag/image/retained0036/stopped change. SourcebudgetADR0080/CITY-LOAD-PROFILES.md/m22-load-checks.json.
+
+Choose100APIpresenceclients aslocalregressionbaseline onmeasuredlarger16CPU/about24.57GBhost,not maximum/public/VPS2vCPU4GiBcapacity. APIprocessCPU-RSSexcludeDB/client,APIbytesexcludeDB/TLS/WAN/webassets/billedegress;120ssoaknot900swindow/leakcertification. Resource/deadline/cancel/forcedkill paths notseparatelyfault-injected. Existingroot500build37b61ca/security1429049146/8independentbrowser63b2d9f baselines separate;no newwhole503suite/browser/imageclaim. OldimageM21-04remainsstaleforpriorRoomfanout. M22-04wholelegacyjourney still B-001/B-002.
+
+Next exact actionM22-06:audit existing scene/Restaurant/Library/Lounge/map/identity native-control keyboard/focus/reduced-motion/contrast/44px/mobile assertions,run current applicable browser cases with fresh artifacts/restorehistorical versions,fix observed issues/track remaining scope. No newscript needed justforan audit;reuse actualPlaywright. Wholeplanincomplete.
+
+## Prior slice — M22-04 BLOCKED_EXTERNAL
 
 From9049146;JOURNEY-ACCEPTANCE.md/m22-journeys-checks.json. Fresh read-only52Deadline/25Maid source digests match oldaudits;HEADsf9475b4/33180a9dirty28/46entries/rootlicenses0. Reports copiedM22/historicalm15/m16restoredfromindex;legacyworktrees/processes/data untouched. Actual8independentbrowsercases0(4desktop/4mobile):Library recovery/timer/history/SDKreturn,Restaurantnativechairs+2worker3course service,portal specificroom capacityroute onsyntheticdestinations. WholeactualDeadline/Maidjourney remains BLOCKED_EXTERNAL B-001/B-002,not substitutedbyfixtures.
 

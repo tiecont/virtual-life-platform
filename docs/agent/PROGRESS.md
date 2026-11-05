@@ -1,5 +1,13 @@
 # Agent progress
 
+## M22-05 — VERIFIED measurement tooling;100local baseline /1000hypothesis NOT_MET
+
+From63b2d9f;ADR0080/[profile and actualtable](../architecture/CITY-LOAD-PROFILES.md)/[ledger](evidence/m22-load-checks.json). `pnpm bench:city` uses strict100/1000and2smoke/120ssoak CLI,ownloopback child/disposablePG,physical sourceIPs/explicit publicfixturepresence,unchangedcaps. Ramp10/batch100mspause,allconcurrentjoin stress,staggered30ssnapshots/120ssoak. Count-only privateIPC addsAPI TCPbytes;phaseall/success p50/p95/outcomes/rejection ratios/API CPU-RSS/clientRSS/hostmemory.3GiBstart/2GiBhostmin/API720MiB/client768MiB/5minabort/owned20sstopfallback,normalexplicitzero cleanup. Forcedresource/deadline/cancellation paths NOT fault-injected.
+
+Actual100/120s0:100connected/100admitted/13rooms,MET_LOCAL_ONLY;joinramp p50/9586.3/174.5ms,stress297.7/517.9ms,400soak snapshots13.2/16.6ms,API RSSpeak199.32MiB;zero command guardreject/unexpectederrors. Actual1000/120s0 experiment butNOT_MET:1000connected/256admitted/32rooms;744rampROOM_FULL;stress744RATE_LIMITED+2ROOM_FULL/254OK,successp50/95859.8/1479.6ms;1023soak snapshot16.3/32.3ms/APIpeak239.95MiB. Both120ssoaks/normalcleanup/childexit0/ownedDBremoved,456sourcehashesunchanged. Choose100APIpresenceclients aslocal regressionbaseline,not maximum/prod2vCPU4GBcapacity. Keep limits,explicitlyseparate successfulfromall-attemptlatency/expectedguardrejections fromunexpected errors.
+
+First samplecast typecheck2retained/fixed checkedfields;corrected/finaltypes/wholelint0. Smoke100/2s0NOT_EVALUATED_SMOKE;invalidCLI10000expected1beforeDBselection. Final5actualSocket/TCPnetworkregressions0/governance/CIpolicy0. API CPU/RSS excludeDB/clientbutsharelarger16CPU/about24.57GBhost;TCPbytesexcludeDB/TLS/WAN/webassets/billed-egress;1ssamples notOSpeak;120snot900soperationwindow/leakcertification. No app/schema/migration/retained0036/stopped/realflags/provider/staff/legacy/remote/publicchange. Oldimage notrebuilt/newwhole503integration/browser notclaimed;allownedworkersfinished. Next exact actionM22-06actualkeyboard/focus/nativecontrols/reducedmotion/contrast/mobileaudit. Wholeplanincomplete.
+
 ## M22-04 — BLOCKED_EXTERNAL complete legacy journey;independent8browser cases pass
 
 From9049146;[acceptance](../architecture/JOURNEY-ACCEPTANCE.md)/[ledger](evidence/m22-journeys-checks.json). Fresh read-only legacy audit0/0:52Deadline/25Maid source digests still identical,HEADsf9475b4/33180a9,28/46dirty entries,0rootlicenses. Double status/HEAD/hash passes unchanged;reports copied underM22/historicalm15/m16restoredfromindex. No source/asset/environment/process/DB/legacy mutation or newruntimeacceptance.
