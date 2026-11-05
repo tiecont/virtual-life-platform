@@ -5,7 +5,7 @@
   "sources": [
     {
       "path": "packages/park-world/src/index.ts",
-      "sha256": "c552500f630fcb406258960a9193c97d6f73e1d0a908d17bb07c6c8053412744"
+      "sha256": "4df97ecd6a374cca8c3819efd8df9f6844d6a74f5efb27af0cb715e58414ca90"
     },
     {
       "path": "packages/pixi-scene/src/park-art.ts",

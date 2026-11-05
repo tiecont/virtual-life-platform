@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { ChatSendSchema, ChatMessageSchema, ModerationDecisionSchema, SafetyPolicySchema, type ChatSend, type ChatMessage, type ChatAccepted, type ChatErrorCode, type SafetyPolicy } from '@virtual-city/contracts';
+import { ChatSendSchema, ChatMessageSchema, ModerationDecisionSchema, SafetyPolicySchema, WorldSlugSchema, type ChatSend, type ChatMessage, type ChatAccepted, type ChatErrorCode, type SafetyPolicy } from '@virtual-city/contracts';
 import type { RoomService } from '../rooms/service';
 import type { IdentityService } from '../identity/service';
 import { WindowLimiter } from '../identity/limits';
@@ -8,18 +8,22 @@ import { LocalChatModerator, normalizeChatText, type ChatModerator } from './mod
 export class ChatError extends Error { constructor(readonly code: ChatErrorCode) { super(code); } }
 type Receipt = { sessionId: string; fingerprint: string; until: number; result: ChatAccepted };
 type Pending = { sessionId: string; fingerprint: string; promise: Promise<ChatAccepted> };
-export interface ChatOptions { evidence?: { record(event: ChatMessage, viewerId: string, worldSlug: string): void }; enabled?: boolean; policy: unknown; moderator?: ChatModerator }
+export interface ChatOptions { evidence?: { record(event: ChatMessage, viewerId: string, worldSlug: string): void }; enabled?: boolean; quickOnlyWorlds?:readonly string[]; policy: unknown; moderator?: ChatModerator }
 function freezePolicy<T>(value: T): T { if (value && typeof value === 'object') { Object.values(value).forEach(freezePolicy); Object.freeze(value); } return value; }
 export class ChatService {
   readonly policy: SafetyPolicy;
-  #enabled: boolean; #closed = false; #receipts = new Map<string, Receipt>(); #pending = new Map<string, Pending>();
+  #enabled: boolean; #globalEnabled:boolean; #quickOnly:Set<string>; #closed = false; #receipts = new Map<string, Receipt>(); #pending = new Map<string, Pending>();
   #accounts = new Map<string, number>(); #workers = new Set<AbortController>(); #limits: WindowLimiter; #moderator: ChatModerator;
   #outcomes = { accepted: 0, rejected: 0, unavailable: 0, droppedRecipients: 0 };
   #moderatorUnavailable = false;
   #evidence?: ChatOptions['evidence'];
   constructor(private rooms: RoomService, private identity: IdentityService, environment: 'development' | 'test' | 'production', options: ChatOptions, private now = Date.now) {
     this.policy = freezePolicy(SafetyPolicySchema.parse(options.policy));
-    this.#enabled = environment !== 'production' && options.enabled === true;
+    const scopes=options.quickOnlyWorlds??[];
+    if(scopes.length>16||new Set(scopes).size!==scopes.length)throw Error('Invalid quick interaction scope');
+    this.#quickOnly=new Set(environment!=='production'?scopes.map(value=>WorldSlugSchema.parse(value)):[]);
+    this.#globalEnabled=environment!=='production'&&options.enabled===true;
+    this.#enabled=this.#globalEnabled||this.#quickOnly.size>0;
     this.#evidence = options.evidence; this.#moderator = options.moderator ?? new LocalChatModerator(); this.#limits = new WindowLimiter(now);
   }
   diagnostics() { return { enabled: this.#enabled && !this.#closed, moderationAvailable: !this.#moderatorUnavailable, pending: this.#pending.size, workerSlots: this.#workers.size, receipts: this.#receipts.size, ...this.#outcomes }; }
@@ -47,6 +51,7 @@ export class ChatService {
     const input = ChatSendSchema.parse(raw);
     if (!this.#enabled || this.#closed) throw new ChatError('FORBIDDEN');
     const { actor, worldSlug } = await this.rooms.authorizeChat(credential, connectionId, input);
+    if((!this.#globalEnabled&&!this.#quickOnly.has(worldSlug))||(this.#quickOnly.has(worldSlug)&&input.content.kind==='text'))throw new ChatError('FORBIDDEN');
     const rule = this.policy.contexts[worldSlug];
     if (!rule || rule.mode === 'silent' || rule.liveOperatorRequired || rule.reviewedAdultRequired || rule.audience !== 'room') throw new ChatError('FORBIDDEN');
     for (const [key, receipt] of this.#receipts) if (receipt.until <= this.now()) this.#receipts.delete(key);

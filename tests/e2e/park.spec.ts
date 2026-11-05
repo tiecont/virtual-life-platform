@@ -1,8 +1,10 @@
-import { test,expect,type BrowserContext } from '@playwright/test';
+import { test,expect,type BrowserContext,type Page } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { mkdir,writeFile } from 'node:fs/promises';
 const origin='http://127.0.0.1:3300';
-async function guest(context:BrowserContext){const response=await context.request.post('/v1/session/guest',{headers:{origin},data:{requestId:randomUUID(),displayName:'Park visitor',avatarKey:'mint'}});expect(response.status()).toBe(201);return response.json();}
+async function guest(context:BrowserContext,displayName='Park visitor'){const response=await context.request.post('/v1/session/guest',{headers:{origin},data:{requestId:randomUUID(),displayName,avatarKey:'mint'}});expect(response.status()).toBe(201);return response.json();}
+async function publicPark(context:BrowserContext,csrf:string){expect((await context.request.patch('/v1/me/privacy',{headers:{origin,'x-csrf-token':csrf,'idempotency-key':randomUUID()},data:{presence:'hidden',analyticsConsent:false,worldVisibility:{dating:'hidden',park:'public'}}})).status()).toBe(200);}
+async function enterPark(page:Page){await page.goto('/worlds/park');await page.getByRole('button',{name:'Enter park',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');}
 test('original park is discoverable and native benches preserve identity,keyboard focus and reduced motion on desktop/mobile',async({page,context},info)=>{
  const me=await guest(context);await page.emulateMedia({reducedMotion:'reduce'});const catalog=(await (await context.request.get('/v1/worlds')).json()).worlds;expect(catalog.find((w:{slug:string})=>w.slug==='park')).toMatchObject({title:'Central Park',capacity:12,kind:'world',availability:'available'});
  await page.goto('/worlds/park');await expect(page.getByRole('heading',{name:'Central Park',exact:true})).toBeVisible();await expect(page.getByRole('region',{name:'Park bench areas'})).toContainText('twelve-place room');
@@ -24,4 +26,39 @@ test('park portal navigation requests consent and the existing travel desk opens
  const me=await guest(context);await page.goto('/');const card=page.getByRole('list',{name:'Available city catalog'}).locator('[data-world-slug="park"]');await expect(card.getByRole('heading',{name:'Central Park',exact:true})).toBeVisible();await card.getByRole('link',{name:'Open travel confirmation',exact:true}).click();
  await expect(page.getByRole('status')).toHaveText('Lobby confirmed.');expect((await (await context.request.get('/v1/me/room')).json()).snapshot).toBeNull();await page.getByRole('button',{name:'Confirm travel',exact:true}).click();await expect(page.locator('.travel-location')).toHaveAttribute('data-world','park');
  await page.getByRole('link',{name:'Open Park room',exact:true}).click();await page.getByRole('button',{name:'Enter park',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');const visit=(await (await context.request.get('/v1/me/room')).json()).snapshot;expect(visit.worldSlug==='park'&&visit.self.accountId===me.profile.id&&visit.occupancy===1).toBe(true);await page.getByRole('button',{name:'Leave park',exact:true}).click();
+});
+test('approved Park greetings use native controls and current visibility while a block removes past and future peer greetings',async({page,context,browser},info)=>{
+ const peer=await browser.newContext({baseURL:origin,viewport:page.viewportSize(),isMobile:info.project.name==='mobile',hasTouch:info.project.name==='mobile'});
+ try{
+  const a=await guest(context,'Park Alice'),b=await guest(peer,'Park Bob');await publicPark(context,a.csrfToken);await publicPark(peer,b.csrfToken);
+  await enterPark(page);const other=await peer.newPage();await enterPark(other);
+  const quick=page.getByRole('region',{name:'Park quick greetings'}),otherQuick=other.getByRole('region',{name:'Park quick greetings'});
+  await expect(page.locator('canvas[data-scene="park"]')).toHaveAttribute('data-entity-count','2');
+  expect(await quick.locator('input,textarea').count()).toBe(0);await quick.getByRole('button',{name:'Hello',exact:true}).focus();await page.keyboard.press('Enter');
+  const otherFeed=otherQuick.getByRole('list',{name:'Recent visible park greetings'});await expect(otherFeed).toContainText('Park Alice: Xin chào!');
+  await otherQuick.getByRole('button',{name:'Wave',exact:true}).click();const feed=quick.getByRole('list',{name:'Recent visible park greetings'});await expect(feed).toContainText('Park Bob: Wave');
+  const targets=await quick.getByRole('button').evaluateAll(elements=>elements.map(e=>({width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height})));expect(targets.every(t=>t.width>=44&&t.height>=44)).toBe(true);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);const dir='docs/agent/evidence/m24-quick-visual';await mkdir(dir,{recursive:true});await page.screenshot({path:`${dir}/${info.project.name}-greetings.png`,fullPage:true});
+  await page.getByRole('button',{name:'Report or block Park Bob',exact:true}).click();const dialog=page.getByRole('dialog',{name:'Report or block Park Bob',exact:true});await dialog.getByRole('button',{name:'Block visitor',exact:true}).click();await expect(dialog.getByText('Blocked. Your contact settings were updated.',{exact:true})).toBeVisible();await dialog.getByRole('button',{name:'Close',exact:true}).click();
+  await expect(feed).not.toContainText('Park Bob');await expect(page.locator('canvas[data-scene="park"]')).toHaveAttribute('data-entity-count','1');
+  await otherQuick.getByRole('button',{name:'Thanks',exact:true}).click();await expect(otherQuick.getByText('Greeting accepted. Visibility and connection rules decide who sees it.',{exact:true})).toBeVisible();await expect(feed).not.toContainText('Park Bob');
+  const storage=await page.evaluate(()=>JSON.stringify({local:{...localStorage},session:{...sessionStorage}}));for(const text of ['Park Bob','Xin chào!','Wave'])expect(storage).not.toContain(text);
+  const privacy=await (await context.request.get('/v1/me/privacy')).json();expect(privacy).toMatchObject({presence:'hidden',worldVisibility:{park:'public'}});
+  await page.screenshot({path:`${dir}/${info.project.name}-blocked.png`,fullPage:true});await page.getByRole('button',{name:'Leave park',exact:true}).click();await other.getByRole('button',{name:'Leave park',exact:true}).click();
+  await writeFile(`${dir}/${info.project.name}-greetings.json`,JSON.stringify({twoRealRoomVisitors:true,approvedHelloAndWaveDelivered:true,explicitParkOnlyVisibility:true,blockPurgedAndStoppedPeerGreetings:true,noTextEntry:true,noMessageStorage:true,noOverflow:true,targets},null,2));
+ }finally{await peer.close();}
+});
+test('lost actual greeting ACK retries the same request once and leaving remains independent of a held reply',async({page,context},info)=>{
+ test.setTimeout(45000);let connections=0,acceptedAcks=0,deliveries=0;const keys:string[]=[];let held:(()=>void)|undefined;
+ await page.routeWebSocket('**/socket.io/**',route=>{
+  connections++;const server=route.connectToServer();route.onMessage(message=>{const text=String(message);if(text.startsWith('42')&&text.includes('"chat.send"')){const frame=JSON.parse(text.slice(text.indexOf('[')));keys.push(frame[1].requestId);}server.send(message);});
+  server.onMessage(message=>{const text=String(message);if(text.startsWith('42')&&text.includes('"chat.message"'))deliveries++;if(text.startsWith('43')&&text.includes('"type":"accepted"')){acceptedAcks++;if(acceptedAcks===1)return;if(acceptedAcks===3){held=()=>route.send(message);return;}}route.send(message);});
+ });
+ await guest(context);await enterPark(page);const quick=page.getByRole('region',{name:'Park quick greetings'});await quick.getByRole('button',{name:'Hello',exact:true}).click();
+ await expect(quick.getByRole('button',{name:'Retry same greeting',exact:true})).toBeEnabled({timeout:10000});expect(acceptedAcks).toBe(1);expect(deliveries).toBe(1);
+ await quick.getByRole('button',{name:'Retry same greeting',exact:true}).focus();await page.keyboard.press('Enter');await expect(quick.getByText('Greeting accepted. Visibility and connection rules decide who sees it.',{exact:true})).toBeVisible();expect(keys).toHaveLength(2);expect(keys[0]===keys[1]).toBe(true);expect(deliveries).toBe(1);await expect(quick.getByRole('button',{name:'Hello',exact:true})).toBeFocused();
+ await quick.getByRole('button',{name:'Wave',exact:true}).click();await expect.poll(()=>!!held).toBe(true);await expect(page.getByRole('button',{name:'Leave park',exact:true})).toBeEnabled();await expect(page.getByRole('link',{name:'Travel to another world',exact:true})).toBeVisible();
+ const dir='docs/agent/evidence/m24-quick-visual';await mkdir(dir,{recursive:true});await page.screenshot({path:`${dir}/${info.project.name}-pending.png`,fullPage:true});await page.getByRole('button',{name:'Leave park',exact:true}).click();await expect(page.getByRole('button',{name:'Enter park',exact:true})).toBeEnabled();held!();
+ await expect(quick.getByText('Greeting accepted. Visibility and connection rules decide who sees it.',{exact:true})).toHaveCount(0);await expect(quick.getByText('No recent greetings visible in this view.',{exact:true})).toBeVisible();expect((await (await context.request.get('/v1/me/room')).json()).snapshot).toBeNull();expect(connections).toBe(1);expect(deliveries).toBe(2);expect(new Set(keys).size).toBe(2);
+ await writeFile(`${dir}/${info.project.name}-retry.json`,JSON.stringify({actualConnections:connections,acceptedAcks,actualDeliveredEvents:deliveries,sentCommands:keys.length,uniqueRequests:new Set(keys).size,sameRequestRetried:true,noDuplicateBroadcast:true,leaveWorkedDuringHeldReply:true,lateAckDidNotRestoreFeedOrStatus:true},null,2));
 });

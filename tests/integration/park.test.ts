@@ -21,7 +21,7 @@ const command=async(u:User,name:string,body:unknown)=>RoomAckSchema.parse(await 
 async function enter(u:User,roomId?:string){const ack=await command(u,'room.join',{...join(),...(roomId?{roomId}:{})});expect(ack.ok).toBe(true);if(!ack.ok||ack.result.type!=='snapshot')throw Error('Expected Park snapshot');return ack.result;}
 it('local installation still requires a separate flag;catalog and directory reads cannot allocate a park room',async()=>{
  const u=await guest(),closed=await command(u,'room.join',join());expect(closed.ok).toBe(false);if(!closed.ok)expect(closed.error.code).toBe('WORLD_UNAVAILABLE');await app.worlds.registry.setEnabled('park',true);
- const catalog=await app.http.inject({url:'/v1/worlds',headers:{cookie:u.cookie}});expect(catalog.statusCode).toBe(200);expect(catalog.json().worlds.find((w:{slug:string})=>w.slug==='park')).toMatchObject({title:'Central Park',capacity:12,kind:'world',availability:'available',capabilities:['presence','seating','portals']});
+ const catalog=await app.http.inject({url:'/v1/worlds',headers:{cookie:u.cookie}});expect(catalog.statusCode).toBe(200);expect(catalog.json().worlds.find((w:{slug:string})=>w.slug==='park')).toMatchObject({title:'Central Park',capacity:12,kind:'world',availability:'available',capabilities:['presence','seating','chat','portals']});
  expect((await app.http.inject({url:'/v1/worlds/park/rooms',headers:{cookie:u.cookie}})).json().rooms).toEqual([]);expect(app.rooms.diagnostics().memberships).toBe(0);expect((await app.http.inject({url:'/v1/worlds/park/rooms'})).statusCode).toBe(401);
 });
 it('actual park geometry binds shared seats and privacy;stale assets,forged authority and solid-board moves fail closed',async()=>{
@@ -32,9 +32,9 @@ it('actual park geometry binds shared seats and privacy;stale assets,forged auth
  const taken=await command(b,'seat.claim',{...own(sb),seatId:'seat-1'});expect(taken.ok).toBe(false);if(!taken.ok)expect(taken.error.code).toBe('SEAT_TAKEN');
  const ended=new Promise(resolve=>a.socket.once('room.ended',resolve));await app.worlds.registry.setEnabled('park',false);await ended;await app.rooms.maintain();expect(app.rooms.diagnostics().memberships).toBe(0);expect(app.rooms.diagnostics().occupiedSeats).toBe(0);
 });
-it('initial scene cannot deliver free text,canned messages or emotes even when the shared chat runtime is enabled',async()=>{
+it('Park cannot deliver free text even when a trusted fixture enables the shared moderated chat runtime',async()=>{
  await app.worlds.registry.setEnabled('park',true);const a=await guest(),b=await guest(),sa=await enter(a);await enter(b,sa.roomId);const delivered:unknown[]=[];b.socket.on('chat.message',event=>delivered.push(event));
- for(const content of [{kind:'text',text:'Unreviewed park text'},{kind:'canned',id:'hello'},{kind:'emote',id:'wave'}]){const ack=ChatAckSchema.parse(await a.socket.timeout(5000).emitWithAck('chat.send',{...own(sa),content}));expect(ack.ok).toBe(false);if(!ack.ok)expect(ack.error.code).toBe('FORBIDDEN');}expect(delivered).toEqual([]);
+ for(const content of [{kind:'text',text:'Unreviewed park text'},{kind:'text',text:'No arbitrary contact text'},{kind:'text',text:'No caller override'}]){const ack=ChatAckSchema.parse(await a.socket.timeout(5000).emitWithAck('chat.send',{...own(sa),content}));expect(ack.ok).toBe(false);if(!ack.ok)expect(ack.error.code).toBe('FORBIDDEN');}expect(delivered).toEqual([]);
 });
 it('shared explicit travel admits the actual park adapter before releasing the SDK source and preserves identity',async()=>{
  await app.worlds.registry.setEnabled('park',true);await app.worlds.registry.setEnabled('sdk-sandbox',true);const u=await guest(),joined=await command(u,'room.join',join('sdk-sandbox'));if(!joined.ok||joined.result.type!=='snapshot')throw Error('Source visit failed');const source=joined.result;

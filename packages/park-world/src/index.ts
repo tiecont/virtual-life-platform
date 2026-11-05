@@ -1,7 +1,7 @@
 import { SceneManifestSchema } from '@virtual-city/contracts';
 import { defineWorld,WorldError } from '@virtual-city/world-sdk';
 
-export const parkWorldVersion='1.0.0';
+export const parkWorldVersion='1.1.0';
 export const parkScene=SceneManifestSchema.parse({
  schemaVersion:1,key:'park',version:'1.0.0',projection:'orthogonal',tileSize:48,columns:24,rows:16,spawn:{x:11,y:14},
  collisionZones:[
@@ -39,7 +39,7 @@ export const parkDestinations=[{label:'Entrance',x:11,y:14},{label:'Garden path'
 export function createParkWorld(){
  let started=false;
  return defineWorld({schemaVersion:1,apiVersion:1,slug:'park',version:parkWorldVersion,title:'Central Park',kind:'world',sceneRef:{key:parkScene.key,version:parkScene.version},scene:parkScene,
-  capacity:12,seatIds:parkScene.seats.map(seat=>seat.seatId),capabilities:['presence','seating','portals'],appearancePolicy:{apron:'forbidden'},accessPolicy:{kind:'public'},visibility:'listed',map:{region:'commons',position:{x:.5,y:.5},icon:'trees'},
+  capacity:12,seatIds:parkScene.seats.map(seat=>seat.seatId),capabilities:['presence','seating','chat','portals'],appearancePolicy:{apron:'forbidden'},accessPolicy:{kind:'public'},visibility:'listed',map:{region:'commons',position:{x:.5,y:.5},icon:'trees'},
  },{bootstrap:async()=>{started=true;},shutdown:async()=>{started=false;},onJoin:async()=>{if(!started)throw Error('Park unavailable');},onLeave:async()=>{},onCommand:async()=>{throw new WorldError('INVALID_REQUEST','Park activity unavailable');},
   travel:{prepare:async context=>{if(!started||context.signal.aborted)throw Error('Park unavailable');},abort:async()=>{},depart:async()=>{}},
  });

@@ -143,7 +143,7 @@
 | M23 | M23-05 · Request explicit owner approvals and record release decision. | TODO | — |
 | M23 | M23-06 · Prepare launch/post-release metrics monitoring and truthful handoff report. | TODO | — |
 | M24 | M24-01 · Design original park scene with benches, activity boards and portal destinations. | VERIFIED | ADR0081/CENTRAL-PARK.md/m24-scene-checks.json;original8benchplaces/cap12/board-portal/native/sharedowners. Root19gov/266unit/507integration/build0/471hashes,6Park+8existingthemebrowser0/4ParkPNGsinspected. Context-keyfailure retained/fixedmetadata,guardkept;localflagsOFF/noSQL/publicactivation. |
-| M24 | M24-02 · Implement public park room allocation and lightweight safe interactions. | TODO | — |
+| M24 | M24-02 · Implement public park room allocation and lightweight safe interactions. | VERIFIED | ADR0082/CENTRAL-PARK.md/m24-quick-checks.json;scoped centralquickIDs/currentRoomSocket/privatevolatilefeed/canonicalretry. Root19gov/266unit/512integration/build0/471hashes;5new/44focused/10browser0,4selectedPNGsinspected;cap12/oneRoomSocket/block/held-lostACK/leave. No newDDL/realflag/publicactivation. |
 | M24 | M24-03 · Implement activity discovery board for events in other worlds. | TODO | — |
 | M24 | M24-04 · Implement consenting group invite and world travel from the park. | TODO | — |
 | M24 | M24-05 · Test public-space harassment protections, cold-start UX and safe event flow. | TODO | — |

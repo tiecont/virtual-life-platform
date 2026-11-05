@@ -1,5 +1,13 @@
 # Agent progress
 
+## M24-02 — VERIFIED scoped Park quick interactions
+
+From4450dcf;ADR0082/[world guide](../architecture/CENTRAL-PARK.md)/[ledger](evidence/m24-quick-checks.json). Reuse sharedChatService/currentRoomSocket rather than opening globalchat:four approved server-resolved canned IDs/four schema emotes only,world1.1.0/scene1.0.0;existing admission/safety/block/privacy/accountquota/canonicalreceipt guards. Native8buttons/bounded20entry60monotonicsecond volatilefeed/currentvisiblepurge/source-sessionremount/unknownACKsamekeyretry/independentLeave/report/block;no textentry/storage/contactfield/newSQL/migration.
+
+Actual initialred1failed4filteredskips retained;new5PG/sockettests0,focusedchat-Library-Park44tests0;types/lint/packages/fullbuild0. Actual10Parkbrowser0(5perdevice):existingnative/fallback/travel plus2visitorHello-Wave delivery withhidden-global/public-Park choices,blockpurge/no futurepeer greeting/8targetsmin44px/nooverflow/nolocalstorage;real lostACK samekeyretry1broadcast andsecondheldACKcannotpreventleave/lateACKdiscard. One actualRoomSocket,3commands/2keys/2events/3acceptedACKs perdevice.17freshfiles saved/4changedhistoricalsceneversions restored;4selectedquickPNGsinspected.
+
+Finalpnpmcheck0:19governance/266unit/512integration/allbuilds;471source-config-assets-ownership hashesunchanged/3provenancehashesvalid/releasefalse. Allownedworkersfinished/no preview;no retained0036/stopped/realflag/provider/staff/legacy/remote/publicchange/imagebuild. OldM21-04image remainsstale. M24-03..05 stillpending;wholeplanincomplete. Next exact actionM24-03embedauthorizedotherworldschedules usingexistingWorldCatalog/WorldActivity/EventCatalog/current-sessionguard/30sTTL/explicittravel,no newDB owner;verify private/gated/stale/outage/identity boundaries.
+
 ## M24-01 — VERIFIED original Park scene/native benches/explicit portal navigation
 
 Froma89873c;ADR0081/[world guide](../architecture/CENTRAL-PARK.md)/[ledger](evidence/m24-scene-checks.json). Audited currentSDK/Room/scene/avatar/safety/social/travel/catalog/harness;newpurepark-world24×16outdoor scene/four2placebenches/eightseats/cap12/garden/trees/activityboard/portals/nativepaths. Shared authoritativeowners,defaultOFFLOCAL_PARK_WORLD/productionreject plusindependentflag;no newdatabase/migration. Shared renderer additiveparkLandscape,existingthemes unchangedbranch;native boardlinksreusecityoverview/explicittraveldesk. No chat/event/service/focus authority atinitialslice. Code-authoredart/provenancesourcehashes/currentstarteravatars/noexternalmedia/releasefalse.

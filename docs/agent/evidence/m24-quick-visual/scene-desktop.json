@@ -1,0 +1,113 @@
+{
+  "sameIdentity": true,
+  "actualWorld": "park",
+  "seat": "seat-1",
+  "capacity": 12,
+  "seats": 8,
+  "nativeEntryBenchAndExit": true,
+  "reducedMotion": true,
+  "targets": [
+    {
+      "width": 196.71875,
+      "height": 44
+    },
+    {
+      "width": 216.40625,
+      "height": 44
+    },
+    {
+      "width": 140.6875,
+      "height": 44
+    },
+    {
+      "width": 128,
+      "height": 44
+    },
+    {
+      "width": 128,
+      "height": 44
+    },
+    {
+      "width": 128,
+      "height": 44
+    },
+    {
+      "width": 128,
+      "height": 44
+    },
+    {
+      "width": 128,
+      "height": 44
+    },
+    {
+      "width": 128,
+      "height": 44
+    },
+    {
+      "width": 128,
+      "height": 44
+    },
+    {
+      "width": 944,
+      "height": 44
+    },
+    {
+      "width": 230,
+      "height": 72
+    },
+    {
+      "width": 230,
+      "height": 72
+    },
+    {
+      "width": 230,
+      "height": 72
+    },
+    {
+      "width": 230,
+      "height": 72
+    },
+    {
+      "width": 85.375,
+      "height": 44
+    },
+    {
+      "width": 230,
+      "height": 72
+    },
+    {
+      "width": 230,
+      "height": 72
+    },
+    {
+      "width": 230,
+      "height": 72
+    },
+    {
+      "width": 230,
+      "height": 72
+    },
+    {
+      "width": 230,
+      "height": 72
+    },
+    {
+      "width": 230,
+      "height": 72
+    },
+    {
+      "width": 230,
+      "height": 72
+    },
+    {
+      "width": 230,
+      "height": 72
+    },
+    {
+      "width": 215,
+      "height": 44
+    }
+  ],
+  "noMedia": true,
+  "noOverflow": true
+}

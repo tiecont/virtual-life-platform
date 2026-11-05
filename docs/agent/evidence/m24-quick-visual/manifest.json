@@ -1,0 +1,79 @@
+{
+  "startedAt": "2026-11-05T03:48:39.787519+00:00",
+  "freshFiles": [
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/browser-batches.json",
+      "sha256": "39a6de953a2522d9590ea815c55db4b7ed3422dc75aeaf73f54d05ef490618b1"
+    },
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/desktop-blocked.png",
+      "sha256": "36b3c24413088fc935530cbfcb7d66bc27ca7cb884f1f4f0f5a3fe59ada88923"
+    },
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/desktop-greetings.json",
+      "sha256": "9ba779494543b0b4e37faa1bc06a4cd05d338a0b669f7e82d72892cf7055ac61"
+    },
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/desktop-greetings.png",
+      "sha256": "9cecb65c76e055b6f9616b2f284e2512abd9f54e8a2f3a00097be036389a864b"
+    },
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/desktop-pending.png",
+      "sha256": "afd8bd63fe1cdedf8095db7cfcdeaf22f3b53f718a45aa49f182e67fcabe02fb"
+    },
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/desktop-retry.json",
+      "sha256": "22f5e31acddf6a5deb10317dbac418109b55481c203cf81444d7877b6a9cec50"
+    },
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/mobile-blocked.png",
+      "sha256": "4cf92ae8f9344c16657ab3d5bf1392c181c38e742f5908c98d7410ac561a9532"
+    },
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/mobile-greetings.json",
+      "sha256": "3c2569ac4fdf5f9409014e642a1fbdeb32a9927aabb8469403ef76d2cfc2cc46"
+    },
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/mobile-greetings.png",
+      "sha256": "57a93285507b61a8c9d1f6dbbc2243bd2e62706997da27a0f56d2047b6a32fd6"
+    },
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/mobile-pending.png",
+      "sha256": "ac0a31c5dc0c3cba0c431a4b9c1ca530640b3a4ea6c2ac861a7bd2d02ebb3bb4"
+    },
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/mobile-retry.json",
+      "sha256": "22f5e31acddf6a5deb10317dbac418109b55481c203cf81444d7877b6a9cec50"
+    },
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/scene-desktop-page.png",
+      "sha256": "be7fdc362e06292f2bbb4d5428847d1e5354fb20ab4d0ac40984c02835e19aec"
+    },
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/scene-desktop.json",
+      "sha256": "81c1146114c4af226258ac22c8c8917287d4893f081dc039cc5bfd1041290378"
+    },
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/scene-desktop.png",
+      "sha256": "c27caaa0d1d17d571dcc8ea3de224faa484e2ae27edf3c66adf808a4d2420588"
+    },
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/scene-mobile-page.png",
+      "sha256": "8691166e60611ddb5dd3337ce4430ca9a8d20f14b8b48f35c8eb8ea3a59d3ea8"
+    },
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/scene-mobile.json",
+      "sha256": "37a921ac837d271b68604276241aacb63af590d53bb4c784e42c6698f14bf830"
+    },
+    {
+      "path": "docs/agent/evidence/m24-quick-visual/scene-mobile.png",
+      "sha256": "9d432c11df588fc360cf193c71385cf01304e8600ff929162ac73832749ee035"
+    }
+  ],
+  "restoredHistorical": [
+    "docs/agent/evidence/m24-scene-visual/desktop-page.png",
+    "docs/agent/evidence/m24-scene-visual/desktop.json",
+    "docs/agent/evidence/m24-scene-visual/mobile-page.png",
+    "docs/agent/evidence/m24-scene-visual/mobile.json"
+  ]
+}

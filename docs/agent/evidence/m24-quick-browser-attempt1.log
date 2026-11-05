@@ -1,0 +1,92 @@
+ Network virtual-city-test-85bb76fd_default Creating 
+ Network virtual-city-test-85bb76fd_default Creating 
+ Network virtual-city-test-85bb76fd_default Created 
+ Network virtual-city-test-85bb76fd_default Created 
+ Container virtual-city-test-85bb76fd-db-1 Creating 
+ Container virtual-city-test-85bb76fd-db-1 Created 
+ Container virtual-city-test-85bb76fd-db-1 Starting 
+ Container virtual-city-test-85bb76fd-db-1 Started 
+ Container virtual-city-test-85bb76fd-db-1 Waiting 
+ Container virtual-city-test-85bb76fd-db-1 Healthy 
+[WebServer] (node:265347) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:265383) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:265383) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:265383) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:265346) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:265477) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:265548) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:265579) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 5 tests using 1 worker
+
+(node:265633) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/park.spec.ts:8:5 › original park is discoverable and native benches preserve identity,keyboard focus and reduced motion on desktop/mobile (2.3s)
+  ✓  2 [desktop] › tests/e2e/park.spec.ts:21:5 › park artwork failure retains native benches and anonymous visitors cannot allocate a room (1.2s)
+  ✓  3 [desktop] › tests/e2e/park.spec.ts:25:5 › park portal navigation requests consent and the existing travel desk opens the actual park room without replacing identity (2.0s)
+  ✓  4 [desktop] › tests/e2e/park.spec.ts:30:5 › approved Park greetings use native controls and current visibility while a block removes past and future peer greetings (3.5s)
+  ✓  5 [desktop] › tests/e2e/park.spec.ts:51:5 › lost actual greeting ACK retries the same request once and leaving remains independent of a held reply (7.2s)
+
+  5 passed (21.1s)
+ Container virtual-city-test-85bb76fd-db-1 Stopping 
+ Container virtual-city-test-85bb76fd-db-1 Stopped 
+ Container virtual-city-test-85bb76fd-db-1 Removing 
+ Container virtual-city-test-85bb76fd-db-1 Removed 
+ Network virtual-city-test-85bb76fd_default Removing 
+ Network virtual-city-test-85bb76fd_default Removed 
+ Network virtual-city-test-939621d1_default Creating 
+ Network virtual-city-test-939621d1_default Creating 
+ Network virtual-city-test-939621d1_default Created 
+ Network virtual-city-test-939621d1_default Created 
+ Container virtual-city-test-939621d1-db-1 Creating 
+ Container virtual-city-test-939621d1-db-1 Created 
+ Container virtual-city-test-939621d1-db-1 Starting 
+ Container virtual-city-test-939621d1-db-1 Started 
+ Container virtual-city-test-939621d1-db-1 Waiting 
+ Container virtual-city-test-939621d1-db-1 Healthy 
+[WebServer] (node:267040) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:267054) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:267054) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:267054) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:267039) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:267099) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:267198) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:267230) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 5 tests using 1 worker
+
+(node:267304) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [mobile] › tests/e2e/park.spec.ts:8:5 › original park is discoverable and native benches preserve identity,keyboard focus and reduced motion on desktop/mobile (2.5s)
+  ✓  2 [mobile] › tests/e2e/park.spec.ts:21:5 › park artwork failure retains native benches and anonymous visitors cannot allocate a room (1.3s)
+  ✓  3 [mobile] › tests/e2e/park.spec.ts:25:5 › park portal navigation requests consent and the existing travel desk opens the actual park room without replacing identity (1.7s)
+  ✓  4 [mobile] › tests/e2e/park.spec.ts:30:5 › approved Park greetings use native controls and current visibility while a block removes past and future peer greetings (4.1s)
+  ✓  5 [mobile] › tests/e2e/park.spec.ts:51:5 › lost actual greeting ACK retries the same request once and leaving remains independent of a held reply (7.6s)
+
+  5 passed (21.8s)
+ Container virtual-city-test-939621d1-db-1 Stopping 
+ Container virtual-city-test-939621d1-db-1 Stopped 
+ Container virtual-city-test-939621d1-db-1 Removing 
+ Container virtual-city-test-939621d1-db-1 Removed 
+ Network virtual-city-test-939621d1_default Removing 
+ Network virtual-city-test-939621d1_default Removed 

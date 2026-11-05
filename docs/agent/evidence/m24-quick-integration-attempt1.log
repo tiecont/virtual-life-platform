@@ -1,0 +1,27 @@
+ Network virtual-city-test-d80ca33a_default Creating 
+ Network virtual-city-test-d80ca33a_default Creating 
+ Network virtual-city-test-d80ca33a_default Created 
+ Network virtual-city-test-d80ca33a_default Created 
+ Container virtual-city-test-d80ca33a-db-1 Creating 
+ Container virtual-city-test-d80ca33a-db-1 Created 
+ Container virtual-city-test-d80ca33a-db-1 Starting 
+ Container virtual-city-test-d80ca33a-db-1 Started 
+ Container virtual-city-test-d80ca33a-db-1 Waiting 
+ Container virtual-city-test-d80ca33a-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ✓ |integration| tests/integration/park-quick.test.ts (5 tests) 2024ms
+   ✓ twenty actual socket contenders beside a seed cannot exceed the twelve-place park or create extra rooms  454ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  03:42:12
+   Duration  3.49s (transform 586ms, setup 0ms, import 1.32s, tests 2.02s, environment 0ms)
+
+ Container virtual-city-test-d80ca33a-db-1 Stopping 
+ Container virtual-city-test-d80ca33a-db-1 Stopped 
+ Container virtual-city-test-d80ca33a-db-1 Removing 
+ Container virtual-city-test-d80ca33a-db-1 Removed 
+ Network virtual-city-test-d80ca33a_default Removing 
+ Network virtual-city-test-d80ca33a_default Removed 
