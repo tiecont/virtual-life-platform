@@ -1,0 +1,19 @@
+{
+  "actualWorlds": [
+    "maid",
+    "deadline"
+  ],
+  "defaultInvitationDenied": true,
+  "oneOfferAfterRetry": true,
+  "acceptDidNotTravel": true,
+  "lostTravelReplyRetainedSourceAndWork": true,
+  "sameTravelRetryKey": true,
+  "oneCommittedWorkerTrip": true,
+  "oldShiftEnded": true,
+  "originalCustomerOrderRequeued": true,
+  "oldPreparationDenied": true,
+  "replacementHasSameIdentityNoAutoSeatOrShift": true,
+  "explicitVolunteerRequired": true,
+  "independentStopWorked": true,
+  "noCompletion": true
+}

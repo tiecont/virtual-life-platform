@@ -1,0 +1,53 @@
+{
+  "group": "legacy",
+  "results": [
+    {
+      "spec": "deadline-identity.spec.ts",
+      "exitCode": 0,
+      "processExitCode": 0,
+      "reportValid": true
+    },
+    {
+      "spec": "deadline.spec.ts",
+      "exitCode": 0,
+      "processExitCode": 0,
+      "reportValid": true
+    },
+    {
+      "spec": "deadline-safety.spec.ts",
+      "exitCode": 0,
+      "processExitCode": 0,
+      "reportValid": true
+    },
+    {
+      "spec": "deadline-acceptance.spec.ts",
+      "exitCode": 0,
+      "processExitCode": 0,
+      "reportValid": true
+    },
+    {
+      "spec": "maid.spec.ts",
+      "exitCode": 0,
+      "processExitCode": 0,
+      "reportValid": true
+    },
+    {
+      "spec": "maid-safety.spec.ts",
+      "exitCode": 0,
+      "processExitCode": 0,
+      "reportValid": true
+    },
+    {
+      "spec": "maid-travel.spec.ts",
+      "exitCode": 0,
+      "processExitCode": 0,
+      "reportValid": true
+    },
+    {
+      "spec": "maid-acceptance.spec.ts",
+      "exitCode": 0,
+      "processExitCode": 0,
+      "reportValid": true
+    }
+  ]
+}

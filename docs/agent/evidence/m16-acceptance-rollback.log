@@ -1,0 +1,55 @@
+ Network virtual-city-test-a2efffd1_default Creating 
+ Network virtual-city-test-a2efffd1_default Creating 
+ Network virtual-city-test-a2efffd1_default Created 
+ Network virtual-city-test-a2efffd1_default Created 
+ Container virtual-city-test-a2efffd1-db-1 Creating 
+ Container virtual-city-test-a2efffd1-db-1 Created 
+ Container virtual-city-test-a2efffd1-db-1 Starting 
+ Container virtual-city-test-a2efffd1-db-1 Started 
+ Container virtual-city-test-a2efffd1-db-1 Waiting 
+ Container virtual-city-test-a2efffd1-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/maid-service.test.ts (11 tests | 1 failed) 4947ms
+   × actual Maid flag closure and re-enable preserve independent source rows and served history without reviving old work consent 878ms
+   ✓ actual selected six recipes and menu IDs are trusted adapter data rather than client recipe policy 85ms
+   ✓ actual recipe compatibility migration keeps current readiness healthy and rejects the older strict-workflow manifest 46ms
+   ✓ assigned preparation has a private server challenge;elapsed time alone,forged nonce,wrong recipe and client score cannot finish it  459ms
+   ✓ expired preparation restarts only with a fresh guarded command and old retries or nonce cannot extend or complete it  346ms
+   ✓ six current Maid workers racing over actual HTTP claim one order;service and eight completion retries commit one course,outbox and outcome  892ms
+   ✓ independent work Stop requeues preparation and replacement invalidates the former assignee nonce without phantom completion  406ms
+   ✓ an actual last worker socket disconnect requeues unfinished recipe work after grace and frees the shift without completion 207ms
+   ✓ actual owner restart cancels stranded customer preparation and old source or nonce cannot resurrect it 211ms
+   ✓ ready receipt failure rolls back nonce consumption and phase so the same guarded submission can retry once 238ms
+   ✓ actual receipt SQL wait cannot carry a recipe submission beyond the server challenge expiry 266ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/maid-service.test.ts > actual Maid flag closure and re-enable preserve independent source rows and served history without reviving old work consent
+AssertionError: expected 409 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 409
+
+ ❯ tests/integration/maid-service.test.ts:42:552
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 10 passed (11)
+   Start at  10:38:32
+   Duration  6.42s (transform 645ms, setup 0ms, import 1.34s, tests 4.95s, environment 0ms)
+
+Test harness failed during command;no raw URL or configuration emitted
+ Container virtual-city-test-a2efffd1-db-1 Stopping 
+ Container virtual-city-test-a2efffd1-db-1 Stopped 
+ Container virtual-city-test-a2efffd1-db-1 Removing 
+ Container virtual-city-test-a2efffd1-db-1 Removed 
+ Network virtual-city-test-a2efffd1_default Removing 
+ Network virtual-city-test-a2efffd1_default Removed 

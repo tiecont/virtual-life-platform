@@ -6,6 +6,6 @@
   "study":["focus.spec.ts","library.spec.ts","scene.spec.ts","wardrobe.spec.ts"],
   "hospitality":["lounge.spec.ts","restaurant.spec.ts"],
   "private":["dating-continuation.spec.ts","dating-profile.spec.ts"],
-  "legacy":["deadline-identity.spec.ts","deadline.spec.ts","deadline-safety.spec.ts","deadline-acceptance.spec.ts","maid.spec.ts","maid-safety.spec.ts","maid-travel.spec.ts"]
+  "legacy":["deadline-identity.spec.ts","deadline.spec.ts","deadline-safety.spec.ts","deadline-acceptance.spec.ts","maid.spec.ts","maid-safety.spec.ts","maid-travel.spec.ts","maid-acceptance.spec.ts"]
  }
 }

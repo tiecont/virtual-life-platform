@@ -1,0 +1,281 @@
+{
+  "nativeEntrySeatTimerAndExit": true,
+  "systemReducedMotion": true,
+  "noIdleFrames": true,
+  "timerLiveRegionOff": true,
+  "contrast": [
+    {
+      "selector": "cafe-eyebrow",
+      "foreground": "rgb(80, 104, 92)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 5.763756557321647
+    },
+    {
+      "selector": "cafe-occupancy",
+      "foreground": "rgb(80, 104, 92)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 5.763756557321647
+    },
+    {
+      "selector": "cafe-scene-caption",
+      "foreground": "rgb(80, 102, 91)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 5.90485158957372
+    },
+    {
+      "selector": "cafe-note",
+      "foreground": "rgb(82, 104, 93)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 5.7288236258564105
+    },
+    {
+      "selector": "focus-private",
+      "foreground": "rgb(74, 93, 112)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 6.481469937486872
+    },
+    {
+      "selector": "focus-phase",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "LABEL",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "LABEL",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "LABEL",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "focus-message",
+      "foreground": "rgb(138, 53, 60)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 7.5451422687668375
+    },
+    {
+      "selector": "cafe-note",
+      "foreground": "rgb(82, 104, 93)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 5.7288236258564105
+    }
+  ],
+  "targets": [
+    {
+      "label": "Walk to entrance",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "Walk to window aisle",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "Walk to central aisle",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "Walk to counter front",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "Stand up",
+      "width": 85.375,
+      "height": 44
+    },
+    {
+      "label": "01Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "02Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "03Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "04Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "05Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "06Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "07Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "08Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "09Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "10Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "11Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "12Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "13Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "14Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "15Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "16Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "17Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "18Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "19Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "20Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "21Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "22Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "23Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "24Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "25Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "26Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "27Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "28Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "29Deadline deskAvailable",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "30Deadline deskYour seat",
+      "width": 175,
+      "height": 72
+    },
+    {
+      "label": "Start focus",
+      "width": 174,
+      "height": 44
+    },
+    {
+      "label": "Refresh timer",
+      "width": 174,
+      "height": 44
+    },
+    {
+      "label": "Leave cafe",
+      "width": 171,
+      "height": 44
+    },
+    {
+      "label": "Leave and return to city",
+      "width": 171,
+      "height": 58.375
+    },
+    {
+      "label": "Invite friend to this room",
+      "width": 171,
+      "height": 58.375
+    },
+    {
+      "label": "Refresh cafe friends",
+      "width": 153.84375,
+      "height": 44
+    }
+  ]
+}

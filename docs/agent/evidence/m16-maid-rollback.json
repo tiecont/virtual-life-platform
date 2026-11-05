@@ -1,0 +1,15 @@
+{
+  "actualFlagsManagerReload": true,
+  "separateSelectedSourceFoundationDatabase": true,
+  "sourceUsersProfilesUnchanged": true,
+  "closedWorldRemovedAllFourVisits": true,
+  "independentStopAndWithdrawalWhileClosed": true,
+  "servedAcknowledgmentWhileClosed": true,
+  "oneCompletionAfterRetry": true,
+  "unfinishedCancelledWithoutCompletion": true,
+  "freshVisitNoAutoSeatOrShift": true,
+  "oldMembershipNonceDeniedAndPositiveRetryCannotReactivate": true,
+  "staleConsentRevisionDenied": true,
+  "compatible0038CodeRetained": true,
+  "limits": "Owned disposable DB/actual HTTP-Socket-SQL;not original data,old-image deployment,public release or a source-auth proof"
+}

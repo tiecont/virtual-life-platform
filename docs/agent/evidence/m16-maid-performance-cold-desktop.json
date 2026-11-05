@@ -1,0 +1,360 @@
+{
+  "readyMs": 3766.399999999441,
+  "timeOrigin": 1793875721826.1,
+  "resources": [
+    {
+      "path": "/_next/static/css/dba6f1ab95283bdd.css",
+      "encoded": 1900,
+      "decoded": 6379,
+      "transfer": 2200,
+      "durationMs": 50.60000000055879
+    },
+    {
+      "path": "/_next/static/css/3cc03f61b0232e4f.css",
+      "encoded": 546,
+      "decoded": 546,
+      "transfer": 846,
+      "durationMs": 46.10000000055879
+    },
+    {
+      "path": "/_next/static/css/00b771dbf00cb45f.css",
+      "encoded": 2092,
+      "decoded": 7617,
+      "transfer": 2392,
+      "durationMs": 50
+    },
+    {
+      "path": "/_next/static/css/d47c610400731fa6.css",
+      "encoded": 1077,
+      "decoded": 3087,
+      "transfer": 1377,
+      "durationMs": 52
+    },
+    {
+      "path": "/_next/static/chunks/webpack-53677ea49e8db6ed.js",
+      "encoded": 1822,
+      "decoded": 3519,
+      "transfer": 2122,
+      "durationMs": 63.200000000186265
+    },
+    {
+      "path": "/_next/static/chunks/203aaf2c-12fbf3002626edb0.js",
+      "encoded": 64057,
+      "decoded": 203724,
+      "transfer": 64357,
+      "durationMs": 157.70000000018626
+    },
+    {
+      "path": "/_next/static/chunks/main-app-0985635544b8a712.js",
+      "encoded": 526,
+      "decoded": 526,
+      "transfer": 826,
+      "durationMs": 91.1000000005588
+    },
+    {
+      "path": "/_next/static/chunks/894-ca267feb4ad12160.js",
+      "encoded": 67624,
+      "decoded": 242294,
+      "transfer": 67924,
+      "durationMs": 234.90000000037253
+    },
+    {
+      "path": "/_next/static/chunks/266-381ea7fab0d4471b.js",
+      "encoded": 106546,
+      "decoded": 495918,
+      "transfer": 106846,
+      "durationMs": 266.5
+    },
+    {
+      "path": "/_next/static/chunks/800-38561f2fd95b7c2c.js",
+      "encoded": 6116,
+      "decoded": 18001,
+      "transfer": 6416,
+      "durationMs": 126.79999999981374
+    },
+    {
+      "path": "/_next/static/chunks/app/layout-ab8bb2fc6f2e92c9.js",
+      "encoded": 1880,
+      "decoded": 4606,
+      "transfer": 2180,
+      "durationMs": 139.8999999994412
+    },
+    {
+      "path": "/_next/static/chunks/64-3bcfc7a6d936c848.js",
+      "encoded": 16227,
+      "decoded": 79510,
+      "transfer": 16527,
+      "durationMs": 143.70000000018626
+    },
+    {
+      "path": "/_next/static/chunks/994-247faff1888da745.js",
+      "encoded": 12782,
+      "decoded": 41160,
+      "transfer": 13082,
+      "durationMs": 200.29999999981374
+    },
+    {
+      "path": "/_next/static/chunks/724-a885d98d65c65706.js",
+      "encoded": 14240,
+      "decoded": 49350,
+      "transfer": 14540,
+      "durationMs": 221.29999999981374
+    },
+    {
+      "path": "/_next/static/chunks/367-15d05e9fb8b5b4ee.js",
+      "encoded": 3387,
+      "decoded": 10063,
+      "transfer": 3687,
+      "durationMs": 197.09999999962747
+    },
+    {
+      "path": "/_next/static/chunks/app/worlds/maid/page-3207c944af6f8191.js",
+      "encoded": 5805,
+      "decoded": 15221,
+      "transfer": 6105,
+      "durationMs": 217.40000000037253
+    },
+    {
+      "path": "/v1/me",
+      "encoded": 242,
+      "decoded": 242,
+      "transfer": 542,
+      "durationMs": 43.799999999813735
+    },
+    {
+      "path": "/v1/me",
+      "encoded": 242,
+      "decoded": 242,
+      "transfer": 542,
+      "durationMs": 44.5
+    },
+    {
+      "path": "/v1/worlds",
+      "encoded": 525,
+      "decoded": 2628,
+      "transfer": 825,
+      "durationMs": 43.39999999944121
+    },
+    {
+      "path": "/_next/static/chunks/377.40181d12dad6f061.js",
+      "encoded": 318164,
+      "decoded": 1031455,
+      "transfer": 318464,
+      "durationMs": 277.29999999981374
+    },
+    {
+      "path": "/_next/static/chunks/267.534189f1b3d7a7a7.js",
+      "encoded": 6856,
+      "decoded": 17033,
+      "transfer": 7156,
+      "durationMs": 51.700000000186265
+    },
+    {
+      "path": "/",
+      "encoded": 165,
+      "decoded": 186,
+      "transfer": 465,
+      "durationMs": 45.10000000055879
+    },
+    {
+      "path": "/social",
+      "encoded": 180,
+      "decoded": 228,
+      "transfer": 480,
+      "durationMs": 45.200000000186265
+    },
+    {
+      "path": "/invitations",
+      "encoded": 183,
+      "decoded": 233,
+      "transfer": 483,
+      "durationMs": 48.700000000186265
+    },
+    {
+      "path": "/travel",
+      "encoded": 180,
+      "decoded": 228,
+      "transfer": 480,
+      "durationMs": 49.69999999925494
+    },
+    {
+      "path": "/v1/me/room",
+      "encoded": 75,
+      "decoded": 75,
+      "transfer": 375,
+      "durationMs": 43.10000000055879
+    },
+    {
+      "path": "/v1/worlds",
+      "encoded": 525,
+      "decoded": 2628,
+      "transfer": 825,
+      "durationMs": 43.60000000055879
+    },
+    {
+      "path": "/identity",
+      "encoded": 183,
+      "decoded": 215,
+      "transfer": 483,
+      "durationMs": 43.60000000055879
+    },
+    {
+      "path": "/worlds/sdk-sandbox/avatar-lab",
+      "encoded": 245,
+      "decoded": 428,
+      "transfer": 545,
+      "durationMs": 43
+    },
+    {
+      "path": "/",
+      "encoded": 621,
+      "decoded": 886,
+      "transfer": 921,
+      "durationMs": 42.799999999813735
+    },
+    {
+      "path": "/social",
+      "encoded": 630,
+      "decoded": 928,
+      "transfer": 930,
+      "durationMs": 51.700000000186265
+    },
+    {
+      "path": "/v1/staff/state",
+      "encoded": 45,
+      "decoded": 45,
+      "transfer": 345,
+      "durationMs": 43.10000000055879
+    },
+    {
+      "path": "/v1/orders/mine",
+      "encoded": 48,
+      "decoded": 48,
+      "transfer": 348,
+      "durationMs": 43.799999999813735
+    },
+    {
+      "path": "/v1/staff/state",
+      "encoded": 45,
+      "decoded": 45,
+      "transfer": 345,
+      "durationMs": 43.299999999813735
+    },
+    {
+      "path": "/invitations",
+      "encoded": 635,
+      "decoded": 933,
+      "transfer": 935,
+      "durationMs": 42.30000000074506
+    },
+    {
+      "path": "/_next/static/css/15101e984366dcba.css",
+      "encoded": 719,
+      "decoded": 1810,
+      "transfer": 1019,
+      "durationMs": 42.89999999944121
+    },
+    {
+      "path": "/travel",
+      "encoded": 632,
+      "decoded": 928,
+      "transfer": 932,
+      "durationMs": 43
+    },
+    {
+      "path": "/identity",
+      "encoded": 1681,
+      "decoded": 4049,
+      "transfer": 1981,
+      "durationMs": 43.700000000186265
+    },
+    {
+      "path": "/assets/avatars/7dee4545ce16/starter-v1.svg",
+      "encoded": 5303,
+      "decoded": 415243,
+      "transfer": 5603,
+      "durationMs": 47.200000000186265
+    },
+    {
+      "path": "/worlds/sdk-sandbox/avatar-lab",
+      "encoded": 1538,
+      "decoded": 4062,
+      "transfer": 1838,
+      "durationMs": 46.700000000186265
+    },
+    {
+      "path": "/_next/static/chunks/app/identity/page-7d66e3df9fc5c8aa.js",
+      "encoded": 4172,
+      "decoded": 12791,
+      "transfer": 4472,
+      "durationMs": 46.10000000055879
+    },
+    {
+      "path": "/_next/static/chunks/app/worlds/sdk-sandbox/avatar-lab/page-bdfdbdca156a6587.js",
+      "encoded": 1744,
+      "decoded": 4199,
+      "transfer": 2044,
+      "durationMs": 44.200000000186265
+    },
+    {
+      "path": "/assets/avatars/7dee4545ce16/starter-v1.svg",
+      "encoded": 5303,
+      "decoded": 415243,
+      "transfer": 0,
+      "durationMs": 1.1000000005587935
+    },
+    {
+      "path": "/v1/staff/state",
+      "encoded": 45,
+      "decoded": 45,
+      "transfer": 345,
+      "durationMs": 43.299999999813735
+    },
+    {
+      "path": "/v1/orders/menu",
+      "encoded": 363,
+      "decoded": 363,
+      "transfer": 663,
+      "durationMs": 46
+    },
+    {
+      "path": "/v1/orders/mine",
+      "encoded": 48,
+      "decoded": 48,
+      "transfer": 348,
+      "durationMs": 43.5
+    },
+    {
+      "path": "/v1/staff/state",
+      "encoded": 45,
+      "decoded": 45,
+      "transfer": 345,
+      "durationMs": 44.700000000186265
+    },
+    {
+      "path": "/v1/friends",
+      "encoded": 48,
+      "decoded": 48,
+      "transfer": 348,
+      "durationMs": 44.69999999925494
+    },
+    {
+      "path": "/v1/safety/status",
+      "encoded": 43,
+      "decoded": 43,
+      "transfer": 343,
+      "durationMs": 42.89999999944121
+    },
+    {
+      "path": "/v1/me",
+      "encoded": 242,
+      "decoded": 242,
+      "transfer": 542,
+      "durationMs": 43.200000000186265
+    }
+  ],
+  "profile": "Chromium desktop/mobile emulation, CPU4x, loopback latency40ms/12Mbps download; not physical low-end hardware",
+  "jsDecoded": 2229370,
+  "jsEncoded": 631948,
+  "cacheControl": "public, max-age=31536000, immutable"
+}

@@ -1,0 +1,385 @@
+{
+  "keyboardEntryChair24OrderWithdrawExit": true,
+  "reducedMotion": true,
+  "noIdleFrames": true,
+  "noMedia": true,
+  "contrast": [
+    {
+      "selector": "cafe-eyebrow",
+      "foreground": "rgb(80, 104, 92)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 5.763756557321647
+    },
+    {
+      "selector": "cafe-occupancy",
+      "foreground": "rgb(80, 104, 92)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 5.763756557321647
+    },
+    {
+      "selector": "cafe-scene-caption",
+      "foreground": "rgb(80, 102, 91)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 5.90485158957372
+    },
+    {
+      "selector": "P",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "P",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "P",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "P",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "P",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "P",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "P",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "P",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "P",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "P",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "P",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "P",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "P",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "cafe-note",
+      "foreground": "rgb(82, 104, 93)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 5.7288236258564105
+    },
+    {
+      "selector": "cafe-note",
+      "foreground": "rgb(82, 104, 93)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 5.7288236258564105
+    },
+    {
+      "selector": "P",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "P",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    }
+  ],
+  "targets": [
+    {
+      "label": "Stop voluntary work",
+      "width": 155.484375,
+      "height": 44
+    },
+    {
+      "label": "Refresh my work status",
+      "width": 176.1875,
+      "height": 44
+    },
+    {
+      "label": "Start voluntary shift",
+      "width": 153.796875,
+      "height": 44
+    },
+    {
+      "label": "Refresh cafe service",
+      "width": 153.65625,
+      "height": 44
+    },
+    {
+      "label": "Order Coffee",
+      "width": 110.25,
+      "height": 44
+    },
+    {
+      "label": "Order Iced Latte",
+      "width": 131.53125,
+      "height": 44
+    },
+    {
+      "label": "Order Milk Tea",
+      "width": 120.75,
+      "height": 44
+    },
+    {
+      "label": "Order Matcha",
+      "width": 116.171875,
+      "height": 44
+    },
+    {
+      "label": "Order Cake",
+      "width": 100.265625,
+      "height": 44
+    },
+    {
+      "label": "Order Omurice",
+      "width": 123.359375,
+      "height": 44
+    },
+    {
+      "label": "Hello",
+      "width": 62.15625,
+      "height": 44
+    },
+    {
+      "label": "Thanks",
+      "width": 74.640625,
+      "height": 44
+    },
+    {
+      "label": "Need help",
+      "width": 93.640625,
+      "height": 44
+    },
+    {
+      "label": "Bye",
+      "width": 52.828125,
+      "height": 44
+    },
+    {
+      "label": "Wave",
+      "width": 63.734375,
+      "height": 44
+    },
+    {
+      "label": "Smile",
+      "width": 63.953125,
+      "height": 44
+    },
+    {
+      "label": "Clap",
+      "width": 57.265625,
+      "height": 44
+    },
+    {
+      "label": "Nod",
+      "width": 56.09375,
+      "height": 44
+    },
+    {
+      "label": "Walk to entrance",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Walk to central aisle",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Walk to window aisle",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Walk to counter front",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Stand up",
+      "width": 85.375,
+      "height": 44
+    },
+    {
+      "label": "01Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "02Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "03Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "04Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "05Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "06Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "07Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "08Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "09Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "10Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "11Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "12Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "13Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "14Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "15Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "16Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "17Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "18Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "19Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "20Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "21Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "22Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "23Sakura chairAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "24Sakura chairYour seat",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Leave cafe",
+      "width": 215,
+      "height": 44
+    },
+    {
+      "label": "Leave and return to city",
+      "width": 177.46875,
+      "height": 44
+    },
+    {
+      "label": "Invite friend to this room",
+      "width": 185.71875,
+      "height": 44
+    },
+    {
+      "label": "Refresh cafe friends",
+      "width": 153.84375,
+      "height": 44
+    }
+  ]
+}
