@@ -37,9 +37,13 @@ const input = (source: TravelSource, durationSeconds = 900) => ({ schemaVersion:
 async function start(r: Runtime, u: User, source: TravelSource, durationSeconds = 900, key = randomUUID()) { const response = await post(r, u, 'focus', input(source, durationSeconds), key); expect(response.statusCode).toBe(201); const result = FocusResultSchema.parse(response.json()); if (!result.session) throw new Error('Expected timer'); return result.session; }
 const action = (r: Runtime, u: User, id: string, operation: string, key = randomUUID()) => post(r, u, 'focus/' + id + '/' + operation, { schemaVersion: 1 }, key);
 const claimXp = (r: Runtime, u: User, id: string) => post(r,u,'me/progression/claim-focus',{schemaVersion:1,focusId:id});
+function sameRewardDay(r: Runtime) {
+  // These cap scenarios advance90minutes and require one UTC day, independent of the host clock.
+  r.advance(Date.parse(new Date(r.now() + 86400000).toISOString().slice(0, 10) + 'T12:00:00.000Z') - r.now());
+}
 
 it('progression corrections retain immutable source history and cannot refund a spent abuse budget',async()=>{
- const r=await open(true,true),u=await guest(r),v=await seat(r,u,'deadline');const ids:string[]=[];
+ const r=await open(true,true);sameRewardDay(r);const u=await guest(r),v=await seat(r,u,'deadline');const ids:string[]=[];
  for(let n=0;n<5;n++){const timer=await start(r,u,v.source);ids.push(timer.id);r.advance(900000);expect((await claimXp(r,u,timer.id)).statusCode).toBe(200);}
  const before=(await get(r,u,'me/progression')).json(),grantId=before.history[0].id,requestId=randomUUID(),command={schemaVersion:1,accountId:u.me.profile.id,grantId,requestId,reason:'incorrect-source'};
  const service=r.app.progression as typeof r.app.progression & {correct:(operator:string,input:unknown)=>Promise<unknown>};
@@ -95,7 +99,7 @@ it('progression claims only an owned completed focus source and eight actual TCP
 });
 
 it('progression world cap unlocks one cosmetic without spending and retains private immutable source history', async () => {
-  const r=await open(true,true),u=await guest(r),visit=await seat(r,u,'deadline');
+  const r=await open(true,true);sameRewardDay(r);const u=await guest(r),visit=await seat(r,u,'deadline');
   for(let i=0;i<6;i++){const timer=await start(r,u,visit.source);r.advance(900000);expect((await claimXp(r,u,timer.id)).statusCode).toBe(200);}
   const current=(await get(r,u,'me/progression')).json();expect(current.lifetimeXp).toBe(10);expect(current.entitlements).toContain('cafe-apron');expect(current.history).toHaveLength(5);expect(JSON.stringify(current)).not.toMatch(/partner|source_id|fingerprint|roomId|seatId/);
   const exported=(await get(r,u,'me/export')).json().domains.progression;expect(exported.lifetimeXp).toBe(10);expect((await r.pool.query("SELECT 1 FROM engine_progression_entitlements WHERE cosmetic_key='cafe-apron'")).rowCount).toBe(1);

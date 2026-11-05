@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N05-02 VERIFIED
+
+Implemented bounded owner queue/execution/projection/fanout/path/real pg phase observation, safe lifecycle cleanup and an executable local runtime profile. Actual12-actor profile observed294 full-snapshot room.delta packets/947560 text bytes, successful move p95264.16ms and queue mean128.75ms; no sparse-delta or capacity claim. Same24-actor benchmark passed before/after instrumentation without a statistical overhead claim. Actual PostgreSQL callback/Promise/wait attribution and owned cancellation/cleanup pass. Full check passed58 governance,308 unit,569 integration and all workspace builds. Two initial same-day reward failures reproduced on the pre-instrumentation commit; only their test clocks were aligned to UTC noon, preserving production behavior and every old expectation. All failed attempts retained; singleton/global serialization,38 SQL, versions and safety gates unchanged.
+
+Actual commands: 24; retained failed attempts: 4; required final checks passed. Evidence: `n05-02-2026-11-05`; [checks](../audit/N05-02-CHECKS.json). Current counts: `{"VERIFIED": 22, "TODO": 47}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N05-03; read current profile/metrics and conditional optimization acceptance, compare pinned workload/hardware/source, choose only a justified consistency-preserving optimization or document retaining the global queue with measured limits. Preserve block/revoke projections and transactions; run actual applicable protocol/integration/security verification and update checkpoint. Never infer sparse deltas, capacity or a performance win from exit0.
+
 ## 2026-11-05 — N05-01 VERIFIED
 
 Implemented the existing strict command envelope and an additive optional bounded clientSeq adapter for room seat/move/leave mutations inside the unchanged singleton/global owner queue. Authenticated actor/session/action/payload receipts remain authoritative; matching receipts return current state without reapplying, stale fresh sequences conflict, and legacy/chat/durable HTTP shapes remain compatible. Member/connection watermarks survive failed travel compensation and are cleaned on detach/revoke/removal. Actual focused protocol128 cases plus an added action-binding case pass, including real100-way socket races, durable order/reward/outbox retries, travel COMMIT failure and actual owner loss/restarts. Full check covers governance/unit/integration and all consumer builds; final counts and output-path refinement evidence are recorded in N05-01-PROTOCOL.json. Existing room/travel assertions retained, diagnostics isolated, 38 SQL/dependency/public gates unchanged.

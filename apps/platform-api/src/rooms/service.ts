@@ -4,6 +4,8 @@ import { findScenePath, motionPosition, type WorldRegistry, type WorldActor } fr
 import type { IdentityService } from '../identity/service';
 import { DomainError } from '../common/errors';
 import type { RoomAuthority } from './authority';
+import {RoomMetrics, type RoomCommandName} from './metrics';
+import {performance} from 'node:perf_hooks';
 
 type Member = { id: string; accountId: string; worldVersion: string; sceneVersion: string; connections: Map<string, string>; sessions: Set<string>; disconnectedUntil: number | null; seatId: string | null; motion?: RoomMotion; commandSequences?: Map<string, number> };
 type Room = { id: string; slug: string; capacity: number; version: number; members: Map<string, Member>; emptySince: number; seats: Map<string, string | null> };
@@ -42,7 +44,7 @@ export class RoomService {
   #controls = new Map<string, { promise: Promise<void>; again: boolean }>();
   #refresh = new Set<string>();
   #unsubscribeAuthority: () => void;
-  constructor(private registry: WorldRegistry, private identity: IdentityService, private authority: RoomAuthority, private now = Date.now, private projection?: RoomProjection, private safety?: RoomSafetyPort) {
+  constructor(private registry: WorldRegistry, private identity: IdentityService, private authority: RoomAuthority, private now = Date.now, private projection?: RoomProjection, private safety?: RoomSafetyPort, private metrics = new RoomMetrics()) {
     this.#unsubscribeAuthority = authority.onLost(() => { this.#abandon(); });
     this.#unsubscribe = registry.onUnavailable(slug => {
       this.#worldGenerations.set(slug, (this.#worldGenerations.get(slug) ?? 0) + 1);
@@ -87,19 +89,27 @@ export class RoomService {
     }))).then(() => {});
   }
   onEnded(listener: (connections: string[], event: RoomEnded) => void) { this.#ended.add(listener); return () => { this.#ended.delete(listener); }; }
-  #run<T>(work: () => Promise<T>, control = false): Promise<T> {
+  #run<T>(work: () => Promise<T>, control = false, command: RoomCommandName | 'internal' = 'internal'): Promise<T> {
+    const enqueue = () => {
     if (!control && this.#closed) return Promise.reject(new DomainError('WORLD_UNAVAILABLE', 503, 'Room authority unavailable'));
     if (!control && this.#pending >= 256) return Promise.reject(new DomainError('RATE_LIMITED', 429, 'Room service busy'));
+    const queuedAt = performance.now();
     this.#pending++;
     this.#peakPending = Math.max(this.#peakPending, this.#pending);
-    const result = this.#tail.then(async () => {
+    const result = this.#tail.then(() => {
+      this.metrics.recordPhase('queue_wait', performance.now() - queuedAt);
+      return this.metrics.phase('execution', async () => {
       if (!control) await this.authority.assert();
       try {
         const value = await work();
         if (!control) await this.authority.assert();
         return value;
       } catch (error) { if (this.authority.state === 'lost') this.#abandon(); throw error; }
+      });
     }).finally(() => { this.#pending--; }); this.#tail = result.then(() => {}, () => {}); return result;
+    };
+    // Internal/safety/engine work retains its existing privacy scope; a waiting public command still observes its queue delay.
+    return command === 'internal' ? enqueue() : this.metrics.command(command, enqueue);
   }
   #control(key: string, work: () => Promise<void>): Promise<void> {
     const pending = this.#controls.get(key); if (pending) { pending.again = true; return pending.promise; }
@@ -120,7 +130,7 @@ export class RoomService {
   }
   #emitEnded(room: Room, member: Member, reason: RoomEnded['reason']) {
     const event = RoomEndedSchema.parse({ schemaVersion: 1, epoch: this.epoch, roomId: room.id, reason });
-    for (const listener of this.#ended) { try { listener([...member.connections.keys()], event); } catch { /* Removal remains authoritative. */ } }
+    this.metrics.syncPhase('fanout', () => {for (const listener of this.#ended) { try { listener([...member.connections.keys()], event); } catch { /* Removal remains authoritative. */ } }});
   }
   #removeMember(room: Room, member: Member, reason: RoomEnded['reason']) {
     this.#emitEnded(room, member, reason);
@@ -144,6 +154,7 @@ export class RoomService {
   }
   #holds(room: Room) { return [...this.#travelHolds.values()].filter(hold => hold.room.id === room.id).length; }
   async #snapshot(room: Room, member: Member, withMotion = false): Promise<RoomSnapshot> {
+    return this.metrics.phase('projection', async () => {
     const projection=this.registry.projectionContext(room.slug);
     const seats = [...room.seats].map(([seatId, ownerId]) => ({ seatId, state: ownerId ? room.members.get(ownerId)?.disconnectedUntil !== null ? 'held' : 'occupied' : 'available', mine: ownerId === member.accountId }));
     const ids = [...room.members.keys()];
@@ -153,6 +164,7 @@ export class RoomService {
     const participants = await Promise.all([...room.members.values()].filter(candidate => profileMap.has(candidate.accountId)).map(async candidate => ({ profile: profileMap.get(candidate.accountId)!, seatId: candidate.seatId, state: candidate.disconnectedUntil === null ? 'active' as const : 'reconnecting' as const, ...(withMotion && candidate.motion ? { motion: candidate.motion } : {}),outfit:projection.definition.appearancePolicy&&projection.definition.appearancePolicy.apron!=='forbidden'?await this.#appearance?.(candidate.accountId,projection.definition,{epoch:this.epoch,roomId:room.id,membershipId:candidate.id},candidate.connections.size>0&&(projection.definition.appearancePolicy.apron!=='on-shift'||await this.identity.hasConnectedSession(candidate.accountId,[...candidate.connections.values()])))??'casual' as const:'casual' as const })));
     if(!projection.valid())throw new DomainError('WORLD_UNAVAILABLE',503,'World appearance changed');
     return RoomSnapshotSchema.parse({ schemaVersion: 1, type: 'snapshot', epoch: this.epoch, roomId: room.id, worldSlug: room.slug, roomVersion: room.version, capacity: room.capacity, occupancy: room.members.size, membershipId: member.id, self: { accountId: member.accountId, seatId: member.seatId, ...(withMotion && member.motion ? { motion: member.motion } : {}) }, ...(withMotion ? { serverTime: this.now() } : {}), seats, participants });
+    });
   }
   async #notifyChanged(room: Room, fromVersion: number) {
     if (this.#closed || !this.#changed.size || !room.members.size) return;
@@ -173,14 +185,14 @@ export class RoomService {
       } catch (error) { failed = true; throw error; }
     };
     // Drain all private reads before releasing the owner queue, including on failure.
-    const workers = await Promise.allSettled(Array.from({ length: Math.min(4, members.length) }, () => project()));
+    const workers = await this.metrics.phase('projection', () => Promise.allSettled(Array.from({ length: Math.min(4, members.length) }, () => project())));
     for (const worker of workers) {
       if (worker.status === 'rejected') throw worker.reason;
     }
     await this.authority.assert();
     if (!generation.valid()) throw new DomainError('WORLD_UNAVAILABLE', 503, 'World projection changed');
     const updates = projected.flat();
-    for (const [listener, accepts] of this.#changed) { try { listener(updates.filter(update => accepts(update.connectionId))); } catch { /* The next snapshot remains authoritative. */ } }
+    this.metrics.syncPhase('fanout', () => {for (const [listener, accepts] of this.#changed) { try { listener(updates.filter(update => accepts(update.connectionId))); } catch { /* The next snapshot remains authoritative. */ } }});
   }
   #receipt(actor: WorldActor, requestId: string, operation: Receipt['operation'], input: unknown) {
     const key = actor.accountId + ':' + requestId; const fingerprint = this.identity.fingerprint({ operation, input }); const receipt = this.#receipts.get(key);
@@ -242,7 +254,7 @@ export class RoomService {
         if (!connected()) throw new DomainError('UNAUTHENTICATED', 401, 'Connection closed');
       } catch (error) { this.#removeMember(room, member, 'disconnected'); if (created) this.#rooms.delete(room.id); throw error; }
       room.version++; this.#remember(actor, request, room, member, 'join'); await this.#notifyChanged(room, room.version - 1); return this.#snapshot(room, member, this.#motionConnections.has(connectionId));
-    });
+    }, false, 'room.join');
   }
   #own(actor: WorldActor, connectionId: string, input: RoomOwnCommand) {
     const connection = this.#connections.get(connectionId); const room = this.#rooms.get(input.roomId); const member = room?.members.get(actor.accountId);
@@ -253,7 +265,7 @@ export class RoomService {
     return this.#run(async () => {
       await this.#sweep(); const actor = await this.identity.authenticate(credential); const { room, member } = this.#own(actor, connectionId, input);
       await this.registry.authorizeWorld(credential, room.slug); return this.#snapshot(room, member, this.#motionConnections.has(connectionId));
-    });
+    }, false, 'room.snapshot');
   }
   leave(credential: string, connectionId: string, input: RoomOwnCommand) {
     return this.#run(async () => {
@@ -265,7 +277,7 @@ export class RoomService {
       catch { /* Leaving remains possible even if world access or lifecycle was revoked. */ }
       const fromVersion = room.version; this.#removeMember(room, member, 'left'); this.#remember(actor, request, room, member, 'leave'); await this.#notifyChanged(room, fromVersion);
       return { schemaVersion: 1 as const, type: 'left' as const, epoch: this.epoch, roomId: room.id };
-    });
+    }, false, 'room.leave');
   }
   detach(connectionId: string) {
     if (!this.#connections.has(connectionId)) return Promise.resolve();
@@ -297,7 +309,7 @@ export class RoomService {
           if (definition.scene) {
             const point = definition.scene.seats.find(seat => seat.seatId === input.seatId);
             const from = member.motion ? motionPosition(member.motion, this.now(), false) : definition.scene.spawn;
-            const path = point && findScenePath(definition.scene, from, point);
+            const path = point && this.metrics.syncPhase('path_compute', () => findScenePath(definition.scene!, from, point));
             if (!path) throw new DomainError('INVALID_REQUEST', 422, 'Seat interaction point unreachable');
             member.motion = { path, startedAt: this.now(), stepMs: 150 };
           }
@@ -308,7 +320,7 @@ export class RoomService {
         if (owner === actor.accountId) { this.#freezeMotion(member); room.seats.set(input.seatId, null); member.seatId = null; room.version++; }
       }
       this.#remember(actor, request, room, member, operation); this.#rememberSequence(member, connectionId, input); if (room.version !== fromVersion) await this.#notifyChanged(room, fromVersion); return this.#snapshot(room, member, this.#motionConnections.has(connectionId));
-    });
+    }, false, operation);
   }
   list(credential: string, slug: string) {
     return this.#run(async () => {
@@ -617,13 +629,13 @@ export class RoomService {
       if (member.seatId) throw new DomainError('ALREADY_SEATED', 409, 'Stand up before walking');
       const from = motionPosition(member.motion, this.now(), false);
       if (from.moving) throw new DomainError('RATE_LIMITED', 429, 'Wait until your current walk finishes');
-      const path = findScenePath(definition.scene, from, input.destination);
+      const path = this.metrics.syncPhase('path_compute', () => findScenePath(definition.scene!, from, input.destination));
       if (!path) throw new DomainError('INVALID_REQUEST', 422, 'Destination unreachable');
       const fromVersion = room.version;
       member.motion = { path, startedAt: this.now(), stepMs: 150 }; room.version++;
       this.#remember(actor, request, room, member, 'room.move'); this.#rememberSequence(member, connectionId, input); await this.#notifyChanged(room, fromVersion);
       return this.#snapshot(room, member, true);
-    });
+    }, false, 'room.move');
   }
   #abandon() {
     this.#closed = true;

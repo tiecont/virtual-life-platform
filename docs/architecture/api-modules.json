@@ -31,7 +31,8 @@
         "common/errors",
         "common/http-errors",
         "common/proxy",
-        "common/request-log"
+        "common/request-log",
+        "common/database-observation"
       ],
       "targetBoundary": "No imports of application/domain implementations"
     },
@@ -39,7 +40,8 @@
       "owner": "platform.foundation",
       "responsibility": "PostgreSQL migration journal and metadata",
       "currentPublicEntryFiles": [
-        "db/migrations"
+        "db/migrations",
+        "db/observe-pool"
       ],
       "targetBoundary": "One DB/journal; no module-private schema imports"
     },

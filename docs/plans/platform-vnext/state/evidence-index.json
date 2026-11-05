@@ -8806,6 +8806,745 @@
         "No fresh full browser, production image release, hosted workflow/GHCR, external staging, physical device, store/public/adult/media/operator authorization. Known hosted Deadline cadence failure/enforcement403 remain unresolved.",
         "Private raw diagnostic/log evidence is local until owner cleanup, not off-host archived; N13/N14 remain inactive."
       ]
+    },
+    {
+      "id": "n05-02-2026-11-05",
+      "taskId": "N05-02",
+      "sourceRevision": "8fbc5e38a33d295dd58cb208503c827d960f0eef+workspace-sha256:89ddc94bee1bfd13a13269f6fb5e9673115342d3e3ebd455ffbc955226354c2e",
+      "environment": "Local Linux x64; Node 26.9.0; pnpm 11.28.5; scope-specific commands below",
+      "executedAt": "2026-11-05T23:04:06.858165+00:00",
+      "commands": [
+        {
+          "command": "pnpm architecture:check",
+          "argv": [
+            "pnpm",
+            "architecture:check"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:25:55.547Z",
+          "endedAt": "2026-11-05T22:25:56.791Z",
+          "log": "artifacts/vnext/n05-02/architecture.log",
+          "sha256": "7a0310ad6b5324386c3c20fd66a2e7a7f8da8eea5905546b200fca5e24c4e4b8"
+        },
+        {
+          "command": "node /tmp/virtual-city-n05-02-clock-baseline/scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/focus.test.ts -t progression corrections retain|progression world cap unlocks",
+          "argv": [
+            "node",
+            "/tmp/virtual-city-n05-02-clock-baseline/scripts/with-test-db.mjs",
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "integration",
+            "tests/integration/focus.test.ts",
+            "-t",
+            "progression corrections retain|progression world cap unlocks"
+          ],
+          "exitCode": 1,
+          "signal": null,
+          "startedAt": "2026-11-05T22:44:48.235Z",
+          "endedAt": "2026-11-05T22:45:01.450Z",
+          "log": "artifacts/vnext/n05-02/baseline-clock.log",
+          "sha256": "8d8b7a575a35efc09c699ffa4283efa085ac79ddcc6d892399ce292962e49019"
+        },
+        {
+          "command": "pnpm bench:rooms",
+          "argv": [
+            "pnpm",
+            "bench:rooms"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:04:21.925Z",
+          "endedAt": "2026-11-05T22:04:42.073Z",
+          "log": "artifacts/vnext/n05-02/baseline.log",
+          "sha256": "c66f7c376b835de2998ad1ec8037c90a66651ee0131b352db1514e503a3a32e6"
+        },
+        {
+          "command": "node artifacts/vnext/n05-02/cancel-probe.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n05-02/cancel-probe.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:36:39.357Z",
+          "endedAt": "2026-11-05T22:36:51.904Z",
+          "log": "artifacts/vnext/n05-02/cancel-profile.log",
+          "sha256": "f67955c53a5aba5444e03e9df048a7904be260a8d1945cbd528303669c56f108"
+        },
+        {
+          "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/database-observation.test.ts",
+          "argv": [
+            "node",
+            "scripts/with-test-db.mjs",
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "integration",
+            "tests/integration/database-observation.test.ts"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:17:59.242Z",
+          "endedAt": "2026-11-05T22:18:04.133Z",
+          "log": "artifacts/vnext/n05-02/db-observation.log",
+          "sha256": "3ba3823db739998bd818f32c9459573670ad2cfc4a81a7d902bb80db25ea23f2"
+        },
+        {
+          "command": "pnpm architecture:check",
+          "argv": [
+            "pnpm",
+            "architecture:check"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:52:41.559Z",
+          "endedAt": "2026-11-05T22:52:42.829Z",
+          "log": "artifacts/vnext/n05-02/final-architecture.log",
+          "sha256": "7a0310ad6b5324386c3c20fd66a2e7a7f8da8eea5905546b200fca5e24c4e4b8"
+        },
+        {
+          "command": "pnpm ci:check",
+          "argv": [
+            "pnpm",
+            "ci:check"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:52:40.388Z",
+          "endedAt": "2026-11-05T22:52:41.516Z",
+          "log": "artifacts/vnext/n05-02/final-ci.log",
+          "sha256": "581954628bb3a0c92edb1baac245d0da04fd7994c4ae40ef6a4b829a76ec44e3"
+        },
+        {
+          "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/database-observation.test.ts",
+          "argv": [
+            "node",
+            "scripts/with-test-db.mjs",
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "integration",
+            "tests/integration/database-observation.test.ts"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:28:55.500Z",
+          "endedAt": "2026-11-05T22:28:59.405Z",
+          "log": "artifacts/vnext/n05-02/final-db-observation.log",
+          "sha256": "0e0d56ca2440c7dbf8b0940a86a5ea700491df5da609cad038d0ebe3354997f4"
+        },
+        {
+          "command": "pnpm exec eslint apps/platform-api/src/common/database-observation.ts apps/platform-api/src/db/observe-pool.ts apps/platform-api/src/rooms/metrics.ts apps/platform-api/src/rooms/metrics.unit.test.ts apps/platform-api/src/rooms/service.ts apps/platform-api/src/operations/telemetry.ts apps/platform-api/src/app.ts tests/integration/database-observation.test.ts tests/load/runtime-profile.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "apps/platform-api/src/common/database-observation.ts",
+            "apps/platform-api/src/db/observe-pool.ts",
+            "apps/platform-api/src/rooms/metrics.ts",
+            "apps/platform-api/src/rooms/metrics.unit.test.ts",
+            "apps/platform-api/src/rooms/service.ts",
+            "apps/platform-api/src/operations/telemetry.ts",
+            "apps/platform-api/src/app.ts",
+            "tests/integration/database-observation.test.ts",
+            "tests/load/runtime-profile.ts"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:32:33.164Z",
+          "endedAt": "2026-11-05T22:32:35.164Z",
+          "log": "artifacts/vnext/n05-02/final-lint.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node artifacts/vnext/n05-02/preservation.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n05-02/preservation.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:52:39.902Z",
+          "endedAt": "2026-11-05T22:52:40.340Z",
+          "log": "artifacts/vnext/n05-02/final-preservation.log",
+          "sha256": "a72a79477b1e916986d7a7657ec183dd6fdd322416a1f068b19554040c1a94e0"
+        },
+        {
+          "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/focus.test.ts",
+          "argv": [
+            "node",
+            "scripts/with-test-db.mjs",
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "integration",
+            "tests/integration/focus.test.ts"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:47:09.522Z",
+          "endedAt": "2026-11-05T22:47:41.440Z",
+          "log": "artifacts/vnext/n05-02/focus-clock-fixed.log",
+          "sha256": "e9cab160fbec539bbdcb9398cb84dea7ffbbe30ef5adebbf32901df32161b76d"
+        },
+        {
+          "command": "pnpm exec eslint tests/integration/focus.test.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "tests/integration/focus.test.ts"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:47:41.482Z",
+          "endedAt": "2026-11-05T22:47:42.986Z",
+          "log": "artifacts/vnext/n05-02/focus-clock-lint.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "pnpm check",
+          "argv": [
+            "pnpm",
+            "check"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:49:06.929Z",
+          "endedAt": "2026-11-05T23:00:39.016Z",
+          "log": "artifacts/vnext/n05-02/full-check-final.log",
+          "sha256": "1fffbabba4c026a02cdd85255211aaabf6febd8a14ac30699824f113767b2c14"
+        },
+        {
+          "command": "pnpm check",
+          "argv": [
+            "pnpm",
+            "check"
+          ],
+          "exitCode": 1,
+          "signal": null,
+          "startedAt": "2026-11-05T22:31:32.444Z",
+          "endedAt": "2026-11-05T22:42:41.859Z",
+          "log": "artifacts/vnext/n05-02/full-check.log",
+          "sha256": "8abdb2788579282aa875050bd1983068c2b6de180cb95afabed30ea2693061ea"
+        },
+        {
+          "command": "pnpm exec eslint apps/platform-api/src/common/database-observation.ts apps/platform-api/src/db/observe-pool.ts apps/platform-api/src/rooms/metrics.ts apps/platform-api/src/rooms/service.ts apps/platform-api/src/app.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "apps/platform-api/src/common/database-observation.ts",
+            "apps/platform-api/src/db/observe-pool.ts",
+            "apps/platform-api/src/rooms/metrics.ts",
+            "apps/platform-api/src/rooms/service.ts",
+            "apps/platform-api/src/app.ts"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:11:48.869Z",
+          "endedAt": "2026-11-05T22:11:50.638Z",
+          "log": "artifacts/vnext/n05-02/initial-lint.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/platform-api typecheck",
+          "argv": [
+            "pnpm",
+            "--filter",
+            "@virtual-city/platform-api",
+            "typecheck"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:11:42.436Z",
+          "endedAt": "2026-11-05T22:11:48.820Z",
+          "log": "artifacts/vnext/n05-02/initial-types.log",
+          "sha256": "38ac890c60e7f38d59ddfb410325cdfb5fca83c9411765c5481754e01c021630"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit apps/platform-api/src/rooms/metrics.unit.test.ts apps/platform-api/src/operations/telemetry.unit.test.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "unit",
+            "apps/platform-api/src/rooms/metrics.unit.test.ts",
+            "apps/platform-api/src/operations/telemetry.unit.test.ts"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:17:57.847Z",
+          "endedAt": "2026-11-05T22:17:59.192Z",
+          "log": "artifacts/vnext/n05-02/metrics-unit.log",
+          "sha256": "df03f567e3cd83654f93cdf2087fba6e96d3a101d5c0897a1c5b6e2d546a8a38"
+        },
+        {
+          "command": "pnpm bench:rooms",
+          "argv": [
+            "pnpm",
+            "bench:rooms"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:28:59.448Z",
+          "endedAt": "2026-11-05T22:29:17.493Z",
+          "log": "artifacts/vnext/n05-02/post-baseline.log",
+          "sha256": "c81e2ab3c95543399c15b6d17304714b714a37dad1a39de7759c00b704777a0b"
+        },
+        {
+          "command": "node artifacts/vnext/n05-02/preservation.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n05-02/preservation.mjs"
+          ],
+          "exitCode": 1,
+          "signal": null,
+          "startedAt": "2026-11-05T22:50:38.694Z",
+          "endedAt": "2026-11-05T22:50:39.840Z",
+          "log": "artifacts/vnext/n05-02/preservation.log",
+          "sha256": "d1698d3d4a7dc1d5884878fbf938d450401217f3034e4e6e855e79f874f0192b"
+        },
+        {
+          "command": "node artifacts/vnext/n05-02/profile-guards.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n05-02/profile-guards.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:49:00.312Z",
+          "endedAt": "2026-11-05T22:49:01.709Z",
+          "log": "artifacts/vnext/n05-02/profile-guards.log",
+          "sha256": "f61de73d9cc930e47f168d88362660d2861e95dec8104027654c8464d420eb67"
+        },
+        {
+          "command": "pnpm exec eslint apps/platform-api/src/common/database-observation.ts apps/platform-api/src/db/observe-pool.ts apps/platform-api/src/rooms/metrics.ts apps/platform-api/src/rooms/metrics.unit.test.ts apps/platform-api/src/rooms/service.ts apps/platform-api/src/operations/telemetry.ts apps/platform-api/src/app.ts tests/integration/database-observation.test.ts tests/load/runtime-profile.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "apps/platform-api/src/common/database-observation.ts",
+            "apps/platform-api/src/db/observe-pool.ts",
+            "apps/platform-api/src/rooms/metrics.ts",
+            "apps/platform-api/src/rooms/metrics.unit.test.ts",
+            "apps/platform-api/src/rooms/service.ts",
+            "apps/platform-api/src/operations/telemetry.ts",
+            "apps/platform-api/src/app.ts",
+            "tests/integration/database-observation.test.ts",
+            "tests/load/runtime-profile.ts"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:22:58.962Z",
+          "endedAt": "2026-11-05T22:23:00.652Z",
+          "log": "artifacts/vnext/n05-02/profile-lint.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "pnpm exec tsc -p tests/load/tsconfig.json",
+          "argv": [
+            "pnpm",
+            "exec",
+            "tsc",
+            "-p",
+            "tests/load/tsconfig.json"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:25:49.976Z",
+          "endedAt": "2026-11-05T22:25:55.505Z",
+          "log": "artifacts/vnext/n05-02/profile-types-fixed.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "pnpm exec tsc -p tests/load/tsconfig.json",
+          "argv": [
+            "pnpm",
+            "exec",
+            "tsc",
+            "-p",
+            "tests/load/tsconfig.json"
+          ],
+          "exitCode": 2,
+          "signal": null,
+          "startedAt": "2026-11-05T22:22:53.345Z",
+          "endedAt": "2026-11-05T22:22:58.898Z",
+          "log": "artifacts/vnext/n05-02/profile-types.log",
+          "sha256": "594942ae626821c82bce0e8fa59e863b702c77a1d8c44bd8fd24f4d279434974"
+        },
+        {
+          "command": "pnpm profile:runtime",
+          "argv": [
+            "pnpm",
+            "profile:runtime"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T22:27:29.916Z",
+          "endedAt": "2026-11-05T22:27:51.004Z",
+          "log": "artifacts/vnext/n05-02/runtime-profile.log",
+          "sha256": "6f42573f3ee2f11d1b06cd048624f489650e9e81703978e76051ece033744b7f"
+        }
+      ],
+      "scenarios": [],
+      "artifacts": [
+        {
+          "ref": "apps/platform-api/src/app.ts",
+          "sha256": "fad75639e5132d1a2ab3e2aa55c2b2041a56580af5c85841c961ab44f38f36fd",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "apps/platform-api/src/common/database-observation.ts",
+          "sha256": "10e0c599251ffef0e4891f9e8d6a9759d274bb56a00e9dd3b3078e74c8d5ff41",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "apps/platform-api/src/db/observe-pool.ts",
+          "sha256": "30e7596e6fd8d4f7fbbd9956f9204f669b2d902043b96c41eba0d4bf7d418456",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "apps/platform-api/src/operations/telemetry.ts",
+          "sha256": "eda52f8699b94cd0fdf4b7e5f130b18813c341561529697e21418888844059e9",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "apps/platform-api/src/rooms/metrics.ts",
+          "sha256": "f737a0b889818537ea02ac2bdf3249fc7b9c182c206c7bd238b69970a47285ed",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "apps/platform-api/src/rooms/metrics.unit.test.ts",
+          "sha256": "5111e419d64cef21888dd4294ff3f462678e6ff4b7a6888c94145e80aff5ae55",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "apps/platform-api/src/rooms/service.ts",
+          "sha256": "793d21b706cc08fcfccf7476ce468dccdf8d9cbaa683a71338eb4c909985ef87",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/baseline.json",
+          "sha256": "819a7dff13be4030f92cd1a1fff0f53dfec1f1cb10d6ea5558b657ad33d6cc59",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/cancel-facts.json",
+          "sha256": "b3371b793931710afafd6728602f51d15c4bfa652e7524145a65035342ddc7d9",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/cancel-probe.mjs",
+          "sha256": "b67f3dd58193460eb4e4c49dba0bdbf055844565fccf5ac04647e0fb5dca1998",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/cancel-run.log",
+          "sha256": "2bcb1b30c696d9ad953a59363f3f179eaf5e315dcc91c9aa105e86883ea17d26",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/clock-finding.json",
+          "sha256": "eaab0d8b4d39c763e034c39fe1a029f8c06d02dc4fa0ccfe95b26d0ad4d89787",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/instrumented-source.json",
+          "sha256": "5542671d0082843357cdb2fbda45dfea8d9276247854878c4ac895978918d4dc",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/instrumented-source.patch",
+          "sha256": "a35c508aa10a7c285631a43c55af73a9ebee785715582cceec8f7459c169650c",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/post-baseline.json",
+          "sha256": "33a8923af6d0545167c55d8108faae209bae18a48096e310a08a7864b8aedf30",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/preservation-initial.mjs",
+          "sha256": "f90833ac270d55137874f19d70ce380732faf9919dcd09e3b482f3f86335c929",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/preservation.mjs",
+          "sha256": "317dcd727a48c89e7709c0a0734da9945e6f64a3a403bed3fdb22692a12f5510",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/profile-guards.mjs",
+          "sha256": "a7ee5e2a3f3e5e762b7d7434b9db64cd6229d6e7baa604ff9d6b43926ee16de5",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/runtime-profile.json",
+          "sha256": "fdb92c10977ca6ab84507e4c82189af19de5ae6edd1e8b84adfac3dc44336f06",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "docs/README.md",
+          "sha256": "a9c7e3604a5c85ac129ff23c1acebf847472b24cf91973edad8ba392f9f85308",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/adr/0109-bounded-owner-runtime-observation.md",
+          "sha256": "781e82c11a068eae9299d8174a8200531260caf811d4d171f111291e6eb36be8",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/architecture/API-MODULES.md",
+          "sha256": "9ece9a80a595f8fae025d8a195ff05d9d9190e272b19d35e06912eed4effc0d6",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/architecture/CURRENT-STATE.md",
+          "sha256": "f4cf78b5a96c3db064a627969ad67005efdc7bf1659a4a5ba479a79669e398ee",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/architecture/N05-02-RUNTIME-PROFILE.json",
+          "sha256": "0df1053f7ffae70f8094a4a735810f7c01beb18b2f4ce9fd4be404dba28cb0e8",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/architecture/RUNTIME-PROFILE.md",
+          "sha256": "080ac7675a9ecd738f77fcbeb5ec019948f9ad9a3ee3c1673ef084d49752ca48",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/architecture/api-modules.json",
+          "sha256": "a7bab3f8f2704daeb2fb624364dbfd23150bf0994b19d7b787d274a0f492810d",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/state/task-state.json",
+          "sha256": "ed891c12c6c334218f188397d46376f578744d1e2033fdce2f59c7462855cf4e",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "package.json",
+          "sha256": "4a967a96fc1aabf47c10e278f897bfb5d69467433f5617e03cafe3560c22b59b",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "tests/integration/database-observation.test.ts",
+          "sha256": "6cdf440b5238792e902c279bc8872ebfe92aca799d36e3fe785f4872da28e99c",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "tests/integration/focus.test.ts",
+          "sha256": "31d77e65f72168a210d52928d669673965f7ae009802dfe055505f19cbb00e06",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "tests/load/runtime-profile.ts",
+          "sha256": "bd20625824cfb999a9e69f46321f4602f279f8019dcc071026943d390b88ab0e",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/architecture.log",
+          "sha256": "7a0310ad6b5324386c3c20fd66a2e7a7f8da8eea5905546b200fca5e24c4e4b8",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/baseline-clock.log",
+          "sha256": "8d8b7a575a35efc09c699ffa4283efa085ac79ddcc6d892399ce292962e49019",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/baseline.log",
+          "sha256": "c66f7c376b835de2998ad1ec8037c90a66651ee0131b352db1514e503a3a32e6",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/cancel-profile.log",
+          "sha256": "f67955c53a5aba5444e03e9df048a7904be260a8d1945cbd528303669c56f108",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/db-observation.log",
+          "sha256": "3ba3823db739998bd818f32c9459573670ad2cfc4a81a7d902bb80db25ea23f2",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/final-architecture.log",
+          "sha256": "7a0310ad6b5324386c3c20fd66a2e7a7f8da8eea5905546b200fca5e24c4e4b8",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/final-ci.log",
+          "sha256": "581954628bb3a0c92edb1baac245d0da04fd7994c4ae40ef6a4b829a76ec44e3",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/final-db-observation.log",
+          "sha256": "0e0d56ca2440c7dbf8b0940a86a5ea700491df5da609cad038d0ebe3354997f4",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/final-lint.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/final-preservation.log",
+          "sha256": "a72a79477b1e916986d7a7657ec183dd6fdd322416a1f068b19554040c1a94e0",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/focus-clock-fixed.log",
+          "sha256": "e9cab160fbec539bbdcb9398cb84dea7ffbbe30ef5adebbf32901df32161b76d",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/focus-clock-lint.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/full-check-final.log",
+          "sha256": "1fffbabba4c026a02cdd85255211aaabf6febd8a14ac30699824f113767b2c14",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/full-check.log",
+          "sha256": "8abdb2788579282aa875050bd1983068c2b6de180cb95afabed30ea2693061ea",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/initial-lint.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/initial-types.log",
+          "sha256": "38ac890c60e7f38d59ddfb410325cdfb5fca83c9411765c5481754e01c021630",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/metrics-unit.log",
+          "sha256": "df03f567e3cd83654f93cdf2087fba6e96d3a101d5c0897a1c5b6e2d546a8a38",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/post-baseline.log",
+          "sha256": "c81e2ab3c95543399c15b6d17304714b714a37dad1a39de7759c00b704777a0b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/preservation.log",
+          "sha256": "d1698d3d4a7dc1d5884878fbf938d450401217f3034e4e6e855e79f874f0192b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/profile-guards.log",
+          "sha256": "f61de73d9cc930e47f168d88362660d2861e95dec8104027654c8464d420eb67",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/profile-lint.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/profile-types-fixed.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/profile-types.log",
+          "sha256": "594942ae626821c82bce0e8fa59e863b702c77a1d8c44bd8fd24f4d279434974",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n05-02/runtime-profile.log",
+          "sha256": "6f42573f3ee2f11d1b06cd048624f489650e9e81703978e76051ece033744b7f",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N05-02-CHECKS.json",
+          "sha256": "474388540da2e83749022b58a84a5e6d7d276350e272cfd4c9c9575c0b04f5a9",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": true,
+      "limitations": [
+        "Short synthetic loopback profile on shared host is diagnostic, not capacity/SLO/overhead equivalence; nested parallel DB span sums are not CPU or additive phase decomposition.",
+        "Only initiated supported pg calls are observed; background/coalesced/unsupported work may be unattributed. One cancellation boundary exercised.",
+        "Same-day fixture timing correction changes only tests; initial failed full run and actual prior-commit reproduction retained.",
+        "No fresh full browser/device/hosted/image/deployment/public entitlement or external approval; known hosted cadence/branch enforcement unresolved. Raw evidence local, not off-host archived; N13/N14 inactive."
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

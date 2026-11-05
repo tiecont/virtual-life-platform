@@ -1,6 +1,6 @@
 # Current API ownership and extraction map
 
-This map starts from the implemented API at `6a7ae9328cb64e76fc1ec5c4ffa4df1ce1815a75`. The application runtime still matches the audited `cef7dc1` baseline. N02-01 changes ownership/import rules, not runtime behavior or SQL. [Machine policy](api-modules.json) lists every current transitional cross-module entry file; [table ownership](ownership.json) remains authoritative for SQL ownership. Concrete service classes are current integration surfaces, not a claim that every module already has a minimal interface.
+This map starts from the implemented API at `6a7ae9328cb64e76fc1ec5c4ffa4df1ce1815a75`. At that N02-01 checkpoint, the application runtime still matched the audited `cef7dc1` baseline; later scoped behavior is indexed in CURRENT-STATE.md. N02-01 itself changed ownership/import rules, not runtime behavior or SQL. [Machine policy](api-modules.json) lists every current transitional cross-module entry file; [table ownership](ownership.json) remains authoritative for SQL ownership. Concrete service classes are current integration surfaces, not a claim that every module already has a minimal interface.
 
 | Area / source directory | Current owner and public integration | Target / constraint |
 |---|---|---|
@@ -43,4 +43,6 @@ The current 300-second maintenance chain includes identity/legacy/social/rooms/r
 
 `HospitalityOutbox` is the bounded initial durable candidate: PostgreSQL/account locks, at-most-one delivery receipt per event/consumer, transaction-bound completion sinks and retry state. It currently runs under API maintenance and closes during API shutdown. N02-02 exposes its [DB/account-lock/sink composition seam](HOSPITALITY-JOBS.md) while preserving the API invocation and existing concurrency/deduplication tests. The independent worker entrypoint and ownership/enablement switch belong to N05-05; no worker process exists because this map mentions it.
 
-No migration, runtime flag, transport contract, replica count or real operator assignment changes here. Revert this policy/map slice independently if a documented legitimate import is blocked; do not bypass safety or duplicate implementation trees to satisfy a new rule.
+N05-02 adds a foundation database-observation port and composition-owned pg adapter (`common/database-observation`, `db/observe-pool`) plus bounded six-command room phase metrics. The DB adapter remains unavailable as a domain import; foundation imports no domain implementation. [Runtime profile](RUNTIME-PROFILE.md) describes actual coverage and nested span semantics.
+
+No migration, runtime flag, replica count or real operator assignment changes here. Revert this policy/map slice independently if a documented legitimate import is blocked; do not bypass safety or duplicate implementation trees to satisfy a new rule.

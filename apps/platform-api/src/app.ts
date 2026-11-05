@@ -65,6 +65,7 @@ import { OperationalTelemetry } from './operations/telemetry';
 import { registerOperations } from './operations/http';
 import { operationalRequestLog,operationalErrorLog } from './operations/log';
 import { ReadinessProbe } from './operations/readiness';
+import {observePool} from './db/observe-pool';
 import { EventInvitationService } from './events/invitations';
 import { ProgressionService } from './progression/service';
 import { registerProgression } from './progression/http';
@@ -134,10 +135,11 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   let roomService: RoomService | undefined = undefined;
   const worlds = await createWorldRuntime(config, identity, { ...options.worlds, safety: safetyGuard,safetyPolicy, membership: options.worlds?.membership ?? { permits: async (actor, slug, membershipId) => roomService?.permits(actor, slug, membershipId) ?? false } });
   const roomAuthority = new RoomAuthority(db);
+  const roomMetrics = new RoomMetrics();
   roomService = new RoomService(worlds.registry, identity, roomAuthority, options.now, {
     relationships: (viewer, targets) => social.roomRelationships(viewer, targets),
     profiles: (viewer, targets, world, relationships) => identity.visibleRoomProfiles(viewer, targets, world, relationships),
-  }, safetyGuard);
+  }, safetyGuard, roomMetrics);
   if (!roomService) throw new Error('Room service failed to initialize');
   const rooms = roomService;
   const reports = new ReportService(db, identity, rooms, safetyPolicy, config.NODE_ENV, config.SAFETY_EVIDENCE_KEY, config.SAFETY_EVIDENCE_KEY_ID, options.now,worlds.releasePolicy?.confidentialEvidence);
@@ -242,7 +244,6 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const gateway = createIdentityGateway(http, config, identity, options.now,()=>!draining);
   const unsubscribePrivateDates=config.NODE_ENV==='test'&&config.LOCAL_DATING_PROTOTYPE==='1'?datingDates.attachGateway(gateway):()=>{};
   http.addHook('preClose',async()=>{unsubscribePrivateDates();});
-  const roomMetrics = new RoomMetrics();
   const unsubscribeRooms = registerRoomGateway(gateway, rooms, roomMetrics,telemetry);
   registerOperations(http,config.OPERATOR_TELEMETRY_TOKEN,telemetry,{online:()=>rooms.diagnostics(),rooms:()=>roomMetrics.snapshot(),orders:()=>hospitality.operationalSummary()},options.now);
   registerChatGateway(gateway, chat);
@@ -255,6 +256,9 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const unsubscribeRoomSocial = social.onChanged(ids => { void rooms.refreshAccounts(ids); });
   const unsubscribeRoomIdentity = identity.onChanged(id => { void rooms.refreshAccounts([id]); });
   http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeEventNotices(); unsubscribeEventInvitations(); unsubscribeEventInvitationWithdrawal(); unsubscribeEventConsent(); unsubscribeInvitationWithdrawal(); unsubscribeHospitalityWithdrawal(); unsubscribeEventWithdrawal(); unsubscribeReservationWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
+  const stopDatabaseObservation = observePool(db), stopEventLoopObservation = roomMetrics.observeEventLoop();
+  roomMetrics.databaseAttached(true);
+  http.addHook('onClose', async () => {stopDatabaseObservation(); roomMetrics.databaseAttached(false); stopEventLoopObservation(); roomMetrics.close();});
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
   return { app, http, identity, deadlineIdentity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain };

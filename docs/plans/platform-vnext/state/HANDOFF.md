@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T21:59:50.500295+00:00; task N05-01 VERIFIED on `codex/vnext-n05-01-protocol`. Base revision `77a0afe3ea488ac7fec6597e0480238e4bd2ea77`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T23:04:06.858165+00:00; task N05-02 VERIFIED on `codex/vnext-n05-02-runtime-profile`. Base revision `8fbc5e38a33d295dd58cb208503c827d960f0eef`; this task has its own reviewable commit after evidence finalization.
 
-Implemented the existing strict command envelope and an additive optional bounded clientSeq adapter for room seat/move/leave mutations inside the unchanged singleton/global owner queue. Authenticated actor/session/action/payload receipts remain authoritative; matching receipts return current state without reapplying, stale fresh sequences conflict, and legacy/chat/durable HTTP shapes remain compatible. Member/connection watermarks survive failed travel compensation and are cleaned on detach/revoke/removal. Actual focused protocol128 cases plus an added action-binding case pass, including real100-way socket races, durable order/reward/outbox retries, travel COMMIT failure and actual owner loss/restarts. Full check covers governance/unit/integration and all consumer builds; final counts and output-path refinement evidence are recorded in N05-01-PROTOCOL.json. Existing room/travel assertions retained, diagnostics isolated, 38 SQL/dependency/public gates unchanged.
+Implemented bounded owner queue/execution/projection/fanout/path/real pg phase observation, safe lifecycle cleanup and an executable local runtime profile. Actual12-actor profile observed294 full-snapshot room.delta packets/947560 text bytes, successful move p95264.16ms and queue mean128.75ms; no sparse-delta or capacity claim. Same24-actor benchmark passed before/after instrumentation without a statistical overhead claim. Actual PostgreSQL callback/Promise/wait attribution and owned cancellation/cleanup pass. Full check passed58 governance,308 unit,569 integration and all workspace builds. Two initial same-day reward failures reproduced on the pre-instrumentation commit; only their test clocks were aligned to UTC noon, preserving production behavior and every old expectation. All failed attempts retained; singleton/global serialization,38 SQL, versions and safety gates unchanged.
 
-[Actual checks](../audit/N05-01-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 21, "TODO": 48}`.
+[Actual checks](../audit/N05-02-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 22, "TODO": 47}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N05-02; read current RoomMetrics/OperationalTelemetry and room benchmark harness, implement bounded phase/outcome instrumentation for queue wait, execution/projection/fanout and actual DB wait where observable, with no raw identity/room labels. Implement profile:runtime before running it, measure actual full-snapshot room.delta bytes and event-loop/workload outcomes on isolated local resources, preserve singleton/serialization/privacy and unchanged budgets, record profile/source/hardware limitations before considering N05-03 optimization.
+Reserve N05-03; read current profile/metrics and conditional optimization acceptance, compare pinned workload/hardware/source, choose only a justified consistency-preserving optimization or document retaining the global queue with measured limits. Preserve block/revoke projections and transactions; run actual applicable protocol/integration/security verification and update checkpoint. Never infer sparse deltas, capacity or a performance win from exit0.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.
