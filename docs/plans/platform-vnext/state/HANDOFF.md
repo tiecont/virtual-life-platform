@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T17:18:55.733914+00:00; task N02-01 VERIFIED on `codex/vnext-n02-01-module-map`. Base revision `b5b5202961f8e7b1eea14d4a0f76883b332a6fe4`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T17:25:50.532420+00:00; task N02-02 VERIFIED on `codex/vnext-n02-02-hospitality-port`. Base revision `0af047d6ec5ab4af2c90541fd858eff7f75bcc72`; this task has its own reviewable commit after evidence finalization.
 
-Mapped90productionAPI files/19areas/84cross-area import edges and all91SQL table+journal owners. Enforced current public-entry files, foundation/composition/migration isolation and world persistence import guards while retaining existing workspace rules and type/metrics coupling. Initial2red assertions retained; final5boundary cases,46governance/278unit,architecture/lint pass. No runtime/SQL changes.
+Extracted hospitality outbox to a minimal DB/account-lock/sink public entrypoint, preserving existing API/progression compatibility exports and one implementation. Exact constructor validation/dispatch core unchanged after type-only substitution; actual compiled Node import loads no identity/room/API composition. Fresh58hospitality races/rollback/restart/retention cases,46governance/278unit,lint/types/allproductionbuilds pass.
 
-[Actual checks](../audit/N02-01-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 13, "TODO": 56}`.
+[Actual checks](../audit/N02-02-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 14, "TODO": 55}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N02-02; extract the hospitality durable outbox behind a minimal account-lock/DB/sink port and compatibility exports, preserve API invocation and SQL exactly, run affected concurrency/rollback integration, types, unit and production builds.
+Reserve N02-03; audit existing offline/runtime production guards, implement a strict versioned environment release-entitlement/runtime-policy model and genuine gated production installer, retain old offline fixture assertions and one human operator model, add missing/version/world/bypass denial tests before enabling any fixture.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.

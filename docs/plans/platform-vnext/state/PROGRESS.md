@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N02-02 VERIFIED
+
+Extracted hospitality outbox to a minimal DB/account-lock/sink public entrypoint, preserving existing API/progression compatibility exports and one implementation. Exact constructor validation/dispatch core unchanged after type-only substitution; actual compiled Node import loads no identity/room/API composition. Fresh58hospitality races/rollback/restart/retention cases,46governance/278unit,lint/types/allproductionbuilds pass.
+
+Actual commands: 9; retained failed attempts: 0; required final checks passed. Evidence: `n02-02-2026-11-05`; [checks](../audit/N02-02-CHECKS.json). Current counts: `{"VERIFIED": 14, "TODO": 55}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N02-03; audit existing offline/runtime production guards, implement a strict versioned environment release-entitlement/runtime-policy model and genuine gated production installer, retain old offline fixture assertions and one human operator model, add missing/version/world/bypass denial tests before enabling any fixture.
+
 ## 2026-11-05 — N02-01 VERIFIED
 
 Mapped90productionAPI files/19areas/84cross-area import edges and all91SQL table+journal owners. Enforced current public-entry files, foundation/composition/migration isolation and world persistence import guards while retaining existing workspace rules and type/metrics coupling. Initial2red assertions retained; final5boundary cases,46governance/278unit,architecture/lint pass. No runtime/SQL changes.

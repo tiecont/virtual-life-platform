@@ -1,0 +1,266 @@
+{
+  "taskId": "N02-02",
+  "sourceRevision": "0af047d6ec5ab4af2c90541fd858eff7f75bcc72+workspace-sha256:342d5d20a437b3f94018dd6137576605510f567822c085f56767c70e5da9b784",
+  "executedAt": "2026-11-05T17:25:50.532420+00:00",
+  "commands": [
+    {
+      "command": "pnpm architecture:check",
+      "argv": [
+        "pnpm",
+        "architecture:check"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T17:20:54.331Z",
+      "endedAt": "2026-11-05T17:20:56.333Z",
+      "log": "artifacts/vnext/n02-02/architecture.log",
+      "sha256": "c6422e5dfde73bd93ec3c39b513a12172afcfd61a087526ab589d07d8f05d8d4"
+    },
+    {
+      "command": "pnpm build",
+      "argv": [
+        "pnpm",
+        "build"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T17:22:34.341Z",
+      "endedAt": "2026-11-05T17:23:05.061Z",
+      "log": "artifacts/vnext/n02-02/build.log",
+      "sha256": "eee66772de3d8f4ed40a61519e8a7b4a116b79e8b4abcbb6c5ff371c16af4c98"
+    },
+    {
+      "command": "node artifacts/vnext/n02-02/inspect-built-entry.mjs",
+      "argv": [
+        "node",
+        "artifacts/vnext/n02-02/inspect-built-entry.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T17:23:57.219Z",
+      "endedAt": "2026-11-05T17:23:57.375Z",
+      "log": "artifacts/vnext/n02-02/built-entry.log",
+      "sha256": "8acad6d2e6e3f9c5343e10370c9de4d2a41d8e1843579655f3d7c58b92612e0f"
+    },
+    {
+      "command": "node scripts/api-module-graph.mjs",
+      "argv": [
+        "node",
+        "scripts/api-module-graph.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T17:22:35.627Z",
+      "endedAt": "2026-11-05T17:22:36.394Z",
+      "log": "artifacts/vnext/n02-02/graph.log",
+      "sha256": "ec7b63d4f48f544017ae188f16f0a080475455c5e956f5a207ededf26342bade"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/hospitality.test.ts",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "integration",
+        "tests/integration/hospitality.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T17:20:44.543Z",
+      "endedAt": "2026-11-05T17:22:16.520Z",
+      "log": "artifacts/vnext/n02-02/hospitality-integration.log",
+      "sha256": "e1dea4980547c5b7d2e37fa865e55b263469870fe0819ca2a92d5b6913e6870a"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T17:20:54.328Z",
+      "endedAt": "2026-11-05T17:21:21.497Z",
+      "log": "artifacts/vnext/n02-02/lint.log",
+      "sha256": "631bdcc42b5d18a8357e8b5796b3cb630e45eddee4877aea9b5bb845da11ea5a"
+    },
+    {
+      "command": "node docs/plans/platform-vnext/tools/validate-plan.mjs",
+      "argv": [
+        "node",
+        "docs/plans/platform-vnext/tools/validate-plan.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T17:23:57.418Z",
+      "endedAt": "2026-11-05T17:23:57.485Z",
+      "log": "artifacts/vnext/n02-02/plan.log",
+      "sha256": "6dd0370bd131ff9b6324fc6c737645b960caa7d81342c190b60811cf1ceb5e4e"
+    },
+    {
+      "command": "pnpm typecheck",
+      "argv": [
+        "pnpm",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T17:20:54.336Z",
+      "endedAt": "2026-11-05T17:21:45.721Z",
+      "log": "artifacts/vnext/n02-02/types.log",
+      "sha256": "99a75f8e3cce31fc134be18879d7a47ba43586542b22cc3469c328a87cb3a204"
+    },
+    {
+      "command": "pnpm test",
+      "argv": [
+        "pnpm",
+        "test"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T17:20:54.337Z",
+      "endedAt": "2026-11-05T17:21:21.937Z",
+      "log": "artifacts/vnext/n02-02/unit.log",
+      "sha256": "bf8c29055b2c58f7ce8ce8140fb6120bf2cd194b084f87df090881ac207df820"
+    }
+  ],
+  "acceptance": [
+    "One bounded module extraction; no mass rename,parallel implementation tree or behavior change",
+    "Old API/progression exports remain the same constructor; minimal account-lock adapter exercised in actual concurrent delivery case",
+    "All constructor validation/dispatch methods preserved byte-for-byte after type-only substitution",
+    "Compiled public/compatibility imports load only jobs/outbox API modules, no identity/RoomAuthority/createApp",
+    "ExistingAPImaintenance/drain/shutdown, SQLmigrations andprotocol contracts unchanged; affectedtransactional regression actually passes"
+  ],
+  "limitations": [
+    "Only the affected58hospitality integration cases were freshly run; earlier clean-checkout553regressions are separate evidence",
+    "Compiled import isolation is not a worker deployment,ownership switch or physical performance result",
+    "Trusted account-lock adapter must preserve current transaction/order semantics; completion sinks remain trusted DB-only hooks"
+  ],
+  "artifacts": [
+    {
+      "ref": "apps/platform-api/src/hospitality/jobs.ts",
+      "sha256": "b6d2d9b68ffecbfc866e0159ed976c38f4e019e9c12f3ea640f29bc9cf8a76ea",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "apps/platform-api/src/hospitality/outbox.ts",
+      "sha256": "76359a5ee62e7cac9c51e59536148d382ca6e127862b0c937ef46e5a05d5b281",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "tests/integration/hospitality.test.ts",
+      "sha256": "f8e7dd854ece870d6687ea7b9c7864f1254fa3f934826cee4e27844d25ac57b4",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/api-modules.json",
+      "sha256": "e4b67a4864c4b706ebe3792f2c87e3b8a8bc7d9790d0abfbd16b15efaca085f4",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/API-MODULES.md",
+      "sha256": "08e40e01d1b399c2f07caff3cccd2f638749c5324efa369ee041f02f9c7e5d81",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/CURRENT-STATE.md",
+      "sha256": "6acec68ba3a3c3ab1d35466745be6ca74751b472ec095f24ef9d4c9c0a88f192",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/HOSPITALITY-JOBS.md",
+      "sha256": "8124e7b2c9944dcdd98e15872830e0e29a9cd2f3c8f9a3cf0e4271d13b2d2acb",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/N02-02-HOSPITALITY.json",
+      "sha256": "e1cbef0f2512fad9aa44af5c0b47f910a64b7fda7c1ca4f7a05c233aaef38d53",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "artifacts/vnext/n02-02/implementation-preservation.json",
+      "sha256": "1ca0d244a301b848de24c2b084a9ca2e396e9d1da2443e5e55caab2edc37f250",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n02-02/inspect-built-entry.mjs",
+      "sha256": "88ee1b29aae799e7f670b423b6eb6bb899f4569e168c1d69e7413ea0a946e5d4",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n02-02/built-entry.json",
+      "sha256": "1b1c5f004a42d5bce28dbcf5791ba26e84af0aa8114a3fd34b6ac1fb3b399f97",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n02-02/architecture.log",
+      "sha256": "c6422e5dfde73bd93ec3c39b513a12172afcfd61a087526ab589d07d8f05d8d4",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n02-02/build.log",
+      "sha256": "eee66772de3d8f4ed40a61519e8a7b4a116b79e8b4abcbb6c5ff371c16af4c98",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n02-02/built-entry.log",
+      "sha256": "8acad6d2e6e3f9c5343e10370c9de4d2a41d8e1843579655f3d7c58b92612e0f",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n02-02/graph.log",
+      "sha256": "ec7b63d4f48f544017ae188f16f0a080475455c5e956f5a207ededf26342bade",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n02-02/hospitality-integration.log",
+      "sha256": "e1dea4980547c5b7d2e37fa865e55b263469870fe0819ca2a92d5b6913e6870a",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n02-02/lint.log",
+      "sha256": "631bdcc42b5d18a8357e8b5796b3cb630e45eddee4877aea9b5bb845da11ea5a",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n02-02/plan.log",
+      "sha256": "6dd0370bd131ff9b6324fc6c737645b960caa7d81342c190b60811cf1ceb5e4e",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n02-02/types.log",
+      "sha256": "99a75f8e3cce31fc134be18879d7a47ba43586542b22cc3469c328a87cb3a204",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n02-02/unit.log",
+      "sha256": "bf8c29055b2c58f7ce8ce8140fb6120bf2cd194b084f87df090881ac207df820",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    }
+  ],
+  "nextExactAction": "Reserve N02-03; audit existing offline/runtime production guards, implement a strict versioned environment release-entitlement/runtime-policy model and genuine gated production installer, retain old offline fixture assertions and one human operator model, add missing/version/world/bypass denial tests before enabling any fixture."
+}

@@ -167,12 +167,14 @@
       "next_action": "Reserve N02-02; extract the hospitality durable outbox behind a minimal account-lock/DB/sink port and compatibility exports, preserve API invocation and SQL exactly, run affected concurrency/rollback integration, types, unit and production builds."
     },
     "N02-02": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex Runtime + Coordinator",
+      "branch": "codex/vnext-n02-02-hospitality-port",
+      "evidence_refs": [
+        "n02-02-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "Một module/PR chuyển boundary/exports; worker-ready composition seams"
+      "next_action": "Reserve N02-03; audit existing offline/runtime production guards, implement a strict versioned environment release-entitlement/runtime-policy model and genuine gated production installer, retain old offline fixture assertions and one human operator model, add missing/version/world/bypass denial tests before enabling any fixture."
     },
     "N02-03": {
       "status": "TODO",

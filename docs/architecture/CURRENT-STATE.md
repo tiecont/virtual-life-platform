@@ -1,6 +1,6 @@
 # Current architecture and evidence index
 
-Updated 2026-11-06 (Asia/Ho_Chi_Minh) for N02-01 at base `b5b5202`. Application runtime still matches `cef7dc17172f7c6cda930c99648a5e3ad609cc55`; vNext adds evidence tooling, isolated test-output paths, pure CSS UI tokens, a mock UX prototype and static API ownership/import guards. This index documents source and scoped evidence, not production readiness. Use the [current documentation index](../README.md) for entrypoints.
+Updated 2026-11-06 (Asia/Ho_Chi_Minh) for N02-02 at base `0af047d`. vNext adds evidence tooling, isolated test-output paths, pure CSS UI tokens, a mock UX prototype, static API ownership/import guards and a [hospitality durable-job boundary](HOSPITALITY-JOBS.md). Other application runtime source still matches `cef7dc17172f7c6cda930c99648a5e3ad609cc55`; outbox dispatch logic remains unchanged behind compatibility exports. This index documents source and scoped evidence, not production readiness. Use the [current documentation index](../README.md) for entrypoints.
 
 ## Implemented local architecture
 

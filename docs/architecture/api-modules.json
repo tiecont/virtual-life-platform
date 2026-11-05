@@ -123,10 +123,11 @@
       "responsibility": "Orders/shifts/courses/completions/outbox",
       "currentPublicEntryFiles": [
         "hospitality/http",
+        "hospitality/jobs",
         "hospitality/outbox",
         "hospitality/service"
       ],
-      "targetBoundary": "HospitalityStaffPort and HospitalityCompletionSink; isolated durable job seam"
+      "targetBoundary": "HospitalityStaffPort and HospitalityCompletionSink; durable jobs use only DB/account-lock/sink contracts with compatibility exports"
     },
     "events": {
       "owner": "engine.events / engine.reservations",

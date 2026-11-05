@@ -1,0 +1,42 @@
+{
+  "taskId": "N02-02",
+  "scope": "One hospitality durable-job boundary; existing API scheduling and transaction semantics unchanged",
+  "implementationPreservation": {
+    "scope": "Exact outbox business-source preservation after type-only dependency substitution",
+    "baseRevision": "0af047d6ec5ab4af2c90541fd858eff7f75bcc72",
+    "normalizedImplementationSha256": "f1f7c16fbdc322c4db2b25938a6b980d37f3931332a79ba568b15c67d20a40a3",
+    "constructorValidationAndDispatchMethodsByteIdentical": true,
+    "typeSubstitution": "IdentityService \u2192 HospitalityAccountLocks",
+    "oldEntrypoint": "apps/platform-api/src/hospitality/outbox.ts",
+    "implementation": "apps/platform-api/src/hospitality/jobs.ts",
+    "compositionRootsChanged": false,
+    "sqlOrContractsChanged": false
+  },
+  "productionImportProof": {
+    "scope": "Actual compiled Node import closure and compatibility alias only; not a running worker",
+    "sameConstructor": true,
+    "apiRuntimeImports": [
+      "hospitality/jobs.js",
+      "hospitality/outbox.js"
+    ],
+    "roomAuthorityLoaded": false,
+    "identityImplementationLoaded": false,
+    "apiCompositionLoaded": false
+  },
+  "verification": {
+    "lint": 0,
+    "typecheck": 0,
+    "unitCases": 278,
+    "governanceCases": 46,
+    "hospitalityIntegrationCases": 58,
+    "apiAndPortalBuilds": 0,
+    "architecture": 0
+  },
+  "databaseProtocolChanged": false,
+  "standaloneWorkerImplemented": false,
+  "limitations": [
+    "Only the affected58hospitality integration cases were freshly run; earlier clean-checkout553regressions are separate evidence",
+    "Compiled import isolation is not a worker deployment,ownership switch or physical performance result",
+    "Trusted account-lock adapter must preserve current transaction/order semantics; completion sinks remain trusted DB-only hooks"
+  ]
+}
