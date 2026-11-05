@@ -117,6 +117,7 @@ export default function TravelPanel({ socketOrigin,preferred={kind:'none'} }: { 
       <section aria-labelledby="current-visit"><h2 id="current-visit">Your visit</h2><div data-world={current?.worldSlug ?? ''} data-membership-id={current?.membershipId ?? ''} className="travel-location">{connection !== 'ready' ? 'No confirmed place' : current ? worlds.find(world => world.slug === current.worldSlug)?.title ?? 'Private world' : 'City lobby'}</div>
         {current && <p className="muted">{current.occupancy} / {current.capacity} present · {current.self.seatId ? 'Your seat is retained.' : 'On the floor'}</p>}
         {connection==='ready'&&current?.worldSlug==='library'&&<Link href="/worlds/library">Open Library room</Link>}
+        {connection==='ready'&&current?.worldSlug==='deadline'&&<Link href="/worlds/deadline">Open Deadline room</Link>}
         {connection==='ready'&&current?.worldSlug==='park'&&<Link href="/worlds/park">Open Park room</Link>}
         {connection==='ready'&&current?.worldSlug==='restaurant'&&<Link href="/worlds/restaurant">Open Restaurant room</Link>}
         <button disabled={busy} onClick={() => { if (client.current?.connected) void refresh.current(); else client.current?.connect(); }}>Refresh your visit</button>{current && <button className="secondary" disabled={busy} onClick={() => void leave()}>Return to lobby</button>}

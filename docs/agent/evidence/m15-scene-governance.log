@@ -1,0 +1,30 @@
+✔ archive is authenticated and versioned before any restore,with independent random nonces (9.208496ms)
+✔ restore targets are disposable exact DB/service only,and disk observations reject invalid data (2.537797ms)
+✔ offline backup tools accept local Unix Docker sockets and reject remote TCP/SSH/named-pipe contexts (0.711827ms)
+✔ worlds cannot import another world repository, platform internals or application code (12.961253ms)
+✔ contracts cannot import SDK and apps cannot import another application internals (1.301424ms)
+✔ the scanner rejects actual source imports and manifest cycles (29.70957ms)
+✔ quality succeeds only for both successful required jobs;failure,cancellation,skip,missing or malformed results cannot pass (1.711524ms)
+✔ browser groups cover every existing spec exactly once and reject omitted,duplicated,foreign or traversing paths (33.229029ms)
+✔ successful reports require both devices for the exact spec and reject stale,foreign,duplicated or incomplete metadata (5.864695ms)
+✔ stack env requires HTTPS,explicit peer,isolated names and URL-safe secrets without echoing secret values (4.660944ms)
+✔ owner-selected snapshot pins dirty/untracked source with secrets/cache excluded and preserves the original worktree (126.305764ms)
+✔ capture rejects absent approval,source-local destinations and source symlinks without copying their target (25.249413ms)
+✔ archive verification rejects tampered payloads,unsafe paths,links,commit mismatch and oversized input before materialization (73.56674ms)
+✔ audit ranges and conjunctive dependencies preserve the authoritative DAG (5.612342ms)
+✔ cycles, unknown dependencies and duplicate module IDs are rejected (1.52807ms)
+✔ checkpoint cannot assert verification without evidence or through an unmet gate (0.860306ms)
+✔ the supplied plan pack is accepted without changing its manifest shape (10.092215ms)
+✔ resource ceiling accounts for memory,disk reserves and unpriced monthly allocations (8.10385ms)
+✔ budget edits cannot silently enable purchases,Redis or multiple room owners (2.703006ms)
+✔ database target rejects remote/non-test/scheme/query overrides without echoing credentials (2.676037ms)
+✔ fixture environment uses independent keys and excludes inherited runtime,PG and preload state (1.769744ms)
+✔ only explicit finite test fixtures/report scopes survive environment filtering (1.272159ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 348.823701

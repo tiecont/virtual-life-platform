@@ -11,7 +11,7 @@ The proposed required check remains `quality`. Its core dependency runs `pnpm ch
 | study | focus,library,scene,wardrobe |
 | hospitality | lounge,restaurant |
 | private | dating continuation,dating profile/matching/Date |
-| legacy | actual pinned Deadline identity association |
+| legacy | actual pinned Deadline identity association,Deadline scene/Portal acceptance |
 
 The actual filenames live in `config/ci-browser-groups.json`:M24-01 adds park to city,making20specs across the same five groups. Coverage rejects omitted,duplicate,unknown or traversing paths. Future specs must be assigned;there is no silent test filtering. Core emits the plan as a validated job output. An invalid/missing plan cannot become a successful browser group.
 

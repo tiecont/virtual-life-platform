@@ -25,7 +25,7 @@ const messages: Record<string, string> = {
 };
 const ownInput = (state: RoomSnapshot) => ({ schemaVersion: 1, requestId: crypto.randomUUID(), epoch: state.epoch, roomId: state.roomId, membershipId: state.membershipId });
 export interface RoomExperience {
- slug:string;worldVersion:string;scene:SceneManifest;title:string;eyebrow:string;badge:string;noun:'cafe'|'library'|'restaurant'|'lounge'|'park';theme:'cafe'|'reading-room'|'dining-room'|'lounge'|'park';sceneLabel:string;caption:string;capacity?:number;movementHint?:string;
+ slug:string;worldVersion:string;scene:SceneManifest;title:string;eyebrow:string;badge:string;noun:'cafe'|'library'|'restaurant'|'lounge'|'park';theme:'cafe'|'reading-room'|'dining-room'|'lounge'|'park'|'deadline';sceneLabel:string;caption:string;capacity?:number;movementHint?:string;portalReturn?:boolean;
  destinations:{label:string;x:number;y:number}[];areas?:readonly {key:string;title:string;description:string;seatIds:readonly string[]}[];areaLabel?:string;areaHeading?:string;areaDescription?:string;provenance?:string;focus:boolean;wardrobe:boolean;events?:boolean;
 }
 const sandboxExperience:RoomExperience={slug:'sdk-sandbox',worldVersion:'1.0.0',scene:sandboxScene,title:'Local Test Cafe',eyebrow:'SDK Sandbox',badge:'LOCAL TEST WORLD',noun:'cafe',theme:'cafe',sceneLabel:'Cafe floor plan. Two shared tables, eight seats, an entrance and a counter. Movement and seat controls follow below.',caption:'WINDOW & GARDEN TABLES',destinations:[{label:'Entrance',x:10,y:11},{label:'Window aisle',x:2,y:4},{label:'Garden aisle',x:11,y:4},{label:'Counter front',x:15,y:9}],focus:true,wardrobe:true};
@@ -180,6 +180,12 @@ export default function WorldRoomPanel({ socketOrigin,experience=sandboxExperien
     } finally { if (sequence.current === run) { inFlight.current = false; if (alive.current) setBusy(false); } }
   }
   claimRef.current = id => { void mutate('seat.claim', id); };
+  async function returnToCity(){
+    if(busy||loading)return;
+    if(recovery.current.view.status==='active')await mutate('room.leave');
+    if(desired.current||inFlight.current){if(alive.current)setMessage('Your departure is unconfirmed. Rejoin to check your place before returning.');return;}
+    if(alive.current)window.location.assign('/');
+  }
   moveRef.current = point => { if (!walking) void mutate('room.move', undefined, point); };
   const active = view.status === 'active' && view.snapshot !== null;
   const status = view.status === 'active' ? view.reason === 'membership-reset' ? 'Rejoined. Your previous place was interrupted.' : 'Connected' : view.status === 'syncing' ? 'Confirming your place...' : view.status === 'reconnecting' ? 'Connection lost. Your place is unconfirmed.' : view.status === 'interrupted' ? view.reason === 'authority-lost' || view.reason === 'server-stopping' ? 'The room was interrupted. Rejoin when it reopens.' : 'This room ended.' : available ? 'Ready to enter' : `${experience.noun[0].toUpperCase()+experience.noun.slice(1)} closed`;
@@ -204,6 +210,7 @@ export default function WorldRoomPanel({ socketOrigin,experience=sandboxExperien
         {me ? <><p className="cafe-identity">{me.profile.displayName}</p><p className="cafe-note" aria-live="polite">{active ? walking ? view.snapshot?.self.seatId ? 'Walking to your reserved seat.' : 'Walking across the '+experience.noun+' floor.' : view.snapshot?.self.seatId ? 'Seated at ' + manifest.seats.find(seat => seat.seatId === view.snapshot?.self.seatId)?.label : 'On the '+experience.noun+' floor' : 'No confirmed place'}</p>
           {active ? <button className="cafe-primary" disabled={busy} onClick={() => void mutate('room.leave')}>Leave {experience.noun}</button> : <button ref={entryButton} className="cafe-primary" disabled={!available || busy || loading || view.status === 'syncing'} onClick={enter}>{(view.status === 'idle' ? 'Enter ' : 'Rejoin ')+experience.noun}</button>}
         </> : !loading && <Link href="/identity">Open identity</Link>}
+        {experience.portalReturn&&<button disabled={busy||loading||view.status==='syncing'||view.status==='reconnecting'} onClick={()=>void returnToCity()}>{active?'Leave and return to city':'Return to city'}</button>}
         <label className="cafe-motion"><input type="checkbox" checked={lowMotion} onChange={event => { const value = event.target.checked; userMotion.current = value; lowMotionRef.current = value; setLowMotion(value); scene.current?.setReducedMotion(value); }}/>Reduce room motion</label>
         <div className="cafe-present"><h2>Visible here</h2>{view.snapshot?.participants.length ? <ul>{view.snapshot.participants.map(person => <li key={person.profile.id}><span>{person.profile.displayName}</span><small>{person.state === 'reconnecting' ? 'Reconnecting' : person.seatId ? 'Seated' : 'Standing'}</small></li>)}</ul> : <p className="cafe-note">No confirmed visible visitors.</p>}</div><Link href="/worlds/sdk-sandbox/avatar-lab">Preview avatar styles</Link>
         <Link href="/travel">Travel to another world</Link>{me&&active&&view.snapshot&&experience.slug==='library'&&<RoomInvitation key={view.snapshot.membershipId} me={me} destination={{worldSlug:experience.slug,worldVersion:experience.worldVersion,sceneVersion:manifest.version,roomId:view.snapshot.roomId}}/>}{me && safetyRoom && <RoomSafety key={me.profile.id + ':' + safetyRoom.membershipId} me={me} room={safetyRoom} active={active}/>}

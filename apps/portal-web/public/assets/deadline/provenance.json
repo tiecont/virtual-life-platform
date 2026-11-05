@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "asset": "Deadline Cafe adapted scene",
+  "origin": "Owner-selected source6d2ca6a4 seat configuration plus original project-authored collision geometry and deterministic Pixi art;no imported images,audio or fonts",
+  "sources": [
+    {
+      "path": "packages/deadline-world/src/baseline.ts",
+      "sha256": "6c89a1c5ddc7fce22ef3abd32ee46c31a29daaf40271534214ccc6d411245095"
+    },
+    {
+      "path": "packages/deadline-world/src/scene.ts",
+      "sha256": "02625c252db3e7cba66037a4bd9755be06950c31aba04f431194dca177e063e9"
+    },
+    {
+      "path": "packages/pixi-scene/src/deadline-art.ts",
+      "sha256": "c1a2dc45e5f96f1806e450a3c0d5a0c55ca1bdb2a0f1087ab8c1bcbe02df8604"
+    }
+  ],
+  "sourceApproval": "integrations/legacy-snapshots/approval.json;offline integration only",
+  "avatar": "Existing original starter atlas;separate avatar provenance applies",
+  "releaseApproved": false
+}

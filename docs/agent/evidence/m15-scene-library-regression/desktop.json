@@ -1,0 +1,108 @@
+{
+  "sameIdentity": true,
+  "world": "library",
+  "desk": "seat-1",
+  "controls": [
+    {
+      "label": "Walk to entrance",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "Walk to reading aisle",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "Walk to study aisle",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "Walk to south shelves",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "Stand up",
+      "height": 44,
+      "width": 85.375
+    },
+    {
+      "label": "01Reading cornerYour seat",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "02Reading cornerAvailable",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "03Reading cornerAvailable",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "04Reading cornerAvailable",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "05Study alcoveAvailable",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "06Study alcoveAvailable",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "07Study alcoveAvailable",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "08Study alcoveAvailable",
+      "height": 72,
+      "width": 230
+    },
+    {
+      "label": "Start focus",
+      "height": 44,
+      "width": 96.859375
+    },
+    {
+      "label": "Refresh timer",
+      "height": 44,
+      "width": 114.640625
+    },
+    {
+      "label": "Stop all study sharing",
+      "height": 44,
+      "width": 164.234375
+    },
+    {
+      "label": "Refresh study sessions",
+      "height": 44,
+      "width": 170.96875
+    },
+    {
+      "label": "Leave library",
+      "height": 44,
+      "width": 215
+    },
+    {
+      "label": "Invite friend to this room",
+      "height": 44,
+      "width": 185.71875
+    },
+    {
+      "label": "Refresh study friends",
+      "height": 44,
+      "width": 162.265625
+    }
+  ],
+  "errors": []
+}

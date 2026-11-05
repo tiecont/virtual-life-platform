@@ -140,6 +140,9 @@ importers:
       '@virtual-city/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@virtual-city/deadline-world':
+        specifier: workspace:*
+        version: link:../../packages/deadline-world
       '@virtual-city/focus-ui':
         specifier: workspace:*
         version: link:../../packages/focus-ui

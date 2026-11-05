@@ -6,8 +6,9 @@ import { fitSceneCamera } from './camera';
 import { sceneEntities } from './entities';
 import { avatarAtlasSpec, avatarFrame } from './avatar-art';
 import { parkLandscape } from './park-art';
+import { deadlineInterior } from './deadline-art';
 
-export async function createCafeScene(host: HTMLElement, input: SceneManifest, onSeat: (seatId: string) => void, options: { signal?: AbortSignal; outfit?: AvatarAppearance['outfit'];theme?:'cafe'|'reading-room'|'dining-room'|'lounge'|'park'; onMove?: (point: { x: number; y: number }) => void } = {}) {
+export async function createCafeScene(host: HTMLElement, input: SceneManifest, onSeat: (seatId: string) => void, options: { signal?: AbortSignal; outfit?: AvatarAppearance['outfit'];theme?:'cafe'|'reading-room'|'dining-room'|'lounge'|'park'|'deadline'; onMove?: (point: { x: number; y: number }) => void } = {}) {
   const scene = SceneManifestSchema.parse(input); const size = scene.tileSize;
   const reading=options.theme==='reading-room',dining=options.theme==='dining-room',lounge=options.theme==='lounge',park=options.theme==='park';
   AvatarOutfitSchema.parse(options.outfit ?? 'casual');
@@ -41,7 +42,7 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
   function label(text: string, x: number, y: number, color = '#354944', fontSize = 14) {
     const element = new Text({ text, style: { fontFamily: 'system-ui, sans-serif', fontSize, fill: color, fontWeight: '600' } }); element.anchor.set(.5); element.position.set(x, y); return element;
   }
-  if(park){world.addChild(parkLandscape(scene));}else{
+  if(park){world.addChild(parkLandscape(scene));}else if(options.theme==='deadline'){world.addChild(deadlineInterior(scene));}else{
   const floor = new Graphics(); world.addChild(floor);
   for (let y = 0; y < scene.rows; y++) for (let x = 0; x < scene.columns; x++) floor.rect(x * size, y * size, size, size).fill((x + y) % 2 ? lounge?'#e2dfeb':dining?'#ded0bf':reading?'#e1ddce':'#dbe7df' : lounge?'#eeeaf1':dining?'#eee3d5':reading?'#e9e5d9':'#e5eee8');
   function rect(g: Graphics, x: number, y: number, w: number, h: number, color: string) { g.rect(x, y, w, h).fill(color); }
@@ -127,7 +128,7 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
       event.stopPropagation();
       if (current && !current.self.seatId && current.seats.some(seat => seat.seatId === point.seatId && seat.state === 'available')) onSeat(point.seatId);
     });
-    seats.addChild(chair, back, label(point.seatId.slice(5).padStart(2, '0'), at.x, at.y + 30, '#40584c', 12), occupied);
+    seats.addChild(chair, back, label(point.seatId.slice(5).padStart(2, '0'), at.x+(options.theme==='deadline'?28:0), at.y+(options.theme==='deadline'?0:30), '#40584c', 12), occupied);
     return { point, chair, occupied };
   });
   function render() { if (!destroyed) { canvas.dataset.renderCount = String(++frames); app.render(); } }
