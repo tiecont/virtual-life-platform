@@ -4,6 +4,8 @@ Các contract dưới đây là **đề xuất vNext**, chưa phải endpoints �
 
 Implemented source pointers: N02-03's environment policy (`docs/operations/ENVIRONMENT-POLICY.md`) and N02-04's schema compatibility manifest (`docs/operations/SCHEMA-COMPATIBILITY.md`) are file-backed runtime contracts with scoped task evidence. N03-04 also implements the CI release-candidate contract and validator (`docs/operations/ARTIFACT-RELEASE.md`), with default-disabled publication and explicit hosted/registry verification. These do not implement proposed durable admin policy, admission, native or staging/production promotion contracts below. Schema metadata remains version 1; migration count, network protocol and asset version remain distinct.
 
+Implemented N05-01 room protocol (`docs/architecture/AUTHORITY-PROTOCOL.md`): existing schemaVersion/requestId envelope and flat adapters, optional bounded clientSeq for room mutations, current epoch/roomVersion projection semantics. Chat/durable HTTP schemas remain unchanged; N/N−1 capability negotiation stays N05-06.
+
 ## 1. Nhóm hợp đồng
 
 | Contract | Owner | Dữ liệu tối thiểu | Invariants / tests | Tasks |

@@ -3,6 +3,7 @@ import { AvatarKeySchema, PublicProfileSchema } from './profiles';
 export * from './profiles';
 export * from './world';
 export * from './rooms';
+export * from './protocol';
 export * from './scene';
 export * from './avatar';
 export * from './safety';

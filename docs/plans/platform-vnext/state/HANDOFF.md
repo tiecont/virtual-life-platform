@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T21:38:30.539042+00:00; task N03-04 VERIFIED on `codex/vnext-n03-04-release-ci`. Base revision `cc70e66447226fac667e03ec111d697ed244139a`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T21:59:50.500295+00:00; task N05-01 VERIFIED on `codex/vnext-n05-01-protocol`. Base revision `77a0afe3ea488ac7fec6597e0480238e4bd2ea77`; this task has its own reviewable commit after evidence finalization.
 
-Implemented read-only Quality change planning and fail-closed required aggregate, preserving full integration/security and all six browser groups. New default-disabled trusted-main publisher verifies exact repository/workflow/event/SHA/run attempt/jobs and transfers already tested images without rebuilding. Fresh frozen immutable-source API/web build passes all six API and six TLS/browser scenarios. Actual disposable loopback registry load/push/independent-descriptor/digest-pull and metadata corruption/mutable-tag rejection pass with cleanup; unsigned source/run/digest/SBOM/provenance release validation implemented and executed. Actual Git PR/push change matrix and final 58 governance tests pass. Full check exits0 with 57 governance/304 unit/559 integration and all builds; final tooling refinements separately pass58 governance/lint/CI. Preflight confirms main unprotected and rulesets/protection403, with auto-merge and production auto-promotion disabled; historical failed hosted run is rejected as publication proof. No hosted new workflow or GHCR publication is claimed.
+Implemented the existing strict command envelope and an additive optional bounded clientSeq adapter for room seat/move/leave mutations inside the unchanged singleton/global owner queue. Authenticated actor/session/action/payload receipts remain authoritative; matching receipts return current state without reapplying, stale fresh sequences conflict, and legacy/chat/durable HTTP shapes remain compatible. Member/connection watermarks survive failed travel compensation and are cleaned on detach/revoke/removal. Actual focused protocol128 cases plus an added action-binding case pass, including real100-way socket races, durable order/reward/outbox retries, travel COMMIT failure and actual owner loss/restarts. Full check covers governance/unit/integration and all consumer builds; final counts and output-path refinement evidence are recorded in N05-01-PROTOCOL.json. Existing room/travel assertions retained, diagnostics isolated, 38 SQL/dependency/public gates unchanged.
 
-[Actual checks](../audit/N03-04-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 20, "TODO": 49}`.
+[Actual checks](../audit/N05-01-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 21, "TODO": 48}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N05-01 on a new branch; read current authority/contract and N02-01 dependency evidence, audit actor/action/payload receipts, socket adapters and seat/order/reward/travel concurrency/privacy guards. Implement one compatible protocol/envelope vertical slice with bounded sequencing and explicit current adapters; implement test:protocol before executing it, run applicable unit/integration/security verification, preserve the singleton/global serialization/38 SQL and prior evidence, then update exact state/action.
+Reserve N05-02; read current RoomMetrics/OperationalTelemetry and room benchmark harness, implement bounded phase/outcome instrumentation for queue wait, execution/projection/fanout and actual DB wait where observable, with no raw identity/room labels. Implement profile:runtime before running it, measure actual full-snapshot room.delta bytes and event-loop/workload outcomes on isolated local resources, preserve singleton/serialization/privacy and unchanged budgets, record profile/source/hardware limitations before considering N05-03 optimization.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.

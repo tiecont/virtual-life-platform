@@ -3,16 +3,17 @@ import { WorldSlugSchema, WorldVersionSchema, SeatIdSchema } from './world';
 import { PublicProfileSchema } from './profiles';
 import { TilePointSchema } from './scene';
 import { AvatarOutfitSchema } from './avatar';
+import {CommandEnvelopeSchema, ClientSequenceSchema} from './protocol';
 
 export const RoomMotionSchema = z.strictObject({ path: z.array(TilePointSchema).min(1).max(256), startedAt: z.number().int().nonnegative(), stepMs: z.literal(150) })
   .refine(motion => motion.path.every((point, index, path) => index === 0 || Math.abs(point.x - path[index - 1].x) + Math.abs(point.y - path[index - 1].y) === 1), 'Path must use adjacent orthogonal tiles');
 export type RoomMotion = z.infer<typeof RoomMotionSchema>;
 
-const CommandBase = z.strictObject({ schemaVersion: z.literal(1), requestId: z.uuid() });
+const CommandBase = CommandEnvelopeSchema;
 export const RoomJoinSchema = CommandBase.extend({
   worldSlug: WorldSlugSchema, worldVersion: WorldVersionSchema, sceneVersion: WorldVersionSchema, roomId: z.uuid().optional(), motionVersion: z.literal(1).optional(),
 });
-export const RoomOwnCommandSchema = CommandBase.extend({ epoch: z.uuid(), roomId: z.uuid(), membershipId: z.uuid() });
+export const RoomOwnCommandSchema = CommandBase.extend({ epoch: z.uuid(), roomId: z.uuid(), membershipId: z.uuid(), clientSeq: ClientSequenceSchema.optional() });
 export const SeatClaimSchema = RoomOwnCommandSchema.extend({ seatId: SeatIdSchema });
 export const SeatReleaseSchema = RoomOwnCommandSchema.extend({ seatId: SeatIdSchema });
 export const RoomMoveSchema = RoomOwnCommandSchema.extend({ destination: TilePointSchema });

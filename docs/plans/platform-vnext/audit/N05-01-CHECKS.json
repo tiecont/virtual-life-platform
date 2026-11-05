@@ -1,0 +1,444 @@
+{
+  "taskId": "N05-01",
+  "sourceRevision": "77a0afe3ea488ac7fec6597e0480238e4bd2ea77+workspace-sha256:7b34d0414747bf9633e9d510f030bdb5612fa0f1512a851d4df1f5fbe77bf40e",
+  "executedAt": "2026-11-05T21:59:50.500295+00:00",
+  "commands": [
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project protocol tests/integration/rooms.test.ts -t binds a request key",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "protocol",
+        "tests/integration/rooms.test.ts",
+        "-t",
+        "binds a request key"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T21:50:45.014Z",
+      "endedAt": "2026-11-05T21:50:53.432Z",
+      "log": "artifacts/vnext/n05-01/action-binding.log",
+      "sha256": "42481e5116b6c47f17d0324301e7724d7fdc48c77d12cc01f8ffa0da3a6b05d9"
+    },
+    {
+      "command": "pnpm architecture:check",
+      "argv": [
+        "pnpm",
+        "architecture:check"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T21:51:54.507Z",
+      "endedAt": "2026-11-05T21:51:56.060Z",
+      "log": "artifacts/vnext/n05-01/architecture.log",
+      "sha256": "cb666c002b1529292b3935fd81ecf0d59e7837d73801cf258d0d0524c9d5c70d"
+    },
+    {
+      "command": "pnpm ci:check",
+      "argv": [
+        "pnpm",
+        "ci:check"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T21:51:56.109Z",
+      "endedAt": "2026-11-05T21:51:57.515Z",
+      "log": "artifacts/vnext/n05-01/ci.log",
+      "sha256": "581954628bb3a0c92edb1baac245d0da04fd7994c4ae40ef6a4b829a76ec44e3"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/contracts/test/protocol.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "packages/contracts/test/protocol.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T21:44:31.531Z",
+      "endedAt": "2026-11-05T21:44:33.137Z",
+      "log": "artifacts/vnext/n05-01/contract-final.log",
+      "sha256": "d36e0e4a10c4fee0e96fb7a4bf3fc00d51548e8be0e0fa22e9ab56f587a8eae2"
+    },
+    {
+      "command": "pnpm exec eslint packages/contracts/src/protocol.ts packages/contracts/src/rooms.ts packages/contracts/src/index.ts packages/contracts/src/chat.ts packages/contracts/test/protocol.test.ts apps/platform-api/src/rooms/service.ts tests/integration/rooms.test.ts tests/integration/travel.test.ts vitest.config.mts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "eslint",
+        "packages/contracts/src/protocol.ts",
+        "packages/contracts/src/rooms.ts",
+        "packages/contracts/src/index.ts",
+        "packages/contracts/src/chat.ts",
+        "packages/contracts/test/protocol.test.ts",
+        "apps/platform-api/src/rooms/service.ts",
+        "tests/integration/rooms.test.ts",
+        "tests/integration/travel.test.ts",
+        "vitest.config.mts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T21:44:33.186Z",
+      "endedAt": "2026-11-05T21:44:35.334Z",
+      "log": "artifacts/vnext/n05-01/final-focused-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "pnpm exec eslint tests/integration/rooms.test.ts tests/integration/travel.test.ts tests/integration/room-network-races.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "eslint",
+        "tests/integration/rooms.test.ts",
+        "tests/integration/travel.test.ts",
+        "tests/integration/room-network-races.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T21:50:53.488Z",
+      "endedAt": "2026-11-05T21:50:55.646Z",
+      "log": "artifacts/vnext/n05-01/final-test-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "pnpm exec eslint packages/contracts/src/protocol.ts packages/contracts/src/rooms.ts packages/contracts/src/index.ts packages/contracts/test/protocol.test.ts apps/platform-api/src/rooms/service.ts tests/integration/rooms.test.ts vitest.config.mts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "eslint",
+        "packages/contracts/src/protocol.ts",
+        "packages/contracts/src/rooms.ts",
+        "packages/contracts/src/index.ts",
+        "packages/contracts/test/protocol.test.ts",
+        "apps/platform-api/src/rooms/service.ts",
+        "tests/integration/rooms.test.ts",
+        "vitest.config.mts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T21:43:31.819Z",
+      "endedAt": "2026-11-05T21:43:34.014Z",
+      "log": "artifacts/vnext/n05-01/focused-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "pnpm check",
+      "argv": [
+        "pnpm",
+        "check"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T21:46:34.066Z",
+      "endedAt": "2026-11-05T21:59:35.320Z",
+      "log": "artifacts/vnext/n05-01/full-check.log",
+      "sha256": "1f5e4fbe9f8c2c287cf2b06102c7ce90ef90057a709924f5fdcd80783584f5c2"
+    },
+    {
+      "command": "node artifacts/vnext/n05-01/preservation.mjs",
+      "argv": [
+        "node",
+        "artifacts/vnext/n05-01/preservation.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T21:51:53.926Z",
+      "endedAt": "2026-11-05T21:51:54.437Z",
+      "log": "artifacts/vnext/n05-01/preservation.log",
+      "sha256": "99df63ecebef3118e60a238713fe5593f8ad94e4a441c0a93d626673b2f95704"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/contracts/test/protocol.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "packages/contracts/test/protocol.test.ts"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-05T21:42:32.733Z",
+      "endedAt": "2026-11-05T21:42:34.244Z",
+      "log": "artifacts/vnext/n05-01/protocol-before.log",
+      "sha256": "9a7bf5c13d8b6f6a51cb8a2ffc19735f3f3ba53f6b2ad8dd6ad16de5b1e75a01"
+    },
+    {
+      "command": "pnpm test:protocol",
+      "argv": [
+        "pnpm",
+        "test:protocol"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T21:43:21.925Z",
+      "endedAt": "2026-11-05T21:45:58.842Z",
+      "log": "artifacts/vnext/n05-01/protocol.log",
+      "sha256": "ea95083828ae063728c54647203e4edbb0f234522d62caf517a1007213a43882"
+    },
+    {
+      "command": "pnpm exec tsc -p tests/legacy-tsconfig.json",
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "-p",
+        "tests/legacy-tsconfig.json"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T21:48:34.600Z",
+      "endedAt": "2026-11-05T21:48:43.197Z",
+      "log": "artifacts/vnext/n05-01/test-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "pnpm exec eslint tests/integration/room-network-races.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "eslint",
+        "tests/integration/room-network-races.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T21:48:31.909Z",
+      "endedAt": "2026-11-05T21:48:34.542Z",
+      "log": "artifacts/vnext/n05-01/writer-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "acceptance": [
+    "Strict shared version1 envelope reuses existing schemaVersion/requestId. Optional clientSeq is bounded0..2147483647; forged actor/role/server/path fields and invalid bounds rejected, while old command JSON and chat strictness remain intact.",
+    "Fresh sequenced seat/move/leave commands enforce monotonic ordering after current authorization/context/receipt checks inside the existing queue. Concurrent duplicates and old matching receipts do not reapply effects; changed action/payload or stale/equal fresh sequences conflict.",
+    "Actual per-tab/rejoin/reconnect/new-membership, validation failure/no-consumption, snapshot resync, movement and projection-loss cases pass. Real deferred travel COMMIT compensation preserves the source watermark and seat; current higher sequence works afterwards.",
+    "Fresh protocol/integration coverage preserves seat/order/reward/travel uniqueness, committed-effect-before-ACK, session revoke/block/privacy and real PG/socket/owner-failure invariants. Existing durable modules, global serialization/advisory owner, SQL and safety defaults are unchanged.",
+    "Implemented test:protocol before executing it; existing full integration/security coverage retained. Actual diagnostic snapshots are isolated and hash-indexed; initial expected contract failure retained."
+  ],
+  "limitations": [
+    "Optional client ordering is not an authorization boundary or exactly-once delivery. Legacy inputs omit it; no product client begins sending it and N/N−1 capability negotiation remains N05-06.",
+    "Room receipts are bounded five-minute in-memory history; owner changes require fresh membership/resync. Global queue/snapshot-carrying delta and singleton guard are retained, without distributed fencing or production capacity claims.",
+    "The128-case focused protocol run precedes one added action-binding case and diagnostic output migration; dedicated action-binding/type/lint and final full integration cover final refinements. Overlapping suites are reported separately, not summed as unique tests.",
+    "Focused security command is not repeated because all its selected files remain in the actual complete integration gate. Initial new-field contract assertion failed as expected and is preserved.",
+    "No fresh full browser, production image release, hosted workflow/GHCR, external staging, physical device, store/public/adult/media/operator authorization. Known hosted Deadline cadence failure/enforcement403 remain unresolved.",
+    "Private raw diagnostic/log evidence is local until owner cleanup, not off-host archived; N13/N14 remain inactive."
+  ],
+  "artifacts": [
+    {
+      "ref": "apps/platform-api/src/rooms/service.ts",
+      "sha256": "c0260c58effd2abeb4033e81af6cade2511d7cbd03c75921f6ca0bc9a8ecad8a",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/README.md",
+      "sha256": "69a1e37ca8630833f953bfe8d80eb2ef70b8633eedb1508e2315ed61aadaeb44",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/adr/0108-compatible-room-command-sequencing.md",
+      "sha256": "36be0fe4fc13b2f79c633615fffcfaa4f37b25ca29c38a52022b2df7e1542754",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/API-MODULES.md",
+      "sha256": "272f2cf5c09a0cc0430ed84f7d234a11eadf0c59ddb33744c965284e3963177b",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/AUTHORITY-PROTOCOL.md",
+      "sha256": "c04f1557697542c55ad928a0509f2ab2f5ab4aa1fa68876f82cc6602a22fdaf0",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/CURRENT-STATE.md",
+      "sha256": "c828be4242e4ddb4d9d66cf547b59d550106de31eda61760f0e7ae2059558ce9",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/N05-01-PROTOCOL.json",
+      "sha256": "3de53b8e8fc0e65c6b702eeb7da05ffc44a69e989158051da1d6dfab721bd851",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/plans/platform-vnext/contracts/CONTRACT-REGISTRY.md",
+      "sha256": "96a030115366d4b6aa1ad56117d6fe3bd9d29f2d87290ef4bee1762d8cb6bcc9",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "package.json",
+      "sha256": "b7412df100fadb48ab2e378476f356dd35e2f769bf19e591a5a1e9f2cf5f9ccf",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "packages/contracts/src/chat.ts",
+      "sha256": "7d3e900f63448e5bfa918a664914bf02ca03cb2262b42153a357ca02ff7c269e",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "packages/contracts/src/index.ts",
+      "sha256": "87cc7c7610c0011750d291a9950fa5b262796fdc4cfbc3f19d0a5534170bf5ed",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "packages/contracts/src/protocol.ts",
+      "sha256": "372c2ddba333ba234918fcd8a5690a7b0bb8074bc576f4567f1357b912501b22",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "packages/contracts/src/rooms.ts",
+      "sha256": "57c6c4baa81463bd613467f383019804f3e9bcf86419922f1189d9aab995597b",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "packages/contracts/test/protocol.test.ts",
+      "sha256": "b8732c72bff347d3440c70d56ceb7aab3be98070d01081b7a620c093be8e4824",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "tests/integration/room-network-races.test.ts",
+      "sha256": "e23185a22334bbb8e02e6f01806ead1da6be494349052112f1d3655bf5e4ac02",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "tests/integration/rooms.test.ts",
+      "sha256": "b4e06c69f5865f096c77d0ae65acf6a45e9a76ac8fcf44395dec16bd76baad8e",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "tests/integration/travel.test.ts",
+      "sha256": "39ec29b8336bc7c01d2ef020de3e6f0a0208a16dee067b809da812ceb073a53c",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "vitest.config.mts",
+      "sha256": "c8171dec27c9b57b15fb489c3a5506ffce0fb780a51706f7ebbf122df911e225",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "artifacts/vnext/n05-01/protocol-network-races.json",
+      "sha256": "5f1c2e4a9ba224b92e461760909f99f4fdedd48bdd6035c21cce61684a195a36",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-01/full-network-races.json",
+      "sha256": "96e9568f0ee0b83ae1f16442c5e077298b36b3cbcebad0c84fcf39a654bdf6b0",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-01/preservation.mjs",
+      "sha256": "f00835287ac5039691d2a9816ffc86dfdc48a4a1cc75f15b71b1a18b2ee8fec7",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-01/action-binding.log",
+      "sha256": "42481e5116b6c47f17d0324301e7724d7fdc48c77d12cc01f8ffa0da3a6b05d9",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-01/architecture.log",
+      "sha256": "cb666c002b1529292b3935fd81ecf0d59e7837d73801cf258d0d0524c9d5c70d",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-01/ci.log",
+      "sha256": "581954628bb3a0c92edb1baac245d0da04fd7994c4ae40ef6a4b829a76ec44e3",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-01/contract-final.log",
+      "sha256": "d36e0e4a10c4fee0e96fb7a4bf3fc00d51548e8be0e0fa22e9ab56f587a8eae2",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-01/final-focused-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-01/final-test-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-01/focused-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-01/full-check.log",
+      "sha256": "1f5e4fbe9f8c2c287cf2b06102c7ce90ef90057a709924f5fdcd80783584f5c2",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-01/preservation.log",
+      "sha256": "99df63ecebef3118e60a238713fe5593f8ad94e4a441c0a93d626673b2f95704",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-01/protocol-before.log",
+      "sha256": "9a7bf5c13d8b6f6a51cb8a2ffc19735f3f3ba53f6b2ad8dd6ad16de5b1e75a01",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-01/protocol.log",
+      "sha256": "ea95083828ae063728c54647203e4edbb0f234522d62caf517a1007213a43882",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-01/test-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-01/writer-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    }
+  ],
+  "nextExactAction": "Reserve N05-02; read current RoomMetrics/OperationalTelemetry and room benchmark harness, implement bounded phase/outcome instrumentation for queue wait, execution/projection/fanout and actual DB wait where observable, with no raw identity/room labels. Implement profile:runtime before running it, measure actual full-snapshot room.delta bytes and event-loop/workload outcomes on isolated local resources, preserve singleton/serialization/privacy and unchanged budgets, record profile/source/hardware limitations before considering N05-03 optimization."
+}

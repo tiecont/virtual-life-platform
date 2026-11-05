@@ -7,6 +7,7 @@
     "node": "26.9.x"
   },
   "scripts": {
+    "test:protocol": "pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project protocol",
     "release-manifest:check": "node scripts/release-manifest.mjs",
     "release:preflight": "node scripts/enforcement-preflight.mjs",
     "image:check": "node scripts/image-check.mjs",

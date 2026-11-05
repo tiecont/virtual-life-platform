@@ -10,7 +10,8 @@ export const ChatContentSchema = z.discriminatedUnion('kind', [
   z.strictObject({ kind: z.literal('canned'), id: CannedMessageIdSchema }),
   z.strictObject({ kind: z.literal('emote'), id: EmoteIdSchema }),
 ]);
-export const ChatSendSchema = RoomOwnCommandSchema.extend({ content: ChatContentSchema });
+// Chat retains its existing receipt/moderation contract; room ordering is not a chat capability.
+export const ChatSendSchema = RoomOwnCommandSchema.omit({clientSeq: true}).extend({ content: ChatContentSchema });
 export type ChatSend = z.infer<typeof ChatSendSchema>;
 export const ModerationDecisionSchema = z.strictObject({ decision: z.enum(['allow', 'reject', 'review']) });
 export const ChatMessageSchema = z.strictObject({ schemaVersion: z.literal(1), messageId: z.uuid(), epoch: z.uuid(), roomId: z.uuid(), createdAt: z.iso.datetime(), sender: PublicProfileSchema,

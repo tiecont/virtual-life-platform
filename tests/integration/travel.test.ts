@@ -386,6 +386,20 @@ it('rolls back the unannounced index switch and source seat when a deferred data
   expect((await get(r, u, issued.intentId)).json().phase).toBe('FAILED');
 });
 
+it('preserves the source command watermark across a failed durable travel commit and index compensation', async () => {
+  const r = await open(), u = await guest(r), peer = await join(r, u);
+  const command = async (event: string, extra: Record<string, unknown>) => RoomAckSchema.parse(await peer.socket.timeout(5000).emitWithAck(event, {...own(peer.state), ...extra}));
+  expect((await command('seat.claim', {seatId: 'seat-1', clientSeq: 5})).ok).toBe(true);
+  const issued = await create(r, u, peer.source);
+  await r.pool.query("CREATE FUNCTION fail_ordered_travel() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.phase='COMMITTED' THEN RAISE EXCEPTION 'synthetic ordered travel commit failure'; END IF; RETURN NEW; END $$");
+  await r.pool.query('CREATE CONSTRAINT TRIGGER fail_ordered_travel AFTER UPDATE ON travel_intents DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION fail_ordered_travel()');
+  expect(await transfer(peer, issued)).toMatchObject({ok: false, error: {code: 'INTERNAL_ERROR'}});
+  expect(await command('seat.release', {seatId: 'seat-1', clientSeq: 4})).toMatchObject({ok: false, error: {code: 'IDEMPOTENCY_CONFLICT'}});
+  expect(r.app.rooms.diagnostics()).toMatchObject({memberships: 1, occupiedSeats: 1, travelHolds: 0});
+  expect((await command('seat.release', {seatId: 'seat-1', clientSeq: 6})).ok).toBe(true);
+  expect((await get(r, u, issued.intentId)).json().phase).toBe('FAILED');
+});
+
 it('treats a durable committed receipt after owner restart as history with no phantom live snapshot', async () => {
   const r = await open(), u = await guest(r), peer = await join(r, u), issued = await create(r, u, peer.source), key = randomUUID(); expect((await transfer(peer, issued, key)).ok).toBe(true); await restart(r);
   const newPeer = await join(r, u), result = await transfer(newPeer, issued, key); expect(result).toMatchObject({ ok: true, result: { receipt: { phase: 'COMMITTED' }, snapshot: null } });
