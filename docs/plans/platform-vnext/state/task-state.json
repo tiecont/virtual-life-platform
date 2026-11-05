@@ -87,12 +87,14 @@
       "next_action": "Reserve N00-03; inspect local host/toolchain/ADB read-only, document target server/device/region unknowns with owners, and keep Android/web work independent of iOS access."
     },
     "N00-03": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex coordinator",
+      "branch": "codex/vnext-n00-03-environment",
+      "evidence_refs": [
+        "n00-03-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "Server/device/region/runtime matrix; unresolved assumptions có owner"
+      "next_action": "Reserve N00-04 and record repository ADR0101 for baseline architecture/ownership, preserving the audited stack and separating preparation from activation/release gates."
     },
     "N00-04": {
       "status": "TODO",

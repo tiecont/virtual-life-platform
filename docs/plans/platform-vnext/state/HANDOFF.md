@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T15:16:37.781074+00:00; task N00-02 VERIFIED on `codex/vnext-n00-02-docs`. Base revision `86959b96472ef30eda711a28087dbe106baf5674`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T15:19:38.555724+00:00; task N00-03 VERIFIED on `codex/vnext-n00-03-environment`. Base revision `d3a2c33866df352f31b8544f39a40c70706d6cf2`; this task has its own reviewable commit after evidence finalization.
 
-Integrated vNext entrypoints and Android-first instructions, added source-pinned current architecture/evidence index, corrected stale README claims and labelled early M02/M22 and offline handoffs as historical. No runtime, schema, rollout, Mxx ledger or raw historical evidence change.
+Measured the CachyOS development host and actual tool availability. Chose conservative local-only staging/rehearsal defaults under owner discretion; recorded server, WAN, device, operator and signing unknowns with responsible lanes. No package install, device/remote-server access, purchase or deployment.
 
-[Actual checks](../audit/N00-02-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 2, "TODO": 67}`.
+[Actual checks](../audit/N00-03-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 3, "TODO": 66}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N00-03; inspect local host/toolchain/ADB read-only, document target server/device/region unknowns with owners, and keep Android/web work independent of iOS access.
+Reserve N00-04 and record repository ADR0101 for baseline architecture/ownership, preserving the audited stack and separating preparation from activation/release gates.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.

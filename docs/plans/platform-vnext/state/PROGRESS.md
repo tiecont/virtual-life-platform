@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N00-03 VERIFIED
+
+Measured the CachyOS development host and actual tool availability. Chose conservative local-only staging/rehearsal defaults under owner discretion; recorded server, WAN, device, operator and signing unknowns with responsible lanes. No package install, device/remote-server access, purchase or deployment.
+
+Actual commands: 3, all exit 0. Evidence: `n00-03-2026-11-05`; [checks](../audit/N00-03-CHECKS.json). Current counts: `{"VERIFIED": 3, "TODO": 66}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N00-04 and record repository ADR0101 for baseline architecture/ownership, preserving the audited stack and separating preparation from activation/release gates.
+
 ## 2026-11-05 — N00-02 VERIFIED
 
 Integrated vNext entrypoints and Android-first instructions, added source-pinned current architecture/evidence index, corrected stale README claims and labelled early M02/M22 and offline handoffs as historical. No runtime, schema, rollout, Mxx ledger or raw historical evidence change.
