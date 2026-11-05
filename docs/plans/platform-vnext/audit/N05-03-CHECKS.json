@@ -1,0 +1,437 @@
+{
+  "taskId": "N05-03",
+  "sourceRevision": "8c73b6ae7a411a9d302831f40b9d9f320d2caa2f+workspace-sha256:f61ca63f30388058914e76e6850087be2b006610ae8370d1dc72dc4538c483fc",
+  "executedAt": "2026-11-05T23:10:38.474821+00:00",
+  "commands": [
+    {
+      "command": "bash -c node --test tests/governance/*.test.mjs",
+      "argv": [
+        "bash",
+        "-c",
+        "node --test tests/governance/*.test.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:07:50.378Z",
+      "endedAt": "2026-11-05T23:07:52.215Z",
+      "log": "artifacts/vnext/n05-03/all-governance.log",
+      "sha256": "f5dc845fe7ebf94159288e18c006758fd6c293ca9458b92aa7bb514115f601bd"
+    },
+    {
+      "command": "pnpm bench:rooms",
+      "argv": [
+        "pnpm",
+        "bench:rooms"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:06:24.900Z",
+      "endedAt": "2026-11-05T23:06:45.455Z",
+      "log": "artifacts/vnext/n05-03/benchmark.log",
+      "sha256": "a8ae7ba65175a9d8a63090be8d9eef320867bde612e2aedb344d7bc9c2875ed8"
+    },
+    {
+      "command": "pnpm ci:check",
+      "argv": [
+        "pnpm",
+        "ci:check"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:07:49.201Z",
+      "endedAt": "2026-11-05T23:07:50.920Z",
+      "log": "artifacts/vnext/n05-03/ci.log",
+      "sha256": "581954628bb3a0c92edb1baac245d0da04fd7994c4ae40ef6a4b829a76ec44e3"
+    },
+    {
+      "command": "node --test tests/governance/runtime-profile-comparison.test.mjs",
+      "argv": [
+        "node",
+        "--test",
+        "tests/governance/runtime-profile-comparison.test.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:06:00.653Z",
+      "endedAt": "2026-11-05T23:06:00.782Z",
+      "log": "artifacts/vnext/n05-03/comparator.log",
+      "sha256": "2110cb50fef31011309a2a8f2184b5ab5741acf9bb0415bb51149301494b5018"
+    },
+    {
+      "command": "node scripts/compare-runtime-profiles.mjs artifacts/vnext/n05-02/runtime-profile.json artifacts/vnext/n05-03/profile-a.json",
+      "argv": [
+        "node",
+        "scripts/compare-runtime-profiles.mjs",
+        "artifacts/vnext/n05-02/runtime-profile.json",
+        "artifacts/vnext/n05-03/profile-a.json"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:06:13.792Z",
+      "endedAt": "2026-11-05T23:06:13.849Z",
+      "log": "artifacts/vnext/n05-03/comparison.log",
+      "sha256": "1fdd98f4d0e1261458af4da5f563d2ed81e84dcec6bfb027a415360c4bd55725"
+    },
+    {
+      "command": "pnpm exec eslint scripts/compare-runtime-profiles.mjs tests/governance/runtime-profile-comparison.test.mjs",
+      "argv": [
+        "pnpm",
+        "exec",
+        "eslint",
+        "scripts/compare-runtime-profiles.mjs",
+        "tests/governance/runtime-profile-comparison.test.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:09:47.789Z",
+      "endedAt": "2026-11-05T23:09:49.184Z",
+      "log": "artifacts/vnext/n05-03/final-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "node --test tests/governance/runtime-profile-comparison.test.mjs",
+      "argv": [
+        "node",
+        "--test",
+        "tests/governance/runtime-profile-comparison.test.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:07:29.141Z",
+      "endedAt": "2026-11-05T23:07:29.281Z",
+      "log": "artifacts/vnext/n05-03/governance-tests.log",
+      "sha256": "900af92e90d391a27a0932ba09d92574dc9058d7c9f5e9efe1b561825ad1b22e"
+    },
+    {
+      "command": "pnpm governance:check",
+      "argv": [
+        "pnpm",
+        "governance:check"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:07:27.971Z",
+      "endedAt": "2026-11-05T23:07:58.034Z",
+      "log": "artifacts/vnext/n05-03/governance.log",
+      "sha256": "0fb0cc60a7d03d9ecb65fa45f85709ee47b96fc13ad7d0839b8fddddb696f361"
+    },
+    {
+      "command": "pnpm exec eslint scripts/compare-runtime-profiles.mjs tests/governance/runtime-profile-comparison.test.mjs",
+      "argv": [
+        "pnpm",
+        "exec",
+        "eslint",
+        "scripts/compare-runtime-profiles.mjs",
+        "tests/governance/runtime-profile-comparison.test.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:06:14.067Z",
+      "endedAt": "2026-11-05T23:06:15.428Z",
+      "log": "artifacts/vnext/n05-03/lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "node artifacts/vnext/n05-03/preservation.mjs",
+      "argv": [
+        "node",
+        "artifacts/vnext/n05-03/preservation.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:08:23.883Z",
+      "endedAt": "2026-11-05T23:08:23.943Z",
+      "log": "artifacts/vnext/n05-03/preservation.log",
+      "sha256": "4e617c0a0b6f81282c614f14f7cae55f3687e3efa96d7f0457e545e4614c34d1"
+    },
+    {
+      "command": "pnpm profile:runtime",
+      "argv": [
+        "pnpm",
+        "profile:runtime"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:04:31.565Z",
+      "endedAt": "2026-11-05T23:04:50.756Z",
+      "log": "artifacts/vnext/n05-03/profile-a.log",
+      "sha256": "531c3e104ed9af55cf2ab69ce626a545509a6a222bd0398c835817d383201350"
+    },
+    {
+      "command": "pnpm profile:runtime",
+      "argv": [
+        "pnpm",
+        "profile:runtime"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:05:19.990Z",
+      "endedAt": "2026-11-05T23:05:39.361Z",
+      "log": "artifacts/vnext/n05-03/profile-b.log",
+      "sha256": "a0fe94459ff305e583b954c228b2a5bfbfc59cfc2dbab918d7b1fb74431af045"
+    },
+    {
+      "command": "pnpm test:protocol",
+      "argv": [
+        "pnpm",
+        "test:protocol"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:06:00.854Z",
+      "endedAt": "2026-11-05T23:08:42.527Z",
+      "log": "artifacts/vnext/n05-03/protocol.log",
+      "sha256": "66054ad83817232b16c54abb9cd078c2b48ebde2611d7cfea82c7f8327bd5d3e"
+    },
+    {
+      "command": "node scripts/compare-runtime-profiles.mjs artifacts/vnext/n05-03/profile-a.json artifacts/vnext/n05-03/profile-b.json",
+      "argv": [
+        "node",
+        "scripts/compare-runtime-profiles.mjs",
+        "artifacts/vnext/n05-03/profile-a.json",
+        "artifacts/vnext/n05-03/profile-b.json"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:06:24.766Z",
+      "endedAt": "2026-11-05T23:06:24.815Z",
+      "log": "artifacts/vnext/n05-03/repeat-comparison-fixed.log",
+      "sha256": "8e1340c1fc2bf09edff16edce98dc1fc126c6e7fa881fffab2e48d9135150dec"
+    },
+    {
+      "command": "node scripts/compare-runtime-profiles.mjs artifacts/vnext/n05-03/profile-a.json artifacts/vnext/n05-03/profile-b.json",
+      "argv": [
+        "node",
+        "scripts/compare-runtime-profiles.mjs",
+        "artifacts/vnext/n05-03/profile-a.json",
+        "artifacts/vnext/n05-03/profile-b.json"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-05T23:06:13.930Z",
+      "endedAt": "2026-11-05T23:06:13.980Z",
+      "log": "artifacts/vnext/n05-03/repeat-comparison.log",
+      "sha256": "dd90ff450eafce4c6fd7bafd29fd8bae3597977befaabd3495189d71bc3c6539"
+    },
+    {
+      "command": "pnpm test:security",
+      "argv": [
+        "pnpm",
+        "test:security"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T23:07:34.563Z",
+      "endedAt": "2026-11-05T23:09:53.425Z",
+      "log": "artifacts/vnext/n05-03/security.log",
+      "sha256": "8a3af57f4e85a5237b842a33bb855a1736a294347d04fa90706794944a86170c"
+    }
+  ],
+  "acceptance": [
+    "Compared source/workload/hardware-pinned actual profiles, included accepted/rejected commands and snapshot bytes without claiming causal improvement or capacity.",
+    "Explicit ADR retains serialization because no controlled candidate demonstrates benefit relative to travel/account-lock/privacy invalidation risk. Burst queue objective remains unmet and disclosed.",
+    "No cached recipients or mailbox introduced; current projection generations, block/revoke/consent/authority barriers and exact transaction ordering remain. Fresh focused protocol/security gates verify critical behavior.",
+    "Reusable offline diagnostic comparison has real positive and negative checks and no production/runtime effect."
+  ],
+  "limitations": [
+    "Short local synthetic sandbox and timing-dependent packet variation are not a qualified workload or capacity/SLO pass. No optimization implemented; future batching/mailbox experiments must retain privacy/account ordering and publish their own before/after evidence.",
+    "No fresh full integration/build/browser/physical/image/hosted/deployment in this slice; runtime is byte-identical to N05-02 measured/fully checked source. Protocol/security are fresh overlapping subsets, not summed unique cases.",
+    "Benchmark overlapped the separate protocol gate and is excluded from timing claims. One absent-input comparison failure retained.",
+    "Raw artifacts local, not off-host archived; N13/N14 inactive and public/store/operator/release gates unchanged."
+  ],
+  "artifacts": [
+    {
+      "ref": "scripts/compare-runtime-profiles.mjs",
+      "sha256": "d371ceb00616cdbc77103db376324988b2abd71937ee38c9dcee1b7cc41bf3b2",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "tests/governance/runtime-profile-comparison.test.mjs",
+      "sha256": "4ff3d102519e0caf8643cf0e0ab96322d053523dabdcb7ab93712f6f0e9debb9",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/README.md",
+      "sha256": "d4e788de112dcd28bfa55cddf12745cc53bc1af8d1523b72546805e008262fc6",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/CURRENT-STATE.md",
+      "sha256": "7c0965e364ff4e266a67f1fe37b4011a9e154d43135b23c930bc92c39d12983b",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/RUNTIME-PROFILE.md",
+      "sha256": "07bb8e7110a1c339354fd03e813a098530b3e1a00c5fa0bda51f791f3c917568",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/N05-03-PROFILE-DECISION.json",
+      "sha256": "8813f8c298b5684575f75c3f58a1cd4ad36b14f73885b3b8d4d00b7f81d55eba",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/adr/0110-retain-owner-serialization-after-local-profile.md",
+      "sha256": "32725e9956faeb9f8e4f0f077be78ceb46f1dee7c9c42e83c508a76774313585",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/profile-a.json",
+      "sha256": "7041d48ff292479905da742a6610c7ca669ad9ff35db570e5d3f020f8f383efc",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/profile-b.json",
+      "sha256": "d1be486a784afd491f909e6106887f6c22d92e51d429cc1e2ce19ddf05567333",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/measured-source.patch",
+      "sha256": "9ff5281b6cb3fb387eadd84b3055f22c5eeaf471593fe6fef53885b11615d8d8",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/prior-profile.json",
+      "sha256": "fdb92c10977ca6ab84507e4c82189af19de5ae6edd1e8b84adfac3dc44336f06",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/comparison.json",
+      "sha256": "1fdd98f4d0e1261458af4da5f563d2ed81e84dcec6bfb027a415360c4bd55725",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/repeat-comparison-fixed.json",
+      "sha256": "8e1340c1fc2bf09edff16edce98dc1fc126c6e7fa881fffab2e48d9135150dec",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/summary.json",
+      "sha256": "8b0c239c484ab057a0696a40bf6fdf5ffbb9818f8978d994adb499daf0953de9",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/preservation.mjs",
+      "sha256": "6857aec1377f4ee06829ff0e820c175e93f3e6b9f0e4c01f29f21de8f80e8109",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/protocol-network-races.json",
+      "sha256": "6f5b290f48a3fb946c598cb6ed8f3a2bccaabd20610f1686a9f74b10c8ccefe0",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/all-governance.log",
+      "sha256": "f5dc845fe7ebf94159288e18c006758fd6c293ca9458b92aa7bb514115f601bd",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/benchmark.log",
+      "sha256": "a8ae7ba65175a9d8a63090be8d9eef320867bde612e2aedb344d7bc9c2875ed8",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/ci.log",
+      "sha256": "581954628bb3a0c92edb1baac245d0da04fd7994c4ae40ef6a4b829a76ec44e3",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/comparator.log",
+      "sha256": "2110cb50fef31011309a2a8f2184b5ab5741acf9bb0415bb51149301494b5018",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/comparison.log",
+      "sha256": "1fdd98f4d0e1261458af4da5f563d2ed81e84dcec6bfb027a415360c4bd55725",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/final-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/governance-tests.log",
+      "sha256": "900af92e90d391a27a0932ba09d92574dc9058d7c9f5e9efe1b561825ad1b22e",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/governance.log",
+      "sha256": "0fb0cc60a7d03d9ecb65fa45f85709ee47b96fc13ad7d0839b8fddddb696f361",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/preservation.log",
+      "sha256": "4e617c0a0b6f81282c614f14f7cae55f3687e3efa96d7f0457e545e4614c34d1",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/profile-a.log",
+      "sha256": "531c3e104ed9af55cf2ab69ce626a545509a6a222bd0398c835817d383201350",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/profile-b.log",
+      "sha256": "a0fe94459ff305e583b954c228b2a5bfbfc59cfc2dbab918d7b1fb74431af045",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/protocol.log",
+      "sha256": "66054ad83817232b16c54abb9cd078c2b48ebde2611d7cfea82c7f8327bd5d3e",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/repeat-comparison-fixed.log",
+      "sha256": "8e1340c1fc2bf09edff16edce98dc1fc126c6e7fa881fffab2e48d9135150dec",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/repeat-comparison.log",
+      "sha256": "dd90ff450eafce4c6fd7bafd29fd8bae3597977befaabd3495189d71bc3c6539",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/security.log",
+      "sha256": "8a3af57f4e85a5237b842a33bb855a1736a294347d04fa90706794944a86170c",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    }
+  ],
+  "nextExactAction": "Reserve N05-04; audit existing main shutdown/preClose/authority/readiness and owner tests, implement bounded lifecycle handling for in-flight maintenance/critical work without releasing authority early, add actual drain/owner-loss/DB-outage and reconnect evidence as needed, implement test:runtime-faults before running it, preserve durable effects/epoch resync and update checkpoint."
+}

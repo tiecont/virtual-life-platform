@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N05-03 VERIFIED
+
+Retained global owner serialization, current viewer reads and full-snapshot deltas after one prior and two fresh hardware/workload/source-bound diagnostic observations. Actual movement p95264.16/234.31/253.20ms and mean queue128.75/114.24/129.26ms expose contention without isolating a safe optimization. Added an offline comparison tool rejecting changed budgets/environment, incomplete cleanup and unexpected outcomes;20 negative mutations/60 governance cases pass. Fresh129 protocol cases and153 security cases pass, preserving actual races, revoke/block/privacy, committed effects and owner-loss behavior. Existing24-actor benchmark passed but overlapped correctness work and is excluded from timing comparisons. Application source,38 SQL, versions, historical151-task ledger and all closed gates unchanged. One missing comparison input failure retained and corrected.
+
+Actual commands: 16; retained failed attempts: 1; required final checks passed. Evidence: `n05-03-2026-11-05`; [checks](../audit/N05-03-CHECKS.json). Current counts: `{"VERIFIED": 23, "TODO": 46}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N05-04; audit existing main shutdown/preClose/authority/readiness and owner tests, implement bounded lifecycle handling for in-flight maintenance/critical work without releasing authority early, add actual drain/owner-loss/DB-outage and reconnect evidence as needed, implement test:runtime-faults before running it, preserve durable effects/epoch resync and update checkpoint.
+
 ## 2026-11-05 — N05-02 VERIFIED
 
 Implemented bounded owner queue/execution/projection/fanout/path/real pg phase observation, safe lifecycle cleanup and an executable local runtime profile. Actual12-actor profile observed294 full-snapshot room.delta packets/947560 text bytes, successful move p95264.16ms and queue mean128.75ms; no sparse-delta or capacity claim. Same24-actor benchmark passed before/after instrumentation without a statistical overhead claim. Actual PostgreSQL callback/Promise/wait attribution and owned cancellation/cleanup pass. Full check passed58 governance,308 unit,569 integration and all workspace builds. Two initial same-day reward failures reproduced on the pre-instrumentation commit; only their test clocks were aligned to UTC noon, preserving production behavior and every old expectation. All failed attempts retained; singleton/global serialization,38 SQL, versions and safety gates unchanged.

@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T23:04:06.858165+00:00; task N05-02 VERIFIED on `codex/vnext-n05-02-runtime-profile`. Base revision `8fbc5e38a33d295dd58cb208503c827d960f0eef`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T23:10:38.474821+00:00; task N05-03 VERIFIED on `codex/vnext-n05-03-profile-decision`. Base revision `8c73b6ae7a411a9d302831f40b9d9f320d2caa2f`; this task has its own reviewable commit after evidence finalization.
 
-Implemented bounded owner queue/execution/projection/fanout/path/real pg phase observation, safe lifecycle cleanup and an executable local runtime profile. Actual12-actor profile observed294 full-snapshot room.delta packets/947560 text bytes, successful move p95264.16ms and queue mean128.75ms; no sparse-delta or capacity claim. Same24-actor benchmark passed before/after instrumentation without a statistical overhead claim. Actual PostgreSQL callback/Promise/wait attribution and owned cancellation/cleanup pass. Full check passed58 governance,308 unit,569 integration and all workspace builds. Two initial same-day reward failures reproduced on the pre-instrumentation commit; only their test clocks were aligned to UTC noon, preserving production behavior and every old expectation. All failed attempts retained; singleton/global serialization,38 SQL, versions and safety gates unchanged.
+Retained global owner serialization, current viewer reads and full-snapshot deltas after one prior and two fresh hardware/workload/source-bound diagnostic observations. Actual movement p95264.16/234.31/253.20ms and mean queue128.75/114.24/129.26ms expose contention without isolating a safe optimization. Added an offline comparison tool rejecting changed budgets/environment, incomplete cleanup and unexpected outcomes;20 negative mutations/60 governance cases pass. Fresh129 protocol cases and153 security cases pass, preserving actual races, revoke/block/privacy, committed effects and owner-loss behavior. Existing24-actor benchmark passed but overlapped correctness work and is excluded from timing comparisons. Application source,38 SQL, versions, historical151-task ledger and all closed gates unchanged. One missing comparison input failure retained and corrected.
 
-[Actual checks](../audit/N05-02-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 22, "TODO": 47}`.
+[Actual checks](../audit/N05-03-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 23, "TODO": 46}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N05-03; read current profile/metrics and conditional optimization acceptance, compare pinned workload/hardware/source, choose only a justified consistency-preserving optimization or document retaining the global queue with measured limits. Preserve block/revoke projections and transactions; run actual applicable protocol/integration/security verification and update checkpoint. Never infer sparse deltas, capacity or a performance win from exit0.
+Reserve N05-04; audit existing main shutdown/preClose/authority/readiness and owner tests, implement bounded lifecycle handling for in-flight maintenance/critical work without releasing authority early, add actual drain/owner-loss/DB-outage and reconnect evidence as needed, implement test:runtime-faults before running it, preserve durable effects/epoch resync and update checkpoint.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.

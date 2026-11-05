@@ -297,12 +297,14 @@
       "next_action": "Reserve N05-03; read current profile/metrics and conditional optimization acceptance, compare pinned workload/hardware/source, choose only a justified consistency-preserving optimization or document retaining the global queue with measured limits. Preserve block/revoke projections and transactions; run actual applicable protocol/integration/security verification and update checkpoint. Never infer sparse deltas, capacity or a performance win from exit0."
     },
     "N05-03": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Runtime",
+      "branch": "codex/vnext-n05-03-profile-decision",
+      "evidence_refs": [
+        "n05-03-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "Comparison report; indexed projections/batching/true deltas hoặc mailbox nếu justified"
+      "next_action": "Reserve N05-04; audit existing main shutdown/preClose/authority/readiness and owner tests, implement bounded lifecycle handling for in-flight maintenance/critical work without releasing authority early, add actual drain/owner-loss/DB-outage and reconnect evidence as needed, implement test:runtime-faults before running it, preserve durable effects/epoch resync and update checkpoint."
     },
     "N05-04": {
       "status": "TODO",

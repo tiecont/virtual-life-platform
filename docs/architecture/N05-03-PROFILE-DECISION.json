@@ -1,0 +1,367 @@
+{
+  "taskId": "N05-03",
+  "result": "PASS",
+  "decision": "RETAIN_GLOBAL_SERIALIZATION",
+  "optimizationImplemented": false,
+  "baseRevision": "8c73b6ae7a411a9d302831f40b9d9f320d2caa2f",
+  "measuredApiSource": "59a2a703e9a13ecb217d386625875dab1cd7f476",
+  "applicationSourceUnchanged": true,
+  "profiledDiffSha256": "9ff5281b6cb3fb387eadd84b3055f22c5eeaf471593fe6fef53885b11615d8d8",
+  "freshRuns": [
+    "profile-a",
+    "profile-b"
+  ],
+  "historicalInput": "prior-profile: actual N05-02, not a new run",
+  "workload": {
+    "actors": 12,
+    "rooms": 2,
+    "capacityPerRoom": 8,
+    "publicSyntheticProfiles": true,
+    "motionVersion": 1,
+    "moveWaves": 2,
+    "reconnects": 2,
+    "limitsChanged": false,
+    "sampleIntervalMs": 100,
+    "includesSetupInPhaseTotals": true
+  },
+  "environment": {
+    "node": "v26.9.0",
+    "kernel": "7.2.9-2-cachyos",
+    "platform": "linux",
+    "architecture": "x64",
+    "cpuModel": "AMD Ryzen 7 4800HS with Radeon Graphics",
+    "logicalCpus": 16,
+    "availableParallelism": 16,
+    "memoryBytes": 24573243392,
+    "cgroup": {
+      "cpu.max": "unavailable",
+      "memory.max": "unavailable"
+    },
+    "postgresVersion": "17.7"
+  },
+  "observedRuns": [
+    {
+      "label": "prior-profile",
+      "sourceRevision": "8fbc5e38a33d295dd58cb208503c827d960f0eef+workspace-sha256:a35c508aa10a7c285631a43c55af73a9ebee785715582cceec8f7459c169650c",
+      "successfulMoveP95Ms": 264.15995599999997,
+      "cpuMs": 1271.137,
+      "queueMeanMs": 128.7465437916666,
+      "projectionMeanMs": 15.645766166666599,
+      "eventLoopP95Ms": 20.938751,
+      "packets": 294,
+      "textBytes": 947560
+    },
+    {
+      "label": "profile-a",
+      "sourceRevision": "8c73b6ae7a411a9d302831f40b9d9f320d2caa2f+workspace-sha256:9ff5281b6cb3fb387eadd84b3055f22c5eeaf471593fe6fef53885b11615d8d8",
+      "successfulMoveP95Ms": 234.31238299999995,
+      "cpuMs": 1071.38,
+      "queueMeanMs": 114.24215108333324,
+      "projectionMeanMs": 13.098858541666678,
+      "eventLoopP95Ms": 20.791295,
+      "packets": 286,
+      "textBytes": 915484
+    },
+    {
+      "label": "profile-b",
+      "sourceRevision": "8c73b6ae7a411a9d302831f40b9d9f320d2caa2f+workspace-sha256:9ff5281b6cb3fb387eadd84b3055f22c5eeaf471593fe6fef53885b11615d8d8",
+      "successfulMoveP95Ms": 253.20088699999997,
+      "cpuMs": 1128.68,
+      "queueMeanMs": 129.26366395833347,
+      "projectionMeanMs": 15.108745125000032,
+      "eventLoopP95Ms": 20.873215,
+      "packets": 294,
+      "textBytes": 949128
+    }
+  ],
+  "comparisons": [
+    {
+      "result": "COMPARABLE_DIAGNOSTICS",
+      "qualification": "DIAGNOSTIC_ONLY",
+      "sourceRevisions": [
+        "8fbc5e38a33d295dd58cb208503c827d960f0eef+workspace-sha256:a35c508aa10a7c285631a43c55af73a9ebee785715582cceec8f7459c169650c",
+        "8c73b6ae7a411a9d302831f40b9d9f320d2caa2f+workspace-sha256:9ff5281b6cb3fb387eadd84b3055f22c5eeaf471593fe6fef53885b11615d8d8"
+      ],
+      "workload": {
+        "actors": 12,
+        "rooms": 2,
+        "capacityPerRoom": 8,
+        "publicSyntheticProfiles": true,
+        "motionVersion": 1,
+        "moveWaves": 2,
+        "reconnects": 2,
+        "limitsChanged": false,
+        "sampleIntervalMs": 100,
+        "includesSetupInPhaseTotals": true
+      },
+      "environment": {
+        "node": "v26.9.0",
+        "kernel": "7.2.9-2-cachyos",
+        "platform": "linux",
+        "architecture": "x64",
+        "cpuModel": "AMD Ryzen 7 4800HS with Radeon Graphics",
+        "logicalCpus": 16,
+        "availableParallelism": 16,
+        "memoryBytes": 24573243392,
+        "cgroup": {
+          "cpu.max": "unavailable",
+          "memory.max": "unavailable"
+        },
+        "postgresVersion": "17.7"
+      },
+      "successfulP95Ms": {
+        "room.join": {
+          "before": 350.1818040000003,
+          "after": 327.85566000000017,
+          "difference": -22.326144000000113
+        },
+        "room.snapshot": {
+          "before": 97.61083999999983,
+          "after": 85.15394700000024,
+          "difference": -12.456892999999582
+        },
+        "room.move": {
+          "before": 264.15995599999997,
+          "after": 234.31238299999995,
+          "difference": -29.84757300000001
+        },
+        "seat.claim": {
+          "before": 51.49022199999945,
+          "after": 30.62518900000032,
+          "difference": -20.86503299999913
+        },
+        "seat.release": {
+          "before": 37.33021100000042,
+          "after": 27.549976000000242,
+          "difference": -9.780235000000175
+        },
+        "room.leave": {
+          "before": 196.23761699999977,
+          "after": 127.76837599999999,
+          "difference": -68.46924099999978
+        }
+      },
+      "cpuMs": {
+        "before": 1271.137,
+        "after": 1071.38,
+        "difference": -199.75699999999983
+      },
+      "rssPeakSampledBytes": {
+        "before": 221085696,
+        "after": 206946304,
+        "difference": -14139392
+      },
+      "eventLoopP95Ms": {
+        "before": 20.938751,
+        "after": 20.791295,
+        "difference": -0.14745599999999826
+      },
+      "snapshotTextBytes": {
+        "before": 947560,
+        "after": 915484,
+        "difference": -32076
+      },
+      "snapshotTextPackets": {
+        "before": 294,
+        "after": 286,
+        "difference": -8
+      },
+      "limitations": [
+        "One pair on a shared host; no statistical equivalence, causal improvement, SLO or capacity conclusion",
+        "Source identity pins the reported checkout/diff, not a production image; inspect source changes independently",
+        "DB/projection phase sums overlap; no subtraction of percentiles or CPU inference",
+        "Snapshot text bytes exclude transport framing; generator and database share hardware"
+      ],
+      "inputSha256": [
+        "fdb92c10977ca6ab84507e4c82189af19de5ae6edd1e8b84adfac3dc44336f06",
+        "7041d48ff292479905da742a6610c7ca669ad9ff35db570e5d3f020f8f383efc"
+      ]
+    },
+    {
+      "result": "COMPARABLE_DIAGNOSTICS",
+      "qualification": "DIAGNOSTIC_ONLY",
+      "sourceRevisions": [
+        "8c73b6ae7a411a9d302831f40b9d9f320d2caa2f+workspace-sha256:9ff5281b6cb3fb387eadd84b3055f22c5eeaf471593fe6fef53885b11615d8d8",
+        "8c73b6ae7a411a9d302831f40b9d9f320d2caa2f+workspace-sha256:9ff5281b6cb3fb387eadd84b3055f22c5eeaf471593fe6fef53885b11615d8d8"
+      ],
+      "workload": {
+        "actors": 12,
+        "rooms": 2,
+        "capacityPerRoom": 8,
+        "publicSyntheticProfiles": true,
+        "motionVersion": 1,
+        "moveWaves": 2,
+        "reconnects": 2,
+        "limitsChanged": false,
+        "sampleIntervalMs": 100,
+        "includesSetupInPhaseTotals": true
+      },
+      "environment": {
+        "node": "v26.9.0",
+        "kernel": "7.2.9-2-cachyos",
+        "platform": "linux",
+        "architecture": "x64",
+        "cpuModel": "AMD Ryzen 7 4800HS with Radeon Graphics",
+        "logicalCpus": 16,
+        "availableParallelism": 16,
+        "memoryBytes": 24573243392,
+        "cgroup": {
+          "cpu.max": "unavailable",
+          "memory.max": "unavailable"
+        },
+        "postgresVersion": "17.7"
+      },
+      "successfulP95Ms": {
+        "room.join": {
+          "before": 327.85566000000017,
+          "after": 364.3575249999999,
+          "difference": 36.501864999999725
+        },
+        "room.snapshot": {
+          "before": 85.15394700000024,
+          "after": 91.71735999999964,
+          "difference": 6.5634129999994
+        },
+        "room.move": {
+          "before": 234.31238299999995,
+          "after": 253.20088699999997,
+          "difference": 18.88850400000001
+        },
+        "seat.claim": {
+          "before": 30.62518900000032,
+          "after": 29.65762299999915,
+          "difference": -0.9675660000011703
+        },
+        "seat.release": {
+          "before": 27.549976000000242,
+          "after": 23.613925999999992,
+          "difference": -3.9360500000002503
+        },
+        "room.leave": {
+          "before": 127.76837599999999,
+          "after": 143.2954179999997,
+          "difference": 15.52704199999971
+        }
+      },
+      "cpuMs": {
+        "before": 1071.38,
+        "after": 1128.68,
+        "difference": 57.299999999999955
+      },
+      "rssPeakSampledBytes": {
+        "before": 206946304,
+        "after": 207605760,
+        "difference": 659456
+      },
+      "eventLoopP95Ms": {
+        "before": 20.791295,
+        "after": 20.873215,
+        "difference": 0.08191999999999666
+      },
+      "snapshotTextBytes": {
+        "before": 915484,
+        "after": 949128,
+        "difference": 33644
+      },
+      "snapshotTextPackets": {
+        "before": 286,
+        "after": 294,
+        "difference": 8
+      },
+      "limitations": [
+        "One pair on a shared host; no statistical equivalence, causal improvement, SLO or capacity conclusion",
+        "Source identity pins the reported checkout/diff, not a production image; inspect source changes independently",
+        "DB/projection phase sums overlap; no subtraction of percentiles or CPU inference",
+        "Snapshot text bytes exclude transport framing; generator and database share hardware"
+      ],
+      "inputSha256": [
+        "7041d48ff292479905da742a6610c7ca669ad9ff35db570e5d3f020f8f383efc",
+        "d1be486a784afd491f909e6106887f6c22d92e51d429cc1e2ce19ddf05567333"
+      ]
+    }
+  ],
+  "interpretation": [
+    "Queue contention in synchronized bursts remains unresolved; the proposed50ms queue objective is not met, and no SLO/capacity is certified.",
+    "No controlled optimization candidate or bottleneck-isolating query experiment exists yet; retain serialized per-account/cross-room travel and safety ordering.",
+    "Projection remains a candidate for batching experiments; privacy, block, consent, revoke and world appearance invalidation must precede any cache.",
+    "Snapshot byte/packet variation is measured despite unchanged attempted command counts; no sparse-delta or bandwidth improvement claim. Exact scheduling cause was not isolated."
+  ],
+  "verification": {
+    "governanceCases": 60,
+    "comparatorNegativeMutations": 20,
+    "protocol": {
+      "exitCode": 0,
+      "files": 6,
+      "cases": 129
+    },
+    "security": {
+      "exitCode": 0,
+      "files": 10,
+      "cases": 153
+    },
+    "preservation": 0,
+    "lint": 0,
+    "ci": 0,
+    "benchmark": {
+      "exitCode": 0,
+      "scope": "Existing24-actor benchmark overlapped the separate protocol gate; diagnostic completion only, excluded from timing comparison"
+    }
+  },
+  "retainedFailures": [
+    {
+      "label": "repeat-comparison",
+      "exitCode": 1,
+      "cause": "Extraction summary used an incorrect samples key and stopped before saving profile-b; comparator correctly rejected the absent input. Extraction corrected to count; original logs retained."
+    }
+  ],
+  "limitations": [
+    "Two short fresh repetitions and one prior observation do not establish statistical significance, causal improvement, sustainable capacity or overhead equivalence.",
+    "Shared local host, synthetic sandbox, loopback, no image/TLS/WAN/browser/device or full gameplay mix. No order workload in profile; actual protocol/security gates cover correctness separately.",
+    "No runtime/contracts/dependencies/migrations/public policy changes. No fresh complete integration/build/browser/hosted/deployment run in N05-03; prior N05-02 full check has explicit earlier source/scope.",
+    "N13/N14 inactive; release NOT_REQUESTED. Raw measurements remain private local files, not off-host archives."
+  ],
+  "artifacts": [
+    {
+      "ref": "artifacts/vnext/n05-03/prior-profile.json",
+      "sha256": "fdb92c10977ca6ab84507e4c82189af19de5ae6edd1e8b84adfac3dc44336f06",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/profile-a.json",
+      "sha256": "7041d48ff292479905da742a6610c7ca669ad9ff35db570e5d3f020f8f383efc",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/profile-b.json",
+      "sha256": "d1be486a784afd491f909e6106887f6c22d92e51d429cc1e2ce19ddf05567333",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/comparison.json",
+      "sha256": "1fdd98f4d0e1261458af4da5f563d2ed81e84dcec6bfb027a415360c4bd55725",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/repeat-comparison-fixed.json",
+      "sha256": "8e1340c1fc2bf09edff16edce98dc1fc126c6e7fa881fffab2e48d9135150dec",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/measured-source.patch",
+      "sha256": "9ff5281b6cb3fb387eadd84b3055f22c5eeaf471593fe6fef53885b11615d8d8",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n05-03/preservation.mjs",
+      "sha256": "6857aec1377f4ee06829ff0e820c175e93f3e6b9f0e4c01f29f21de8f80e8109",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    }
+  ]
+}

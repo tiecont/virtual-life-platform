@@ -30,4 +30,6 @@ The initial full regression retained two reward-cap failures. Both reproduced on
 
 The current singleton/global queue, full-snapshot deltas, durable effects, privacy/consent and public/store/adult/media gates are preserved. N05-03 owns any optimization decision and comparison; N08 owns measured capacity qualification. See [ADR0109](../adr/0109-bounded-owner-runtime-observation.md).
 
+N05-03's [measured retention decision](../adr/0110-retain-owner-serialization-after-local-profile.md) keeps global serialization and viewer projection reads pending a controlled optimization candidate. Compare completed local runs with `node scripts/compare-runtime-profiles.mjs BEFORE.json AFTER.json`. The tool rejects changed workload/hardware, failed cleanup, invalid measurements or unexpected outcomes. COMPARABLE_DIAGNOSTICS means only that those recorded inputs can be compared; it is not statistical equivalence, a speedup, capacity qualification or a release gate. Packet counts varied even with identical command counts; scheduling around reconnect notifications is a possible contributor, not an isolated cause. [Actual comparison and correctness results](N05-03-PROFILE-DECISION.json) retain that variability.
+
 [Actual profile and verification](N05-02-RUNTIME-PROFILE.json): final full check passed58 governance,308 unit and569 integration cases and all workspace builds.
