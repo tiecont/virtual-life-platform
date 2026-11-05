@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T17:25:50.532420+00:00; task N02-02 VERIFIED on `codex/vnext-n02-02-hospitality-port`. Base revision `0af047d6ec5ab4af2c90541fd858eff7f75bcc72`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T18:29:14.960806+00:00; task N02-03 VERIFIED on `codex/vnext-n02-03-release-policy`. Base revision `67c6567ff3a9fd36c151f661deb9c7a23515d4b6`; this task has its own reviewable commit after evidence finalization.
 
-Extracted hospitality outbox to a minimal DB/account-lock/sink public entrypoint, preserving existing API/progression compatibility exports and one implementation. Exact constructor validation/dispatch core unchanged after type-only substitution; actual compiled Node import loads no identity/room/API composition. Fresh58hospitality races/rollback/restart/retention cases,46governance/278unit,lint/types/allproductionbuilds pass.
+Implemented strict versioned release/runtime/safety policy with real curated production installers and unchanged legacy fixtures. Immutable Git ceiling,version/hash/safety/key validation,registry activation/use gates and publication rechecks deny bypass. One operator reference replaces fake person-count requirements; real defaults/approvals remain closed. Fresh full check46governance/296unit/557integration/builds,additional20SDKcases and40legacybrowser executions pass.
 
-[Actual checks](../audit/N02-02-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 14, "TODO": 55}`.
+[Actual checks](../audit/N02-03-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 15, "TODO": 54}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N02-03; audit existing offline/runtime production guards, implement a strict versioned environment release-entitlement/runtime-policy model and genuine gated production installer, retain old offline fixture assertions and one human operator model, add missing/version/world/bypass denial tests before enabling any fixture.
+Reserve N02-04; implement explicit checksum-prefix schema compatibility without weakening defaults, then prove disposable38→approved-expand schema with actual previous runtime/image rollback and negative checksum/unknown-tail/metadata cases. Existing M23 image builder assumes38 and src/dist packages; adapt only necessary fixture/build support, preserving source pins and no production SQL edits.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.

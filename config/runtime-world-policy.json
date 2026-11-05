@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "releaseVersion": 1,
+  "environment": "production",
+  "maintenance": true,
+  "quickInteractions": false,
+  "worlds": {
+    "deadline": false,
+    "maid": false,
+    "library": false,
+    "restaurant": false,
+    "park": false,
+    "lounge": false,
+    "dating": false
+  }
+}

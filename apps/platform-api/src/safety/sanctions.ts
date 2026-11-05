@@ -27,8 +27,8 @@ export class SanctionService {
   #cipher?: EvidenceCipher;
   #maintenance?: Promise<number>;
   #listeners = new Set<(accountId: string) => void>();
-  constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private reports: ReportService, private rooms: RoomService, private policy: SafetyPolicy, environment: 'development' | 'test' | 'production', key?: string, keyId = 'local-v1', private now = Date.now) {
-    if (environment !== 'production' && key) this.#cipher = new EvidenceCipher(key, keyId);
+  constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private reports: ReportService, private rooms: RoomService, private policy: SafetyPolicy, environment: 'development' | 'test' | 'production', key?: string, keyId = 'local-v1', private now = Date.now, productionEvidence=false) {
+    if ((environment !== 'production'||productionEvidence) && key) this.#cipher = new EvidenceCipher(key, keyId);
   }
   private enabled() { if (!this.#cipher || !this.reports.available()) throw new DomainError('SAFETY_UNAVAILABLE', 503, 'Confidential safety review is unavailable'); }
   onChanged(listener: (accountId: string) => void) { this.#listeners.add(listener); return () => { this.#listeners.delete(listener); }; }

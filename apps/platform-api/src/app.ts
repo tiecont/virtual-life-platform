@@ -86,7 +86,7 @@ Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
 export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort } = {}) {
-  const safetyPolicy = await loadSafetyPolicy(options.safety?.policy);
+  const safetyPolicy = await loadSafetyPolicy(options.safety?.policy,config.SAFETY_POLICY_FILE);
   const mediaClearance=await MediaClearanceGate.create(await loadMediaClearance(),[],options.now);
   const requiredMigrations = await migrationManifest();
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
@@ -130,7 +130,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const sanctionsPolicy = new SanctionPolicy(db, options.now), incidentPolicy = new IncidentPolicy(db);
   const safetyGuard = { permits: async (id: string, world: string) => await incidentPolicy.permits(id, world) && await sanctionsPolicy.permits(id, world), assert: async (id: string, world: string, room?: string, chat?: boolean) => { await incidentPolicy.assert(id, world, room, chat); await sanctionsPolicy.assert(id, world, room, chat); } };
   let roomService: RoomService | undefined = undefined;
-  const worlds = await createWorldRuntime(config, identity, { ...options.worlds, safety: safetyGuard, membership: options.worlds?.membership ?? { permits: async (actor, slug, membershipId) => roomService?.permits(actor, slug, membershipId) ?? false } });
+  const worlds = await createWorldRuntime(config, identity, { ...options.worlds, safety: safetyGuard,safetyPolicy, membership: options.worlds?.membership ?? { permits: async (actor, slug, membershipId) => roomService?.permits(actor, slug, membershipId) ?? false } });
   const roomAuthority = new RoomAuthority(db);
   roomService = new RoomService(worlds.registry, identity, roomAuthority, options.now, {
     relationships: (viewer, targets) => social.roomRelationships(viewer, targets),
@@ -138,7 +138,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   }, safetyGuard);
   if (!roomService) throw new Error('Room service failed to initialize');
   const rooms = roomService;
-  const reports = new ReportService(db, identity, rooms, safetyPolicy, config.NODE_ENV, config.SAFETY_EVIDENCE_KEY, config.SAFETY_EVIDENCE_KEY_ID, options.now);
+  const reports = new ReportService(db, identity, rooms, safetyPolicy, config.NODE_ENV, config.SAFETY_EVIDENCE_KEY, config.SAFETY_EVIDENCE_KEY_ID, options.now,worlds.releasePolicy?.confidentialEvidence);
   const datingDates=new DatingDates(db,identity,social,datingMatching,reports,safetyPolicy,options.now);
   const datingContinuations=new DatingContinuations(db,identity,social,datingProfiles,datingDates,datingMatching,options.now);
   continuationOwner.current=datingContinuations;
@@ -151,7 +151,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   identity.registerExportOwner('privateDates',(account,transaction)=>datingDates.exportAccount(account,transaction));
   registerDatingDates(http,config,identity,datingDates,datingMatching,options.now);
   http.addHook('preClose',async()=>{await datingDates.close();});
-  const sanctions = new SanctionService(db, identity, reports, rooms, safetyPolicy, config.NODE_ENV, config.SAFETY_EVIDENCE_KEY, config.SAFETY_EVIDENCE_KEY_ID, options.now);
+  const sanctions = new SanctionService(db, identity, reports, rooms, safetyPolicy, config.NODE_ENV, config.SAFETY_EVIDENCE_KEY, config.SAFETY_EVIDENCE_KEY_ID, options.now,worlds.releasePolicy?.confidentialEvidence);
   const incidents = new IncidentService(db, identity, reports, rooms, () => [...new Set([...worlds.registry.slugs(),'dating'])], options.now);
   const travel = new TravelService(db, identity, rooms, options.now);
   const invitations = new InvitationService(db, identity, social, worlds.registry, options.now,rooms);
@@ -191,8 +191,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const unsubscribeDinnerContact=social.onContactWithdrawn((transaction,a,b)=>reservationParties.withdrawOfferContact(transaction,a,b));
   const unsubscribeEventInvitationWithdrawal = social.onContactWithdrawn((transaction, a, b) => eventInvitations.withdrawContact(transaction, a, b));
   const unsubscribeEventConsent = invitations.onConsentWithdrawn((transaction, account) => eventInvitations.withdrawAll(transaction, account));
-  const quickOnlyWorlds=[...new Set([...(options.safety?.quickOnlyWorlds??[]),...(config.LOCAL_PARK_WORLD==='1'?['park']:[]),...(config.LOCAL_MAID_WORLD==='1'?['maid']:[])])];
-  const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, quickOnlyWorlds, policy: safetyPolicy, evidence: reports.cache }, options.now);
+  const quickOnlyWorlds=worlds.releasePolicy?.quickOnlyWorlds??[...new Set([...(options.safety?.quickOnlyWorlds??[]),...(config.LOCAL_PARK_WORLD==='1'?['park']:[]),...(config.LOCAL_MAID_WORLD==='1'?['maid']:[])])];
+  const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, enabled:worlds.releasePolicy?false:options.safety?.enabled,quickAccess:worlds.releasePolicy?.permitsQuick,quickOnlyWorlds, policy: safetyPolicy, evidence: reports.cache }, options.now);
   http.addHook('onClose', async () => { await worlds.registry.close(); });
   http.addHook('onClose', async () => { await rooms.close(); });
   registerWorlds(http, config, worlds.registry, options.now, rooms,discovery);

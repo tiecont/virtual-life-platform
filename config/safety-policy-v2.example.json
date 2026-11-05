@@ -1,0 +1,260 @@
+{
+  "schemaVersion": 2,
+  "policyVersion": "2.0.0",
+  "approval": {
+    "publicRelease": false,
+    "operatorCoverageApproved": false,
+    "retentionReviewed": false
+  },
+  "defaults": {
+    "chatEnabled": false,
+    "unsolicitedDm": false,
+    "rawChatRetentionHours": 0,
+    "reporterIdentityPublic": false,
+    "unreviewedClassifierSanctions": false,
+    "unlicensedMedia": false
+  },
+  "contexts": {
+    "portal": {
+      "mode": "silent",
+      "fallback": "deny",
+      "audience": "none",
+      "cannedIds": [],
+      "liveOperatorRequired": false,
+      "reviewedAdultRequired": false,
+      "discloseActivity": true,
+      "media": "none"
+    },
+    "sdk-sandbox": {
+      "mode": "canned",
+      "fallback": "canned-only",
+      "audience": "room",
+      "cannedIds": [
+        "hello",
+        "thanks",
+        "need-help",
+        "bye"
+      ],
+      "liveOperatorRequired": false,
+      "reviewedAdultRequired": false,
+      "discloseActivity": true,
+      "media": "none"
+    },
+    "deadline": {
+      "mode": "silent",
+      "fallback": "deny",
+      "audience": "none",
+      "cannedIds": [],
+      "liveOperatorRequired": false,
+      "reviewedAdultRequired": false,
+      "discloseActivity": true,
+      "media": "none"
+    },
+    "maid": {
+      "mode": "moderated",
+      "fallback": "canned-only",
+      "audience": "room",
+      "cannedIds": [
+        "hello",
+        "thanks",
+        "need-help",
+        "bye"
+      ],
+      "liveOperatorRequired": false,
+      "reviewedAdultRequired": false,
+      "discloseActivity": true,
+      "media": "none"
+    },
+    "library": {
+      "mode": "silent",
+      "fallback": "deny",
+      "audience": "none",
+      "cannedIds": [],
+      "liveOperatorRequired": false,
+      "reviewedAdultRequired": false,
+      "discloseActivity": true,
+      "media": "none"
+    },
+    "restaurant": {
+      "mode": "moderated",
+      "fallback": "canned-only",
+      "audience": "room",
+      "cannedIds": [
+        "hello",
+        "thanks",
+        "need-help",
+        "bye"
+      ],
+      "liveOperatorRequired": false,
+      "reviewedAdultRequired": false,
+      "discloseActivity": true,
+      "media": "none"
+    },
+    "lounge": {
+      "mode": "moderated",
+      "fallback": "canned-only",
+      "audience": "room",
+      "cannedIds": [
+        "hello",
+        "thanks",
+        "need-help",
+        "bye"
+      ],
+      "liveOperatorRequired": true,
+      "reviewedAdultRequired": false,
+      "discloseActivity": true,
+      "media": "original-visual-only"
+    },
+    "dating": {
+      "mode": "moderated",
+      "fallback": "canned-only",
+      "audience": "isolated-session",
+      "cannedIds": [
+        "hello",
+        "thanks",
+        "need-help",
+        "bye"
+      ],
+      "liveOperatorRequired": true,
+      "reviewedAdultRequired": true,
+      "discloseActivity": false,
+      "media": "none"
+    },
+    "park": {
+      "mode": "moderated",
+      "fallback": "canned-only",
+      "audience": "room",
+      "cannedIds": [
+        "hello",
+        "thanks",
+        "need-help",
+        "bye"
+      ],
+      "liveOperatorRequired": false,
+      "reviewedAdultRequired": false,
+      "discloseActivity": true,
+      "media": "none"
+    }
+  },
+  "categories": {
+    "harassment": {
+      "defaultSeverity": "medium",
+      "humanReviewRequired": true
+    },
+    "hate": {
+      "defaultSeverity": "high",
+      "humanReviewRequired": true
+    },
+    "threats": {
+      "defaultSeverity": "critical",
+      "humanReviewRequired": true
+    },
+    "sexual-content": {
+      "defaultSeverity": "high",
+      "humanReviewRequired": true
+    },
+    "child-safety": {
+      "defaultSeverity": "critical",
+      "humanReviewRequired": true
+    },
+    "privacy": {
+      "defaultSeverity": "high",
+      "humanReviewRequired": true
+    },
+    "impersonation": {
+      "defaultSeverity": "medium",
+      "humanReviewRequired": true
+    },
+    "spam": {
+      "defaultSeverity": "low",
+      "humanReviewRequired": true
+    },
+    "media-rights": {
+      "defaultSeverity": "medium",
+      "humanReviewRequired": true
+    },
+    "staff-abuse": {
+      "defaultSeverity": "high",
+      "humanReviewRequired": true
+    },
+    "consent-violation": {
+      "defaultSeverity": "high",
+      "humanReviewRequired": true
+    },
+    "self-harm": {
+      "defaultSeverity": "critical",
+      "humanReviewRequired": true
+    }
+  },
+  "severities": {
+    "low": {
+      "triageTargetMinutes": 4320,
+      "allowedSanctions": [
+        "warn",
+        "mute"
+      ]
+    },
+    "medium": {
+      "triageTargetMinutes": 1440,
+      "allowedSanctions": [
+        "warn",
+        "mute",
+        "room-eject"
+      ]
+    },
+    "high": {
+      "triageTargetMinutes": 60,
+      "allowedSanctions": [
+        "mute",
+        "room-eject",
+        "world-ban"
+      ]
+    },
+    "critical": {
+      "triageTargetMinutes": 15,
+      "allowedSanctions": [
+        "mute",
+        "room-eject",
+        "world-ban",
+        "platform-ban"
+      ]
+    }
+  },
+  "sanctions": {
+    "reasonRequired": true,
+    "evidenceReferenceRequired": true,
+    "appealReceiptRequired": true,
+    "permanentBanRequiresIndependentReview": true,
+    "staffRoleFromClient": false,
+    "maxMuteHours": 24,
+    "maxWorldBanHours": 168,
+    "maxTemporaryPlatformBanHours": 720
+  },
+  "draftRetentionHours": {
+    "rejectedText": 0,
+    "reportEvidence": 720,
+    "caseMetadata": 2160,
+    "auditMetadata": 4320,
+    "appealMetadata": 2160
+  },
+  "evidence": {
+    "maxMessageReferences": 5,
+    "maxReporterNoteChars": 1000,
+    "encryptedAtRestRequired": true,
+    "assignedCaseAccessOnly": true,
+    "rawEvidenceInLogs": false,
+    "legalHoldReviewDays": 30
+  },
+  "appeals": {
+    "windowDays": 30,
+    "reviewTargetHours": 72,
+    "independentReviewerRequired": true,
+    "contact": null
+  },
+  "escalation": {
+    "operator": null,
+    "safetyLead": null,
+    "privacyOwner": null,
+    "automaticExternalMessages": false
+  }
+}

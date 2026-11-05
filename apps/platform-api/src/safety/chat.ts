@@ -8,7 +8,7 @@ import { LocalChatModerator, normalizeChatText, type ChatModerator } from './mod
 export class ChatError extends Error { constructor(readonly code: ChatErrorCode) { super(code); } }
 type Receipt = { sessionId: string; fingerprint: string; until: number; result: ChatAccepted };
 type Pending = { sessionId: string; fingerprint: string; promise: Promise<ChatAccepted> };
-export interface ChatOptions { evidence?: { record(event: ChatMessage, viewerId: string, worldSlug: string): void }; enabled?: boolean; quickOnlyWorlds?:readonly string[]; policy: unknown; moderator?: ChatModerator }
+export interface ChatOptions { evidence?: { record(event: ChatMessage, viewerId: string, worldSlug: string): void }; enabled?: boolean; quickOnlyWorlds?:readonly string[]; quickAccess?:(worldSlug:string)=>boolean; policy: unknown; moderator?: ChatModerator }
 function freezePolicy<T>(value: T): T { if (value && typeof value === 'object') { Object.values(value).forEach(freezePolicy); Object.freeze(value); } return value; }
 export class ChatService {
   readonly policy: SafetyPolicy;
@@ -17,16 +17,20 @@ export class ChatService {
   #outcomes = { accepted: 0, rejected: 0, unavailable: 0, droppedRecipients: 0 };
   #moderatorUnavailable = false;
   #evidence?: ChatOptions['evidence'];
+  #quickAccess?:ChatOptions['quickAccess'];
   constructor(private rooms: RoomService, private identity: IdentityService, environment: 'development' | 'test' | 'production', options: ChatOptions, private now = Date.now) {
     this.policy = freezePolicy(SafetyPolicySchema.parse(options.policy));
     const scopes=options.quickOnlyWorlds??[];
     if(scopes.length>16||new Set(scopes).size!==scopes.length)throw Error('Invalid quick interaction scope');
-    this.#quickOnly=new Set(environment!=='production'?scopes.map(value=>WorldSlugSchema.parse(value)):[]);
+    this.#quickAccess=options.quickAccess;
+    this.#quickOnly=new Set(environment!=='production'||options.quickAccess?scopes.map(value=>WorldSlugSchema.parse(value)):[]);
     this.#globalEnabled=environment!=='production'&&options.enabled===true;
     this.#enabled=this.#globalEnabled||this.#quickOnly.size>0;
     this.#evidence = options.evidence; this.#moderator = options.moderator ?? new LocalChatModerator(); this.#limits = new WindowLimiter(now);
   }
-  diagnostics() { return { enabled: this.#enabled && !this.#closed, moderationAvailable: !this.#moderatorUnavailable, pending: this.#pending.size, workerSlots: this.#workers.size, receipts: this.#receipts.size, ...this.#outcomes }; }
+  #quickPermits(world:string){try{return this.#quickAccess===undefined||this.#quickAccess(world)===true;}catch{return false;}}
+  #allows(world:string,kind:ChatSend['content']['kind']){if(this.#quickOnly.has(world))return kind!=='text'&&this.#quickPermits(world);return this.#globalEnabled;}
+  diagnostics() { return { enabled: this.#enabled && !this.#closed&&(this.#globalEnabled||[...this.#quickOnly].some(world=>this.#quickPermits(world))), moderationAvailable: !this.#moderatorUnavailable, pending: this.#pending.size, workerSlots: this.#workers.size, receipts: this.#receipts.size, ...this.#outcomes }; }
   dropRecipient() { this.#outcomes.droppedRecipients++; }
   async #inspect(text: string) {
     if (this.#workers.size >= 4) { this.#moderatorUnavailable = true; throw new ChatError('MODERATION_UNAVAILABLE'); }
@@ -51,7 +55,7 @@ export class ChatService {
     const input = ChatSendSchema.parse(raw);
     if (!this.#enabled || this.#closed) throw new ChatError('FORBIDDEN');
     const { actor, worldSlug } = await this.rooms.authorizeChat(credential, connectionId, input);
-    if((!this.#globalEnabled&&!this.#quickOnly.has(worldSlug))||(this.#quickOnly.has(worldSlug)&&input.content.kind==='text'))throw new ChatError('FORBIDDEN');
+    if(!this.#allows(worldSlug,input.content.kind))throw new ChatError('FORBIDDEN');
     const rule = this.policy.contexts[worldSlug];
     if (!rule || rule.mode === 'silent' || rule.liveOperatorRequired || rule.reviewedAdultRequired || rule.audience !== 'room') throw new ChatError('FORBIDDEN');
     for (const [key, receipt] of this.#receipts) if (receipt.until <= this.now()) this.#receipts.delete(key);
@@ -83,9 +87,11 @@ export class ChatService {
       content = { kind: 'canned', id: input.content.id, text: phrases[input.content.id] };
     } else { if (this.#moderatorUnavailable && rule.fallback === 'deny') throw new ChatError('MODERATION_UNAVAILABLE'); content = input.content; }
     if (this.#closed) throw new ChatError('WORLD_UNAVAILABLE');
+    if(!this.#allows(worldSlug,input.content.kind))throw new ChatError('FORBIDDEN');
     const result: ChatAccepted = { type: 'accepted', messageId: randomUUID(), createdAt: new Date(this.now()).toISOString() };
     await this.rooms.publishChat(credential, connectionId, input, recipient => {
       if (this.#closed) return;
+      if(!this.#allows(worldSlug,input.content.kind))throw new ChatError('FORBIDDEN');
       const message = ChatMessageSchema.parse({ schemaVersion: 1, messageId: result.messageId, epoch: input.epoch, roomId: input.roomId, createdAt: result.createdAt, sender: recipient.profile, content });
       try { const delivered = emit(recipient.connectionId, message); if (delivered !== false) this.#evidence?.record(message, recipient.accountId, recipient.worldSlug); } catch { this.dropRecipient(); }
     });

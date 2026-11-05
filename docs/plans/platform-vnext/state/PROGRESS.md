@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N02-03 VERIFIED
+
+Implemented strict versioned release/runtime/safety policy with real curated production installers and unchanged legacy fixtures. Immutable Git ceiling,version/hash/safety/key validation,registry activation/use gates and publication rechecks deny bypass. One operator reference replaces fake person-count requirements; real defaults/approvals remain closed. Fresh full check46governance/296unit/557integration/builds,additional20SDKcases and40legacybrowser executions pass.
+
+Actual commands: 23; retained failed attempts: 5; required final checks passed. Evidence: `n02-03-2026-11-05`; [checks](../audit/N02-03-CHECKS.json). Current counts: `{"VERIFIED": 15, "TODO": 54}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N02-04; implement explicit checksum-prefix schema compatibility without weakening defaults, then prove disposable38→approved-expand schema with actual previous runtime/image rollback and negative checksum/unknown-tail/metadata cases. Existing M23 image builder assumes38 and src/dist packages; adapt only necessary fixture/build support, preserving source pins and no production SQL edits.
+
 ## 2026-11-05 — N02-02 VERIFIED
 
 Extracted hospitality outbox to a minimal DB/account-lock/sink public entrypoint, preserving existing API/progression compatibility exports and one implementation. Exact constructor validation/dispatch core unchanged after type-only substitution; actual compiled Node import loads no identity/room/API composition. Fresh58hospitality races/rollback/restart/retention cases,46governance/278unit,lint/types/allproductionbuilds pass.

@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { WorldFlagsSchema } from '@virtual-city/contracts';
-import { WorldRegistry, createSandboxWorld, type WorldActor, type WorldAdapter } from '@virtual-city/world-sdk';
+import { WorldRegistry, createSandboxWorld, type WorldActor, type WorldAdapter,type WorldPorts } from '@virtual-city/world-sdk';
 import type { Config } from '../config';
 import type { IdentityService } from '../identity/service';
 import { AdmissionPolicy, type AdultEligibilityProvider } from '../identity/policy';
@@ -11,6 +11,7 @@ import { createDeadlineWorld } from '@virtual-city/deadline-world';
 import { createMaidWorld } from '@virtual-city/maid-world';
 import { createRestaurantWorld } from '@virtual-city/restaurant-world';
 import { createLoungeWorld } from '@virtual-city/lounge-world';
+import {createReleaseWorldRuntime} from './release-installation';
 
 export interface WorldRuntimeOptions {
   modules?: WorldAdapter[];
@@ -18,10 +19,11 @@ export interface WorldRuntimeOptions {
   adultProof?: AdultEligibilityProvider;
   membership?: { permits(actor: WorldActor, slug: string, membershipId: string): Promise<boolean> };
   safety?: { permits(accountId: string, worldSlug: string): Promise<boolean> };
+  safetyPolicy?:unknown;
 }
 export async function createWorldRuntime(config: Config, identity: IdentityService, options: WorldRuntimeOptions = {}) {
   const admission = new AdmissionPolicy(options.adultProof);
-  const registry = new WorldRegistry(config.NODE_ENV, {
+  const ports:WorldPorts={
     authenticate: credential => identity.authenticate(credential),
     canAccess: async (actor, world) => {
       if (options.safety && !await options.safety.permits(actor.accountId, world.slug)) return false;
@@ -30,7 +32,9 @@ export async function createWorldRuntime(config: Config, identity: IdentityServi
       return admission.permits(actor, { enabled: true, restricted: policy.kind !== 'public', restrictedAccessApproved: approved, requiresAdult: policy.kind === 'restricted' && policy.requiresAdult });
     },
     hasMembership: (actor, slug, membershipId) => options.membership?.permits(actor, slug, membershipId) ?? Promise.resolve(false),
-  });
+  };
+  if(config.RELEASE_POLICY_FILE){if(options.modules?.length)throw Error('Versioned installation rejects injected fixture modules');return createReleaseWorldRuntime(config,ports,options.safetyPolicy);}
+  const registry = new WorldRegistry(config.NODE_ENV,ports);
   registry.register(createSandboxWorld());
   if (config.NODE_ENV !== 'production' && config.LOCAL_LIBRARY_WORLD === '1') registry.register(createLibraryWorld());
   if (config.NODE_ENV !== 'production' && config.LOCAL_PARK_WORLD === '1') registry.register(createParkWorld());
@@ -57,5 +61,5 @@ export async function createWorldRuntime(config: Config, identity: IdentityServi
     reloadTail = work.catch(() => {}); return work;
   }
   try { await reloadFlags(); } catch (error) { await registry.close().catch(() => {}); throw error; }
-  return { registry, reloadFlags };
+  return { registry, reloadFlags,releasePolicy:undefined };
 }

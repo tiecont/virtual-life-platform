@@ -8,6 +8,25 @@ const definition: WorldDefinition = {
   accessPolicy: { kind: 'public' }, visibility: 'listed', map: { region: 'test', position: { x: 0.5, y: 0.5 }, icon: 'flask' },
 };
 const invocation: WorldInvocation = { schemaVersion: 1, worldVersion: '1.0.0', sceneVersion: '1.0.0', action: 'join', membershipId: 'controlled-membership-fixture' };
+describe('environment entitlement and runtime activation ports',()=>{
+ it('direct registry activation cannot bypass a denied entitlement',async()=>{
+  const {registry,calls}=fixture({}, {canEnable:()=>false});await expect(registry.setEnabled(definition.slug,true)).rejects.toMatchObject({code:'FORBIDDEN'});expect(calls).toEqual([]);await registry.close();
+ });
+ it('bootstrapped content remains unavailable until runtime policy is published, and revocation is immediate',async()=>{
+  let published=false;const {registry}=fixture({}, {canEnable:()=>true,canUse:()=>published});await registry.setEnabled(definition.slug,true);
+  expect((await registry.catalog('server-credential')).worlds[0].availability).toBe('disabled');await expect(registry.dispatch('server-credential',definition.slug,invocation)).rejects.toMatchObject({code:'WORLD_UNAVAILABLE'});
+  published=true;await expect(registry.dispatch('server-credential',definition.slug,invocation)).resolves.toBeUndefined();published=false;expect(()=>registry.projectionContext(definition.slug)).toThrow();expect(registry.permitsActivityDisclosure(definition.slug)).toBe(false);await registry.close();
+ });
+ it('activation revoked while bootstrap is awaiting never publishes a usable world',async()=>{
+  let permitted=true,release!:()=>void,started!:()=>void;const entering=new Promise<void>(resolve=>{started=resolve;}),held=new Promise<void>(resolve=>{release=resolve;});
+  const {registry}=fixture({bootstrap:async()=>{started();await held;}},{canEnable:()=>permitted});const activation=registry.setEnabled(definition.slug,true);await entering;permitted=false;release();await expect(activation).rejects.toMatchObject({code:'WORLD_UNAVAILABLE'});expect(()=>registry.projectionContext(definition.slug)).toThrow();await registry.close();
+ });
+ it('captured projections and prepared admission invalidate on policy withdrawal before a flag generation changes',async()=>{
+  let published=true;const {registry}=fixture({travel:{prepare:async()=>{},abort:async()=>{},depart:async()=>{}}},{canUse:()=>published});await registry.setEnabled(definition.slug,true);
+  const projection=registry.projectionContext(definition.slug),prepared=await registry.prepareAdmission('server-credential',definition.slug,'policy-preparation',Date.now()+10000);expect(projection.valid()).toBe(true);expect(prepared.valid()).toBe(true);
+  published=false;expect(projection.valid()).toBe(false);expect(prepared.valid()).toBe(false);expect(()=>prepared.complete()).toThrow();await prepared.abort();await registry.close();
+ });
+});
 describe('M09 separate bounded travel lifecycle grants', () => {
   it('preparation invokes no ordinary join and never supplies command authority; abort and departure are single-use', async () => {
     const calls: string[] = []; let member = false;

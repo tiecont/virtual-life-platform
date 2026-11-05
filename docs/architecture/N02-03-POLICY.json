@@ -1,0 +1,106 @@
+{
+  "taskId": "N02-03",
+  "baseRevision": "67c6567ff3a9fd36c151f661deb9c7a23515d4b6",
+  "scope": "Opt-in versioned environment profile, curated factories, bounded runtime switches and reviewed safety-v2; real defaults remain closed",
+  "implemented": [
+    "strict release/runtime schemas and canonical safety-rule hash",
+    "production-capable curated installer, immutable process entitlement and monotonic runtime reload",
+    "registry activation/use ports and captured projection/preparation revocation",
+    "versioned safety contract retaining strict historical v1 behavior",
+    "one operator reference with unchanged independent report/review and enforcement rules",
+    "policy-gated encrypted reports and bounded quick interactions with final publication checks",
+    "real release-policy:check included in root check"
+  ],
+  "actualVerification": {
+    "pnpm check": {
+      "exitCode": 0,
+      "governanceCases": 46,
+      "unitFiles": 60,
+      "unitCases": 296,
+      "integrationFiles": 39,
+      "integrationCases": 557,
+      "apiPortalBuilds": 0
+    },
+    "latestSdkPolicyCases": {
+      "cases": 20,
+      "exitCode": 0,
+      "note": "19 overlap the earlier full run;one additional captured-policy case passed in this scoped run"
+    },
+    "productionModeCases": 4,
+    "legacyBrowser": {
+      "specs": 8,
+      "lifetimes": 16,
+      "executions": 40,
+      "exitCode": 0
+    },
+    "policyCommand": 0,
+    "apiTypesFinal": 0,
+    "selectedIntegrationTypes": 0,
+    "infra": 0,
+    "lint": 0,
+    "securitySelectionInFullIntegration": [
+      "security-network",
+      "identity",
+      "identity-socket",
+      "rooms",
+      "social",
+      "reports",
+      "sanctions",
+      "travel",
+      "dating-adversarial",
+      "release-policy"
+    ],
+    "separateFocusedSecurityCommand": "NOT_RUN; same10files actually executed in the full39file integration project"
+  },
+  "preservationAndBrowser": {
+    "scope": "Existing canonical real defaults and checksum/fixture preservation; latest browser coverage",
+    "protectedFilesUnchanged": 49,
+    "protectedFilesDigest": "029e1d4f41fabd469678e8dc21c53d5d26e82abaa4d67d4af6710161dc6ff032",
+    "browserSpecs": 8,
+    "browserLifetimes": 16,
+    "browserExecutions": 40,
+    "browserGroup": "legacy",
+    "browserProfiles": "Chromium desktop/mobile emulation, not physical devices",
+    "deadlineLocalPerformance": {
+      "desktop": {
+        "readyMs": 3231.2000000029802,
+        "jsDecodedBytes": 2209456,
+        "idleRenders": 0,
+        "rafP95GapMs": 33.400000000000546,
+        "remountCycles": 3,
+        "heapGrowthBytes": 1100776
+      },
+      "mobile": {
+        "readyMs": 3133.599999997765,
+        "jsDecodedBytes": 2209456,
+        "idleRenders": 0,
+        "rafP95GapMs": 16.700000000000728,
+        "remountCycles": 3,
+        "heapGrowthBytes": 1159204
+      }
+    },
+    "realDefaultsClosed": true,
+    "reviewReferencesUnassigned": true,
+    "operatorHumanLimit": 1,
+    "actualOperatorProvisioned": false,
+    "historicalHostedFailureStillUnresolved": true
+  },
+  "realDefaults": {
+    "worldsInstalled": 0,
+    "worldsEnabled": 0,
+    "maintenance": true,
+    "operatorProvisioned": false,
+    "humanOperatorLimit": 1,
+    "reviewReferencesSupplied": false,
+    "publicStoreRelease": "NOT_REQUESTED"
+  },
+  "limitations": [
+    "Positive configuration references/accounts/keys are synthetic fixtures; no real human approvals,MFA/bootstrap,external staff or deployment qualified",
+    "Production-mode loopback HTTP/Socket tests are not TLS deployment or public infrastructure evidence",
+    "Runtime policy currently uses a file adapter and monotonic revision within a process; durable DB policy/audit remain N07/N09",
+    "Free text,live media,real dating and active Lounge remain closed in the new v1 environment model",
+    "Five failed recorded attempts retained: missing implementation3newregistryguards,test setup collision,optional test field type and oversized guest display name; required final checks pass",
+    "Other five browser groups not newly run; hosted baseline Deadline cadence failure remains unresolved",
+    "Current config validation trusts reviewed GitOps inputs; it does not cryptographically attest human decisions or resolve/provision the operator reference"
+  ]
+}

@@ -14,7 +14,11 @@ const Env = z.object({
   OPERATOR_TELEMETRY_TOKEN:z.preprocess(value=>value===''?undefined:value,z.string().regex(/^[a-f0-9]{64}$/).optional()),
   SAFETY_EVIDENCE_KEY: z.string().regex(/^[a-f0-9]{64}$/i).optional(),
   SAFETY_EVIDENCE_KEY_ID: z.string().regex(/^[a-z0-9-]{1,32}$/).default('local-v1'),
+  SAFETY_POLICY_FILE:z.string().min(1).max(4096).optional(),
   WORLD_FLAGS_FILE: z.string().min(1).max(4096).optional(),
+  RELEASE_POLICY_FILE:z.string().min(1).max(4096).optional(),
+  RUNTIME_WORLD_POLICY_FILE:z.string().min(1).max(4096).optional(),
+  RELEASE_ENVIRONMENT:z.enum(['development','test','staging','production']).optional(),
   LOCAL_TRAVEL_FIXTURES: z.enum(['0', '1']).default('0'),
   LOCAL_LIBRARY_WORLD: z.enum(['0', '1']).default('0'),
   LOCAL_PARK_WORLD: z.enum(['0', '1']).default('0'),
@@ -30,6 +34,11 @@ const Env = z.object({
   DATING_PROFILE_KEY_ID:z.string().regex(/^[a-z0-9-]{1,32}$/).default('local-v1'),
 }).superRefine((env, ctx) => {
   const origin = new URL(env.WEB_ORIGIN);
+  if(env.RELEASE_POLICY_FILE||env.RUNTIME_WORLD_POLICY_FILE||env.RELEASE_ENVIRONMENT){
+    if(!env.RELEASE_POLICY_FILE||!env.RUNTIME_WORLD_POLICY_FILE||!env.RELEASE_ENVIRONMENT)ctx.addIssue({code:'custom',path:['RELEASE_POLICY_FILE'],message:'Explicit release/runtime files and environment required together'});
+    if(env.WORLD_FLAGS_FILE||Object.entries(env).some(([name,value])=>name.startsWith('LOCAL_')&&value==='1')||env.DATING_TEST_PROOFS==='1')ctx.addIssue({code:'custom',path:['RELEASE_POLICY_FILE'],message:'Versioned installation cannot mix legacy fixture controls'});
+    if((env.NODE_ENV==='production'&&!['staging','production'].includes(env.RELEASE_ENVIRONMENT??''))||(env.NODE_ENV!=='production'&&env.RELEASE_ENVIRONMENT!==env.NODE_ENV))ctx.addIssue({code:'custom',path:['RELEASE_ENVIRONMENT'],message:'Release environment must match runtime mode'});
+  }
   if (origin.origin !== env.WEB_ORIGIN || !['http:', 'https:'].includes(origin.protocol)) {
     ctx.addIssue({ code: 'custom', path: ['WEB_ORIGIN'], message: 'Expected an exact HTTP origin' });
   }

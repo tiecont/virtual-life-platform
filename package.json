@@ -7,6 +7,7 @@
     "node": "26.9.x"
   },
   "scripts": {
+    "release-policy:check": "pnpm build:packages && node --import tsx scripts/verify-release-policy.ts",
     "evidence:archive": "node scripts/evidence-cli.mjs archive",
     "evidence:check": "node scripts/evidence-cli.mjs check",
     "evidence:restore-smoke": "node scripts/evidence-cli.mjs restore-smoke",
@@ -24,7 +25,7 @@
     "db:migrate": "node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts",
     "plan:status": "node scripts/plan-status.mjs",
     "governance:check": "node scripts/verify-governance.mjs",
-    "check": "pnpm governance:check && pnpm ci:check && pnpm infra:check && pnpm legacy:check && pnpm architecture:check && pnpm lint && pnpm typecheck && pnpm dating:check && pnpm assets:check && pnpm test && pnpm test:integration && pnpm build",
+    "check": "pnpm governance:check && pnpm ci:check && pnpm infra:check && pnpm legacy:check && pnpm architecture:check && pnpm lint && pnpm typecheck && pnpm release-policy:check && pnpm dating:check && pnpm assets:check && pnpm test && pnpm test:integration && pnpm build",
     "legacy:check":"node scripts/legacy-snapshots.mjs verify",
     "legacy:prepare":"node scripts/prepare-deadline-baseline.mjs && node scripts/prepare-maid-baseline.mjs",
     "legacy:maid:baseline":"node scripts/prepare-maid-baseline.mjs && node scripts/with-test-db.mjs node tests/support/maid-baseline-check.mjs",

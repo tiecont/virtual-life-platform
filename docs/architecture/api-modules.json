@@ -18,7 +18,8 @@
       "owner": "platform.foundation",
       "responsibility": "Validated runtime environment",
       "currentPublicEntryFiles": [
-        "config"
+        "config",
+        "config/release-policy"
       ],
       "targetBoundary": "Versioned environment policy; no feature entitlement bypass"
     },

@@ -7,5 +7,6 @@ export default defineConfig({ test: { projects: [
     'tests/integration/security-network.test.ts','tests/integration/identity.test.ts','tests/integration/identity-socket.test.ts',
     'tests/integration/rooms.test.ts','tests/integration/social.test.ts','tests/integration/reports.test.ts',
     'tests/integration/sanctions.test.ts','tests/integration/travel.test.ts','tests/integration/dating-adversarial.test.ts',
+    'tests/integration/release-policy.test.ts',
   ], environment: 'node', testTimeout: 15000, hookTimeout: 15000, fileParallelism: false } },
 ] } });

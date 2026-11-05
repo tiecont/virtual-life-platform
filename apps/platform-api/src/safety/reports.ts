@@ -18,8 +18,8 @@ export class ReportService {
   setReservationInvitationContext(port:ReservationInvitationReportPort){if(this.#reservationInvitation)throw Error('Reservation report context already attached');this.#reservationInvitation=port;}
   readonly cache?: MessageEvidenceCache;
   #cipher?: EvidenceCipher; #closed = false; #maintenance?: Promise<number>;
-  constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private rooms: RoomService, private policy: SafetyPolicy, environment: 'development' | 'test' | 'production', key?: string, keyId = 'local-v1', private now = Date.now) {
-    if (environment !== 'production' && key) { this.#cipher = new EvidenceCipher(key, keyId); this.cache = new MessageEvidenceCache(this.#cipher, now); }
+  constructor(private pool: Pick<Pool, 'query' | 'connect'>, private identity: IdentityService, private rooms: RoomService, private policy: SafetyPolicy, environment: 'development' | 'test' | 'production', key?: string, keyId = 'local-v1', private now = Date.now, productionEvidence=false) {
+    if ((environment !== 'production'||productionEvidence) && key) { this.#cipher = new EvidenceCipher(key, keyId); this.cache = new MessageEvidenceCache(this.#cipher, now); }
   }
   available() { return !!this.#cipher && !this.#closed; }
   private enabled() { if (!this.available()) throw new DomainError('SAFETY_UNAVAILABLE', 503, 'Confidential reporting is unavailable'); }

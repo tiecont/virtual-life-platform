@@ -22,7 +22,7 @@ assert.equal(policy.worlds.lounge.unlicensedMediaAllowed, false);
 console.log(JSON.stringify(summarize(manifest, JSON.parse(await readFile('docs/agent/task-state.json', 'utf8'))), null, 2));
 console.log('Governance consistency verified; no gameplay or release claim.');
 await checkRelease();
-console.log('Release inventory checked; public release remains blocked.');
+console.log('Historical offline release fixture checked; current environment entitlement is assessed by release-policy:check.');
 await checkOpsWatch();
 console.log('Monitoring preparation checked; no live collector or business metrics inferred.');
 console.log(JSON.stringify(await (await historicalEvidence()).verifyAll()));

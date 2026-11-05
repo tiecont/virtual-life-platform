@@ -177,12 +177,14 @@
       "next_action": "Reserve N02-03; audit existing offline/runtime production guards, implement a strict versioned environment release-entitlement/runtime-policy model and genuine gated production installer, retain old offline fixture assertions and one human operator model, add missing/version/world/bypass denial tests before enabling any fixture."
     },
     "N02-03": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex Runtime + Coordinator",
+      "branch": "codex/vnext-n02-03-release-policy",
+      "evidence_refs": [
+        "n02-03-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "Versioned release policy + runtime config model; updated guard tests"
+      "next_action": "Reserve N02-04; implement explicit checksum-prefix schema compatibility without weakening defaults, then prove disposable38→approved-expand schema with actual previous runtime/image rollback and negative checksum/unknown-tail/metadata cases. Existing M23 image builder assumes38 and src/dist packages; adapt only necessary fixture/build support, preserving source pins and no production SQL edits."
     },
     "N02-04": {
       "status": "TODO",

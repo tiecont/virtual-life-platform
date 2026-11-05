@@ -5,6 +5,8 @@ export interface WorldPorts {
   authenticate(credential: string): Promise<WorldActor>;
   canAccess(actor: WorldActor, definition: WorldDefinition): Promise<boolean>;
   hasMembership(actor: WorldActor, worldSlug: string, membershipId: string): Promise<boolean>;
+  canEnable?(definition: WorldDefinition): boolean;
+  canUse?(definition: WorldDefinition): boolean;
 }
 export type WorldHookContext = Readonly<{ accountId: string; kind: WorldActor['kind']; membershipId: string }>;
 export type WorldTravelContext = WorldHookContext & Readonly<{ signal: AbortSignal; expiresAt: number }>;
@@ -72,8 +74,10 @@ export class WorldRegistry {
   slugs(): string[] { return [...this.#entries.keys()]; }
   permitsActivityDisclosure(slug: string): boolean {
     const entry = this.#entries.get(slug);
-    return Boolean(!this.#closed && entry?.enabled && entry.phase === 'available' && entry.adapter.definition.visibility === 'listed' && entry.adapter.definition.accessPolicy.kind === 'public' && slug !== 'dating');
+    return Boolean(!this.#closed && entry?.enabled && entry.phase === 'available' && this.#usable(entry) && entry.adapter.definition.visibility === 'listed' && entry.adapter.definition.accessPolicy.kind === 'public' && slug !== 'dating');
   }
+  #allowed(entry:Entry,port:'canEnable'|'canUse'){try{const check=this.ports[port];return check===undefined||check.call(this.ports,entry.adapter.definition)===true;}catch{return false;}}
+  #usable(entry:Entry){return this.#allowed(entry,'canEnable')&&this.#allowed(entry,'canUse');}
   onUnavailable(listener: (slug: string) => void) { this.#unavailableListeners.add(listener); return () => { this.#unavailableListeners.delete(listener); }; }
   #notifyUnavailable(entry: Entry) { for (const listener of this.#unavailableListeners) { try { listener(entry.adapter.definition.slug); } catch { /* Access checks remain authoritative if a consumer fails. */ } } }
   #get(slug: string) { const entry = this.#entries.get(slug); if (!entry) throw new WorldError('NOT_FOUND', 'World not found'); return entry; }
@@ -98,6 +102,7 @@ export class WorldRegistry {
     if (this.#closed) throw unavailable();
     if (typeof enabled !== 'boolean') throw new WorldError('INVALID_REQUEST', 'Expected a boolean flag');
     const entry = this.#get(slug);
+    if(enabled&&!this.#allowed(entry,'canEnable'))throw new WorldError('FORBIDDEN','World activation is outside release/runtime policy');
     if (entry.travelStalled) { if (enabled) throw unavailable(); entry.enabled = false; this.#notifyUnavailable(entry); return; }
     if (enabled && this.environment === 'production' && entry.adapter.definition.kind === 'sandbox') throw new WorldError('FORBIDDEN', 'Sandbox unavailable in production');
     if (entry.enabled === enabled && ((enabled && entry.phase === 'available') || (!enabled && entry.phase === 'disabled'))) return entry.tail;
@@ -106,6 +111,7 @@ export class WorldRegistry {
     const generation = ++entry.generation; this.#revision++;
     return this.#queue(entry, async () => {
       if (entry.generation !== generation) return;
+      if(enabled&&!this.#allowed(entry,'canEnable'))throw unavailable();
       await this.#stop(entry);
       if (!enabled) return;
       if (entry.cleanupFailed) throw unavailable();
@@ -113,10 +119,11 @@ export class WorldRegistry {
       try { await this.#invoke(entry, { hook: 'bootstrap' }); }
       catch { entry.phase = 'offline'; this.#revision++; await this.#stop(entry); throw unavailable(); }
       if (entry.generation !== generation) return;
+      if(!this.#allowed(entry,'canEnable')){entry.enabled=false;entry.phase='disabled';this.#revision++;this.#notifyUnavailable(entry);await this.#stop(entry);throw unavailable();}
       entry.phase = 'available'; this.#revision++;
     }, true);
   }
-  #ready(entry: Entry) { if (this.#closed || !entry.enabled || entry.phase !== 'available') throw unavailable(); }
+  #ready(entry: Entry) { if (this.#closed || !entry.enabled || entry.phase !== 'available' || !this.#usable(entry)) throw unavailable(); }
   #quarantine(entry: Entry) { entry.cleanupFailed = true; entry.phase = 'offline'; entry.generation++; this.#revision++; this.#notifyUnavailable(entry); }
   // Preparation never calls normal onJoin or supplies active membership authority.
   // Each underlying hook is bounded; an ignored abort quarantines this adapter.
@@ -147,9 +154,9 @@ export class WorldRegistry {
     try { await this.#travelHook(entry, 'prepare', context, controller, now); }
     catch (error) { await abort(); throw error; }
     return Object.freeze({
-      valid: () => !finished && !controller.signal.aborted && !this.#closed && entry.enabled && entry.phase === 'available' && entry.generation === generation && now() < expiresAt,
+      valid: () => !finished && !controller.signal.aborted && !this.#closed && entry.enabled && entry.phase === 'available' && this.#usable(entry) && entry.generation === generation && now() < expiresAt,
       abort,
-      complete: () => { if (finished || controller.signal.aborted || entry.generation !== generation || now() >= expiresAt) throw unavailable(); finished = true; this.#preparations.delete(cancel); },
+      complete: () => { if (finished || controller.signal.aborted || !this.#usable(entry) || entry.generation !== generation || now() >= expiresAt) throw unavailable(); finished = true; this.#preparations.delete(cancel); },
     });
   }
   async prepareDeparture(credential: string, slug: string, membershipId: string, now = Date.now) {
@@ -169,18 +176,18 @@ export class WorldRegistry {
   }
   async authorizedContext<T>(credential: string, slug: string, work: (actor: WorldActor, definition: WorldDefinition, valid: () => boolean) => Promise<T>): Promise<T> {
     const entry = this.#get(slug), generation = entry.generation, { actor, definition } = await this.authorizeWorld(credential, slug);
-    const valid = () => !this.#closed && entry.enabled && entry.phase === 'available' && entry.generation === generation;
+    const valid = () => !this.#closed && entry.enabled && entry.phase === 'available' && this.#usable(entry) && entry.generation === generation;
     if (!valid()) throw unavailable();
     return work(actor, definition, valid);
   }
-  projectionContext(slug: string) { const entry=this.#get(slug);this.#ready(entry);const generation=entry.generation;return {definition:entry.adapter.definition,valid:()=>!this.#closed&&entry.enabled&&entry.phase==='available'&&entry.generation===generation}; }
+  projectionContext(slug: string) { const entry=this.#get(slug);this.#ready(entry);const generation=entry.generation;return {definition:entry.adapter.definition,valid:()=>!this.#closed&&entry.enabled&&entry.phase==='available'&&this.#usable(entry)&&entry.generation===generation}; }
   #card(entry: Entry): WorldCard {
     const world = entry.adapter.definition;
     return {
       slug: world.slug, version: world.version, title: world.title, kind: world.kind, sceneRef: world.sceneRef,
       capacity: world.capacity, capabilities: world.capabilities, map: world.map,
       accessHint: world.accessPolicy.kind === 'public' ? 'session-required' : world.accessPolicy.kind === 'private' ? 'permission-required' : 'reviewed-access-required',
-      availability: entry.phase, discoverability: 'listed',
+      availability: entry.phase==='available'&&!this.#usable(entry)?'disabled':entry.phase, discoverability: 'listed',
     };
   }
   async catalog(credential: string): Promise<WorldCatalog> {
