@@ -1,0 +1,3 @@
+[integration] tests/integration/security-network.test.ts > actual TCP mutation and socket handshake reject mixed session CSRF,origin,cookie and claimed authority without changing either identity
+[integration] tests/integration/security-network.test.ts > actual TCP known room authority stays viewer scoped and a persisted world ban denies live commands,reconnect and owner restart without blocking independent logout
+[integration] tests/integration/security-network.test.ts > actual TCP forwarded-header spoofing cannot bypass guest limits,session budget is shared across sockets and adult claims cannot open the closed world

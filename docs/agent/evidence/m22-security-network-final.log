@@ -1,0 +1,37 @@
+ Network virtual-city-test-42c3887f_default Creating 
+ Network virtual-city-test-42c3887f_default Creating 
+ Network virtual-city-test-42c3887f_default Created 
+ Network virtual-city-test-42c3887f_default Created 
+ Container virtual-city-test-42c3887f-db-1 Creating 
+ Container virtual-city-test-42c3887f-db-1 Created 
+ Container virtual-city-test-42c3887f-db-1 Starting 
+ Container virtual-city-test-42c3887f-db-1 Started 
+ Container virtual-city-test-42c3887f-db-1 Waiting 
+ Container virtual-city-test-42c3887f-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+(node:77206) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:77266) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:77368) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:77422) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ |security| tests/integration/security-network.test.ts (3 tests) 5910ms
+   ✓ actual TCP mutation and socket handshake reject mixed session CSRF,origin,cookie and claimed authority without changing either identity  1630ms
+   ✓ actual TCP known room authority stays viewer scoped and a persisted world ban denies live commands,reconnect and owner restart without blocking independent logout  2521ms
+   ✓ actual TCP forwarded-header spoofing cannot bypass guest limits,session budget is shared across sockets and adult claims cannot open the closed world  1755ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  01:44:38
+   Duration  6.26s (transform 78ms, setup 0ms, import 234ms, tests 5.91s, environment 0ms)
+
+ Container virtual-city-test-42c3887f-db-1 Stopping 
+ Container virtual-city-test-42c3887f-db-1 Stopped 
+ Container virtual-city-test-42c3887f-db-1 Removing 
+ Container virtual-city-test-42c3887f-db-1 Removed 
+ Network virtual-city-test-42c3887f_default Removing 
+ Network virtual-city-test-42c3887f_default Removed 

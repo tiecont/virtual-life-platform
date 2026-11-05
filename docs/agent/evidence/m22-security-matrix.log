@@ -1,0 +1,148 @@
+$ pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project security
+$ pnpm --filter './packages/*' -r build
+Scope: 8 of 11 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/world-sdk build: Done
+packages/library-world build$ tsc -p tsconfig.json
+packages/lounge-world build$ tsc -p tsconfig.json
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/library-world build: Done
+packages/restaurant-world build: Done
+packages/lounge-world build: Done
+packages/pixi-scene build: Done
+ Network virtual-city-test-0e5258a0_default Creating 
+ Network virtual-city-test-0e5258a0_default Creating 
+ Network virtual-city-test-0e5258a0_default Created 
+ Network virtual-city-test-0e5258a0_default Created 
+ Container virtual-city-test-0e5258a0-db-1 Creating 
+ Container virtual-city-test-0e5258a0-db-1 Created 
+ Container virtual-city-test-0e5258a0-db-1 Starting 
+ Container virtual-city-test-0e5258a0-db-1 Started 
+ Container virtual-city-test-0e5258a0-db-1 Waiting 
+ Container virtual-city-test-0e5258a0-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ✓ |security| tests/integration/travel.test.ts (33 tests) 27748ms
+   ✓ issues one scoped capability under concurrent actual HTTP retries without changing source membership or reserving a target  1035ms
+   ✓ consumes authorization once under a concurrent race, retries the same redemption and never reports READY or moves a player  797ms
+   ✓ rejects malformed authority, wrong origin/CSRF, unknown query fields and wrong capability without consuming anything  698ms
+   ✓ expires at trusted deadline, bounds TTL to session expiry and never resurrects an old creation retry  728ms
+   ✓ serializes one pending intent per account and cancellation retries without reopening an old request  724ms
+   ✓ binds an existing source to the exact epoch/membership/current session and rejects changed or missing sources  779ms
+   ✓ keeps capabilities and receipts inaccessible to another authenticated session of the same registered account  916ms
+   ✓ denies private/unreviewed adult/offline/version-mismatched and full targets before changing source  758ms
+   ✓ revalidates private/adult/base flags after issuance; a scoped token never bypasses current access  709ms
+   ✓ rechecks a specific destination capacity after issuance without consuming a full target or releasing source  745ms
+   ✓ applies already committed world sanctions and incident denial again during redemption without evidence-key dependency  737ms
+   ✓ invalidates previous owner epoch after restart and cannot replay its old source or redemption  758ms
+   ✓ keeps the creation quota durable across API restart and bounds expiry/metadata cleanup  886ms
+   ✓ exports own receipt metadata without capabilities, cascades identity erasure and rolls back intent on receipt failure  778ms
+   ✓ prepares a destination without public membership, retains source seat, then switches exactly once with current snapshots  796ms
+   ✓ accepted group members race for one remaining target slot without overfilling or holding places for an offline invite  913ms
+   ✓ rechecks reviewed adult eligibility and committed target sanctions after preparation, retaining valid source  1561ms
+   ✓ reconciles ambiguous COMMIT acknowledgement without inventing a live target or replaying membership  767ms
+   ✓ owner lock loss during preparation discards source/holds and denies every late destination completion  808ms
+   ✓ quarantines failing source resource departure without creating a second active membership  792ms
+   ✓ reads only the authenticated account current room for reconnect reconciliation and never returns peer room authority  710ms
+   ✓ travels over authenticated socket with same-key ACK replay and invalidates every old source tab  774ms
+   ✓ retains source on timed-out/hung preparation and quarantines late completion without blocking owner commands  1319ms
+   ✓ cancellation during nonpublic preparation wins and removes its hold without releasing source  802ms
+   ✓ counts pending holds in target capacity and never activates two users into a last slot  855ms
+   ✓ revalidates expiry after preparation started and cannot publish a stale target  724ms
+   ✓ revalidates source-leave after preparation started and cannot publish a stale target  764ms
+   ✓ revalidates target-disable after preparation started and cannot publish a stale target  1234ms
+   ✓ revalidates private-withdrawal after preparation started and cannot publish a stale target  777ms
+   ✓ revalidates disconnect after preparation started and cannot publish a stale target  756ms
+   ✓ revalidates logout after preparation started and cannot publish a stale target  751ms
+   ✓ rolls back the unannounced index switch and source seat when a deferred database constraint rejects COMMIT  769ms
+   ✓ treats a durable committed receipt after owner restart as history with no phantom live snapshot  823ms
+stdout | tests/integration/sanctions.test.ts > measures the actual local HTTP review and incident round trips with committed restrictions and drained memberships
+M08-06_LOCAL_HTTP_TIMING {"samples":[{"operation":"assigned-case-read","elapsedMs":46.577187999999296},{"operation":"issue-mute","elapsedMs":24.773459000000003},{"operation":"own-decisions-read","elapsedMs":7.090283999998064},{"operation":"private-appeal-intake","elapsedMs":7.809657999998308},{"operation":"independent-appeal-revoke","elapsedMs":9.947975999999471},{"operation":"world-closure","elapsedMs":9.044325999999273},{"operation":"independent-world-recovery","elapsedMs":13.003497000001516}],"clientDeadlineMs":2500,"profile":"one sample per operation, synthetic local TCP/DB, no production percentile/SLA claim"}
+
+ ✓ |security| tests/integration/sanctions.test.ts (24 tests) 26988ms
+   ✓ issues one encrypted reasoned mute under concurrent retries, denies both tabs and releases at expiry without maintenance  1281ms
+   ✓ requires current assigned registered scoped staff, strict input, allowed severity and policy duration  1337ms
+   ✓ room ejection releases seat/all tabs, prevents stale joins and commands, and permits a different world  1091ms
+   ✓ world ban survives reconnect/new sessions but other-world admission remains available; independent revocation releases access  1304ms
+   ✓ temporary platform ban requires assigned admin and denies every world while preserving own appeal/export/session access  1138ms
+   ✓ does not broadcast a message whose moderation resolves after a mute commits  1037ms
+   ✓ restarts without the evidence key and still enforces committed bans without disclosing protected notes  1038ms
+   ✓ deleted subjects erase notes, unlink sanction/appeal identities and preserve append-only audit  1079ms
+   ✓ expiry, appeal deadlines and encrypted-note purge use authoritative time with no reactivation on retry  1060ms
+   ✓ rolls back notes, sanction, audit and receipt together and does not interrupt rooms on transaction failure  969ms
+   ✓ orders an already pending trusted join before ban commit and removes it before issuance acknowledges  1056ms
+   ✓ private refresh hints reach only the target, and an old issuance retry cannot undo a reasoned independent reversal  1028ms
+   ✓ requires admin for actions against registered staff even if a report uses a different category, and denies expired evidence  1168ms
+   ✓ persists an account-wide appeal budget across different sanctions and rejects missing-CSRF writes  1130ms
+   ✓ searches only scoped assigned cases and gates staff session/controls by registered current grants  1114ms
+   ✓ scoped admin closes chat before delayed moderation delivery, keeps room activity, requires independent recovery and rejects stale closure replay  1226ms
+   ✓ world closure interrupts all occupants and persists across restart without evidence key; recovery cannot override disabled flags  1207ms
+   ✓ only a distinct assigned reviewer can inspect and decide an appeal; concurrent replay revokes once and reveals only controlled result to subject  1092ms
+   ✓ appeal uphold leaves restriction active; expired/tampered appeal evidence and moderator platform review are denied  1206ms
+   ✓ does not uphold a sanction already independently revoked or lose original appeal intake idempotency after review  1104ms
+   ✓ rechecks confidential appeal read and disposition after assignment changes while the reviewer has an open case  1081ms
+   ✓ rechecks confidential appeal read and disposition after grant-expiry changes while the reviewer has an open case  1026ms
+   ✓ rechecks confidential appeal read and disposition after session-revoke changes while the reviewer has an open case  967ms
+   ✓ measures the actual local HTTP review and incident round trips with committed restrictions and drained memberships  1246ms
+ ✓ |security| tests/integration/rooms.test.ts (23 tests) 6114ms
+     ✓ serializes 100 simultaneous real-session joins into one target room without overcapacity  736ms
+     ✓ one hundred simultaneous real-session seat claims produce exactly one owner  1451ms
+     ✓ shares one session command budget across room and seat events and rejects invalid action/role claims  340ms
+     ✓ idle session expiry immediately frees ownership instead of extending a disconnected seat hold  1049ms
+ ✓ |security| tests/integration/reports.test.ts (11 tests) 11254ms
+   ✓ reports fail closed without a separate key; no client can provision staff or bypass auth/CSRF/strict payloads  959ms
+   ✓ confidential receipt is reporter-only, concurrent retries persist one encrypted case and one audit event  825ms
+   ✓ rejects room IDOR, self-report, forged membership/epoch and invisible targets without enumerating peers  861ms
+   ✓ assigned registered staff can review within world scope, while target/reporter/unassigned/expired grants cannot  1241ms
+   ✓ guest grants and conflicted staff never authorize case evidence; staff-abuse needs an independent safety admin  1329ms
+   ✓ database audit refuses UPDATE, DELETE and TRUNCATE; tampered ciphertext fails safely without leaking evidence  984ms
+   ✓ shared durable daily report budget, bounded notes and evidence TTL prevent unbounded retained evidence  1156ms
+   ✓ own export excludes reports against target; explicit identity deletion unlinks case and erases associated evidence  832ms
+   ✓ automatic guest expiry invokes safety deletion hooks and removes ciphertext rather than leaving orphaned identity evidence  862ms
+   ✓ persisted receipt and ciphertext survive app recreation while missing or wrong keys never reveal plaintext  1106ms
+   ✓ actual moderated-message references are recipient-bound and remain reportable after block without fabricating text  1095ms
+ ✓ |security| tests/integration/social.test.ts (16 tests) 2248ms
+     ✓ enforces persistent daily request limits even with a fresh HTTP/service instance and exposes a minimal abuse hook  335ms
+ ✓ |security| tests/integration/identity.test.ts (15 tests) 3200ms
+     ✓ upgrades a guest exactly once without changing identity, then signs in after logout  403ms
+     ✓ caps live sessions per registered account and preserves registration after session expiry cleanup  934ms
+     ✓ caps sign-in attempts before additional KDF work  350ms
+ ✓ |security| tests/integration/dating-adversarial.test.ts (6 tests) 7518ms
+   ✓ rejects nine malformed,underage,self-attested,mismatched and stale proof decisions on every private positive owner  1118ms
+   ✓ denied proof cannot enter via HTTPdirectory,forged socketroom,travelintent or arbitrary travel redemption even when generic adult permission is true  853ms
+   ✓ a known source handle grants outsiders no observation,choice,queue,report attribution or global profile lookup  1492ms
+   ✓ private return grants cannot migrate to another current session of the same account and logout invalidates original positive requests  1382ms
+   ✓ even an existing friend cannot discover private alias,source or dating activity through shared projections and request logging  1340ms
+   ✓ an account-scoped current world ban cannot be evaded by another login or a previously known mutual source while independent revoke remains available  1330ms
+(node:82823) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:82913) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:82994) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:83069) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ |security| tests/integration/security-network.test.ts (3 tests) 5777ms
+   ✓ actual TCP mutation and socket handshake reject mixed session CSRF,origin,cookie and claimed authority without changing either identity  1619ms
+   ✓ actual TCP known room authority stays viewer scoped and a persisted world ban denies live commands,reconnect and owner restart without blocking independent logout  2516ms
+   ✓ actual TCP forwarded-header spoofing cannot bypass guest limits,session budget is shared across sockets and adult claims cannot open the closed world  1640ms
+ ✓ |security| tests/integration/identity-socket.test.ts (11 tests) 1569ms
+     ✓ disconnects an idle socket when its authoritative session expires  307ms
+
+ Test Files  9 passed (9)
+      Tests  142 passed (142)
+   Start at  01:45:15
+   Duration  98.60s (transform 829ms, setup 0ms, import 5.10s, tests 92.42s, environment 1ms)
+
+ Container virtual-city-test-0e5258a0-db-1 Stopping 
+ Container virtual-city-test-0e5258a0-db-1 Stopped 
+ Container virtual-city-test-0e5258a0-db-1 Removing 
+ Container virtual-city-test-0e5258a0-db-1 Removed 
+ Network virtual-city-test-0e5258a0_default Removing 
+ Network virtual-city-test-0e5258a0_default Removed 

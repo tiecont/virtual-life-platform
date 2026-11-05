@@ -12,6 +12,8 @@ The [isolated quality harness](docs/architecture/TEST-HARNESS.md) uses fresh fix
 
 The [concurrency matrix](docs/architecture/CONCURRENCY-VERIFICATION.md) exercises actual socket capacity/seating and TCP order/booking/matching races. It distinguishes invariant checks from the observed100member admission-burst latency failure;capacity targets still require load measurements.
 
+Run `pnpm test:security` for the [security regression matrix](docs/architecture/SECURITY-REGRESSIONS.md): session/CSRF/socket guards,private projections,current restrictions and closed adult access. Local protocol tests do not establish real eligibility or public release approval.
+
 Project repository: `git@github.com:tiecont/virtual-life-platform.git` (configured locally; no push performed). The Virtual City plan is the product specification.
 
 The [shared hospitality engine](docs/architecture/HOSPITALITY.md) provides private policy-gated orders, atomic claims, voluntary shifts, reusable timed courses, transactional completion hooks and service refusal/block/safety recovery. Optional progression consumers are implemented; real Maid integration remains gated. No public hospitality world is enabled.

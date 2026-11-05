@@ -1,0 +1,16 @@
+{
+  "files": {
+    "desktop-public-after-denial.png": "8c11c33459f799465fbb562aa1cb0d7bf00af8c0049ea697ddd59ddf56f0e3c4",
+    "desktop.json": "85b70ffb764c6e2b6d4080b8b2de3e2ac7671fa44cab08c762b1d7c4d176d9b8",
+    "mobile-public-after-denial.png": "a619b166268693fb7d8273e511bca61d3957b183bbea3a248f28c1ab085a2450",
+    "mobile.json": "85b70ffb764c6e2b6d4080b8b2de3e2ac7671fa44cab08c762b1d7c4d176d9b8",
+    "browser-batches.json": "b43815a720a120c85f819bd26bcb37248168476e283d906005ebacc07d8e452b"
+  },
+  "restoredHistoricalFiles": [],
+  "freshButByteIdenticalHistoricalFiles": [
+    "docs/agent/evidence/m20-adversarial-visual/desktop-public-after-denial.png",
+    "docs/agent/evidence/m20-adversarial-visual/desktop.json",
+    "docs/agent/evidence/m20-adversarial-visual/mobile-public-after-denial.png",
+    "docs/agent/evidence/m20-adversarial-visual/mobile.json"
+  ]
+}

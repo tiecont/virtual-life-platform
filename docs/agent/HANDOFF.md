@@ -6,7 +6,15 @@ Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;bran
 
 Node26.9.0/pnpm11.28.5. RetaineddevDB0036/stopped;latestjournal/9privatecounts0. No preview/verificationworker remains. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
 
-## Current work — M22-02 VERIFIED;continue M22-03
+## Current work — M22-03 VERIFIED;continue M22-04
+
+From37b61ca;ADR0079/SECURITY-REGRESSIONS.md/m22-security-checks.json. Focused9file/142case security project/pnpm test:security0 reuses8owner suites+3new separate API child/actualTCPcases. Normalintegrationstillselects3newcases(actuallist0),rootCI unchanged. Mixed-sessionCSRF/Origin/cookie/role/known-roomIDOR/privacy,persistedworldbanlive/reconnect/restart,independentlogout,physicalguest10/11th429 despiteforwardedheaders,sharedsocket60/61stdenied,closedDatingclaims/noenrollment. Initial2pass1fail expectedFORBIDDEN vsdeliberateNOT_FOUND;fixturecorrectedafterregistryaudit,notruntime.
+
+Final142security/packagebuild/wholelint/types/governance/CIpolicy0;455sourcehashesunchanged/all335runtimepaths match37b61ca. Prior19gov/263unit/500integration/fullbuild0 baseline remains separate,not503fullsuite. Final2privatebrowser0(desktop/mobile heldcommittedread/logout/latealiasdiscard/API401/deeplink404/publicnoalias-source-storage),2PNGsinspected/4freshfiles+batchreport savedm22-security-visual. All4historicalfiles byte-identical,none requiredrestore;initialcollector incorrectlyrequiredfreshfilesdiffer,correctedbookkeepingonly. No workers/DB/API/webremain;noapp/schema/retained0036/stopped/realflags/provider/staff/legacy/remote/publicchange. OldM21-04image stale forpriorRoomfanout. Realage/security/privacy/legal/publicgatesclosed.
+
+Next exact action:M22-04 audit existing actualLibrary/Restaurant/portal/mobile browser journeys;run independentcases,record actualDeadline/Maid wholejourneyBLOCKED_EXTERNAL B-001/B-002,never substitute synthetictravelfixtures;then continueM22-05 loadhypotheses. Wholeplanincomplete.
+
+## Prior slice — M22-02 VERIFIED
 
 From954087b;ADR0078/CONCURRENCY-VERIFICATION.md/m22-races-checks.json. Actual separate API child/HTTP bootstrap/physical unique loopback sockets:cap8 seed+100attempts gives7admitted93ROOM_FULL;100members claim1seat with1winner99SEAT_TAKEN. Explicit cleanup0. Bounded4privateprojection workers retain owner queue/per-viewer privacy;held/failing port test proves allSettled barrier/no partial publish/canonical committed-seat retry. Isolated100admission burst passed once after fix but consolidated burst still exceeded5s;seat setup now batches10,100claims still simultaneous. Keep performancefailure forM22-05,no timeout/quota increase/no100CCUcertification. InitialDockerEOF interrupted/noexit,displayname fixture and widened existing helper type failures retained/fixed.
 

@@ -1,0 +1,22 @@
+[
+  {
+    "project": "desktop",
+    "batch": 1,
+    "filters": [
+      "tests/e2e/dating-continuation.spec.ts",
+      "-g",
+      "logout defeats a held private connection read"
+    ],
+    "exitCode": 0
+  },
+  {
+    "project": "mobile",
+    "batch": 1,
+    "filters": [
+      "tests/e2e/dating-continuation.spec.ts",
+      "-g",
+      "logout defeats a held private connection read"
+    ],
+    "exitCode": 0
+  }
+]

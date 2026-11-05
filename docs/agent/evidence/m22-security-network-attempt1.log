@@ -1,0 +1,50 @@
+ Network virtual-city-test-32608ea8_default Creating 
+ Network virtual-city-test-32608ea8_default Creating 
+ Network virtual-city-test-32608ea8_default Created 
+ Network virtual-city-test-32608ea8_default Created 
+ Container virtual-city-test-32608ea8-db-1 Creating 
+ Container virtual-city-test-32608ea8-db-1 Created 
+ Container virtual-city-test-32608ea8-db-1 Starting 
+ Container virtual-city-test-32608ea8-db-1 Started 
+ Container virtual-city-test-32608ea8-db-1 Waiting 
+ Container virtual-city-test-32608ea8-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+(node:75227) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:75308) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:75395) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ |security| tests/integration/security-network.test.ts (3 tests | 1 failed) 4913ms
+   ✓ actual TCP mutation and socket handshake reject mixed session CSRF,origin,cookie and claimed authority without changing either identity  1598ms
+   × actual TCP known room authority stays viewer scoped and a persisted world ban denies live commands,reconnect and owner restart without blocking independent logout 1676ms
+   ✓ actual TCP forwarded-header spoofing cannot bypass guest limits,session budget is shared across sockets and adult claims cannot open the closed world  1636ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |security| tests/integration/security-network.test.ts > actual TCP known room authority stays viewer scoped and a persisted world ban denies live commands,reconnect and owner restart without blocking independent logout
+AssertionError: expected 'NOT_FOUND' to be 'FORBIDDEN' // Object.is equality
+
+Expected: "FORBIDDEN"
+Received: "NOT_FOUND"
+
+ ❯ tests/integration/security-network.test.ts:55:196
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  01:43:46
+   Duration  5.26s (transform 75ms, setup 0ms, import 230ms, tests 4.91s, environment 0ms)
+
+Test harness failed during command;no raw URL or configuration emitted
+ Container virtual-city-test-32608ea8-db-1 Stopping 
+ Container virtual-city-test-32608ea8-db-1 Stopped 
+ Container virtual-city-test-32608ea8-db-1 Removing 
+ Container virtual-city-test-32608ea8-db-1 Removed 
+ Network virtual-city-test-32608ea8_default Removing 
+ Network virtual-city-test-32608ea8_default Removed 
