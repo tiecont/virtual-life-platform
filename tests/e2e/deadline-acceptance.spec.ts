@@ -8,9 +8,11 @@ import performanceBudget from '../../config/scene-performance.json';
 // recorded by bench:deadline and are not a40browser rendering claim.
 test('Deadline keyboard focus,timer actions,reduced motion and readable controls remain accessible without canvas input',async({page,context},info)=>{
  await page.emulateMedia({reducedMotion:'reduce'});await guest(context,'Deadline keyboard');await page.goto('/worlds/deadline');
+ // Native Tab skips unavailable controls; start the keyboard path after async entry readiness.
+ const enter=page.getByRole('button',{name:'Enter cafe',exact:true});await expect(enter).toBeEnabled();
  const skip=page.getByRole('link',{name:'Skip to room controls',exact:true});await skip.focus();await page.keyboard.press('Enter');
  await expect(page.getByRole('complementary',{name:'Your room',exact:true})).toBeFocused();await page.keyboard.press('Tab');
- const enter=page.getByRole('button',{name:'Enter cafe',exact:true});await expect(enter).toBeFocused();await page.keyboard.press('Enter');
+ await expect(enter).toBeFocused();await page.keyboard.press('Enter');
  await expect(page.getByRole('heading',{name:'Walk around',exact:true})).toBeFocused();
  const canvas=page.locator('canvas[data-scene="deadline"]');await expect(canvas).toHaveAttribute('data-reduced-motion','true');
  await expect(page.getByLabel('Reduce room motion',{exact:true})).toBeChecked();

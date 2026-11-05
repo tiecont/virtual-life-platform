@@ -217,12 +217,14 @@
       "next_action": "Reserve N03-03; read portal AGENTS and installed Next16.4.4 deployment/output/environment guides, audit server/client API origins and assets, implement and actually run a separate nonroot portal runtime image with correct standalone tracing/runtime configuration. Extend image:check --target=web and prove real portal/browser assets/cache headers and HTTPS/socket proxy compatibility, preserving safety/CSP/legacy fixture behavior and frozen pins."
     },
     "N03-03": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex Foundation/CI",
+      "branch": "codex/vnext-n03-03-web-image",
+      "evidence_refs": [
+        "n03-03-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "vlp-web image; Next runtime assets/standalone phù hợp"
+      "next_action": "Reserve N03-04; audit current quality/trust/security contracts and remote enforcement availability, implement read-only PR matrix plus trusted-main immutable image publish/SBOM/provenance/source manifest and real release-manifest validation. Keep auto-merge and production auto-promotion disabled unless exact enforcement is verified; distinguish local proofs from hosted/published NOT_RUN results."
     },
     "N03-04": {
       "status": "TODO",

@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N03-03 VERIFIED
+
+Verified a separate nonroot standalone web artifact and same-source API image with six generated-certificate TLS/browser/runtime-origin scenarios plus six API scenarios. Runtime API forwarding and public socket configuration change on the identical web image; secure cookies, asset hashes/cache/privacy headers and WSS/Origin protection pass. Full check: 52 governance, 304 unit, 559 integration and production builds exit0. Final legacy browser group: 40 executions across eight specs/16 isolated lifetimes, retries0. An earlier async readiness failure and controlled delayed-catalog diagnostic remain preserved; only test readiness synchronization changed, with all original assertions/budgets retained. Protected 75 files, 11 public assets and 15 dependency manifests unchanged.
+
+Actual commands: 17; retained failed attempts: 4; required final checks passed. Evidence: `n03-03-2026-11-05`; [checks](../audit/N03-03-CHECKS.json). Current counts: `{"VERIFIED": 19, "TODO": 50}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N03-04; audit current quality/trust/security contracts and remote enforcement availability, implement read-only PR matrix plus trusted-main immutable image publish/SBOM/provenance/source manifest and real release-manifest validation. Keep auto-merge and production auto-promotion disabled unless exact enforcement is verified; distinguish local proofs from hosted/published NOT_RUN results.
+
 ## 2026-11-05 — N03-02 VERIFIED
 
 Built and inspected a separate nonroot API image from a clean tested Node base and frozen installed production graph, without a packaging resolver or network. Actual image has 131 package components, 9 first-party packages, 38 unchanged SQL files and a same-image migrator. Six production-mode HTTP/socket/migration/singleton/SIGTERM-replacement scenarios and final driver rerun pass; cancellation cleanup and 52 governance tests pass. Two failed resolver-based attempts retained. Original combined Docker/recovery fixtures and runtime source remain unchanged.

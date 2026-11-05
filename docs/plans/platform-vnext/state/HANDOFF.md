@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T20:15:05.154310+00:00; task N03-02 VERIFIED on `codex/vnext-n03-02-api-image`. Base revision `0f1079a688edc309c78a546ed666a1f70311af9c`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T21:14:17.617869+00:00; task N03-03 VERIFIED on `codex/vnext-n03-03-web-image`. Base revision `6f1f14a8e13537acb0328d86c8d02f7c67b0f465`; this task has its own reviewable commit after evidence finalization.
 
-Built and inspected a separate nonroot API image from a clean tested Node base and frozen installed production graph, without a packaging resolver or network. Actual image has 131 package components, 9 first-party packages, 38 unchanged SQL files and a same-image migrator. Six production-mode HTTP/socket/migration/singleton/SIGTERM-replacement scenarios and final driver rerun pass; cancellation cleanup and 52 governance tests pass. Two failed resolver-based attempts retained. Original combined Docker/recovery fixtures and runtime source remain unchanged.
+Verified a separate nonroot standalone web artifact and same-source API image with six generated-certificate TLS/browser/runtime-origin scenarios plus six API scenarios. Runtime API forwarding and public socket configuration change on the identical web image; secure cookies, asset hashes/cache/privacy headers and WSS/Origin protection pass. Full check: 52 governance, 304 unit, 559 integration and production builds exit0. Final legacy browser group: 40 executions across eight specs/16 isolated lifetimes, retries0. An earlier async readiness failure and controlled delayed-catalog diagnostic remain preserved; only test readiness synchronization changed, with all original assertions/budgets retained. Protected 75 files, 11 public assets and 15 dependency manifests unchanged.
 
-[Actual checks](../audit/N03-02-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 18, "TODO": 51}`.
+[Actual checks](../audit/N03-03-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 19, "TODO": 50}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N03-03; read portal AGENTS and installed Next16.4.4 deployment/output/environment guides, audit server/client API origins and assets, implement and actually run a separate nonroot portal runtime image with correct standalone tracing/runtime configuration. Extend image:check --target=web and prove real portal/browser assets/cache headers and HTTPS/socket proxy compatibility, preserving safety/CSP/legacy fixture behavior and frozen pins.
+Reserve N03-04; audit current quality/trust/security contracts and remote enforcement availability, implement read-only PR matrix plus trusted-main immutable image publish/SBOM/provenance/source manifest and real release-manifest validation. Keep auto-merge and production auto-promotion disabled unless exact enforcement is verified; distinguish local proofs from hosted/published NOT_RUN results.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.

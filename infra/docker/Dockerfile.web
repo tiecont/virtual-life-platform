@@ -1,0 +1,23 @@
+FROM node:26.9.0-bookworm-slim@sha256:582460f614631b59b824ac6020533b9bf339c7fdf3a6d7db31abb6b4065f0212 AS build
+ENV NEXT_TELEMETRY_DISABLED=1
+WORKDIR /app
+RUN npm install --global pnpm@11.28.5
+COPY . .
+RUN pnpm install --frozen-lockfile
+ENV VLP_WEB_STANDALONE=1 API_INTERNAL_URL=http://build-only-api.invalid:4300
+RUN pnpm build
+
+FROM node:26.9.0-bookworm-slim@sha256:582460f614631b59b824ac6020533b9bf339c7fdf3a6d7db31abb6b4065f0212 AS runtime
+ARG SOURCE_REVISION
+LABEL org.opencontainers.image.title="vlp-web" org.opencontainers.image.revision=$SOURCE_REVISION
+WORKDIR /app
+RUN rm -rf /usr/local/lib/node_modules /opt/yarn-* /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/yarn /usr/local/bin/yarnpkg /usr/local/bin/pnpm /usr/local/bin/corepack
+COPY --from=build /app/apps/portal-web/.next/standalone/ ./
+COPY --from=build /app/apps/portal-web/.next/static/ ./apps/portal-web/.next/static/
+COPY --from=build /app/apps/portal-web/public/ ./apps/portal-web/public/
+COPY --from=build /app/apps/portal-web/start-runtime.mjs ./apps/portal-web/start-runtime.mjs
+WORKDIR /app/apps/portal-web
+ENV NODE_ENV=production HOSTNAME=0.0.0.0 PORT=3300 NEXT_TELEMETRY_DISABLED=1
+USER node
+EXPOSE 3300
+CMD ["node", "start-runtime.mjs"]
