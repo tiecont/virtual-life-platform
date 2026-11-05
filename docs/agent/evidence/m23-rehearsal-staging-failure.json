@@ -1,0 +1,14 @@
+{
+  "stage": "browser-guest-signout",
+  "message": "apiRequestContext.get: self-signed certificate; if the root CA is installed locally, try running Node.js with --use-system-ca\nCall log:\n\u001b[2m  - → GET https://localhost:36961/v1/me\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n",
+  "browserNetwork": [
+    {
+      "path": "/v1/me",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/v1/me",
+      "error": "net::ERR_NETWORK_CHANGED"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+ Network virtual-city-test-fbf8d231_default Creating 
+ Network virtual-city-test-fbf8d231_default Creating 
+ Network virtual-city-test-fbf8d231_default Created 
+ Network virtual-city-test-fbf8d231_default Created 
+ Container virtual-city-test-fbf8d231-db-1 Creating 
+ Container virtual-city-test-fbf8d231-db-1 Created 
+ Container virtual-city-test-fbf8d231-db-1 Starting 
+ Container virtual-city-test-fbf8d231-db-1 Started 
+ Container virtual-city-test-fbf8d231-db-1 Waiting 
+ Container virtual-city-test-fbf8d231-db-1 Healthy 
+[WebServer] (node:363931) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:363982) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:363982) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:363982) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:363930) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:364046) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:364127) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:364140) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:364244) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/maid-safety.spec.ts:9:5 › native private Maid report retries once;assigned moderator removes an active worker and requeues unfinished preparation (10.5s)
+  ✓  2 [desktop] › tests/e2e/maid-safety.spec.ts:16:5 › Maid block hides both participants and their greetings;contact stays denied in actual Deadline (9.0s)
+
+  2 passed (25.9s)
+ Container virtual-city-test-fbf8d231-db-1 Stopping 
+ Container virtual-city-test-fbf8d231-db-1 Stopped 
+ Container virtual-city-test-fbf8d231-db-1 Removing 
+ Container virtual-city-test-fbf8d231-db-1 Removed 
+ Network virtual-city-test-fbf8d231_default Removing 
+ Network virtual-city-test-fbf8d231_default Removed 
+ Network virtual-city-test-9741e19a_default Creating 
+ Network virtual-city-test-9741e19a_default Creating 
+ Network virtual-city-test-9741e19a_default Created 
+ Network virtual-city-test-9741e19a_default Created 
+ Container virtual-city-test-9741e19a-db-1 Creating 
+ Container virtual-city-test-9741e19a-db-1 Created 
+ Container virtual-city-test-9741e19a-db-1 Starting 
+ Container virtual-city-test-9741e19a-db-1 Started 
+ Container virtual-city-test-9741e19a-db-1 Waiting 
+ Container virtual-city-test-9741e19a-db-1 Healthy 
+[WebServer] (node:365944) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:365959) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:365959) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:365959) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:365943) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:366065) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:366099) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:366112) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:366187) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [mobile] › tests/e2e/maid-safety.spec.ts:9:5 › native private Maid report retries once;assigned moderator removes an active worker and requeues unfinished preparation (9.5s)
+  ✓  2 [mobile] › tests/e2e/maid-safety.spec.ts:16:5 › Maid block hides both participants and their greetings;contact stays denied in actual Deadline (7.4s)
+
+  2 passed (22.0s)
+ Container virtual-city-test-9741e19a-db-1 Stopping 
+ Container virtual-city-test-9741e19a-db-1 Stopped 
+ Container virtual-city-test-9741e19a-db-1 Removing 
+ Container virtual-city-test-9741e19a-db-1 Removed 
+ Network virtual-city-test-9741e19a_default Removing 
+ Network virtual-city-test-9741e19a_default Removed 

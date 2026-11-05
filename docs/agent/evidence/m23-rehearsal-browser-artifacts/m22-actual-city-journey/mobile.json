@@ -1,0 +1,50 @@
+{
+  "actualWorlds": [
+    {
+      "world": "deadline",
+      "version": "1.1.0",
+      "capacity": 40,
+      "seats": 30,
+      "sameIdentityAvatar": true,
+      "oneActiveMembership": true,
+      "noAutomaticSeatOrShift": true,
+      "nativeSeatWorked": true
+    },
+    {
+      "world": "maid",
+      "version": "1.2.0",
+      "capacity": 30,
+      "seats": 24,
+      "sameIdentityAvatar": true,
+      "oneActiveMembership": true,
+      "noAutomaticSeatOrShift": true,
+      "nativeSeatWorked": true
+    },
+    {
+      "world": "library",
+      "version": "1.2.0",
+      "capacity": 8,
+      "seats": 8,
+      "sameIdentityAvatar": true,
+      "oneActiveMembership": true,
+      "noAutomaticSeatOrShift": true,
+      "nativeSeatWorked": true
+    },
+    {
+      "world": "restaurant",
+      "version": "1.2.0",
+      "capacity": 10,
+      "seats": 8,
+      "sameIdentityAvatar": true,
+      "oneActiveMembership": true,
+      "noAutomaticSeatOrShift": true,
+      "nativeSeatWorked": true
+    }
+  ],
+  "confirmedCityReturn": true,
+  "finalOwnVisitNull": true,
+  "datingNotOffered": true,
+  "noPageErrors": true,
+  "activities": "Deadline/Library start-cancel,Maid place-withdraw,Restaurant native entry/seating/perspectives;completed service/booking loops are separate module evidence",
+  "syntheticTargetsUsed": false
+}

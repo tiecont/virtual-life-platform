@@ -1,5 +1,11 @@
 # Agent progress
 
+## M23-04 — VERIFIED two-lane offline release rehearsal
+
+From77620f6;[runbook](../operations/RELEASE-REHEARSAL.md),[evidence](evidence/m23-rehearsal-checks.json). Freshcurrent38productionclosedTLS/rotation/Origin-IPbudget/failedcanary-compatibleAPIrollback-rollforward/privateoperator404/actual10requests1expected401error0online/guestlogout-cookie401removed-reloadnoautocreate/proxyredaction/cleanup0. InitialguestlogoutNodeAPIRequestContextselfsignedtrustfailure retained;switchtobrowsersameoriginfetchwithSPKIpin,neverdisableTLSvalidation. FinalrunsequentialtootherDockerharnesses;02renewfetchfailure remainsunexplained.
+
+Separateactualtestprofiles12browser0/8completebatches:4actualCityDeadlineMaidLibraryRestaurantCity+labelledsyntheticfaultlogout,4MaidprivateReport-humanfixtureModerator-blockacrossactualDeadline,2friendship/block,2appeal/independentrecovery. Types/lint2830/24freshhistoryPNGJSONsaved8changedrestored/6syntheticartifacts/twoPNGsinspected. Initialbatchauditwrongfullpathvsbasename failure retained/correctinvocation0. Runtimeidentical07a2372;M23-02fresh38encryptedrestore reused,notsecondrestoreclaim. No publicTLSworldinstallation/staff/DDL/originalaction/newwholeAPI-browserclaim. Next05NoGo/06metrics-handoff/finalwholecheck.
+
 ## M23-03 — local technical work complete;BLOCKED_EXTERNAL public coverage
 
 Fromd926e53;[incident runbook](../operations/INCIDENTS.md),[evidence](evidence/m23-incidents-checks.json). Complete abuse/leak/roomcrash/performance containment/privateevidence/independentrecovery/handover procedures usingactualexistingcontrols. FreshrealPG/Socket+TCP4tests0/23filteredskips:in-flightchatdenied/no broadcast,worldclosure0members/otherworldunaffected,restartwithoutkeypersistsclosure,distinctadminrecovery/stalereplay/baseflagdenial/auditappendonly;Lounge no stage/audienceconsent resurrection. OwnedDBcleaned,no runtime/DDL/publicchange. M23-03explicitacceptance requiresassignedpublicon-duty/contact;allrolesnull/escalationunassigned,so whole task BLOCKED_EXTERNAL despite completedlocaldrill. No invented staffing/alert/realgrant/publicapproval. ContinueindependentM23-04..06offline.
