@@ -1,0 +1,28 @@
+[
+  {
+    "project": "desktop",
+    "batch": 1,
+    "filters": [
+      "tests/e2e/scene.spec.ts",
+      "tests/e2e/library.spec.ts",
+      "tests/e2e/restaurant.spec.ts",
+      "tests/e2e/lounge.spec.ts",
+      "-g",
+      "room keyboard focus, reduced motion|Library keyboard focus|Restaurant native keyboard focus|original silent Lounge"
+    ],
+    "exitCode": 0
+  },
+  {
+    "project": "mobile",
+    "batch": 1,
+    "filters": [
+      "tests/e2e/scene.spec.ts",
+      "tests/e2e/library.spec.ts",
+      "tests/e2e/restaurant.spec.ts",
+      "tests/e2e/lounge.spec.ts",
+      "-g",
+      "room keyboard focus, reduced motion|Library keyboard focus|Restaurant native keyboard focus|original silent Lounge"
+    ],
+    "exitCode": 0
+  }
+]

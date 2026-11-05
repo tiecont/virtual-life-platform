@@ -1,0 +1,176 @@
+{
+  "nativeEntrySeatTimerAndExit": true,
+  "systemReducedMotion": true,
+  "noIdleFrames": true,
+  "timerLiveRegionOff": true,
+  "contrast": [
+    {
+      "selector": "cafe-eyebrow",
+      "foreground": "rgb(80, 104, 92)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 5.763756557321647
+    },
+    {
+      "selector": "cafe-occupancy",
+      "foreground": "rgb(80, 104, 92)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 5.763756557321647
+    },
+    {
+      "selector": "cafe-scene-caption",
+      "foreground": "rgb(80, 102, 91)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 5.90485158957372
+    },
+    {
+      "selector": "cafe-note",
+      "foreground": "rgb(82, 104, 93)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 5.7288236258564105
+    },
+    {
+      "selector": "focus-private",
+      "foreground": "rgb(74, 93, 112)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 6.481469937486872
+    },
+    {
+      "selector": "focus-phase",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "LABEL",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "LABEL",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "LABEL",
+      "foreground": "rgb(36, 61, 53)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 11.16741727377888
+    },
+    {
+      "selector": "focus-message",
+      "foreground": "rgb(138, 53, 60)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 7.5451422687668375
+    },
+    {
+      "selector": "cafe-note",
+      "foreground": "rgb(82, 104, 93)",
+      "background": "rgb(248, 250, 249)",
+      "ratio": 5.7288236258564105
+    }
+  ],
+  "targets": [
+    {
+      "label": "Walk to entrance",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Walk to reading aisle",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Walk to study aisle",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Walk to south shelves",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Stand up",
+      "width": 85.375,
+      "height": 44
+    },
+    {
+      "label": "01Reading cornerAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "02Reading cornerAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "03Reading cornerYour seat",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "04Reading cornerAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "05Study alcoveAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "06Study alcoveAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "07Study alcoveAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "08Study alcoveAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Start focus",
+      "width": 96.859375,
+      "height": 44
+    },
+    {
+      "label": "Refresh timer",
+      "width": 114.640625,
+      "height": 44
+    },
+    {
+      "label": "Stop all study sharing",
+      "width": 164.234375,
+      "height": 44
+    },
+    {
+      "label": "Refresh study sessions",
+      "width": 170.96875,
+      "height": 44
+    },
+    {
+      "label": "Leave library",
+      "width": 215,
+      "height": 44
+    },
+    {
+      "label": "Invite friend to this room",
+      "width": 185.71875,
+      "height": 44
+    },
+    {
+      "label": "Refresh study friends",
+      "width": 162.265625,
+      "height": 44
+    }
+  ]
+}

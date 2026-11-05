@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "asset": "Central Park original outdoor scene",
+  "origin": "Original project-authored geometry and deterministic Pixi graphics;no imported artwork,media,fonts,audio or location data",
+  "sources": [
+    {
+      "path": "packages/park-world/src/index.ts",
+      "sha256": "c552500f630fcb406258960a9193c97d6f73e1d0a908d17bb07c6c8053412744"
+    },
+    {
+      "path": "packages/pixi-scene/src/park-art.ts",
+      "sha256": "5de12ef8b7f205973731d54e3664778fb040838ef7e3b361f4d2ecec7521b25e"
+    },
+    {
+      "path": "packages/pixi-scene/src/renderer.ts",
+      "sha256": "462940a52978afa2c12188728e082bb073afbe0c43ec36d55d9be6c590e16eb3"
+    }
+  ],
+  "avatar": "Existing original starter atlas;separate avatar provenance applies",
+  "rights": "Project owner retains distribution/license decisions;this record grants no external media license",
+  "releaseApproved": false
+}

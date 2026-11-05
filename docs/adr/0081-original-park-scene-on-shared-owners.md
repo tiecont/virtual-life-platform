@@ -1,0 +1,15 @@
+# ADR0081 — Original Central Park on shared scene and room owners
+
+Status: M24-01 locally VERIFIED froma89873c. Final root19governance/266unit/507integration/allbuild0,471hashes unchanged;6Park+8existingtheme browser regressions0,all4ParkPNGs inspected. Initial context-key failure retained/fixed without weakening guard. [Actual evidence](../agent/evidence/m24-scene-checks.json). This is scene/native navigation,not M24-02..05 or public activation.
+
+Audit finds no existing park module,route,scene or scene-specific data owner. Rollout already defines park OFF. Existing Library/Restaurant/Lounge demonstrate pure world packages,explicit local installation plus registry flags,shared authoritative Room/Social/Safety/Travel and a native WorldRoomPanel independent of Pixi. Reuse these boundaries;add no database table,ORM,identity system or room allocator.
+
+Create an original orthogonal outdoor scene:four two-place benches,eight native bench choices,twelve total places,trees/central garden,two fixed boards and walking paths. The map belongs to a new pure park-world package. Shared renderer gains an additive park theme;existing themes retain their geometry/palettes. Existing solid fixture kinds are reused as in Library bookshelves:counter footprints represent fixed bench backs/boards,planter footprints represent trees/garden. No scene-contract enum/version rewrite or cross-world package import is needed.
+
+Initial capabilities are presence,seating and portals. Board links use the existing city overview and explicit travel desk rather than fabricated activity,auto admission or new cross-domain SQL. Embedded live activity,moderated quick interactions,consenting group travel and public-space safety acceptance remain M24-02..05. The scene alone cannot satisfy those tasks.
+
+Install only with explicit LOCAL_PARK_WORLD in development/test and independent park registry flag. Default OFF,production rejects this local activation. Preserve every real rollout flag and all private/adult/operator gates. Reuse original starter avatars and author deterministic park geometry/graphics here;provenance records source hashes but does not assign a media license or approve public release.
+
+Require actual topology/flag/authority/privacy integration and desktop/mobile native bench/focus/reduced-motion/fallback/portal evidence. Shared-renderer changes also require regression/build checks for existing worlds;never label a static scene or catalog entry as a playable verified world without real commands.
+
+The first rendered browser acceptance caught SCENE_CONTEXT_MISMATCH:the new scene key central-park differed from the world slug park. Existing renderer context validation intentionally rejects that pairing. Align the module key to park and add a compatibility assertion;preserve the renderer guard rather than relaxing it. The initial fallback case passed because it did not render snapshots. Keep the1pass/2fail desktop run and private failure traces;mobile was not run after that failure. Rebuild/rerun before any success claim.

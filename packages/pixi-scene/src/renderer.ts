@@ -5,10 +5,11 @@ import { tileCenter } from './spec';
 import { fitSceneCamera } from './camera';
 import { sceneEntities } from './entities';
 import { avatarAtlasSpec, avatarFrame } from './avatar-art';
+import { parkLandscape } from './park-art';
 
-export async function createCafeScene(host: HTMLElement, input: SceneManifest, onSeat: (seatId: string) => void, options: { signal?: AbortSignal; outfit?: AvatarAppearance['outfit'];theme?:'cafe'|'reading-room'|'dining-room'|'lounge'; onMove?: (point: { x: number; y: number }) => void } = {}) {
+export async function createCafeScene(host: HTMLElement, input: SceneManifest, onSeat: (seatId: string) => void, options: { signal?: AbortSignal; outfit?: AvatarAppearance['outfit'];theme?:'cafe'|'reading-room'|'dining-room'|'lounge'|'park'; onMove?: (point: { x: number; y: number }) => void } = {}) {
   const scene = SceneManifestSchema.parse(input); const size = scene.tileSize;
-  const reading=options.theme==='reading-room',dining=options.theme==='dining-room',lounge=options.theme==='lounge';
+  const reading=options.theme==='reading-room',dining=options.theme==='dining-room',lounge=options.theme==='lounge',park=options.theme==='park';
   AvatarOutfitSchema.parse(options.outfit ?? 'casual');
   options.signal?.throwIfAborted();
   const app = new Application();
@@ -37,6 +38,10 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
     if (!current || current.self.seatId || !options.onMove) return;
     const point = world.toLocal(event.global); options.onMove({ x: Math.floor(point.x / size), y: Math.floor(point.y / size) });
   });
+  function label(text: string, x: number, y: number, color = '#354944', fontSize = 14) {
+    const element = new Text({ text, style: { fontFamily: 'system-ui, sans-serif', fontSize, fill: color, fontWeight: '600' } }); element.anchor.set(.5); element.position.set(x, y); return element;
+  }
+  if(park){world.addChild(parkLandscape(scene));}else{
   const floor = new Graphics(); world.addChild(floor);
   for (let y = 0; y < scene.rows; y++) for (let x = 0; x < scene.columns; x++) floor.rect(x * size, y * size, size, size).fill((x + y) % 2 ? lounge?'#e2dfeb':dining?'#ded0bf':reading?'#e1ddce':'#dbe7df' : lounge?'#eeeaf1':dining?'#eee3d5':reading?'#e9e5d9':'#e5eee8');
   function rect(g: Graphics, x: number, y: number, w: number, h: number, color: string) { g.rect(x, y, w, h).fill(color); }
@@ -96,12 +101,10 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
   const rugX=(dining?8:6)*size,rugY=(lounge?12:dining?4:9)*size,rugHeight=(dining?4:3)*size;
   const rug = new Graphics().rect(rugX,rugY,7*size,rugHeight).fill(lounge?'#b3a1b6':dining?'#a77b79':reading?'#b8a8ab':'#a7c2c6');
   rug.rect(rugX+8,rugY+8,7*size-16,rugHeight-16).stroke({ color: '#e6eee8', width: 2 }); world.addChild(rug);
-  const seats = new Container(); const people = new Container({ sortableChildren: true }); world.addChild(seats, people);
-  function label(text: string, x: number, y: number, color = '#354944', fontSize = 14) {
-    const element = new Text({ text, style: { fontFamily: 'system-ui, sans-serif', fontSize, fill: color, fontWeight: '600' } }); element.anchor.set(.5); element.position.set(x, y); return element;
-  }
   world.addChild(label(lounge?'TEXT / VISUAL STAGE':dining?'GARDEN DINING':reading?'READING CORNER':'WINDOW TABLE', (lounge?12:dining?5:4.5) * size, (lounge?5.7:dining?8.8:8) * size), label(lounge?'VIRTUAL MOCKTAILS':dining?'WINDOW DINING':reading?'STUDY ALCOVE':'GARDEN TABLE', (lounge?19.5:dining?18:13.5) * size, (lounge?12.7:dining?8.8:reading?9:8) * size));
   world.addChild(label(lounge?'MOONLIGHT LOUNGE':dining?'GRAND RESTAURANT':reading?'ETERNAL LIBRARY':'LOCAL TEST CAFE', (lounge||dining?12:9.5) * size, 1.8 * size, '#eff4ef', 14));
+  }
+  const seats = new Container(); const people = new Container({ sortableChildren: true }); world.addChild(seats, people);
   let destroyed = false;
   let current: RoomSnapshot | null = null; let context = ''; let created = 0; let removed = 0; let frames = 0;
   const avatars = new Map<string, { root: Container; sprite: Sprite; appearance: AvatarAppearance; pose: AnimationState; startedAt: number | null; motion?: RoomMotion; serverTime: number; receivedAt: number; settledPose: 'idle' | 'sit'; self: boolean }>();
@@ -118,7 +121,7 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
   const chairs = scene.seats.map(point => {
     const at = tileCenter(scene, point); const chair = new Graphics().roundRect(-18, -17, 36, 33, 4).fill('#ffffff');
     chair.position.set(at.x, at.y);
-    const back = new Graphics().rect(at.x - 18, at.y + (point.facing === 'south' ? -20 : 12), 36, 8).fill('#9c5149');
+    const back = new Graphics().rect(at.x - 18, at.y + (point.facing === 'south' ? -20 : 12), 36, 8).fill(park?'#806043':'#9c5149');
     const occupied = new Graphics().circle(at.x, at.y - 3, 6).fill('#e4e9e4'); occupied.visible = false;
     chair.on('pointertap', event => {
       event.stopPropagation();
@@ -176,7 +179,7 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
     current = state;
     for (const { point, chair, occupied } of chairs) {
       const seat = state?.seats.find(seat => seat.seatId === point.seatId);
-      chair.tint = seat?.mine ? '#287a70' : seat?.state === 'available' ? '#d77766' : '#87918c';
+      chair.tint = seat?.mine ? '#287a70' : seat?.state === 'available' ? park?'#c6a06e':'#d77766' : '#87918c';
       const enabled = !!state && seat?.state === 'available' && !state.self.seatId;
       chair.eventMode = enabled ? 'static' : 'none'; chair.cursor = enabled ? 'pointer' : 'default';
       occupied.visible = !!seat && seat.state !== 'available' && !state?.participants.some(person => person.seatId === seat.seatId) && !seat.mine;

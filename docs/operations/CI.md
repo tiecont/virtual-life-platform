@@ -6,13 +6,13 @@ The proposed required check remains `quality`. Its core dependency runs `pnpm ch
 
 | Browser group | Existing specs |
 |---|---|
-| city | activity,header,map,discovery,foundation,portal route |
+| city | activity,header,map,discovery,foundation,portal route,park |
 | social | identity,invitations,safety,social,travel |
 | study | focus,library,scene,wardrobe |
 | hospitality | lounge,restaurant |
 | private | dating continuation,dating profile/matching/Date |
 
-The actual filenames live in `config/ci-browser-groups.json`. Coverage rejects omitted,duplicate,unknown or traversing paths. Future specs must be assigned;there is no silent test filtering. Core emits the plan as a validated job output. An invalid/missing plan cannot become a successful browser group.
+The actual filenames live in `config/ci-browser-groups.json`:M24-01 adds park to city,making20specs across the same five groups. Coverage rejects omitted,duplicate,unknown or traversing paths. Future specs must be assigned;there is no silent test filtering. Core emits the plan as a validated job output. An invalid/missing plan cannot become a successful browser group.
 
 The aggregate uses explicit core/browser dependencies and `if: always()`. Its tested program accepts only both success results. Failure,cancellation,skip,missing/malformed or unexpected job metadata fails. The browser matrix result represents all its groups. After creating the repository,the owner must explicitly require the `quality` status in branch protection and verify a real broken PR. That remote step is NOT_RUN under current authorization.
 

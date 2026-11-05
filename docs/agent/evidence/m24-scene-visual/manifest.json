@@ -1,0 +1,17 @@
+{
+  "files": {
+    "desktop.png": "c27caaa0d1d17d571dcc8ea3de224faa484e2ae27edf3c66adf808a4d2420588",
+    "desktop-page.png": "00b65b118ec5f2b8862433e33fc810591310f14705f682e61d8390819b08846c",
+    "desktop.json": "647ba9524b804558a2d9b89248c445f95095d90602ad815764cfa2d74635937e",
+    "mobile.png": "9d432c11df588fc360cf193c71385cf01304e8600ff929162ac73832749ee035",
+    "mobile-page.png": "cd8b0668d45477bd50dcec35471d75b7b2178c17c5043912eff9e69f6563f3e1",
+    "mobile.json": "4550977255790f270790446c600873857fa2a10bccaf423d64ad39a55d373997",
+    "browser-batches.json": "39a6de953a2522d9590ea815c55db4b7ed3422dc75aeaf73f54d05ef490618b1"
+  },
+  "inspected": [
+    "desktop.png",
+    "mobile.png",
+    "desktop-page.png",
+    "mobile-page.png"
+  ]
+}

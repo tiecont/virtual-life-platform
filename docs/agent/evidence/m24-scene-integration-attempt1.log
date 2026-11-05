@@ -1,0 +1,48 @@
+ Network virtual-city-test-fa639e8e_default Creating 
+ Network virtual-city-test-fa639e8e_default Creating 
+ Network virtual-city-test-fa639e8e_default Created 
+ Network virtual-city-test-fa639e8e_default Created 
+ Container virtual-city-test-fa639e8e-db-1 Creating 
+ Container virtual-city-test-fa639e8e-db-1 Created 
+ Container virtual-city-test-fa639e8e-db-1 Starting 
+ Container virtual-city-test-fa639e8e-db-1 Started 
+ Container virtual-city-test-fa639e8e-db-1 Waiting 
+ Container virtual-city-test-fa639e8e-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/park.test.ts (4 tests | 1 failed) 1188ms
+   ✓ local installation still requires a separate flag;catalog and directory reads cannot allocate a park room 87ms
+   ✓ actual park geometry binds shared seats and privacy;stale assets,forged authority and solid-board moves fail closed 109ms
+   ✓ initial scene cannot deliver free text,canned messages or emotes even when the shared chat runtime is enabled 67ms
+   × shared explicit travel admits the actual park adapter before releasing the SDK source and preserves identity 115ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/park.test.ts > shared explicit travel admits the actual park adapter before releasing the SDK source and preserves identity
+AssertionError: expected undefined to be 'COMMITTED' // Object.is equality
+
+- Expected:
+"COMMITTED"
+
++ Received:
+undefined
+
+ ❯ tests/integration/park.test.ts:42:253
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  03:06:48
+   Duration  2.45s (transform 558ms, setup 0ms, import 1.15s, tests 1.19s, environment 0ms)
+
+Test harness failed during command;no raw URL or configuration emitted
+ Container virtual-city-test-fa639e8e-db-1 Stopping 
+ Container virtual-city-test-fa639e8e-db-1 Stopped 
+ Container virtual-city-test-fa639e8e-db-1 Removing 
+ Container virtual-city-test-fa639e8e-db-1 Removed 
+ Network virtual-city-test-fa639e8e_default Removing 
+ Network virtual-city-test-fa639e8e_default Removed 

@@ -1,0 +1,31 @@
+{
+  "files": {
+    "cafe-a11y-desktop.json": "b8c617dcdb07183c6de35739ad6cf491acbf1a7fe0faadb8faae9361e81a10de",
+    "cafe-targets-desktop.json": "fc91bea669c4b5dcbeb1451bf070eb509a6706e158984bf6c93c5c6ca01bcb8a",
+    "cafe-a11y-mobile.json": "b8c617dcdb07183c6de35739ad6cf491acbf1a7fe0faadb8faae9361e81a10de",
+    "cafe-targets-mobile.json": "bab40aa9cd03dae9c045d6c0c4503b37ecb0ba63cece72e21e293878b3450ed4",
+    "browser-batches.json": "06d5348c8fef7656241b9084d8372decc31c933c4c67563982ed60b70d815a3f",
+    "m18-acceptance-visual/desktop-reduced-motion.png": "ec50eee4979c1bea9dd1974ce162cda1195478ae6fdde68fd4eb00037537ca5f",
+    "m18-acceptance-visual/desktop-accessibility.json": "c5d65302a8aafeb9093faa25aec15a5d174cc93c21d591bdfd9d41aaa5e3b78e",
+    "m18-acceptance-visual/mobile-reduced-motion.png": "4268bbf4e104d68a3016392dbcdcf7d0502f3b6dd9b8189f844c18d5897fbb3d",
+    "m18-acceptance-visual/mobile-accessibility.json": "5ab37c99d902177bbf7cf67a97019850afce1d5a4106ce7d51d7e4516b359b1f",
+    "m19-scene-visual/desktop.png": "89bd00ca3445a844b39011200f71dfa86604d7b0657969a02f2c1eace7cf3e6e",
+    "m19-scene-visual/desktop-page.png": "47124194c33ffc4c9132c319c4a748d29747cedcaab8571d58bc59f6fe8d83a6",
+    "m19-scene-visual/desktop.json": "22372864c994957eb9b60c739e8d3707732430e5e40baa8912f25c4c866cdc38",
+    "m19-scene-visual/mobile.png": "934bbfd3d78ce23be9c1388337532dd942e7f44b28edb462b522b2ba4759bb14",
+    "m19-scene-visual/mobile-page.png": "d665dc3932ddb735678ed0c7a0c56c0646d0530bcb69be6d320b2ffba8b2e8d9",
+    "m19-scene-visual/mobile.json": "689a142deae0062b7675a0621dc68856df85a6fabbe8472d773c1b639fd0a750",
+    "m22-accessibility-visual/desktop-library.png": "1722b69c2b86267bc76f6131d666c5197fa1315997acfb7f80aabd01bc19f93f",
+    "m22-accessibility-visual/desktop-library.json": "9dfce5a3983824d6da76c4402314902c623ee99f245b3fb8f9f8ffe2f12d6370",
+    "m22-accessibility-visual/mobile-library.png": "26dd9d93e45b0b0cc218f108c606f0038d869d6ff66538305668fad1eba2c731",
+    "m22-accessibility-visual/mobile-library.json": "adfc6bbbd2eedf31932d470b37d1e813a266d1fa7887a45419e9432b487b5b3f"
+  },
+  "restoredHistoricalFiles": [
+    "docs/agent/evidence/m19-scene-visual/desktop-page.png",
+    "docs/agent/evidence/m19-scene-visual/desktop.json",
+    "docs/agent/evidence/m19-scene-visual/mobile-page.png",
+    "docs/agent/evidence/m19-scene-visual/mobile.json",
+    "docs/agent/evidence/m22-accessibility-visual/desktop-library.png",
+    "docs/agent/evidence/m22-accessibility-visual/mobile-library.png"
+  ]
+}

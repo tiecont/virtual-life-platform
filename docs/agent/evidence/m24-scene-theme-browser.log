@@ -1,0 +1,90 @@
+ Network virtual-city-test-50dd4e02_default Creating 
+ Network virtual-city-test-50dd4e02_default Creating 
+ Network virtual-city-test-50dd4e02_default Created 
+ Network virtual-city-test-50dd4e02_default Created 
+ Container virtual-city-test-50dd4e02-db-1 Creating 
+ Container virtual-city-test-50dd4e02-db-1 Created 
+ Container virtual-city-test-50dd4e02-db-1 Starting 
+ Container virtual-city-test-50dd4e02-db-1 Started 
+ Container virtual-city-test-50dd4e02-db-1 Waiting 
+ Container virtual-city-test-50dd4e02-db-1 Healthy 
+[WebServer] (node:204846) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:204859) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:204859) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:204859) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:204845) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:204942) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:205018) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:205031) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:205106) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/library.spec.ts:33:5 › Library keyboard focus,timer actions,reduced motion and readable controls remain accessible without canvas input (2.9s)
+  ✓  2 [desktop] › tests/e2e/lounge.spec.ts:14:5 › original silent Lounge renders a closed stage,authoritative audience seating and reduced-motion native controls without media (2.4s)
+  ✓  3 [desktop] › tests/e2e/restaurant.spec.ts:39:5 › Restaurant native keyboard focus,rendered reduced motion and text contrast meet the local accessibility acceptance (2.3s)
+  ✓  4 [desktop] › tests/e2e/scene.spec.ts:315:5 › room keyboard focus, reduced motion, readable text contrast and mobile targets remain usable (2.4s)
+
+  4 passed (15.1s)
+ Container virtual-city-test-50dd4e02-db-1 Stopping 
+ Container virtual-city-test-50dd4e02-db-1 Stopped 
+ Container virtual-city-test-50dd4e02-db-1 Removing 
+ Container virtual-city-test-50dd4e02-db-1 Removed 
+ Network virtual-city-test-50dd4e02_default Removing 
+ Network virtual-city-test-50dd4e02_default Removed 
+ Network virtual-city-test-875f3325_default Creating 
+ Network virtual-city-test-875f3325_default Creating 
+ Network virtual-city-test-875f3325_default Created 
+ Network virtual-city-test-875f3325_default Created 
+ Container virtual-city-test-875f3325-db-1 Creating 
+ Container virtual-city-test-875f3325-db-1 Created 
+ Container virtual-city-test-875f3325-db-1 Starting 
+ Container virtual-city-test-875f3325-db-1 Started 
+ Container virtual-city-test-875f3325-db-1 Waiting 
+ Container virtual-city-test-875f3325-db-1 Healthy 
+[WebServer] (node:206293) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:206326) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:206326) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:206326) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:206292) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:206380) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:206450) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:206502) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:206559) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [mobile] › tests/e2e/library.spec.ts:33:5 › Library keyboard focus,timer actions,reduced motion and readable controls remain accessible without canvas input (3.0s)
+  ✓  2 [mobile] › tests/e2e/lounge.spec.ts:14:5 › original silent Lounge renders a closed stage,authoritative audience seating and reduced-motion native controls without media (2.7s)
+  ✓  3 [mobile] › tests/e2e/restaurant.spec.ts:39:5 › Restaurant native keyboard focus,rendered reduced motion and text contrast meet the local accessibility acceptance (2.1s)
+  ✓  4 [mobile] › tests/e2e/scene.spec.ts:315:5 › room keyboard focus, reduced motion, readable text contrast and mobile targets remain usable (2.3s)
+
+  4 passed (15.3s)
+ Container virtual-city-test-875f3325-db-1 Stopping 
+ Container virtual-city-test-875f3325-db-1 Stopped 
+ Container virtual-city-test-875f3325-db-1 Removing 
+ Container virtual-city-test-875f3325-db-1 Removed 
+ Network virtual-city-test-875f3325_default Removing 
+ Network virtual-city-test-875f3325_default Removed 

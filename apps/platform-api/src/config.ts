@@ -17,6 +17,7 @@ const Env = z.object({
   WORLD_FLAGS_FILE: z.string().min(1).max(4096).optional(),
   LOCAL_TRAVEL_FIXTURES: z.enum(['0', '1']).default('0'),
   LOCAL_LIBRARY_WORLD: z.enum(['0', '1']).default('0'),
+  LOCAL_PARK_WORLD: z.enum(['0', '1']).default('0'),
   LOCAL_RESTAURANT_WORLD: z.enum(['0', '1']).default('0'),
   LOCAL_LOUNGE_WORLD: z.enum(['0', '1']).default('0'),
   LOCAL_DATING_PROTOTYPE:z.enum(['0','1']).default('0'),
@@ -33,6 +34,7 @@ const Env = z.object({
   }
   if (env.NODE_ENV === 'production' && env.LOCAL_TRAVEL_FIXTURES === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_TRAVEL_FIXTURES'], message: 'Local travel fixtures cannot run in production' });
   if (env.NODE_ENV === 'production' && env.LOCAL_LIBRARY_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_LIBRARY_WORLD'], message: 'Local library activation cannot run in production' });
+  if (env.NODE_ENV === 'production' && env.LOCAL_PARK_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_PARK_WORLD'], message: 'Local park activation cannot run in production' });
   if (env.NODE_ENV === 'production' && env.LOCAL_RESTAURANT_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_RESTAURANT_WORLD'], message: 'Local restaurant activation cannot run in production' });
   if (env.NODE_ENV === 'production' && env.LOCAL_LOUNGE_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_LOUNGE_WORLD'], message: 'Local lounge activation cannot run in production' });
   if(env.NODE_ENV==='production'&&env.LOCAL_DATING_PROTOTYPE==='1')ctx.addIssue({code:'custom',path:['LOCAL_DATING_PROTOTYPE'],message:'Local dating prototype cannot run in production'});

@@ -38,6 +38,9 @@ importers:
       '@virtual-city/lounge-world':
         specifier: workspace:*
         version: link:packages/lounge-world
+      '@virtual-city/park-world':
+        specifier: workspace:*
+        version: link:packages/park-world
       '@virtual-city/restaurant-world':
         specifier: workspace:*
         version: link:packages/restaurant-world
@@ -95,6 +98,9 @@ importers:
       '@virtual-city/lounge-world':
         specifier: workspace:*
         version: link:../../packages/lounge-world
+      '@virtual-city/park-world':
+        specifier: workspace:*
+        version: link:../../packages/park-world
       '@virtual-city/restaurant-world':
         specifier: workspace:*
         version: link:../../packages/restaurant-world
@@ -137,6 +143,9 @@ importers:
       '@virtual-city/lounge-world':
         specifier: workspace:*
         version: link:../../packages/lounge-world
+      '@virtual-city/park-world':
+        specifier: workspace:*
+        version: link:../../packages/park-world
       '@virtual-city/pixi-scene':
         specifier: workspace:*
         version: link:../../packages/pixi-scene
@@ -190,6 +199,15 @@ importers:
         version: link:../world-sdk
 
   packages/lounge-world:
+    dependencies:
+      '@virtual-city/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@virtual-city/world-sdk':
+        specifier: workspace:*
+        version: link:../world-sdk
+
+  packages/park-world:
     dependencies:
       '@virtual-city/contracts':
         specifier: workspace:*
