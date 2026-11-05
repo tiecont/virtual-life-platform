@@ -1,5 +1,7 @@
 # N01-02 — private evidence index, archive and restore
 
+Current status after N01-04: the indexed historical files have been removed from the current tree in a separate cleanup slice. They remain byte-identical in the original private Git revision and the additional local encrypted store. [Cleanup record](N01-04-CLEANUP.json) supersedes current-tree retention descriptions below; the immutable index's `originalsRetained=true` describes the N01-02 creation snapshot. Neither archive/check commands nor their `cleanupAuthorized=false` output authorize deletion. Full-history Git retrieval remains independent of the local key/store. No Git history was rewritten.
+
 The committed [index](index.json), described by [INDEX.schema.json](INDEX.schema.json), pins all 3,586 original historical evidence files by path, byte size, plaintext SHA-256 and authenticated-object ciphertext SHA-256. The index records the source snapshot, creation time, key ID and restricted retention policy. It contains no key or raw screenshot/log. The [actual full restore summary](N01-02-RESTORE.json) records counts/hashes and local references.
 
 ## Access and retention
@@ -28,7 +30,7 @@ The runtime-independent API is `readEvidenceBytes(path, {root,index,store,key})`
 
 Objects use Node's AES-256-GCM with a fresh random 12-byte nonce per distinct plaintext object and a 16-byte tag. The `VLPEVID1` header and plaintext digest are bound to the format/AAD; the index pins ciphertext and plaintext hashes. Ciphertext objects are named by plaintext SHA-256 for deduplication. A key is newly generated per archive and never derived from app/session credentials. [Node crypto API](https://nodejs.org/api/crypto.html#class-cipheriv).
 
-The loader bounds each file to 64 MiB, the complete plaintext corpus to 256 MiB and entries to 10,000. Restore authenticates the complete bounded object set before creating its new private target, writes with no-overwrite semantics, then reads back and checks every restored file. Raw originals are never modified or deleted. Keys and decrypted restore buffers are cleared from the tool's explicit buffers after use; this is not an OS/process memory-erasure guarantee or a multi-user sandbox.
+The loader bounds each file to 64 MiB, the complete plaintext corpus to 256 MiB and entries to 10,000. Restore authenticates the complete bounded object set before creating its new private target, writes with no-overwrite semantics, then reads back and checks every restored file. Archive/restore tools never modify or delete originals; N01-04 is the separate cleanup operation. Keys and decrypted restore buffers are cleared from the tool's explicit buffers after use; this is not an OS/process memory-erasure guarantee or a multi-user sandbox.
 
 Actual corpus verification produced 1,955 unique objects and restored all 151,876,136 source bytes across 3,586 paths. Five isolated governance cases also cover missing source fallback, wrong key, corrupted ciphertext, original mismatch, missing object, traversal/duplicate/bounds/version errors, output symlink/overwrite refusal and key permissions. No historical test is rerun merely by reading its archived result.
 

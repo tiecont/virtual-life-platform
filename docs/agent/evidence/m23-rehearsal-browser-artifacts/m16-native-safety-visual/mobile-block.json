@@ -1,9 +1,0 @@
-{
-  "positiveInviteControl": true,
-  "bilateralMaidVisibilityFiltered": true,
-  "greetingRemoved": true,
-  "sameActualDeadlineRoom": true,
-  "bilateralInvitesDenied": true,
-  "friendContactDenied": true,
-  "automaticSanctions": 0
-}

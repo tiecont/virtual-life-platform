@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N01-04 VERIFIED
+
+Removed only 3586 indexed historical outputs (3005 raw,581 migrated JSON), preserving all870 other tracked files at deletion. Current tracked bytes fell160766453→8890317 (151876136 removed); Git history unchanged. Fresh encrypted archive and complete Git retrieval pass; governance/release/ops/evidence pass with originals and local store/key absent.
+
+Actual commands: 9; retained failed attempts: 0; required final checks passed. Evidence: `n01-04-2026-11-05`; [checks](../audit/N01-04-CHECKS.json). Current counts: `{"VERIFIED": 11, "TODO": 58}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N01-05; clone committed full history into a new isolated directory with no author artifacts/env/node_modules, run frozen install, legacy preparation, evidence verification and full pnpm check; publish canonical docs and actual clean-checkout/size results.
+
 ## 2026-11-05 — N01-03 VERIFIED
 
 Migrated governance/release/ops/audit readers to content-indexed historical bytes, added pinned private Git retrieval, redirected fresh browser/integration/load/audit outputs, and repaired 68 historical Markdown/image links. Full 553 integration / 278 unit regressions and scoped desktop/mobile producer pass; all original evidence retained.

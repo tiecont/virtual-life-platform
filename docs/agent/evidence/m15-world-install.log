@@ -1,9 +1,0 @@
-Scope: all 13 workspace projects
-✓ Lockfile passes supply-chain policies (verified 54s ago)
-Lockfile is up to date, resolution step is skipped
-Already up to date
-
-devDependencies:
-+ @virtual-city/deadline-world 0.1.0 <- packages/deadline-world
-
-Done in 1.3s using pnpm v11.28.5

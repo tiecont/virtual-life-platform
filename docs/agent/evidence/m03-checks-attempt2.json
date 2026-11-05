@@ -1,8 +1,0 @@
-[
-  {
-    "startedAt": "2026-11-02T15:28:04.022896+00:00",
-    "command": "pnpm check",
-    "exitCode": 1,
-    "log": "m03-check.log"
-  }
-]

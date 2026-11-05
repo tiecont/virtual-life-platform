@@ -1,0 +1,37 @@
+{
+  "taskId": "N01-04",
+  "executedAt": "2026-11-05T16:52:26.464120+00:00",
+  "sourceRevision": "d858d5aaf9d25136cf51ddc2446e01df02d48dd1",
+  "selection": "All indexed historical outputs: raw archive candidates and JSON whose reader migration is VERIFIED",
+  "removedFiles": 3586,
+  "removedBytes": 151876136,
+  "classificationCounts": {
+    "RAW_EVIDENCE": 3005,
+    "EVIDENCE_JSON": 581
+  },
+  "before": {
+    "trackedRegularFiles": 4456,
+    "trackedRegularBytes": 160766453
+  },
+  "after": {
+    "trackedRegularFiles": 870,
+    "trackedRegularBytes": 8890317
+  },
+  "measurementScope": "Tracked regular current-tree files at deletion; excludes Git database, ignored artifacts/node_modules and later checkpoint additions",
+  "protectedFilesVerified": 870,
+  "indexSha256": "7a7e454fc43b8840987cb65263e6589b68e5ccf7ba1d0cc81adae7ee9b2bb78a",
+  "gitSnapshotSha256": "949fa0c44715191cc14140a78878a89bde3d28f677b111c4e99205406a1e9ac5",
+  "originalRevision": "cef7dc17172f7c6cda930c99648a5e3ad609cc55",
+  "currentTreeOriginalsRetained": false,
+  "originalsRetainedInGit": true,
+  "encryptedArchiveRetained": true,
+  "fullRestorePreviouslyVerified": "docs/evidence/N01-02-RESTORE.json",
+  "historyRewritten": false,
+  "runtimeBehaviorChanged": false,
+  "limitations": [
+    "Git history/full clone transfer is not reduced",
+    "Private Git access/full history required without local encrypted store/key",
+    "No new off-host ciphertext destination or independent off-host key custody",
+    "Historical source/environment applicability unchanged; this is byte retention, not rerun certification"
+  ]
+}

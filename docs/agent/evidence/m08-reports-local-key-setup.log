@@ -1,2 +1,0 @@
-$ node scripts/create-local-safety-env.mjs
-Created ignored local safety key file. Keep it stable; never commit or use it in production.

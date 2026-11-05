@@ -3264,6 +3264,249 @@
         "Local encrypted archive remains additional; no independent off-host ciphertext/key custody provisioned",
         "Initial lint no-undef failure retained; fixed globalThis reference; final lint passes"
       ]
+    },
+    {
+      "id": "n01-04-2026-11-05",
+      "taskId": "N01-04",
+      "sourceRevision": "d858d5aaf9d25136cf51ddc2446e01df02d48dd1+workspace-sha256:efc8ca4eb065deef690c89663d984a7906acbd222285fe92fab46f9392777eba",
+      "environment": "Local Linux x64; Node 26.9.0; pnpm 11.28.5; scope-specific commands below",
+      "executedAt": "2026-11-05T16:54:16.300993+00:00",
+      "commands": [
+        {
+          "command": "pnpm architecture:check",
+          "argv": [
+            "pnpm",
+            "architecture:check"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:53:13.822Z",
+          "endedAt": "2026-11-05T16:53:14.585Z",
+          "log": "artifacts/vnext/n01-04/architecture.log",
+          "sha256": "37cd523cf1e2d517b9350d660fc6967f21d2dc4b19bc60c95e4f7d7cc1598b65"
+        },
+        {
+          "command": "pnpm evidence:check --archive",
+          "argv": [
+            "pnpm",
+            "evidence:check",
+            "--archive"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:52:19.079Z",
+          "endedAt": "2026-11-05T16:52:20.465Z",
+          "log": "artifacts/vnext/n01-04/before-archive.log",
+          "sha256": "48bd5e878f5997ecb65b3756e6499aae8bfbc3a6f97a2618273da52a9940c118"
+        },
+        {
+          "command": "pnpm evidence:check --git-only",
+          "argv": [
+            "pnpm",
+            "evidence:check",
+            "--git-only"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:52:17.705Z",
+          "endedAt": "2026-11-05T16:52:19.031Z",
+          "log": "artifacts/vnext/n01-04/before-git-only.log",
+          "sha256": "d1a26f4527842f3587c64e7a1b3a0d58ad96651b00dfa6d729727c26784145ad"
+        },
+        {
+          "command": "python3 artifacts/vnext/n01-04/cleanup-script.py",
+          "argv": [
+            "python3",
+            "artifacts/vnext/n01-04/cleanup-script.py"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:52:25.028Z",
+          "endedAt": "2026-11-05T16:52:26.488Z",
+          "log": "artifacts/vnext/n01-04/cleanup.log",
+          "sha256": "3cfcc669029ee463d5a8aa96d741befe822beb48ba1fcdd0eb55624a778ffa64"
+        },
+        {
+          "command": "git diff --check HEAD",
+          "argv": [
+            "git",
+            "diff",
+            "--check",
+            "HEAD"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:53:28.575Z",
+          "endedAt": "2026-11-05T16:53:29.114Z",
+          "log": "artifacts/vnext/n01-04/diff-check.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "pnpm evidence:check --store artifacts/evidence-unavailable/store --key-file artifacts/evidence-unavailable/key",
+          "argv": [
+            "pnpm",
+            "evidence:check",
+            "--store",
+            "artifacts/evidence-unavailable/store",
+            "--key-file",
+            "artifacts/evidence-unavailable/key"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:53:13.823Z",
+          "endedAt": "2026-11-05T16:53:52.323Z",
+          "log": "artifacts/vnext/n01-04/evidence-without-local-store.log",
+          "sha256": "d4053eaac4b2a37752e283b4c108ddc6c71028604117bb569302e7d850e32766"
+        },
+        {
+          "command": "env EVIDENCE_STORE_DIR=artifacts/evidence-unavailable/store EVIDENCE_KEY_FILE=artifacts/evidence-unavailable/key pnpm governance:check",
+          "argv": [
+            "env",
+            "EVIDENCE_STORE_DIR=artifacts/evidence-unavailable/store",
+            "EVIDENCE_KEY_FILE=artifacts/evidence-unavailable/key",
+            "pnpm",
+            "governance:check"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:53:13.818Z",
+          "endedAt": "2026-11-05T16:53:51.906Z",
+          "log": "artifacts/vnext/n01-04/governance-without-local-store.log",
+          "sha256": "f44777a3c10a23f192f90896641655f9bcc24a1f8bde94bc4c00d399e2e2307b"
+        },
+        {
+          "command": "pnpm legacy:check",
+          "argv": [
+            "pnpm",
+            "legacy:check"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:53:13.827Z",
+          "endedAt": "2026-11-05T16:53:14.601Z",
+          "log": "artifacts/vnext/n01-04/legacy.log",
+          "sha256": "05b0e763f9c75ef91ce4091db98df17df40bf97ea19da70d226846d145c1845a"
+        },
+        {
+          "command": "node docs/plans/platform-vnext/tools/validate-plan.mjs",
+          "argv": [
+            "node",
+            "docs/plans/platform-vnext/tools/validate-plan.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:53:28.477Z",
+          "endedAt": "2026-11-05T16:53:28.530Z",
+          "log": "artifacts/vnext/n01-04/plan.log",
+          "sha256": "5d8df9bb6ee44341edea5c1e89bd5684016dca3c3f8986d426f748d877abc195"
+        }
+      ],
+      "scenarios": [],
+      "artifacts": [
+        {
+          "ref": ".gitignore",
+          "sha256": "7eb1d5c4574b26683a06e7fb8c283a3f4dcf640fe31fd3cb5015d611edfb0fbc",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/evidence/README.md",
+          "sha256": "5f4830518057d3f92e261b9e603f15dedb51601b0ea5c1a3c6e43e10d8a84f41",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/evidence/STORE.md",
+          "sha256": "1771b7f0fb39ea33203edd99ebe724938262c6840c68877927ef3b3d0b3557c6",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/evidence/N01-04-CLEANUP.json",
+          "sha256": "13836682edc4f463c3a0cbc09c09c81a9d0ce6342272114afb2db50370deb464",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "artifacts/vnext/n01-04/cleanup-script.py",
+          "sha256": "ba65c9078f27e52ba8ecd64f1ec9b6a46dee2f9dca873a6bf3716e4e9f71fb9c",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-04/cleanup-facts.json",
+          "sha256": "13836682edc4f463c3a0cbc09c09c81a9d0ce6342272114afb2db50370deb464",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-04/architecture.log",
+          "sha256": "37cd523cf1e2d517b9350d660fc6967f21d2dc4b19bc60c95e4f7d7cc1598b65",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-04/before-archive.log",
+          "sha256": "48bd5e878f5997ecb65b3756e6499aae8bfbc3a6f97a2618273da52a9940c118",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-04/before-git-only.log",
+          "sha256": "d1a26f4527842f3587c64e7a1b3a0d58ad96651b00dfa6d729727c26784145ad",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-04/cleanup.log",
+          "sha256": "3cfcc669029ee463d5a8aa96d741befe822beb48ba1fcdd0eb55624a778ffa64",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-04/diff-check.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-04/evidence-without-local-store.log",
+          "sha256": "d4053eaac4b2a37752e283b4c108ddc6c71028604117bb569302e7d850e32766",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-04/governance-without-local-store.log",
+          "sha256": "f44777a3c10a23f192f90896641655f9bcc24a1f8bde94bc4c00d399e2e2307b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-04/legacy.log",
+          "sha256": "05b0e763f9c75ef91ce4091db98df17df40bf97ea19da70d226846d145c1845a",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-04/plan.log",
+          "sha256": "5d8df9bb6ee44341edea5c1e89bd5684016dca3c3f8986d426f748d877abc195",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N01-04-CHECKS.json",
+          "sha256": "0d9363006e6a44d4c5898bda75be37519dd7c7e4ddef6bb95702ff60cecb784c",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": true,
+      "limitations": [
+        "Tracked current-tree measurement excludes Git database, caches, ignored artifacts and later checkpoint additions; full clone/history bytes not reduced",
+        "Existing private Git access/full history required for portable fallback",
+        "Local encrypted store remains additional with no new off-host ciphertext/key custody",
+        "No runtime source changed or new runtime/browser capacity/release claim; N01-03 regressions remain pinned to that slice"
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

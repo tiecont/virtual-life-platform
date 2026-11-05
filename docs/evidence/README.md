@@ -1,6 +1,8 @@
 # Evidence inventory and archival preparation
 
-N01-02 implements the [versioned private store and full restore](STORE.md). N01-03 integrates indexed governance/release/ops readers, redirects new measurements into private artifact scopes and proves complete retrieval from the existing immutable private Git history. `evidence:check`, `evidence:check --git-only` and `evidence:restore-smoke` are real commands with actual full-corpus results. Originals remain in place until the separate N01-04 cleanup. No new off-host encrypted destination or independent key custody is provisioned.
+N01-02 implements the [versioned private store and full restore](STORE.md). N01-03 integrates indexed governance/release/ops readers, redirects new measurements into private artifact scopes and proves complete retrieval from the existing immutable private Git history. N01-04 now removes the 3,586 indexed historical outputs from the current tree; the unchanged original blobs remain in Git and the additional encrypted archive. [Actual cleanup measurements](N01-04-CLEANUP.json) record 151,876,136 bytes removed, with every other tracked file preserved at deletion. Git history/full clone transfer is unchanged.
+
+Use `pnpm evidence:check` for indexed retrieval or `pnpm evidence:check --git-only` to verify the full immutable Git corpus without a local archive/key. A full-history checkout is required for Git fallback; explicitly fetch full history when starting with a shallow clone. Private repository access remains required for remote links. No new off-host encrypted destination or independent key custody is provisioned. Fresh outputs belong under ignored artifacts, and the old raw-output directory is ignored.
 
 N01-01 adds `pnpm evidence:inventory --out artifacts/<private-scope>/inventory.json`. It reads tracked/nonignored paths without loading environment files, follows no symlink targets, computes bytes/SHA-256 for regular unprotected files, and records static evidence references plus directory/template warnings. Output is confined to artifacts and refuses overwrite. It does not move or delete files.
 
@@ -8,7 +10,7 @@ N01-01 adds `pnpm evidence:inventory --out artifacts/<private-scope>/inventory.j
 
 ## Decisions and gates
 
-| Group | Inventory decision | Required next proof |
+| Group | Historical N01-01 inventory decision | Required proof before removal |
 |---|---|---|
 | Runtime/source/config/tests/docs | KEEP | Public imports, runtime discovery, fixtures and file readers continue to work |
 | SQL and lockfile | KEEP | Never rewrite history/checksums for cleanup |

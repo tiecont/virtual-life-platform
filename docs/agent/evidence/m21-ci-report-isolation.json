@@ -1,9 +1,0 @@
-{
-  "modifiedHistoricalPNGsPreservedAndRestored": 7,
-  "scopedReports": [
-    "playwright-report/ci/private/dating-continuation/desktop/index.html",
-    "playwright-report/ci/private/dating-continuation/mobile/index.html",
-    "playwright-report/ci/private/dating-profile/desktop/index.html",
-    "playwright-report/ci/private/dating-profile/mobile/index.html"
-  ]
-}

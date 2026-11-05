@@ -1,7 +1,0 @@
-{
-  "heldCommittedQueueReply": true,
-  "heldCommittedProfileWithdrawalReply": true,
-  "positiveMatchingDisabledWhileUnconfirmed": true,
-  "lateQueueReplyNoRestoration": true,
-  "matchingAndProfileWithdrawn": true
-}

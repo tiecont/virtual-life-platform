@@ -1,6 +1,0 @@
-[
-  {
-    "command": "node scripts/run-browser-tests.mjs tests/e2e/scene.spec.ts",
-    "exitCode": 1
-  }
-]

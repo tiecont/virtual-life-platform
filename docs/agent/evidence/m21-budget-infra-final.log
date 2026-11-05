@@ -1,2 +1,0 @@
-$ node scripts/verify-infra.mjs
-Environment matrix/examples/build exclusions verified;not a deployment or secret scan certification

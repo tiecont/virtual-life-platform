@@ -1,8 +1,0 @@
-$ eslint . && node scripts/check-boundaries.mjs
-
-/home/tiecont/Projects/virtual-city/apps/platform-api/src/app.ts
-  102:7  error  'continuationOwner' is never reassigned. Use 'const' instead  prefer-const
-
-✖ 1 problem (1 error, 0 warnings)
-
-[ELIFECYCLE] Command failed with exit code 1.

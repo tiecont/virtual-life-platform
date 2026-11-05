@@ -1,1 +1,0 @@
-tests/integration/maid-service.test.ts(65,303): error TS2561: Object literal may only specify known properties, but 'intervals' does not exist in type 'ExpectPollOptions'. Did you mean to write 'interval'?

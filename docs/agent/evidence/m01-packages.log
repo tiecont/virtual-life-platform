@@ -1,4 +1,0 @@
-$ pnpm --filter './packages/*' -r build
-Scope: 3 of 6 workspace projects
-$ tsc -p tsconfig.json
-$ tsc -p tsconfig.json

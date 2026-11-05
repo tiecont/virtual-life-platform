@@ -1,8 +1,0 @@
-$ eslint . && node scripts/check-boundaries.mjs
-
-/home/tiecont/Projects/virtual-city/apps/portal-web/app/private/profile/page.tsx
-  6:294  error  Empty block statement  no-empty
-
-✖ 1 problem (1 error, 0 warnings)
-
-[ELIFECYCLE] Command failed with exit code 1.

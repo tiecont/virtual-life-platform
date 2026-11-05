@@ -1,8 +1,0 @@
-
-/home/tiecont/Projects/virtual-city/tests/governance/resource-budget.test.mjs
-   8:210  error  'structuredClone' is not defined  no-undef
-  11:110  error  'structuredClone' is not defined  no-undef
-  12:13   error  'structuredClone' is not defined  no-undef
-
-✖ 3 problems (3 errors, 0 warnings)
-
