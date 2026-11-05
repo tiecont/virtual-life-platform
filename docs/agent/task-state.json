@@ -1,6 +1,7 @@
 {
   "updatedAt": "2026-11-05T11:06:20.345247Z",
   "tasks": {
+    "M23-02":{"status":"VERIFIED","evidence":"docs/adr/0099-network-disabled-candidates-and-compatible-api-recovery.md;docs/agent/evidence/m23-recovery-checks.json;docs/operations/MIGRATION-RELEASE.md","verification":"Actual38encryptedbackup-emptyrestore/negativeguards/cleanup0;networknonecacheddependency current+actual3a2de59previous API images/outputhashes verified;TLSgracefulexit0/badcanary1neverready/same38APIrollback-sessionSocket-rollforward0;old36refusedbeforestackmutation. Build/lint0,initialbrowserfetchfailure retained/unexplained;fixedweb/allworldsOFF/noDBdowngrade/publicclaim."},
     "M23-01": {"status":"VERIFIED","evidence":"docs/adr/0098-independent-wave-candidates-with-human-release-gates.md;docs/agent/evidence/m23-trains-checks.json;docs/operations/RELEASE-TRAINS.md","verification":"25governance/final lint0;7worlds5waves/defaultOFF/sixunassignedpublicroles,negative activation-fabricatedstaff-dating and W2independence tests. Checklist/inventory only,no public authority/runtime-DDLchange."},
     "AUD-01": {
       "status": "VERIFIED",

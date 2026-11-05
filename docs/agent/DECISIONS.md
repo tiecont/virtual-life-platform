@@ -1,5 +1,7 @@
 # Decisions
 
+M23-02 / ADR0099:cached36images are dependencybases only,notcurrent38acceptance. Verifyexternalgraph/sourceGit/outputhashes and networknoneoverlay;rollbacktogenuineearlier38-aware3a2de59API,currentwebfixed. Actual38encryptedrestore/TLSfailedcanary/compatibleAPIrollback-rollforward0/old36preflightdenied. Firstbrowserrenewfetchfailure remainsunexplained,notfixedbydiagnostics;retainallfailures/publicOFF/noDBdowngrade. Nextincident/publicstaffinggate.
+
 M23-01 / ADR0098:separate independent wave candidates from human release authority. ExactW2 baseline excludes laterworlds;JSONinventory plus read-only governance,negative public/staff/dating cases. AllrealflagsOFF/publicNoGo/sixunassignedroles;25governance/lint0. Production rejects localinstallation;reviewing JSON neverinstallsworlds. Continue02current38offlinecandidate/backup/rollback.
 
 M22-04 / ADR0097:separate actual4world/native single-identity tour from retained syntheticfaultprotocol scenario. Finite test-only journeyprofile/allrealflagsOFF/no applicationcode orDDLchange. Actual4browser/types-lint-build-CI0;actualversions-capacities/seats/oneownmembership-occupancy/noautoseat-shift/privateactivitywithdrawals/finalCitynull.14actual+6synthetic artifacts/two selectedPNGsinspected. No completedDinner/two-player-service inferred;those remainmodule evidence. AllM22localverified;continueM23operations/publicNoGo scope.

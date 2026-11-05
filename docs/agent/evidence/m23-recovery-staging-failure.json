@@ -1,0 +1,4 @@
+{
+  "stage": "cookie-rotation",
+  "message": "expect(locator).toContainText(expected) failed\n\nLocator: getByRole('status')\nExpected substring: \"Session renewed\"\nReceived string:    \"Failed to fetch\"\nTimeout: 5000ms\n\nCall log:\n  - Expect \"toContainText\" getByRole('status') with timeout 5000ms\n  - waiting for getByRole('status')\n    - locator resolved to <p role=\"status\" aria-live=\"polite\">Welcome, Local TLS fixture.</p>\n    - unexpected value \"Welcome, Local TLS fixture.\"\n    13 × locator resolved to <p role=\"status\" aria-live=\"polite\">Failed to fetch</p>\n       - unexpected value \"Failed to fetch\"\n"
+}

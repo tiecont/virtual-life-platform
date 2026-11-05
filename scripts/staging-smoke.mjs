@@ -61,6 +61,8 @@ try{
  const spki=createHash('sha256').update(new X509Certificate(cert).publicKey.export({type:'spki',format:'der'})).digest('base64');
  browser=await chromium.launch({args:['--ignore-certificate-errors-spki-list='+spki]});
  const context=await browser.newContext({baseURL:origin}),page=await context.newPage();
+ const browserNetwork=[];facts.browserNetwork=browserNetwork;
+ page.on('requestfailed',req=>{const path=new URL(req.url()).pathname;if(['/v1/session/guest','/v1/session/rotate','/v1/me'].includes(path))browserNetwork.push({path,error:/^net::ERR_[A-Z_]+$/.test(req.failure()?.errorText??'')?req.failure().errorText:'unclassified-transport-failure'});});
  await page.goto('/identity');await page.getByLabel('Display name').fill('Local TLS fixture');
  const createdPromise=page.waitForResponse(response=>response.url().endsWith('/v1/session/guest')&&response.request().method()==='POST');
  await page.getByRole('button',{name:'Create guest identity',exact:true}).click();const created=await createdPromise;assert.equal(created.status(),201);
@@ -117,7 +119,7 @@ try{
  facts.result='PASS';await writeFile(resolve(dir,'facts.json'),JSON.stringify(facts,null,2)+'\n');console.log(JSON.stringify({...facts,artifactDirectory:dir},null,2));
 }catch(error){
  if(started)await compose(['logs','--no-color'],true).catch(()=>{});
- await writeFile(resolve(dir,'failure.json'),JSON.stringify({stage,message:error instanceof Error?error.message:'Unknown failure'},null,2));
+  await writeFile(resolve(dir,'failure.json'),JSON.stringify({stage,message:error instanceof Error?error.message:'Unknown failure',browserNetwork:facts.browserNetwork},null,2));
  console.error('Local staging smoke failed during '+stage+';see ignored artifact '+dir);process.exitCode=1;
 }finally{
  for(const socket of sockets)socket.close();await browser?.close();

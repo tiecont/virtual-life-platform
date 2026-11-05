@@ -1,0 +1,4 @@
+{
+  "stage": "rollback-compatibility",
+  "message": "Rollback requires identical bundled migrations\n+ actual - expected\n\n  {\n+   count: 38,\n+   digest: '29e43babe66b757cc8d8cf18b31b7bebf9d43c84e6651310b991503e43a097dc'\n-   count: 36,\n-   digest: '9147f9fd4dd0d97c396b3e29d7d917ba50f96f0fb88e1df000a8df246502f737'\n  }\n"
+}

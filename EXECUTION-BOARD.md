@@ -137,7 +137,7 @@
 | M22 | M22-05 · Implement load profiles for 100/1000 CCU hypotheses (ramp/stress/soak). | VERIFIED | ADR0080/CITY-LOAD-PROFILES.md/m22-load-checks.json;actual100and1000ramp/stress/120ssoak/cleanup0,456stablehashes/5networkregressions/lint/types0.100localbaseline MET_LOCAL_ONLY;1000hypothesis NOT_MET(1000sockets/256admitted,744rate+2fullstress,p95success1479.6ms). No quota/VPS/publiccapacity claim. |
 | M22 | M22-06 · Perform accessibility audits: focus order, keyboard navigation, reduced-motion, color contrast. | VERIFIED | ACCESSIBILITY-AUDIT.md/m22-accessibility-checks.json;10unique desktopmobilebrowsercases0,newLibrarykeyboardtimer/entry-seat-exit;types/lint/CIpolicy0/456hashesstable/335runtimeunchanged. Selectedcontrastmin5.7288/targets44px;24freshfiles/4PNGsinspected. HumanAT/device/legacy/allstates backlog explicit,noWCAGcertification. |
 | M23 | M23-01 · Define wave-based release checklist and feature flag inventory with owners. | VERIFIED | ADR0098/m23-trains-checks.json;25governance/lint0,7worlds5waves/sixunassignedroles;W2independent/publicNoGo. |
-| M23 | M23-02 · Create migration release runbook with preflight backup, canary and rollback. | TODO | — |
+| M23 | M23-02 · Create migration release runbook with preflight backup, canary and rollback. | VERIFIED | ADR0099/m23-recovery-checks.json;actual38encryptedrestore/TLSfailedcanary/compatibleAPIrollback-rollforward0,36imagepreflightrefused;initialfetchfailure retained/publicOFF. |
 | M23 | M23-03 · Create incident and safety runbooks (abuse, data leak, room crash, performance). | TODO | — |
 | M23 | M23-04 · Run end-to-end staging smoke and release rehearsal. | TODO | — |
 | M23 | M23-05 · Request explicit owner approvals and record release decision. | TODO | — |
