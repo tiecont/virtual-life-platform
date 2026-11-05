@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { AvatarKeySchema, MeSchema, PrivacySchema, VisibilitySchema, type Me, type Privacy } from '@virtual-city/contracts';
+import LegacyDeadlineIdentity from './LegacyDeadlineIdentity';
 class RequestFailure extends Error { constructor(readonly status: number, message: string) { super(message); } }
 async function request(path: string, options: RequestInit = {}): Promise<unknown> {
   const response = await fetch('/v1' + path, { ...options, credentials: 'same-origin', cache: 'no-store' });
@@ -83,6 +84,7 @@ export default function IdentityPanel() {
     }, 'Identity upgraded. Use your sign-in name and password to return.', 'session'); }}><h2>Keep this identity</h2><p className="muted">Add a sign-in name and password to keep the same identity on another browser. Keep them safe: password recovery is not available.</p>
       <label htmlFor="register-name">Choose a sign-in name</label><input id="register-name" value={loginName} onChange={e => setLoginName(e.target.value)} autoComplete="username" required minLength={3} maxLength={32} pattern="[A-Za-z][A-Za-z0-9_]{2,31}" disabled={busy}/><p className="muted">3–32 letters, numbers or underscores; start with a letter. This is separate from your display name.</p>
       <label htmlFor="register-password">New password (12–128 characters)</label><input id="register-password" type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="new-password" required minLength={12} maxLength={128} disabled={busy}/><button disabled={busy}>Upgrade identity</button></form>}
+    {me && <LegacyDeadlineIdentity key={me.profile.id + ':' + me.csrfToken} csrf={me.csrfToken}/>}
     {me && privacy && <><form className="status-card" onSubmit={e => { e.preventDefault(); void perform(async () => { setPrivacy(PrivacySchema.parse(await mutate('/me/privacy', 'PATCH', privacy))); }, 'Privacy choices saved.'); }}>
       <h2>Your privacy</h2><label htmlFor="presence">Who can see your presence?</label><select id="presence" value={privacy.presence} disabled={busy} onChange={e => setPrivacy({ ...privacy, presence: VisibilitySchema.parse(e.target.value) })}><option value="hidden">Nobody</option><option value="friends">Friends (when available)</option><option value="public">Everyone in an eligible world</option></select>
       <label className="checkbox"><input type="checkbox" checked={privacy.analyticsConsent} disabled={busy} onChange={e => setPrivacy({ ...privacy, analyticsConsent: e.target.checked })}/>Allow optional usage analytics</label><p className="muted">No external analytics service is connected. Restricted-world presence stays private.</p><button disabled={busy}>Save privacy</button></form>

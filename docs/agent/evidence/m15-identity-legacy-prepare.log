@@ -1,0 +1,13 @@
+[WARN] Unsupported engine: wanted: {"node":"26.13.x"} (current: {"node":"v26.9.0","pnpm":"11.28.5"})
+Scope: all 5 workspace projects
+Already up to date
+Done in 406ms using pnpm v11.28.5
+.                                        | [WARN] Unsupported engine: wanted: {"node":"26.13.x"} (current: {"node":"v26.9.0","pnpm":"11.28.5"})
+Scope: 3 of 5 workspace projects
+packages/scene-data build$ tsc
+packages/contracts build$ tsc
+packages/scene-data build: Done
+packages/contracts build: Done
+apps/api build$ tsc
+apps/api build: Done
+{"source":"deadline","commit":"6d2ca6a4e00505b2df1d6f41f1041fa14a227c5b","sourceFiles":88,"sourceUnchanged":true,"prepared":true,"networkPermitted":false,"node":"v26.9.0","declaredNode":"26.13.x"}

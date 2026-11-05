@@ -1,0 +1,28 @@
+ Network virtual-city-test-7362c228_default Creating 
+ Network virtual-city-test-7362c228_default Creating 
+ Network virtual-city-test-7362c228_default Created 
+ Network virtual-city-test-7362c228_default Created 
+ Container virtual-city-test-7362c228-db-1 Creating 
+ Container virtual-city-test-7362c228-db-1 Created 
+ Container virtual-city-test-7362c228-db-1 Starting 
+ Container virtual-city-test-7362c228-db-1 Started 
+ Container virtual-city-test-7362c228-db-1 Waiting 
+ Container virtual-city-test-7362c228-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ✓ |integration| tests/integration/deadline-identity.test.ts (12 tests) 4836ms
+   ✓ uncooperative trusted source work stays bounded while an independent withdrawal succeeds without a source cookie  2025ms
+   ✓ persistent daily budget survives negative receipt pruning and frozen clocks; latest canonical receipts stay bounded  628ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  05:23:52
+   Duration  6.13s (transform 585ms, setup 0ms, import 1.15s, tests 4.84s, environment 0ms)
+
+ Container virtual-city-test-7362c228-db-1 Stopping 
+ Container virtual-city-test-7362c228-db-1 Stopped 
+ Container virtual-city-test-7362c228-db-1 Removing 
+ Container virtual-city-test-7362c228-db-1 Removed 
+ Network virtual-city-test-7362c228_default Removing 
+ Network virtual-city-test-7362c228_default Removed 

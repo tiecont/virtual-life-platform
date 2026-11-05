@@ -1,0 +1,8 @@
+.                                        | [WARN] Unsupported engine: wanted: {"node":"26.13.x"} (current: {"node":"v26.9.0","pnpm":"11.28.5"})
+Scope: 3 of 5 workspace projects
+packages/contracts build$ tsc
+packages/scene-data build$ tsc
+packages/scene-data build: Done
+packages/contracts build: Done
+apps/api build$ tsc
+apps/api build: Done

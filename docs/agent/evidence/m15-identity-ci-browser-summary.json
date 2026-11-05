@@ -1,0 +1,11 @@
+{
+  "group": "legacy",
+  "results": [
+    {
+      "spec": "deadline-identity.spec.ts",
+      "exitCode": 0,
+      "processExitCode": 0,
+      "reportValid": true
+    }
+  ]
+}

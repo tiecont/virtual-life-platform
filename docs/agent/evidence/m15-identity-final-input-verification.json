@@ -1,0 +1,8 @@
+{
+  "frozenRootFiles": 501,
+  "unchangedAfterBrowserFixtureCorrection": 500,
+  "changed": [
+    "tests/e2e/deadline-identity.spec.ts"
+  ],
+  "reason": "After the root check completed,shortened source bootstrap display name from26to20 characters to meet unchanged24character policy;explicit types and actual browser verified the corrected fixture. Application/build inputs unchanged."
+}

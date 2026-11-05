@@ -5,6 +5,7 @@
   "social":["identity.spec.ts","invitations.spec.ts","safety.spec.ts","social.spec.ts","travel.spec.ts"],
   "study":["focus.spec.ts","library.spec.ts","scene.spec.ts","wardrobe.spec.ts"],
   "hospitality":["lounge.spec.ts","restaurant.spec.ts"],
-  "private":["dating-continuation.spec.ts","dating-profile.spec.ts"]
+  "private":["dating-continuation.spec.ts","dating-profile.spec.ts"],
+  "legacy":["deadline-identity.spec.ts"]
  }
 }

@@ -1,5 +1,7 @@
 # Current contracts and target compatibility
 
+M15-02 adds an explicit [offline identity association](DEADLINE-IDENTITY.md) against the owner-selected pinned Deadline API. City sessions stay separate;actual possession proof grants no login/world privilege and imports no source data. The table below is the historical AUD-03 baseline;room/focus/scene adapters are still subsequent tasks.
+
 ## Identity and HTTP (AUD-03)
 
 | Concern | Deadline actual | Maid actual | Target / bridge |
@@ -17,7 +19,7 @@ Cookie scopes on localhost include all ports: different ports are not isolation.
 
 Deadline owns guest_sessions, cafes, rooms, focus_sessions (one active per guest, unique guest/idempotency, constrained duration). Guest deletion cascades focus rows. Hourly purge deletes expired guests. Focus SQL exists but no start/finish service is present in snapshot. Maid owns users, profiles, sessions, cafe_templates, menu_items, cosmetic_catalog; SQL runner uses checksums and advisory transaction lock. Sessions have expiry/revocation fields but no runtime purge yet. Planned seven-day chat / thirty-day moderation retention is documentation, not implemented deletion.
 
-No databases imported or mutated by integration. Future migration order: encrypted backup + restore verification; additive city IDs and mapping table per adapter; prove identity ownership; shadow read contract comparisons; feature-flag a test cohort; reconcile counts; retain legacy access until rollback window ends. Rollback disables adapter and removes city routing; preserve original DB/journal. Never run city migrations in legacy DBs. Production migration/backup permissions and retention policy remain owner gates.
+No original legacy databases imported or mutated by integration. M15-02 uses only separate disposable city/Deadline databases for proof and preservation tests;city migration0037 owns private mapping/receipts. Future real-data migration order: encrypted backup + restore verification; additive city IDs and mapping table per adapter; prove identity ownership; shadow read contract comparisons; feature-flag a test cohort; reconcile counts; retain legacy access until rollback window ends. Rollback disables adapter and removes city routing; preserve original DB/journal. Never run city migrations in legacy DBs. Production migration/backup permissions and retention policy remain owner gates.
 
 ## Room and transport (AUD-05)
 

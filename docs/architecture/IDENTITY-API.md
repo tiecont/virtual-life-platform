@@ -2,6 +2,8 @@
 
 All routes same-origin under /v1. Browser uses trusted Next rewrite; internal API URL never comes from a request. Production TLS/edge configuration remains M21/release work. Every mutation requires exact WEB_ORIGIN. Signed cookie is HttpOnly, host-only and contains no account claims. No CORS wildcard.
 
+The local-only optional [Deadline association](DEADLINE-IDENTITY.md) adds GET/POST/DELETE `/me/legacy/deadline`. It requires a current city session and explicit consent with actual source-cookie proof for linking;withdrawal needs no source access. It never issues a city login or merges identities. Its private metadata appears only in own-data export;city erasure leaves the separate legacy history intact.
+
 | Route | Body / authority | Result / duplicate semantics |
 |---|---|---|
 | POST /session/guest | strict displayName, avatarKey, random requestId | Me; 201 first, 200 duplicate/current browser; conflicting key 409, expired/deleted bootstrap 401 |

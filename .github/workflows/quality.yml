@@ -42,6 +42,8 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Prepare selected Deadline baseline in isolated copy
+        run: node scripts/prepare-deadline-baseline.mjs --allow-network
       - id: browser-plan
         run: node scripts/ci-browser-plan.mjs >> "$GITHUB_OUTPUT"
       - name: Verify disposable test isolation and cleanup
@@ -83,6 +85,9 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Prepare selected Deadline baseline for legacy browser group
+        if: ${{ matrix.group == 'legacy' }}
+        run: node scripts/prepare-deadline-baseline.mjs --allow-network
       - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium
       # Each spec/device still gets a disposable DB/API;never combine IP budgets.

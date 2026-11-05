@@ -1,0 +1,191 @@
+{
+  "task": "M15-02",
+  "status": "VERIFIED",
+  "cityBase": "4c5e2ee",
+  "selectedDeadlineCommit": "6d2ca6a4e00505b2df1d6f41f1041fa14a227c5b",
+  "scope": "Explicit private possession-proven association of an existing isolated Deadline guest with a current city account. No automatic login, profile merge, history import or playable-world claim.",
+  "environment": {
+    "node": "26.9.0",
+    "pnpm": "11.28.5",
+    "database": "Disposable PostgreSQL17.7; separate generated Deadline database and city schema",
+    "legacyDeclaredNode": "26.13.x; actual installed version differs, warning retained",
+    "retainedCityDatabase": "0037 applied successfully; links0/receipts0; stopped again"
+  },
+  "commands": [
+    {
+      "command": "pnpm install --offline --frozen-lockfile --ignore-scripts in independent selected Deadline copy",
+      "exitCode": 0,
+      "log": "m15-identity-legacy-install.log",
+      "result": "555 reused,0 downloaded; no original dependency/source/data mutation"
+    },
+    {
+      "command": "pnpm --filter @deadline/api... build in independent selected Deadline copy",
+      "exitCode": 0,
+      "log": "m15-identity-legacy-build.log",
+      "result": "Actual contracts,scene-data and API build; not legacy web/all-world build"
+    },
+    {
+      "command": "node scripts/prepare-deadline-baseline.mjs",
+      "exitCode": 0,
+      "log": "m15-identity-legacy-prepare.log"
+    },
+    {
+      "command": "pnpm build:packages",
+      "exitCode": 0,
+      "log": "m15-identity-packages.log"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/platform-api typecheck [two earlier service revisions]",
+      "exitCode": 0,
+      "logs": [
+        "m15-identity-api-types-attempt1.log",
+        "m15-identity-api-types-attempt2.log"
+      ]
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/deadline-identity.test.ts [attempt1]",
+      "exitCode": 1,
+      "log": "m15-identity-integration-attempt1.log",
+      "result": "11 passed,1 failed: retention assertion assumed one account monopolized a global100-row batch. Runtime bound retained; corrected to two batches."
+    },
+    {
+      "command": "same targeted integration [attempt2]",
+      "exitCode": 0,
+      "log": "m15-identity-integration-attempt2.log",
+      "result": "12 passed before final4 acceptance cases"
+    },
+    {
+      "command": "pnpm typecheck [earlier stable UI/service]",
+      "exitCode": 0,
+      "log": "m15-identity-types-attempt1.log"
+    },
+    {
+      "command": "pnpm exec tsc -p tests/legacy-tsconfig.json [initial/final at the time]",
+      "exitCode": 0,
+      "logs": [
+        "m15-identity-fixture-types-attempt1.log",
+        "m15-identity-fixture-types-final.log"
+      ],
+      "result": "New integration,actual source helper and native browser spec types; final overall check must cover frozen revision"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit apps/platform-api/src/identity/legacy/deadline-port.unit.test.ts",
+      "exitCode": 0,
+      "log": "m15-identity-unit.log",
+      "result": "5 passed: default/production/local URL policy,actual TCP allowlist proof,forged cookie rejection,no redirect forwarding,oversize/malformed/denied responses"
+    },
+    {
+      "command": "pnpm lint [initial whole workspace]",
+      "exitCode": 0,
+      "log": "m15-identity-lint-attempt1.log"
+    },
+    {
+      "command": "selected edited-file ESLint [earlier UI/service]",
+      "exitCode": 0,
+      "log": "m15-identity-lint-final.log"
+    },
+    {
+      "command": "pnpm check [attempt1 while additional implementation/test edits occurred]",
+      "exitCode": 1,
+      "log": "m15-identity-check-attempt1.log",
+      "result": "22 governance,271 unit passed; integration527 passed/1 failed of528 in final-authority test. Build phase NOT_RUN. This mixed live-edit run is not evidence for the frozen final code; failure retained."
+    },
+    {
+      "command": "same targeted integration in a fresh process [attempt3]",
+      "exitCode": 0,
+      "log": "m15-identity-integration-attempt3.log",
+      "result": "16 passed,including actual receipt SQL waits/current city authority/source proof expiry/maxrevision withdrawal/feature-off independent withdrawal"
+    },
+    {
+      "command": "pnpm lint [frozen code]",
+      "exitCode": 0,
+      "log": "m15-identity-lint-stable.log",
+      "result": "264 source boundaries"
+    },
+    {
+      "command": "node scripts/legacy-snapshots.mjs verify",
+      "exitCode": 0,
+      "log": "m15-identity-source-verify.log",
+      "result": "Both immutable portable source archives verified"
+    },
+    {
+      "command": "Compare all147 selected files against original and materialized copies; count original status/HEAD",
+      "exitCode": 0,
+      "log": "m15-identity-original-source-verification.json",
+      "result": "All source hashes match; original Deadline f9475b4/28 dirty and Maid33180a9/46 dirty unchanged"
+    },
+    {
+      "command": "pnpm check [frozen final process]",
+      "exitCode": 0,
+      "log": "m15-identity-check-final.log",
+      "result": "22 governance,271 unit,528 integration incl16Deadline;lint/types/architecture/policy/assets/all builds0. All501 frozen source/config inputs unchanged at completion."
+    },
+    {
+      "command": "pnpm exec tsc -p tests/legacy-tsconfig.json [after browser-fixture-only correction]",
+      "exitCode": 0,
+      "log": "m15-identity-fixture-types-browser.log",
+      "result": "After root completion,shortened invalid26char bootstrap fixture name to20char;unchanged legacy24char policy retained."
+    },
+    {
+      "command": "pnpm ci:browser legacy",
+      "exitCode": 0,
+      "log": "m15-identity-browser-attempt1.log",
+      "result": "6 actual executions:3desktop/3mobile. Actual selected legacy API in separate generated database. Exact CI group/spec/device metadata validation0."
+    },
+    {
+      "command": "BROWSER_REPORT_SCOPE=ci/social/identity-m15-regression node scripts/run-browser-tests.mjs tests/e2e/identity.spec.ts",
+      "exitCode": 0,
+      "log": "m15-identity-browser-regression.log",
+      "result": "4 actual default-OFF identity regressions:2desktop/2mobile;separate API/DB lifetimes."
+    },
+    {
+      "command": "Inspect4 freshly retained desktop/mobile association/withdrawal screenshots",
+      "exitCode": 0,
+      "log": "m15-identity-browser-artifacts.json",
+      "result": "All4 visually inspected;native actions/status readable;actual browser assertion no horizontal overflow."
+    },
+    {
+      "command": "pnpm db:up;pnpm db:migrate;journal/count query;pnpm db:stop [sequential separate commands]",
+      "exitCode": 0,
+      "logs": [
+        "m15-identity-local-db-start.log",
+        "m15-identity-local-migration.log",
+        "m15-identity-local-db-state.log",
+        "m15-identity-local-db-stop.log"
+      ],
+      "result": "Only retained City development DB migrated to0037;newlinks0/receipts0;stopped. No original legacy DB access."
+    }
+  ],
+  "frozenVerificationInput": {
+    "files": 501,
+    "sha256": "178929166e4e30f86807266aab95df24ca6be3d47f88ed32b6d45185c28f915e",
+    "manifest": "artifacts/m15-identity-freeze.json",
+    "completionProof": "m15-identity-frozen-root-verification.json",
+    "afterBrowserFixtureCorrection": "m15-identity-final-input-verification.json"
+  },
+  "verifiedTargetedCases": [
+    "Actual selected Deadline HTTP proof; duplicate names never merge identity/avatar",
+    "Six actual TCP retries produce one mapping/receipt; two city accounts cannot own one source guest",
+    "Strict Origin/CSRF/body/cookie guards and foreign ownership concealment",
+    "City guest upgrade/session rotation retain mapping; old city session rejected; source guest unchanged",
+    "Source expiry/revocation deny new positive links; actual account-lock and receipt waits recheck authority",
+    "Old link/unlink retries return current consent; negative pre-link barrier and uncooperative provider bounds",
+    "SQL receipt failure rolls back mapping/quota; durable rolling24/day budget survives100-row sequence pruning and105 negative commands",
+    "Owner-only export/city cascade erasure preserve independent guest and preexisting focus history",
+    "Disabling adapter preserves city access/historical consent/independent withdrawal; revision ceiling cannot block withdrawal"
+  ],
+  "limitations": [
+    "No original legacy worktree,process,database or secret file changed or imported",
+    "Source proof is an HTTP observation,not a distributed transaction or ongoing source authentication",
+    "No actual Deadline room/seat/focus/scene travel yet; M15-03..06 remain pending",
+    "No real provider/staff grants,media licensing,remote operation,public release or hosted CI run",
+    "Real rollout flags OFF; production rejects local identity activation"
+  ],
+  "nextExactAction": "M15-03 actual selected catalog/seat/focus compatibility through shared Room/Focus owners;then M15-04 shared scene/travel. No whole-world claim.",
+  "artifacts": [
+    "m15-identity-ci-browser-summary.json",
+    "m15-identity-browser-batches.json",
+    "m15-identity-regression-batches.json",
+    "m15-identity-browser-artifacts.json"
+  ]
+}

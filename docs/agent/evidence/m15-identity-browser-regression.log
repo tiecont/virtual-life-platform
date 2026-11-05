@@ -1,0 +1,86 @@
+ Network virtual-city-test-f0b43943_default Creating 
+ Network virtual-city-test-f0b43943_default Creating 
+ Network virtual-city-test-f0b43943_default Created 
+ Network virtual-city-test-f0b43943_default Created 
+ Container virtual-city-test-f0b43943-db-1 Creating 
+ Container virtual-city-test-f0b43943-db-1 Created 
+ Container virtual-city-test-f0b43943-db-1 Starting 
+ Container virtual-city-test-f0b43943-db-1 Started 
+ Container virtual-city-test-f0b43943-db-1 Waiting 
+ Container virtual-city-test-f0b43943-db-1 Healthy 
+[WebServer] (node:498386) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:498436) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:498436) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:498436) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:498385) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:498525) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:498597) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:498658) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:498754) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/identity.spec.ts:3:5 › guest profile, private settings, session renewal and deletion survive reload and synchronize tabs (2.7s)
+  ✓  2 [desktop] › tests/e2e/identity.spec.ts:30:5 › upgrading retains identity and permits sign-in from a separate browser context (2.2s)
+
+  2 passed (12.1s)
+ Container virtual-city-test-f0b43943-db-1 Stopping 
+ Container virtual-city-test-f0b43943-db-1 Stopped 
+ Container virtual-city-test-f0b43943-db-1 Removing 
+ Container virtual-city-test-f0b43943-db-1 Removed 
+ Network virtual-city-test-f0b43943_default Removing 
+ Network virtual-city-test-f0b43943_default Removed 
+ Network virtual-city-test-680197d6_default Creating 
+ Network virtual-city-test-680197d6_default Creating 
+ Network virtual-city-test-680197d6_default Created 
+ Network virtual-city-test-680197d6_default Created 
+ Container virtual-city-test-680197d6-db-1 Creating 
+ Container virtual-city-test-680197d6-db-1 Created 
+ Container virtual-city-test-680197d6-db-1 Starting 
+ Container virtual-city-test-680197d6-db-1 Started 
+ Container virtual-city-test-680197d6-db-1 Waiting 
+ Container virtual-city-test-680197d6-db-1 Healthy 
+[WebServer] (node:499668) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:499720) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:499720) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:499720) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:499667) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:499822) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:499867) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:499930) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:500005) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [mobile] › tests/e2e/identity.spec.ts:3:5 › guest profile, private settings, session renewal and deletion survive reload and synchronize tabs (3.1s)
+  ✓  2 [mobile] › tests/e2e/identity.spec.ts:30:5 › upgrading retains identity and permits sign-in from a separate browser context (2.3s)
+
+  2 passed (12.4s)
+ Container virtual-city-test-680197d6-db-1 Stopping 
+ Container virtual-city-test-680197d6-db-1 Stopped 
+ Container virtual-city-test-680197d6-db-1 Removing 
+ Container virtual-city-test-680197d6-db-1 Removed 
+ Network virtual-city-test-680197d6_default Removing 
+ Network virtual-city-test-680197d6_default Removed 

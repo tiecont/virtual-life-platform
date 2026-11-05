@@ -10,7 +10,7 @@ test('quality succeeds only for both successful required jobs;failure,cancellati
 });
 test('browser groups cover every existing spec exactly once and reject omitted,duplicated,foreign or traversing paths',async()=>{
  const files=(await readdir('tests/e2e')).filter(value=>value.endsWith('.spec.ts')).sort(),plan=JSON.parse(await readFile('config/ci-browser-groups.json','utf8'));
- const groups=validateBrowserGroups(plan,files);assert.equal(groups.length,5);
+ const groups=validateBrowserGroups(plan,files);assert.equal(groups.length,6);
  const first=Object.keys(plan.groups)[0],file=plan.groups[first][0];
  for(const mutation of [p=>p.groups[first].pop(),p=>p.groups[first].push(file),p=>p.groups[first].push('../private.spec.ts'),p=>p.groups[first].push('missing.spec.ts')]){const copy=JSON.parse(JSON.stringify(plan));mutation(copy);assert.throws(()=>validateBrowserGroups(copy,files));}
 });

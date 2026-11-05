@@ -28,6 +28,8 @@
     "platform_metadata": "platform.foundation",
     "city_schema_migrations": "platform.foundation",
     "identity_accounts": "platform.identity",
+    "identity_legacy_links":"platform.identity",
+    "identity_legacy_mutations":"platform.identity",
     "identity_profiles": "platform.identity",
     "identity_privacy": "platform.identity",
     "identity_sessions": "platform.identity",

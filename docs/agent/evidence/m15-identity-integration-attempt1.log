@@ -1,0 +1,56 @@
+ Network virtual-city-test-f257a2fc_default Creating 
+ Network virtual-city-test-f257a2fc_default Creating 
+ Network virtual-city-test-f257a2fc_default Created 
+ Network virtual-city-test-f257a2fc_default Created 
+ Container virtual-city-test-f257a2fc-db-1 Creating 
+ Container virtual-city-test-f257a2fc-db-1 Created 
+ Container virtual-city-test-f257a2fc-db-1 Starting 
+ Container virtual-city-test-f257a2fc-db-1 Started 
+ Container virtual-city-test-f257a2fc-db-1 Waiting 
+ Container virtual-city-test-f257a2fc-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/deadline-identity.test.ts (12 tests | 1 failed) 5192ms
+   ✓ actual pinned Deadline session proves one private association without name/avatar merges or source data changes 160ms
+   ✓ six actual TCP retries commit one mapping and receipt while competing accounts never share a legacy subject 89ms
+   ✓ two city accounts racing the same actual legacy cookie produce one owner and one conflict 41ms
+   ✓ Origin,CSRF,strict bodies,forged or duplicate legacy cookies and arbitrary source IDs cannot become ownership proof 24ms
+   ✓ city guest upgrade and rotation preserve account mapping without changing the original Deadline guest 128ms
+   ✓ actual source revocation and expiry deny new associations without expiring the independent city session 42ms
+   ✓ source expiry after a real city account-lock wait is rechecked before link commit 70ms
+   ✓ unlink is an independent revision barrier and exact old positive/negative retries cannot undo fresh consent 108ms
+   ✓ receipt failure rolls back mapping and daily counter so the original request can retry once 44ms
+   ✓ export/erasure are owner-only and do not destroy independent legacy focus history or guest access 152ms
+   ✓ uncooperative trusted source work stays bounded while an independent withdrawal succeeds without a source cookie  2030ms
+   × persistent daily budget survives negative receipt pruning and frozen clocks; latest canonical receipts stay bounded 604ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/deadline-identity.test.ts > persistent daily budget survives negative receipt pruning and frozen clocks; latest canonical receipts stay bounded
+AssertionError: expected 11 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 11
+
+ ❯ tests/integration/deadline-identity.test.ts:64:1431
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 11 passed (12)
+   Start at  05:19:31
+   Duration  6.88s (transform 617ms, setup 0ms, import 1.51s, tests 5.19s, environment 0ms)
+
+Test harness failed during command;no raw URL or configuration emitted
+ Container virtual-city-test-f257a2fc-db-1 Stopping 
+ Container virtual-city-test-f257a2fc-db-1 Stopped 
+ Container virtual-city-test-f257a2fc-db-1 Removing 
+ Container virtual-city-test-f257a2fc-db-1 Removed 
+ Network virtual-city-test-f257a2fc_default Removing 
+ Network virtual-city-test-f257a2fc_default Removed 
