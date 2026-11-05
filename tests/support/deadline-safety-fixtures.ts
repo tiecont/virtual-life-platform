@@ -1,0 +1,14 @@
+import { expect,type BrowserContext,type Page } from '@playwright/test';
+import { request } from 'node:http';
+import { randomUUID } from 'node:crypto';
+import { Pool } from 'pg';
+import { MeSchema,type Me } from '@virtual-city/contracts';
+export const origin='http://127.0.0.1:3300';let serial=0;
+export async function guest(context:BrowserContext,displayName:string){const body=JSON.stringify({requestId:randomUUID(),displayName,avatarKey:'mint'});const result=await new Promise<{cookie:string;body:unknown}>((ok,no)=>{const req=request('http://127.0.0.1:4300/v1/session/guest',{method:'POST',localAddress:'127.119.0.'+(++serial),headers:{origin,'content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{let text='';res.on('data',part=>text+=part);res.on('end',()=>{try{expect(res.statusCode).toBe(201);ok({cookie:res.headers['set-cookie']![0].split(';')[0],body:JSON.parse(text)});}catch(error){no(error);}});});req.on('error',no);req.end(body);});const split=result.cookie.indexOf('=');await context.addCookies([{name:result.cookie.slice(0,split),value:result.cookie.slice(split+1),url:origin,httpOnly:true,sameSite:'Lax'}]);return MeSchema.parse(result.body);}
+export const headers=(me:Me)=>({origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()});
+export async function friends(a:BrowserContext,actor:Me,b:BrowserContext,peer:Me){const code=(await (await b.request.get('/v1/social/me')).json()).contactCode;const sent=await a.request.post('/v1/friends/requests',{headers:headers(actor),data:{contactCode:code}});expect(sent.status()).toBe(200);expect((await b.request.post('/v1/friends/requests/'+(await sent.json()).id+'/respond',{headers:headers(peer),data:{action:'accept'}})).status()).toBe(200);}
+export async function allowInvites(context:BrowserContext,me:Me){expect((await context.request.patch('/v1/me/invitations/settings',{headers:headers(me),data:{schemaVersion:1,allowInvitations:true}})).status()).toBe(200);}
+export async function publicRooms(context:BrowserContext,me:Me){expect((await context.request.patch('/v1/me/privacy',{headers:headers(me),data:{presence:'hidden',analyticsConsent:false,worldVisibility:{dating:'hidden',deadline:'public',library:'public'}}})).status()).toBe(200);}
+export async function enter(page:Page,world:'deadline'|'library'){await page.goto('/worlds/'+world);await page.getByRole('button',{name:world==='deadline'?'Enter cafe':'Enter library',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');}
+export const own=async(context:BrowserContext)=>(await (await context.request.get('/v1/me/room')).json()).snapshot;
+export function testDb(){const value=new URL(process.env.TEST_DATABASE_URL??'');if(value.hostname!=='127.0.0.1'||!/^virtual_city_test(?:_|$)/.test(value.pathname.slice(1))||value.search||value.hash)throw Error('Disposable local test database required');return new Pool({connectionString:value.toString()});}

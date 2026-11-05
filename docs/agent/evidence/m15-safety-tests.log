@@ -1,0 +1,60 @@
+$ pnpm build:packages && node --test tests/governance/*.test.mjs && vitest run --project unit
+$ pnpm --filter './packages/*' -r build
+Scope: 10 of 13 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+packages/library-world build$ tsc -p tsconfig.json
+packages/deadline-world build$ tsc -p tsconfig.json
+packages/lounge-world build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/park-world build$ tsc -p tsconfig.json
+packages/library-world build: Done
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/lounge-world build: Done
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/park-world build: Done
+packages/deadline-world build: Done
+packages/restaurant-world build: Done
+packages/pixi-scene build: Done
+✔ archive is authenticated and versioned before any restore,with independent random nonces (5.143733ms)
+✔ restore targets are disposable exact DB/service only,and disk observations reject invalid data (0.857739ms)
+✔ offline backup tools accept local Unix Docker sockets and reject remote TCP/SSH/named-pipe contexts (0.37651ms)
+✔ worlds cannot import another world repository, platform internals or application code (6.867495ms)
+✔ contracts cannot import SDK and apps cannot import another application internals (0.921338ms)
+✔ the scanner rejects actual source imports and manifest cycles (27.801558ms)
+✔ quality succeeds only for both successful required jobs;failure,cancellation,skip,missing or malformed results cannot pass (2.830329ms)
+✔ browser groups cover every existing spec exactly once and reject omitted,duplicated,foreign or traversing paths (33.327432ms)
+✔ successful reports require both devices for the exact spec and reject stale,foreign,duplicated or incomplete metadata (5.701436ms)
+✔ stack env requires HTTPS,explicit peer,isolated names and URL-safe secrets without echoing secret values (3.927329ms)
+✔ owner-selected snapshot pins dirty/untracked source with secrets/cache excluded and preserves the original worktree (136.355764ms)
+✔ capture rejects absent approval,source-local destinations and source symlinks without copying their target (30.053025ms)
+✔ archive verification rejects tampered payloads,unsafe paths,links,commit mismatch and oversized input before materialization (80.988244ms)
+✔ audit ranges and conjunctive dependencies preserve the authoritative DAG (9.77433ms)
+✔ cycles, unknown dependencies and duplicate module IDs are rejected (1.895876ms)
+✔ checkpoint cannot assert verification without evidence or through an unmet gate (1.078174ms)
+✔ the supplied plan pack is accepted without changing its manifest shape (9.759451ms)
+✔ resource ceiling accounts for memory,disk reserves and unpriced monthly allocations (7.708682ms)
+✔ budget edits cannot silently enable purchases,Redis or multiple room owners (3.220526ms)
+✔ database target rejects remote/non-test/scheme/query overrides without echoing credentials (4.179965ms)
+✔ fixture environment uses independent keys and excludes inherited runtime,PG and preload state (1.588577ms)
+✔ only explicit finite test fixtures/report scopes survive environment filtering (3.184758ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 386.678518
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+
+ Test Files  56 passed (56)
+      Tests  273 passed (273)
+   Start at  14:15:29
+   Duration  4.66s (transform 8.24s, setup 0ms, import 33.46s, tests 4.82s, environment 13ms)
+

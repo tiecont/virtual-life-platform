@@ -1,0 +1,88 @@
+ Network virtual-city-test-8a2bed58_default Creating 
+ Network virtual-city-test-8a2bed58_default Creating 
+ Network virtual-city-test-8a2bed58_default Created 
+ Network virtual-city-test-8a2bed58_default Created 
+ Container virtual-city-test-8a2bed58-db-1 Creating 
+ Container virtual-city-test-8a2bed58-db-1 Created 
+ Container virtual-city-test-8a2bed58-db-1 Starting 
+ Container virtual-city-test-8a2bed58-db-1 Started 
+ Container virtual-city-test-8a2bed58-db-1 Waiting 
+ Container virtual-city-test-8a2bed58-db-1 Healthy 
+[WebServer] (node:625007) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:625021) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:625021) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:625021) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:625006) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:625090) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:625142) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:625167) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:625280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/deadline-safety.spec.ts:4:5 › actual Library visitor opts into a Deadline offer,accepts privately and separately confirms travel to the offered room (6.3s)
+  ✓  2 [desktop] › tests/e2e/deadline-safety.spec.ts:14:5 › native Deadline report is private and idempotent;block persists through actual Library travel while focus stays private (8.4s)
+  ✓  3 [desktop] › tests/e2e/deadline-safety.spec.ts:23:5 › unknown friends disable positive sends and a committed held invitation reply cannot restore the panel after Leave (2.5s)
+
+  3 passed (22.4s)
+ Container virtual-city-test-8a2bed58-db-1 Stopping 
+ Container virtual-city-test-8a2bed58-db-1 Stopped 
+ Container virtual-city-test-8a2bed58-db-1 Removing 
+ Container virtual-city-test-8a2bed58-db-1 Removed 
+ Network virtual-city-test-8a2bed58_default Removing 
+ Network virtual-city-test-8a2bed58_default Removed 
+ Network virtual-city-test-e9abc02c_default Creating 
+ Network virtual-city-test-e9abc02c_default Creating 
+ Network virtual-city-test-e9abc02c_default Created 
+ Network virtual-city-test-e9abc02c_default Created 
+ Container virtual-city-test-e9abc02c-db-1 Creating 
+ Container virtual-city-test-e9abc02c-db-1 Created 
+ Container virtual-city-test-e9abc02c-db-1 Starting 
+ Container virtual-city-test-e9abc02c-db-1 Started 
+ Container virtual-city-test-e9abc02c-db-1 Waiting 
+ Container virtual-city-test-e9abc02c-db-1 Healthy 
+[WebServer] (node:626757) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:626770) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:626770) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:626770) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:626756) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:626930) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:626980) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:627062) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:627138) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [mobile] › tests/e2e/deadline-safety.spec.ts:4:5 › actual Library visitor opts into a Deadline offer,accepts privately and separately confirms travel to the offered room (6.5s)
+  ✓  2 [mobile] › tests/e2e/deadline-safety.spec.ts:14:5 › native Deadline report is private and idempotent;block persists through actual Library travel while focus stays private (7.0s)
+  ✓  3 [mobile] › tests/e2e/deadline-safety.spec.ts:23:5 › unknown friends disable positive sends and a committed held invitation reply cannot restore the panel after Leave (2.0s)
+
+  3 passed (20.6s)
+ Container virtual-city-test-e9abc02c-db-1 Stopping 
+ Container virtual-city-test-e9abc02c-db-1 Stopped 
+ Container virtual-city-test-e9abc02c-db-1 Removing 
+ Container virtual-city-test-e9abc02c-db-1 Removed 
+ Network virtual-city-test-e9abc02c_default Removing 
+ Network virtual-city-test-e9abc02c_default Removed 

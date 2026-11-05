@@ -1,1 +1,1 @@
-{"schemaVersion":1,"environments":{"development":{},"test":{"deadline":true,"sdk-sandbox":true,"travel-deadline-fixture":true,"travel-maid-fixture":true,"travel-portal-fixture":true},"production":{}}}
+{"schemaVersion":1,"environments":{"development":{},"test":{"deadline":true,"library":true,"sdk-sandbox":true,"travel-deadline-fixture":true,"travel-maid-fixture":true,"travel-portal-fixture":true},"production":{}}}

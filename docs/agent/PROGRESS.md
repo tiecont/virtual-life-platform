@@ -1,5 +1,13 @@
 # Agent progress
 
+## M15-05 — VERIFIED actual Deadline invitations,private reporting and block across Library
+
+From861f67c;[ADR0089](../adr/0089-deadline-consent-and-safety.md)/[ledger](evidence/m15-safety-checks.json). Reuse existing RoomInvitation/M09 and RoomSafety/M08;Deadline cafe labels/new explicit roomInvites flag preserve Library defaults. Failed friend reads clear selection/disable sends. Keep pending choice/key through same-membership Room sync/seat mutation while positives paused;actual departure clears lifetime,late replies cannot restore panel. No new serverowner/SQL/chat/DM/tasknotes/staff/automatic sanctions.
+
+Actual first6browser0 then final6(3perdevice)0 after extra sync-lifetime guard/test;2existing Library invitation/browser regressions0. Actual Library recipientdefaultOFF rejects0rows→native optin→lostcommittedreply/samekey1offer→acceptretainsLibrary→explicittravelofferedDeadline/noautoseat/sameidentity. Publicprofile snapshot/foreignfocus404/privatehistoryguards;native report samekey1case1audit/privateownreceipt/noautosanction;block purgesbothDeadlinecanvases and freshfriendchoices,then bothactualLibraryviewsstillfilterpeer/freshinvite404/oldDeadlinefocusprivate. Held committed offer survives actual seat sync;Leave remains available and late replycannotrestore endedpanel/forcepeertravel.
+
+Relevant36API/22gov273unit/wholetypes/lint272boundaries/allbuilds0.8freshimagesretained/4selectedinspected;147original+copyhashes/HEAD/status/3provenanceunchanged/releasefalse. CI24specs/6groups/boundsunchanged;no full24specbrowser/freshfull535API/realAT/load/container/hosted/publicclaim. No migration/retained0037stopped/source process-data/realflagschange. Next exact actionM15-06performance/a11y/configmigration/flagrollback actualacceptance,thenM16-02;module/wholeplan incomplete.
+
 ## M15-04 — VERIFIED selected Deadline shared scene/native shell and Portal journey
 
 Frome1f8f9d;[ADR0088](../adr/0088-deadline-shared-scene-shell.md)/[world guide](../architecture/DEADLINE-WORLD.md)/[evidence](evidence/m15-scene-checks.json). Source CafeShell was a placeholder;reuse actual30seat configuration with tile-center rounding<=20px in24x16/40px/960x640 scene,original solid furniture/art and existing atlas/authoritative owners. Worldversion1.1.0,new `/worlds/deadline`,three native desk areas,private non-pause focus,explicit confirmed leave/return and TravelPanel scene link. Real installation/registry remainOFF/productionreject;no original source/data/client rewrite.

@@ -6,7 +6,15 @@ Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;bran
 
 Node26.9.0/pnpm11.28.5. RetaineddevDB0037/stopped;latestjournal/9privatecounts0. Current verification workers are listed below;completed slices leave no preview running. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
 
-## Current work — M15-04 VERIFIED;next M15-05
+## Current work — M15-05 VERIFIED;next M15-06
+
+From861f67c;ADR0089/DEADLINE-WORLD.md/m15-safety-checks.json. Shared current-room friend offers now in Deadline with cafe labels,Library defaults unchanged/useId. Unknown friend reads clear choices/disable positives. Widget stays keyed to same source membership through Room sync/seat changes,pending canonical key/selection retained while positives paused. Leave ends lifetime/late replies discarded. Native shared report/block/focus privacy existingowners;no newserver/SQL/chat/DM/tasknotes/staff/autosanction.
+
+Actual initial6browser0;final6(3perdevice)0 includes held committed invite during actual seat mutation/sync→confirmedLeave→late discarded reply.2existing Library sender/inbox/travel browser0. ActualLibrary→Deadline recipientdefaultOFF denies0rows/nativeoptin/samekeylostresponse1offer/acceptnoautomaticmove/separateconfirm/noautoseat/sameidentity;privateFocus/currentpublicprofile/foreign404;nativeReportretry1case1audit/ownreceipt/noautosanction;nativeBlockbothDeadlineviews and actualLibraryviews/freshinvite404/oldDeadlinefocusprivate.36relevantAPI/22gov273unit/wholetypes/lint272boundaries/allbuilds0.8freshimagesretained/4selectedinspected.147source/copyhashes/HEAD/status/3provenanceunchanged/releasefalse. CI24specs/6groups/boundsunchanged;no full24specbrowser/freshfull535API/realAT/load/image/hosted/publicclaim. Retained0037stopped/allrealflagsOFF/no sourceprocess-datachange. All owned verification workersfinished/no preview/background promise.
+
+Next exact action M15-06:read existing M22/load and a11y harness before adding code. Verify actual Deadline configured40place/30seat capacity with honest real-vs-controlled actors,measure a bounded local profile (not productionCCU);actual native keyboard/reducedmotion/contrast/targets;rehearse independent flagOFF/re-enable against realDeadline/City/sourceguest/history without importing/dropping original data. Preserve private timer/association receipts and source access on rollback;currentoldcommands/worldversions mustnotrejoin afterclosure. Actual full-module acceptance/evidence/checkpoint/localcommit before M16-02. SourceNode26.13.x declaration vs actual26.9.0 warning remains recorded. No purchases/networkdependencyfetch/originallegacyDB/realstaff/provider/push/deploy/public action.
+
+## Prior verified slice — M15-04;commit861f67c
 
 Frome1f8f9d;ADR0088/DEADLINE-WORLD.md/m15-scene-checks.json. Actual selected30seat configuration now has24x16/40px original collision/art scene at /worlds/deadline;tile-center error<=20px/source960x640 preserved/all30reachable. Sharedavatar/nativecontrols/private non-pause focus/travel scene link and explicit authoritative leave/return. Worldversion1.1.0;source metadata now baseline.ts/reexports unchanged. New additive renderer branch;realinstall/registryOFF/productionreject;originalsource/data/processes untouched.
 
