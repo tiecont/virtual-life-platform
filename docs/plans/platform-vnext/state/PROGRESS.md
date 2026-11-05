@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N01-02 VERIFIED
+
+Implemented versioned content-indexed evidence reads, bounded AES-256-GCM objects, owner-only independent key custody, no-overwrite archive/restore and full restore hash readback. Actual archive/check/restore covers all 3,586 historical files / 151,876,136 bytes / 1,955 unique objects. Five negative/round-trip governance cases and lint pass. Originals retained; no public/off-host upload or cleanup authorized.
+
+Actual commands: 17; retained failed attempts: 1; required final checks passed. Evidence: `n01-02-2026-11-05`; [checks](../audit/N01-02-CHECKS.json). Current counts: `{"VERIFIED": 9, "TODO": 60}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N01-03; migrate governance/release/ops-watch through indexed readers, distinguish historical provenance from fresh acceptance, redirect raw-output writers, and prove portable missing/tampered retrieval before cleanup.
+
 ## 2026-11-05 — N01-01 VERIFIED
 
 Implemented read-only hashed per-file inventory and conservative keep/archive/review classifications with static references, dynamic/directory path warnings and manual reader/writer review. Actual full snapshot keeps 581 evidence JSON, migrations/lockfile/assets and legacy fixtures; raw outputs are only archive candidates. No move/delete or source-data change. Safety/consumer fixtures, lint, governance and preservation checks pass.

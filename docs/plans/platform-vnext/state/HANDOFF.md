@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T16:02:18.988064+00:00; task N01-01 VERIFIED on `codex/vnext-n01-01-inventory`. Base revision `e4b6881c885a03a2277bff60f7cf21e305e6fe38`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T16:26:29.622206+00:00; task N01-02 VERIFIED on `codex/vnext-n01-02-evidence-store`. Base revision `1b5ad00eee8c7cc8660aba30fa9c60a15d9378e4`; this task has its own reviewable commit after evidence finalization.
 
-Implemented read-only hashed per-file inventory and conservative keep/archive/review classifications with static references, dynamic/directory path warnings and manual reader/writer review. Actual full snapshot keeps 581 evidence JSON, migrations/lockfile/assets and legacy fixtures; raw outputs are only archive candidates. No move/delete or source-data change. Safety/consumer fixtures, lint, governance and preservation checks pass.
+Implemented versioned content-indexed evidence reads, bounded AES-256-GCM objects, owner-only independent key custody, no-overwrite archive/restore and full restore hash readback. Actual archive/check/restore covers all 3,586 historical files / 151,876,136 bytes / 1,955 unique objects. Five negative/round-trip governance cases and lint pass. Originals retained; no public/off-host upload or cleanup authorized.
 
-[Actual checks](../audit/N01-01-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 8, "TODO": 61}`.
+[Actual checks](../audit/N01-02-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 9, "TODO": 60}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N01-02; implement versioned content index and private archive/check/restore tools with complete manifest validation, real restore and missing/tampered negative tests. Keep originals and record any durable-storage gate separately.
+Reserve N01-03; migrate governance/release/ops-watch through indexed readers, distinguish historical provenance from fresh acceptance, redirect raw-output writers, and prove portable missing/tampered retrieval before cleanup.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.

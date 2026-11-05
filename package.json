@@ -7,6 +7,9 @@
     "node": "26.9.x"
   },
   "scripts": {
+    "evidence:archive": "node scripts/evidence-cli.mjs archive",
+    "evidence:check": "node scripts/evidence-cli.mjs check",
+    "evidence:restore-smoke": "node scripts/evidence-cli.mjs restore-smoke",
     "evidence:inventory": "node scripts/evidence-inventory.mjs",
     "ux:prototype": "node scripts/verify-ux-prototype.mjs",
     "build:packages": "pnpm --filter './packages/*' -r build",

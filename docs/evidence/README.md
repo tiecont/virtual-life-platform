@@ -1,5 +1,7 @@
 # Evidence inventory and archival preparation
 
+N01-02 now implements the [versioned private store and full restore](STORE.md). `evidence:check` and `evidence:restore-smoke` are real commands with actual full-corpus results; consumers and portable off-host custody are separate gates. Originals remain in place.
+
 N01-01 adds `pnpm evidence:inventory --out artifacts/<private-scope>/inventory.json`. It reads tracked/nonignored paths without loading environment files, follows no symlink targets, computes bytes/SHA-256 for regular unprotected files, and records static evidence references plus directory/template warnings. Output is confined to artifacts and refuses overwrite. It does not move or delete files.
 
 [N01-01-INVENTORY.json](N01-01-INVENTORY.json) is a compact dated summary with the private full manifest hash, classification counts/bytes, reviewed consumers and limits. The scan is a point-in-time workspace observation before checkpoint/report finalization, not Git-history size or all ignored disk usage.

@@ -1922,6 +1922,447 @@
         "Private full inventory is local until cleanup, with original source/Git retained",
         "No archive, restore, loader migration or file deletion is claimed"
       ]
+    },
+    {
+      "id": "n01-02-2026-11-05",
+      "taskId": "N01-02",
+      "sourceRevision": "1b5ad00eee8c7cc8660aba30fa9c60a15d9378e4+workspace-sha256:7cf133ca13c314489b792fbe0085cac9a296e9840dcf4b308c30f9c37f490c52",
+      "environment": "Local Linux x64; Node 26.9.0; pnpm 11.28.5; scope-specific commands below",
+      "executedAt": "2026-11-05T16:26:29.622206+00:00",
+      "commands": [
+        {
+          "command": "pnpm evidence:check --index artifacts/evidence-store/n01-02/index.json --archive",
+          "argv": [
+            "pnpm",
+            "evidence:check",
+            "--index",
+            "artifacts/evidence-store/n01-02/index.json",
+            "--archive"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:15:13.330Z",
+          "endedAt": "2026-11-05T16:15:14.685Z",
+          "log": "artifacts/vnext/n01-02/archive-check.log",
+          "sha256": "ba15fbac3414e2fd5d8da770a21e796c6968fe045f86600930ef5e3d6e4a97ff"
+        },
+        {
+          "command": "pnpm evidence:check --archive",
+          "argv": [
+            "pnpm",
+            "evidence:check",
+            "--archive"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:19:36.152Z",
+          "endedAt": "2026-11-05T16:19:37.546Z",
+          "log": "artifacts/vnext/n01-02/archive-current.log",
+          "sha256": "48bd5e878f5997ecb65b3756e6499aae8bfbc3a6f97a2618273da52a9940c118"
+        },
+        {
+          "command": "pnpm evidence:archive",
+          "argv": [
+            "pnpm",
+            "evidence:archive"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:14:10.728Z",
+          "endedAt": "2026-11-05T16:14:12.701Z",
+          "log": "artifacts/vnext/n01-02/archive.log",
+          "sha256": "a03d8f6b6b627976e62760357a01bdd6a769a16e2568fe10558961c255aa27e2"
+        },
+        {
+          "command": "pnpm governance:check",
+          "argv": [
+            "pnpm",
+            "governance:check"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:26:28.621Z",
+          "endedAt": "2026-11-05T16:26:29.218Z",
+          "log": "artifacts/vnext/n01-02/governance.log",
+          "sha256": "2b64113b631902b8420aeb9318e2e924c2c22056f4cc2998648de840eca959a9"
+        },
+        {
+          "command": "pnpm evidence:check",
+          "argv": [
+            "pnpm",
+            "evidence:check"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:19:34.981Z",
+          "endedAt": "2026-11-05T16:19:57.693Z",
+          "log": "artifacts/vnext/n01-02/indexed-check.log",
+          "sha256": "86724f57816102c1734117ab924d5debed347e266340e65fb3d53d698861e91c"
+        },
+        {
+          "command": "pnpm exec eslint scripts/evidence-store.mjs scripts/evidence-cli.mjs tests/governance/evidence-store.test.mjs",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "scripts/evidence-store.mjs",
+            "scripts/evidence-cli.mjs",
+            "tests/governance/evidence-store.test.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:19:37.703Z",
+          "endedAt": "2026-11-05T16:19:39.126Z",
+          "log": "artifacts/vnext/n01-02/lint-accepted.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "pnpm exec eslint scripts/evidence-store.mjs scripts/evidence-cli.mjs tests/governance/evidence-store.test.mjs",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "scripts/evidence-store.mjs",
+            "scripts/evidence-cli.mjs",
+            "tests/governance/evidence-store.test.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:14:11.909Z",
+          "endedAt": "2026-11-05T16:14:13.424Z",
+          "log": "artifacts/vnext/n01-02/lint-current.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "pnpm exec eslint scripts/evidence-store.mjs scripts/evidence-cli.mjs tests/governance/evidence-store.test.mjs",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "scripts/evidence-store.mjs",
+            "scripts/evidence-cli.mjs",
+            "tests/governance/evidence-store.test.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:17:06.423Z",
+          "endedAt": "2026-11-05T16:17:07.796Z",
+          "log": "artifacts/vnext/n01-02/lint-final.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "pnpm exec eslint scripts/evidence-store.mjs tests/governance/evidence-store.test.mjs",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "scripts/evidence-store.mjs",
+            "tests/governance/evidence-store.test.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:11:41.526Z",
+          "endedAt": "2026-11-05T16:11:42.829Z",
+          "log": "artifacts/vnext/n01-02/lint.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node docs/plans/platform-vnext/tools/validate-plan.mjs",
+          "argv": [
+            "node",
+            "docs/plans/platform-vnext/tools/validate-plan.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:26:29.387Z",
+          "endedAt": "2026-11-05T16:26:29.445Z",
+          "log": "artifacts/vnext/n01-02/plan.log",
+          "sha256": "cefafdecb619a44e38e59fab9697d847d0debebee2e0902714729670c5a6568f"
+        },
+        {
+          "command": "git diff --exit-code cef7dc17172f7c6cda930c99648a5e3ad609cc55 -- PLAN-MANIFEST.json docs/agent/task-state.json docs/agent/evidence",
+          "argv": [
+            "git",
+            "diff",
+            "--exit-code",
+            "cef7dc17172f7c6cda930c99648a5e3ad609cc55",
+            "--",
+            "PLAN-MANIFEST.json",
+            "docs/agent/task-state.json",
+            "docs/agent/evidence"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:26:29.296Z",
+          "endedAt": "2026-11-05T16:26:29.308Z",
+          "log": "artifacts/vnext/n01-02/preserved.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "pnpm evidence:restore-smoke --index artifacts/evidence-store/n01-02/index.json --target artifacts/vnext/n01-02/restored",
+          "argv": [
+            "pnpm",
+            "evidence:restore-smoke",
+            "--index",
+            "artifacts/evidence-store/n01-02/index.json",
+            "--target",
+            "artifacts/vnext/n01-02/restored"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:15:14.502Z",
+          "endedAt": "2026-11-05T16:15:17.530Z",
+          "log": "artifacts/vnext/n01-02/restore.log",
+          "sha256": "48463a6c3797690f2939523fff6f9aca28a269d14681d74ab1f7a3923975e1ec"
+        },
+        {
+          "command": "node --test tests/governance/evidence-store.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/evidence-store.test.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:19:37.313Z",
+          "endedAt": "2026-11-05T16:19:37.645Z",
+          "log": "artifacts/vnext/n01-02/tests-accepted.log",
+          "sha256": "ac1e05dfdd12862ac4a4579fbc23f7b5c491e351e6f6108d23b7e89656e193b9"
+        },
+        {
+          "command": "node --test tests/governance/evidence-store.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/evidence-store.test.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:14:10.370Z",
+          "endedAt": "2026-11-05T16:14:10.661Z",
+          "log": "artifacts/vnext/n01-02/tests-current.log",
+          "sha256": "d756256748fd66ef9c2d4308641725960c459e0d5397e80f670d453c251d2027"
+        },
+        {
+          "command": "node --test tests/governance/evidence-store.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/evidence-store.test.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:17:06.009Z",
+          "endedAt": "2026-11-05T16:17:06.360Z",
+          "log": "artifacts/vnext/n01-02/tests-final.log",
+          "sha256": "a2c4f253802baca11761fce43f5e9d640a4baffe81b1922ee3d534771466968c"
+        },
+        {
+          "command": "node --test tests/governance/evidence-store.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/evidence-store.test.mjs"
+          ],
+          "exitCode": 1,
+          "signal": null,
+          "startedAt": "2026-11-05T16:09:42.542Z",
+          "endedAt": "2026-11-05T16:09:42.663Z",
+          "log": "artifacts/vnext/n01-02/tests-red.log",
+          "sha256": "a447978ae2505a4e547cc0afada76ecbfd68223dbc4757f5bcdd2fe7fdcd916b"
+        },
+        {
+          "command": "node --test tests/governance/evidence-store.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/evidence-store.test.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T16:11:41.166Z",
+          "endedAt": "2026-11-05T16:11:41.452Z",
+          "log": "artifacts/vnext/n01-02/tests.log",
+          "sha256": "ed0731ee6189b48d834ac43d74e91dd5600c784b05cbeafe430a39c9f07612e0"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "Full additional private archive and restore",
+          "outcome": "PASS",
+          "notes": "3586 originals retained; 1955 objects authenticated; 151876136 bytes restored and rehashed"
+        },
+        {
+          "name": "Negative integrity/path/key tests",
+          "outcome": "PASS",
+          "notes": "Five cases after initial missing implementation red; no mismatch fallback or partial restore target on authentication failure"
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "scripts/evidence-store.mjs",
+          "sha256": "cf3793f4c5947a3e40c3b8fc2cacff414aa7c3fbb056d313255e78fe5f52cc63",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "scripts/evidence-cli.mjs",
+          "sha256": "1ac09873f3a490509f862aae9526cee7a6e3c6f7449c272d659518e6c064c9aa",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "tests/governance/evidence-store.test.mjs",
+          "sha256": "c28df082a6b3160e8121c16141c540a3cfcbf01294932ee9e91efebd4ad23af5",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "package.json",
+          "sha256": "09edff1e0559b131c246cdf09116fc232b73ad8c0030874960a88ac2ed1b7975",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/evidence/index.json",
+          "sha256": "7a7e454fc43b8840987cb65263e6589b68e5ccf7ba1d0cc81adae7ee9b2bb78a",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/evidence/INDEX.schema.json",
+          "sha256": "d145421d0ffd4fff695c9d837f7c4711b5bb728946d832ec88800859e8525753",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/evidence/STORE.md",
+          "sha256": "4fdbfc37ce5dc3fb84e1968e7e96c2483d8d629a3f68f31aeee577d74699a33c",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/evidence/N01-02-RESTORE.json",
+          "sha256": "8b3013365cc8cfaa4fd49942ab216f293c9d56d62b1915e431d92233a7305530",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/archive-check.log",
+          "sha256": "ba15fbac3414e2fd5d8da770a21e796c6968fe045f86600930ef5e3d6e4a97ff",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/archive-current.log",
+          "sha256": "48bd5e878f5997ecb65b3756e6499aae8bfbc3a6f97a2618273da52a9940c118",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/archive.log",
+          "sha256": "a03d8f6b6b627976e62760357a01bdd6a769a16e2568fe10558961c255aa27e2",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/governance.log",
+          "sha256": "2b64113b631902b8420aeb9318e2e924c2c22056f4cc2998648de840eca959a9",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/indexed-check.log",
+          "sha256": "86724f57816102c1734117ab924d5debed347e266340e65fb3d53d698861e91c",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/lint-accepted.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/lint-current.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/lint-final.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/lint.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/plan.log",
+          "sha256": "cefafdecb619a44e38e59fab9697d847d0debebee2e0902714729670c5a6568f",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/preserved.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/restore.log",
+          "sha256": "48463a6c3797690f2939523fff6f9aca28a269d14681d74ab1f7a3923975e1ec",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/tests-accepted.log",
+          "sha256": "ac1e05dfdd12862ac4a4579fbc23f7b5c491e351e6f6108d23b7e89656e193b9",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/tests-current.log",
+          "sha256": "d756256748fd66ef9c2d4308641725960c459e0d5397e80f670d453c251d2027",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/tests-final.log",
+          "sha256": "a2c4f253802baca11761fce43f5e9d640a4baffe81b1922ee3d534771466968c",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/tests-red.log",
+          "sha256": "a447978ae2505a4e547cc0afada76ecbfd68223dbc4757f5bcdd2fe7fdcd916b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n01-02/tests.log",
+          "sha256": "ed0731ee6189b48d834ac43d74e91dd5600c784b05cbeafe430a39c9f07612e0",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N01-02-CHECKS.json",
+          "sha256": "265f6ab013bf3ad5a3d4bb04fb9d2c53dfa39ca17f52c843d56d806660ba8179",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": true,
+      "limitations": [
+        "Local encrypted additional archive only; independent durable off-host access/custody not yet configured",
+        "Corpus remains restricted fixture material, not public-safe privacy certification",
+        "Current consumers and browser/load output writers are not migrated by this task",
+        "Raw originals/Git remain and cleanupAuthorized is false"
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

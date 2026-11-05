@@ -1,0 +1,16 @@
+{
+  "taskId": "N01-02",
+  "indexSha256": "7a7e454fc43b8840987cb65263e6589b68e5ccf7ba1d0cc81adae7ee9b2bb78a",
+  "snapshotRevision": "1b5ad00eee8c7cc8660aba30fa9c60a15d9378e4",
+  "sourceFiles": 3586,
+  "uniqueEncryptedObjects": 1955,
+  "verifiedRestoredBytes": 151876136,
+  "encryptedObjectBytes": 116854952,
+  "store": "artifacts/evidence-store/n01-02",
+  "keyFileReference": "artifacts/evidence-keys/n01-02.key",
+  "restoreTarget": "artifacts/vnext/n01-02/restored",
+  "originalsRetained": true,
+  "cleanupAuthorized": false,
+  "durableOffHostArchive": "NOT_CONFIGURED",
+  "scope": "Local additional encrypted copy and complete actual restore; no new historical test results or public-data approval"
+}
