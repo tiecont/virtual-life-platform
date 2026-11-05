@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "taskId": "N06-02",
+  "origin": "Original repository-authored HTML/CSS/SVG concept scene and semantic controls; no external bitmap/audio/font or artwork copied",
+  "purpose": "Design-only simulated state prototype; not authoritative world geometry or production scene",
+  "releaseApproved": false,
+  "externalSource": false,
+  "sources": [
+    {
+      "path": "docs/design/vnext/prototype/index.html",
+      "sha256": "32fa0c358d8cf5820ad70e859e353938fbd1f547534c0f8e756dab8c383002c8"
+    },
+    {
+      "path": "docs/design/vnext/prototype/prototype.css",
+      "sha256": "17f772b213c3526cf269db3463d37b15c9dd5020944ffdbfa8b00c7efaad2a1a"
+    },
+    {
+      "path": "docs/design/vnext/prototype/prototype.mjs",
+      "sha256": "472b10c386c8c79406853231914edd727f8588a1203ce4c4c99ac7e9b0891348"
+    },
+    {
+      "path": "packages/ui/src/tokens.css",
+      "sha256": "69c527d87f95c7170636f2c61a9841f1f19f3cb802db74557a2bee3a3eb3cf69"
+    },
+    {
+      "path": "packages/ui/src/components.css",
+      "sha256": "4143f2d3b8dfd8796cd4a20c104debb164621d180b536cdbb0c6b1a5491390ca"
+    }
+  ]
+}

@@ -309,12 +309,14 @@
       "next_action": "Reserve N06-02; implement reusable presentation tokens and a standalone responsive interactive prototype for loading/empty/full/wait/offline/reconnect/denied, then verify keyboard/focus and 360px/desktop layouts."
     },
     "N06-02": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex Experience lane",
+      "branch": "codex/vnext-n06-02-prototype",
+      "evidence_refs": [
+        "n06-02-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "Tokens/components, desktop/mobile prototype, keyboard/reduced-motion alternatives"
+      "next_action": "Reserve N10-01; pin a proposed Android toolchain and pre-measurement device/workload/budget matrix with Capacitor ADR, preserving UNKNOWN phone facts and separate conditional iOS gates. Then continue dependency-ready repository and boundary work."
     },
     "N06-03": {
       "status": "TODO",

@@ -1,0 +1,22 @@
+:root {
+  color-scheme: light;
+  --vlp-canvas: #f5f4ee;
+  --vlp-surface: #ffffff;
+  --vlp-ink: #172d2a;
+  --vlp-muted: #435b53;
+  --vlp-accent: #225c49;
+  --vlp-accent-soft: #e6eee7;
+  --vlp-clay: #b85b49;
+  --vlp-danger: #a12232;
+  --vlp-border: #b9c9bd;
+  --vlp-space-1: .25rem;
+  --vlp-space-2: .5rem;
+  --vlp-space-3: .75rem;
+  --vlp-space-4: 1rem;
+  --vlp-space-6: 1.5rem;
+  --vlp-space-8: 2rem;
+  --vlp-radius-control: .5rem;
+  --vlp-radius-panel: 1rem;
+  --vlp-touch: 2.75rem;
+  --vlp-font: system-ui, -apple-system, sans-serif;
+}

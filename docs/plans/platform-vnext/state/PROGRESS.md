@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N06-02 VERIFIED
+
+Implemented reusable CSS tokens/primitives and an isolated scene-first Deadline/Maid state prototype, with native modal/bottom-sheet controls, independent withdrawal, reduced motion, 200% text wrapping and no live API calls. Real Chromium walkthrough passes 360px/desktop across eight state designs each; Enter/Tab/Shift+Tab/Escape focus, private focus/cancel, voluntary shift stop, safety and static-server deny guards pass. Inspected desktop/mobile and large-text captures.
+
+Actual commands: 15; retained failed attempts: 4; required final checks passed. Evidence: `n06-02-2026-11-05`; [checks](../audit/N06-02-CHECKS.json). Current counts: `{"VERIFIED": 6, "TODO": 63}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N10-01; pin a proposed Android toolchain and pre-measurement device/workload/budget matrix with Capacitor ADR, preserving UNKNOWN phone facts and separate conditional iOS gates. Then continue dependency-ready repository and boundary work.
+
 ## 2026-11-05 — N06-01 VERIFIED
 
 Selected Deadline focus and Maid service as the two core loops; specified first-play/return, full/wait, lost-ACK/reconnect and independent safety/withdrawal behavior. Direction board retains original code-authored art, source-pinned historical screenshots, accessible DOM controls and conservative privacy. First action <60s remains an unmeasured draft target.

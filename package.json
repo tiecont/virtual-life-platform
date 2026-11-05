@@ -7,6 +7,7 @@
     "node": "26.9.x"
   },
   "scripts": {
+    "ux:prototype": "node scripts/verify-ux-prototype.mjs",
     "build:packages": "pnpm --filter './packages/*' -r build",
     "dev": "pnpm build:packages && node --env-file-if-exists=.env --env-file-if-exists=.env.safety scripts/dev-stack.mjs",
     "lint": "eslint . && node scripts/check-boundaries.mjs",

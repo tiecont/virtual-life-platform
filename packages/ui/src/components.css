@@ -1,0 +1,25 @@
+.vlp-button {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  min-height: var(--vlp-touch); min-width: var(--vlp-touch); padding: .7rem 1rem;
+  border: 1px solid var(--vlp-accent); border-radius: var(--vlp-radius-control);
+  background: var(--vlp-accent); color: var(--vlp-surface); font: 600 1rem/1.35 var(--vlp-font);
+  text-align: center; cursor: pointer; text-decoration: none; overflow-wrap: anywhere;
+}
+.vlp-button.secondary { background: var(--vlp-surface); color: var(--vlp-accent); }
+.vlp-button.danger { background: var(--vlp-danger); border-color: var(--vlp-danger); }
+.vlp-button:disabled { background: #e2e7e2; border-color: #c3cdc3; color: #435b53; cursor: default; }
+.vlp-button:focus-visible, .vlp-field:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 3px solid var(--vlp-accent); outline-offset: 4px;
+}
+.vlp-field { min-height: var(--vlp-touch); max-width: 100%; border: 1px solid var(--vlp-border); border-radius: .5rem; padding: .5rem; font: inherit; background: white; color: var(--vlp-ink); }
+.vlp-card { background: var(--vlp-surface); border: 1px solid var(--vlp-border); border-radius: var(--vlp-radius-panel); padding: var(--vlp-space-6); min-width: 0; }
+.vlp-pill { display: inline-block; background: var(--vlp-accent-soft); color: var(--vlp-accent); border-radius: 2rem; padding: .35rem .75rem; font-size: .8rem; font-weight: 650; }
+.vlp-dialog { width: min(34rem, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); overflow: auto; overscroll-behavior: contain; color: var(--vlp-ink); border: 1px solid var(--vlp-border); border-radius: var(--vlp-radius-panel); padding: var(--vlp-space-6); background: var(--vlp-canvas); }
+.vlp-dialog::backdrop { background: rgb(23 45 42 / .45); }
+.vlp-dialog header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }
+.vlp-dialog h2 { margin: 0; }
+.vlp-dialog p { color: var(--vlp-muted); }
+.vlp-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@media (max-width: 600px) {
+  .vlp-dialog { margin: auto 0 0; width: 100%; max-width: 100%; max-height: 85dvh; border-radius: 1rem 1rem 0 0; padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }
+}

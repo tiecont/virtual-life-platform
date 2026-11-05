@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T15:25:11.186894+00:00; task N06-01 VERIFIED on `codex/vnext-n06-01-journeys`. Base revision `efe5889c2a1e5a28be51e71e43b9f9f19085e636`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T15:39:16.747120+00:00; task N06-02 VERIFIED on `codex/vnext-n06-02-prototype`. Base revision `a2a84e1aee8464f0fe1b20e3e5dac5400966bd13`; this task has its own reviewable commit after evidence finalization.
 
-Selected Deadline focus and Maid service as the two core loops; specified first-play/return, full/wait, lost-ACK/reconnect and independent safety/withdrawal behavior. Direction board retains original code-authored art, source-pinned historical screenshots, accessible DOM controls and conservative privacy. First action <60s remains an unmeasured draft target.
+Implemented reusable CSS tokens/primitives and an isolated scene-first Deadline/Maid state prototype, with native modal/bottom-sheet controls, independent withdrawal, reduced motion, 200% text wrapping and no live API calls. Real Chromium walkthrough passes 360px/desktop across eight state designs each; Enter/Tab/Shift+Tab/Escape focus, private focus/cancel, voluntary shift stop, safety and static-server deny guards pass. Inspected desktop/mobile and large-text captures.
 
-[Actual checks](../audit/N06-01-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 5, "TODO": 64}`.
+[Actual checks](../audit/N06-02-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 6, "TODO": 63}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N06-02; implement reusable presentation tokens and a standalone responsive interactive prototype for loading/empty/full/wait/offline/reconnect/denied, then verify keyboard/focus and 360px/desktop layouts.
+Reserve N10-01; pin a proposed Android toolchain and pre-measurement device/workload/budget matrix with Capacitor ADR, preserving UNKNOWN phone facts and separate conditional iOS gates. Then continue dependency-ready repository and boundary work.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.
