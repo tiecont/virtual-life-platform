@@ -1,5 +1,7 @@
 # Blockers and scoped gates
 
+After M24-05's local acceptance,the actual dependency summary has no ready tasks. [Current counts](evidence/m24-final-plan-counts.json):132/151includingaudit VERIFIED,13BLOCKED_EXTERNAL and6M23release tasks TODO because their module dependencies remain unverified. AllfiveM24localtasks are VERIFIED;this does not close B-001/B-002/B-003 or constitute public release. Resume M15-02/M16-02 after owner supplies the full-world revision pins and reuse scope;retain legacy worktrees/data unchanged until then.
+
 | ID | Tasks | Type | Evidence / resolution |
 |---|---|---|---|
 | B-001 | M15/M16 integration revision;M17-05actualDeadline acceptance;M22-04wholelegacyjourney | External | M22-04fresh52Deadline/25Maid hash audit still matchesprior digests,HEADf9475b4/33180a9,dirty28/46entries. ADR0001 requires clean full-world pins before02..06. LocalLibrary/Restaurant/portal/mobile8browsercases pass butactualDeadline/Maid journey remains unverified before adapters;seeJOURNEY-ACCEPTANCE.md/m22-journeys-checks.json. Exact source observations are not approval;legacy source/data/process unchanged. See DEADLINE-INTEGRATION-AUDIT.md/ADR0049 andMAID-INTEGRATION-AUDIT.md/ADR0050. |

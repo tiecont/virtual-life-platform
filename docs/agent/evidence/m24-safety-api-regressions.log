@@ -1,0 +1,49 @@
+ Network virtual-city-test-1e13ae69_default Creating 
+ Network virtual-city-test-1e13ae69_default Creating 
+ Network virtual-city-test-1e13ae69_default Created 
+ Network virtual-city-test-1e13ae69_default Created 
+ Container virtual-city-test-1e13ae69-db-1 Creating 
+ Container virtual-city-test-1e13ae69-db-1 Created 
+ Container virtual-city-test-1e13ae69-db-1 Starting 
+ Container virtual-city-test-1e13ae69-db-1 Started 
+ Container virtual-city-test-1e13ae69-db-1 Waiting 
+ Container virtual-city-test-1e13ae69-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ✓ |integration| tests/integration/reports.test.ts (11 tests) 14376ms
+   ✓ reports fail closed without a separate key; no client can provision staff or bypass auth/CSRF/strict payloads  1516ms
+   ✓ confidential receipt is reporter-only, concurrent retries persist one encrypted case and one audit event  2998ms
+   ✓ rejects room IDOR, self-report, forged membership/epoch and invisible targets without enumerating peers  882ms
+   ✓ assigned registered staff can review within world scope, while target/reporter/unassigned/expired grants cannot  1253ms
+   ✓ guest grants and conflicted staff never authorize case evidence; staff-abuse needs an independent safety admin  1316ms
+   ✓ database audit refuses UPDATE, DELETE and TRUNCATE; tampered ciphertext fails safely without leaking evidence  1043ms
+   ✓ shared durable daily report budget, bounded notes and evidence TTL prevent unbounded retained evidence  1256ms
+   ✓ own export excludes reports against target; explicit identity deletion unlinks case and erases associated evidence  956ms
+   ✓ automatic guest expiry invokes safety deletion hooks and removes ciphertext rather than leaving orphaned identity evidence  949ms
+   ✓ persisted receipt and ciphertext survive app recreation while missing or wrong keys never reveal plaintext  1118ms
+   ✓ actual moderated-message references are recipient-bound and remain reportable after block without fabricating text  1084ms
+ ✓ |integration| tests/integration/library.test.ts (18 tests) 6970ms
+   ✓ eight actual Library visitors race one desk,then only its owner starts one private canonical focus session  729ms
+   ✓ Library silent study schedules require trusted authority and atomic RSVPs cannot exceed the declared room policy  430ms
+   ✓ study counts require per-visit opt-in and expose only phases of current consenting visible participants  481ms
+   ✓ withdrawal defeats a pending enable and old retries cannot undo it or reactivate after RSVP withdrawal and rejoin  395ms
+   ✓ current block,privacy change,leave and actual restart revoke study consent with no old-key revival  592ms
+   ✓ hidden or erased peers never contribute and old simultaneous enable retries cannot restore stopped consent  567ms
+   ✓ study pending read slots stay bounded and an actual disconnection suppresses peer counts until valid same-visit reconnect  406ms
+   ✓ withdrawal during an in-flight phase read prevents both own and peer stale contribution publication  360ms
+   ✓ canonical event cancellation revokes study sharing even when the control URI uses an upper-case UUID  380ms
+ ✓ |integration| tests/integration/park-quick.test.ts (5 tests) 1729ms
+   ✓ twenty actual socket contenders beside a seed cannot exceed the twelve-place park or create extra rooms  379ms
+
+ Test Files  3 passed (3)
+      Tests  34 passed (34)
+   Start at  04:24:29
+   Duration  26.55s (transform 816ms, setup 0ms, import 2.98s, tests 23.08s, environment 0ms)
+
+ Container virtual-city-test-1e13ae69-db-1 Stopping 
+ Container virtual-city-test-1e13ae69-db-1 Stopped 
+ Container virtual-city-test-1e13ae69-db-1 Removing 
+ Container virtual-city-test-1e13ae69-db-1 Removed 
+ Network virtual-city-test-1e13ae69_default Removing 
+ Network virtual-city-test-1e13ae69_default Removed 

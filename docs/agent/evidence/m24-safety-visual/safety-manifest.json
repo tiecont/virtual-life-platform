@@ -1,0 +1,57 @@
+{
+  "freshSafetyFiles": [
+    {
+      "path": "docs/agent/evidence/m24-safety-visual/desktop-cold-start.json",
+      "sha256": "7fa08084b9199f00cf0bb86fa2ec957512b369ac0fc4029c183122b31074636e"
+    },
+    {
+      "path": "docs/agent/evidence/m24-safety-visual/desktop-cold-start.png",
+      "sha256": "cb1bccdb43988b408f66a9879064c1f079a6e53012006f8fb723f45ad47643bf"
+    },
+    {
+      "path": "docs/agent/evidence/m24-safety-visual/desktop-event.png",
+      "sha256": "2bdb3357291582bf62b1a11f6ee797268571c205ebed34fb1037ea2e4aa31c50"
+    },
+    {
+      "path": "docs/agent/evidence/m24-safety-visual/desktop-library-block.png",
+      "sha256": "7f928e45ee7ab6a709f20d159af259e32be85353d3000cb5724e975ed3b52d5f"
+    },
+    {
+      "path": "docs/agent/evidence/m24-safety-visual/desktop-receipt.png",
+      "sha256": "ac0f31bf47f7eabaf3a0f3bdc173e2ea0b5f36454fa181deb04f1858d48d85c7"
+    },
+    {
+      "path": "docs/agent/evidence/m24-safety-visual/desktop-safety.json",
+      "sha256": "c5749986fab3f2d790dc3844fe934890c5552e95e9a5680cc9b47437e01849bb"
+    },
+    {
+      "path": "docs/agent/evidence/m24-safety-visual/mobile-cold-start.json",
+      "sha256": "7fa08084b9199f00cf0bb86fa2ec957512b369ac0fc4029c183122b31074636e"
+    },
+    {
+      "path": "docs/agent/evidence/m24-safety-visual/mobile-cold-start.png",
+      "sha256": "0fc63cb30447c91d8ef7d1e4e759b3d912fe23decd30902ef81523c6cc650e19"
+    },
+    {
+      "path": "docs/agent/evidence/m24-safety-visual/mobile-event.png",
+      "sha256": "9a22a5e00ca40108e7d4b6e847fdc4bcafaebc15d59892eec438a18faf741a09"
+    },
+    {
+      "path": "docs/agent/evidence/m24-safety-visual/mobile-library-block.png",
+      "sha256": "56a36454cd11fb1afec5a85b8857cbbd97e59edb96c910f739b34b95a3ba955d"
+    },
+    {
+      "path": "docs/agent/evidence/m24-safety-visual/mobile-receipt.png",
+      "sha256": "4157519480b8200af4b87f3cf0e54b0f1b7d6106d01f7728c47efde94a8290b0"
+    },
+    {
+      "path": "docs/agent/evidence/m24-safety-visual/mobile-safety.json",
+      "sha256": "c5749986fab3f2d790dc3844fe934890c5552e95e9a5680cc9b47437e01849bb"
+    }
+  ],
+  "caseExecutions": 4,
+  "devices": [
+    "desktop",
+    "mobile"
+  ]
+}

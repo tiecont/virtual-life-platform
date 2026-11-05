@@ -1,0 +1,43 @@
+{
+  "twoRealRoomVisitors": true,
+  "approvedHelloAndWaveDelivered": true,
+  "explicitParkOnlyVisibility": true,
+  "blockPurgedAndStoppedPeerGreetings": true,
+  "noTextEntry": true,
+  "noMessageStorage": true,
+  "noOverflow": true,
+  "targets": [
+    {
+      "width": 175,
+      "height": 44
+    },
+    {
+      "width": 175,
+      "height": 44
+    },
+    {
+      "width": 175,
+      "height": 44
+    },
+    {
+      "width": 175,
+      "height": 44
+    },
+    {
+      "width": 175,
+      "height": 44
+    },
+    {
+      "width": 175,
+      "height": 44
+    },
+    {
+      "width": 175,
+      "height": 44
+    },
+    {
+      "width": 175,
+      "height": 44
+    }
+  ]
+}

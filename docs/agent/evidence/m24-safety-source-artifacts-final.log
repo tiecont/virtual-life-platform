@@ -1,0 +1,11 @@
+{
+  "finalEvidenceFilesExcludingManifests": 50,
+  "freshParkImagesFacts": 36,
+  "restoredHistorical": 16,
+  "frozenSourcePaths": 475,
+  "changedSourcePaths": 0,
+  "appPackageFilesIdenticalToD97754e": 340,
+  "newSafetyExecutions": 4,
+  "previousParkRegressions": 18,
+  "selectedFinalPngsInspected": 4
+}

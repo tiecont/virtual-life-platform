@@ -1,0 +1,10 @@
+[
+  {
+    "project": "desktop",
+    "batch": 1,
+    "filters": [
+      "tests/e2e/park.spec.ts"
+    ],
+    "exitCode": 1
+  }
+]

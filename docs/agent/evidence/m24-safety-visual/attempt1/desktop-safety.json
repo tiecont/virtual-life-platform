@@ -1,0 +1,13 @@
+{
+  "nativeReportWithOwnAllegation": true,
+  "sameKeyReceiptRetry": true,
+  "privateCaseCount": 1,
+  "auditCount": 1,
+  "reporterOnlyReceiptBeforeAndAfterTravel": true,
+  "noAutomaticSanction": true,
+  "nativeBlockPurgedGreeting": true,
+  "blockStillFiltersBothActualLibraryViews": true,
+  "blockedInvitationDenied": true,
+  "sameIdentity": true,
+  "noOverflow": true
+}

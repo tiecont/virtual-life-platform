@@ -1,0 +1,104 @@
+{
+  "tasksIncludingAudit": 151,
+  "taskCounts": {
+    "VERIFIED": 132,
+    "BLOCKED_EXTERNAL": 13,
+    "TODO": 6
+  },
+  "modulesVerified": 19,
+  "moduleCount": 25,
+  "ready": [],
+  "blocked": [
+    "M15-02",
+    "M15-03",
+    "M15-04",
+    "M15-05",
+    "M15-06",
+    "M16-02",
+    "M16-03",
+    "M16-04",
+    "M16-05",
+    "M16-06",
+    "M17-05",
+    "M20-07",
+    "M22-04"
+  ],
+  "otherUnresolvedTasks": [
+    {
+      "taskID": "M15-02",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "taskID": "M15-03",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "taskID": "M15-04",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "taskID": "M15-05",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "taskID": "M15-06",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "taskID": "M16-02",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "taskID": "M16-03",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "taskID": "M16-04",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "taskID": "M16-05",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "taskID": "M16-06",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "taskID": "M17-05",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "taskID": "M20-07",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "taskID": "M22-04",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "taskID": "M23-01",
+      "status": "TODO"
+    },
+    {
+      "taskID": "M23-02",
+      "status": "TODO"
+    },
+    {
+      "taskID": "M23-03",
+      "status": "TODO"
+    },
+    {
+      "taskID": "M23-04",
+      "status": "TODO"
+    },
+    {
+      "taskID": "M23-05",
+      "status": "TODO"
+    },
+    {
+      "taskID": "M23-06",
+      "status": "TODO"
+    }
+  ]
+}
