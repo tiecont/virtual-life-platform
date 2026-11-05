@@ -1,0 +1,22 @@
+[
+  {
+    "project": "desktop",
+    "batch": 1,
+    "filters": [
+      "tests/e2e/restaurant.spec.ts",
+      "-g",
+      "Cook and Server coordinate"
+    ],
+    "exitCode": 0
+  },
+  {
+    "project": "mobile",
+    "batch": 1,
+    "filters": [
+      "tests/e2e/restaurant.spec.ts",
+      "-g",
+      "Cook and Server coordinate"
+    ],
+    "exitCode": 0
+  }
+]

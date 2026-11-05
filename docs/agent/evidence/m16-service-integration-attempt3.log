@@ -1,0 +1,58 @@
+ Network virtual-city-test-fda97a7a_default Creating 
+ Network virtual-city-test-fda97a7a_default Creating 
+ Network virtual-city-test-fda97a7a_default Created 
+ Network virtual-city-test-fda97a7a_default Created 
+ Container virtual-city-test-fda97a7a-db-1 Creating 
+ Container virtual-city-test-fda97a7a-db-1 Created 
+ Container virtual-city-test-fda97a7a-db-1 Starting 
+ Container virtual-city-test-fda97a7a-db-1 Started 
+ Container virtual-city-test-fda97a7a-db-1 Waiting 
+ Container virtual-city-test-fda97a7a-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/maid-service.test.ts (8 tests | 1 failed) 4343ms
+   ✓ actual selected six recipes and menu IDs are trusted adapter data rather than client recipe policy 194ms
+   ✓ assigned preparation has a private server challenge;elapsed time alone,forged nonce,wrong recipe and client score cannot finish it  552ms
+   ✓ expired preparation restarts only with a fresh guarded command and old retries or nonce cannot extend or complete it  484ms
+   ✓ six current Maid workers racing over actual HTTP claim one order;service and eight completion retries commit one course,outbox and outcome  1115ms
+   ✓ independent work Stop requeues preparation and replacement invalidates the former assignee nonce without phantom completion  340ms
+   × an actual last worker socket disconnect requeues unfinished recipe work after grace and frees the shift without completion 201ms
+   ✓ actual owner restart cancels stranded customer preparation and old source or nonce cannot resurrect it 262ms
+   ✓ ready receipt failure rolls back nonce consumption and phase so the same guarded submission can retry once 222ms
+ ✓ |integration| tests/integration/maid-identity.test.ts (5 tests) 2117ms
+   ✓ seven actual volunteers cannot exceed six active Maid shifts;stopped consent defeats an old positive receipt  474ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/maid-service.test.ts > an actual last worker socket disconnect requeues unfinished recipe work after grace and frees the shift without completion
+AssertionError: expected { schemaVersion: 1, …(10) } to match object { phase: 'ended', …(1) }
+(9 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "phase": "ended",
+-   "reason": "disconnected",
++   "reason": "visit-ended",
+  }
+
+ ❯ tests/integration/maid-service.test.ts:53:747
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 12 passed (13)
+   Start at  08:38:00
+   Duration  9.39s (transform 1.13s, setup 0ms, import 2.64s, tests 6.46s, environment 0ms)
+
+Test harness failed during command;no raw URL or configuration emitted
+ Container virtual-city-test-fda97a7a-db-1 Stopping 
+ Container virtual-city-test-fda97a7a-db-1 Stopped 
+ Container virtual-city-test-fda97a7a-db-1 Removing 
+ Container virtual-city-test-fda97a7a-db-1 Removed 
+ Network virtual-city-test-fda97a7a_default Removing 
+ Network virtual-city-test-fda97a7a_default Removed 

@@ -11,11 +11,13 @@ export const maidMenu=[
  {key:'milk-tea',label:'Milk Tea'},{key:'matcha',label:'Matcha'},
  {key:'cake',label:'Cake'},{key:'omurice',label:'Omurice'},
 ] as const;
-export const maidWorldVersion='1.0.0';
+export const maidWorldVersion='1.1.0';
+export const maidRecipes={coffee:['coffee','water'],'iced-latte':['ice','coffee','milk'],'milk-tea':['tea','milk'],matcha:['matcha','water','milk'],cake:['sponge','cream','strawberry'],omurice:['rice','egg','sauce']} as const;
+const ingredientChoices=[...new Set(Object.values(maidRecipes).flat())].sort();
 export const maidSeatIds=Array.from({length:maidCatalog.maxCustomer},(_,i)=>'seat-'+String(i+1).padStart(2,'0'));
-export const maidServicePolicy=HospitalityPolicySchema.parse({version:'1.0.0',itemKeys:maidMenu.map(item=>item.key),maxActivePerStaff:1,maxQueue:24,
+export const maidServicePolicy=HospitalityPolicySchema.parse({version:'1.1.0',itemKeys:maidMenu.map(item=>item.key),maxActivePerStaff:1,maxQueue:24,
  staffing:{kind:'voluntary',maxStaff:maidCatalog.maxMaid,roles:[{key:'maid',label:'Maid',actions:['claim','prepare','ready','serve']}]},
- menu:{items:maidMenu.map(item=>({...item,workflowKey:item.key})),workflows:maidMenu.map(item=>({key:item.key,version:'1.0.0',kind:'timed-courses',courses:[{key:item.key,label:item.label,prepareSeconds:2}]}))},
+ menu:{items:maidMenu.map(item=>({...item,workflowKey:item.key})),workflows:maidMenu.map(item=>({key:item.key,version:'1.1.0',kind:'timed-courses',courses:[{key:item.key,label:item.label,prepareSeconds:2,recipe:{steps:maidRecipes[item.key],choices:ingredientChoices}}]}))},
 });
 export function createMaidWorld(){
  let started=false;const current=()=>{if(!started)throw new WorldError('WORLD_UNAVAILABLE','Maid Cafe unavailable');};

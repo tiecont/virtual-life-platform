@@ -1,0 +1,39 @@
+ Network virtual-city-test-0fefda95_default Creating 
+ Network virtual-city-test-0fefda95_default Creating 
+ Network virtual-city-test-0fefda95_default Created 
+ Network virtual-city-test-0fefda95_default Created 
+ Container virtual-city-test-0fefda95-db-1 Creating 
+ Container virtual-city-test-0fefda95-db-1 Created 
+ Container virtual-city-test-0fefda95-db-1 Starting 
+ Container virtual-city-test-0fefda95-db-1 Started 
+ Container virtual-city-test-0fefda95-db-1 Waiting 
+ Container virtual-city-test-0fefda95-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ✓ |integration| tests/integration/readiness.test.ts (5 tests) 5507ms
+   ✓ readiness rejects journal checksum drift and unknown later migrations without disabling independent liveness  1040ms
+   ✓ a blocked metadata read is coalesced and bounded while liveness stays responsive,then recovers after release  1019ms
+   ✓ exhausted pool probes time out without accumulating checkout requests,and late checkout is discarded before recovery  1722ms
+   ✓ a second idle replica cannot become ready while another ready process owns the same schema  796ms
+   ✓ irreversible trusted drain closes new HTTP/socket work and existing room commands before graceful interruption  925ms
+ ✓ |integration| tests/integration/maid-service.test.ts (10 tests) 4142ms
+   ✓ assigned preparation has a private server challenge;elapsed time alone,forged nonce,wrong recipe and client score cannot finish it  452ms
+   ✓ expired preparation restarts only with a fresh guarded command and old retries or nonce cannot extend or complete it  349ms
+   ✓ six current Maid workers racing over actual HTTP claim one order;service and eight completion retries commit one course,outbox and outcome  804ms
+   ✓ independent work Stop requeues preparation and replacement invalidates the former assignee nonce without phantom completion  372ms
+ ✓ |integration| tests/integration/maid-identity.test.ts (5 tests) 2434ms
+   ✓ seven actual volunteers cannot exceed six active Maid shifts;stopped consent defeats an old positive receipt  519ms
+   ✓ entitled on-shift apron projects only in Maid while the same City identity/palette and selected outfit survive actual socket world changes  357ms
+
+ Test Files  3 passed (3)
+      Tests  20 passed (20)
+   Start at  08:53:29
+   Duration  15.12s (transform 680ms, setup 0ms, import 2.61s, tests 12.08s, environment 0ms)
+
+ Container virtual-city-test-0fefda95-db-1 Stopping 
+ Container virtual-city-test-0fefda95-db-1 Stopped 
+ Container virtual-city-test-0fefda95-db-1 Removing 
+ Container virtual-city-test-0fefda95-db-1 Removed 
+ Network virtual-city-test-0fefda95_default Removing 
+ Network virtual-city-test-0fefda95_default Removed 

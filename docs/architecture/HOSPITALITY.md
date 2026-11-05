@@ -1,5 +1,9 @@
 # Shared hospitality engine
 
+M16-03 adds an optional trusted ingredient recipe to the immutable course snapshot. Only the assigned PREPARING worker receives a private HMAC challenge bound to order,worker,course,version and readyAt. Ready accepts strict `preparation:{nonce,ingredients}` for recipe courses,checks exact sequence,minimum server time and a60second window after readyAt,and rechecks expiry after receipt SQL work before commit. Ordinary timed courses accept no ingredient fields and retain their existing behavior. An expired recipe preparation can restart with a fresh guarded command/version;old retries cannot renew its deadline. Customer views,public presence and exports omit the challenge. Stop/requeue/reassignment and owner restart invalidate previous authority.
+
+Actual Maid supplies six selected source recipes under world/policy/workflow1.1.0. Metadata-only migration0038 records the serialization compatibility boundary:older strict workflow readers fail exact-manifest readiness. Keep compatible code for flag closure/history/withdrawal;see [Maid local recovery](../operations/MAID-LOCAL-RECOVERY.md),ADR0092 and `m16-service-checks.json`. Actual backend claim/service/customerack/outbox/XP cases and ordinary Restaurant/Lounge browser regressions pass;native Maid activity/service UI remains later module work.
+
 M11-02 provides new city APIs; it does not replace or call legacy Maid routes. All real world flags remain OFF. Only an explicit trusted world definition with hospitality capability and matching policy can admit orders.
 
 ## Implemented Core

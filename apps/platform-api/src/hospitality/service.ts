@@ -9,6 +9,8 @@ import { DomainError } from '../common/errors';
 import { nextOrderPhase } from './lifecycle';
 import { advanceService, type ServiceAction } from './workflow';
 import { OrderPhaseSchema } from '@virtual-city/contracts';
+import { OrderReadySchema } from '@virtual-city/contracts';
+import { preparationFor,verifyPreparation,canRestartPreparation } from './preparation';
 type Row = { id: string; customer_id: string; assignee_id: string | null; customer_epoch: string; customer_membership_id: string; world_slug: string; room_id: string; item_key: string; policy_version: string; phase: OrderPhase; version: number; created_at: Date; updated_at: Date; workflow: OrderWorkflowStrategy | null; course_index: number; ready_at: Date | null };
 type Shift = { id: string;role_key:string; account_id: string; world_slug: string; room_id: string; owner_epoch: string; membership_id: string; policy_version: string; started_at: Date; expires_at: Date; interrupted_at: Date | null; ended_at: Date | null; reason: 'voluntary' | 'disconnected' | 'visit-ended' | 'restart' | 'expired' | 'restricted' | null };
 type Context = { worldSlug: string; roomId: string; seatId: string | null; epoch: string; membershipId: string; policy: HospitalityPolicy };
@@ -37,9 +39,9 @@ export class HospitalityService {
     const row=(await db.query<Shift>('SELECT * FROM engine_hospitality_shifts WHERE account_id=$1 AND world_slug=$2 AND room_id=$3 AND owner_epoch=$4 AND membership_id=$5 AND policy_version=$6 AND ended_at IS NULL AND expires_at>$7 AND interrupted_at IS NULL', [actor.accountId, context.worldSlug, context.roomId, context.epoch, context.membershipId, context.policy.version, new Date(this.now())])).rows[0];if(!row)return false;
     const roles=context.policy.staffing.roles;return !roles||roles.some(role=>role.key===row.role_key&&(!action||role.actions.includes(action)));
   }
-  private view(row: Row, actor: string) {
-    const workflow = row.workflow ? OrderWorkflowStrategySchema.parse(row.workflow) : null;
-    return OrderViewSchema.parse({ schemaVersion: 1, id: row.id, phase: row.phase, version: row.version, worldSlug: row.world_slug, roomId: row.room_id, itemKey: row.item_key, policyVersion: row.policy_version, mine: row.customer_id === actor, assignedToMe: row.assignee_id === actor, createdAt: row.created_at.toISOString(), updatedAt: row.updated_at.toISOString(), ...(workflow ? { service: { workflowKey: workflow.key, workflowVersion: workflow.version, courseNumber: row.course_index + 1, courseCount: workflow.courses.length, coursesServed: row.course_index + (['SERVED', 'COMPLETED'].includes(row.phase) ? 1 : 0), courseLabel: workflow.courses[row.course_index].label, readyAt: row.ready_at?.toISOString() ?? null,...workflow.handoff?{passChoices:workflow.courses.map(course=>({key:course.key,label:course.label}))}:{} } } : {}) });
+  private view(row: Row, actor: string,includePreparation=true) {
+    const workflow = row.workflow ? OrderWorkflowStrategySchema.parse(row.workflow) : null,preparation=includePreparation?preparationFor({...row,workflow},actor,value=>this.identity.fingerprint(value)):undefined;
+    return OrderViewSchema.parse({ schemaVersion: 1, id: row.id, phase: row.phase, version: row.version, worldSlug: row.world_slug, roomId: row.room_id, itemKey: row.item_key, policyVersion: row.policy_version, mine: row.customer_id === actor, assignedToMe: row.assignee_id === actor, createdAt: row.created_at.toISOString(), updatedAt: row.updated_at.toISOString(), ...(workflow ? { service: { workflowKey: workflow.key, workflowVersion: workflow.version, courseNumber: row.course_index + 1, courseCount: workflow.courses.length, coursesServed: row.course_index + (['SERVED', 'COMPLETED'].includes(row.phase) ? 1 : 0), courseLabel: workflow.courses[row.course_index].label, readyAt: row.ready_at?.toISOString() ?? null,...preparation?{preparation}:{},...workflow.handoff?{passChoices:workflow.courses.map(course=>({key:course.key,label:course.label}))}:{} } } : {}) });
   }
   private result(row: Row, actor: string) { return OrderResultSchema.parse({ schemaVersion: 1, order: this.view(row, actor) }); }
   private async tx<T>(token: string, targets: string[], work: (db: PoolClient, actor: IdentityContext) => Promise<T>) {
@@ -73,7 +75,7 @@ export class HospitalityService {
     }));
   }
   async mutate(token: string, id: string, requestKey: string, action: 'claim' | 'cancel' | ServiceAction, raw: unknown) {
-    id = uuid.parse(id); const key = uuid.parse(requestKey), input = OrderMutationSchema.parse(raw), fingerprint = this.identity.fingerprint({ operation: 'order.' + action, id, input });
+    id = uuid.parse(id); const key = uuid.parse(requestKey), ready=action==='ready'?OrderReadySchema.parse(raw):undefined,input=ready??OrderMutationSchema.parse(raw), fingerprint = this.identity.fingerprint({ operation: 'order.' + action, id, input });
     await this.maintain();
     const known = (await this.pool.query<{ customer_id: string }>('SELECT customer_id FROM engine_hospitality_orders WHERE id=$1', [id])).rows[0]; if (!known) { await this.identity.authenticate(token); throw absent(); }
     return this.rooms.hospitalityContext(token, input.source, false, (_actor, context, valid) => this.tx(token, [known.customer_id], async (db, actor) => {
@@ -88,13 +90,14 @@ export class HospitalityService {
       const at = this.now(); if (at < row.updated_at.getTime()) throw new DomainError('WORLD_UNAVAILABLE', 503, 'Service clock unavailable');
       const workflow = row.workflow ? OrderWorkflowStrategySchema.parse(row.workflow) : null;
       if (action !== 'claim' && action !== 'cancel' && !workflow) throw absent();
-      const step = action === 'claim' || action === 'cancel' ? { phase: nextOrderPhase(row.phase, action), course: row.course_index, readyAt: null } : advanceService(workflow!, row.phase, row.course_index, row.ready_at?.getTime() ?? null, action, at);
+      if(action==='ready')verifyPreparation({...row,workflow},actor.accountId,ready?.preparation,at,value=>this.identity.fingerprint(value));
+      const step = action === 'claim' || action === 'cancel' ? { phase: nextOrderPhase(row.phase, action), course: row.course_index, readyAt: null } : advanceService(workflow!, action==='prepare'&&canRestartPreparation({...row,workflow},at)?'ASSIGNED':row.phase, row.course_index, row.ready_at?.getTime() ?? null, action, at);
       await this.quota(db, actor.accountId, false);
       if (action === 'claim' && (await db.query("SELECT count(*)::int AS n FROM engine_hospitality_orders WHERE assignee_id=$1 AND phase IN ('ASSIGNED','PREPARING','READY')", [actor.accountId])).rows[0].n >= context.policy.maxActivePerStaff) throw new DomainError('NOT_AVAILABLE', 409, 'Your service queue is full');
       if (action === 'serve') await db.query('INSERT INTO engine_hospitality_courses VALUES($1,$2,$3,$4,$5)', [id, row.course_index, workflow!.courses[row.course_index].key, new Date(at), row.version + 1]);
       const nextKitchen=action==='serve'&&!!workflow?.handoff&&step.phase==='ASSIGNED';
       const updated = (await db.query<Row>('UPDATE engine_hospitality_orders SET phase=$2,assignee_id=$3,version=version+1,updated_at=$4,course_index=$5,ready_at=$6 WHERE id=$1 RETURNING *', [id, nextKitchen?'PENDING':step.phase, action === 'claim' ? actor.accountId : action === 'cancel'||nextKitchen ? null : row.assignee_id, new Date(at), step.course, step.readyAt === null ? null : new Date(step.readyAt)])).rows[0];
-      await this.remember(db, actor.accountId, key, updated, fingerprint, action); if (!valid() || this.now() >= actor.expiresAt) throw new DomainError('NOT_IN_ROOM', 409, 'Your visit changed'); return this.result(updated, actor.accountId);
+      await this.remember(db, actor.accountId, key, updated, fingerprint, action); if(action==='ready')verifyPreparation({...row,workflow},actor.accountId,ready?.preparation,this.now(),value=>this.identity.fingerprint(value)); if (!valid() || this.now() >= actor.expiresAt) throw new DomainError('NOT_IN_ROOM', 409, 'Your visit changed'); return this.result(updated, actor.accountId);
     }));
   }
   menu(token: string, raw: unknown) {
@@ -172,7 +175,7 @@ export class HospitalityService {
       if (!valid()) throw absent(); return OrderPageSchema.parse({ schemaVersion: 1, items, truncated: rows.length > 50 });
     }));
   }
-  async exportAccount(id: string, db: PoolClient) { const rows = (await db.query<Row>('SELECT * FROM engine_hospitality_orders WHERE customer_id=$1 OR assignee_id=$1 ORDER BY creation_order DESC LIMIT 101', [id])).rows, shifts = (await db.query<Shift>('SELECT * FROM engine_hospitality_shifts WHERE account_id=$1 ORDER BY creation_order DESC LIMIT 101', [id])).rows, refusals = (await db.query<{ order_id: string; created_at: Date }>('SELECT order_id,created_at FROM engine_hospitality_refusals WHERE staff_id=$1 ORDER BY created_at DESC,order_id LIMIT 101', [id])).rows; return { schemaVersion: 1, items: rows.slice(0, 100).map(row => this.view(row, id)), truncated: rows.length > 100, shifts: shifts.slice(0, 100).map(row => this.shiftView(row)), shiftsTruncated: shifts.length > 100, refusals: refusals.slice(0, 100).map(row => ({ orderId: row.order_id, createdAt: row.created_at.toISOString() })), refusalsTruncated: refusals.length > 100 }; }
+  async exportAccount(id: string, db: PoolClient) { const rows = (await db.query<Row>('SELECT * FROM engine_hospitality_orders WHERE customer_id=$1 OR assignee_id=$1 ORDER BY creation_order DESC LIMIT 101', [id])).rows, shifts = (await db.query<Shift>('SELECT * FROM engine_hospitality_shifts WHERE account_id=$1 ORDER BY creation_order DESC LIMIT 101', [id])).rows, refusals = (await db.query<{ order_id: string; created_at: Date }>('SELECT order_id,created_at FROM engine_hospitality_refusals WHERE staff_id=$1 ORDER BY created_at DESC,order_id LIMIT 101', [id])).rows; return { schemaVersion: 1, items: rows.slice(0, 100).map(row => this.view(row, id,false)), truncated: rows.length > 100, shifts: shifts.slice(0, 100).map(row => this.shiftView(row)), shiftsTruncated: shifts.length > 100, refusals: refusals.slice(0, 100).map(row => ({ orderId: row.order_id, createdAt: row.created_at.toISOString() })), refusalsTruncated: refusals.length > 100 }; }
   async redactAccount(id: string, db: PoolClient) {
     // Retain the customer's service request without retaining a deleted staff identity.
     await db.query("DELETE FROM engine_hospitality_orders WHERE assignee_id=$1 AND phase IN ('SERVED','COMPLETED')", [id]);

@@ -1,0 +1,43 @@
+ Network virtual-city-test-a23f820a_default Creating 
+ Network virtual-city-test-a23f820a_default Creating 
+ Network virtual-city-test-a23f820a_default Created 
+ Network virtual-city-test-a23f820a_default Created 
+ Container virtual-city-test-a23f820a-db-1 Creating 
+ Container virtual-city-test-a23f820a-db-1 Created 
+ Container virtual-city-test-a23f820a-db-1 Starting 
+ Container virtual-city-test-a23f820a-db-1 Started 
+ Container virtual-city-test-a23f820a-db-1 Waiting 
+ Container virtual-city-test-a23f820a-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ❯ |integration| tests/integration/maid-service.test.ts (5 tests | 1 failed) 3813ms
+   ✓ actual selected six recipes and menu IDs are trusted adapter data rather than client recipe policy 197ms
+   ✓ assigned preparation has a private server challenge;elapsed time alone,forged nonce,wrong recipe and client score cannot finish it  584ms
+   ✓ expired preparation restarts only with a fresh guarded command and old retries or nonce cannot extend or complete it  387ms
+   × six current Maid workers racing over actual HTTP claim one order;service and eight completion retries commit one course,outbox and outcome 1188ms
+   ✓ independent work Stop requeues preparation and replacement invalidates the former assignee nonce without phantom completion  472ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/maid-service.test.ts > six current Maid workers racing over actual HTTP claim one order;service and eight completion retries commit one course,outbox and outcome
+error: column "order_id" does not exist
+ ❯ node_modules/.pnpm/pg-pool@3.14.0_pg@8.23.1/node_modules/pg-pool/index.js:45:11
+ ❯ tests/integration/maid-service.test.ts:44:121
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  08:34:16
+   Duration  5.64s (transform 798ms, setup 0ms, import 1.66s, tests 3.81s, environment 0ms)
+
+Test harness failed during command;no raw URL or configuration emitted
+ Container virtual-city-test-a23f820a-db-1 Stopping 
+ Container virtual-city-test-a23f820a-db-1 Stopped 
+ Container virtual-city-test-a23f820a-db-1 Removing 
+ Container virtual-city-test-a23f820a-db-1 Removed 
+ Network virtual-city-test-a23f820a_default Removing 
+ Network virtual-city-test-a23f820a_default Removed 
