@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-05",
+  "decision": "NO_GO_PUBLIC",
+  "publicRelease": false,
+  "localScope": "OFFLINE_ONLY",
+  "authorization": { "offlineImplementation": true, "selectedSourceSnapshots": true, "publicDeployment": false, "realStaffProvisioning": false, "purchases": false },
+  "approvals": { "publicOwner": null, "productionDomainCredentials": null, "safetyCoverage": null, "privacyRetention": null, "contentRightsPublic": null, "backupCustody": null, "monitoringRouting": null, "datingProviderLegalPilot": null, "loungeLiveOperatorMedia": null },
+  "instructionLog": [
+    { "kind": "owner-instruction", "scope": "offline-implementation", "statement": "bạn chỉ cần code offline ở đây nhé" },
+    { "kind": "owner-instruction", "scope": "selected-independent-source-copy", "statement": "Tôi có quyền; dùng snapshot hiện tại trong bản sao riêng để tích hợp offline" },
+    { "kind": "agent-decision-record", "scope": "no-public-action", "statement": "No public activation or real staffing requested under this offline scope;missing public signoffs remain external,not inferred from implementation rights." }
+  ],
+  "evidence": [
+    "docs/agent/evidence/m23-rehearsal-checks.json",
+    "docs/agent/evidence/m23-recovery-checks.json",
+    "docs/agent/evidence/m23-incidents-checks.json",
+    "docs/agent/evidence/m23-recovery-current-image.json",
+    "docs/agent/evidence/m23-recovery-previous-image.json",
+    "integrations/legacy-snapshots/approval.json"
+  ],
+  "blockedTasks": ["M20-07", "M23-03", "M23-05"],
+  "nextPublicAction": "None authorized. Reopen only the requested wave after explicit reviewed public scope,production installation,credentials and independent human coverage/privacy/content/backup/monitoring approvals. Dating and Lounge retain separate decisions."
+}

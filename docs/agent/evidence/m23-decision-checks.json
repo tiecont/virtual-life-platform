@@ -1,0 +1,13 @@
+{
+ "task":"M23-05","status":"BLOCKED_EXTERNAL","baseCommit":"d1aacca","recordedAt":"2026-11-05",
+ "implemented":"config/release-decision.json/docs/operations/RELEASE-DECISION.md/read-onlydecisionvalidation",
+ "commands":[
+  {"command":"node --test tests/governance/release.test.mjs","exitCode":0,"log":"m23-decision-tests.log","result":"4pass;offline source rights cannot authorize publicdeployment/staff/purchases,synthetic signature or eraseblockedtasks"},
+  {"command":"pnpm lint","exitCode":0,"log":"m23-decision-lint.log","result":"283boundaries"}
+ ],
+ "actualDecision":"NO_GO_PUBLIC/OFFLINE_ONLY/publicReleasefalse/ninepublicsignoffslotsnull/sixpublicrolesunassigned",
+ "authority":"User explicitlyrequestedofflinecoding+selectedindependentsourcecopies. No publicactionrequested;no repeatedpublicpermissionquestionoutsideauthorizedscope. RecordmissingapprovalsasexternalperM23-05acceptance,notfakehumanapproval.",
+ "missing":"Publicowner/domainTLScredentials/reviewedproductioninstallation/staffcoverage-contact/privacy-retention/publiccontentrights/backupcustody-monitoringrouting/adultprovider-legalpilot/Loungeoperator-media",
+ "unchanged":"No runtime/DDL/worldflags/originalsource-data-process/publicaction. M20-07/M23-03/M23-05remainexternal;independentM23-06localmonitoring/handoffcontinues.",
+ "next":"M23-06read-onlymonitoringstatus/currentproofsummary/truthfulworld-taskhandoff/freshwholepnpmcheck;thenreportremainingexternalgatesandnoactivebackgroundwork."
+}

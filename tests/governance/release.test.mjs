@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readFile } from 'node:fs/promises';
-import { checkRelease, validateRelease } from '../../scripts/verify-release.mjs';
+import { checkRelease, validateRelease, validateDecision } from '../../scripts/verify-release.mjs';
 
 const inputs = await Promise.all(['config/release-trains.json', 'config/rollout.json', 'config/safety-policy.json', 'config/dating-policy.json', 'PLAN-MANIFEST.json', 'docs/agent/task-state.json'].map(async path => JSON.parse(await readFile(path, 'utf8'))));
 test('offline inventory covers seven worlds with public gates and honest operator vacancies', async () => {
@@ -35,4 +35,16 @@ test('public flags,fabricated operator assignment and inherited dating approval 
   ]) {
     const next = globalThis.structuredClone(inputs); mutate(next); assert.throws(() => validateRelease(...next));
   }
+});
+
+test('offline source rights cannot become a public decision,staffing or purchased resource approval', async () => {
+  const decision = JSON.parse(await readFile('config/release-decision.json', 'utf8'));
+  assert.equal(validateDecision(decision).localScope, 'OFFLINE_ONLY');
+  for (const mutate of [
+    value => { value.decision = 'RELEASED'; },
+    value => { value.authorization.publicDeployment = true; },
+    value => { value.authorization.realStaffProvisioning = true; },
+    value => { value.approvals.publicOwner = 'inferred-from-source-rights'; },
+    value => { value.blockedTasks = []; },
+  ]) { const next = globalThis.structuredClone(decision); mutate(next); assert.throws(() => validateDecision(next)); }
 });

@@ -1,5 +1,9 @@
 # Agent progress
 
+## M23-05 — explicit offline NoGo recorded;BLOCKED_EXTERNAL public signoff
+
+Fromd1aacca;[release decision](../operations/RELEASE-DECISION.md),[machine record](../../config/release-decision.json),[evidence](evidence/m23-decision-checks.json). NO_GO_PUBLIC/OFFLINE_ONLY/publicfalse/nineapprovalslotsnull/sixrolesunassigned. Preserveuserofflinecoding/source-snapshot authorization withoutpublicstaff/purchase/release inference. Newdecisionguardnegativecases4tests0/lint2830. WholeM23-05BLOCKED_EXTERNAL perexplicitmissingpubliccredentials/legal-media/operatorapprovalacceptance;no redundantpublicrequestoutsideoffline scope. No runtime-DDL-realflags-original-publicchange. Continue06monitoring/truthfulhandoff/finalwholecheck;do notclaimfullplanreleasedwithM20-07/M23-03/M23-05external.
+
 ## M23-04 — VERIFIED two-lane offline release rehearsal
 
 From77620f6;[runbook](../operations/RELEASE-REHEARSAL.md),[evidence](evidence/m23-rehearsal-checks.json). Freshcurrent38productionclosedTLS/rotation/Origin-IPbudget/failedcanary-compatibleAPIrollback-rollforward/privateoperator404/actual10requests1expected401error0online/guestlogout-cookie401removed-reloadnoautocreate/proxyredaction/cleanup0. InitialguestlogoutNodeAPIRequestContextselfsignedtrustfailure retained;switchtobrowsersameoriginfetchwithSPKIpin,neverdisableTLSvalidation. FinalrunsequentialtootherDockerharnesses;02renewfetchfailure remainsunexplained.

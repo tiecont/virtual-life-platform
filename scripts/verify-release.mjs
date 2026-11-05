@@ -64,7 +64,25 @@ export async function checkRelease() {
     assert(!control.source.startsWith('/') && !control.source.split('/').includes('..'));
     await access(control.source);
   }
-  return result;
+  const decision = JSON.parse(await readFile('config/release-decision.json', 'utf8'));
+  validateDecision(decision);
+  for (const path of decision.evidence) {
+    assert(/^(docs\/agent\/evidence\/|integrations\/legacy-snapshots\/)[a-z0-9/-]+\.json$/.test(path));
+    await access(path);
+  }
+  return { ...result, decision: decision.decision };
+}
+export function validateDecision(decision) {
+  assert.equal(decision.schemaVersion, 1);
+  assert.equal(decision.decision, 'NO_GO_PUBLIC');
+  assert.equal(decision.publicRelease, false);
+  assert.equal(decision.localScope, 'OFFLINE_ONLY');
+  assert.deepEqual(decision.authorization, { offlineImplementation: true, selectedSourceSnapshots: true, publicDeployment: false, realStaffProvisioning: false, purchases: false });
+  assert.deepEqual(Object.keys(decision.approvals).sort(), ['publicOwner', 'productionDomainCredentials', 'safetyCoverage', 'privacyRetention', 'contentRightsPublic', 'backupCustody', 'monitoringRouting', 'datingProviderLegalPilot', 'loungeLiveOperatorMedia'].sort());
+  assert(Object.values(decision.approvals).every(value => value === null), 'No human public signoffs supplied');
+  assert.deepEqual(decision.blockedTasks, ['M20-07', 'M23-03', 'M23-05']);
+  assert(decision.evidence.length >= 6);
+  return { publicRelease: false, localScope: decision.localScope };
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   console.log(JSON.stringify(await checkRelease(), null, 2));
