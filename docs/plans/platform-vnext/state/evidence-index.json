@@ -797,6 +797,86 @@
         "Actual production/store/operator custody remains external",
         "No runtime behavior or schema change"
       ]
+    },
+    {
+      "id": "n06-01-2026-11-05",
+      "taskId": "N06-01",
+      "sourceRevision": "efe5889c2a1e5a28be51e71e43b9f9f19085e636+workspace-sha256:23160a411ae1d5ac75095af23ea709c0a910c9f416698158247110cb6bd1a444",
+      "environment": "Local Linux x64; Node 26.9.0; pnpm 11.28.5; scope-specific commands below",
+      "executedAt": "2026-11-05T15:25:11.186894+00:00",
+      "commands": [
+        {
+          "command": "pnpm assets:check",
+          "argv": [
+            "pnpm",
+            "assets:check"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T15:24:30.009Z",
+          "endedAt": "2026-11-05T15:24:32.029Z",
+          "log": "artifacts/vnext/n06-01/assets.log",
+          "sha256": "5f43fcefff14e2feb507d4a21bfe892d15611220cdbf407b79ffc7707aab13c1"
+        },
+        {
+          "command": "node docs/plans/platform-vnext/tools/validate-plan.mjs",
+          "argv": [
+            "node",
+            "docs/plans/platform-vnext/tools/validate-plan.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T15:24:30.972Z",
+          "endedAt": "2026-11-05T15:24:31.090Z",
+          "log": "artifacts/vnext/n06-01/plan.log",
+          "sha256": "16b15b04ceee8f3cdeb651acd0edb91cb6639fd84707d475af2d3f55fb2a50d8"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "Source and historical screenshot walkthrough",
+          "outcome": "PASS",
+          "notes": "Inspected portal desktop, Deadline mobile page and Maid scene; documented technical-status prominence and long mobile controls without claiming new screenshots or usability findings"
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "docs/design/vnext/JOURNEYS-AND-DIRECTION.md",
+          "sha256": "176ad739b027bfea3bd8eb0af88b987197ce059f30937f63b0194eaa58e6f0c4",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/design/vnext/SOURCE-REFERENCES.json",
+          "sha256": "02bf51f6f50137ebcffeff7d06d0eff3db1cf5b980a36c2a4e845bd3e7ddf885",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "artifacts/vnext/n06-01/assets.log",
+          "sha256": "5f43fcefff14e2feb507d4a21bfe892d15611220cdbf407b79ffc7707aab13c1",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n06-01/plan.log",
+          "sha256": "16b15b04ceee8f3cdeb651acd0edb91cb6639fd84707d475af2d3f55fb2a50d8",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N06-01-CHECKS.json",
+          "sha256": "495ba362067cfb82ae93b5ee7502664c0c5f05a2736304d05a1cd668f9cf3cb9",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": true,
+      "limitations": [
+        "Design only; existing player routes unchanged",
+        "Queue/native/optimized shell states are proposals until owner tasks implement them",
+        "No human usability, retention or physical-device result"
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

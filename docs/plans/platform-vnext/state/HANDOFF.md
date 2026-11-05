@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T15:21:22.995126+00:00; task N00-04 VERIFIED on `codex/vnext-n00-04-decisions`. Base revision `b707e85bf53c196f346d492b2d51099f8eaf9604`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T15:25:11.186894+00:00; task N06-01 VERIFIED on `codex/vnext-n06-01-journeys`. Base revision `efe5889c2a1e5a28be51e71e43b9f9f19085e636`; this task has its own reviewable commit after evidence finalization.
 
-ADR0101 records the audited stack, modular monolith/images/GitOps/authority/mobile/admin/admission/evidence baseline, reasons/tradeoffs/reconsideration triggers, migration/rollback and lane ownership. One human operator is distinct from service identities; no staffing or release approval inferred.
+Selected Deadline focus and Maid service as the two core loops; specified first-play/return, full/wait, lost-ACK/reconnect and independent safety/withdrawal behavior. Direction board retains original code-authored art, source-pinned historical screenshots, accessible DOM controls and conservative privacy. First action <60s remains an unmeasured draft target.
 
-[Actual checks](../audit/N00-04-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 4, "TODO": 65}`.
+[Actual checks](../audit/N06-01-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 5, "TODO": 64}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N06-01 (priority 10); read UX plan, inspect current first-play/return flows and source-owned assets, then deliver player flows and a provenance-backed visual direction board without claiming usability results.
+Reserve N06-02; implement reusable presentation tokens and a standalone responsive interactive prototype for loading/empty/full/wait/offline/reconnect/denied, then verify keyboard/focus and 360px/desktop layouts.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.

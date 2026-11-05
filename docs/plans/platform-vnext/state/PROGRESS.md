@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N06-01 VERIFIED
+
+Selected Deadline focus and Maid service as the two core loops; specified first-play/return, full/wait, lost-ACK/reconnect and independent safety/withdrawal behavior. Direction board retains original code-authored art, source-pinned historical screenshots, accessible DOM controls and conservative privacy. First action <60s remains an unmeasured draft target.
+
+Actual commands: 2, all exit 0. Evidence: `n06-01-2026-11-05`; [checks](../audit/N06-01-CHECKS.json). Current counts: `{"VERIFIED": 5, "TODO": 64}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N06-02; implement reusable presentation tokens and a standalone responsive interactive prototype for loading/empty/full/wait/offline/reconnect/denied, then verify keyboard/focus and 360px/desktop layouts.
+
 ## 2026-11-05 — N00-04 VERIFIED
 
 ADR0101 records the audited stack, modular monolith/images/GitOps/authority/mobile/admin/admission/evidence baseline, reasons/tradeoffs/reconsideration triggers, migration/rollback and lane ownership. One human operator is distinct from service identities; no staffing or release approval inferred.

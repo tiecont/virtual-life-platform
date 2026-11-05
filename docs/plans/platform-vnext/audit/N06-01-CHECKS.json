@@ -1,0 +1,71 @@
+{
+  "taskId": "N06-01",
+  "sourceRevision": "efe5889c2a1e5a28be51e71e43b9f9f19085e636+workspace-sha256:23160a411ae1d5ac75095af23ea709c0a910c9f416698158247110cb6bd1a444",
+  "executedAt": "2026-11-05T15:25:11.186894+00:00",
+  "commands": [
+    {
+      "command": "pnpm assets:check",
+      "argv": [
+        "pnpm",
+        "assets:check"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T15:24:30.009Z",
+      "endedAt": "2026-11-05T15:24:32.029Z",
+      "log": "artifacts/vnext/n06-01/assets.log",
+      "sha256": "5f43fcefff14e2feb507d4a21bfe892d15611220cdbf407b79ffc7707aab13c1"
+    },
+    {
+      "command": "node docs/plans/platform-vnext/tools/validate-plan.mjs",
+      "argv": [
+        "node",
+        "docs/plans/platform-vnext/tools/validate-plan.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-05T15:24:30.972Z",
+      "endedAt": "2026-11-05T15:24:31.090Z",
+      "log": "artifacts/vnext/n06-01/plan.log",
+      "sha256": "16b15b04ceee8f3cdeb651acd0edb91cb6639fd84707d475af2d3f55fb2a50d8"
+    }
+  ],
+  "acceptance": [
+    "Meaningful activities lead home; infrastructure details belong to admin/development",
+    "Exactly two core loops prioritized with server-confirmed success",
+    "First-play/return/room/queue/reconnect flows and negative actions specified",
+    "Original asset and historical screenshot provenance hashed; no release rights inferred"
+  ],
+  "limitations": [
+    "Design only; existing player routes unchanged",
+    "Queue/native/optimized shell states are proposals until owner tasks implement them",
+    "No human usability, retention or physical-device result"
+  ],
+  "artifacts": [
+    {
+      "ref": "docs/design/vnext/JOURNEYS-AND-DIRECTION.md",
+      "sha256": "176ad739b027bfea3bd8eb0af88b987197ce059f30937f63b0194eaa58e6f0c4",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/design/vnext/SOURCE-REFERENCES.json",
+      "sha256": "02bf51f6f50137ebcffeff7d06d0eff3db1cf5b980a36c2a4e845bd3e7ddf885",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "artifacts/vnext/n06-01/assets.log",
+      "sha256": "5f43fcefff14e2feb507d4a21bfe892d15611220cdbf407b79ffc7707aab13c1",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n06-01/plan.log",
+      "sha256": "16b15b04ceee8f3cdeb651acd0edb91cb6639fd84707d475af2d3f55fb2a50d8",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    }
+  ],
+  "nextExactAction": "Reserve N06-02; implement reusable presentation tokens and a standalone responsive interactive prototype for loading/empty/full/wait/offline/reconnect/denied, then verify keyboard/focus and 360px/desktop layouts."
+}

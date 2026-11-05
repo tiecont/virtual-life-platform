@@ -1,0 +1,54 @@
+{
+  "taskId": "N06-01",
+  "sourceRevision": "efe5889",
+  "screenshots": "Historical controlled M15/M16 fixtures inspected in this session, not fresh app captures",
+  "externalAssetsAdded": false,
+  "releaseApprovalGranted": false,
+  "sources": [
+    {
+      "path": "docs/agent/evidence/m16-portal-journey/desktop-city.png",
+      "sha256": "9c9d741a63e7fc621a9bb453081eea34f581b99d35b5b01507496e9cb6b10761",
+      "classification": "historical screenshot"
+    },
+    {
+      "path": "docs/agent/evidence/m15-deadline-scene-page-mobile.png",
+      "sha256": "a883a63c8af36e5da92e27b97e072b8ce1a3f0f4faab2c1eea993afaea316632",
+      "classification": "historical screenshot"
+    },
+    {
+      "path": "docs/agent/evidence/m16-native-visual/mobile-scene.png",
+      "sha256": "985d39a92c43a01659d4a3656ed3f3ccae6e0459ea5174dc93fffec93d03d053",
+      "classification": "historical screenshot"
+    },
+    {
+      "path": "apps/portal-web/app/components/PixelCityArt.tsx",
+      "sha256": "d3e0d339f8417988bcda85088efd6445ffe8ad2d11a5d61a1081473e775d07d4",
+      "classification": "existing original source/provenance"
+    },
+    {
+      "path": "packages/pixi-scene/src/deadline-art.ts",
+      "sha256": "c1a2dc45e5f96f1806e450a3c0d5a0c55ca1bdb2a0f1087ab8c1bcbe02df8604",
+      "classification": "existing original source/provenance"
+    },
+    {
+      "path": "packages/pixi-scene/src/maid-art.ts",
+      "sha256": "74e8fce874e96db08f4127f7394a8204e0bdc684e288a53196232b085b3f08bb",
+      "classification": "existing original source/provenance"
+    },
+    {
+      "path": "apps/portal-web/public/assets/city/provenance.json",
+      "sha256": "38f008fde3a118bd7256541fe0b5b539e4b6a650fc86930616336b92318289b9",
+      "classification": "existing original source/provenance"
+    },
+    {
+      "path": "apps/portal-web/public/assets/deadline/provenance.json",
+      "sha256": "16fff84e48aa31dfa70fef63fed2d48d97f4bbab82933ddba5c6e342839693ed",
+      "classification": "existing original source/provenance"
+    },
+    {
+      "path": "apps/portal-web/public/assets/maid/provenance.json",
+      "sha256": "340a3d0ba76ad4b675b76a3789b0a93ea769a043880be4095bba12254f459b55",
+      "classification": "existing original source/provenance"
+    }
+  ]
+}
