@@ -1,0 +1,115 @@
+{
+  "generatedAt": "2026-11-05T12:49:02.781Z",
+  "publicRelease": false,
+  "counts": {
+    "VERIFIED": 148,
+    "BLOCKED_EXTERNAL": 3
+  },
+  "totalTasks": 151,
+  "ready": [],
+  "blocked": [
+    "M23-05",
+    "M23-03",
+    "M20-07"
+  ],
+  "worlds": {
+    "deadline": {
+      "module": "M15",
+      "checkpoint": "VERIFIED",
+      "publicRelease": false,
+      "remainingTasks": []
+    },
+    "maid": {
+      "module": "M16",
+      "checkpoint": "VERIFIED",
+      "publicRelease": false,
+      "remainingTasks": []
+    },
+    "library": {
+      "module": "M17",
+      "checkpoint": "VERIFIED",
+      "publicRelease": false,
+      "remainingTasks": []
+    },
+    "restaurant": {
+      "module": "M18",
+      "checkpoint": "VERIFIED",
+      "publicRelease": false,
+      "remainingTasks": []
+    },
+    "lounge": {
+      "module": "M19",
+      "checkpoint": "VERIFIED",
+      "publicRelease": false,
+      "remainingTasks": []
+    },
+    "dating": {
+      "module": "M20",
+      "checkpoint": "PENDING",
+      "publicRelease": false,
+      "remainingTasks": [
+        "M20-07"
+      ]
+    },
+    "park": {
+      "module": "M24",
+      "checkpoint": "VERIFIED",
+      "publicRelease": false,
+      "remainingTasks": []
+    }
+  },
+  "monitoring": {
+    "scope": "historical-local-rehearsal-observations;not-live-monitoring",
+    "publicRelease": false,
+    "errors": {
+      "status": "LOCAL_SAMPLE",
+      "requests": 10,
+      "errorsIncludingExpectedDenials": 1,
+      "productionUnexpectedErrorRate": null
+    },
+    "occupancy": {
+      "status": "LOCAL_CLOSED_STACK_SAMPLE",
+      "genericOnlineMemberships": 0,
+      "productionOccupancy": null,
+      "privateDatesExcluded": true
+    },
+    "recordRetention": {
+      "status": "OWNER_CLEANUP_TESTS_ONLY",
+      "liveExpiryHoldBacklog": null,
+      "publicPolicyReviewed": false
+    },
+    "returnRetention": {
+      "status": "NOT_COLLECTED",
+      "rate": null,
+      "optionalAnalyticsCollectorInstalled": false
+    },
+    "safety": {
+      "status": "SYNTHETIC_REVIEW_DRILL_ONLY",
+      "localReports": 1,
+      "initialAutomaticSanctions": 0,
+      "actualPublicIncidents": null,
+      "publicCoverageAssigned": false
+    },
+    "costs": {
+      "status": "UNPRICED_NOT_METERED",
+      "ceilingCentsUSD": 2500,
+      "actualSpendCents": null,
+      "purchasesApproved": false
+    },
+    "databaseBackup": {
+      "status": "LOCAL_EMPTY_RESTORE_SAMPLE",
+      "migrations": 38,
+      "encryptedArchiveBytes": 291709,
+      "recoveryExerciseMs": 2905,
+      "operatedSchedule": false,
+      "achievedRpoRto": false
+    },
+    "collection": {
+      "installed": false,
+      "alertDeliveryTested": false,
+      "automaticActions": false,
+      "proposedSampleSeconds": 30,
+      "proposedWatchSeconds": 900
+    }
+  }
+}

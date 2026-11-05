@@ -1,0 +1,20 @@
+{
+ "task":"M23-06","status":"VERIFIED","baseCommit":"301ecd3","finalCommit":"local commit containing this ledger;source-quality inputs frozen from the workspace diff",
+ "environment":"2026-11-05/Linux/Node26.9.0/pnpm11.28.5/disposablePostgreSQL17.7/offline",
+ "commands":[
+  {"command":"node --test tests/governance/ops-watch.test.mjs","exitCode":0,"log":"m23-handoff-tests.log","result":"2pass;finitewhitelistedlocalobservations/unknownretention-cost-publicincidentnull/no rawinputfieldleak/cannotfabricatelivecollectororzero businessdata"},
+  {"command":"pnpm lint","exitCode":0,"log":"m23-handoff-lint.log","result":"283boundaries"},
+  {"command":"pnpm check","exitCode":0,"log":"m23-handoff-check.log","result":"28governance/278unit(58files)/553integration(38files)/allpackage-API-webbuilds/lint-types-assets-datingpolicy-CI-infra-legacy-architecture. CI29spec6groups contract only;hostedCI notrun. Wholecheck doesnotrunallbrowser specs."},
+  {"command":"Readonly frozen quality-input fingerprint comparison","exitCode":0,"report":"m23-handoff-input-audit.json","result":"546files/0changed;sourcefingerprint10aba0a06bb56e4733c6ae4a71df93c5f4f8a5bc16bf368c4b508ed3d509f5d9"},
+  {"command":"Readonly original-source and independent-copy audit against selected manifests","exitCode":0,"report":"m23-handoff-source-audit.json","result":"147original+copyfilehashes andoriginalHEAD/statusmatch;Deadline88/Maid59;no originalsource-data-processmutation"},
+  {"command":"node scripts/ops-watch.mjs","exitCode":0,"report":"m23-handoff-watch-final.json","result":"Current151tasks/148VERIFIED/3BLOCKED_EXTERNAL/readyempty;7worldlocal/publicdistinction. No livecollector/alert/retentionanalytics/bill/publiccoverage inferred."},
+  {"command":"Final unchanged-input/resource/port audit and pnpm governance:check","exitCode":0,"reports":["m23-handoff-cleanup.json","m23-handoff-checkpoint.log"],"result":"546inputsunchanged/noownedrunningtestcontainers/retainedDBstopped/3300-4300-4400free/currentclosedrelease-watchcheckpointvalid"}
+ ],
+ "freshSeparateAcceptance":"M23-02 actual38encryptedrestore/failedcanary-compatibleAPIrollback and M23-04 freshclosedproductionTLSlogout plus12scopeddesktop-mobilebrowser/8completebatches. See their ledgers;not rerun or counted as part of pnpmcheck.",
+ "deliverables":"config/ops-watch.json/scripts/ops-watch.mjs/ADR0100/MONITORING-WATCH.md/OFFLINE-HANDOFF.md/conciseHANDOFF;README-blockers-a11yactualadaptergap reconciled",
+ "publicRelease":false,
+ "remainingExternal":["M20-07 realreviewed adult provider/legal/privacy/operatorcontrolledpilot","M23-03 assigned publicsocial on-duty/contact coverage","M23-05 explicitpublic owner/domain-credentials/privacy-content-backup-monitoring approvals"],
+ "knownLimits":"1000clientcapacityhypothesisNOT_MET;100member admissionburstmayexceed5s;humanAT-privacy-legal-content-security/imagehardening/publicinstallation absent. InitialM23-02renewfetchfailure unexplained andretained;latersequentialTLSruns0. SourceDeadlineNode26.13.xdeclaredvsactual26.9.0recorded. Unknownretention-cost-publicsafetyremainnull.",
+ "databaseAssets":"No newmigration/DDL;retainedCity0038stopped/disposablestacksclean. Selectedsources147hashes/provenanceguard6scenes15references/allreleaseapprovalsfalse/defaultrealflagsOFF. No newexternalimage/media license.",
+ "next":"No dependency-ready offline task. Keepclosed;readonlynode scripts/ops-watch.mjs. ReopenexternalIDs onlyfornewexplicitpublicscopeandactualprivatelyreviewed humanrecords. No push/deploy/purchase/realstaff/provider/hiddenbackgroundwork."
+}

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "scope": "offline-preparation",
+  "publicRelease": false,
+  "collectorInstalled": false,
+  "alertDeliveryTested": false,
+  "automaticActions": false,
+  "proposedSampleSeconds": 30,
+  "proposedWatchSeconds": 900,
+  "actualMonthlySpendCents": null,
+  "consentedReturnRetentionRate": null,
+  "publicSafetyIncidentCount": null,
+  "signals": [
+    { "id": "errors", "ownerRole": "incidentCommander", "source": "private HTTP metrics", "limit": "unexpected errors >1percent or histogram p95 >1000ms for15min;separate expected denials" },
+    { "id": "occupancy", "ownerRole": "incidentCommander", "source": "private generic Room gauges", "limit": "memberships differ from connections/grace holds;Dating excluded;unknown503 is not zero" },
+    { "id": "record-retention", "ownerRole": "privacyOwner", "source": "owner cleanup tests and reviewed policy", "limit": "review expiry/holds/erasure;no new raw report/chat logging" },
+    { "id": "return-retention", "ownerRole": "privacyOwner", "source": "not collected", "limit": "no consented cohort collector installed;no cross-world adult tracking" },
+    { "id": "safety", "ownerRole": "safetyOnDuty", "source": "private assigned cases/append-only controls", "limit": "coverage missing keeps affected scope closed;no automatic classifier sanction" },
+    { "id": "costs", "ownerRole": "releaseApprover", "source": "unpriced resource ceiling;no bills supplied", "limit": "obtain reviewed quotes and metered invoices;no purchases or automatic scaling" },
+    { "id": "database-backup", "ownerRole": "backupCustodian", "source": "private postgres-backup observe/restore CLI", "limit": "disk <20percent or1GiB;connections >=80percent/15min;backup freshness and key custody require operated schedule" }
+  ]
+}

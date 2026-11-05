@@ -23,7 +23,7 @@ These are known coverage/release gates,not invented confirmed runtime defects. N
 | ID | Priority | Remaining verification / owner gate |
 |---|---|---|
 | A11Y-01 | P1 before public | Human NVDA/VoiceOver and real keyboard/touch device review,including announcements,reading order and native dialog focus. No real tester/operator is provisioned by this work. |
-| A11Y-02 | P1 before integrated beta | Actual Deadline/Maid keyboard/focus/fallback journeys after clean revisions/adapters/reuse scope(B-001/B-002). Synthetic destinations do not close this gate. |
+| A11Y-02 | Local actual-adapter scope verified;human review remains | Later M15-06/M16-06 actual Deadline/Maid native keyboard/focus/fallback/reduced-motion/selected contrast and targets were executed after owner-selected snapshots;see their acceptance ledgers. This resolves the earlier synthetic-only gap,not human assistive-technology/device/conformance signoff. |
 | A11Y-03 | P1 before restricted operation | Human review of all private consent/withdrawal/report/moderation paths and dialog Tab loops on intended devices. Independent negative actions have protocol/browser tests;that is narrower than full accessibility signoff. |
 | A11Y-04 | P2 | Text resize/high zoom/reflow,forced colors/high contrast,all interactive/focus/non-text states and all composite backgrounds. Current contrast samples alone cannot settle those checks. |
 | A11Y-05 | P2 | Extend full Tab-order/contrast inventory across less-used scheduling,staff/event/private forms;validate new worlds when implemented. |

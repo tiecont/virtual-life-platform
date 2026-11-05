@@ -1,5 +1,11 @@
 # Agent progress
 
+## M23-06 — VERIFIED final offline preparation and whole check
+
+From301ecd3;[ADR0100](../adr/0100-explicit-unknowns-in-offline-operations-handoff.md),[actual final evidence](evidence/m23-handoff-checks.json),[handoff](OFFLINE-HANDOFF.md). Add finitevalidated watch/currenttask-worldreport usingactualhistoricalTLS10requests1expected401error0online/38restore291709bytes2905ms/syntheticreport1case0initialautosanctions separatelyfromnullreturnretention-cost-publicincidentdata. No livecollector/alerts/automaticactions/staff/productionRPO-RTO inferred.2newprivacy/unknown-boundarytests/lint0.
+
+Freshpnpmcheckexit0=28governance/278unit58files/553integration38files/allbuilds-lint-types-assets-policy-CI-infra-legacy-architecture;546qualityinputhashesunchanged. CI29spec6groupscontractonly/hostednotrun. M23separatefresh12browser/closedTLS/38restore evidence preserved,notwholesuitebrowserclaim.147original+copyhashes/originalHEADstatusmatch;retainedCity0038stopped/noDDL-original-publicaction/allflagsOFF/provenanceguards0. ReconcileREADME/blockers/a11yactuallegacygap. Final151tasks=148VERIFIED/3BLOCKED_EXTERNAL(M20-07/M23-03/M23-05)/readyempty;allpossibleauthorizedofflineworkhandled,notfullpublicplancompletion. Next exactactionreadonlyops-watch;reopenonlyexplicitauthorizedpublicscopewithactualhumanrecords. No hiddenbackgroundwork.
+
 ## M23-05 — explicit offline NoGo recorded;BLOCKED_EXTERNAL public signoff
 
 Fromd1aacca;[release decision](../operations/RELEASE-DECISION.md),[machine record](../../config/release-decision.json),[evidence](evidence/m23-decision-checks.json). NO_GO_PUBLIC/OFFLINE_ONLY/publicfalse/nineapprovalslotsnull/sixrolesunassigned. Preserveuserofflinecoding/source-snapshot authorization withoutpublicstaff/purchase/release inference. Newdecisionguardnegativecases4tests0/lint2830. WholeM23-05BLOCKED_EXTERNAL perexplicitmissingpubliccredentials/legal-media/operatorapprovalacceptance;no redundantpublicrequestoutsideoffline scope. No runtime-DDL-realflags-original-publicchange. Continue06monitoring/truthfulhandoff/finalwholecheck;do notclaimfullplanreleasedwithM20-07/M23-03/M23-05external.

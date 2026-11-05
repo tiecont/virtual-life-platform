@@ -2,6 +2,8 @@
 
 [Release trains](docs/operations/RELEASE-TRAINS.md) enumerate independently assessed waves,flag ownership and unassigned public responsibilities. `node scripts/verify-release.mjs` audits the offline candidate;all public gates remain closed.
 
+[Offline handoff](docs/agent/OFFLINE-HANDOFF.md) records the final local scope and remaining external gates. `node scripts/ops-watch.mjs` reports current task/world status and measured local observations with explicit unknown retention/costs. No public release or live monitoring is installed.
+
 [Private operational telemetry](docs/operations/OBSERVABILITY.md) provides bounded process-local traces, metrics and sanitized logs. Collection defaults OFF; operator endpoints require an independent secret and stay outside the public edge. External monitoring is not provisioned.
 
 [Deployment recovery](docs/operations/DEPLOYMENT-RECOVERY.md) adds bounded exact-migration/single-owner readiness and irreversible HTTP/socket drain. The disposable local TLS harness can exercise API rollback between explicitly selected images with identical migration manifests. Production rollout and schema rollback remain gated.
@@ -22,7 +24,7 @@ The [local accessibility audit](docs/architecture/ACCESSIBILITY-AUDIT.md) record
 
 Project repository: `git@github.com:tiecont/virtual-life-platform.git` (configured locally; no push performed). The Virtual City plan is the product specification.
 
-The [shared hospitality engine](docs/architecture/HOSPITALITY.md) provides private policy-gated orders, atomic claims, voluntary shifts, reusable timed courses, transactional completion hooks and service refusal/block/safety recovery. Optional progression consumers are implemented; actual Maid service-loop integration is in progress. No public hospitality world is enabled.
+The [shared hospitality engine](docs/architecture/HOSPITALITY.md) provides private policy-gated orders,atomic claims,voluntary shifts,reusable timed courses,transactional completion hooks and service refusal/block/safety recovery. Optional progression consumers and actual local Maid recipe/service-loop integration are verified in their scoped evidence. No public hospitality world is enabled.
 
 The [event engine](docs/architecture/EVENTS-RESERVATIONS.md) provides policy-gated silent schedules, private RSVPs, explicit calendar download, virtual table holds/check-in/FIFO, consented discovery/invitations and scoped controls/private cancellation notices. Concurrent effects use PostgreSQL transactions. The independent local Restaurant consumes these owners; real event worlds remain disabled.
 
@@ -34,7 +36,7 @@ Offline implementation of the supplied [master plan](MASTER-AGENT-PLAN.md). Curr
 
 A synthetic cafe scene is available at `/worlds/sdk-sandbox` only with explicit local/test flags. It renders real room presence, original starter avatars and seat state with keyboard controls. Server-approved walking supports floor clicks and keyboard destinations around solid tables/walls. See [scene setup and limitations](docs/architecture/SCENES.md); real world rollout remains OFF.
 
-Owner-selected source snapshots support an optional [offline Deadline guest association](docs/architecture/DEADLINE-IDENTITY.md) in `/identity`. It records private consent after proving the existing source cookie,keeps city login separate and supports independent withdrawal. No legacy history is imported;playable Deadline room/scene integration remains subsequent work. Local activation defaults OFF and is rejected in production.
+Owner-selected source snapshots support an optional [offline Deadline guest association](docs/architecture/DEADLINE-IDENTITY.md) in `/identity`. It records private consent after proving the existing source cookie,keeps City login separate and supports independent withdrawal. No legacy history is imported;actual local Deadline room/scene acceptance is recorded below. Local activation defaults OFF and is rejected in production.
 
 The [Deadline Cafe](docs/architecture/DEADLINE-WORLD.md) at `/worlds/deadline` adapts the selected source's30seat IDs/40-place configuration into the shared scene/native shell,with private non-pausable timers and reconnect/retry guards. Portal travel,scene attachment and confirmed leave/return preserve City identity/avatar without duplicating membership. Native controls work if graphics fail. Friend offers require recipient consent and separate travel;private reports/block reuse shared safety without automatic sanctions or exposing focus history. Its independent local installation/registry flags default OFF. Local acceptance covers24desktop/mobile browser executions,a separate40Socket API profile and [non-destructive flag/adapter rollback](docs/operations/DEADLINE-LOCAL-RECOVERY.md);these are scoped local observations,not public release or production capacity certification.
 

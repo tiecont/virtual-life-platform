@@ -1,0 +1,794 @@
+$ pnpm governance:check && pnpm ci:check && pnpm infra:check && pnpm legacy:check && pnpm architecture:check && pnpm lint && pnpm typecheck && pnpm dating:check && pnpm assets:check && pnpm test && pnpm test:integration && pnpm build
+$ node scripts/verify-governance.mjs
+{
+  "modules": {
+    "M00": "VERIFIED",
+    "M01": "VERIFIED",
+    "M02": "VERIFIED",
+    "M03": "VERIFIED",
+    "M04": "VERIFIED",
+    "M05": "VERIFIED",
+    "M06": "VERIFIED",
+    "M07": "VERIFIED",
+    "M08": "VERIFIED",
+    "M09": "VERIFIED",
+    "M10": "VERIFIED",
+    "M11": "VERIFIED",
+    "M12": "VERIFIED",
+    "M13": "VERIFIED",
+    "M14": "VERIFIED",
+    "M15": "VERIFIED",
+    "M16": "VERIFIED",
+    "M17": "VERIFIED",
+    "M18": "VERIFIED",
+    "M19": "VERIFIED",
+    "M20": "PENDING",
+    "M21": "VERIFIED",
+    "M22": "VERIFIED",
+    "M23": "PENDING",
+    "M24": "VERIFIED"
+  },
+  "ready": [
+    "M23-06"
+  ],
+  "blocked": [
+    "M23-05",
+    "M23-03",
+    "M20-07"
+  ]
+}
+Governance consistency verified; no gameplay or release claim.
+Release inventory checked; public release remains blocked.
+Monitoring preparation checked; no live collector or business metrics inferred.
+$ node scripts/verify-ci.mjs
+{"groups":["city","social","study","hospitality","private","legacy"],"specs":29,"requiredCheck":"quality","scope":"Local workflow contract only;hosted run/required-check settings NOT_RUN"}
+$ node scripts/verify-infra.mjs
+Environment matrix/examples/build exclusions verified;not a deployment or secret scan certification
+$ node scripts/legacy-snapshots.mjs verify
+[{"name":"deadline","commit":"6d2ca6a4e00505b2df1d6f41f1041fa14a227c5b","files":88,"archiveBytes":552960},{"name":"maid","commit":"f676298fdab6cd3f2d54ad422f409538c4bdf52a","files":59,"archiveBytes":348160}]
+$ node scripts/verify-architecture.mjs
+Architecture consistency passed: 90 SQL tables + journal; 283 source files checked. Future gameplay invariants remain runtime gates.
+$ eslint . && node scripts/check-boundaries.mjs
+Boundary checks passed: 283 source files
+$ pnpm build:packages && pnpm -r typecheck && tsc -p tests/load/tsconfig.json && tsc -p tests/legacy-tsconfig.json
+$ pnpm --filter './packages/*' -r build
+Scope: 11 of 14 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+packages/deadline-world build$ tsc -p tsconfig.json
+packages/library-world build$ tsc -p tsconfig.json
+packages/lounge-world build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/maid-world build$ tsc -p tsconfig.json
+packages/lounge-world build: Done
+packages/park-world build$ tsc -p tsconfig.json
+packages/library-world build: Done
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/deadline-world build: Done
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/maid-world build: Done
+packages/park-world build: Done
+packages/restaurant-world build: Done
+packages/pixi-scene build: Done
+Scope: 13 of 14 workspace projects
+packages/contracts typecheck$ tsc -p tsconfig.json --noEmit
+packages/contracts typecheck: Done
+packages/focus-ui typecheck$ tsc -p tsconfig.json --noEmit
+packages/world-sdk typecheck$ tsc -p tsconfig.json --noEmit
+packages/world-sdk typecheck: Done
+packages/deadline-world typecheck$ tsc -p tsconfig.json --noEmit
+packages/library-world typecheck$ tsc -p tsconfig.json --noEmit
+packages/lounge-world typecheck$ tsc -p tsconfig.json --noEmit
+packages/focus-ui typecheck: Done
+packages/maid-world typecheck$ tsc -p tsconfig.json --noEmit
+packages/library-world typecheck: Done
+packages/park-world typecheck$ tsc -p tsconfig.json --noEmit
+packages/lounge-world typecheck: Done
+packages/pixi-scene typecheck$ tsc -p tsconfig.json --noEmit
+packages/deadline-world typecheck: Done
+packages/restaurant-world typecheck$ tsc -p tsconfig.json --noEmit
+packages/maid-world typecheck: Done
+packages/park-world typecheck: Done
+packages/restaurant-world typecheck: Done
+apps/platform-api typecheck$ tsc -p tsconfig.json --noEmit
+packages/pixi-scene typecheck: Done
+apps/portal-web typecheck$ tsc --noEmit
+apps/portal-web typecheck: Done
+apps/platform-api typecheck: Done
+$ node --import tsx scripts/verify-dating-policy.ts
+(node:387266) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{
+  "task": "M20-01",
+  "policy": "1.0.0",
+  "state": "closed-draft",
+  "approvalState": {
+    "publicLaunch": false,
+    "controlledPilot": false,
+    "legalJurisdictionReviewed": false,
+    "adultVerificationReviewed": false,
+    "moderatorCoverageApproved": false,
+    "privacyRetentionReviewed": false,
+    "independentPrivacyAssessment": false,
+    "operatorSignoff": false
+  },
+  "verificationProvider": null,
+  "scope": "Strict definition/gate consistency only;does not verify private runtime,real eligibility,operator signoff or public/pilot approval"
+}
+$ node --import tsx scripts/build-avatar-assets.ts --check && node scripts/check-scene-provenance.mjs
+(node:387297) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Original avatar atlas and provenance reproduce exactly.
+{"sceneManifests":6,"sourceReferences":15,"allReleaseApprovalsFalse":true,"mismatches":[],"scope":"Code-source fingerprints only;not a media license or public release approval"}
+$ pnpm build:packages && node --test tests/governance/*.test.mjs && vitest run --project unit
+$ pnpm --filter './packages/*' -r build
+Scope: 11 of 14 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+packages/deadline-world build$ tsc -p tsconfig.json
+packages/lounge-world build$ tsc -p tsconfig.json
+packages/library-world build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/maid-world build$ tsc -p tsconfig.json
+packages/library-world build: Done
+packages/park-world build$ tsc -p tsconfig.json
+packages/lounge-world build: Done
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/deadline-world build: Done
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/maid-world build: Done
+packages/park-world build: Done
+packages/restaurant-world build: Done
+packages/pixi-scene build: Done
+✔ archive is authenticated and versioned before any restore,with independent random nonces (6.158739ms)
+✔ restore targets are disposable exact DB/service only,and disk observations reject invalid data (1.810802ms)
+✔ offline backup tools accept local Unix Docker sockets and reject remote TCP/SSH/named-pipe contexts (0.837449ms)
+✔ worlds cannot import another world repository, platform internals or application code (8.56644ms)
+✔ contracts cannot import SDK and apps cannot import another application internals (1.037855ms)
+✔ the scanner rejects actual source imports and manifest cycles (37.039504ms)
+✔ quality succeeds only for both successful required jobs;failure,cancellation,skip,missing or malformed results cannot pass (2.251588ms)
+✔ browser groups cover every existing spec exactly once and reject omitted,duplicated,foreign or traversing paths (33.202005ms)
+✔ successful reports require both devices for the exact spec and reject stale,foreign,duplicated or incomplete metadata (6.423254ms)
+✔ stack env requires HTTPS,explicit peer,isolated names and URL-safe secrets without echoing secret values (4.172778ms)
+✔ owner-selected snapshot pins dirty/untracked source with secrets/cache excluded and preserves the original worktree (127.46558ms)
+✔ capture rejects absent approval,source-local destinations and source symlinks without copying their target (28.3474ms)
+✔ archive verification rejects tampered payloads,unsafe paths,links,commit mismatch and oversized input before materialization (72.133323ms)
+✔ actual local samples remain separate from unavailable retention,costs and public safety metrics (18.057681ms)
+✔ a historical sample cannot silently become live monitoring or unknown business data become zero (11.205504ms)
+✔ audit ranges and conjunctive dependencies preserve the authoritative DAG (8.641009ms)
+✔ cycles, unknown dependencies and duplicate module IDs are rejected (1.37157ms)
+✔ checkpoint cannot assert verification without evidence or through an unmet gate (0.88612ms)
+✔ the supplied plan pack is accepted without changing its manifest shape (9.743415ms)
+✔ offline inventory covers seven worlds with public gates and honest operator vacancies (15.613072ms)
+✔ a missing later world or dating pilot does not block the independently verified W2 baseline (8.094255ms)
+✔ public flags,fabricated operator assignment and inherited dating approval fail closed (9.104698ms)
+✔ offline source rights cannot become a public decision,staffing or purchased resource approval (4.490263ms)
+✔ resource ceiling accounts for memory,disk reserves and unpriced monthly allocations (8.756916ms)
+✔ budget edits cannot silently enable purchases,Redis or multiple room owners (2.252049ms)
+✔ database target rejects remote/non-test/scheme/query overrides without echoing credentials (2.961829ms)
+✔ fixture environment uses independent keys and excludes inherited runtime,PG and preload state (1.306067ms)
+✔ only explicit finite test fixtures/report scopes survive environment filtering (1.133534ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 370.320274
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+
+ Test Files  58 passed (58)
+      Tests  278 passed (278)
+   Start at  19:12:04
+   Duration  5.88s (transform 12.58s, setup 0ms, import 45.79s, tests 5.30s, environment 19ms)
+
+$ pnpm build:packages && pnpm legacy:prepare && node scripts/with-test-db.mjs pnpm exec vitest run --project integration
+$ pnpm --filter './packages/*' -r build
+Scope: 11 of 14 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+packages/deadline-world build$ tsc -p tsconfig.json
+packages/lounge-world build$ tsc -p tsconfig.json
+packages/library-world build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/maid-world build$ tsc -p tsconfig.json
+packages/lounge-world build: Done
+packages/park-world build$ tsc -p tsconfig.json
+packages/library-world build: Done
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/deadline-world build: Done
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/maid-world build: Done
+packages/park-world build: Done
+packages/restaurant-world build: Done
+packages/pixi-scene build: Done
+$ node scripts/prepare-deadline-baseline.mjs && node scripts/prepare-maid-baseline.mjs
+{"source":"deadline","commit":"6d2ca6a4e00505b2df1d6f41f1041fa14a227c5b","sourceFiles":88,"sourceUnchanged":true,"prepared":true,"networkPermitted":false,"node":"v26.9.0","declaredNode":"26.13.x"}
+{"source":"maid","commit":"f676298fdab6cd3f2d54ad422f409538c4bdf52a","sourceFiles":59,"sourceUnchanged":true,"prepared":true,"networkPermitted":false,"node":"v26.9.0","declaredNode":">=24 <27"}
+ Network virtual-city-test-c761a6cc_default Creating 
+ Network virtual-city-test-c761a6cc_default Creating 
+ Network virtual-city-test-c761a6cc_default Created 
+ Network virtual-city-test-c761a6cc_default Created 
+ Container virtual-city-test-c761a6cc-db-1 Creating 
+ Container virtual-city-test-c761a6cc-db-1 Created 
+ Container virtual-city-test-c761a6cc-db-1 Starting 
+ Container virtual-city-test-c761a6cc-db-1 Started 
+ Container virtual-city-test-c761a6cc-db-1 Waiting 
+ Container virtual-city-test-c761a6cc-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ✓ |integration| tests/integration/hospitality.test.ts (58 tests) 58796ms
+   ✓ private cosmetics inventory uses trusted policy and entitlement rather than client XP and hides other owners  956ms
+   ✓ approved outfit requires entitlement and current voluntary shift, falls back per participant and never grants service authority  1050ms
+   ✓ outfit receipt rollback, stale membership and erased entitlement cannot leave an approved uniform  986ms
+   ✓ reviewed progression outbox consumer grants each participant once and bounds repeated partner farming ('2026-11-05T12:00:00.000Z')  1315ms
+   ✓ reviewed progression outbox consumer grants each participant once and bounds repeated partner farming ('2026-11-05T23:59:00.000Z')  1265ms
+   ✓ 20 actual TCP staff claims produce exactly one assigned staff,version and committed receipt  2872ms
+   ✓ requires actual seat/source/policy and rejects caller-selected identity,staff,time,phase or assignee  1008ms
+   ✓ denies off-role/self claim and defaults to no trusted staff authority  915ms
+   ✓ keeps participant reads,exports and staff queue private;Origin,CSRF,query and authority injection reject  939ms
+   ✓ serializes pending cancellation against claim, with no terminal reactivation  836ms
+   ✓ enforces one active customer,per-staff cap and room queue policy  970ms
+   ✓ persists exact place retry across API restart and cannot reuse key for changed input  870ms
+   ✓ rolls back order and assignment if durable mutation receipt fails  822ms
+   ✓ enforces bilateral block and current world closure before service interactions  914ms
+   ✓ invalidates a disable/re-enable generation during awaited authorization  781ms
+   ✓ requeues on staff erasure without retaining staff identity,and customer erasure removes requests/receipts  975ms
+   ✓ bounds durable placement quota while allowing exact retry,and SQL rejects invalid active assignments  1091ms
+   ✓ voluntary active shift alone grants service permission and ending it atomically requeues one unchanged item  911ms
+   ✓ actual disconnect preserves assignment inside grace,reconnect resumes the same shift,and timeout requeues without duplicating items  1018ms
+   ✓ recovery after restart ends old shifts and cancels abandoned customer work without new admission  948ms
+   ✓ shift source/policy/cap are trusted,own retries are durable and peer shifts remain private  921ms
+   ✓ offered staffing is explicit and cannot be added through role or duration fields  779ms
+   ✓ failed end receipt rolls back both shift withdrawal and order requeue;own end works after leaving a closed world  910ms
+   ✓ ending a shift racing a claim cannot leave an assignment owned by off-shift staff,and stale receipt cannot reactivate it  947ms
+   ✓ one remaining tab keeps the shift active while expiry ends it and cancels stale customer work  947ms
+   ✓ bounds shift command receipts durably without charging exact retries or allowing new terminal-end receipt spam  1070ms
+   ✓ erases own shifts/receipts and bounds terminal shift retention to100 rows per batch  825ms
+   ✓ fair bounded recovery reaches disconnected shifts beyond the first20 even with a frozen test clock  2417ms
+   ✓ concurrent voluntary starts cannot exceed per-room staff capacity  809ms
+   ✓ one shared workflow engine serves synthetic coffee with trusted server steps and one durable row per served course  949ms
+   ✓ one shared workflow engine serves synthetic dining with trusted server steps and one durable row per served course  1118ms
+   ✓ one shared workflow engine serves synthetic mocktail with trusted server steps and one durable row per served course  942ms
+   ✓ only the assigned,current on-shift actor can run server steps;client deadlines,recipes,course or scores confer no authority  1098ms
+   ✓ concurrent actual TCP serve retries insert one course receipt and rollback all service state on receipt failure  961ms
+   ✓ reassignment after a served course preserves progress but invalidates an in-flight preparation and old staff receipts  1080ms
+   ✓ seat-release stops actual service and relinquishes outstanding assignment  892ms
+   ✓ expired-session stops actual service and relinquishes outstanding assignment  857ms
+   ✓ block stops actual service and relinquishes outstanding assignment  972ms
+   ✓ persisted workflow snapshots survive API restart and SQL refuses an impossible readiness/course state  927ms
+   ✓ a backwards trusted clock cannot advance service or write an order/course receipt  911ms
+   ✓ only the customer acknowledges fully served workflow once under actual TCP completion retries  1021ms
+   ✓ completion,outbox and order receipt commit atomically and failed outbox or receipt leaves the order served  908ms
+   ✓ failed transactional hook rolls back its effect and delivery receipt while another consumer succeeds;durable retry survives restart  968ms
+   ✓ independent concurrent outbox dispatchers apply a DB hook once and rollback an effect when its delivery receipt fails  939ms
+   ✓ a committed completion lost response is privately retryable after leave/restart,and no caller can post arbitrary events or rewards  1029ms
+   ✓ account erasure cascades completion,outbox,delivery and retry metadata;no remaining handler can grant an erased reward  993ms
+   ✓ bounds outbox delivery to20 events per consumer batch and terminal retention cascades completion/consumer metadata  1011ms
+   ✓ staff may refuse assigned work and the customer cannot force a refused staff to reclaim it  1107ms
+   ✓ blocking an assigned participant transactionally requeues outstanding work and clears preparation without losing served courses  1004ms
+   ✓ own customer withdrawal works after leaving/closure and cannot be forged by staff or a stranger  896ms
+   ✓ refusal and block requeue failures rollback the full transaction and do not leave half-written consent  872ms
+   ✓ current world-ban on customer stops service and cancels/requeues work through shared safety policy  880ms
+   ✓ current world-ban on staff stops service and cancels/requeues work through shared safety policy  865ms
+   ✓ customer reconnect inside grace retains the same order,but last-connection timeout cancels once with no phantom active order  915ms
+   ✓ block versus serve race permits no subsequent contact or duplicate course/outcome  979ms
+   ✓ two-hour unserved order TTL frees the active-customer slot and exact old placement retry cannot reactivate it  791ms
+   ✓ customer withdrawal racing final service never creates completion or leaves cancelled work assigned  901ms
+   ✓ refusal history remains private and erasure removes only the refused staff record without cancelling customer work  941ms
+ ✓ |integration| tests/integration/events.test.ts (52 tests) 49937ms
+   ✓ discovery concentrates confirmed empty city into one eligible place without allocating rooms or exposing hidden metadata  998ms
+   ✓ discovery ranks actual room allocations before listed schedules,excludes private schedules and rechecks current access  974ms
+   ✓ discovery preserves known occupied counts during schedule outage and refuses unknown room snapshots  792ms
+   ✓ discovery bounds held reads per account and globally over actual TCP and releases permits after completion  1028ms
+   ✓ discovery leaves realtime commands unblocked by a slow catalog and rejects the resulting old snapshot  817ms
+   ✓ serves an authenticated empty catalog and denies ungranted scheduling or automatic calendar access  754ms
+   ✓ twenty actual TCP accounts competing for two RSVP places never oversell and reveal no attendee list  1114ms
+   ✓ durable same-key retries allocate once, changed key input conflicts, and withdrawal frees capacity without old-key resurrection  970ms
+   ✓ requires trusted organizer provisioning, explicit world policy and silent audience, with durable schedule retries  888ms
+   ✓ enforces auth, Origin, CSRF, strict mutation/query input and own withdrawal without leaking peer allocation IDs  829ms
+   ✓ rolls back RSVP and schedule effects if mutation receipts fail, then retries the original key  818ms
+   ✓ current block cancels organizer contact in the same transaction and own withdrawal works after closure  935ms
+   ✓ shared world-ban on participant prevents RSVP and event disclosure without automatic sanction creation  805ms
+   ✓ shared world-ban on organizer prevents RSVP and event disclosure without automatic sanction creation  848ms
+   ✓ observes server deadlines across restart, ends once, and old retries cannot invent attendance or room membership  850ms
+   ✓ requires explicit calendar opt-in and confirmed RSVP, with escaped/folded UTF-8 and distinct DST offsets  877ms
+   ✓ exports only own event participation and participant erasure immediately frees capacity without a leaked counter  895ms
+   ✓ invalidates the captured world generation during awaited registry authorization, even after re-enable  757ms
+   ✓ rechecks the trusted schedule after waiting for an actual SQL event lock, and rejects backward time  851ms
+   ✓ bounds durable new-key RSVP budgets while exact retries remain valid without duplicate allocation  942ms
+   ✓ rotates fair twenty-row maintenance batches under frozen time and bounds ninety-day retention cascades  968ms
+   ✓ fails closed on current world kill switch or expired session but permits private consent withdrawal  762ms
+   ✓ table hold competition commits one slot and confirmation retries do not create a second booking  1192ms
+   ✓ table holds expire at exact TTL, old retries cannot revive them and a cancelled hold releases the slot  838ms
+   ✓ FIFO waitlist requires an explicit claim and cannot silently confirm or jump the first eligible entry  877ms
+   ✓ check-in requires actual current room admission, a confirmed booking and the original trusted interval  1152ms
+   ✓ a full specified room cannot be bypassed by a reservation; failed check-in retains the confirmed booking  1449ms
+   ✓ late or expired booking cannot check in and a hold near start is clipped without clock extension  880ms
+   ✓ rejects overlapping table windows under concurrent trusted schedule creation and permits adjacent windows  986ms
+   ✓ reservation receipt failure rolls back holds/confirmation and own privacy/erasure cascades allocation  952ms
+   ✓ FIFO entry withdrawal is private and block cancels pending bookings atomically  914ms
+   ✓ expired FIFO consent cannot renew through an old key or block a new explicit claimant  853ms
+   ✓ durable reservation command budgets and SQL constraints reject replay churn and duplicate slot ownership  1331ms
+   ✓ restart preserves original hold expiry while confirmed no-shows expire without phantom attendance  868ms
+   ✓ event cancellation atomically releases table/waitlist consent and leaves one private notice per participant  1134ms
+   ✓ default persistent organizer grants require current registered scope and do not grant moderation or performer authority  1006ms
+   ✓ only the current organizer adjusts an unoccupied scheduled event; stale versions and participant rescheduling reject  1114ms
+   ✓ performer readiness is voluntary, event-scoped and cannot adjust/cancel or become a moderation privilege  1141ms
+   ✓ scoped registered safety moderator cancels during world closure without organizer/performer grants  1092ms
+   ✓ notice insertion failure rolls back cancellation, booking release and idempotency receipt together  855ms
+   ✓ RSVP racing cancellation either rejects admission or receives a single durable private notice after retry  1060ms
+   ✓ authorized schedule adjustment persists an explicit timezone and cannot overlap another table slot  956ms
+   ✓ participant erasure racing cancellation leaves no private notice or booking tied to the erased account  871ms
+   ✓ global event discovery lists eligible public events while private and adult-gated rows remain hidden  836ms
+   ✓ private event invitation needs current friendship/opt-in and explicit acceptance without allocating RSVP/table/room  877ms
+   ✓ private invitations reject IDOR and expire at the original deadline without revealing later schedule changes  919ms
+   ✓ acceptance crossing its deadline while SQL is blocked expires instead of granting private access  873ms
+   ✓ revoking invitation consent atomically cancels accepted private table work and cannot revive old keys  1003ms
+   ✓ blocking or unfriending serializes with acceptance and withdraws private RSVP without later resurrection  1076ms
+   ✓ event cancellation reaches invited accounts with private notices and cancels pending consent once  987ms
+   ✓ two independent network sessions preserve one table and trusted expiry after timezone change through 'spring gap'  1162ms
+   ✓ two independent network sessions preserve one table and trusted expiry after timezone change through 'repeated fall hour'  1210ms
+ ✓ |integration| tests/integration/travel.test.ts (33 tests) 31315ms
+   ✓ issues one scoped capability under concurrent actual HTTP retries without changing source membership or reserving a target  1159ms
+   ✓ consumes authorization once under a concurrent race, retries the same redemption and never reports READY or moves a player  842ms
+   ✓ rejects malformed authority, wrong origin/CSRF, unknown query fields and wrong capability without consuming anything  762ms
+   ✓ expires at trusted deadline, bounds TTL to session expiry and never resurrects an old creation retry  797ms
+   ✓ serializes one pending intent per account and cancellation retries without reopening an old request  801ms
+   ✓ binds an existing source to the exact epoch/membership/current session and rejects changed or missing sources  821ms
+   ✓ keeps capabilities and receipts inaccessible to another authenticated session of the same registered account  982ms
+   ✓ denies private/unreviewed adult/offline/version-mismatched and full targets before changing source  843ms
+   ✓ revalidates private/adult/base flags after issuance; a scoped token never bypasses current access  772ms
+   ✓ rechecks a specific destination capacity after issuance without consuming a full target or releasing source  884ms
+   ✓ applies already committed world sanctions and incident denial again during redemption without evidence-key dependency  826ms
+   ✓ invalidates previous owner epoch after restart and cannot replay its old source or redemption  847ms
+   ✓ keeps the creation quota durable across API restart and bounds expiry/metadata cleanup  900ms
+   ✓ exports own receipt metadata without capabilities, cascades identity erasure and rolls back intent on receipt failure  856ms
+   ✓ prepares a destination without public membership, retains source seat, then switches exactly once with current snapshots  892ms
+   ✓ accepted group members race for one remaining target slot without overfilling or holding places for an offline invite  1061ms
+   ✓ rechecks reviewed adult eligibility and committed target sanctions after preparation, retaining valid source  1727ms
+   ✓ reconciles ambiguous COMMIT acknowledgement without inventing a live target or replaying membership  848ms
+   ✓ owner lock loss during preparation discards source/holds and denies every late destination completion  895ms
+   ✓ quarantines failing source resource departure without creating a second active membership  893ms
+   ✓ reads only the authenticated account current room for reconnect reconciliation and never returns peer room authority  827ms
+   ✓ travels over authenticated socket with same-key ACK replay and invalidates every old source tab  847ms
+   ✓ retains source on timed-out/hung preparation and quarantines late completion without blocking owner commands  1356ms
+   ✓ cancellation during nonpublic preparation wins and removes its hold without releasing source  1000ms
+   ✓ counts pending holds in target capacity and never activates two users into a last slot  1253ms
+   ✓ revalidates expiry after preparation started and cannot publish a stale target  1029ms
+   ✓ revalidates source-leave after preparation started and cannot publish a stale target  909ms
+   ✓ revalidates target-disable after preparation started and cannot publish a stale target  1366ms
+   ✓ revalidates private-withdrawal after preparation started and cannot publish a stale target  862ms
+   ✓ revalidates disconnect after preparation started and cannot publish a stale target  870ms
+   ✓ revalidates logout after preparation started and cannot publish a stale target  881ms
+   ✓ rolls back the unannounced index switch and source seat when a deferred database constraint rejects COMMIT  815ms
+   ✓ treats a durable committed receipt after owner restart as history with no phantom live snapshot  885ms
+ ✓ |integration| tests/integration/stage.test.ts (23 tests) 31333ms
+   ✓ Stage HTTP authenticates and strictly rejects untrusted input without allocating anything  1084ms
+   ✓ actual registered performer explicitly accepts the FIFO host offer;ordinary users cannot hijack it  1740ms
+   ✓ durable Stop works outside admission and canonical old keys cannot reactivate or reset withdrawal  1074ms
+   ✓ server slot expiry releases the sole allocation and the next FIFO request is offered  1334ms
+   ✓ guest,foreign,expired grants and forged current-source references cannot acquire stage authority  1159ms
+   ✓ eight real HTTP retries commit one queue,offer and ACTIVE allocation with one receipt per actor action  1974ms
+   ✓ scoped current moderator revokes a slot outside the room and expired or foreign moderators cannot  1330ms
+   ✓ Stop racing accept always leaves ENDED and the original acceptance receipt never restores it  1196ms
+   ✓ acceptance receipt failure rolls back ACTIVE and permits exact-key retry without duplicate effects  1164ms
+   ✓ revoked performer or host authority,disconnect and disabled world end work without restoration  1542ms
+   ✓ event cancellation and bilateral block close stage authority in their original transaction  1413ms
+   ✓ trusted grant deadline clips the slot and exact expiry defeats a late acceptance  1526ms
+   ✓ post-awaited receipt deadline fences prevent committing an acceptance that became late  1159ms
+   ✓ Stop serializes behind an actual SQL wait then ends the committed start and its receipt  1338ms
+   ✓ Stop receipt failure rolls back both revision and withdrawal,then the same key succeeds  1131ms
+   ✓ actual API restart ends stranded original-epoch slots and canonical acceptance remains terminal  1165ms
+   ✓ own export excludes peer and source authority;account erasure cascades private receipts and consent  1094ms
+   ✓ recovery purges only expired Stop receipts while retaining the current consent revision  1104ms
+   ✓ actual receipt SQL wait cannot carry acceptance beyond the original offer deadline  1137ms
+   ✓ fair twenty-row recovery rotates a healthy head so a stranded twenty-first row is checked next  1245ms
+   ✓ ten consenting real performers fill a room queue;the eleventh remains unallocated  2855ms
+   ✓ actual moderator account erasure closes offered work and removes the host source proof  1297ms
+   ✓ a stage withdrawal failure rolls back bilateral block and slot closure together  1268ms
+ ✓ |integration| tests/integration/focus.test.ts (29 tests) 31683ms
+   ✓ progression corrections retain immutable source history and cannot refund a spent abuse budget  1335ms
+   ✓ progression correction and entitlement revocation are atomic under retries, preserve privacy and remove current uniform  1233ms
+   ✓ progression account cap spans worlds and original UTC completion day cannot be moved by a late retry  1864ms
+   ✓ progression maintenance bounds old partner and appearance receipts while retaining replay-safe history  826ms
+   ✓ progression claims only an owned completed focus source and eight actual TCP replays mint once across restart  1019ms
+   ✓ progression world cap unlocks one cosmetic without spending and retains private immutable source history  993ms
+   ✓ progression entitlement failure rolls back the grant and focus transition, and default disabled app grants nothing  1649ms
+   ✓ progression rejects current safety closure and forged claims without turning private timer reads into reward authority  861ms
+   ✓ starts one server-timestamped timer under concurrent actual HTTP retries with trusted seat association  905ms
+   ✓ requires current authenticated room/seat, exact source epoch/member and does not accept arbitrary authority/time/reward  827ms
+   ✓ denies Origin/CSRF/unknown query and hides timer identifiers/content from other accounts  1026ms
+   ✓ rejects early finish, completes exactly at the trusted deadline, and repeated finish/cancel never doubles completion  986ms
+   ✓ continues through seat release, leave and API restart; sleep does not write ticks and current read finalizes persistent deadline  3246ms
+   ✓ cancels before deadline without counting completion and old start receipt cannot resurrect it  1655ms
+   ✓ only explicit origin policy can pause/resume and cumulative pause budget expires without awarding completion  1290ms
+   ✓ same account across registration/login sees one timer, logout denies old session but does not fabricate cancellation  1256ms
+   ✓ rolls back start when mutation receipt cannot commit, and account erasure cascades own timer/history receipts  825ms
+   ✓ bounds durable start budget, rejects database invalid states and purges terminal history/receipts in batches  988ms
+   ✓ trusted clock moving backwards rejects transition and preserves the original deadline  777ms
+   ✓ invalidates a source flag generation that changes during awaited focus authorization, even after re-enable  740ms
+   ✓ pages private world-scoped history in stable creation order across synthetic Deadline and Library without changing origin  819ms
+   ✓ keeps focus history private under public/hidden per-world presence and rejects foreign or forged history cursors  903ms
+   ✓ denies new starts in a closed origin while retaining own private history and independent timer cancellation  718ms
+   ✓ groups canonical completed deadlines across 23:59 UTC+7 and UTC storage,with private world filters and no tick writes  964ms
+   ✓ uses actual 23-hour IANA calendar day for '2026-03-08' and assigns a late observation to its original completion day  793ms
+   ✓ uses actual 25-hour IANA calendar day for '2026-11-01' and assigns a late observation to its original completion day  772ms
+   ✓ counts both repeated DST hours once each and excludes cancelled/active timers from private summaries  841ms
+   ✓ validates calendar dates,IANA zones,max31day/recent retention range and forbids account overrides  829ms
+   ✓ purges at most100 old terminal timers per maintenance batch and removes receipts without retaining aggregate copies  741ms
+ ✓ |integration| tests/integration/dating-date.test.ts (16 tests) 24128ms
+   ✓ requires separate two-party date consent,keeps peer identities private,and delivers bounded canned messages once before independent Leave  1842ms
+   ✓ denies generic dating directory,join and travel even with positive adult world permission  943ms
+   ✓ historical private block retry cannot override a later explicit general unblock;fresh private block remains available  1224ms
+   ✓ saturated positive HTTP transport quota cannot consume the independent Leave and private block budget  2691ms
+   ✓ rejects outsiders,alternate sessions,forged quickchat/free text and stale versions;parallel entry needs refreshed independent consent  1381ms
+   ✓ persistent quickchat budgets,canonical retries and receipt rollback prevent duplicate feeds or uncommitted delivery  1672ms
+   ✓ last original session socket loss ends private date without reconnect restoration;another tab preserves consent  1238ms
+   ✓ Leave/chat/block/profile withdrawal races serialize without contact restoration and private block avoids global peer IDs and notifications  1195ms
+   ✓ date-close failure rolls back block and profile withdrawal together,then retry ends both participants  1169ms
+   ✓ private contact reporting survives Leave,block and proof revocation without global visibility or automatic sanction  1439ms
+   ✓ expired or restarted date cannot resume;independent Leave works with positive flag/key/reporting loss and own erasure removes shared state  1233ms
+   ✓ original deadline checked after actual receipt SQL wait prevents late chat commit or ephemeral delivery  1187ms
+   ✓ current chat incident closure during real receipt wait rolls back the pending send without disabling independent Leave  1233ms
+   ✓ assigned independent synthetic reviewer can eject only the proven private date;revocation never restores ended consent  1502ms
+   ✓ account hourly chat cap survives three ended dates and blocks a fresh date without resetting spent budget  3187ms
+   ✓ bounded own date export omits peer/date identifiers and100row receipt/history cleanup cascades private date metadata  987ms
+ ✓ |integration| tests/integration/dating-continuation-safety.test.ts (14 tests) 21754ms
+   ✓ foreign and nonexistent private handles have indistinguishable404code/message without exposing existence  1629ms
+   ✓ committed return retry remains canonical after grant expiry and Date Stop without renewing allocation or old consent  1311ms
+   ✓ private return sources never pair with general queue or another mutual source  2185ms
+   ✓ 8actual TCP same-key likes create one own choice/receipt and never expose unilateral interest to the peer  1431ms
+   ✓ return-vs-revoke-vs-private block-vs-profile withdrawal serialize without restoration or deadlock  1513ms
+   ✓ like receipt failure rolls back header/member and current shared-close failure rolls back profile/block/revoke  1352ms
+   ✓ a late actual SQL receipt wait cannot commit a like after its original short grant expires  1418ms
+   ✓ kept connection survives date history purge while revoke works after restart with positive flag/key/reporting loss and negative receipt saturation  1400ms
+   ✓ current peer proof loss and foreign IDs are denied;participant erase removes mutual state before cascades  1367ms
+   ✓ one kept choice never reserves a peer slot and withdraw enables a fresh independent choice without reviving the old source  1648ms
+   ✓ sorted union header locking handles two expired matched profiles against a negative operation on a third bridge participant  2245ms
+   ✓ second like cannot rescue an expired pending deadline through an awaited SQL receipt and a30day mutual extension  1333ms
+   ✓ positive transport exhaustion cannot consume independent connection withdrawal and old grants cannot rejoin after Date Stop  1905ms
+   ✓ 100row retention cleanup and bounded own export omit source/peer identifiers  1014ms
+ ✓ |integration| tests/integration/dating-matching.test.ts (15 tests) 20355ms
+   ✓ private queue creates one opaque proposal;only both explicit current participants may accept without any Room/contact disclosure  1508ms
+   ✓ queue matching requires mutual topics and compatible pace and Stop cannot be undone by old join retry  1258ms
+   ✓ eight actual TCP join retries allocate once;parallel two-party accepts preserve one accepted match per account  1848ms
+   ✓ six actual concurrent joiners produce three disjoint proposals and accept-vs-decline cannot leave an active allocation  2038ms
+   ✓ profile edit,withdrawal,block and account erasure terminate matching in their original transactions without peer account locks  1655ms
+   ✓ injected profile/block invalidation failure rolls back both owners;exact-key negative retries remain safe  1252ms
+   ✓ original proposal deadline wins after an actual receipt wait even if second consent would extend the match lease  1239ms
+   ✓ queued and proposed work expires without auto-requeue;proof revocation and restart/rotation cannot revive old session consent  1461ms
+   ✓ positive join receipt failure rolls back both proposal/enrollments and cross-owner ID/field/CSRF probes reveal nothing  1184ms
+   ✓ Stop races with accept/block/profile edit/account deletion settle without deadlock or duplicate allocations  1280ms
+   ✓ actual TCP peer account deletion racing second acceptance cannot orphan an accepted proposal or enrollment  1232ms
+   ✓ join quota survives API restart and Stop remains available after key/flag/proof loss or negative receipt saturation  990ms
+   ✓ recovery observes only20proposals and cleanup removes at most100ended rows and receipts per batch  1075ms
+   ✓ accepted lease expires without contact or requeue and profile expiry atomically ends the peer allocation  1224ms
+   ✓ bounded stale-candidate cleanup removes20invalid entries before a later join reaches a compatible queued peer  1105ms
+stdout | tests/integration/chat.test.ts > applies the Vietnamese/Unicode corpus before real socket broadcast without turning withheld text into sanctions or cases
+M08-06_LOCAL_CHAT_TIMING {"samples":31,"p50Ms":7.399108000000069,"p95Ms":21.779601000000184,"maxMs":29.22724099999982,"allowed":11,"withheld":20,"profile":"sequential loopback sockets; synthetic clock advances quota windows; not a load/production SLA"}
+
+stdout | tests/integration/chat.test.ts > acknowledges a nonsettling moderation deadline within a bounded local response without any late delivery
+M08-06_LOCAL_MODERATION_DEADLINE {"samples":1,"elapsedMs":507.3375209999999,"providerDeadlineMs":500,"localRegressionCeilingMs":1500,"profile":"loopback, nonsettling test provider, not a production latency guarantee"}
+
+ ✓ |integration| tests/integration/chat.test.ts (17 tests) 17494ms
+   ✓ applies the Vietnamese/Unicode corpus before real socket broadcast without turning withheld text into sanctions or cases  1503ms
+   ✓ shares a concurrent quick-action flood budget across independently signed-in sessions and recovers after the account window  1172ms
+   ✓ acknowledges a nonsettling moderation deadline within a bounded local response without any late delivery  1366ms
+   ✓ keeps chat disabled by default and denies missing capabilities, malformed identity/target and private payload fields  2331ms
+   ✓ broadcasts only approved normalized server-profile messages and deduplicates actual socket retries  831ms
+   ✓ does not broadcast before moderation, shares pending retries and rechecks bilateral block after a delayed decision  949ms
+   ✓ rejects abuse, ambiguous text and markup without broadcasting or automatically banning, while allowing explicit canned/emote choices  786ms
+   ✓ fails closed on classifier error or invalid decision and permits only separately requested safe fallback content  849ms
+   ✓ enforces silent world rules even with an injected allowing moderator  735ms
+   ✓ enforces canned world rules even with an injected allowing moderator  750ms
+   ✓ honors a deny-on-outage rule and recovers only after a validated moderation response  773ms
+   ✓ closes pending moderation without broadcast or retained acceptance and ignores a late provider completion  818ms
+   ✓ bounds timed-out underlying classifier work and never emits late successes after providers eventually resolve  1393ms
+   ✓ shares quick-action flood limits across tabs and releases the account budget after its window  813ms
+   ✓ rechecks authority and admission after moderation when leave occurs  837ms
+   ✓ rechecks authority and admission after moderation when revoke occurs  791ms
+   ✓ rechecks authority and admission after moderation when disable occurs  794ms
+ ✓ |integration| tests/integration/audience.test.ts (13 tests) 16955ms
+   ✓ audience endpoints authenticate,default closed,and only a current scoped moderator may enable reactions  1360ms
+   ✓ RSVP and original connected room are required;whitelist counts are anonymous and same-key retry has one effect  1449ms
+   ✓ mute clears counts and fences old send/open keys;negative disable works after leaving or closing the world  1223ms
+   ✓ twenty room reactions per ten seconds remain a hard cap under real TCP audience waves  2459ms
+   ✓ grant loss,original moderator disconnect and actual restart disable rather than restoring an approval  1320ms
+   ✓ receipt failure rolls back both count and account cooldown then exact-key retry commits once  1185ms
+   ✓ actual receipt wait cannot outlive a shortened current moderator grant  1167ms
+   ✓ ticket-free RSVP allocates no room or stage,and withdrawal prevents new or replayed reactions  1163ms
+   ✓ current mute sanctions and chat incident closure cannot be bypassed by canned reactions  1136ms
+   ✓ event cancellation and feed suppression either commit together or both roll back  1163ms
+   ✓ moderator erasure clears approval proofs and own export never exposes another participant  1111ms
+   ✓ bounded daily receipt cleanup does not let old request versions reopen a disabled feed  1165ms
+   ✓ private event IDs are unavailable before room-proof checks and never allocate an audience header  1050ms
+ ✓ |integration| tests/integration/invitations.test.ts (18 tests) 15887ms
+   ✓ defaults recipient consent OFF, requires current friendship and rejects self/stranger without notifications  1036ms
+   ✓ persists one invitation under actual TCP concurrent retries and sends metadata-free account-scoped socket refresh once  1002ms
+   ✓ accept/decline/cancel are scoped, durable and idempotent, never issue travel authority or move membership  927ms
+   ✓ expires at server deadline, retains original TTL on retry and never accepts expired invitation  785ms
+   ✓ withdraws pending invitations atomically on block/unfriend and never resurrects them after new friendship  860ms
+   ✓ serializes accept versus block, then rejects stale accepted replay and preference disable/re-enable cannot restore pending offers  843ms
+   ✓ never sends hidden/private/adult world details even to reviewed adults; rechecks base flags and versions on accept/list  749ms
+   ✓ rejects forged authority/room/free text, Origin/CSRF failures, arbitrary keys and query bearer input  791ms
+   ✓ keeps sender rate budget durable across independent sessions/restart and bounds expiry metadata maintenance  1134ms
+   ✓ enforces current recipient sanctions at accept/list without giving the invitation any admission privilege  780ms
+   ✓ rolls back block and friendship withdrawal if pending invitation cancellation cannot commit  830ms
+   ✓ bounds paginated inbox projections and rejects changed idempotency input or duplicate pending pair  851ms
+   ✓ exports minimal own invitation metadata, erases dependent data and rolls back creation on receipt failure  882ms
+   ✓ creates a bounded group with explicit partial consent, offline pending expiry and no reserved room capacity  888ms
+   ✓ same-key concurrent group retries persist one root and one invitation per recipient, with no peer cohort disclosure  888ms
+   ✓ resumes partial fan-out after a committed child loses its group linkage without duplicate invitations, including restart  833ms
+   ✓ group retries recheck blocks/preferences, budgets count every child and expired roots cannot resend unfinished entries  927ms
+   ✓ rejects oversized/duplicate/forged group input and exports/deletes group metadata without recipient identities  875ms
+(node:404236) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:404316) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ |integration| tests/integration/room-network-races.test.ts (2 tests) 13096ms
+   ✓ 100 actual socket admissions to one cap8 room admit7 beside the seed and reject93 without extra rooms  2619ms
+   ✓ 100 actual socket members claim one seat with one winner99SeatTaken and no phantom allocation  10468ms
+ ✓ |integration| tests/integration/reports.test.ts (11 tests) 12017ms
+   ✓ reports fail closed without a separate key; no client can provision staff or bypass auth/CSRF/strict payloads  1069ms
+   ✓ confidential receipt is reporter-only, concurrent retries persist one encrypted case and one audit event  882ms
+   ✓ rejects room IDOR, self-report, forged membership/epoch and invisible targets without enumerating peers  914ms
+   ✓ assigned registered staff can review within world scope, while target/reporter/unassigned/expired grants cannot  1382ms
+   ✓ guest grants and conflicted staff never authorize case evidence; staff-abuse needs an independent safety admin  1403ms
+   ✓ database audit refuses UPDATE, DELETE and TRUNCATE; tampered ciphertext fails safely without leaking evidence  1079ms
+   ✓ shared durable daily report budget, bounded notes and evidence TTL prevent unbounded retained evidence  1206ms
+   ✓ own export excludes reports against target; explicit identity deletion unlinks case and erases associated evidence  877ms
+   ✓ automatic guest expiry invokes safety deletion hooks and removes ciphertext rather than leaving orphaned identity evidence  892ms
+   ✓ persisted receipt and ciphertext survive app recreation while missing or wrong keys never reveal plaintext  1177ms
+   ✓ actual moderated-message references are recipient-bound and remain reportable after block without fabricating text  1134ms
+ ✓ |integration| tests/integration/dating-profile.test.ts (12 tests) 11445ms
+   ✓ private profile is absent by default and unknown/guest/revoked proof cannot opt in;negative withdrawal still works  1180ms
+   ✓ eight actual TCP saves deduplicate an encrypted private profile and never modify general profile/privacy/catalog  1070ms
+   ✓ rejects foreign IDs,age/role/URL fields,Origin/CSRF/query bypasses and profile reads from another owner  933ms
+   ✓ competing writes have one revision winner;withdraw defeats either ordering and old save retries never restore consent  906ms
+   ✓ receipt failure rolls back profile and exact-key retry commits once;wrong key/ciphertext never exposes partial data  933ms
+   ✓ proof expiry and grant expiry after a real SQL wait reject late save atomically;withdraw remains independently available  920ms
+   ✓ withdraw works after flag/key/proof loss;account erasure cascades all private profile/proof/receipt rows  945ms
+   ✓ expired grants cannot revive an erased tombstone and persisted hour quota survives restart while negative consent is still accepted  880ms
+   ✓ expiry erases encrypted choices and bounded recovery purges only100rows per table per batch  985ms
+   ✓ negative consent still erases at the200daily receipt cap and backward clock denies positive access without blocking withdrawal  908ms
+   ✓ current incident and world-ban policies deny private positive access while own withdrawal remains available  923ms
+   ✓ shortened current proof expiry after a real receipt SQL wait rolls back even while the original write grant is unexpired  858ms
+ ✓ |integration| tests/integration/restaurant.test.ts (34 tests) 11732ms
+   ✓ actual ten-place admission and eight exclusive dining chairs preserve identity without service authority  550ms
+   ✓ private dinner city discovery retains public room/schedule activity without disclosing private offer,party or participant identifiers  358ms
+   ✓ private dinner requires friendship and recipient opt-in;acceptance allocates no attendance,room,chair or RSVP and discovery excludes the private party  704ms
+   ✓ private dinner decline,cancel,opt-out,mode changes and stop revoke attendance without resurrecting prior acceptance  720ms
+   ✓ private dinner block and unfriend revoke offers atomically;callback failure rolls back the block and offer together  575ms
+   ✓ private dinner event cancellation notifies offer recipients and restart or host departure hides access without forced travel  328ms
+   ✓ private dinner expiry is rechecked after an actual SQL wait and stop racing acceptance cannot restore access  374ms
+   ✓ private dinner current visit cannot survive actual owner restart and check-in close expires accepted access  336ms
+   ✓ invitation evidence permits assigned safety review but never supplies room-ejection authority  453ms
+   ✓ own dinner contact can be privately reported after blocking,without room proof,profile disclosure or automatic sanctions  357ms
+   ✓ each same-room diner explicitly joins;two peers race the final party place and retries cannot bypass block withdrawal  468ms
+   ✓ offline/session-invalid guests lose current group eligibility;owner withdrawal outside the room closes the group without moving diners  376ms
+   ✓ party receipt failure rolls back attendance;cancel notices include actual consenting guests and no peer roster is exposed  317ms
+   ✓ stop wins against pending enable/join and old revision or receipt cannot restore group consent  348ms
+   ✓ actual voluntary Server/Cook role permissions reject forgery and switching requeues held work atomically without renewing the shift  422ms
+   ✓ two actual voluntary workers coordinate all three courses;server-clock preparation,matching passes and customer completion commit once  1022ms
+(node:406446) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:406481) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:406563) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:406634) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:406696) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:406735) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:406883) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ |integration| tests/integration/room-owner.test.ts (4 tests) 10163ms
+   ✓ recovers after actual SIGTERM and same-port restart with a fresh epoch and no phantom seat  2735ms
+   ✓ recovers after actual SIGKILL and same-port restart with a fresh epoch and no phantom seat  2809ms
+   ✓ rejects a second live process, then denies the old owner after SIGSTOP, lost authority backend and takeover  2737ms
+   ✓ never acknowledges or publishes a paused admission after losing its dedicated lock connection  1879ms
+ ✓ |integration| tests/integration/dating-adversarial.test.ts (6 tests) 8038ms
+   ✓ rejects nine malformed,underage,self-attested,mismatched and stale proof decisions on every private positive owner  1183ms
+   ✓ denied proof cannot enter via HTTPdirectory,forged socketroom,travelintent or arbitrary travel redemption even when generic adult permission is true  931ms
+   ✓ a known source handle grants outsiders no observation,choice,queue,report attribution or global profile lookup  1509ms
+   ✓ private return grants cannot migrate to another current session of the same account and logout invalidates original positive requests  1515ms
+   ✓ even an existing friend cannot discover private alias,source or dating activity through shared projections and request logging  1483ms
+   ✓ an account-scoped current world ban cannot be evaded by another login or a previously known mutual source while independent revoke remains available  1414ms
+ ✓ |integration| tests/integration/library.test.ts (18 tests) 5914ms
+   ✓ eight actual Library visitors race one desk,then only its owner starts one private canonical focus session  558ms
+   ✓ Library silent study schedules require trusted authority and atomic RSVPs cannot exceed the declared room policy  357ms
+   ✓ study counts require per-visit opt-in and expose only phases of current consenting visible participants  417ms
+   ✓ current block,privacy change,leave and actual restart revoke study consent with no old-key revival  498ms
+   ✓ hidden or erased peers never contribute and old simultaneous enable retries cannot restore stopped consent  525ms
+   ✓ study pending read slots stay bounded and an actual disconnection suppresses peer counts until valid same-visit reconnect  357ms
+   ✓ friends explicitly accept the exact public Library room hint then travel without automatic RSVP or forced admission  305ms
+   ✓ withdrawal during an in-flight phase read prevents both own and peer stale contribution publication  306ms
+(node:407604) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:407659) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:407780) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:407834) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ |integration| tests/integration/security-network.test.ts (3 tests) 6238ms
+   ✓ actual TCP mutation and socket handshake reject mixed session CSRF,origin,cookie and claimed authority without changing either identity  1741ms
+   ✓ actual TCP known room authority stays viewer scoped and a persisted world ban denies live commands,reconnect and owner restart without blocking independent logout  2692ms
+   ✓ actual TCP forwarded-header spoofing cannot bypass guest limits,session budget is shared across sockets and adult claims cannot open the closed world  1802ms
+ ✓ |integration| tests/integration/rooms.test.ts (23 tests) 6575ms
+     ✓ serializes 100 simultaneous real-session joins into one target room without overcapacity  686ms
+     ✓ one hundred simultaneous real-session seat claims produce exactly one owner  1763ms
+     ✓ shares one session command budget across room and seat events and rejects invalid action/role claims  365ms
+     ✓ idle session expiry immediately frees ownership instead of extending a disconnected seat hold  1043ms
+ ✓ |integration| tests/integration/deadline-identity.test.ts (17 tests) 6193ms
+   ✓ uncooperative trusted source work stays bounded while an independent withdrawal succeeds without a source cookie  2023ms
+   ✓ persistent daily budget survives negative receipt pruning and frozen clocks; latest canonical receipts stay bounded  675ms
+   ✓ real flag reload and adapter restart preserve independent legacy history and private focus without reviving withdrawn consent or old room authority  301ms
+ ✓ |integration| tests/integration/telemetry.test.ts (5 tests) 5229ms
+   ✓ operator export defaults closed and cookie/client role claims never replace the independent token  1620ms
+   ✓ actual HTTP and authenticated room commands export real spans,pseudonymous room,p95,online and durable order gauges without participant fields  944ms
+   ✓ unknown-path flooding stays finite,dating calls stay excluded,and actual Pino records never include raw caller fields or error messages  833ms
+   ✓ order gauge SQL timeouts return unknown failure rather than fabricated zero and operator quota cannot disable player reads  992ms
+   ✓ last socket loss leaves a separate grace hold rather than an online membership  837ms
+ ✓ |integration| tests/integration/readiness.test.ts (5 tests) 5304ms
+   ✓ readiness rejects journal checksum drift and unknown later migrations without disabling independent liveness  925ms
+   ✓ a blocked metadata read is coalesced and bounded while liveness stays responsive,then recovers after release  1034ms
+   ✓ exhausted pool probes time out without accumulating checkout requests,and late checkout is discarded before recovery  1779ms
+   ✓ a second idle replica cannot become ready while another ready process owns the same schema  774ms
+   ✓ irreversible trusted drain closes new HTTP/socket work and existing room commands before graceful interruption  789ms
+ ✓ |integration| tests/integration/maid-service.test.ts (11 tests) 4324ms
+   ✓ actual Maid flag closure and re-enable preserve independent source rows and served history without reviving old work consent  829ms
+   ✓ assigned preparation has a private server challenge;elapsed time alone,forged nonce,wrong recipe and client score cannot finish it  373ms
+   ✓ six current Maid workers racing over actual HTTP claim one order;service and eight completion retries commit one course,outbox and outcome  759ms
+   ✓ independent work Stop requeues preparation and replacement invalidates the former assignee nonce without phantom completion  303ms
+stdout | tests/integration/sanctions.test.ts > measures the actual local HTTP review and incident round trips with committed restrictions and drained memberships
+M08-06_LOCAL_HTTP_TIMING {"samples":[{"operation":"assigned-case-read","elapsedMs":37.467265999999654},{"operation":"issue-mute","elapsedMs":20.804599999999482},{"operation":"own-decisions-read","elapsedMs":6.0389500000019325},{"operation":"private-appeal-intake","elapsedMs":8.41582600000038},{"operation":"independent-appeal-revoke","elapsedMs":14.530188000000635},{"operation":"world-closure","elapsedMs":14.684688000001188},{"operation":"independent-world-recovery","elapsedMs":7.650902999997925}],"clientDeadlineMs":2500,"profile":"one sample per operation, synthetic local TCP/DB, no production percentile/SLA claim"}
+
+ ✓ |integration| tests/integration/sanctions.test.ts (24 tests) 27777ms
+   ✓ issues one encrypted reasoned mute under concurrent retries, denies both tabs and releases at expiry without maintenance  1350ms
+   ✓ requires current assigned registered scoped staff, strict input, allowed severity and policy duration  1359ms
+   ✓ room ejection releases seat/all tabs, prevents stale joins and commands, and permits a different world  1121ms
+   ✓ world ban survives reconnect/new sessions but other-world admission remains available; independent revocation releases access  1288ms
+   ✓ temporary platform ban requires assigned admin and denies every world while preserving own appeal/export/session access  1127ms
+   ✓ does not broadcast a message whose moderation resolves after a mute commits  1058ms
+   ✓ restarts without the evidence key and still enforces committed bans without disclosing protected notes  1115ms
+   ✓ deleted subjects erase notes, unlink sanction/appeal identities and preserve append-only audit  1155ms
+   ✓ expiry, appeal deadlines and encrypted-note purge use authoritative time with no reactivation on retry  1093ms
+   ✓ rolls back notes, sanction, audit and receipt together and does not interrupt rooms on transaction failure  1064ms
+   ✓ orders an already pending trusted join before ban commit and removes it before issuance acknowledges  1076ms
+   ✓ private refresh hints reach only the target, and an old issuance retry cannot undo a reasoned independent reversal  1118ms
+   ✓ requires admin for actions against registered staff even if a report uses a different category, and denies expired evidence  1130ms
+   ✓ persists an account-wide appeal budget across different sanctions and rejects missing-CSRF writes  1039ms
+   ✓ searches only scoped assigned cases and gates staff session/controls by registered current grants  1190ms
+   ✓ scoped admin closes chat before delayed moderation delivery, keeps room activity, requires independent recovery and rejects stale closure replay  1231ms
+   ✓ world closure interrupts all occupants and persists across restart without evidence key; recovery cannot override disabled flags  1226ms
+   ✓ only a distinct assigned reviewer can inspect and decide an appeal; concurrent replay revokes once and reveals only controlled result to subject  1160ms
+   ✓ appeal uphold leaves restriction active; expired/tampered appeal evidence and moderator platform review are denied  1275ms
+   ✓ does not uphold a sanction already independently revoked or lose original appeal intake idempotency after review  1107ms
+   ✓ rechecks confidential appeal read and disposition after assignment changes while the reviewer has an open case  1100ms
+   ✓ rechecks confidential appeal read and disposition after grant-expiry changes while the reviewer has an open case  1048ms
+   ✓ rechecks confidential appeal read and disposition after session-revoke changes while the reviewer has an open case  1059ms
+   ✓ measures the actual local HTTP review and incident round trips with committed restrictions and drained memberships  1282ms
+ ✓ |integration| tests/integration/dating-continuation.test.ts (2 tests) 3759ms
+   ✓ unilateral private like leaves the nonconsenting peer view identical;mutual continuation requires two fresh return choices before a new private date and independent revoke  1882ms
+   ✓ profile withdrawal and block invalidate mutual private connections after the original active enrollment is gone  1875ms
+ ✓ |integration| tests/integration/deadline-world.test.ts (7 tests) 3718ms
+   ✓ sixteen actual Socket contenders produce one zero-padded seat owner and retries never add a second seat  605ms
+   ✓ thirty-five controlled owner memberships plus six actual Socket admissions cannot overfill the forty-place source contract  560ms
+ ✓ |integration| tests/integration/identity.test.ts (15 tests) 3399ms
+     ✓ upgrades a guest exactly once without changing identity, then signs in after logout  418ms
+     ✓ caps live sessions per registered account and preserves registration after session expiry cleanup  990ms
+     ✓ caps sign-in attempts before additional KDF work  385ms
+ ✓ |integration| tests/integration/lounge.test.ts (8 tests) 3029ms
+   ✓ twelve actual visitors cannot enter the closed stage;exclusive audience seating and room capacity remain authoritative  693ms
+   ✓ actual seated Lounge mocktail order uses one shared course ledger and one acknowledged completion despite retries  402ms
+   ✓ two actual voluntary bartenders race over one mocktail;refusal,block and customer withdrawal prevent compelled service  487ms
+ ✓ |integration| tests/integration/social.test.ts (16 tests) 2414ms
+     ✓ enforces persistent daily request limits even with a fresh HTTP/service instance and exposes a minimal abuse hook  350ms
+ ✓ |integration| tests/integration/maid-identity.test.ts (6 tests) 2437ms
+   ✓ seven actual volunteers cannot exceed six active Maid shifts;stopped consent defeats an old positive receipt  455ms
+ ✓ |integration| tests/integration/park-quick.test.ts (5 tests) 1769ms
+   ✓ twenty actual socket contenders beside a seed cannot exceed the twelve-place park or create extra rooms  370ms
+ ✓ |integration| tests/integration/identity-socket.test.ts (11 tests) 1658ms
+     ✓ disconnects an idle socket when its authoritative session expires  307ms
+stdout | tests/integration/lounge-operations.test.ts > emergency world closure rejects ordinary callers,ejects current visits and independent recovery never restores stage or audience consent
+{"scope":"local Lounge emergency closure plus explicit maintenance and independent recovery","elapsedMs":86.33468699999958,"membershipsImmediatelyAfterClosure":0,"restoredConsent":false}
+
+ ✓ |integration| tests/integration/lounge-operations.test.ts (3 tests) 4851ms
+   ✓ real Lounge private report retries create one encrypted allegation without exposing reporter or automatically sanctioning performer  1866ms
+   ✓ actual Lounge cancellation atomically closes Stage and Audience;injected close failure rolls back all owners and retry commits once  1556ms
+   ✓ emergency world closure rejects ordinary callers,ejects current visits and independent recovery never restores stage or audience consent  1426ms
+ ✓ |integration| tests/integration/park.test.ts (4 tests) 1303ms
+ ✓ |integration| tests/integration/worlds.test.ts (5 tests) 1022ms
+ ✓ |integration| tests/integration/foundation.test.ts (3 tests) 986ms
+     ✓ readiness fails on clean DB, then succeeds after idempotent concurrent migrations, including actual TCP  659ms
+ ✓ |integration| tests/integration/stage-storage.test.ts (5 tests) 823ms
+
+ Test Files  38 passed (38)
+      Tests  553 passed (553)
+   Start at  12:12:23
+   Duration  512.25s (transform 1.77s, setup 0ms, import 22.49s, tests 484.85s, environment 3ms)
+
+ Container virtual-city-test-c761a6cc-db-1 Stopping 
+ Container virtual-city-test-c761a6cc-db-1 Stopped 
+ Container virtual-city-test-c761a6cc-db-1 Removing 
+ Container virtual-city-test-c761a6cc-db-1 Removed 
+ Network virtual-city-test-c761a6cc_default Removing 
+ Network virtual-city-test-c761a6cc_default Removed 
+$ pnpm -r build
+Scope: 13 of 14 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+packages/library-world build$ tsc -p tsconfig.json
+packages/deadline-world build$ tsc -p tsconfig.json
+packages/lounge-world build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/maid-world build$ tsc -p tsconfig.json
+packages/library-world build: Done
+packages/park-world build$ tsc -p tsconfig.json
+packages/lounge-world build: Done
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/maid-world build: Done
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/deadline-world build: Done
+packages/park-world build: Done
+packages/restaurant-world build: Done
+apps/platform-api build$ tsc -p tsconfig.json && node ../../scripts/copy-migrations.mjs
+packages/pixi-scene build: Done
+apps/portal-web build$ next build --webpack
+apps/portal-web build: ▲ Next.js 16.4.4 (webpack)
+apps/portal-web build: ✓ Running next.config.ts took 47ms
+apps/portal-web build:   Creating an optimized production build ...
+apps/platform-api build: Done
+apps/portal-web build: ✓ Compiled successfully in 4.5s
+apps/portal-web build:   Running TypeScript ...
+apps/portal-web build:   Finished TypeScript in 1605ms ...
+apps/portal-web build:   Collecting page data using 15 workers ...
+apps/portal-web build:   Generating static pages using 15 workers (0/6) ...
+apps/portal-web build:   Generating static pages using 15 workers (1/6) 
+apps/portal-web build:   Generating static pages using 15 workers (2/6) 
+apps/portal-web build:   Generating static pages using 15 workers (4/6) 
+apps/portal-web build: ✓ Generating static pages using 15 workers (6/6) in 835ms
+apps/portal-web build:   Finalizing page optimization ...
+apps/portal-web build:   Collecting build traces ...
+apps/portal-web build: Route (app)
+apps/portal-web build: ┌ ƒ /
+apps/portal-web build: ├ ○ /_not-found
+apps/portal-web build: ├ ○ /identity
+apps/portal-web build: ├ ƒ /invitations
+apps/portal-web build: ├ ○ /moderation
+apps/portal-web build: ├ ƒ /private/profile
+apps/portal-web build: ├ ƒ /private/withdraw
+apps/portal-web build: ├ ○ /safety
+apps/portal-web build: ├ ƒ /social
+apps/portal-web build: ├ ƒ /travel
+apps/portal-web build: ├ ƒ /worlds/deadline
+apps/portal-web build: ├ ƒ /worlds/library
+apps/portal-web build: ├ ƒ /worlds/lounge
+apps/portal-web build: ├ ƒ /worlds/maid
+apps/portal-web build: ├ ƒ /worlds/park
+apps/portal-web build: ├ ƒ /worlds/restaurant
+apps/portal-web build: ├ ƒ /worlds/sdk-sandbox
+apps/portal-web build: └ ○ /worlds/sdk-sandbox/avatar-lab
+apps/portal-web build: ○  (Static)   prerendered as static content
+apps/portal-web build: ƒ  (Dynamic)  server-rendered on demand
+apps/portal-web build: Done
