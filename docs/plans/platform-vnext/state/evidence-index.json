@@ -1296,6 +1296,189 @@
         "No performance/retention target achievement or media release approval",
         "Pure CSS package adds only a lockfile importer; external dependency graph unchanged"
       ]
+    },
+    {
+      "id": "n10-01-2026-11-05",
+      "taskId": "N10-01",
+      "sourceRevision": "187827b51e71fa2e57459c9c448d117094f65438+workspace-sha256:db684339eaa723af97a8094e9003d6c39f66346a4e32f3ba0dd733c505fb23ce",
+      "environment": "Local Linux x64; Node 26.9.0; pnpm 11.28.5; scope-specific commands below",
+      "executedAt": "2026-11-05T15:48:33.264347+00:00",
+      "commands": [
+        {
+          "command": "pnpm architecture:check",
+          "argv": [
+            "pnpm",
+            "architecture:check"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T15:48:32.310Z",
+          "endedAt": "2026-11-05T15:48:32.892Z",
+          "log": "artifacts/vnext/n10-01/architecture.log",
+          "sha256": "37cd523cf1e2d517b9350d660fc6967f21d2dc4b19bc60c95e4f7d7cc1598b65"
+        },
+        {
+          "command": "python3 /tmp/vnext-environment.py n10-01",
+          "argv": [
+            "python3",
+            "/tmp/vnext-environment.py",
+            "n10-01"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T15:44:20.182Z",
+          "endedAt": "2026-11-05T15:44:20.790Z",
+          "log": "artifacts/vnext/n10-01/inventory-scoped.log",
+          "sha256": "9cea814459f97c70ca673c8a74bfb7a5a5c6eb1441063c4eafcbcb7c5e6a61ef"
+        },
+        {
+          "command": "python3 /tmp/vnext-environment.py",
+          "argv": [
+            "python3",
+            "/tmp/vnext-environment.py"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T15:41:21.345Z",
+          "endedAt": "2026-11-05T15:41:22.072Z",
+          "log": "artifacts/vnext/n10-01/inventory.log",
+          "sha256": "51f65bef9e44d2346f1339d9c676846e245f4bbee42f4c230bd5f2c321324abd"
+        },
+        {
+          "command": "python3 /tmp/vnext-toolchain-review.py",
+          "argv": [
+            "python3",
+            "/tmp/vnext-toolchain-review.py"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T15:41:20.528Z",
+          "endedAt": "2026-11-05T15:41:21.283Z",
+          "log": "artifacts/vnext/n10-01/official-template.log",
+          "sha256": "3bb6336b35dd20364e703a1e4bda39da947c1b3252b553ef1617709148ae9846"
+        },
+        {
+          "command": "node docs/plans/platform-vnext/tools/validate-plan.mjs",
+          "argv": [
+            "node",
+            "docs/plans/platform-vnext/tools/validate-plan.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T15:48:32.957Z",
+          "endedAt": "2026-11-05T15:48:33.015Z",
+          "log": "artifacts/vnext/n10-01/plan-current.log",
+          "sha256": "2ecc4db49606cf8b6e6143b2ba89a4d6dc86e4213d0e7c436b674c3a22f2713b"
+        },
+        {
+          "command": "node docs/plans/platform-vnext/tools/validate-plan.mjs",
+          "argv": [
+            "node",
+            "docs/plans/platform-vnext/tools/validate-plan.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T15:46:19.927Z",
+          "endedAt": "2026-11-05T15:46:19.979Z",
+          "log": "artifacts/vnext/n10-01/plan.log",
+          "sha256": "2ecc4db49606cf8b6e6143b2ba89a4d6dc86e4213d0e7c436b674c3a22f2713b"
+        }
+      ],
+      "scenarios": [],
+      "artifacts": [
+        {
+          "ref": "docs/mobile/ANDROID-SPIKE.md",
+          "sha256": "589b500e85d7effdcbbaeec313f890c8951bbce169376030e1248f23c8b035fd",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/mobile/android-spike.json",
+          "sha256": "a490322765b931ee190bc43416070568a79c37e2cdddb039adc14f24817f47ca",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/adr/0102-android-shared-client-spike.md",
+          "sha256": "a6387db2bd35b386ab6f31570171f651d6376cc064b1d8c49483c49f60fbc88a",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/template-review.json",
+          "sha256": "76015b6324bdbbe0d14eae532135407bd4406e7b717097448563d7b7055e3721",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/registry-pins.json",
+          "sha256": "47e3700d734f9b8ddf1c481e8d2faf4f2a5ef6c8d6f197612061704419a64543",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/jdk-pin.json",
+          "sha256": "2108f05d92f33a018f5648381ae6f449465d920032e769dd72b630b40eab48ff",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/inventory.json",
+          "sha256": "b78f0ce8f8c19bed58c09ec84e9e57317f235ecb98940c804aabd8192148408c",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/architecture.log",
+          "sha256": "37cd523cf1e2d517b9350d660fc6967f21d2dc4b19bc60c95e4f7d7cc1598b65",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/inventory-scoped.log",
+          "sha256": "9cea814459f97c70ca673c8a74bfb7a5a5c6eb1441063c4eafcbcb7c5e6a61ef",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/inventory.log",
+          "sha256": "51f65bef9e44d2346f1339d9c676846e245f4bbee42f4c230bd5f2c321324abd",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/official-template.log",
+          "sha256": "3bb6336b35dd20364e703a1e4bda39da947c1b3252b553ef1617709148ae9846",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/plan-current.log",
+          "sha256": "2ecc4db49606cf8b6e6143b2ba89a4d6dc86e4213d0e7c436b674c3a22f2713b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/plan.log",
+          "sha256": "2ecc4db49606cf8b6e6143b2ba89a4d6dc86e4213d0e7c436b674c3a22f2713b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N10-01-CHECKS.json",
+          "sha256": "846d781f7a7049ff4574f33fff9ff773a0b09acc8e3a6588ce2e4e6bfc839f78",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": true,
+      "limitations": [
+        "Phone/ADB/Studio/SDK unavailable; no physical run",
+        "Adoptium API lookup returned 403; official GitHub release metadata supplied proposed JDK pin instead",
+        "Android Studio installer and platform-tools checksum still must be pinned before installation",
+        "Local inspection helper initially reused old output location; original N00-03 inventory hash restored from its unchanged log, new N10 inventory retained in task-scoped output",
+        "All performance numbers are hypotheses, not achievements"
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

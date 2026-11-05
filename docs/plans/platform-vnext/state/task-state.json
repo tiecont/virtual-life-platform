@@ -463,12 +463,14 @@
       "next_action": "Admission invariant/fairness/failure report and queue recovery runbook"
     },
     "N10-01": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex Mobile lane",
+      "branch": "codex/vnext-n10-01-android-spike",
+      "evidence_refs": [
+        "n10-01-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "CachyOS/Android toolchain inventory, one-device baseline matrix, proposed performance budgets và Capacitor ADR với iOS applicability riêng"
+      "next_action": "Reserve N01-01; implement a read-only per-file inventory with size/hash/classification and static/dynamic consumer mapping. Preserve source, migration, legacy and historical evidence; archive candidates are not deletion authorization."
     },
     "N10-02": {
       "status": "TODO",

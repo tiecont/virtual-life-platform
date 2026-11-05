@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N10-01 VERIFIED
+
+Recorded Android-first shared DOM/Pixi/Capacitor experiment ADR0102, read-only host/standard-path inventory and official integrity-checked Capacitor 8.6.0 templates. Locked proposed toolchain/JDK and pre-measurement workload/performance/lifecycle budgets. Actual phone fields and measured results remain UNKNOWN/NOT_RUN; N14 iOS remains separate. No native package/tool installation, APK or physical result claimed.
+
+Actual commands: 6; retained failed attempts: 0; required final checks passed. Evidence: `n10-01-2026-11-05`; [checks](../audit/N10-01-CHECKS.json). Current counts: `{"VERIFIED": 7, "TODO": 62}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N01-01; implement a read-only per-file inventory with size/hash/classification and static/dynamic consumer mapping. Preserve source, migration, legacy and historical evidence; archive candidates are not deletion authorization.
+
 ## 2026-11-05 — N06-02 VERIFIED
 
 Implemented reusable CSS tokens/primitives and an isolated scene-first Deadline/Maid state prototype, with native modal/bottom-sheet controls, independent withdrawal, reduced motion, 200% text wrapping and no live API calls. Real Chromium walkthrough passes 360px/desktop across eight state designs each; Enter/Tab/Shift+Tab/Escape focus, private focus/cancel, voluntary shift stop, safety and static-server deny guards pass. Inspected desktop/mobile and large-text captures.

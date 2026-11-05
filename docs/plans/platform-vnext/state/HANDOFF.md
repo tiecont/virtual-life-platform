@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T15:39:16.747120+00:00; task N06-02 VERIFIED on `codex/vnext-n06-02-prototype`. Base revision `a2a84e1aee8464f0fe1b20e3e5dac5400966bd13`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T15:48:33.264347+00:00; task N10-01 VERIFIED on `codex/vnext-n10-01-android-spike`. Base revision `187827b51e71fa2e57459c9c448d117094f65438`; this task has its own reviewable commit after evidence finalization.
 
-Implemented reusable CSS tokens/primitives and an isolated scene-first Deadline/Maid state prototype, with native modal/bottom-sheet controls, independent withdrawal, reduced motion, 200% text wrapping and no live API calls. Real Chromium walkthrough passes 360px/desktop across eight state designs each; Enter/Tab/Shift+Tab/Escape focus, private focus/cancel, voluntary shift stop, safety and static-server deny guards pass. Inspected desktop/mobile and large-text captures.
+Recorded Android-first shared DOM/Pixi/Capacitor experiment ADR0102, read-only host/standard-path inventory and official integrity-checked Capacitor 8.6.0 templates. Locked proposed toolchain/JDK and pre-measurement workload/performance/lifecycle budgets. Actual phone fields and measured results remain UNKNOWN/NOT_RUN; N14 iOS remains separate. No native package/tool installation, APK or physical result claimed.
 
-[Actual checks](../audit/N06-02-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 6, "TODO": 63}`.
+[Actual checks](../audit/N10-01-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 7, "TODO": 62}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N10-01; pin a proposed Android toolchain and pre-measurement device/workload/budget matrix with Capacitor ADR, preserving UNKNOWN phone facts and separate conditional iOS gates. Then continue dependency-ready repository and boundary work.
+Reserve N01-01; implement a read-only per-file inventory with size/hash/classification and static/dynamic consumer mapping. Preserve source, migration, legacy and historical evidence; archive candidates are not deletion authorization.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.
