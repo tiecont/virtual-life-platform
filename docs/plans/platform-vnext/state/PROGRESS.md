@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N01-05 VERIFIED
+
+Completed N01 clean checkout from committed6a7ae93 with no author artifacts/env/archive/key/node_modules. Frozen install, explicit network-enabled selected-source prep, required prep rerun,3586-file evidence retrieval and full check pass(44governance/278unit/553integration/API+portal builds). Tracked clone clean;38historicalSQL and151-task ledger preserved. Canonical docs/index and exact committed current-tree measurements added.
+
+Actual commands: 15; retained failed attempts: 2; required final checks passed. Evidence: `n01-05-2026-11-05`; [checks](../audit/N01-05-CHECKS.json). Current counts: `{"VERIFIED": 12, "TODO": 57}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N02-01; publish audited current-to-target API ownership/public entry map and enforce private imports/world persistence boundaries, keep the one-DB journal and room-dependent lifecycle intact, run architecture/lint and negative boundary checks.
+
 ## 2026-11-05 — N01-04 VERIFIED
 
 Removed only 3586 indexed historical outputs (3005 raw,581 migrated JSON), preserving all870 other tracked files at deletion. Current tracked bytes fell160766453→8890317 (151876136 removed); Git history unchanged. Fresh encrypted archive and complete Git retrieval pass; governance/release/ops/evidence pass with originals and local store/key absent.

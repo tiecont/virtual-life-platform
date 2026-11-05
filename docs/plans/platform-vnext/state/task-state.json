@@ -147,12 +147,14 @@
       "next_action": "Reserve N01-05; clone committed full history into a new isolated directory with no author artifacts/env/node_modules, run frozen install, legacy preparation, evidence verification and full pnpm check; publish canonical docs and actual clean-checkout/size results."
     },
     "N01-05": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex Foundation lane",
+      "branch": "codex/vnext-n01-05-clean-checkout",
+      "evidence_refs": [
+        "n01-05-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "Clean-checkout build/test log; canonical docs index"
+      "next_action": "Reserve N02-01; publish audited current-to-target API ownership/public entry map and enforce private imports/world persistence boundaries, keep the one-DB journal and room-dependent lifecycle intact, run architecture/lint and negative boundary checks."
     },
     "N02-01": {
       "status": "TODO",

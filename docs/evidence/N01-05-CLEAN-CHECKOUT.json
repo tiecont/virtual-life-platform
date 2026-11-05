@@ -1,0 +1,78 @@
+{
+  "taskId": "N01-05",
+  "sourceRevision": "6a7ae9328cb64e76fc1ec5c4ffa4df1ce1815a75",
+  "checkoutStart": {
+    "scope": "Fresh separate local full-history clone; no hardlinks/shared object alternates; dependency cache may be warm",
+    "path": "/tmp/virtual-city-n01-05-6a7ae93",
+    "revision": "6a7ae9328cb64e76fc1ec5c4ffa4df1ce1815a75",
+    "initialStatus": "CLEAN",
+    "absentAtStart": [
+      "node_modules",
+      "artifacts",
+      ".env",
+      ".env.safety",
+      ".git/shallow",
+      ".git/objects/info/alternates"
+    ],
+    "source": "Local committed repository, not a fresh authenticated GitHub network clone",
+    "beforeCleanup": {
+      "revision": "d858d5aaf9d25136cf51ddc2446e01df02d48dd1",
+      "trackedFiles": 4456,
+      "trackedBlobBytes": 160766321
+    },
+    "afterCleanup": {
+      "revision": "6a7ae9328cb64e76fc1ec5c4ffa4df1ce1815a75",
+      "trackedFiles": 872,
+      "trackedBlobBytes": 8913719
+    },
+    "limitations": [
+      "Git object database/full-history transfer remains; these are tracked blob/current-tree byte measurements",
+      "Global pnpm dependency cache shared; no author artifacts or env copied"
+    ]
+  },
+  "actualResult": {
+    "frozenInstall": 0,
+    "legacyPreparationInitialOffline": 1,
+    "explicitNetworkDeadline": 0,
+    "explicitNetworkMaid": 0,
+    "requiredLegacyPreparationRerun": 0,
+    "fullCheckInitialStoppedAfterPrerequisiteFailure": 1,
+    "fullCheckFinal": 0,
+    "governanceCases": 44,
+    "unitFiles": 58,
+    "unitCases": 278,
+    "integrationFiles": 38,
+    "integrationCases": 553,
+    "apiBuild": 0,
+    "portalBuild": 0,
+    "evidenceFiles": 3586,
+    "evidenceSourceBytes": 151876136,
+    "canonicalLocalLinks": 109
+  },
+  "trackedTreeAfter": "CLEAN",
+  "absentAfter": [
+    ".env",
+    ".env.safety",
+    "docs/agent/evidence",
+    "artifacts/evidence-store",
+    "artifacts/evidence-keys",
+    ".git/shallow",
+    ".git/objects/info/alternates"
+  ],
+  "historicalMigrationFilesUnchanged": 38,
+  "historicalTaskCounts": {
+    "VERIFIED": 148,
+    "BLOCKED_EXTERNAL": 3
+  },
+  "freshIntegrationOutputs": 2,
+  "ownedTestDatabase": "virtual-city-test-3e09541c",
+  "ownedDatabaseCleanup": "Full check log records removal; separate docker ps -a filter returned no owned containers",
+  "limitations": [
+    "Fresh separate local Git clone, not hosted or authenticated GitHub network clone",
+    "Global dependency cache can be warm; root install and selected-source missing packages actually fetched network, no author cache copied",
+    "Deadline source declares Node26.13.x vs repo runtime26.9.x; original warning/source preserved",
+    "Full check excludes E2E/physical devices/deployment/store qualification",
+    "Git history/clone transfer remains; measured tracked blob sizes exclude installed dependencies and ignored artifacts",
+    "Initial offline preparation failure and intentionally stopped aggregate are retained, never reported passing"
+  ]
+}

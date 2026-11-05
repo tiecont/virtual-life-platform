@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T16:54:16.300993+00:00; task N01-04 VERIFIED on `codex/vnext-n01-04-evidence-cleanup`. Base revision `d858d5aaf9d25136cf51ddc2446e01df02d48dd1`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T17:12:39.296819+00:00; task N01-05 VERIFIED on `codex/vnext-n01-05-clean-checkout`. Base revision `6a7ae9328cb64e76fc1ec5c4ffa4df1ce1815a75`; this task has its own reviewable commit after evidence finalization.
 
-Removed only 3586 indexed historical outputs (3005 raw,581 migrated JSON), preserving all870 other tracked files at deletion. Current tracked bytes fell160766453→8890317 (151876136 removed); Git history unchanged. Fresh encrypted archive and complete Git retrieval pass; governance/release/ops/evidence pass with originals and local store/key absent.
+Completed N01 clean checkout from committed6a7ae93 with no author artifacts/env/archive/key/node_modules. Frozen install, explicit network-enabled selected-source prep, required prep rerun,3586-file evidence retrieval and full check pass(44governance/278unit/553integration/API+portal builds). Tracked clone clean;38historicalSQL and151-task ledger preserved. Canonical docs/index and exact committed current-tree measurements added.
 
-[Actual checks](../audit/N01-04-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 11, "TODO": 58}`.
+[Actual checks](../audit/N01-05-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 12, "TODO": 57}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N01-05; clone committed full history into a new isolated directory with no author artifacts/env/node_modules, run frozen install, legacy preparation, evidence verification and full pnpm check; publish canonical docs and actual clean-checkout/size results.
+Reserve N02-01; publish audited current-to-target API ownership/public entry map and enforce private imports/world persistence boundaries, keep the one-DB journal and room-dependent lifecycle intact, run architecture/lint and negative boundary checks.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.

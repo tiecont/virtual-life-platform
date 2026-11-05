@@ -2,6 +2,10 @@
 
 Continue implementation from the [vNext 2.1 master](docs/plans/platform-vnext/MASTER-AGENT-PLAN.md) and [current handoff](docs/plans/platform-vnext/state/HANDOFF.md). The [current architecture/evidence index](docs/architecture/CURRENT-STATE.md) separates implemented local gameplay, fresh baseline results, historical evidence and proposed work. The original Mxx ledger remains intact. Android comes first on CachyOS; iOS is a separate conditional lane. No public/store release is approved.
 
+Use the [current documentation index](docs/README.md) and [clean-checkout procedure](docs/operations/CLEAN-CHECKOUT.md). Historical raw outputs now live in the original private Git revision and an additional authenticated archive; [indexed retrieval](docs/evidence/README.md) preserves their hashes without requiring author artifacts. Git history is retained.
+
+The module notes below retain their Mxx checkpoint scope, including earlier offline-only hosted-CI observations. Use the current architecture map and dated Nxx evidence for later local/hosted outcomes and remaining work.
+
 [Release trains](docs/operations/RELEASE-TRAINS.md) enumerate independently assessed waves,flag ownership and unassigned public responsibilities. `node scripts/verify-release.mjs` audits the offline candidate;all public gates remain closed.
 
 [Offline handoff](docs/agent/OFFLINE-HANDOFF.md) records the final local scope and remaining external gates. `node scripts/ops-watch.mjs` reports current task/world status and measured local observations with explicit unknown retention/costs. No public release or live monitoring is installed.
