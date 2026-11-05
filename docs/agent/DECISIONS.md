@@ -1,5 +1,7 @@
 # Decisions
 
+M23-03:completeincidenttechnicalwork/runfresh4controltests0,but respectexplicitassignedpublicon-duty/contact acceptance. All6rolesnull/safetyescalationunassigned;markBLOCKED_EXTERNAL B-003,notVERIFIEDbydocuments/syntheticstaff. Continueindependent04..06offline,no publicpermissionrequest/provisioning.
+
 M23-02 / ADR0099:cached36images are dependencybases only,notcurrent38acceptance. Verifyexternalgraph/sourceGit/outputhashes and networknoneoverlay;rollbacktogenuineearlier38-aware3a2de59API,currentwebfixed. Actual38encryptedrestore/TLSfailedcanary/compatibleAPIrollback-rollforward0/old36preflightdenied. Firstbrowserrenewfetchfailure remainsunexplained,notfixedbydiagnostics;retainallfailures/publicOFF/noDBdowngrade. Nextincident/publicstaffinggate.
 
 M23-01 / ADR0098:separate independent wave candidates from human release authority. ExactW2 baseline excludes laterworlds;JSONinventory plus read-only governance,negative public/staff/dating cases. AllrealflagsOFF/publicNoGo/sixunassignedroles;25governance/lint0. Production rejects localinstallation;reviewing JSON neverinstallsworlds. Continue02current38offlinecandidate/backup/rollback.

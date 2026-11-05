@@ -1,0 +1,37 @@
+ Network virtual-city-test-e08d7601_default Creating 
+ Network virtual-city-test-e08d7601_default Creating 
+ Network virtual-city-test-e08d7601_default Created 
+ Network virtual-city-test-e08d7601_default Created 
+ Container virtual-city-test-e08d7601-db-1 Creating 
+ Container virtual-city-test-e08d7601-db-1 Created 
+ Container virtual-city-test-e08d7601-db-1 Starting 
+ Container virtual-city-test-e08d7601-db-1 Started 
+ Container virtual-city-test-e08d7601-db-1 Waiting 
+ Container virtual-city-test-e08d7601-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+stdout | tests/integration/sanctions.test.ts > measures the actual local HTTP review and incident round trips with committed restrictions and drained memberships
+M08-06_LOCAL_HTTP_TIMING {"samples":[{"operation":"assigned-case-read","elapsedMs":26.989227000000028},{"operation":"issue-mute","elapsedMs":25.15677599999981},{"operation":"own-decisions-read","elapsedMs":10.240624000000025},{"operation":"private-appeal-intake","elapsedMs":10.524223999999776},{"operation":"independent-appeal-revoke","elapsedMs":15.422187000000122},{"operation":"world-closure","elapsedMs":13.99395000000004},{"operation":"independent-world-recovery","elapsedMs":11.034606999999596}],"clientDeadlineMs":2500,"profile":"one sample per operation, synthetic local TCP/DB, no production percentile/SLA claim"}
+
+ ✓ |integration| tests/integration/sanctions.test.ts (24 tests | 21 skipped) 4358ms
+   ✓ scoped admin closes chat before delayed moderation delivery, keeps room activity, requires independent recovery and rejects stale closure replay  1636ms
+   ✓ world closure interrupts all occupants and persists across restart without evidence key; recovery cannot override disabled flags  1357ms
+   ✓ measures the actual local HTTP review and incident round trips with committed restrictions and drained memberships  1362ms
+stdout | tests/integration/lounge-operations.test.ts > emergency world closure rejects ordinary callers,ejects current visits and independent recovery never restores stage or audience consent
+{"scope":"local Lounge emergency closure plus explicit maintenance and independent recovery","elapsedMs":116.09310700000015,"membershipsImmediatelyAfterClosure":0,"restoredConsent":false}
+
+ ✓ |integration| tests/integration/lounge-operations.test.ts (3 tests | 2 skipped) 1884ms
+   ✓ emergency world closure rejects ordinary callers,ejects current visits and independent recovery never restores stage or audience consent  1881ms
+
+ Test Files  2 passed (2)
+      Tests  4 passed | 23 skipped (27)
+   Start at  11:58:15
+   Duration  8.58s (transform 714ms, setup 0ms, import 2.04s, tests 6.24s, environment 0ms)
+
+ Container virtual-city-test-e08d7601-db-1 Stopping 
+ Container virtual-city-test-e08d7601-db-1 Stopped 
+ Container virtual-city-test-e08d7601-db-1 Removing 
+ Container virtual-city-test-e08d7601-db-1 Removed 
+ Network virtual-city-test-e08d7601_default Removing 
+ Network virtual-city-test-e08d7601_default Removed 

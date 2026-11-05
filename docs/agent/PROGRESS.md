@@ -1,5 +1,9 @@
 # Agent progress
 
+## M23-03 — local technical work complete;BLOCKED_EXTERNAL public coverage
+
+Fromd926e53;[incident runbook](../operations/INCIDENTS.md),[evidence](evidence/m23-incidents-checks.json). Complete abuse/leak/roomcrash/performance containment/privateevidence/independentrecovery/handover procedures usingactualexistingcontrols. FreshrealPG/Socket+TCP4tests0/23filteredskips:in-flightchatdenied/no broadcast,worldclosure0members/otherworldunaffected,restartwithoutkeypersistsclosure,distinctadminrecovery/stalereplay/baseflagdenial/auditappendonly;Lounge no stage/audienceconsent resurrection. OwnedDBcleaned,no runtime/DDL/publicchange. M23-03explicitacceptance requiresassignedpublicon-duty/contact;allrolesnull/escalationunassigned,so whole task BLOCKED_EXTERNAL despite completedlocaldrill. No invented staffing/alert/realgrant/publicapproval. ContinueindependentM23-04..06offline.
+
 ## M23-02 — VERIFIED current38 local migration/recovery rehearsal
 
 From07a2372;[ADR0099](../adr/0099-network-disabled-candidates-and-compatible-api-recovery.md),[runbook](../operations/MIGRATION-RELEASE.md),[exact commands/results](evidence/m23-recovery-checks.json). Freshbuild0;actual encrypted38journal backup/emptyrestore/authsession/no phantom/strandedordercancel/no completion/negativeguards/cleanup0(local2905ms,nongoingRPO/RTO). Cached36image rejectedbeforestackmutation. Newnetwork-none/noinstall/nopull builder verifiesunchangedexternalgraph,selectedsourceGit hashes,curated784/778outputhashes/imports/current38. Current07a2372 and genuineearlier3a2de59 API/package images;webcurrentfixed,no publicartifact hardeningclaim.

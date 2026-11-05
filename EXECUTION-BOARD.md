@@ -138,7 +138,7 @@
 | M22 | M22-06 · Perform accessibility audits: focus order, keyboard navigation, reduced-motion, color contrast. | VERIFIED | ACCESSIBILITY-AUDIT.md/m22-accessibility-checks.json;10unique desktopmobilebrowsercases0,newLibrarykeyboardtimer/entry-seat-exit;types/lint/CIpolicy0/456hashesstable/335runtimeunchanged. Selectedcontrastmin5.7288/targets44px;24freshfiles/4PNGsinspected. HumanAT/device/legacy/allstates backlog explicit,noWCAGcertification. |
 | M23 | M23-01 · Define wave-based release checklist and feature flag inventory with owners. | VERIFIED | ADR0098/m23-trains-checks.json;25governance/lint0,7worlds5waves/sixunassignedroles;W2independent/publicNoGo. |
 | M23 | M23-02 · Create migration release runbook with preflight backup, canary and rollback. | VERIFIED | ADR0099/m23-recovery-checks.json;actual38encryptedrestore/TLSfailedcanary/compatibleAPIrollback-rollforward0,36imagepreflightrefused;initialfetchfailure retained/publicOFF. |
-| M23 | M23-03 · Create incident and safety runbooks (abuse, data leak, room crash, performance). | TODO | — |
+| M23 | M23-03 · Create incident and safety runbooks (abuse, data leak, room crash, performance). | BLOCKED_EXTERNAL | Localrunbooks/fresh4controltests0/23filteredskips;m23-incidents-checks.json. Explicitpublicon-duty/contact acceptance missing;no realstaff fabricated. |
 | M23 | M23-04 · Run end-to-end staging smoke and release rehearsal. | TODO | — |
 | M23 | M23-05 · Request explicit owner approvals and record release decision. | TODO | — |
 | M23 | M23-06 · Prepare launch/post-release metrics monitoring and truthful handoff report. | TODO | — |
