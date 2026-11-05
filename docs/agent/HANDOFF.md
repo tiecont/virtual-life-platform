@@ -6,7 +6,15 @@ Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;bran
 
 Node26.9.0/pnpm11.28.5. RetaineddevDB0036/stopped;latestjournal/9privatecounts0. No preview/verificationworker remains. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
 
-## Current work — M22-05 VERIFIED;continue M22-06
+## Current work — M22-06 VERIFIED;continue M24-01
+
+From5af78c6;ACCESSIBILITY-AUDIT.md/m22-accessibility-checks.json. ExistingSDK/Restaurant/Lounge/mapnative/focus/contrast/motion reused,newLibrarykeyboard entry/desk/timerstart-pause-resume-cancel/exit/focus/aria-liveoff/reducedmotion/noidleframes. Initial2pass thenDOMNodeListspreadtypeerror2;changedArray.from/factsafterexitassertions,finaltypes0/final2Librarybrowser0. Finalunique10cases0(2Library/6worlds/2map),initial2retainedseparately. Wholelint/CIpolicy0;456sourcehashesstable aroundfinalLibrary,onlyLibrarytest differsfrom5af78c6/all335runtimepathsunchanged. Hostbuildstillcurrent/no newwhole503integration/fullbuild/imageclaim.
+
+Perdevice11Library/14SDK/42Restaurant contrastmin5.7288236;Library20buttonsmin44px.24freshfiles12PNGs/12facts+3batchreports/manifest savedm22-accessibility-visual,10changedhistoricalversions restoredfromindex.4selectedPNGsinspected:Librarybothdevices,Loungemobilepage,mapmobile. No newblockingdefecttestedcontrols;A11Y-01..05backlog realAT/device/legacy/privateTabloops/zoom/forcedcolors/allcontraststates,notWCAGcertification. Allownedbrowser/DB/API/webworkersfinished;noapp/config/asset/schema/migration/retained0036/stopped/realflag/provider/staff/legacy/remote/publicchange. M22-04wholeactuallegacyjourneystill B-001/B-002;M23moduledependslegacy/M22thereforenotready.
+
+Next exact actionM24-01:readplans/24-central-park-world.md anddirectM04/M05/M06/M07/M08/M09/M14plans;auditsourceexistingpark/catalog/SDK/social/safety/nativeUXbefore newscene/policyverticalslice. Wholeplanincomplete.
+
+## Prior slice — M22-05 VERIFIED
 
 Implemented tests/load/city-profiles.ts/pnpm bench:city and count-only applicationTCP read/write bytes in testchild IPC. CLIclients100/1000,soak2smokeor120full;strictloopback disposablePG/separatechild/uniquephysicalIPs/publicfixtureconsent,unchangedcap8/max32rooms/1000transport. Ramp10/batch100mspause,stressallconcurrentjoins,soakstaggered30sprivateauthoritativesnapshots. API720MiB/client768MiB/hostavailable2GiBguards,startavailable3GiB,5minuteabort,child20sstopthenownSIGKILLifneeded. Phasep50/p95/outcomes/CPU/RSS/APIbytes separatefrombrowser/DB/WAN;profilecount-onlyJSON,noIDs/cookies.
 

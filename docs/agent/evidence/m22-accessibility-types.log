@@ -1,0 +1,1 @@
+tests/e2e/library.spec.ts(52,14): error TS2488: Type 'NodeListOf<Element>' must have a '[Symbol.iterator]()' method that returns an iterator.

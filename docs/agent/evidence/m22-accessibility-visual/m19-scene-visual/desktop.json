@@ -1,0 +1,147 @@
+{
+  "sameIdentity": true,
+  "capacity": 12,
+  "seats": 10,
+  "closedStageDenied": true,
+  "actualSeat": "seat-1",
+  "reducedMotion": true,
+  "mediaRequests": 0,
+  "targets": [
+    {
+      "label": "Refresh stage",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Stop stage participation",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Refresh lounge sets",
+      "width": 152.609375,
+      "height": 44
+    },
+    {
+      "label": "Refresh audience",
+      "width": 137.484375,
+      "height": 44
+    },
+    {
+      "label": "Check media clearance",
+      "width": 172.53125,
+      "height": 44
+    },
+    {
+      "label": "Stop voluntary work",
+      "width": 155.484375,
+      "height": 44
+    },
+    {
+      "label": "Refresh my work status",
+      "width": 176.1875,
+      "height": 44
+    },
+    {
+      "label": "Start voluntary shift",
+      "width": 153.796875,
+      "height": 44
+    },
+    {
+      "label": "Refresh mocktail service",
+      "width": 181.078125,
+      "height": 44
+    },
+    {
+      "label": "Order Moonlit mint-lime",
+      "width": 181.125,
+      "height": 44
+    },
+    {
+      "label": "Order Berry spark",
+      "width": 141.640625,
+      "height": 44
+    },
+    {
+      "label": "Walk to entrance",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Walk to front aisle",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Walk to audience aisle",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Walk to counter front",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Stand up",
+      "width": 85.375,
+      "height": 44
+    },
+    {
+      "label": "01Front rowYour seat",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "02Front rowAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "03Front rowAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "04Front rowAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "05Front rowAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "06Back rowAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "07Back rowAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "08Back rowAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "09Back rowAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "10Back rowAvailable",
+      "width": 230,
+      "height": 72
+    },
+    {
+      "label": "Leave lounge",
+      "width": 215,
+      "height": 44
+    }
+  ],
+  "errors": []
+}

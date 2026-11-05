@@ -1,5 +1,13 @@
 # Agent progress
 
+## M22-06 — VERIFIED scoped local accessibility audit/native Library keyboard case
+
+From5af78c6;[audit/prioritybacklog](../architecture/ACCESSIBILITY-AUDIT.md)/[ledger](evidence/m22-accessibility-checks.json). Add actual Library keyboard entry/desk/start-pause-resume-cancel timer/exit/focus restoration,OSreducedmotion/noidleframes/timeraria-liveoff/selectedcontrast/44pxtargets/nooverflow. Initial2desktopmobilepass;explicit typecheck2foundNodeListspreadwithoutDOM.Iterable,changedtestArray.from andfactswrittenafterexitassertions,finaltypes0/final2browser0. No product fix or type-config relaxation.
+
+Finalunique10browsercases0:2Library+6existingSDK/Restaurant/Loungefocus/native/motion/geometry+2separateportalmapkeyboard/nativecatalog/44px/nooverlap/sameidentity. InitialLibrary2executionsretainedseparately,not extrauniquecoverage. Perdevice selectedcontrast samples11Library/14SDK/42Restaurant,min5.7288all;Library20buttonsminimum44px. Wholelint/CIpolicy0;456hashes aroundfinalLibraryrunidentical,onlyLibrarytest changedversus5af78c6/all335runtimepathsunchanged. Existinghostbuildstillapplies;no new503integration/fullbuildclaim.
+
+24freshfiles12PNGs/12facts+3batchreports/manifest savedm22-accessibility-visual,10changedhistoricalversions restoredfromindex.4selectedimages inspected(Librarydesktop/mobile,Loungemobilepage,mapmobile),notall12visualreviewed. Scope/prioritiesA11Y-01..05track realAT/device/legacy/private-dialog/fullTaborder/zoom/forcedcolors/allcontraststates;no newblockingdefect in exercisedcontrols,noWCAG/humancertification. Noapp/config/asset/schema/migration/retained0036/stopped/realflags/provider/staff/legacy/remote/publicchange;allownedworkersfinished. M22-04actuallegacyjourneystillblocked,thereforeM23notready. Next exact action M24-01 readplan/directdeps and auditcurrentpark/SDK/social/safety/nativeintegration. Wholeplanincomplete.
+
 ## M22-05 — VERIFIED measurement tooling;100local baseline /1000hypothesis NOT_MET
 
 From63b2d9f;ADR0080/[profile and actualtable](../architecture/CITY-LOAD-PROFILES.md)/[ledger](evidence/m22-load-checks.json). `pnpm bench:city` uses strict100/1000and2smoke/120ssoak CLI,ownloopback child/disposablePG,physical sourceIPs/explicit publicfixturepresence,unchangedcaps. Ramp10/batch100mspause,allconcurrentjoin stress,staggered30ssnapshots/120ssoak. Count-only privateIPC addsAPI TCPbytes;phaseall/success p50/p95/outcomes/rejection ratios/API CPU-RSS/clientRSS/hostmemory.3GiBstart/2GiBhostmin/API720MiB/client768MiB/5minabort/owned20sstopfallback,normalexplicitzero cleanup. Forcedresource/deadline/cancellation paths NOT fault-injected.
