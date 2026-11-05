@@ -1,0 +1,6 @@
+
+/home/tiecont/Projects/virtual-city/tests/load/deadline-baseline.ts
+  27:74  error  'users' is never reassigned. Use 'const' instead  prefer-const
+
+✖ 1 problem (1 error, 0 warnings)
+

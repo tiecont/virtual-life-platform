@@ -1,0 +1,42 @@
+$ pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/deadline-baseline.ts
+$ pnpm --filter './packages/*' -r build
+Scope: 10 of 13 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/world-sdk build: Done
+packages/deadline-world build$ tsc -p tsconfig.json
+packages/lounge-world build$ tsc -p tsconfig.json
+packages/library-world build$ tsc -p tsconfig.json
+packages/park-world build$ tsc -p tsconfig.json
+packages/park-world build: Done
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/lounge-world build: Done
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/library-world build: Done
+packages/deadline-world build: Done
+packages/restaurant-world build: Done
+packages/pixi-scene build: Done
+ Network virtual-city-test-f5495399_default Creating 
+ Network virtual-city-test-f5495399_default Creating 
+ Network virtual-city-test-f5495399_default Created 
+ Network virtual-city-test-f5495399_default Created 
+ Container virtual-city-test-f5495399-db-1 Creating 
+ Container virtual-city-test-f5495399-db-1 Created 
+ Container virtual-city-test-f5495399-db-1 Starting 
+ Container virtual-city-test-f5495399-db-1 Started 
+ Container virtual-city-test-f5495399-db-1 Waiting 
+ Container virtual-city-test-f5495399-db-1 Healthy 
+(node:715269) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:715340) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"recordedAt":"2026-11-05T07:56:18.873Z","command":"pnpm bench:deadline","complete":true,"phase":"leave","aborted":false,"forcedCleanup":false,"profile":{"actualSockets":40,"capacity":40,"claimedSeats":30,"seatRaceOwners":1,"soakSeconds":30,"elapsedMs":35727.024099999995,"allProfilesExplicitlyPublicWithinDeadline":true,"timerTickWritesAbsent":true},"hardware":{"node":"v26.9.0","platform":"linux","cpu":"AMD Ryzen 7 4800HS with Radeon Graphics","logicalCpus":16,"hostMemoryBytes":24573251584},"operations":[{"operation":"ramp:room.join","latencyMs":{"samples":40,"p50":23.200691000000006,"p95":32.24020299999984,"max":36.87276299999985},"outcomes":{"OK":40}},{"operation":"seat-race:seat.claim","latencyMs":{"samples":40,"p50":91.80413099999987,"p95":140.63985700000012,"max":144.78094599999986},"outcomes":{"OK":1,"SEAT_TAKEN":39}},{"operation":"seat-fill:seat.claim","latencyMs":{"samples":29,"p50":33.9228320000002,"p95":53.72588399999995,"max":53.90704699999969},"outcomes":{"OK":29}},{"operation":"soak:room.snapshot","latencyMs":{"samples":120,"p50":6.126600999999937,"p95":9.66253300000244,"max":30.96204999999827},"outcomes":{"OK":120}},{"operation":"leave:room.leave","latencyMs":{"samples":40,"p50":14.523465999998734,"p95":36.21700000000419,"max":50.53544700000202},"outcomes":{"OK":40}}],"server":{"cpuMs":2864.663,"rssPeakSampled":209793024,"heapPeakSampled":77342352,"sampleIntervalMs":1000,"final":{"sockets":40,"transportConnections":40,"authority":"held","rooms":{"rooms":1,"memberships":0,"connections":0,"occupiedSeats":0,"travelHolds":0,"graceMemberships":0,"receipts":110,"pending":0,"peakPending":40,"controlKeys":0},"realtime":{"pendingCommands":0,"peakPendingCommands":40,"droppedDeltas":0,"slowConsumerDisconnects":0,"commands":{"room.join":{"count":40,"errors":{"OK":40},"buckets":[{"upperMs":1,"count":0},{"upperMs":5,"count":0},{"upperMs":10,"count":0},{"upperMs":25,"count":25},{"upperMs":50,"count":15},{"upperMs":100,"count":0},{"upperMs":250,"count":0},{"upperMs":500,"count":0},{"upperMs":1000,"count":0},{"upperMs":2500,"count":0},{"upperMs":5000,"count":0},{"upperMs":null,"count":0}],"totalMs":937.144359,"maxMs":36.003555000000006},"room.leave":{"count":40,"errors":{"OK":40},"buckets":[{"upperMs":1,"count":0},{"upperMs":5,"count":0},{"upperMs":10,"count":9},{"upperMs":25,"count":23},{"upperMs":50,"count":8},{"upperMs":100,"count":0},{"upperMs":250,"count":0},{"upperMs":500,"count":0},{"upperMs":1000,"count":0},{"upperMs":2500,"count":0},{"upperMs":5000,"count":0},{"upperMs":null,"count":0}],"totalMs":725.282309999966,"maxMs":49.832275000000664},"room.snapshot":{"count":120,"errors":{"OK":120},"buckets":[{"upperMs":1,"count":0},{"upperMs":5,"count":28},{"upperMs":10,"count":89},{"upperMs":25,"count":2},{"upperMs":50,"count":1},{"upperMs":100,"count":0},{"upperMs":250,"count":0},{"upperMs":500,"count":0},{"upperMs":1000,"count":0},{"upperMs":2500,"count":0},{"upperMs":5000,"count":0},{"upperMs":null,"count":0}],"totalMs":727.2012269999891,"maxMs":29.63202999999703},"seat.claim":{"count":69,"errors":{"OK":30,"SEAT_TAKEN":39},"buckets":[{"upperMs":1,"count":0},{"upperMs":5,"count":0},{"upperMs":10,"count":0},{"upperMs":25,"count":0},{"upperMs":50,"count":29},{"upperMs":100,"count":25},{"upperMs":250,"count":15},{"upperMs":500,"count":0},{"upperMs":1000,"count":0},{"upperMs":2500,"count":0},{"upperMs":5000,"count":0},{"upperMs":null,"count":0}],"totalMs":4655.770567999999,"maxMs":142.73760300000004},"seat.release":{"count":0,"errors":{},"buckets":[{"upperMs":1,"count":0},{"upperMs":5,"count":0},{"upperMs":10,"count":0},{"upperMs":25,"count":0},{"upperMs":50,"count":0},{"upperMs":100,"count":0},{"upperMs":250,"count":0},{"upperMs":500,"count":0},{"upperMs":1000,"count":0},{"upperMs":2500,"count":0},{"upperMs":5000,"count":0},{"upperMs":null,"count":0}],"totalMs":0,"maxMs":0},"room.move":{"count":0,"errors":{},"buckets":[{"upperMs":1,"count":0},{"upperMs":5,"count":0},{"upperMs":10,"count":0},{"upperMs":25,"count":0},{"upperMs":50,"count":0},{"upperMs":100,"count":0},{"upperMs":250,"count":0},{"upperMs":500,"count":0},{"upperMs":1000,"count":0},{"upperMs":2500,"count":0},{"upperMs":5000,"count":0},{"upperMs":null,"count":0}],"totalMs":0,"maxMs":0}}}},"apiTcpReadBytes":118536,"apiTcpWrittenBytes":22370822},"limits":["40actual loopback API Socket clients,not40browsers or productionCCU","30second short soak,sampledAPI-only CPU/RSS/traffic;client,DB andbrowser rendering excluded/sharehost","No rate limits raised,uniquephysical loopbacks preserve existing quotas","No original/source/retaineddata/public/remotechange;forcekill path not separatelyfault-injected"]}
+ Container virtual-city-test-f5495399-db-1 Stopping 
+ Container virtual-city-test-f5495399-db-1 Stopped 
+ Container virtual-city-test-f5495399-db-1 Removing 
+ Container virtual-city-test-f5495399-db-1 Removed 
+ Network virtual-city-test-f5495399_default Removing 
+ Network virtual-city-test-f5495399_default Removed 
