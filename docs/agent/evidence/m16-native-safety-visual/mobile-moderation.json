@@ -1,0 +1,10 @@
+{
+  "sameReportKey": true,
+  "cases": 1,
+  "initialAutomaticSanctions": 0,
+  "assignedHumanFixture": true,
+  "workerRemoved": true,
+  "shiftEnded": true,
+  "orderRequeued": true,
+  "completions": 0
+}

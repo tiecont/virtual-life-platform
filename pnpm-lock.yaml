@@ -158,6 +158,9 @@ importers:
       '@virtual-city/lounge-world':
         specifier: workspace:*
         version: link:../../packages/lounge-world
+      '@virtual-city/maid-world':
+        specifier: workspace:*
+        version: link:../../packages/maid-world
       '@virtual-city/park-world':
         specifier: workspace:*
         version: link:../../packages/park-world

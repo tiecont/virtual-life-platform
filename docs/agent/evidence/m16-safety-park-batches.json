@@ -1,0 +1,22 @@
+[
+  {
+    "project": "desktop",
+    "batch": 1,
+    "filters": [
+      "tests/e2e/park.spec.ts",
+      "-g",
+      "approved Park greetings|lost actual greeting ACK"
+    ],
+    "exitCode": 0
+  },
+  {
+    "project": "mobile",
+    "batch": 1,
+    "filters": [
+      "tests/e2e/park.spec.ts",
+      "-g",
+      "approved Park greetings|lost actual greeting ACK"
+    ],
+    "exitCode": 0
+  }
+]

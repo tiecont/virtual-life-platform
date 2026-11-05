@@ -4,7 +4,7 @@ import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { Pool } from 'pg';
 import { io,type Socket } from 'socket.io-client';
-import { MeSchema,RoomAckSchema,AvatarKeySchema,type RoomSnapshot } from '@virtual-city/contracts';
+import { MeSchema,RoomAckSchema,AvatarKeySchema,ChatAckSchema,ChatMessageSchema,type RoomSnapshot } from '@virtual-city/contracts';
 import { maidCatalog,maidMenu,maidSourceAvatarSuggestions,maidWorldVersion,maidServicePolicy } from '@virtual-city/maid-world';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/config';
@@ -55,4 +55,10 @@ it('entitled on-shift apron projects only in Maid while the same City identity/p
  await pool.query("INSERT INTO engine_progression_entitlements VALUES($1,'cafe-apron',now())",[u.me.profile.id]);expect((await post(u,'me/appearance',{schemaVersion:1,source:source(room),outfit:'cafe-apron'})).statusCode).toBe(200);expect((await snapshot(socket,room)).participants.find(p=>p.profile.id===u.me.profile.id)).toMatchObject({profile:{avatarKey:'mint'},outfit:'cafe-apron'});
  expect(RoomAckSchema.parse(await socket.timeout(5000).emitWithAck('room.leave',command(room))).ok).toBe(true);const quiet=await enter(socket,'deadline');expect(quiet.self.accountId).toBe(u.me.profile.id);expect(quiet.participants.find(p=>p.profile.id===u.me.profile.id)).toMatchObject({profile:{avatarKey:'mint'},outfit:'casual'});expect((await app.http.inject({url:'/v1/me/export',headers:{cookie:u.cookie}})).json().domains.appearance.selected).toBe('cafe-apron');expect(RoomAckSchema.parse(await socket.timeout(5000).emitWithAck('room.leave',command(quiet))).ok).toBe(true);
  const returned=await enter(socket);expect(returned.participants.find(p=>p.profile.id===u.me.profile.id)?.outfit).toBe('casual');expect((await volunteer(u,returned)).statusCode).toBe(201);expect((await snapshot(socket,returned)).participants.find(p=>p.profile.id===u.me.profile.id)?.outfit).toBe('cafe-apron');await post(u,'staff/stop',{schemaVersion:1});expect((await snapshot(socket,returned)).participants.find(p=>p.profile.id===u.me.profile.id)?.outfit).toBe('casual');
+});
+it('actual Maid quick-only scope rejects raw text and forged sender before any broadcast;approved greeting respects bilateral block',async()=>{
+ await app.worlds.registry.setEnabled('maid',true);const a=await guest(),b=await guest();for(const u of[a,b])expect((await app.http.inject({method:'PATCH',url:'/v1/me/privacy',headers:headers(u),payload:{presence:'hidden',analyticsConsent:false,worldVisibility:{dating:'hidden',maid:'public'}}})).statusCode).toBe(200);
+ const sa=await connect(a),ra=await enter(sa),sb=await connect(b),rb=await enter(sb,'maid',ra.roomId),received:ReturnType<typeof ChatMessageSchema.parse>[]=[];sb.on('chat.message',raw=>received.push(ChatMessageSchema.parse(raw)));const send=(extra:object)=>sa.timeout(2500).emitWithAck('chat.send',{...command(ra),content:{kind:'canned',id:'hello'},...extra}).then(value=>ChatAckSchema.parse(value));
+ expect((await send({content:{kind:'text',text:'unreviewed arbitrary content'}})).ok).toBe(false);expect((await send({senderId:b.me.profile.id})).ok).toBe(false);await snapshot(sb,rb);expect(received).toHaveLength(0);expect((await send({})).ok).toBe(true);await snapshot(sb,rb);expect(received).toHaveLength(1);expect(received[0].sender.id).toBe(a.me.profile.id);
+ expect((await post(b,'blocks',{targetId:a.me.profile.id,blocked:true})).statusCode).toBe(200);expect((await send({content:{kind:'canned',id:'thanks'}})).ok).toBe(true);await snapshot(sb,rb);expect(received).toHaveLength(1);expect((await snapshot(sb,rb)).participants.some(p=>p.profile.id===a.me.profile.id)).toBe(false);
 });

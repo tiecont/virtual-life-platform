@@ -1,0 +1,130 @@
+ Network virtual-city-test-dd4a1a32_default Creating 
+ Network virtual-city-test-dd4a1a32_default Creating 
+ Network virtual-city-test-dd4a1a32_default Created 
+ Network virtual-city-test-dd4a1a32_default Created 
+ Container virtual-city-test-dd4a1a32-db-1 Creating 
+ Container virtual-city-test-dd4a1a32-db-1 Created 
+ Container virtual-city-test-dd4a1a32-db-1 Starting 
+ Container virtual-city-test-dd4a1a32-db-1 Started 
+ Container virtual-city-test-dd4a1a32-db-1 Waiting 
+ Container virtual-city-test-dd4a1a32-db-1 Healthy 
+[WebServer] (node:90905) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:90936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:90936) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:90936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:90904) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:91159) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:91284) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:91361) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:91479) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [desktop] › tests/e2e/maid-safety.spec.ts:9:5 › native private Maid report retries once;assigned moderator removes an active worker and requeues unfinished preparation (11.8s)
+(node:92344) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [desktop] › tests/e2e/maid-safety.spec.ts:16:5 › Maid block hides both participants and their greetings;contact stays denied in actual Deadline (9.4s)
+
+
+  1) [desktop] › tests/e2e/maid-safety.spec.ts:9:5 › native private Maid report retries once;assigned moderator removes an active worker and requeues unfinished preparation 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 404
+
+      11 |  try{const a=await guest(context,'Cafe reporter'),b=await guest(peer,'Cafe worker'),moderator=await guest(review,'Fixture reviewer');await visible(context,a);await visible(peer,b);await enter(page);const worker=await peer.newPage();await enter(worker);await page.getByRole('button',{name:'Sakura chair 01',exact:true}).click();const work=worker.getByRole('region',{name:'Voluntary cafe work'}),service=worker.getByRole('region',{name:'Virtual cafe service'});await work.getByRole('button',{name:'Start voluntary shift',exact:true}).click();await expect(work).toContainText('maid · maid · active');await page.getByRole('button',{name:'Order Coffee',exact:true}).click();await expect(page.getByText('Order state: PENDING',{exact:true})).toBeVisible();await service.getByRole('button',{name:'Refresh cafe service',exact:true}).click();await service.getByRole('button',{name:'Take service ticket',exact:true}).click();await service.getByRole('button',{name:'Start ingredient preparation',exact:true}).click();await expect(service.getByRole('region',{name:'Ingredient preparation'})).toBeVisible();
+      12 |   await page.getByRole('button',{name:'Report or block Cafe worker',exact:true}).click();const dialog=page.getByRole('dialog',{name:'Report or block Cafe worker',exact:true});const note='Private Maid allegation for a human fixture review.';await dialog.getByLabel('Note (optional)',{exact:true}).fill(note);let interrupted=false,receipt='';const keys:string[]=[];await page.route('**/v1/reports',async route=>{keys.push(route.request().headers()['idempotency-key']);if(!interrupted){interrupted=true;const response=await route.fetch();expect(response.status()).toBe(201);receipt=(await response.json()).receiptId;await route.abort('failed');}else await route.continue();});await dialog.getByRole('button',{name:'Send private report',exact:true}).click();await expect(dialog.getByText('Your report was not confirmed. Try again.',{exact:true})).toBeVisible();await dialog.getByRole('button',{name:'Send private report',exact:true}).click();await expect(dialog.getByText(/Report received. Receipt:/)).toBeFocused();expect(keys.length===2&&keys[0]===keys[1]).toBe(true);expect((await context.request.get('/v1/reports/'+receipt)).status()).toBe(200);expect((await peer.request.get('/v1/reports/'+receipt)).status()).toBe(404);expect(await worker.locator('body').innerText()).not.toContain(note);const cases=await db.query("SELECT id FROM safety_cases WHERE reporter_id=$1 AND world_slug='maid'",[a.profile.id]);expect(cases.rowCount).toBe(1);const caseId=cases.rows[0].id;expect((await db.query('SELECT count(*)::int AS n FROM safety_audit_events WHERE case_id=$1',[caseId])).rows[0].n).toBe(1);expect((await db.query('SELECT count(*)::int AS n FROM safety_sanctions')).rows[0].n).toBe(0);
+    > 13 |   const upgraded=await review.request.post('/v1/session/upgrade',{headers:headers(moderator),data:{loginName:'maidreview'+randomUUID().replaceAll('-','').slice(0,10),password:'synthetic-e2e-only-passphrase'}});expect(upgraded.status()).toBe(200);const registered=MeSchema.parse(await upgraded.json());await db.query('INSERT INTO safety_staff_grants VALUES($1,$2,$3,$4)',[registered.profile.id,'maid','safety-admin',new Date(Date.now()+3600000)]);const desk=await review.newPage();await desk.goto('/moderation');await desk.getByLabel('Case ID',{exact:true}).fill(caseId);await desk.getByRole('button',{name:'Search cases',exact:true}).click();await desk.getByRole('region',{name:'Case queue',exact:true}).getByRole('button').filter({hasText:caseId}).click();await desk.getByRole('button',{name:'Use my account',exact:true}).click();await desk.getByRole('button',{name:'Assign case',exact:true}).click();await expect(desk.getByText(note,{exact:true})).toBeVisible();await desk.getByLabel('Restriction',{exact:true}).selectOption('world-ban');await desk.getByLabel('Duration (minutes)',{exact:true}).fill('10');await desk.getByLabel('Private decision reason',{exact:true}).fill('Human fixture reviewed the private allegation and current context.');const issued=desk.waitForResponse(response=>response.url().endsWith(`/moderation/cases/${caseId}/sanctions`)&&response.request().method()==='POST');await desk.getByRole('button',{name:'Issue restriction',exact:true}).click();expect((await issued).status()).toBe(200);await expect.poll(async()=>await own(peer)).toBeNull();await expect.poll(async()=>(await db.query('SELECT phase FROM engine_hospitality_shifts WHERE account_id=$1',[b.profile.id])).rows[0]?.phase).toBe('ended');await expect.poll(async()=>(await db.query('SELECT phase FROM engine_hospitality_orders WHERE customer_id=$1',[a.profile.id])).rows[0]?.phase).toBe('PENDING');expect((await db.query('SELECT count(*)::int AS n FROM engine_hospitality_completions')).rows[0].n).toBe(0);await expect(service.getByRole('region',{name:'Ingredient preparation'})).toHaveCount(0);await work.getByRole('button',{name:'Stop voluntary work',exact:true}).click();await expect(work).toContainText('No active voluntary shift');await page.getByRole('button',{name:'Close',exact:true}).click();await page.getByRole('button',{name:'Refresh cafe service',exact:true}).click();await expect(page.getByText('Order state: PENDING',{exact:true})).toBeVisible();const dir='docs/agent/evidence/m16-native-safety-visual';await mkdir(dir,{recursive:true});await desk.screenshot({path:`${dir}/${info.project.name}-moderation.png`,fullPage:true});await worker.screenshot({path:`${dir}/${info.project.name}-restricted.png`,fullPage:true});await writeFile(`${dir}/${info.project.name}-moderation.json`,JSON.stringify({sameReportKey:true,cases:1,initialAutomaticSanctions:0,assignedHumanFixture:true,workerRemoved:true,shiftEnded:true,orderRequeued:true,completions:0},null,2));await page.getByRole('button',{name:'Withdraw unfinished service',exact:true}).click();await page.getByRole('button',{name:'Leave and return to city',exact:true}).click();await page.waitForURL('/');
+         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^
+      14 |  }finally{await peer.close();await review.close();await db.end();}
+      15 | });
+      16 | test('Maid block hides both participants and their greetings;contact stays denied in actual Deadline',async({page,context,browser},info)=>{
+        at /home/tiecont/Projects/virtual-city/tests/e2e/maid-safety.spec.ts:13:1503
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/maid-safety-native-private-eeb45-eues-unfinished-preparation-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/maid-safety-native-private-eeb45-eues-unfinished-preparation-desktop/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/maid-safety-native-private-eeb45-eues-unfinished-preparation-desktop/test-failed-3.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/desktop/maid-safety-native-private-eeb45-eues-unfinished-preparation-desktop/error-context.md
+
+    attachment #5: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/desktop/maid-safety-native-private-eeb45-eues-unfinished-preparation-desktop/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/desktop/maid-safety-native-private-eeb45-eues-unfinished-preparation-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [desktop] › tests/e2e/maid-safety.spec.ts:16:5 › Maid block hides both participants and their greetings;contact stays denied in actual Deadline 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  locator('canvas[data-scene="maid"]')
+    Expected: "2"
+    Received: "4"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveAttribute" locator('canvas[data-scene="maid"]') with timeout 5000ms
+      - waiting for locator('canvas[data-scene="maid"]')
+        14 × locator resolved to <canvas width="944" height="661" data-scene="maid" aria-hidden="true" data-entity-count="4" data-room-version="7" data-moving-count="0" data-sitting-count="1" data-suspended="false" data-render-count="10" data-created-entities="4" data-removed-entities="0" data-active-animations="0" data-avatar-outfit="casual" data-avatar-palettes="mint" data-reduced-motion="false" data-avatar-core="starter-v1" data-self-position="12.00:16.00"></canvas>
+           - unexpected value "4"
+
+
+      16 | test('Maid block hides both participants and their greetings;contact stays denied in actual Deadline',async({page,context,browser},info)=>{
+      17 |  test.setTimeout(60000);const peer=await browser.newContext({...devices[info.project.name==='mobile'?'iPhone 13':'Desktop Chrome'],baseURL:origin}),db=testDb();
+    > 18 |  try{const a=await guest(context,'Block owner'),b=await guest(peer,'Blocked visitor');await friends(context,a,peer,b);await allowInvites(peer,b);await visible(context,a);await visible(peer,b);await enter(page);const other=await peer.newPage();await enter(other);await expect(page.locator('canvas[data-scene="maid"]')).toHaveAttribute('data-entity-count','2');await other.getByRole('region',{name:'Cafe quick greetings'}).getByRole('button',{name:'Hello',exact:true}).click();await expect(page.getByRole('list',{name:'Recent visible cafe greetings'})).toContainText('Blocked visitor');const destination={worldSlug:'deadline',worldVersion:deadlineWorldVersion,sceneVersion:'1.0.0'};expect((await context.request.post('/v1/invitations',{headers:headers(a),data:{schemaVersion:1,recipientId:b.profile.id,destination}})).status()).toBe(201);await page.getByRole('button',{name:'Report or block Blocked visitor',exact:true}).click();const dialog=page.getByRole('dialog',{name:'Report or block Blocked visitor',exact:true});await dialog.getByRole('button',{name:'Block visitor',exact:true}).click();await expect(dialog.getByText('Blocked. Your contact settings were updated.',{exact:true})).toBeVisible();await dialog.getByRole('button',{name:'Close',exact:true}).click();for(const p of [page,other])await expect(p.locator('canvas[data-scene="maid"]')).toHaveAttribute('data-entity-count','1');await expect(page.getByRole('list',{name:'Recent visible cafe greetings'})).not.toContainText('Blocked visitor');
+         |                                                                                                                                                                                                                                                                                                                               ^
+      19 |   for(const p of [page,other]){await p.goto('/travel?destination=deadline');await expect(p.locator('.travel-location')).toHaveAttribute('data-world','maid');await p.getByRole('button',{name:'Confirm travel',exact:true}).click();await expect(p.locator('.travel-location')).toHaveAttribute('data-world','deadline');await p.getByRole('link',{name:'Open Deadline room',exact:true}).click();await p.getByRole('button',{name:'Enter cafe',exact:true}).click();await expect(p.getByRole('status')).toHaveText('Connected');await expect(p.locator('canvas[data-scene="deadline"]')).toHaveAttribute('data-entity-count','1');}expect((await own(context)).roomId).toBe((await own(peer)).roomId);for(const [sender,me,recipient]of [[context,a,b],[peer,b,a]]as const)expect((await sender.request.post('/v1/invitations',{headers:headers(me),data:{schemaVersion:1,recipientId:recipient.profile.id,destination}})).status()).toBe(404);const code=(await(await peer.request.get('/v1/social/me')).json()).contactCode;expect((await context.request.post('/v1/friends/requests',{headers:headers(a),data:{contactCode:code}})).status()).toBe(404);expect((await db.query('SELECT count(*)::int AS n FROM safety_sanctions')).rows[0].n).toBe(0);const dir='docs/agent/evidence/m16-native-safety-visual';await mkdir(dir,{recursive:true});await page.screenshot({path:`${dir}/${info.project.name}-cross-world-block.png`,fullPage:true});await writeFile(`${dir}/${info.project.name}-block.json`,JSON.stringify({positiveInviteControl:true,bilateralMaidVisibilityFiltered:true,greetingRemoved:true,sameActualDeadlineRoom:true,bilateralInvitesDenied:true,friendContactDenied:true,automaticSanctions:0},null,2));for(const p of[page,other]){await p.getByRole('button',{name:'Leave and return to city',exact:true}).click();await p.waitForURL('/');}
+      20 |  }finally{await peer.close();await db.end();}
+      21 | });
+        at /home/tiecont/Projects/virtual-city/tests/e2e/maid-safety.spec.ts:18:319
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/maid-safety-Maid-block-hid-e7de0-s-denied-in-actual-Deadline-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/maid-safety-Maid-block-hid-e7de0-s-denied-in-actual-Deadline-desktop/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/desktop/maid-safety-Maid-block-hid-e7de0-s-denied-in-actual-Deadline-desktop/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/desktop/maid-safety-Maid-block-hid-e7de0-s-denied-in-actual-Deadline-desktop/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/desktop/maid-safety-Maid-block-hid-e7de0-s-denied-in-actual-Deadline-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [desktop] › tests/e2e/maid-safety.spec.ts:9:5 › native private Maid report retries once;assigned moderator removes an active worker and requeues unfinished preparation 
+    [desktop] › tests/e2e/maid-safety.spec.ts:16:5 › Maid block hides both participants and their greetings;contact stays denied in actual Deadline 
+Test harness failed during command;no raw URL or configuration emitted
+ Container virtual-city-test-dd4a1a32-db-1 Stopping 
+ Container virtual-city-test-dd4a1a32-db-1 Stopped 
+ Container virtual-city-test-dd4a1a32-db-1 Removing 
+ Container virtual-city-test-dd4a1a32-db-1 Removed 
+ Network virtual-city-test-dd4a1a32_default Removing 
+ Network virtual-city-test-dd4a1a32_default Removed 

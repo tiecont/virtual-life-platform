@@ -1,0 +1,38 @@
+$ pnpm -r build
+Scope: 13 of 14 workspace projects
+packages/contracts build$ tsc -p tsconfig.json
+packages/contracts build: Done
+packages/focus-ui build$ tsc -p tsconfig.json
+packages/world-sdk build$ tsc -p tsconfig.json
+packages/world-sdk build: Done
+packages/deadline-world build$ tsc -p tsconfig.json
+packages/library-world build$ tsc -p tsconfig.json
+packages/lounge-world build$ tsc -p tsconfig.json
+packages/focus-ui build: Done
+packages/maid-world build$ tsc -p tsconfig.json
+packages/library-world build: Done
+packages/park-world build$ tsc -p tsconfig.json
+packages/lounge-world build: Done
+packages/pixi-scene build$ tsc -p tsconfig.json
+packages/deadline-world build: Done
+packages/restaurant-world build$ tsc -p tsconfig.json
+packages/maid-world build: Done
+packages/park-world build: Done
+packages/restaurant-world build: Done
+apps/platform-api build$ tsc -p tsconfig.json && node ../../scripts/copy-migrations.mjs
+packages/pixi-scene build: Done
+apps/portal-web build$ next build --webpack
+apps/portal-web build: ▲ Next.js 16.4.4 (webpack)
+apps/portal-web build: ✓ Running next.config.ts took 40ms
+apps/portal-web build:   Creating an optimized production build ...
+apps/platform-api build: Done
+apps/portal-web build: ✓ Compiled successfully in 7.3s
+apps/portal-web build:   Running TypeScript ...
+apps/portal-web build: app/components/VoluntaryStaffControls.tsx(18,763): error TS18047: 'confirmed.shift' is possibly 'null'.
+apps/portal-web build: app/components/VoluntaryStaffControls.tsx(18,797): error TS18047: 'confirmed.shift' is possibly 'null'.
+apps/portal-web build: Failed to type check.
+apps/portal-web build: Failed
+/home/tiecont/Projects/virtual-city/apps/portal-web:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @virtual-city/portal-web@0.1.0 build: `next build --webpack`
+Exit status 1
+[ELIFECYCLE] Command failed with exit code 1.

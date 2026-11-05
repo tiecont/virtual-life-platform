@@ -1,0 +1,88 @@
+ Network virtual-city-test-e28aa13d_default Creating 
+ Network virtual-city-test-e28aa13d_default Creating 
+ Network virtual-city-test-e28aa13d_default Created 
+ Network virtual-city-test-e28aa13d_default Created 
+ Container virtual-city-test-e28aa13d-db-1 Creating 
+ Container virtual-city-test-e28aa13d-db-1 Created 
+ Container virtual-city-test-e28aa13d-db-1 Starting 
+ Container virtual-city-test-e28aa13d-db-1 Started 
+ Container virtual-city-test-e28aa13d-db-1 Waiting 
+ Container virtual-city-test-e28aa13d-db-1 Healthy 
+[WebServer] (node:142769) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:142802) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:142802) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:142802) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:142768) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:142877) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:142973) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:143042) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:143120) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/maid.spec.ts:4:5 › Stop fences a held staff queue reply and a fresh voluntary start is required before tickets return (8.8s)
+  ✓  2 [desktop] › tests/e2e/maid.spec.ts:11:5 › actual Customer and voluntary Maid finish a native recipe service with canonical Ready retry and private completion (8.9s)
+  ✓  3 [desktop] › tests/e2e/maid.spec.ts:19:5 › anonymous and failed graphics retain native twenty-four chairs,keyboard service withdrawal and confirmed departure (2.3s)
+
+  3 passed (27.8s)
+ Container virtual-city-test-e28aa13d-db-1 Stopping 
+ Container virtual-city-test-e28aa13d-db-1 Stopped 
+ Container virtual-city-test-e28aa13d-db-1 Removing 
+ Container virtual-city-test-e28aa13d-db-1 Removed 
+ Network virtual-city-test-e28aa13d_default Removing 
+ Network virtual-city-test-e28aa13d_default Removed 
+ Network virtual-city-test-bd3edfa0_default Creating 
+ Network virtual-city-test-bd3edfa0_default Creating 
+ Network virtual-city-test-bd3edfa0_default Created 
+ Network virtual-city-test-bd3edfa0_default Created 
+ Container virtual-city-test-bd3edfa0-db-1 Creating 
+ Container virtual-city-test-bd3edfa0-db-1 Created 
+ Container virtual-city-test-bd3edfa0-db-1 Starting 
+ Container virtual-city-test-bd3edfa0-db-1 Started 
+ Container virtual-city-test-bd3edfa0-db-1 Waiting 
+ Container virtual-city-test-bd3edfa0-db-1 Healthy 
+[WebServer] (node:144804) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:144855) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:144855) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:144855) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:144803) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:144932) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:145007) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:145020) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:145095) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [mobile] › tests/e2e/maid.spec.ts:4:5 › Stop fences a held staff queue reply and a fresh voluntary start is required before tickets return (6.7s)
+  ✓  2 [mobile] › tests/e2e/maid.spec.ts:11:5 › actual Customer and voluntary Maid finish a native recipe service with canonical Ready retry and private completion (8.8s)
+  ✓  3 [mobile] › tests/e2e/maid.spec.ts:19:5 › anonymous and failed graphics retain native twenty-four chairs,keyboard service withdrawal and confirmed departure (2.3s)
+
+  3 passed (23.0s)
+ Container virtual-city-test-bd3edfa0-db-1 Stopping 
+ Container virtual-city-test-bd3edfa0-db-1 Stopped 
+ Container virtual-city-test-bd3edfa0-db-1 Removing 
+ Container virtual-city-test-bd3edfa0-db-1 Removed 
+ Network virtual-city-test-bd3edfa0_default Removing 
+ Network virtual-city-test-bd3edfa0_default Removed 

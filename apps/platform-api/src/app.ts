@@ -191,7 +191,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const unsubscribeDinnerContact=social.onContactWithdrawn((transaction,a,b)=>reservationParties.withdrawOfferContact(transaction,a,b));
   const unsubscribeEventInvitationWithdrawal = social.onContactWithdrawn((transaction, a, b) => eventInvitations.withdrawContact(transaction, a, b));
   const unsubscribeEventConsent = invitations.onConsentWithdrawn((transaction, account) => eventInvitations.withdrawAll(transaction, account));
-  const quickOnlyWorlds=[...new Set([...(options.safety?.quickOnlyWorlds??[]),...(config.LOCAL_PARK_WORLD==='1'?['park']:[])])];
+  const quickOnlyWorlds=[...new Set([...(options.safety?.quickOnlyWorlds??[]),...(config.LOCAL_PARK_WORLD==='1'?['park']:[]),...(config.LOCAL_MAID_WORLD==='1'?['maid']:[])])];
   const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, quickOnlyWorlds, policy: safetyPolicy, evidence: reports.cache }, options.now);
   http.addHook('onClose', async () => { await worlds.registry.close(); });
   http.addHook('onClose', async () => { await rooms.close(); });

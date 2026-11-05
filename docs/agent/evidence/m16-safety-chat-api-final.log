@@ -1,0 +1,29 @@
+ Network virtual-city-test-24026a84_default Creating 
+ Network virtual-city-test-24026a84_default Creating 
+ Network virtual-city-test-24026a84_default Created 
+ Network virtual-city-test-24026a84_default Created 
+ Container virtual-city-test-24026a84-db-1 Creating 
+ Container virtual-city-test-24026a84-db-1 Created 
+ Container virtual-city-test-24026a84-db-1 Starting 
+ Container virtual-city-test-24026a84-db-1 Started 
+ Container virtual-city-test-24026a84-db-1 Waiting 
+ Container virtual-city-test-24026a84-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ✓ |integration| tests/integration/maid-identity.test.ts (6 tests) 3307ms
+   ✓ current City identity alone enters;voluntary Maid role cannot forge administration,profile ownership or an outfit entitlement  357ms
+   ✓ seven actual volunteers cannot exceed six active Maid shifts;stopped consent defeats an old positive receipt  710ms
+   ✓ actual Maid quick-only scope rejects raw text and forged sender before any broadcast;approved greeting respects bilateral block  328ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  09:56:30
+   Duration  5.21s (transform 777ms, setup 0ms, import 1.75s, tests 3.31s, environment 0ms)
+
+ Container virtual-city-test-24026a84-db-1 Stopping 
+ Container virtual-city-test-24026a84-db-1 Stopped 
+ Container virtual-city-test-24026a84-db-1 Removing 
+ Container virtual-city-test-24026a84-db-1 Removed 
+ Network virtual-city-test-24026a84_default Removing 
+ Network virtual-city-test-24026a84_default Removed 

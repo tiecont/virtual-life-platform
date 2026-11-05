@@ -1,9 +1,9 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
-import { HospitalityMenuSchema,OrderPageSchema,OrderResultSchema,StaffStateSchema,type Me,type TravelSource } from '@virtual-city/contracts';
+import { HospitalityMenuSchema,OrderPageSchema,OrderResultSchema,OrderRefusedSchema,StaffStateSchema,type Me,type TravelSource } from '@virtual-city/contracts';
 export type Orders=ReturnType<typeof OrderPageSchema.parse>;
 type Data={menu:ReturnType<typeof HospitalityMenuSchema.parse>|null;own:Orders|null;queue:Orders|null;staff:ReturnType<typeof StaffStateSchema.parse>|null};
-type Change={path:string;body:object;key:string;withdraw?:boolean};
+type Change={path:string;body:object;key:string;withdraw?:boolean;refusal?:boolean};
 class ServiceError extends Error{constructor(readonly status:number){super('Service request unavailable');}}
 const empty:Data={menu:null,own:null,queue:null,staff:null};
 export default function useHospitalityOrders(me:Me,source:TravelSource|null,worldSlug:string){
@@ -25,7 +25,7 @@ export default function useHospitalityOrders(me:Me,source:TravelSource|null,worl
   };
   run.current=async change=>{
    if(lifetime.signal.aborted)return;if(change.withdraw){ticket++;write?.abort();writing=false;pending.current=change;setUncertain(false);}if(writing)return;writing=true;const generation=++ticket,controller=new AbortController();let confirmed:ReturnType<typeof OrderResultSchema.parse>['order']|null=null;write=controller;setBusy(true);setMessage('Confirming virtual service...');
-   try{const response=await fetch(change.path,{method:'POST',cache:'no-store',credentials:'same-origin',signal:AbortSignal.any([lifetime.signal,controller.signal,AbortSignal.timeout(8000)]),headers:{'content-type':'application/json','x-csrf-token':me.csrfToken,'idempotency-key':change.key},body:JSON.stringify(change.body)});if(!response.ok)throw new ServiceError(response.status);confirmed=OrderResultSchema.parse(await response.json()).order;if(lifetime.signal.aborted||ticket!==generation)return;pending.current=null;setUncertain(false);setMessage('Service change recorded. Refresh the service controls to check current availability.');}
+   try{const response=await fetch(change.path,{method:'POST',cache:'no-store',credentials:'same-origin',signal:AbortSignal.any([lifetime.signal,controller.signal,AbortSignal.timeout(8000)]),headers:{'content-type':'application/json','x-csrf-token':me.csrfToken,'idempotency-key':change.key},body:JSON.stringify(change.body)});if(!response.ok)throw new ServiceError(response.status);const value=await response.json();if(change.refusal)OrderRefusedSchema.parse(value);else confirmed=OrderResultSchema.parse(value).order;if(lifetime.signal.aborted||ticket!==generation)return;pending.current=null;setUncertain(false);setMessage(change.refusal?'Your service refusal was recorded.':'Service change recorded. Refresh the service controls to check current availability.');}
    catch(error){if(lifetime.signal.aborted||ticket!==generation)return;if(error instanceof ServiceError&&[400,401,403,404,409,422,429].includes(error.status)){pending.current=null;setUncertain(false);setMessage('The service change was declined or your role/order changed. Refresh to check current permissions and preparation.');}else{setUncertain(true);setMessage('The service response was interrupted. Retry the same change to check it.');}}
    finally{if(!lifetime.signal.aborted&&ticket===generation){
     if(confirmed?.mine&&observable()){const order=confirmed;setData(current=>{if(!current.own)return current;const known=current.own.items.some(item=>item.id===order.id);return {...current,own:{...current.own,items:[order,...current.own.items.filter(item=>item.id!==order.id)].slice(0,20),truncated:current.own.truncated||!known&&current.own.items.length>=20}};});}
@@ -35,6 +35,6 @@ export default function useHospitalityOrders(me:Me,source:TravelSource|null,worl
   };
   const hidden=()=>{if(document.visibilityState==='hidden')invalidate();};document.addEventListener('visibilitychange',hidden);window.addEventListener('offline',invalidate);void refresh.current();return()=>{lifetime.abort();read?.abort();write?.abort();clearTimeout(expiry);clearTimeout(queueExpiry);pending.current=null;document.removeEventListener('visibilitychange',hidden);window.removeEventListener('offline',invalidate);};
  },[me.profile.id,me.csrfToken,source?.epoch,source?.roomId,source?.membershipId,worldSlug]);
- const change=(path:string,body:object,withdraw=false)=>{if(!withdraw&&(busy||uncertain||pending.current))return;const next={path,body,key:crypto.randomUUID(),withdraw};pending.current=next;void run.current(next);};
- return {data,busy,uncertain,message,refresh:()=>void refresh.current(),retry:()=>{if(pending.current)void run.current(pending.current);},change};
+ const change=(path:string,body:object,withdraw=false,refusal=false)=>{if(!withdraw&&(busy||uncertain||pending.current))return;const next={path,body,key:crypto.randomUUID(),withdraw,refusal};pending.current=next;void run.current(next);};
+ return {data,busy,uncertain,message,refuse:(order:{id:string;version:number})=>change(`/v1/orders/${order.id}/refuse`,{schemaVersion:1,expectedVersion:order.version},true,true),refresh:()=>void refresh.current(),retry:()=>{if(pending.current)void run.current(pending.current);},change};
 }

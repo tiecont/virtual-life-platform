@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "asset": "Cafe Sakura original scene",
+  "origin": "Project-authored orthogonal24x18 geometry and deterministic Pixi art;selected source supplies catalog capacity only,no legacy scene or external media copied",
+  "sources": [
+    {
+      "path": "packages/maid-world/src/scene.ts",
+      "sha256": "b08ebe067b8dda3a8d20edc69cf81e8036e9ff5933b42baa8127783821f6aa96"
+    },
+    {
+      "path": "packages/pixi-scene/src/maid-art.ts",
+      "sha256": "74e8fce874e96db08f4127f7394a8204e0bdc684e288a53196232b085b3f08bb"
+    },
+    {
+      "path": "packages/pixi-scene/src/renderer.ts",
+      "sha256": "1622aa6265d27dc2a4eeac0e09b98a212b08e6cd2cd035cadc57c376eb880e7d"
+    }
+  ],
+  "sourceApproval": "integrations/legacy-snapshots/approval.json;offline integration only",
+  "avatar": "Existing original starter atlas;separate avatar provenance applies",
+  "releaseApproved": false
+}

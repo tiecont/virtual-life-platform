@@ -1,0 +1,10 @@
+{
+  "actualCustomerAndWorker": true,
+  "sourceWorld": "maid",
+  "capacity": 30,
+  "seats": 24,
+  "wrongSequenceDisabled": true,
+  "sameReadyRetryKey": true,
+  "oneCompletion": true,
+  "nativeGreeting": true
+}

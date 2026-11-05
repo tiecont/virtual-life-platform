@@ -1,0 +1,15 @@
+{
+  "freshFiles": 14,
+  "changedHistoricalFilesRestored": 7,
+  "all14OwnedHistoricalOutputsRestored": true,
+  "loungeStopTestProducesNoImage": true,
+  "restoredPaths": [
+    "docs/agent/evidence/m24-quick-visual/desktop-greetings.png",
+    "docs/agent/evidence/m24-quick-visual/desktop-blocked.png",
+    "docs/agent/evidence/m24-quick-visual/desktop-pending.png",
+    "docs/agent/evidence/m18-roles-visual/desktop.png",
+    "docs/agent/evidence/m24-quick-visual/mobile-greetings.png",
+    "docs/agent/evidence/m24-quick-visual/mobile-blocked.png",
+    "docs/agent/evidence/m24-quick-visual/mobile-pending.png"
+  ]
+}

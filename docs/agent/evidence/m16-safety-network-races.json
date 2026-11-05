@@ -1,0 +1,27 @@
+{
+  "scope": "Actual loopback HTTP+Socket.IO clients,separate API process,unchanged limits;not a capacity benchmark",
+  "facts": [
+    {
+      "scenario": "room-capacity",
+      "actualSockets": 101,
+      "simultaneousAttempts": 100,
+      "admitted": 7,
+      "roomFull": 93,
+      "roomCapacity": 8,
+      "extraRooms": 0,
+      "burstMs": 425.01425100000006,
+      "cleanupConnections": 0
+    },
+    {
+      "scenario": "seat-contention",
+      "actualSockets": 100,
+      "admissionSetupBatch": 10,
+      "simultaneousClaims": 100,
+      "winners": 1,
+      "seatTaken": 99,
+      "occupiedSeats": 1,
+      "burstMs": 533.5959330000005,
+      "cleanupConnections": 0
+    }
+  ]
+}

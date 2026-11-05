@@ -1,0 +1,88 @@
+ Network virtual-city-test-61496963_default Creating 
+ Network virtual-city-test-61496963_default Creating 
+ Network virtual-city-test-61496963_default Created 
+ Network virtual-city-test-61496963_default Created 
+ Container virtual-city-test-61496963-db-1 Creating 
+ Container virtual-city-test-61496963-db-1 Created 
+ Container virtual-city-test-61496963-db-1 Starting 
+ Container virtual-city-test-61496963-db-1 Started 
+ Container virtual-city-test-61496963-db-1 Waiting 
+ Container virtual-city-test-61496963-db-1 Healthy 
+[WebServer] (node:101087) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:101101) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:101101) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:101101) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:101086) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:101167) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:101218) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:101231) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:101329) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [desktop] › tests/e2e/maid.spec.ts:4:5 › Stop fences a held staff queue reply and a fresh voluntary start is required before tickets return (10.8s)
+
+
+  1) [desktop] › tests/e2e/maid.spec.ts:4:5 › Stop fences a held staff queue reply and a fresh voluntary start is required before tickets return 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByRole('region', { name: 'Virtual cafe service' }).getByRole('button', { name: 'Take service ticket', exact: true })
+    Expected: 0
+    Received: 1
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" getByRole('region', { name: 'Virtual cafe service' }).getByRole('button', { name: 'Take service ticket', exact: true }) with timeout 5000ms
+      - waiting for getByRole('region', { name: 'Virtual cafe service' }).getByRole('button', { name: 'Take service ticket', exact: true })
+        14 × locator resolved to 1 element
+           - unexpected value "1"
+
+
+      4 | test('Stop fences a held staff queue reply and a fresh voluntary start is required before tickets return',async({page,context,browser},info)=>{
+      5 |  test.setTimeout(45000);const peer=await browser.newContext({...devices[info.project.name==='mobile'?'iPhone 13':'Desktop Chrome'],baseURL:origin});let release:()=>void=()=>{};
+    > 6 |  try{const customer=await guest(peer,'Queue customer');await guest(context,'Queue volunteer');await visible(peer,customer);const other=await peer.newPage();await enter(other);await other.getByRole('button',{name:'Sakura chair 01',exact:true}).click();await other.getByRole('button',{name:'Order Coffee',exact:true}).click();await expect(other.getByText('Order state: PENDING',{exact:true})).toBeVisible();await enter(page);const work=page.getByRole('region',{name:'Voluntary cafe work'}),service=page.getByRole('region',{name:'Virtual cafe service'});await work.getByRole('button',{name:'Start voluntary shift',exact:true}).click();await expect(work).toContainText('maid · maid · active');let observed:()=>void=()=>{};const held=new Promise<void>(ok=>observed=ok),gate=new Promise<void>(ok=>release=ok);await page.route('**/v1/orders/queue',async route=>{const response=await route.fetch();expect(response.status()).toBe(200);observed();await gate;await route.fulfill({response}).catch(()=>{});});await service.getByRole('button',{name:'Refresh cafe service',exact:true}).click();await held;await work.getByRole('button',{name:'Stop voluntary work',exact:true}).click();await expect(work).toContainText('No active voluntary shift');release();await page.unrouteAll({behavior:'wait'});await expect(service.getByRole('button',{name:'Order Coffee',exact:true})).toBeVisible();await expect(service.getByRole('button',{name:'Take service ticket',exact:true})).toHaveCount(0);await expect(service).toContainText('Current voluntary work is unconfirmed');await work.getByRole('button',{name:'Start voluntary shift',exact:true}).click();await expect(work).toContainText('maid · maid · active');await service.getByRole('button',{name:'Refresh cafe service',exact:true}).click();await expect(service.getByRole('button',{name:'Take service ticket',exact:true})).toBeEnabled();await work.getByRole('button',{name:'Stop voluntary work',exact:true}).click();await other.getByRole('button',{name:'Withdraw unfinished service',exact:true}).click();for(const p of[page,other]){await p.getByRole('button',{name:'Leave and return to city',exact:true}).click();await p.waitForURL('/');}
+        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^
+      7 |  }finally{release();await peer.close();}
+      8 | });
+      9 | async function visible(context:BrowserContext,me:Awaited<ReturnType<typeof guest>>){expect((await context.request.patch('/v1/me/privacy',{headers:headers(me),data:{presence:'hidden',analyticsConsent:false,worldVisibility:{dating:'hidden',maid:'public',deadline:'public'}}})).status()).toBe(200);}
+        at /home/tiecont/Projects/virtual-city/tests/e2e/maid.spec.ts:6:1455
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/maid-Stop-fences-a-held-st-3a512-uired-before-tickets-return-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/maid-Stop-fences-a-held-st-3a512-uired-before-tickets-return-desktop/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/desktop/maid-Stop-fences-a-held-st-3a512-uired-before-tickets-return-desktop/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/desktop/maid-Stop-fences-a-held-st-3a512-uired-before-tickets-return-desktop/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/desktop/maid-Stop-fences-a-held-st-3a512-uired-before-tickets-return-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [desktop] › tests/e2e/maid.spec.ts:4:5 › Stop fences a held staff queue reply and a fresh voluntary start is required before tickets return 
+Test harness failed during command;no raw URL or configuration emitted
+ Container virtual-city-test-61496963-db-1 Stopping 
+ Container virtual-city-test-61496963-db-1 Stopped 
+ Container virtual-city-test-61496963-db-1 Removing 
+ Container virtual-city-test-61496963-db-1 Removed 
+ Network virtual-city-test-61496963_default Removing 
+ Network virtual-city-test-61496963_default Removed 

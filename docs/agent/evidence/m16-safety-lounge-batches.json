@@ -1,0 +1,22 @@
+[
+  {
+    "project": "desktop",
+    "batch": 1,
+    "filters": [
+      "tests/e2e/lounge.spec.ts",
+      "-g",
+      "voluntary bartender Stop"
+    ],
+    "exitCode": 0
+  },
+  {
+    "project": "mobile",
+    "batch": 1,
+    "filters": [
+      "tests/e2e/lounge.spec.ts",
+      "-g",
+      "voluntary bartender Stop"
+    ],
+    "exitCode": 0
+  }
+]

@@ -1,0 +1,88 @@
+ Network virtual-city-test-5a7f0490_default Creating 
+ Network virtual-city-test-5a7f0490_default Creating 
+ Network virtual-city-test-5a7f0490_default Created 
+ Network virtual-city-test-5a7f0490_default Created 
+ Container virtual-city-test-5a7f0490-db-1 Creating 
+ Container virtual-city-test-5a7f0490-db-1 Created 
+ Container virtual-city-test-5a7f0490-db-1 Starting 
+ Container virtual-city-test-5a7f0490-db-1 Started 
+ Container virtual-city-test-5a7f0490-db-1 Waiting 
+ Container virtual-city-test-5a7f0490-db-1 Healthy 
+[WebServer] (node:97612) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:97663) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:97663) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:97663) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:97611) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:97801) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:97926) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:98001) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:98176) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/e2e/maid-safety.spec.ts:9:5 › native private Maid report retries once;assigned moderator removes an active worker and requeues unfinished preparation (10.2s)
+  ✘  2 [desktop] › tests/e2e/maid-safety.spec.ts:16:5 › Maid block hides both participants and their greetings;contact stays denied in actual Deadline (8.8s)
+
+
+  1) [desktop] › tests/e2e/maid-safety.spec.ts:16:5 › Maid block hides both participants and their greetings;contact stays denied in actual Deadline 
+
+    Error: expect(locator).not.toContainText(expected) failed
+
+    Locator: getByRole('list', { name: 'Recent visible cafe greetings' })
+    Expected substring: not "Blocked visitor"
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "not toContainText" getByRole('list', { name: 'Recent visible cafe greetings' }) with timeout 5000ms
+      - waiting for getByRole('list', { name: 'Recent visible cafe greetings' })
+
+
+      16 | test('Maid block hides both participants and their greetings;contact stays denied in actual Deadline',async({page,context,browser},info)=>{
+      17 |  test.setTimeout(60000);const peer=await browser.newContext({...devices[info.project.name==='mobile'?'iPhone 13':'Desktop Chrome'],baseURL:origin}),db=testDb();
+    > 18 |  try{const a=await guest(context,'Block owner'),b=await guest(peer,'Blocked visitor');await friends(context,a,peer,b);await allowInvites(peer,b);await visible(context,a);await visible(peer,b);await enter(page);const other=await peer.newPage();await enter(other);await expect(page.locator('canvas[data-scene="maid"]')).toHaveAttribute('data-entity-count','2');await other.getByRole('region',{name:'Cafe quick greetings'}).getByRole('button',{name:'Hello',exact:true}).click();await expect(page.getByRole('list',{name:'Recent visible cafe greetings'})).toContainText('Blocked visitor');const destination={worldSlug:'deadline',worldVersion:deadlineWorldVersion,sceneVersion:'1.0.0'};expect((await context.request.post('/v1/invitations',{headers:headers(a),data:{schemaVersion:1,recipientId:b.profile.id,destination}})).status()).toBe(201);await page.getByRole('button',{name:'Report or block Blocked visitor',exact:true}).click();const dialog=page.getByRole('dialog',{name:'Report or block Blocked visitor',exact:true});await dialog.getByRole('button',{name:'Block visitor',exact:true}).click();await expect(dialog.getByText('Blocked. Your contact settings were updated.',{exact:true})).toBeVisible();await dialog.getByRole('button',{name:'Close',exact:true}).click();for(const p of [page,other])await expect(p.locator('canvas[data-scene="maid"]')).toHaveAttribute('data-entity-count','1');await expect(page.getByRole('list',{name:'Recent visible cafe greetings'})).not.toContainText('Blocked visitor');
+         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^
+      19 |   for(const p of [page,other]){await p.goto('/travel?destination=deadline');await expect(p.locator('.travel-location')).toHaveAttribute('data-world','maid');await p.getByRole('button',{name:'Confirm travel',exact:true}).click();await expect(p.locator('.travel-location')).toHaveAttribute('data-world','deadline');await p.getByRole('link',{name:'Open Deadline room',exact:true}).click();await p.getByRole('button',{name:'Enter cafe',exact:true}).click();await expect(p.getByRole('status')).toHaveText('Connected');await expect(p.locator('canvas[data-scene="deadline"]')).toHaveAttribute('data-entity-count','1');}expect((await own(context)).roomId).toBe((await own(peer)).roomId);for(const [sender,me,recipient]of [[context,a,b],[peer,b,a]]as const)expect((await sender.request.post('/v1/invitations',{headers:headers(me),data:{schemaVersion:1,recipientId:recipient.profile.id,destination}})).status()).toBe(404);const code=(await(await peer.request.get('/v1/social/me')).json()).contactCode;expect((await context.request.post('/v1/friends/requests',{headers:headers(a),data:{contactCode:code}})).status()).toBe(404);expect((await db.query('SELECT count(*)::int AS n FROM safety_sanctions WHERE subject_id IN ($1,$2)',[a.profile.id,b.profile.id])).rows[0].n).toBe(0);const dir='docs/agent/evidence/m16-native-safety-visual';await mkdir(dir,{recursive:true});await page.screenshot({path:`${dir}/${info.project.name}-cross-world-block.png`,fullPage:true});await writeFile(`${dir}/${info.project.name}-block.json`,JSON.stringify({positiveInviteControl:true,bilateralMaidVisibilityFiltered:true,greetingRemoved:true,sameActualDeadlineRoom:true,bilateralInvitesDenied:true,friendContactDenied:true,automaticSanctions:0},null,2));for(const p of[page,other]){await p.getByRole('button',{name:'Leave and return to city',exact:true}).click();await p.waitForURL('/');}
+      20 |  }finally{await peer.close();await db.end();}
+      21 | });
+        at /home/tiecont/Projects/virtual-city/tests/e2e/maid-safety.spec.ts:18:1468
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/maid-safety-Maid-block-hid-e7de0-s-denied-in-actual-Deadline-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/desktop/maid-safety-Maid-block-hid-e7de0-s-denied-in-actual-Deadline-desktop/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/desktop/maid-safety-Maid-block-hid-e7de0-s-denied-in-actual-Deadline-desktop/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/desktop/maid-safety-Maid-block-hid-e7de0-s-denied-in-actual-Deadline-desktop/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/desktop/maid-safety-Maid-block-hid-e7de0-s-denied-in-actual-Deadline-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [desktop] › tests/e2e/maid-safety.spec.ts:16:5 › Maid block hides both participants and their greetings;contact stays denied in actual Deadline 
+  1 passed (26.4s)
+Test harness failed during command;no raw URL or configuration emitted
+ Container virtual-city-test-5a7f0490-db-1 Stopping 
+ Container virtual-city-test-5a7f0490-db-1 Stopped 
+ Container virtual-city-test-5a7f0490-db-1 Removing 
+ Container virtual-city-test-5a7f0490-db-1 Removed 
+ Network virtual-city-test-5a7f0490_default Removing 
+ Network virtual-city-test-5a7f0490_default Removed 

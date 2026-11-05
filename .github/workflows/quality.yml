@@ -44,6 +44,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Prepare selected Deadline baseline in isolated copy
         run: node scripts/prepare-deadline-baseline.mjs --allow-network
+      - name: Prepare selected Maid foundation in isolated copy
+        run: node scripts/prepare-maid-baseline.mjs --allow-network
       - id: browser-plan
         run: node scripts/ci-browser-plan.mjs >> "$GITHUB_OUTPUT"
       - name: Verify disposable test isolation and cleanup
