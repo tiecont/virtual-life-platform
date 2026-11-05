@@ -6,7 +6,15 @@ Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;bran
 
 Node26.9.0/pnpm11.28.5. RetaineddevDB0036/stopped;latestjournal/9privatecounts0. No preview/verificationworker remains. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
 
-## Current work — M22-03 VERIFIED;continue M22-04
+## Current work — M22-04 BLOCKED_EXTERNAL;continue M22-05
+
+From9049146;JOURNEY-ACCEPTANCE.md/m22-journeys-checks.json. Fresh read-only52Deadline/25Maid source digests match oldaudits;HEADsf9475b4/33180a9dirty28/46entries/rootlicenses0. Reports copiedM22/historicalm15/m16restoredfromindex;legacyworktrees/processes/data untouched. Actual8independentbrowsercases0(4desktop/4mobile):Library recovery/timer/history/SDKreturn,Restaurantnativechairs+2worker3course service,portal specificroom capacityroute onsyntheticdestinations. WholeactualDeadline/Maidjourney remains BLOCKED_EXTERNAL B-001/B-002,not substitutedbyfixtures.
+
+18fresh artifacts(10PNGs/eightfacts)+batchreport savedm22-journeys-visual,8changedhistoricalversions restoredfromindex;4selectedimages inspected. Initialcollector16vs18countfail1retained/fixedinventory0;browserpassesfirsttime. Successfultracesnotconfigured/nonegenerated,localreports/logs only/hostedCI NOT_RUN. No ownedworkersremain;no app/schema/retained0036/stopped/realflags/provider/staff/legacy/remote/publicchange. Wholeplanincomplete.
+
+Next exact action M22-05:currentSDKcap8/max32rooms/world meansmax256admitted,1000sockettransportceiling separate. Report connected versus admitted/ROOM_FULL/queue/timeouts,keepquotas. Review existingloadhelper then add count-only TCP read/write byte counters to tests/support/room-runtime.ts IPCsample;implement guarded tests/load/city-profiles.ts/pnpm entry for100/1000ramp-stress-soak on ownloopbackchild/disposablePG,CPU/RSS/client/hostresource abort/latency/error counts/finite phases/explicit cleanup. Full120ssoak pertarget versus shortsmoke clearlydistinct;measurebefore choosinglocal target,no realVM/CCUcertification. MemAvailable observedabout7GBon24GBhost withotherownerapps;do nottouch their processes or Dockerresources. No newbenchcommandexistsyet.
+
+## Prior slice — M22-03 VERIFIED
 
 From37b61ca;ADR0079/SECURITY-REGRESSIONS.md/m22-security-checks.json. Focused9file/142case security project/pnpm test:security0 reuses8owner suites+3new separate API child/actualTCPcases. Normalintegrationstillselects3newcases(actuallist0),rootCI unchanged. Mixed-sessionCSRF/Origin/cookie/role/known-roomIDOR/privacy,persistedworldbanlive/reconnect/restart,independentlogout,physicalguest10/11th429 despiteforwardedheaders,sharedsocket60/61stdenied,closedDatingclaims/noenrollment. Initial2pass1fail expectedFORBIDDEN vsdeliberateNOT_FOUND;fixturecorrectedafterregistryaudit,notruntime.
 

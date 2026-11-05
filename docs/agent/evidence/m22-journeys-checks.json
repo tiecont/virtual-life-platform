@@ -1,0 +1,15 @@
+{
+ "taskID":"M22-04",
+ "status":"BLOCKED_EXTERNAL",
+ "source":"9049146;no app/test/config/schema changes in this checkpoint",
+ "commands":[
+  {"command":"node scripts/audit-legacy-integration.mjs deadline","exitCode":0,"log":"m22-journeys-deadline-audit.log","report":"m22-journeys-deadline-audit.json","scope":"52source hashes/digest unchanged,HEADf9475b4,28dirty/untracked entries,0rootlicenses,9route references/0runtime transport imports. Double-pass status/HEAD/hash unchanged;not a fresh legacy runtime acceptance. Historical m15report restored fromindex after copying."},
+  {"command":"node scripts/audit-legacy-integration.mjs maid","exitCode":0,"log":"m22-journeys-maid-audit.log","report":"m22-journeys-maid-audit.json","scope":"25source hashes/digest unchanged,HEAD33180a9,46dirty/untracked entries,0rootlicenses,2health route references/0runtime transport imports. Double-pass status/HEAD/hash unchanged;not a fresh legacy runtime acceptance. Historical m16report restored fromindex after copying."},
+  {"command":"BROWSER_REPORT_SCOPE=ci/city/independent-journeys node scripts/run-browser-tests.mjs tests/e2e/library.spec.ts tests/e2e/restaurant.spec.ts tests/e2e/portal-route.spec.ts -g 'actual Library transport recovery|original Restaurant tables|Cook and Server coordinate|specific public room link waits'","exitCode":0,"log":"m22-journeys-browser.log","scope":"8passed:4desktop/4mobile. Actual Library recovery/identity/seat/timer/history/travel toSDKfixture;Restaurant nativechair/perspectives and3course2worker dinner completion;explicit specific-room route/capacity/source retention onsynthetic travelfixtures. No actualDeadline/Maid acceptance."},
+  {"command":"fresh artifact collection [initial count assertion]","exitCode":1,"log":"m22-journeys-artifacts-attempt1.log","scope":"Expected16butactual18generated files;no product/browser failure. Copies already saved,restore not reached;corrected inventory count18."},
+  {"command":"fresh artifact collection [corrected inventory/freshness/changed-subset checks]","exitCode":0,"log":"m22-journeys-artifacts.log","scope":"18fresh files/10PNGs+8facts copied plus batchreport/manifest;8changedhistorical versions restoredfromindex.4selected images actually inspected;not all10visualreviewed."}
+ ],
+ "blockedBy":["B-001 clean full actual legacy revisions and adapters","B-002 explicit legacy reuse/redistribution scope"],
+ "limits":"Partial independent journeys pass but full M22-04 remains BLOCKED_EXTERNAL. Synthetic travel fixtures cannot substitute for actualDeadline/Maid;no actual legacy runtime/browser/build/DB/import or public operation. No new whole-root/full-browser/a11y/image-build claim. Success traces not configured;retain-on-failure emitted no new failure trace. HostedCI NOT_RUN. All owned browser/DB/API/web workers finished;retained0036/stopped/allrealflags/8Datingapprovals/provider/staff unchanged.",
+ "nextExactAction":"Continue M22-05:implement and measure guarded loopback ramp/stress/soak100/1000client hypotheses,report connected versus admitted and configured cap256/world instead of increasing quotas or claiming1000CCU."
+}

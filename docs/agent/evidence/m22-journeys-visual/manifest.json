@@ -1,0 +1,53 @@
+{
+  "files": {
+    "browser-batches.json": "450d629d21096aa37cb6e88aa6a4223ebb9a2ee696418e74d10c0cc75d3359f5",
+    "m17-journey-visual/desktop.png": "c766f6f963e93b3e5a82b5ca3e3064f30452c0a5eafcb590de881550455bf317",
+    "m17-journey-visual/desktop.json": "0b598c76e7199fc70d846ebc765462c3bd3e8ae5bc2a971d07f444992e621a0b",
+    "m17-journey-visual/mobile.png": "7fba8cd3928c1e1d2b64eeee17b47e8dcf94f53d85b38f2ba7a0d9120cd0c9cf",
+    "m17-journey-visual/mobile.json": "0b598c76e7199fc70d846ebc765462c3bd3e8ae5bc2a971d07f444992e621a0b",
+    "m18-scene-visual/desktop-page.png": "6bb9b378d180fa3673589e4b13e9dd3583e8a5eba2232c6de437b49c414d1426",
+    "m18-scene-visual/desktop.json": "e2df7cb1f46c7f55566e70a7b6ae511d15f919eae0a50b1f8bc44d1d43f55f0b",
+    "m18-scene-visual/desktop.png": "b5129827a70ce359c7a0fd8ebfd32d67a26ebe35b4dfb7537a1efb15974ca336",
+    "m18-scene-visual/mobile-page.png": "68b40f0fb69185dfd7891270ead64102f6e6956e511687c5e3ed49d6c2426d1f",
+    "m18-scene-visual/mobile.json": "b2e7f8ef92714d57d0b2595c0305d1cc6e63b299a6539618e9f9fbc24d16ce87",
+    "m18-scene-visual/mobile.png": "f02d392a07df1ad3c2338265c5f19d0258bccc61befdd57a75fed6c380b6bfcf",
+    "m14-route-visual/desktop-admitted.png": "863e3e52541982e4c46767a3aa46eaea19aa8e371f5b8a416081cfa7444cc912",
+    "m14-route-visual/desktop-capacity.json": "ba7da8f506564353730f62d00023e9778fa240034461abf946ea35f2a6a51417",
+    "m14-route-visual/mobile-capacity.json": "ba7da8f506564353730f62d00023e9778fa240034461abf946ea35f2a6a51417",
+    "m14-route-visual/mobile-admitted.png": "078a1d3ebda494604666a550d9d065eb222f78741c3c976c84d970dca52f8ea7",
+    "m18-courses-visual/desktop.json": "e829e2bc55c9a7a9395414891510224d47b29ad1f461bf0102fd5442a12e9972",
+    "m18-courses-visual/desktop.png": "7816995f40330640d9df0bd9f3b72cc7102157a8e1621666a17ed50d012f0dd9",
+    "m18-courses-visual/mobile.json": "e829e2bc55c9a7a9395414891510224d47b29ad1f461bf0102fd5442a12e9972",
+    "m18-courses-visual/mobile.png": "58fb02c1301a4227c35c6ac7b8a54834c472edae519b067d13f95d12bbd2c45e"
+  },
+  "freshFiles": [
+    "docs/agent/evidence/m17-journey-visual/desktop.png",
+    "docs/agent/evidence/m17-journey-visual/desktop.json",
+    "docs/agent/evidence/m17-journey-visual/mobile.png",
+    "docs/agent/evidence/m17-journey-visual/mobile.json",
+    "docs/agent/evidence/m18-scene-visual/desktop-page.png",
+    "docs/agent/evidence/m18-scene-visual/desktop.json",
+    "docs/agent/evidence/m18-scene-visual/desktop.png",
+    "docs/agent/evidence/m18-scene-visual/mobile-page.png",
+    "docs/agent/evidence/m18-scene-visual/mobile.json",
+    "docs/agent/evidence/m18-scene-visual/mobile.png",
+    "docs/agent/evidence/m14-route-visual/desktop-admitted.png",
+    "docs/agent/evidence/m14-route-visual/desktop-capacity.json",
+    "docs/agent/evidence/m14-route-visual/mobile-capacity.json",
+    "docs/agent/evidence/m14-route-visual/mobile-admitted.png",
+    "docs/agent/evidence/m18-courses-visual/desktop.json",
+    "docs/agent/evidence/m18-courses-visual/desktop.png",
+    "docs/agent/evidence/m18-courses-visual/mobile.json",
+    "docs/agent/evidence/m18-courses-visual/mobile.png"
+  ],
+  "restoredHistoricalFiles": [
+    "docs/agent/evidence/m14-route-visual/mobile-admitted.png",
+    "docs/agent/evidence/m17-journey-visual/mobile.png",
+    "docs/agent/evidence/m18-courses-visual/desktop.png",
+    "docs/agent/evidence/m18-courses-visual/mobile.png",
+    "docs/agent/evidence/m18-scene-visual/desktop-page.png",
+    "docs/agent/evidence/m18-scene-visual/desktop.json",
+    "docs/agent/evidence/m18-scene-visual/mobile-page.png",
+    "docs/agent/evidence/m18-scene-visual/mobile.json"
+  ]
+}

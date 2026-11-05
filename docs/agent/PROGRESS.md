@@ -1,5 +1,13 @@
 # Agent progress
 
+## M22-04 — BLOCKED_EXTERNAL complete legacy journey;independent8browser cases pass
+
+From9049146;[acceptance](../architecture/JOURNEY-ACCEPTANCE.md)/[ledger](evidence/m22-journeys-checks.json). Fresh read-only legacy audit0/0:52Deadline/25Maid source digests still identical,HEADsf9475b4/33180a9,28/46dirty entries,0rootlicenses. Double status/HEAD/hash passes unchanged;reports copied underM22/historicalm15/m16restoredfromindex. No source/asset/environment/process/DB/legacy mutation or newruntimeacceptance.
+
+Actual8browser0(4desktop/4mobile):Library real interruption/recovery retains one identity/seat/membership/private timer,explicit travel toSDKfixture and canonicalLibraryhistory;Restaurant nativechairs/perspective-no-role and2worker3course dinner completes once;portal specificroom URLrequiresconfirmation/fulltargetretainssource/releasedcapacity admits onsynthetic travelfixtures.18freshfiles10PNGs/eightfacts+batchreport savedm22-journeys-visual,8changedhistoricalversions restored.4selectedPNGinspected;not all10visualreviewed/fullbrowser/a11ycertification. Collector firstexpected16files(actual18)exit1retained,correctedinventory0;browser itselfpassedfirsttime. Successfultracesnotconfigured/retain-on-failureproducednone;localreports/logs only,hostedCI NOT_RUN.
+
+ActualPortal→Deadline→Maid remains BLOCKED_EXTERNAL B-001/B-002;do not substitute thosefixtures or markwhole04VERIFIED. No app/schema/asset/migration/retained0036/stopped/worldflag/provider/staff/publicchange;all owned workersfinished. Next exact action M22-05 guarded100/1000ramp/stress/soak measurements. Currentcap8/max32rooms/world admitsatmost256SDKplayers;1000socketconnections isdifferent,do notraisequotas forproof. Wholeplanincomplete.
+
 ## M22-03 — VERIFIED focused security lane and actual TCP denial/reconnect matrix
 
 From37b61ca;ADR0079/[matrix](../architecture/SECURITY-REGRESSIONS.md)/[ledger](evidence/m22-security-checks.json). Reuse8existing owner suites plus3new separate API child/actual TCP tests in `pnpm test:security`/Vitest security project. Normal integration/CI still includes all cases(actuallist0). Mixed session cookies/CSRF,Origin/role/actor/tampered-cookie denial preserve identities;known-room proof cannot grant another viewer authority. Committed synthetic world ban denies live/new socket/HTTPdirectory/restarted owner while logout remains available. One physicalIP/forged forwarded headers still caps guest10/11th429;two sockets share60session commands/61stdenied. Claimed adult headers/payload cannot activate Dating or create enrollment;existing adversarial suite supplies nine invalid proof decisions/private-handle/friend/session/ban cases.

@@ -1,0 +1,293 @@
+{
+  "taskID": "M16-01",
+  "auditedAt": "2026-11-05T01:51:31.708Z",
+  "cityBase": "9049146b8e5c5896083baf9f3b201351ec0eb40b",
+  "command": "node scripts/audit-legacy-integration.mjs maid",
+  "exitCode": 0,
+  "legacy": {
+    "path": "/home/tiecont/Projects/maid-cafe",
+    "branch": "master",
+    "head": "33180a920505a6e0f3998dbf0367be0b72727710",
+    "status": [
+      "?? .env.example",
+      "?? .github/workflows/ci.yml",
+      "?? .gitignore",
+      "?? .npmrc",
+      "?? README.md",
+      "?? apps/api/package.json",
+      "?? apps/api/src/app.ts",
+      "?? apps/api/src/common/config.ts",
+      "?? apps/api/src/common/errors.ts",
+      "?? apps/api/src/db/catalog.ts",
+      "?? apps/api/src/db/client.ts",
+      "?? apps/api/src/db/migrate.ts",
+      "?? apps/api/src/db/migrations.ts",
+      "?? apps/api/src/db/migrations/0001_foundation.sql",
+      "?? apps/api/src/db/schema.ts",
+      "?? apps/api/src/db/seed.ts",
+      "?? apps/api/src/db/seeding.ts",
+      "?? apps/api/src/main.ts",
+      "?? apps/api/test/integration/foundation.test.ts",
+      "?? apps/api/test/unit/config.test.ts",
+      "?? apps/api/test/unit/health.test.ts",
+      "?? apps/api/tsconfig.json",
+      "?? apps/web/e2e/foundation.spec.ts",
+      "?? apps/web/next-env.d.ts",
+      "?? apps/web/next.config.ts",
+      "?? apps/web/package.json",
+      "?? apps/web/postcss.config.mjs",
+      "?? apps/web/src/app/globals.css",
+      "?? apps/web/src/app/layout.tsx",
+      "?? apps/web/src/app/page.tsx",
+      "?? apps/web/tsconfig.json",
+      "?? apps/web/tsconfig.tsbuildinfo",
+      "?? eslint.config.mjs",
+      "?? infra/compose/local.yaml",
+      "?? infra/compose/test.yaml",
+      "?? package.json",
+      "?? packages/contracts/package.json",
+      "?? packages/contracts/src/index.ts",
+      "?? packages/contracts/test/unit/contracts.test.ts",
+      "?? packages/contracts/tsconfig.json",
+      "?? playwright.config.ts",
+      "?? pnpm-lock.yaml",
+      "?? pnpm-workspace.yaml",
+      "?? scripts/with-test-db.mjs",
+      "?? tsconfig.base.json",
+      "?? vitest.config.mts"
+    ],
+    "sourceDigest": "50193526fbe758766c17d6cb8138958b0a95a0c4e68d8feece8ef3e592b041f4",
+    "sources": [
+      {
+        "path": "apps/api/src/app.ts",
+        "sha256": "fb8397a4ee9a44fc39eee2b9d626ecc1ef47b7f387ae77b66fb37f3085b96c7f"
+      },
+      {
+        "path": "apps/api/src/common/config.ts",
+        "sha256": "e1cb8cd8d67301adb6055e8176433b7db26f642fb660c0345308826440008e78"
+      },
+      {
+        "path": "apps/api/src/common/errors.ts",
+        "sha256": "c35be39fc2e3fed1386f1d67d45c06a55f25c0ebb0f94e660e3264e5da262aa6"
+      },
+      {
+        "path": "apps/api/src/db/catalog.ts",
+        "sha256": "1d6880cc9c513d1987877d469d0b2e9b6ed02c6eeafc4f02ba695a2112dbe5d4"
+      },
+      {
+        "path": "apps/api/src/db/client.ts",
+        "sha256": "b1e5ec504dcffee3d93e441f077570ffba370e75cccecf12f83bfe1277f99638"
+      },
+      {
+        "path": "apps/api/src/db/migrate.ts",
+        "sha256": "a131f19707c4c55d4678eab7115cc46ed7dc9caf5601d88fee020cff08c9b8ed"
+      },
+      {
+        "path": "apps/api/src/db/migrations.ts",
+        "sha256": "2a6eed14c29045b6b39ecc763e96df468cb9ddf28f3b80d27df0ea9c9725fc9e"
+      },
+      {
+        "path": "apps/api/src/db/migrations/0001_foundation.sql",
+        "sha256": "251eef1c7becda03984db055581e02503b42d90de3dbc0bdcb38172685071b30"
+      },
+      {
+        "path": "apps/api/src/db/schema.ts",
+        "sha256": "677c03720c787822a3cc1941b7ac1b34f551041a82281386884f7d8e1483dcc5"
+      },
+      {
+        "path": "apps/api/src/db/seed.ts",
+        "sha256": "5e5d8ff8c22d278d761804e9758ff0127309544eae125fd34bad79c3139800b2"
+      },
+      {
+        "path": "apps/api/src/db/seeding.ts",
+        "sha256": "ddbfe9a1ea1de232d9c2f0bdc802d4895e1261160274a827f026dfc15c04542b"
+      },
+      {
+        "path": "apps/api/src/main.ts",
+        "sha256": "cac0cceb3ed43d9ffd8c64ff52509840726915c9ab91e732434b3b93a9cb11ad"
+      },
+      {
+        "path": "apps/api/test/integration/foundation.test.ts",
+        "sha256": "2847f9d27499661e733558cdd2522e3b5d33913304b285001870e37b2caf270d"
+      },
+      {
+        "path": "apps/api/test/unit/config.test.ts",
+        "sha256": "19629f5fa9180f33bd9c0b6d757751411dbee5893e48e323bb06f628fcba60cd"
+      },
+      {
+        "path": "apps/api/test/unit/health.test.ts",
+        "sha256": "267570a6542222caae174c8bbf8a5c329a436e8186a004c6b11672a92a04c838"
+      },
+      {
+        "path": "apps/web/src/app/layout.tsx",
+        "sha256": "b55c5f1dab22091a1170269ecf36b9287224be6e5026a93764ec64ddb81a8bc2"
+      },
+      {
+        "path": "apps/web/src/app/page.tsx",
+        "sha256": "454d3d0d3b026569ad7d4ac0cffafda3276f8a2cc33c8ff0e7203a7ddd2a0279"
+      },
+      {
+        "path": "assets/LICENSES.md",
+        "sha256": "23a27981981ddb2889131b3deb563c86e57cbaf274209b78581fcf8afd0ca554"
+      },
+      {
+        "path": "assets/SPECIFICATION.md",
+        "sha256": "ca25fe63de53dca4c0ac7afe6cc63f09f9c9947d5ab69fde7543a65f6e4ba1ce"
+      },
+      {
+        "path": "package.json",
+        "sha256": "f673725c794d3ad72547f542a23afa3dff4ddcfd0de8d6b4453fa4f675117eb2"
+      },
+      {
+        "path": "packages/contracts/package.json",
+        "sha256": "a4a18a14be699e15b941211c33450db7b61193f4b7a961283f8472dfb16b1848"
+      },
+      {
+        "path": "packages/contracts/src/index.ts",
+        "sha256": "cd1a67ae64aea0fd6deb1a5c981024793d9a3c2864a75eeb2a23fd8065318186"
+      },
+      {
+        "path": "packages/contracts/test/unit/contracts.test.ts",
+        "sha256": "7d09335bf51ea233ce9bc828548879af83de1645db9eac7b796ef480d1e58b52"
+      },
+      {
+        "path": "pnpm-lock.yaml",
+        "sha256": "55797f18bc3edd850c701c4dc0b21d467fc89bed82da5998d8fa76e6e0e851f5"
+      },
+      {
+        "path": "pnpm-workspace.yaml",
+        "sha256": "508e03f757cfc9d1d8a87ad56323b2c34f6c5a6081fc02ea8505320e2a73a39d"
+      }
+    ],
+    "apiSourceFiles": [
+      "apps/api/src/app.ts",
+      "apps/api/src/common/config.ts",
+      "apps/api/src/common/errors.ts",
+      "apps/api/src/db/catalog.ts",
+      "apps/api/src/db/client.ts",
+      "apps/api/src/db/migrate.ts",
+      "apps/api/src/db/migrations.ts",
+      "apps/api/src/db/migrations/0001_foundation.sql",
+      "apps/api/src/db/schema.ts",
+      "apps/api/src/db/seed.ts",
+      "apps/api/src/db/seeding.ts",
+      "apps/api/src/main.ts"
+    ],
+    "testFiles": [
+      "apps/api/test/integration/foundation.test.ts",
+      "apps/api/test/unit/config.test.ts",
+      "apps/api/test/unit/health.test.ts",
+      "packages/contracts/test/unit/contracts.test.ts"
+    ],
+    "routes": [
+      {
+        "path": "apps/api/src/app.ts",
+        "method": "GET",
+        "route": "/health/live",
+        "syntax": "call"
+      },
+      {
+        "path": "apps/api/src/app.ts",
+        "method": "GET",
+        "route": "/health/ready",
+        "syntax": "call"
+      }
+    ],
+    "transportReferences": [],
+    "parseDiagnostics": [],
+    "rootLicenseFiles": [],
+    "previousFocusedAudit": [
+      {
+        "path": "apps/api/src/db/schema.ts",
+        "previousSha256": "677c03720c787822a3cc1941b7ac1b34f551041a82281386884f7d8e1483dcc5",
+        "currentSha256": "677c03720c787822a3cc1941b7ac1b34f551041a82281386884f7d8e1483dcc5",
+        "unchanged": true
+      },
+      {
+        "path": "apps/api/src/db/migrations/0001_foundation.sql",
+        "previousSha256": "251eef1c7becda03984db055581e02503b42d90de3dbc0bdcb38172685071b30",
+        "currentSha256": "251eef1c7becda03984db055581e02503b42d90de3dbc0bdcb38172685071b30",
+        "unchanged": true
+      },
+      {
+        "path": "apps/api/src/db/catalog.ts",
+        "previousSha256": "1d6880cc9c513d1987877d469d0b2e9b6ed02c6eeafc4f02ba695a2112dbe5d4",
+        "currentSha256": "1d6880cc9c513d1987877d469d0b2e9b6ed02c6eeafc4f02ba695a2112dbe5d4",
+        "unchanged": true
+      },
+      {
+        "path": "apps/api/src/db/seeding.ts",
+        "previousSha256": "ddbfe9a1ea1de232d9c2f0bdc802d4895e1261160274a827f026dfc15c04542b",
+        "currentSha256": "ddbfe9a1ea1de232d9c2f0bdc802d4895e1261160274a827f026dfc15c04542b",
+        "unchanged": true
+      },
+      {
+        "path": "apps/api/src/app.ts",
+        "previousSha256": "fb8397a4ee9a44fc39eee2b9d626ecc1ef47b7f387ae77b66fb37f3085b96c7f",
+        "currentSha256": "fb8397a4ee9a44fc39eee2b9d626ecc1ef47b7f387ae77b66fb37f3085b96c7f",
+        "unchanged": true
+      },
+      {
+        "path": "apps/api/src/main.ts",
+        "previousSha256": "cac0cceb3ed43d9ffd8c64ff52509840726915c9ab91e732434b3b93a9cb11ad",
+        "currentSha256": "cac0cceb3ed43d9ffd8c64ff52509840726915c9ab91e732434b3b93a9cb11ad",
+        "unchanged": true
+      },
+      {
+        "path": "packages/contracts/src/index.ts",
+        "previousSha256": "cd1a67ae64aea0fd6deb1a5c981024793d9a3c2864a75eeb2a23fd8065318186",
+        "currentSha256": "cd1a67ae64aea0fd6deb1a5c981024793d9a3c2864a75eeb2a23fd8065318186",
+        "unchanged": true
+      },
+      {
+        "path": "packages/contracts/test/unit/contracts.test.ts",
+        "previousSha256": "7d09335bf51ea233ce9bc828548879af83de1645db9eac7b796ef480d1e58b52",
+        "currentSha256": "7d09335bf51ea233ce9bc828548879af83de1645db9eac7b796ef480d1e58b52",
+        "unchanged": true
+      },
+      {
+        "path": "apps/api/test/integration/foundation.test.ts",
+        "previousSha256": "2847f9d27499661e733558cdd2522e3b5d33913304b285001870e37b2caf270d",
+        "currentSha256": "2847f9d27499661e733558cdd2522e3b5d33913304b285001870e37b2caf270d",
+        "unchanged": true
+      },
+      {
+        "path": "apps/web/src/app/page.tsx",
+        "previousSha256": "454d3d0d3b026569ad7d4ac0cffafda3276f8a2cc33c8ff0e7203a7ddd2a0279",
+        "currentSha256": "454d3d0d3b026569ad7d4ac0cffafda3276f8a2cc33c8ff0e7203a7ddd2a0279",
+        "unchanged": true
+      }
+    ]
+  },
+  "datedBaseline": {
+    "rerun": false,
+    "commands": [
+      {
+        "command": "pnpm lint",
+        "exitCode": 0,
+        "startedAt": "2026-11-02T14:44:27.398414+00:00",
+        "log": "audit-maid-lint.log"
+      },
+      {
+        "command": "pnpm typecheck",
+        "exitCode": 0,
+        "startedAt": "2026-11-02T14:44:30.370956+00:00",
+        "log": "audit-maid-typecheck.log"
+      },
+      {
+        "command": "pnpm test",
+        "exitCode": 0,
+        "startedAt": "2026-11-02T14:44:37.904620+00:00",
+        "log": "audit-maid-test.log"
+      },
+      {
+        "command": "pnpm build",
+        "exitCode": 0,
+        "startedAt": "2026-11-02T14:44:49.243525+00:00",
+        "log": "audit-maid-build.log"
+      }
+    ],
+    "warning": "2026-11-02 baseline only;not a new runtime/build/DB/browser result. Source comparison covers listed prior focused files,not every baseline input."
+  },
+  "scope": "Readonly source/AST/hash inspection. No environment reads,source/asset copying,legacy DB/process/migration/network operation or worktree mutation. Parsed route references do not prove a listening service. Dirty source hashes are an observation,not an approved clean integration revision."
+}
