@@ -7,6 +7,7 @@
     "node": "26.9.x"
   },
   "scripts": {
+    "image:check": "node scripts/check-image.mjs",
     "toolchain:check": "node scripts/verify-toolchain.mjs",
     "toolchain:map": "node scripts/verify-toolchain.mjs --write-map",
     "test:migration-compat": "pnpm build:packages && pnpm --filter @virtual-city/platform-api build && node scripts/with-test-db.mjs node scripts/migration-compat-smoke.mjs",

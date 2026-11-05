@@ -15,5 +15,6 @@ Follow the [vNext master](plans/platform-vnext/MASTER-AGENT-PLAN.md), [current h
 | Release and operations | [Release decision](operations/RELEASE-DECISION.md) / [recovery](operations/DEPLOYMENT-RECOVERY.md) | Public/store gates remain closed; no real deployment follows from code checks |
 | Environment policy | [Versioned release/runtime/safety model](operations/ENVIRONMENT-POLICY.md) | Explicit default-deny profile; one operator requirement, no provisioned identity or actual approval |
 | Schema rollback | [Image-bound checksum compatibility](operations/SCHEMA-COMPATIBILITY.md) | Exact by default; expanded prefix needs its own reviewed image/data proof; no automatic down-migration |
+| API artifact | [Production dependency image](operations/API-IMAGE.md) | Separate nonroot API artifact and same-image migrator; local inspection/smoke is distinct from deployment |
 
 Historical architecture and ADR prose retain their original decisions and observations. Prefer the current map and dated task evidence when an early checkpoint differs from later implementation. Source hashes and test environments remain part of every acceptance claim.

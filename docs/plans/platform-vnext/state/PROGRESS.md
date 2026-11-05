@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N03-02 VERIFIED
+
+Built and inspected a separate nonroot API image from a clean tested Node base and frozen installed production graph, without a packaging resolver or network. Actual image has 131 package components, 9 first-party packages, 38 unchanged SQL files and a same-image migrator. Six production-mode HTTP/socket/migration/singleton/SIGTERM-replacement scenarios and final driver rerun pass; cancellation cleanup and 52 governance tests pass. Two failed resolver-based attempts retained. Original combined Docker/recovery fixtures and runtime source remain unchanged.
+
+Actual commands: 26; retained failed attempts: 2; required final checks passed. Evidence: `n03-02-2026-11-05`; [checks](../audit/N03-02-CHECKS.json). Current counts: `{"VERIFIED": 18, "TODO": 51}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N03-03; read portal AGENTS and installed Next16.4.4 deployment/output/environment guides, audit server/client API origins and assets, implement and actually run a separate nonroot portal runtime image with correct standalone tracing/runtime configuration. Extend image:check --target=web and prove real portal/browser assets/cache headers and HTTPS/socket proxy compatibility, preserving safety/CSP/legacy fixture behavior and frozen pins.
+
 ## 2026-11-05 — N03-01 VERIFIED
 
 Added a checked build-all map for 14 workspaces and 12 compiled targets, including TypeScript extends hashes and transitive application consumers. Actual Node 26.9.0/pnpm 11.28.5 and all 34 direct external declarations match existing pins. Frozen install, final CI/graph/lint and 49 governance checks passed. Full check passed 49 governance, 302 unit, 559 integration tests and both production builds. Application/package source, dependency versions, lockfile and Quality workflow remain unchanged.

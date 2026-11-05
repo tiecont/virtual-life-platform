@@ -207,12 +207,14 @@
       "next_action": "Reserve N03-02; implement a separate hardened API Dockerfile using the tested Node digest, build-all and a production dependency closure, with the exact same image for API and migrator. Implement image:check --target=api before running disposable PostgreSQL/HTTP/socket, nonroot/read-only, SBOM/secret/file inspection and SIGTERM/owner-release checks. Preserve the combined legacy Dockerfile/M23 fixtures; do not add a worker entrypoint before N05-05."
     },
     "N03-02": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex Foundation/CI",
+      "branch": "codex/vnext-n03-02-api-image",
+      "evidence_refs": [
+        "n03-02-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "vlp-api runtime image; migrations và runtime dependency closure"
+      "next_action": "Reserve N03-03; read portal AGENTS and installed Next16.4.4 deployment/output/environment guides, audit server/client API origins and assets, implement and actually run a separate nonroot portal runtime image with correct standalone tracing/runtime configuration. Extend image:check --target=web and prove real portal/browser assets/cache headers and HTTPS/socket proxy compatibility, preserving safety/CSP/legacy fixture behavior and frozen pins."
     },
     "N03-03": {
       "status": "TODO",

@@ -6210,6 +6210,734 @@
         "No new hosted/fork run, registry publication, branch protection, alternate platform, deployment or public/store release",
         "Known hosted Deadline cadence failure and independent legacy Node declaration mismatch remain disclosed"
       ]
+    },
+    {
+      "id": "n03-02-2026-11-05",
+      "taskId": "N03-02",
+      "sourceRevision": "0f1079a688edc309c78a546ed666a1f70311af9c+workspace-sha256:5c3f1bfb88bcd468deed568e231fe17d1d37609bf72054626208b2ec3af3baa2",
+      "environment": "Local Linux x64; Node 26.9.0; pnpm 11.28.5; scope-specific commands below",
+      "executedAt": "2026-11-05T20:15:05.154310+00:00",
+      "commands": [
+        {
+          "command": "node /tmp/n03-02-cancel-probe.mjs",
+          "argv": [
+            "node",
+            "/tmp/n03-02-cancel-probe.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T20:08:51.377Z",
+          "endedAt": "2026-11-05T20:09:12.640Z",
+          "log": "artifacts/vnext/n03-02/cancellation-cleanup.log",
+          "sha256": "01378203260e6d1e410b946569a1687107fcc2d9e602e31f5c9e792bb87dc56b"
+        },
+        {
+          "command": "pnpm ci:check",
+          "argv": [
+            "pnpm",
+            "ci:check"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T19:46:52.726Z",
+          "endedAt": "2026-11-05T19:46:54.505Z",
+          "log": "artifacts/vnext/n03-02/ci.log",
+          "sha256": "581954628bb3a0c92edb1baac245d0da04fd7994c4ae40ef6a4b829a76ec44e3"
+        },
+        {
+          "command": "docker build --pull=false --target build -f /home/tiecont/Projects/virtual-city/artifacts/vnext/n03-02/diagnostic.Dockerfile -t vlp-api:deployment-diagnostic-f2441b51 artifacts/image-api-f2441b51/source",
+          "argv": [
+            "docker",
+            "build",
+            "--pull=false",
+            "--target",
+            "build",
+            "-f",
+            "/home/tiecont/Projects/virtual-city/artifacts/vnext/n03-02/diagnostic.Dockerfile",
+            "-t",
+            "vlp-api:deployment-diagnostic-f2441b51",
+            "artifacts/image-api-f2441b51/source"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T19:50:54.182Z",
+          "endedAt": "2026-11-05T19:51:37.157Z",
+          "log": "artifacts/vnext/n03-02/deployment-diagnostic.log",
+          "sha256": "2a93164f7953abf7437ed3b947c7827e076efdeb738148d73c762bae5f3ee50c"
+        },
+        {
+          "command": "docker run --rm --network none --read-only --mount type=bind,src=/home/tiecont/Projects/virtual-city/artifacts/vnext/n03-02/deployment-links.mjs,dst=/probe.mjs,readonly --entrypoint node vlp-api:deployment-diagnostic-f2441b51 /probe.mjs",
+          "argv": [
+            "docker",
+            "run",
+            "--rm",
+            "--network",
+            "none",
+            "--read-only",
+            "--mount",
+            "type=bind,src=/home/tiecont/Projects/virtual-city/artifacts/vnext/n03-02/deployment-links.mjs,dst=/probe.mjs,readonly",
+            "--entrypoint",
+            "node",
+            "vlp-api:deployment-diagnostic-f2441b51",
+            "/probe.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T19:53:37.031Z",
+          "endedAt": "2026-11-05T19:53:37.552Z",
+          "log": "artifacts/vnext/n03-02/escaped-link-inspection.log",
+          "sha256": "40623ef9d07e1706c143e001adfdaacffcdf18bac7140d6f5924d5cffdc86725"
+        },
+        {
+          "command": "pnpm ci:check",
+          "argv": [
+            "pnpm",
+            "ci:check"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T20:11:54.941Z",
+          "endedAt": "2026-11-05T20:11:56.096Z",
+          "log": "artifacts/vnext/n03-02/final-ci.log",
+          "sha256": "581954628bb3a0c92edb1baac245d0da04fd7994c4ae40ef6a4b829a76ec44e3"
+        },
+        {
+          "command": "pnpm exec eslint scripts/api-image-smoke.mjs",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "scripts/api-image-smoke.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T20:10:55.663Z",
+          "endedAt": "2026-11-05T20:10:57.239Z",
+          "log": "artifacts/vnext/n03-02/final-driver-lint.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T20:05:17.385Z",
+          "endedAt": "2026-11-05T20:05:31.075Z",
+          "log": "artifacts/vnext/n03-02/final-lint.log",
+          "sha256": "844eacb4e1e7b145210a24d528fa9e8ed6d04b21afaeea52e339fec04df8dac9"
+        },
+        {
+          "command": "node /tmp/n03-02-preservation.mjs",
+          "argv": [
+            "node",
+            "/tmp/n03-02-preservation.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T20:11:54.497Z",
+          "endedAt": "2026-11-05T20:11:54.875Z",
+          "log": "artifacts/vnext/n03-02/final-preservation.log",
+          "sha256": "c502de121b0b2cc4ccb1f4b81d9403ecc6b99f2ea133683278938d09cf3a3d41"
+        },
+        {
+          "command": "node scripts/with-test-db.mjs node scripts/api-image-smoke.mjs --image sha256:091b3c0cccabe592b73a2b7066d11b9fbe4e8e7f4c71496af06dbed1fa8a6f56 --output /home/tiecont/Projects/virtual-city/artifacts/image-api-final-verification/smoke",
+          "argv": [
+            "node",
+            "scripts/with-test-db.mjs",
+            "node",
+            "scripts/api-image-smoke.mjs",
+            "--image",
+            "sha256:091b3c0cccabe592b73a2b7066d11b9fbe4e8e7f4c71496af06dbed1fa8a6f56",
+            "--output",
+            "/home/tiecont/Projects/virtual-city/artifacts/image-api-final-verification/smoke"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T20:10:54.490Z",
+          "endedAt": "2026-11-05T20:11:05.222Z",
+          "log": "artifacts/vnext/n03-02/final-runtime-smoke.log",
+          "sha256": "7b0e9917c3a3c9e11508f86648761dc131efa01777a3cfbd2fb8a6ccbb22c777"
+        },
+        {
+          "command": "pnpm exec eslint scripts/api-image-smoke.mjs",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "scripts/api-image-smoke.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T19:57:49.243Z",
+          "endedAt": "2026-11-05T19:57:50.905Z",
+          "log": "artifacts/vnext/n03-02/final-smoke-static.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "pnpm exec eslint scripts/prune-api-runtime.mjs scripts/inspect-api-image.mjs scripts/image-test-tools.mjs scripts/check-image.mjs scripts/api-image-smoke.mjs tests/governance/image-inspection.test.mjs",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "scripts/prune-api-runtime.mjs",
+            "scripts/inspect-api-image.mjs",
+            "scripts/image-test-tools.mjs",
+            "scripts/check-image.mjs",
+            "scripts/api-image-smoke.mjs",
+            "tests/governance/image-inspection.test.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T19:56:23.761Z",
+          "endedAt": "2026-11-05T19:56:25.070Z",
+          "log": "artifacts/vnext/n03-02/final-static.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test tests/governance/api-runtime-package.test.mjs tests/governance/image-inspection.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/api-runtime-package.test.mjs",
+            "tests/governance/image-inspection.test.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T20:03:06.242Z",
+          "endedAt": "2026-11-05T20:03:06.393Z",
+          "log": "artifacts/vnext/n03-02/frozen-binding-package.log",
+          "sha256": "1f94f45204b53d1447f77123dc1603b8ec9e6f1551fd135b51ba5130a171a31b"
+        },
+        {
+          "command": "docker run --rm --network none --entrypoint pnpm vlp-api:deployment-diagnostic-f2441b51 --filter @virtual-city/platform-api deploy --prod --legacy --frozen-lockfile --offline /runtime-proof",
+          "argv": [
+            "docker",
+            "run",
+            "--rm",
+            "--network",
+            "none",
+            "--entrypoint",
+            "pnpm",
+            "vlp-api:deployment-diagnostic-f2441b51",
+            "--filter",
+            "@virtual-city/platform-api",
+            "deploy",
+            "--prod",
+            "--legacy",
+            "--frozen-lockfile",
+            "--offline",
+            "/runtime-proof"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T19:55:29.360Z",
+          "endedAt": "2026-11-05T19:55:33.303Z",
+          "log": "artifacts/vnext/n03-02/frozen-deploy-probe.log",
+          "sha256": "3bf31ebc3723ab13c54986791e9b2b5ae1e844893fa70d2c9d194a62b1d2878e"
+        },
+        {
+          "command": "node --test tests/governance/api-runtime-package.test.mjs tests/governance/backup.test.mjs tests/governance/boundaries.test.mjs tests/governance/ci.test.mjs tests/governance/evidence-inventory.test.mjs tests/governance/evidence-output.test.mjs tests/governance/evidence-reader.test.mjs tests/governance/evidence-store.test.mjs tests/governance/image-inspection.test.mjs tests/governance/infra.test.mjs tests/governance/legacy-snapshots.test.mjs tests/governance/ops-watch.test.mjs tests/governance/plan-status.test.mjs tests/governance/release.test.mjs tests/governance/resource-budget.test.mjs tests/governance/test-environment.test.mjs tests/governance/toolchain.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/api-runtime-package.test.mjs",
+            "tests/governance/backup.test.mjs",
+            "tests/governance/boundaries.test.mjs",
+            "tests/governance/ci.test.mjs",
+            "tests/governance/evidence-inventory.test.mjs",
+            "tests/governance/evidence-output.test.mjs",
+            "tests/governance/evidence-reader.test.mjs",
+            "tests/governance/evidence-store.test.mjs",
+            "tests/governance/image-inspection.test.mjs",
+            "tests/governance/infra.test.mjs",
+            "tests/governance/legacy-snapshots.test.mjs",
+            "tests/governance/ops-watch.test.mjs",
+            "tests/governance/plan-status.test.mjs",
+            "tests/governance/release.test.mjs",
+            "tests/governance/resource-budget.test.mjs",
+            "tests/governance/test-environment.test.mjs",
+            "tests/governance/toolchain.test.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T20:08:52.535Z",
+          "endedAt": "2026-11-05T20:08:53.484Z",
+          "log": "artifacts/vnext/n03-02/governance.log",
+          "sha256": "15c9ccc5dad6a9dec2cd4d0c896a7dab8d4b9e49e32208f5ad33f3949ce1b96d"
+        },
+        {
+          "command": "pnpm image:check --target=api --source-revision 8aeaa0d5343666811eaec3e71c2f96b42c93428d",
+          "argv": [
+            "pnpm",
+            "image:check",
+            "--target=api",
+            "--source-revision",
+            "8aeaa0d5343666811eaec3e71c2f96b42c93428d"
+          ],
+          "exitCode": 1,
+          "signal": null,
+          "startedAt": "2026-11-05T19:56:55.826Z",
+          "endedAt": "2026-11-05T19:57:51.024Z",
+          "log": "artifacts/vnext/n03-02/image-api-fixed.log",
+          "sha256": "792313d2782a924b9fed0a4a43dd1c1665d235d598db0b554ce681be0369c2c4"
+        },
+        {
+          "command": "pnpm image:check --target=api --source-revision fbbc0beaccc61d736b5636801d32fea62f18cd04",
+          "argv": [
+            "pnpm",
+            "image:check",
+            "--target=api",
+            "--source-revision",
+            "fbbc0beaccc61d736b5636801d32fea62f18cd04"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T20:05:16.186Z",
+          "endedAt": "2026-11-05T20:06:42.643Z",
+          "log": "artifacts/vnext/n03-02/image-api-frozen-graph.log",
+          "sha256": "9de38540b91917d98800d490c5fe8da42c97352cff4d5a387d78901a8fab09ae"
+        },
+        {
+          "command": "pnpm image:check --target=api --source-revision 4d16e78631217c8190ee1c69e8a82366fe3b754d",
+          "argv": [
+            "pnpm",
+            "image:check",
+            "--target=api",
+            "--source-revision",
+            "4d16e78631217c8190ee1c69e8a82366fe3b754d"
+          ],
+          "exitCode": 1,
+          "signal": null,
+          "startedAt": "2026-11-05T19:43:34.341Z",
+          "endedAt": "2026-11-05T19:47:42.156Z",
+          "log": "artifacts/vnext/n03-02/image-api.log",
+          "sha256": "e90a9c65d23b5619d2b4ed33e8a3bf82a906ba784f4b7adcea67bfd199e180ab"
+        },
+        {
+          "command": "pnpm infra:check",
+          "argv": [
+            "pnpm",
+            "infra:check"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T19:46:52.728Z",
+          "endedAt": "2026-11-05T19:46:53.629Z",
+          "log": "artifacts/vnext/n03-02/infra.log",
+          "sha256": "2439aba54f518bc84e8ff6df169a4762c4ef2f9ac17357e99001a3fece9fa962"
+        },
+        {
+          "command": "node --test tests/governance/image-inspection.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/image-inspection.test.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T19:43:04.032Z",
+          "endedAt": "2026-11-05T19:43:04.150Z",
+          "log": "artifacts/vnext/n03-02/inspection-negative.log",
+          "sha256": "449dad19e62932f72f5790b045c2094c68070773055ff5be348abd0ec6bda1f8"
+        },
+        {
+          "command": "docker run --rm --network none --mount type=bind,src=/home/tiecont/Projects/virtual-city/scripts/package-api-runtime.mjs,dst=/package.mjs,readonly --entrypoint node vlp-api:deployment-diagnostic-f2441b51 --input-type=module -e import {packageApiRuntime} from '/package.mjs'; console.log(JSON.stringify(await packageApiRuntime('/app','/runtime-frozen-probe')));",
+          "argv": [
+            "docker",
+            "run",
+            "--rm",
+            "--network",
+            "none",
+            "--mount",
+            "type=bind,src=/home/tiecont/Projects/virtual-city/scripts/package-api-runtime.mjs,dst=/package.mjs,readonly",
+            "--entrypoint",
+            "node",
+            "vlp-api:deployment-diagnostic-f2441b51",
+            "--input-type=module",
+            "-e",
+            "import {packageApiRuntime} from '/package.mjs'; console.log(JSON.stringify(await packageApiRuntime('/app','/runtime-frozen-probe')));"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T20:03:53.994Z",
+          "endedAt": "2026-11-05T20:03:56.909Z",
+          "log": "artifacts/vnext/n03-02/installed-graph-probe.log",
+          "sha256": "e2f0c7ca5f9a3c24e6f1efddf5fe96517bcbbdafa27b9caa180ebdaebdcdb485"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T19:46:52.726Z",
+          "endedAt": "2026-11-05T19:47:06.920Z",
+          "log": "artifacts/vnext/n03-02/lint.log",
+          "sha256": "844eacb4e1e7b145210a24d528fa9e8ed6d04b21afaeea52e339fec04df8dac9"
+        },
+        {
+          "command": "pnpm exec eslint scripts/package-api-runtime.mjs scripts/inspect-api-image.mjs tests/governance/api-runtime-package.test.mjs",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "scripts/package-api-runtime.mjs",
+            "scripts/inspect-api-image.mjs",
+            "tests/governance/api-runtime-package.test.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T20:03:06.458Z",
+          "endedAt": "2026-11-05T20:03:07.766Z",
+          "log": "artifacts/vnext/n03-02/package-static.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node /tmp/n03-02-preservation.mjs",
+          "argv": [
+            "node",
+            "/tmp/n03-02-preservation.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T19:56:57.042Z",
+          "endedAt": "2026-11-05T19:56:57.398Z",
+          "log": "artifacts/vnext/n03-02/preservation.log",
+          "sha256": "c502de121b0b2cc4ccb1f4b81d9403ecc6b99f2ea133683278938d09cf3a3d41"
+        },
+        {
+          "command": "docker run --rm --network none --mount type=bind,src=/home/tiecont/Projects/virtual-city/scripts/prune-api-runtime.mjs,dst=/prune.mjs,readonly --entrypoint node vlp-api:deployment-diagnostic-f2441b51 /prune.mjs /runtime-api",
+          "argv": [
+            "docker",
+            "run",
+            "--rm",
+            "--network",
+            "none",
+            "--mount",
+            "type=bind,src=/home/tiecont/Projects/virtual-city/scripts/prune-api-runtime.mjs,dst=/prune.mjs,readonly",
+            "--entrypoint",
+            "node",
+            "vlp-api:deployment-diagnostic-f2441b51",
+            "/prune.mjs",
+            "/runtime-api"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T19:55:41.569Z",
+          "endedAt": "2026-11-05T19:55:42.219Z",
+          "log": "artifacts/vnext/n03-02/pruned-closure-probe.log",
+          "sha256": "1d988c0765075c51063107ef61cc0797d0149ff28f901996fe137b7a6d6f00ed"
+        },
+        {
+          "command": "node /tmp/n03-02-rogue.mjs",
+          "argv": [
+            "node",
+            "/tmp/n03-02-rogue.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T19:56:23.038Z",
+          "endedAt": "2026-11-05T19:56:23.719Z",
+          "log": "artifacts/vnext/n03-02/rogue-link-denied.log",
+          "sha256": "aa64871dc953e522a11c0ad57efad61d5cf9e40950dd318e47820e560f7a7bf8"
+        },
+        {
+          "command": "pnpm exec eslint scripts/prune-api-runtime.mjs scripts/inspect-api-image.mjs scripts/image-test-tools.mjs scripts/check-image.mjs scripts/api-image-smoke.mjs tests/governance/image-inspection.test.mjs",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "scripts/prune-api-runtime.mjs",
+            "scripts/inspect-api-image.mjs",
+            "scripts/image-test-tools.mjs",
+            "scripts/check-image.mjs",
+            "scripts/api-image-smoke.mjs",
+            "tests/governance/image-inspection.test.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-05T19:43:02.889Z",
+          "endedAt": "2026-11-05T19:43:04.174Z",
+          "log": "artifacts/vnext/n03-02/static.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "scenarios": [],
+      "artifacts": [
+        {
+          "ref": "infra/docker/Dockerfile.api",
+          "sha256": "ce36d152c425ea2b282bf1a7ff71b753fae19611779a97cce4540b9ffc99f1c9",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "package.json",
+          "sha256": "df70140b4aa912b388a4bff04039f6b6de98676620e3f2c7ad84ab81addfe360",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "scripts/api-image-smoke.mjs",
+          "sha256": "dca2c776fcd248ea7739a9a9e226ffdded1a62b8fcec8230263440fedadb305b",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "scripts/check-image.mjs",
+          "sha256": "1b210d03410d6894655a953c8cdd3dedc7a7cbac25663903ea7254ff84b6888b",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "scripts/image-test-tools.mjs",
+          "sha256": "f97fa3639c00817a6b239b362b866544cb9879f1dac7b87b3c8288d7fff8c9d6",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "scripts/inspect-api-image.mjs",
+          "sha256": "6d0faed056134a97d213ba6a1131aff4daaa5bbdbc79180710f45d4e0c94b1b1",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "scripts/package-api-runtime.mjs",
+          "sha256": "105a13c8522bafc14ae9013209138969c5b833c88850b8006465b8a67ff161ed",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "tests/governance/api-runtime-package.test.mjs",
+          "sha256": "42ac6865e60d2fb9263899aa466a2a56e62614119dbdb23b26f6b75b431bc61d",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "tests/governance/image-inspection.test.mjs",
+          "sha256": "2d638e30f023f9eccabf73fe3150798237668b83d97dcaaf0ccc164dc4459cc3",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/README.md",
+          "sha256": "495470ff8b89c8dc5078f4c23f17d8c81d95d30162d94af7435a273ed30b2007",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/operations/API-IMAGE.md",
+          "sha256": "3d3465a56f52f974fda098a207de5e247c31bc5802e464fc86c19f9992fb37b3",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/architecture/CURRENT-STATE.md",
+          "sha256": "ffb2fba7585d19701327ae6241a5e953e59049fa9f4c456d2d685f33f5229346",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/architecture/N03-02-API-IMAGE.json",
+          "sha256": "212888edcd1186ba71cdb0a351d55e91bdc58eaba7519763b29ff4236065b56c",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/n03-02-cancel-probe.mjs",
+          "sha256": "4702017b8d33eb6b6f43e4b4db252d3b64b29371c809e5ac0e23efe1685094dc",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/n03-02-preservation.mjs",
+          "sha256": "b319d1997ce3bf95cdd6c5f8ae4e7c5aae2392dde46736cb276c560befa49e59",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/n03-02-rogue.mjs",
+          "sha256": "8b7f90b84b4177ab8890aa0351f5b192e821a511171403d764a744ad8b5e845a",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/cancellation-cleanup.log",
+          "sha256": "01378203260e6d1e410b946569a1687107fcc2d9e602e31f5c9e792bb87dc56b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/ci.log",
+          "sha256": "581954628bb3a0c92edb1baac245d0da04fd7994c4ae40ef6a4b829a76ec44e3",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/deployment-diagnostic.log",
+          "sha256": "2a93164f7953abf7437ed3b947c7827e076efdeb738148d73c762bae5f3ee50c",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/escaped-link-inspection.log",
+          "sha256": "40623ef9d07e1706c143e001adfdaacffcdf18bac7140d6f5924d5cffdc86725",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/final-ci.log",
+          "sha256": "581954628bb3a0c92edb1baac245d0da04fd7994c4ae40ef6a4b829a76ec44e3",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/final-driver-lint.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/final-lint.log",
+          "sha256": "844eacb4e1e7b145210a24d528fa9e8ed6d04b21afaeea52e339fec04df8dac9",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/final-preservation.log",
+          "sha256": "c502de121b0b2cc4ccb1f4b81d9403ecc6b99f2ea133683278938d09cf3a3d41",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/final-runtime-smoke.log",
+          "sha256": "7b0e9917c3a3c9e11508f86648761dc131efa01777a3cfbd2fb8a6ccbb22c777",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/final-smoke-static.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/final-static.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/frozen-binding-package.log",
+          "sha256": "1f94f45204b53d1447f77123dc1603b8ec9e6f1551fd135b51ba5130a171a31b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/frozen-deploy-probe.log",
+          "sha256": "3bf31ebc3723ab13c54986791e9b2b5ae1e844893fa70d2c9d194a62b1d2878e",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/governance.log",
+          "sha256": "15c9ccc5dad6a9dec2cd4d0c896a7dab8d4b9e49e32208f5ad33f3949ce1b96d",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/image-api-fixed.log",
+          "sha256": "792313d2782a924b9fed0a4a43dd1c1665d235d598db0b554ce681be0369c2c4",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/image-api-frozen-graph.log",
+          "sha256": "9de38540b91917d98800d490c5fe8da42c97352cff4d5a387d78901a8fab09ae",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/image-api.log",
+          "sha256": "e90a9c65d23b5619d2b4ed33e8a3bf82a906ba784f4b7adcea67bfd199e180ab",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/infra.log",
+          "sha256": "2439aba54f518bc84e8ff6df169a4762c4ef2f9ac17357e99001a3fece9fa962",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/inspection-negative.log",
+          "sha256": "449dad19e62932f72f5790b045c2094c68070773055ff5be348abd0ec6bda1f8",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/installed-graph-probe.log",
+          "sha256": "e2f0c7ca5f9a3c24e6f1efddf5fe96517bcbbdafa27b9caa180ebdaebdcdb485",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/lint.log",
+          "sha256": "844eacb4e1e7b145210a24d528fa9e8ed6d04b21afaeea52e339fec04df8dac9",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/package-static.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/preservation.log",
+          "sha256": "c502de121b0b2cc4ccb1f4b81d9403ecc6b99f2ea133683278938d09cf3a3d41",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/pruned-closure-probe.log",
+          "sha256": "1d988c0765075c51063107ef61cc0797d0149ff28f901996fe137b7a6d6f00ed",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/rogue-link-denied.log",
+          "sha256": "aa64871dc953e522a11c0ad57efad61d5cf9e40950dd318e47820e560f7a7bf8",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n03-02/static.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N03-02-CHECKS.json",
+          "sha256": "2c89e5a2c14fa9e80f1dfbb832e80d24871b63641a045dde4fe26315d0a98b79",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": true,
+      "limitations": [
+        "Local image IDs, not registry publication or remote digest/deployment certification",
+        "Application SBOM and defined bounded credential patterns only; no OS/CVE or universal secret certification",
+        "Two recorded image failures retained: builder-hoist aliases and cold offline metadata; legacy-deploy resolver path is not shipped",
+        "Final test-driver cancellation refinement separately reverified using same immutable image; it is not runtime image code",
+        "Cancellation after detached API creation tested, not every possible interruption point",
+        "No fresh full unit/integration/browser rerun because runtime source unchanged; actual Docker all-target build,image semantics,52 governance and static checks are this slice",
+        "Hosted baseline Deadline cadence failure unresolved; no hosted/mobile/public/store outcome inferred"
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

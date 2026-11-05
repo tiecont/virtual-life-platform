@@ -1,0 +1,22 @@
+FROM node:26.9.0-bookworm-slim@sha256:582460f614631b59b824ac6020533b9bf339c7fdf3a6d7db31abb6b4065f0212 AS build
+ENV NEXT_TELEMETRY_DISABLED=1
+WORKDIR /app
+RUN npm install --global pnpm@11.28.5
+COPY . .
+RUN pnpm install --frozen-lockfile
+# Build all consumers before packaging one independently runnable artifact.
+ENV API_INTERNAL_URL=http://api:4300
+RUN pnpm build
+RUN --network=none node scripts/package-api-runtime.mjs /runtime-api
+
+FROM node:26.9.0-bookworm-slim@sha256:582460f614631b59b824ac6020533b9bf339c7fdf3a6d7db31abb6b4065f0212 AS runtime
+ARG SOURCE_REVISION
+LABEL org.opencontainers.image.title="vlp-api" org.opencontainers.image.revision=$SOURCE_REVISION
+WORKDIR /app/apps/platform-api
+# The runtime starts from a clean base, not the workspace/compiler stage.
+RUN rm -rf /usr/local/lib/node_modules /opt/yarn-* /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/yarn /usr/local/bin/yarnpkg /usr/local/bin/pnpm /usr/local/bin/corepack
+COPY --from=build /runtime-api/ ./
+ENV NODE_ENV=production HOST=0.0.0.0 PORT=4300
+USER node
+EXPOSE 4300
+CMD ["node", "dist/main.js"]
