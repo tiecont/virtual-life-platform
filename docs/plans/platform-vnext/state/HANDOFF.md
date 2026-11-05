@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T15:19:38.555724+00:00; task N00-03 VERIFIED on `codex/vnext-n00-03-environment`. Base revision `d3a2c33866df352f31b8544f39a40c70706d6cf2`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T15:21:22.995126+00:00; task N00-04 VERIFIED on `codex/vnext-n00-04-decisions`. Base revision `b707e85bf53c196f346d492b2d51099f8eaf9604`; this task has its own reviewable commit after evidence finalization.
 
-Measured the CachyOS development host and actual tool availability. Chose conservative local-only staging/rehearsal defaults under owner discretion; recorded server, WAN, device, operator and signing unknowns with responsible lanes. No package install, device/remote-server access, purchase or deployment.
+ADR0101 records the audited stack, modular monolith/images/GitOps/authority/mobile/admin/admission/evidence baseline, reasons/tradeoffs/reconsideration triggers, migration/rollback and lane ownership. One human operator is distinct from service identities; no staffing or release approval inferred.
 
-[Actual checks](../audit/N00-03-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 3, "TODO": 66}`.
+[Actual checks](../audit/N00-04-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 4, "TODO": 65}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N00-04 and record repository ADR0101 for baseline architecture/ownership, preserving the audited stack and separating preparation from activation/release gates.
+Reserve N06-01 (priority 10); read UX plan, inspect current first-play/return flows and source-owned assets, then deliver player flows and a provenance-backed visual direction board without claiming usability results.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.

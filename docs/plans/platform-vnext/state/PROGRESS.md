@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N00-04 VERIFIED
+
+ADR0101 records the audited stack, modular monolith/images/GitOps/authority/mobile/admin/admission/evidence baseline, reasons/tradeoffs/reconsideration triggers, migration/rollback and lane ownership. One human operator is distinct from service identities; no staffing or release approval inferred.
+
+Actual commands: 3, all exit 0. Evidence: `n00-04-2026-11-05`; [checks](../audit/N00-04-CHECKS.json). Current counts: `{"VERIFIED": 4, "TODO": 65}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N06-01 (priority 10); read UX plan, inspect current first-play/return flows and source-owned assets, then deliver player flows and a provenance-backed visual direction board without claiming usability results.
+
 ## 2026-11-05 — N00-03 VERIFIED
 
 Measured the CachyOS development host and actual tool availability. Chose conservative local-only staging/rehearsal defaults under owner discretion; recorded server, WAN, device, operator and signing unknowns with responsible lanes. No package install, device/remote-server access, purchase or deployment.

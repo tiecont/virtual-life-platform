@@ -97,12 +97,14 @@
       "next_action": "Reserve N00-04 and record repository ADR0101 for baseline architecture/ownership, preserving the audited stack and separating preparation from activation/release gates."
     },
     "N00-04": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex coordinator",
+      "branch": "codex/vnext-n00-04-decisions",
+      "evidence_refs": [
+        "n00-04-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "ADR cho modular monolith/images/GitOps/authority/mobile/admin/admission; owner matrix"
+      "next_action": "Reserve N06-01 (priority 10); read UX plan, inspect current first-play/return flows and source-owned assets, then deliver player flows and a provenance-backed visual direction board without claiming usability results."
     },
     "N01-01": {
       "status": "TODO",

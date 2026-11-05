@@ -1,5 +1,7 @@
 # Decision register — vNext
 
+N00-04 records the consolidated implementation baseline and lane ownership in repository `docs/adr/0101-vnext-baseline-and-ownership.md` (2026-11-05). It accepts architecture direction for preparation under owner discretion, not implementation completion or public/store approval. Runtime contracts and each task's acceptance remain separate. Existing ADR0001–0100 are preserved.
+
 Status `PROPOSED_BASELINE` nghĩa là lựa chọn kỹ thuật của bộ kế hoạch, chưa phải thay đổi code đã triển khai hoặc chứng nhận owner duyệt production. Dùng ID NEXT-ADR để tránh đụng ADR0001–0100 hiện có; khi tích hợp, coordinator cấp repository ADR number thật.
 
 | ID | Quyết định | Lý do / tradeoff | Trigger xem lại | Task |
