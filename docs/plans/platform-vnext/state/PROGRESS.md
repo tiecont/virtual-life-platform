@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N01-01 VERIFIED
+
+Implemented read-only hashed per-file inventory and conservative keep/archive/review classifications with static references, dynamic/directory path warnings and manual reader/writer review. Actual full snapshot keeps 581 evidence JSON, migrations/lockfile/assets and legacy fixtures; raw outputs are only archive candidates. No move/delete or source-data change. Safety/consumer fixtures, lint, governance and preservation checks pass.
+
+Actual commands: 18; retained failed attempts: 2; required final checks passed. Evidence: `n01-01-2026-11-05`; [checks](../audit/N01-01-CHECKS.json). Current counts: `{"VERIFIED": 8, "TODO": 61}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N01-02; implement versioned content index and private archive/check/restore tools with complete manifest validation, real restore and missing/tampered negative tests. Keep originals and record any durable-storage gate separately.
+
 ## 2026-11-05 — N10-01 VERIFIED
 
 Recorded Android-first shared DOM/Pixi/Capacitor experiment ADR0102, read-only host/standard-path inventory and official integrity-checked Capacitor 8.6.0 templates. Locked proposed toolchain/JDK and pre-measurement workload/performance/lifecycle budgets. Actual phone fields and measured results remain UNKNOWN/NOT_RUN; N14 iOS remains separate. No native package/tool installation, APK or physical result claimed.

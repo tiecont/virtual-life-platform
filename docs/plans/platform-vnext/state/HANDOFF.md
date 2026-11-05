@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T15:48:33.264347+00:00; task N10-01 VERIFIED on `codex/vnext-n10-01-android-spike`. Base revision `187827b51e71fa2e57459c9c448d117094f65438`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T16:02:18.988064+00:00; task N01-01 VERIFIED on `codex/vnext-n01-01-inventory`. Base revision `e4b6881c885a03a2277bff60f7cf21e305e6fe38`; this task has its own reviewable commit after evidence finalization.
 
-Recorded Android-first shared DOM/Pixi/Capacitor experiment ADR0102, read-only host/standard-path inventory and official integrity-checked Capacitor 8.6.0 templates. Locked proposed toolchain/JDK and pre-measurement workload/performance/lifecycle budgets. Actual phone fields and measured results remain UNKNOWN/NOT_RUN; N14 iOS remains separate. No native package/tool installation, APK or physical result claimed.
+Implemented read-only hashed per-file inventory and conservative keep/archive/review classifications with static references, dynamic/directory path warnings and manual reader/writer review. Actual full snapshot keeps 581 evidence JSON, migrations/lockfile/assets and legacy fixtures; raw outputs are only archive candidates. No move/delete or source-data change. Safety/consumer fixtures, lint, governance and preservation checks pass.
 
-[Actual checks](../audit/N10-01-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 7, "TODO": 62}`.
+[Actual checks](../audit/N01-01-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 8, "TODO": 61}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N01-01; implement a read-only per-file inventory with size/hash/classification and static/dynamic consumer mapping. Preserve source, migration, legacy and historical evidence; archive candidates are not deletion authorization.
+Reserve N01-02; implement versioned content index and private archive/check/restore tools with complete manifest validation, real restore and missing/tampered negative tests. Keep originals and record any durable-storage gate separately.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.

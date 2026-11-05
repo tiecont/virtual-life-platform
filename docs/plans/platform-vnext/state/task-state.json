@@ -107,12 +107,14 @@
       "next_action": "Reserve N06-01 (priority 10); read UX plan, inspect current first-play/return flows and source-owned assets, then deliver player flows and a provenance-backed visual direction board without claiming usability results."
     },
     "N01-01": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex Foundation lane",
+      "branch": "codex/vnext-n01-01-inventory",
+      "evidence_refs": [
+        "n01-01-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "Keep/move/archive/remove inventory với hash, size và consumer"
+      "next_action": "Reserve N01-02; implement versioned content index and private archive/check/restore tools with complete manifest validation, real restore and missing/tampered negative tests. Keep originals and record any durable-storage gate separately."
     },
     "N01-02": {
       "status": "TODO",
