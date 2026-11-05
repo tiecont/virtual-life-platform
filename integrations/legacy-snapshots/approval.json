@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "approvedAt": "2026-11-05",
+  "authority": "Project owner instruction in this session",
+  "instruction": "Tôi có quyền; dùng snapshot hiện tại trong bản sao riêng để tích hợp offline.",
+  "sources": ["deadline", "maid"],
+  "scope": "Reuse the selected current local code/assets for offline integration in a separate copy; preserve original repositories, histories, processes and databases",
+  "publicReleaseApproved": false,
+  "externalMediaLicenseGranted": false
+}

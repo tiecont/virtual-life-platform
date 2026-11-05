@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 1,
+  "name": "maid",
+  "selection": "Owner-selected current working source,including uncommitted/untracked implementation",
+  "origin": {
+    "path": "/home/tiecont/Projects/maid-cafe",
+    "branch": "master",
+    "head": "33180a920505a6e0f3998dbf0367be0b72727710",
+    "dirtyEntries": 46,
+    "statusSha256": "d45bb98fcceec0fa1a8c8a3a3b834128f33cb06bfcde70963f552d7b55ee480c"
+  },
+  "commit": "f676298fdab6cd3f2d54ad422f409538c4bdf52a",
+  "tree": "de6d07555a62434f14f67503aac29c7b6665aa8d",
+  "archiveSha256": "599cc3945fcac7d82d9d998c7b0cecf0c8beb90a47accae5e034cb20ce977890",
+  "archiveBytes": 348160,
+  "sourceDigest": "c720563af241b1a3e99e9d41012ed0818002c8681b51b3406d4a833fff85f70f",
+  "files": [
+    {
+      "path": ".env.example",
+      "sha256": "e564851411ab97c5b9ff12ccc01d64108fd85a7ad38e4b8f41412b90dae5a0e1",
+      "bytes": 244,
+      "executable": false
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "8f3f0b895a7ee8ed6102f53ac1b44c28f53909953af8b03a441c7eec923c495b",
+      "bytes": 1535,
+      "executable": false
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "5b8a5ff21917071170373707eecbddeadbe58783d03fef5366f749ecb8eda698",
+      "bytes": 94,
+      "executable": false
+    },
+    {
+      "path": "MAID-CAFE-SOCIAL-MASTER-AGENT-PLAN.md",
+      "sha256": "ffefe7461ae736318390d2b0e4dec7fe52e6af39cbfe750ecb22416685af7e46",
+      "bytes": 71028,
+      "executable": false
+    },
+    {
+      "path": "README.md",
+      "sha256": "398c3681cec288d0b764e9c3ce4645894410412e33ac912a1ba4c3090477d506",
+      "bytes": 2956,
+      "executable": false
+    },
+    {
+      "path": "apps/api/package.json",
+      "sha256": "e68440dbee38e36cc4581061a8e0ac0f3b4c9e3a0e467f9a4f3e1aca22f6965c",
+      "bytes": 315,
+      "executable": false
+    },
+    {
+      "path": "apps/api/src/app.ts",
+      "sha256": "fb8397a4ee9a44fc39eee2b9d626ecc1ef47b7f387ae77b66fb37f3085b96c7f",
+      "bytes": 2668,
+      "executable": false
+    },
+    {
+      "path": "apps/api/src/common/config.ts",
+      "sha256": "e1cb8cd8d67301adb6055e8176433b7db26f642fb660c0345308826440008e78",
+      "bytes": 1546,
+      "executable": false
+    },
+    {
+      "path": "apps/api/src/common/errors.ts",
+      "sha256": "c35be39fc2e3fed1386f1d67d45c06a55f25c0ebb0f94e660e3264e5da262aa6",
+      "bytes": 573,
+      "executable": false
+    },
+    {
+      "path": "apps/api/src/db/catalog.ts",
+      "sha256": "1d6880cc9c513d1987877d469d0b2e9b6ed02c6eeafc4f02ba695a2112dbe5d4",
+      "bytes": 587,
+      "executable": false
+    },
+    {
+      "path": "apps/api/src/db/client.ts",
+      "sha256": "b1e5ec504dcffee3d93e441f077570ffba370e75cccecf12f83bfe1277f99638",
+      "bytes": 649,
+      "executable": false
+    },
+    {
+      "path": "apps/api/src/db/migrate.ts",
+      "sha256": "a131f19707c4c55d4678eab7115cc46ed7dc9caf5601d88fee020cff08c9b8ed",
+      "bytes": 500,
+      "executable": false
+    },
+    {
+      "path": "apps/api/src/db/migrations.ts",
+      "sha256": "2a6eed14c29045b6b39ecc763e96df468cb9ddf28f3b80d27df0ea9c9725fc9e",
+      "bytes": 1511,
+      "executable": false
+    },
+    {
+      "path": "apps/api/src/db/migrations/0001_foundation.sql",
+      "sha256": "251eef1c7becda03984db055581e02503b42d90de3dbc0bdcb38172685071b30",
+      "bytes": 1664,
+      "executable": false
+    },
+    {
+      "path": "apps/api/src/db/schema.ts",
+      "sha256": "677c03720c787822a3cc1941b7ac1b34f551041a82281386884f7d8e1483dcc5",
+      "bytes": 2094,
+      "executable": false
+    },
+    {
+      "path": "apps/api/src/db/seed.ts",
+      "sha256": "5e5d8ff8c22d278d761804e9758ff0127309544eae125fd34bad79c3139800b2",
+      "bytes": 505,
+      "executable": false
+    },
+    {
+      "path": "apps/api/src/db/seeding.ts",
+      "sha256": "ddbfe9a1ea1de232d9c2f0bdc802d4895e1261160274a827f026dfc15c04542b",
+      "bytes": 954,
+      "executable": false
+    },
+    {
+      "path": "apps/api/src/main.ts",
+      "sha256": "cac0cceb3ed43d9ffd8c64ff52509840726915c9ab91e732434b3b93a9cb11ad",
+      "bytes": 758,
+      "executable": false
+    },
+    {
+      "path": "apps/api/test/integration/foundation.test.ts",
+      "sha256": "2847f9d27499661e733558cdd2522e3b5d33913304b285001870e37b2caf270d",
+      "bytes": 3009,
+      "executable": false
+    },
+    {
+      "path": "apps/api/test/unit/config.test.ts",
+      "sha256": "19629f5fa9180f33bd9c0b6d757751411dbee5893e48e323bb06f628fcba60cd",
+      "bytes": 1647,
+      "executable": false
+    },
+    {
+      "path": "apps/api/test/unit/health.test.ts",
+      "sha256": "267570a6542222caae174c8bbf8a5c329a436e8186a004c6b11672a92a04c838",
+      "bytes": 1849,
+      "executable": false
+    },
+    {
+      "path": "apps/api/tsconfig.json",
+      "sha256": "09d635f779292551b2d18dadb365dcc7b5c69adbff0712cc73963d03a9028f64",
+      "bytes": 278,
+      "executable": false
+    },
+    {
+      "path": "apps/web/e2e/foundation.spec.ts",
+      "sha256": "43918f1ae93ac56ba6e1975425787aa21e1296dad31f2b8ee305a57d15d60956",
+      "bytes": 576,
+      "executable": false
+    },
+    {
+      "path": "apps/web/next-env.d.ts",
+      "sha256": "1862ac4bbbc5192d4bf562161df66ea547ed3e67173100656ab606ae9797db2b",
+      "bytes": 288,
+      "executable": false
+    },
+    {
+      "path": "apps/web/next.config.ts",
+      "sha256": "b790c153df118c9285669770eda8f860f42b28457758c23a2081a090fc736643",
+      "bytes": 879,
+      "executable": false
+    },
+    {
+      "path": "apps/web/package.json",
+      "sha256": "1518f11f6317595d149a2c1e4785898d05d3cdca5aa2b411460236ff969815ed",
+      "bytes": 413,
+      "executable": false
+    },
+    {
+      "path": "apps/web/postcss.config.mjs",
+      "sha256": "a1a188221f064d964dd9958c3d48b0c23252fabbeb6099d95ee8e15c764718b0",
+      "bytes": 60,
+      "executable": false
+    },
+    {
+      "path": "apps/web/src/app/globals.css",
+      "sha256": "91690848e2b8c2eb1454dfef0ebced93e435c0f7b31917790b20ebd675bafb65",
+      "bytes": 845,
+      "executable": false
+    },
+    {
+      "path": "apps/web/src/app/layout.tsx",
+      "sha256": "b55c5f1dab22091a1170269ecf36b9287224be6e5026a93764ec64ddb81a8bc2",
+      "bytes": 300,
+      "executable": false
+    },
+    {
+      "path": "apps/web/src/app/page.tsx",
+      "sha256": "454d3d0d3b026569ad7d4ac0cffafda3276f8a2cc33c8ff0e7203a7ddd2a0279",
+      "bytes": 417,
+      "executable": false
+    },
+    {
+      "path": "apps/web/tsconfig.json",
+      "sha256": "9710cdf9017d8d9a9649bf9de416ea9a2ca194a1194baefdcc5ddc44f9970cc9",
+      "bytes": 466,
+      "executable": false
+    },
+    {
+      "path": "assets/LICENSES.md",
+      "sha256": "23a27981981ddb2889131b3deb563c86e57cbaf274209b78581fcf8afd0ca554",
+      "bytes": 324,
+      "executable": false
+    },
+    {
+      "path": "assets/SPECIFICATION.md",
+      "sha256": "ca25fe63de53dca4c0ac7afe6cc63f09f9c9947d5ab69fde7543a65f6e4ba1ce",
+      "bytes": 464,
+      "executable": false
+    },
+    {
+      "path": "docs/agent/BLOCKERS.md",
+      "sha256": "219c7f70277603557884c3af2f2558497d7635ddaa793149f022f028e8b80630",
+      "bytes": 639,
+      "executable": false
+    },
+    {
+      "path": "docs/agent/DECISIONS.md",
+      "sha256": "f776fc434fb7ccc7ec95d7faa9ec08e3703be27a9e90d16c0ff5f2aeeb098019",
+      "bytes": 185,
+      "executable": false
+    },
+    {
+      "path": "docs/agent/DEPENDENCIES.md",
+      "sha256": "7d41f11894dfbbd83f46542862b908fda2c1cf7d35db6e0d45253d22f51b64bf",
+      "bytes": 331,
+      "executable": false
+    },
+    {
+      "path": "docs/agent/HANDOFF.md",
+      "sha256": "18532d21fb45f6a3fa6cfa12daea29609e46ee4b6c9b8a9d254266e8257eb675",
+      "bytes": 253,
+      "executable": false
+    },
+    {
+      "path": "docs/agent/PROGRESS.md",
+      "sha256": "c0a98106f9019dfa6807f20b9e90eb0604540c6465923e96a467ee11db55603a",
+      "bytes": 4475,
+      "executable": false
+    },
+    {
+      "path": "docs/agent/evidence/P00.txt",
+      "sha256": "6d1e43787b2b035ab1f91e339b8fc0bc435728aff0b60e5bfcd5a4df1c612e40",
+      "bytes": 434,
+      "executable": false
+    },
+    {
+      "path": "docs/architecture/DECISIONS.md",
+      "sha256": "e1dc3a776a0645ef3617a5ba25a284ed56b74db1c35b5351e99f15feb257cffe",
+      "bytes": 1556,
+      "executable": false
+    },
+    {
+      "path": "docs/product/GAME_DESIGN.md",
+      "sha256": "4593b805bc78c9af81c9723b1fa951133f444551284896062e170bdb306e5230",
+      "bytes": 8366,
+      "executable": false
+    },
+    {
+      "path": "docs/product/PRD.md",
+      "sha256": "d0d1fad9309524bdc86e402efe9ab200223d834b9432a403b37023e16b07409d",
+      "bytes": 6584,
+      "executable": false
+    },
+    {
+      "path": "docs/security/COMMUNITY_RULES.md",
+      "sha256": "49e80dc821e4dc0d8c9a42a7e667ef8cde66f5861f0618794d7ffb06733481a0",
+      "bytes": 371,
+      "executable": false
+    },
+    {
+      "path": "docs/security/MODERATION_POLICY.md",
+      "sha256": "5f31b855f37494079892d5aced0bc421794e2fbbbf9032b8abebdd8bcdcaebf1",
+      "bytes": 3791,
+      "executable": false
+    },
+    {
+      "path": "docs/security/PRIVACY_DRAFT.md",
+      "sha256": "98b192581bed2178889bfe785d0c141cbe8766771c9d93f6914ec82fc4fa361e",
+      "bytes": 609,
+      "executable": false
+    },
+    {
+      "path": "eslint.config.mjs",
+      "sha256": "830222eaf55deb7f5faec92f55d5b0280a53cdb4e4d0c1a0dedc5611bf67d0e0",
+      "bytes": 682,
+      "executable": false
+    },
+    {
+      "path": "infra/compose/local.yaml",
+      "sha256": "144297c9a3264d658d42a97d1db6e4c96b3fecfd8aed36f609f46b2bfa17e3f1",
+      "bytes": 447,
+      "executable": false
+    },
+    {
+      "path": "infra/compose/test.yaml",
+      "sha256": "141b1a32e785fb7a24f4b5637615deaf7bd3363a2a01ebe47d74ba0977229fb0",
+      "bytes": 385,
+      "executable": false
+    },
+    {
+      "path": "package.json",
+      "sha256": "f673725c794d3ad72547f542a23afa3dff4ddcfd0de8d6b4453fa4f675117eb2",
+      "bytes": 1800,
+      "executable": false
+    },
+    {
+      "path": "packages/contracts/package.json",
+      "sha256": "a4a18a14be699e15b941211c33450db7b61193f4b7a961283f8472dfb16b1848",
+      "bytes": 277,
+      "executable": false
+    },
+    {
+      "path": "packages/contracts/src/index.ts",
+      "sha256": "cd1a67ae64aea0fd6deb1a5c981024793d9a3c2864a75eeb2a23fd8065318186",
+      "bytes": 4885,
+      "executable": false
+    },
+    {
+      "path": "packages/contracts/test/unit/contracts.test.ts",
+      "sha256": "7d09335bf51ea233ce9bc828548879af83de1645db9eac7b796ef480d1e58b52",
+      "bytes": 2899,
+      "executable": false
+    },
+    {
+      "path": "packages/contracts/tsconfig.json",
+      "sha256": "4c9d747fd31e15549bb38dbe4f5c258434ba7b6ef58253fe0a26552704d04a82",
+      "bytes": 232,
+      "executable": false
+    },
+    {
+      "path": "playwright.config.ts",
+      "sha256": "81dceb64240fa21bc3d7e7c1bd07439c786871e7349e5a4f52fe6cef91a6f9b5",
+      "bytes": 798,
+      "executable": false
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "55797f18bc3edd850c701c4dc0b21d467fc89bed82da5998d8fa76e6e0e851f5",
+      "bytes": 133356,
+      "executable": false
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "sha256": "508e03f757cfc9d1d8a87ad56323b2c34f6c5a6081fc02ea8505320e2a73a39d",
+      "bytes": 469,
+      "executable": false
+    },
+    {
+      "path": "scripts/with-test-db.mjs",
+      "sha256": "8338eafdc0266fa573506b628190b7ad0a90d7a97444354d03f825c42327ad79",
+      "bytes": 1442,
+      "executable": false
+    },
+    {
+      "path": "tsconfig.base.json",
+      "sha256": "d315c874154561e3ca0428f3ccbce2fb8b014e404886a9cb333ddb331575b0f2",
+      "bytes": 244,
+      "executable": false
+    },
+    {
+      "path": "vitest.config.mts",
+      "sha256": "0679563d4607fd37b409b8bcfe3e6add2a1310100036a60e655576571959f645",
+      "bytes": 318,
+      "executable": false
+    }
+  ],
+  "exclusions": [
+    {
+      "path": ".npmrc",
+      "reason": "Secret-bearing configuration or generated/non-source data"
+    },
+    {
+      "path": "apps/web/tsconfig.tsbuildinfo",
+      "reason": "Secret-bearing configuration or generated/non-source data"
+    }
+  ],
+  "scope": "Offline integration only; original sources/DB/processes unchanged; no public/media license approval"
+}

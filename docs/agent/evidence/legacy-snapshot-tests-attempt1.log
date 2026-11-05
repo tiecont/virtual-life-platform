@@ -1,0 +1,11 @@
+✔ owner-selected snapshot pins dirty/untracked source with secrets/cache excluded and preserves the original worktree (107.103114ms)
+✔ capture rejects absent approval,source-local destinations and source symlinks without copying their target (27.766014ms)
+✔ archive verification rejects tampered payloads,unsafe paths,links,commit mismatch and oversized input before materialization (81.808481ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 307.350756

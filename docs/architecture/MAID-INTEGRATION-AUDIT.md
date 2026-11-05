@@ -17,6 +17,8 @@ AUD-07 on2026-11-02 ran lint,typecheck,test,build,all exit0. Tests were11unit an
 
 ## Integration gates and rollback
 
+Subsequent owner decision2026-11-05:reuse rights andcurrentworking-source copy selected explicitly. ADR0085 supplies cleanindependentpinf676298fdab6cd3f2d54ad422f409538c4bdf52a/59files withoriginalrepo untouched. The gate description below is historical;offlineM16-02..06 can nowresume against that archive,not the mutable original tree. No runtime/gameplay success follows from the pin.
+
 ADR0001/B-001 requires an exact clean full implementation snapshot before M16-02..06. Do not auto-commit the owner's active untracked repository. B-002 concerns redistribution,not this local audit. Source feature gaps are later implementation work;they cannot be hidden by a VERIFIED integration label. No real Maid flag,staff grant,reward activation,legacy process/DB/migration/source/media/environment mutation or copy occurs here.
 
 After a stable snapshot/reuse scope is supplied,rerun this audit and compare contracts before implementing identity/role mapping,one hospitality owner,report/block/sanction UX and departure cleanup. Verify customer+staff full service from CityPortal,actual claim races,refusal,block,disconnect recovery and rollback. Keep legacy DB/history unmodified until an approved proof-backed import with backup/restore/uniqueness/rollback is concrete. Independent Library work is ready now.

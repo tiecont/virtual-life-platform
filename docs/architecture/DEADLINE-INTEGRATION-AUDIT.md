@@ -20,6 +20,8 @@ AUD-07 logs dated2026-11-02 remain available: `pnpm lint` exit1(521generated `.n
 
 ## Gates and exact resumption
 
+Subsequent owner decision2026-11-05:reuse rights andcurrentworking-source copy selected explicitly. ADR0085 supplies cleanindependentpin6d2ca6a4e00505b2df1d6f41f1041fa14a227c5b/88files withoriginalrepo untouched. The gate description below is historical;offlineM15-02..06 can nowresume against that archive,not the mutable original tree. No runtime/gameplay success follows from the pin.
+
 ADR0001 requires an exact clean integration revision before adapter implementation. B-001 remains for the full Deadline world worktree,including untracked web/tests. B-002 concerns redistribution and does not bar local audit. M15-02..06 remain BLOCKED_EXTERNAL at this integration boundary; source feature gaps above are future implementation work, not evidence of a working world.
 
 Resume by receiving/selecting the owner's clean committed full-world snapshot,rerun this read-only audit against it,confirm code/media reuse scope,and update the compatibility ADR before implementing possession-proven identity,room/focus bridges and shell integration. Do not auto-commit another active worktree or replace its source with the synthetic travel fixture. Rollback today is unchanged: real Deadline flag OFF,legacy app/DB untouched. No import,DDL or backup operation occurred. Independent M16audit and M17Library work can proceed now.

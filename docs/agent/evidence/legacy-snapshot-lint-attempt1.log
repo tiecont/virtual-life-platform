@@ -1,0 +1,7 @@
+
+/home/tiecont/Projects/virtual-city/scripts/legacy-snapshots.mjs
+  12:214  error  Unnecessary escape character: \[      no-useless-escape
+  29:37   error  '_content' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 2 problems (2 errors, 0 warnings)
+

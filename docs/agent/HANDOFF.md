@@ -6,7 +6,17 @@ Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;bran
 
 Node26.9.0/pnpm11.28.5. RetaineddevDB0036/stopped;latestjournal/9privatecounts0. Current verification workers are listed below;completed slices leave no preview running. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
 
-## Current work — M24-05 VERIFIED;no dependency-ready tasks
+## Current work — Owner-approved source snapshots verified;resume M15-02
+
+The owner replied:“Tôi có quyền; dùng snapshot hiện tại trong bản sao riêng để tích hợp offline.” This resolves priorB-001/B-002 forofflineintegration;do not askagain. ADR0085 supersedesADR0001's cleanoriginalrepo prerequisite withindependentcleanselected snapshots,not public/media license approval. Upstreamoriginals remainDeadlineHEADf9475b4/28dirty andMaidHEAD33180a9/46dirty;no source/DB/process mutation. Freshpreflight prior52/25hashesunchanged.
+
+Tracked portablearchives/manifests atintegrations/legacy-snapshots:Deadline6d2ca6a4e00505b2df1d6f41f1041fa14a227c5b/88files/552960bytes;Maidf676298fdab6cd3f2d54ad422f409538c4bdf52a/59files/348160bytes/.npmrc+TS-cacheexcluded. Ownerapproval.json recordslocalreuseonly. No .env/node_modules/build/DB copy. IndependentcleanGitmetadata underartifacts/legacy-snapshots andeditablematerialized copiesunderartifacts/legacy-runtime/deadline,maid;all147sourcehashesmatch. Capturetoolrefusesoverwriting;verifychecksboundedtar/hash/commit/safepath/nolinks;materializerefusesexistingtarget. No symlinktoconcurrentoriginalsources. `pnpm legacy:check` nowpartofrootcheck.
+
+Actual3snapshotsecurity-lifecycle tests0/22governance0/legacyverify0/wholelint0/originalandmaterializedsource-status-headcomparison0. Initialscriptlint2errors retained/fixed;firstwholelint12copiedlegacyJestCJSerrors retained,thenonlytwoprivatelegacycopytreesexcludedfromcitylint sinceexternaltoolchains stayseparate. No new legacyruntime/build/API/browser/gameplay proof. DeadlineNode26.13.x vsinstalled26.9.0 unchanged;MaidNest12/TS6unchanged. Scopeledger legacy-snapshot-checks.json. No worker/previewcurrentlyrunning.
+
+M15-02..06/M16-02..06reopenedTODO;M17-05/M22-04 nowBLOCKED_TECHNICALpendingactualadapters;M20-07/publicB-003still external/M23moduledepspending. Next exact action M15-02:readselectedDeadlineAPI/Guest/HTTP/schema/contracts+M03identity/directdeps;designpossession-proven compatibility bridge/additiveuniquemap,no name-basedmerge/no realdataimport. Useactualbaseline guest/session APIs andownseparate disposableDB;legacycaptureisnotgameplay. Thenoneverticalslice tests/type/lint/build/evidence/commit before03. Originalcleanselectedbaseline remainsimmutable;anyadapterplugin/patch mustbetrackedseparatelyandreproducible. Do not touchoriginalrepo/DB/env or startoriginalprocess. Existingcitycore/appsremainunchangedbysnapshotpreparation. Userofflineauthorizationpersists;no push/deploy/publicrelease.
+
+## Prior checkpoint — M24-05 VERIFIED;no ready tasks before owner selection
 
 Fromd97754e;PARK-ACCEPTANCE.md/m24-safety-checks.json. AllfiveM24localtasks now VERIFIED.05changesonlytests/harness/checkpoints;all340app-packagefilesidenticald97754e whoseallbuilds0. No newruntime/SQL/migration/realflag/publicaction. New2desktop-mobilejourneys:anonymousadmissiondeny/newguestapprovedgreetingwithoutfriends/contactentry/automaticinviteoptin/noinvitation;actualLibrarylistedboard/sourcehelduntilconfirm/separatetravel/explicitRSVPonce/noautoseat/withdraw-leave. NativeParkprivateallegation/lost201samekeyreceipt retry/SQL1case1audit/noautosanction/reporter-onlyreceiptbefore-aftertravel/nativeblockpurge/bothactualLibraryviewsfilterpeer/blockedinvite404/sameidentity/nooverflow.
 
