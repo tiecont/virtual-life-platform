@@ -15,6 +15,7 @@ const Env = z.object({
   SAFETY_EVIDENCE_KEY: z.string().regex(/^[a-f0-9]{64}$/i).optional(),
   SAFETY_EVIDENCE_KEY_ID: z.string().regex(/^[a-z0-9-]{1,32}$/).default('local-v1'),
   SAFETY_POLICY_FILE:z.string().min(1).max(4096).optional(),
+  SCHEMA_COMPATIBILITY_FILE:z.string().min(1).max(4096).optional(),
   WORLD_FLAGS_FILE: z.string().min(1).max(4096).optional(),
   RELEASE_POLICY_FILE:z.string().min(1).max(4096).optional(),
   RUNTIME_WORLD_POLICY_FILE:z.string().min(1).max(4096).optional(),

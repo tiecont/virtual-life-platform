@@ -19,7 +19,8 @@
       "responsibility": "Validated runtime environment",
       "currentPublicEntryFiles": [
         "config",
-        "config/release-policy"
+        "config/release-policy",
+        "config/schema-compatibility"
       ],
       "targetBoundary": "Versioned environment policy; no feature entitlement bypass"
     },

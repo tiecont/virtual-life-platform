@@ -187,12 +187,14 @@
       "next_action": "Reserve N02-04; implement explicit checksum-prefix schema compatibility without weakening defaults, then prove disposable38→approved-expand schema with actual previous runtime/image rollback and negative checksum/unknown-tail/metadata cases. Existing M23 image builder assumes38 and src/dist packages; adapt only necessary fixture/build support, preserving source pins and no production SQL edits."
     },
     "N02-04": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex Runtime + Coordinator",
+      "branch": "codex/vnext-n02-04-schema-compat",
+      "evidence_refs": [
+        "n02-04-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "Compatibility manifest, checksum-prefix policy, expand/contract ADR"
+      "next_action": "Reserve N03-01; audit actual workspace dependency/build consumers and installed toolchain, add a checked build-all target map and compatibility matrix without upgrading pins, then verify fork read-only CI, frozen install and full pnpm check. Continue N03-02 with a hardened API image using the tested Node digest and a separate runtime dependency closure, retaining legacy Docker fixtures."
     },
     "N03-01": {
       "status": "TODO",

@@ -1,11 +1,12 @@
 import type { Pool,PoolClient,QueryResultRow } from 'pg';
 import { SCHEMA_VERSION } from '@virtual-city/contracts';
 import type { RoomAuthority } from '../rooms/authority';
+import {resolveSchemaCompatibility,isSchemaCompatible,type SchemaCompatibility} from '../config/schema-compatibility';
 
 export class ReadinessProbe {
   private work?:Promise<boolean>;
   private checkoutPending=false;
-  constructor(private db:Pick<Pool,'connect'>,private manifest:Readonly<Record<string,string>>,private authority:RoomAuthority,private draining:()=>boolean){}
+  constructor(private db:Pick<Pool,'connect'>,manifest:Readonly<Record<string,string>>,private authority:RoomAuthority,private draining:()=>boolean,private compatibility:SchemaCompatibility=resolveSchemaCompatibility(manifest)){}
 
   private checkout():Promise<PoolClient> {
     if(this.checkoutPending)return Promise.reject(Error('Checkout already pending'));
@@ -37,7 +38,7 @@ export class ReadinessProbe {
       await this.query(client,"SET LOCAL lock_timeout='200ms'");
       const rows=await this.query<{schema_version:number;migrations:Record<string,string>}>(client,'SELECT schema_version,(SELECT jsonb_object_agg(name,checksum) FROM city_schema_migrations) AS migrations FROM platform_metadata WHERE singleton=true');
       const row=rows[0],actual=row?.migrations;
-      healthy=rows.length===1&&row.schema_version===SCHEMA_VERSION&&!!actual&&Object.keys(actual).length===Object.keys(this.manifest).length&&Object.entries(this.manifest).every(([name,checksum])=>actual[name]===checksum);
+      healthy=rows.length===1&&row.schema_version===SCHEMA_VERSION&&isSchemaCompatible(this.compatibility,row.schema_version,actual);
       if(healthy){await this.query(client,'COMMIT');reusable=true;}
     }finally{
       // Destroy a timed-out/failed read, rather than returning a still-running

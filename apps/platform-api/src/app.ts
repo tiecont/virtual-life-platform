@@ -13,6 +13,7 @@ import type { Config } from './config';
 import { IdentityService } from './identity/service';
 import { registerIdentity } from './identity/http';
 import { migrationManifest } from './db/migrations';
+import {loadSchemaCompatibility} from './config/schema-compatibility';
 import { createIdentityGateway } from './identity/socket';
 import { SocialService, type SocialPresencePort } from './social/service';
 import { registerSocial } from './social/http';
@@ -89,6 +90,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const safetyPolicy = await loadSafetyPolicy(options.safety?.policy,config.SAFETY_POLICY_FILE);
   const mediaClearance=await MediaClearanceGate.create(await loadMediaClearance(),[],options.now);
   const requiredMigrations = await migrationManifest();
+  const schemaCompatibility=await loadSchemaCompatibility(config.SCHEMA_COMPATIBILITY_FILE,requiredMigrations);
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
     trustProxy:config.TRUSTED_PROXY_IP?(address=>isTrustedProxy(address,config.TRUSTED_PROXY_IP)):false,
     bodyLimit: 8192, requestTimeout: 10000, genReqId: () => randomUUID(),
@@ -230,7 +232,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   identity.registerExportOwner('social', (id, transaction) => social.exportAccount(id, transaction));
   // Emit truthful room interruption events while sockets are still connected; the gateway closes immediately after this hook.
   http.addHook('preClose', async () => { chat.close(); await events.close(); await hospitalityOutbox.close(); await hospitality.close(); await focus.close(); await invitations.close(); await travel.close(); await reports.close(); await rooms.close(); roomAuthority.close(); });
-  const readiness=new ReadinessProbe(db,requiredMigrations,roomAuthority,()=>draining);
+  const readiness=new ReadinessProbe(db,requiredMigrations,roomAuthority,()=>draining,schemaCompatibility);
   http.get('/health/live', async () => ({ status: 'ok' }));
   http.get('/health/ready', async (_req, reply) => {
     return await readiness.check()?{status:'ready',schemaVersion:SCHEMA_VERSION}:reply.code(503).send({status:'unavailable'});

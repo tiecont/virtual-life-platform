@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T18:29:14.960806+00:00; task N02-03 VERIFIED on `codex/vnext-n02-03-release-policy`. Base revision `67c6567ff3a9fd36c151f661deb9c7a23515d4b6`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T19:11:40.413268+00:00; task N02-04 VERIFIED on `codex/vnext-n02-04-schema-compat`. Base revision `02c97878f20c9319b7824d31d8b3839f58059de3`; this task has its own reviewable commit after evidence finalization.
 
-Implemented strict versioned release/runtime/safety policy with real curated production installers and unchanged legacy fixtures. Immutable Git ceiling,version/hash/safety/key validation,registry activation/use gates and publication rechecks deny bypass. One operator reference replaces fake person-count requirements; real defaults/approvals remain closed. Fresh full check46governance/296unit/557integration/builds,additional20SDKcases and40legacybrowser executions pass.
+Implemented strict-by-default, image-bound schema checksum windows and transactional migrator preflight while preserving all 38 production SQL files. Actual source-built runtime 38 → synthetic expand 39 → runtime 39 → previous image 38 rollback passed HTTP identity/socket, checksum/unknown-tail/metadata rejection, data preservation and owned cleanup. Fresh full check passed: 46 governance, 302 unit, 559 integration tests and all production builds.
 
-[Actual checks](../audit/N02-03-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 15, "TODO": 54}`.
+[Actual checks](../audit/N02-04-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 16, "TODO": 53}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N02-04; implement explicit checksum-prefix schema compatibility without weakening defaults, then prove disposable38→approved-expand schema with actual previous runtime/image rollback and negative checksum/unknown-tail/metadata cases. Existing M23 image builder assumes38 and src/dist packages; adapt only necessary fixture/build support, preserving source pins and no production SQL edits.
+Reserve N03-01; audit actual workspace dependency/build consumers and installed toolchain, add a checked build-all target map and compatibility matrix without upgrading pins, then verify fork read-only CI, frozen install and full pnpm check. Continue N03-02 with a hardened API image using the tested Node digest and a separate runtime dependency closure, retaining legacy Docker fixtures.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.

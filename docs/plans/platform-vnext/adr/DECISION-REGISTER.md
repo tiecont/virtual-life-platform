@@ -24,6 +24,8 @@ Status `PROPOSED_BASELINE` nghĩa là lựa chọn kỹ thuật của bộ kế 
 
 ## Quy tắc thay đổi quyết định
 
+N02-04 implements the bounded local portion of NEXT-ADR-005 in repository `docs/adr/0105-image-bound-schema-prefix-compatibility.md`: exact default, image-bound checksum prefix and an actual synthetic expand/image rollback proof. Image/scenario evidence in `docs/architecture/N02-04-SCHEMA-COMPATIBILITY.json` does not approve a future production migration, arbitrary old binary, deployment or N12 release gate.
+
 Một ADR mới phải nêu current fact, constraint, options, choice, business invariant, migration/rollback, test evidence và consequence. Không rewrite lịch sử hoặc ghi “approved” khi chỉ là recommendation.
 
 Các metric targets trong plan là giả thuyết cần kiểm. Không đổi threshold sau khi run chỉ để chuyển fail thành pass; nếu workload/SLO cần đổi, ghi revision và chạy lại.

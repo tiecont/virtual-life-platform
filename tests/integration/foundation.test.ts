@@ -55,7 +55,8 @@ describe('real PostgreSQL and HTTP vertical slice', () => {
       await expect(migrate(pool, directory)).rejects.toThrow('checksum mismatch');
       const original = await import('node:fs/promises').then(fs => fs.readFile('apps/platform-api/src/db/migrations/0001_foundation.sql', 'utf8'));
       await writeFile(join(directory, '0001_foundation.sql'), original);
-      await writeFile(join(directory, '0002_broken.sql'), 'CREATE TABLE must_rollback(id integer); SELECT definitely_missing_column;');
+      for(const name of await migrationNames())await copyFile('apps/platform-api/src/db/migrations/'+name,join(directory,name));
+      await writeFile(join(directory, '0039_broken.sql'), 'CREATE TABLE must_rollback(id integer); SELECT definitely_missing_column;');
       await expect(migrate(pool, directory)).rejects.toBeDefined();
       expect((await pool.query("SELECT to_regclass('must_rollback') AS table_name")).rows[0].table_name).toBe(null);
       expect((await pool.query('SELECT count(*)::int AS count FROM city_schema_migrations')).rows[0].count).toBe((await migrationNames()).length);

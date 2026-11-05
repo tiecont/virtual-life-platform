@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N02-04 VERIFIED
+
+Implemented strict-by-default, image-bound schema checksum windows and transactional migrator preflight while preserving all 38 production SQL files. Actual source-built runtime 38 → synthetic expand 39 → runtime 39 → previous image 38 rollback passed HTTP identity/socket, checksum/unknown-tail/metadata rejection, data preservation and owned cleanup. Fresh full check passed: 46 governance, 302 unit, 559 integration tests and all production builds.
+
+Actual commands: 17; retained failed attempts: 5; required final checks passed. Evidence: `n02-04-2026-11-05`; [checks](../audit/N02-04-CHECKS.json). Current counts: `{"VERIFIED": 16, "TODO": 53}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N03-01; audit actual workspace dependency/build consumers and installed toolchain, add a checked build-all target map and compatibility matrix without upgrading pins, then verify fork read-only CI, frozen install and full pnpm check. Continue N03-02 with a hardened API image using the tested Node digest and a separate runtime dependency closure, retaining legacy Docker fixtures.
+
 ## 2026-11-05 — N02-03 VERIFIED
 
 Implemented strict versioned release/runtime/safety policy with real curated production installers and unchanged legacy fixtures. Immutable Git ceiling,version/hash/safety/key validation,registry activation/use gates and publication rechecks deny bypass. One operator reference replaces fake person-count requirements; real defaults/approvals remain closed. Fresh full check46governance/296unit/557integration/builds,additional20SDKcases and40legacybrowser executions pass.
