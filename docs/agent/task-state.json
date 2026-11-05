@@ -1,6 +1,7 @@
 {
   "updatedAt": "2026-11-05T11:06:20.345247Z",
   "tasks": {
+    "M23-01": {"status":"VERIFIED","evidence":"docs/adr/0098-independent-wave-candidates-with-human-release-gates.md;docs/agent/evidence/m23-trains-checks.json;docs/operations/RELEASE-TRAINS.md","verification":"25governance/final lint0;7worlds5waves/defaultOFF/sixunassignedpublicroles,negative activation-fabricatedstaff-dating and W2independence tests. Checklist/inventory only,no public authority/runtime-DDLchange."},
     "AUD-01": {
       "status": "VERIFIED",
       "evidence": "docs/architecture/repository-inventory.md; docs/architecture/legacy-compatibility.md; docs/adr/0001-adapter-first.md; docs/agent/evidence/audit-*-checks.json",

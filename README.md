@@ -1,5 +1,7 @@
 # virtual-life-platform
 
+[Release trains](docs/operations/RELEASE-TRAINS.md) enumerate independently assessed waves,flag ownership and unassigned public responsibilities. `node scripts/verify-release.mjs` audits the offline candidate;all public gates remain closed.
+
 [Private operational telemetry](docs/operations/OBSERVABILITY.md) provides bounded process-local traces, metrics and sanitized logs. Collection defaults OFF; operator endpoints require an independent secret and stay outside the public edge. External monitoring is not provisioned.
 
 [Deployment recovery](docs/operations/DEPLOYMENT-RECOVERY.md) adds bounded exact-migration/single-owner readiness and irreversible HTTP/socket drain. The disposable local TLS harness can exercise API rollback between explicitly selected images with identical migration manifests. Production rollout and schema rollback remain gated.

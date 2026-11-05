@@ -1,5 +1,7 @@
 # Decisions
 
+M23-01 / ADR0098:separate independent wave candidates from human release authority. ExactW2 baseline excludes laterworlds;JSONinventory plus read-only governance,negative public/staff/dating cases. AllrealflagsOFF/publicNoGo/sixunassignedroles;25governance/lint0. Production rejects localinstallation;reviewing JSON neverinstallsworlds. Continue02current38offlinecandidate/backup/rollback.
+
 M22-04 / ADR0097:separate actual4world/native single-identity tour from retained syntheticfaultprotocol scenario. Finite test-only journeyprofile/allrealflagsOFF/no applicationcode orDDLchange. Actual4browser/types-lint-build-CI0;actualversions-capacities/seats/oneownmembership-occupancy/noautoseat-shift/privateactivitywithdrawals/finalCitynull.14actual+6synthetic artifacts/two selectedPNGsinspected. No completedDinner/two-player-service inferred;those remainmodule evidence. AllM22localverified;continueM23operations/publicNoGo scope.
 
 M17-05 / ADR0096:actualDeadline replaces explicitly limited SDK target inLibrary completion/transport acceptance. Separate controlledtrusted-clock900s completion/6finish1privatehistory from browserrealreconnect/actualDeadline/nativecancel;neverclaim15minbrowsercompletion.18API20browser/typeslintbuild0. Fixnewlytypecheckedhelperunknown→object(no runtimechange) and4stale rendererprovenance references;newassetscheck6scene15fingerprints0/approvalfalse. No gameplayowner/DDL/publicchange;allM17localverified,continueM22-04.

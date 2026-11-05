@@ -6,7 +6,13 @@ Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;bran
 
 Node26.9.0/pnpm11.28.5. RetaineddevDB0038/stopped;prior37journal checksums unchanged/retainedMaidorders0. Current verification workers are listed below;completed slices leave no preview running. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
 
-## Current work — M22-04 VERIFIED;next M23-01
+## Current work — M23-01 VERIFIED;next M23-02
+
+Fromd3a5551;ADR0098/m23-trains-checks.json. Newconfig/release-trains.json,read-onlyscripts/verify-release.mjs integratedgovernance,3negative/boundarytests/25allgovernance/final lint2830. Initial2structuredCloneno-undef retained/fixedglobalThis.7worlds5waves/exactindependentW2baseline/sixunassignedpublicroles/allpublicNoGo. No runtime/DDL/realflag/publicchange. NewRELEASE-TRAINS.md has concretewavegates andresponsibilitysources. No newwholeAPI/browser/buildclaim.
+
+Next exact action M23-02:auditcachedm21-deployment image36migrations(notcurrent38),externaldependencyversionsmatchcurrentmanifests (artifacts/m23-cached-image-audit.json). Build currenthostpackages/API/web firstifneeded;createcuratedignoredcontextofcurrentcompiledoutputs/public/manifests,neverenv/node_modules/originalsource. Network-disabled Docker overlay onimmutableinspectedcachedbase mayreuseexactexternaldeps,createworkspacealiases fornewpark/deadline/maid (auditallaliases),retainnonroot;verifycurrent38manifest+filehashes andexternalpackageversions beforeactualstaging. Existingstaging-smoke requires2identicalmigrationmanifestimagesforcompatibleAPIrollback;old36mustfailpreflight. Needhonestdistinctcompatible38candidatepair/provenance,notretagoldimageasnew. Runcurrentbackup-smoke actualencryptedemptyrestore,thenfailedcanary/rollback/rollforward. No imagefetch/npmnetwork permitted. PublicM23-03staffing/M23-05decision likelyexternal;completeindependentlocaldrills/handoff,no publicapprovalrequestneededforofflineuser.
+
+## Prior verified slice — M22-04
 
 Fromda26919;ADR0097/m22-actual-city-checks.json. All6localM22tasksVERIFIED. Actual4browser0(2/device):newactualsingle-account CityPortal→Deadline1.1(40/30)→Maid1.2(30/24)→Library1.2(8/8)→Restaurant1.2(10/8)→confirmedlobby/City,plus retained explicitlysynthetic lostHTTPintent/realcommitACK/reconnect/multitab/logout case. Sameaccount/amberavatar/currentversions/oneownmembership/total4worldoccupancy1eachhop/noautoseat-shift/actualnativekeyboardseats. Deadline-Library startcancel,Maid placewithdraw,Restaurant entry-seating-perspectives;finalownnull/datingnotOffered/no pageerrors/overflow. Completed service/booking loops remainseparate moduleevidence,not claimedbyonevisitor tour.
 

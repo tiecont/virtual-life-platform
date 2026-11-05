@@ -1,5 +1,9 @@
 # Agent progress
 
+## M23-01 — VERIFIED independent offline release inventory
+
+Fromd3a5551;[ADR0098](../adr/0098-independent-wave-candidates-with-human-release-gates.md),[evidence](evidence/m23-trains-checks.json). Add executable read-only wave/control/owner inventory and release checklist. Seven worlds/fivewaves;W2 has exact shared technical baseline and no later-wave dependency. Public installation,domain/credentials,coverage/appeals,privacy/content/backup/monitoring/explicit approval remain independent gates;sixpublicresponsibilities explicitlyunassigned. Governance rejects fabricated assignment/public flag/inheriteddating approval;laterworld missingproof doesnotblock W2baseline. Actual25governance/final lint283/report0;initial2no-undeflint retained/fixedglobalThis. No runtime/DDL/publicchange,newAPI/browser/build claim. NextM23-02 current38offlinebackup/canary/compatible rollback. Cachedm21-deployment audit36migrations/externaldependenciesunchanged:neveruseascurrent38proof.
+
 ## M22-04 — VERIFIED actual complete city browser journey
 
 Fromda26919;[ADR0097](../adr/0097-actual-cross-world-browser-journey.md),[actual evidence](evidence/m22-actual-city-checks.json). Dedicated finite/sanitized owned test profile installs actualDeadline/Maid/Library/Restaurant;defaultrealflags unchanged. New actualCityPortal→Deadline→Maid→Library→Restaurant→City verifies sameaccount/amberavatar,currentworld versions/capacities40-30-8-10/seats30-24-8-8,onecurrentmembership/noautoseat-shift,actualnativecanvas/keyboardseats and all4world occupancy sum1perhop. Deadline/Library start-cancel,Maid place-withdraw,Restaurant native entry/seating/perspectives;finalconfirmedlobby/City/ownnull,dating notoffered/noPageerrors/overflow. Complete service/booking/staffing remainseparate verifiedmodule loops,not implied byonevisitor tour.

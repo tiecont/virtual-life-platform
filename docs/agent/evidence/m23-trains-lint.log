@@ -1,0 +1,9 @@
+$ eslint . && node scripts/check-boundaries.mjs
+
+/home/tiecont/Projects/virtual-city/tests/governance/release.test.mjs
+  15:16  error  'structuredClone' is not defined  no-undef
+  36:18  error  'structuredClone' is not defined  no-undef
+
+✖ 2 problems (2 errors, 0 warnings)
+
+[ELIFECYCLE] Command failed with exit code 1.
