@@ -1,0 +1,15 @@
+{
+  "trustedInjectedServerClock": true,
+  "completedDurationSeconds": 900,
+  "concurrentFinishAttempts": 6,
+  "completedHistoryRows": 1,
+  "actualDestination": "deadline",
+  "deadlineVersion": "1.1.0",
+  "deadlineCapacity": 40,
+  "libraryHistoryScopePreserved": true,
+  "deadlineHistoryEmpty": true,
+  "foreignRead404": true,
+  "privateDailyFocusSeconds": 900,
+  "activeMemberships": 1,
+  "limits": "Actual HTTP-Socket-SQL with controlled trusted clock;not15minutes wall time or browser-clock authority"
+}

@@ -1,0 +1,8 @@
+{
+  "defaultOff": true,
+  "onePhaseOnlyPeer": true,
+  "sameKeyRetry": true,
+  "withdrawnPeerExcluded": true,
+  "fiveSecondExpiry": true,
+  "stopOutsideRoom": true
+}

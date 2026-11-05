@@ -1,0 +1,102 @@
+ Network virtual-city-test-cf0ee809_default Creating 
+ Network virtual-city-test-cf0ee809_default Creating 
+ Network virtual-city-test-cf0ee809_default Created 
+ Network virtual-city-test-cf0ee809_default Created 
+ Container virtual-city-test-cf0ee809-db-1 Creating 
+ Container virtual-city-test-cf0ee809-db-1 Created 
+ Container virtual-city-test-cf0ee809-db-1 Starting 
+ Container virtual-city-test-cf0ee809-db-1 Started 
+ Container virtual-city-test-cf0ee809-db-1 Waiting 
+ Container virtual-city-test-cf0ee809-db-1 Healthy 
+[WebServer] (node:278093) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:278163) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:278163) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:278163) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:278092) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:278254) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:278290) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:278313) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 10 tests using 1 worker
+
+(node:278390) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/e2e/library.spec.ts:16:5 › original library scene and native desk areas work with actual identity and authoritative seating (2.6s)
+  ✓   2 [desktop] › tests/e2e/library.spec.ts:27:5 › library asset failure keeps keyboard desks usable and sessionless access never enters a room (1.8s)
+  ✓   3 [desktop] › tests/e2e/library.spec.ts:33:5 › Library keyboard focus,timer actions,reduced motion and readable controls remain accessible without canvas input (3.9s)
+  ✓   4 [desktop] › tests/e2e/library.spec.ts:64:5 › Library uses the private shared timer with exact-key retry,pause and durable continuation after leaving (3.9s)
+  ✓   5 [desktop] › tests/e2e/library.spec.ts:81:5 › listed quiet study RSVP uses canonical receipts,private schedules stay hidden,and stale or failed reads show no fabricated empty state (2.7s)
+  ✓   6 [desktop] › tests/e2e/library.spec.ts:92:5 › late study schedules cannot restore the previous identity after logout (1.5s)
+  ✓   7 [desktop] › tests/e2e/library.spec.ts:98:5 › study progress is opt-in,phase-only,expires quickly,and an interrupted choice can be retried or stopped (6.2s)
+  ✓   8 [desktop] › tests/e2e/library.spec.ts:112:5 › friend accepts a specific Library room invitation and confirms travel before joining the same room (3.9s)
+  ✓   9 [desktop] › tests/e2e/library.spec.ts:120:5 › actual Library transport recovery and explicit portal travel retain one identity,seat and private timer history (5.7s)
+  ✓  10 [desktop] › tests/e2e/library.spec.ts:129:5 › Library private report and block use the shared safety workflow without broadcasting evidence (3.3s)
+
+  10 passed (40.8s)
+ Container virtual-city-test-cf0ee809-db-1 Stopping 
+ Container virtual-city-test-cf0ee809-db-1 Stopped 
+ Container virtual-city-test-cf0ee809-db-1 Removing 
+ Container virtual-city-test-cf0ee809-db-1 Removed 
+ Network virtual-city-test-cf0ee809_default Removing 
+ Network virtual-city-test-cf0ee809_default Removed 
+ Network virtual-city-test-e01aea65_default Creating 
+ Network virtual-city-test-e01aea65_default Creating 
+ Network virtual-city-test-e01aea65_default Created 
+ Network virtual-city-test-e01aea65_default Created 
+ Container virtual-city-test-e01aea65-db-1 Creating 
+ Container virtual-city-test-e01aea65-db-1 Created 
+ Container virtual-city-test-e01aea65-db-1 Starting 
+ Container virtual-city-test-e01aea65-db-1 Started 
+ Container virtual-city-test-e01aea65-db-1 Waiting 
+ Container virtual-city-test-e01aea65-db-1 Healthy 
+[WebServer] (node:280833) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node --env-file-if-exists=.env --import tsx apps/platform-api/src/db/migrate.ts
+[WebServer] (node:280865) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:280865) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[WebServer] (node:280865) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:280832) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ node dist/main.js
+[WebServer] (node:280969) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:281013) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ next start --hostname 127.0.0.1 --port 3300
+[WebServer] (node:281026) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 10 tests using 1 worker
+
+(node:281083) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [mobile] › tests/e2e/library.spec.ts:16:5 › original library scene and native desk areas work with actual identity and authoritative seating (2.8s)
+  ✓   2 [mobile] › tests/e2e/library.spec.ts:27:5 › library asset failure keeps keyboard desks usable and sessionless access never enters a room (1.5s)
+  ✓   3 [mobile] › tests/e2e/library.spec.ts:33:5 › Library keyboard focus,timer actions,reduced motion and readable controls remain accessible without canvas input (3.3s)
+  ✓   4 [mobile] › tests/e2e/library.spec.ts:64:5 › Library uses the private shared timer with exact-key retry,pause and durable continuation after leaving (2.7s)
+  ✓   5 [mobile] › tests/e2e/library.spec.ts:81:5 › listed quiet study RSVP uses canonical receipts,private schedules stay hidden,and stale or failed reads show no fabricated empty state (2.5s)
+  ✓   6 [mobile] › tests/e2e/library.spec.ts:92:5 › late study schedules cannot restore the previous identity after logout (1.2s)
+  ✓   7 [mobile] › tests/e2e/library.spec.ts:98:5 › study progress is opt-in,phase-only,expires quickly,and an interrupted choice can be retried or stopped (5.7s)
+  ✓   8 [mobile] › tests/e2e/library.spec.ts:112:5 › friend accepts a specific Library room invitation and confirms travel before joining the same room (4.0s)
+  ✓   9 [mobile] › tests/e2e/library.spec.ts:120:5 › actual Library transport recovery and explicit portal travel retain one identity,seat and private timer history (5.3s)
+  ✓  10 [mobile] › tests/e2e/library.spec.ts:129:5 › Library private report and block use the shared safety workflow without broadcasting evidence (3.2s)
+
+  10 passed (37.4s)
+ Container virtual-city-test-e01aea65-db-1 Stopping 
+ Container virtual-city-test-e01aea65-db-1 Stopped 
+ Container virtual-city-test-e01aea65-db-1 Removing 
+ Container virtual-city-test-e01aea65-db-1 Removed 
+ Network virtual-city-test-e01aea65_default Removing 
+ Network virtual-city-test-e01aea65_default Removed 

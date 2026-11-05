@@ -1,0 +1,6 @@
+{
+  "exactKeyRetry": true,
+  "canonicalWorld": "library",
+  "continuedAfterLeave": true,
+  "canPause": true
+}

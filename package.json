@@ -34,7 +34,7 @@
     "db:stop": "docker compose --env-file .env -f infra/compose/dev.yml stop",
     "architecture:check": "node scripts/verify-architecture.mjs",
     "assets:avatars": "node --import tsx scripts/build-avatar-assets.ts",
-    "assets:check": "node --import tsx scripts/build-avatar-assets.ts --check",
+    "assets:check": "node --import tsx scripts/build-avatar-assets.ts --check && node scripts/check-scene-provenance.mjs",
     "bench:rooms": "pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/rooms-baseline.ts",
     "bench:deadline":"pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/deadline-baseline.ts",
     "bench:city": "pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/city-profiles.ts",

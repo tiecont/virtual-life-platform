@@ -13,7 +13,7 @@
     },
     {
       "path": "packages/pixi-scene/src/renderer.ts",
-      "sha256": "462940a52978afa2c12188728e082bb073afbe0c43ec36d55d9be6c590e16eb3"
+      "sha256": "1622aa6265d27dc2a4eeac0e09b98a212b08e6cd2cd035cadc57c376eb880e7d"
     }
   ],
   "avatar": "Existing original starter atlas;separate avatar provenance applies",

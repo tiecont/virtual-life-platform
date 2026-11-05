@@ -3,7 +3,7 @@
  "origin":"Original project-authored geometry and deterministic Pixi graphics; virtual dining decor, no external media, distributed food imagery, fonts or audio",
  "sources":[
   {"path":"packages/restaurant-world/src/index.ts","sha256":"68f59dd0358683693c69cbb97dad7ebf178203571722cb91c7c21480adf16a4b"},
-  {"path":"packages/pixi-scene/src/renderer.ts","sha256":"4d8c62290f080ef85769e9cafc140276c03dfc4ee6e317da1984f4e0ae773be7"}
+  {"path":"packages/pixi-scene/src/renderer.ts","sha256":"1622aa6265d27dc2a4eeac0e09b98a212b08e6cd2cd035cadc57c376eb880e7d"}
  ],
  "avatar":"Existing original starter atlas; separate avatar provenance applies",
  "releaseApproved":false
