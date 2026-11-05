@@ -1,6 +1,6 @@
 # ADR0081 — Original Central Park on shared scene and room owners
 
-Status: M24-01 locally VERIFIED froma89873c. Final root19governance/266unit/507integration/allbuild0,471hashes unchanged;6Park+8existingtheme browser regressions0,all4ParkPNGs inspected. Initial context-key failure retained/fixed without weakening guard. [Actual evidence](../agent/evidence/m24-scene-checks.json). This is scene/native navigation,not M24-02..05 or public activation.
+Status: M24-01 locally VERIFIED froma89873c. Final root19governance/266unit/507integration/allbuild0,471hashes unchanged;6Park+8existingtheme browser regressions0,all4ParkPNGs inspected. Initial context-key failure retained/fixed without weakening guard. [Actual evidence](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m24-scene-checks.json). This is scene/native navigation,not M24-02..05 or public activation.
 
 Audit finds no existing park module,route,scene or scene-specific data owner. Rollout already defines park OFF. Existing Library/Restaurant/Lounge demonstrate pure world packages,explicit local installation plus registry flags,shared authoritative Room/Social/Safety/Travel and a native WorldRoomPanel independent of Pixi. Reuse these boundaries;add no database table,ORM,identity system or room allocator.
 

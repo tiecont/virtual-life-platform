@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T16:26:29.622206+00:00; task N01-02 VERIFIED on `codex/vnext-n01-02-evidence-store`. Base revision `1b5ad00eee8c7cc8660aba30fa9c60a15d9378e4`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T16:52:03.362977+00:00; task N01-03 VERIFIED on `codex/vnext-n01-03-indexed-readers`. Base revision `bd9a61ea005f3de9316e5a99088c9b54153c0220`; this task has its own reviewable commit after evidence finalization.
 
-Implemented versioned content-indexed evidence reads, bounded AES-256-GCM objects, owner-only independent key custody, no-overwrite archive/restore and full restore hash readback. Actual archive/check/restore covers all 3,586 historical files / 151,876,136 bytes / 1,955 unique objects. Five negative/round-trip governance cases and lint pass. Originals retained; no public/off-host upload or cleanup authorized.
+Migrated governance/release/ops/audit readers to content-indexed historical bytes, added pinned private Git retrieval, redirected fresh browser/integration/load/audit outputs, and repaired 68 historical Markdown/image links. Full 553 integration / 278 unit regressions and scoped desktop/mobile producer pass; all original evidence retained.
 
-[Actual checks](../audit/N01-02-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 9, "TODO": 60}`.
+[Actual checks](../audit/N01-03-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 10, "TODO": 59}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N01-03; migrate governance/release/ops-watch through indexed readers, distinguish historical provenance from fresh acceptance, redirect raw-output writers, and prove portable missing/tampered retrieval before cleanup.
+Reserve N01-04; recheck encrypted archive and Git-only retrieval, remove only the 3586 indexed historical outputs in a separate commit, retain source/SQL/lock/provenance/legacy fixtures, then verify consumers and exact current-tree byte reduction.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.

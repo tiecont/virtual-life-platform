@@ -1,6 +1,6 @@
 # ADR0080 — Guarded local city load hypotheses
 
-Status: M22-05 measurement tooling locally VERIFIED from63b2d9f. Actual100/120s and1000/120s experiments complete0/cleanup0;100hypothesis MET_LOCAL_ONLY,1000hypothesis NOT_MET(256admitted,guard rejections andstress successfulACKp95~1.48s).456unchanged hashes,5network regressions/lint/types/governance/CIpolicy0. Runtime source and quotas unchanged;test child gains count-only TCP byte samples. [Evidence](../agent/evidence/m22-load-checks.json),[measured table](../architecture/CITY-LOAD-PROFILES.md).
+Status: M22-05 measurement tooling locally VERIFIED from63b2d9f. Actual100/120s and1000/120s experiments complete0/cleanup0;100hypothesis MET_LOCAL_ONLY,1000hypothesis NOT_MET(256admitted,guard rejections andstress successfulACKp95~1.48s).456unchanged hashes,5network regressions/lint/types/governance/CIpolicy0. Runtime source and quotas unchanged;test child gains count-only TCP byte samples. [Evidence](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m22-load-checks.json),[measured table](../architecture/CITY-LOAD-PROFILES.md).
 
 Audit finds previous24socket/16actor/48socket profiles are short local observations. Current SDK Sandbox has eight places per room and at most32rooms:256admitted players. Gateway transport ceiling1000is separate. Testing1000connected clients cannot prove1000admitted/game-playing users,and must not increase limits to manufacture success.
 

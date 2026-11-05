@@ -1,6 +1,6 @@
 # Evidence inventory and archival preparation
 
-N01-02 now implements the [versioned private store and full restore](STORE.md). `evidence:check` and `evidence:restore-smoke` are real commands with actual full-corpus results; consumers and portable off-host custody are separate gates. Originals remain in place.
+N01-02 implements the [versioned private store and full restore](STORE.md). N01-03 integrates indexed governance/release/ops readers, redirects new measurements into private artifact scopes and proves complete retrieval from the existing immutable private Git history. `evidence:check`, `evidence:check --git-only` and `evidence:restore-smoke` are real commands with actual full-corpus results. Originals remain in place until the separate N01-04 cleanup. No new off-host encrypted destination or independent key custody is provisioned.
 
 N01-01 adds `pnpm evidence:inventory --out artifacts/<private-scope>/inventory.json`. It reads tracked/nonignored paths without loading environment files, follows no symlink targets, computes bytes/SHA-256 for regular unprotected files, and records static evidence references plus directory/template warnings. Output is confined to artifacts and refuses overwrite. It does not move or delete files.
 
@@ -23,9 +23,9 @@ No MOVE or REMOVE is approved by this scan. Neither an extension nor absence of 
 
 ## Reader and writer review
 
-`ops-watch.mjs` and its governance fixture actually parse three M23 JSON observations. `verify-release.mjs` checks evidence paths supplied by the release-decision config. `plan-status.mjs` reads the Mxx manifest/metadata and verifies a nonempty evidence/verification field; it does not independently validate raw result bytes. The old ledger remains unchanged and cannot substitute for fresh source acceptance.
+`ops-watch.mjs` and its governance fixture parse three M23 JSON observations through indexed hash verification. `verify-release.mjs` validates indexed historical bytes supplied by the release-decision config, retaining all existing controls. `verify-governance.mjs` also verifies the complete historical corpus. `plan-status.mjs` reads the Mxx manifest/metadata and verifies a nonempty evidence/verification field; it does not independently validate raw result bytes. The old ledger remains unchanged and cannot substitute for fresh source acceptance.
 
-Legacy audit helpers both read dated JSON inputs and write reports. Browser/load/integration cases also produce historical-path artifacts. These require distinct reader adapters and controlled fresh output/restore behavior; simply moving their referenced files would break evidence or regenerate history in place. Relative documentation/image links are additional consumers.
+Legacy integration audits read dated JSON through the historical reader; all identified browser/load/integration/audit producers now use ignored fresh output scopes. Documentation/image links target the original private Git commit. Static JSON artifact references remain historical metadata, preserving original hashes and source/environment context. See [ADR0103](../adr/0103-indexed-historical-evidence-and-private-git-retrieval.md).
 
 ## Verification and continuation
 

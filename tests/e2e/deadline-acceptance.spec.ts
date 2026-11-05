@@ -1,3 +1,4 @@
+import {evidenceOutput} from '../../scripts/evidence-output.mjs';
 import { test,expect } from '@playwright/test';
 import { mkdir,writeFile } from 'node:fs/promises';
 import { guest,enter } from '../support/deadline-safety-fixtures';
@@ -32,7 +33,7 @@ test('Deadline keyboard focus,timer actions,reduced motion and readable controls
  });expect(contrast.length).toBeGreaterThan(10);expect(contrast.every(row=>row.ratio>=4.5)).toBe(true);
  const targets=await page.locator('main button:visible').evaluateAll(elements=>elements.map(e=>({label:e.textContent,width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height})));
  expect(targets.every(t=>t.width>=44&&t.height>=44)).toBe(true);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
- const dir='docs/agent/evidence/m15-deadline-accessibility';await mkdir(dir,{recursive:true});await page.screenshot({path:`${dir}/${info.project.name}-deadline.png`,fullPage:true});
+ const dir=evidenceOutput('docs/agent/evidence/m15-deadline-accessibility');await mkdir(dir,{recursive:true});await page.screenshot({path:`${dir}/${info.project.name}-deadline.png`,fullPage:true});
  await page.getByRole('link',{name:'Back to visit controls',exact:true}).focus();await page.keyboard.press('Enter');await page.keyboard.press('Tab');
  await expect(page.getByRole('button',{name:'Leave cafe',exact:true})).toBeFocused();await page.keyboard.press('Enter');await expect(enter).toBeFocused();
  await writeFile(`${dir}/${info.project.name}-deadline.json`,JSON.stringify({nativeEntrySeatTimerAndExit:true,systemReducedMotion:true,noIdleFrames:true,timerLiveRegionOff:true,contrast,targets},null,2));
@@ -56,7 +57,7 @@ test('Deadline scene loading,cache,idle work and SPA lifetimes fit the unchanged
   const js = cold.resources.filter(entry => entry.path.endsWith('.js'));
   const jsDecoded = js.reduce((sum, entry) => sum + entry.decoded, 0), jsEncoded = js.reduce((sum, entry) => sum + entry.encoded, 0);
   const avatar = cold.resources.find(entry => entry.path.endsWith('/starter-v1.svg'))!;
-  await mkdir('artifacts', { recursive: true }); await writeFile(`docs/agent/evidence/m15-deadline-performance-cold-${test.info().project.name}.json`, JSON.stringify({ ...cold, profile: performanceBudget.profile, jsDecoded, jsEncoded, cacheControl }, null, 2));
+  await mkdir('artifacts', { recursive: true }); await writeFile(evidenceOutput(`docs/agent/evidence/m15-deadline-performance-cold-${test.info().project.name}.json`), JSON.stringify({ ...cold, profile: performanceBudget.profile, jsDecoded, jsEncoded, cacheControl }, null, 2));
   expect(cold.readyMs).toBeLessThan(performanceBudget.readyMaxMs); expect(jsDecoded).toBeLessThan(performanceBudget.jsDecodedMaxBytes);
   expect(jsEncoded).toBeLessThan(performanceBudget.jsEncodedMaxBytes); expect(avatar.decoded).toBeGreaterThan(0); expect(avatar.decoded).toBeLessThan(performanceBudget.avatarDecodedMaxBytes);
   const beforeIdle = Number(await canvas.getAttribute('data-render-count')); await page.waitForTimeout(performanceBudget.idleWindowMs);
@@ -91,6 +92,6 @@ test('Deadline scene loading,cache,idle work and SPA lifetimes fit the unchanged
     expect(warmAsset).toBeDefined(); expect(warmAsset!.transferSize).toBe(0);
     await second.getByRole('button', { name: 'Leave cafe', exact: true }).click();
     await mkdir('artifacts', { recursive: true });
-    await writeFile(`docs/agent/evidence/m15-deadline-performance-${test.info().project.name}.json`, JSON.stringify({ profile: performanceBudget.profile, readyMs: cold.readyMs, jsDecodedBytes: jsDecoded, jsEncodedBytes: jsEncoded, coldAvatar: avatar, cacheControl, warmAssetTransferBytes: warmAsset!.transferSize, idleWindowMs: performanceBudget.idleWindowMs, idleRenders, rafSamples: sortedGaps.length, rafP95GapMs, remountCycles: performanceBudget.remountCycles, warmHeapBytes, afterHeapBytes, heapGrowthBytes, atlasSourcePixelBytes: 512 * 768 * 4, resources: cold.resources, limits: 'Short local emulated Chromium profile; rAF cadence is not GPU throughput; forced-GC JS heap is not total browser/GPU memory or leak certification.' }, null, 2));
+    await writeFile(evidenceOutput(`docs/agent/evidence/m15-deadline-performance-${test.info().project.name}.json`), JSON.stringify({ profile: performanceBudget.profile, readyMs: cold.readyMs, jsDecodedBytes: jsDecoded, jsEncodedBytes: jsEncoded, coldAvatar: avatar, cacheControl, warmAssetTransferBytes: warmAsset!.transferSize, idleWindowMs: performanceBudget.idleWindowMs, idleRenders, rafSamples: sortedGaps.length, rafP95GapMs, remountCycles: performanceBudget.remountCycles, warmHeapBytes, afterHeapBytes, heapGrowthBytes, atlasSourcePixelBytes: 512 * 768 * 4, resources: cold.resources, limits: 'Short local emulated Chromium profile; rAF cadence is not GPU throughput; forced-GC JS heap is not total browser/GPU memory or leak certification.' }, null, 2));
   } finally { await second.close(); }
 });

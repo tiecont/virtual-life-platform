@@ -1,6 +1,6 @@
 # ADR0089 — Deadline invitations and shared safety
 
-Status: accepted and locally verified for M15-05,from861f67c. See [actual evidence](../agent/evidence/m15-safety-checks.json);public/operator approvals remain separate.
+Status: accepted and locally verified for M15-05,from861f67c. See [actual evidence](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m15-safety-checks.json);public/operator approvals remain separate.
 
 Reuse the M09 RoomInvitation/M08 RoomSafety UI and existing authenticated Room/Focus/Social/Invitation/Report owners. Deadline remains silent by its current safety policy;do not invent a legacy chat/task-notes feature. Source has no private task text field to migrate,and strict shared focus commands reject such client input. Public presence may show permitted profile/seat only,not timer/history.
 

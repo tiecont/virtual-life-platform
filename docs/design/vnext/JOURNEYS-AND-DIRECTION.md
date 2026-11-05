@@ -83,23 +83,23 @@ Desktop: room scene is the main area, compact activity HUD, one right-side conte
 
 <details><summary>Historical portal desktop: technical status and long map/list before activity</summary>
 
-<img src="../../agent/evidence/m16-portal-journey/desktop-city.png" width="500" alt="Historical synthetic account portal screenshot with platform status above the city map and long catalog"/>
+[Historical synthetic account portal screenshot with platform status above the city map and long catalog](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m16-portal-journey/desktop-city.png)
 
 </details>
 
 <details><summary>Historical Deadline mobile: scene and focus separated by long native seat controls</summary>
 
-<img src="../../agent/evidence/m15-deadline-scene-page-mobile.png" width="200" alt="Historical Deadline mobile layout with native controls and the private focus timer below the seat list"/>
+[Historical Deadline mobile layout with native controls and the private focus timer below the seat list](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m15-deadline-scene-page-mobile.png)
 
 </details>
 
 <details><summary>Historical Maid scene: original warm cafe geometry and shared avatars to retain</summary>
 
-<img src="../../agent/evidence/m16-native-visual/mobile-scene.png" width="500" alt="Historical original Cafe Sakura scene with numbered tables, warm floor colors and shared starter avatars"/>
+[Historical original Cafe Sakura scene with numbered tables, warm floor colors and shared starter avatars](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m16-native-visual/mobile-scene.png)
 
 </details>
 
-The screenshot names denote earlier controlled browser profiles, including synthetic test identities. Their hashes and associated source provenance are in [SOURCE-REFERENCES.json](SOURCE-REFERENCES.json). They are reference material, not current screenshots, performance data or human usability approval. All existing scene distribution approvals remain false.
+The screenshot names denote earlier controlled browser profiles, including synthetic test identities. Their hashes and associated source provenance are in [SOURCE-REFERENCES.json](SOURCE-REFERENCES.json). The immutable screenshot links require access to the existing private repository; [indexed retrieval](../../evidence/STORE.md) preserves byte verification. They are reference material, not current screenshots, performance data or human usability approval. All existing scene distribution approvals remain false.
 
 ## Walkthrough and handoff
 

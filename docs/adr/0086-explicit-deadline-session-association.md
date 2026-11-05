@@ -1,6 +1,6 @@
 # ADR0086 — Explicit Deadline session association
 
-Status: accepted and locally verified for M15-02,from4c5e2ee. Actual commands and initial failures are retained in [the verification ledger](../agent/evidence/m15-identity-checks.json);public federation and whole-world integration remain separate.
+Status: accepted and locally verified for M15-02,from4c5e2ee. Actual commands and initial failures are retained in [the verification ledger](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m15-identity-checks.json);public federation and whole-world integration remain separate.
 
 City remains the account/session authority. An authenticated city user explicitly associates the existing HttpOnly Deadline guest cookie from this browser. The local-only adapter calls the selected Deadline baseline's actual `GET /api/v1/me`,forwarding only that cookie to a fixed exact loopback origin. It accepts no caller-supplied guest/account ID,name or avatar as ownership proof. It follows no redirects and bounds response size,time and concurrent work. This is a possession-proven association of two existing sessions,not a new login provider or a claim of production cross-domain federation.
 

@@ -1,3 +1,4 @@
+import {evidenceOutput} from './evidence-output.mjs';
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -20,6 +21,6 @@ const report = {
   },
   scope: 'Readonly source/SQL inspection; no legacy process/database/network/mutation/secret read, no runtime focus behavior claimed. Pattern counts support manual audit, not a security certificate.',
 };
-const artifact = 'docs/agent/evidence/m10-focus-audit.json';
+const artifact = evidenceOutput('docs/agent/evidence/m10-focus-audit.json');
 writeFileSync(artifact, JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify({ artifact, head: report.legacy.head, sourceCount: paths.length, focusHttpDeclarations: report.legacy.focusHttpDeclarations, focusWireLines: report.legacy.focusWireLines, buttonDisabled: report.legacy.focusStartButtonDisabled, sql: report.legacy.sql }));

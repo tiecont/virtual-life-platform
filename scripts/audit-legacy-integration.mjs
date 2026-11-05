@@ -4,6 +4,8 @@ import { resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import ts from 'typescript';
+import {readHistoricalJson} from './evidence-reader.mjs';
+import {evidenceOutput} from './evidence-output.mjs';
 
 // Explicit source roots only: never read environment files, databases, generated
 // bundles or credentials, and never write to the legacy worktree.
@@ -47,9 +49,9 @@ for(const path of paths.filter(path=>/\.[cm]?tsx?$/.test(path))){
  visit(source);
 }
 assert.equal(parseDiagnostics.length,0,'Source parse errors; inspect before claiming audit complete');
-const prior=JSON.parse(readFileSync(`docs/agent/evidence/${name==='deadline'?'m10-focus-audit':'m11-hospitality-audit'}.json`,'utf8'));
+const prior=await readHistoricalJson(`docs/agent/evidence/${name==='deadline'?'m10-focus-audit':'m11-hospitality-audit'}.json`);
 const comparison=prior.legacy.sources.map(item=>({path:item.path,previousSha256:item.sha256,currentSha256:sources.find(source=>source.path===item.path)?.sha256??null,unchanged:sources.some(source=>source.path===item.path&&source.sha256===item.sha256)}));
-const baseline=JSON.parse(readFileSync(`docs/agent/evidence/audit-${name}-checks.json`,'utf8'));
+const baseline=await readHistoricalJson(`docs/agent/evidence/audit-${name}-checks.json`);
 // Detect changes during inspection instead of treating a live worktree as a pin.
 assert.equal(status(),before,'Legacy worktree changed during audit');
 assert.equal(git(['-C',root,'rev-parse','HEAD']),head,'Legacy HEAD changed during audit');
@@ -58,6 +60,6 @@ const report={taskID,auditedAt:new Date().toISOString(),cityBase:git(['rev-parse
  legacy:{path:root,branch:git(['-C',root,'branch','--show-current']),head,status:before.split('\n').filter(Boolean),sourceDigest:digest(JSON.stringify(sources)),sources,apiSourceFiles:sources.filter(source=>source.path.startsWith('apps/api/src/')).map(source=>source.path),testFiles:sources.filter(source=>/\.(test|spec)\.|\.integration\./.test(source.path)).map(source=>source.path),routes,transportReferences,parseDiagnostics,rootLicenseFiles:['LICENSE','LICENSE.md','LICENSE.txt','COPYING'].filter(path=>existsSync(root+'/'+path)),previousFocusedAudit:comparison},
  datedBaseline:{rerun:false,commands:baseline,warning:'2026-11-02 baseline only;not a new runtime/build/DB/browser result. Source comparison covers listed prior focused files,not every baseline input.'},
  scope:'Readonly source/AST/hash inspection. No environment reads,source/asset copying,legacy DB/process/migration/network operation or worktree mutation. Parsed route references do not prove a listening service. Dirty source hashes are an observation,not an approved clean integration revision.'};
-const artifact=`docs/agent/evidence/${name==='deadline'?'m15':'m16'}-integration-audit.json`;
+const artifact=evidenceOutput(`docs/agent/evidence/${name==='deadline'?'m15':'m16'}-integration-audit.json`);
 writeFileSync(artifact,JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({taskID,artifact,head,sources:sources.length,routes:routes.length,transportReferences:transportReferences.length,previousFocusedFilesUnchanged:comparison.filter(item=>item.unchanged).length,previousFocusedFiles:comparison.length,worktreeUnchanged:true}));

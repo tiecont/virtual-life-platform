@@ -15,7 +15,7 @@ async function safePath(root,relative,missing=false){
  for(const part of relative.split('/')){current=path.join(current,part);try{assert(!(await lstat(current)).isSymbolicLink(),'Symlink refused');}catch(error){if(!missing||error.code!=='ENOENT')throw error;}}
  return current;
 }
-async function readRegular(root,relative,limit){
+export async function readRegular(root,relative,limit){
  const name=await safePath(root,relative),file=await open(name,constants.O_RDONLY|constants.O_NOFOLLOW);
  try{const info=await file.stat();assert(info.isFile()&&info.size<=limit,'Evidence file bounds rejected');return await file.readFile();}finally{await file.close();}
 }

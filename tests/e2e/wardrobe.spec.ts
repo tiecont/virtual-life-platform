@@ -1,3 +1,4 @@
+import {evidenceOutput} from '../../scripts/evidence-output.mjs';
 import { test,expect } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { mkdir,writeFile } from 'node:fs/promises';
@@ -20,7 +21,7 @@ test('private wardrobe previews locked styles, equips with a durable retry and r
   await wardrobe.getByRole('button',{name:'Equip Cafe apron',exact:true}).focus();await page.keyboard.press('Enter');await expect(wardrobe.getByText('Outfit response interrupted. Retry to confirm the same request.',{exact:true})).toBeVisible();
   await wardrobe.getByRole('button',{name:'Retry outfit request',exact:true}).click();await expect(wardrobe.getByText('Outfit confirmed: Cafe apron.',{exact:true})).toBeVisible();expect(keys).toHaveLength(2);expect(keys[0]).toBe(keys[1]);expect((await db.query('SELECT count(*)::int AS n FROM engine_progression_appearance_mutations WHERE account_id=$1',[me.profile.id])).rows[0].n).toBe(1);
   const canvas=page.locator('canvas[data-scene]');await expect(canvas).toHaveAttribute('data-avatar-outfit','cafe-apron');await expect(wardrobe.getByText('Wearing in this visit: Cafe apron.',{exact:true})).toBeVisible();
-  const dir='docs/agent/evidence/m13-wardrobe-visual';await mkdir(dir,{recursive:true});await wardrobe.screenshot({path:`${dir}/${test.info().project.name}.png`});await page.screenshot({path:`${dir}/${test.info().project.name}-page.png`,fullPage:true});
+  const dir=evidenceOutput('docs/agent/evidence/m13-wardrobe-visual');await mkdir(dir,{recursive:true});await wardrobe.screenshot({path:`${dir}/${test.info().project.name}.png`});await page.screenshot({path:`${dir}/${test.info().project.name}-page.png`,fullPage:true});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);const targets=await wardrobe.locator('button').evaluateAll(buttons=>buttons.map(button=>{const r=button.getBoundingClientRect();return {width:r.width,height:r.height};}));expect(targets.every(r=>r.width>=44&&r.height>=44)).toBe(true);
   await db.query('DELETE FROM engine_progression_entitlements WHERE account_id=$1',[me.profile.id]);await expect(canvas).toHaveAttribute('data-avatar-outfit','casual',{timeout:20000});await wardrobe.getByRole('button',{name:'Refresh wardrobe',exact:true}).click();await expect(wardrobe.getByRole('button',{name:'Equip Cafe apron',exact:true})).toBeDisabled();
   await wardrobe.getByRole('radio',{name:/City casual/}).check();await wardrobe.getByRole('button',{name:'Equip City casual',exact:true}).click();await expect(wardrobe.getByText('Outfit confirmed: City casual.',{exact:true})).toBeVisible();

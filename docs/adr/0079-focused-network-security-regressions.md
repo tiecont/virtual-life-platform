@@ -1,6 +1,6 @@
 # ADR0079 — Focused security regressions on existing owners
 
-Status: M22-03 locally VERIFIED from37b61ca. Full focused9file/142case security lane,whole lint/types/governance/CI policy and2desktop/mobile private deep-link browser cases pass. All455source hashes unchanged;335runtime paths match prior root baseline. No runtime or schema change. [Actual ledger](../agent/evidence/m22-security-checks.json).
+Status: M22-03 locally VERIFIED from37b61ca. Full focused9file/142case security lane,whole lint/types/governance/CI policy and2desktop/mobile private deep-link browser cases pass. All455source hashes unchanged;335runtime paths match prior root baseline. No runtime or schema change. [Actual ledger](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m22-security-checks.json).
 
 Audit found substantive identity/socket,room,social,report,sanction,travel and restricted Dating regressions already run by the normal integration gate. Reuse those files in an explicit Vitest security project and `pnpm test:security`;do not create a replacement server,policy implementation or independent fixture authentication system. The same files remain in the integration project,so existing `pnpm check`/CI coverage still includes the new tests.
 

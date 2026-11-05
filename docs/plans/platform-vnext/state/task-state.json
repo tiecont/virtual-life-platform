@@ -127,12 +127,14 @@
       "next_action": "Reserve N01-03; migrate governance/release/ops-watch through indexed readers, distinguish historical provenance from fresh acceptance, redirect raw-output writers, and prove portable missing/tampered retrieval before cleanup."
     },
     "N01-03": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex Foundation lane",
+      "branch": "codex/vnext-n01-03-indexed-readers",
+      "evidence_refs": [
+        "n01-03-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "Loader adapters cho governance/release/ops watch và docs links"
+      "next_action": "Reserve N01-04; recheck encrypted archive and Git-only retrieval, remove only the 3586 indexed historical outputs in a separate commit, retain source/SQL/lock/provenance/legacy fixtures, then verify consumers and exact current-tree byte reduction."
     },
     "N01-04": {
       "status": "TODO",

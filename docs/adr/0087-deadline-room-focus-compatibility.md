@@ -1,6 +1,6 @@
 # ADR0087 — Deadline room/focus compatibility on shared owners
 
-Status: accepted and locally verified for M15-03,from88432dc. See [actual evidence](../agent/evidence/m15-world-checks.json);scene/navigation follow04.
+Status: accepted and locally verified for M15-03,from88432dc. See [actual evidence](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m15-world-checks.json);scene/navigation follow04.
 
 The selected Deadline snapshot6d2ca6a4 has working guest/catalog HTTP,30 zero-padded seat IDs and960x640 seat positions,plus focus SQL duration900/1500/3000 and active/completed/cancelled states. It has no authoritative room/seat WebSocket implementation or focus service to preserve/extract. Catalog occupancy defaults to zero through an unmounted callback. There is no existing playable Pomodoro baseline to claim green.
 

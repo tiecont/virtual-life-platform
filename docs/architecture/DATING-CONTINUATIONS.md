@@ -1,6 +1,6 @@
 # Private connections and return conversations
 
-M20-05 adds a closed synthetic-test-only continuation to the native private DateRoom. See [ADR0070](../adr/0070-private-mutual-continuations-and-consent-scoped-return-queues.md) and [actual evidence](../agent/evidence/m20-continuation-checks.json). Normal development/production has no positive eligibility provider. All real rollout and eight approval gates remain closed;this is not a controlled pilot or effective real-world age verification.
+M20-05 adds a closed synthetic-test-only continuation to the native private DateRoom. See [ADR0070](../adr/0070-private-mutual-continuations-and-consent-scoped-return-queues.md) and [actual evidence](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m20-continuation-checks.json). Normal development/production has no positive eligibility provider. All real rollout and eight approval gates remain closed;this is not a controlled pilot or effective real-world age verification.
 
 After an actual started conversation ends,each participant may explicitly keep one private connection choice. A unilateral choice sends no notification and leaves the other participant's NONE observation—including own revisions,times and grants—identical. Only two current consenting choices expose MUTUAL and the neutral private alias. One choice occupies only its owner's slot;it cannot reserve the peer. Global active choice membership is bounded at100. There is no general friendship,DM,contact exchange,scoreboard or reward.
 

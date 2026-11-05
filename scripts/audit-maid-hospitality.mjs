@@ -1,3 +1,4 @@
+import {evidenceOutput} from './evidence-output.mjs';
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -28,5 +29,5 @@ const report = {
   legacy: { path: root, branch: git(['-C', root, 'branch', '--show-current']), head: git(['-C', root, 'rev-parse', 'HEAD']), status: git(['-C', root, 'status', '--short']).split('\n').filter(Boolean), sources: paths.map(path => ({ path, sha256: createHash('sha256').update(source(path)).digest('hex') })), tables, states, serviceCommands: commands.filter(name => /^(order\.|maid\.shift\.|minigame\.)/.test(name)), routes, apiSourceFiles: files('apps/api/src'), webPageFiles: files('apps/web/src/app').filter(path => /page\.tsx$/.test(path)) },
   scope: 'Readonly current source/SQL/AST inventory plus manual reference comparison; no legacy server/database/test/process/mutation/secret access or copied implementation. Contracts/menu seeds do not prove live order/shift functionality.',
 };
-const artifact = 'docs/agent/evidence/m11-hospitality-audit.json'; writeFileSync(artifact, JSON.stringify(report, null, 2) + '\n');
+const artifact = evidenceOutput('docs/agent/evidence/m11-hospitality-audit.json'); writeFileSync(artifact, JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify({ artifact, head: report.legacy.head, sources: paths.length, states, serviceCommands: report.legacy.serviceCommands, routes, tables }));

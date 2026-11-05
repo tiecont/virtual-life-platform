@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N01-03 VERIFIED
+
+Migrated governance/release/ops/audit readers to content-indexed historical bytes, added pinned private Git retrieval, redirected fresh browser/integration/load/audit outputs, and repaired 68 historical Markdown/image links. Full 553 integration / 278 unit regressions and scoped desktop/mobile producer pass; all original evidence retained.
+
+Actual commands: 21; retained failed attempts: 1; required final checks passed. Evidence: `n01-03-2026-11-05`; [checks](../audit/N01-03-CHECKS.json). Current counts: `{"VERIFIED": 10, "TODO": 59}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N01-04; recheck encrypted archive and Git-only retrieval, remove only the 3586 indexed historical outputs in a separate commit, retain source/SQL/lock/provenance/legacy fixtures, then verify consumers and exact current-tree byte reduction.
+
 ## 2026-11-05 — N01-02 VERIFIED
 
 Implemented versioned content-indexed evidence reads, bounded AES-256-GCM objects, owner-only independent key custody, no-overwrite archive/restore and full restore hash readback. Actual archive/check/restore covers all 3,586 historical files / 151,876,136 bytes / 1,955 unique objects. Five negative/round-trip governance cases and lint pass. Originals retained; no public/off-host upload or cleanup authorized.

@@ -1,6 +1,6 @@
 # Security regression matrix
 
-`pnpm test:security` builds existing packages and runs nine existing/new integration files through the isolated disposable PostgreSQL harness. The security project reuses the normal integration tests;it does not replace CI's root gate. All tests retain the15second case/hook deadline. Actual run counts and exits belong in [M22-03 evidence](../agent/evidence/m22-security-checks.json).
+`pnpm test:security` builds existing packages and runs nine existing/new integration files through the isolated disposable PostgreSQL harness. The security project reuses the normal integration tests;it does not replace CI's root gate. All tests retain the15second case/hook deadline. Actual run counts and exits belong in [M22-03 evidence](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m22-security-checks.json).
 
 | Risk | Executable evidence |
 |---|---|

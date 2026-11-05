@@ -1,6 +1,6 @@
 # ADR0073 — Private bounded operational telemetry
 
-Status: locally VERIFIED M21-03 from c0019cc. Actual root check0 (11 governance/263 unit/491 integration/all builds),437 frozen hashes unchanged; targeted3unit/5API0,actual Docker/TLS/internal25spans/private-edge404 smoke0 and322 image-source hashes matched. Initial404/type failures and first unexplained browser locator timeout retained. External collector/dashboard/alerts remain NOT_RUN. Existing worlds/approvals stay closed. See [evidence](../agent/evidence/m21-telemetry-checks.json) and [runbook](../operations/OBSERVABILITY.md).
+Status: locally VERIFIED M21-03 from c0019cc. Actual root check0 (11 governance/263 unit/491 integration/all builds),437 frozen hashes unchanged; targeted3unit/5API0,actual Docker/TLS/internal25spans/private-edge404 smoke0 and322 image-source hashes matched. Initial404/type failures and first unexplained browser locator timeout retained. External collector/dashboard/alerts remain NOT_RUN. Existing worlds/approvals stay closed. See [evidence](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m21-telemetry-checks.json) and [runbook](../operations/OBSERVABILITY.md).
 
 Audit found Pino JSON logs with generated request IDs and resource/query redaction,plus fixed-label process-local RoomMetrics histograms/diagnostics. There is no protected operator export,real trace processor or accurate durable order-state gauge. Reuse those owners rather than query another domain's tables from an infrastructure repository.
 

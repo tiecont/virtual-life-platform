@@ -1,6 +1,6 @@
 # Environments and local TLS stack
 
-M21-01 adds an environment matrix,application image and local Compose/Caddy staging equivalent. See [ADR0071](../adr/0071-local-staging-tls-and-one-explicit-edge-proxy.md),[matrix](../../infra/environments/matrix.json) and [actual evidence](../agent/evidence/m21-env-checks.json). [Private telemetry](OBSERVABILITY.md) and [bounded readiness/deployment recovery](DEPLOYMENT-RECOVERY.md) extend this local stack;their ledgers distinguish later image hashes and exact observed scope. No external staging,public deployment,domain or public CA is configured. All real world flags/restricted approvals remain OFF.
+M21-01 adds an environment matrix,application image and local Compose/Caddy staging equivalent. See [ADR0071](../adr/0071-local-staging-tls-and-one-explicit-edge-proxy.md),[matrix](../../infra/environments/matrix.json) and [actual evidence](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m21-env-checks.json). [Private telemetry](OBSERVABILITY.md) and [bounded readiness/deployment recovery](DEPLOYMENT-RECOVERY.md) extend this local stack;their ledgers distinguish later image hashes and exact observed scope. No external staging,public deployment,domain or public CA is configured. All real world flags/restricted approvals remain OFF.
 
 | Environment | Runtime and data | Entry / transport |
 |---|---|---|

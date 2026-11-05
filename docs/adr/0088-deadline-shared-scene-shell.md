@@ -1,6 +1,6 @@
 # ADR0088 — Selected Deadline layout in the shared scene shell
 
-Status: accepted and locally verified for M15-04,frome1f8f9d. [Actual evidence](../agent/evidence/m15-scene-checks.json) distinguishes the first and final visual builds and scoped regressions.
+Status: accepted and locally verified for M15-04,frome1f8f9d. [Actual evidence](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m15-scene-checks.json) distinguishes the first and final visual builds and scoped regressions.
 
 Selected source CafeShell is a placeholder,not a playable scene to embed unchanged. Reuse its actual30 seat identities/960x640 configuration and transform coordinates to40pixel tiles in a24x16 scene,rounding each axis by at most20pixels. Add original walkable/collision furniture and deterministic code-authored cafe art on the existing renderer/atlas/native WorldRoomPanel. City Room/Focus/Identity/Travel remain authoritative. No old client or original source file is overwritten.
 

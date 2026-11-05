@@ -1,6 +1,6 @@
 # Closed dating prototype: adversarial verification
 
-M20-06 verifies the synthetic prototype from local commit `f6e3a69`;it grants no real adult eligibility,independent privacy assessment,operator review,pilot or public approval. See [commands and actual outcomes](../agent/evidence/m20-adversarial-checks.json),[closed gates](../product/DATING-GATES.md) and [mutual continuation boundaries](DATING-CONTINUATIONS.md). No runtime schema or application owner changed in this test/tooling slice. All real flags/eight approvals remain false and provider remains null.
+M20-06 verifies the synthetic prototype from local commit `f6e3a69`;it grants no real adult eligibility,independent privacy assessment,operator review,pilot or public approval. See [commands and actual outcomes](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m20-adversarial-checks.json),[closed gates](../product/DATING-GATES.md) and [mutual continuation boundaries](DATING-CONTINUATIONS.md). No runtime schema or application owner changed in this test/tooling slice. All real flags/eight approvals remain false and provider remains null.
 
 The read-only audit pins16 source/policy hashes at that commit. It distinguishes the synthetic private proof service from the generic trusted adult-world permission port. Allowing a generic adult world cannot admit anyone into a private date or enumerate it. Private contact authority comes only from current exact participants/sessions,explicit choices and current proof/safety checks.
 

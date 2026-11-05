@@ -29,4 +29,4 @@ Room publication retains one owner queue,per-viewer privacy and deterministic fi
 
 Client ACK5seconds and global integration15seconds remain unchanged. Short loopback timings,large host resources and synthetic fixture capacity100 are not production100CCU certification. M22-05 owns ramp/stress/soak and resource measurements. The M21-04 application image predates this Room change;host builds do not update that image. No migration,real-world activation,Redis or additional owner is introduced.
 
-Final commands,failures and counts belong in [M22 evidence](../agent/evidence/m22-races-checks.json);the slice is VERIFIED only after those checks actually finish successfully.
+Final commands,failures and counts belong in [M22 evidence](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m22-races-checks.json);the slice is VERIFIED only after those checks actually finish successfully.

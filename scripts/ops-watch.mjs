@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { summarize } from './plan-status.mjs';
 import { checkRelease } from './verify-release.mjs';
+import {readHistoricalJson} from './evidence-reader.mjs';
 
 export function watchReport(watch, stage, backup, safety, budget) {
   assert.equal(watch.schemaVersion, 1);
@@ -34,7 +35,7 @@ export function watchReport(watch, stage, backup, safety, budget) {
 }
 export async function checkOpsWatch() {
   const paths = ['config/ops-watch.json', 'docs/agent/evidence/m23-rehearsal-staging-facts.json', 'docs/agent/evidence/m23-recovery-backup-facts.json', 'docs/agent/evidence/m23-rehearsal-browser-artifacts/m16-native-safety-visual/desktop-moderation.json', 'infra/environments/resource-budget.json'];
-  const values = await Promise.all(paths.map(async path => JSON.parse(await readFile(path, 'utf8'))));
+  const values = await Promise.all(paths.map(async path => path.startsWith('docs/agent/evidence/') ? readHistoricalJson(path) : JSON.parse(await readFile(path, 'utf8'))));
   const release = await checkRelease();
   for (const signal of values[0].signals) assert(release.unassignedRoles.includes(signal.ownerRole));
   return watchReport(...values);
