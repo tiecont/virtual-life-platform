@@ -1,0 +1,53 @@
+ Network virtual-city-test-f8fc2fb2_default Creating 
+ Network virtual-city-test-f8fc2fb2_default Creating 
+ Network virtual-city-test-f8fc2fb2_default Created 
+ Network virtual-city-test-f8fc2fb2_default Created 
+ Container virtual-city-test-f8fc2fb2-db-1 Creating 
+ Container virtual-city-test-f8fc2fb2-db-1 Created 
+ Container virtual-city-test-f8fc2fb2-db-1 Starting 
+ Container virtual-city-test-f8fc2fb2-db-1 Started 
+ Container virtual-city-test-f8fc2fb2-db-1 Waiting 
+ Container virtual-city-test-f8fc2fb2-db-1 Healthy 
+
+ RUN  v4.1.12 /home/tiecont/Projects/virtual-city
+
+ ✓ |integration| tests/integration/hospitality.test.ts (58 tests | 57 skipped) 2732ms
+   ✓ 20 actual TCP staff claims produce exactly one assigned staff,version and committed receipt  2727ms
+ ✓ |integration| tests/integration/events.test.ts (52 tests | 51 skipped) 1478ms
+   ✓ table hold competition commits one slot and confirmation retries do not create a second booking  1475ms
+ ✓ |integration| tests/integration/dating-matching.test.ts (15 tests | 13 skipped) 3316ms
+   ✓ eight actual TCP join retries allocate once;parallel two-party accepts preserve one accepted match per account  1673ms
+   ✓ six actual concurrent joiners produce three disjoint proposals and accept-vs-decline cannot leave an active allocation  1640ms
+(node:38395) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:38565) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ |integration| tests/integration/room-network-races.test.ts (2 tests | 1 failed) 9638ms
+   ✓ 100 actual socket admissions to one cap8 room admit7 beside the seed and reject93 without extra rooms  2444ms
+   × 100 actual socket members claim one seat with one winner99SeatTaken and no phantom allocation 7189ms
+ ✓ |integration| tests/integration/rooms.test.ts (23 tests | 22 skipped) 1098ms
+     ✓ waits for every in-flight private projection on failure before releasing the owner queue and publishes no partial batch  303ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| tests/integration/room-network-races.test.ts > 100 actual socket members claim one seat with one winner99SeatTaken and no phantom allocation
+Error: Actual socket command did not complete: room.join
+ ❯ command tests/integration/room-network-races.test.ts:23:158
+
+ ❯ tests/integration/room-network-races.test.ts:36:167
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  1 failed | 6 passed | 143 skipped (150)
+   Start at  01:28:40
+   Duration  22.03s (transform 810ms, setup 0ms, import 3.14s, tests 18.26s, environment 0ms)
+
+Test harness failed during command;no raw URL or configuration emitted
+ Container virtual-city-test-f8fc2fb2-db-1 Stopping 
+ Container virtual-city-test-f8fc2fb2-db-1 Stopped 
+ Container virtual-city-test-f8fc2fb2-db-1 Removing 
+ Container virtual-city-test-f8fc2fb2-db-1 Removed 
+ Network virtual-city-test-f8fc2fb2_default Removing 
+ Network virtual-city-test-f8fc2fb2_default Removed 

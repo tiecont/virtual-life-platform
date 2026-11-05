@@ -6,7 +6,15 @@ Workspace /home/tiecont/Projects/virtual-city;project virtual-life-platform;bran
 
 Node26.9.0/pnpm11.28.5. RetaineddevDB0036/stopped;latestjournal/9privatecounts0. No preview/verificationworker remains. AllrealworldflagsOFF;production rejects localworld options. No realdatingprovider/key/proof/participant provisioned.
 
-## Current work — M22-01 VERIFIED; continue M22-02
+## Current work — M22-02 VERIFIED;continue M22-03
+
+From954087b;ADR0078/CONCURRENCY-VERIFICATION.md/m22-races-checks.json. Actual separate API child/HTTP bootstrap/physical unique loopback sockets:cap8 seed+100attempts gives7admitted93ROOM_FULL;100members claim1seat with1winner99SEAT_TAKEN. Explicit cleanup0. Bounded4privateprojection workers retain owner queue/per-viewer privacy;held/failing port test proves allSettled barrier/no partial publish/canonical committed-seat retry. Isolated100admission burst passed once after fix but consolidated burst still exceeded5s;seat setup now batches10,100claims still simultaneous. Keep performancefailure forM22-05,no timeout/quota increase/no100CCUcertification. InitialDockerEOF interrupted/noexit,displayname fixture and widened existing helper type failures retained/fixed.
+
+Actual focused7cases0;stable fullpnpmcheck0:19gov/263unit/500integration/allbuilds,453source hashes unchanged. Final6browser0(3desktop/3mobile):block peer filter,reconnect2connections/1entity/1seat,moderator/reversal/worldclosure/independentrecovery.6fresh images/facts plus batch report/manifest saved m22-races-visual,all4PNGs inspected;historical tracked artifacts unchanged. No test/DB/API/web worker remains. No migration/retained0036/stopped/realflag/provider/staff/legacy/remote/public change. M21-04Dockerimage stale for this runtime;not recertified. Whole plan incomplete.
+
+Next exact action:M22-03 audit existing identity/socket/rooms/social/reports/sanctions/travel/Dating adversarial tests;add actual TCP mixed-session CSRF/reconnect restriction proof where missing and executable security matrix using existing Vitest/disposableDB. Verify direct HTTP/socket/deep-link/privacy/rate/ban/adult denial with actual outcomes;no real operator/provider or public activation.
+
+## Prior slice — M22-01 VERIFIED
 
 From1538e1c;ADR0077/TEST-HARNESS.md/m22-harness-checks.json. Reuse Vitest/per-schema PG-HTTP-socket/per-specdevice Playwright/CI. Strict loopback postgres/test-name/noquery-fragment baseURL,explicit OS/tool/finite fixture env,fresh session/report/profile keys,UTC/local endpoints/closed defaults. Installedpg constructor audit proves hostquery overridesURL authority(no connection). ExternalCI DB never stopped;owned localUnix Docker projects only. Bounded failure/signal process-group cleanup/fixed-stage secret-free diagnostics. CI runs actual smoke before corechecks.
 

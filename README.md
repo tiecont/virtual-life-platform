@@ -10,6 +10,8 @@
 
 The [isolated quality harness](docs/architecture/TEST-HARNESS.md) uses fresh fixture keys and strict local test DB targets. `node scripts/test-harness-smoke.mjs` verifies parallel seed isolation,external ownership and failed/cancelled child cleanup;hosted CI remains unrun offline.
 
+The [concurrency matrix](docs/architecture/CONCURRENCY-VERIFICATION.md) exercises actual socket capacity/seating and TCP order/booking/matching races. It distinguishes invariant checks from the observed100member admission-burst latency failure;capacity targets still require load measurements.
+
 Project repository: `git@github.com:tiecont/virtual-life-platform.git` (configured locally; no push performed). The Virtual City plan is the product specification.
 
 The [shared hospitality engine](docs/architecture/HOSPITALITY.md) provides private policy-gated orders, atomic claims, voluntary shifts, reusable timed courses, transactional completion hooks and service refusal/block/safety recovery. Optional progression consumers are implemented; real Maid integration remains gated. No public hospitality world is enabled.

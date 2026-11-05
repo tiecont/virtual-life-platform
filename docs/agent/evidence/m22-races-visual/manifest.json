@@ -1,0 +1,12 @@
+{
+  "files": {
+    "cafe-reconnecting-desktop.png": "2be7cab9d285961bb504e592c69b4352065bcd166a45912846ff020504bf3529",
+    "cafe-recovery-desktop.json": "aa6c1843d6c4bfa48117babbcf0c188d0bc3f888c214a40e706a06f44002b94f",
+    "moderation-closed-desktop.png": "1565f8b6ed6d70de049e2f14fd82a9f10afb6dcdfd220a58ef66cd5bb0be8679",
+    "cafe-reconnecting-mobile.png": "8aff3e0c118cc6d32008c3dc55bde4c06624a92d4dd3241a1d2b1b97b4e59830",
+    "cafe-recovery-mobile.json": "aa6c1843d6c4bfa48117babbcf0c188d0bc3f888c214a40e706a06f44002b94f",
+    "moderation-closed-mobile.png": "41c35131f64538fe855e28b81bb4939ab82595f65e3cc33c26d688713726fc88",
+    "browser-batches.json": "f55c24870b24407f6527931d6a6dae97a290d7f110ae10e97c28134b90b1e8c0"
+  },
+  "historicalTrackedChanges": []
+}

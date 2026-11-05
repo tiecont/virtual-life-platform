@@ -1,0 +1,24 @@
+[
+  {
+    "project": "desktop",
+    "batch": 1,
+    "filters": [
+      "tests/e2e/scene.spec.ts",
+      "tests/e2e/safety.spec.ts",
+      "-g",
+      "actual transport interruption|viewer-filtered scene|assigned moderator"
+    ],
+    "exitCode": 0
+  },
+  {
+    "project": "mobile",
+    "batch": 1,
+    "filters": [
+      "tests/e2e/scene.spec.ts",
+      "tests/e2e/safety.spec.ts",
+      "-g",
+      "actual transport interruption|viewer-filtered scene|assigned moderator"
+    ],
+    "exitCode": 0
+  }
+]

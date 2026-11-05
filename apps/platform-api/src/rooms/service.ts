@@ -155,17 +155,30 @@ export class RoomService {
   }
   async #notifyChanged(room: Room, fromVersion: number) {
     if (this.#closed || !this.#changed.size || !room.members.size) return;
-    const updates: RoomUpdate[] = [];
-    for (const member of room.members.values()) {
-      const snapshots = new Map<boolean, RoomSnapshot>();
-      for (const connectionId of member.connections.keys()) {
-        if (![...this.#changed.values()].some(accepts => accepts(connectionId))) continue;
-        const motion = this.#motionConnections.has(connectionId);
-        if (!snapshots.has(motion)) snapshots.set(motion, await this.#snapshot(room, member, motion));
-        updates.push({ connectionId, fromVersion, snapshot: snapshots.get(motion)! });
-      }
+    const generation = this.registry.projectionContext(room.slug), members = [...room.members.values()];
+    const projected: RoomUpdate[][] = members.map(() => []);
+    let next = 0, failed = false;
+    const project = async () => {
+      try {
+        while (!failed && next < members.length) {
+          const index = next++, member = members[index], snapshots = new Map<boolean, RoomSnapshot>();
+          for (const connectionId of member.connections.keys()) {
+            if (![...this.#changed.values()].some(accepts => accepts(connectionId))) continue;
+            const motion = this.#motionConnections.has(connectionId);
+            if (!snapshots.has(motion)) snapshots.set(motion, await this.#snapshot(room, member, motion));
+            projected[index].push({ connectionId, fromVersion, snapshot: snapshots.get(motion)! });
+          }
+        }
+      } catch (error) { failed = true; throw error; }
+    };
+    // Drain all private reads before releasing the owner queue, including on failure.
+    const workers = await Promise.allSettled(Array.from({ length: Math.min(4, members.length) }, () => project()));
+    for (const worker of workers) {
+      if (worker.status === 'rejected') throw worker.reason;
     }
     await this.authority.assert();
+    if (!generation.valid()) throw new DomainError('WORLD_UNAVAILABLE', 503, 'World projection changed');
+    const updates = projected.flat();
     for (const [listener, accepts] of this.#changed) { try { listener(updates.filter(update => accepts(update.connectionId))); } catch { /* The next snapshot remains authoritative. */ } }
   }
   #receipt(actor: WorldActor, requestId: string, operation: Receipt['operation'], input: unknown) {

@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, afterEach, describe, it, expect } from 'vitest';
+import { beforeAll, afterAll, afterEach, describe, it, expect, vi } from 'vitest';
 import { Pool } from 'pg';
 import { randomUUID } from 'node:crypto';
 import { io, type Socket } from 'socket.io-client';
@@ -45,7 +45,7 @@ function connect(user: User, target = url) {
   return new Promise<Socket>((resolve, reject) => { client.once('connect', () => resolve(client)); client.once('connect_error', reject); client.connect(); });
 }
 const joinInput = (extra: Record<string, unknown> = {}) => ({ schemaVersion: 1, requestId: randomUUID(), worldSlug: 'sdk-sandbox', worldVersion: '1.0.0', sceneVersion: '1.0.0', ...extra });
-const ownInput = (snapshot: RoomSnapshot, extra: Record<string, unknown> = {}) => ({ schemaVersion: 1, requestId: randomUUID(), epoch: snapshot.epoch, roomId: snapshot.roomId, membershipId: snapshot.membershipId, ...extra });
+const ownInput = (snapshot: RoomSnapshot, extra: Record<string, unknown> = {}) => ({ schemaVersion: 1 as const, requestId: randomUUID(), epoch: snapshot.epoch, roomId: snapshot.roomId, membershipId: snapshot.membershipId, ...extra });
 const command = async (client: Socket, event: string, input: unknown) => RoomAckSchema.parse(await client.timeout(5000).emitWithAck(event, input));
 async function join(client: Socket, extra: Record<string, unknown> = {}): Promise<RoomSnapshot> {
   const ack = await command(client, 'room.join', joinInput(extra)); expect(ack.ok).toBe(true);
@@ -67,6 +67,39 @@ it('directory refuses activity reads during current world safety closure',async(
  try{const response=await app.http.inject({url:'/v1/worlds/sdk-sandbox/rooms',headers:{cookie:u.cookie}});expect(response.statusCode).toBe(404);expect(response.json()).not.toHaveProperty('rooms');}finally{await pool.query("DELETE FROM safety_incident_controls WHERE world_slug='sdk-sandbox'");}
 });
 describe('M06-01 real PostgreSQL identity + Socket.IO authoritative room allocator slice', () => {
+  it('waits for every in-flight private projection on failure before releasing the owner queue and publishes no partial batch', async () => {
+    const a = await guest(), b = await guest(), c = await guest();
+    const ca = await connect(a), cb = await connect(b), cc = await connect(c);
+    const sa = await join(ca), sb = await join(cb, { roomId: sa.roomId }); await join(cc, { roomId: sa.roomId });
+    const original = app.identity.visibleRoomProfiles.bind(app.identity);
+    let release!: () => void;
+    const gate = new Promise<void>(resolve => { release = resolve; });
+    let failed = false, held = false, published = 0, secondSettled = false;
+    const unsubscribe = app.rooms.onChanged(() => { published++; });
+    const spy = vi.spyOn(app.identity, 'visibleRoomProfiles').mockImplementation(async (...args) => {
+      if (args[0] === a.me.profile.id && !failed) { failed = true; throw new Error('Synthetic projection failure'); }
+      if (args[0] === b.me.profile.id && !held) { held = true; await gate; }
+      return original(...args);
+    });
+    const input = ownInput(sa, { seatId: 'seat-1' });
+    const first = command(ca, 'seat.claim', input);
+    let second: ReturnType<typeof command> | undefined;
+    try { try {
+      await expect.poll(() => held).toBe(true);
+      second = command(cb, 'room.snapshot', ownInput(sb)).finally(() => { secondSettled = true; });
+      await expect.poll(() => app.rooms.diagnostics().pending).toBeGreaterThanOrEqual(2);
+      expect(secondSettled).toBe(false); expect(published).toBe(0);
+    } finally { release(); }
+      const rejected = await first; expect(rejected.ok).toBe(false);
+      if (!rejected.ok) expect(rejected.error.code).toBe('INTERNAL_ERROR');
+      expect(JSON.stringify(rejected)).not.toContain('Synthetic projection failure');
+      const observed = await second!; expect(observed.ok).toBe(true);
+      if (observed.ok && observed.result.type === 'snapshot') expect(observed.result.seats.filter(seat => seat.state === 'occupied')).toHaveLength(1);
+      expect(published).toBe(0);
+    } finally { release(); spy.mockRestore(); unsubscribe(); await Promise.allSettled([first, ...(second ? [second] : [])]); }
+    const retried = await command(ca, 'seat.claim', input); expect(retried.ok).toBe(true);
+    if (retried.ok && retried.result.type === 'snapshot') expect(retried.result.self.seatId).toBe('seat-1');
+  });
   it('joins, snapshots and leaves via guarded network commands without disclosing other profiles', async () => {
     const user = await guest(); const client = await connect(user); const snapshot = await join(client);
     expect(snapshot.self.accountId).toBe(user.me.profile.id); expect(snapshot.occupancy).toBe(1); expect(snapshot.capacity).toBe(8);

@@ -1,0 +1,7 @@
+tests/integration/rooms.test.ts(213,122): error TS2345: Argument of type '{ seatId: string; schemaVersion: number; requestId: `${string}-${string}-${string}-${string}-${string}`; epoch: string; roomId: string; membershipId: string; }' is not assignable to parameter of type '{ schemaVersion: 1; requestId: string; epoch: string; roomId: string; membershipId: string; seatId: string; } | { schemaVersion: 1; requestId: string; epoch: string; roomId: string; membershipId: string; seatId: string; }'.
+  Type '{ seatId: string; schemaVersion: number; requestId: `${string}-${string}-${string}-${string}-${string}`; epoch: string; roomId: string; membershipId: string; }' is not assignable to type '{ schemaVersion: 1; requestId: string; epoch: string; roomId: string; membershipId: string; seatId: string; }'.
+    Types of property 'schemaVersion' are incompatible.
+      Type 'number' is not assignable to type '1'.
+tests/integration/rooms.test.ts(216,89): error TS2345: Argument of type '{ schemaVersion: number; requestId: `${string}-${string}-${string}-${string}-${string}`; epoch: string; roomId: string; membershipId: string; }' is not assignable to parameter of type '{ schemaVersion: 1; requestId: string; epoch: string; roomId: string; membershipId: string; }'.
+  Types of property 'schemaVersion' are incompatible.
+    Type 'number' is not assignable to type '1'.
