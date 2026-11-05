@@ -1,6 +1,6 @@
 # Current architecture and evidence index
 
-Updated 2026-11-06 (Asia/Ho_Chi_Minh) for N02-04 at base `02c9787`. vNext adds evidence tooling, isolated test-output paths, pure CSS UI tokens, a mock UX prototype, static API ownership/import guards, a [hospitality durable-job boundary](HOSPITALITY-JOBS.md) and an explicit [environment policy profile](../operations/ENVIRONMENT-POLICY.md). The new profile preserves the historical legacy fixture path; all real defaults remain closed. This index documents source and scoped evidence, not production readiness. Use the [current documentation index](../README.md) for entrypoints.
+Updated 2026-11-06 (Asia/Ho_Chi_Minh) for N03-01 at base `80bd2f3`. vNext adds evidence tooling, isolated test-output paths, pure CSS UI tokens, a mock UX prototype, static API ownership/import guards, a checked [toolchain/build graph](../operations/TOOLCHAIN.md), a [hospitality durable-job boundary](HOSPITALITY-JOBS.md) and an explicit [environment policy profile](../operations/ENVIRONMENT-POLICY.md). The new profile preserves the historical legacy fixture path; all real defaults remain closed. This index documents source and scoped evidence, not production readiness. Use the [current documentation index](../README.md) for entrypoints.
 
 ## Implemented local architecture
 

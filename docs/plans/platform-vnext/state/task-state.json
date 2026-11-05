@@ -197,12 +197,14 @@
       "next_action": "Reserve N03-01; audit actual workspace dependency/build consumers and installed toolchain, add a checked build-all target map and compatibility matrix without upgrading pins, then verify fork read-only CI, frozen install and full pnpm check. Continue N03-02 with a hardened API image using the tested Node digest and a separate runtime dependency closure, retaining legacy Docker fixtures."
     },
     "N03-01": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex Foundation/CI",
+      "branch": "codex/vnext-n03-01-toolchain",
+      "evidence_refs": [
+        "n03-01-2026-11-05"
+      ],
       "blocker": null,
-      "next_action": "Toolchain compatibility matrix, frozen lock build, workspace target map"
+      "next_action": "Reserve N03-02; implement a separate hardened API Dockerfile using the tested Node digest, build-all and a production dependency closure, with the exact same image for API and migrator. Implement image:check --target=api before running disposable PostgreSQL/HTTP/socket, nonroot/read-only, SBOM/secret/file inspection and SIGTERM/owner-release checks. Preserve the combined legacy Dockerfile/M23 fixtures; do not add a worker entrypoint before N05-05."
     },
     "N03-02": {
       "status": "TODO",

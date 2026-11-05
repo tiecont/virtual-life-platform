@@ -1,0 +1,538 @@
+{
+  "schemaVersion": 1,
+  "strategy": "build-all",
+  "node": "26.9.0",
+  "packageManager": "pnpm@11.28.5",
+  "rootBuild": "pnpm -r build",
+  "packagesBuild": "pnpm --filter './packages/*' -r build",
+  "lockSha256": "3ab003e86b34715e20681d3d682018c4119e7303da4c0bb52f457ee460d1d425",
+  "workspaceConfigSha256": "0c79bdd36e2d8eac11365b4cba92045f1d494d8e191f41de14298de2263d0ec1",
+  "rootDependencies": {
+    "dependencies": {},
+    "devDependencies": {
+      "@eslint/js": "9.39.1",
+      "eslint": "9.39.1",
+      "typescript-eslint": "8.57.1",
+      "typescript": "5.9.3",
+      "@types/node": "26.0.0",
+      "@types/pg": "8.23.1",
+      "@types/react": "19.3.0",
+      "@types/react-dom": "19.3.0",
+      "@playwright/test": "1.64.1",
+      "vitest": "4.1.12",
+      "tsx": "4.21.0",
+      "pg": "8.23.1",
+      "@virtual-city/contracts": "workspace:*",
+      "@virtual-city/library-world": "workspace:*",
+      "@virtual-city/park-world": "workspace:*",
+      "@virtual-city/deadline-world": "workspace:*",
+      "@virtual-city/maid-world": "workspace:*",
+      "@virtual-city/restaurant-world": "workspace:*",
+      "@virtual-city/lounge-world": "workspace:*",
+      "@virtual-city/world-sdk": "workspace:*",
+      "socket.io-client": "4.8.4"
+    },
+    "peerDependencies": {},
+    "optionalDependencies": {}
+  },
+  "buildOrder": [
+    "@virtual-city/contracts",
+    "@virtual-city/world-sdk",
+    "@virtual-city/deadline-world",
+    "@virtual-city/focus-ui",
+    "@virtual-city/library-world",
+    "@virtual-city/lounge-world",
+    "@virtual-city/maid-world",
+    "@virtual-city/park-world",
+    "@virtual-city/pixi-scene",
+    "@virtual-city/restaurant-world",
+    "@virtual-city/platform-api",
+    "@virtual-city/portal-web"
+  ],
+  "projects": [
+    {
+      "name": "@virtual-city/config",
+      "path": "packages/config",
+      "kind": "source-only",
+      "build": null,
+      "typecheck": null,
+      "dependencies": [],
+      "configurationDependencies": [],
+      "compilerInputs": [
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {},
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": [
+        "@virtual-city/platform-api",
+        "@virtual-city/portal-web"
+      ]
+    },
+    {
+      "name": "@virtual-city/contracts",
+      "path": "packages/contracts",
+      "kind": "compiled-package",
+      "build": "tsc -p tsconfig.json",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "dependencies": [
+        "@virtual-city/config"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "packages/contracts/tsconfig.json",
+          "sha256": "25d2284942fcc973651445e7af4de072d0993497ff01a1aed3799f56dcf3dcd0"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {
+          "zod": "4.6.7"
+        },
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": [
+        "@virtual-city/platform-api",
+        "@virtual-city/portal-web"
+      ]
+    },
+    {
+      "name": "@virtual-city/deadline-world",
+      "path": "packages/deadline-world",
+      "kind": "compiled-package",
+      "build": "tsc -p tsconfig.json",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "dependencies": [
+        "@virtual-city/config",
+        "@virtual-city/contracts",
+        "@virtual-city/world-sdk"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "packages/deadline-world/tsconfig.json",
+          "sha256": "a3f73a7f13fb41e0068e26863ac4edd58f347bc5d16cfdea13f3fa4c421c0626"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {},
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": [
+        "@virtual-city/platform-api",
+        "@virtual-city/portal-web"
+      ]
+    },
+    {
+      "name": "@virtual-city/focus-ui",
+      "path": "packages/focus-ui",
+      "kind": "compiled-package",
+      "build": "tsc -p tsconfig.json",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "dependencies": [
+        "@virtual-city/config",
+        "@virtual-city/contracts"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "packages/focus-ui/tsconfig.json",
+          "sha256": "e87a22c8d453d03c3770705c1503a93cb584c236cd6ddaabae94305fa29546ef"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {},
+        "devDependencies": {
+          "@types/react": "19.3.0"
+        },
+        "peerDependencies": {
+          "react": "19.3.1"
+        },
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": [
+        "@virtual-city/portal-web"
+      ]
+    },
+    {
+      "name": "@virtual-city/library-world",
+      "path": "packages/library-world",
+      "kind": "compiled-package",
+      "build": "tsc -p tsconfig.json",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "dependencies": [
+        "@virtual-city/config",
+        "@virtual-city/contracts",
+        "@virtual-city/world-sdk"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "packages/library-world/tsconfig.json",
+          "sha256": "a3f73a7f13fb41e0068e26863ac4edd58f347bc5d16cfdea13f3fa4c421c0626"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {},
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": [
+        "@virtual-city/platform-api",
+        "@virtual-city/portal-web"
+      ]
+    },
+    {
+      "name": "@virtual-city/lounge-world",
+      "path": "packages/lounge-world",
+      "kind": "compiled-package",
+      "build": "tsc -p tsconfig.json",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "dependencies": [
+        "@virtual-city/config",
+        "@virtual-city/contracts",
+        "@virtual-city/world-sdk"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "packages/lounge-world/tsconfig.json",
+          "sha256": "a3f73a7f13fb41e0068e26863ac4edd58f347bc5d16cfdea13f3fa4c421c0626"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {},
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": [
+        "@virtual-city/platform-api",
+        "@virtual-city/portal-web"
+      ]
+    },
+    {
+      "name": "@virtual-city/maid-world",
+      "path": "packages/maid-world",
+      "kind": "compiled-package",
+      "build": "tsc -p tsconfig.json",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "dependencies": [
+        "@virtual-city/config",
+        "@virtual-city/contracts",
+        "@virtual-city/world-sdk"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "packages/maid-world/tsconfig.json",
+          "sha256": "a3f73a7f13fb41e0068e26863ac4edd58f347bc5d16cfdea13f3fa4c421c0626"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {},
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": [
+        "@virtual-city/platform-api",
+        "@virtual-city/portal-web"
+      ]
+    },
+    {
+      "name": "@virtual-city/park-world",
+      "path": "packages/park-world",
+      "kind": "compiled-package",
+      "build": "tsc -p tsconfig.json",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "dependencies": [
+        "@virtual-city/config",
+        "@virtual-city/contracts",
+        "@virtual-city/world-sdk"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "packages/park-world/tsconfig.json",
+          "sha256": "a3f73a7f13fb41e0068e26863ac4edd58f347bc5d16cfdea13f3fa4c421c0626"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {},
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": [
+        "@virtual-city/platform-api",
+        "@virtual-city/portal-web"
+      ]
+    },
+    {
+      "name": "@virtual-city/pixi-scene",
+      "path": "packages/pixi-scene",
+      "kind": "compiled-package",
+      "build": "tsc -p tsconfig.json",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "dependencies": [
+        "@virtual-city/config",
+        "@virtual-city/contracts",
+        "@virtual-city/world-sdk"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "packages/pixi-scene/tsconfig.json",
+          "sha256": "af5fe990f5a147846c2b58701b35f170157c142171f8033b44f858c88404e615"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {
+          "pixi.js": "8.22.0"
+        },
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": [
+        "@virtual-city/portal-web"
+      ]
+    },
+    {
+      "name": "@virtual-city/platform-api",
+      "path": "apps/platform-api",
+      "kind": "application",
+      "build": "tsc -p tsconfig.json && node ../../scripts/copy-migrations.mjs",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "dependencies": [
+        "@virtual-city/config",
+        "@virtual-city/contracts",
+        "@virtual-city/deadline-world",
+        "@virtual-city/library-world",
+        "@virtual-city/lounge-world",
+        "@virtual-city/maid-world",
+        "@virtual-city/park-world",
+        "@virtual-city/restaurant-world",
+        "@virtual-city/world-sdk"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "apps/platform-api/tsconfig.json",
+          "sha256": "b959c238a09740e2b6e89a3f218d12163bd1f19d6f2bcfbd236c0cdf96bb9d2b"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {
+          "@fastify/cookie": "11.0.2",
+          "@nestjs/common": "11.2.8",
+          "@nestjs/core": "11.2.8",
+          "@nestjs/platform-fastify": "11.2.8",
+          "@opentelemetry/api": "1.10.0",
+          "@opentelemetry/sdk-trace": "3.0.0",
+          "drizzle-orm": "0.45.4",
+          "fastify": "5.12.8",
+          "pg": "8.23.1",
+          "reflect-metadata": "0.2.2",
+          "rxjs": "7.8.2",
+          "socket.io": "4.8.4",
+          "zod": "4.6.7"
+        },
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": []
+    },
+    {
+      "name": "@virtual-city/portal-web",
+      "path": "apps/portal-web",
+      "kind": "application",
+      "build": "next build --webpack",
+      "typecheck": "tsc --noEmit",
+      "dependencies": [
+        "@virtual-city/contracts",
+        "@virtual-city/deadline-world",
+        "@virtual-city/focus-ui",
+        "@virtual-city/library-world",
+        "@virtual-city/lounge-world",
+        "@virtual-city/maid-world",
+        "@virtual-city/park-world",
+        "@virtual-city/pixi-scene",
+        "@virtual-city/restaurant-world",
+        "@virtual-city/world-sdk"
+      ],
+      "configurationDependencies": [],
+      "compilerInputs": [
+        {
+          "path": "apps/portal-web/tsconfig.json",
+          "sha256": "fe301561c5f9f7556924d85c875b73846f4fc6891001acb4ce3ca299984d06c0"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {
+          "next": "16.4.4",
+          "react": "19.3.1",
+          "react-dom": "19.3.1",
+          "socket.io-client": "4.8.4"
+        },
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": []
+    },
+    {
+      "name": "@virtual-city/restaurant-world",
+      "path": "packages/restaurant-world",
+      "kind": "compiled-package",
+      "build": "tsc -p tsconfig.json",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "dependencies": [
+        "@virtual-city/config",
+        "@virtual-city/contracts",
+        "@virtual-city/world-sdk"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "packages/restaurant-world/tsconfig.json",
+          "sha256": "a3f73a7f13fb41e0068e26863ac4edd58f347bc5d16cfdea13f3fa4c421c0626"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {},
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": [
+        "@virtual-city/platform-api",
+        "@virtual-city/portal-web"
+      ]
+    },
+    {
+      "name": "@virtual-city/ui",
+      "path": "packages/ui",
+      "kind": "source-only",
+      "build": null,
+      "typecheck": null,
+      "dependencies": [],
+      "configurationDependencies": [],
+      "compilerInputs": [],
+      "externalPins": {
+        "dependencies": {},
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": []
+    },
+    {
+      "name": "@virtual-city/world-sdk",
+      "path": "packages/world-sdk",
+      "kind": "compiled-package",
+      "build": "tsc -p tsconfig.json",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "dependencies": [
+        "@virtual-city/config",
+        "@virtual-city/contracts"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "packages/world-sdk/tsconfig.json",
+          "sha256": "25d2284942fcc973651445e7af4de072d0993497ff01a1aed3799f56dcf3dcd0"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {},
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": [
+        "@virtual-city/platform-api",
+        "@virtual-city/portal-web"
+      ]
+    }
+  ]
+}

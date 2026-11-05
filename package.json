@@ -7,6 +7,8 @@
     "node": "26.9.x"
   },
   "scripts": {
+    "toolchain:check": "node scripts/verify-toolchain.mjs",
+    "toolchain:map": "node scripts/verify-toolchain.mjs --write-map",
     "test:migration-compat": "pnpm build:packages && pnpm --filter @virtual-city/platform-api build && node scripts/with-test-db.mjs node scripts/migration-compat-smoke.mjs",
     "release-policy:check": "pnpm build:packages && node --import tsx scripts/verify-release-policy.ts",
     "evidence:archive": "node scripts/evidence-cli.mjs archive",

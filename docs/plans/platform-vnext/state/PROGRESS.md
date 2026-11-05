@@ -1,5 +1,13 @@
 # Current vNext progress
 
+## 2026-11-05 — N03-01 VERIFIED
+
+Added a checked build-all map for 14 workspaces and 12 compiled targets, including TypeScript extends hashes and transitive application consumers. Actual Node 26.9.0/pnpm 11.28.5 and all 34 direct external declarations match existing pins. Frozen install, final CI/graph/lint and 49 governance checks passed. Full check passed 49 governance, 302 unit, 559 integration tests and both production builds. Application/package source, dependency versions, lockfile and Quality workflow remain unchanged.
+
+Actual commands: 17; retained failed attempts: 1; required final checks passed. Evidence: `n03-01-2026-11-05`; [checks](../audit/N03-01-CHECKS.json). Current counts: `{"VERIFIED": 17, "TODO": 52}`. Release remains NOT_REQUESTED; N13/N14 remain inactive.
+
+Next exact action: Reserve N03-02; implement a separate hardened API Dockerfile using the tested Node digest, build-all and a production dependency closure, with the exact same image for API and migrator. Implement image:check --target=api before running disposable PostgreSQL/HTTP/socket, nonroot/read-only, SBOM/secret/file inspection and SIGTERM/owner-release checks. Preserve the combined legacy Dockerfile/M23 fixtures; do not add a worker entrypoint before N05-05.
+
 ## 2026-11-05 — N02-04 VERIFIED
 
 Implemented strict-by-default, image-bound schema checksum windows and transactional migrator preflight while preserving all 38 production SQL files. Actual source-built runtime 38 → synthetic expand 39 → runtime 39 → previous image 38 rollback passed HTTP identity/socket, checksum/unknown-tail/metadata rejection, data preservation and owned cleanup. Fresh full check passed: 46 governance, 302 unit, 559 integration tests and all production builds.

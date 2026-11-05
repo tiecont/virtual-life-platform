@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-05T19:11:40.413268+00:00; task N02-04 VERIFIED on `codex/vnext-n02-04-schema-compat`. Base revision `02c97878f20c9319b7824d31d8b3839f58059de3`; this task has its own reviewable commit after evidence finalization.
+Updated 2026-11-05T19:30:38.349951+00:00; task N03-01 VERIFIED on `codex/vnext-n03-01-toolchain`. Base revision `80bd2f38651b990c93a1ac629011e11cdd54f728`; this task has its own reviewable commit after evidence finalization.
 
-Implemented strict-by-default, image-bound schema checksum windows and transactional migrator preflight while preserving all 38 production SQL files. Actual source-built runtime 38 → synthetic expand 39 → runtime 39 → previous image 38 rollback passed HTTP identity/socket, checksum/unknown-tail/metadata rejection, data preservation and owned cleanup. Fresh full check passed: 46 governance, 302 unit, 559 integration tests and all production builds.
+Added a checked build-all map for 14 workspaces and 12 compiled targets, including TypeScript extends hashes and transitive application consumers. Actual Node 26.9.0/pnpm 11.28.5 and all 34 direct external declarations match existing pins. Frozen install, final CI/graph/lint and 49 governance checks passed. Full check passed 49 governance, 302 unit, 559 integration tests and both production builds. Application/package source, dependency versions, lockfile and Quality workflow remain unchanged.
 
-[Actual checks](../audit/N02-04-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 16, "TODO": 53}`.
+[Actual checks](../audit/N03-01-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 17, "TODO": 52}`.
 
 ## Remaining gates
 
@@ -12,6 +12,6 @@ Hosted baseline Quality 42037215254 failed Deadline cadence (133.3 ms vs <100 ms
 
 ## Next exact action
 
-Reserve N03-01; audit actual workspace dependency/build consumers and installed toolchain, add a checked build-all target map and compatibility matrix without upgrading pins, then verify fork read-only CI, frozen install and full pnpm check. Continue N03-02 with a hardened API image using the tested Node digest and a separate runtime dependency closure, retaining legacy Docker fixtures.
+Reserve N03-02; implement a separate hardened API Dockerfile using the tested Node digest, build-all and a production dependency closure, with the exact same image for API and migrator. Implement image:check --target=api before running disposable PostgreSQL/HTTP/socket, nonroot/read-only, SBOM/secret/file inspection and SIGTERM/owner-release checks. Preserve the combined legacy Dockerfile/M23 fixtures; do not add a worker entrypoint before N05-05.
 
 Continue dependency-ready tasks independently of external server/device/store inputs. Do not claim unattended background continuation.

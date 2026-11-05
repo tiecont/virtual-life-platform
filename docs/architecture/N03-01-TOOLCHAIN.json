@@ -1,0 +1,282 @@
+{
+  "taskId": "N03-01",
+  "scope": "Local installed toolchain, declared workspace graph and read-only Quality contract; not hosted or multi-platform certification",
+  "baseRevision": "80bd2f38651b990c93a1ac629011e11cdd54f728",
+  "node": "26.9.0",
+  "pnpm": "11.28.5",
+  "workspaceProjects": 14,
+  "buildTargets": 12,
+  "installedDirectDeclarations": 34,
+  "installed": [
+    {
+      "project": ".",
+      "section": "devDependencies",
+      "name": "@eslint/js",
+      "version": "9.39.1"
+    },
+    {
+      "project": ".",
+      "section": "devDependencies",
+      "name": "eslint",
+      "version": "9.39.1"
+    },
+    {
+      "project": ".",
+      "section": "devDependencies",
+      "name": "typescript-eslint",
+      "version": "8.57.1"
+    },
+    {
+      "project": ".",
+      "section": "devDependencies",
+      "name": "typescript",
+      "version": "5.9.3"
+    },
+    {
+      "project": ".",
+      "section": "devDependencies",
+      "name": "@types/node",
+      "version": "26.0.0"
+    },
+    {
+      "project": ".",
+      "section": "devDependencies",
+      "name": "@types/pg",
+      "version": "8.23.1"
+    },
+    {
+      "project": ".",
+      "section": "devDependencies",
+      "name": "@types/react",
+      "version": "19.3.0"
+    },
+    {
+      "project": ".",
+      "section": "devDependencies",
+      "name": "@types/react-dom",
+      "version": "19.3.0"
+    },
+    {
+      "project": ".",
+      "section": "devDependencies",
+      "name": "@playwright/test",
+      "version": "1.64.1"
+    },
+    {
+      "project": ".",
+      "section": "devDependencies",
+      "name": "vitest",
+      "version": "4.1.12"
+    },
+    {
+      "project": ".",
+      "section": "devDependencies",
+      "name": "tsx",
+      "version": "4.21.0"
+    },
+    {
+      "project": ".",
+      "section": "devDependencies",
+      "name": "pg",
+      "version": "8.23.1"
+    },
+    {
+      "project": ".",
+      "section": "devDependencies",
+      "name": "socket.io-client",
+      "version": "4.8.4"
+    },
+    {
+      "project": "apps/platform-api",
+      "section": "dependencies",
+      "name": "@fastify/cookie",
+      "version": "11.0.2"
+    },
+    {
+      "project": "apps/platform-api",
+      "section": "dependencies",
+      "name": "@nestjs/common",
+      "version": "11.2.8"
+    },
+    {
+      "project": "apps/platform-api",
+      "section": "dependencies",
+      "name": "@nestjs/core",
+      "version": "11.2.8"
+    },
+    {
+      "project": "apps/platform-api",
+      "section": "dependencies",
+      "name": "@nestjs/platform-fastify",
+      "version": "11.2.8"
+    },
+    {
+      "project": "apps/platform-api",
+      "section": "dependencies",
+      "name": "@opentelemetry/api",
+      "version": "1.10.0"
+    },
+    {
+      "project": "apps/platform-api",
+      "section": "dependencies",
+      "name": "@opentelemetry/sdk-trace",
+      "version": "3.0.0"
+    },
+    {
+      "project": "apps/platform-api",
+      "section": "dependencies",
+      "name": "drizzle-orm",
+      "version": "0.45.4"
+    },
+    {
+      "project": "apps/platform-api",
+      "section": "dependencies",
+      "name": "fastify",
+      "version": "5.12.8"
+    },
+    {
+      "project": "apps/platform-api",
+      "section": "dependencies",
+      "name": "pg",
+      "version": "8.23.1"
+    },
+    {
+      "project": "apps/platform-api",
+      "section": "dependencies",
+      "name": "reflect-metadata",
+      "version": "0.2.2"
+    },
+    {
+      "project": "apps/platform-api",
+      "section": "dependencies",
+      "name": "rxjs",
+      "version": "7.8.2"
+    },
+    {
+      "project": "apps/platform-api",
+      "section": "dependencies",
+      "name": "socket.io",
+      "version": "4.8.4"
+    },
+    {
+      "project": "apps/platform-api",
+      "section": "dependencies",
+      "name": "zod",
+      "version": "4.6.7"
+    },
+    {
+      "project": "apps/portal-web",
+      "section": "dependencies",
+      "name": "next",
+      "version": "16.4.4"
+    },
+    {
+      "project": "apps/portal-web",
+      "section": "dependencies",
+      "name": "react",
+      "version": "19.3.1"
+    },
+    {
+      "project": "apps/portal-web",
+      "section": "dependencies",
+      "name": "react-dom",
+      "version": "19.3.1"
+    },
+    {
+      "project": "apps/portal-web",
+      "section": "dependencies",
+      "name": "socket.io-client",
+      "version": "4.8.4"
+    },
+    {
+      "project": "packages/contracts",
+      "section": "dependencies",
+      "name": "zod",
+      "version": "4.6.7"
+    },
+    {
+      "project": "packages/focus-ui",
+      "section": "devDependencies",
+      "name": "@types/react",
+      "version": "19.3.0"
+    },
+    {
+      "project": "packages/focus-ui",
+      "section": "peerDependencies",
+      "name": "react",
+      "version": "19.3.1"
+    },
+    {
+      "project": "packages/pixi-scene",
+      "section": "dependencies",
+      "name": "pixi.js",
+      "version": "8.22.0"
+    }
+  ],
+  "buildStrategy": "build-all",
+  "mapSha256": "b52f35cc36fc1dbee27ad8080ab3251fdf96bc61f192e6dc7d349e57977cf63b",
+  "lockSha256": "3ab003e86b34715e20681d3d682018c4119e7303da4c0bb52f457ee460d1d425",
+  "preservation": {
+    "protectedFiles": 53,
+    "protectedSha256": "f5fc9569dab3d2b2f0e169c015725472490928b3694b17db197f3f802c45a6c4",
+    "dependencyManifests": 15,
+    "allDeclaredDependencyVersionsUnchanged": true,
+    "allRuntimeSourceUnchanged": true
+  },
+  "verification": {
+    "frozenInstall": {
+      "exitCode": 0,
+      "cacheScope": "Existing local installation/store; already up to date; not a new cold clone"
+    },
+    "graphAndCiGuards": {
+      "exitCode": 0,
+      "cases": 6
+    },
+    "ciContract": {
+      "exitCode": 0,
+      "workflowChanged": false,
+      "forkPermissions": "contents: read; no secret or publishing grant"
+    },
+    "lint": {
+      "exitCode": 0,
+      "artifactSnapshotsExcluded": true
+    },
+    "fullCheck": {
+      "exitCode": 0,
+      "governance": 49,
+      "unit": 302,
+      "unitFiles": 61,
+      "integration": 559,
+      "integrationFiles": 40,
+      "productionBuilds": [
+        "platform-api",
+        "portal-web"
+      ],
+      "typesAssetsArchitectureInfraPolicies": "PASS"
+    },
+    "finalTooling": {
+      "exitCodes": 0,
+      "governanceCases": 49,
+      "focusedCases": 6,
+      "commands": [
+        "complete-toolchain",
+        "complete-ci",
+        "complete-graph",
+        "complete-source-lint",
+        "complete-governance"
+      ],
+      "compilerConfigurationEdgesAndHashes": true,
+      "writeAllInlineQuotedAndInheritedSecretNegatives": true
+    }
+  },
+  "limitations": [
+    "One recorded lint formatting failure retained; final lint passes",
+    "Full application regression began before final pure-tooling compiler-edge and permission refinements; final dedicated checks cover final tooling, with application/package source unchanged.",
+    "Root warm install is distinct from prior N01-05 clean clone and N02-04 source-built Docker install",
+    "Declared graph plus build-all does not claim dynamic import tracing or affected-build optimization",
+    "No dependency upgrade, new hosted workflow/fork run, registry publish,branch protection or deployment",
+    "Baseline hosted Quality42037215254 Deadline cadence failure remains unresolved; local checks do not repair it",
+    "Legacy Deadline Node26.13.x declaration mismatch remains disclosed and its snapshot/lock untouched",
+    "Native/admin artifacts are future task outputs, not fabricated build targets"
+  ]
+}
