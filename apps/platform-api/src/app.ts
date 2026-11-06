@@ -1,3 +1,4 @@
+import {AccountControlService} from './identity/account-control';
 import 'reflect-metadata';
 import { DeadlineIdentityLinks } from './identity/legacy/service';
 import { DeadlineHttpIdentityPort,type DeadlineIdentityPort } from './identity/legacy/deadline-port';
@@ -120,7 +121,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   });
   const identity = new IdentityService(db, config, options.now);
   const operator=config.OPERATOR_AUTH_KEY?new OperatorService(db,config.OPERATOR_AUTH_KEY,options.now):undefined;
-  registerOperator(http,config,operator,options.now);
+  const accountControls=operator?new AccountControlService(identity,operator,options.now):undefined;
+  registerOperator(http,config,operator,options.now,accountControls);
   const deadlineIdentity=new DeadlineIdentityLinks(db,identity,config.NODE_ENV!=='production'&&config.LOCAL_DEADLINE_IDENTITY==='1'?(options.deadlineIdentity??new DeadlineHttpIdentityPort(config.DEADLINE_LEGACY_API_URL!)):undefined,options.now);
   identity.registerExportOwner('legacyIdentity',(account,transaction)=>deadlineIdentity.exportAccount(account,transaction));
   http.addHook('preClose',async()=>{deadlineIdentity.close();});

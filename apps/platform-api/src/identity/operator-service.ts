@@ -20,9 +20,9 @@ export class OperatorService {
  private verifyCsrf(token:string,value:unknown){if(typeof value!=='string'||!/^[a-f0-9]{64}$/.test(value)||!timingSafeEqual(Buffer.from(value),Buffer.from(this.csrf(token))))throw new DomainError('FORBIDDEN',403,'CSRF validation failed');}
  // One lock order for bootstrap, login, recovery and every operator session use.
  // A deny result commits its rate/audit changes; ordinary thrown errors roll back.
- private async transaction<T>(fn:(tx:PoolClient,operator:Operator|undefined)=>Promise<T|DomainError>):Promise<T>{
+ private async transaction<T>(fn:(tx:PoolClient,operator:Operator|undefined)=>Promise<T|DomainError>,bounded=false):Promise<T>{
   const tx=await this.db.connect();let result:T|DomainError;
-  try{await tx.query('BEGIN');await tx.query('SELECT pg_advisory_xact_lock(86732419)');const operator=(await tx.query<Operator>('SELECT * FROM identity_operator WHERE singleton=true FOR UPDATE')).rows[0];result=await fn(tx,operator);await tx.query('COMMIT');}
+  try{await tx.query('BEGIN');if(bounded){await tx.query("SET LOCAL statement_timeout='2000ms'");await tx.query("SET LOCAL lock_timeout='1000ms'");}await tx.query('SELECT pg_advisory_xact_lock(86732419)');const operator=(await tx.query<Operator>('SELECT * FROM identity_operator WHERE singleton=true FOR UPDATE')).rows[0];result=await fn(tx,operator);await tx.query('COMMIT');}
   catch(error){await tx.query('ROLLBACK');throw error;}finally{tx.release();}
   if(result instanceof DomainError)throw result;return result;
  }
@@ -90,4 +90,13 @@ export class OperatorService {
   await tx.query('UPDATE identity_operator_sessions SET revoked_at=$1 WHERE revoked_at IS NULL',[new Date(this.now())]);const recoveryCodes=await this.recoveryCodes(tx,operator.subject);await this.audit(tx,operator,'recover','accepted',operator.auth_version+1);return {subject:operator.subject,recoveryCodes};
  });}
  async auditEvents(token:string){return this.transaction(async(tx,operator)=>{if(!operator)throw denied();await this.active(tx,operator,token,undefined,true);return {events:(await tx.query('SELECT sequence,action,outcome,occurred_at,before_version,after_version,previous_hash,event_hash FROM identity_operator_audit ORDER BY sequence DESC LIMIT 100')).rows};});}
+ // Trusted server ports only: auth, effects and audit share the same transaction.
+ // Recheck at the end so lock waits/work cannot outlive fresh elevation.
+ async controlRead<T>(token:string,work:(tx:PoolClient,subject:string,seal:(purpose:string,value:unknown)=>string)=>Promise<T>){
+  return this.transaction(async(tx,operator)=>{if(!operator)throw denied();await this.active(tx,operator,token,undefined,true);
+   const result=await work(tx,operator.subject,(purpose,value)=>this.keyed('operator:control:'+purpose+':v1:'+JSON.stringify(value)));
+   await this.active(tx,operator,token,undefined,true);return result;
+  },true);
+ }
+ async controlWrite<T>(token:string,csrf:unknown,work:(tx:PoolClient,subject:string,seal:(purpose:string,value:unknown)=>string)=>Promise<T>){this.verifyCsrf(token,csrf);return this.controlRead(token,work);}
 }

@@ -7,7 +7,7 @@ import { PasswordHasher, type PasswordRecord } from './passwords';
 import { canViewPresence } from './policy';
 import {lockAccounts} from './account-locks';
 type DB = Pick<Pool, 'query'> | PoolClient;
-type Session = { id: string; account_id: string; expires_at: Date; revoked_at: Date | null; revoked_reason: string | null; kind: 'guest' | 'registered'; display_name: string; avatar_key: PublicProfile['avatarKey'] };
+type Session = { id: string; account_id: string; expires_at: Date; revoked_at: Date | null; revoked_reason: string | null; kind: 'guest' | 'registered'; status:'active'|'suspended'; display_name: string; avatar_key: PublicProfile['avatarKey'] };
 export type IdentityContext = Readonly<{ accountId: string; sessionId: string; kind: 'guest' | 'registered'; expiresAt: number }>;
 const defaults: Privacy = { presence: 'hidden', analyticsConsent: false, worldVisibility: { dating: 'hidden' } };
 export class IdentityService {
@@ -18,6 +18,7 @@ export class IdentityService {
   private passwords = new PasswordHasher();
   private subscribers = new Set<(event: { accountId: string; sessionIds: string[] }) => void>();
   private changes = new Set<(accountId: string) => void>();
+  private controlChanges=new Set<(accountId:string)=>void>();
   constructor(readonly pool: Pick<Pool, 'query' | 'connect'>, private config: Config, private now = Date.now) {}
   hash(token: string) { return createHash('sha256').update(token).digest('hex'); }
   private keyed(value: string) { return createHmac('sha256', this.config.SESSION_SECRET).update(value).digest('hex'); }
@@ -29,8 +30,17 @@ export class IdentityService {
   }
   onRevoked(listener: (event: { accountId: string; sessionIds: string[] }) => void) { this.subscribers.add(listener); return () => { this.subscribers.delete(listener); }; }
   onChanged(listener: (accountId: string) => void) { this.changes.add(listener); return () => { this.changes.delete(listener); }; }
+  onAccountControl(listener:(accountId:string)=>void){this.controlChanges.add(listener);return()=>{this.controlChanges.delete(listener);};}
   private changed(accountId: string) { for (const listener of this.changes) { try { listener(accountId); } catch { /* Readers always apply current identity policy. */ } } }
   private notify(accountId: string, sessionIds: string[]) { if (sessionIds.length === 0) return; for (const listener of this.subscribers) { try { listener({ accountId, sessionIds }); } catch { /* DB remains authoritative even if a consumer fails. */ } } }
+  // Trusted operator adapter calls this only after its auth/effect/audit COMMIT.
+  afterOperatorControl(accountId:string,sessionIds:string[],changed=true){
+    this.notify(accountId,sessionIds);
+    // Replays reconcile live transport from canonical session state after an
+    // uncertain COMMIT acknowledgement, without storing session IDs in audit.
+    for(const listener of this.controlChanges){try{listener(accountId);}catch{/* A later replay/command still rechecks canonical identity. */}}
+    if(changed)this.changed(accountId);
+  }
   private async tx<T>(work: (client: PoolClient) => Promise<T>): Promise<T> {
     const client = await this.pool.connect();
     try { await client.query('BEGIN'); const value = await work(client); await client.query('COMMIT'); return value; }
@@ -40,9 +50,9 @@ export class IdentityService {
   private async lock(client: PoolClient, key: string) { await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))', [key]); }
   private async session(token: string, db: DB = this.pool, allowRevoked = false): Promise<Session> {
     if (!/^[a-f0-9]{64}$/.test(token)) throw unauthorized();
-    const result = await db.query<Session>('SELECT s.*, a.kind, p.display_name, p.avatar_key FROM identity_sessions s JOIN identity_accounts a ON a.id=s.account_id JOIN identity_profiles p ON p.account_id=a.id WHERE s.token_hash=$1', [this.hash(token)]);
+    const result = await db.query<Session>('SELECT s.*, a.kind, a.status, p.display_name, p.avatar_key FROM identity_sessions s JOIN identity_accounts a ON a.id=s.account_id JOIN identity_profiles p ON p.account_id=a.id WHERE s.token_hash=$1', [this.hash(token)]);
     const row = result.rows[0];
-    if (!row || row.expires_at.getTime() <= this.now() || (!allowRevoked && row.revoked_at)) throw unauthorized();
+    if (!row || row.status!=='active' || row.expires_at.getTime() <= this.now() || (!allowRevoked && row.revoked_at)) throw unauthorized();
     return row;
   }
   private async lockedSession(db: PoolClient, token: string, allowRevoked = false) {
@@ -53,10 +63,10 @@ export class IdentityService {
   // Internal platform transaction ports. Never handed to world/client modules.
   async lockAccounts(db: PoolClient, ids: string[]) {await lockAccounts(db, ids);}
   async contextInTransaction(db: PoolClient, token: string): Promise<IdentityContext> { const s = await this.session(token, db); return Object.freeze({ accountId: s.account_id, sessionId: s.id, kind: s.kind, expiresAt: s.expires_at.getTime() }); }
-  async hasConnectedSession(accountId: string, sessionIds: string[]) { return Boolean((await this.pool.query('SELECT 1 FROM identity_sessions WHERE account_id=$1 AND id=ANY($2::uuid[]) AND revoked_at IS NULL AND expires_at>$3 LIMIT 1', [accountId, sessionIds, new Date(this.now())])).rowCount); }
+  async hasConnectedSession(accountId: string, sessionIds: string[]) { return Boolean((await this.pool.query("SELECT 1 FROM identity_sessions s JOIN identity_accounts a ON a.id=s.account_id WHERE s.account_id=$1 AND s.id=ANY($2::uuid[]) AND a.status='active' AND s.revoked_at IS NULL AND s.expires_at>$3 LIMIT 1", [accountId, sessionIds, new Date(this.now())])).rowCount); }
   // Trusted activity owner port. Called under the participant account lock.
   async connectedAuthority(db: PoolClient, accountId: string, sessionIds: string[]) {
-    const row = (await db.query<{ until: Date | null }>("SELECT max(s.expires_at) AS until FROM identity_sessions s JOIN identity_accounts a ON a.id=s.account_id WHERE s.account_id=$1 AND s.id=ANY($2::uuid[]) AND a.kind='registered' AND s.revoked_at IS NULL AND s.expires_at>$3", [accountId, sessionIds, new Date(this.now())])).rows[0];
+    const row = (await db.query<{ until: Date | null }>("SELECT max(s.expires_at) AS until FROM identity_sessions s JOIN identity_accounts a ON a.id=s.account_id WHERE s.account_id=$1 AND s.id=ANY($2::uuid[]) AND a.kind='registered' AND a.status='active' AND s.revoked_at IS NULL AND s.expires_at>$3", [accountId, sessionIds, new Date(this.now())])).rows[0];
     return row.until?.getTime() ?? 0;
   }
   fingerprint(value: unknown) { return this.keyed('mutation:v1:' + JSON.stringify(value)); }
@@ -245,6 +255,7 @@ export class IdentityService {
       for (const id of [...new Set([record.account_id, ...(old ? [old.account_id] : [])])].sort()) await this.lock(db, 'account:' + id);
       const current = (await db.query<PasswordRecord>('SELECT salt,digest FROM identity_credentials WHERE account_id=$1', [record.account_id])).rows[0];
       if (!current || current.salt !== record.salt || current.digest !== record.digest) throw unauthorized();
+      if(!(await db.query("SELECT 1 FROM identity_accounts WHERE id=$1 AND status='active'",[record.account_id])).rowCount)throw unauthorized();
       const previous = (await db.query('SELECT * FROM identity_login_requests WHERE request_hash=$1', [requestHash])).rows[0];
       if (previous) {
         if (previous.fingerprint !== fingerprint) throw new IdentityError('IDEMPOTENCY_CONFLICT', 409, 'Request key was used with different input');

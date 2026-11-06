@@ -54,3 +54,7 @@ it('does not publish a slow service observation after the operator session is re
  });
  const request=handler(new Request(origin+'/api/admin/metrics?view=summary&range=current',{headers:{cookie}}));await waiting;valid=false;release();const response=await request;expect(response.status).toBe(401);expect((await response.text()).includes('connections')).toBe(false);
 });
+it('account results must be bounded strict projections; private upstream fields never pass through',async()=>{
+ const id='11111111-1111-4111-8111-111111111111',view={accountId:id,kind:'registered',status:'active',version:0,activeSessions:1,privacy:{export:'OWNER_SELF_SERVICE',deletion:'OWNER_SELF_SERVICE',receiptTtlSeconds:86400}};
+ for(const extra of [{privateEmail:'SYNTHETIC_PRIVATE_NOT_ALLOWED'},{sessions:[{token:'SYNTHETIC_PRIVATE_NOT_ALLOWED'}]},{version:-1}]){const handler=createAdminHandler(config(),async()=>Response.json({...view,...extra}));const response=await handler(new Request(origin+'/api/admin/account?accountId='+id,{headers:{cookie}}));expect(response.status).toBe(503);expect(await response.text()).not.toContain('SYNTHETIC_PRIVATE_NOT_ALLOWED');}
+});

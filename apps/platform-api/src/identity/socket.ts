@@ -103,7 +103,17 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
   const unsubscribe = identity.onRevoked(event => {
     for (const id of event.sessionIds) for (const socket of [...(sessions.get(id) ?? [])]) disconnect(socket);
   });
-  http.addHook('preClose', async () => { unsubscribe(); io.disconnectSockets(true); io.engine.close(); });
+  const unsubscribeControls=identity.onAccountControl(accountId=>{
+    for(const sockets of sessions.values())for(const socket of [...sockets]){
+      const observed=leases.get(socket);if(observed?.context.accountId!==accountId)continue;
+      // An already revoked socket closes; a newly authenticated session survives
+      // replay of an older command. No rate-limit budget is consumed by hints.
+      void identity.authenticate(observed.token).then(current=>{
+        if(leases.get(socket)===observed&&(current.accountId!==observed.context.accountId||current.sessionId!==observed.context.sessionId))disconnect(socket);
+      }).catch(()=>{if(leases.get(socket)===observed)disconnect(socket);});
+    }
+  });
+  http.addHook('preClose', async () => { unsubscribe(); unsubscribeControls(); io.disconnectSockets(true); io.engine.close(); });
   http.addHook('onClose', async () => { await io.close(); });
   // M06 may register room commands only after its dependencies are VERIFIED.
   const emitToAccount = (accountId: string, event: string, payload: unknown) => {

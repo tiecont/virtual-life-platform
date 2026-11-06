@@ -1,15 +1,15 @@
-# vNext current handoff
+# N07-03 account checkpoint — IN_PROGRESS
 
-Updated 2026-11-06T05:42:13.792200+00:00; N03-05 VERIFIED on `codex/vnext-n03-05-admin-artifact`. Base `e570850d13ceeb550c64d19bc70734f0e06fc3ba`; this slice is committed after evidence finalization.
+Updated 2026-11-06T06:26:53.990256+00:00 on `codex/vnext-n07-03-operator-controls`, base `1ece578cff804a573efaa669afdf6a69549de5e4`; this slice is committed after evidence finalization.
 
-Implemented a separate hardened standalone admin image, shared sanitized runtime parser and strict source-bound schema2 API/web/admin release set; legacy schema1 pair remains accepted. Actual six scenarios each for API/web/admin, standalone pnpm admin image command, local loopback registry push/digest-pull and corruption/source/missing-admin rejection all pass with cleanup. Fresh84 governance/328unit/26admin cases, build/type/lint/CI/infra/architecture pass. API/portal/shared/SQL/lock/workflow/Kubernetes source and historical evidence preserved. Original failures retained; no real operator, hosted publish, App pilot or deployment.
+Account lookup/suspend/resume/revoke vertical slice implemented with fresh same-transaction auth, fixed reason/version/idempotency, redacted immutable audit, post-COMMIT and lost-ack replay socket reconciliation, bounded BFF and responsive Accounts UI. Full checkpoint84governance/329unit/614integration/build pass; final177security/11account cases,10browser executions, API/test types, lint, strict40 API/admin images6each, TCP fixture/negative diagnostic and owned cleanup pass. Original failures retained; first generic migrator startup cause remains unproven. N07-03 stays IN_PROGRESS; privacy recovery/retention, event calendar and durable entitlement-bounded runtime controls remain.
 
-[Actual checks](../audit/N03-05-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 30, "BLOCKED_EXTERNAL": 1, "TODO": 38}`.
-
-## Remaining gates
-
-Hosted baseline Quality42037215254 failed Deadline cadence (133.3ms vs <100ms); cause remains unresolved. Repository enforcement unavailable; publishing/automatic promotion remain disabled. Raw logs are private local artifacts until owner cleanup, not off-host archives. Original151 Mxx tasks/evidence and public/restricted gates persist. Release NOT_REQUESTED; N13/N14 inactive; mobile distribution contexts false. No unattended work continues after shutdown.
+[Scoped audit](../audit/N07-03-ACCOUNTS-CHECKS.json) / current report `docs/architecture/N07-03-ACCOUNTS.json`. `acceptance_met:false`; do not mark the composite task VERIFIED or treat proposed remaining scripts as executed. Current source `dd39386e4bcecb16af420f0a417cebe15f999ea2` matches runtime/verification source; later evidence/docs differ only as recorded.
 
 ## Next exact action
 
-Reserve N07-03 (highest ready priority72) on a clean branch. Read its events/accounts/runtime-control plan and N07-01/N02-03 evidence; audit existing event, identity, runtime/safety policy and operator audit transactions. Implement one bounded audited control slice with fresh step-up/CSRF/Origin, idempotency/version checks, preserved privacy/reward history and real DB/HTTP/browser denial tests; keep public/dating/media gates closed. N04-02 remains externally blocked and N04-03 waits.
+Continue N07-03 on the clean account-slice commit. Implement owner-verified suspended-account privacy export/deletion request/status and retention without reviving revoked player authority or exposing private payloads to the operator; then implement event draft/publish/cancel through event-owned transactions and durable runtime/maintenance controls bounded by immutable Git entitlement. Test every remaining requirement before VERIFIED; keep N04-02 externally blocked/N04-03 waiting and all real release/mobile/public gates closed.
+
+## Remaining gates
+
+No real operator, production migration/deployment, public/store/mobile distribution or GitHub write. Historical151 Mxx/148VERIFIED/3BLOCKED_EXTERNAL ledger is unchanged. N04-02 remains externally blocked; N13/N14 inactive and mobile contexts false. Raw artifacts are private local until owner cleanup, not off-host archives. No unattended work continues after shutdown.

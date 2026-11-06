@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "tables": {
+    "identity_account_control_audit": "platform.identity",
     "identity_operator": "platform.identity",
     "identity_operator_sessions": "platform.identity",
     "identity_operator_recovery": "platform.identity",

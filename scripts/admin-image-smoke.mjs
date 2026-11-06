@@ -131,7 +131,9 @@ try {
   await compose(['exec','-T','api','node','-e',"fetch('http://127.0.0.1:4300/health/ready').then(r=>{if(!r.ok)throw Error('API affected');console.log('API remains ready');})"]);
   facts.scenarios.push({id:'ADMIN-06',sameImageAfterRuntimeRestart:true,newApiAliasAndOriginEffective:true,uncoordinatedApiOriginDenied:true,wrongMetricsCredentialUnknownNotZero:true,revocationAfterOriginalOriginRestored:true,oldSessionDenied:true,apiRemainsReady:true});
   assert(!signal.aborted);facts.result='PASS';
-} catch (error) {facts.result = 'FAIL'; facts.failedStage = stage; facts.error = error.message; process.exitCode = 1;}
+} catch (error) {
+  if(started){await compose(['ps','-a','--format','json'],{allowFailure:true,ignoreCancellation:true,timeout:10000});await compose(['logs','--no-color','--tail','80','migrate','api','admin'],{allowFailure:true,ignoreCancellation:true,timeout:10000});}
+  facts.result = 'FAIL'; facts.failedStage = stage; facts.error = error.message; process.exitCode = 1;}
 finally {
   stage = 'cleanup'; for (const socket of sockets) socket.close(); await browser?.close().catch(() => {});
   let cleaned = true;

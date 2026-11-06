@@ -1,5 +1,5 @@
 {
  "extends":"../packages/config/tsconfig.json",
  "compilerOptions":{"noEmit":true,"module":"ESNext","moduleResolution":"Bundler","experimentalDecorators":true,"emitDecoratorMetadata":true,"lib":["ES2022","DOM"]},
- "include":["e2e/admin.spec.ts","integration/admin-proxy.test.ts","integration/operator-identity.test.ts","support/admin-browser-runtime.ts","../playwright.admin.config.ts"]
+ "include":["e2e/admin.spec.ts","integration/admin-proxy.test.ts","integration/operator-identity.test.ts","integration/operator-account-controls.test.ts","support/admin-browser-runtime.ts","../playwright.admin.config.ts"]
 }

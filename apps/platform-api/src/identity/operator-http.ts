@@ -6,8 +6,9 @@ import {DomainError} from '../common/errors';
 import {apiErrorHandler} from '../common/http-errors';
 import {WindowLimiter} from './limits';
 import type {OperatorService} from './operator-service';
+import type {AccountControlService} from './account-control';
 export const operatorCookieName=(production:boolean)=>production?'__Host-city_operator':'city_operator';
-export function registerOperator(http:FastifyInstance,config:Config,service:OperatorService|undefined,now=Date.now){
+export function registerOperator(http:FastifyInstance,config:Config,service:OperatorService|undefined,now=Date.now,accounts?:AccountControlService){
  const limiter=new WindowLimiter(now,1000),name=operatorCookieName(config.NODE_ENV==='production');
  const options={path:'/',httpOnly:true,secure:config.NODE_ENV==='production',sameSite:'strict' as const};
  const token=(req:FastifyRequest)=>{const value=req.cookies[name];if(typeof value!=='string'||!/^[a-f0-9]{64}$/.test(value))throw new DomainError('UNAUTHENTICATED',401,'Operator authentication required');return value;};
@@ -26,5 +27,8 @@ export function registerOperator(http:FastifyInstance,config:Config,service:Oper
   api.post('/step-up',async(req,reply)=>{const result=await service!.stepUp(token(req),req.headers['x-csrf-token'],OperatorLoginSchema.parse(req.body));cookie(reply,result);return result.session;});
   for(const path of ['/logout','/revoke-all'])api.post(path,async(req,reply)=>{z.strictObject({}).parse(req.body??{});const result=await service!.logout(token(req),req.headers['x-csrf-token'],path==='/revoke-all');reply.clearCookie(name,options);return result;});
   api.get('/audit',req=>{z.strictObject({}).parse(req.query);return service!.auditEvents(token(req));});
+  api.get('/account',req=>{if(!accounts)throw new DomainError('NOT_FOUND',404,'Route not found');return accounts.account(token(req),req.query);});
+  api.get('/account-audit',req=>{if(!accounts)throw new DomainError('NOT_FOUND',404,'Route not found');return accounts.audit(token(req),req.query);});
+  api.post('/account-command',req=>{if(!accounts)throw new DomainError('NOT_FOUND',404,'Route not found');z.strictObject({}).parse(req.query);return accounts.command(token(req),req.headers['x-csrf-token'],req.body);});
  },{prefix:'/v1/operator'});
 }

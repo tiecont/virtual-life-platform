@@ -412,12 +412,14 @@
       "next_action": "Reserve N03-05 (highest ready priority44) on a clean branch. Read artifact build/publish/provenance/manifest and admin source closure. Implement a separate hardened admin image and integrate its exact source/digest target into quality, image tests and reviewed release metadata while preserving existing API/web and old release compatibility. Run real production image/browser/private-origin/token inspection with cleanup; no publishing, automatic promotion or deployment without real gates. Keep N04-02 externally blocked and N04-03 waiting."
     },
     "N07-03": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "IN_PROGRESS",
+      "owner": "Admin + Runtime",
+      "branch": "codex/vnext-n07-03-operator-controls",
+      "evidence_refs": [
+        "n07-03-accounts-2026-11-06"
+      ],
       "blocker": null,
-      "next_action": "Event calendar draft/publish/cancel; account suspend/revoke; flags/maintenance/audit UI"
+      "next_action": "Continue N07-03 on the clean account-slice commit. Implement owner-verified suspended-account privacy export/deletion request/status and retention without reviving revoked player authority or exposing private payloads to the operator; then implement event draft/publish/cancel through event-owned transactions and durable runtime/maintenance controls bounded by immutable Git entitlement. Test every remaining requirement before VERIFIED; keep N04-02 externally blocked/N04-03 waiting and all real release/mobile/public gates closed."
     },
     "N07-04": {
       "status": "TODO",
