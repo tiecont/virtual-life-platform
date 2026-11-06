@@ -79,7 +79,7 @@ def tap(nodes, text):
         if match:
             x1, y1, x2, y2 = map(int, match.groups())
             if x2 > x1 and y2 > y1:
-                run('tap-own-' + text.replace(' ', '-'), ['shell', 'input', 'tap', str((x1+x2)//2), str((y1+y2)//2)])
+                run('tap-own-' + text.replace(' ', '-'), ['shell', 'input', 'touchscreen', 'tap', str((x1+x2)//2), str((y1+y2)//2)])
                 return
     raise RuntimeError('Owned visible control missing: ' + text)
 
