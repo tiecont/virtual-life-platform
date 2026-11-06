@@ -135,6 +135,42 @@ export class EventService {
     const rows = (await db.query<{ account_id: string }>("SELECT account_id FROM engine_event_rsvps WHERE event_id=$1 AND phase='CONFIRMED' UNION SELECT account_id FROM engine_event_performer_readiness WHERE event_id=$1 AND ready", [id])).rows;
     return [...new Set([...rows.map(row => row.account_id), ...await this.#reservations?.participants(db, id) ?? [], ...await this.#invitations?.participants(db, id) ?? [], ...await this.#stage?.participants(db,id)??[]])];
   }
+  // Trusted operator ports take the caller's transaction, never a player token
+  // or browser-supplied callback. The operator boundary owns authentication/audit.
+  operatorTargets(db:PoolClient,id:string){return this.participants(db,id);}
+  private async cancelInTransaction(db:PoolClient,row:Row,targets:string[]){
+    const recipients=await this.participants(db,row.id);if(recipients.some(account=>!targets.includes(account)))throw new DomainError('WORLD_UNAVAILABLE',503,'Participation changed; retry this cancellation');
+    const state=advanceEvent({schemaVersion:1,phase:row.phase,schedule:this.scheduleOf(row),createdAt:row.created_at.getTime(),changedAt:row.changed_at.getTime()},'cancel',this.now());
+    Object.assign(row,(await db.query<Row>('UPDATE engine_events SET phase=$2,changed_at=$3,version=version+1 WHERE id=$1 RETURNING *',[row.id,state.phase,new Date(state.changedAt)])).rows[0]);await this.observe(db,row);
+    if(row.phase!=='CANCELLED')return [];
+    for(const account of recipients)await db.query("INSERT INTO engine_event_notices VALUES($1,$2,$3,'cancelled',$4) ON CONFLICT(event_id,account_id,kind) DO NOTHING",[randomUUID(),row.id,account,new Date(this.now())]);return recipients;
+  }
+  async withOperatorCancellation<T>(db:PoolClient,id:string,version:number,targets:string[],work:(live:{id:string;phase:EventPhase;version:number})=>Promise<T>){
+    if(this.#closed)throw unavailable();const row=(await db.query<Row>('SELECT * FROM engine_events WHERE id=$1 FOR UPDATE',[id])).rows[0];if(!row)throw unavailable();
+    await this.observe(db,row);if(row.version!==version||row.phase==='ENDED')throw conflict();
+    if(row.phase!=='CANCELLED')await this.cancelInTransaction(db,row,targets);
+    return work({id:row.id,phase:row.phase,version:row.version});
+  }
+  async reconcileOperatorCancellation(id:string){
+    const rows=(await this.pool.query<{account_id:string}>("SELECT n.account_id FROM engine_event_notices n JOIN engine_events e ON e.id=n.event_id WHERE e.id=$1 AND e.phase='CANCELLED' AND n.kind='cancelled'",[id])).rows,accounts=rows.map(row=>row.account_id);
+    if(!accounts.length)return;this.invalidateParticipation(id,accounts);for(const listener of this.#noticeListeners){try{listener(accounts);}catch{/* Durable inbox and current authority remain authoritative. */}}
+  }
+  async withOperatorPublication<T>(db:PoolClient,organizerId:string,raw:unknown,work:(live:{id:string;phase:EventPhase;version:number})=>Promise<T>){
+    if(this.#closed)throw unavailable();const input=EventScheduleInputSchema.parse(raw),context=this.registry.projectionContext(input.worldSlug),world=context.definition;
+    const eligible=async()=>{
+      const actor=(await db.query<{kind:string;status:string}>('SELECT kind,status FROM identity_accounts WHERE id=$1 FOR UPDATE',[organizerId])).rows[0];
+      if(!actor||actor.kind!=='registered'||actor.status!=='active'||!await this.permissions?.organizesAccount(db,organizerId,input.worldSlug)||!await this.safety.permits(db,organizerId,input.worldSlug))throw unavailable();
+      if(!context.valid()||!world.eventPolicy||!world.capabilities.includes('events')||world.accessPolicy.kind!=='public'||world.visibility!=='listed'||input.worldSlug==='dating'||input.policyVersion!==world.eventPolicy.version||input.capacity>world.eventPolicy.maxCapacity)throw unavailable();
+    };
+    await eligible();createEvent(input.schedule,this.now());if(Date.parse(input.schedule.opensAt)>this.now()+30*DAY||!(await db.query('SELECT 1 FROM pg_timezone_names WHERE name=$1',[input.schedule.timeZone])).rowCount)throw unavailable();
+    if(input.resourceKey&&!world.eventPolicy!.reservations?.resources.some(resource=>resource.key===input.resourceKey&&resource.capacity>=input.capacity))throw unavailable();
+    await db.query("SELECT pg_advisory_xact_lock(hashtextextended(current_schema()||':events:'||$1,0))",[input.worldSlug]);
+    if(input.resourceKey&&(await db.query("SELECT 1 FROM engine_events WHERE world_slug=$1 AND resource_key=$2 AND phase<>'CANCELLED' AND tstzrange(opens_at,ends_at,'[)') && tstzrange($3::timestamptz,$4::timestamptz,'[)') LIMIT 1",[input.worldSlug,input.resourceKey,input.schedule.opensAt,input.schedule.endsAt])).rowCount)throw conflict();
+    if((await db.query("SELECT count(*)::int AS n FROM engine_events WHERE world_slug=$1 AND phase NOT IN ('ENDED','CANCELLED')",[input.worldSlug])).rows[0].n>=100)throw new DomainError('RATE_LIMITED',429,'The schedule is full');
+    const at=new Date(this.now()),s=input.schedule;
+    const row=(await db.query<Row>("INSERT INTO engine_events(id,organizer_id,world_slug,world_version,policy_version,title,audience,visibility,capacity,time_zone,opens_at,starts_at,check_in_closes_at,ends_at,phase,created_at,changed_at,resource_key) VALUES($1,$2,$3,$4,$5,$6,'silent',$7,$8,$9,$10,$11,$12,$13,'SCHEDULED',$14,$14,$15) RETURNING *",[randomUUID(),organizerId,input.worldSlug,world.version,input.policyVersion,input.title,input.visibility,input.capacity,s.timeZone,s.opensAt,s.startsAt,s.checkInClosesAt,s.endsAt,at,input.resourceKey??null])).rows[0];
+    const result=await work({id:row.id,phase:row.phase,version:row.version});await eligible();if(this.now()>=row.opens_at.getTime())throw unavailable();return result;
+  }
   async controls(token: string, id: string) {
     return this.withBooking(token, id, async (db, actor, context) => {
       const manage = actor.accountId === context.organizerId && !!await this.organizers?.permits(db, actor, context.worldSlug), moderate = !!await this.permissions?.moderates(db, actor, context.worldSlug), perform = !!await this.permissions?.performs(db, actor, context.worldSlug, context.id), ready = !!(await db.query('SELECT 1 FROM engine_event_performer_readiness WHERE event_id=$1 AND account_id=$2 AND ready', [context.id, actor.accountId])).rowCount;
@@ -174,10 +210,7 @@ export class EventService {
           if (row.resource_key && (await db.query("SELECT 1 FROM engine_events WHERE world_slug=$1 AND resource_key=$2 AND id<>$3 AND phase<>'CANCELLED' AND tstzrange(opens_at,ends_at,'[)') && tstzrange($4::timestamptz,$5::timestamptz,'[)') LIMIT 1", [row.world_slug, row.resource_key, row.id, schedule.opensAt, schedule.endsAt])).rowCount) throw conflict();
           Object.assign(row, (await db.query<Row>('UPDATE engine_events SET title=$2,time_zone=$3,opens_at=$4,starts_at=$5,check_in_closes_at=$6,ends_at=$7,changed_at=$8,version=version+1 WHERE id=$1 RETURNING *', [row.id, adjustment.title ?? row.title, schedule.timeZone, schedule.opensAt, schedule.startsAt, schedule.checkInClosesAt, schedule.endsAt, new Date(this.now())])).rows[0]);
         } else {
-          const recipients = await this.participants(db, row.id); if (recipients.some(account => !targets.includes(account))) throw new DomainError('WORLD_UNAVAILABLE', 503, 'Participation changed; retry this cancellation');
-          const state = advanceEvent({ schemaVersion: 1, phase: row.phase, schedule: this.scheduleOf(row), createdAt: row.created_at.getTime(), changedAt: row.changed_at.getTime() }, 'cancel', this.now());
-          Object.assign(row, (await db.query<Row>('UPDATE engine_events SET phase=$2,changed_at=$3,version=version+1 WHERE id=$1 RETURNING *', [row.id, state.phase, new Date(state.changedAt)])).rows[0]); await this.observe(db, row);
-          if (row.phase === 'CANCELLED') { for (const account of recipients) await db.query("INSERT INTO engine_event_notices VALUES($1,$2,$3,'cancelled',$4) ON CONFLICT(event_id,account_id,kind) DO NOTHING", [randomUUID(), row.id, account, new Date(this.now())]); notified = recipients; }
+          notified=await this.cancelInTransaction(db,row,targets);
         }
       }
       await this.remember(db, actor.accountId, key, row.id, action, fingerprint);
@@ -263,9 +296,10 @@ export class EventService {
     await db.query("UPDATE engine_event_performer_readiness r SET ready=false,changed_at=greatest(r.changed_at,$3) FROM engine_events e WHERE e.id=r.event_id AND r.ready AND ((e.organizer_id=$1 AND r.account_id=$2) OR (e.organizer_id=$2 AND r.account_id=$1))", [a, b, new Date(this.now())]);
   }
   async exportAccount(id: string, db: PoolClient) {
+    const drafts=(await db.query<{id:string;state:string;config:unknown}>('SELECT id,state,config FROM engine_event_drafts WHERE organizer_id=$1 AND retain_until>$2 ORDER BY created_at DESC,id LIMIT 101',[id,new Date(this.now())])).rows;
     const rsvps = (await db.query<Rsvp & { ends_at: Date }>('SELECT r.*,e.ends_at FROM engine_event_rsvps r JOIN engine_events e ON e.id=r.event_id WHERE r.account_id=$1 ORDER BY r.created_at DESC,r.id LIMIT 101', [id])).rows, events = (await db.query<Row>('SELECT * FROM engine_events WHERE organizer_id=$1 ORDER BY creation_order DESC LIMIT 101', [id])).rows;
     const grants = (await db.query<{ id: string; world_slug: string; event_id: string | null; role: string; expires_at: Date }>('SELECT * FROM engine_event_grants WHERE account_id=$1 ORDER BY expires_at DESC,id LIMIT 101', [id])).rows, readiness = (await db.query<{ event_id: string; ready: boolean; changed_at: Date }>('SELECT * FROM engine_event_performer_readiness WHERE account_id=$1 ORDER BY changed_at DESC,event_id LIMIT 101', [id])).rows, notices = (await db.query<{ id: string; event_id: string; kind: string; created_at: Date }>('SELECT * FROM engine_event_notices WHERE account_id=$1 ORDER BY created_at DESC,id LIMIT 101', [id])).rows;
-    return { schemaVersion: 1, rsvps: rsvps.slice(0, 100).map(row => ({ ...this.rsvpView(row.phase === 'CONFIRMED' && row.ends_at.getTime() <= this.now() ? { ...row, phase: 'EXPIRED', changed_at: row.ends_at } : row), eventId: row.event_id })), rsvpsTruncated: rsvps.length > 100, events: events.slice(0, 100).map(row => ({ id: row.id, worldSlug: row.world_slug, title: row.title, phase: advanceEvent({ schemaVersion: 1, phase: row.phase, schedule: this.scheduleOf(row), createdAt: row.created_at.getTime(), changedAt: row.changed_at.getTime() }, 'observe', this.now()).phase, schedule: this.scheduleOf(row) })), eventsTruncated: events.length > 100,
+    return { schemaVersion: 1, ...(drafts.length?{operatorDrafts:drafts.slice(0,100),operatorDraftsTruncated:drafts.length>100}:{}), rsvps: rsvps.slice(0, 100).map(row => ({ ...this.rsvpView(row.phase === 'CONFIRMED' && row.ends_at.getTime() <= this.now() ? { ...row, phase: 'EXPIRED', changed_at: row.ends_at } : row), eventId: row.event_id })), rsvpsTruncated: rsvps.length > 100, events: events.slice(0, 100).map(row => ({ id: row.id, worldSlug: row.world_slug, title: row.title, phase: advanceEvent({ schemaVersion: 1, phase: row.phase, schedule: this.scheduleOf(row), createdAt: row.created_at.getTime(), changedAt: row.changed_at.getTime() }, 'observe', this.now()).phase, schedule: this.scheduleOf(row) })), eventsTruncated: events.length > 100,
       grants: grants.slice(0, 100).map(row => ({ id: row.id, worldSlug: row.world_slug, eventId: row.event_id, role: row.role, expiresAt: row.expires_at.toISOString() })), grantsTruncated: grants.length > 100, readiness: readiness.slice(0, 100).map(row => ({ eventId: row.event_id, ready: row.ready, changedAt: row.changed_at.toISOString() })), readinessTruncated: readiness.length > 100, notices: notices.slice(0, 100).map(row => ({ id: row.id, eventId: row.event_id, kind: row.kind, createdAt: row.created_at.toISOString() })), noticesTruncated: notices.length > 100 };
   }
   maintain() {
@@ -274,6 +308,7 @@ export class EventService {
       const rows = (await this.pool.query<{ id: string }>("SELECT id FROM engine_events WHERE phase NOT IN ('ENDED','CANCELLED') ORDER BY checked_order,creation_order LIMIT 20")).rows;
       for (const item of rows) { const db = await this.pool.connect(); try { await db.query('BEGIN'); await db.query("SET LOCAL statement_timeout='2000ms'"); await db.query("SET LOCAL lock_timeout='1000ms'"); const row = (await db.query<Row>('SELECT * FROM engine_events WHERE id=$1 FOR UPDATE', [item.id])).rows[0]; if (row) await this.observe(db, row); await db.query('COMMIT'); } catch (error) { await db.query('ROLLBACK'); throw error; } finally { db.release(); } }
       await this.pool.query("DELETE FROM engine_events WHERE id IN(SELECT id FROM engine_events WHERE phase IN ('ENDED','CANCELLED') AND changed_at<$1 ORDER BY creation_order LIMIT 100)", [new Date(this.now() - 90 * DAY)]);
+      await this.pool.query('DELETE FROM engine_event_drafts WHERE id IN(SELECT id FROM engine_event_drafts WHERE retain_until<=$1 ORDER BY retain_until,id LIMIT 100)',[new Date(this.now())]);
     })().finally(() => { this.#maintenance = undefined; }); return this.#maintenance;
   }
   async close() { this.#closed = true; await this.#maintenance; }

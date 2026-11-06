@@ -157,7 +157,9 @@
         "events/reservations-http",
         "events/service",
         "events/stage",
-        "events/stage-http"
+        "events/stage-http",
+        "events/operator-calendar",
+        "events/operator-http"
       ],
       "targetBoundary": "Existing organizer/safety/reservation/invitation observers; retain transactions"
     },

@@ -1,4 +1,6 @@
 import {PrivacyRequestService} from './identity/privacy-requests';
+import {OperatorEventCalendar} from './events/operator-calendar';
+import {registerOperatorEvents} from './events/operator-http';
 import {registerPrivacyRequests} from './identity/privacy-http';
 import {AccountControlService} from './identity/account-control';
 import 'reflect-metadata';
@@ -177,6 +179,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const hospitalityOutbox = new HospitalityOutbox(db, identity, [...options.hospitality?.completionSinks ?? [], ...progression.policy.enabled ? [progression.hospitalitySink()] : []], options.now);
   const eventPermissions = new EventPermissions(reports, options.now);
   const events = new EventService(db, identity, social, worlds.registry, { permits: async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account, world) && await new SanctionPolicy(transaction, options.now).permits(account, world) }, options.events?.organizers ?? eventPermissions, options.now, eventPermissions);
+  const operatorEvents=operator?new OperatorEventCalendar(identity,operator,events,options.now):undefined;
+  registerOperatorEvents(http,config,operatorEvents,options.now);
   const reservations = new ReservationService(db, identity, social, rooms, events, options.now); events.attachReservations(reservations);
   const stage=new StageService(db,identity,social,rooms,events,eventPermissions,worlds.registry,options.now);events.attachStage(stage);
   const audience=new AudienceService(db,identity,social,rooms,events,eventPermissions,worlds.registry,{permits:async(transaction,account,world,room)=>{if(!await new SanctionPolicy(transaction,options.now).permits(account,world,room,true))return false;try{await new IncidentPolicy(transaction).assert(account,world,room,true);return true;}catch(error){if(error instanceof DomainError&&error.status===403)return false;throw error;}}},options.now);events.attachAudience(audience);

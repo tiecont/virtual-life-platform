@@ -1,0 +1,822 @@
+{
+  "taskId": "N07-03",
+  "status": "IN_PROGRESS",
+  "acceptance_met": false,
+  "sourceRevision": "2e30727320e2e9397ed6d0821bc835ff332ad79b",
+  "qualifiedSource": {
+    "baseRevision": "50c493d2f34e9804f44d07b7ebf28e508f94907a",
+    "snapshotRevision": "2e30727320e2e9397ed6d0821bc835ff332ad79b",
+    "ref": "refs/vnext/candidates/n07-03-calendar",
+    "workspaceSha256": "ecf1866fe4f186d092d4728c4c2894d986dec835a9b911cb1a0336bfda833a77",
+    "scope": "Operator event draft/publish/cancel slice; N07-03 IN_PROGRESS for runtime controls",
+    "createdAt": "2026-11-06T07:51:40.117274+00:00"
+  },
+  "environment": {
+    "observedAt": "2026-11-06T07:54:50.087Z",
+    "os": "Linux 7.2.9-2-cachyos x86_64 GNU/Linux",
+    "node": "v26.9.0",
+    "pnpm": "11.28.5",
+    "docker": "29.9.0/29.9.0",
+    "platform": "linux",
+    "arch": "x64",
+    "scope": "Local CachyOS; disposable PostgreSQL17.7; generated-certificate Caddy TLS; Chromium emulation; synthetic users/operators; no physical-device or hosted/deployed qualification"
+  },
+  "executedAt": "2026-11-06T08:05:11.072768+00:00",
+  "commands": [
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/operator-events.test.ts",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "integration",
+        "tests/integration/operator-events.test.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T07:38:40.538Z",
+      "endedAt": "2026-11-06T07:38:52.070Z",
+      "log": "artifacts/vnext/n07-03/calendar-before.log",
+      "sha256": "d24d6c313eb05d74b3f7c3fd3525159f061451e785bd263eff90b1e200f18b48"
+    },
+    {
+      "command": "pnpm ci:browser admin",
+      "argv": [
+        "pnpm",
+        "ci:browser",
+        "admin"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T07:52:02.739Z",
+      "endedAt": "2026-11-06T07:55:27.085Z",
+      "log": "artifacts/vnext/n07-03/calendar-browser-regression.log",
+      "sha256": "4e46f51e5b332acd61a1902b9a85ddeed31947a6ac73da90ab2794d4eda1574c"
+    },
+    {
+      "command": "env BROWSER_REPORT_SCOPE=ci/admin/calendar node scripts/run-browser-tests.mjs tests/e2e/calendar.spec.ts",
+      "argv": [
+        "env",
+        "BROWSER_REPORT_SCOPE=ci/admin/calendar",
+        "node",
+        "scripts/run-browser-tests.mjs",
+        "tests/e2e/calendar.spec.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T07:47:49.325Z",
+      "endedAt": "2026-11-06T07:48:23.121Z",
+      "log": "artifacts/vnext/n07-03/calendar-browser.log",
+      "sha256": "1af97aa4a3659334c9eb5efc15eebc4a8933dc890659a8eb17f2017fcc07ba5f"
+    },
+    {
+      "command": "python3 artifacts/vnext/n07-03-calendar/cleanup.py",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n07-03-calendar/cleanup.py"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T08:05:05.632Z",
+      "endedAt": "2026-11-06T08:05:05.874Z",
+      "log": "artifacts/vnext/n07-03/calendar-cleanup.log",
+      "sha256": "2fff6821d1e0e737a4ca3f1bed2004dc588a3e04c58307efa0a1780f367d8923"
+    },
+    {
+      "command": "node artifacts/vnext/n07-03-calendar/environment.mjs",
+      "argv": [
+        "node",
+        "artifacts/vnext/n07-03-calendar/environment.mjs"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T07:54:50.053Z",
+      "endedAt": "2026-11-06T07:54:50.719Z",
+      "log": "artifacts/vnext/n07-03/calendar-environment.log",
+      "sha256": "ec190819b9c839ffdbf7796d2756509411088d97cd13fb5bf4714f9ccde42c14"
+    },
+    {
+      "command": "pnpm exec tsc -p tests/admin-tsconfig.json",
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "-p",
+        "tests/admin-tsconfig.json"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T07:51:38.878Z",
+      "endedAt": "2026-11-06T07:51:47.148Z",
+      "log": "artifacts/vnext/n07-03/calendar-final-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project admin tests/integration/operator-events.test.ts",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "admin",
+        "tests/integration/operator-events.test.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T07:41:57.773Z",
+      "endedAt": "2026-11-06T07:42:05.759Z",
+      "log": "artifacts/vnext/n07-03/calendar-first.log",
+      "sha256": "a9428923f03f477407d19e09b727fe14a43218dd34460a957190b29e2e82811f"
+    },
+    {
+      "command": "pnpm check",
+      "argv": [
+        "pnpm",
+        "check"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T07:48:33.367Z",
+      "endedAt": "2026-11-06T08:04:58.327Z",
+      "log": "artifacts/vnext/n07-03/calendar-full-check.log",
+      "sha256": "f8cd1f80655a93e28e28a1791efbb04a3ca709e99630bc41d329dbb268f3a6f5"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T07:53:07.263Z",
+      "endedAt": "2026-11-06T07:53:27.643Z",
+      "log": "artifacts/vnext/n07-03/calendar-lint-final.log",
+      "sha256": "ece225c54cc63ecf6018f8f8f5b8778f6446edd899add77f9cf4306dfc03b614"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T07:46:17.423Z",
+      "endedAt": "2026-11-06T07:46:27.497Z",
+      "log": "artifacts/vnext/n07-03/calendar-lint.log",
+      "sha256": "ece225c54cc63ecf6018f8f8f5b8778f6446edd899add77f9cf4306dfc03b614"
+    },
+    {
+      "command": "node artifacts/vnext/n07-03-calendar/preservation.mjs",
+      "argv": [
+        "node",
+        "artifacts/vnext/n07-03-calendar/preservation.mjs"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T07:54:49.316Z",
+      "endedAt": "2026-11-06T07:54:50.003Z",
+      "log": "artifacts/vnext/n07-03/calendar-preservation.log",
+      "sha256": "a614c8d0741473e461136daa4d74ad9c6c77208f3aa074061e3884a1896dadcf"
+    },
+    {
+      "command": "pnpm image:check --target=admin --source-revision 2e30727320e2e9397ed6d0821bc835ff332ad79b",
+      "argv": [
+        "pnpm",
+        "image:check",
+        "--target=admin",
+        "--source-revision",
+        "2e30727320e2e9397ed6d0821bc835ff332ad79b"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T07:51:40.253Z",
+      "endedAt": "2026-11-06T07:56:10.514Z",
+      "log": "artifacts/vnext/n07-03/calendar-production.log",
+      "sha256": "b00e814f4d9298bfff106575741f94774fa02cc1f77712a614e3e0d94796c7ce"
+    },
+    {
+      "command": "python3 artifacts/vnext/n07-03-calendar/report.py",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n07-03-calendar/report.py"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T08:05:05.917Z",
+      "endedAt": "2026-11-06T08:05:05.959Z",
+      "log": "artifacts/vnext/n07-03/calendar-report.log",
+      "sha256": "dbfb7214a292101e0ece85ee364c8da65d353e38b171ce3b842ec59995f57a4c"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project admin tests/integration/operator-events.test.ts tests/integration/admin-proxy.test.ts",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "admin",
+        "tests/integration/operator-events.test.ts",
+        "tests/integration/admin-proxy.test.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T07:49:35.895Z",
+      "endedAt": "2026-11-06T07:50:14.705Z",
+      "log": "artifacts/vnext/n07-03/calendar-security-complete.log",
+      "sha256": "dc47a0accbced9be21435d98d1dd2579302070fe6fd5542b02fa56fbf23d6eeb"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project admin tests/integration/operator-events.test.ts",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "admin",
+        "tests/integration/operator-events.test.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T07:44:54.454Z",
+      "endedAt": "2026-11-06T07:45:16.191Z",
+      "log": "artifacts/vnext/n07-03/calendar-security-corrected.log",
+      "sha256": "d4e43ed1c4c4e7313a02d8a8ef0445fb50a6b39d841dbf1b9987bb911cf2bd54"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project admin tests/integration/operator-events.test.ts",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "admin",
+        "tests/integration/operator-events.test.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T07:48:32.239Z",
+      "endedAt": "2026-11-06T07:48:54.083Z",
+      "log": "artifacts/vnext/n07-03/calendar-security-expanded.log",
+      "sha256": "f82f301d0f2842031d9c38e40dbb4e043596822227ad920fc7324933f021ad0d"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project admin tests/integration/operator-events.test.ts",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "admin",
+        "tests/integration/operator-events.test.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T07:47:43.068Z",
+      "endedAt": "2026-11-06T07:48:00.327Z",
+      "log": "artifacts/vnext/n07-03/calendar-security-final.log",
+      "sha256": "13c17f129c0c8e0dabb489de2462a005d0aa1bb745ed8eed97283ff50e800990"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project security",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "security"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T07:52:03.906Z",
+      "endedAt": "2026-11-06T07:56:41.625Z",
+      "log": "artifacts/vnext/n07-03/calendar-security-suite.log",
+      "sha256": "ae8782394ad590996b1e3083da5d98ab950a90ea32298acf83ced7db77bdfe87"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project admin tests/integration/operator-events.test.ts",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "admin",
+        "tests/integration/operator-events.test.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T07:43:40.059Z",
+      "endedAt": "2026-11-06T07:44:00.403Z",
+      "log": "artifacts/vnext/n07-03/calendar-security.log",
+      "sha256": "5bcabe816da8c743a3758824e9c40dbdc14e459d8fdd57e4f16cfb4b61d5e768"
+    },
+    {
+      "command": "node scripts/verify-architecture.mjs",
+      "argv": [
+        "node",
+        "scripts/verify-architecture.mjs"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T07:52:05.129Z",
+      "endedAt": "2026-11-06T07:52:06.909Z",
+      "log": "artifacts/vnext/n07-03/calendar-static.log",
+      "sha256": "828774b845ec79b1a269377811dabc9b7d66d6595d9c728cdfac46ecf5f96131"
+    },
+    {
+      "command": "pnpm typecheck",
+      "argv": [
+        "pnpm",
+        "typecheck"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T07:45:48.925Z",
+      "endedAt": "2026-11-06T07:46:30.803Z",
+      "log": "artifacts/vnext/n07-03/calendar-types.log",
+      "sha256": "88b1a8fff6ebc120e3fefb3c2670d914d81b91952fff292069ad28703a88d9da"
+    }
+  ],
+  "scopeAcceptance": {
+    "eventCalendar": "PASS_LOCAL_BOUNDED_SCOPE",
+    "compositeN07_03": "INCOMPLETE"
+  },
+  "remainingAcceptance": [
+    "Durable entitlement-bounded runtime/maintenance commands and audit UI",
+    "Calendar pagination/selection beyond50 before complete-task acceptance"
+  ],
+  "limitations": [
+    "Composite N07-03 remains IN_PROGRESS for durable entitlement-bounded runtime/maintenance controls and audit UI.",
+    "Calendar returns its first50entries for at most31days and explicitly reports truncation. UI pagination/selection beyond50 is not implemented in this slice.",
+    "Synthetic operator/organizer grants and explicitly enabled sandbox fixtures do not provision real organizers, enable real world defaults or create public events.",
+    "Desktop/mobile Chromium emulation and inspected screenshots do not qualify physical Android/iOS, human usability or complete accessibility.",
+    "Production API/admin images retain their existing six scenarios each. New calendar feature flows use actual test-mode backend/dev admin; no complete calendar flow over production TLS is claimed.",
+    "Strict42 is required; no old strict41 image rollback, expanded compatibility, production migration/deployment, hosted/GHCR publishing or public/store release is qualified.",
+    "Draft cleanup uses bounded maintenance and can lag during outage/backlog; synthetic expired rows do not establish elapsed retention days or a production cleanup SLO.",
+    "Artifacts remain private local until owner cleanup, not off-host archives. N04-02 real App PR/hosted Quality remains externally blocked."
+  ],
+  "artifacts": [
+    {
+      "ref": "artifacts/image-admin-0d098f21/application-sbom.cdx.json",
+      "sha256": "8cf8c8d82e5e0751828cdd5aabbe74618263fc7b1750e735e50c87802fc2a62f",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/image-admin-0d098f21/commands.json",
+      "sha256": "b03313b28647bf71c6ab268b007e3f94ba9a0d3e7c99108d20f84942109b0a3d",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/image-admin-0d098f21/facts.json",
+      "sha256": "77170648cff21b9eed4227bc9ba13d9428ce0526f8b95af97eaad5422e873b16",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/image-admin-0d098f21/inspection.json",
+      "sha256": "cdc12c2392b0288067d0fadfae6e83ed51cac60a8d507baee431b42bf6d49cbe",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/image-api-059c0adb/application-sbom.cdx.json",
+      "sha256": "4e57813319298def1b89ba6a341c100b62ff718e6ce596495b479776bf2641d5",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/image-api-059c0adb/commands.json",
+      "sha256": "b05f3b5fbcb8651fe57479e3a9ebd3edf3f38c3027113cbd8e0b7eed5d9482d3",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/image-api-059c0adb/facts.json",
+      "sha256": "9e18b7b66ed8de75801b99eb2956981dfde5dc49d6ff3f6bcc4b71f9aa270a04",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/image-api-059c0adb/inspection.json",
+      "sha256": "785e09e0c5043780c6cc690f9b574b50fbc4786c5c48b91e6c4e5d06f8074bef",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03-calendar/adhoc-types.json",
+      "sha256": "7a3de30e6706f36b06ad4e52983517aa33695a63beb0bc8f0a6c1d4785467955",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03-calendar/checkpoint.py",
+      "sha256": "4a88203ac7d10e2e5a5509be13c3d640b2f7af504d2ac593c1030d8b6a5b6a75",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03-calendar/cleanup.json",
+      "sha256": "0ddc657b611bf1dfa58f1ecbbd9800e7037e860770b331f0692ceb4e4b7a1432",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03-calendar/cleanup.py",
+      "sha256": "98be2d471cdc76a27f4578b272e0846377352dc5f480ad4806926291213aae74",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03-calendar/environment.json",
+      "sha256": "7c48e5898d215034fa1f7ae8d1ece25f9a3efb9b9a30f850ebd95c34d5927345",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03-calendar/environment.mjs",
+      "sha256": "b4fa969df626ad1743454a91a3eacfbb2ec989bfcb7dc30f9d15887fac198b69",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03-calendar/packages.log",
+      "sha256": "6570fc138cb664bdf089f39e4c6e4c8618b01ccc8d55a1d3efe7b715fed3d2d7",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03-calendar/preservation.json",
+      "sha256": "2bd5def45d5c83be674721ff1e55dcfa25b666d3ecb840aa09729f2d724bb64c",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03-calendar/preservation.mjs",
+      "sha256": "f2e0896b3e61afa10ab66f73a1cebe5143ffc77c39c0017549f54e20fab53f51",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03-calendar/report.py",
+      "sha256": "c9f2c6c1c39f540a2a0d5ceab0946803c1a612a6800a19c6fb0c2ef2781a3713",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03-calendar/source.json",
+      "sha256": "560dc2c254914af377728c53859df0330bb85b414627627fc743f3daf45243a7",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03-calendar/source.patch",
+      "sha256": "ecf1866fe4f186d092d4728c4c2894d986dec835a9b911cb1a0336bfda833a77",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03-calendar/types-initial.log",
+      "sha256": "07d2f2f693faa389514157f200ca9c5a1fb293f543171a4a13337d026b6d388e",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03-calendar/visual-review.json",
+      "sha256": "629233b02f698936f4c97ae0854776fca447d50c663fb15fd1505bee5e876578",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-before.log",
+      "sha256": "d24d6c313eb05d74b3f7c3fd3525159f061451e785bd263eff90b1e200f18b48",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-browser-regression.log",
+      "sha256": "4e46f51e5b332acd61a1902b9a85ddeed31947a6ac73da90ab2794d4eda1574c",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-browser-regression/manifest.json",
+      "sha256": "54d4853a28658429fb5f849aecb47113d4d68736b7800dc28a48ba73e5d89a4b",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-browser.log",
+      "sha256": "1af97aa4a3659334c9eb5efc15eebc4a8933dc890659a8eb17f2017fcc07ba5f",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-browser/manifest.json",
+      "sha256": "e2b2f3523f612c87c878e7d2037312f7cf7eba2401f83b80bd2b47e1f6061bf5",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-cleanup.log",
+      "sha256": "2fff6821d1e0e737a4ca3f1bed2004dc588a3e04c58307efa0a1780f367d8923",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-environment.log",
+      "sha256": "ec190819b9c839ffdbf7796d2756509411088d97cd13fb5bf4714f9ccde42c14",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-final-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-first.log",
+      "sha256": "a9428923f03f477407d19e09b727fe14a43218dd34460a957190b29e2e82811f",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-full-check.log",
+      "sha256": "f8cd1f80655a93e28e28a1791efbb04a3ca709e99630bc41d329dbb268f3a6f5",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-lint-final.log",
+      "sha256": "ece225c54cc63ecf6018f8f8f5b8778f6446edd899add77f9cf4306dfc03b614",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-lint.log",
+      "sha256": "ece225c54cc63ecf6018f8f8f5b8778f6446edd899add77f9cf4306dfc03b614",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-preservation.log",
+      "sha256": "a614c8d0741473e461136daa4d74ad9c6c77208f3aa074061e3884a1896dadcf",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-production.log",
+      "sha256": "b00e814f4d9298bfff106575741f94774fa02cc1f77712a614e3e0d94796c7ce",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-report.log",
+      "sha256": "dbfb7214a292101e0ece85ee364c8da65d353e38b171ce3b842ec59995f57a4c",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-security-complete.log",
+      "sha256": "dc47a0accbced9be21435d98d1dd2579302070fe6fd5542b02fa56fbf23d6eeb",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-security-corrected.log",
+      "sha256": "d4e43ed1c4c4e7313a02d8a8ef0445fb50a6b39d841dbf1b9987bb911cf2bd54",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-security-expanded.log",
+      "sha256": "f82f301d0f2842031d9c38e40dbb4e043596822227ad920fc7324933f021ad0d",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-security-final.log",
+      "sha256": "13c17f129c0c8e0dabb489de2462a005d0aa1bb745ed8eed97283ff50e800990",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-security-suite.log",
+      "sha256": "ae8782394ad590996b1e3083da5d98ab950a90ea32298acf83ced7db77bdfe87",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-security.log",
+      "sha256": "5bcabe816da8c743a3758824e9c40dbdc14e459d8fdd57e4f16cfb4b61d5e768",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-static.log",
+      "sha256": "828774b845ec79b1a269377811dabc9b7d66d6595d9c728cdfac46ecf5f96131",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/calendar-types.log",
+      "sha256": "88b1a8fff6ebc120e3fefb3c2670d914d81b91952fff292069ad28703a88d9da",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-before.json",
+      "sha256": "532366ef4b45aaf04ea862b0ec0297a9d27b9a1ddbfea03c2bd36b1d6e062738",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-browser-regression.json",
+      "sha256": "edf61cbfbac350bd21b4d66f81362910715f4d89177772871c1fafd3cb60a1ac",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-browser.json",
+      "sha256": "6d4a361959489dadcbe33075269ab31f5f34e4979c9f691cb3151d9b26ae45e7",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-cleanup.json",
+      "sha256": "6464a4382ca2c6f57a5aa7ee735110d5f2227d5b7ed3c61243fbcbc6e9ec5776",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-environment.json",
+      "sha256": "91732f390020971b51a330f359fc0b4f8844209ba6016f2002be85d906e5f041",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-final-types.json",
+      "sha256": "ed1b55eb691b149a256c9f22e67bb30a1bc7f8643c094b826bd9e0763d6a93f4",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-first.json",
+      "sha256": "96ff2ae96cb77fba7d82ebfef36d0b08e7e2e98485aa4e777a6067211e12d441",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-full-check.json",
+      "sha256": "2015a20f6c219416eca1e2492379c4230826d271c70160de703a3b5029b0b7f2",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-lint-final.json",
+      "sha256": "cc1b542c660aacb48d7f2bc03da65326933e25df0f9ac726a51bc5a5233f62d7",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-lint.json",
+      "sha256": "a52ee37e75d159ac1b465a055c9f827dec2ac62445b6bb820d622811f6765333",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-preservation.json",
+      "sha256": "7d0078e98494566a4b69fe96187b54d468e93964aa28406f670d9b2c6dae4166",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-production.json",
+      "sha256": "0cd4dc1fba6c08d62bdfab5d2746ce648ecfb64d7e5420481ca13605df2b486d",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-report.json",
+      "sha256": "0c2635e0a4e1d093e8826513b89fae32d550d18d007d07695149f5b52347ab00",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-security-complete.json",
+      "sha256": "065ad4fb2ee35a0bdbb4d130eda97ea55280637267b21bdb560243032a67b578",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-security-corrected.json",
+      "sha256": "b046c061d136dd1a5b47abec361e1b80374e2bdeaa7a5c0f7cf7776d3a398e17",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-security-expanded.json",
+      "sha256": "56b406083518a1777d68ee93e330624ff1a4f422c1c2bfee1abac3f80b2aaed7",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-security-final.json",
+      "sha256": "6c229586f7a8db7c1db4c1830f63d3989c6e7da024ccf40c4562f36d4716ff9d",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-security-suite.json",
+      "sha256": "eebeb0f7c10f24271c76091aa8ab065172d2a968e3c8c0905a53d26122cc9583",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-security.json",
+      "sha256": "c1fdfdf068b784238876505629ceec48024446293def95bc9ad3786a59c74978",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-static.json",
+      "sha256": "d83c93fb12add268a18f212e7390521cc78f7d2406f3e5337698b042adacc64b",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n07-03/command-calendar-types.json",
+      "sha256": "6457a5fa7119a8f122c977c8a370b4b2630c88f9d0a8a075b8a41110669882c4",
+      "access": "private",
+      "retention": "Local until owner cleanup; not off-host archive"
+    },
+    {
+      "ref": "docs/adr/0121-event-owned-operator-calendar.md",
+      "sha256": "4092553c7aa67bb32fc0f42d9a0ecca9e6498685ae170d6ce65e641336efb8f5",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/architecture/N07-03-CALENDAR.json",
+      "sha256": "54cd7f09fa20915335beeb08604bf7f4c1833bd77d4f2b4ce5a4ee23b0aeb99b",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/operations/EVENT-CALENDAR.md",
+      "sha256": "635deef6f2dc290806c0bd85a1d5ff41e0dad50368ffd69c2d21786dc13ed1f0",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    }
+  ],
+  "nextExactAction": "Continue N07-03 with durable versioned runtime/maintenance controls bounded by immutable Git release entitlement. Inspect release/runtime/safety policy and existing world reload/incident owners; implement audited fixed-scope operator commands and UI without enabling an unentitled world, reviving consent or changing worker/room ownership. Revisit calendar pagination beyond its explicit50-entry limit before claiming complete N07-03 acceptance. Keep N07-03 IN_PROGRESS until every remaining scenario qualifies; N04-02 stays externally blocked and no production/public/store release is authorized."
+}

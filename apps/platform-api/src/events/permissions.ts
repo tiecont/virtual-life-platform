@@ -6,8 +6,9 @@ export class EventPermissions {
   constructor(private reports: ReportService, private now = Date.now) {}
   async permits(db: PoolClient, actor: IdentityContext, worldSlug: string) {
     if (actor.kind !== 'registered') return false;
-    return !!(await db.query("SELECT 1 FROM engine_event_grants WHERE account_id=$1 AND world_slug=$2 AND role='organizer' AND expires_at>$3 FOR SHARE", [actor.accountId, worldSlug, new Date(this.now())])).rowCount;
+    return this.organizesAccount(db,actor.accountId,worldSlug);
   }
+  async organizesAccount(db:PoolClient,accountId:string,worldSlug:string){return !!(await db.query("SELECT 1 FROM engine_event_grants WHERE account_id=$1 AND world_slug=$2 AND role='organizer' AND expires_at>$3 FOR SHARE",[accountId,worldSlug,new Date(this.now())])).rowCount;}
   async performs(db: PoolClient, actor: IdentityContext, worldSlug: string, eventId: string) {
     if (actor.kind !== 'registered') return false;
     return !!(await db.query("SELECT 1 FROM engine_event_grants WHERE account_id=$1 AND world_slug=$2 AND event_id=$3 AND role='performer' AND expires_at>$4 FOR SHARE", [actor.accountId, worldSlug, eventId, new Date(this.now())])).rowCount;
