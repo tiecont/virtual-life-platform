@@ -73,7 +73,11 @@
     "ux:animal-study": "node scripts/verify-animal-study.mjs",
     "test:ux-core": "node scripts/run-ux-core.mjs",
     "test:queue-ux":"node scripts/run-queue-ux.mjs",
-    "mobile:landscape:smoke": "python3 scripts/mobile-landscape-smoke.py"
+    "mobile:landscape:smoke": "python3 scripts/mobile-landscape-smoke.py",
+    "mobile:emulator:start":"node scripts/mobile-emulator.mjs start",
+    "mobile:emulator:smoke":"node scripts/mobile-emulator.mjs smoke",
+    "mobile:emulator:stop":"node scripts/mobile-emulator.mjs stop",
+    "mobile:emulator:status":"node scripts/mobile-emulator.mjs status"
   },
   "devDependencies": {
     "@eslint/js": "9.39.1",

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "avdName": "vlp_n10_05_api35",
+  "port": 5580,
+  "emulatorVersion": "37.2.13",
+  "systemImage": "system-images;android-35;google_apis;x86_64",
+  "systemImageRevision": "9",
+  "api": "35",
+  "cpuCores": 4,
+  "memoryMiB": 2048,
+  "dataPartitionGiB": 2,
+  "minimumFreeDiskGiB": 10,
+  "minimumAvailableMemoryMiB": 3072,
+  "width": 1080,
+  "height": 2400,
+  "density": 420,
+  "gpu": "host",
+  "bootTimeoutSeconds": 180,
+  "scope": "Development emulator only, not physical performance, thermal, battery, store, support-floor or iOS evidence"
+}
