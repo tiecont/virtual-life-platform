@@ -25,3 +25,6 @@ for (const file of ['ARCHITECTURE.md', 'PERSISTENCE.md', 'FUTURE-OWNERSHIP.md', 
 console.log(`Architecture consistency passed: ${tables.size} SQL tables + journal; ${await checkBoundaries(process.cwd())} source files checked. Future gameplay invariants remain runtime gates.`);
 const graph=await inspectApiModules();
 console.log(`API ownership checked: ${graph.productionFiles} production files, ${Object.keys(graph.owners).length} areas, ${graph.crossModuleEdges.length} static cross-area edges; existing type/metrics cycles retained.`);
+const {checkWorkerBoundary} = await import('./worker-boundary.mjs');
+const worker = await checkWorkerBoundary();
+console.log(`Worker boundary checked: ${worker.files.length} runtime source files; no API/room/socket bootstrap.`);

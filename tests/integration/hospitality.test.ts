@@ -384,6 +384,44 @@ it('independent concurrent outbox dispatchers apply a DB hook once and rollback 
   const two = new DurableHospitalityOutbox(r.pool, {lockAccounts:(db,ids)=>r.app.identity.lockAccounts(db,ids)}, sinks, r.now); await Promise.all([one.drain(), two.drain()]); expect((await r.pool.query('SELECT amount FROM synthetic_once')).rows).toEqual([{ amount: 1 }]); expect((await r.pool.query('SELECT 1 FROM engine_hospitality_deliveries')).rowCount).toBe(1); await one.close(); await two.close();
 });
 
+it('quarantines poison work at the retry limit and permits exactly one scoped explicit retry without clearing a committed receipt', async () => {
+  const {r, customer, order} = await servedFixture(); await acknowledge(r, customer, order.id);
+  await r.pool.query('CREATE TABLE synthetic_worker_effect(event_id uuid PRIMARY KEY,amount integer NOT NULL)'); let broken = true, attempts = 0;
+  const sink: HospitalityCompletionSink = {key: 'worker-poison', apply: async (db, event) => {attempts++; await db.query('INSERT INTO synthetic_worker_effect VALUES($1,1)', [event.id]); if (broken) throw Error('synthetic poison');}};
+  const dispatcher = new DurableHospitalityOutbox(r.pool, {lockAccounts: (db, ids) => r.app.identity.lockAccounts(db, ids)}, [sink], r.now, 2);
+  try {
+    await expect(dispatcher.drain()).rejects.toThrow(); r.advance(1000); await expect(dispatcher.drain()).rejects.toThrow(); r.advance(60000);
+    await dispatcher.drain(); expect(attempts).toBe(2); expect((await r.pool.query('SELECT 1 FROM synthetic_worker_effect')).rowCount).toBe(0);
+    const dead = await dispatcher.deadLetters(); expect(dead).toHaveLength(1); expect(dead[0]).toMatchObject({consumer_key: 'worker-poison', attempts: 2});
+    expect(Object.keys(dead[0]).sort()).toEqual(['attempts', 'consumer_key', 'event_id', 'next_at']);
+    await expect(dispatcher.retryDeadLetter(dead[0].event_id, 'foreign-consumer', 2, dead[0].next_at.toISOString())).rejects.toThrow();
+    await expect(dispatcher.retryDeadLetter(dead[0].event_id, 'worker-poison', 3, dead[0].next_at.toISOString())).rejects.toThrow('conflict');
+    const retried = await Promise.allSettled(Array.from({length: 8}, () => dispatcher.retryDeadLetter(dead[0].event_id, 'worker-poison', 2, dead[0].next_at.toISOString())));
+    expect(retried.filter(row => row.status === 'fulfilled')).toHaveLength(1); expect(retried.filter(row => row.status === 'rejected')).toHaveLength(7);
+    // A later poison cycle can have the same attempt count; the old observation
+    // must not reset that newer cycle. Compare its persisted due time as well.
+    await expect(dispatcher.drain()).rejects.toThrow(); r.advance(1000); await expect(dispatcher.drain()).rejects.toThrow();
+    await expect(dispatcher.retryDeadLetter(dead[0].event_id, 'worker-poison', 2, dead[0].next_at.toISOString())).rejects.toThrow('conflict');
+    const current = (await dispatcher.deadLetters())[0]; await dispatcher.retryDeadLetter(current.event_id, current.consumer_key, current.attempts, current.next_at.toISOString());
+    broken = false;
+    const concurrent = new DurableHospitalityOutbox(r.pool, {lockAccounts: (db, ids) => r.app.identity.lockAccounts(db, ids)}, [sink], r.now, 2);
+    try {await Promise.all([dispatcher.drain(), concurrent.drain()]);} finally {await concurrent.close();}
+    expect((await r.pool.query('SELECT amount FROM synthetic_worker_effect')).rows).toEqual([{amount: 1}]); expect((await dispatcher.deadLetters())).toEqual([]);
+    await expect(dispatcher.retryDeadLetter(dead[0].event_id, 'worker-poison', 2, dead[0].next_at.toISOString())).rejects.toThrow('conflict');
+    expect((await r.pool.query("SELECT 1 FROM engine_hospitality_deliveries WHERE consumer_key='worker-poison'")).rowCount).toBe(1);
+  } finally {await dispatcher.close();}
+});
+it('legacy API dispatcher retains its retry behavior until an explicit bounded-worker cutover', async () => {
+  const {r, customer, order} = await servedFixture(); await acknowledge(r, customer, order.id);
+  const eventId = (await r.pool.query('SELECT event_id FROM engine_hospitality_outbox')).rows[0].event_id;
+  await r.pool.query("INSERT INTO engine_hospitality_delivery_retries VALUES($1,'legacy-retry',30,$2)", [eventId, new Date(r.now() - 1)]);
+  let attempts = 0;
+  const dispatcher = new DurableHospitalityOutbox(r.pool, {lockAccounts: (db, ids) => r.app.identity.lockAccounts(db, ids)}, [{key: 'legacy-retry', apply: async () => {attempts++; throw Error('synthetic legacy failure');}}], r.now);
+  try {await expect(dispatcher.drain()).rejects.toThrow(); expect(attempts).toBe(1); await expect(dispatcher.deadLetters()).rejects.toThrow('Bounded retry policy required'); expect((await r.pool.query("SELECT attempts FROM engine_hospitality_delivery_retries WHERE consumer_key='legacy-retry'")).rows[0].attempts).toBe(30);}
+  finally {await dispatcher.close();}
+});
+
+
 it('a committed completion lost response is privately retryable after leave/restart,and no caller can post arbitrary events or rewards', async () => {
   const { r, customer, c, staff, order } = await servedFixture(), key = randomUUID(), stranger = await guest(r);
   for (const extra of [{ reward: 100 }, { staffId: staff.me.profile.id }, { completedAt: new Date().toISOString() }, { coursesServed: 5 }, { event: 'OrderCompleted' }]) expect((await post(r, customer, `orders/${order.id}/complete`, { schemaVersion: 1, expectedVersion: 4, ...extra })).statusCode).toBe(422);

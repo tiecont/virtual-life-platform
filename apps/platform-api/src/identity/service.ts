@@ -5,6 +5,7 @@ import type { Config } from '../config';
 import { IdentityError, unauthorized } from './errors';
 import { PasswordHasher, type PasswordRecord } from './passwords';
 import { canViewPresence } from './policy';
+import {lockAccounts} from './account-locks';
 type DB = Pick<Pool, 'query'> | PoolClient;
 type Session = { id: string; account_id: string; expires_at: Date; revoked_at: Date | null; revoked_reason: string | null; kind: 'guest' | 'registered'; display_name: string; avatar_key: PublicProfile['avatarKey'] };
 export type IdentityContext = Readonly<{ accountId: string; sessionId: string; kind: 'guest' | 'registered'; expiresAt: number }>;
@@ -50,7 +51,7 @@ export class IdentityService {
     return this.session(token, db, allowRevoked);
   }
   // Internal platform transaction ports. Never handed to world/client modules.
-  async lockAccounts(db: PoolClient, ids: string[]) { for (const id of [...new Set(ids)].sort()) await this.lock(db, 'account:' + id); }
+  async lockAccounts(db: PoolClient, ids: string[]) {await lockAccounts(db, ids);}
   async contextInTransaction(db: PoolClient, token: string): Promise<IdentityContext> { const s = await this.session(token, db); return Object.freeze({ accountId: s.account_id, sessionId: s.id, kind: s.kind, expiresAt: s.expires_at.getTime() }); }
   async hasConnectedSession(accountId: string, sessionIds: string[]) { return Boolean((await this.pool.query('SELECT 1 FROM identity_sessions WHERE account_id=$1 AND id=ANY($2::uuid[]) AND revoked_at IS NULL AND expires_at>$3 LIMIT 1', [accountId, sessionIds, new Date(this.now())])).rowCount); }
   // Trusted activity owner port. Called under the participant account lock.

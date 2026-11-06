@@ -19,6 +19,8 @@
       "responsibility": "Validated runtime environment",
       "currentPublicEntryFiles": [
         "config",
+        "config/progression",
+        "config/worker",
         "config/release-policy",
         "config/schema-compatibility"
       ],
@@ -50,6 +52,7 @@
       "responsibility": "Account/session/privacy/credential/legacy-link authority",
       "currentPublicEntryFiles": [
         "identity/errors",
+        "identity/account-locks",
         "identity/http",
         "identity/legacy/deadline-port",
         "identity/legacy/http",
@@ -158,6 +161,7 @@
       "responsibility": "Reward ledger and appearance projection",
       "currentPublicEntryFiles": [
         "progression/appearance",
+        "progression/ledger",
         "progression/http",
         "progression/service"
       ],

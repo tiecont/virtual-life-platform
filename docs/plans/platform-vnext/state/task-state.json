@@ -317,12 +317,14 @@
       "next_action": "Reserve N05-05; use the existing hospitality/jobs transaction/account-lock seam, extract the progression completion sink into a room-free reusable ledger port if needed, and implement a separate durable worker bootstrap/config/DB lifetime that never calls createApp or constructs RoomAuthority/socket ownership. Keep room-bound maintenance in API, preserve default behavior/closed gates, add bounded retry/dead-letter controls and actual worker kill/resume/effect-receipt tests; implement worker:check before executing it, then run applicable full verification and checkpoint."
     },
     "N05-05": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Runtime",
+      "branch": "codex/vnext-n05-05-durable-worker",
+      "evidence_refs": [
+        "n05-05-2026-11-06"
+      ],
       "blocker": null,
-      "next_action": "Worker entrypoint, transactional outbox jobs, retry/dead-letter controls"
+      "next_action": "Reserve N05-06; audit current SessionHandshake/room content schemas, Socket.IO gateway and actual portal consumers. Implement additive protocol/capability negotiation with explicit incompatible-client outcomes, preserve legacy strict response/handshake adapters and Origin/cookie/CSRF/revoke checks. Keep protocol, scene schema, content identity and DB migration versions independent. Exercise real N/N-1 or explicitly pinned legacy fixtures, epoch/gap resync/token revoke and graceful unsupported content; wire/test the relevant client adapter and run applicable contracts/consumer/protocol/integration/browser verification without claiming a released old mobile binary exists."
     },
     "N05-06": {
       "status": "TODO",

@@ -1,6 +1,6 @@
 # Hospitality durable-job boundary
 
-N02-02 extracts one module boundary. The implementation now lives in `apps/platform-api/src/hospitality/jobs.ts`; `hospitality/outbox.ts` is a compatibility re-export. Existing API/progression callers retain the same `HospitalityOutbox` constructor/type names. There is one implementation, with no parallel `domains/` or `modules/` copy.
+At the N02-02 checkpoint, one module boundary was extracted. The implementation now lives in `apps/platform-api/src/hospitality/jobs.ts`; `hospitality/outbox.ts` is a compatibility re-export. Existing API/progression callers retain the same `HospitalityOutbox` constructor/type names. There is one implementation, with no parallel `domains/` or `modules/` copy.
 
 The public constructor needs a PostgreSQL query/connect port, `HospitalityAccountLocks`, bounded `HospitalityCompletionSink` consumers and the existing clock. It imports no identity implementation, room authority, HTTP/socket adapter or API composition root. The account-lock adapter is trusted and must preserve `IdentityService.lockAccounts` ordering/transaction semantics. Existing API wiring still supplies that identity service; the minimal-port integration case supplies only its bound account-lock method.
 
@@ -9,3 +9,5 @@ All dispatch SQL, transaction/statement/lock deadlines, account lock order, immu
 This is a worker-ready composition seam, not an independently running worker. `main.ts` still drains the API-owned outbox in its existing maintenance chain and `app.ts` still closes it at shutdown. A later worker task must supply its own bootstrap/config/DB lifetime and tested ownership/enablement policy. It must not call `createApp`, acquire RoomAuthority or move room-dependent maintenance into the worker. No database/schema/transport/rollout flag changes occur in this slice.
 
 Rollback the entrypoint extraction and restore the original type dependency; no data migration or down-migration is needed. See the [API module map](API-MODULES.md) for all owners and the current [task evidence](../plans/platform-vnext/state/evidence-index.json) for actual command outcomes.
+
+N05-05 now adds the separate [durable worker](../operations/DURABLE-WORKER.md) and shared room-free reward/account-lock ports. Default API dispatch retains its legacy retry behavior. Only an explicit bounded worker policy quarantines retry exhaustion and offers optimistic metadata-only CLI controls. This supersedes the earlier worker-preparation-only statement above; original N02-02 results retain their historical source/scope.

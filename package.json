@@ -7,6 +7,7 @@
     "node": "26.9.x"
   },
   "scripts": {
+    "worker:check": "pnpm build:packages && pnpm --filter @virtual-city/platform-api build && node scripts/worker-boundary.mjs && node scripts/with-test-db.mjs pnpm exec vitest run --project worker",
     "test:runtime-faults": "pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project runtime-faults",
     "profile:runtime": "pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/runtime-profile.ts",
     "test:protocol": "pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project protocol",
@@ -27,7 +28,7 @@
     "lint": "eslint . && node scripts/check-boundaries.mjs",
     "typecheck": "pnpm build:packages && pnpm -r typecheck && tsc -p tests/load/tsconfig.json && tsc -p tests/legacy-tsconfig.json",
     "test": "pnpm build:packages && node --test tests/governance/*.test.mjs && vitest run --project unit",
-    "test:integration": "pnpm build:packages && pnpm legacy:prepare && node scripts/with-test-db.mjs pnpm exec vitest run --project integration",
+    "test:integration": "pnpm build:packages && pnpm --filter @virtual-city/platform-api build && pnpm legacy:prepare && node scripts/with-test-db.mjs pnpm exec vitest run --project integration",
     "test:security": "pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project security",
     "test:e2e": "pnpm build && node scripts/run-browser-tests.mjs",
     "build": "pnpm -r build",

@@ -24,7 +24,7 @@ export class RuntimeLifecycle {
     }).finally(() => {this.#active.delete(task);});
     this.#active.add(task); return task;
   }
-  every(intervalMs: number, work: () => Promise<unknown>, onError: () => void) {
+  every(intervalMs: number, work: () => Promise<unknown>, onError: () => void, keepAlive = false) {
     if (this.#state !== 'running' || !Number.isInteger(intervalMs) || intervalMs < 1) throw Error('Cannot schedule maintenance');
     let busy = false;
     const timer = setInterval(() => {
@@ -32,7 +32,7 @@ export class RuntimeLifecycle {
       busy = true;
       void this.run(work, onError)?.finally(() => {busy = false;});
     }, intervalMs);
-    timer.unref(); this.#timers.add(timer);
+    if (!keepAlive) timer.unref(); this.#timers.add(timer);
   }
   stop(): Promise<void> {
     if (this.#stopping) return this.#stopping;

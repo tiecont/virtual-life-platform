@@ -17,6 +17,7 @@ Follow the [vNext master](plans/platform-vnext/MASTER-AGENT-PLAN.md), [current h
 | Release and operations | [Release decision](operations/RELEASE-DECISION.md) / [recovery](operations/DEPLOYMENT-RECOVERY.md) / [tracked drain](adr/0111-settle-maintenance-before-owner-shutdown.md) | Public/store gates remain closed; no real deployment follows from code checks |
 | Environment policy | [Versioned release/runtime/safety model](operations/ENVIRONMENT-POLICY.md) | Explicit default-deny profile; one operator requirement, no provisioned identity or actual approval |
 | Schema rollback | [Image-bound checksum compatibility](operations/SCHEMA-COMPATIBILITY.md) | Exact by default; expanded prefix needs its own reviewed image/data proof; no automatic down-migration |
+| Durable worker | [Separate reward process and cutover](operations/DURABLE-WORKER.md) | Compiled source/process checks; default API behavior retained, no room authority or deployment approval |
 | API artifact | [Production dependency image](operations/API-IMAGE.md) | Separate nonroot API artifact and same-image migrator; local inspection/smoke is distinct from deployment |
 | CI release artifacts | [Source/run/digest publication and owner promotion](operations/ARTIFACT-RELEASE.md) | Default-disabled publisher; explicit enforcement fallback and local rehearsal distinguished from hosted/GHCR results |
 | Web artifact | [Standalone portal/runtime origins](operations/WEB-IMAGE.md) | Same-image runtime configuration and local TLS/browser verification; normal build compatibility retained |

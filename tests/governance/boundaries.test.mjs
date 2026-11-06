@@ -8,6 +8,8 @@ test('API areas use declared public entry files and isolate composition and migr
  assert.doesNotThrow(()=>assertImportAllowed(social,'../identity/service',root));
  assert.doesNotThrow(()=>assertImportAllowed('/repo/apps/platform-api/src/app.ts','./db/migrations',root));
  assert.doesNotThrow(()=>assertImportAllowed('/repo/apps/platform-api/src/main.ts','./app',root));
+ assert.throws(()=>assertImportAllowed(social,'../worker',root));
+ assert.doesNotThrow(()=>assertImportAllowed('/repo/apps/platform-api/src/worker.ts','./db/migrations',root));
  assert.throws(()=>assertImportAllowed('/repo/apps/platform-api/src/common/errors.ts','../identity/service',root));
  for(const area of ['unowned','constructor','__proto__'])assert.throws(()=>assertImportAllowed('/repo/apps/platform-api/src/'+area+'/service.ts','../identity/service',root));
 });

@@ -68,6 +68,7 @@ import { ReadinessProbe } from './operations/readiness';
 import {observePool} from './db/observe-pool';
 import { EventInvitationService } from './events/invitations';
 import { ProgressionService } from './progression/service';
+import {loadProgressionPolicy} from './config/progression';
 import { registerProgression } from './progression/http';
 import { AppearanceService } from './progression/appearance';
 import { DiscoveryService } from './discovery/service';
@@ -161,7 +162,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const invitations = new InvitationService(db, identity, social, worlds.registry, options.now,rooms);
   const focus = new FocusService(db, identity, rooms, options.now);
   const hospitality = new HospitalityService(db, identity, rooms, social, options.hospitality?.staff, options.now);
-  const progression = new ProgressionService(db, identity, focus, async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account,world) && await new SanctionPolicy(transaction, options.now).permits(account,world), options.progression?.policy, options.now,options.progression?.correctionOperators);
+  const progression = new ProgressionService(db, identity, focus, async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account,world) && await new SanctionPolicy(transaction, options.now).permits(account,world), options.progression?.policy ?? await loadProgressionPolicy(config.PROGRESSION_POLICY_FILE), options.now,options.progression?.correctionOperators);
   const appearance=new AppearanceService(db,identity,rooms,hospitality,options.now);rooms.setAppearanceProjection((account,world,source,connected)=>appearance.project(account,world,source,connected));
   const hospitalityOutbox = new HospitalityOutbox(db, identity, [...options.hospitality?.completionSinks ?? [], ...progression.policy.enabled ? [progression.hospitalitySink()] : []], options.now);
   const eventPermissions = new EventPermissions(reports, options.now);
