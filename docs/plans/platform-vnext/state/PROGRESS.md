@@ -1,3 +1,9 @@
+# N07-04 local source qualification; BLOCKED_EXTERNAL — 2026-11-06T10:27:38.819448+00:00
+
+N07-04 local source qualification passes: 84governance/338unit/677integration,99admin,18observability,61hospitality,83runtime-fault cases and18browser executions; API/admin6production scenarios each include actual owner sources/TLS/MFA. Independent bounded DB/pool/backlog, readonly failure/recovery, missing/zero, source versions and privacy pass.43SQL/39priorrecords/defaults/historical ledger preserved. Actual staging scrape remains NOT_RUN; task BLOCKED_EXTERNAL, acceptance_met:false. Retained original404/type/test-policy failures; no production guard relaxed.
+
+[Actual checks](../audit/N07-04-SOURCES-CHECKS.json). Counts: {"VERIFIED": 32, "BLOCKED_EXTERNAL": 2, "TODO": 35}. Next: Finalize the prepared N09-01 contract/model branch onto this source/state, verify merged source parity and actual contract/unit/build checks, then mark only its model scope VERIFIED and continue N09-02/N10 per ready DAG. N07-04 needs actual private staging scrape/coverage after N04-04; do not relabel local TLS as staging. Continue independent N14 preparation; Mac/Xcode/iPhone are unavailable.
+
 # N07-04 observation UI checkpoint — 2026-11-06T09:42:37.850013+00:00
 
 N07-04 system-observation UI slice qualifies locally: strict source-aware operator BFF,5second/coalesced service read and fresh/stale/UNKNOWN handling, configured-edge/observed-traffic separation and explicit cumulative approximations.95admin/84governance/335unit, types/lint/build, prior18browser group plus final10styled admin executions and same-source API/admin6scenarios each pass. Original two browser failures, rate-limit enforcement and visual corrections retained.43SQL/38priorrecords/unrelated tasks/defaults/API source preserved. N07-04 remains IN_PROGRESS for local source ports and staging acceptance.

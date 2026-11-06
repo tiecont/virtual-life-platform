@@ -422,14 +422,20 @@
       "next_action": "Complete N08-01 observations on its reserved isolated branch, reconcile onto this acceptance commit, run actual verification and preserve all evidence. Then N07-04/N09/N10 in dependency order, through independent N14 preparation. No Mac/Xcode/iPhone are available; keep physical/archive/TestFlight gates unmet and release NOT_REQUESTED."
     },
     "N07-04": {
-      "status": "IN_PROGRESS",
+      "status": "BLOCKED_EXTERNAL",
       "owner": "Codex Admin + Operations lane",
-      "branch": "codex/vnext-n07-04-system-overview",
+      "branch": "codex/vnext-n07-04-sources",
       "evidence_refs": [
-        "n07-04-observation-ui-2026-11-06"
+        "n07-04-observation-ui-2026-11-06",
+        "n07-04-sources-2026-11-06"
       ],
-      "blocker": null,
-      "next_action": "Continue N07-04 local source slice: implement bounded/coalesced DB responding/pool-wait and hospitality-owned durable-backlog ports, local authority/expected schema/release metadata, independent UNKNOWN/freshness and actual timeout/cardinality/privacy tests; retain unsupported deployment/worker-liveness data as UNKNOWN. Qualify local UI/production scope, then record actual staging-scrape gate behind N04-04. Continue ready N09/N10 and full plan through independent N14 preparation; no Mac/Xcode/iPhone available."
+      "blocker": {
+        "owner": "Operations/Admin and repository/server owner",
+        "neededInput": "N04-04 verified private staging target with genuine tested artifact identity and service-bound telemetry access; execute actual authenticated staging scrape/coverage/freshness/zero/outage checks. No secrets in chat.",
+        "evidence": "n07-04-sources-2026-11-06",
+        "nextIndependentTask": "N09-01"
+      },
+      "next_action": "Finalize the prepared N09-01 contract/model branch onto this source/state, verify merged source parity and actual contract/unit/build checks, then mark only its model scope VERIFIED and continue N09-02/N10 per ready DAG. N07-04 needs actual private staging scrape/coverage after N04-04; do not relabel local TLS as staging. Continue independent N14 preparation; Mac/Xcode/iPhone are unavailable."
     },
     "N07-05": {
       "status": "TODO",

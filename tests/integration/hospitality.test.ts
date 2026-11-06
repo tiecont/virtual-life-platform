@@ -10,6 +10,7 @@ import { migrate } from '../../apps/platform-api/src/db/migrations';
 import { HospitalityOutbox, type HospitalityCompletionSink } from '../../apps/platform-api/src/hospitality/outbox';
 import {HospitalityOutbox as DurableHospitalityOutbox} from '../../apps/platform-api/src/hospitality/jobs';
 import { DEFAULT_PROGRESSION_POLICY } from '../../apps/platform-api/src/progression/policy';
+import {BoundedObservationRead} from '../../apps/platform-api/src/operations/system-observation';
 import {RuntimeLifecycle} from '../../apps/platform-api/src/operations/runtime-lifecycle';
 const origin = 'http://127.0.0.1:3300'; let admin: Pool, serial = 0;
 const opened: { app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: string }[] = [], sockets = new Set<Socket>();
@@ -379,9 +380,9 @@ it('independent concurrent outbox dispatchers apply a DB hook once and rollback 
   const { r, customer, order } = await servedFixture(); await acknowledge(r, customer, order.id); await r.pool.query('CREATE TABLE synthetic_once(event_id uuid PRIMARY KEY,amount integer NOT NULL)');
   const sinks: HospitalityCompletionSink[] = [{ key: 'once-progress', apply: async (db, event) => { await db.query('INSERT INTO synthetic_once VALUES($1,1)', [event.id]); } }];
   await r.pool.query("CREATE FUNCTION fail_delivery_receipt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic delivery receipt failure'; END $$"); await r.pool.query('CREATE TRIGGER fail_delivery_receipt BEFORE INSERT ON engine_hospitality_deliveries FOR EACH ROW EXECUTE FUNCTION fail_delivery_receipt()');
-  const one = new HospitalityOutbox(r.pool, r.app.identity, sinks, r.now); await expect(one.drain()).rejects.toThrow(); expect((await r.pool.query('SELECT 1 FROM synthetic_once')).rowCount).toBe(0); await r.pool.query('DROP TRIGGER fail_delivery_receipt ON engine_hospitality_deliveries'); r.advance(1000);
+  const one = new HospitalityOutbox(r.pool, r.app.identity, sinks, r.now);const backlog=new BoundedObservationRead(r.pool,db=>one.operationalBacklog(db),r.now);expect(await backlog.read()).toMatchObject({status:'OBSERVED',value:{pendingDeliveries:1,oldestAgeMs:0,consumerCount:1}}); await expect(one.drain()).rejects.toThrow(); expect((await r.pool.query('SELECT 1 FROM synthetic_once')).rowCount).toBe(0); await r.pool.query('DROP TRIGGER fail_delivery_receipt ON engine_hospitality_deliveries'); r.advance(1000);
   expect(DurableHospitalityOutbox).toBe(HospitalityOutbox);
-  const two = new DurableHospitalityOutbox(r.pool, {lockAccounts:(db,ids)=>r.app.identity.lockAccounts(db,ids)}, sinks, r.now); await Promise.all([one.drain(), two.drain()]); expect((await r.pool.query('SELECT amount FROM synthetic_once')).rows).toEqual([{ amount: 1 }]); expect((await r.pool.query('SELECT 1 FROM engine_hospitality_deliveries')).rowCount).toBe(1); await one.close(); await two.close();
+  const two = new DurableHospitalityOutbox(r.pool, {lockAccounts:(db,ids)=>r.app.identity.lockAccounts(db,ids)}, sinks, r.now); await Promise.all([one.drain(), two.drain()]); expect((await r.pool.query('SELECT amount FROM synthetic_once')).rows).toEqual([{ amount: 1 }]); expect((await r.pool.query('SELECT 1 FROM engine_hospitality_deliveries')).rowCount).toBe(1);expect(await backlog.read()).toMatchObject({status:'OBSERVED',value:{pendingDeliveries:0,oldestAgeMs:null,consumerCount:1}});backlog.close(); await one.close(); await two.close();
 });
 
 it('quarantines poison work at the retry limit and permits exactly one scoped explicit retry without clearing a committed receipt', async () => {

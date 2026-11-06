@@ -68,3 +68,8 @@ it('system observations enforce exact queries, authenticated fresh reads and cac
  const response=await handler(request(path,undefined,user.cookie));expect(response.status).toBe(200);const body=await response.json();expect(body).toMatchObject({status:'FRESH',source:'platform-api',observation:{schemaVersion:2,online:{connections:0},coverage:{databaseHealth:'NOT_OBSERVED'}}});expect(JSON.stringify(body)).not.toContain(readToken);expect(JSON.stringify(body)).not.toMatch(/traceId|roomKey/);
  expect((await handler(request('revoke-all',{},user.cookie,user.session.csrfToken))).status).toBe(200);expect((await handler(request(path,undefined,user.cookie))).status).toBe(401);
 });
+
+it('system owner-port proxy exposes independent sources under the existing read policy and denies idle-expired authority',async()=>{
+ const user=await login(),path='system-state?view=system&range=current';expect((await handler(request(path))).status).toBe(401);for(const invalid of [path+'&query=arbitrary',path.replace('current','1h'),path+'&view=system'])expect((await handler(request(invalid,undefined,user.cookie))).status).toBe(400);
+ const response=await handler(request(path,undefined,user.cookie));expect(response.status).toBe(200);const value=await response.json();expect(value).toMatchObject({status:'FRESH',system:{database:{status:'OBSERVED',value:{responding:true}},pool:{status:'OBSERVED'},backlog:{status:'NOT_CONFIGURED'},workerLiveness:'UNKNOWN',versions:{expectedSchemaVersion:1,expectedMigrationCount:43}}});expect(JSON.stringify(value)).not.toContain(readToken);now+=300001;expect((await handler(request(path,undefined,user.cookie))).status).toBe(200);now+=15*60000+1;expect((await handler(request(path,undefined,user.cookie))).status).toBe(401);
+});

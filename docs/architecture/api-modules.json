@@ -226,7 +226,8 @@
         "operations/telemetry",
         "operations/runtime-policy-store",
         "operations/operator-runtime",
-        "operations/operator-http"
+        "operations/operator-http",
+        "operations/system-observation"
       ],
       "targetBoundary": "Separate read ports from room owner before durable-worker bootstrap"
     }

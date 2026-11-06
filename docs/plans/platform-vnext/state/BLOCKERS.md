@@ -1,3 +1,7 @@
+# N07-04 actual staging scrape — 2026-11-06T10:27:38.819448+00:00
+
+Local implementation and qualification pass; task is BLOCKED_EXTERNAL for actual staging-source coverage after N04-04. Owner: Operations/Admin + repository/server owner. Needed: verified private staging target/genuine artifact and service-bound telemetry path; execute authenticated scrape with fresh/stale/zero/unreachable observations. Do not request secrets in chat or call local generated-certificate TLS staging. [Actual scope](../audit/N07-04-SOURCES-CHECKS.json). Next independent task N09-01, then N09-02/N10 per DAG.
+
 # N04-02 hosted promotion gate — 2026-11-06
 
 Task N04-02 is BLOCKED_EXTERNAL. Local implementation/checks pass, but actual App PR and required hosted Quality are NOT_RUN. Read-only metadata found the private-key secret name absent and promotion variables unavailable; no usable genuine published candidate was supplied. Owner: repository owner / Foundation CI. Needed input: repository-scoped App contents/PR permissions, secure service-side setup and genuine published release proof; then observe actual bot PR/head, actor and required Quality outcomes. Do not request keys in chat or infer these results from local mocks. Evidence: [actual checks](../audit/N04-02-CHECKS.json). Automation remains disabled, release NOT_REQUESTED. Next independent task: N07-01. N04-03 remains dependency-blocked until this task is VERIFIED.
