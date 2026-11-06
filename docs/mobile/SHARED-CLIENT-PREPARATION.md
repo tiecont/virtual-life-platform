@@ -12,7 +12,7 @@ Implemented commands:
 
 Android source is generated from pinned Capacitor8.6.0, using the existing proposed SDK/AGP/Gradle pins; Gradle distribution checksum is locked from `https://services.gradle.org/distributions/gradle-8.14.3-all.zip.sha256`. Copied web bundles, generated plugin configuration, Gradle output/caches, local SDK paths, keystores and device captures are excluded from source. Backup and mixed-content access are disabled. Template app identity `life.virtualcity.spike` and icons are local preparation values, not a store-identity or branding approval.
 
-Before completing N10-02: provide the proposed JDK21/SDK36/build-tools setup and authorized ADB access, lock actual installed tool versions, build/install this local bundle and record the real phone model/OS/WebView/source/result. Accept Android SDK licenses through the owner-controlled setup. Keep raw identifiers/logs private. The current workstation's missing Java/ADB and absent physical execution are recorded in the task audit; generated Android files alone cannot satisfy this gate.
+The initial audit's missing Java/ADB is historical: isolated JDK21/SDK36/build-tools and authorized USB access are now available, with an actual debug build/install on the owner-controlled Xiaomi23129RAA4G Android15/API35 phone. Before completing N10-02, record the exact APK/source and successful local navigation/lifecycle scenarios; build/install alone cannot satisfy the gate. Keep raw identifiers/logs private and preserve failed attempts.
 
 Then N10-03 adds reviewed Android Keystore custody, native session/refresh/revoke and one-time socket-ticket adapters while browser auth remains unchanged. N10-04 still requires its full prelocked 30minute/20visit/10background workload and measurements. This preview is not that spike.
 
@@ -21,3 +21,9 @@ N14 remains conditional without Mac/Xcode and physical-iPhone access. The shared
 ## Native debug build command
 
 `pnpm mobile:android:build` builds/syncs the web assets and invokes the existing Gradle wrapper for `assembleDebug`. Set the pinned JDK21 `JAVA_HOME` and SDK36 `ANDROID_SDK_ROOT` in the child environment; the command checks the required platform/build-tools, uses four Gradle workers and writes a hash/source-bound private APK fact record. It does not install an app, upload to a store or establish device acceptance. [Observed local toolchain](ANDROID-TOOLCHAIN.json) records the isolated setup used for native qualification; the original performance budgets remain unchanged.
+
+## Physical local-preview check
+
+With the reviewed ADB executable in `ADB_PATH`, run `pnpm mobile:preview:smoke` against exactly one authorized USB device with the debug preview installed. It stops/restarts only `life.virtualcity.spike`, checks its installed APK hash and guards its focused window before UI capture/input. Private artifacts cover the logged-out canvas/disabled seats, local fallback/return, native Back, basic background/foreground and process restart. Home briefly backgrounds the app; the command never reads another app's UI. Raw device identifiers stay in private artifacts.
+
+Back navigation is attached for the shell lifetime, including fallback routes; renderer visibility/app-state subscriptions still follow the room lifetime. This check does not authenticate, join a real world, measure performance or satisfy the proposed `mobile:smoke` N10-04 workload. The new landscape/animal direction is planned in N06-06..09 and is not present in this starter preview.
