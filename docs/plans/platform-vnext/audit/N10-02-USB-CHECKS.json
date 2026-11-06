@@ -1,0 +1,66 @@
+{
+  "taskId": "N10-02",
+  "scope": "AUTHORIZED_ANDROID_USB_RESOURCE_DELTA",
+  "acceptance_met": false,
+  "sourceRevision": "c4c5dfbd942ea8d20cf7d794fed77492fb4a2198",
+  "observedAt": "2026-11-06T12:48:08.887749+00:00",
+  "adb": {
+    "observedAt": "2026-11-06T12:42:54.270521+00:00",
+    "package": "android-tools",
+    "version": "37.0.0.p1-1.1",
+    "source": "https://cdn77.cachyos.org/repo/x86_64_v3/cachyos-extra-v3/android-tools-37.0.0.p1-1.1-x86_64_v3.pkg.tar.zst",
+    "packageSHA256": "5ae80990440a2b61605dc564d050a6d1414c68d38542aad5f78b94a00ad7016c",
+    "signatureExitCode": 0,
+    "adbVersionExitCode": 0,
+    "installedSystemWide": false
+  },
+  "device": {
+    "manufacturer": "Xiaomi",
+    "model": "23129RAA4G",
+    "androidRelease": "15",
+    "apiLevel": "35",
+    "webViewProvider": {
+      "package": "com.google.android.webview",
+      "version": "156.0.8078.47"
+    }
+  },
+  "transport": "USB",
+  "adbState": "device",
+  "commands": [
+    {
+      "command": "python3 artifacts/vnext/n10-02/usb-connection/setup.py",
+      "exitCode": 0,
+      "purpose": "Final package SHA256 and distribution-keyring signature verification, isolated extraction and actual adb version; prior empty/armored-keyring failures retained."
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/usb-connection/probe.py",
+      "exitCode": 0,
+      "purpose": "Initial read-only probe found zero devices; raw serial-bearing logs remain private."
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/usb-connection/watch.py",
+      "exitCode": 0,
+      "purpose": "Seven bounded observations; final one authorized device after owner replugged/approved RSA."
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/usb-connection/probe-authorized.py",
+      "exitCode": 0,
+      "purpose": "Actual authorized USB transport and read-only manufacturer/model/Android/API properties."
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/usb-connection/webview.py",
+      "exitCode": 0,
+      "purpose": "Read-only current WebView provider/version; no app installation or gameplay."
+    }
+  ],
+  "nativeBuildInstallRun": "NOT_RUN_THIS_PROBE",
+  "limitations": [
+    "USB connection/resource evidence only; no APK/AAB build, install, app launch, native auth, gameplay/performance/lifecycle or supported-device floor is qualified.",
+    "ADB37.0.0.p1-1.1 is extracted under private artifacts, not installed system-wide or added to global PATH. Default PATH preflight may still report adb absent; use the explicitly verified binary. Java/SDK preparation remains.",
+    "Initial probes found no device; owner replugged and explicitly approved USB debugging, then ADB reports one USB device in state device. No bootloader/root/flash/reset or phone app/data changes.",
+    "Raw serial-bearing logs remain mode0600 in private artifacts; repository stores only hashes and nonunique model/OS/WebView metadata. No ADB private key was read or archived.",
+    "First signature checks failed because the first keyring was empty and the shipped distribution keyring was armored. Both logs/scripts retained; dearmoring the system-provided keyring and checking the expected trusted fingerprint/DB SHA completed before binary execution.",
+    "N10-02 resumes IN_PROGRESS rather than VERIFIED; N14 conditional/fiveTODO, distribution flagsfalse and release NOT_REQUESTED unchanged. Existing43evidence records and all application source/SQL preserved."
+  ],
+  "nextExactAction": "Continue N10-02 on the now-authorized Xiaomi23129RAA4G Android15/API35 phone. Use the verified isolated ADB under artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb. Prepare/lock JDK21 and SDK36/build-tools, run pnpm mobile:sync:android and actual Gradle assembleDebug, then install/run the local bundled preview on this device and record source/build/navigation/lifecycle evidence before VERIFIED. Do not repeat USB/RSA approval while this authorization remains valid. Native auth/N06-03/N14 gates remain separate."
+}

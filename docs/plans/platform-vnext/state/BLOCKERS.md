@@ -1,3 +1,9 @@
+# Android USB blocker cleared — 2026-11-06T12:48:08.887749+00:00
+
+Owner replugged and approved RSA. Verified isolated ADB now sees one actual USB device in state device: Xiaomi23129RAA4G,Android15/API35,WebView156.0.8078.47. N10-02 USB/resource blocker cleared; task resumes IN_PROGRESS. This is not build/install/app/native/spike acceptance. Application source/44SQL and prior43evidence records unchanged; no private serial or ADB key committed.
+
+Use the verified isolated ADB path in the current handoff; global PATH absence is no longer evidence that no usable ADB exists. Older entries below are historical checkpoints.
+
 # N10-02 Android native/device prerequisite — 2026-11-06T12:25:18.212119+00:00
 
 Local source/bundle/Next/browser scope is qualified; actual Gradle assembleDebug fails before compile because Java/JAVA_HOME is absent. Default SDK/platform-tools/ADB are absent and the existing phone has not been probed/qualified. Owner-controlled toolchain and authorized physical phone access are required to complete N10-02. [Evidence](../audit/N10-02-CHECKS.json).

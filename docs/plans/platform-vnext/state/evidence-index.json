@@ -28670,6 +28670,237 @@
         "All44SQL,42prior evidence records, API/admin/contracts/world-sdk, historical151Mxx ledger, one room owner/separate worker, closed release defaults and distribution flags are preserved. N09-02 qualification atf80fdde remains scoped historical evidence; this slice does not rerun its complete693integration gate or activate admission.",
         "No signing, APK/AAB/IPA, physical phone, staging, hosted publishing, deployment, store upload/TestFlight or iOS activation. Mac/Xcode/iPhone absent, N04-02/N07-04 external gates unchanged. Raw artifacts are local private storage, not an off-host archive."
       ]
+    },
+    {
+      "id": "n10-02-usb-connected-2026-11-06",
+      "taskId": "N10-02",
+      "sourceRevision": "c4c5dfbd942ea8d20cf7d794fed77492fb4a2198",
+      "environment": "CachyOS Linux x86_64; isolated distro-signed ADB37.0.0.p1-1.1; actual owner-authorized Xiaomi23129RAA4G Android15/API35 USB device",
+      "executedAt": "2026-11-06T12:48:08.887749+00:00",
+      "commands": [
+        {
+          "command": "python3 artifacts/vnext/n10-02/usb-connection/setup.py",
+          "exitCode": 0,
+          "purpose": "Final package SHA256 and distribution-keyring signature verification, isolated extraction and actual adb version; prior empty/armored-keyring failures retained."
+        },
+        {
+          "command": "python3 artifacts/vnext/n10-02/usb-connection/probe.py",
+          "exitCode": 0,
+          "purpose": "Initial read-only probe found zero devices; raw serial-bearing logs remain private."
+        },
+        {
+          "command": "python3 artifacts/vnext/n10-02/usb-connection/watch.py",
+          "exitCode": 0,
+          "purpose": "Seven bounded observations; final one authorized device after owner replugged/approved RSA."
+        },
+        {
+          "command": "python3 artifacts/vnext/n10-02/usb-connection/probe-authorized.py",
+          "exitCode": 0,
+          "purpose": "Actual authorized USB transport and read-only manufacturer/model/Android/API properties."
+        },
+        {
+          "command": "python3 artifacts/vnext/n10-02/usb-connection/webview.py",
+          "exitCode": 0,
+          "purpose": "Read-only current WebView provider/version; no app installation or gameplay."
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "USB authorization",
+          "outcome": "PASS",
+          "notes": "One actual USB transport reports device; read-only getprop and WebView service inspection succeed."
+        },
+        {
+          "name": "native application acceptance",
+          "outcome": "NOT_RUN",
+          "notes": "No build/install/launch/gameplay/native lifecycle or performance test in this connection probe."
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/adb-version.log",
+          "sha256": "49df3e5f0cb3ca9916dc7b82df829cdc12a43bc34cc08ecb521a49006c93db52",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/capture-evidence.py",
+          "sha256": "323657fceecec702e428059b1e12c441a68ab4dcc8956e0d8adc68e5dc0aab90",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/connection-watch.json",
+          "sha256": "50f058a69d6c51c21fb6287e793bcab6cc26011f96f63b86593f1ae6a52715d3",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/devices-authorized.log",
+          "sha256": "065778814e55c95a49d60c183d904fdd6a9d3de75f18b364cd66fbc73ef46c87",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/devices-initial.log",
+          "sha256": "b20e017b3d862424d223fbdb04cc87b09d943aa26da26a76d0cb1d24961f47fa",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/devices-watch-00.log",
+          "sha256": "36f15c2fe32964a6fbe902e914a47739d4e6304b0d3e812bf08096ff0419b7ae",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/devices-watch-01.log",
+          "sha256": "36f15c2fe32964a6fbe902e914a47739d4e6304b0d3e812bf08096ff0419b7ae",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/devices-watch-02.log",
+          "sha256": "36f15c2fe32964a6fbe902e914a47739d4e6304b0d3e812bf08096ff0419b7ae",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/devices-watch-03.log",
+          "sha256": "36f15c2fe32964a6fbe902e914a47739d4e6304b0d3e812bf08096ff0419b7ae",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/devices-watch-04.log",
+          "sha256": "36f15c2fe32964a6fbe902e914a47739d4e6304b0d3e812bf08096ff0419b7ae",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/devices-watch-05.log",
+          "sha256": "36f15c2fe32964a6fbe902e914a47739d4e6304b0d3e812bf08096ff0419b7ae",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/devices-watch-06.log",
+          "sha256": "065778814e55c95a49d60c183d904fdd6a9d3de75f18b364cd66fbc73ef46c87",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/package-signature-distribution-keyring.log",
+          "sha256": "9992bb3819d973f8b1d59d7e96cbfc5256211be79d1eb4566ec89c5c8b619e7f",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/package-signature-final.log",
+          "sha256": "096440705cf4be8bd0d4015f7dd5cff9d6019144a45fc03bca2950d815cd1632",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/package-signature.log",
+          "sha256": "39bde4c1bf5c3d4fadf5e8677216662a4e42085383b3a5ea3568df607fa814f5",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/probe-authorized.json",
+          "sha256": "fe5a23790ec4064a675e146648151ee388f0acab93cf175e6b65cdb95619a03b",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/probe-authorized.py",
+          "sha256": "2ecf6a2ea458e64e21f3902d165634d416af84c5121ccd87dfa49586ae3a9802",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/probe-initial.json",
+          "sha256": "3fd80739df2b6768404db95c458cc68ab60ad5c368ac6659995353fed3bf2b82",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/probe.py",
+          "sha256": "682b6046c1bf0648ca84e76250205df683d541fa494be6e7e522d3bf639e3269",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/setup-before-dearmor.py",
+          "sha256": "c3fb51c164949348fce68feab4eb4381137d607e22c07bbd76163c660c4d282d",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/setup-before-keyring.py",
+          "sha256": "9b7e9b56de57c530f5358eb93b5f4301dde33771cd8b0376c35c2cde2ad6c13f",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/setup.json",
+          "sha256": "951d3b29e4eafdc8e3351b5d7417799228259298b61a1ef2bee845b9ef566837",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/setup.py",
+          "sha256": "cffdf9bebc5146ab9a966317e1ed69f45c7f94860b3e81ff1da4a2eff578cba0",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/watch.py",
+          "sha256": "dc90e97f2bf950d0a86e72a7aa504dcfe086475f79e4adcfa663bf9967eeb631",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/webview-service.log",
+          "sha256": "14359ee666e63831461aa2c46776e0eff073242f77ca4ac4ca79b31ee95b03bc",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/webview.json",
+          "sha256": "bd089a9cdb36f851370a9fe1f16e6f80c68b5730ec1dd2e936b72682015e0f4f",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-02/usb-connection/webview.py",
+          "sha256": "27aa418d5eb89bbf8daacd6d8da370d73b2a5674b61b0dd45a20dfe57cb510ee",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "docs/architecture/N10-02-USB-CONNECTION.json",
+          "sha256": "ef9417982bc64482441abef22d0ebce9e8864b620913caa9cc646be363cb62c0",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N10-02-USB-CHECKS.json",
+          "sha256": "ef9417982bc64482441abef22d0ebce9e8864b620913caa9cc646be363cb62c0",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": false,
+      "limitations": [
+        "USB connection/resource evidence only; no APK/AAB build, install, app launch, native auth, gameplay/performance/lifecycle or supported-device floor is qualified.",
+        "ADB37.0.0.p1-1.1 is extracted under private artifacts, not installed system-wide or added to global PATH. Default PATH preflight may still report adb absent; use the explicitly verified binary. Java/SDK preparation remains.",
+        "Initial probes found no device; owner replugged and explicitly approved USB debugging, then ADB reports one USB device in state device. No bootloader/root/flash/reset or phone app/data changes.",
+        "Raw serial-bearing logs remain mode0600 in private artifacts; repository stores only hashes and nonunique model/OS/WebView metadata. No ADB private key was read or archived.",
+        "First signature checks failed because the first keyring was empty and the shipped distribution keyring was armored. Both logs/scripts retained; dearmoring the system-provided keyring and checking the expected trusted fingerprint/DB SHA completed before binary execution.",
+        "N10-02 resumes IN_PROGRESS rather than VERIFIED; N14 conditional/fiveTODO, distribution flagsfalse and release NOT_REQUESTED unchanged. Existing43evidence records and all application source/SQL preserved."
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

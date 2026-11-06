@@ -1,3 +1,9 @@
+# Authorized Android USB resource delta — 2026-11-06T12:48:08.887749+00:00
+
+Owner replugged and approved RSA. Verified isolated ADB now sees one actual USB device in state device: Xiaomi23129RAA4G,Android15/API35,WebView156.0.8078.47. N10-02 USB/resource blocker cleared; task resumes IN_PROGRESS. This is not build/install/app/native/spike acceptance. Application source/44SQL and prior43evidence records unchanged; no private serial or ADB key committed.
+
+[Evidence](../audit/N10-02-USB-CHECKS.json). Next: Continue N10-02 on the now-authorized Xiaomi23129RAA4G Android15/API35 phone. Use the verified isolated ADB under artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb. Prepare/lock JDK21 and SDK36/build-tools, run pnpm mobile:sync:android and actual Gradle assembleDebug, then install/run the local bundled preview on this device and record source/build/navigation/lifecycle evidence before VERIFIED. Do not repeat USB/RSA approval while this authorization remains valid. Native auth/N06-03/N14 gates remain separate.
+
 # N10-02 preparation checkpoint — 2026-11-06T12:25:18.212119+00:00
 
 N10-02 local shared-client preparation complete at87ecc8107df53c4554616b4605c576cf542e15cd (merged code1bfd58a), taskBLOCKED_EXTERNAL/acceptancefalse for actual Android native/device gate. Original room UI/CSS now shared with explicit Next presentation/platform ports; Vite/Capacitor source and local assets built/synced.87governance357unit, finaltypes/lint/build/static and118browser executions,3local bundle and6same-source web/API TLS scenarios pass. Native preview has no auth/socket/gameplay. Actual Gradle attempt fails before compile because Java is unavailable; SDK/ADB/default device path unqualified. First44SQL/42priorrecords/budgets/defaults preserved. N09-02 remains VERIFIED atf80fdde; all failures retained.
