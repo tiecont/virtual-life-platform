@@ -543,12 +543,14 @@
       "next_action": "Reserve N01-01; implement a read-only per-file inventory with size/hash/classification and static/dynamic consumer mapping. Preserve source, migration, legacy and historical evidence; archive candidates are not deletion authorization."
     },
     "N10-02": {
-      "status": "IN_PROGRESS",
+      "status": "BLOCKED_EXTERNAL",
       "owner": "Codex",
       "branch": "codex/vnext-n10-02-shared-client",
-      "evidence_refs": [],
-      "blocker": null,
-      "next_action": "Extract browser-only shared room client behind explicit presentation/platform ports, preserve Next adapters, build pinned Vite/Capacitor local assets and qualify browser regression. Record missing Android native toolchain/device and separate iOS gates; no native/distribution PASS from bundle output."
+      "evidence_refs": [
+        "n10-02-preparation-2026-11-06"
+      ],
+      "blocker": "Native Android build/install/device gate missing: Java and default SDK/ADB unavailable, actual phone/model/OS/WebView not qualified. Local source/bundle/Next regression passes; cap sync is not compilation or phone evidence.",
+      "next_action": "Finish N10-02 native gate on the existing owner-controlled Android path: install/lock JDK21,SDK36/build-tools36.0.0/platform-tools, authorize ADB and record phone model/OS/WebView. Run implemented pnpm mobile:sync:android, then the existing Android Gradle wrapper assembleDebug, install and verify the actual local bundle/navigation/lifecycle on that phone. Record source/build/device/actual outcomes before VERIFIED. Rerun next-task: N06-03(priority82) and N10-03(priority112) can become ready only after N10-02. Keep N14 conditional until actual macOS/Xcode and physical-iPhone access exists; no public/store action."
     },
     "N10-03": {
       "status": "TODO",

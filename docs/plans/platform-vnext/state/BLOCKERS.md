@@ -1,3 +1,9 @@
+# N10-02 Android native/device prerequisite — 2026-11-06T12:25:18.212119+00:00
+
+Local source/bundle/Next/browser scope is qualified; actual Gradle assembleDebug fails before compile because Java/JAVA_HOME is absent. Default SDK/platform-tools/ADB are absent and the existing phone has not been probed/qualified. Owner-controlled toolchain and authorized physical phone access are required to complete N10-02. [Evidence](../audit/N10-02-CHECKS.json).
+
+Finish N10-02 native gate on the existing owner-controlled Android path: install/lock JDK21,SDK36/build-tools36.0.0/platform-tools, authorize ADB and record phone model/OS/WebView. Run implemented pnpm mobile:sync:android, then the existing Android Gradle wrapper assembleDebug, install and verify the actual local bundle/navigation/lifecycle on that phone. Record source/build/device/actual outcomes before VERIFIED. Rerun next-task: N06-03(priority82) and N10-03(priority112) can become ready only after N10-02. Keep N14 conditional until actual macOS/Xcode and physical-iPhone access exists; no public/store action.
+
 # N07-04 actual staging scrape — 2026-11-06T10:27:38.819448+00:00
 
 Local implementation and qualification pass; task is BLOCKED_EXTERNAL for actual staging-source coverage after N04-04. Owner: Operations/Admin + repository/server owner. Needed: verified private staging target/genuine artifact and service-bound telemetry path; execute authenticated scrape with fresh/stale/zero/unreachable observations. Do not request secrets in chat or call local generated-certificate TLS staging. [Actual scope](../audit/N07-04-SOURCES-CHECKS.json). Next independent task N09-01, then N09-02/N10 per DAG.
