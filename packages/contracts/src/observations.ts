@@ -23,3 +23,8 @@ export const OperationalObservationSchema=z.strictObject({
  tracing:z.strictObject({retentionMs:z.literal(300000),maxCompleted:z.literal(100),maxInFlight:z.literal(128),active:count,dropped:count,identifiersInMetricLabels:z.literal(false)}),
 });
 export type OperationalObservation=z.infer<typeof OperationalObservationSchema>;
+
+export const OperatorObservationViewSchema=z.strictObject({schemaVersion:z.literal(1),source:z.literal('platform-api'),status:z.enum(['FRESH','STALE','UNKNOWN']),sampledAt:stamp.nullable(),observation:OperationalObservationSchema.nullable()}).superRefine((value,ctx)=>{
+ if(value.status==='UNKNOWN'?value.observation!==null||value.sampledAt!==null:!value.observation||value.sampledAt!==value.observation.sampledAt)ctx.addIssue({code:'custom',message:'Observation availability and sample must agree'});
+});
+export type OperatorObservationView=z.infer<typeof OperatorObservationViewSchema>;

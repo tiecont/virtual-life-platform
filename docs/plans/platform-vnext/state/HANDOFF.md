@@ -1,13 +1,13 @@
-# N07-03/N08-01 VERIFIED; iOS preparation recorded
+# N07-04 IN_PROGRESS — observation UI checkpoint
 
-iOS resource preparation recorded through active N10-01: owner confirms no Mac/Xcode/iPhone. Implemented read-only mobile:preflight; actual inventory exit0, required iOS readiness exit2 NOT_READY, lint/CI exit0. No native verification/build/device/store result, no N14 activation; fiveN14tasks TODO, distribution false and release NOT_REQUESTED. Android spike budgets,43SQL, original151Mxx ledger and37priorrecords preserved.
+N07-04 system-observation UI slice qualifies locally: strict source-aware operator BFF,5second/coalesced service read and fresh/stale/UNKNOWN handling, configured-edge/observed-traffic separation and explicit cumulative approximations.95admin/84governance/335unit, types/lint/build, prior18browser group plus final10styled admin executions and same-source API/admin6scenarios each pass. Original two browser failures, rate-limit enforcement and visual corrections retained.43SQL/38priorrecords/unrelated tasks/defaults/API source preserved. N07-04 remains IN_PROGRESS for local source ports and staging acceptance.
 
-[Preparation checks](../audit/N10-01-IOS-PREPARATION.json); qualified preparation source6831be09f4fd7a0530073f33bdb7233382031dba. N07-03 final84governance/329unit/668integration,91admin/18browser and API/admin6each pass; N08-01 focused12,84governance/332unit,91admin and API6 including real observation pass. These are separate scoped source qualifications. Counts remain32VERIFIED/36TODO/1BLOCKED_EXTERNAL.
+[Scoped checks](../audit/N07-04-OBSERVATION-UI-CHECKS.json). Qualified final source268f6c4b7ed496fd92084d72034d95ed87cdf6f4; final checkpoint commit follows. N07-03/N08-01 remain VERIFIED, iOS resource supplement recorded under N10-01; previous38records retained.
 
 ## Next exact action
 
-Reserve N07-04, the highest dependency-ready task; continue N09/N10 web/Android tasks. For iOS obtain authorized macOS/Xcode build access and a usable physical-iPhone testing path, record observed versions/provisioning/resources in active N10/N00 evidence, then activate N14. Keep archive/device/TestFlight gates NOT_RUN until executed.
+Continue N07-04 local source slice: implement bounded/coalesced DB responding/pool-wait and hospitality-owned durable-backlog ports, local authority/expected schema/release metadata, independent UNKNOWN/freshness and actual timeout/cardinality/privacy tests; retain unsupported deployment/worker-liveness data as UNKNOWN. Qualify local UI/production scope, then record actual staging-scrape gate behind N04-04. Continue ready N09/N10 and full plan through independent N14 preparation; no Mac/Xcode/iPhone available.
 
 ## Remaining gates
 
-N04-02 hosted/App qualification remains externally blocked; N04 dependent staging work cannot be marked complete. N13/N14 conditional. Native iOS cannot pass without actual macOS/iPhone; Android remains independently actionable with actual SDK/device gates. Keep safety/privacy/consent and strict43 rollback qualification. Raw artifacts private local only; no unattended work after shutdown.
+N04-02 genuine App PR/hosted qualification remains external; N04-dependent staging cannot pass locally. N13/N14 conditional, no Mac/Xcode/iPhone and fiveN14TODO. Distribution false, release NOT_REQUESTED, historical151Mxx ledger unchanged. Native resource preflight is not native acceptance. Raw artifacts private local only, no unattended work after shutdown.

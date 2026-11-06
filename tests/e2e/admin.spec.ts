@@ -1,5 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';
 import {Pool} from 'pg';
+import {OperatorObservationViewSchema} from '@virtual-city/contracts';
 import {totp} from '../../apps/platform-api/src/identity/operator-crypto';
 const secret='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',password='synthetic-admin-browser-password-only',serviceToken='e'.repeat(64);
 let pool:Pool;
@@ -10,16 +11,26 @@ test.afterAll(async()=>{await pool.end();});
 async function signIn(page:Page){await page.goto('/');await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Authenticator code').fill(totp(secret,Date.now()));await page.getByLabel('Authenticator code').press('Enter');await expect(page.getByRole('heading',{name:'City at a glance'})).toBeVisible();}
 test('unauthenticated UI and routes deny operator/service bypass, wrong Origin, arbitrary queries and private source paths',async({page,request})=>{
  await page.goto('/');await expect(page.getByRole('heading',{name:/quiet place/})).toBeVisible();expect(await page.locator('form').getAttribute('method')).toBe('post');
- for(const path of ['/api/admin/session','/api/admin/metrics?view=summary&range=current'])expect((await request.get(path,{headers:{authorization:'Bearer '+serviceToken}})).status()).toBe(401);
+ for(const path of ['/api/admin/session','/api/admin/metrics?view=summary&range=current','/api/admin/observations?view=system&range=current'])expect((await request.get(path,{headers:{authorization:'Bearer '+serviceToken}})).status()).toBe(401);
  expect((await request.post('/api/admin/login',{headers:{origin:'https://attacker.invalid'},data:{password,code:totp(secret,Date.now())}})).status()).toBe(403);
  expect((await request.get('/api/admin/metrics?view=summary&range=24h')).status()).toBe(400);
  for(const path of ['/.env','/server/proxy.ts','/internal/metrics','/v1/operator/session'])expect((await request.get(path)).status()).toBe(404);
  await page.screenshot({path:test.info().outputPath('operator-login.png'),fullPage:true});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
 });
-test('actual browser MFA sign-in reads a real private API snapshot and audit then logs out without exposing service credentials',async({page})=>{
+test('actual browser MFA reads private metrics, audit and system traffic with labeled source fixtures then logs out',async({page})=>{
  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));const observed:string[]=[];page.on('response',response=>{if(response.url().includes('/api/admin/'))void response.text().then(text=>observed.push(text)).catch(()=>{});});
  await signIn(page);expect(await page.evaluate(()=>document.cookie.includes('city_operator'))).toBe(false);await page.getByRole('button',{name:'Refresh snapshot'}).click();await expect(page.getByText('Fresh observation',{exact:true})).toBeVisible();await expect(page.getByText('Requests since API start')).toBeVisible();
  await page.screenshot({path:test.info().outputPath('operator-overview.png'),fullPage:true});await page.getByRole('button',{name:'Audit trail',exact:true}).click();await page.getByRole('button',{name:'Load audit'}).click();await expect(page.getByRole('cell',{name:'login',exact:true})).toBeVisible();
+
+ // Reuse this authenticated fixture session: a sixth login would exceed the unchanged5/minute guard.
+await page.getByRole('button',{name:'System & traffic',exact:true}).click();const response=page.waitForResponse(r=>r.url().includes('/api/admin/observations?'));await page.getByRole('button',{name:'Refresh system snapshot',exact:true}).click();const actual=OperatorObservationViewSchema.parse(await (await response).json());expect(actual.status).toBe('FRESH');expect(actual.observation?.schemaVersion).toBe(2);expect(JSON.stringify(actual)).not.toContain(serviceToken);await expect(page.getByText('Fresh observation',{exact:true})).toBeVisible();await expect(page.getByRole('heading',{name:'Configured system map'})).toBeVisible();await expect(page.getByText('Worker liveness / backlog UNKNOWN',{exact:true})).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);await page.screenshot({path:test.info().outputPath('system-traffic-actual.png'),fullPage:true});
+ let mode='zero';await page.route('**/api/admin/observations?*',async route=>{
+  if(mode==='error'){await route.fulfill({status:503,contentType:'application/json',body:'{}'});return;}
+  const body=structuredClone(actual),at=Date.now()-(mode==='stale'?15000:0);body.sampledAt=at;body.status=mode==='stale'?'STALE':mode==='unknown'?'UNKNOWN':'FRESH';if(mode==='unknown'){body.sampledAt=null;body.observation=null;}else if(body.observation){body.observation.sampledAt=at;body.observation.online.connections=0;body.observation.http={requests:0,errors:0,series:[]};}
+  await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(body)});
+ });
+ await page.getByRole('button',{name:'Refresh system snapshot',exact:true}).click();await expect(page.getByText('Connections now',{exact:true}).locator('..').locator('dd')).toHaveText('0');mode='stale';await page.getByRole('button',{name:'Refresh system snapshot',exact:true}).click();await expect(page.getByText('Stale observation',{exact:true})).toBeVisible();mode='unknown';await page.getByRole('button',{name:'Refresh system snapshot',exact:true}).click();await expect(page.getByText('Sources unknown',{exact:true})).toBeVisible();await expect(page.getByText('Connections now',{exact:true}).locator('..').locator('dd')).toHaveText('UNKNOWN');mode='error';await page.getByRole('button',{name:'Refresh system snapshot',exact:true}).click();await expect(page.getByRole('status').filter({hasText:'Observation unavailable.'})).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);await page.screenshot({path:test.info().outputPath('system-traffic-unknown.png'),fullPage:true});
+
  expect(observed.every(body=>!body.includes(serviceToken)&&!body.includes(secret)&&!body.includes('ADMIN_METRICS_READ_TOKEN')&&!body.includes('OPERATOR_AUTH_KEY'))).toBe(true);expect(errors).toEqual([]);await page.getByRole('button',{name:'Sign out',exact:true}).click();await expect(page.getByRole('button',{name:'Sign in',exact:true})).toBeVisible();expect((await page.request.get('/api/admin/session')).status()).toBe(401);
 });
 test('actual browser fresh verification rotates the session and revoke-all clears access',async({page,request})=>{

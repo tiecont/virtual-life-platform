@@ -7,3 +7,7 @@
 .event-editor{margin-top:1.5rem}.event-editor fieldset{min-width:0;border:0;padding:0;margin:1rem 0}.event-editor legend{font-weight:600}.event-editor input,.event-editor select{max-width:100%}
 
 .runtime-worlds{margin-block:1.5rem}.runtime-worlds article p{overflow-wrap:anywhere}
+
+.system-section{margin-top:1.5rem}.system-section p{overflow-wrap:anywhere}
+
+.system-metrics.unknown dd{font-size:1rem;letter-spacing:0;white-space:nowrap}

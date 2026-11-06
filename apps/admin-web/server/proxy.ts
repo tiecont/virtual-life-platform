@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import {createObservationReader} from './observations';
 import {OperatorLoginSchema,OperatorRecoverySchema,OperatorSessionSchema,OperatorAccountQuerySchema,OperatorAccountCommandSchema,OperatorAccountViewSchema,OperatorAccountResultSchema,OperatorAccountAuditSchema,OperatorPrivacyRequestsSchema,OperatorPrivacyReviewSchema,PrivacyRequestViewSchema} from '@virtual-city/contracts';
 import {OperatorEventRangeSchema,OperatorEventQuerySchema,OperatorEventCalendarSchema,OperatorEventCommandSchema,OperatorEventReceiptSchema,OperatorEventAuditSchema} from '@virtual-city/contracts';
 import {RuntimeControlViewSchema,RuntimeControlCommandSchema,RuntimeControlResultSchema,RuntimeControlAuditSchema} from '@virtual-city/contracts';
@@ -23,6 +24,7 @@ async function boundedBody(message:Request|Response,maximum:number){
  const bytes=new Uint8Array(length);let at=0;for(const part of chunks){bytes.set(part,at);at+=part.byteLength;}return new TextDecoder('utf-8',{fatal:true}).decode(bytes);
 }
 export function createAdminHandler(config:Config|undefined,fetcher:Fetch=fetch,now=Date.now){
+ const observation=config?createObservationReader(config,fetcher,now):undefined;
  let cached:MetricView|undefined,nextFetch=0,pending:Promise<MetricView>|undefined,failed=false;
  const unknown=():MetricView=>({status:'UNKNOWN',source:'platform-api',sampledAt:null,values:{requests:null,errors:null,connections:null,memberships:null,eventLoopP95Ms:null}});
  async function metric():Promise<MetricView>{
@@ -31,11 +33,11 @@ export function createAdminHandler(config:Config|undefined,fetcher:Fetch=fetch,n
   pending=(async()=>{try{const response=await fetcher(config.api+'/internal/telemetry',{headers:{accept:'application/json',authorization:'Bearer '+config.metricsToken},cache:'no-store',redirect:'error',signal:globalThis.AbortSignal.timeout(2500)});if(!response.ok){await response.body?.cancel();throw Error();}const data=telemetry.parse(JSON.parse(await boundedBody(response,131072)));if(data.serverTime>now()+5000||now()-data.serverTime>30000)throw Error();failed=false;cached={status:'FRESH',source:'platform-api',sampledAt:data.serverTime,values:{requests:data.http.requests,errors:data.http.errors,connections:data.gauges.online.connections,memberships:data.gauges.online.memberships,eventLoopP95Ms:data.rooms.eventLoop.p95Ms}};return snapshot();}catch{failed=true;return snapshot();}finally{pending=undefined;}})();return pending;
  }
  return async(request:Request):Promise<Response>=>{
-  if(!config)return error(503);const url=new URL(request.url),action=url.pathname.slice('/api/admin/'.length),accountRead=['account','account-audit','privacy-requests'].includes(action),get=['session','audit','metrics','account','account-audit','privacy-requests','event-calendar','event-audit','runtime-state','runtime-audit'].includes(action),post=['login','step-up','logout','revoke-all','recover','account-command','privacy-review','event-command','runtime-command'].includes(action);
+  if(!config)return error(503);const url=new URL(request.url),action=url.pathname.slice('/api/admin/'.length),accountRead=['account','account-audit','privacy-requests'].includes(action),get=['observations','session','audit','metrics','account','account-audit','privacy-requests','event-calendar','event-audit','runtime-state','runtime-audit'].includes(action),post=['login','step-up','logout','revoke-all','recover','account-command','privacy-review','event-command','runtime-command'].includes(action);
   if(!url.pathname.startsWith('/api/admin/')||!get&&!post)return error(400);
   if(request.method!==(get?'GET':'POST'))return json({error:{code:'METHOD_NOT_ALLOWED',message:'Method not allowed'}},405);
   let accountQuery='';
-  if(action==='metrics'){if(url.searchParams.size!==2||url.searchParams.get('view')!=='summary'||url.searchParams.get('range')!=='current')return error(400);}
+  if(action==='metrics'||action==='observations'){if(url.searchParams.size!==2||url.searchParams.get('view')!==(action==='metrics'?'summary':'system')||url.searchParams.get('range')!=='current')return error(400);}
   else if(['event-calendar','event-audit'].includes(action)){try{if(url.searchParams.size!==new Set(url.searchParams.keys()).size||!(action==='event-calendar'?[2,3]:[1]).includes(url.searchParams.size))throw Error();const query=(action==='event-calendar'?OperatorEventRangeSchema:OperatorEventQuerySchema).parse(Object.fromEntries(url.searchParams));accountQuery='?'+new URLSearchParams(Object.entries(query).filter(([,value])=>value!==undefined).map(([key,value])=>[key,String(value)])).toString();}catch{return error(400);}}
   else if(accountRead){try{if(url.searchParams.size!==1)throw Error();const parsed=OperatorAccountQuerySchema.parse(Object.fromEntries(url.searchParams));accountQuery='?accountId='+encodeURIComponent(parsed.accountId);}catch{return error(400);}}
   else if(url.search)return error(400);
@@ -50,8 +52,8 @@ export function createAdminHandler(config:Config|undefined,fetcher:Fetch=fetch,n
    return fetcher(config!.api+'/v1/operator/'+path,{method,headers:{accept:'application/json',...cookie?{cookie}:{},...method==='POST'?{origin:config!.origin,'content-type':'application/json',...csrf?{'x-csrf-token':csrf}:{}}:{}},...method==='POST'?{body:JSON.stringify(body)}:{},cache:'no-store',redirect:'error',signal:globalThis.AbortSignal.timeout(2500)});
   }
   try{
-   if(action==='metrics'){
-    const response=await auth('session');if(!response.ok)return authError(response);OperatorSessionSchema.parse(JSON.parse(await boundedBody(response,8192)));const view=await metric();
+   if(action==='metrics'||action==='observations'){
+    const response=await auth('session');if(!response.ok)return authError(response);OperatorSessionSchema.parse(JSON.parse(await boundedBody(response,8192)));const view=action==='observations'?await observation!():await metric();
     const current=await auth('session');if(!current.ok)return authError(current);OperatorSessionSchema.parse(JSON.parse(await boundedBody(current,8192)));return json(view);
    }
    const response=await auth(action+accountQuery,request.method);if(!response.ok){if(['account','account-command','privacy-review','event-command','runtime-command'].includes(action)&&[404,409].includes(response.status)){await response.body?.cancel();return json({error:{code:response.status===409?'IDEMPOTENCY_CONFLICT':'NOT_FOUND',message:response.status===409?'Account changed. Refresh before another command.':'Account unavailable'}},response.status);}return authError(response);}
