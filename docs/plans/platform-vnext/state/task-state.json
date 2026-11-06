@@ -414,14 +414,15 @@
     "N07-03": {
       "status": "IN_PROGRESS",
       "owner": "Admin + Runtime",
-      "branch": "codex/vnext-n07-03-event-calendar",
+      "branch": "codex/vnext-n07-03-runtime-controls",
       "evidence_refs": [
         "n07-03-accounts-2026-11-06",
         "n07-03-privacy-2026-11-06",
-        "n07-03-calendar-2026-11-06"
+        "n07-03-calendar-2026-11-06",
+        "n07-03-runtime-2026-11-06"
       ],
       "blocker": null,
-      "next_action": "Continue N07-03 with durable versioned runtime/maintenance controls bounded by immutable Git release entitlement. Inspect release/runtime/safety policy and existing world reload/incident owners; implement audited fixed-scope operator commands and UI without enabling an unentitled world, reviving consent or changing worker/room ownership. Revisit calendar pagination beyond its explicit50-entry limit before claiming complete N07-03 acceptance. Keep N07-03 IN_PROGRESS until every remaining scenario qualifies; N04-02 stays externally blocked and no production/public/store release is authorized."
+      "next_action": "Finish calendar pagination/selection beyond50 and verify composite N07-03 acceptance with all account/privacy/calendar/runtime scenarios, including persisted restrictions without an interactive operator key. Keep N07-03 IN_PROGRESS until these pass. Then continue dependency-ready N08/N10 and the full vNext plan through independent N14 preparation. Owner confirmed macOS/Xcode/iPhone unavailable: retain actual iOS resource/archive/device/TestFlight gates, with no public/store/production approval inferred."
     },
     "N07-04": {
       "status": "TODO",

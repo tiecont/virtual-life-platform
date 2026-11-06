@@ -1,6 +1,8 @@
 {
   "schemaVersion": 1,
   "tables": {
+    "operator_runtime_controls": "platform.operations",
+    "operator_runtime_audit": "platform.operations",
     "identity_privacy_requests": "platform.identity",
     "identity_privacy_auth": "platform.identity",
     "identity_privacy_audit_head": "platform.identity",

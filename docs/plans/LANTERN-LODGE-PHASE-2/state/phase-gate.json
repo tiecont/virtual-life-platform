@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "phase_id": "LAN-L02",
+  "phase_state": "WAITING_FOR_PHASE1_HANDOFF",
+  "owner_approved_start": false,
+  "owner_approval_ref": null,
+  "handoff_record": null,
+  "handoff_source_sha": null,
+  "no_conflicting_agents_confirmed": false,
+  "source_delta_reviewed": false,
+  "activated_at": null,
+  "public_release_authorized": false,
+  "notes": "Do not activate automatically or change any Phase 1 checkpoint. Phase 2 remains separate until owner authorizes after a real Phase 1 handoff."
+}

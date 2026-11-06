@@ -11,6 +11,7 @@ export * from './operator';
 export * from './operator-controls';
 export * from './privacy-requests';
 export * from './operator-events';
+export * from './runtime-controls';
 export * from './scene';
 export * from './avatar';
 export * from './safety';

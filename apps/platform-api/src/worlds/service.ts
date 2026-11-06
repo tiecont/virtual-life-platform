@@ -12,6 +12,7 @@ import { createMaidWorld } from '@virtual-city/maid-world';
 import { createRestaurantWorld } from '@virtual-city/restaurant-world';
 import { createLoungeWorld } from '@virtual-city/lounge-world';
 import {createReleaseWorldRuntime} from './release-installation';
+import type {RuntimeControlReader} from '../operations/runtime-policy-store';
 
 export interface WorldRuntimeOptions {
   modules?: WorldAdapter[];
@@ -20,6 +21,7 @@ export interface WorldRuntimeOptions {
   membership?: { permits(actor: WorldActor, slug: string, membershipId: string): Promise<boolean> };
   safety?: { permits(accountId: string, worldSlug: string): Promise<boolean> };
   safetyPolicy?:unknown;
+  runtimeControls?:RuntimeControlReader;
 }
 export async function createWorldRuntime(config: Config, identity: IdentityService, options: WorldRuntimeOptions = {}) {
   const admission = new AdmissionPolicy(options.adultProof);
@@ -33,7 +35,7 @@ export async function createWorldRuntime(config: Config, identity: IdentityServi
     },
     hasMembership: (actor, slug, membershipId) => options.membership?.permits(actor, slug, membershipId) ?? Promise.resolve(false),
   };
-  if(config.RELEASE_POLICY_FILE){if(options.modules?.length)throw Error('Versioned installation rejects injected fixture modules');return createReleaseWorldRuntime(config,ports,options.safetyPolicy);}
+  if(config.RELEASE_POLICY_FILE){if(options.modules?.length)throw Error('Versioned installation rejects injected fixture modules');return createReleaseWorldRuntime(config,ports,options.safetyPolicy,options.runtimeControls);}
   const registry = new WorldRegistry(config.NODE_ENV,ports);
   registry.register(createSandboxWorld());
   if (config.NODE_ENV !== 'production' && config.LOCAL_LIBRARY_WORLD === '1') registry.register(createLibraryWorld());

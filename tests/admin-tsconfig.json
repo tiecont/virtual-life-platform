@@ -24,6 +24,10 @@
     "integration/operator-events.test.ts",
     "e2e/calendar.spec.ts",
     "support/calendar-browser-runtime.ts",
-    "../playwright.calendar.config.ts"
+    "../playwright.calendar.config.ts",
+    "integration/operator-runtime.test.ts",
+    "e2e/runtime.spec.ts",
+    "support/runtime-browser-runtime.ts",
+    "../playwright.runtime.config.ts"
   ]
 }

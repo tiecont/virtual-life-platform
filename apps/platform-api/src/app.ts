@@ -1,4 +1,7 @@
 import {PrivacyRequestService} from './identity/privacy-requests';
+import {RuntimePolicyStore} from './operations/runtime-policy-store';
+import {OperatorRuntimeControls} from './operations/operator-runtime';
+import {registerRuntimeControls} from './operations/operator-http';
 import {OperatorEventCalendar} from './events/operator-calendar';
 import {registerOperatorEvents} from './events/operator-http';
 import {registerPrivacyRequests} from './identity/privacy-http';
@@ -146,7 +149,10 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const sanctionsPolicy = new SanctionPolicy(db, options.now), incidentPolicy = new IncidentPolicy(db);
   const safetyGuard = { permits: async (id: string, world: string) => await incidentPolicy.permits(id, world) && await sanctionsPolicy.permits(id, world), assert: async (id: string, world: string, room?: string, chat?: boolean) => { await incidentPolicy.assert(id, world, room, chat); await sanctionsPolicy.assert(id, world, room, chat); } };
   let roomService: RoomService | undefined = undefined;
-  const worlds = await createWorldRuntime(config, identity, { ...options.worlds, safety: safetyGuard,safetyPolicy, membership: options.worlds?.membership ?? { permits: async (actor, slug, membershipId) => roomService?.permits(actor, slug, membershipId) ?? false } });
+  const runtimeStore=new RuntimePolicyStore(db);
+  const worlds = await createWorldRuntime(config, identity, { ...options.worlds, runtimeControls:runtimeStore,safety: safetyGuard,safetyPolicy, membership: options.worlds?.membership ?? { permits: async (actor, slug, membershipId) => roomService?.permits(actor, slug, membershipId) ?? false } });
+  const runtimeControls=new OperatorRuntimeControls(runtimeStore,operator,worlds.releasePolicy?.controls);
+  registerRuntimeControls(http,config,runtimeControls,options.now);
   const roomAuthority = new RoomAuthority(db);
   const roomMetrics = new RoomMetrics();
   roomService = new RoomService(worlds.registry, identity, roomAuthority, options.now, {
@@ -277,5 +283,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => {stopDatabaseObservation(); roomMetrics.databaseAttached(false); stopEventLoopObservation(); roomMetrics.close();});
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity,privacyRequests, deadlineIdentity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain };
+  return { app, http, identity,privacyRequests,runtimeControls, deadlineIdentity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain };
 }

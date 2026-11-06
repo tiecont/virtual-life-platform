@@ -223,7 +223,10 @@
         "operations/log",
         "operations/readiness",
         "operations/runtime-lifecycle",
-        "operations/telemetry"
+        "operations/telemetry",
+        "operations/runtime-policy-store",
+        "operations/operator-runtime",
+        "operations/operator-http"
       ],
       "targetBoundary": "Separate read ports from room owner before durable-worker bootstrap"
     }
@@ -242,6 +245,7 @@
     "Existing room/operations type and metrics coupling is retained, not declared acyclic"
   ],
   "tableOwnerModules": {
+    "platform.operations": "operations",
     "platform.foundation": "db",
     "platform.identity": "identity",
     "platform.social": "social",
