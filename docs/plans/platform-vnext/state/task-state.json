@@ -368,12 +368,12 @@
       "next_action": "Reserve N10-01; pin a proposed Android toolchain and pre-measurement device/workload/budget matrix with Capacitor ADR, preserving UNKNOWN phone facts and separate conditional iOS gates. Then continue dependency-ready repository and boundary work."
     },
     "N06-03": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
+      "status": "IN_PROGRESS",
+      "owner": "Codex",
+      "branch": "codex/vnext-n09-02-postgres",
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Scene-first shell, onboarding, navigation và shared state"
+      "next_action": "Implement opt-in scene-first shared shell, stable Next router navigation port and actual test:ux-core browser/API scenarios; preserve classic layout/authority/widgets/safety and measure applicable checks."
     },
     "N06-04": {
       "status": "TODO",

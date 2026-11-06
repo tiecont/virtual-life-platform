@@ -11,7 +11,7 @@ export function internalPath(path:string){
 }
 // No window/document/Node evaluation at import time. Browser cookies and CSRF
 // stay in their existing adapters; this port never stores or logs credentials.
-export function browserPlatform(visitChanged:()=>void):ClientPlatform{
- return {request:(path,init)=>fetch(internalPath(path),init),navigate:path=>window.location.assign(internalPath(path)),visitChanged,
+export function browserPlatform(visitChanged:()=>void,navigate?:(path:string)=>void):ClientPlatform{
+ return {request:(path,init)=>fetch(internalPath(path),init),navigate:path=>{const safe=internalPath(path);if(navigate)navigate(safe);else window.location.assign(safe);},visitChanged,
   watchIdentity(listener){const bus=typeof BroadcastChannel==='undefined'?null:new BroadcastChannel('virtual-city-identity');if(bus)bus.onmessage=listener;return()=>bus?.close();}};
 }

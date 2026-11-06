@@ -12,6 +12,8 @@ export function testEnvironment(parent,databaseUrl,project){
  for(const key of ['BROWSER_CITY_JOURNEY','BROWSER_MAID_WORLD','BROWSER_DEADLINE_WORLD','BROWSER_DEADLINE_IDENTITY','BROWSER_PARK_WORLD','BROWSER_LIBRARY_WORLD','BROWSER_RESTAURANT_WORLD','BROWSER_LOUNGE_WORLD','BROWSER_DATING_PROFILE']){if(parent[key]!==undefined&&!['0','1'].includes(parent[key]))throw Error('Invalid test fixture toggle');env[key]=parent[key]??'0';}
  if(parent.ROOM_LOAD_SOCKETS!==undefined){if(!/^(?:[2-9]|1[0-9]|2[0-4])$/.test(parent.ROOM_LOAD_SOCKETS))throw Error('Invalid local room baseline size');env.ROOM_LOAD_SOCKETS=parent.ROOM_LOAD_SOCKETS;}
  if(parent.BROWSER_REPORT_SCOPE!==undefined){if(!/^ci\/[a-z][a-z0-9-]{0,39}\/[a-z][a-z0-9-]{0,79}$/.test(parent.BROWSER_REPORT_SCOPE))throw Error('Invalid test report scope');env.BROWSER_REPORT_SCOPE=parent.BROWSER_REPORT_SCOPE;}
+ if(parent.UX_SHELL_MODE!==undefined){if(!['classic','scene-first'].includes(parent.UX_SHELL_MODE))throw Error('Invalid UX fixture mode');env.UX_SHELL_MODE=parent.UX_SHELL_MODE;}
+ if(parent.UX_EVIDENCE_RUN!==undefined){if(!/^[a-f0-9]{8}$/.test(parent.UX_EVIDENCE_RUN))throw Error('Invalid UX evidence run');env.UX_EVIDENCE_RUN=parent.UX_EVIDENCE_RUN;}
  if(parent.PLAYWRIGHT_HTML_OUTPUT_DIR!==undefined){if(!/^playwright-report\/[a-z0-9/-]+$/.test(parent.PLAYWRIGHT_HTML_OUTPUT_DIR)||parent.PLAYWRIGHT_HTML_OUTPUT_DIR.includes('//'))throw Error('Invalid test report directory');env.PLAYWRIGHT_HTML_OUTPUT_DIR=parent.PLAYWRIGHT_HTML_OUTPUT_DIR;}
  return env;
 }
