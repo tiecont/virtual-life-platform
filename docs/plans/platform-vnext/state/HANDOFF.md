@@ -1,3 +1,13 @@
+# N06-06 animal/landscape design VERIFIED — 2026-11-06
+
+Design source `5b6604ff3d188c3c8b96373f45dfbfe082be803d`. Original SVG animal/room style study,14group part catalog, rig/layer/idle-walk-sit-serve plan, versioned art budgets and v1/entitlement/compatibility migration brief are reviewed. Implemented `pnpm ux:animal-study` passes6profiles/48state-profile executions/24part changes/48static species-pose-view selections, keyboard/Escape/focus,200% text,44px targets and control containment. Lint/CI/existing assets checks exit0. Manual review found and corrected dock occlusion, portrait-large-text clipping and hidden skip-link capture; failed/intermediate sources and screenshots retained.
+
+[Design acceptance](../audit/N06-06-DESIGN-CHECKS.json). This is a simulated design tool, not production renderer/creator/native orientation, owner art approval, rights signoff, human usability or performance acceptance. No runtime consumer, SQL/authority/entitlement/world/distribution changes. Prior45evidence records and existing Android budget bytes preserved; record46. Current counts36VERIFIED/2BLOCKED_EXTERNAL/35TODO. N10-02 remains first logged-out bundle VERIFIED, N10-03/04 and N06-07/08/09 separate; N14 conditional without Mac/Xcode/iPhone.
+
+**Next exact action:** Execute N06-03 (priority82): read current shared WorldRoomPanel/widgets and Next local navigation docs; implement an opt-in scene-first shared shell and client navigation adapter, preserving authoritative recovery/safety/business controls and legacy rollback. Implement test:ux-core with actual browser/API verification; qualify before N06-08 landscape/native orientation. Continue N10-03 and later Phase2 per DAG; N14 stays conditional.
+
+## Earlier checkpoints — historical
+
 # N10-02 first Android bundle VERIFIED — 2026-11-06
 
 Source `a8cfc0d129ab919198c18061de20eeffb3363519`, clean at build and physical run. Actual JDK21/SDK36/Gradle8.14.3 DEBUG APK `7186d3f3deefb66879bfcbcb4f6d4e2d4d575c39f3c544d2051d1ba66f1a6c2c` (5090986bytes) installed/updated on the owner-controlled Xiaomi23129RAA4G Android15/API35, WebView156.0.8078.47. Signature and17packaged local files match; no remote server URL/mixed content. Fresh lint/mobile-types/CI/boundaries,3browser bundle cases and5actual native preview scenarios PASS. Additional own-window Home/resume probe confirms background/foreground without inspecting other-app UI.

@@ -31184,6 +31184,116 @@
         "n10-02-preparation-2026-11-06",
         "n10-02-usb-connected-2026-11-06"
       ]
+    },
+    {
+      "id": "n06-06-animal-landscape-design-2026-11-06",
+      "taskId": "N06-06",
+      "sourceRevision": "5b6604ff3d188c3c8b96373f45dfbfe082be803d",
+      "environment": "Linux 7.2.9-2-cachyos x86_64 GNU/Linux; Nodev26.9.0; installed Playwright Chromium; original static SVG study",
+      "executedAt": "2026-11-06T13:57:23.721Z",
+      "commands": [
+        {
+          "command": "pnpm assets:check",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm ux:animal-study",
+          "exitCode": 1
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm ux:animal-study",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm ux:animal-study",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm ux:animal-study",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm ux:animal-study",
+          "exitCode": 0
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "artifacts/vnext/n06-06/raw-index.json",
+          "sha256": "e625b207c0aa0220ac43d200381f92ea286ad778c121fbfb8eb383d515fecf1f",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n06-06/study-75641f87/facts.json",
+          "sha256": "623fc3940cc8610157c88ee1ac42080ba311e4b7b8f8f7bba48425b680409255",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n06-06/study-75641f87/landscape-small-ready.png",
+          "sha256": "f88f002cea6c3061b2c56f6c0ddce686a4ffdf0ba025761a3b032d29f46f87f7",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n06-06/study-75641f87/landscape-phone-creator.png",
+          "sha256": "c08166e8343ddb9de613e666f2f5db7c692da9bd6bd346d7ab02b892bb4f18c6",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n06-06/study-75641f87/portrait-fallback-text-200.png",
+          "sha256": "4fca44742d65a39cf1c16c8cfd2125cdd68bc5e8e12866dd446b472d1e358cc6",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "docs/design/vnext/animal-landscape/provenance.json",
+          "sha256": "9c0a9c75be8895d0be2e8f89573bc2947c5b8871adaa068005ec02967b5293cd",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/design/vnext/animal-landscape/budgets.json",
+          "sha256": "0614968056b14553266d7596e92640a0cfd824e735e2dc550e48028616f08c92",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/design/vnext/animal-landscape/ART-AND-RIG.md",
+          "sha256": "525754abcf36e4890063b3cb76c5f038ac32e84d18996cb75936031173116fdb",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N06-06-DESIGN-CHECKS.json",
+          "sha256": "b84393ab74cabb5bf6605a76caad37cebeafff01d28352eee8a1eea7893b158b",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": true,
+      "limitations": [
+        "Design-only simulated SVG study; actual game renderer, server-authoritative creator/persistence/entitlements/native orientation still TODO in their tasks.",
+        "Agent visual review is not owner art approval, public asset clearance, five-target-user usability, physical Android/iOS, screen-reader certification or performance/retention evidence.",
+        "First sweep failed because the harness incorrectly expected the empty state to disable entry; corrected expected action, retained failed log/source. Subsequent automated PASS still needed manual review: short-landscape dock occluded the character, portrait200% clipped controls and a hidden skip link leaked into full-page capture. Screens/source snapshots retained; final source fixes positions/containment/wrapping/skip visibility.",
+        "Static 48species/pose/view selections illustrate anchors; profile silhouettes, asymmetric mirroring, cap/scarf/back occlusion and continuous animation require production sheets and N06-07/09 qualification.",
+        "Short viewport is only keyboard-occlusion fixture; CSS safe-area rules are design preparation, not real cutout/virtual keyboard/native Back/TalkBack/VoiceOver evidence.",
+        "Texture/loading budgets are proposed locked hypotheses with null measurements; existing Android thresholds unchanged. No new SQL, world flag, identity/authority owner, native session, public deployment, store distribution or external media purchase."
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

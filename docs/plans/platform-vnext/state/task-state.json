@@ -705,12 +705,14 @@
       "next_action": "TestFlight beta khi được phép, Apple disclosures/UGC/deletion dossier, device coverage và exact store release status"
     },
     "N06-06": {
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "owner": "Codex",
       "branch": "codex/vnext-n09-02-postgres",
-      "evidence_refs": [],
+      "evidence_refs": [
+        "n06-06-animal-landscape-design-2026-11-06"
+      ],
       "blocker": null,
-      "next_action": "Create/review original SVG animal style sheet, modular catalog/rig specification and landscape storyboard; lock additive asset budgets, preserve previous runtime/evidence."
+      "next_action": "Execute N06-03 (priority82): read current shared WorldRoomPanel/widgets and Next local navigation docs; implement an opt-in scene-first shared shell and client navigation adapter, preserving authoritative recovery/safety/business controls and legacy rollback. Implement test:ux-core with actual browser/API verification; qualify before N06-08 landscape/native orientation. Continue N10-03 and later Phase2 per DAG; N14 stays conditional."
     },
     "N06-07": {
       "status": "TODO",

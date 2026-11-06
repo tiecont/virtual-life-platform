@@ -75,4 +75,4 @@ N10-04 chạy 30 phút với **build landscape/animal đã tích hợp**, không
 | N06-05 / N10-04 | Usability / physical Android spike | Thêm N06-09 |
 | N15-05 / N19-04 | Lodge dùng chung animal/landscape shell / Android ba mode | N15-05 thêm upstream N06-09; N19-04 vẫn đòi N10-04 |
 
-[Manifest](../PLAN-MANIFEST.json) là DAG chính thức. Bốn task mới vẫn TODO, không thêm evidence implementation. Hoàn tất N10-02 đang IN_PROGRESS trước khi chuyển source ownership sang slice mới; N06-06 là task thiết kế ready kế tiếp. Rollback theo flag/catalog version: giữ renderer/profile v1, không xóa selections/receipts, không đổi authority hoặc các public/store gates.
+[Manifest](../PLAN-MANIFEST.json) là DAG chính thức. Task status thực đọc state. N06-06 đã VERIFIED cho design scope tại5b6604f, xem [design checks](../audit/N06-06-DESIGN-CHECKS.json); N06-07/08/09 chưa hoàn thành và owner art review vẫn pending. N10-02 first bundle đã VERIFIED; N06-03 là task triển khai shell tiếp theo. Rollback theo flag/catalog version: giữ renderer/profile v1, không xóa selections/receipts, không đổi authority hoặc các public/store gates.

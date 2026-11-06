@@ -51,7 +51,7 @@ Có docs drift: tài liệu kiến trúc đầu kỳ vẫn nói “chưa mount P
 
 1. **Baseline:** N00, sau đó N01 cleanup + N02 boundaries.
 2. **Sản phẩm sớm:** N06-01/N06-02 và N10-01 spike được mở sau baseline cần thiết; không chờ toàn bộ hạ tầng mới bắt đầu UX/mobile.
-   Bổ sung owner 2026-11-06: giữ evidence N06-01/02 lịch sử, thực hiện N06-06 art/rig/landscape brief → N06-03 shell → N06-08 landscape và N06-07 animal creator → N06-04 polish → N06-09 visual qualification. N10-02 đang IN_PROGRESS phải checkpoint trước chuyển source slice; không lấy preview cũ chứng minh hướng mới.
+   Bổ sung owner 2026-11-06: giữ evidence N06-01/02 lịch sử, thực hiện N06-06 art/rig/landscape brief → N06-03 shell → N06-08 landscape và N06-07 animal creator → N06-04 polish → N06-09 visual qualification. N10-02 đã checkpoint first-bundle VERIFIED; N06-06 đã có [design evidence](audit/N06-06-DESIGN-CHECKS.json). Tiếp tục N06-03 theo state; không lấy preview cũ hoặc design study chứng minh gameplay/visual acceptance mới.
 3. **Nền triển khai:** N03 build/CI → N04 Argo staging; N05 authority/transport song song.
 4. **Vận hành:** N07 admin → N08 observability/capacity → N09 admission/queue.
 5. **Android:** N10 shared-client/physical spike → N11 Android release lane, dựa trên UX/protocol ổn định. N14 iOS là nhánh conditional độc lập, không chặn Android/web.
