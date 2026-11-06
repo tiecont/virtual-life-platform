@@ -4,12 +4,11 @@ import { io, type Socket } from 'socket.io-client';
 import { MeSchema, RoomAckSchema, WorldCatalogSchema, sceneManifestHash, type ClientProtocolOffer, type NegotiatedSession, type SceneIdentity, type Me, type RoomSnapshot,type SceneManifest,type TravelSource,type AvatarAppearance,type TravelDestination } from '@virtual-city/contracts';
 import { RoomRecovery, resolveClientCompatibility, createClientProtocolOffer, acceptSessionCompatibility, type ResolvedClientCompatibility, type RoomRecoveryView } from '@virtual-city/world-sdk';
 import { sandboxScene } from '@virtual-city/pixi-scene';
-import type { createCafeScene } from '@virtual-city/pixi-scene';
 import {rendererFactory} from './renderer';
-import type {ClientPlatform} from '@virtual-city/client-sdk';
+import type {ClientPlatform,RoomSceneHandle} from '@virtual-city/client-sdk';
 
 const idle: RoomRecoveryView = { status: 'idle', snapshot: null, reason: null };
-type SceneView = Awaited<ReturnType<typeof createCafeScene>>;
+type SceneView = RoomSceneHandle;
 const messages: Record<string, string> = {
   RATE_LIMITED: 'Please wait before trying again.', ROOM_FULL: 'This room is full. Try again shortly.',
   ALREADY_IN_ROOM: 'Leave your other room or use the travel desk.', WORLD_UNAVAILABLE: 'This place is closed.',

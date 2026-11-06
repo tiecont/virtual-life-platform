@@ -755,12 +755,12 @@
       "next_action": "Finish in-progress N09-03 pending whole integration report/evidence, then reserve N06-11: extract engine-neutral renderer handle/factory, audit/pin ThreeWebGL2 dependency and implement original rig/fur/room technical slice with actual browser/packaged Android qualification. Do not promote concept raster or primitive placeholders to final visuals. Native creator Save still requires N10-03."
     },
     "N06-11": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
+      "status": "IN_PROGRESS",
+      "owner": "Codex",
+      "branch": "codex/vnext-n09-02-postgres",
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Shared renderer3D adapter, rigged animal/fur/material/room technical slice"
+      "next_action": "Qualify the opt-in shared3D studio with a new source-bound packaged DEBUG APK on the owned Android Emulator; preserve actual browser/LOD failures and gather native context/rotation/Back/Home measurements. Then implement authoritative snapshot/intent3D adapter and distance LOD, fix sparse fur/pointed limb art findings, and qualify20actors/physical Android before N06-11 acceptance. N10-03/native Save and final N06-09 remain separate."
     },
     "N10-05": {
       "status": "VERIFIED",

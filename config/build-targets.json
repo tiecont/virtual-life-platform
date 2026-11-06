@@ -5,7 +5,7 @@
   "packageManager": "pnpm@11.28.5",
   "rootBuild": "pnpm -r build",
   "packagesBuild": "pnpm --filter './packages/*' -r build",
-  "lockSha256": "905fb65b746ae7ddb5864d8d5d05a6fcb9b5086611d3c695c861806709b63c35",
+  "lockSha256": "03398b9dceee20fb0b86bafa53495f1916b2bf6893d5c96e91e29b3986a23931",
   "workspaceConfigSha256": "0c79bdd36e2d8eac11365b4cba92045f1d494d8e191f41de14298de2263d0ec1",
   "rootDependencies": {
     "dependencies": {},
@@ -47,6 +47,7 @@
     "@virtual-city/library-world",
     "@virtual-city/lounge-world",
     "@virtual-city/maid-world",
+    "@virtual-city/scene3d",
     "@virtual-city/mobile",
     "@virtual-city/park-world",
     "@virtual-city/restaurant-world",
@@ -91,7 +92,8 @@
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/config"
+        "@virtual-city/config",
+        "@virtual-city/contracts"
       ],
       "configurationDependencies": [
         "@virtual-city/config"
@@ -408,7 +410,8 @@
         "@virtual-city/client-sdk",
         "@virtual-city/config",
         "@virtual-city/game-client",
-        "@virtual-city/pixi-scene"
+        "@virtual-city/pixi-scene",
+        "@virtual-city/scene3d"
       ],
       "configurationDependencies": [
         "@virtual-city/config"
@@ -582,6 +585,7 @@
         "@virtual-city/park-world",
         "@virtual-city/pixi-scene",
         "@virtual-city/restaurant-world",
+        "@virtual-city/scene3d",
         "@virtual-city/world-sdk"
       ],
       "configurationDependencies": [],
@@ -636,6 +640,46 @@
       },
       "applicationConsumers": [
         "@virtual-city/platform-api",
+        "@virtual-city/portal-web"
+      ]
+    },
+    {
+      "name": "@virtual-city/scene3d",
+      "path": "packages/scene3d",
+      "kind": "compiled-package",
+      "build": "tsc -p tsconfig.json",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "dependencies": [
+        "@virtual-city/client-sdk",
+        "@virtual-city/config",
+        "@virtual-city/contracts",
+        "@virtual-city/world-sdk"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "packages/scene3d/tsconfig.json",
+          "sha256": "e8081a673f41592f7d713577e11cb743a8fd9ef2a5caf90f8543a9c3d38ffeb2"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {
+          "three": "0.187.0"
+        },
+        "devDependencies": {
+          "@types/three": "0.187.0"
+        },
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": [
+        "@virtual-city/mobile",
         "@virtual-city/portal-web"
       ]
     },

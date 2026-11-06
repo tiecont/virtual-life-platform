@@ -4,8 +4,8 @@ import {existsSync,readFileSync} from 'node:fs';
 import {spawn,spawnSync} from 'node:child_process';
 import {resolve,relative} from 'node:path';
 import {createHash,randomUUID} from 'node:crypto';
-const [action,...args]=process.argv.slice(2);assert(['start','stop','status','smoke'].includes(action),'Expected start,stop,status,smoke');
-assert(args.length===0||action==='smoke'&&args.length===2&&args[0]==='--apk','Only smoke --apk accepts a file');
+const [action,...args]=process.argv.slice(2);assert(['start','stop','status','smoke','scene3d'].includes(action),'Expected start,stop,status,smoke,scene3d');
+assert(args.length===0||['smoke','scene3d'].includes(action)&&args.length===2&&args[0]==='--apk','Only smoke/scene3d --apk accepts a file');
 const root=resolve('.'),config=JSON.parse(await readFile('docs/mobile/ANDROID-EMULATOR.json','utf8')),base=resolve('artifacts/vnext/n10-05/runtime');await mkdir(base,{recursive:true,mode:0o700});
 const runtimeFile=base+'/instance.json',serial='emulator-'+config.port,local='artifacts/vnext/n10-02/android-native/local-env.json',paths=existsSync(local)?JSON.parse(await readFile(local,'utf8')):{};
 const sdk=process.env.ANDROID_SDK_ROOT??process.env.ANDROID_HOME??paths.sdkRoot,jdk=process.env.JAVA_HOME??paths.javaHome;
@@ -34,9 +34,9 @@ try{
   while(Date.now()<deadline){assert(owned(instance),'Owned emulator exited before boot');const p=spawnSync(adb,['-s',serial,'shell','getprop','sys.boot_completed'],{env,encoding:'utf8',timeout:3000});if(p.status===0&&p.stdout.trim()==='1'){booted=true;break;}await new Promise(ok=>setTimeout(ok,1000));}
   assert(booted,'Emulator boot deadline exceeded');assert((await run('emulated-device',adb,['-s',serial,'shell','getprop','ro.kernel.qemu'])).trim()==='1');await run('graphics',adb,['-s',serial,'shell','dumpsys','SurfaceFlinger']);await run('webview',adb,['-s',serial,'shell','dumpsys','webviewupdate']);result='PASS';
  }
- if(action==='smoke'){
+ if(['smoke','scene3d'].includes(action)){
   assert(owned(instance),'No task-owned emulator; start it first');const apk=resolve(args[1]??'apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk');assert((apk.startsWith(root+'/artifacts/')||apk.startsWith(root+'/apps/mobile/android/app/build/outputs/apk/'))&&apk.endsWith('.apk')&&(await stat(apk)).isFile(),'Expected a local development APK');
-  const child=spawn('python3',['scripts/mobile-emulator-smoke.py'],{env:{...env,ADB_PATH:adb,VLP_EMULATOR_SERIAL:serial,VLP_EMULATOR_APK:apk},stdio:['ignore','pipe','pipe']});let logs='';child.stdout.on('data',chunk=>logs+=chunk);child.stderr.on('data',chunk=>logs+=chunk);const code=await new Promise((ok,no)=>{child.once('error',no);child.once('close',ok);});await writeFile(output+'/smoke.log',logs,{mode:0o600});assert(code===0,'Emulator own-app smoke failed; see private log');result='PASS';
+  const child=spawn(action==='scene3d'?process.execPath:'python3',[action==='scene3d'?'scripts/mobile-emulator-scene3d.mjs':'scripts/mobile-emulator-smoke.py'],{env:{...env,ADB_PATH:adb,VLP_EMULATOR_SERIAL:serial,VLP_EMULATOR_APK:apk},stdio:['ignore','pipe','pipe']});let logs='';child.stdout.on('data',chunk=>logs+=chunk);child.stderr.on('data',chunk=>logs+=chunk);const code=await new Promise((ok,no)=>{child.once('error',no);child.once('close',ok);});await writeFile(output+'/smoke.log',logs,{mode:0o600});assert(code===0,'Emulator own-app smoke failed; see private log');result='PASS';
  }
  if(action==='stop'){
   assert(owned(instance),'Refusing to stop an unknown/reused emulator PID');await run('stop-own-emulator',adb,['-s',serial,'emu','kill']);for(let i=0;i<30&&owned(instance);i++)await new Promise(ok=>setTimeout(ok,500));if(owned(instance)){process.kill(instance.pid,'SIGTERM');for(let i=0;i<10&&owned(instance);i++)await new Promise(ok=>setTimeout(ok,500));}assert(!owned(instance),'Owned emulator did not exit');result='PASS';

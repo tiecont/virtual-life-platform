@@ -73,9 +73,11 @@
     "ux:animal-study": "node scripts/verify-animal-study.mjs",
     "test:ux-core": "node scripts/run-ux-core.mjs",
     "test:queue-ux":"node scripts/run-queue-ux.mjs",
+    "test:scene3d":"node scripts/verify-scene3d.mjs",
     "mobile:landscape:smoke": "python3 scripts/mobile-landscape-smoke.py",
     "mobile:emulator:start":"node scripts/mobile-emulator.mjs start",
     "mobile:emulator:smoke":"node scripts/mobile-emulator.mjs smoke",
+    "mobile:emulator:scene3d":"node scripts/mobile-emulator.mjs scene3d",
     "mobile:emulator:stop":"node scripts/mobile-emulator.mjs stop",
     "mobile:emulator:status":"node scripts/mobile-emulator.mjs status"
   },

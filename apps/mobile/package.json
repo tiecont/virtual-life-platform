@@ -9,6 +9,7 @@
     "cap": "cap"
   },
   "dependencies": {
+    "@virtual-city/scene3d":"workspace:*",
     "@virtual-city/game-client": "workspace:*",
     "@virtual-city/client-sdk": "workspace:*",
     "@capacitor/core": "8.6.0",

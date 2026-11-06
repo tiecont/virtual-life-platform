@@ -23,7 +23,7 @@ export function assertImportAllowed(from, specifier, root) {
     const publicGameStyles=specifier==='@virtual-city/game-client/styles.css'&&(path.startsWith('apps/portal-web/')||path.startsWith('apps/mobile/'));
     const publicUi = path.startsWith('apps/admin-web/') && ['@virtual-city/ui/tokens.css','@virtual-city/ui/components.css'].includes(specifier);
     if (layer === 'packages' && worldPackages.includes(targetPackage) && !path.startsWith('packages/'+targetPackage+'/')) throw new Error(`Shared package imports world implementation: ${path}`);
-    if (['apps', 'packages', 'worlds'].includes(layer) && !['contracts', 'world-sdk', 'pixi-scene', 'focus-ui', 'game-client', 'client-sdk', 'config', ...worldPackages].includes(targetPackage) && !publicUi) {
+    if (['apps', 'packages', 'worlds'].includes(layer) && !['contracts', 'world-sdk', 'pixi-scene', 'scene3d', 'focus-ui', 'game-client', 'client-sdk', 'config', ...worldPackages].includes(targetPackage) && !publicUi) {
       throw new Error(`Forbidden workspace package: ${path} → ${specifier}`);
     }
     if (path.startsWith('packages/contracts/') && targetPackage !== 'config') throw new Error(`Contracts must not import SDK/apps: ${specifier}`);

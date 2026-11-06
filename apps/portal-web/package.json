@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@virtual-city/scene3d":"workspace:*",
     "@virtual-city/focus-ui": "workspace:*",
     "@virtual-city/library-world": "workspace:*",
     "@virtual-city/deadline-world": "workspace:*",
