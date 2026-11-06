@@ -25,7 +25,7 @@ async function select(label,value){await evaluate(`(()=>{const node=[...document
 async function measurement(){await evaluate("document.querySelector('.animal-studio-diagnostics').open=true");await click('Read measurements');return evaluate("JSON.parse(document.querySelector('.animal-studio-diagnostics pre').textContent)");}
 async function capture(name){const focus=run('capture-own-focus',['shell','dumpsys','window','windows']);assert(focus.split('\n').some(line=>line.includes('mCurrentFocus')&&line.includes(app)),'Refusing to capture another app');await writeFile(output+'/'+name+'.png',run('capture-own-window',['exec-out','screencap','-p'],{binary:true}),{mode:0o600});}
 try{
- assert.equal(run('qemu-guard',['shell','getprop','ro.kernel.qemu']),'1');assert(run('avd-guard',['emu','avd','name']).split('\n').includes(config.avdName));
+ assert.equal(run('qemu-guard',['shell','getprop','ro.kernel.qemu']),'1');assert(run('avd-guard',['emu','avd','name']).split(/\r?\n/).includes(config.avdName));
  const apkBytes=await readFile(apk);facts.apk={sha256:hash(apkBytes),bytes:apkBytes.length};await writeFile(output+'/app-debug.apk',apkBytes,{mode:0o600});
  const sources=[];for(const dir of ['packages/scene3d/src','packages/game-client/src','packages/client-sdk/src','apps/mobile/src']){for(const name of await readdir(dir)){if(!/\.tsx?$/.test(name))continue;const ref=dir+'/'+name;sources.push({ref,sha256:hash(await readFile(ref))});}}facts.sourceFiles=sources;
  run('install-own-debug-apk',['install','-r',apk]);run('start-own-app',['shell','am','start','-n',component]);
