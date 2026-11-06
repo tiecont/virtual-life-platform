@@ -4,6 +4,7 @@ import {resolve, sep} from 'node:path';
 import net from 'node:net';
 import {Pool} from 'pg';
 import {io} from 'socket.io-client';
+import {OperationalObservationSchema} from '@virtual-city/contracts';
 import {validateTestDatabaseURL} from './test-environment.mjs';
 import {imageTestTools} from './image-test-tools.mjs';
 
@@ -13,7 +14,7 @@ const image = args[1], directory = resolve(args[3]);
 assert(directory.startsWith(resolve('artifacts') + sep + 'image-api-') && directory.endsWith(sep + 'smoke'));
 const {run: execute, save, commands, signal, dispose} = await imageTestTools(directory);
 const id = randomUUID().slice(0, 8), owned = new Set(), origin = 'https://api-image.example.invalid';
-const common = {NODE_ENV: 'production', HOST: '127.0.0.1', WEB_ORIGIN: origin, DATABASE_URL: validateTestDatabaseURL(process.env.TEST_DATABASE_URL), SESSION_SECRET: randomBytes(48).toString('base64url')};
+const common = {NODE_ENV: 'production', HOST: '127.0.0.1', WEB_ORIGIN: origin, DATABASE_URL: validateTestDatabaseURL(process.env.TEST_DATABASE_URL), SESSION_SECRET: randomBytes(48).toString('base64url'), OPERATOR_TELEMETRY_TOKEN: randomBytes(32).toString('hex')};
 const pool = new Pool({connectionString: common.DATABASE_URL, connectionTimeoutMillis: 2000, query_timeout: 2000});
 const result = {image, migrationImage: image, publicRelease: false, scenarios: []};
 let stage = 'prepare', socket;
@@ -83,7 +84,9 @@ try {
   const guest = await http(api.url + '/v1/session/guest', {method: 'POST', headers: {origin, 'content-type': 'application/json'}, body: JSON.stringify({requestId: randomUUID(), displayName: 'Image visitor', avatarKey: 'mint'})});
   assert.equal(guest.status, 201); const cookie = guest.headers.get('set-cookie').split(';')[0], identity = (await guest.json()).profile.id;
   socket = await connect(api, cookie, identity);
-  result.scenarios.push({id: 'API-03', realHttpSessionAndSocket: true, readonlyNonrootRuntime: true});
+  const deniedObservation=await http(api.url+'/internal/observations',{headers:{cookie}});assert.equal(deniedObservation.status,404);
+  const observed=await http(api.url+'/internal/observations',{headers:{authorization:'Bearer '+common.OPERATOR_TELEMETRY_TOKEN}});assert.equal(observed.status,200);const aggregate=OperationalObservationSchema.parse(await observed.json());assert.equal(aggregate.durations.window,'PROCESS_LIFETIME');assert.equal(aggregate.source,'platform-api');assert(aggregate.http.requests>0);assert.equal(aggregate.coverage.workerBacklog,'NOT_OBSERVED');assert(!JSON.stringify(aggregate).includes(common.OPERATOR_TELEMETRY_TOKEN));
+  result.scenarios.push({id: 'API-03', realHttpSessionAndSocket: true, readonlyNonrootRuntime: true,aggregateObservations:true,observationCookieDenied:true});
   stage = 'checksum'; const original = history[0];
   await pool.query('UPDATE city_schema_migrations SET checksum=$2 WHERE name=$1', [original.name, '0'.repeat(64)]);
   assert.equal(await api.ready(), 503); const rejected = await migrate(true); assert.equal(rejected.code, 1); assert.match(rejected.stderr, /City migration failed/);

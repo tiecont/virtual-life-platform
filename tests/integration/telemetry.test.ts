@@ -27,7 +27,7 @@ const operator=(r:Runtime,path='/internal/telemetry')=>r.app.http.inject({url:pa
 async function visit(r:Runtime,u:User){const socket=io(r.url,{autoConnect:false,forceNew:true,reconnection:false,transports:['websocket'],extraHeaders:{origin,cookie:u.cookie},auth:{schemaVersion:1,csrfToken:u.me.csrfToken}});sockets.add(socket);await new Promise<void>((ok,no)=>{socket.once('connect',ok);socket.once('connect_error',no);socket.connect();});const joined=RoomAckSchema.parse(await socket.timeout(5000).emitWithAck('room.join',{schemaVersion:1,requestId:randomUUID(),worldSlug:'telemetry-fixture',worldVersion:'1.0.0',sceneVersion:'1.0.0'}));if(!joined.ok||joined.result.type!=='snapshot')throw Error('Synthetic visit failed');const source={epoch:joined.result.epoch,roomId:joined.result.roomId,membershipId:joined.result.membershipId};const seat=RoomAckSchema.parse(await socket.timeout(5000).emitWithAck('seat.claim',{schemaVersion:1,requestId:randomUUID(),...source,seatId:'seat-1'}));expect(seat.ok).toBe(true);return {socket,source};}
 
 it('operator export defaults closed and cookie/client role claims never replace the independent token',async()=>{
- const closed=await open(false);expect((await operator(closed)).statusCode).toBe(404);
+ const closed=await open(false);expect((await operator(closed)).statusCode).toBe(404);expect((await operator(closed,'/internal/observations')).statusCode).toBe(404);
  const r=await open(),u=await guest(r);
  expect((await r.app.http.inject({url:'/internal/telemetry',headers:{cookie:u.cookie,'x-role':'safety-admin'}})).statusCode).toBe(404);
  expect((await r.app.http.inject({url:'/internal/telemetry',headers:{authorization:'Bearer '+'80'.repeat(32)}})).statusCode).toBe(404);
@@ -61,10 +61,10 @@ it('order gauge SQL timeouts return unknown failure rather than fabricated zero 
  const r=await open(),u=await guest(r),blocker=await r.pool.connect();await blocker.query('BEGIN');await blocker.query('LOCK TABLE engine_hospitality_orders IN ACCESS EXCLUSIVE MODE');
  try{
   const [snapshot,me]=await Promise.all([operator(r),r.app.http.inject({url:'/v1/me',headers:{cookie:u.cookie}})]);
-  expect(snapshot.statusCode).toBe(503);expect(snapshot.json().gauges).toBeUndefined();expect(me.statusCode).toBe(200);
+  expect(snapshot.statusCode).toBe(503);expect(snapshot.json().gauges).toBeUndefined();expect(me.statusCode).toBe(200);expect((await operator(r,'/internal/observations')).statusCode).toBe(503);
  }finally{await blocker.query('ROLLBACK');blocker.release();}
  expect((await operator(r)).statusCode).toBe(200);
- for(let i=2;i<30;i++)expect((await operator(r)).statusCode).toBe(200);
+ for(let i=3;i<30;i++)expect((await operator(r)).statusCode).toBe(200);
  expect((await operator(r)).statusCode).toBe(429);expect((await r.app.http.inject({url:'/v1/me',headers:{cookie:u.cookie}})).statusCode).toBe(200);
 });
 
@@ -72,4 +72,8 @@ it('last socket loss leaves a separate grace hold rather than an online membersh
  const r=await open(),u=await guest(r),v=await visit(r,u);v.socket.close();
  await expect.poll(async()=>(await operator(r)).json().gauges.online.connections).toBe(0);
  const snapshot=(await operator(r)).json();expect(snapshot.gauges.online).toMatchObject({memberships:0,retainedMemberships:1,graceMemberships:1});
+});
+it('versioned aggregate observations are authenticated, timestamped, finite and compatible with original telemetry',async()=>{
+ const r=await open(),u=await guest(r);const query=await operator(r,'/internal/observations?query=private-marker');expect(query.statusCode).toBe(422);expect((await r.app.http.inject({url:'/internal/observations',headers:{cookie:u.cookie}})).statusCode).toBe(404);
+ const response=await operator(r,'/internal/observations');expect(response.statusCode).toBe(200);const data=response.json();expect(data).toMatchObject({schemaVersion:2,source:'platform-api',sampledAt:r.now(),http:{requests:1,errors:0},online:{connections:0,memberships:0},coverage:{databaseHealth:'NOT_OBSERVED',workerBacklog:'NOT_OBSERVED'},durations:{window:'PROCESS_LIFETIME',method:'FIXED_BUCKET_UPPER_BOUND_APPROXIMATION'}});expect(data.orders.phases).toHaveLength(7);expect(JSON.stringify(data)).not.toMatch(/traceId|spanId|roomKey|requestId/);for(const value of [operatorToken,u.me.profile.id,u.me.csrfToken,u.cookie])expect(response.body).not.toContain(value);expect(response.headers['cache-control']).toContain('no-store');expect((await operator(r)).json()).toMatchObject({schemaVersion:1,durationSemantics:{window:'PROCESS_LIFETIME'}});
 });
