@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config';
 export default defineConfig({ test: { projects: [
+  { test: { name: 'admission-contract', include: ['packages/contracts/test/admission.test.ts','apps/platform-api/src/admission/model.unit.test.ts'], environment:'node' } },
   { test: { name: 'unit', include: ['apps/**/*.unit.test.ts', 'packages/**/*.test.ts'], environment: 'node' } },
   { test: { name: 'integration', include: ['tests/integration/**/*.test.ts'], environment: 'node', testTimeout: 15000, hookTimeout: 15000, fileParallelism: false } },
   { test: { name: 'admin', include: ['apps/admin-web/server/system-observations.unit.test.ts','apps/admin-web/server/observations.unit.test.ts','apps/platform-api/src/identity/operator-crypto.unit.test.ts','apps/admin-web/server/proxy.unit.test.ts','tests/integration/operator-identity.test.ts','tests/integration/operator-account-controls.test.ts','tests/integration/privacy-requests.test.ts','tests/integration/operator-events.test.ts','tests/integration/operator-runtime.test.ts','tests/integration/admin-proxy.test.ts'], environment:'node', testTimeout:15000,hookTimeout:15000,fileParallelism:false } },
