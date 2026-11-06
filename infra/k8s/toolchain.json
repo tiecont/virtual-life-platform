@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "platform": "linux-amd64",
+  "kubernetesVersion": "1.37.0",
+  "tools": [
+    {
+      "name": "kustomize",
+      "version": "v5.8.3",
+      "url": "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v5.8.3/kustomize_v5.8.3_linux_amd64.tar.gz",
+      "downloadSha256": "cb9e31198d3f63b44848bd0afc4c8efc56e6cfef9c93a4a39a211940e6decd61",
+      "archive": true,
+      "binarySha256": "a5e53d28755098b003ae2b6bff7b1650a411a366a0c800c1ea1b677e0cfff747",
+      "bytes": 13443232
+    },
+    {
+      "name": "kubeconform",
+      "version": "v0.8.0",
+      "url": "https://github.com/yannh/kubeconform/releases/download/v0.8.0/kubeconform-linux-amd64.tar.gz",
+      "downloadSha256": "9bc2bffbf71f261128533edaf912153948b7ff238f9a531ae6d34466ec287883",
+      "archive": true,
+      "binarySha256": "457722b36e98d7bdbc91525e594951ef5d7ea3a29da2d13b9b28a2fb8a5097b7",
+      "bytes": 13944911
+    },
+    {
+      "name": "k3d",
+      "version": "v5.9.0",
+      "url": "https://github.com/k3d-io/k3d/releases/download/v5.9.0/k3d-linux-amd64",
+      "downloadSha256": "06d8f25bc3a971c4eb29e0ff08429b180402db0f4dec838c9eac427e296800a0",
+      "archive": false,
+      "binarySha256": "06d8f25bc3a971c4eb29e0ff08429b180402db0f4dec838c9eac427e296800a0",
+      "bytes": 24887458
+    },
+    {
+      "name": "kubectl",
+      "version": "v1.37.2",
+      "url": "https://dl.k8s.io/release/v1.37.2/bin/linux/amd64/kubectl",
+      "downloadSha256": "c04487523e7aa7d1493f7808174c899db93d7a9cf57531420cd76b9bd415f8f4",
+      "archive": false,
+      "binarySha256": "c04487523e7aa7d1493f7808174c899db93d7a9cf57531420cd76b9bd415f8f4",
+      "bytes": 61890722
+    }
+  ],
+  "schemas": [
+    {
+      "name": "deployment-apps-v1.json",
+      "url": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/102361970337d65537d40141dc29b991b8e95786/v1.37.0-standalone-strict/deployment-apps-v1.json",
+      "sha256": "0b64451c0b8c36ea06dfebf952718810ae24a07779fb0ed2a6b03f1cc8735a54"
+    },
+    {
+      "name": "service-v1.json",
+      "url": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/102361970337d65537d40141dc29b991b8e95786/v1.37.0-standalone-strict/service-v1.json",
+      "sha256": "8bf019854daed511e7c174896a898173fa65d88ec5937c687a37303d4cc9351b"
+    },
+    {
+      "name": "networkpolicy-networking-v1.json",
+      "url": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/102361970337d65537d40141dc29b991b8e95786/v1.37.0-standalone-strict/networkpolicy-networking-v1.json",
+      "sha256": "f6324cc464f62228b0418f438d167208e4f86c7e3677ba30f608e79a8b26ba79"
+    }
+  ]
+}

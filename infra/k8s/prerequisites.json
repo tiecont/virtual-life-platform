@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "status": "REQUIRED_NOT_VERIFIED",
+  "deploymentEligible": false,
+  "environments": {
+    "staging": {
+      "applicationNamespace": "vlp-staging",
+      "dataNamespace": "vlp-data-staging",
+      "architecture": {
+        "os": "linux",
+        "architecture": "amd64"
+      },
+      "externalObjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "vlp-runtime"
+        },
+        {
+          "kind": "ConfigMap",
+          "name": "vlp-runtime",
+          "keys": [
+            "WEB_ORIGIN",
+            "TRUSTED_PROXY_IP",
+            "RELEASE_ENVIRONMENT"
+          ]
+        },
+        {
+          "kind": "ConfigMap",
+          "name": "vlp-installation-policy",
+          "keys": [
+            "release.json",
+            "runtime-worlds.json",
+            "safety.json"
+          ]
+        },
+        {
+          "kind": "Secret",
+          "name": "vlp-runtime-secrets",
+          "requiredKeys": [
+            "DATABASE_URL",
+            "SESSION_SECRET"
+          ],
+          "optionalKeys": [
+            "SAFETY_EVIDENCE_KEY"
+          ]
+        },
+        {
+          "kind": "Secret",
+          "name": "vlp-registry-pull",
+          "type": "kubernetes.io/dockerconfigjson"
+        }
+      ],
+      "databasePeer": {
+        "namespace": "vlp-data-staging",
+        "podLabels": {
+          "app.kubernetes.io/name": "vlp-postgres"
+        },
+        "port": 5432
+      },
+      "ingress": "CLOSED; no controller allow rule or public Ingress is installed",
+      "requiredQualifications": [
+        "tested release set and registry pulls",
+        "external namespace/SA/DB/PVC/config/secrets lifecycle",
+        "exact proxy peer and HTTPS/WSS/Origin/CSRF/internal-route boundary",
+        "CNI enforcement and DNS/database network paths",
+        "target resource/storage/backup inventory",
+        "full migration/sync/drain/rollback evidence"
+      ]
+    },
+    "production": {
+      "applicationNamespace": "vlp-production",
+      "dataNamespace": "vlp-data-production",
+      "architecture": {
+        "os": "linux",
+        "architecture": "amd64"
+      },
+      "externalObjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "vlp-runtime"
+        },
+        {
+          "kind": "ConfigMap",
+          "name": "vlp-runtime",
+          "keys": [
+            "WEB_ORIGIN",
+            "TRUSTED_PROXY_IP",
+            "RELEASE_ENVIRONMENT"
+          ]
+        },
+        {
+          "kind": "ConfigMap",
+          "name": "vlp-installation-policy",
+          "keys": [
+            "release.json",
+            "runtime-worlds.json",
+            "safety.json"
+          ]
+        },
+        {
+          "kind": "Secret",
+          "name": "vlp-runtime-secrets",
+          "requiredKeys": [
+            "DATABASE_URL",
+            "SESSION_SECRET"
+          ],
+          "optionalKeys": [
+            "SAFETY_EVIDENCE_KEY"
+          ]
+        },
+        {
+          "kind": "Secret",
+          "name": "vlp-registry-pull",
+          "type": "kubernetes.io/dockerconfigjson"
+        }
+      ],
+      "databasePeer": {
+        "namespace": "vlp-data-production",
+        "podLabels": {
+          "app.kubernetes.io/name": "vlp-postgres"
+        },
+        "port": 5432
+      },
+      "ingress": "CLOSED; no controller allow rule or public Ingress is installed",
+      "requiredQualifications": [
+        "tested release set and registry pulls",
+        "external namespace/SA/DB/PVC/config/secrets lifecycle",
+        "exact proxy peer and HTTPS/WSS/Origin/CSRF/internal-route boundary",
+        "CNI enforcement and DNS/database network paths",
+        "target resource/storage/backup inventory",
+        "full migration/sync/drain/rollback evidence"
+      ]
+    }
+  }
+}

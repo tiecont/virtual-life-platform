@@ -245,12 +245,14 @@
       "next_action": "vlp-admin image, publish target và image tests"
     },
     "N04-01": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Foundation/CI",
+      "branch": "codex/vnext-n04-01-kubernetes-base",
+      "evidence_refs": [
+        "n04-01-2026-11-06"
+      ],
       "blocker": null,
-      "next_action": "Manifests staging/prod, resource budget, prerequisites inventory"
+      "next_action": "Reserve N04-02 on a clean branch. Read current release manifest/publisher proof and constrained Kustomize graph. Implement source/digest-bound staging/production promotion with narrow reviewed file changes and default-disabled GitHub App/bot workflow; preserve required CI/no-loop behavior and identical tested release sets. Exercise local bot-event/proof/corruption fixtures and actual available registry evidence without inventing a hosted bot run, registry credentials or tested application digest. Keep publishing/auto-merge/production auto-promotion off until their real gates are met; retain owner-promotion fallback and all external N04-03/N04-04 deployment prerequisites."
     },
     "N04-02": {
       "status": "TODO",

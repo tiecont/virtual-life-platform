@@ -21,6 +21,7 @@ Follow the [vNext master](plans/platform-vnext/MASTER-AGENT-PLAN.md), [current h
 | Durable worker | [Separate reward process and cutover](operations/DURABLE-WORKER.md) | Compiled source/process checks; default API behavior retained, no room authority or deployment approval |
 | API artifact | [Production dependency image](operations/API-IMAGE.md) | Separate nonroot API artifact and same-image migrator; local inspection/smoke is distinct from deployment |
 | CI release artifacts | [Source/run/digest publication and owner promotion](operations/ARTIFACT-RELEASE.md) | Default-disabled publisher; explicit enforcement fallback and local rehearsal distinguished from hosted/GHCR results |
+| Kubernetes preparation | [Private manifests and explicit target inventory](operations/KUBERNETES-PREPARATION.md) | Render/schema/local API-server evidence; no deployable release, ingress, registry credentials or real server qualification |
 | Web artifact | [Standalone portal/runtime origins](operations/WEB-IMAGE.md) | Same-image runtime configuration and local TLS/browser verification; normal build compatibility retained |
 
 Historical architecture and ADR prose retain their original decisions and observations. Prefer the current map and dated task evidence when an early checkpoint differs from later implementation. Source hashes and test environments remain part of every acceptance claim.

@@ -1,0 +1,93 @@
+{
+  "taskId": "N04-01",
+  "result": "PASS",
+  "scope": "Inert Kubernetes preparation; actual renders/schemas and disposable local API-server admission, not a deployment-ready release",
+  "source": {
+    "baseRevision": "f97c1b475c2256afc78ce8bc39f9a52421d5a260",
+    "snapshotRevision": "16b5f866c4cdc5e47a5158376e72f04ecf8dea5f",
+    "ref": "refs/vnext/candidates/n04-01-kubernetes-base",
+    "workspaceSha256": "82aa59f12f8dff7c279ad1c24ad89f90fe3a43b844d0a4389d04c1644a008fe2",
+    "scope": "Final preparation/tooling/manifests; later actual reports/checkpoint only. Local server dry-run covered identical manifests; actual final render parity is checked separately."
+  },
+  "verification": {
+    "renderedEnvironments": 2,
+    "resourcesPerEnvironment": 9,
+    "strictUnknownFieldAndTypeRejected": 2,
+    "governanceCases": 67,
+    "unitCases": 320,
+    "unitFiles": 67,
+    "testsExitCode": 0,
+    "ci": 0,
+    "toolchain": 0,
+    "architecture": 0,
+    "lintFixed": 0,
+    "infra": 0,
+    "finalInfra": 0,
+    "finalLint": 0,
+    "rootK8sCommand": 0,
+    "finalCandidateSourceDiff": 0,
+    "finalRenderParity": 0,
+    "finalFixtureCleanup": 0
+  },
+  "localCluster": {
+    "result": "PASS",
+    "serverVersion": "v1.37.2+k3s1",
+    "nodeImage": "rancher/k3s@sha256:21ea6e0fac4e3930c2ce8aa40ddd41a8b18cb3e9a0222c030dc005e7e88c4332",
+    "applicationObjectsServerDryRun": 18,
+    "applicationWorkloadsApplied": false,
+    "invalidTypeRejected": true,
+    "controlPlaneMemoryLimitBytes": 2147483648,
+    "dryRunCpuLimit": 2,
+    "bootstrapCpuCapped": false,
+    "ownedClusterRemoved": true,
+    "kubeconfigRemoved": true,
+    "defaultKubeconfigTouched": false,
+    "nodeArchitectures": [
+      "amd64"
+    ],
+    "readyNodes": 1,
+    "ingressClassesObserved": 0,
+    "registryPullQualified": false,
+    "ingressQualified": false,
+    "networkPolicyEnforcement": "UNKNOWN",
+    "externalPrerequisitesVerified": false,
+    "preflightReport": "artifacts/k8s-preflight/ba25d1d4-aeef-4972-a7ff-08f1524e530d/inventory.json"
+  },
+  "applicationBudget": {
+    "scope": "Application-only planning ceiling; excludes OS/cluster/PostgreSQL/ingress/storage; no workload/capacity qualification",
+    "peakCpuMillicores": 2000,
+    "peakMemoryMiB": 2304,
+    "ceilingMemoryMiB": 4096,
+    "webSurgeCounted": 1,
+    "migrationReserveCounted": true,
+    "workerEnabled": false
+  },
+  "preservation": {
+    "result": "PASS",
+    "base": "f97c1b475c2256afc78ce8bc39f9a52421d5a260",
+    "applicationAndDependencyChanges": 0,
+    "oldBrowserAndIntegrationChanges": 0,
+    "oldInfraChanges": 0,
+    "legacyEnvironmentVerifierBodyUnchanged": true,
+    "addedRootCommands": 2,
+    "historicalTasks": 151,
+    "historicalVerified": 148,
+    "historicalBlocked": 3,
+    "priorVnextEvidenceRecordsUnchanged": 26,
+    "release": "NOT_REQUESTED"
+  },
+  "retainedFailures": [
+    "policy-before missing implementation module",
+    "lint four undeclared Node globals; fixed with explicit globalThis",
+    "initial k3d bootstrap with --no-image-volume failed before admission; source inspection found a concurrent missing-image-volume cluster lookup; normal owned image volume fixed this fixture. Original failure/script/log and cleanup retained."
+  ],
+  "limitations": [
+    "No active application image release/digest binding; reserved registry.invalid sentinels are intentionally not deployable. Promotion/full sync/actual staging are N04-02/N04-03/N04-04.",
+    "No real cluster/server, external namespace/DB/PVC/configuration/SA/registry/session/encryption secrets or target resource/storage/backup inputs qualified. Secret/ConfigMap values were not read.",
+    "Ingress class absence was observed in the owned fixture; no TLS/WSS/Origin/CSRF/private-route qualification or CNI traffic enforcement test. Source rules alone do not prove enforcement.",
+    "Local API-server admission applies no application workloads and cannot prove boot, readiness semantics, registry authentication, migrations, Argo sync/prune/drain or rollback.",
+    "Node image/validation tools/schemas are pinned for stated scope. k3d packaged helper images and host/runtime/kernel are not a complete hermetic/signed/CVE-qualified stack. Control-plane memory limit is not a total fixture/server or capacity budget.",
+    "No fresh browser/integration/application image build is claimed for N04-01; application/package/dependency/SQL source is preserved from f97c1b4 and its separately recorded N05-06 checks.",
+    "Known prior hosted/enforcement findings are not resolved or freshly re-observed here. Publishing/automatic promotion remain disabled, release NOT_REQUESTED, mobile contexts undistributed, N13/N14 inactive. Private raw artifacts remain local until owner cleanup, not off-host archived."
+  ]
+}
