@@ -1,5 +1,32 @@
 {
-  "extends":"../packages/config/tsconfig.json",
-  "compilerOptions":{"noEmit":true,"module":"ESNext","moduleResolution":"Bundler","experimentalDecorators":true,"emitDecoratorMetadata":true},
-  "include":["integration/release-policy.test.ts","integration/deadline-identity.test.ts","integration/deadline-world.test.ts","integration/maid-identity.test.ts","integration/maid-service.test.ts","integration/library.test.ts","e2e/library.spec.ts","e2e/travel.spec.ts","e2e/deadline-identity.spec.ts","e2e/deadline.spec.ts","e2e/deadline-safety.spec.ts","e2e/deadline-acceptance.spec.ts","e2e/maid.spec.ts","e2e/maid-safety.spec.ts","e2e/maid-travel.spec.ts","e2e/maid-acceptance.spec.ts","support/deadline-legacy-fixture.ts","support/deadline-browser-runtime.ts","support/deadline-safety-fixtures.ts"]
+  "extends": "../packages/config/tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": [
+    "integration/release-policy.test.ts",
+    "integration/deadline-identity.test.ts",
+    "integration/deadline-world.test.ts",
+    "integration/maid-identity.test.ts",
+    "integration/maid-service.test.ts",
+    "integration/library.test.ts",
+    "e2e/library.spec.ts",
+    "e2e/travel.spec.ts",
+    "e2e/deadline-identity.spec.ts",
+    "e2e/deadline.spec.ts",
+    "e2e/deadline-safety.spec.ts",
+    "e2e/deadline-acceptance.spec.ts",
+    "e2e/maid.spec.ts",
+    "e2e/maid-safety.spec.ts",
+    "e2e/maid-travel.spec.ts",
+    "e2e/maid-acceptance.spec.ts",
+    "support/deadline-legacy-fixture.ts",
+    "support/deadline-browser-runtime.ts",
+    "support/deadline-safety-fixtures.ts",
+    "integration/admission.test.ts"
+  ]
 }

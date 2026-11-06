@@ -104,7 +104,10 @@
     "engine_progression_appearance_mutations": "engine.progression",
     "engine_progression_corrections": "engine.progression",
     "engine_event_drafts": "engine.events",
-    "engine_event_operator_audit": "engine.events"
+    "engine_event_operator_audit": "engine.events",
+    "platform_admission_policy": "platform.admission",
+    "platform_admission_entries": "platform.admission",
+    "platform_admission_receipts": "platform.admission"
   },
   "journalTable": "city_schema_migrations",
   "legacyDatabases": "not managed by city migrations",

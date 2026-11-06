@@ -69,6 +69,9 @@ export class IdentityService {
     const row = (await db.query<{ until: Date | null }>("SELECT max(s.expires_at) AS until FROM identity_sessions s JOIN identity_accounts a ON a.id=s.account_id WHERE s.account_id=$1 AND s.id=ANY($2::uuid[]) AND a.kind='registered' AND a.status='active' AND s.revoked_at IS NULL AND s.expires_at>$3", [accountId, sessionIds, new Date(this.now())])).rows[0];
     return row.until?.getTime() ?? 0;
   }
+  // Read-only eligibility hint for a trusted allocator. A reservation does not
+  // authorize activity: claim/current use still reauthenticate under account lock.
+  async admissionAvailable(db:Pick<PoolClient,'query'>,accountId:string){return Boolean((await db.query("SELECT 1 FROM identity_accounts a WHERE a.id=$1 AND a.status='active' AND EXISTS(SELECT 1 FROM identity_sessions s WHERE s.account_id=a.id AND s.revoked_at IS NULL AND s.expires_at>$2)",[accountId,new Date(this.now())])).rowCount);}
   fingerprint(value: unknown) { return this.keyed('mutation:v1:' + JSON.stringify(value)); }
   async publicProfiles(ids: string[], db: DB = this.pool): Promise<PublicProfile[]> {
     if (ids.length > 100) throw new IdentityError('INVALID_REQUEST', 422, 'Too many profiles requested');
