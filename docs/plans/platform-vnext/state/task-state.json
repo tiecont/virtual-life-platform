@@ -743,12 +743,14 @@
       "next_action": "Qualify actual3D/fur/animation/lighting/LOD and polished web/mobile UI, preserving pixel evidence as historical"
     },
     "N06-10": {
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "owner": "Codex",
       "branch": "codex/vnext-n09-02-postgres",
-      "evidence_refs": [],
+      "evidence_refs": [
+        "n06-10-3d-design-qualified-2026-11-06"
+      ],
       "blocker": null,
-      "next_action": "Brief3D/fur/rig/UI và rendererport audit/ADR"
+      "next_action": "Finish in-progress N09-03 pending whole integration report/evidence, then reserve N06-11: extract engine-neutral renderer handle/factory, audit/pin ThreeWebGL2 dependency and implement original rig/fur/room technical slice with actual browser/packaged Android qualification. Do not promote concept raster or primitive placeholders to final visuals. Native creator Save still requires N10-03."
     },
     "N06-11": {
       "status": "TODO",

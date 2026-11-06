@@ -1,3 +1,13 @@
+# N06-10 VERIFIED for3D design/pipeline only — 2026-11-06
+
+Design source `5f529201a0d73d800787d6190d666ba86aa0d0df`; [actual design checks](../audit/N06-10-3D-DESIGN-CHECKS.json). A built-in image_gen original reference is saved in `docs/design/vnext/animals-3d/lookdev-reference-v1.png` with its exact prompt/provenance. Developer review records cinematic DOF/icon-label/realtime-detail limitations.9actual source files audited; ADR0129 identifies the still-Pixi-concrete factory and chooses ThreeWebGL2/glTF2 only for a bounded spike. Rig/part/material/fur/LOD pipeline and new3D resource/quality budgets are locked before measurement, preserving original96MiB/8MiB/24MiB art limits and all Android thresholds. Existing assets/plan checks pass. No3D engine/model/rig/groom/animation export or runtime consumer exists yet; measurementsnull/ownerArtApprovalfalse.
+
+Record50 preserves49prior records,44SQL/old art budget/Mxx bytes and distributionfalse/releaseNOT_REQUESTED. Counts40VERIFIED/2BLOCKED_EXTERNAL/33TODO/1IN_PROGRESS. N10-05 emulator remains VERIFIED and STOPPED; its old landscape APK is not3D/auth/performance. N09-03:12queue browser,45focused,88governance/373unit and225security pass; whole integration still running, not yet accepted. N14 still needs Mac/Xcode/iPhone. Owner .idea/ and infra/botkeep-ca.pem unread/unstaged.
+
+**Next exact action:** finish N09-03 pending whole integration and source-bound evidence; then N06-11 (priority81) extracts an engine-neutral renderer handle/factory, audits/pins Three dependency and implements an original rig/fur/room technical slice for web/packaged Android. Do not call the concept a model/game or primitive placeholders final3D art. N10-03 auth remains necessary before real native creator Save; N06-04/09 final visuals and N10-04 physical30minutes remain gates.
+
+## Earlier checkpoints — historical
+
 # N10-05 Android Emulator VERIFIED;3D direction active — 2026-11-06
 
 [Actual emulator checks](../audit/N10-05-EMULATOR-CHECKS.json), landed driver `a9c913c6cfef9bb6e5accb51b16c2d78ae1ae134`: Emulator37.2.13/API35Google APIs x86_64rev9 boots with KVM12 and AMD host GLES3.1;5actual APK/IME/rotation/Back/Home-resume scenarios PASS. Explicit outside-APK and unowned-PID stop guards reject safely; owned stop/status confirms STOPPED. Commands/pins: `docs/mobile/ANDROID-EMULATOR.md`, public SDK payload hashes locked separately. Initial start/smoke used unchanged new workspace driver files on29b0eee, byte-attested at landed source; installed APK is preserved6764233 landscape preview, not3D/auth/gameplay/performance. No private key/token/AVD userdata archived.
