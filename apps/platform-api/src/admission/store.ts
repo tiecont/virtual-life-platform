@@ -163,6 +163,7 @@ export class AdmissionStore {
                     await lease.db.query('ROLLBACK');
             }
             catch {
+                // A lost COMMIT acknowledgement is reconciled from durable receipt/current state.
             }
             if (error instanceof DomainError || error instanceof z.ZodError || error && typeof error === 'object' && 'status' in error)
                 throw error;
@@ -332,15 +333,17 @@ export class AdmissionStore {
             if (context.policy.paused || counts.active + counts.grace + counts.reserved >= context.policy.target)
                 return null;
             for (let i = 0; i < 100; i++) {
-                const entry = (await context.db.query<Entry>("SELECT * FROM platform_admission_entries WHERE phase='WAITING' AND expires_at>clock_timestamp() ORDER BY queue_order LIMIT 1 FOR UPDATE")).rows[0];
+                const entry = (await context.db.query<Entry>("SELECT * FROM platform_admission_entries WHERE phase='WAITING' AND expires_at>clock_timestamp() ORDER BY queue_order LIMIT 1")).rows[0];
                 if (!entry)
                     return null;
                 if (!await this.identity.admissionAvailable(context.db, entry.account_id)) {
                     await context.db.query('DELETE FROM platform_admission_entries WHERE account_id=$1', [entry.account_id]);
                     continue;
                 }
-                await context.db.query("UPDATE platform_admission_entries SET id=$2,phase='RESERVED',owner_epoch=$3,expires_at=clock_timestamp()+$4*interval '1 millisecond',version=version+1,changed_at=clock_timestamp() WHERE account_id=$1", [entry.account_id, randomUUID(), this.owner.epoch, context.policy.offer_ttl_ms]);
+                // FK custody precedes the entry write, matching account deletion order.
                 await this.remember(context, entry.account_id, requestId, 'offer', fingerprint);
+                const updated = await context.db.query("UPDATE platform_admission_entries SET id=$2,phase='RESERVED',owner_epoch=$3,expires_at=clock_timestamp()+$4*interval '1 millisecond',version=version+1,changed_at=clock_timestamp() WHERE account_id=$1", [entry.account_id, randomUUID(), this.owner.epoch, context.policy.offer_ttl_ms]);
+                if (updated.rowCount !== 1) throw unavailable();
                 const own = await this.view(context, entry.account_id);
                 return own ? { accountId: entry.account_id, own } : null;
             }

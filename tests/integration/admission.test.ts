@@ -284,3 +284,10 @@ it('bounds real policy lock waits and statement execution without ending the sha
         slow.close();
     }
 });
+it('does not pin a queue row before the identity-owned deletion can finish',async()=>{
+    await cap(1);const a=await actor();await enqueue(a.token);let began!:()=>void,release!:()=>void;const reached=new Promise<void>(resolve=>{began=resolve;}),gate=new Promise<void>(resolve=>{release=resolve;});let paused=false;
+    const allocator=intercepted(async(db,text,args)=>{const result=await actual(db,text,args);if(text.startsWith('SELECT * FROM platform_admission_entries WHERE phase=')&&!paused){paused=true;began();await gate;}return result;});
+    const offered=allocator.offer(randomUUID());await reached;const deletion=identity.delete(a.token,randomUUID());
+    try{const finished=await Promise.race([deletion.then(()=>true),new Promise<boolean>(resolve=>setTimeout(()=>resolve(false),300))]);expect(finished).toBe(true);}finally{release();await Promise.allSettled([offered,deletion]);allocator.close();}
+    expect(await offered).toBeNull();expect((await store.capacity()).occupancy).toBe(0);expect((await pool.query('SELECT 1 FROM platform_admission_receipts WHERE account_id=$1',[a.id])).rowCount).toBe(0);
+});
