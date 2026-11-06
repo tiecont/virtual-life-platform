@@ -69,7 +69,8 @@
     "mobile:bundle:smoke": "node scripts/mobile-bundle-smoke.mjs",
     "mobile:sync:android": "pnpm mobile:build:dev && pnpm --filter @virtual-city/mobile cap sync android",
     "mobile:android:build": "pnpm mobile:sync:android && node scripts/android-build.mjs",
-    "mobile:preview:smoke": "python3 scripts/mobile-preview-smoke.py"
+    "mobile:preview:smoke": "python3 scripts/mobile-preview-smoke.py",
+    "ux:animal-study": "node scripts/verify-animal-study.mjs"
   },
   "devDependencies": {
     "@eslint/js": "9.39.1",

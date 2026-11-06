@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "taskId": "N06-06",
+  "author": "Codex, repository-authored original code in this task",
+  "tooling": "Hand-authored HTML/CSS/JavaScript SVG paths, gradients and primitive shapes; no external image generation or downloaded media",
+  "classification": "CONCEPT_AND_INTERACTIVE_DESIGN_STUDY",
+  "ownerArtApproval": false,
+  "publicDistributionApproval": false,
+  "thirdPartyAssetsAdded": false,
+  "licenseStatus": "No external media license asserted; repository-authored design subject to owner rights/art review before distribution",
+  "runtimeConsumers": [],
+  "existingProvenancePreserved": "N06-01/02 sources, current pixel atlas and scene manifests unchanged",
+  "sources": [
+    {
+      "path": "docs/design/vnext/animal-landscape/index.html",
+      "sha256": "f47b7d5bb458d3713ed1caf05848259bb164307ad637bad2ed4b8e4bea3847d3"
+    },
+    {
+      "path": "docs/design/vnext/animal-landscape/study.css",
+      "sha256": "0d0758f17b7de89d3ab440ab5b4c51887821613c44f89a2693bb955df84cad79"
+    },
+    {
+      "path": "docs/design/vnext/animal-landscape/catalog.mjs",
+      "sha256": "f4336d6dd25b33ab0a58eb8d77604fca129eb1c01fd47eeb9ddc1f0a305e3bcc"
+    },
+    {
+      "path": "docs/design/vnext/animal-landscape/illustrations.mjs",
+      "sha256": "d6dda92471c20aa6d4e74d5a39e9c4d3a37928ebbeff2f027a1d1068450e043e"
+    },
+    {
+      "path": "docs/design/vnext/animal-landscape/study.mjs",
+      "sha256": "220b3b412c6aa810f0de9926394fcab420d5d91976df22e7bf73bfa0f88f326f"
+    },
+    {
+      "path": "docs/design/vnext/animal-landscape/ART-AND-RIG.md",
+      "sha256": "525754abcf36e4890063b3cb76c5f038ac32e84d18996cb75936031173116fdb"
+    },
+    {
+      "path": "docs/design/vnext/animal-landscape/budgets.json",
+      "sha256": "0614968056b14553266d7596e92640a0cfd824e735e2dc550e48028616f08c92"
+    }
+  ]
+}

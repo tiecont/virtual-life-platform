@@ -705,12 +705,12 @@
       "next_action": "TestFlight beta khi được phép, Apple disclosures/UGC/deletion dossier, device coverage và exact store release status"
     },
     "N06-06": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
+      "status": "IN_PROGRESS",
+      "owner": "Codex",
+      "branch": "codex/vnext-n09-02-postgres",
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Style sheet/palette/lighting và một cảnh đại diện, gắn provenance/review status"
+      "next_action": "Create/review original SVG animal style sheet, modular catalog/rig specification and landscape storyboard; lock additive asset budgets, preserve previous runtime/evidence."
     },
     "N06-07": {
       "status": "TODO",
