@@ -3,6 +3,7 @@ import type { FastifyInstance,FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { DomainError } from '../common/errors';
 import { apiErrorHandler } from '../common/http-errors';
+import { observation } from './observation';
 import { WindowLimiter } from '../identity/limits';
 import { prometheus,type OperationalTelemetry } from './telemetry';
 type Snapshot=Parameters<OperationalTelemetry['snapshot']>;
@@ -13,6 +14,6 @@ export function registerOperations(http:FastifyInstance,token:string|undefined,t
   z.strictObject({}).parse(req.query);if(!limiter.take('operator',30)||pending)throw new DomainError('RATE_LIMITED',429,'Please wait before refreshing telemetry');
   pending=true;try{return await telemetry.snapshot(ports.online(),ports.rooms(),await ports.orders());}finally{pending=false;}
  };
- api.get('/internal/telemetry',req=>snapshot(req));api.get('/internal/metrics',async(req,reply)=>{const result=await snapshot(req);return reply.type('text/plain; version=0.0.4').send(prometheus(result));});
+ api.get('/internal/telemetry',req=>snapshot(req));api.get('/internal/observations',async req=>observation(await snapshot(req)));api.get('/internal/metrics',async(req,reply)=>{const result=await snapshot(req);return reply.type('text/plain; version=0.0.4').send(prometheus(result));});
  });
 }
