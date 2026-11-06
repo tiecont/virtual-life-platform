@@ -1,0 +1,46 @@
+import {test,expect,type BrowserContext,type Page} from '@playwright/test';
+import {Pool} from 'pg';
+import {randomUUID} from 'node:crypto';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {MeSchema} from '@virtual-city/contracts';
+const origin='http://127.0.0.1:3300',runId=process.env.UX_EVIDENCE_RUN??randomUUID().slice(0,8);if(!/^[a-f0-9]{8}$/.test(runId))throw Error('Invalid evidence run');let pool:Pool,serial=0;
+test.beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))||url.search||url.hash)throw Error('Disposable test database required');pool=new Pool({connectionString:url.toString()});});
+test.beforeEach(async()=>{await pool.query('DELETE FROM platform_admission_entries');await pool.query('DELETE FROM platform_admission_receipts');});
+test.afterAll(async()=>{await pool.end();});
+async function guest(context:BrowserContext){const response=await context.request.post('/v1/session/guest',{headers:{origin},data:{requestId:randomUUID(),displayName:'Queue visitor '+(++serial),avatarKey:'mint'}});expect(response.status()).toBe(201);return MeSchema.parse(await response.json());}
+async function evidence(page:Page,name:string){const dir='artifacts/vnext/n09-03/queue-'+runId+'/'+test.info().project.name;await mkdir(dir,{recursive:true});await page.screenshot({path:dir+'/'+name+'.png',fullPage:true});await writeFile(dir+'/'+name+'.yml',await page.locator('body').ariaSnapshot());}
+async function snapshot(context:BrowserContext){const r=await context.request.get('/v1/admission');expect(r.status()).toBe(200);return r.json();}
+// Deliberate DB offer fixture; HTTP claim/receipts below use the actual store.
+// Allocator FIFO/concurrency is tested separately through its trusted owner port.
+async function offered(account:string,ttl=15000){await pool.query("UPDATE platform_admission_entries SET id=$2,phase='RESERVED',version=version+1,owner_epoch=(SELECT owner_epoch FROM platform_admission_policy),expires_at=clock_timestamp()+$3*interval '1 millisecond' WHERE account_id=$1",[account,randomUUID(),ttl]);}
+
+test('signed-out waiting screen offers identity and opens no gameplay connection',async({page})=>{let sockets=0;page.on('websocket',()=>sockets++);await page.goto('/queue');await expect(page.getByRole('button',{name:'Open identity',exact:true})).toBeVisible();expect(sockets).toBe(0);await expect(page.getByText(/Your position:/)).toHaveCount(0);await evidence(page,'signed-out');});
+
+test('two tabs share one own position; cancel propagates and another visitor stays private',async({page,context,browser})=>{
+ await guest(context);const second=await context.newPage(),other=await browser.newContext({baseURL:origin});let sockets=0;page.on('websocket',()=>sockets++);second.on('websocket',()=>sockets++);
+ try{await page.goto('/queue');await second.goto('/queue');await Promise.all([page.getByRole('button',{name:'Join waiting list',exact:true}).click(),second.getByRole('button',{name:'Join waiting list',exact:true}).click()]);await expect(page.getByText('Your position: 1',{exact:true})).toBeVisible();await expect(second.getByText('Your position: 1',{exact:true})).toBeVisible();
+ const b=await guest(other);const bTicket=await other.request.post('/v1/admission',{headers:{origin,'x-csrf-token':b.csrfToken},data:{schemaVersion:1,requestId:randomUUID(),action:'enqueue'}});expect(bTicket.status()).toBe(200);expect(bTicket && (await bTicket.json()).own.position).toBe(2);await expect(page.getByText(b.profile.displayName,{exact:true})).toHaveCount(0);expect((await pool.query('SELECT 1 FROM platform_admission_entries')).rowCount).toBe(2);
+ await second.getByRole('button',{name:'Leave waiting list',exact:true}).click();await expect(page.getByRole('heading',{name:'Before you enter',exact:true})).toBeVisible({timeout:12000});expect(sockets).toBe(0);await evidence(page,'other-tab-cancel');}finally{await second.close();await other.close();}
+});
+
+test('missed offer requires a fresh join; ready is explicit and claim/release use server receipts',async({page,context})=>{
+ test.setTimeout(60000);const me=await guest(context);await page.goto('/queue');await page.getByRole('button',{name:'Join waiting list',exact:true}).click();await expect(page.getByRole('heading',{name:'Waiting for a place',exact:true})).toBeVisible();await offered(me.profile.id,5000);await expect(page.getByRole('heading',{name:'Your place is ready',exact:true})).toBeVisible({timeout:10000});await evidence(page,'ready-offer');expect((await snapshot(context)).own.state).toBe('RESERVED');
+ await pool.query("UPDATE platform_admission_entries SET expires_at=clock_timestamp()-interval '1 second' WHERE account_id=$1",[me.profile.id]);await expect(page.getByRole('heading',{name:'Before you enter',exact:true})).toBeVisible({timeout:12000});await page.getByRole('button',{name:'Join waiting list',exact:true}).click();await expect(page.getByRole('heading',{name:'Waiting for a place',exact:true})).toBeVisible();await offered(me.profile.id);await expect(page.getByRole('button',{name:'I’m ready',exact:true})).toBeVisible({timeout:10000});await page.getByRole('button',{name:'I’m ready',exact:true}).click();await expect(page.getByRole('heading',{name:'Your place is confirmed',exact:true})).toBeVisible();expect((await snapshot(context)).own.state).toBe('ACTIVE');expect((await pool.query("SELECT 1 FROM platform_admission_entries WHERE phase='ACTIVE'")).rowCount).toBe(1);await evidence(page,'confirmed-place');await page.getByRole('button',{name:'Release my platform place',exact:true}).click();expect((await snapshot(context)).own).toBeNull();
+});
+
+test('lost real HTTP acknowledgement retries the same request without creating another ticket',async({page,context})=>{
+ test.setTimeout(45000);await guest(context);let lost=false;const bodies:string[]=[];await page.route('**/v1/admission',async route=>{if(route.request().method()!=='POST'){await route.continue();return;}bodies.push(route.request().postData()!);if(!lost){lost=true;const actual=await route.fetch();expect(actual.status()).toBe(200);await route.abort();}else await route.continue();});
+ await page.goto('/queue');await page.getByRole('button',{name:'Join waiting list',exact:true}).click();await expect(page.getByText(/last action has no confirmed result/)).toBeVisible();await expect(page.getByRole('status')).toHaveText('Your place is up to date.',{timeout:15000});await page.getByRole('button',{name:'Retry last action',exact:true}).click();await expect(page.getByRole('button',{name:'Leave waiting list',exact:true})).toBeEnabled();expect(bodies).toHaveLength(2);expect(bodies[0]).toBe(bodies[1]);expect((await pool.query('SELECT 1 FROM platform_admission_entries')).rowCount).toBe(1);await evidence(page,'lost-ack-recovered');
+});
+
+test('late previous-account queue state cannot restore private position after logout and identity change',async({page,context})=>{
+ const old=await guest(context);await context.request.post('/v1/admission',{headers:{origin,'x-csrf-token':old.csrfToken},data:{schemaVersion:1,requestId:randomUUID(),action:'enqueue'}});let release!:()=>void,seen!:()=>void,held=false;const gate=new Promise<void>(ok=>release=ok),observed=new Promise<void>(ok=>seen=ok);
+ await page.route('**/v1/admission',async route=>{if(held){await route.continue();return;}held=true;const actual=await route.fetch();expect(actual.status()).toBe(200);seen();await gate;await route.fulfill({response:actual}).catch(()=>{});});
+ try{await page.goto('/queue',{waitUntil:'domcontentloaded'});await observed;expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':old.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);await guest(context);await page.evaluate(()=>{const bus=new BroadcastChannel('virtual-city-identity');bus.postMessage({changed:true});bus.close();});await expect(page.getByRole('button',{name:'Join waiting list',exact:true})).toBeVisible();release();await page.unrouteAll({behavior:'wait'});await expect(page.getByText(/Your position:/)).toHaveCount(0);await evidence(page,'identity-late');}finally{release();}
+});
+
+test('waiting controls remain keyboard-accessible across landscape, portrait and200percent text',async({page,context})=>{
+ await guest(context);await page.goto('/queue');await page.getByRole('button',{name:'Join waiting list',exact:true}).focus();await page.keyboard.press('Enter');await expect(page.getByText('Your position: 1',{exact:true})).toBeVisible();
+ for(const [width,height]of [[740,360],[844,390],[1280,720],[1920,1080],[360,740]]){await page.setViewportSize({width,height});await page.evaluate(()=>document.documentElement.style.fontSize='200%');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);const leave=page.getByRole('button',{name:'Leave waiting list',exact:true});await leave.scrollIntoViewIfNeeded();await expect(leave).toBeVisible();const box=await leave.boundingBox();expect(box!.height).toBeGreaterThanOrEqual(44);expect(box!.width).toBeGreaterThanOrEqual(44);await evidence(page,'waiting-'+width+'-'+height+'-text200');await page.evaluate(()=>document.documentElement.style.removeProperty('font-size'));}
+ expect(await page.locator('canvas').count()).toBe(0);
+});

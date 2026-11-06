@@ -27,6 +27,10 @@
     "support/deadline-legacy-fixture.ts",
     "support/deadline-browser-runtime.ts",
     "support/deadline-safety-fixtures.ts",
-    "integration/admission.test.ts"
+    "integration/admission.test.ts",
+    "integration/admission-ux.test.ts",
+    "e2e/queue-ux.spec.ts",
+    "support/queue-browser-runtime.ts",
+    "../playwright.queue.config.ts"
   ]
 }

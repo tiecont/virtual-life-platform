@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
 import { z } from 'zod';
-import { AdmissionCommandSchema, AdmissionOwnStateSchema, AdmissionCapacitySchema, type AdmissionOwnState } from '@virtual-city/contracts';
+import { AdmissionCommandSchema, AdmissionOwnStateSchema, AdmissionCapacitySchema, AdmissionQueueViewSchema, type AdmissionOwnState } from '@virtual-city/contracts';
 import type { IdentityService, IdentityContext } from '../identity/service';
 import { DomainError } from '../common/errors';
 type Owner = {
@@ -242,6 +242,14 @@ export class AdmissionStore {
     }
     async own(credential: string) {
         return this.tx(credential, context => this.view(context, context.actor!.accountId));
+    }
+    async queueView(credential: string) {
+        return this.tx(credential, async context => {
+            const own = await this.view(context, context.actor!.accountId);
+            const counts = await this.counts(context.db), occupied = counts.active + counts.grace + counts.reserved, p = context.policy;
+            const availability = occupied > p.target ? 'DRAINING_LIMIT' : p.paused ? 'PAUSED' : p.target === 0 ? 'CLOSED' : occupied >= p.target ? 'FULL' : 'OPEN';
+            return AdmissionQueueViewSchema.parse({schemaVersion:1,viewerAccountId:context.actor!.accountId,observedAt:own?.observedAt ?? context.at.toISOString(),availability,own,etaSeconds:null});
+        });
     }
     async capacity() {
         return this.tx(undefined, async (context) => {

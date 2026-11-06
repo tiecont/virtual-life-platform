@@ -72,6 +72,7 @@
     "mobile:preview:smoke": "python3 scripts/mobile-preview-smoke.py",
     "ux:animal-study": "node scripts/verify-animal-study.mjs",
     "test:ux-core": "node scripts/run-ux-core.mjs",
+    "test:queue-ux":"node scripts/run-queue-ux.mjs",
     "mobile:landscape:smoke": "python3 scripts/mobile-landscape-smoke.py"
   },
   "devDependencies": {

@@ -1,4 +1,6 @@
 import {PrivacyRequestService} from './identity/privacy-requests';
+import {AdmissionStore} from './admission/store';
+import {registerAdmissionQueue} from './admission/http';
 import {RuntimePolicyStore} from './operations/runtime-policy-store';
 import {OperatorRuntimeControls} from './operations/operator-runtime';
 import {registerRuntimeControls} from './operations/operator-http';
@@ -155,6 +157,14 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const runtimeControls=new OperatorRuntimeControls(runtimeStore,operator,worlds.releasePolicy?.controls);
   registerRuntimeControls(http,config,runtimeControls,options.now);
   const roomAuthority = new RoomAuthority(db);
+  // No allocator timer, room hook or production activation in this UI slice.
+  const admission=config.NODE_ENV!=='production'&&config.LOCAL_ADMISSION_UX==='1'?new AdmissionStore(db,identity,{epoch:randomUUID(),assert:()=>roomAuthority.assert()}):undefined;
+  if(admission){
+    try {if(!await admission.recover())throw new Error('Queue preview requires bounded recovery before startup');}
+    catch(error){admission.close();roomAuthority.close();await app.close();throw error;}
+    registerAdmissionQueue(http,config,identity,admission,options.now);
+    http.addHook('preClose',async()=>{admission.close();});
+  }
   const roomMetrics = new RoomMetrics();
   roomService = new RoomService(worlds.registry, identity, roomAuthority, options.now, {
     relationships: (viewer, targets) => social.roomRelationships(viewer, targets),
@@ -286,5 +296,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => {stopDatabaseObservation(); roomMetrics.databaseAttached(false); stopEventLoopObservation(); roomMetrics.close();});
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity,privacyRequests,runtimeControls, deadlineIdentity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain };
+  return { app, http, identity,privacyRequests,runtimeControls, deadlineIdentity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain,admission };
 }

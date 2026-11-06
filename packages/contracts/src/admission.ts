@@ -20,3 +20,14 @@ export const AdmissionCommandSchema=z.discriminatedUnion('action',[
 ]);
 export type AdmissionPolicy=z.infer<typeof AdmissionPolicySchema>;
 export type AdmissionOwnState=z.infer<typeof AdmissionOwnStateSchema>;
+
+// Viewer-only queue transport. No capacity totals, account selector, estimate
+// inferred from rank, or public allocator/disconnect command.
+export const AdmissionQueueCommandSchema=z.discriminatedUnion('action',[
+ ...AdmissionCommandSchema.options,
+ z.strictObject({schemaVersion:z.literal(1),requestId:id,action:z.literal('reconnect'),id,expectedVersion:version}),
+]);
+export const AdmissionQueueViewSchema=z.strictObject({schemaVersion:z.literal(1),viewerAccountId:id,observedAt:z.iso.datetime(),availability:z.enum(['OPEN','FULL','CLOSED','DRAINING_LIMIT','PAUSED']),own:AdmissionOwnStateSchema.nullable(),etaSeconds:z.tuple([z.number().int().nonnegative(),z.number().int().nonnegative()]).refine(([low,high])=>low<=high&&high<=86400).nullable()});
+export type AdmissionQueueView=z.infer<typeof AdmissionQueueViewSchema>;
+export type AdmissionQueueCommand=z.infer<typeof AdmissionQueueCommandSchema>;
+export const AdmissionQueueReceiptSchema=AdmissionQueueViewSchema.extend({requestId:id});

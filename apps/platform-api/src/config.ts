@@ -25,6 +25,7 @@ const Env = z.object({
   RUNTIME_WORLD_POLICY_FILE:z.string().min(1).max(4096).optional(),
   RELEASE_ENVIRONMENT:z.enum(['development','test','staging','production']).optional(),
   LOCAL_TRAVEL_FIXTURES: z.enum(['0', '1']).default('0'),
+  LOCAL_ADMISSION_UX:z.enum(['0','1']).default('0'),
   LOCAL_LIBRARY_WORLD: z.enum(['0', '1']).default('0'),
   LOCAL_PARK_WORLD: z.enum(['0', '1']).default('0'),
   LOCAL_DEADLINE_WORLD:z.enum(['0','1']).default('0'),
@@ -54,6 +55,7 @@ const Env = z.object({
     ctx.addIssue({ code: 'custom', path: ['WEB_ORIGIN'], message: 'HTTPS required in production' });
   }
   if (env.NODE_ENV === 'production' && env.LOCAL_TRAVEL_FIXTURES === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_TRAVEL_FIXTURES'], message: 'Local travel fixtures cannot run in production' });
+  if(env.NODE_ENV==='production'&&env.LOCAL_ADMISSION_UX==='1')ctx.addIssue({code:'custom',path:['LOCAL_ADMISSION_UX'],message:'Queue preview cannot run in production'});
   if (env.NODE_ENV === 'production' && env.LOCAL_LIBRARY_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_LIBRARY_WORLD'], message: 'Local library activation cannot run in production' });
   if (env.NODE_ENV === 'production' && env.LOCAL_PARK_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_PARK_WORLD'], message: 'Local park activation cannot run in production' });
   if(env.NODE_ENV==='production'&&env.LOCAL_DEADLINE_WORLD==='1')ctx.addIssue({code:'custom',path:['LOCAL_DEADLINE_WORLD'],message:'Local Deadline activation cannot run in production'});

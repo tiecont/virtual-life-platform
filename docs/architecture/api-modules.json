@@ -236,7 +236,8 @@
       "responsibility": "Additive global queue/lease contracts and deterministic reference model; runtime activation is separate",
       "currentPublicEntryFiles": [
         "admission/model",
-        "admission/store"
+        "admission/store",
+        "admission/http"
       ],
       "targetBoundary": "Atomic PostgreSQL allocation separate from room/booking capacity; authenticated owner ports only"
     }
