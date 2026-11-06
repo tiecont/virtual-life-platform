@@ -1,0 +1,90 @@
+name: Propose verified digest promotion
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        options: [staging, production]
+        required: true
+      release_id:
+        type: string
+        required: true
+      publish_run_id:
+        type: string
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: promotion-${{ inputs.environment }}
+  cancel-in-progress: false
+jobs:
+  propose:
+    if: ${{ github.repository == 'tiecont/virtual-life-platform' && github.ref == 'refs/heads/main' && vars.VLP_PROMOTION_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+      packages: read
+    env:
+      VLP_PROMOTION_ENABLED: ${{ vars.VLP_PROMOTION_ENABLED }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .node-version
+      - id: authorize
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/promotion-bot.mjs authorize
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        if: ${{ steps.authorize.outputs.promotion == 'true' }}
+        with:
+          name: ${{ steps.authorize.outputs.artifact }}
+          path: artifacts/promotion-candidate/
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.authorize.outputs.publisher_run }}
+      - name: Authenticate read-only registry verification
+        env:
+          REGISTRY_TOKEN: ${{ github.token }}
+          REGISTRY_ACTOR: ${{ github.actor }}
+        run: printf '%s' "$REGISTRY_TOKEN" | docker login ghcr.io --username "$REGISTRY_ACTOR" --password-stdin
+      - id: prepare
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SOURCE: ${{ steps.authorize.outputs.source }}
+          EXPECTED_ATTEMPT: ${{ steps.authorize.outputs.attempt }}
+        run: node scripts/promotion-bot.mjs prepare
+      - id: app
+        if: ${{ steps.prepare.outputs.changed == 'true' }}
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510
+        with:
+          app-id: ${{ vars.VLP_PROMOTION_APP_ID }}
+          private-key: ${{ secrets.VLP_PROMOTION_APP_PRIVATE_KEY }}
+          owner: tiecont
+          repositories: virtual-life-platform
+          permission-contents: write
+          permission-pull-requests: write
+      - name: Create or reuse a draft promotion PR
+        if: ${{ steps.prepare.outputs.changed == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROMOTION_APP_TOKEN: ${{ steps.app.outputs.token }}
+          PROMOTION_PROPOSAL_SHA: ${{ steps.prepare.outputs.sha }}
+          EXPECTED_SOURCE: ${{ steps.authorize.outputs.source }}
+          EXPECTED_ATTEMPT: ${{ steps.authorize.outputs.attempt }}
+        run: node scripts/promotion-bot.mjs publish
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ steps.prepare.outcome == 'success' }}
+        with:
+          name: digest-promotion-proposal-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/promotion-proposal/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Remove registry credential
+        if: ${{ always() }}
+        run: docker logout ghcr.io

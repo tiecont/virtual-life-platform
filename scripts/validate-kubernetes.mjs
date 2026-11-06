@@ -27,7 +27,7 @@ export async function validateKubernetes() {
     report.toolchainSha256 = sha256(await readFile('infra/k8s/toolchain.json')); report.kubernetesSchemaVersion = lock.kubernetesVersion;
     const schemaArgs = ['-strict', '-summary', '-verbose', '-output', 'json', '-kubernetes-version', lock.kubernetesVersion, '-schema-location', schemaDirectory + '/{{.ResourceKind}}{{.KindSuffix}}.json'];
     for (const environment of ['staging', 'production']) {
-      const source = await readKubernetesSource(environment); verifyKubernetesPolicy(source.objects, environment, source.budget);
+      const source = await readKubernetesSource(environment); verifyKubernetesPolicy(source.objects, environment, source.budget, source.release);
       const directory = resolve(root, environment); await mkdir(directory);
       await run(tools.kustomize, ['build', 'infra/k8s/overlays/' + environment, '--load-restrictor', 'LoadRestrictionsRootOnly', '--output', directory]);
       const files = (await readdir(directory)).sort(); assert.equal(files.length, 9); assert(files.every(file => /^[a-z0-9_.-]+\.yaml$/.test(file)));
@@ -40,7 +40,7 @@ export async function validateKubernetes() {
         objects.push(JSON.parse(decoded)); artifacts.push({ref: path, sha256: sha256(await readFile(path))});
       }
       assert.deepEqual(sorted(objects), sorted(source.objects), 'Actual Kustomize output differs from the constrained source graph');
-      const policy = verifyKubernetesPolicy(objects, environment, source.budget);
+      const policy = verifyKubernetesPolicy(objects, environment, source.budget, source.release);
       const validation = JSON.parse(await run(tools.kubeconform, [...schemaArgs, ...files.map(file => join(directory, file))]));
       assert.deepEqual(validation.summary, {valid: 9, invalid: 0, errors: 0, skipped: 0}); assert.equal(validation.resources.length, 9); assert(validation.resources.every(resource => resource.status === 'statusValid'));
       report.environments.push({environment, policy, schema: validation.summary, decodedSha256: sha256(JSON.stringify(sorted(objects))), artifacts}); await save();

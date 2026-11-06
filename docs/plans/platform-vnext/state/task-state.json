@@ -255,12 +255,19 @@
       "next_action": "Reserve N04-02 on a clean branch. Read current release manifest/publisher proof and constrained Kustomize graph. Implement source/digest-bound staging/production promotion with narrow reviewed file changes and default-disabled GitHub App/bot workflow; preserve required CI/no-loop behavior and identical tested release sets. Exercise local bot-event/proof/corruption fixtures and actual available registry evidence without inventing a hosted bot run, registry credentials or tested application digest. Keep publishing/auto-merge/production auto-promotion off until their real gates are met; retain owner-promotion fallback and all external N04-03/N04-04 deployment prerequisites."
     },
     "N04-02": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
-      "blocker": null,
-      "next_action": "Release/promotion workflow và immutable tested release set"
+      "status": "BLOCKED_EXTERNAL",
+      "owner": "Foundation/CI",
+      "branch": "codex/vnext-n04-02-digest-promotion",
+      "evidence_refs": [
+        "n04-02-2026-11-06"
+      ],
+      "blocker": {
+        "owner": "Repository owner / Foundation CI",
+        "neededInput": "Scoped GitHub App setup and genuine published release candidate; actual bot PR/head and required hosted Quality outcomes",
+        "evidence": "n04-02-2026-11-06",
+        "nextIndependentTask": "N07-01"
+      },
+      "next_action": "N04-02: repository owner supplies a genuine published candidate and narrowly scoped App setup, then review activation and observe an actual draft bot PR/head and required hosted Quality outcomes before VERIFIED. Keep automation off. Continue independent N07-01 now: reserve a clean branch, audit identity/operations/schema boundaries and implement singleton operator MFA/session/audit with deny/replay/CSRF/revoke/idle-expiry verification. N04-03 waits."
     },
     "N04-03": {
       "status": "TODO",

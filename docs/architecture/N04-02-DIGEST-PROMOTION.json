@@ -1,0 +1,75 @@
+{
+  "taskId": "N04-02",
+  "result": "LOCAL_CHECKS_PASS_HOSTED_GATE_BLOCKED",
+  "status": "BLOCKED_EXTERNAL",
+  "source": {
+    "baseRevision": "0fe569338038825f7768aa2e5e1f4f5c013df853",
+    "snapshotRevision": "f315cae36bb9b9a54fa2d20645623a4a3ed3d1d2",
+    "ref": "refs/vnext/candidates/n04-02-digest-promotion",
+    "workspaceSha256": "5d1115bb5a0a723aff9dfc4e79d60a37adf546af6885432a9efe0616ecae9170",
+    "scope": "Implementation and operations docs before final scope reports/state; no application or active release binding changes"
+  },
+  "verification": {
+    "governanceCases": 76,
+    "unitCases": 320,
+    "unitFiles": 67,
+    "focusedFinalCases": 9,
+    "unboundRenderedResources": 18,
+    "syntheticBoundRenderedResources": 18,
+    "applicableGitPatchApplied": true,
+    "existingReleaseImmutable": true,
+    "stagingProductionDescriptorEqual": true,
+    "mockedApiRetryAndCredentialBoundaries": "PASS",
+    "actualHostedBotPr": "NOT_RUN",
+    "actualHostedBotQuality": "NOT_RUN",
+    "realRemoteCandidate": "NOT_SUPPLIED",
+    "realGitHubWrites": 0,
+    "actionlint": "v1.7.12 exit0 all three workflows"
+  },
+  "preservation": {
+    "result": "PASS",
+    "baseRevision": "0fe569338038825f7768aa2e5e1f4f5c013df853",
+    "protectedPaths": [
+      "apps",
+      "packages",
+      "pnpm-lock.yaml",
+      "tests/e2e",
+      "tests/integration",
+      "integrations",
+      "infra",
+      ".github/workflows/quality.yml",
+      ".github/workflows/publish.yml",
+      "docs/agent"
+    ],
+    "originalPublisherAssertionUnchanged": true,
+    "oldActionPinsUnchanged": 5,
+    "historicalCounts": {
+      "VERIFIED": 148,
+      "BLOCKED_EXTERNAL": 3
+    },
+    "priorVnextRecordsUnchanged": 27,
+    "rootBindingsCreated": false,
+    "applicationDependencyChanges": 0,
+    "releaseStatus": "NOT_REQUESTED"
+  },
+  "activation": {
+    "manualWorkflowEnabled": false,
+    "automaticPromotion": false,
+    "autoMerge": false,
+    "productionAutoPromotion": false,
+    "deploymentEligible": false
+  },
+  "retainedFailures": [
+    "missing implementation module",
+    "generated diff missing new-file mode, fixed and real git apply verified",
+    "new workflow guard absent",
+    "new guard permission regex too broad, fixed without weakening original publisher assertions"
+  ],
+  "limitations": [
+    "Real App PR and required hosted Quality run NOT_RUN; promotion variables unavailable and private-key secret name absent. No usable genuine published release candidate was supplied.",
+    "All registry/GitHub actor cases use explicit local stand-ins; bound renders use synthetic digests and prove only constrained local integrity/schema behavior.",
+    "Main observed unprotected; protection/rulesets access403. Owner review is not technical enforcement. Known hosted baseline cadence failure remains unresolved.",
+    "No GitHub writes, active root bindings, image publication, deployment, public/store release or mobile distribution. No new application/integration/browser/image qualification claimed; their sources are preserved.",
+    "Private raw logs remain local until owner cleanup, not off-host archived. Original failures retained; local code success does not satisfy the external task acceptance."
+  ]
+}

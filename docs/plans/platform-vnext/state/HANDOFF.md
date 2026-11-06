@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-06T03:00:55.329987+00:00; N04-01 VERIFIED on `codex/vnext-n04-01-kubernetes-base`. Base `f97c1b475c2256afc78ce8bc39f9a52421d5a260`; this slice is committed after evidence finalization.
+Updated 2026-11-06T03:57:51.704164+00:00; N04-02 BLOCKED_EXTERNAL on `codex/vnext-n04-02-digest-promotion`. Base `0fe569338038825f7768aa2e5e1f4f5c013df853`; this slice is committed after evidence finalization.
 
-Implemented inert staging/production Kustomize preparation with one Recreate API, bounded probes/grace/resources, read-only unprivileged containers, private Services and closed/default-deny network policies. External namespaces/SA/policy/config/DB/PVC/Secrets remain outside application prune ownership. Actual pinned render/offline decode/strict schema checks pass18 resources and reject2 invalid schemas; local K3s API-server dry-runs pass18 resources, reject invalid type and create no app workloads. Explicit-context metadata preflight reports1ready linux/amd64 node and0ingress classes, with secret/registry/CNI/ingress qualifications still unverified. Both fixture attempts and cleanup are retained; final containers/networks/image volumes/kubeconfigs absent. Fresh67 governance and320 unit cases pass, plus final infra/lint/CI/toolchain/architecture/preservation gates. Application/dependency/SQL/old infra/tests and original151-task evidence remain unchanged. No deployable release, Argo sync, actual staging or public/store readiness claimed.
+Implemented default-disabled scoped App draft-PR promotion, proof-checked bounded proposals, immutable release binding and local Kubernetes adapter. Fresh76 governance/320 unit cases pass, final9 focused cases pass, actual synthetic-bound and inert render/schema checks18 each pass, real isolated Git patch/apply/production reuse and mocked writer retry/deny boundaries pass. CI/infra/lint/actionlint/architecture and preservation pass. Real App PR/hosted CI/published candidate remain unavailable; task BLOCKED_EXTERNAL, acceptance_met=false. No application/dependency/SQL/old workflow/active manifest changes or service writes.
 
-[Actual checks](../audit/N04-01-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 27, "TODO": 42}`.
+[Actual checks](../audit/N04-02-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 27, "TODO": 41, "BLOCKED_EXTERNAL": 1}`.
 
 ## Remaining gates
 
@@ -12,4 +12,4 @@ Hosted baseline Quality42037215254 failed Deadline cadence (133.3ms vs <100ms); 
 
 ## Next exact action
 
-Reserve N04-02 on a clean branch. Read current release manifest/publisher proof and constrained Kustomize graph. Implement source/digest-bound staging/production promotion with narrow reviewed file changes and default-disabled GitHub App/bot workflow; preserve required CI/no-loop behavior and identical tested release sets. Exercise local bot-event/proof/corruption fixtures and actual available registry evidence without inventing a hosted bot run, registry credentials or tested application digest. Keep publishing/auto-merge/production auto-promotion off until their real gates are met; retain owner-promotion fallback and all external N04-03/N04-04 deployment prerequisites.
+N04-02: repository owner supplies a genuine published candidate and narrowly scoped App setup, then review activation and observe an actual draft bot PR/head and required hosted Quality outcomes before VERIFIED. Keep automation off. Continue independent N07-01 now: reserve a clean branch, audit identity/operations/schema boundaries and implement singleton operator MFA/session/audit with deny/replay/CSRF/revoke/idle-expiry verification. N04-03 waits.

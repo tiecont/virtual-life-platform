@@ -4,6 +4,8 @@ Updated 2026-11-06 (Asia/Ho_Chi_Minh) for N04-01 at base `f97c1b4`. vNext adds e
 
 ## Implemented local architecture
 
+N04-02 adds [digest-bound draft proposals](../operations/DIGEST-PROMOTION.md), immutable release binding and a default-disabled scoped App workflow. [Local checks](N04-02-DIGEST-PROMOTION.json) pass; real App PR/hosted CI and a genuine published candidate remain externally blocked. Existing Quality/publisher workflows and active inert overlays are preserved. No GitHub write or deployment was performed.
+
 | Boundary | Current source | Scope and limits |
 |---|---|---|
 | Web client | `apps/portal-web/app/components/WorldRoomPanel.tsx`; `packages/pixi-scene/src/renderer.ts` | Dynamic client-only Pixi scene mount plus native keyboard/DOM controls; room state comes from authenticated server snapshots. |

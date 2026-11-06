@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile, readdir} from 'node:fs/promises';
 import {artifactPolicy} from './artifact-policy.mjs';
+import {validatePromotionPolicy} from './promotion-bot.mjs';
 
 export function assertArtifactWorkflows(quality, publish, pins) {
   for (const workflow of [quality, publish]) {
@@ -30,7 +31,29 @@ export function assertArtifactWorkflows(quality, publish, pins) {
   assert(publish.includes('docker logout ghcr.io'));
 }
 export async function verifyArtifactWorkflows() {
-  assert.deepEqual((await readdir('.github/workflows')).sort(), ['publish.yml', 'quality.yml'], 'Review new workflow trust boundary');
+  assert.deepEqual((await readdir('.github/workflows')).sort(), ['promote.yml', 'publish.yml', 'quality.yml'], 'Review new workflow trust boundary');
   await artifactPolicy();
-  assertArtifactWorkflows(await readFile('.github/workflows/quality.yml', 'utf8'), await readFile('.github/workflows/publish.yml', 'utf8'), JSON.parse(await readFile('config/ci-actions.json', 'utf8')));
+  const pins = JSON.parse(await readFile('config/ci-actions.json', 'utf8'));
+  assertArtifactWorkflows(await readFile('.github/workflows/quality.yml', 'utf8'), await readFile('.github/workflows/publish.yml', 'utf8'), pins);
+  assertPromotionWorkflow(await readFile('.github/workflows/promote.yml', 'utf8'), pins);
+  validatePromotionPolicy(JSON.parse(await readFile('config/digest-promotion.json', 'utf8')));
+}
+export function assertPromotionWorkflow(workflow, pins) {
+  assert(workflow.startsWith('name: Propose verified digest promotion\non:\n  workflow_dispatch:\n'));
+  assert(!/pull_request_target|continue-on-error|\|\|\s*true|write-all|\[skip ci\]|paths-ignore:|skip-token-revoke|persist-credentials: true/.test(workflow));
+  assert(!/^\s+(?:push|pull_request|workflow_run|schedule):/m.test(workflow));
+  assert(!/^\s+(?:contents|packages|actions|id-token): write\b/m.test(workflow));
+  assert(!/docker (?:build|push)|git push|gh pr merge|kubectl|argocd/.test(workflow));
+  assert.deepEqual([...workflow.matchAll(/secrets\.([A-Za-z0-9_]+)/g)].map(match => match[1]), ['VLP_PROMOTION_APP_PRIVATE_KEY']);
+  for (const match of workflow.matchAll(/uses:\s*([^\s#]+)/g)) {const [name, revision] = match[1].split('@'); assert(/^[a-f0-9]{40}$/.test(revision ?? '')); assert.equal(revision, pins[name]);}
+  assert.equal((workflow.match(/: write\b/g) ?? []).length, 2);
+  assert.equal((workflow.split('\njobs:\n')[1]?.match(/^ {2}[a-z][a-z-]*:\s*$/gm) ?? []).length, 1);
+  for (const condition of ["github.repository == 'tiecont/virtual-life-platform'", "github.ref == 'refs/heads/main'", "vars.VLP_PROMOTION_ENABLED == 'true'"]) assert(workflow.includes(condition));
+  assert(workflow.includes('    permissions:\n      contents: read\n      actions: read\n      packages: read\n'));
+  assert(workflow.includes('ref: ${{ github.sha }}') && workflow.includes('persist-credentials: false') && workflow.includes('fetch-depth: 0') && workflow.includes('node-version-file: .node-version'));
+  const authorize = workflow.indexOf('node scripts/promotion-bot.mjs authorize'), download = workflow.indexOf('uses: actions/download-artifact@'), prepare = workflow.indexOf('node scripts/promotion-bot.mjs prepare'), app = workflow.indexOf('uses: actions/create-github-app-token@'), publish = workflow.indexOf('node scripts/promotion-bot.mjs publish');
+  assert(authorize >= 0 && authorize < download && download < prepare && prepare < app && app < publish);
+  for (const text of ['name: ${{ steps.authorize.outputs.artifact }}', 'run-id: ${{ steps.authorize.outputs.publisher_run }}', 'owner: tiecont', 'repositories: virtual-life-platform', 'permission-contents: write', 'permission-pull-requests: write', 'PROMOTION_APP_TOKEN: ${{ steps.app.outputs.token }}', 'PROMOTION_PROPOSAL_SHA: ${{ steps.prepare.outputs.sha }}', 'docker logout ghcr.io']) assert(workflow.includes(text));
+  assert.equal((workflow.match(/if: \$\{\{ steps.prepare.outputs.changed == 'true' \}\}/g) ?? []).length, 2);
+  for (const line of workflow.split('\n').filter(line => /^\s+run:/.test(line))) assert(!line.includes('inputs.'));
 }

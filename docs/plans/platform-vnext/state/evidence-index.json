@@ -13843,6 +13843,813 @@
         "No fresh browser/integration/application image build is claimed for N04-01; application/package/dependency/SQL source is preserved from f97c1b4 and its separately recorded N05-06 checks.",
         "Known prior hosted/enforcement findings are not resolved or freshly re-observed here. Publishing/automatic promotion remain disabled, release NOT_REQUESTED, mobile contexts undistributed, N13/N14 inactive. Private raw artifacts remain local until owner cleanup, not off-host archived."
       ]
+    },
+    {
+      "id": "n04-02-2026-11-06",
+      "taskId": "N04-02",
+      "sourceRevision": "0fe569338038825f7768aa2e5e1f4f5c013df853+workspace-sha256:5d1115bb5a0a723aff9dfc4e79d60a37adf546af6885432a9efe0616ecae9170",
+      "environment": "CachyOS Linux amd64; Node26.9.0 pnpm11.28.5; local Git/CLI fixtures; pinned Kustomize/kubectl/kubeconform; actionlint1.7.12; read-only GitHub metadata, no remote mutations",
+      "executedAt": "2026-11-06T03:57:51.704164+00:00",
+      "commands": [
+        {
+          "command": "artifacts/vnext/n04-02/actionlint .github/workflows/promote.yml .github/workflows/publish.yml .github/workflows/quality.yml",
+          "argv": [
+            "artifacts/vnext/n04-02/actionlint",
+            ".github/workflows/promote.yml",
+            ".github/workflows/publish.yml",
+            ".github/workflows/quality.yml"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:44:18.100Z",
+          "endedAt": "2026-11-06T03:44:18.110Z",
+          "log": "artifacts/vnext/n04-02/actionlint.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test tests/governance/digest-promotion.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/digest-promotion.test.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:35:57.744Z",
+          "endedAt": "2026-11-06T03:36:02.418Z",
+          "log": "artifacts/vnext/n04-02/api-fixture.log",
+          "sha256": "4f47acb292029a27018314d47fc6f42687f48a774a2abf74300c26ad50332867"
+        },
+        {
+          "command": "pnpm architecture:check",
+          "argv": [
+            "pnpm",
+            "architecture:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:44:18.106Z",
+          "endedAt": "2026-11-06T03:44:19.413Z",
+          "log": "artifacts/vnext/n04-02/architecture.log",
+          "sha256": "0895f7c190684fe636b7c1d51d0c973be105d3c5315d5d86b4525fa71ba6a5c4"
+        },
+        {
+          "command": "node --test tests/governance/digest-promotion.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/digest-promotion.test.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:30:15.018Z",
+          "endedAt": "2026-11-06T03:30:15.757Z",
+          "log": "artifacts/vnext/n04-02/binding-tests.log",
+          "sha256": "af13458d989e0fb96a09348eee52ee8e8198b31bee9d038636e39843a528a425"
+        },
+        {
+          "command": "node --test tests/governance/digest-promotion.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/digest-promotion.test.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:22:23.262Z",
+          "endedAt": "2026-11-06T03:22:23.769Z",
+          "log": "artifacts/vnext/n04-02/bot-contracts.log",
+          "sha256": "0220afcac07b5f4ec937d30dbec3387ae6ea2786507cfc42f7b75b41790d12ea"
+        },
+        {
+          "command": "node --test tests/governance/digest-promotion.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/digest-promotion.test.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:52:18.785Z",
+          "endedAt": "2026-11-06T03:52:23.753Z",
+          "log": "artifacts/vnext/n04-02/bot-final.log",
+          "sha256": "a5f643fe273bf8c0efd4a549c7c466ef66676cfff8c7870c0064d27b41d0651b"
+        },
+        {
+          "command": "python3 artifacts/vnext/n04-02/bound-render.py",
+          "argv": [
+            "python3",
+            "artifacts/vnext/n04-02/bound-render.py"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:38:43.353Z",
+          "endedAt": "2026-11-06T03:38:44.457Z",
+          "log": "artifacts/vnext/n04-02/bound-render.log",
+          "sha256": "0e3db8dcea46539a5521deedb5aefee77c4a9c52115ff1dc8400bcdb60520a27"
+        },
+        {
+          "command": "env VLP_CAPTURE_PROMOTION_FIXTURE=1 node --test --test-name-pattern=actual preview CLI tests/governance/digest-promotion.test.mjs",
+          "argv": [
+            "env",
+            "VLP_CAPTURE_PROMOTION_FIXTURE=1",
+            "node",
+            "--test",
+            "--test-name-pattern=actual preview CLI",
+            "tests/governance/digest-promotion.test.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:37:30.195Z",
+          "endedAt": "2026-11-06T03:37:30.913Z",
+          "log": "artifacts/vnext/n04-02/captured-binding.log",
+          "sha256": "843d32109b012f089bcec4ba0cd14c8319b7421c7308f69144457346d468b35e"
+        },
+        {
+          "command": "pnpm ci:check",
+          "argv": [
+            "pnpm",
+            "ci:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:27:13.650Z",
+          "endedAt": "2026-11-06T03:27:14.879Z",
+          "log": "artifacts/vnext/n04-02/ci.log",
+          "sha256": "cd69896c44551981580258cb1e804892622825389b6b1ba85316a1c4b71e8612"
+        },
+        {
+          "command": "node --test tests/governance/digest-promotion.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/digest-promotion.test.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 1,
+          "signal": null,
+          "startedAt": "2026-11-06T03:11:33.250Z",
+          "endedAt": "2026-11-06T03:11:33.344Z",
+          "log": "artifacts/vnext/n04-02/contracts-before.log",
+          "sha256": "6ac8eabf09c396e050df1dbaccc16f36ec3a5954fa50b189d437a1925574cba1"
+        },
+        {
+          "command": "node --test tests/governance/digest-promotion.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/digest-promotion.test.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:12:15.270Z",
+          "endedAt": "2026-11-06T03:12:15.402Z",
+          "log": "artifacts/vnext/n04-02/contracts.log",
+          "sha256": "261411e8305f00b735e98337b8e3cdd96014861ed2acbb42f7ba84dcbe4588a2"
+        },
+        {
+          "command": "pnpm release:preflight",
+          "argv": [
+            "pnpm",
+            "release:preflight"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:04:12.905Z",
+          "endedAt": "2026-11-06T03:04:16.580Z",
+          "log": "artifacts/vnext/n04-02/enforcement.log",
+          "sha256": "76149e471be1a129c987e27ced2f2df927ad1bd544a45f95514dd2a97984507f"
+        },
+        {
+          "command": "pnpm ci:check",
+          "argv": [
+            "pnpm",
+            "ci:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:57:00.639Z",
+          "endedAt": "2026-11-06T03:57:01.742Z",
+          "log": "artifacts/vnext/n04-02/final-ci.log",
+          "sha256": "cd69896c44551981580258cb1e804892622825389b6b1ba85316a1c4b71e8612"
+        },
+        {
+          "command": "pnpm infra:check",
+          "argv": [
+            "pnpm",
+            "infra:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:57:00.643Z",
+          "endedAt": "2026-11-06T03:57:02.789Z",
+          "log": "artifacts/vnext/n04-02/final-infra.log",
+          "sha256": "8a0457a2e66b3a056a81a1b04f9f64d8a82c51c186e04996ce6847b689a0e7d8"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:56:32.616Z",
+          "endedAt": "2026-11-06T03:56:41.221Z",
+          "log": "artifacts/vnext/n04-02/final-lint.log",
+          "sha256": "2370dba5a000c30daca5833ff88dc555269cba67cdb84ca06665fd14d3228e70"
+        },
+        {
+          "command": "pnpm infra:check",
+          "argv": [
+            "pnpm",
+            "infra:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:27:13.654Z",
+          "endedAt": "2026-11-06T03:27:15.791Z",
+          "log": "artifacts/vnext/n04-02/infra.log",
+          "sha256": "5f4def9abb7abad4723e8745d338b7a324cb9d079905dc2f796291be6ae97513"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:27:13.650Z",
+          "endedAt": "2026-11-06T03:27:22.061Z",
+          "log": "artifacts/vnext/n04-02/lint.log",
+          "sha256": "2370dba5a000c30daca5833ff88dc555269cba67cdb84ca06665fd14d3228e70"
+        },
+        {
+          "command": "python artifacts/vnext/n04-02/preservation.py",
+          "argv": [
+            "python",
+            "artifacts/vnext/n04-02/preservation.py"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:57:00.639Z",
+          "endedAt": "2026-11-06T03:57:00.728Z",
+          "log": "artifacts/vnext/n04-02/preservation.log",
+          "sha256": "d6b4992d00f3ca362feaeda5559997be6ffcbd3c75647684e9a1275a920bb8dc"
+        },
+        {
+          "command": "node --test tests/governance/digest-promotion.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/digest-promotion.test.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:17:13.037Z",
+          "endedAt": "2026-11-06T03:17:13.429Z",
+          "log": "artifacts/vnext/n04-02/proposal-fixed.log",
+          "sha256": "d50213dd803a1bd9f88428009c46c149a38f58e3b1fb709670349425d863d88e"
+        },
+        {
+          "command": "node --test tests/governance/digest-promotion.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/digest-promotion.test.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 1,
+          "signal": null,
+          "startedAt": "2026-11-06T03:16:54.463Z",
+          "endedAt": "2026-11-06T03:16:54.803Z",
+          "log": "artifacts/vnext/n04-02/proposal-tests.log",
+          "sha256": "a984ac53a5df3cf4d04f5c8f4fc204acf68bfe13f008e10633735f45539c176c"
+        },
+        {
+          "command": "pnpm release-manifest:check",
+          "argv": [
+            "pnpm",
+            "release-manifest:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:44:18.097Z",
+          "endedAt": "2026-11-06T03:44:18.720Z",
+          "log": "artifacts/vnext/n04-02/release-manifest.log",
+          "sha256": "48175563d8ffd3ad2f6de8974a6b3d338e8807fc5a7ed46bb148be0b5aa701e5"
+        },
+        {
+          "command": "pnpm release:promote preview staging synthetic-fixture artifacts/vnext/n04-02/bound-render-fixture/artifacts/input artifacts/vnext/n04-02/root-preview",
+          "argv": [
+            "pnpm",
+            "release:promote",
+            "preview",
+            "staging",
+            "synthetic-fixture",
+            "artifacts/vnext/n04-02/bound-render-fixture/artifacts/input",
+            "artifacts/vnext/n04-02/root-preview"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:38:44.512Z",
+          "endedAt": "2026-11-06T03:38:45.012Z",
+          "log": "artifacts/vnext/n04-02/root-preview.log",
+          "sha256": "d588832aa0f8f4dab5c41c4edbcf341778f15cf453d7d10e1de50d8086778bd2"
+        },
+        {
+          "command": "pnpm test",
+          "argv": [
+            "pnpm",
+            "test"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:44:18.104Z",
+          "endedAt": "2026-11-06T03:44:39.128Z",
+          "log": "artifacts/vnext/n04-02/tests.log",
+          "sha256": "ec94715aa1b29b8122d10201033e304fee966a0a11335f676c888c469fd75258"
+        },
+        {
+          "command": "node --test tests/governance/digest-promotion.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/digest-promotion.test.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 1,
+          "signal": null,
+          "startedAt": "2026-11-06T03:26:13.042Z",
+          "endedAt": "2026-11-06T03:26:13.150Z",
+          "log": "artifacts/vnext/n04-02/workflow-before.log",
+          "sha256": "5c8312078c3df8307127acf002276c1a7dbc720a10a07851d5d6647f825d974a"
+        },
+        {
+          "command": "node --test tests/governance/digest-promotion.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/digest-promotion.test.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 1,
+          "signal": null,
+          "startedAt": "2026-11-06T03:26:13.230Z",
+          "endedAt": "2026-11-06T03:26:13.811Z",
+          "log": "artifacts/vnext/n04-02/workflow-contracts.log",
+          "sha256": "ffba47a03fea7bbb50e6a219547fa004096ccb2a4ceef828c84e4b9db903f41a"
+        },
+        {
+          "command": "node --test tests/governance/digest-promotion.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/digest-promotion.test.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T03:27:13.084Z",
+          "endedAt": "2026-11-06T03:27:13.583Z",
+          "log": "artifacts/vnext/n04-02/workflow-fixed.log",
+          "sha256": "2fc38ccd912480b19d70b61d40d0465e99611db91576d986ec0b01e933c55c56"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "Actual bot PR and hosted required Quality",
+          "outcome": "BLOCKED",
+          "notes": "App/published candidate prerequisites unavailable; never inferred from mocks."
+        },
+        {
+          "name": "Bounded local proposal, render and simulated writer recovery",
+          "outcome": "PASS",
+          "notes": "Explicitly synthetic registry/GitHub responses; real local Git and pinned schema tooling."
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "artifacts/vnext/n04-02/actionlint.json",
+          "sha256": "2fa626141f80df4d928a4effc359006cc4c1ad367dd6a138d2e9fa5cca73aed5",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/actionlint.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/api-fixture.log",
+          "sha256": "4f47acb292029a27018314d47fc6f42687f48a774a2abf74300c26ad50332867",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/app-preflight.json",
+          "sha256": "81261bb9937e6924580ceed070b1d0905ac34773811e26d4513b4c5b9b359df9",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/architecture.log",
+          "sha256": "0895f7c190684fe636b7c1d51d0c973be105d3c5315d5d86b4525fa71ba6a5c4",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/binding-tests.log",
+          "sha256": "af13458d989e0fb96a09348eee52ee8e8198b31bee9d038636e39843a528a425",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/bot-contracts.log",
+          "sha256": "0220afcac07b5f4ec937d30dbec3387ae6ea2786507cfc42f7b75b41790d12ea",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/bot-final.log",
+          "sha256": "a5f643fe273bf8c0efd4a549c7c466ef66676cfff8c7870c0064d27b41d0651b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/bound-render.log",
+          "sha256": "0e3db8dcea46539a5521deedb5aefee77c4a9c52115ff1dc8400bcdb60520a27",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/bound-render.py",
+          "sha256": "18a9cb2522f26a04ed203620d389218c9c536f83dcb46b893bb8ec25c703d39f",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/captured-binding.log",
+          "sha256": "843d32109b012f089bcec4ba0cd14c8319b7421c7308f69144457346d468b35e",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/ci.log",
+          "sha256": "cd69896c44551981580258cb1e804892622825389b6b1ba85316a1c4b71e8612",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-actionlint.json",
+          "sha256": "e7b1aa7e11158794f9c62a485cae339d1fabc43362f0a004b1a67484b97dde7f",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-api-fixture.json",
+          "sha256": "5b60b701a94ac64a4e189cbef84c037aeefc6841b8c58e52a659346905af3860",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-architecture.json",
+          "sha256": "64bf967e0d4ce05443fb0d385ff40d9beb7ac4f292e9a3f953d4324a94e10a28",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-binding-tests.json",
+          "sha256": "1ccc821cdc0879d62719ad8b5102786547d661b4c0cbf59c922fcaac9d06f6f1",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-bot-contracts.json",
+          "sha256": "838f505ddf9c835191756e4fcc73d468409aa13700c7d29a1ca33cb7a76e17e9",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-bot-final.json",
+          "sha256": "2d65417cb8670fdbb6eb8e24846c548346962512f33223e37d3c4c360c89809c",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-bound-render.json",
+          "sha256": "4109e52706ad2249172254f2a51fd0ea351ab4b7fa1b13a1a25ce71f70ca9c28",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-captured-binding.json",
+          "sha256": "80e7c32074c8044de737d39e368101f18efdbd81e50adc53d63c19c37e85f76f",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-ci.json",
+          "sha256": "aed4f7fe307924f2992e02f8c5ca4b90f107aa13ba70925d3b426cf3f63b8cd2",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-contracts-before.json",
+          "sha256": "45e1dc580e4b6d48556ed2802c46c245b763e130c30ee1ec6c0d216cbeddcbe9",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-contracts.json",
+          "sha256": "98a9a29fda6ce64026d6b6e3fb969cfeee740b70a5eb9315a3a8c2fc5839d10b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-enforcement.json",
+          "sha256": "b630b89019fef508bfbb127688da2ed66ca0f694f32f29ab69584396908b694a",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-final-ci.json",
+          "sha256": "cb32f31b3366101193ac3f449cf68b5154ebaef117de5fb1ae3a2f5e34a19733",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-final-infra.json",
+          "sha256": "6e31ee48f05e75bd0e2cdb2d9f97c25f703dd37a50c05fb09ea666d7aef4981d",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-final-lint.json",
+          "sha256": "e3ce4f6111b1c3c5d92288d803437ebc14f63de6640aa31e19c487f04c7523db",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-infra.json",
+          "sha256": "c000eaf6c9a0a1fe921dece5e5a80b2336c5ca3e0be42d104fd198706d2683ba",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-lint.json",
+          "sha256": "59d8e724b61b3c7917c365645c377d24c40f3eccc1104d950acf5d6f86eafc53",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-preservation.json",
+          "sha256": "7824db3b722beadc7b1bafc96d2d3654469aebe4560eb36ae5ffe60b802db794",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-proposal-fixed.json",
+          "sha256": "7864014278658d42fa4cabe752d3e35a4b4da5701de289fce8f15ac7f0245205",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-proposal-tests.json",
+          "sha256": "3467e791c4b49540a92943328bfc92be07adaea9e92eecc2af61b29231b503f6",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-release-manifest.json",
+          "sha256": "f88b78264bafa6e247494b2050455ceeca293230ad7e1d149c375e15cefbb929",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-root-preview.json",
+          "sha256": "537533af76587a8994c1ea1fb788f6e0336996350d0d89bd53eb4fd0786853ff",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-tests.json",
+          "sha256": "859b7183b4de96fe35fa343e29ccc6e9238c6d7ff4711ef15740e9189a7db009",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-workflow-before.json",
+          "sha256": "0bc1d197190d42ffc0369a39fb47cf9bed39a5252813e7e77ff2b7aedb069008",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-workflow-contracts.json",
+          "sha256": "f6a2d8d43a7eca62abfd8bec6c329e20bff2af4cc94b359609dcba04c8ab51b2",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/command-workflow-fixed.json",
+          "sha256": "a477fbed1ecdae643d25033408e21b0bc287b701d1fc8aacb50ddfa6cfc22692",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/contracts-before.log",
+          "sha256": "6ac8eabf09c396e050df1dbaccc16f36ec3a5954fa50b189d437a1925574cba1",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/contracts.log",
+          "sha256": "261411e8305f00b735e98337b8e3cdd96014861ed2acbb42f7ba84dcbe4588a2",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/enforcement.log",
+          "sha256": "76149e471be1a129c987e27ced2f2df927ad1bd544a45f95514dd2a97984507f",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/final-ci.log",
+          "sha256": "cd69896c44551981580258cb1e804892622825389b6b1ba85316a1c4b71e8612",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/final-infra.log",
+          "sha256": "8a0457a2e66b3a056a81a1b04f9f64d8a82c51c186e04996ce6847b689a0e7d8",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/final-lint.log",
+          "sha256": "2370dba5a000c30daca5833ff88dc555269cba67cdb84ca06665fd14d3228e70",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/infra.log",
+          "sha256": "5f4def9abb7abad4723e8745d338b7a324cb9d079905dc2f796291be6ae97513",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/lint.log",
+          "sha256": "2370dba5a000c30daca5833ff88dc555269cba67cdb84ca06665fd14d3228e70",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/preservation.json",
+          "sha256": "97683b9110239c9ffd454590612b27bd50c1dd6d6c13d0ed421e7b42a20ca19c",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/preservation.log",
+          "sha256": "d6b4992d00f3ca362feaeda5559997be6ffcbd3c75647684e9a1275a920bb8dc",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/preservation.py",
+          "sha256": "5f6da856972328593ef6b1e8670ca9868e52cafe287a7c144c3d0b0ac186bcc6",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/proposal-fixed.log",
+          "sha256": "d50213dd803a1bd9f88428009c46c149a38f58e3b1fb709670349425d863d88e",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/proposal-tests.log",
+          "sha256": "a984ac53a5df3cf4d04f5c8f4fc204acf68bfe13f008e10633735f45539c176c",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/release-manifest.log",
+          "sha256": "48175563d8ffd3ad2f6de8974a6b3d338e8807fc5a7ed46bb148be0b5aa701e5",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/root-preview.log",
+          "sha256": "d588832aa0f8f4dab5c41c4edbcf341778f15cf453d7d10e1de50d8086778bd2",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/root-preview/proposal.diff",
+          "sha256": "36d7785d8f911c64cb20a4bedb8c8da34e6997a0c2c53f754475798855c5fa97",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/root-preview/proposal.json",
+          "sha256": "54764a4bd3da1af3e46109e459703c17b80f58b7126f34425dab3951570f31e5",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/source.json",
+          "sha256": "60a49405ac908a7da57bfff5a85f34b2adcdbdb74b64f11bc2d629c3f4cd167f",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/source.patch",
+          "sha256": "5d1115bb5a0a723aff9dfc4e79d60a37adf546af6885432a9efe0616ecae9170",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/tests.log",
+          "sha256": "ec94715aa1b29b8122d10201033e304fee966a0a11335f676c888c469fd75258",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/workflow-before.log",
+          "sha256": "5c8312078c3df8307127acf002276c1a7dbc720a10a07851d5d6647f825d974a",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/workflow-contracts.log",
+          "sha256": "ffba47a03fea7bbb50e6a219547fa004096ccb2a4ceef828c84e4b9db903f41a",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n04-02/workflow-fixed.log",
+          "sha256": "2fc38ccd912480b19d70b61d40d0465e99611db91576d986ec0b01e933c55c56",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "docs/adr/0115-review-digest-promotion-through-scoped-app.md",
+          "sha256": "5d846066411860e3922519fb8a91ead2fb53f996ad825b3cd7726fd5dd63992e",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/architecture/N04-02-DIGEST-PROMOTION.json",
+          "sha256": "974b9ebb127a1ace110370a7d418e4947a0bc975b914a29bdde438b00ac78e4d",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/operations/DIGEST-PROMOTION.md",
+          "sha256": "a735a966627e78a0ea4520651c7e889b7452c1826a49b4d8e9ea1a576332b3eb",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N04-02-CHECKS.json",
+          "sha256": "60183d4f6d10ec258a8dd206f86c119375be0b326edece1b68b3415019056e11",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": false,
+      "limitations": [
+        "Real App PR and required hosted Quality run NOT_RUN; promotion variables unavailable and private-key secret name absent. No usable genuine published release candidate was supplied.",
+        "All registry/GitHub actor cases use explicit local stand-ins; bound renders use synthetic digests and prove only constrained local integrity/schema behavior.",
+        "Main observed unprotected; protection/rulesets access403. Owner review is not technical enforcement. Known hosted baseline cadence failure remains unresolved.",
+        "No GitHub writes, active root bindings, image publication, deployment, public/store release or mobile distribution. No new application/integration/browser/image qualification claimed; their sources are preserved.",
+        "Private raw logs remain local until owner cleanup, not off-host archived. Original failures retained; local code success does not satisfy the external task acceptance."
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."
