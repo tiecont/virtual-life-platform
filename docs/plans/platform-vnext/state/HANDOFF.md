@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-06T05:15:15.570796+00:00; N07-02 VERIFIED on `codex/vnext-n07-02-admin-shell`. Base `3faeae3ee79ad3fe8852cc730303bf2b9c644be4`; this slice is committed after evidence finalization.
+Updated 2026-11-06T05:42:13.792200+00:00; N03-05 VERIFIED on `codex/vnext-n03-05-admin-artifact`. Base `e570850d13ceeb550c64d19bc70734f0e06fc3ba`; this slice is committed after evidence finalization.
 
-Implemented separate admin MFA/session/audit shell, narrow server BFF and read-only current metrics projection with bounded query/cache/freshness and post-observation auth recheck. API/portal/packages/SQL and existing dependency snapshots unchanged; only new importer and admin build target added. Actual26 admin cases,328 unit cases,81 governance cases, final8 desktop/mobile browser executions and production frontend nonce/header/hydration/denials pass. Actual production bundle21files/1512620bytes excludes4 random synthetic configuration markers and private telemetry route; build/type/CI/infra/architecture/lint, preservation, generated-input typecheck/typegen and scoped cleanup pass. Existing30 specs/six groups retained; required admin seventh group added. Original failures retained and corrected, no real operator/image/deployment or public release.
+Implemented a separate hardened standalone admin image, shared sanitized runtime parser and strict source-bound schema2 API/web/admin release set; legacy schema1 pair remains accepted. Actual six scenarios each for API/web/admin, standalone pnpm admin image command, local loopback registry push/digest-pull and corruption/source/missing-admin rejection all pass with cleanup. Fresh84 governance/328unit/26admin cases, build/type/lint/CI/infra/architecture pass. API/portal/shared/SQL/lock/workflow/Kubernetes source and historical evidence preserved. Original failures retained; no real operator, hosted publish, App pilot or deployment.
 
-[Actual checks](../audit/N07-02-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 29, "TODO": 39, "BLOCKED_EXTERNAL": 1}`.
+[Actual checks](../audit/N03-05-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 30, "BLOCKED_EXTERNAL": 1, "TODO": 38}`.
 
 ## Remaining gates
 
@@ -12,4 +12,4 @@ Hosted baseline Quality42037215254 failed Deadline cadence (133.3ms vs <100ms); 
 
 ## Next exact action
 
-Reserve N03-05 (highest ready priority44) on a clean branch. Read artifact build/publish/provenance/manifest and admin source closure. Implement a separate hardened admin image and integrate its exact source/digest target into quality, image tests and reviewed release metadata while preserving existing API/web and old release compatibility. Run real production image/browser/private-origin/token inspection with cleanup; no publishing, automatic promotion or deployment without real gates. Keep N04-02 externally blocked and N04-03 waiting.
+Reserve N07-03 (highest ready priority72) on a clean branch. Read its events/accounts/runtime-control plan and N07-01/N02-03 evidence; audit existing event, identity, runtime/safety policy and operator audit transactions. Implement one bounded audited control slice with fresh step-up/CSRF/Origin, idempotency/version checks, preserved privacy/reward history and real DB/HTTP/browser denial tests; keep public/dating/media gates closed. N04-02 remains externally blocked and N04-03 waits.

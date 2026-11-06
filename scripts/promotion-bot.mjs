@@ -56,7 +56,7 @@ async function appApi(path, method = 'GET', payload, optional = false) {
 }
 async function publish(input) {
   const bytes = await readFile('artifacts/promotion-proposal/proposal.json'); assert.equal(hash(bytes), process.env.PROMOTION_PROPOSAL_SHA);
-  const plan = JSON.parse(bytes.toString()), actual = await prepare(input); assert.deepEqual(actual, plan, 'Proposal/source/proof changed before Git mutation'); assert(plan.changed && plan.remoteEvidenceVerified); assertPromotionPaths(plan.edits.map(edit => edit.path), plan.environment, plan.releaseId);
+  const plan = JSON.parse(bytes.toString()), actual = await prepare(input); assert.deepEqual(actual, plan, 'Proposal/source/proof changed before Git mutation'); assert(plan.changed && plan.remoteEvidenceVerified); assertPromotionPaths(plan.edits.map(edit => edit.path), plan.environment, plan.releaseId,plan.releaseSchemaVersion);
   // Read credentials and write credentials stay separate. The App token is
   // restricted to one installation repository and contents/PR permissions.
   const installation = await appApi('installation/repositories'); assert.equal(installation.total_count, 1); assert.equal(installation.repositories.length, 1); assert.equal(installation.repositories[0].full_name, repository);

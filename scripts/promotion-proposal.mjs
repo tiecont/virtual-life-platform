@@ -4,14 +4,15 @@ import {lstat, mkdir, readFile, readdir, writeFile} from 'node:fs/promises';
 import {resolve, relative, join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {checkManifest, hash, jsonBytes, validateManifest} from './release-manifest.mjs';
-import {assertPromotionPaths, buildPromotionPlan, promotionTarget, releaseFiles} from './promotion-contract.mjs';
+import {assertPromotionPaths, buildPromotionPlan, promotionTarget, releaseFilesFor} from './promotion-contract.mjs';
 
 const git = args => execFileSync('git', args, {encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe']}).trim();
 async function optional(path) {try {const stat = await lstat(path); assert(stat.isFile() && !stat.isSymbolicLink() && stat.size <= 16 * 1024 ** 2); return await readFile(path);} catch (error) {if (error.code === 'ENOENT') return null; throw error;}}
 export async function promotionProposal({mode, environment, releaseId, candidate}) {
   assert(['preview', 'verify'].includes(mode)); const target = promotionTarget(environment, releaseId), baseRevision = git(['rev-parse', 'HEAD']);
-  const directory = resolve(candidate), stat = await lstat(directory); assert(stat.isDirectory() && !stat.isSymbolicLink()); assert.deepEqual((await readdir(directory)).sort(), [...releaseFiles].sort());
+  const directory = resolve(candidate), stat = await lstat(directory); assert(stat.isDirectory() && !stat.isSymbolicLink());
   const original = await optional(join(directory, 'release.json')); assert(original); const manifest = validateManifest(JSON.parse(original.toString()));
+  const releaseFiles=releaseFilesFor(manifest);assert.deepEqual((await readdir(directory)).sort(), [...releaseFiles].sort());
   if (mode === 'verify') {
     assert.equal(git(['status', '--porcelain']), '', 'Verified proposal requires a clean source checkout');
     execFileSync('git', ['merge-base', '--is-ancestor', manifest.source.revision, baseRevision], {stdio: ['ignore', 'pipe', 'pipe']});
@@ -22,7 +23,7 @@ export async function promotionProposal({mode, environment, releaseId, candidate
   const payloads = new Map();
   for (const file of releaseFiles) {const bytes = await optional(join(directory, file)); assert(bytes); assert(Buffer.from(bytes.toString('utf8')).equals(bytes)); JSON.parse(bytes.toString()); payloads.set(file, bytes);}
   assert.equal(hash(payloads.get('release.json')), hash(original), 'Release changed while capturing proposal payloads');
-  const descriptors = [manifest.evidence.quality, manifest.evidence.imageChecks, ...['api', 'web'].flatMap(name => [manifest.artifacts[name].sbom, manifest.artifacts[name].provenance])];
+  const descriptors = [manifest.evidence.quality, manifest.evidence.imageChecks, ...Object.keys(manifest.artifacts).flatMap(name => [manifest.artifacts[name].sbom, manifest.artifacts[name].provenance])];
   assert.deepEqual(descriptors.map(descriptor => descriptor.file).sort(), releaseFiles.filter(file => file !== 'release.json').sort());
   for (const descriptor of descriptors) assert.equal(hash(payloads.get(descriptor.file)), descriptor.sha256, 'Release payload changed after proof');
   const currentOverlayBytes = await optional(target.overlay + '/kustomization.yaml'); assert(currentOverlayBytes);
@@ -36,7 +37,7 @@ export async function promotionProposal({mode, environment, releaseId, candidate
     if (before?.equals(bytes)) continue;
     edits.push({path, beforeSha256: before ? hash(before) : null, afterSha256: hash(bytes), content: bytes.toString('utf8'), before: before?.toString('utf8') ?? null});
   }
-  if (edits.length) assertPromotionPaths(edits.map(edit => edit.path), environment, releaseId);
+  if (edits.length) assertPromotionPaths(edits.map(edit => edit.path), environment, releaseId,manifest.schemaVersion);
   assert.equal(git(['rev-parse', 'HEAD']), baseRevision, 'Source changed during verification');
   if (mode === 'verify') assert.equal(git(['status', '--porcelain']), '', 'Source changed during verified proposal capture');
   return {...preview, kind: mode === 'verify' ? 'vlp-proof-checked-promotion-proposal' : preview.kind, changed: edits.length > 0, remoteEvidenceVerified: mode === 'verify', sourceValidation: validation, edits, scope: 'Reviewable proposal only. This command never writes overlays/releases, calls GitHub mutation APIs, deploys or authorizes production. Any future writer must reverify remote proof and exact edits.'};

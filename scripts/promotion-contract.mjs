@@ -2,8 +2,10 @@ import assert from 'node:assert/strict';
 import {isDeepStrictEqual} from 'node:util';
 import {keys, validateManifest} from './release-manifest.mjs';
 import {shaPattern} from './artifact-policy.mjs';
+import {releasePayloadFiles} from './artifact-targets.mjs';
 
 export const releaseFiles = ['release.json', 'quality-proof.json', 'image-checks.json', 'api-sbom.cdx.json', 'api-provenance.json', 'web-sbom.cdx.json', 'web-provenance.json'];
+export const releaseFilesFor=manifest=>releasePayloadFiles(manifest.schemaVersion);
 export function promotionTarget(environment, releaseId) {
   assert(['staging', 'production'].includes(environment)); assert(typeof releaseId === 'string' && /^[a-z0-9][a-z0-9-]{0,79}$/.test(releaseId));
   return {overlay: 'infra/k8s/overlays/' + environment, releasePath: 'releases/' + releaseId};
@@ -20,8 +22,8 @@ export function imageTransforms(binding) {
   validateOverlayRelease(binding);
   return ['api', 'web'].map(target => {const [newName, digest] = binding.images[target].split('@'); return {name: 'registry.invalid/vlp-' + target, newName, digest};});
 }
-export function assertPromotionPaths(paths, environment, releaseId) {
-  const target = promotionTarget(environment, releaseId), allowed = new Set([...releaseFiles.map(file => target.releasePath + '/' + file), target.overlay + '/release.json', target.overlay + '/kustomization.yaml']);
+export function assertPromotionPaths(paths, environment, releaseId, releaseSchemaVersion=1) {
+  const target = promotionTarget(environment, releaseId), allowed = new Set([...releasePayloadFiles(releaseSchemaVersion).map(file => target.releasePath + '/' + file), target.overlay + '/release.json', target.overlay + '/kustomization.yaml']);
   assert(Array.isArray(paths) && paths.length > 0 && paths.length <= allowed.size && new Set(paths).size === paths.length);
   assert(paths.every(path => allowed.has(path)), 'Promotion cannot change code, another environment or unreviewed metadata');
 }
@@ -35,5 +37,5 @@ export function buildPromotionPlan(manifest, {environment, releaseId, manifestSh
   const binding = validateOverlayRelease({schemaVersion: 1, kind: 'vlp-overlay-release', releasePath: target.releasePath, manifestSha256, sourceRevision: manifest.source.revision, quality: {runId: manifest.quality.runId, runAttempt: manifest.quality.runAttempt}, images: Object.fromEntries(['api', 'web'].map(name => [name, manifest.artifacts[name].image])), ownerReviewRequired: true, autoMerge: false, productionReleaseAuthorized: false, deploymentEligible: false});
   if (environment === 'production') assert.deepEqual(validateOverlayRelease(stagingBinding), binding, 'Production must use the identical staging release descriptor and digests');
   const overlay = {...currentOverlay, images: imageTransforms(binding)}, changed = !isDeepStrictEqual(currentBinding, binding) || !isDeepStrictEqual(currentOverlay, overlay);
-  return {schemaVersion: 1, kind: 'vlp-unverified-promotion-preview', environment, releaseId, baseRevision, changed, remoteEvidenceVerified: false, productionReleaseAuthorized: false, deploymentEligible: false, binding, overlay};
+  return {schemaVersion: 1, releaseSchemaVersion:manifest.schemaVersion, kind: 'vlp-unverified-promotion-preview', environment, releaseId, baseRevision, changed, remoteEvidenceVerified: false, productionReleaseAuthorized: false, deploymentEligible: false, binding, overlay};
 }

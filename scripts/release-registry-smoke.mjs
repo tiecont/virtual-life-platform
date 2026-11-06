@@ -31,7 +31,17 @@ try {
   facts.daemonAndRegistryIdentityEqual = Object.fromEntries(Object.entries(manifest.artifacts).map(([target, artifact]) => [target, artifact.image.split('@')[1] === artifact.localImageId]));
   await assert.rejects(() => checkManifest(output), 'Rehearsal cannot be used as an actual release candidate');
   const negative = resolve(directory, 'corrupt-candidate'); await cp(output, negative, {recursive: true});
-  await writeFile(resolve(negative, 'web-sbom.cdx.json'), '{}'); await assert.rejects(() => checkManifest(negative, {rehearsal: true}));
+  for (const target of Object.keys(manifest.artifacts)) {
+    const file = resolve(negative, target + '-sbom.cdx.json'), original = await readFile(file);
+    await writeFile(file, '{}'); await assert.rejects(() => checkManifest(negative, {rehearsal: true})); await writeFile(file, original);
+  }
+  if (manifest.schemaVersion === 2) {
+    const missing = globalThis.structuredClone(manifest); delete missing.artifacts.admin;
+    await writeFile(resolve(negative, 'release.json'), jsonBytes(missing)); await assert.rejects(() => checkManifest(negative, {rehearsal: true}));
+    const wrongSource = globalThis.structuredClone(manifest); wrongSource.artifacts.admin.sourceRevision = '0'.repeat(40);
+    await writeFile(resolve(negative, 'release.json'), jsonBytes(wrongSource)); await assert.rejects(() => checkManifest(negative, {rehearsal: true}));
+    facts.missingAdminAndWrongSourceDenied = true;
+  }
   await writeFile(resolve(negative, 'release.json'), jsonBytes({...manifest, artifacts: {...manifest.artifacts, api: {...manifest.artifacts.api, image: registry + '/vlp-api:latest'}}}));
   await assert.rejects(() => checkManifest(negative, {rehearsal: true}));
   await rm(negative, {recursive: true});

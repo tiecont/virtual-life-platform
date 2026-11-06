@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {readFile} from 'node:fs/promises';
+import {releaseTargets} from './artifact-targets.mjs';
 
 export const repository = 'tiecont/virtual-life-platform';
 export const qualityWorkflow = '.github/workflows/quality.yml';
@@ -9,17 +10,17 @@ export const digestPattern = /^sha256:[a-f0-9]{64}$/;
 
 export function validateArtifactPolicy(value) {
   assert.deepEqual(Object.keys(value).sort(), ['autoMerge', 'branch', 'candidate', 'images', 'ownerPromotionRequired', 'productionAutoPromotion', 'publishEnabled', 'qualityWorkflow', 'repository', 'schemaVersion'].sort());
-  assert.equal(value.schemaVersion, 1); assert.equal(value.repository, repository);
+  const targets=releaseTargets(value.schemaVersion); assert.equal(value.repository, repository);
   assert.equal(value.branch, 'main'); assert.equal(value.qualityWorkflow, qualityWorkflow);
   assert.equal(typeof value.publishEnabled, 'boolean');
   assert.equal(value.autoMerge, false); assert.equal(value.productionAutoPromotion, false); assert.equal(value.ownerPromotionRequired, true);
-  assert.deepEqual(value.images, {api: 'ghcr.io/tiecont/vlp-api', web: 'ghcr.io/tiecont/vlp-web'});
+  assert.deepEqual(value.images,Object.fromEntries(targets.map(target=>[target,'ghcr.io/tiecont/vlp-'+target])));
   assert(value.candidate === null || /^releases\/[a-z0-9-]+$/.test(value.candidate));
   return value;
 }
 export async function artifactPolicy() {return validateArtifactPolicy(JSON.parse(await readFile('config/artifact-release.json', 'utf8')));}
 
-// Unknown paths rebuild both artifacts. Only inert documentation and deployment metadata skip images.
+// Unknown paths rebuild every artifact. Only inert documentation and deployment metadata skip images.
 export function imageChanges(files) {
   assert(Array.isArray(files) && files.length > 0 && files.length <= 100000);
   for (const file of files) assert(typeof file === 'string' && file && !file.startsWith('/') && !file.split('/').some(part => part === '..' || part === '.') && !file.includes('\n'));

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {lstat, readFile, readdir} from 'node:fs/promises';
 import {checkManifest, hash, validateManifest} from './release-manifest.mjs';
-import {imageTransforms, promotionTarget, releaseFiles, validateOverlayRelease} from './promotion-contract.mjs';
+import {imageTransforms, promotionTarget, releaseFilesFor, validateOverlayRelease} from './promotion-contract.mjs';
 
 async function ownedFile(path) {
   const pieces = path.split('/'); let current = '';
@@ -14,6 +14,7 @@ export async function loadOverlayRelease(environment, overlay) {
   const binding = validateOverlayRelease(JSON.parse(bytes.toString())); assert.deepEqual(overlay.images, imageTransforms(binding));
   const path = binding.releasePath + '/release.json', manifestBytes = await ownedFile(path); assert.equal(hash(manifestBytes), binding.manifestSha256);
   const manifest = validateManifest(JSON.parse(manifestBytes.toString())); assert.equal(manifest.source.revision, binding.sourceRevision); assert.deepEqual({runId: manifest.quality.runId, runAttempt: manifest.quality.runAttempt}, binding.quality);
+  const releaseFiles=releaseFilesFor(manifest);
   for (const name of ['api', 'web']) assert.equal(manifest.artifacts[name].image, binding.images[name]);
   assert.deepEqual((await readdir(binding.releasePath)).sort(), [...releaseFiles].sort());
   for (const file of releaseFiles) await ownedFile(binding.releasePath + '/' + file);

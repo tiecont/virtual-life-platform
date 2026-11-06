@@ -6,6 +6,7 @@ import {tmpdir} from 'node:os';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {artifactPolicy, digestPattern, hostedProof, qualityWorkflow, repository, shaPattern} from './artifact-policy.mjs';
+import {releaseTargets} from './artifact-targets.mjs';
 
 export const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 export const jsonBytes = value => JSON.stringify(value, null, 2) + '\n';
@@ -20,16 +21,17 @@ export async function verifiedFile(directory, descriptor) {
 }
 export function validateManifest(value, {rehearsal = false} = {}) {
   keys(value, 'schemaVersion,kind,source,quality,artifacts,compatibility,promotion,evidence,vulnerabilities');
-  assert.equal(value.schemaVersion, 1); assert.equal(value.kind, rehearsal ? 'local-registry-rehearsal' : 'vlp-release-candidate');
+  const targets=releaseTargets(value.schemaVersion); assert.equal(value.kind, rehearsal ? 'local-registry-rehearsal' : 'vlp-release-candidate');
   keys(value.source, 'repository,revision'); assert.equal(value.source.repository, repository); assert(shaPattern.test(value.source.revision));
   keys(value.quality, 'runId,runAttempt,workflow,event,branch');
   assert.equal(value.quality.workflow, qualityWorkflow); assert.equal(value.quality.event, rehearsal ? 'local-rehearsal' : 'push'); assert.equal(value.quality.branch, 'main');
   for (const name of ['runId', 'runAttempt']) assert(Number.isSafeInteger(value.quality[name]) && value.quality[name] >= (rehearsal ? 0 : 1));
   assert.deepEqual(value.promotion, {autoMerge: false, productionAutoPromotion: false, ownerRequired: true, publicRelease: false});
   assert.deepEqual(value.vulnerabilities, {status: 'NOT_RUN', promotionRequiresReview: true});
-  keys(value.artifacts, 'api,web');
-  for (const target of ['api', 'web']) {
-    const artifact = value.artifacts[target]; keys(artifact, 'image,localImageId,sbom,provenance'); assert(digestPattern.test(artifact.localImageId));
+  keys(value.artifacts, targets.join(','));
+  for (const target of targets) {
+    const artifact = value.artifacts[target]; keys(artifact, 'image,localImageId,sbom,provenance'+(value.schemaVersion===2?',sourceRevision':'')); assert(digestPattern.test(artifact.localImageId));
+    if(value.schemaVersion===2)assert.equal(artifact.sourceRevision,value.source.revision,'Artifact source revision mismatch');
     const pattern = rehearsal ? new RegExp('^127\\.0\\.0\\.1:[1-9][0-9]{0,4}/vlp-' + target + '@sha256:[a-f0-9]{64}$') : new RegExp('^ghcr\\.io/tiecont/vlp-' + target + '@sha256:[a-f0-9]{64}$');
     assert(pattern.test(artifact.image), 'Deploy by allowlisted immutable digest only');
     descriptorShape(artifact.sbom); descriptorShape(artifact.provenance);
@@ -53,8 +55,9 @@ export async function checkManifest(directory, {rehearsal = false, remote = fals
   assert.equal(proof.sourceRevision, manifest.source.revision); assert.equal(proof.repository, repository);
   assert.equal(proof.runId, manifest.quality.runId); assert.equal(proof.runAttempt, manifest.quality.runAttempt);
   assert.equal(proof.event, manifest.quality.event); assert.equal(proof.branch, 'main'); assert.equal(proof.workflow, qualityWorkflow);
-  assert.equal(checks.sourceRevision, manifest.source.revision); assert.equal(checks.result, 'PASS'); assert.equal(checks.apiScenarios, 6); assert.equal(checks.webScenarios, 6); assert.equal(checks.cleanupComplete, true);
-  for (const target of ['api', 'web']) {
+  const targets=releaseTargets(manifest.schemaVersion);
+  assert.equal(checks.sourceRevision, manifest.source.revision); assert.equal(checks.result, 'PASS'); for(const target of targets)assert.equal(checks[target+'Scenarios'],6); keys(checks.images,targets.join(',')); assert.equal(checks.cleanupComplete, true);
+  for (const target of targets) {
     const artifact = manifest.artifacts[target]; assert.equal(checks.images[target], artifact.localImageId);
     const sbom = await verifiedFile(directory, artifact.sbom), provenance = await verifiedFile(directory, artifact.provenance);
     assert.equal(sbom.bomFormat, 'CycloneDX'); assert(Array.isArray(sbom.components) && sbom.components.length > 0);
@@ -76,10 +79,11 @@ export async function checkManifest(directory, {rehearsal = false, remote = fals
     try {
       execFileSync('gh', ['run', 'download', String(actual.runId), '--repo', repository, '--name', 'verified-image-metadata-' + actual.sourceRevision + '-' + actual.runAttempt, '--dir', metadataDirectory], {timeout: 120000, stdio: ['ignore', 'pipe', 'pipe']});
       const bundle = JSON.parse(await readFile(resolve(metadataDirectory, 'bundle.json'), 'utf8'));
+      assert.equal(bundle.schemaVersion,manifest.schemaVersion);keys(bundle.images,targets.join(','));
       assert.equal(bundle.sourceRevision, actual.sourceRevision); assert.deepEqual(bundle.compatibility, manifest.compatibility);
       assert.equal(bundle.checks.sha256, manifest.evidence.imageChecks.sha256);
       await verifiedFile(metadataDirectory, bundle.checks);
-      for (const target of ['api', 'web']) {
+      for (const target of targets) {
         assert.equal(bundle.images[target].id, manifest.artifacts[target].localImageId);
         assert.deepEqual(bundle.images[target].sbom, manifest.artifacts[target].sbom);
         await verifiedFile(metadataDirectory, bundle.images[target].sbom);

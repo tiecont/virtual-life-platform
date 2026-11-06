@@ -1,14 +1,10 @@
 import {z} from 'zod';
 import {OperatorLoginSchema,OperatorRecoverySchema,OperatorSessionSchema} from '@virtual-city/contracts';
-type Config={origin:string;api:string;production:boolean;metricsToken?:string};
+import {adminConfig,type AdminConfig as Config} from './runtime-config.mjs';
+export {adminConfig};
 type Fetch=(input:string,init?:RequestInit)=>Promise<Response>;
 export type MetricView={status:'FRESH'|'STALE'|'UNKNOWN';source:'platform-api';sampledAt:number|null;values:{requests:number|null;errors:number|null;connections:number|null;memberships:number|null;eventLoopP95Ms:number|null}};
-export function adminConfig(env:Record<string,string|undefined>):Config|undefined{
- try{const origin=new URL(env.ADMIN_ORIGIN??''),api=new URL(env.ADMIN_API_ORIGIN??''),production=env.NODE_ENV==='production';
-  if(origin.origin!==env.ADMIN_ORIGIN||api.origin!==env.ADMIN_API_ORIGIN||![origin,api].every(url=>['http:','https:'].includes(url.protocol))||production&&origin.protocol!=='https:'||env.ADMIN_METRICS_READ_TOKEN!==undefined&&!/^[a-f0-9]{64}$/.test(env.ADMIN_METRICS_READ_TOKEN))return;
-  return {origin:origin.origin,api:api.origin,production,metricsToken:env.ADMIN_METRICS_READ_TOKEN};
- }catch{return;}
-}
+
 const count=z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const telemetry=z.object({schemaVersion:z.literal(1),serverTime:z.number().finite(),http:z.object({requests:count,errors:count}),gauges:z.object({online:z.object({connections:count,memberships:count})}),rooms:z.object({eventLoop:z.object({p95Ms:z.number().min(0).nullable()})})});
 const recovery=z.strictObject({subject:z.uuid(),recoveryCodes:z.array(z.string().regex(/^[a-f0-9]{64}$/)).length(10)});

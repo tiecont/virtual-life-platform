@@ -10,7 +10,7 @@ function fail(status=403){respond({status:String(status),message:'Synthetic fixt
 try{
  if(tool==='docker'){
   assert.equal(role,'read');state.calls.push({tool,role,args});
-  const image=args.find(a=>a.startsWith('ghcr.io/tiecont/vlp-'));assert(image);const target=image.includes('/vlp-api@')?'api':'web';assert.equal(image,state.manifest.artifacts[target].image);
+  const image=args.find(a=>a.startsWith('ghcr.io/tiecont/vlp-'));assert(image);const target=image.match(/\/vlp-(api|web|admin)@/)?.[1];assert(target);assert.equal(image,state.manifest.artifacts[target].image);
   if(args[0]==='buildx')respond({digest:image.split('@')[1]});
   if(args[0]==='pull')respond();
   if(args[0]==='image'&&args[1]==='inspect')respond([{Id:state.manifest.artifacts[target].localImageId,Config:{Labels:{'org.opencontainers.image.revision':state.revision}}}]);
@@ -20,7 +20,7 @@ try{
  if(args[0]==='run'&&args[1]==='download'){
   assert.equal(role,'read');state.calls.push({tool,role,operation:'metadata-download'});const dir=args[args.indexOf('--dir')+1];
   assert.equal(args[args.indexOf('--name')+1],'verified-image-metadata-'+state.revision+'-2');fs.mkdirSync(dir,{recursive:true});
-  for(const name of ['image-checks.json','api-sbom.cdx.json','web-sbom.cdx.json'])fs.copyFileSync(path.join(state.candidate,name),path.join(dir,name));
+  for(const name of ['image-checks.json',...Object.keys(state.manifest.artifacts).map(target=>target+'-sbom.cdx.json')])fs.copyFileSync(path.join(state.candidate,name),path.join(dir,name));
   fs.writeFileSync(path.join(dir,'bundle.json'),JSON.stringify(state.bundle));respond();
  }
  assert.equal(args[0],'api');const endpoint=args.slice(1).find(a=>a.startsWith('repos/')||a==='installation/repositories');assert(endpoint);

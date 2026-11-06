@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "repository": "tiecont/virtual-life-platform",
   "branch": "main",
   "qualityWorkflow": ".github/workflows/quality.yml",
@@ -9,7 +9,8 @@
   "ownerPromotionRequired": true,
   "images": {
     "api": "ghcr.io/tiecont/vlp-api",
-    "web": "ghcr.io/tiecont/vlp-web"
+    "web": "ghcr.io/tiecont/vlp-web",
+    "admin": "ghcr.io/tiecont/vlp-admin"
   },
   "candidate": null
 }
