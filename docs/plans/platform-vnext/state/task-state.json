@@ -368,12 +368,14 @@
       "next_action": "Reserve N10-01; pin a proposed Android toolchain and pre-measurement device/workload/budget matrix with Capacitor ADR, preserving UNKNOWN phone facts and separate conditional iOS gates. Then continue dependency-ready repository and boundary work."
     },
     "N06-03": {
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "owner": "Codex",
       "branch": "codex/vnext-n09-02-postgres",
-      "evidence_refs": [],
+      "evidence_refs": [
+        "n06-03-shared-shell-2026-11-06"
+      ],
       "blocker": null,
-      "next_action": "Implement opt-in scene-first shared shell, stable Next router navigation port and actual test:ux-core browser/API scenarios; preserve classic layout/authority/widgets/safety and measure applicable checks."
+      "next_action": "Execute N06-08 (priority82.1): audit the camera fit/resize and mobile Shell/native MainActivity; implement scene-first landscape HUD/context panels, gameplay-scoped Android orientation with cleanup/restoration and usable portrait/large-text/keyboard/safe-area fallback. Qualify actual browser and owner-authorized Android DEBUG build/install/rotation/Back/resume with source/APK hashes; keep native auth/animal saves/performance/iOS gates separate."
     },
     "N06-04": {
       "status": "TODO",

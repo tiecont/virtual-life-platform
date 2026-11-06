@@ -1,0 +1,393 @@
+{
+  "taskId": "N06-03",
+  "sourceRevision": "65bbb836b0af4f5c635977d6e48c977edc27913e",
+  "executedAt": "2026-11-06T14:28:20.356Z",
+  "environment": {
+    "os": "Linux 7.2.9-2-cachyos x86_64 GNU/Linux",
+    "node": "v26.9.0",
+    "pnpm": "11.28.5",
+    "scope": "Actual local browser/API with disposable PostgreSQL44migrations; desktop and iPhone13 Chromium emulation, not physical iOS/Android"
+  },
+  "commands": [
+    {
+      "command": "pnpm ci:check",
+      "argv": [
+        "pnpm",
+        "ci:check"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:09:09.235Z",
+      "endedAt": "2026-11-06T14:09:10.712Z",
+      "log": "artifacts/vnext/n06-03/ci-with-core.log",
+      "sha256": "52a5ffe04d8d48058db2532508be6b6b59c71870947c67e4c5c02fa09b9c1f45"
+    },
+    {
+      "command": "env NEXT_PUBLIC_VLP_SCENE_FIRST=0 pnpm --filter @virtual-city/portal-web build",
+      "argv": [
+        "env",
+        "NEXT_PUBLIC_VLP_SCENE_FIRST=0",
+        "pnpm",
+        "--filter",
+        "@virtual-city/portal-web",
+        "build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:20:57.626Z",
+      "endedAt": "2026-11-06T14:21:32.235Z",
+      "log": "artifacts/vnext/n06-03/classic-build.log",
+      "sha256": "fda87a4779addd51d810ac941478310b2a4785efdd06b1023a1286a18eb2ce43"
+    },
+    {
+      "command": "pnpm test:ux-core --classic",
+      "argv": [
+        "pnpm",
+        "test:ux-core",
+        "--classic"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:22:50.665Z",
+      "endedAt": "2026-11-06T14:24:19.625Z",
+      "log": "artifacts/vnext/n06-03/classic-core.log",
+      "sha256": "a62dcd3fd3f0830422e39a6a29c4a758f673c6ae9ecd88a8b327a74e0e74c7ff"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:09:11.522Z",
+      "endedAt": "2026-11-06T14:09:34.630Z",
+      "log": "artifacts/vnext/n06-03/core-lint.log",
+      "sha256": "1a2919c0f6e3923fc1f916d392f46ef8bbfe75713b7905181473b117adb18175"
+    },
+    {
+      "command": "env NEXT_PUBLIC_VLP_SCENE_FIRST=1 pnpm build",
+      "argv": [
+        "env",
+        "NEXT_PUBLIC_VLP_SCENE_FIRST=1",
+        "pnpm",
+        "build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:09:10.360Z",
+      "endedAt": "2026-11-06T14:10:08.965Z",
+      "log": "artifacts/vnext/n06-03/enhanced-build.log",
+      "sha256": "3264ca9858bf2fcfa8cf921eca0620fec11e80351b3705c15605b7f5ddf9b3d5"
+    },
+    {
+      "command": "pnpm test:ux-core",
+      "argv": [
+        "pnpm",
+        "test:ux-core"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T14:12:13.086Z",
+      "endedAt": "2026-11-06T14:13:16.797Z",
+      "log": "artifacts/vnext/n06-03/enhanced-core-first.log",
+      "sha256": "ff5a223d320c9186fb05677254d027920db72b8cdcb4c05988fe241cea8e79dd"
+    },
+    {
+      "command": "pnpm test:ux-core",
+      "argv": [
+        "pnpm",
+        "test:ux-core"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:14:47.343Z",
+      "endedAt": "2026-11-06T14:15:49.627Z",
+      "log": "artifacts/vnext/n06-03/enhanced-core-mode-final.log",
+      "sha256": "fc4d1b3823fa3d868fe7d92ef35ef0061fe4813c3f431fab7a5c8a8641cfdd6b"
+    },
+    {
+      "command": "node --test tests/governance/test-environment.test.mjs",
+      "argv": [
+        "node",
+        "--test",
+        "tests/governance/test-environment.test.mjs"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:14:47.100Z",
+      "endedAt": "2026-11-06T14:14:47.260Z",
+      "log": "artifacts/vnext/n06-03/environment-guard.log",
+      "sha256": "5e9edf0a292604a595e7818df8fec241c4737802318625649640551e1db7eceb"
+    },
+    {
+      "command": "node --test tests/governance/test-environment.test.mjs",
+      "argv": [
+        "node",
+        "--test",
+        "tests/governance/test-environment.test.mjs"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T14:14:37.541Z",
+      "endedAt": "2026-11-06T14:14:37.688Z",
+      "log": "artifacts/vnext/n06-03/environment-negative-first.log",
+      "sha256": "7e3979b79327f25c1f94cfb14bc3df4ca2c493018b60a3b5e1fbfda69f332fdb"
+    },
+    {
+      "command": "pnpm test:client-boundaries",
+      "argv": [
+        "pnpm",
+        "test:client-boundaries"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:19:14.307Z",
+      "endedAt": "2026-11-06T14:19:16.145Z",
+      "log": "artifacts/vnext/n06-03/final-boundaries.log",
+      "sha256": "f8d327b750d1dae8d625b9b55cb92490c12a9d8ce53364f5053a3fabb4ec8ec6"
+    },
+    {
+      "command": "pnpm ci:check",
+      "argv": [
+        "pnpm",
+        "ci:check"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:20:56.433Z",
+      "endedAt": "2026-11-06T14:20:58.952Z",
+      "log": "artifacts/vnext/n06-03/final-ci.log",
+      "sha256": "52a5ffe04d8d48058db2532508be6b6b59c71870947c67e4c5c02fa09b9c1f45"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:19:14.303Z",
+      "endedAt": "2026-11-06T14:19:42.421Z",
+      "log": "artifacts/vnext/n06-03/final-lint.log",
+      "sha256": "1a2919c0f6e3923fc1f916d392f46ef8bbfe75713b7905181473b117adb18175"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/client-sdk/test/platform.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "packages/client-sdk/test/platform.test.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:08:06.047Z",
+      "endedAt": "2026-11-06T14:08:07.319Z",
+      "log": "artifacts/vnext/n06-03/focused-unit.log",
+      "sha256": "6ab270bd3e9102f8f4549b48e773a893dd83e077016dd24dbf77244ec219c957"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:03:55.443Z",
+      "endedAt": "2026-11-06T14:04:13.340Z",
+      "log": "artifacts/vnext/n06-03/initial-lint.log",
+      "sha256": "b5f0464289ac9ab113d9a764abbc7821d91a49f4213749f52660270bf71379c0"
+    },
+    {
+      "command": "pnpm typecheck",
+      "argv": [
+        "pnpm",
+        "typecheck"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:03:54.285Z",
+      "endedAt": "2026-11-06T14:04:49.591Z",
+      "log": "artifacts/vnext/n06-03/initial-types.log",
+      "sha256": "287e01cbe3b250d07cb5ee39ba56a9107355d94c9c41eb217612463a0af26fd0"
+    },
+    {
+      "command": "pnpm mobile:bundle:smoke",
+      "argv": [
+        "pnpm",
+        "mobile:bundle:smoke"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:20:56.430Z",
+      "endedAt": "2026-11-06T14:21:03.792Z",
+      "log": "artifacts/vnext/n06-03/mobile-classic-bundle.log",
+      "sha256": "58f880d5b663ef8bae646e08a4049dbbc483cfd4acb8e0f90cdf1f645ae540e0"
+    },
+    {
+      "command": "pnpm test",
+      "argv": [
+        "pnpm",
+        "test"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:19:13.275Z",
+      "endedAt": "2026-11-06T14:20:02.594Z",
+      "log": "artifacts/vnext/n06-03/regression-unit.log",
+      "sha256": "a367b98ddf2a68091d5fde675b936f869c42ba94de201ec058417e14d558db0f"
+    }
+  ],
+  "acceptance_met": true,
+  "acceptance": [
+    {
+      "requirement": "Next mounts shared client without Next in shared dependency closure",
+      "outcome": "PASS",
+      "actual": "Stable Next-only router adapter and optional sanitized browser navigation callback; full build/types/lint/boundary checks and3navigation unit cases pass."
+    },
+    {
+      "requirement": "Shared state, identity/travel/error/onboarding and honest queue status",
+      "outcome": "PASS",
+      "actual": "One connection status surface and existing RoomRecovery/identity/widgets, no duplicate authority store. Real pending/anonymous, late identity/logout, transport loss/resync and confirmed seat/departure exercised; no fabricated global queue."
+    },
+    {
+      "requirement": "Critical gameplay updates/navigation do not require full document reload in the opt-in path",
+      "outcome": "PASS",
+      "actual": "Actual Deadline seat/focus followed by confirmed leave/return preserves document sentinel,identity and persisted focus; classic rollback deliberately preserves legacy full document navigation."
+    },
+    {
+      "requirement": "Scene-first hierarchy follows the design brief with independent rollback",
+      "outcome": "PASS",
+      "actual": "Scoped warm HUD/shortcuts/onboarding, scene before options at narrow widths; existing sprite artwork/widget contracts retained. Both opt-in and classic12browser cases pass; this is not final animal/landscape visual acceptance."
+    }
+  ],
+  "verification": {
+    "governance": 88,
+    "unit": 360,
+    "optInBrowserExecutions": 12,
+    "classicBrowserExecutions": 12,
+    "mobileLocalBundleCases": 3,
+    "ciSpecsEnumerated": 35
+  },
+  "runtimeSourceAttestation": [
+    {
+      "ref": "apps/portal-web/app/components/WorldRoomPanel.tsx",
+      "atRevision": "65bbb836b0af4f5c635977d6e48c977edc27913e",
+      "sha256": "06647493a91a7a70675061ed065ec633ad28a6455fb8c03c281f00a343edc1ae",
+      "unchangedSinceOptInBuild": true
+    },
+    {
+      "ref": "packages/game-client/src/WorldRoomPanel.tsx",
+      "atRevision": "65bbb836b0af4f5c635977d6e48c977edc27913e",
+      "sha256": "5dc89caac8b1ba18923e6d2fd7db3683e1ca64e29cca98d9b711fcc5bd4b9f22",
+      "unchangedSinceOptInBuild": true
+    },
+    {
+      "ref": "packages/game-client/src/world-room.css",
+      "atRevision": "65bbb836b0af4f5c635977d6e48c977edc27913e",
+      "sha256": "55cc2d19e3e0de25a2f08e59a8ff618422cc65c97cfa4fca2db1553092677db3",
+      "unchangedSinceOptInBuild": true
+    },
+    {
+      "ref": "packages/client-sdk/src/index.ts",
+      "atRevision": "65bbb836b0af4f5c635977d6e48c977edc27913e",
+      "sha256": "2d62ce85f1a77ae32b734b5978c865ce041820914f024510ebd17b3187ae4618",
+      "unchangedSinceOptInBuild": true
+    }
+  ],
+  "optInRun": {
+    "sourceRevision": "a5d94820f23f71d699944c95c41d760aac711c43",
+    "trackedDiffSha256": "1acb990d0437c940c23657d0f6ec2688def11eeb7d809baa0b1d99e33b314bab",
+    "mode": "scene-first"
+  },
+  "review": {
+    "reviewer": "Codex",
+    "inspected": [
+      "artifacts/vnext/n06-03/ux-c4a5a456/desktop/confirmed-focus.png",
+      "artifacts/vnext/n06-03/ux-c4a5a456/mobile/anonymous.png"
+    ],
+    "findings": [
+      "Single authoritative Connected/identity/entry placement and retained real scene/widgets visible.",
+      "Narrow layout moves room options after scene; full-height landscape and native context-panel polish is explicitly next task.",
+      "Existing art is retained; animal concept assets have no production consumer yet."
+    ]
+  },
+  "artifacts": [
+    {
+      "ref": "artifacts/vnext/n06-03/raw-index.json",
+      "sha256": "2e72c1891cbb24bfce833cfe1aeb0572c442c5db34e601053dd541861ccf654c",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n06-03/enhanced-build-fingerprint.json",
+      "sha256": "e5ad0a3476bf9899988c1c80152c1c240406bcbdd75668368a4fbe7eeee8146b",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n06-03/ux-run-c4a5a456/facts.json",
+      "sha256": "0bf4bc0ff4fcddfd49ab874562baae00bb4450c2c4a5319b8d374c064a853c49",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n06-03/ux-run-4ffeff62/facts.json",
+      "sha256": "819a6c59b6d6938105053608f863e2ed7f4d8424f5aa2e36d1fc2fc25e4255f7",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "/home/tiecont/Projects/virtual-city/artifacts/mobile-bundle-ecb76916/facts.json",
+      "sha256": "6d8096a9edb66629a4a48a1d3aa531f909deefbdbf51c5818b35ce92f741ed72",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n06-03/ux-c4a5a456/desktop/confirmed-focus.png",
+      "sha256": "532799b5d260c448a5defe63990618a45f36b41b4f31cc154563af82fac5f009",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n06-03/ux-c4a5a456/mobile/anonymous.png",
+      "sha256": "6c3aaea9948923d771c8308b92fabef03639ae33e20fb2d657fd9ad736168d3e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    }
+  ],
+  "limitations": [
+    "Opt-in hierarchy/client navigation only; actual animal creator/production art, complete landscape/orientation, physical Android/iOS and human usability remain N06-07/04/08/09/N10/N14 gates.",
+    "Opt-in12browser executions used the preceding workspace (parent SHA and diff hash in its facts). Runtime files are attested unchanged since that actual build/run and byte-identical at landed65bbb83; classic12,88governance/360unit,lint/CI/static/bundle checks are scoped separately. No invented exact-head hosted/image/native qualification.",
+    "First opt-in run failed six desktop mode assertions because the isolated test environment stripped UX fixture variables. A failure-first environment test and bounded enum/eight-hex propagation fix passed; no inherited runtime/public flag, guest/IP/protocol threshold or security policy was relaxed. Initial failed traces/source remain private.",
+    "Global admission queue implementation remains unwired/default closed outside its owner; shell shows existing room outcomes without invented queue position/ETA. No N09-03 acceptance claimed.",
+    "Classic remains default; CI unflagged build tests classic, enabling scene-first needs matching build/qualification. Build-time flags cannot mutate a running client artifact. No image digest promotion, staging deployment or public/store release.",
+    "Existing widgets/lifetimes/room geometry/CSRF/authority/protocol remain; no SQL changes or new authority/session owner. Mobile3cases are actual Chromium loading local assets, not a new APK/device result.",
+    "An untracked .idea directory appeared during execution; preserved unstaged as owner IDE data and not read/archived."
+  ],
+  "nextExactAction": "Execute N06-08 (priority82.1): audit the camera fit/resize and mobile Shell/native MainActivity; implement scene-first landscape HUD/context panels, gameplay-scoped Android orientation with cleanup/restoration and usable portrait/large-text/keyboard/safe-area fallback. Qualify actual browser and owner-authorized Android DEBUG build/install/rotation/Back/resume with source/APK hashes; keep native auth/animal saves/performance/iOS gates separate."
+}

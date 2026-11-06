@@ -31294,6 +31294,143 @@
         "Short viewport is only keyboard-occlusion fixture; CSS safe-area rules are design preparation, not real cutout/virtual keyboard/native Back/TalkBack/VoiceOver evidence.",
         "Texture/loading budgets are proposed locked hypotheses with null measurements; existing Android thresholds unchanged. No new SQL, world flag, identity/authority owner, native session, public deployment, store distribution or external media purchase."
       ]
+    },
+    {
+      "id": "n06-03-shared-shell-2026-11-06",
+      "taskId": "N06-03",
+      "sourceRevision": "65bbb836b0af4f5c635977d6e48c977edc27913e",
+      "environment": "Linux 7.2.9-2-cachyos x86_64 GNU/Linux; Nodev26.9.0; actual loopback web/API/PostgreSQL; desktop/Chromium mobile emulation",
+      "executedAt": "2026-11-06T14:28:20.356Z",
+      "commands": [
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0
+        },
+        {
+          "command": "env NEXT_PUBLIC_VLP_SCENE_FIRST=0 pnpm --filter @virtual-city/portal-web build",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test:ux-core --classic",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        },
+        {
+          "command": "env NEXT_PUBLIC_VLP_SCENE_FIRST=1 pnpm build",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test:ux-core",
+          "exitCode": 1
+        },
+        {
+          "command": "pnpm test:ux-core",
+          "exitCode": 0
+        },
+        {
+          "command": "node --test tests/governance/test-environment.test.mjs",
+          "exitCode": 0
+        },
+        {
+          "command": "node --test tests/governance/test-environment.test.mjs",
+          "exitCode": 1
+        },
+        {
+          "command": "pnpm test:client-boundaries",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/client-sdk/test/platform.test.ts",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm typecheck",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm mobile:bundle:smoke",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test",
+          "exitCode": 0
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "artifacts/vnext/n06-03/raw-index.json",
+          "sha256": "2e72c1891cbb24bfce833cfe1aeb0572c442c5db34e601053dd541861ccf654c",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n06-03/enhanced-build-fingerprint.json",
+          "sha256": "e5ad0a3476bf9899988c1c80152c1c240406bcbdd75668368a4fbe7eeee8146b",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n06-03/ux-run-c4a5a456/facts.json",
+          "sha256": "0bf4bc0ff4fcddfd49ab874562baae00bb4450c2c4a5319b8d374c064a853c49",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n06-03/ux-run-4ffeff62/facts.json",
+          "sha256": "819a6c59b6d6938105053608f863e2ed7f4d8424f5aa2e36d1fc2fc25e4255f7",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "/home/tiecont/Projects/virtual-city/artifacts/mobile-bundle-ecb76916/facts.json",
+          "sha256": "6d8096a9edb66629a4a48a1d3aa531f909deefbdbf51c5818b35ce92f741ed72",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n06-03/ux-c4a5a456/desktop/confirmed-focus.png",
+          "sha256": "532799b5d260c448a5defe63990618a45f36b41b4f31cc154563af82fac5f009",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n06-03/ux-c4a5a456/mobile/anonymous.png",
+          "sha256": "6c3aaea9948923d771c8308b92fabef03639ae33e20fb2d657fd9ad736168d3e",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N06-03-SHELL-CHECKS.json",
+          "sha256": "6cc7faeed03ab43f351aef60f7da1c9b80a71ca23c10c4ba75ebc37aae15cabb",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": true,
+      "limitations": [
+        "Opt-in hierarchy/client navigation only; actual animal creator/production art, complete landscape/orientation, physical Android/iOS and human usability remain N06-07/04/08/09/N10/N14 gates.",
+        "Opt-in12browser executions used the preceding workspace (parent SHA and diff hash in its facts). Runtime files are attested unchanged since that actual build/run and byte-identical at landed65bbb83; classic12,88governance/360unit,lint/CI/static/bundle checks are scoped separately. No invented exact-head hosted/image/native qualification.",
+        "First opt-in run failed six desktop mode assertions because the isolated test environment stripped UX fixture variables. A failure-first environment test and bounded enum/eight-hex propagation fix passed; no inherited runtime/public flag, guest/IP/protocol threshold or security policy was relaxed. Initial failed traces/source remain private.",
+        "Global admission queue implementation remains unwired/default closed outside its owner; shell shows existing room outcomes without invented queue position/ETA. No N09-03 acceptance claimed.",
+        "Classic remains default; CI unflagged build tests classic, enabling scene-first needs matching build/qualification. Build-time flags cannot mutate a running client artifact. No image digest promotion, staging deployment or public/store release.",
+        "Existing widgets/lifetimes/room geometry/CSRF/authority/protocol remain; no SQL changes or new authority/session owner. Mobile3cases are actual Chromium loading local assets, not a new APK/device result.",
+        "An untracked .idea directory appeared during execution; preserved unstaged as owner IDE data and not read/archived."
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

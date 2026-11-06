@@ -1,3 +1,13 @@
+# N06-03 shared shell VERIFIED — 2026-11-06
+
+Landed source `65bbb836b0af4f5c635977d6e48c977edc27913e`: opt-in scene-first shared hierarchy, one connection/identity entry HUD, activity shortcuts/onboarding and Next-only sanitized client-router injection. Classic remains default and unchanged authority/widgets are reused. [Actual checks](../audit/N06-03-SHELL-CHECKS.json): full types/build/lint/CI/boundaries,88governance/360unit,12opt-in +12classic actual browser/API cases and3mobile local-bundle cases PASS. Opt-in ran precommit workspace with runtime-file identity attested at65bbb83; classic tests pin clean tracked65bbb83. First six failed mode assertions and failure-first environment guard retained; only finite UX mode/run-id fixture propagation added, no runtime/public/security bypass.
+
+No final animal art/creator, native orientation/auth/performance, physical-device or global queue integration is qualified here. All44SQL/prior46evidence records and release/distribution contexts preserved; record47, counts37VERIFIED/2BLOCKED_EXTERNAL/34TODO. N06-06 design and N10-02 first logged-out native bundle remain separately scoped. Untracked `.idea/` appeared during execution, preserved unstaged and not inspected/archived.
+
+**Next exact action:** Execute N06-08 (priority82.1): audit the camera fit/resize and mobile Shell/native MainActivity; implement scene-first landscape HUD/context panels, gameplay-scoped Android orientation with cleanup/restoration and usable portrait/large-text/keyboard/safe-area fallback. Qualify actual browser and owner-authorized Android DEBUG build/install/rotation/Back/resume with source/APK hashes; keep native auth/animal saves/performance/iOS gates separate.
+
+## Earlier checkpoints — historical
+
 # N06-06 animal/landscape design VERIFIED — 2026-11-06
 
 Design source `5b6604ff3d188c3c8b96373f45dfbfe082be803d`. Original SVG animal/room style study,14group part catalog, rig/layer/idle-walk-sit-serve plan, versioned art budgets and v1/entitlement/compatibility migration brief are reviewed. Implemented `pnpm ux:animal-study` passes6profiles/48state-profile executions/24part changes/48static species-pose-view selections, keyboard/Escape/focus,200% text,44px targets and control containment. Lint/CI/existing assets checks exit0. Manual review found and corrected dock occlusion, portrait-large-text clipping and hidden skip-link capture; failed/intermediate sources and screenshots retained.
