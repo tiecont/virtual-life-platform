@@ -1,0 +1,563 @@
+{
+  "taskId": "N06-08",
+  "sourceRevision": "676423366825e36eccfdef7db7b9c1b2fbd0bc2d",
+  "driverRevision": "ab78d84bd7a246e23f46a4228f72de3b16b62e0a",
+  "executedAt": "2026-11-06T15:31:45.151852+00:00",
+  "environment": {
+    "os": "CachyOS Linux7.2.9-2 x86_64",
+    "node": "26.9.0",
+    "pnpm": "11.28.5",
+    "device": "Xiaomi23129RAA4G Android15/API35 WebView156.0.8078.47",
+    "toolchain": "JDK21.0.13+9 SDK36/build-tools36.0.0 Gradle8.14.3 AGP8.13.0 Capacitor8.6.0",
+    "scope": "Actual local browser/API/PostgreSQL44 and owner-controlled Android DEBUG preview"
+  },
+  "commands": [
+    {
+      "command": "pnpm exec vitest run --project unit apps/mobile/src/orientation.unit.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "apps/mobile/src/orientation.unit.test.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:45:21.447Z",
+      "endedAt": "2026-11-06T14:45:23.520Z",
+      "log": "artifacts/vnext/n06-08/bridge-unit.log",
+      "sha256": "def3b997f87bb86576fe765a02538c37d0c9888d8eba1932c65e40f3de9be2ee"
+    },
+    {
+      "command": "pnpm test:ux-core",
+      "argv": [
+        "pnpm",
+        "test:ux-core"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:26:12.257Z",
+      "endedAt": "2026-11-06T15:27:49.216Z",
+      "log": "artifacts/vnext/n06-08/browser-candidate.log",
+      "sha256": "f2c7276921e8097712a30bcf9282d7793d8cb8d0a0e92280f0f8eb3fa0fdc5ec"
+    },
+    {
+      "command": "pnpm mobile:bundle:smoke",
+      "argv": [
+        "pnpm",
+        "mobile:bundle:smoke"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:26:32.449Z",
+      "endedAt": "2026-11-06T15:26:46.251Z",
+      "log": "artifacts/vnext/n06-08/candidate-bundle.log",
+      "sha256": "64048d95e276fa7a50f24cb4aa6535850721c845cd0de95e0b7cd07b0273d310"
+    },
+    {
+      "command": "pnpm test",
+      "argv": [
+        "pnpm",
+        "test"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:26:25.470Z",
+      "endedAt": "2026-11-06T15:27:21.408Z",
+      "log": "artifacts/vnext/n06-08/candidate-unit.log",
+      "sha256": "45b0392e3a5bd9f89fe50f9fcc8fee0301bb74593e41f908f7e2c692e9f5a873"
+    },
+    {
+      "command": "env NEXT_PUBLIC_VLP_SCENE_FIRST=1 pnpm --filter @virtual-city/portal-web build",
+      "argv": [
+        "env",
+        "NEXT_PUBLIC_VLP_SCENE_FIRST=1",
+        "pnpm",
+        "--filter",
+        "@virtual-city/portal-web",
+        "build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:18:55.432Z",
+      "endedAt": "2026-11-06T15:19:26.107Z",
+      "log": "artifacts/vnext/n06-08/candidate-web-build.log",
+      "sha256": "4a5eac9b7a3d2d8cc19e218df434d9210973a6ab449d33c28a0e781979f4e072"
+    },
+    {
+      "command": "env NEXT_PUBLIC_VLP_SCENE_FIRST=1 pnpm build",
+      "argv": [
+        "env",
+        "NEXT_PUBLIC_VLP_SCENE_FIRST=1",
+        "pnpm",
+        "build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:50:14.285Z",
+      "endedAt": "2026-11-06T14:51:24.012Z",
+      "log": "artifacts/vnext/n06-08/enhanced-build.log",
+      "sha256": "81450b65ce227a184653fb86673cefa49ca7a7478e936c0a13cdad3cf9da84aa"
+    },
+    {
+      "command": "pnpm test:client-boundaries",
+      "argv": [
+        "pnpm",
+        "test:client-boundaries"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:30:18.817Z",
+      "endedAt": "2026-11-06T15:30:20.395Z",
+      "log": "artifacts/vnext/n06-08/final-boundaries.log",
+      "sha256": "f8d327b750d1dae8d625b9b55cb92490c12a9d8ce53364f5053a3fabb4ec8ec6"
+    },
+    {
+      "command": "pnpm ci:check",
+      "argv": [
+        "pnpm",
+        "ci:check"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:27:04.390Z",
+      "endedAt": "2026-11-06T15:27:07.567Z",
+      "log": "artifacts/vnext/n06-08/final-ci.log",
+      "sha256": "52a5ffe04d8d48058db2532508be6b6b59c71870947c67e4c5c02fa09b9c1f45"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:27:03.205Z",
+      "endedAt": "2026-11-06T15:27:34.767Z",
+      "log": "artifacts/vnext/n06-08/final-lint.log",
+      "sha256": "aba4a11f9882f9d207907e4db68d65fca3c92db6c3b45e6506d0c3634a4e44de"
+    },
+    {
+      "command": "pnpm typecheck",
+      "argv": [
+        "pnpm",
+        "typecheck"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:27:56.210Z",
+      "endedAt": "2026-11-06T15:29:30.766Z",
+      "log": "artifacts/vnext/n06-08/final-types.log",
+      "sha256": "8343e0eea500a46875cd8c3a5d3db916a5e922c7e38994c80d331ad10009ee10"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:43:21.698Z",
+      "endedAt": "2026-11-06T14:43:47.402Z",
+      "log": "artifacts/vnext/n06-08/initial-lint.log",
+      "sha256": "4e39f3ada1e60915422330774968ea08630266ffeaa96c356c2c72d605c90c7e"
+    },
+    {
+      "command": "pnpm typecheck",
+      "argv": [
+        "pnpm",
+        "typecheck"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:43:20.574Z",
+      "endedAt": "2026-11-06T14:44:31.167Z",
+      "log": "artifacts/vnext/n06-08/initial-types.log",
+      "sha256": "aed0b8f57fc56d58d1b7b65269d65c3ecdee9b79da40570649c8a1ea4fca0fe4"
+    },
+    {
+      "command": "env NEXT_PUBLIC_VLP_SCENE_FIRST=1 pnpm build",
+      "argv": [
+        "env",
+        "NEXT_PUBLIC_VLP_SCENE_FIRST=1",
+        "pnpm",
+        "build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:55:03.541Z",
+      "endedAt": "2026-11-06T14:55:58.668Z",
+      "log": "artifacts/vnext/n06-08/layout-build.log",
+      "sha256": "a06a6740bc95d5ef68d271594cec82f4dc0996f0bba5c83abaa328cfab0d7f91"
+    },
+    {
+      "command": "pnpm test:ux-core",
+      "argv": [
+        "pnpm",
+        "test:ux-core"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T14:56:30.357Z",
+      "endedAt": "2026-11-06T14:57:17.519Z",
+      "log": "artifacts/vnext/n06-08/layout-core-first.log",
+      "sha256": "14ca704adba70bc0e950a4d337db28dd9db587dc363328640d8e7a102985d0f6"
+    },
+    {
+      "command": "pnpm test:ux-core",
+      "argv": [
+        "pnpm",
+        "test:ux-core"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:01:42.543Z",
+      "endedAt": "2026-11-06T15:02:53.996Z",
+      "log": "artifacts/vnext/n06-08/layout-core-panels.log",
+      "sha256": "7bbcd44577bf4fe1f93059038ca3eb89bba4d18f0ec9ab9f998f5eacd45d0527"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit apps/mobile/src/platform.unit.test.ts apps/mobile/src/orientation.unit.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "apps/mobile/src/platform.unit.test.ts",
+        "apps/mobile/src/orientation.unit.test.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:01:41.413Z",
+      "endedAt": "2026-11-06T15:01:43.008Z",
+      "log": "artifacts/vnext/n06-08/native-back-unit.log",
+      "sha256": "c2d0fae55226acae3337098c4bf6e6c7208c7ea2ce7b4ffd0844c205f6c825e8"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm mobile:android:build",
+      "argv": [
+        "node",
+        "artifacts/vnext/n10-02/android-native/run.mjs",
+        "pnpm",
+        "mobile:android:build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:15:11.894Z",
+      "endedAt": "2026-11-06T15:15:59.168Z",
+      "log": "artifacts/vnext/n06-08/native-candidate-build.log",
+      "sha256": "8a9588fd8508a22b428b9db1673b2fe675a174dd78f4eb82fe2c6a46f0e3307d"
+    },
+    {
+      "command": "python3 artifacts/vnext/n06-08/inspect-install.py",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n06-08/inspect-install.py"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:18:54.244Z",
+      "endedAt": "2026-11-06T15:19:05.648Z",
+      "log": "artifacts/vnext/n06-08/native-install.log",
+      "sha256": "1ce1f2171827616cd8a1065e1f611b4780935ed0d05077f1ef68e2bd0e88a720"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs gradle testDebugUnitTest",
+      "argv": [
+        "node",
+        "artifacts/vnext/n10-02/android-native/run.mjs",
+        "gradle",
+        "testDebugUnitTest"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:45:22.553Z",
+      "endedAt": "2026-11-06T14:46:26.219Z",
+      "log": "artifacts/vnext/n06-08/native-unit.log",
+      "sha256": "abb0e47afd506c395a5c000302a840b105068e1de67898301a559351010a7dc2"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:50:15.362Z",
+      "endedAt": "2026-11-06T14:50:51.567Z",
+      "log": "artifacts/vnext/n06-08/panel-lint.log",
+      "sha256": "a431d076f99ec50bd749e13b8b37a53b453924df14e7948aaace92ffe760867d"
+    },
+    {
+      "command": "pnpm typecheck",
+      "argv": [
+        "pnpm",
+        "typecheck"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:49:16.157Z",
+      "endedAt": "2026-11-06T14:50:31.110Z",
+      "log": "artifacts/vnext/n06-08/panel-types.log",
+      "sha256": "981e47fe0c0905752e46cd733a351c8051d1f304974c8ad9859156771c0b5494"
+    },
+    {
+      "command": "python3 artifacts/vnext/n06-08/probe-phone.py",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n06-08/probe-phone.py"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T14:56:22.576Z",
+      "endedAt": "2026-11-06T14:56:22.904Z",
+      "log": "artifacts/vnext/n06-08/phone-prerequisite.log",
+      "sha256": "1b68bbb42d94d940e0fd8b468bebd12173d996b44dfb84f314dc258029d16951"
+    },
+    {
+      "command": "env ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb pnpm mobile:landscape:smoke",
+      "argv": [
+        "env",
+        "ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb",
+        "pnpm",
+        "mobile:landscape:smoke"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T15:22:33.384Z",
+      "endedAt": "2026-11-06T15:22:36.201Z",
+      "log": "artifacts/vnext/n06-08/physical-first.log",
+      "sha256": "acf304cfa9823ad81d362dd7602d33f65cbc582a0d7a876075ad5e3c4324b590"
+    },
+    {
+      "command": "env ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb pnpm mobile:landscape:smoke",
+      "argv": [
+        "env",
+        "ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb",
+        "pnpm",
+        "mobile:landscape:smoke"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:26:43.907Z",
+      "endedAt": "2026-11-06T15:27:38.765Z",
+      "log": "artifacts/vnext/n06-08/physical-unlocked.log",
+      "sha256": "b0584224b353d893f53d8a5eaf1c704367ddf05d801e3949fd050f1c5a58fc08"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/mobile typecheck",
+      "argv": [
+        "pnpm",
+        "--filter",
+        "@virtual-city/mobile",
+        "typecheck"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:10:36.980Z",
+      "endedAt": "2026-11-06T15:10:40.440Z",
+      "log": "artifacts/vnext/n06-08/ready-mobile-types.log",
+      "sha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92"
+    },
+    {
+      "command": "pnpm test:ux-core --classic",
+      "argv": [
+        "pnpm",
+        "test:ux-core",
+        "--classic"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:29:15.289Z",
+      "endedAt": "2026-11-06T15:30:26.048Z",
+      "log": "artifacts/vnext/n06-08/rollback-browser.log",
+      "sha256": "260aa382aac0f011ea8ecb28f92ddb9fdd8b179c6d08fe55646eaddc0d958623"
+    },
+    {
+      "command": "env NEXT_PUBLIC_VLP_SCENE_FIRST=0 pnpm --filter @virtual-city/portal-web build",
+      "argv": [
+        "env",
+        "NEXT_PUBLIC_VLP_SCENE_FIRST=0",
+        "pnpm",
+        "--filter",
+        "@virtual-city/portal-web",
+        "build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:27:55.099Z",
+      "endedAt": "2026-11-06T15:28:51.528Z",
+      "log": "artifacts/vnext/n06-08/rollback-web-build.log",
+      "sha256": "8fc6779624296ec033e6069385ae9720f08855b4af179bfe5e6309a5f734fb88"
+    }
+  ],
+  "artifacts": [
+    {
+      "ref": "artifacts/vnext/n06-08/raw-index.json",
+      "sha256": "d08ac61fd7966895a328c63592285c672bfc98d6f07833143d8bffe3abe98b30",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n06-08/native-lease-unit.xml",
+      "sha256": "5a88173f3290fb80cfbc2c6b2baa9fa4897fbfaf22d3828463717f0f538f5eab",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-landscape-5d9399ab/facts.json",
+      "sha256": "d2df7e68efda07a180f8320c5cdc8b0f7ebf318bec9be3ea07d2e12647599bdf",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-landscape-5d9399ab/primary.png",
+      "sha256": "9cce0a7c13e72f524a8d9aa390224e20585917641eb9ec924b2ff5650bd37027",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-landscape-5d9399ab/actions.png",
+      "sha256": "0bd6c097328340c90d567d2219a255d01ee9754e0253c82fcc1e3e5433ba6e5d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n06-03/ux-run-f1af907d/facts.json",
+      "sha256": "04f918ae424f5bdaf2c156f7eda9ef3620d754e25bb794851c06b6e09cc29a60",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n06-03/ux-run-1d53e227/facts.json",
+      "sha256": "4722a27698d9b7b02db33355dd871210b244bcf9b17a9358e61616a6bb1335cb",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n06-03/ux-f1af907d/mobile/viewport-740-360-text200.png",
+      "sha256": "4828121109bbb3aa893fe5f68254f495270165ebaec67dc4ab9a6110866ff55c",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-bundle-03d15a99/facts.json",
+      "sha256": "e7460d391926fff984e0898f5ec4ca49164b285dfc2c37a89125e19f83c8c919",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n06-08/native-candidate/facts.json",
+      "sha256": "60dc4a5ada50ef3915a8eaaa63b7d7ba628d5dd6f8749491d79fe59c22983c75",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-android-build-6fea6009/facts.json",
+      "sha256": "09bfc2163f444710a0473ec71e331d2d1f9f3c8c9201074ce071d9338979a199",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    }
+  ],
+  "acceptance": {
+    "sharedLandscapeAndPersistentDialogs": true,
+    "browserAPIExecutions": 14,
+    "classicBrowserAPIExecutions": 12,
+    "classicLayoutOnlySkips": 2,
+    "governanceCases": 88,
+    "unitCases": 366,
+    "nativeJavaLeaseCases": 4,
+    "nativeJSOrientationAndBackCases": 6,
+    "browserLocalBundleCases": 3,
+    "physicalScenarios": [
+      {
+        "name": "actual own-app landscape entry",
+        "outcome": "PASS",
+        "screenPx": [
+          2400,
+          1080
+        ],
+        "rotation": "1"
+      },
+      {
+        "name": "native keyboard, touch-close, panel Back and retained local filter",
+        "outcome": "PASS"
+      },
+      {
+        "name": "both native landscape policies",
+        "outcome": "PASS",
+        "rotations": [
+          "3",
+          "1"
+        ]
+      },
+      {
+        "name": "fallback cleanup and native Back re-entry",
+        "outcome": "PASS",
+        "fallbackScreenPx": [
+          2400,
+          1080
+        ]
+      },
+      {
+        "name": "actual background/foreground with layout recovery",
+        "outcome": "PASS"
+      }
+    ],
+    "physicalKeyboardShown": true,
+    "apkSHA256": "1d87d46c0bd4e25ae98bf802383b8a81ecef59106cec6262188dd5052b614bb8",
+    "packagedAssetMatches": 17,
+    "manualImagesReviewed": [
+      "Android primary scene and actions dialog",
+      "Browser740x360 text200%"
+    ],
+    "authorityAndMembershipPreservedInBrowserResize": true,
+    "iosExecuted": false,
+    "nativeAuthenticatedGameplayQualified": false,
+    "distribution": false
+  },
+  "acceptance_met": true,
+  "limitations": [
+    "Native is a logged-out local DEBUG preview, not real native sign-in, room/animal saves or authenticated gameplay/performance. Web/API membership recovery is qualified separately; N10-03/04 and N06-07/04/09 remain required.",
+    "Single Xiaomi23129RAA4G Android15/API35 WebView156.0.8078.47, actual2400x1080 screen. Both Activity landscape policies applied (rotation3 and1); fallback route remained landscape on this sensor/OS. Requested-policy restoration and stale-cleanup isolation are covered by four actual JVM cases, not an invented observed physical portrait transition.",
+    "Five browser viewports include360x740portrait fallback and200% text; browser semantics, keyboard/focus and physical touch/IME are checked. No TalkBack/VoiceOver human session, broad cutout/device/Android16 coverage or iOS execution is claimed.",
+    "Actual APK and final scene-first browser source pin6764233. The physical/browser tracked diff9b7ab725 contains only the strengthened smoke driver, preserved as physical-driver.patch; it changes no application binary. Driver lands atab78d84, whose only other change is preparation prose. Classic qualification pins clean trackedab78d84.",
+    "Initial browser run failed a hidden-seat assertion after Leave; fixed by opening its actual dialog before checking the disabled controls. Initial physical run stopped at the own-focus guard while the phone was locked; owner unlocked it and a new immutable run passed. All failures retained, no thresholds or authority checks weakened.",
+    "Scene geometry/original art/appearance/authority/protocol/44SQL remain unchanged. Mobile default scene-first has a build-time classic rollback; portal remains opt-in. Queue not wired or capacity-qualified, no global admission claim.",
+    "Original47evidence records, historical151Mxx ledger, Android budget bytes, platform distributionfalse and releaseNOT_REQUESTED preserved. N14 conditional with missing Mac/Xcode/iPhone; no store/public action. Owner .idea/ and infra/botkeep-ca.pem left unread/unstaged."
+  ]
+}

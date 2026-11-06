@@ -31431,6 +31431,147 @@
         "Existing widgets/lifetimes/room geometry/CSRF/authority/protocol remain; no SQL changes or new authority/session owner. Mobile3cases are actual Chromium loading local assets, not a new APK/device result.",
         "An untracked .idea directory appeared during execution; preserved unstaged as owner IDE data and not read/archived."
       ]
+    },
+    {
+      "id": "n06-08-landscape-qualified-2026-11-06",
+      "taskId": "N06-08",
+      "sourceRevision": "676423366825e36eccfdef7db7b9c1b2fbd0bc2d",
+      "environment": "CachyOS; actual loopback browser/API/PostgreSQL44 and Xiaomi23129RAA4G Android15/API35 DEBUG local preview",
+      "executedAt": "2026-11-06T15:31:45.151852+00:00",
+      "commands": [
+        {
+          "command": "pnpm exec vitest run --project unit apps/mobile/src/orientation.unit.test.ts",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test:ux-core",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm mobile:bundle:smoke",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test",
+          "exitCode": 0
+        },
+        {
+          "command": "env NEXT_PUBLIC_VLP_SCENE_FIRST=1 pnpm --filter @virtual-city/portal-web build",
+          "exitCode": 0
+        },
+        {
+          "command": "env NEXT_PUBLIC_VLP_SCENE_FIRST=1 pnpm build",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test:client-boundaries",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm typecheck",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm typecheck",
+          "exitCode": 0
+        },
+        {
+          "command": "env NEXT_PUBLIC_VLP_SCENE_FIRST=1 pnpm build",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test:ux-core",
+          "exitCode": 1
+        },
+        {
+          "command": "pnpm test:ux-core",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm exec vitest run --project unit apps/mobile/src/platform.unit.test.ts apps/mobile/src/orientation.unit.test.ts",
+          "exitCode": 0
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm mobile:android:build",
+          "exitCode": 0
+        },
+        {
+          "command": "python3 artifacts/vnext/n06-08/inspect-install.py",
+          "exitCode": 0
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs gradle testDebugUnitTest",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm typecheck",
+          "exitCode": 0
+        },
+        {
+          "command": "python3 artifacts/vnext/n06-08/probe-phone.py",
+          "exitCode": 0
+        },
+        {
+          "command": "env ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb pnpm mobile:landscape:smoke",
+          "exitCode": 1
+        },
+        {
+          "command": "env ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb pnpm mobile:landscape:smoke",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm --filter @virtual-city/mobile typecheck",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test:ux-core --classic",
+          "exitCode": 0
+        },
+        {
+          "command": "env NEXT_PUBLIC_VLP_SCENE_FIRST=0 pnpm --filter @virtual-city/portal-web build",
+          "exitCode": 0
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "artifacts/vnext/n06-08/raw-index.json",
+          "sha256": "d08ac61fd7966895a328c63592285c672bfc98d6f07833143d8bffe3abe98b30",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N06-08-LANDSCAPE-CHECKS.json",
+          "sha256": "c7828e0df157ddaa37417d56141382a9e4df615feebe00dac1b2276a08bfcf9b",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": true,
+      "limitations": [
+        "Native is a logged-out local DEBUG preview, not real native sign-in, room/animal saves or authenticated gameplay/performance. Web/API membership recovery is qualified separately; N10-03/04 and N06-07/04/09 remain required.",
+        "Single Xiaomi23129RAA4G Android15/API35 WebView156.0.8078.47, actual2400x1080 screen. Both Activity landscape policies applied (rotation3 and1); fallback route remained landscape on this sensor/OS. Requested-policy restoration and stale-cleanup isolation are covered by four actual JVM cases, not an invented observed physical portrait transition.",
+        "Five browser viewports include360x740portrait fallback and200% text; browser semantics, keyboard/focus and physical touch/IME are checked. No TalkBack/VoiceOver human session, broad cutout/device/Android16 coverage or iOS execution is claimed.",
+        "Actual APK and final scene-first browser source pin6764233. The physical/browser tracked diff9b7ab725 contains only the strengthened smoke driver, preserved as physical-driver.patch; it changes no application binary. Driver lands atab78d84, whose only other change is preparation prose. Classic qualification pins clean trackedab78d84.",
+        "Initial browser run failed a hidden-seat assertion after Leave; fixed by opening its actual dialog before checking the disabled controls. Initial physical run stopped at the own-focus guard while the phone was locked; owner unlocked it and a new immutable run passed. All failures retained, no thresholds or authority checks weakened.",
+        "Scene geometry/original art/appearance/authority/protocol/44SQL remain unchanged. Mobile default scene-first has a build-time classic rollback; portal remains opt-in. Queue not wired or capacity-qualified, no global admission claim.",
+        "Original47evidence records, historical151Mxx ledger, Android budget bytes, platform distributionfalse and releaseNOT_REQUESTED preserved. N14 conditional with missing Mac/Xcode/iPhone; no store/public action. Owner .idea/ and infra/botkeep-ca.pem left unread/unstaged."
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

@@ -725,12 +725,14 @@
       "next_action": "Creator species/body/head/eyes/muzzle/ears/tail/fur-markings/hair/outfit/accessories với preview, preset, reset, Save/Cancel"
     },
     "N06-08": {
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "owner": "Codex",
       "branch": "codex/vnext-n09-02-postgres",
-      "evidence_refs": [],
+      "evidence_refs": [
+        "n06-08-landscape-qualified-2026-11-06"
+      ],
       "blocker": null,
-      "next_action": "Implement gameplay-scoped Android landscape request/lease cleanup, actual responsive scene/HUD/dialog controls and portrait/keyboard/large-text fallback; qualify browser/API and physical Android APK evidence, without native-auth/gameplay/iOS claims."
+      "next_action": "Execute N09-03(priority102): audit AdmissionStore/own-state contracts and current identity/lifecycle adapters; implement bounded account-scoped waiting/ready/expired/reconnect UI with jitter/backoff and no waiting gameplay socket, qualify actual HTTP/browser/API scenarios before acceptance. Then N10-03 native auth to unblock animal creator; N14 conditional."
     },
     "N06-09": {
       "status": "TODO",
