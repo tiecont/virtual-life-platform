@@ -1,4 +1,3 @@
-import path from 'node:path';
 import { validatePlan } from './validate-plan.mjs';
 import { inspectUpstream,chooseUpstream } from './check-upstream.mjs';
 

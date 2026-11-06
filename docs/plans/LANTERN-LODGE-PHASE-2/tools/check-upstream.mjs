@@ -55,7 +55,7 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
   const {manifest,gate,errors}=validatePlan();
   if(errors.length)throw new Error('Invalid Phase 2 pack: '+errors.join('; '));
   const result=inspectUpstream(manifest,gate,chooseUpstream());
-  const {upstreamTasks,...safe}=result;
+  const safe={...result};delete safe.upstreamTasks;
   console.log(JSON.stringify({readOnly:true,...safe},null,2));
  }catch(e){console.error(String(e.stack||e));process.exitCode=1;}
 }
