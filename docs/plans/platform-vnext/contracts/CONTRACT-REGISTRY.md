@@ -83,3 +83,5 @@ Endpoint names cuối cùng là output của task, được commit vào packages
 ## 6. Platform release applicability
 
 Native session contract dùng chung nhưng Android secure-storage implementation gate N10-03, iOS Keychain gate N14-02. Android/server matrix là N12-03, iOS/server matrix là N14-04. Release evidence giữ platform/build/signing track/protocol/content revisions và support window; không dựa duy nhất aggregate mobile flag. Candidate đầu chưa có previous published build thì ghi rõ NOT_APPLICABLE và lưu baseline.
+
+Implemented N05-06 pointers: `docs/architecture/CLIENT-COMPATIBILITY.md` and shared compatibility/content schemas. Discovery and optional authenticated offer negotiate application/content support; legacy response adapters remain. Current web waits for a nonce-bound selection and uses optional scene identity/sequence fields only on that path. This does not implement native auth or claim released mobile N−1 binaries.

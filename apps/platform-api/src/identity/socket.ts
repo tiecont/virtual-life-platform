@@ -1,14 +1,14 @@
 import { randomUUID } from 'node:crypto';
 import { Server, type Socket } from 'socket.io';
 import type { FastifyInstance } from 'fastify';
-import { SessionHandshakeSchema, SessionCheckSchema, SessionCheckAckSchema } from '@virtual-city/contracts';
+import { SessionHandshakeSchema, SessionCheckSchema, SessionCheckAckSchema, negotiateClientProtocol, type NegotiatedSession } from '@virtual-city/contracts';
 import type { Config } from '../config';
 import { IdentityService, type IdentityContext } from './service';
 import { IdentityError, unauthorized } from './errors';
 import { sessionCookieName } from './http';
 import { WindowLimiter } from './limits';
 import { clientAddress } from '../common/proxy';
-type Lease = { token: string; context: IdentityContext; cleanup: () => void; armExpiry: () => void };
+type Lease = { token: string; context: IdentityContext; cleanup: () => void; armExpiry: () => void; compatibility?: NegotiatedSession };
 export function createIdentityGateway(http: FastifyInstance, config: Config, identity: IdentityService, now = Date.now,available=()=>true) {
   const limits = new WindowLimiter(now);
   const leases = new WeakMap<Socket, Lease>();
@@ -52,6 +52,11 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
       identity.verifyCsrf(parsed.value, handshake.csrfToken);
       const context = await identity.authenticate(parsed.value);
       if(!available())return next(new Error('WORLD_UNAVAILABLE'));
+      const compatibility = handshake.protocol ? negotiateClientProtocol(handshake.protocol) : undefined;
+      if (compatibility === null) {
+        const error = new Error('UPGRADE_REQUIRED') as Error & {data: {code: string; retryable: boolean}};
+        error.data = {code: 'UPGRADE_REQUIRED', retryable: false}; return next(error);
+      }
       if (socket.conn.readyState !== 'open') throw unauthorized();
       const current = sessions.get(context.sessionId) ?? new Set<Socket>();
       if (current.size >= 4) return next(new Error('RATE_LIMITED'));
@@ -68,12 +73,13 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
         timer = setTimeout(armExpiry, Math.min(remaining, 86400000)); timer.unref();
       };
       socket.conn.once('close', cleanup); socket.once('disconnect', cleanup);
-      leases.set(socket, { token: parsed.value, context, cleanup, armExpiry });
+      leases.set(socket, { token: parsed.value, context, cleanup, armExpiry, ...(compatibility ? {compatibility} : {}) });
       next();
     } catch { next(new Error('UNAUTHENTICATED')); }
   });
   io.on('connection', socket => {
-    leases.get(socket)?.armExpiry();
+    const lease = leases.get(socket); lease?.armExpiry();
+    if (socket.connected && lease?.compatibility) socket.emit('session.compatibility', lease.compatibility);
     socket.onAny(event => {
       if (!commands.has(event) || !limits.take('events:' + socket.id, 120)) disconnect(socket, 'rate-limit');
     });

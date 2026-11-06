@@ -2,8 +2,8 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState,type ReactNode } from 'react';
 import { io, type Socket } from 'socket.io-client';
-import { MeSchema, RoomAckSchema, WorldCatalogSchema, type Me, type RoomSnapshot,type SceneManifest,type TravelSource } from '@virtual-city/contracts';
-import { RoomRecovery, type RoomRecoveryView } from '@virtual-city/world-sdk';
+import { MeSchema, RoomAckSchema, WorldCatalogSchema, sceneManifestHash, type ClientProtocolOffer, type NegotiatedSession, type SceneIdentity, type Me, type RoomSnapshot,type SceneManifest,type TravelSource } from '@virtual-city/contracts';
+import { RoomRecovery, resolveClientCompatibility, createClientProtocolOffer, acceptSessionCompatibility, type ResolvedClientCompatibility, type RoomRecoveryView } from '@virtual-city/world-sdk';
 import { sandboxScene } from '@virtual-city/pixi-scene';
 import type { createCafeScene } from '@virtual-city/pixi-scene';
 import './world-room.css';
@@ -23,7 +23,7 @@ const messages: Record<string, string> = {
   SEAT_TAKEN: 'That seat is no longer available.', ALREADY_SEATED: 'Stand up before choosing another seat.',
   INVALID_REQUEST: 'That destination or interaction is unavailable. Choose an open floor tile.',
 };
-const ownInput = (state: RoomSnapshot) => ({ schemaVersion: 1, requestId: crypto.randomUUID(), epoch: state.epoch, roomId: state.roomId, membershipId: state.membershipId });
+const ownInput = (state: RoomSnapshot, clientSeq?: number) => ({ schemaVersion: 1, requestId: crypto.randomUUID(), epoch: state.epoch, roomId: state.roomId, membershipId: state.membershipId, ...(clientSeq === undefined ? {} : {clientSeq}) });
 export interface RoomExperience {
  slug:string;worldVersion:string;scene:SceneManifest;title:string;eyebrow:string;badge:string;noun:'cafe'|'library'|'restaurant'|'lounge'|'park';theme:'cafe'|'reading-room'|'dining-room'|'lounge'|'park'|'deadline'|'maid';sceneLabel:string;caption:string;capacity?:number;movementHint?:string;portalReturn?:boolean;
  destinations:{label:string;x:number;y:number}[];areas?:readonly {key:string;title:string;description:string;seatIds:readonly string[]}[];areaLabel?:string;areaHeading?:string;areaDescription?:string;provenance?:string;focus:boolean;wardrobe:boolean;events?:boolean;roomInvites?:boolean;
@@ -42,6 +42,9 @@ export default function WorldRoomPanel({ socketOrigin,experience=sandboxExperien
   const host = useRef<HTMLDivElement>(null); const scene = useRef<SceneView | null>(null);
   const socket = useRef<Socket | null>(null); const recovery = useRef(new RoomRecovery()); const latest = useRef<RoomSnapshot | null>(null);
   const alive = useRef(true); const desired = useRef(false); const inFlight = useRef(false); const sequence = useRef(0);
+  const compatibility = useRef<ResolvedClientCompatibility | null>(null), sceneIdentity = useRef<SceneIdentity | undefined>(undefined);
+  const negotiated = useRef<NegotiatedSession | null>(null), clientSequence = useRef(0);
+  const compatibilityTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const announcedVisit=useRef<string|null>(null);
   const claimRef = useRef<(seatId: string) => void>(() => {});
   const moveRef = useRef<(point: { x: number; y: number }) => void>(() => {});
@@ -72,6 +75,7 @@ export default function WorldRoomPanel({ socketOrigin,experience=sandboxExperien
     if (next.status === 'syncing') scene.current?.suspend(); else scene.current?.update(next.snapshot);
   }
   function closeConnection() {
+    clearTimeout(compatibilityTimer.current); compatibilityTimer.current = undefined; negotiated.current = null; clientSequence.current = 0;
     desired.current = false; sequence.current++; inFlight.current = false;
     const client = socket.current; socket.current = null; client?.removeAllListeners(); client?.close();
     recovery.current = new RoomRecovery(); latest.current = null;
@@ -82,14 +86,18 @@ export default function WorldRoomPanel({ socketOrigin,experience=sandboxExperien
     async function load() {
       pending?.abort(); const controller = new AbortController(); pending = controller;
       setLoading(true); setMe(null); setAvailable(false); setMessage('');
+      compatibility.current = null; sceneIdentity.current = undefined;
       try {
         const signal=AbortSignal.any([controller.signal,AbortSignal.timeout(8000)]);
-        const [identity, catalog] = await Promise.all([fetch('/v1/me', { cache: 'no-store', signal }), fetch('/v1/worlds', { cache: 'no-store', signal })]);
+        const [identity, catalog, discovery] = await Promise.all([fetch('/v1/me', { cache: 'no-store', signal }), fetch('/v1/worlds', { cache: 'no-store', signal }), fetch('/v1/client-compatibility', {cache: 'no-store', signal})]);
         if (!identity.ok) throw new Error('Open identity to create a guest or sign in.');
         const nextMe = MeSchema.parse(await identity.json());
         if (!catalog.ok) throw new Error('The city is unavailable. Try again shortly.');
         const worlds = WorldCatalogSchema.parse(await catalog.json()); const world = worlds.worlds.find(world => world.slug === experience.slug);
-        if (!disposed && !controller.signal.aborted) { setMe(nextMe); setAvailable(world?.availability === 'available'&&world.version===experience.worldVersion&&world.sceneRef.version===manifest.version); }
+        const selected = resolveClientCompatibility(discovery.status, discovery.status === 200 ? await discovery.json() : undefined);
+        let digest: SceneIdentity | undefined;
+        if (selected.mode === 'negotiated') {try {digest = {schemaVersion: manifest.schemaVersion, sha256: await sceneManifestHash(manifest)};} catch {throw new Error('This place changed. Reload before entering.');}}
+        if (!disposed && !controller.signal.aborted) { compatibility.current = selected; sceneIdentity.current = digest; setMe(nextMe); setAvailable(world?.availability === 'available'&&world.version===experience.worldVersion&&world.sceneRef.version===manifest.version); }
       } catch (error) { if (!disposed && !controller.signal.aborted) setMessage(error instanceof Error ? error.message : 'The city is unavailable.'); }
       finally { if (!disposed && !controller.signal.aborted) setLoading(false); }
     }
@@ -111,11 +119,12 @@ export default function WorldRoomPanel({ socketOrigin,experience=sandboxExperien
 
   async function sync(joining: boolean) {
     const client = socket.current; if (!client?.connected || inFlight.current || !desired.current) return;
+    if (compatibility.current?.mode === 'negotiated' && !negotiated.current) return;
     const previous = latest.current; if (!joining && !previous) return;
     inFlight.current = true; if (alive.current) setBusy(true);
     const operation = ++sequence.current; const ticket = recovery.current.beginSync(); publish();
     try {
-      const input = joining ? { schemaVersion: 1, requestId: crypto.randomUUID(), worldSlug: experience.slug, worldVersion: experience.worldVersion, sceneVersion: manifest.version, motionVersion: 1 } : ownInput(previous!);
+      const input = joining ? { schemaVersion: 1, requestId: crypto.randomUUID(), worldSlug: experience.slug, worldVersion: experience.worldVersion, sceneVersion: manifest.version, motionVersion: 1, ...(sceneIdentity.current ? {sceneIdentity: sceneIdentity.current} : {}) } : commandInput(previous!);
       const ack = RoomAckSchema.parse(await client.timeout(5000).emitWithAck(joining ? 'room.join' : 'room.snapshot', input));
       if (socket.current !== client || !client.connected || !desired.current || sequence.current !== operation) return;
       if (!ack.ok) throw new Error(messages[ack.error.code] ?? 'Your room could not be confirmed. Rejoin to continue.');
@@ -132,13 +141,29 @@ export default function WorldRoomPanel({ socketOrigin,experience=sandboxExperien
     return () => clearInterval(timer);
   }, []);
   function enter() {
-    if (!me || !available || inFlight.current) return;
+    if (!me || !available || !compatibility.current || busy || loading || inFlight.current) return;
     closeConnection(); focusIntent.current = 'actions'; desired.current = true;
-    const client = io(socketOrigin, { autoConnect: false, reconnection: true, reconnectionAttempts: 3, reconnectionDelay: 1000, transports: ['websocket'], withCredentials: true, auth: { schemaVersion: 1, csrfToken: me.csrfToken } });
+    setBusy(true);
+    let offer: ClientProtocolOffer | null = null;
+    const client = io(socketOrigin, { forceNew: true, autoConnect: false, reconnection: true, reconnectionAttempts: 3, reconnectionDelay: 1000, transports: ['websocket'], withCredentials: true, auth: complete => {
+      const protocol = compatibility.current?.mode === 'negotiated' ? createClientProtocolOffer(crypto.randomUUID()) : undefined;
+      offer = protocol ?? null; complete({schemaVersion: 1, csrfToken: me.csrfToken, ...(protocol ? {protocol} : {})});
+    } });
     socket.current = client;
-    client.on('connect', () => { if (socket.current === client) void syncRef.current(true); });
-    client.on('disconnect', () => { if (socket.current === client && alive.current) { sequence.current++; inFlight.current = false; setBusy(false); setMessage(''); recovery.current.disconnect(); publish(); } });
-    client.on('connect_error', () => { if (socket.current === client && alive.current) { recovery.current.disconnect(); publish(); setMessage('Connection unavailable. Rejoin to try again.'); } });
+    client.on('connect', () => {
+      if (socket.current !== client) return; clientSequence.current = 0; negotiated.current = null;
+      if (compatibility.current?.mode === 'legacy') void syncRef.current(true);
+      else {clearTimeout(compatibilityTimer.current); compatibilityTimer.current = setTimeout(() => {if (socket.current === client && alive.current && !negotiated.current) {client.close(); setBusy(false); setMessage('Connection changed. Reload before rejoining.');}}, 5000);}
+    });
+    client.on('session.compatibility', input => {
+      if (socket.current !== client || !client.connected || !alive.current || !offer || negotiated.current) return;
+      try {
+        const selected = acceptSessionCompatibility(offer, input); if (!selected) return;
+        negotiated.current = selected; clearTimeout(compatibilityTimer.current); compatibilityTimer.current = undefined; void syncRef.current(true);
+      } catch {client.close(); setBusy(false); setMessage('Update this app before entering the city.');}
+    });
+    client.on('disconnect', () => { if (socket.current === client && alive.current) { clearTimeout(compatibilityTimer.current); compatibilityTimer.current = undefined; negotiated.current = null; sequence.current++; inFlight.current = false; setBusy(false); setMessage(''); recovery.current.disconnect(); publish(); } });
+    client.on('connect_error', error => { if (socket.current === client && alive.current) {clearTimeout(compatibilityTimer.current); compatibilityTimer.current = undefined; negotiated.current = null; setBusy(false); recovery.current.disconnect(); publish(); setMessage(error.message === 'UPGRADE_REQUIRED' ? 'Update this app before entering the city.' : 'Connection unavailable. Reload or rejoin to try again.'); } });
     client.on('room.delta', event => {
       if (socket.current !== client || !alive.current) return;
       try {
@@ -158,17 +183,18 @@ export default function WorldRoomPanel({ socketOrigin,experience=sandboxExperien
     });
     client.connect();
   }
+  function commandInput(state: RoomSnapshot) {return ownInput(state, negotiated.current?.capabilities.includes('room-client-sequence-v1') ? clientSequence.current++ : undefined);}
   async function mutate(name: 'seat.claim' | 'seat.release' | 'room.leave' | 'room.move', seatId?: string, destination?: { x: number; y: number }) {
     const current = latest.current; const client = socket.current;
     if (!current || !client?.connected || inFlight.current) return;
     inFlight.current = true; setBusy(true); const run = ++sequence.current;
     const ticket = recovery.current.beginSync(); publish();
     try {
-      const ack = RoomAckSchema.parse(await client.timeout(5000).emitWithAck(name, { ...ownInput(current), ...(seatId ? { seatId } : {}), ...(destination ? { destination } : {}) }));
+      const ack = RoomAckSchema.parse(await client.timeout(5000).emitWithAck(name, { ...commandInput(current), ...(seatId ? { seatId } : {}), ...(destination ? { destination } : {}) }));
       if (!alive.current || socket.current !== client || run !== sequence.current) return;
       if (!ack.ok) {
         const explanation = messages[ack.error.code] ?? 'That change could not be confirmed. Rejoin to check your place.';
-        const refreshed = RoomAckSchema.parse(await client.timeout(5000).emitWithAck('room.snapshot', ownInput(current)));
+        const refreshed = RoomAckSchema.parse(await client.timeout(5000).emitWithAck('room.snapshot', commandInput(current)));
         if (!alive.current || socket.current !== client || run !== sequence.current) return;
         if (!refreshed.ok || refreshed.result.type !== 'snapshot') throw new Error(explanation);
         recovery.current.acceptSnapshot(ticket, refreshed.result); publish(); setMessage(explanation); return;
@@ -207,8 +233,8 @@ export default function WorldRoomPanel({ socketOrigin,experience=sandboxExperien
       </section>{me && <>{experience.focus&&<FocusPanel key={me.profile.id + ':' + me.csrfToken} me={me} source={active && view.snapshot?.self.seatId ? { epoch: view.snapshot.epoch, roomId: view.snapshot.roomId, membershipId: view.snapshot.membershipId } : null}/ >}{experience.wardrobe&&<Wardrobe key={'wardrobe:'+me.profile.id+':'+me.csrfToken} me={me} source={active&&view.snapshot?{epoch:view.snapshot.epoch,roomId:view.snapshot.roomId,membershipId:view.snapshot.membershipId}:null} effective={active?view.snapshot?.participants.find(person=>person.profile.id===me.profile.id)?.outfit??'casual':null}/ >}{experience.events&&available&&<WorldEvents key={'events:'+me.profile.id+':'+me.csrfToken} me={me} worldSlug={experience.slug} source={active&&view.snapshot?{epoch:view.snapshot.epoch,roomId:view.snapshot.roomId,membershipId:view.snapshot.membershipId}:null}/>}</>}<a className="cafe-action-back" href="#cafe-room-controls">Back to visit controls</a></div>
       <aside className="cafe-sidebar" id="cafe-room-controls" tabIndex={-1} aria-label="Your room"><h2>Your visit</h2><p className="cafe-connection" role="status" aria-live="polite">{loading ? 'Checking your session...' : status}</p>
         {message && <p className="cafe-message" aria-live="polite">{message}</p>}
-        {me ? <><p className="cafe-identity">{me.profile.displayName}</p><p className="cafe-note" aria-live="polite">{active ? walking ? view.snapshot?.self.seatId ? 'Walking to your reserved seat.' : 'Walking across the '+experience.noun+' floor.' : view.snapshot?.self.seatId ? 'Seated at ' + manifest.seats.find(seat => seat.seatId === view.snapshot?.self.seatId)?.label : 'On the '+experience.noun+' floor' : 'No confirmed place'}</p>
-          {active ? <button className="cafe-primary" disabled={busy} onClick={() => void mutate('room.leave')}>Leave {experience.noun}</button> : <button ref={entryButton} className="cafe-primary" disabled={!available || busy || loading || view.status === 'syncing'} onClick={enter}>{(view.status === 'idle' ? 'Enter ' : 'Rejoin ')+experience.noun}</button>}
+        {me || loading ? <>{me && <><p className="cafe-identity">{me.profile.displayName}</p><p className="cafe-note" aria-live="polite">{active ? walking ? view.snapshot?.self.seatId ? 'Walking to your reserved seat.' : 'Walking across the '+experience.noun+' floor.' : view.snapshot?.self.seatId ? 'Seated at ' + manifest.seats.find(seat => seat.seatId === view.snapshot?.self.seatId)?.label : 'On the '+experience.noun+' floor' : 'No confirmed place'}</p></>}
+          {active ? <button className="cafe-primary" disabled={busy} onClick={() => void mutate('room.leave')}>Leave {experience.noun}</button> : <button ref={entryButton} className="cafe-primary" aria-disabled={!available || loading} disabled={busy || view.status === 'syncing'} onClick={enter}>{(view.status === 'idle' ? 'Enter ' : 'Rejoin ')+experience.noun}</button>}
         </> : !loading && <Link href="/identity">Open identity</Link>}
         {experience.portalReturn&&<button disabled={busy||loading||view.status==='syncing'||view.status==='reconnecting'} onClick={()=>void returnToCity()}>{active?'Leave and return to city':'Return to city'}</button>}
         <label className="cafe-motion"><input type="checkbox" checked={lowMotion} onChange={event => { const value = event.target.checked; userMotion.current = value; lowMotionRef.current = value; setLowMotion(value); scene.current?.setReducedMotion(value); }}/>Reduce room motion</label>

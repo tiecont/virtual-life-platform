@@ -1,0 +1,174 @@
+{
+  "taskId": "N05-06",
+  "result": "PASS",
+  "scope": "Additive client/server and scene-description compatibility, current web adapter and immutable pre-negotiation wire fixture; no native binary or deployment qualification",
+  "source": {
+    "baseRevision": "50f10681febb15154d650a2bd13fe9f3d9c97e37",
+    "snapshotRevision": "e793e763cfd68f5d1bf81c338e01b73ccac835ac",
+    "ref": "refs/vnext/candidates/n05-06-final-compatibility",
+    "workspaceSha256": "9cb4195bd78f041ecfb904c7a6695274bd824c0c1125d02adf8ab5b4e7e5a7a6",
+    "scope": "Final application/tests: manager ownership, guarded focusable loading entry and explicit enabled waits in two existing keyboard setups. Earlier source candidates884702/54558 retained. Full study/legacy/core follow; API/contracts unchanged from protocol-resumed145."
+  },
+  "environment": {
+    "observedAt": "2026-11-06T01:39:53.555Z",
+    "node": "v26.9.0",
+    "platform": "linux",
+    "architecture": "x64",
+    "kernel": "7.2.9-2-cachyos",
+    "cpu": "AMD Ryzen 7 4800HS with Radeon Graphics",
+    "logicalCpus": 16,
+    "memoryBytes": 24573255680,
+    "scope": "Shared local host; browser emulation, no physical/device/capacity qualification"
+  },
+  "compatibility": {
+    "applicationProtocol": 1,
+    "sceneSchema": 1,
+    "bootstrapEnvelope": 1,
+    "databaseMigrations": 38,
+    "roomDelta": "full-snapshot",
+    "strictOldResponseSchemasChanged": false,
+    "discoveryLegacyFallbackStatus": 404,
+    "negotiationAfterCurrentAuthentication": true,
+    "sceneHash": "SHA256 of canonical validated scene JSON; not downloaded media bytes or license rights",
+    "legacySourceRevision": "50f10681febb15154d650a2bd13fe9f3d9c97e37",
+    "releasedMobileBinary": "NOT_APPLICABLE; no distributed mobile clients",
+    "transportDelivery": "Reconnect is not exactly-once; existing bounded/durable receipt ownership remains"
+  },
+  "verification": {
+    "protocolResumed": {
+      "exitCode": 0,
+      "cases": 145,
+      "files": 10
+    },
+    "studyBeforeFinalManagerOwnership": {
+      "exitCode": 0,
+      "specs": 5,
+      "executions": 58,
+      "scope": "Precedes only forceNew manager option; old assertions and performance budgets unchanged"
+    },
+    "legacyBrowser": {
+      "exitCode": 0,
+      "specs": 8,
+      "isolatedLifetimes": 16,
+      "executions": 40,
+      "commandLabel": "browser-legacy-final"
+    },
+    "fullCheck": {
+      "exitCode": 0,
+      "governance": 62,
+      "unit": {
+        "cases": 320,
+        "files": 67
+      },
+      "integration": {
+        "cases": 586,
+        "files": 45
+      },
+      "allWorkspaceBuilds": 0,
+      "lintTypecheckPoliciesAssetsArchitectureCiInfraLegacy": 0,
+      "startedAt": "2026-11-06T02:09:26.730Z",
+      "endedAt": "2026-11-06T02:21:44.089Z"
+    },
+    "keyboardBefore": {
+      "exitCode": 1,
+      "scope": "Expected deterministic regression before fix; desktop only"
+    },
+    "preKeyboardCompatibilityBrowser": {
+      "exitCode": 0,
+      "executions": 8
+    },
+    "preKeyboardTransportIdentityRecoveryBrowser": {
+      "exitCode": 0,
+      "executions": 4
+    },
+    "legacyLoadingReadinessAttempt": {
+      "exitCode": 1,
+      "identityExecutionsPassed": 6,
+      "deadlineDesktop": {
+        "passed": 2,
+        "failed": 2
+      },
+      "remaining": "NOT_RUN",
+      "scope": "First case pressedEnterwhileunavailable; occupancy2 in later same-DB case after failed preceding travel. Fresh full spec required; not classified as preexisting or independent production fault."
+    },
+    "finalCompatibilityBrowser": {
+      "exitCode": 0,
+      "cases": 5,
+      "executions": 10,
+      "scope": "Final application source; before only explicit readiness waits in existing legacy specs"
+    },
+    "initialLegacyKeyboardAttempt": {
+      "exitCode": 1,
+      "passed": 37,
+      "failed": 1,
+      "notRun": 2,
+      "scope": "First legacy run, before keyboard focus fix"
+    },
+    "studyFinal": {
+      "exitCode": 0,
+      "specs": 5,
+      "isolatedLifetimes": 10,
+      "executions": 60,
+      "commandLabel": "browser-study-qualified",
+      "scope": "Final frozen application/test source; actual transport/identity recovery, privacy, assets, keyboard and existing performance budgets"
+    },
+    "preservationQualified": {
+      "exitCode": 0,
+      "scope": "All protected domains/SQL/dependencies/old evidence unchanged; strict7 schemas identical;27 old browser specs exact and2 readiness-wait-only"
+    },
+    "candidateApplicationDiff": {
+      "exitCode": 0,
+      "revision": "e793e763cfd68f5d1bf81c338e01b73ccac835ac",
+      "scope": "apps/packages/tests/scripts/browser-group config/vitest are identical after full check; later report/state only"
+    },
+    "changedFixtureTypes": 0
+  },
+  "preservation": {
+    "dependencyChanges": 0,
+    "productionSqlChanges": 0,
+    "strictLegacyResponseSchemas": 7,
+    "historicalTasks": 151,
+    "historicalVerified": 148,
+    "historicalBlocked": 3,
+    "originalBrowserSpecsByteIdentical": 27,
+    "originalBrowserSpecsReadinessWaitOnly": 2,
+    "originalAssertionsAndBudgetsChanged": 0
+  },
+  "initialFailures": [
+    "contracts-before: missing helper exports before implementation",
+    "server-before: three unsupported/mismatch expectations before implementation",
+    "browser: fixture displayName exceeded existing24-character limit; shortened fixture only",
+    "browser-fixed and protocol: legacy fixture omitted worldVersion; fixed by source-derived old-schema verifier",
+    "legacy-fixture-before: newly implemented immutable-source verifier rejected the incorrect fixture",
+    "browser-legacy/keyboard-before: pending bootstrap had no keyboard-focusable entry. Product fix retains tab position via guarded aria-disabled loading control; original29specs unchanged.",
+    "browser-legacy-qualified: focusable loading control made existing direct-focus activation happen before readiness; two existing setups now explicitly await enabled before Enter. Exact preservation check removes only those waits to recover original bytes. No original assertions/budgets changed."
+  ],
+  "interruptedProtocol": {
+    "status": "INCOMPLETE",
+    "exitCode": null,
+    "signal": "NOT_RECORDED",
+    "observedAt": "2026-11-06T01:28:24.399Z",
+    "reason": "Execution session ended without command completion metadata; process no longer running. Partial assertions are not a completed gate.",
+    "partialLog": "artifacts/vnext/n05-06/protocol-final.log",
+    "sha256": "1f5b2fa1d21b89e961f6b238a5f8f47ef6d1623b282f6fa9c814d09538eeaca5",
+    "cleanup": {
+      "project": "virtual-city-test-369fafab",
+      "containerWas": "exited",
+      "containerRemoved": true,
+      "networksRemoved": [
+        "virtual-city-test-369fafab_default"
+      ],
+      "unrelatedResourcesTouched": false
+    }
+  },
+  "limitations": [
+    "Local Node/disposable PostgreSQL and responsive Chromium emulation only; no physical Android/iOS evidence or previous deployed server/binary.",
+    "Pinned old source/wire fixtures establish the stated compatibility window; N12 still requires tested image digests and release/rollback qualification.",
+    "Scene identity covers the validated scene description; legacy joins require immutable semantic versions and gain no hash guarantee.",
+    "Current browser falls back only on absent discovery; an already loaded client during server rollback can require reload.",
+    "No protocol response grants authentication/permission or exactly-once delivery; snapshots/gap/epoch repair and receipts remain authoritative.",
+    "Hosted baseline cadence and repository enforcement limitations remain unresolved; no hosted runs, pushes, publish, production/store/operator/adult/media approval.",
+    "Private raw evidence remains local until owner cleanup, not off-host archived.",
+    "Fresh browser matrix is study and legacy only; city/social/hospitality/private groups are not newly executed by this task. Full pnpm check does not itself run Playwright. Browser timing is local emulation, not production capacity or GPU certification."
+  ]
+}

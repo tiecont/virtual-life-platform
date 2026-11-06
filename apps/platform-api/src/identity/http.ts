@@ -1,7 +1,7 @@
 import cookie from '@fastify/cookie';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
-import { GuestInputSchema, ProfilePatchSchema, PrivacySchema, UpgradeInputSchema, LoginInputSchema } from '@virtual-city/contracts';
+import { GuestInputSchema, ProfilePatchSchema, PrivacySchema, UpgradeInputSchema, LoginInputSchema, CURRENT_CLIENT_COMPATIBILITY } from '@virtual-city/contracts';
 import type { Config } from '../config';
 import { IdentityService } from './service';
 import { IdentityError, unauthorized } from './errors';
@@ -27,6 +27,7 @@ export function registerIdentity(http: FastifyInstance, config: Config, service:
     api.addHook('onRequest', async req => {
       if (!limiter.take('http:' + req.ip, 300)) throw new IdentityError('RATE_LIMITED', 429, 'Please wait before trying again');
     });
+    api.get('/client-compatibility', req => {z.strictObject({}).parse(req.query); return CURRENT_CLIENT_COMPATIBILITY;});
     api.post('/session/guest', async (req, reply) => {
       if (!limiter.take('guest:' + req.ip, 10)) throw new IdentityError('RATE_LIMITED', 429, 'Please wait before creating another guest');
       const input = GuestInputSchema.parse(req.body);

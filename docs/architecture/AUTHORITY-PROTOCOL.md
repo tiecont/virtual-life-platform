@@ -31,3 +31,5 @@ Run `pnpm test:protocol` for the implemented six-file focused project (contracts
 See [ADR0108](../adr/0108-compatible-room-command-sequencing.md). Version/capability negotiation and N/N−1 support remain N05-06; instrumentation/profile-based optimization N05-02/03; broader drain/DB-fault qualification N05-04; independent durable worker N05-05. Current defaults still authorize no public/store/adult/media release.
 
 [N05-01 actual results](N05-01-PROTOCOL.json) record focused128 plus the appended binding case, full58 governance/306 unit/566 integration/build outcomes, source preservation and private diagnostic hashes.
+
+N05-06 adds opt-in [session/content compatibility](CLIENT-COMPATIBILITY.md) and current web use of the sequence adapter. Legacy handshake/room inputs and strict ACK/snapshot/delta shapes remain unchanged. Nonces/streams are compatibility state, not identity or exactly-once delivery.

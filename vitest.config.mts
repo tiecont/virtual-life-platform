@@ -15,6 +15,8 @@ export default defineConfig({ test: { projects: [
   // Focused replay/concurrency suite; every integration file also stays in the complete gate.
   { test: { name: 'protocol', include: [
     'packages/contracts/test/protocol.test.ts',
+    'packages/contracts/test/compatibility.test.ts', 'packages/world-sdk/test/client-compatibility.test.ts', 'packages/world-sdk/test/room-sync.test.ts',
+    'tests/integration/client-compatibility.test.ts',
     'tests/integration/rooms.test.ts', 'tests/integration/room-owner.test.ts',
     'tests/integration/room-network-races.test.ts', 'tests/integration/travel.test.ts',
     'tests/integration/hospitality.test.ts',

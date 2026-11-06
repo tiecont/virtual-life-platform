@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { RoomSnapshotSchema, RoomEndedSchema, type WorldCard, type WorldDefinition, type AvatarAppearance, type TravelSource, type TravelDestination, type RoomMotion, type RoomMove, type RoomJoin, type RoomOwnCommand, type RoomSnapshot, type RoomEnded, type SeatClaim, type SeatRelease, type PublicProfile } from '@virtual-city/contracts';
+import { RoomSnapshotSchema, RoomEndedSchema, sceneManifestHash, type WorldCard, type WorldDefinition, type AvatarAppearance, type TravelSource, type TravelDestination, type RoomMotion, type RoomMove, type RoomJoin, type RoomOwnCommand, type RoomSnapshot, type RoomEnded, type SeatClaim, type SeatRelease, type PublicProfile } from '@virtual-city/contracts';
 import { findScenePath, motionPosition, type WorldRegistry, type WorldActor } from '@virtual-city/world-sdk';
 import type { IdentityService } from '../identity/service';
 import { DomainError } from '../common/errors';
@@ -220,6 +220,15 @@ export class RoomService {
       if (!connected()) throw new DomainError('UNAUTHENTICATED', 401, 'Connection closed');
       if (input.worldVersion !== definition.version || input.sceneVersion !== definition.sceneRef.version) throw new DomainError('WORLD_VERSION_MISMATCH', 409, 'Refresh world assets');
       if (input.motionVersion && !definition.scene) throw new DomainError('WORLD_VERSION_MISMATCH', 409, 'Movement unavailable for this scene');
+      if (input.sceneIdentity) {
+        if (!definition.scene || input.sceneIdentity.schemaVersion !== definition.scene.schemaVersion) throw new DomainError('WORLD_VERSION_MISMATCH', 409, 'Refresh world assets');
+        const digest = await sceneManifestHash(definition.scene);
+        const refreshed = await this.registry.authorizeWorld(credential, input.worldSlug);
+        await this.authority.assert();
+        if (this.#closed || generation !== (this.#worldGenerations.get(input.worldSlug) ?? 0)) throw new DomainError('WORLD_UNAVAILABLE', 503, 'World unavailable');
+        if (!connected() || refreshed.actor.accountId !== actor.accountId || refreshed.actor.sessionId !== actor.sessionId) throw new DomainError('UNAUTHENTICATED', 401, 'Connection changed');
+        if (digest !== input.sceneIdentity.sha256) throw new DomainError('WORLD_VERSION_MISMATCH', 409, 'Refresh world assets');
+      }
       const request = this.#receipt(actor, input.requestId, 'join', input);
       const current = this.#rooms.get(this.#accounts.get(actor.accountId) ?? '');
       if (request.receipt && (!current || current.id !== request.receipt.roomId || current.members.get(actor.accountId)?.id !== request.receipt.membershipId)) throw new DomainError('NOT_IN_ROOM', 409, 'Previous membership ended');

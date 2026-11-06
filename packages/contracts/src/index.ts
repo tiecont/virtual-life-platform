@@ -1,9 +1,12 @@
 import { z } from 'zod';
 import { AvatarKeySchema, PublicProfileSchema } from './profiles';
+import {ClientProtocolOfferSchema} from './compatibility';
 export * from './profiles';
 export * from './world';
 export * from './rooms';
 export * from './protocol';
+export * from './compatibility';
+export * from './content';
 export * from './scene';
 export * from './avatar';
 export * from './safety';
@@ -43,7 +46,7 @@ export const UpgradeInputSchema = z.strictObject({ loginName: LoginNameSchema, p
 export const LoginInputSchema = UpgradeInputSchema.extend({ requestId: z.uuid() });
 export type UpgradeInput = z.infer<typeof UpgradeInputSchema>;
 // Identity transport only; room/world envelopes remain owned by M05/M06/M09.
-export const SessionHandshakeSchema = z.strictObject({ schemaVersion: z.literal(1), csrfToken: z.string().regex(/^[a-f0-9]{64}$/) });
+export const SessionHandshakeSchema = z.strictObject({ schemaVersion: z.literal(1), csrfToken: z.string().regex(/^[a-f0-9]{64}$/), protocol: ClientProtocolOfferSchema.optional() });
 export const SessionCheckSchema = z.strictObject({ schemaVersion: z.literal(1), requestId: z.uuid() });
 export const SessionCheckAckSchema = z.discriminatedUnion('ok', [
   z.strictObject({ schemaVersion: z.literal(1), requestId: z.uuid(), ok: z.literal(true), result: z.strictObject({ accountId: z.uuid(), kind: z.enum(['guest', 'registered']) }) }),

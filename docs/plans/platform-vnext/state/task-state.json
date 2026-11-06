@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "updated_at": "2026-11-05",
+  "updated_at": "2026-11-06",
   "scope": "vNext implementation",
   "release_status": "NOT_REQUESTED",
   "module_activation": {
@@ -327,12 +327,14 @@
       "next_action": "Reserve N05-06; audit current SessionHandshake/room content schemas, Socket.IO gateway and actual portal consumers. Implement additive protocol/capability negotiation with explicit incompatible-client outcomes, preserve legacy strict response/handshake adapters and Origin/cookie/CSRF/revoke checks. Keep protocol, scene schema, content identity and DB migration versions independent. Exercise real N/N-1 or explicitly pinned legacy fixtures, epoch/gap resync/token revoke and graceful unsupported content; wire/test the relevant client adapter and run applicable contracts/consumer/protocol/integration/browser verification without claiming a released old mobile binary exists."
     },
     "N05-06": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Runtime",
+      "branch": "codex/vnext-n05-06-client-compatibility",
+      "evidence_refs": [
+        "n05-06-2026-11-06"
+      ],
       "blocker": null,
-      "next_action": "Version negotiation, feature capabilities, stable errors và resync behavior"
+      "next_action": "Reserve N04-01 on a clean branch. Read current image/env/schema/rollout contracts and N03-04/N02-03/N02-04 evidence; inventory cluster tools without reading credentials. Implement Kustomize staging/production preparation with one Recreate API, bounded probes/drain/resource budgets, default private networking and external DB/PVC/secrets lifecycle. Implement k8s:validate before claiming it ran; render/schema-validate and exercise a disposable local cluster if resources permit. Record live server prerequisites as unverified external inputs, never pin an untested fake deployment digest or expose production."
     },
     "N06-01": {
       "status": "VERIFIED",
