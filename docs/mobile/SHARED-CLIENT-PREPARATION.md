@@ -17,3 +17,7 @@ Before completing N10-02: provide the proposed JDK21/SDK36/build-tools setup and
 Then N10-03 adds reviewed Android Keystore custody, native session/refresh/revoke and one-time socket-ticket adapters while browser auth remains unchanged. N10-04 still requires its full prelocked 30minute/20visit/10background workload and measurements. This preview is not that spike.
 
 N14 remains conditional without Mac/Xcode and physical-iPhone access. The shared bundle, no-eval renderer, lifecycle interface and safe-area CSS are preparation inputs only. Keychain/WKWebView/native archive/signing/device/compatibility/TestFlight remain NOT_RUN. Neither mobile platform has been distributed; release remains NOT_REQUESTED.
+
+## Native debug build command
+
+`pnpm mobile:android:build` builds/syncs the web assets and invokes the existing Gradle wrapper for `assembleDebug`. Set the pinned JDK21 `JAVA_HOME` and SDK36 `ANDROID_SDK_ROOT` in the child environment; the command checks the required platform/build-tools, uses four Gradle workers and writes a hash/source-bound private APK fact record. It does not install an app, upload to a store or establish device acceptance. [Observed local toolchain](ANDROID-TOOLCHAIN.json) records the isolated setup used for native qualification; the original performance budgets remain unchanged.

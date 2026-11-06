@@ -67,7 +67,8 @@
     "mobile:build:dev": "pnpm build:packages && pnpm --filter @virtual-city/mobile build",
     "test:client-boundaries": "node scripts/client-boundaries.mjs",
     "mobile:bundle:smoke": "node scripts/mobile-bundle-smoke.mjs",
-    "mobile:sync:android": "pnpm mobile:build:dev && pnpm --filter @virtual-city/mobile cap sync android"
+    "mobile:sync:android": "pnpm mobile:build:dev && pnpm --filter @virtual-city/mobile cap sync android",
+    "mobile:android:build": "pnpm mobile:sync:android && node scripts/android-build.mjs"
   },
   "devDependencies": {
     "@eslint/js": "9.39.1",
