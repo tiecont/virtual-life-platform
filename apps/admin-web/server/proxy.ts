@@ -36,7 +36,7 @@ export function createAdminHandler(config:Config|undefined,fetcher:Fetch=fetch,n
   if(request.method!==(get?'GET':'POST'))return json({error:{code:'METHOD_NOT_ALLOWED',message:'Method not allowed'}},405);
   let accountQuery='';
   if(action==='metrics'){if(url.searchParams.size!==2||url.searchParams.get('view')!=='summary'||url.searchParams.get('range')!=='current')return error(400);}
-  else if(['event-calendar','event-audit'].includes(action)){try{if(url.searchParams.size!==(action==='event-calendar'?2:1))throw Error();const query=(action==='event-calendar'?OperatorEventRangeSchema:OperatorEventQuerySchema).parse(Object.fromEntries(url.searchParams));accountQuery='?'+new URLSearchParams(query).toString();}catch{return error(400);}}
+  else if(['event-calendar','event-audit'].includes(action)){try{if(url.searchParams.size!==new Set(url.searchParams.keys()).size||!(action==='event-calendar'?[2,3]:[1]).includes(url.searchParams.size))throw Error();const query=(action==='event-calendar'?OperatorEventRangeSchema:OperatorEventQuerySchema).parse(Object.fromEntries(url.searchParams));accountQuery='?'+new URLSearchParams(Object.entries(query).filter(([,value])=>value!==undefined).map(([key,value])=>[key,String(value)])).toString();}catch{return error(400);}}
   else if(accountRead){try{if(url.searchParams.size!==1)throw Error();const parsed=OperatorAccountQuerySchema.parse(Object.fromEntries(url.searchParams));accountQuery='?accountId='+encodeURIComponent(parsed.accountId);}catch{return error(400);}}
   else if(url.search)return error(400);
   if(post&&request.headers.get('origin')!==config.origin)return error(403);
