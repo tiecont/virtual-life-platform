@@ -54,9 +54,8 @@ try:
  tap(nodes,'Room actions');nodes,_,_=snapshot('actions',['Find a seat','Window table 01','Close room actions']);seats=[n for n in nodes if re.fullmatch(r'(Window|Garden) table \d\d',label(n))];assert len(seats)==8 and all(n.get('enabled')=='false'for n in seats),'Logged-out controls must not grant a seat'
  tap(nodes,edit=True);run('type-public-seat-label',['shell','input','text','Window']);nodes,_,_=snapshot('keyboard',['Window','Close room actions'],image=False)
  ime=run('ime-observation',['shell','dumpsys','input_method']).stdout.decode();shown=any(re.search(r'(mInputShown|isInputViewShown|mIsInputViewShown)=true',s)for s in ime.splitlines());facts['keyboardShown']=shown
- assert shown,'Actual virtual-keyboard visibility required';run('back-keyboard',['shell','input','keyevent','4']);nodes,_,_=snapshot('after-keyboard',['Local Test Cafe'],image=False)
- if has(nodes,'Close room actions'):tap(nodes,'Close room actions')
- nodes,_,_=snapshot('after-panel-back',['Local Test Cafe','Room actions']);tap(nodes,'Room actions');nodes,_,_=snapshot('filter-retained',['Window','Close room actions']);tap(nodes,'Close room actions');scenarios.append({'name':'native keyboard, panel controls and retained local filter','outcome':'PASS'})
+ assert shown,'Actual virtual-keyboard visibility required';tap(nodes,'Close room actions');nodes,_,_=snapshot('after-keyboard',['Local Test Cafe','Room actions'],image=False)
+ tap(nodes,'Room actions');nodes,_,_=snapshot('filter-retained',['Window','Close room actions']);run('native-panel-back',['shell','input','keyevent','4']);nodes,_,_=snapshot('after-panel-back',['Local Test Cafe','Room actions']);scenarios.append({'name':'native keyboard, touch-close, panel Back and retained local filter','outcome':'PASS'})
  rotations=[]
  for name in ['secondary','primary']:
   nodes,_,_=snapshot('before-'+name,['Rotate view']);tap(nodes,'Rotate view');nodes,rotation,size=snapshot(name,['Local Test Cafe','Room actions','Rotate view']);assert size[0]>size[1];rotations.append(rotation)
