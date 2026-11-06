@@ -71,6 +71,7 @@ import { registerDatingDates } from './dating/date-http';
 import { DatingContinuations } from './dating/continuations';
 import { registerDatingContinuations } from './dating/continuation-http';
 import { isTrustedProxy } from './common/proxy';
+import {SystemObservations} from './operations/system-observation';
 import { OperationalTelemetry } from './operations/telemetry';
 import { registerOperations } from './operations/http';
 import { operationalRequestLog,operationalErrorLog } from './operations/log';
@@ -267,7 +268,9 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const unsubscribePrivateDates=config.NODE_ENV==='test'&&config.LOCAL_DATING_PROTOTYPE==='1'?datingDates.attachGateway(gateway):()=>{};
   http.addHook('preClose',async()=>{unsubscribePrivateDates();});
   const unsubscribeRooms = registerRoomGateway(gateway, rooms, roomMetrics,telemetry);
-  registerOperations(http,config.OPERATOR_TELEMETRY_TOKEN,telemetry,{online:()=>rooms.diagnostics(),rooms:()=>roomMetrics.snapshot(),orders:()=>hospitality.operationalSummary()},options.now);
+  const systemObservations=new SystemObservations(db,transaction=>hospitalityOutbox.operationalBacklog(transaction),()=>{const context=worlds.releasePolicy?.controls.context() as {releaseVersion?:number}|undefined;return {authority:{configuredOwners:1,state:roomAuthority.state},versions:{expectedSchemaVersion:SCHEMA_VERSION,expectedMigrationCount:Object.keys(requiredMigrations).length,releaseVersion:context?.releaseVersion??null,artifactRevision:null}};},options.now);
+  http.addHook('preClose',async()=>{systemObservations.close();});
+  registerOperations(http,config.OPERATOR_TELEMETRY_TOKEN,telemetry,{online:()=>rooms.diagnostics(),rooms:()=>roomMetrics.snapshot(),orders:()=>hospitality.operationalSummary(),system:systemObservations},options.now);
   registerChatGateway(gateway, chat);
   registerTravelGateway(gateway, travel);
   const unsubscribeSanctions = sanctions.onChanged(id => gateway.emitToAccount(id, 'sanction.changed', SanctionChangedSchema.parse({ schemaVersion: 1 })));

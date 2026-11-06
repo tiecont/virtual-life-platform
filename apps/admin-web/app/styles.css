@@ -11,3 +11,5 @@
 .system-section{margin-top:1.5rem}.system-section p{overflow-wrap:anywhere}
 
 .system-metrics.unknown dd{font-size:1rem;letter-spacing:0;white-space:nowrap}
+
+.system-metrics dd.metric-state{font-size:1rem;letter-spacing:0;overflow-wrap:normal}

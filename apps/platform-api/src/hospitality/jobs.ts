@@ -47,6 +47,13 @@ export class HospitalityOutbox {
     }
     if (failures) throw new Error('Hospitality completion delivery unavailable');
   }
+  // Aggregate-only read port for the API's configured consumers. Execution is
+  // intentionally not inferred: zero pending deliveries does not prove a worker.
+  async operationalBacklog(db:Pick<PoolClient,'query'>){
+    if(this.#closed)throw Error('Backlog unavailable');if(!this.sinks.length)return null;
+    const row=(await db.query<{pending:string;oldest:Date|null}>("SELECT count(*)::text AS pending,min(c.completed_at) AS oldest FROM engine_hospitality_outbox b JOIN engine_hospitality_completions c ON c.id=b.event_id JOIN engine_hospitality_orders o ON o.id=c.order_id CROSS JOIN unnest($1::text[]) AS sinks(consumer_key) WHERE o.world_slug<>'dating' AND NOT EXISTS(SELECT 1 FROM engine_hospitality_deliveries d WHERE d.event_id=b.event_id AND d.consumer_key=sinks.consumer_key)",[this.sinks.map(sink=>sink.key)])).rows[0];
+    const pending=Number(row.pending);if(!Number.isSafeInteger(pending)||pending<0||pending>0&&!row.oldest)throw Error('Invalid backlog observation');return {pendingDeliveries:pending,oldestAgeMs:row.oldest?Math.max(0,this.now()-row.oldest.getTime()):null,consumerCount:this.sinks.length};
+  }
   async deadLetters() {
     if (this.retryLimit === undefined) throw Error('Bounded retry policy required');
     return (await this.pool.query<{event_id: string; consumer_key: string; attempts: number; next_at: Date}>('SELECT event_id,consumer_key,attempts,next_at FROM engine_hospitality_delivery_retries r WHERE consumer_key=ANY($1::text[]) AND attempts>=$2 AND NOT EXISTS(SELECT 1 FROM engine_hospitality_deliveries d WHERE d.event_id=r.event_id AND d.consumer_key=r.consumer_key) ORDER BY next_at,event_id LIMIT 20', [this.sinks.map(sink => sink.key), this.retryLimit])).rows;
