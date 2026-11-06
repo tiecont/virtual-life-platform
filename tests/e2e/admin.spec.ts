@@ -1,0 +1,40 @@
+import {test,expect,type Page} from '@playwright/test';
+import {Pool} from 'pg';
+import {totp} from '../../apps/platform-api/src/identity/operator-crypto';
+const secret='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',password='synthetic-admin-browser-password-only',serviceToken='e'.repeat(64);
+let pool:Pool;
+test.beforeAll(()=>{const address=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost'].includes(address.hostname)||!/^virtual_city_test(?:_|$)/.test(address.pathname.slice(1))||address.search)throw Error('Disposable local test DB required');pool=new Pool({connectionString:address.toString()});});
+// Synthetic seed reset is test-owner SQL, never an application endpoint.
+test.beforeEach(async()=>{await pool.query('UPDATE identity_operator SET totp_counter=-1,failures=0,locked_until=NULL');await pool.query('UPDATE identity_operator_sessions SET revoked_at=clock_timestamp() WHERE revoked_at IS NULL');});
+test.afterAll(async()=>{await pool.end();});
+async function signIn(page:Page){await page.goto('/');await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Authenticator code').fill(totp(secret,Date.now()));await page.getByLabel('Authenticator code').press('Enter');await expect(page.getByRole('heading',{name:'City at a glance'})).toBeVisible();}
+test('unauthenticated UI and routes deny operator/service bypass, wrong Origin, arbitrary queries and private source paths',async({page,request})=>{
+ await page.goto('/');await expect(page.getByRole('heading',{name:/quiet place/})).toBeVisible();expect(await page.locator('form').getAttribute('method')).toBe('post');
+ for(const path of ['/api/admin/session','/api/admin/metrics?view=summary&range=current'])expect((await request.get(path,{headers:{authorization:'Bearer '+serviceToken}})).status()).toBe(401);
+ expect((await request.post('/api/admin/login',{headers:{origin:'https://attacker.invalid'},data:{password,code:totp(secret,Date.now())}})).status()).toBe(403);
+ expect((await request.get('/api/admin/metrics?view=summary&range=24h')).status()).toBe(400);
+ for(const path of ['/.env','/server/proxy.ts','/internal/metrics','/v1/operator/session'])expect((await request.get(path)).status()).toBe(404);
+ await page.screenshot({path:test.info().outputPath('operator-login.png'),fullPage:true});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+});
+test('actual browser MFA sign-in reads a real private API snapshot and audit then logs out without exposing service credentials',async({page})=>{
+ const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));const observed:string[]=[];page.on('response',response=>{if(response.url().includes('/api/admin/'))void response.text().then(text=>observed.push(text)).catch(()=>{});});
+ await signIn(page);expect(await page.evaluate(()=>document.cookie.includes('city_operator'))).toBe(false);await page.getByRole('button',{name:'Refresh snapshot'}).click();await expect(page.getByText('Fresh observation',{exact:true})).toBeVisible();await expect(page.getByText('Requests since API start')).toBeVisible();
+ await page.screenshot({path:test.info().outputPath('operator-overview.png'),fullPage:true});await page.getByRole('button',{name:'Audit trail',exact:true}).click();await page.getByRole('button',{name:'Load audit'}).click();await expect(page.getByRole('cell',{name:'login',exact:true})).toBeVisible();
+ expect(observed.every(body=>!body.includes(serviceToken)&&!body.includes(secret)&&!body.includes('ADMIN_METRICS_READ_TOKEN')&&!body.includes('OPERATOR_AUTH_KEY'))).toBe(true);expect(errors).toEqual([]);await page.getByRole('button',{name:'Sign out',exact:true}).click();await expect(page.getByRole('button',{name:'Sign in',exact:true})).toBeVisible();expect((await page.request.get('/api/admin/session')).status()).toBe(401);
+});
+test('actual browser fresh verification rotates the session and revoke-all clears access',async({page,request})=>{
+ await signIn(page);const old=(await page.context().cookies()).find(value=>value.name==='city_operator')!;await page.getByRole('button',{name:'Session & security',exact:true}).click();await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Authenticator code').fill(totp(secret,Date.now()+30000));await page.getByRole('button',{name:'Verify again',exact:true}).click();await expect(page.getByRole('status')).toContainText('Verification refreshed.');
+ const current=(await page.context().cookies()).find(value=>value.name==='city_operator')!;expect(current.value!==old.value).toBe(true);expect((await request.get('/api/admin/session',{headers:{cookie:'city_operator='+old.value}})).status()).toBe(401);
+ await page.getByRole('button',{name:'Revoke all sessions',exact:true}).click();await expect(page.getByRole('button',{name:'Sign in',exact:true})).toBeVisible();await page.screenshot({path:test.info().outputPath('operator-revoked.png'),fullPage:true});
+});
+test('synthetic observation fixtures show loading, true zero, stale, missing and error states with responsive keyboard controls',async({page})=>{
+ await page.clock.install({time:new Date()});await page.emulateMedia({reducedMotion:'reduce'});await signIn(page);let mode='loading',release:undefined|(()=>void);const values={requests:0,errors:0,connections:0,memberships:0,eventLoopP95Ms:null};
+ await page.route('**/api/admin/metrics?*',async route=>{
+  if(mode==='loading')await new Promise<void>(resolve=>{release=resolve;});
+  if(mode==='error'){await route.fulfill({status:503,contentType:'application/json',body:'{}'});return;}
+  await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({status:mode==='stale'?'STALE':mode==='unknown'?'UNKNOWN':'FRESH',sampledAt:mode==='unknown'?null:Date.now()-(mode==='stale'?15000:0),values:mode==='unknown'?Object.fromEntries(Object.keys(values).map(key=>[key,null])):values})});
+ });
+ await page.getByRole('button',{name:'Refresh snapshot'}).focus();await page.keyboard.press('Enter');await expect(page.getByRole('button',{name:'Refreshing…'})).toBeDisabled();mode='fresh';release?.();await expect(page.getByText('Fresh observation',{exact:true})).toBeVisible();await expect(page.locator('dd').first()).toHaveText('0');
+ mode='stale';await page.getByRole('button',{name:'Refresh snapshot'}).click();await expect(page.getByText('Stale observation',{exact:true})).toBeVisible();mode='unknown';await page.getByRole('button',{name:'Refresh snapshot'}).click();await expect(page.getByText('Metrics unknown',{exact:true})).toBeVisible();await expect(page.locator('dd').first()).toHaveText('—');
+ mode='error';await page.getByRole('button',{name:'Refresh snapshot'}).click();await expect(page.getByRole('status')).toContainText('service is unavailable');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);await page.screenshot({path:test.info().outputPath('operator-unknown.png'),fullPage:true});await page.clock.fastForward(16*60000);await expect(page.getByRole('button',{name:'Sign in',exact:true})).toBeVisible();
+});

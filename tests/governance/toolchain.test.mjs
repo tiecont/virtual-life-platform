@@ -5,10 +5,10 @@ import {assertBuildAll, assertQualityToolchain, describeToolchain, workspaceGrap
 
 const project = (name, dependencies = {}) => ({path: 'packages/' + name, manifest: {name: '@virtual-city/' + name, scripts: {build: 'tsc', typecheck: 'tsc --noEmit'}, dependencies}});
 
-test('shared contracts reach both real apps and every compiled workspace participates in the build-all map', async () => {
+test('shared contracts reach all three real apps and every compiled workspace participates in the build-all map', async () => {
   const {map} = await describeToolchain();
   const contracts = map.projects.find(project => project.name === '@virtual-city/contracts');
-  assert.deepEqual(contracts.applicationConsumers, ['@virtual-city/platform-api', '@virtual-city/portal-web']);
+  assert.deepEqual(contracts.applicationConsumers, ['@virtual-city/admin-web', '@virtual-city/platform-api', '@virtual-city/portal-web']);
   assert.deepEqual(map.projects.find(project => project.name === '@virtual-city/config').applicationConsumers, contracts.applicationConsumers);
   assert(map.projects.find(project => project.name === '@virtual-city/platform-api').compilerInputs.some(input => input.path === 'packages/config/tsconfig.json'));
   assert(map.projects.filter(project => project.kind === 'application').every(project => map.buildOrder.includes(project.name)));

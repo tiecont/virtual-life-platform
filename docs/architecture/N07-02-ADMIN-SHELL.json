@@ -1,0 +1,138 @@
+{
+  "taskId": "N07-02",
+  "result": "PASS",
+  "scope": "Separate private admin app/BFF locally qualified, default unavailable without explicit configuration",
+  "source": {
+    "baseRevision": "3faeae3ee79ad3fe8852cc730303bf2b9c644be4",
+    "snapshotRevision": "a7b3248671b8506c17ab99855088f0e58d59c579",
+    "ref": "refs/vnext/candidates/n07-02-qualified-admin-shell",
+    "workspaceSha256": "3ff29f4fb90044ea4a6d13b773c302838682aa5319ed2ce93665dc9f8577b65c",
+    "scope": "Qualified tracked runtime/client source identical to b231099 except removal of generated next-env.d.ts and additive ignore rule; generated header stays on disk and is recreated by Next"
+  },
+  "originalRuntimeCandidate": {
+    "baseRevision": "3faeae3ee79ad3fe8852cc730303bf2b9c644be4",
+    "snapshotRevision": "b231099825e371c051d735218d3b768338ca53d2",
+    "ref": "refs/vnext/candidates/n07-02-admin-shell",
+    "workspaceSha256": "a857d5b024d288dabd35f423d5e25151eed3b85f4c730b52c22984c2cc32b828",
+    "scope": "Final admin app/proxy/nonce, harness/guards/build-map and docs before actual scope reports/state finalization"
+  },
+  "verification": {
+    "adminCases": 26,
+    "adminFiles": 4,
+    "actualApiTcpProxyCases": 5,
+    "proxyUnitCases": 7,
+    "unitCases": 328,
+    "unitFiles": 69,
+    "governanceCases": 81,
+    "finalBrowserExecutions": 8,
+    "viewportProfiles": [
+      "desktop",
+      "360px mobile emulation"
+    ],
+    "newBrowserSpecs": 1,
+    "existingBrowserSpecsPreserved": 30,
+    "requiredBrowserGroups": 7,
+    "buildAllExitCode": 0,
+    "rootTypecheckExitCode": 0,
+    "adminTypesQualifiedExitCode": 0,
+    "cleanGeneratedTypes": "PASS",
+    "ciInfraArchitectureLint": "PASS",
+    "sourceParity": "PASS",
+    "abortedDenialBodyCleanup": "PASS"
+  },
+  "bundle": {
+    "result": "PASS",
+    "files": 21,
+    "bytes": 1512620,
+    "distinctSyntheticMarkers": 4,
+    "privateServiceRouteAbsent": true,
+    "report": "artifacts/admin-bundle/cfbdef67-9a6b-49b6-aff0-2d4bd50ddd49/report.json",
+    "qualification": "Actual production rebuild with synthetic values; no real credentials used"
+  },
+  "productionFrontendSmoke": {
+    "result": "PASS",
+    "scope": "Actual local production frontend HTTP/browser without an operator or TLS deployment; API target intentionally unreachable",
+    "publicRelease": false,
+    "productionNoncePerResponse": true,
+    "allScriptsNonced": 12,
+    "unsafeEval": false,
+    "unsafeInline": false,
+    "protectedDenials": [
+      401,
+      401,
+      403,
+      400
+    ],
+    "chromiumHydratedLogin": true,
+    "viewport": {
+      "width": 360,
+      "height": 800
+    },
+    "pageErrors": 0,
+    "syntheticMarkerSha256": "1d94df5783b1c5cba15fa01dc666c3d6a4f19288e261d729d1f4cd3c212b5279",
+    "stop": {
+      "code": 143,
+      "signal": null
+    },
+    "cleanupComplete": true
+  },
+  "browserEngineObservation": {
+    "browserVersion": "156.0.8078.4",
+    "driver": "@playwright/test1.64.1",
+    "scope": "Installed default Chromium engine observed separately; no physical device claim"
+  },
+  "preservation": {
+    "result": "PASS",
+    "baseRevision": "3faeae3ee79ad3fe8852cc730303bf2b9c644be4",
+    "applicationApiPortalPackagesSqlChanges": 0,
+    "historicalBrowserSpecsByteIdentical": 30,
+    "originalBrowserGroupsPreserved": 6,
+    "newBrowserGroups": 1,
+    "existingDependencyAndLockSnapshotsUnchanged": true,
+    "addedBuildTarget": "@virtual-city/admin-web",
+    "operatorTestTypeChangeErasesIdentically": true,
+    "historicalCounts": {
+      "VERIFIED": 148,
+      "BLOCKED_EXTERNAL": 3
+    },
+    "priorVnextRecordsUnchanged": 29,
+    "release": "NOT_REQUESTED"
+  },
+  "cleanup": {
+    "result": "PASS",
+    "ownedComposeProjects": [
+      "virtual-city-test-0226ae17",
+      "virtual-city-test-27e7f9f7",
+      "virtual-city-test-308d2801",
+      "virtual-city-test-55466ab7",
+      "virtual-city-test-6cbb9f01",
+      "virtual-city-test-83a51b73",
+      "virtual-city-test-83c4f376",
+      "virtual-city-test-a1a46a51",
+      "virtual-city-test-c4c46884",
+      "virtual-city-test-c8a7d904",
+      "virtual-city-test-f1bfaa67"
+    ],
+    "ownedContainersNetworksVolumesRemaining": 0,
+    "productionFrontendCleanup": true,
+    "unrelatedResourcesTouched": false
+  },
+  "retainedFailures": [
+    "proxy-before missing implementation module",
+    "initial browser desktop3failed/1passed due development CSP; fixed nonce/dev-only evaluation, fresh full8passed",
+    "governance expected two app consumers; expanded to exactthree without reducing assertions",
+    "support .mjs typing and operator test unknown payload; explicit admin typecheck now covers harness/config/specs and type-only correction erases identically",
+    "recovery test local name shadowed helper; corrected actual26-case suite passes",
+    "private aborted-body probe top-level await/CJS mismatch; corrected probe passes without app workaround",
+    "generated next-env.d.ts switched production/dev imports; untracked only this new generated shim, retained runtime bytes, clean typecheck/typegen and final parity pass"
+  ],
+  "limitations": [
+    "All operator credentials/accounts are synthetic and disposable. No real operator, private deployment, admin OCI image, registry publication, external monitor or public/store release is established; N03-05/N07-05 are separate gates.",
+    "Authenticated desktop/mobile flows use a local development frontend and actual test API/DB. Production frontend smoke uses local HTTP, validates nonce hydration/headers/denials and has no operator/TLS backend. This is not an authorized private-ingress or production MFA rollout.",
+    "Mobile is360px Chromium emulation only; no Android/iOS binary or physical evidence and no distribution-context change.",
+    "Metrics expose only current process counters/gauges, not historical queries, rate/health/capacity or deployed source-revision qualification. Ten/thirty-second freshness and clock-skew rules are local gateway policy; richer N08/N07-04 work remains.",
+    "No new complete backend599-case/browser-six-group run is claimed here. API/portal/shared-package/SQL bytes and old dependency snapshots are unchanged from3faeae3; scoped26 admin,328 unit,81 governance and final8 admin-browser executions are fresh. Historical source-specific results retain their scope.",
+    "Initial missing module/CSP/consumer-list/type/harness failures and generated-shim parity failures remain in private logs. Generated Next type shim remains on disk and out of tracked admin source; actual clean generated-input typecheck/typegen and runtime parity pass.",
+    "N04-02 remains BLOCKED_EXTERNAL: genuine release/App setup/actual bot PR+hosted Quality missing. Known hosted baseline cadence/enforcement finding remains unresolved; owner review is not branch protection. Raw artifacts remain private local until owner cleanup, not off-host archives."
+  ]
+}

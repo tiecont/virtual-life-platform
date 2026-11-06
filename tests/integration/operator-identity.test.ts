@@ -24,7 +24,7 @@ beforeEach(async()=>{
 afterEach(async()=>{await server?.app.close();await pool?.end();await admin.query(`DROP SCHEMA "${schema}" CASCADE`);});
 afterAll(async()=>{await admin.end();});
 const code=(key=secret)=>totp(key,now), cookie=(r:{headers:Record<string,unknown>})=>String(r.headers['set-cookie']).split(';')[0];
-const send=(path:string,payload:unknown,headers:Record<string,string>={},address='127.0.0.2')=>server.http.inject({method:'POST',url:'/v1/operator/'+path,payload,headers:{origin,...headers},remoteAddress:address});
+const send=(path:string,payload:Record<string,unknown>,headers:Record<string,string>={},address='127.0.0.2')=>server.http.inject({method:'POST',url:'/v1/operator/'+path,payload,headers:{origin,...headers},remoteAddress:address});
 async function login(key=secret){const response=await send('login',{password,code:code(key)});expect(response.statusCode).toBe(200);return {cookie:cookie(response),session:OperatorSessionSchema.parse(response.json()),response};}
 type User=Awaited<ReturnType<typeof login>>;
 const headers=(user:User)=>({cookie:user.cookie,'x-csrf-token':user.session.csrfToken});

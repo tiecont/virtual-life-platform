@@ -5,7 +5,7 @@
   "packageManager": "pnpm@11.28.5",
   "rootBuild": "pnpm -r build",
   "packagesBuild": "pnpm --filter './packages/*' -r build",
-  "lockSha256": "3ab003e86b34715e20681d3d682018c4119e7303da4c0bb52f457ee460d1d425",
+  "lockSha256": "d552edea9691e0fc71921ea21a2e3f80b5c9e213f87416e896cd3bc74bac7a03",
   "workspaceConfigSha256": "0c79bdd36e2d8eac11365b4cba92045f1d494d8e191f41de14298de2263d0ec1",
   "rootDependencies": {
     "dependencies": {},
@@ -37,6 +37,7 @@
   },
   "buildOrder": [
     "@virtual-city/contracts",
+    "@virtual-city/admin-web",
     "@virtual-city/world-sdk",
     "@virtual-city/deadline-world",
     "@virtual-city/focus-ui",
@@ -50,6 +51,36 @@
     "@virtual-city/portal-web"
   ],
   "projects": [
+    {
+      "name": "@virtual-city/admin-web",
+      "path": "apps/admin-web",
+      "kind": "application",
+      "build": "next build --webpack",
+      "typecheck": "tsc --noEmit",
+      "dependencies": [
+        "@virtual-city/contracts",
+        "@virtual-city/ui"
+      ],
+      "configurationDependencies": [],
+      "compilerInputs": [
+        {
+          "path": "apps/admin-web/tsconfig.json",
+          "sha256": "cb60e8d090d3d38584c2db46e12189f3d82b52ab582db3afd8ddde1238e98421"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {
+          "next": "16.4.4",
+          "react": "19.3.1",
+          "react-dom": "19.3.1",
+          "zod": "4.6.7"
+        },
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": []
+    },
     {
       "name": "@virtual-city/config",
       "path": "packages/config",
@@ -71,6 +102,7 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
+        "@virtual-city/admin-web",
         "@virtual-city/platform-api",
         "@virtual-city/portal-web"
       ]
@@ -106,6 +138,7 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
+        "@virtual-city/admin-web",
         "@virtual-city/platform-api",
         "@virtual-city/portal-web"
       ]
@@ -498,7 +531,9 @@
         "peerDependencies": {},
         "optionalDependencies": {}
       },
-      "applicationConsumers": []
+      "applicationConsumers": [
+        "@virtual-city/admin-web"
+      ]
     },
     {
       "name": "@virtual-city/world-sdk",

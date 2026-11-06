@@ -400,12 +400,14 @@
       "next_action": "Reserve N07-02 on a clean branch. Read operator MFA contracts, current Next proxy and UI tokens; implement a separate private admin shell/BFF with authenticated allowlisted bounded read-only metrics proxy, no service tokens in browser, explicit unauthorized/error/stale states and actual network/browser/bundle inspection. Preserve player routes, one owner and all release gates. N04-02 still needs genuine published candidate/App setup/real bot PR Quality; N04-03 waits."
     },
     "N07-02": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Admin + Runtime",
+      "branch": "codex/vnext-n07-02-admin-shell",
+      "evidence_refs": [
+        "n07-02-2026-11-06"
+      ],
       "blocker": null,
-      "next_action": "apps/admin-web, navigation/design, authenticated BFF/proxy"
+      "next_action": "Reserve N03-05 (highest ready priority44) on a clean branch. Read artifact build/publish/provenance/manifest and admin source closure. Implement a separate hardened admin image and integrate its exact source/digest target into quality, image tests and reviewed release metadata while preserving existing API/web and old release compatibility. Run real production image/browser/private-origin/token inspection with cleanup; no publishing, automatic promotion or deployment without real gates. Keep N04-02 externally blocked and N04-03 waiting."
     },
     "N07-03": {
       "status": "TODO",

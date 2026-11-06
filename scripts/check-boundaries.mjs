@@ -20,13 +20,14 @@ export function assertImportAllowed(from, specifier, root) {
   if (layer === 'worlds' && target.startsWith('worlds/') && targetProject !== project) throw new Error(`Cross-world import: ${path} → ${target}`);
   if (specifier.startsWith('@virtual-city/')) {
     const targetPackage = specifier.split('/')[1];
+    const publicUi = path.startsWith('apps/admin-web/') && ['@virtual-city/ui/tokens.css','@virtual-city/ui/components.css'].includes(specifier);
     if (layer === 'packages' && worldPackages.includes(targetPackage) && !path.startsWith('packages/'+targetPackage+'/')) throw new Error(`Shared package imports world implementation: ${path}`);
-    if (['apps', 'packages', 'worlds'].includes(layer) && !['contracts', 'world-sdk', 'pixi-scene', 'focus-ui', 'config', ...worldPackages].includes(targetPackage)) {
+    if (['apps', 'packages', 'worlds'].includes(layer) && !['contracts', 'world-sdk', 'pixi-scene', 'focus-ui', 'config', ...worldPackages].includes(targetPackage) && !publicUi) {
       throw new Error(`Forbidden workspace package: ${path} → ${specifier}`);
     }
     if (path.startsWith('packages/contracts/') && targetPackage !== 'config') throw new Error(`Contracts must not import SDK/apps: ${specifier}`);
     const publicRenderer = specifier === '@virtual-city/pixi-scene/renderer' && path.startsWith('apps/portal-web/');
-    if (specifier.split('/').length > 2 && !publicRenderer) throw new Error(`Workspace deep import: ${specifier}`);
+    if (specifier.split('/').length > 2 && !publicRenderer && !publicUi) throw new Error(`Workspace deep import: ${specifier}`);
   }
 }
 export async function checkBoundaries(root) {

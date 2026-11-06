@@ -24,6 +24,7 @@ Follow the [vNext master](plans/platform-vnext/MASTER-AGENT-PLAN.md), [current h
 | Kubernetes preparation | [Private manifests and explicit target inventory](operations/KUBERNETES-PREPARATION.md) | Render/schema/local API-server evidence; no deployable release, ingress, registry credentials or real server qualification |
 | Digest promotion | [Proof-checked draft proposals](operations/DIGEST-PROMOTION.md) | Default-disabled scoped App workflow; real bot PR/hosted CI remains externally blocked |
 | Operator identity | [Singleton MFA, sessions and audit](operations/OPERATOR-IDENTITY.md) | Default-disabled boundary; local qualification does not provision a real operator or deployment |
+| Admin shell | [Separate console and bounded proxy](operations/ADMIN-SHELL.md) | Local browser/TCP/bundle qualification; image and real private deployment remain separate |
 | Web artifact | [Standalone portal/runtime origins](operations/WEB-IMAGE.md) | Same-image runtime configuration and local TLS/browser verification; normal build compatibility retained |
 
 Historical architecture and ADR prose retain their original decisions and observations. Prefer the current map and dated task evidence when an early checkpoint differs from later implementation. Source hashes and test environments remain part of every acceptance claim.

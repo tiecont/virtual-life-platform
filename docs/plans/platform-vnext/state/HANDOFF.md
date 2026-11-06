@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-06T04:27:38.140976+00:00; N07-01 VERIFIED on `codex/vnext-n07-01-operator-identity`. Base `0371e7963bf480e910111c2b6521e626cfb26e5e`; this slice is committed after evidence finalization.
+Updated 2026-11-06T05:15:15.570796+00:00; N07-02 VERIFIED on `codex/vnext-n07-02-admin-shell`. Base `3faeae3ee79ad3fe8852cc730303bf2b9c644be4`; this slice is committed after evidence finalization.
 
-Implemented singleton out-of-band operator bootstrap, separate password/TOTP session/audience/CSRF, monotonic factor replay protection, bounded durable lockout, idle/absolute/step-up expiry, token rotation, same-identity recovery/revocation and redacted chained append-only audit. Additive0039 keeps first38 SQL bytes, one journal and strict39. Final599 integration/46files pass, security165/11files pass, governance76/unit321 pass, production build/type/lint/infra/CI/architecture/toolchain and preservation pass. Actual39→synthetic40 image compatibility scenarios6 and cleanup pass; production source matches its immutable image candidate. Original count/build/test/argument failures retained and explicitly superseded. No real operator or deployment; N04-02 remains BLOCKED_EXTERNAL.
+Implemented separate admin MFA/session/audit shell, narrow server BFF and read-only current metrics projection with bounded query/cache/freshness and post-observation auth recheck. API/portal/packages/SQL and existing dependency snapshots unchanged; only new importer and admin build target added. Actual26 admin cases,328 unit cases,81 governance cases, final8 desktop/mobile browser executions and production frontend nonce/header/hydration/denials pass. Actual production bundle21files/1512620bytes excludes4 random synthetic configuration markers and private telemetry route; build/type/CI/infra/architecture/lint, preservation, generated-input typecheck/typegen and scoped cleanup pass. Existing30 specs/six groups retained; required admin seventh group added. Original failures retained and corrected, no real operator/image/deployment or public release.
 
-[Actual checks](../audit/N07-01-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 28, "TODO": 40, "BLOCKED_EXTERNAL": 1}`.
+[Actual checks](../audit/N07-02-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 29, "TODO": 39, "BLOCKED_EXTERNAL": 1}`.
 
 ## Remaining gates
 
@@ -12,4 +12,4 @@ Hosted baseline Quality42037215254 failed Deadline cadence (133.3ms vs <100ms); 
 
 ## Next exact action
 
-Reserve N07-02 on a clean branch. Read operator MFA contracts, current Next proxy and UI tokens; implement a separate private admin shell/BFF with authenticated allowlisted bounded read-only metrics proxy, no service tokens in browser, explicit unauthorized/error/stale states and actual network/browser/bundle inspection. Preserve player routes, one owner and all release gates. N04-02 still needs genuine published candidate/App setup/real bot PR Quality; N04-03 waits.
+Reserve N03-05 (highest ready priority44) on a clean branch. Read artifact build/publish/provenance/manifest and admin source closure. Implement a separate hardened admin image and integrate its exact source/digest target into quality, image tests and reviewed release metadata while preserving existing API/web and old release compatibility. Run real production image/browser/private-origin/token inspection with cleanup; no publishing, automatic promotion or deployment without real gates. Keep N04-02 externally blocked and N04-03 waiting.

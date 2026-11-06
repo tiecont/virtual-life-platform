@@ -2,6 +2,12 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { assertImportAllowed } from '../../scripts/check-boundaries.mjs';
 const root = '/repo';
+test('admin consumes only public UI CSS and cannot import another app or private UI implementation',()=>{
+ const admin='/repo/apps/admin-web/app/layout.tsx';
+ for(const target of ['@virtual-city/ui/tokens.css','@virtual-city/ui/components.css'])assert.doesNotThrow(()=>assertImportAllowed(admin,target,root));
+ for(const target of ['@virtual-city/ui/private','@virtual-city/ui','../../platform-api/src/config'])assert.throws(()=>assertImportAllowed(admin,target,root));
+ assert.throws(()=>assertImportAllowed('/repo/packages/deadline-world/src/index.ts','@virtual-city/ui/tokens.css',root));
+});
 test('API areas use declared public entry files and isolate composition and migration internals',()=>{
  const social='/repo/apps/platform-api/src/social/service.ts';
  for(const target of ['../identity/passwords','../db/schema','../db/migrations','../app'])assert.throws(()=>assertImportAllowed(social,target,root));
