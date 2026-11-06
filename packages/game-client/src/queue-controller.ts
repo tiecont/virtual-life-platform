@@ -10,7 +10,7 @@ class QueueFailure extends Error {constructor(readonly status:number){super('Que
 export class QueueController {
  state:QueuePresentation={phase:'checking',snapshot:null,busy:false,uncertain:false,remainingSeconds:null,message:'Checking your place…'};
  private me:Me|null=null;
- private alive=false;private foreground=true;private generation=0;
+ private alive=false;private foreground=true;private documentForeground=true;private lifecycleForeground=true;private generation=0;
  private request:AbortController|null=null;
  private poll:ReturnType<typeof setTimeout>|undefined;private clock:ReturnType<typeof setTimeout>|undefined;
  private deadline:number|null=null;private lastRead=-Infinity;private retryAt=0;private failures=0;
@@ -20,10 +20,11 @@ export class QueueController {
  private publish(change:Partial<QueuePresentation>){this.state={...this.state,...change};if(this.alive)this.changed(this.state);}
  private clearTimers(){clearTimeout(this.poll);clearTimeout(this.clock);}
  private invalidate(){this.generation++;this.request?.abort();this.request=null;this.clearTimers();}
- start(){if(this.alive)return;this.alive=true;this.unwatch=this.platform.watchIdentity(()=>this.identityChanged());this.unlife=this.platform.lifecycle?.subscribe(active=>this.setForeground(active));void this.refresh();}
+ start(){if(this.alive)return;this.alive=true;this.unwatch=this.platform.watchIdentity(()=>this.identityChanged());this.unlife=this.platform.lifecycle?.subscribe(active=>{this.lifecycleForeground=active;this.applyForeground(this.documentForeground&&this.lifecycleForeground);});void this.refresh();}
  stop(){this.alive=false;this.invalidate();this.unwatch?.();this.unlife?.();this.me=null;this.pending=null;}
  private identityChanged(){this.invalidate();this.me=null;this.pending=null;this.deadline=null;this.lastRead=-Infinity;this.publish({phase:'checking',snapshot:null,busy:false,uncertain:false,remainingSeconds:null,message:'Checking your session…'});void this.refresh();}
- setForeground(active:boolean){if(active===this.foreground)return;this.foreground=active;this.invalidate();if(this.state.busy&&this.pending)this.publish({busy:false,uncertain:true,message:'Check your place, then retry the same action if needed.'});if(active&&this.alive){this.publish({phase:'stale',message:'Checking your place after returning…'});this.schedule(500+this.random()*1000);}else if(this.alive)this.publish({phase:'stale',message:'Updates paused while this screen is in the background.'});}
+ setForeground(active:boolean){this.documentForeground=active;this.applyForeground(this.documentForeground&&this.lifecycleForeground);}
+ private applyForeground(active:boolean){if(active===this.foreground)return;this.foreground=active;this.invalidate();if(this.state.busy&&this.pending)this.publish({busy:false,uncertain:true,message:'Check your place, then retry the same action if needed.'});if(active&&this.alive){this.publish({phase:'stale',message:'Checking your place after returning…'});this.schedule(500+this.random()*1000);}else if(this.alive)this.publish({phase:'stale',message:'Updates paused while this screen is in the background.'});}
  private schedule(delay:number){clearTimeout(this.poll);if(this.alive&&this.foreground)this.poll=setTimeout(()=>{void this.refresh();},Math.max(delay,this.retryAt-this.now(),0));}
  private countdown(){clearTimeout(this.clock);if(this.deadline===null||!this.alive||!this.foreground)return;const remainingSeconds=Math.max(0,Math.ceil((this.deadline-this.now())/1000));this.publish({remainingSeconds});if(remainingSeconds>0)this.clock=setTimeout(()=>this.countdown(),1000);}
  private accept(snapshot:AdmissionQueueView){if(snapshot.viewerAccountId!==this.me?.profile.id)throw new QueueFailure(401);this.failures=0;this.deadline=snapshot.own?.expiresAt?this.now()+Math.max(0,Date.parse(snapshot.own.expiresAt)-Date.parse(snapshot.observedAt)):null;this.publish({phase:'connected',snapshot,busy:false,uncertain:!!this.pending,message:snapshot.own?'Your place is up to date.':'No active place. An earlier place may have expired or been cancelled on another screen.',remainingSeconds:null});this.countdown();}
