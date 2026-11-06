@@ -1,0 +1,354 @@
+{
+  "taskId": "N07-03",
+  "status": "VERIFIED",
+  "acceptance_met": true,
+  "qualifiedSource": {
+    "baseRevision": "bc176706d63152c1d1a101960ebfc43f9aa76b88",
+    "snapshotRevision": "552dd3c664113f5b5004bcb8d57827eae0065c88",
+    "ref": "refs/vnext/candidates/n07-03-acceptance",
+    "workspaceSha256": "21aa3adc7c2c70aa9d2cf5118e9501add6d49d0731c03530a65a168485f5ccd0",
+    "files": [
+      "apps/admin-web/app/event-calendar.tsx",
+      "apps/admin-web/server/proxy.ts",
+      "apps/platform-api/src/events/operator-calendar.ts",
+      "docs/operations/EVENT-CALENDAR.md",
+      "packages/contracts/src/operator-events.ts",
+      "tests/e2e/calendar.spec.ts",
+      "tests/integration/admin-proxy.test.ts",
+      "tests/integration/operator-events.test.ts",
+      "tests/integration/operator-runtime.test.ts"
+    ],
+    "createdAt": "2026-11-06T08:52:29.800568+00:00",
+    "fullCheckRevision": "adce205ab172a97797fd4b6f1cdbb9ea236133e7",
+    "fullCheckDocsPatchSha256": "aace988be6d2cf068f8cbb2f5a643da7fc940defd058602dd7352298c22fd75e",
+    "fullCheckScope": "Clean checkout runtime exactly matches image candidate; two unused plan helper bindings removed. Full check executes these bytes."
+  },
+  "executedAt": "2026-11-06T09:14:55.629919+00:00",
+  "environment": {
+    "observedAt": "2026-11-06T09:13:04.813Z",
+    "os": "Linux 7.2.9-2-cachyos x86_64 GNU/Linux",
+    "node": "v26.9.0",
+    "pnpm": "11.28.5",
+    "docker": "29.9.0/29.9.0",
+    "platform": "linux",
+    "arch": "x64",
+    "scope": "Local CachyOS; disposable PostgreSQL17.7; generated-certificate Caddy TLS; Chromium emulation; synthetic users/operators; no physical-device or hosted/deployed qualification"
+  },
+  "acceptance": {
+    "serverValidatedVersionedAuditedWrites": "PASS: four qualified account/privacy/calendar/runtime scopes; fixed reasons, fresh MFA/Origin/CSRF and atomic minimal before/after receipts",
+    "minimalAccountPrivacyAndRetention": "PASS: account11 and purpose-bound privacy tests plus final combined91admin cases; owner-only payload/export/erasure, access-time retention and bounded cleanup",
+    "entitlementBoundedRuntimeAndOperatorScope": "PASS: pause-only desired/apply/rebind, Git+safety upper bounds, real ejection/fresh membership, rollback/lost-ack recovery, restart without interactive auth",
+    "calendarPaginationAndReview": "PASS:53seeded drafts, exact strict queries and response compatibility, later-page revision/conflict plus desktop/mobile editing",
+    "completeTask": "PASS_LOCAL_SCOPE"
+  },
+  "actualVerification": {
+    "full": {
+      "governance": 84,
+      "unit": 329,
+      "unitFiles": 69,
+      "integration": 668,
+      "integrationFiles": 51,
+      "staticTypesPoliciesBuild": "PASS",
+      "exitCode": 0,
+      "cwd": "artifacts/vnext/n07-03-acceptance/checkout",
+      "sourceRevision": "adce205ab172a97797fd4b6f1cdbb9ea236133e7"
+    },
+    "targeted": {
+      "adminCases": 91,
+      "files": 8,
+      "exitCode": 0
+    },
+    "browser": {
+      "executions": 18,
+      "physicalDevice": false,
+      "profiles": [
+        "desktop",
+        "360px mobile emulation"
+      ],
+      "manualVisualReview": {
+        "observedAt": "2026-11-06T09:06:20.309442+00:00",
+        "result": "PASS",
+        "review": "Manually inspected both actual desktop/mobile later-page screenshots: entries51–52, reviewed draft revision2, bounded navigation, readable labels and no horizontal overflow. Browser checks additionally assert layout; physical devices not tested.",
+        "files": [
+          {
+            "ref": "artifacts/vnext/n07-03/acceptance-browser/test-results/calendar/desktop/calendar-operator-plans-an-c24f0-nd-records-redacted-history-desktop/event-calendar-later-page.png",
+            "sha256": "53a23f83b0056a267fe2244fd1c8608ef42200be8fbbe2532fd36cab4d3b40ff",
+            "bytes": 172658
+          },
+          {
+            "ref": "artifacts/vnext/n07-03/acceptance-browser/test-results/calendar/mobile/calendar-operator-plans-an-c24f0-nd-records-redacted-history-mobile/event-calendar-later-page.png",
+            "sha256": "75fe3202df4584d529aa06e49f588a1d4856194b2111720203a0589d1a67c0f9",
+            "bytes": 542216
+          }
+        ]
+      }
+    },
+    "production": {
+      "admin": {
+        "facts": "artifacts/image-admin-772f51e5/facts.json",
+        "sha256": "6677dcb2dcd2eb15cce12e344701bea1e2151333eb8a58ad9226e4a212b9b12b",
+        "image": {
+          "id": "sha256:0c7a092941c426a2c3dc620351d60da70dd8b23ec315f218af4f62927c8b903d",
+          "tag": "vlp-admin:source-552dd3c66411-86e5e661",
+          "sourceRevision": "552dd3c664113f5b5004bcb8d57827eae0065c88",
+          "user": "node",
+          "workdir": "/app/apps/admin-web",
+          "sizeBytes": 418350365,
+          "identityScope": "Local Docker image ID, not a published registry digest"
+        },
+        "scenarios": [
+          {
+            "id": "ADMIN-01",
+            "privateApiAdminDatabase": true,
+            "nonrootReadonlyApps": true,
+            "backendCredentialsAbsent": true
+          },
+          {
+            "id": "ADMIN-02",
+            "localCertificateVerified": true,
+            "freshNoncesAndAllScriptsNonced": true,
+            "noUnsafeInlineOrEval": true,
+            "privateHeaders": true,
+            "unauthenticatedDenied": true,
+            "backendRoutesNotExposed": true
+          },
+          {
+            "id": "ADMIN-03",
+            "outOfBandImageCliBootstrap": true,
+            "otpReplayWindowUnmodified": true,
+            "browserProfiles": [
+              {
+                "profile": "desktop",
+                "hydrated": true,
+                "actualMfaSession": true,
+                "freshMetrics": true,
+                "audit": true,
+                "secureHttpOnlyCookie": true,
+                "noHorizontalOverflow": true
+              },
+              {
+                "profile": "mobile",
+                "hydrated": true,
+                "actualMfaSession": true,
+                "freshMetrics": true,
+                "audit": true,
+                "secureHttpOnlyCookie": true,
+                "noHorizontalOverflow": true
+              }
+            ],
+            "physicalDevice": false
+          },
+          {
+            "id": "ADMIN-04",
+            "wrongOriginAndCsrfDenied": true,
+            "playerAndServiceCredentialsDenied": true,
+            "arbitraryQueriesAndActionsDenied": true,
+            "operatorStillUsable": true
+          },
+          {
+            "id": "ADMIN-05",
+            "actualPasswordTotpStepUp": true,
+            "cookieRotated": true,
+            "previousSessionDenied": true,
+            "auditUsable": true
+          },
+          {
+            "id": "ADMIN-06",
+            "sameImageAfterRuntimeRestart": true,
+            "newApiAliasAndOriginEffective": true,
+            "uncoordinatedApiOriginDenied": true,
+            "wrongMetricsCredentialUnknownNotZero": true,
+            "revocationAfterOriginalOriginRestored": true,
+            "oldSessionDenied": true,
+            "apiRemainsReady": true
+          }
+        ],
+        "cleanupComplete": true
+      },
+      "api": {
+        "facts": "artifacts/image-api-354ed6b3/facts.json",
+        "sha256": "3c3d6c3a3e478923b5ce327e59db7f0fcd450c6b57556098a2769a10a1fe6a50",
+        "image": {
+          "id": "sha256:1895943484fa7506fa919f7684aebb21fb1b3e339dccc3b26b8e76a2a8ec2eaf",
+          "tag": "vlp-api:source-552dd3c66411-354ed6b3",
+          "sourceRevision": "552dd3c664113f5b5004bcb8d57827eae0065c88",
+          "user": "node",
+          "workdir": "/app/apps/platform-api",
+          "sizeBytes": 437251979,
+          "identityScope": "Local Docker image ID, not a published registry digest"
+        },
+        "scenarios": [
+          {
+            "id": "API-01",
+            "missingSecretDenied": true
+          },
+          {
+            "id": "API-02",
+            "emptyDatabaseAndRerun": true,
+            "migrations": 43,
+            "sameImage": true
+          },
+          {
+            "id": "API-03",
+            "realHttpSessionAndSocket": true,
+            "readonlyNonrootRuntime": true
+          },
+          {
+            "id": "API-04",
+            "checksumReadinessAndMigratorDenied": true,
+            "recovered": true
+          },
+          {
+            "id": "API-05",
+            "competingOwnerDenied": true
+          },
+          {
+            "id": "API-06",
+            "sigtermExitZero": true,
+            "socketDisconnected": true,
+            "ownerReleased": true,
+            "sameIdentityAfterReplacement": true
+          }
+        ],
+        "cleanupComplete": true
+      }
+    },
+    "preservation": {
+      "result": "PASS",
+      "baseRevision": "bc176706d63152c1d1a101960ebfc43f9aa76b88",
+      "qualifiedRuntimeSource": "552dd3c664113f5b5004bcb8d57827eae0065c88",
+      "qualifiedFullSource": "adce205ab172a97797fd4b6f1cdbb9ea236133e7",
+      "unchangedSqlFiles": 43,
+      "preservedEvidence": 35,
+      "protectedFiles": 32,
+      "unrelatedTasksAndContexts": "UNCHANGED",
+      "changedQualifiedFiles": [
+        {
+          "file": "apps/admin-web/app/event-calendar.tsx",
+          "sha256": "c33c457a35085dded6996f7bc4c920d188109cf3769114534cc93c9d0d4bff13"
+        },
+        {
+          "file": "apps/admin-web/server/proxy.ts",
+          "sha256": "0917126e8549339527737150686ebcf671f80b1b1fce35c33341fba2cce6b39c"
+        },
+        {
+          "file": "apps/platform-api/src/events/operator-calendar.ts",
+          "sha256": "161c17a7b7328b8f92fae061919b3b52361e6dd0e754aa7d87faca99f6a41be9"
+        },
+        {
+          "file": "docs/operations/EVENT-CALENDAR.md",
+          "sha256": "92e0d9f0d0507f92d1d67cdeede52a5594e8caab96427bc3c687daa5f6c573da"
+        },
+        {
+          "file": "docs/plans/LANTERN-LODGE-PHASE-2/tools/check-upstream.mjs",
+          "sha256": "7dcc4fd07f63f3eb00ee5540dd2194631a14e48b448f86d0ea06e240762bd5ea"
+        },
+        {
+          "file": "docs/plans/LANTERN-LODGE-PHASE-2/tools/next-task.mjs",
+          "sha256": "dcea650fb5843f0c39811228c73b896372a43125dc6228d3e4888004f68f3b62"
+        },
+        {
+          "file": "packages/contracts/src/operator-events.ts",
+          "sha256": "6ecbc70d5d3622941ad07f860f4428dcbc30673d42ea6fbde88e8603c038e8ef"
+        },
+        {
+          "file": "tests/e2e/calendar.spec.ts",
+          "sha256": "da69a8377eb206681df45f76c89ef164ebc7caf4b174596894cdd9aa4665bb38"
+        },
+        {
+          "file": "tests/integration/admin-proxy.test.ts",
+          "sha256": "acc1e1e000a7c1163b08bf1f8a9b3d1ba00d099b3dae3de2c2ec8aff37c2a2e0"
+        },
+        {
+          "file": "tests/integration/operator-events.test.ts",
+          "sha256": "c9488bb9a512a23c6de1ef977e96786084ae57ad6f4cc7bbcc49151ae03d41ee"
+        },
+        {
+          "file": "tests/integration/operator-runtime.test.ts",
+          "sha256": "2d323558c4de86d888357cdca8a72dc5e868ec1ff382ce5d09823f51c8aaa193"
+        }
+      ]
+    },
+    "cleanup": {
+      "result": "PASS",
+      "observedAt": "2026-11-06T09:14:48.098970+00:00",
+      "ownedProjectsObserved": [
+        "virtual-city-admin-image-08f9eceb",
+        "virtual-city-test-0d2e2c35",
+        "virtual-city-test-10f114c0",
+        "virtual-city-test-4edeb7f4",
+        "virtual-city-test-4fc44ee0",
+        "virtual-city-test-7125b0e0",
+        "virtual-city-test-85273ae2",
+        "virtual-city-test-95e40774",
+        "virtual-city-test-c81cfa58",
+        "virtual-city-test-d228151d",
+        "virtual-city-test-e4f4d4ff"
+      ],
+      "ownedImageContainersObserved": [
+        "vlp-api-check-c6bf0a9f-19c724ce",
+        "vlp-api-check-c6bf0a9f-4fcd6683",
+        "vlp-api-check-c6bf0a9f-8053fa71",
+        "vlp-api-check-c6bf0a9f-migration-187448bb",
+        "vlp-api-check-c6bf0a9f-migration-c4061611",
+        "vlp-api-check-c6bf0a9f-migration-d2ba7dc8"
+      ],
+      "ownedResourcesRemaining": [],
+      "runtimeImages": [
+        {
+          "facts": "artifacts/image-admin-772f51e5/facts.json",
+          "target": "admin",
+          "result": "PASS",
+          "cleanupComplete": true
+        },
+        {
+          "facts": "artifacts/image-api-354ed6b3/facts.json",
+          "target": "api",
+          "result": "PASS",
+          "cleanupComplete": true
+        }
+      ],
+      "scope": "Read-only resource audit after harness cleanup; image archives retained as private evidence. No unrelated resource deletion."
+    }
+  },
+  "priorScopedEvidenceRefs": [
+    "n07-03-accounts-2026-11-06",
+    "n07-03-privacy-2026-11-06",
+    "n07-03-calendar-2026-11-06",
+    "n07-03-runtime-2026-11-06"
+  ],
+  "scopeReports": [
+    "docs/architecture/N07-03-ACCOUNTS.json",
+    "docs/architecture/N07-03-PRIVACY.json",
+    "docs/architecture/N07-03-CALENDAR.json",
+    "docs/architecture/N07-03-RUNTIME.json"
+  ],
+  "retainedFailures": [
+    {
+      "label": "acceptance-lint",
+      "exitCode": 1,
+      "reason": "Two unused bindings from the newly arrived Phase2 plan were inadvertently included in runtime commit; minimally corrected, waiting plan-only helper and final full check pass."
+    },
+    {
+      "label": "acceptance-full",
+      "exitCode": 1,
+      "reason": "Two unused bindings from the newly arrived Phase2 plan were inadvertently included in runtime commit; minimally corrected, waiting plan-only helper and final full check pass."
+    },
+    {
+      "label": "acceptance-production",
+      "exitCode": 1,
+      "reason": "Initial invocation used unsupported --source-revision=<sha> spelling; corrected to two arguments before qualification."
+    }
+  ],
+  "limitations": [
+    "Local synthetic operator/organizer/owner fixtures only; no real operator, organizer, public deployment or store distribution.",
+    "Single room owner and application-mediated restriction writes remain required. APPLIED is restriction projection, not server health.",
+    "Offset pages are bounded to50000 and may move under concurrent schedule changes; refreshed expected revisions protect writes, not snapshot pagination.",
+    "Versioned runtime profiles only. Git release/safety entitlements remain authoritative and real defaults remain closed.",
+    "Strict43 is required; no old42 rollback compatibility or production migration/deployment qualified.",
+    "Images pin source552dd3c runtime; full check sourceadce205 differs only by two unused plan-helper binding removals, retained as explicit correction.",
+    "New-feature flows use real test-mode backend/browser; production image smoke retains its separate six API/admin scenarios. No full new-feature TLS or physical-device claim.",
+    "N04-02 hosted/App/registry gate remains external. Owner confirms no Mac/Xcode/iPhone; N14 remains conditional, with preparation allowed.",
+    "Raw evidence is private local, not off-host archived; historical151 Mxx tasks are preserved. Release NOT_REQUESTED."
+  ]
+}

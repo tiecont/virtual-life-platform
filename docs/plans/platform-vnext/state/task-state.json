@@ -412,17 +412,14 @@
       "next_action": "Reserve N03-05 (highest ready priority44) on a clean branch. Read artifact build/publish/provenance/manifest and admin source closure. Implement a separate hardened admin image and integrate its exact source/digest target into quality, image tests and reviewed release metadata while preserving existing API/web and old release compatibility. Run real production image/browser/private-origin/token inspection with cleanup; no publishing, automatic promotion or deployment without real gates. Keep N04-02 externally blocked and N04-03 waiting."
     },
     "N07-03": {
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "owner": "Admin + Runtime",
-      "branch": "codex/vnext-n07-03-runtime-controls",
+      "branch": "codex/vnext-n07-03-acceptance",
       "evidence_refs": [
-        "n07-03-accounts-2026-11-06",
-        "n07-03-privacy-2026-11-06",
-        "n07-03-calendar-2026-11-06",
-        "n07-03-runtime-2026-11-06"
+        "n07-03-acceptance-2026-11-06"
       ],
       "blocker": null,
-      "next_action": "Finish calendar pagination/selection beyond50 and verify composite N07-03 acceptance with all account/privacy/calendar/runtime scenarios, including persisted restrictions without an interactive operator key. Keep N07-03 IN_PROGRESS until these pass. Then continue dependency-ready N08/N10 and the full vNext plan through independent N14 preparation. Owner confirmed macOS/Xcode/iPhone unavailable: retain actual iOS resource/archive/device/TestFlight gates, with no public/store/production approval inferred."
+      "next_action": "Complete N08-01 observations on its reserved isolated branch, reconcile onto this acceptance commit, run actual verification and preserve all evidence. Then N07-04/N09/N10 in dependency order, through independent N14 preparation. No Mac/Xcode/iPhone are available; keep physical/archive/TestFlight gates unmet and release NOT_REQUESTED."
     },
     "N07-04": {
       "status": "TODO",

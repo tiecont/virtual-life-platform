@@ -2,7 +2,7 @@ import {z} from 'zod';
 import {EventScheduleInputSchema,EventScheduleSchema,EventPhaseSchema} from './events';
 const id=z.uuid().transform(value=>value.toLowerCase()),version=z.number().int().nonnegative().max(2147483646),hash=z.string().regex(/^[a-f0-9]{64}$/);
 export const OperatorEventConfigSchema=z.strictObject({organizerId:id,event:EventScheduleInputSchema});
-export const OperatorEventRangeSchema=z.strictObject({from:z.iso.datetime(),until:z.iso.datetime()}).refine(value=>Date.parse(value.until)>Date.parse(value.from)&&Date.parse(value.until)-Date.parse(value.from)<=31*86400000,'A positive range of at most31days is required');
+export const OperatorEventRangeSchema=z.strictObject({from:z.iso.datetime(),until:z.iso.datetime(),offset:z.string().regex(/^(0|[1-9][0-9]{0,4})$/).transform(Number).pipe(z.number().int().max(50000)).optional()}).refine(value=>Date.parse(value.until)>Date.parse(value.from)&&Date.parse(value.until)-Date.parse(value.from)<=31*86400000,'A positive range of at most31days is required');
 export const OperatorEventQuerySchema=z.strictObject({draftId:id});
 export const OperatorEventLiveSchema=z.strictObject({id,phase:EventPhaseSchema,version});
 export const OperatorEventDraftSchema=z.strictObject({id,version,state:z.enum(['DRAFT','PUBLISHED','CANCELLED']),config:OperatorEventConfigSchema,live:OperatorEventLiveSchema.nullable(),createdAt:z.iso.datetime(),changedAt:z.iso.datetime(),retainedUntil:z.iso.datetime()});

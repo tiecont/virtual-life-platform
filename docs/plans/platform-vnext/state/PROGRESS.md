@@ -1,3 +1,9 @@
+# N07-03 VERIFIED — 2026-11-06T09:14:55.629919+00:00
+
+N07-03 complete local acceptance: final91admin and18browser executions; full check 84governance/329unit/668integration, all types/static/build gates pass. API/admin6production scenarios each, later-page review, persisted maintenance without interactive auth,43SQL/35priorrecords/default preservation and owned cleanup pass. Two unused Phase2 bindings corrected after accidental inclusion; original failures retained. No Phase2 activation, deployment, device or release claim.
+
+[Actual checks](../audit/N07-03-CHECKS.json). Next: Complete N08-01 observations on its reserved isolated branch, reconcile onto this acceptance commit, run actual verification and preserve all evidence. Then N07-04/N09/N10 in dependency order, through independent N14 preparation. No Mac/Xcode/iPhone are available; keep physical/archive/TestFlight gates unmet and release NOT_REQUESTED.
+
 # N07-03 runtime checkpoint — IN_PROGRESS — 2026-11-06T08:46:24.147790+00:00
 
 Durable runtime restriction slice qualifies locally at `de960716487a5522eddca178619f9c380cd6a5d8`: pause-only desired state, fresh atomic audit, commit fences/canonical reconciliation, stale-release rebind, current Git/safety upper bounds and desired/applied UI. Final pnpm check: 84governance/329unit/666integration with all builds/static/type gates pass; 223security,14runtime+10proxy targeted cases and final18browser executions pass (plus2initialruntime). Same-source API/admin6production scenarios each, strict43, owned cleanup and first42SQL/prior34records/default preservation pass. Original ownership-mapping failure and unexplained initial login timeout retained; budgets unchanged. N07-03 remains IN_PROGRESS for calendar pagination and final complete-task acceptance.
