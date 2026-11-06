@@ -6,7 +6,7 @@ const base='apps/platform-api/src/';
 export function apiModuleOwner(file){
  if(!file.startsWith(base))return null;
  const name=file.slice(base.length).replace(/\.(?:[cm]?[jt]sx?)$/,'');
- const owner=['app','main','worker'].includes(name)?'composition':name.split('/')[0];
+ const owner=['app','main','worker','operator-bootstrap'].includes(name)?'composition':name.split('/')[0];
  assert(Object.hasOwn(apiModulePolicy.modules,owner),'Unowned API source area: '+name);return owner;
 }
 export function assertApiModuleImport(from,target){

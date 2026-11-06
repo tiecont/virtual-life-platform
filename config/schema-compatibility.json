@@ -4,9 +4,9 @@
   "mode": "strict",
   "journal": "city_schema_migrations",
   "metadataVersion": 1,
-  "runtimeManifestSha256": "29e43babe66b757cc8d8cf18b31b7bebf9d43c84e6651310b991503e43a097dc",
-  "minimumDatabaseMigrations": 38,
-  "maximumDatabaseMigrations": 38,
+  "runtimeManifestSha256": "f57ff806796217512c0e665a36989d13fa5cc7031300a72bb7f1c8f18a00ac33",
+  "minimumDatabaseMigrations": 39,
+  "maximumDatabaseMigrations": 39,
   "reviewRef": null,
   "migrations": [
     {
@@ -160,6 +160,10 @@
     {
       "name": "0038_hospitality_recipe_compatibility.sql",
       "checksum": "7989943f85f33ec6b3691126597a8a00ef44a80707919a94ea9f791378e40dec"
+    },
+    {
+      "name": "0039_operator_identity.sql",
+      "checksum": "e8ce7330b27cace5910fef0cc71ccea33ad8f90a1ea90a87ac4ee869af826f15"
     }
   ]
 }

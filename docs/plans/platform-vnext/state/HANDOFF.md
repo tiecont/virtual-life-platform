@@ -1,10 +1,10 @@
 # vNext current handoff
 
-Updated 2026-11-06T03:57:51.704164+00:00; N04-02 BLOCKED_EXTERNAL on `codex/vnext-n04-02-digest-promotion`. Base `0fe569338038825f7768aa2e5e1f4f5c013df853`; this slice is committed after evidence finalization.
+Updated 2026-11-06T04:27:38.140976+00:00; N07-01 VERIFIED on `codex/vnext-n07-01-operator-identity`. Base `0371e7963bf480e910111c2b6521e626cfb26e5e`; this slice is committed after evidence finalization.
 
-Implemented default-disabled scoped App draft-PR promotion, proof-checked bounded proposals, immutable release binding and local Kubernetes adapter. Fresh76 governance/320 unit cases pass, final9 focused cases pass, actual synthetic-bound and inert render/schema checks18 each pass, real isolated Git patch/apply/production reuse and mocked writer retry/deny boundaries pass. CI/infra/lint/actionlint/architecture and preservation pass. Real App PR/hosted CI/published candidate remain unavailable; task BLOCKED_EXTERNAL, acceptance_met=false. No application/dependency/SQL/old workflow/active manifest changes or service writes.
+Implemented singleton out-of-band operator bootstrap, separate password/TOTP session/audience/CSRF, monotonic factor replay protection, bounded durable lockout, idle/absolute/step-up expiry, token rotation, same-identity recovery/revocation and redacted chained append-only audit. Additive0039 keeps first38 SQL bytes, one journal and strict39. Final599 integration/46files pass, security165/11files pass, governance76/unit321 pass, production build/type/lint/infra/CI/architecture/toolchain and preservation pass. Actual39→synthetic40 image compatibility scenarios6 and cleanup pass; production source matches its immutable image candidate. Original count/build/test/argument failures retained and explicitly superseded. No real operator or deployment; N04-02 remains BLOCKED_EXTERNAL.
 
-[Actual checks](../audit/N04-02-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 27, "TODO": 41, "BLOCKED_EXTERNAL": 1}`.
+[Actual checks](../audit/N07-01-CHECKS.json) / [evidence index](evidence-index.json). Counts: `{"VERIFIED": 28, "TODO": 40, "BLOCKED_EXTERNAL": 1}`.
 
 ## Remaining gates
 
@@ -12,4 +12,4 @@ Hosted baseline Quality42037215254 failed Deadline cadence (133.3ms vs <100ms); 
 
 ## Next exact action
 
-N04-02: repository owner supplies a genuine published candidate and narrowly scoped App setup, then review activation and observe an actual draft bot PR/head and required hosted Quality outcomes before VERIFIED. Keep automation off. Continue independent N07-01 now: reserve a clean branch, audit identity/operations/schema boundaries and implement singleton operator MFA/session/audit with deny/replay/CSRF/revoke/idle-expiry verification. N04-03 waits.
+Reserve N07-02 on a clean branch. Read operator MFA contracts, current Next proxy and UI tokens; implement a separate private admin shell/BFF with authenticated allowlisted bounded read-only metrics proxy, no service tokens in browser, explicit unauthorized/error/stale states and actual network/browser/bundle inspection. Preserve player routes, one owner and all release gates. N04-02 still needs genuine published candidate/App setup/real bot PR Quality; N04-03 waits.

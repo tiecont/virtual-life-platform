@@ -10,6 +10,8 @@ const Env = z.object({
     return ['postgres:', 'postgresql:'].includes(url.protocol);
   }),
   WEB_ORIGIN: z.string().url().default('http://127.0.0.1:3300'),
+  OPERATOR_AUTH_KEY:z.string().regex(/^[a-f0-9]{64}$/).optional(),
+  ADMIN_ORIGIN:z.string().url().optional(),
   TRUSTED_PROXY_IP:z.ipv4().refine(value=>!['0.0.0.0','255.255.255.255'].includes(value)).optional(),
   OPERATOR_TELEMETRY_TOKEN:z.preprocess(value=>value===''?undefined:value,z.string().regex(/^[a-f0-9]{64}$/).optional()),
   SAFETY_EVIDENCE_KEY: z.string().regex(/^[a-f0-9]{64}$/i).optional(),
@@ -37,6 +39,9 @@ const Env = z.object({
   DATING_PROFILE_KEY_ID:z.string().regex(/^[a-z0-9-]{1,32}$/).default('local-v1'),
 }).superRefine((env, ctx) => {
   const origin = new URL(env.WEB_ORIGIN);
+  if(Boolean(env.OPERATOR_AUTH_KEY)!==Boolean(env.ADMIN_ORIGIN))ctx.addIssue({code:'custom',path:['ADMIN_ORIGIN'],message:'Operator key and exact admin origin required together'});
+  if(env.ADMIN_ORIGIN){const admin=new URL(env.ADMIN_ORIGIN);if(admin.origin!==env.ADMIN_ORIGIN||!['http:','https:'].includes(admin.protocol)||admin.origin===env.WEB_ORIGIN||(env.NODE_ENV==='production'&&admin.protocol!=='https:'))ctx.addIssue({code:'custom',path:['ADMIN_ORIGIN'],message:'Separate exact admin origin required; HTTPS in production'});}
+  if(env.OPERATOR_AUTH_KEY===env.SESSION_SECRET)ctx.addIssue({code:'custom',path:['OPERATOR_AUTH_KEY'],message:'Separate operator key required'});
   if(env.RELEASE_POLICY_FILE||env.RUNTIME_WORLD_POLICY_FILE||env.RELEASE_ENVIRONMENT){
     if(!env.RELEASE_POLICY_FILE||!env.RUNTIME_WORLD_POLICY_FILE||!env.RELEASE_ENVIRONMENT)ctx.addIssue({code:'custom',path:['RELEASE_POLICY_FILE'],message:'Explicit release/runtime files and environment required together'});
     if(env.WORLD_FLAGS_FILE||Object.entries(env).some(([name,value])=>name.startsWith('LOCAL_')&&value==='1')||env.DATING_TEST_PROOFS==='1')ctx.addIssue({code:'custom',path:['RELEASE_POLICY_FILE'],message:'Versioned installation cannot mix legacy fixture controls'});

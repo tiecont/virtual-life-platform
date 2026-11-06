@@ -60,7 +60,9 @@
         "identity/limits",
         "identity/policy",
         "identity/service",
-        "identity/socket"
+        "identity/socket",
+        "identity/operator-service",
+        "identity/operator-http"
       ],
       "targetBoundary": "Public account/auth/locking/export/deletion ports; never client-supplied authority"
     },

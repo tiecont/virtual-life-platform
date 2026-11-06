@@ -1,5 +1,7 @@
 # Current API ownership and extraction map
 
+N07-01 adds identity-owned operator service/HTTP/crypto files and `operator-bootstrap.ts` as a separate composition root. Four additive operator tables belong to `platform.identity`; player identity and safety grants stay separate. See [operator boundary](../operations/OPERATOR-IDENTITY.md).
+
 This map starts from the implemented API at `6a7ae9328cb64e76fc1ec5c4ffa4df1ce1815a75`. At that N02-01 checkpoint, the application runtime still matched the audited `cef7dc1` baseline; later scoped behavior is indexed in CURRENT-STATE.md. N02-01 itself changed ownership/import rules, not runtime behavior or SQL. [Machine policy](api-modules.json) lists every current transitional cross-module entry file; [table ownership](ownership.json) remains authoritative for SQL ownership. Concrete service classes are current integration surfaces, not a claim that every module already has a minimal interface.
 
 | Area / source directory | Current owner and public integration | Target / constraint |

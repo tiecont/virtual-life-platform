@@ -1,6 +1,10 @@
 {
   "schemaVersion": 1,
   "tables": {
+    "identity_operator": "platform.identity",
+    "identity_operator_sessions": "platform.identity",
+    "identity_operator_recovery": "platform.identity",
+    "identity_operator_audit": "platform.identity",
     "restricted_dating_match_consent":"restricted.dating",
     "restricted_dating_proposals":"restricted.dating",
     "restricted_dating_enrollments":"restricted.dating",

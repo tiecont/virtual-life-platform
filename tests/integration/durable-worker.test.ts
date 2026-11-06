@@ -12,7 +12,7 @@ import {MeSchema, RoomAckSchema, OrderResultSchema, type Me, type TravelSource} 
 import {defineWorld} from '@virtual-city/world-sdk';
 import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/config';
-import {migrate} from '../../apps/platform-api/src/db/migrations';
+import {migrate,migrationManifest} from '../../apps/platform-api/src/db/migrations';
 import {DEFAULT_PROGRESSION_POLICY} from '../../apps/platform-api/src/progression/policy';
 import {ROOM_OWNER_LOCK_CLASS} from '../../apps/platform-api/src/rooms/authority';
 const origin = 'http://127.0.0.1:3300'; let admin: Pool;
@@ -109,7 +109,7 @@ it('compiled worker refuses schema drift without migrating or consuming the pend
   await r.pool.query("INSERT INTO city_schema_migrations(name,checksum) VALUES('9999_worker_unknown.sql',$1)", ['f'.repeat(64)]);
   expect((await start().result()).code).toBe(1);
   expect((await r.pool.query('SELECT 1 FROM engine_progression_ledger')).rowCount).toBe(0); expect((await r.pool.query('SELECT 1 FROM engine_hospitality_deliveries')).rowCount).toBe(0);
-  expect((await r.pool.query('SELECT 1 FROM city_schema_migrations')).rowCount).toBe(39);
+  expect((await r.pool.query('SELECT 1 FROM city_schema_migrations')).rowCount).toBe(Object.keys(await migrationManifest()).length+1);
   await r.pool.query("DELETE FROM city_schema_migrations WHERE name='9999_worker_unknown.sql'");
   expect((await start().result()).code).toBe(0); expect((await r.pool.query('SELECT 1 FROM engine_progression_ledger')).rowCount).toBe(2);
 });

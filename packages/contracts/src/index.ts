@@ -7,6 +7,7 @@ export * from './rooms';
 export * from './protocol';
 export * from './compatibility';
 export * from './content';
+export * from './operator';
 export * from './scene';
 export * from './avatar';
 export * from './safety';

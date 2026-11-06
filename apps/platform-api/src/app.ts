@@ -12,6 +12,8 @@ import { SCHEMA_VERSION, SanctionChangedSchema } from '@virtual-city/contracts';
 import type { Config } from './config';
 import { IdentityService } from './identity/service';
 import { registerIdentity } from './identity/http';
+import {OperatorService} from './identity/operator-service';
+import {registerOperator} from './identity/operator-http';
 import { migrationManifest } from './db/migrations';
 import {loadSchemaCompatibility} from './config/schema-compatibility';
 import { createIdentityGateway } from './identity/socket';
@@ -111,11 +113,14 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onRequest', async (req, reply) => {
     reply.header('x-request-id', req.id).header('x-content-type-options', 'nosniff').header('cache-control', 'no-store').header('referrer-policy', 'same-origin');
     if(draining&&!['/health/live','/health/ready'].includes(req.routeOptions.url??''))return reply.code(503).send({error:{code:'WORLD_UNAVAILABLE',message:'Server is stopping',requestId:req.id}});
-    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) && req.headers.origin !== config.WEB_ORIGIN) {
+    const allowedOrigin=(req.routeOptions.url??'').startsWith('/v1/operator/')?config.ADMIN_ORIGIN:config.WEB_ORIGIN;
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) && req.headers.origin !== allowedOrigin) {
       return reply.code(403).send({ error: { code: 'FORBIDDEN', message: 'Origin is not allowed', requestId: req.id } });
     }
   });
   const identity = new IdentityService(db, config, options.now);
+  const operator=config.OPERATOR_AUTH_KEY?new OperatorService(db,config.OPERATOR_AUTH_KEY,options.now):undefined;
+  registerOperator(http,config,operator,options.now);
   const deadlineIdentity=new DeadlineIdentityLinks(db,identity,config.NODE_ENV!=='production'&&config.LOCAL_DEADLINE_IDENTITY==='1'?(options.deadlineIdentity??new DeadlineHttpIdentityPort(config.DEADLINE_LEGACY_API_URL!)):undefined,options.now);
   identity.registerExportOwner('legacyIdentity',(account,transaction)=>deadlineIdentity.exportAccount(account,transaction));
   http.addHook('preClose',async()=>{deadlineIdentity.close();});

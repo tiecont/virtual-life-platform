@@ -7,6 +7,7 @@
     "node": "26.9.x"
   },
   "scripts": {
+    "test:admin": "pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project admin",
     "release:promote": "node scripts/promotion-proposal.mjs",
     "k8s:validate": "node scripts/validate-kubernetes.mjs",
     "k8s:preflight": "node scripts/kubernetes-preflight.mjs",

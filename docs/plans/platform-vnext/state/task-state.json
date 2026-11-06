@@ -390,12 +390,14 @@
       "next_action": "Usability observations, a11y report, privacy-aware activation/return event spec"
     },
     "N07-01": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Admin + Runtime",
+      "branch": "codex/vnext-n07-01-operator-identity",
+      "evidence_refs": [
+        "n07-01-2026-11-06"
+      ],
       "blocker": null,
-      "next_action": "Singleton operator bootstrap, separate session, passkey/MFA/step-up và audit model"
+      "next_action": "Reserve N07-02 on a clean branch. Read operator MFA contracts, current Next proxy and UI tokens; implement a separate private admin shell/BFF with authenticated allowlisted bounded read-only metrics proxy, no service tokens in browser, explicit unauthorized/error/stale states and actual network/browser/bundle inspection. Preserve player routes, one owner and all release gates. N04-02 still needs genuine published candidate/App setup/real bot PR Quality; N04-03 waits."
     },
     "N07-02": {
       "status": "TODO",
