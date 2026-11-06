@@ -438,12 +438,14 @@
       "next_action": "Private admin deployment, audit evidence và release/backup status view"
     },
     "N08-01": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex Operations lane",
+      "branch": "codex/vnext-n08-01-final",
+      "evidence_refs": [
+        "n08-01-2026-11-06"
+      ],
       "blocker": null,
-      "next_action": "Histogram/counter metrics, bounded labels, safe tracing, health/traffic schemas"
+      "next_action": "Reserve N07-04 (priority73) and implement the authenticated current observation/system map with explicit source/version/freshness and configured-vs-observed edges. Add actual bounded sources where available and UNKNOWN elsewhere; retain actual staging-scrape gate until N04-04. Continue ready N09/N10 and independent N14 preparation; owner has no Mac/Xcode/iPhone."
     },
     "N08-02": {
       "status": "TODO",

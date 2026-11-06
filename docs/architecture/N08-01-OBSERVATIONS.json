@@ -1,0 +1,175 @@
+{
+  "taskId": "N08-01",
+  "status": "VERIFIED",
+  "acceptance_met": true,
+  "sourceRevision": "8415a269bac8d53638718ab49e2ef486bd8db624",
+  "mergedImplementationRevision": "de37e0b381681b394179b9f105799f2e774329dd",
+  "qualifiedSource": {
+    "baseRevision": "adce205ab172a97797fd4b6f1cdbb9ea236133e7",
+    "snapshotRevision": "8415a269bac8d53638718ab49e2ef486bd8db624",
+    "files": [
+      "apps/platform-api/src/operations/http.ts",
+      "apps/platform-api/src/operations/observation.ts",
+      "apps/platform-api/src/operations/observation.unit.test.ts",
+      "apps/platform-api/src/operations/telemetry.ts",
+      "docs/adr/0124-explicit-observation-lifetimes.md",
+      "docs/operations/OBSERVATIONS.md",
+      "package.json",
+      "packages/contracts/src/index.ts",
+      "packages/contracts/src/observations.ts",
+      "scripts/api-image-smoke.mjs",
+      "tests/integration/telemetry.test.ts",
+      "vitest.config.mts"
+    ],
+    "sha256": "a71526ba75ea5be3b16e14486232a0440c8ec3d366477dec993b49d797fd8273",
+    "createdAt": "2026-11-06T09:04:49.032012+00:00"
+  },
+  "environment": {
+    "observedAt": "2026-11-06T09:15:48.374Z",
+    "os": "Linux 7.2.9-2-cachyos x86_64 GNU/Linux",
+    "node": "v26.9.0",
+    "pnpm": "11.28.5",
+    "docker": "29.9.0/29.9.0",
+    "platform": "linux",
+    "arch": "x64",
+    "scope": "Local CachyOS; disposable PostgreSQL17.7; private production-mode HTTP/Socket.IO image; synthetic users/operators; no fresh browser or TLS claim for N08; no physical-device or hosted/deployed qualification"
+  },
+  "executedAt": "2026-11-06T09:16:53.200113+00:00",
+  "acceptance": {
+    "explicitPercentileSemantics": "PASS: fixed-bucket process-lifetime upper-bound approximation; monitor-lifetime Node histogram; overflow null, no rolling-window claim",
+    "boundedPrivateTelemetry": "PASS: finite route/method/command/outcome labels; aggregate-only v2 drops trace/request/span/room keys; existing safe tracing and logs preserve bounded/redacted exports",
+    "timestampSourceVersionContract": "PASS: strict shared schemaVersion2/platform-api/source sample/process start plus independent order timestamp; v1/Prometheus adapters retained",
+    "missingSourceAndZero": "PASS: actual denied credentials/query and database-query outage fail without invented gauges; true zero retained; DB-health/worker/cluster explicitly unobserved",
+    "executableVerification": "PASS: implemented observability:check, actual12focused cases plus84governance/332unit and91admin regression; production-image actual aggregate read/cookie denial"
+  },
+  "actualVerification": {
+    "focused": {
+      "cases": 12,
+      "files": 3,
+      "mergedRepeatCases": 12
+    },
+    "unit": {
+      "governance": 84,
+      "cases": 332,
+      "files": 70
+    },
+    "admin": {
+      "cases": 91,
+      "files": 8
+    },
+    "typesLintBuildArchitectureCI": "PASS",
+    "productionImages": [
+      {
+        "facts": "artifacts/vnext/n08-01/checkout/artifacts/image-api-5e726b98/facts.json",
+        "sha256": "b5a6c0505246f8a9d868638b7c7274306f7aa93628af624e410a9c52e77b07ca",
+        "image": {
+          "id": "sha256:6142d5be1eb38e6806867283394ac63b1c9ef7c32e721206b512b8523de4588f",
+          "tag": "vlp-api:source-8415a269bac8-5e726b98",
+          "sourceRevision": "8415a269bac8d53638718ab49e2ef486bd8db624",
+          "user": "node",
+          "workdir": "/app/apps/platform-api",
+          "sizeBytes": 437279377,
+          "identityScope": "Local Docker image ID, not a published registry digest"
+        },
+        "runtime": {
+          "image": "sha256:6142d5be1eb38e6806867283394ac63b1c9ef7c32e721206b512b8523de4588f",
+          "migrationImage": "sha256:6142d5be1eb38e6806867283394ac63b1c9ef7c32e721206b512b8523de4588f",
+          "publicRelease": false,
+          "scenarios": [
+            {
+              "id": "API-01",
+              "missingSecretDenied": true
+            },
+            {
+              "id": "API-02",
+              "emptyDatabaseAndRerun": true,
+              "migrations": 43,
+              "sameImage": true
+            },
+            {
+              "id": "API-03",
+              "realHttpSessionAndSocket": true,
+              "readonlyNonrootRuntime": true,
+              "aggregateObservations": true,
+              "observationCookieDenied": true
+            },
+            {
+              "id": "API-04",
+              "checksumReadinessAndMigratorDenied": true,
+              "recovered": true
+            },
+            {
+              "id": "API-05",
+              "competingOwnerDenied": true
+            },
+            {
+              "id": "API-06",
+              "sigtermExitZero": true,
+              "socketDisconnected": true,
+              "ownerReleased": true,
+              "sameIdentityAfterReplacement": true
+            }
+          ],
+          "result": "PASS",
+          "cleanupComplete": true
+        }
+      }
+    ],
+    "preservation": {
+      "result": "PASS",
+      "sourceRevision": "8415a269bac8d53638718ab49e2ef486bd8db624",
+      "unchangedSql": 43,
+      "unchangedProtectedFiles": 30,
+      "previousEvidence": 35,
+      "sourceFiles": 12,
+      "unrelatedTasksAndContexts": "UNCHANGED",
+      "scope": "Isolated N08 worktree before reconciliation; final merge parity checked separately"
+    },
+    "mergePreservation": {
+      "result": "PASS",
+      "baseRevision": "25fdf432141f82e1aa014d8cc73a336a6f85349d",
+      "mergedImplementationRevision": "de37e0b381681b394179b9f105799f2e774329dd",
+      "qualifiedSource": "8415a269bac8d53638718ab49e2ef486bd8db624",
+      "matchingSourceFiles": 12,
+      "previousEvidence": 36,
+      "unrelatedTasksAndContexts": "UNCHANGED"
+    },
+    "cleanup": {
+      "result": "PASS",
+      "observedAt": "2026-11-06T09:16:04.570663+00:00",
+      "ownedProjectsObserved": [
+        "virtual-city-test-1771701f",
+        "virtual-city-test-18b3cff0",
+        "virtual-city-test-75078c59",
+        "virtual-city-test-e84220ce"
+      ],
+      "ownedImageContainersObserved": [
+        "vlp-api-check-5557e169-8fd8c60e",
+        "vlp-api-check-5557e169-c407a7a0",
+        "vlp-api-check-5557e169-fbe267ea",
+        "vlp-api-check-5557e169-migration-08f0ae5c",
+        "vlp-api-check-5557e169-migration-b8a84368",
+        "vlp-api-check-5557e169-migration-b9fe47fb"
+      ],
+      "ownedResourcesRemaining": [],
+      "runtimeImages": [
+        {
+          "facts": "artifacts/vnext/n08-01/checkout/artifacts/image-api-5e726b98/facts.json",
+          "target": "api",
+          "result": "PASS",
+          "cleanupComplete": true
+        }
+      ],
+      "scope": "Read-only resource audit after harness cleanup; image archives retained as private evidence. No unrelated resource deletion."
+    }
+  },
+  "limitations": [
+    "Only process-local observations; no collector, staging scrape, alert delivery, capacity qualification or cluster aggregation. N08-02 requires N04-04.",
+    "Database health, worker backlog and cluster observations are NOT_OBSERVED; order counts do not certify database health. Dashboard topology/freshness UI is N07-04.",
+    "p95 values remain explicitly labeled approximations over process/monitor lifetime. No exact rolling percentile, independent per-series sliding window or production latency SLO claimed.",
+    "No new browser or physical-device qualification. Final N07 regression at adce205 precedes this observation change and is retained separately, not claimed as a full N08 check.",
+    "Same runtime/contracts/scripts source matches immutable8415a269 candidate and merged implementation; later evidence/state/docs do not change it. API image is a local image ID, not a published registry digest.",
+    "First43SQL, all36previous evidence records, historical151Mxx ledger, release NOT_REQUESTED, one room owner, separate worker and mobile distribution false remain unchanged.",
+    "Owner confirms Mac/Xcode/iPhone unavailable; independent preparation allowed, N14 inactive and native/store gates not run. Hosted N04-02 remains external. Raw artifacts private local, not off-host archived."
+  ]
+}

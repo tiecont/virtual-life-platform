@@ -1,3 +1,9 @@
+# N08-01 VERIFIED — 2026-11-06T09:16:53.200113+00:00
+
+N08-01 qualifies explicit process-lifetime/monitor-lifetime approximation labels, strict source/version/timestamp aggregate contract, bounded redacted traces/logs and source-outage/true-zero distinction. Actual12focused cases (repeated after merge),84governance/332unit,91admin regression, types/lint/build/architecture/CI and6production API scenarios including actual new endpoint/cookie denial pass. No new collector/staging/capacity/browser/device claim.43SQL,36priorrecords and all unrelated task/context/defaults preserved.
+
+[Actual checks](../audit/N08-01-CHECKS.json). Counts: {"VERIFIED": 32, "BLOCKED_EXTERNAL": 1, "TODO": 36}. Next: Reserve N07-04 (priority73) and implement the authenticated current observation/system map with explicit source/version/freshness and configured-vs-observed edges. Add actual bounded sources where available and UNKNOWN elsewhere; retain actual staging-scrape gate until N04-04. Continue ready N09/N10 and independent N14 preparation; owner has no Mac/Xcode/iPhone.
+
 # N07-03 VERIFIED — 2026-11-06T09:14:55.629919+00:00
 
 N07-03 complete local acceptance: final91admin and18browser executions; full check 84governance/329unit/668integration, all types/static/build gates pass. API/admin6production scenarios each, later-page review, persisted maintenance without interactive auth,43SQL/35priorrecords/default preservation and owned cleanup pass. Two unused Phase2 bindings corrected after accidental inclusion; original failures retained. No Phase2 activation, deployment, device or release claim.

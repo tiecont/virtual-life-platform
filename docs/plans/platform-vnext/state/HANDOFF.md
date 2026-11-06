@@ -1,13 +1,13 @@
-# N07-03 VERIFIED
+# N08-01 VERIFIED
 
-N07-03 complete local acceptance: final91admin and18browser executions; full check 84governance/329unit/668integration, all types/static/build gates pass. API/admin6production scenarios each, later-page review, persisted maintenance without interactive auth,43SQL/35priorrecords/default preservation and owned cleanup pass. Two unused Phase2 bindings corrected after accidental inclusion; original failures retained. No Phase2 activation, deployment, device or release claim.
+N08-01 qualifies explicit process-lifetime/monitor-lifetime approximation labels, strict source/version/timestamp aggregate contract, bounded redacted traces/logs and source-outage/true-zero distinction. Actual12focused cases (repeated after merge),84governance/332unit,91admin regression, types/lint/build/architecture/CI and6production API scenarios including actual new endpoint/cookie denial pass. No new collector/staging/capacity/browser/device claim.43SQL,36priorrecords and all unrelated task/context/defaults preserved.
 
-[Actual checks](../audit/N07-03-CHECKS.json). Source/runtime image candidate552dd3c, full checkadce205; final evidence/state commit follows. Previous35evidence records retained, original151Mxx ledger unchanged.
+[Actual checks](../audit/N08-01-CHECKS.json). Qualified source8415a269, merged implementationde37e0b381681b394179b9f105799f2e774329dd; final evidence/state commit follows.
 
 ## Next exact action
 
-Complete N08-01 observations on its reserved isolated branch, reconcile onto this acceptance commit, run actual verification and preserve all evidence. Then N07-04/N09/N10 in dependency order, through independent N14 preparation. No Mac/Xcode/iPhone are available; keep physical/archive/TestFlight gates unmet and release NOT_REQUESTED.
+Reserve N07-04 (priority73) and implement the authenticated current observation/system map with explicit source/version/freshness and configured-vs-observed edges. Add actual bounded sources where available and UNKNOWN elsewhere; retain actual staging-scrape gate until N04-04. Continue ready N09/N10 and independent N14 preparation; owner has no Mac/Xcode/iPhone.
 
 ## Remaining gates
 
-N04-02 remains BLOCKED_EXTERNAL for genuine App PR/hosted qualification. N13/N14 conditional, Android/iOS/mobile distribution false. No macOS/Xcode or iPhone per owner confirmation. Keep strict43 rollback, safety/privacy/consent and actual mobile resource/device gates. Raw artifacts private local only. No unattended work after shutdown.
+N04-02 genuine App PR/hosted qualification remains BLOCKED_EXTERNAL. N13/N14 conditional; no Mac/Xcode or iPhone, native results NOT_RUN. Mobile distribution false; release NOT_REQUESTED. Retain actual staging scrape, external usability/physical-device/store gates, one owner and strict43 rollback requirements. Raw artifacts remain private local, not off-host archives. No unattended work after shutdown.
