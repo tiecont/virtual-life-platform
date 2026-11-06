@@ -31572,6 +31572,78 @@
         "Scene geometry/original art/appearance/authority/protocol/44SQL remain unchanged. Mobile default scene-first has a build-time classic rollback; portal remains opt-in. Queue not wired or capacity-qualified, no global admission claim.",
         "Original47evidence records, historical151Mxx ledger, Android budget bytes, platform distributionfalse and releaseNOT_REQUESTED preserved. N14 conditional with missing Mac/Xcode/iPhone; no store/public action. Owner .idea/ and infra/botkeep-ca.pem left unread/unstaged."
       ]
+    },
+    {
+      "id": "n10-05-emulator-qualified-2026-11-06",
+      "taskId": "N10-05",
+      "sourceRevision": "a9c913c6cfef9bb6e5accb51b16c2d78ae1ae134",
+      "environment": "CachyOS/KVM12;actual Android Emulator37.2.13/API35 x86_64rev9,AMD host graphics; not physical phone/iOS",
+      "executedAt": "2026-11-06T16:01:25.556494+00:00",
+      "commands": [
+        {
+          "command": "pnpm mobile:emulator:status",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm mobile:emulator:stop",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm mobile:emulator:smoke --apk artifacts/mobile-android-build-6fea6009/app-debug.apk",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm mobile:emulator:start",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm mobile:emulator:smoke --apk /tmp/not-a-development.apk",
+          "exitCode": 1
+        },
+        {
+          "command": "python3 artifacts/vnext/n10-05/reject-unowned.py",
+          "exitCode": 0
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs sdk emulator system-images;android-35;google_apis;x86_64",
+          "exitCode": 0
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs sdk --list",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm mobile:emulator:status",
+          "exitCode": 0
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "artifacts/vnext/n10-05/raw-index.json",
+          "sha256": "150a1f0bb373ad4f2a343c610bc85ca1f40dc01f26ca7bdd9885681c130881a2",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N10-05-EMULATOR-CHECKS.json",
+          "sha256": "4cf8576986cbc55a581ceff569b6c1259eb59aebe3accc6608780a5ec3eddfbc",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": true,
+      "limitations": [
+        "Actual start/own-app5scenarios/negative guards/stop/status were executed. Initial start/smoke ran new uncommitted driver files on parent29b0eee; all three runtime driver/config files have unchanged pre-start mtimes and byte identity at landeda9c913c, preserved privately. Status/negative guards/stop pin landed driver. No invented clean-head APK build.",
+        "The installed test APK is the preserved N06-08 source6764233 logged-out landscape preview, not3D animals/fur/native auth/full gameplay. Exact hash and installed byte identity are checked; the emulator driver does not manufacture those future gates.",
+        "Emulator37.2.13/API35Google APIs x86_64rev9, KVM API12, requested host GPU and observed AMD Radeon OpenGL ES3.1/Mesa26.2.4-arch3.1. Bundled WebView124.0.6367.219 differs from the physical phone156; neither is a broad compatibility/support floor.",
+        "No physical frame-time/thermal/battery,30minute gameplay, store distribution or iOS Simulator. N10-04 and Mac/Xcode/iPhone N14 remain separate.3D direction is planning only until N06-10/11/07/04/09.",
+        "AVD has4cores/2048MiB/2GiB data under private artifacts, no snapshot/wipe/owner-device operation. Explicit emulator serial and owned PID/start-tick guards retain physical USB selection unchanged. Invalid APK and unowned stop are intentionally rejected; emulator is STOPPED at this checkpoint.",
+        "All previous48evidence records,44SQL/locked Android thresholds/historicalMxx/distributionfalse/releaseNOT_REQUESTED remain unchanged. SDK hashes include only enumerated public payloads; no private keys/tokens/userdata were read, copied or archived."
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

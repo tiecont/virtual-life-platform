@@ -1,0 +1,264 @@
+{
+  "taskId": "N10-05",
+  "sourceRevision": "a9c913c6cfef9bb6e5accb51b16c2d78ae1ae134",
+  "executedAt": "2026-11-06T16:01:25.556494+00:00",
+  "environment": {
+    "os": "CachyOS 7.2.9-2-cachyos",
+    "cpu": "AMD Ryzen7 4800HS",
+    "kvmApi": 12,
+    "emulator": "37.2.13",
+    "api": 35,
+    "systemImageRevision": 9,
+    "gpu": "Google(AMD) Android Emulator OpenGL ES Translator AMD Radeon Graphics/Mesa26.2.4-arch3.1 OpenGL ES3.1",
+    "webview": "124.0.6367.219",
+    "physicalDevice": false
+  },
+  "commands": [
+    {
+      "command": "pnpm mobile:emulator:status",
+      "argv": [
+        "pnpm",
+        "mobile:emulator:status"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:57:26.611Z",
+      "endedAt": "2026-11-06T15:57:27.307Z",
+      "log": "artifacts/vnext/n10-05/candidate-status.log",
+      "sha256": "44d4cfdac59fc43693b51b550d364fa1b72e5ba0dfe13ab0c7b328660711b07f"
+    },
+    {
+      "command": "pnpm mobile:emulator:stop",
+      "argv": [
+        "pnpm",
+        "mobile:emulator:stop"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:57:57.617Z",
+      "endedAt": "2026-11-06T15:58:01.211Z",
+      "log": "artifacts/vnext/n10-05/candidate-stop.log",
+      "sha256": "414babd425f68625ee09488d4441186080b33cddcee1125ce047abc1cd012026"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:56:09.563Z",
+      "endedAt": "2026-11-06T15:56:37.519Z",
+      "log": "artifacts/vnext/n10-05/emulator-lint.log",
+      "sha256": "8f9d20bb957171baf41c7619b3d1a06507cad8923cbc82f6aab6ae382b0cd511"
+    },
+    {
+      "command": "pnpm mobile:emulator:smoke --apk artifacts/mobile-android-build-6fea6009/app-debug.apk",
+      "argv": [
+        "pnpm",
+        "mobile:emulator:smoke",
+        "--apk",
+        "artifacts/mobile-android-build-6fea6009/app-debug.apk"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:56:19.924Z",
+      "endedAt": "2026-11-06T15:57:06.543Z",
+      "log": "artifacts/vnext/n10-05/initial-smoke.log",
+      "sha256": "de4ae0a95fa2fb78e004038de7b58c85dc0ec7dc7a0ce48296276d40c2703f9a"
+    },
+    {
+      "command": "pnpm mobile:emulator:start",
+      "argv": [
+        "pnpm",
+        "mobile:emulator:start"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:54:49.554Z",
+      "endedAt": "2026-11-06T15:55:30.233Z",
+      "log": "artifacts/vnext/n10-05/initial-start.log",
+      "sha256": "9e310c8ffd232a803b4158375f5c240360c6b6d258de71dab40b022f3ffb9559"
+    },
+    {
+      "command": "pnpm mobile:emulator:smoke --apk /tmp/not-a-development.apk",
+      "argv": [
+        "pnpm",
+        "mobile:emulator:smoke",
+        "--apk",
+        "/tmp/not-a-development.apk"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T15:57:27.386Z",
+      "endedAt": "2026-11-06T15:57:28.186Z",
+      "log": "artifacts/vnext/n10-05/reject-apk-boundary.log",
+      "sha256": "c633560d645648bc3fecd16189933230595c1b3bf1b493cecb68e34224058a3f"
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-05/reject-unowned.py",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n10-05/reject-unowned.py"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:57:45.486Z",
+      "endedAt": "2026-11-06T15:57:46.325Z",
+      "log": "artifacts/vnext/n10-05/reject-unowned-stop.log",
+      "sha256": "163a464d4bcf2274034e31fa05da3ce3f1e0d86858683268fc15b0e5bc6023eb"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs sdk emulator system-images;android-35;google_apis;x86_64",
+      "argv": [
+        "node",
+        "artifacts/vnext/n10-02/android-native/run.mjs",
+        "sdk",
+        "emulator",
+        "system-images;android-35;google_apis;x86_64"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:47:09.790Z",
+      "endedAt": "2026-11-06T15:48:43.577Z",
+      "log": "artifacts/vnext/n10-05/sdk-emulator-install.log",
+      "sha256": "f38393a0e3f999ed89518d6cbc113604ce4e5875ee22e898f4e148bb83ee3af7"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs sdk --list",
+      "argv": [
+        "node",
+        "artifacts/vnext/n10-02/android-native/run.mjs",
+        "sdk",
+        "--list"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:45:18.271Z",
+      "endedAt": "2026-11-06T15:45:21.789Z",
+      "log": "artifacts/vnext/n10-05/sdk-inventory.log",
+      "sha256": "deb08c97596851f1f72735ca7ed79156de7f84b53871e256a17930f240f79da1"
+    },
+    {
+      "command": "pnpm mobile:emulator:status",
+      "argv": [
+        "pnpm",
+        "mobile:emulator:status"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T15:58:40.297Z",
+      "endedAt": "2026-11-06T15:58:41.070Z",
+      "log": "artifacts/vnext/n10-05/stopped-status.log",
+      "sha256": "bc8d42ae84c0b1c38c74ae1f3e63aa6f7773ec9a2edc4646be68658cb332176f"
+    }
+  ],
+  "artifacts": [
+    {
+      "ref": "artifacts/vnext/n10-05/raw-index.json",
+      "sha256": "150a1f0bb373ad4f2a343c610bc85ca1f40dc01f26ca7bdd9885681c130881a2",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-05/emulated-preview-a9b97f4f/facts.json",
+      "sha256": "2795d05702f134782ed56b508977f6e028e4b5e69b4f49d0dcf035ed7babb759",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-05/emulated-preview-a9b97f4f/primary.png",
+      "sha256": "eb27cb8a231260c6d8e04e25d795e155a6ef4760f5ce67beaa4ae80f90874f54",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "docs/mobile/ANDROID-EMULATOR-LOCK.json",
+      "sha256": "bfd5d5439ba2674bfdfd912c441a8b36ba2944a6061b665ed5a1bcdc83b35ab1",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    }
+  ],
+  "driverIdentity": [
+    {
+      "ref": "scripts/mobile-emulator.mjs",
+      "sha256": "c0c2cdb26cf6df4183248648241d9159eea8bbb2b9ffa437798e95c4ebb65f27",
+      "landedRevision": "a9c913c6cfef9bb6e5accb51b16c2d78ae1ae134",
+      "unchangedSinceInitialStart": true
+    },
+    {
+      "ref": "scripts/mobile-emulator-smoke.py",
+      "sha256": "3e6a51af34c82fec4d8dd9aa7a312518ed1554303d9ecb94a8c3ef09cc8a3554",
+      "landedRevision": "a9c913c6cfef9bb6e5accb51b16c2d78ae1ae134",
+      "unchangedSinceInitialStart": true
+    },
+    {
+      "ref": "docs/mobile/ANDROID-EMULATOR.json",
+      "sha256": "d4b5d8f747616aa0ecfb84e8800d6d794b3280b8e7019dc013cd3ebeec60b133",
+      "landedRevision": "a9c913c6cfef9bb6e5accb51b16c2d78ae1ae134",
+      "unchangedSinceInitialStart": true
+    }
+  ],
+  "acceptance": {
+    "actualBoot": true,
+    "installedAPKHash": "1d87d46c0bd4e25ae98bf802383b8a81ecef59106cec6262188dd5052b614bb8",
+    "apkBuildRevision": "676423366825e36eccfdef7db7b9c1b2fbd0bc2d",
+    "scenarios": [
+      {
+        "name": "actual emulated APK landscape entry",
+        "result": "PASS",
+        "screenPx": [
+          2400,
+          1080
+        ]
+      },
+      {
+        "name": "emulated IME and touch-close without granting a seat",
+        "result": "PASS"
+      },
+      {
+        "name": "emulated panel Back/filter and opposite landscape rotations",
+        "result": "PASS",
+        "rotations": [
+          "3",
+          "1"
+        ]
+      },
+      {
+        "name": "emulated fallback/Back",
+        "result": "PASS"
+      },
+      {
+        "name": "emulated Home/resume",
+        "result": "PASS"
+      }
+    ],
+    "outsideAPKRejected": true,
+    "unownedStopRejectedWithoutADB": true,
+    "ownedStopAndStoppedStatus": true,
+    "manualImageReview": "Actual emulated primary scene readable; historical pixel preview only",
+    "physicalPerformance": false,
+    "ios": false,
+    "threeDimensionalGraphics": false
+  },
+  "acceptance_met": true,
+  "limitations": [
+    "Actual start/own-app5scenarios/negative guards/stop/status were executed. Initial start/smoke ran new uncommitted driver files on parent29b0eee; all three runtime driver/config files have unchanged pre-start mtimes and byte identity at landeda9c913c, preserved privately. Status/negative guards/stop pin landed driver. No invented clean-head APK build.",
+    "The installed test APK is the preserved N06-08 source6764233 logged-out landscape preview, not3D animals/fur/native auth/full gameplay. Exact hash and installed byte identity are checked; the emulator driver does not manufacture those future gates.",
+    "Emulator37.2.13/API35Google APIs x86_64rev9, KVM API12, requested host GPU and observed AMD Radeon OpenGL ES3.1/Mesa26.2.4-arch3.1. Bundled WebView124.0.6367.219 differs from the physical phone156; neither is a broad compatibility/support floor.",
+    "No physical frame-time/thermal/battery,30minute gameplay, store distribution or iOS Simulator. N10-04 and Mac/Xcode/iPhone N14 remain separate.3D direction is planning only until N06-10/11/07/04/09.",
+    "AVD has4cores/2048MiB/2GiB data under private artifacts, no snapshot/wipe/owner-device operation. Explicit emulator serial and owned PID/start-tick guards retain physical USB selection unchanged. Invalid APK and unowned stop are intentionally rejected; emulator is STOPPED at this checkpoint.",
+    "All previous48evidence records,44SQL/locked Android thresholds/historicalMxx/distributionfalse/releaseNOT_REQUESTED remain unchanged. SDK hashes include only enumerated public payloads; no private keys/tokens/userdata were read, copied or archived."
+  ]
+}

@@ -759,12 +759,14 @@
       "next_action": "Shared renderer3D adapter, rigged animal/fur/material/room technical slice"
     },
     "N10-05": {
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "owner": "Codex",
       "branch": "codex/vnext-n09-02-postgres",
-      "evidence_refs": [],
+      "evidence_refs": [
+        "n10-05-emulator-qualified-2026-11-06"
+      ],
       "blocker": null,
-      "next_action": "KVM API12 is accessible; pin/install Emulator37.2.13 and API35Google APIs x86_64rev9 in the isolated SDK; implement private AVD start/smoke/stop, actual own-APK qualification and evidence. No physical/iOS substitution."
+      "next_action": "Finish current N09-03 browser/security/integration qualification; then N06-10 current3D/fur/rig/UI source audit/ADR/locked budgets before N06-11 renderer spike. Emulator is stopped; reuse explicit lifecycle commands for development, never replace N10-04 physical or N14 gates."
     }
   },
   "runtime_context": {
