@@ -10,6 +10,8 @@
 - `packages/game-client/*`
 - `packages/ui/*`
 - `packages/pixi-scene/*`
+- `packages/scene3d/*`
+- `apps/mobile/*`
 - `packages/*-world/*`
 
 Path mới là đề xuất, không chứng minh source đã tồn tại. Đọc source tại HEAD và consumers trước khi áp dụng cấu trúc đích. Chỉ coordinator thay shared contracts/migration numbers/composition roots khi nhiều agent làm song song.
@@ -369,3 +371,5 @@ Deliverables: renderer3D qua shared adapter, model rigged/fur/material và một
 Acceptance: runtime3D thực có idle/walk/sit/serve và camera/resize; close-up fur và gameplay-distance LOD/readability, anchors/occlusion/shadow/color-space được review. Không texture/card leak sau travel/recreate; graphics failure vẫn có DOM/report/leave. Web + packaged Android Emulator chạy thực; physical Android kiểm riêng và iOS conditional. Ghi số đo GPU/frame/loading/memory và source/model/material hashes; emulator/softwareGPU không thay physical thermal/battery hoặc N10-04. Placeholder có nhãn; N06-09 vẫn cần final asset/visual acceptance.
 
 Verification hiện hữu cần chạy: pnpm lint, pnpm typecheck, pnpm build, pnpm test:client-boundaries, pnpm assets:check. **Planned, phải implement trước:** pnpm test:scene3d; pnpm mobile:emulator:smoke. Manual: actual browser/AVD/physical images/video/performance và failure/context-loss/lifecycle review theo brief07. Rollback bằng renderer flag/catalog compatibility, giữ Pixi/v1 data/receipts. Evidence SHA/diff, environment/device/GPU, actual commands/codes/hashes/limitations/exact next action.
+
+Implementation checkpoint 2026-11-07: `test:scene3d` và `mobile:emulator:scene3d` đã được implement và chạy thật cho shared local studio; [evidence partial](../audit/N06-11-STUDIO-CHECKPOINT.json). Runtime state vẫn IN_PROGRESS, không VERIFIED. Original24bone cat/groom/room, extracted engine-neutral port, opt-in web/mobile study, source-bound DEBUG APK và browser/AVD lifecycle/context/rotation/Back checks có kết quả thực. Authoritative room snapshot/intent/distance LOD,20actor/loading/resources/physical qualification và final fur/rig/cloth/serve art còn thiếu. Không nhận studio chỉ xem mẫu là playable3D room hay full N06-11 acceptance; N06-07/04/09 và N10-03/04 vẫn riêng.

@@ -31885,6 +31885,422 @@
         "No ETA is inferred from rank; server range is null until measured. Local countdown is based on server timestamps and monotonic time,does not grant or authoritatively expire a slot. Background requires visible document plus active platform; only explicit user claim/reconnect/retry can mutate.",
         "No source/SQL/avatar/asset/authority reset,privacy-export rollout,hosted/staging,image digest promotion,3D runtime,human usability or public/store release. Original50records/44SQL/Mxx/locked Android budgets and distributionfalse preserved. Owner .idea/ and infra/botkeep-ca.pem remain unread/unstaged."
       ]
+    },
+    {
+      "id": "n06-11-shared-3d-studio-partial-2026-11-07",
+      "taskId": "N06-11",
+      "sourceRevision": "804c0f1c7300a905324087d4eb0454951ff5db64",
+      "environment": "CachyOS Linux7.2.9-2; Node26.9.0/pnpm11.28.5; Three0.187.0; Chromium156 SwiftShader; owned Android Emulator37.2.13/API35/WebView124 via host AMD Radeon/Mesa26.2.4; JDK21/SDK36/Gradle8.14.3 DEBUG",
+      "executedAt": "2026-11-06T18:09:09.580Z",
+      "commands": [
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test/animal.test.ts",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/animal-first.log",
+          "sha256": "be926a82a96e95c3c29e50ad8a44f850ca4ece42e4b38f959246086f7fef2008"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test/animal.test.ts",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/animal-normalized.log",
+          "sha256": "6483cefa2b5d0a61fc5fd0f2765a089feb41c1d844fbc02126d3efa40c033442"
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm exec python3 artifacts/vnext/n06-11/inspect-apk.py",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/apk-inspection-capacitor.log",
+          "sha256": "c8c140dbbff50d9bffc7453cc14ee295ce2e071b6f26e47aa14ce78ff43a4c05"
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm exec python3 artifacts/vnext/n06-11/inspect-apk.py",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/apk-inspection.log",
+          "sha256": "5116e9a523cdabf376ee20ed35bde4975f4fec35f97eb37fbece5ee96f70b6bb"
+        },
+        {
+          "command": "pnpm toolchain:map",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/build-map.log",
+          "sha256": "9bfe7943cd549e861ad2485f2130b4640ef970858ccd2b840706ecc3e54bd0eb"
+        },
+        {
+          "command": "env VITE_VLP_SCENE3D_STUDY=1 node artifacts/vnext/n10-02/android-native/run.mjs pnpm mobile:android:build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/candidate-android-build.log",
+          "sha256": "1093322144084d994db838a795be9ed11e81eaef5cba621b90f61fc2fa76ec0a"
+        },
+        {
+          "command": "pnpm assets:check",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/candidate-assets.log",
+          "sha256": "4e7181f12c3cf201a5503f9e76b0af57757d18aa08fd4c98baa7cb6881bcbe8d"
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/candidate-ci.log",
+          "sha256": "9b26f593ae8786ca611388eac57592ded16f1f30a19debc808047c7eafe34fb6"
+        },
+        {
+          "command": "pnpm test:client-boundaries",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/candidate-client-boundaries.log",
+          "sha256": "c42d064475f7cf2f2fb6e19d80cfce07819ff9c8c6f2bef3c9e0e00a04e45c45"
+        },
+        {
+          "command": "pnpm build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/candidate-full-build.log",
+          "sha256": "5fe59967f7a2afd88e33d7d61b333e745a25999316c456f92d1f651db3137453"
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/candidate-lint.log",
+          "sha256": "e25408f7d2874c9ed93da6707239d10a53e7d9a51b6faaca8f155894d009caf2"
+        },
+        {
+          "command": "pnpm mobile:bundle:smoke",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/candidate-mobile-rollback.log",
+          "sha256": "2531d555b8cd6f99ebae676771722e91e3c88742b51294c1d508160ed2f6d298"
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/current-ci.log",
+          "sha256": "9b26f593ae8786ca611388eac57592ded16f1f30a19debc808047c7eafe34fb6"
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/current-lint.log",
+          "sha256": "e25408f7d2874c9ed93da6707239d10a53e7d9a51b6faaca8f155894d009caf2"
+        },
+        {
+          "command": "pnpm mobile:emulator:start",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/emulator-start.log",
+          "sha256": "f233779faa84888168c0fd79afa48cc63ada5e62572a1f8ee1d160f16155880a"
+        },
+        {
+          "command": "pnpm test:client-boundaries",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/final-boundaries.log",
+          "sha256": "c42d064475f7cf2f2fb6e19d80cfce07819ff9c8c6f2bef3c9e0e00a04e45c45"
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/final-ci.log",
+          "sha256": "9b26f593ae8786ca611388eac57592ded16f1f30a19debc808047c7eafe34fb6"
+        },
+        {
+          "command": "pnpm mobile:emulator:status",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/final-emulator-status.log",
+          "sha256": "fbce62406bd3cb4fb95f853cd1cdfaf593f1138981fbf33a80ab5fcbb64f4070"
+        },
+        {
+          "command": "pnpm mobile:emulator:stop",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/final-emulator-stop.log",
+          "sha256": "d1e9b735b81fd98531bf86b299762b335996053dafed22034ae620e8ee9e5645"
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/final-lint.log",
+          "sha256": "e25408f7d2874c9ed93da6707239d10a53e7d9a51b6faaca8f155894d009caf2"
+        },
+        {
+          "command": "pnpm test:scene3d",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/first-functional.log",
+          "sha256": "02a540183a0af80e929dc1497244b74d46e35cf2f6942b6a6b5f3f185789c7ae"
+        },
+        {
+          "command": "node artifacts/vnext/n06-11/capture-first-look.mjs",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/first-look.log",
+          "sha256": "fa534c2e6ac4690f1093e0397972654a12124acbd909f74a669ccd6fd335484c"
+        },
+        {
+          "command": "pnpm mobile:emulator:scene3d --apk apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/first-native-study.log",
+          "sha256": "0750fcaf2688ff1b3ad1b2dc54a4881e42928d5ada63109929ee29b495bfcae0"
+        },
+        {
+          "command": "pnpm build:packages",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/first-shared-build.log",
+          "sha256": "62a6aec6d2274a657b3189774ba8e81bb920ecd00369d764ec265c18f1dd4a45"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/portal-web build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/first-web-build.log",
+          "sha256": "cabdd6da58ae73e7aa87e64246386475b64ab38729e98ad78733cff1f55c49bf"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test/animal.test.ts",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/full-model-budget-red.log",
+          "sha256": "b2a55afdceb8c599fedfc1963436313ada218f9c5e1564cb50ccada4da44d896"
+        },
+        {
+          "command": "pnpm build:packages",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/groom-refinement-packages.log",
+          "sha256": "b1a58c9bd052704fa6015bccc73d4ada3683828fe0172dd850382c1d8f5a61b8"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test/animal.test.ts",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/groom-refinement-unit.log",
+          "sha256": "7a01b4b80a6286cd1c891b73b1f348e4307d5a2f586cc9b6676e517422f49669"
+        },
+        {
+          "command": "pnpm install",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/install-renderer.log",
+          "sha256": "d635c20ba27681c7c6e1d1a357735a6ffbdbc14c8fbf80b0791951e69d12e38d"
+        },
+        {
+          "command": "pnpm install --offline",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/link-renderer.log",
+          "sha256": "9c619f0aaeadb94ca01801a2f54f3e11c8581633f50576b5d62314f7f819582d"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test/animal.test.ts",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/lod-ceilings-first.log",
+          "sha256": "dc8f167cc04fdea2d868e32bb9d208ee49691678fe857382f2766e3ea8fe10ca"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test/animal.test.ts",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/lod-matte-unit.log",
+          "sha256": "ab3065e6254d28b6567d5eed4c1ac6afb4d358c6c6e2d24a4425a29f42c8af96"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/game-client build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/look-v2-client.log",
+          "sha256": "29c5ee0f6b0b20dbb259b99d01276198c3d28190090706394608d4deda6d2c0b"
+        },
+        {
+          "command": "env VITE_VLP_SCENE3D_STUDY=1 pnpm --filter @virtual-city/mobile build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/look-v2-mobile-build.log",
+          "sha256": "6aedf4a71b54ba3f86467c987f9126b2675ab92bf2f02a2fbb37928c560c1735"
+        },
+        {
+          "command": "node --import tsx artifacts/vnext/n06-11/inspect-model.mts",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/model-geometry-esm.log",
+          "sha256": "8059d4b87f4f5887a38e1635115a94bf85c72bc7d20f130955ee930e313f7029"
+        },
+        {
+          "command": "node --import tsx artifacts/vnext/n06-11/inspect-model.ts",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/model-geometry.log",
+          "sha256": "95b9644ab25528081841a2cd838e46df6ba113ef50a93593482c141fcafac7b8"
+        },
+        {
+          "command": "pnpm mobile:emulator:scene3d --apk apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/native-study-api35-rotation.log",
+          "sha256": "5cbbf00d3baeb8b5925272b1bbde7b0ee81593336a08ac83db014423356bd8bd"
+        },
+        {
+          "command": "pnpm mobile:emulator:scene3d --apk apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/native-study-focus-guard.log",
+          "sha256": "05db47963cbdb8b063fcbccb8960598bd58b281cfe15ef6b6e38335d0652dbb1"
+        },
+        {
+          "command": "pnpm mobile:emulator:scene3d --apk apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/native-study-line-ending.log",
+          "sha256": "fa245983dfabe71c25f745133d53aa3d5904cb905640140cd00acdf9880da01b"
+        },
+        {
+          "command": "pnpm mobile:emulator:scene3d --apk apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/native-study-process-ready.log",
+          "sha256": "bd9c2a16a7808174339bb3142cdd029e6fd80a4ef90c31181165113c1eb7e18a"
+        },
+        {
+          "command": "pnpm test:scene3d",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/organic-browser.log",
+          "sha256": "2778cdbb2050281883ead8cdcf032a6a40155102728aeb9d91ae7c6b01dd7eab"
+        },
+        {
+          "command": "pnpm build:packages",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/organic-build-packages.log",
+          "sha256": "b1a58c9bd052704fa6015bccc73d4ada3683828fe0172dd850382c1d8f5a61b8"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test/animal.test.ts",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/organic-full-lod-unit.log",
+          "sha256": "b8bd9358ca451b3767c9561a90dbb1256273248a763b9354fa7fc57770c07be6"
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/organic-lint.log",
+          "sha256": "0ca49cf28afde7e5832fa44e40fe29fd7cb6265bbccc725b606e0dcb8010082f"
+        },
+        {
+          "command": "env VITE_VLP_SCENE3D_STUDY=1 pnpm --filter @virtual-city/mobile build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/organic-mobile-build.log",
+          "sha256": "cf84374aeb47c844de6195134c79009ffdeb543d9ee5b22a99ae986a320abe37"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/scene3d build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/organic-scene-build.log",
+          "sha256": "29c5ee0f6b0b20dbb259b99d01276198c3d28190090706394608d4deda6d2c0b"
+        },
+        {
+          "command": "pnpm test",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/organic-tests.log",
+          "sha256": "3380c9fd14ed15cae7def13a7cc63e0d6575fb18dc86920405e2c6682290d4fb"
+        },
+        {
+          "command": "pnpm typecheck",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/organic-typecheck.log",
+          "sha256": "618e4da867a42e344f1ac874f47a249920145eea033110a79f45e32ebe4c079b"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/scene3d typecheck",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/organic-types.log",
+          "sha256": "38ac890c60e7f38d59ddfb410325cdfb5fca83c9411765c5481754e01c021630"
+        },
+        {
+          "command": "env VITE_VLP_SCENE3D_STUDY=1 node artifacts/vnext/n10-02/android-native/run.mjs pnpm mobile:android:build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/refinement-android-build.log",
+          "sha256": "036c6b5869a0a8f36c45190ea1c2ac650a6d2a65c796c48bb3ef4fc5ace542a6"
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm exec python3 artifacts/vnext/n06-11/inspect-apk-v2.py",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/refinement-apk-inspection.log",
+          "sha256": "e691ace627572f1287db6ec1bb6d2b37f67234e412fddd90c3908726df976283"
+        },
+        {
+          "command": "pnpm test:scene3d",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/refinement-browser.log",
+          "sha256": "452361b42405c864316693ab8dc5176e1fc76d8a8741a45b017e13b1ebdde18a"
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/refinement-lint.log",
+          "sha256": "e25408f7d2874c9ed93da6707239d10a53e7d9a51b6faaca8f155894d009caf2"
+        },
+        {
+          "command": "env VITE_VLP_SCENE3D_STUDY=1 pnpm --filter @virtual-city/mobile build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/refinement-mobile-build.log",
+          "sha256": "cfa6ef2bc77fcd1eb8d95595f0752eaa173b382d691f4ff1dbeffaa44b4dbfc4"
+        },
+        {
+          "command": "node --import tsx artifacts/vnext/n06-11/inspect-model-v2.mts",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/refinement-model-geometry.log",
+          "sha256": "3aca47354f1a236ca68a9626bf1b1d4aa0eb7d854054f3fa0a8a21df449f81f4"
+        },
+        {
+          "command": "pnpm mobile:emulator:scene3d --apk apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/refinement-native-study.log",
+          "sha256": "864d4330ded2a71b23d031f55bfc2debb3777ab649536758283d4abe48902c15"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/portal-web build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/refinement-next-build.log",
+          "sha256": "5a4b78f8845576228c024c31c1e9ad53c7239e4dcfc2ef6559088d4d103df541"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/scene3d typecheck",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-types.log",
+          "sha256": "38ac890c60e7f38d59ddfb410325cdfb5fca83c9411765c5481754e01c021630"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/scene3d typecheck",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/scene-types-first.log",
+          "sha256": "38ac890c60e7f38d59ddfb410325cdfb5fca83c9411765c5481754e01c021630"
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/source-lint.log",
+          "sha256": "e25408f7d2874c9ed93da6707239d10a53e7d9a51b6faaca8f155894d009caf2"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/scene3d typecheck",
+          "exitCode": 2,
+          "log": "artifacts/vnext/n06-11/study-types.log",
+          "sha256": "870bda129b8afa1bbe6fb3c42bfc7b05ebb44c2b147d17df4571e2ccc7dc4e51"
+        },
+        {
+          "command": "pnpm view three@0.187.0 version dist.integrity dist.tarball --json",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/three-registry.log",
+          "sha256": "cf0ff30dab12457e02254c6e7c6823d84bdd47fb1e08e42fd8baec7b95c9a0b2"
+        },
+        {
+          "command": "pnpm view @types/three@0.187.0 version dist.integrity dist.tarball dependencies --json",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/three-types-registry.log",
+          "sha256": "a0555d57b09cb3efa826ae1dc0222b187310751bafb76f1c775d239ed9b26805"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/scene3d build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/visual-iteration-build.log",
+          "sha256": "29c5ee0f6b0b20dbb259b99d01276198c3d28190090706394608d4deda6d2c0b"
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "artifacts/vnext/n06-11/raw-index.json",
+          "sha256": "cfc9e0eba890997464f76768124d6d1fba07b82549a9868a628a2e30d758f705",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N06-11-STUDIO-CHECKPOINT.json",
+          "sha256": "48765dff0030bfaf49610da873d8d1e5ec7e2eb0f9edaf455f77da627a5cf879",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": false,
+      "limitations": [
+        "N06-11 remains IN_PROGRESS: this is an opt-in original procedural cat/studio, not a completed authoritative3D room renderer, modular creator, final fur/art acceptance, exported glTF asset or full game upgrade. Sparse/wispy bright fur, silhouette, cloth/seams/anchors and serve props still require art work; ownerArtApproval=false.",
+        "Actual packaged Android Emulator has API35/WebView124 and host AMD WebGL2. Latest short-window p95 is low16.8/balanced50/high16.8ms: balanced exceeds the locked33.4ms reference and performance is NOT accepted. The Next build overlapped this development run; no exclusive-load or physical comparison is established. Own-app RSS/PSS excludes unaggregated isolated WebView/GPU processes. Not20actors,N10-04 thirty minutes,thermal/battery or supported-device evidence. Latest USB availability observes0attached devices; physical3D is NOT_RUN.",
+        "Actual Chromium software SwiftShader profiles pass functionality; their frame times are not accepted physical/native performance. Prior source/failed runs are retained. Revision1 duration included rolled-out intervals; revision2 sums the same300interval window used for p95. Do not reuse the old duration as a new measurement.",
+        "Full89governance/377unit,wholetypes/build and legacy3bundle checks ran the preceding ce58e8a runtime scope; final3rig/whole-model tests,package build,Next rebuild,browser and new source-bound DEBUG APK/AVD cover804c0f1 refinements. Precommit browser source-file hashes match the committed current sources; no invented clean-head rerun. Backend c39c89b sources/44SQL are unchanged, so prior698integration/225security remain historical.",
+        "Default current playable rooms remain Pixi/v1. The SDK port is engine-neutral but the labelled studio rejects non-null snapshots. Real snapshot projection,intent raycasts,distance LOD,20actor/resource/loading and physical qualification remain before N06-11 acceptance. Native session/authN10-03 precedes N06-07 creator Save; N06-04/09 qualify final scenes/art.",
+        "Mac/Xcode/iPhone are unavailable for conditional N14. Android AVD is not iOS Simulator. Existing release/distributionfalse,admission hard0target0paused,single RoomAuthority and old ledgers remain intact; no public deployment/store/production data change or Phase2 activation. Owner .idea/ and infra/botkeep-ca.pem unread/unstaged."
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

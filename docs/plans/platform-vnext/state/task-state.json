@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "updated_at": "2026-11-06",
+  "updated_at": "2026-11-06T18:09:09.580Z",
   "scope": "vNext implementation",
   "release_status": "NOT_REQUESTED",
   "module_activation": {
@@ -758,9 +758,11 @@
       "status": "IN_PROGRESS",
       "owner": "Codex",
       "branch": "codex/vnext-n09-02-postgres",
-      "evidence_refs": [],
+      "evidence_refs": [
+        "n06-11-shared-3d-studio-partial-2026-11-07"
+      ],
       "blocker": null,
-      "next_action": "Qualify the opt-in shared3D studio with a new source-bound packaged DEBUG APK on the owned Android Emulator; preserve actual browser/LOD failures and gather native context/rotation/Back/Home measurements. Then implement authoritative snapshot/intent3D adapter and distance LOD, fix sparse fur/pointed limb art findings, and qualify20actors/physical Android before N06-11 acceptance. N10-03/native Save and final N06-09 remain separate."
+      "next_action": "Resume N06-11: implement the authoritative RoomSnapshot3D adapter and existing validated move/seat intent projection with distance LOD and Pixi/v1 rollback; fix unresolved fur/silhouette/cloth/serve art findings, then qualify20actors/loading/resources and physical Android when attached. Keep studio-only status explicit. N10-03 native auth independently gates N06-07 Save; N06-04/09/N10-04 and conditional N14 remain unqualified. Phase2 waits for real ownership handoff and task dependencies."
     },
     "N10-05": {
       "status": "VERIFIED",

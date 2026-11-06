@@ -1,3 +1,11 @@
+# N06-11 remaining gates; code work continues — 2026-11-07
+
+[Partial studio checkpoint](../audit/N06-11-STUDIO-CHECKPOINT.json): shared3D studio/browser/packaged AVD functionality works; task remains IN_PROGRESS. Authoritative snapshot/intent3D adapter,distance LOD,20actor/load/resources and final fur/rig/cloth/props are unfinished code/art work, not an external blocker. Latest short Balanced AVD p95 is50ms, above33.4ms, with a simultaneous web build; performance is not accepted. Do not raise budgets or substitute this for N10-04.
+
+Current USB probe sees0attached devices: physical3D is NOT_RUN, and earlier physical2D evidence does not qualify the new renderer. Emulator is STOPPED after actual checks and remains available for development without phone unlock. N10-03 auth still gates creator Save. N04-02/N07-04 remain BLOCKED_EXTERNAL; N14 remains conditional without Mac/Xcode/iPhone. Android AVD is not iOS Simulator. Continue current source/handoff; older resolved prerequisites below are historical.
+
+## Earlier checkpoints — historical
+
 # N10-02 native prerequisite resolved — 2026-11-06
 
 N10-02 first logged-out Android bundle now VERIFIED with actual native build/install, signature/asset inspection,3fresh browser bundle cases and5physical preview cases; see [native checks](../audit/N10-02-NATIVE-CHECKS.json). Initial absent JDK/SDK/ADB and later Back/input/capture failures below are retained historical findings. N10-03 auth/N10-04 full spike/new N06 animal/landscape work remain separate. N04-02 and N07-04 still BLOCKED_EXTERNAL; N14 conditional without actual Mac/Xcode/iPhone. Next ready task N06-06 priority80; no repeated USB permission request needed.
