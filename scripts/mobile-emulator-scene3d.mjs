@@ -13,7 +13,7 @@ assert(adb&&serial==='emulator-'+config.port&&instance.serial===serial&&instance
 const ticks=readFileSync('/proc/'+instance.pid+'/stat','utf8').split(') ').at(-1).split(' ')[19],argv=readFileSync('/proc/'+instance.pid+'/cmdline','utf8').split('\0');assert.equal(ticks,instance.startTicks);assert(argv.includes(config.avdName)&&argv.includes(String(config.port)));
 assert((apk.startsWith(root+'/artifacts/')||apk.startsWith(root+'/apps/mobile/android/app/build/outputs/apk/'))&&apk.endsWith('.apk'));
 const output=resolve('artifacts/vnext/n06-11/native-study-'+randomUUID().slice(0,8));await mkdir(output,{recursive:true,mode:0o700});const hash=bytes=>createHash('sha256').update(bytes).digest('hex'),commands=[];
-function run(label,args,{binary=false}={}){const bytes=execFileSync(adb,['-s',serial,...args],{timeout:30000,maxBuffer:8*1024*1024});commands.push({label,args,exitCode:0});return binary?bytes:bytes.toString().trim();}
+function run(label,args,{binary=false,allowMissing=false}={}){let bytes;try{bytes=execFileSync(adb,['-s',serial,...args],{timeout:30000,maxBuffer:8*1024*1024});}catch(error){if(allowMissing&&error.status===1){commands.push({label,args,exitCode:1,expected:'Own app process not started yet'});return '';}throw error;}commands.push({label,args,exitCode:0});return binary?bytes:bytes.toString().trim();}
 const sleep=ms=>new Promise(ok=>setTimeout(ok,ms));
 const facts={scope:'PACKAGED_DEBUG_3D_STUDY_ON_OWNED_ANDROID_EMULATOR_ONLY',sourceRevision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),trackedDiffSha256:hash(execFileSync('git',['diff','--binary','HEAD'],{maxBuffer:32*1024*1024})),startedAt:new Date().toISOString(),scenarios:[],measurements:[],commands,performanceQualified:false,physicalDevice:false,distributed:false};
 let ws,forward,sequence=0;const pending=new Map();
@@ -29,7 +29,7 @@ try{
  const apkBytes=await readFile(apk);facts.apk={sha256:hash(apkBytes),bytes:apkBytes.length};await writeFile(output+'/app-debug.apk',apkBytes,{mode:0o600});
  const sources=[];for(const dir of ['packages/scene3d/src','packages/game-client/src','packages/client-sdk/src','apps/mobile/src']){for(const name of await readdir(dir)){if(!/\.tsx?$/.test(name))continue;const ref=dir+'/'+name;sources.push({ref,sha256:hash(await readFile(ref))});}}facts.sourceFiles=sources;
  run('install-own-debug-apk',['install','-r',apk]);run('start-own-app',['shell','am','start','-n',component]);
- let pid;for(let i=0;i<40;i++){pid=run('own-app-pid',['shell','pidof',app]);if(/^\d+$/.test(pid))break;await sleep(250);}assert(/^\d+$/.test(pid));
+ let pid;for(let i=0;i<40;i++){pid=run('own-app-pid',['shell','pidof',app],{allowMissing:true});if(/^\d+$/.test(pid))break;await sleep(250);}assert(/^\d+$/.test(pid));
  forward=run('forward-own-webview',['forward','tcp:0','localabstract:webview_devtools_remote_'+pid]);assert(/^\d+$/.test(forward));let target;
  for(let i=0;i<40;i++){try{const list=await fetch('http://127.0.0.1:'+forward+'/json/list',{signal:globalThis.AbortSignal.timeout(1000)}).then(response=>response.json());target=list.find(value=>value.type==='page'&&new URL(value.url).origin==='https://localhost');if(target)break;}catch{/* Own WebView is still starting. */}await sleep(250);}assert(target,'Own packaged localhost WebView unavailable');
  const url=new URL(target.webSocketDebuggerUrl);assert(url.hostname==='localhost'||url.hostname==='127.0.0.1');assert(url.port===forward);ws=new globalThis.WebSocket(url);
