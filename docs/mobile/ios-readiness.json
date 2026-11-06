@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "ownerReported": {
+    "confirmedAt": "2026-11-06",
+    "source": "Owner explicitly confirmed no Mac/Xcode or iPhone; continue preparation and record missing gates",
+    "macOSBuildAccess": false,
+    "physicalIPhonePath": false
+  },
+  "qualification": {
+    "scope": "Resource preparation only; not N14 task acceptance or activation evidence",
+    "macOSXcodeRunner": "UNAVAILABLE_OWNER_CONFIRMED",
+    "signingProvisioning": "NOT_VERIFIED",
+    "physicalIPhoneModelOS": "UNAVAILABLE_OWNER_CONFIRMED",
+    "archiveIPA": "NOT_RUN",
+    "keychainNativeAuth": "NOT_RUN",
+    "physicalGameplayLifecycle": "NOT_RUN",
+    "supportedBinaryCompatibility": "NOT_RUN",
+    "testFlight": "NOT_RUN",
+    "storeReview": "NOT_RUN",
+    "publicPublication": "NOT_REQUESTED"
+  }
+}

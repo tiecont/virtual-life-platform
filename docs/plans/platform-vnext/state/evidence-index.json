@@ -23541,6 +23541,199 @@
         "First43SQL, all36previous evidence records, historical151Mxx ledger, release NOT_REQUESTED, one room owner, separate worker and mobile distribution false remain unchanged.",
         "Owner confirms Mac/Xcode/iPhone unavailable; independent preparation allowed, N14 inactive and native/store gates not run. Hosted N04-02 remains external. Raw artifacts private local, not off-host archived."
       ]
+    },
+    {
+      "id": "n10-01-ios-preparation-2026-11-06",
+      "taskId": "N10-01",
+      "sourceRevision": "6831be09f4fd7a0530073f33bdb7233382031dba",
+      "environment": "CachyOS Linux x64; Node26.9.0/pnpm11.28.5; owner reports no Mac/Xcode/iPhone; Java/ADB unavailable in sanitized preflight PATH",
+      "executedAt": "2026-11-06T09:19:58.690675+00:00",
+      "commands": [
+        {
+          "command": "pnpm mobile:preflight --platform=ios",
+          "argv": [
+            "pnpm",
+            "mobile:preflight",
+            "--platform=ios"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T09:18:21.510Z",
+          "endedAt": "2026-11-06T09:18:22.031Z",
+          "log": "artifacts/vnext/n10-01/ios-preflight.log",
+          "sha256": "ef10c12d70b6e6606aa60803bf61a05a441c5847083cf1e3407c70bfed1d7cd5"
+        },
+        {
+          "command": "pnpm mobile:preflight --platform=ios --require-ready",
+          "argv": [
+            "pnpm",
+            "mobile:preflight",
+            "--platform=ios",
+            "--require-ready"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 2,
+          "signal": null,
+          "startedAt": "2026-11-06T09:18:22.073Z",
+          "endedAt": "2026-11-06T09:18:22.636Z",
+          "log": "artifacts/vnext/n10-01/ios-gate.log",
+          "sha256": "222fec866dd3f784f3675e3aad7314b5fd684d06c2877c645321e4827b8987fc"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T09:18:27.879Z",
+          "endedAt": "2026-11-06T09:18:36.977Z",
+          "log": "artifacts/vnext/n10-01/ios-preparation-lint.log",
+          "sha256": "624e6f33d85aa33142b77c9421b426b1ae1d1fb1060683be3522cc24a015c8ed"
+        },
+        {
+          "command": "pnpm ci:check",
+          "argv": [
+            "pnpm",
+            "ci:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T09:18:29.043Z",
+          "endedAt": "2026-11-06T09:18:30.386Z",
+          "log": "artifacts/vnext/n10-01/ios-preparation-ci.log",
+          "sha256": "013f8afb0f1d75a42dc183568d8dbaf77a287ed9ec1e6d36628f93cc2ca0556d"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "Read-only inventory and explicit owner resource dossier",
+          "outcome": "PASS",
+          "notes": "N10 design/resource supplement only; exit0 inventory is not native readiness."
+        },
+        {
+          "name": "Required iOS readiness fails closed",
+          "outcome": "PASS",
+          "notes": "Actual exit2; ios.ready=false, no activation. All N14 native/archive/device/store acceptance remains NOT_RUN."
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "artifacts/vnext/ios-preparation/checkpoint.py",
+          "sha256": "3d05cbdb4e6c6b63fcae481dfdb125eb132c192a4fe1ad1f0366e4bd8bd7214a",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/ios-preparation/preservation.json",
+          "sha256": "bf6f042062552873a1854937d08094624449d2b0c3306fab24d8f7bff3fa4b12",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/ios-preparation/source.json",
+          "sha256": "9cefbb05dd710e63b4c29931a9e347a54745e019ae98cd19707bd9f0f97fef90",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/ios-preparation/source.patch",
+          "sha256": "15ffa49fd225de97c680aaf26b235fe93dfe132d0e838ec3af38a1a8f787c622",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/command-ios-gate.json",
+          "sha256": "c14b3405888a9c1f215edf1b7e478d5c6cd0e38a309d124ffcc123d5d19b12fb",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/command-ios-preflight.json",
+          "sha256": "334885d7523969c9b7e569942d793fdc2a3eb634dc50e81396b35747d8285fca",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/command-ios-preparation-ci.json",
+          "sha256": "ef94cd9632b8cb580c4bf9c414c29ca861e3b610afe8febf5a15842b716949ae",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/command-ios-preparation-lint.json",
+          "sha256": "d961fc69d17142238cc404c106fbb27b637fb3d1c01abf49f73149ba8b1c0210",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/ios-gate.log",
+          "sha256": "222fec866dd3f784f3675e3aad7314b5fd684d06c2877c645321e4827b8987fc",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/ios-preflight.log",
+          "sha256": "ef10c12d70b6e6606aa60803bf61a05a441c5847083cf1e3407c70bfed1d7cd5",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/ios-preparation-ci.log",
+          "sha256": "013f8afb0f1d75a42dc183568d8dbaf77a287ed9ec1e6d36628f93cc2ca0556d",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n10-01/ios-preparation-lint.log",
+          "sha256": "624e6f33d85aa33142b77c9421b426b1ae1d1fb1060683be3522cc24a015c8ed",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "docs/architecture/IOS-PREPARATION.json",
+          "sha256": "1f1aaf306831504651ca50bacd86b4695d6f07c81a5a1d2fc26532a82f096a73",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/mobile/IOS-PREPARATION.md",
+          "sha256": "e4d869b5bf7487c484f0558f1fe98e069642c8ec80f118dc6fb1c0210ccf64b0",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/mobile/ios-readiness.json",
+          "sha256": "7a847ae9f6953563f21579f80f477014a61ebe8e9d8deb9c992edcfb75a96fe8",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "scripts/mobile-readiness.mjs",
+          "sha256": "24a9e52c9e7581d4497861f83c6354aeb239dfb6e83f4153e94d1a1f98ddcb6e",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N10-01-IOS-PREPARATION.json",
+          "sha256": "c82203cae0c4a3e55b90d150ff3ba62f5dc7191e2d299e3260251ace912d1d0f",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": true,
+      "limitations": [
+        "Resource/inventory preparation supplements active N10-01 only; no N14 task or native gate is VERIFIED.",
+        "No local/remote macOS/Xcode or usable physical-iPhone testing path per explicit owner confirmation. Linux probes do not prove absence of remote infrastructure; that absence is owner-reported.",
+        "Signing/provisioning, Keychain/native auth, archive/IPA, iPhone performance/lifecycle/compatibility, TestFlight and store review are NOT_RUN.",
+        "Android Java/ADB absent on this preflight PATH; SDK/device/build remain unqualified and no device is probed. Missing iOS resources do not block independent web/Android work.",
+        "No installs, device-server startup, secrets, purchases, remote runners, deployments, binary distribution or store submission. No native verification aliases are fabricated.",
+        "N14 conditional/fiveTODO, all distribution flags false, release NOT_REQUESTED, original Android budgets and37prior evidence records remain unchanged."
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

@@ -7,6 +7,7 @@
     "node": "26.9.x"
   },
   "scripts": {
+    "mobile:preflight": "node scripts/mobile-readiness.mjs",
     "observability:check": "pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project observability",
     "test:admin": "pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project admin",
     "release:promote": "node scripts/promotion-proposal.mjs",

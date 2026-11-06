@@ -524,7 +524,8 @@
       "owner": "Codex Mobile lane",
       "branch": "codex/vnext-n10-01-android-spike",
       "evidence_refs": [
-        "n10-01-2026-11-05"
+        "n10-01-2026-11-05",
+        "n10-01-ios-preparation-2026-11-06"
       ],
       "blocker": null,
       "next_action": "Reserve N01-01; implement a read-only per-file inventory with size/hash/classification and static/dynamic consumer mapping. Preserve source, migration, legacy and historical evidence; archive candidates are not deletion authorization."
@@ -655,7 +656,7 @@
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Environment dossier: macOS local/remote/CI provider, supported Xcode, signing path, physical iPhone/testing access, cost/owner"
+      "next_action": "Owner confirmed no Mac/Xcode/iPhone on2026-11-06. Obtain authorized macOS/Xcode build access and usable physical-iPhone path; record actual versions/resources through active N10/N00 evidence before N14 activation. No signing/archive/device/TestFlight result exists."
     },
     "N14-02": {
       "status": "TODO",
