@@ -31744,6 +31744,147 @@
         "Source audit covers9actual files and records proposed client-only floor projection without changing authoritative room geometry,intents,identity,equip,protocol or SQL. New starter part variants are production requirements, not inventory grants or an implemented creator.",
         "Original49evidence records/44SQL/Mxx ledger/old design budget bytes and distributionfalse/releaseNOT_REQUESTED preserved. N10-05 emulator and N06-08 landscape are separate scopes; physical performance, native auth, human usability, owner visual review and N14 Mac/Xcode/iPhone remain gates."
       ]
+    },
+    {
+      "id": "n09-03-queue-ux-qualified-2026-11-06",
+      "taskId": "N09-03",
+      "sourceRevision": "c39c89b8cdaacb2ff4f4b4da529ea5750b11c5f5",
+      "environment": "CachyOS; actual HTTP/signed-session/PostgreSQL44/Next browser UI,synthetic cap/offer/fault fixtures; desktop+Chromium mobile",
+      "executedAt": "2026-11-06T16:23:06.076616+00:00",
+      "commands": [
+        {
+          "command": "pnpm test:admission",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm build",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test:integration",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test:security",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test:client-boundaries",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/game-client/test/queue.test.ts",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test:queue-ux",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm --filter @virtual-city/game-client typecheck",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm exec tsc -p tests/legacy-tsconfig.json",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm --filter @virtual-city/portal-web build",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm typecheck",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test:admission",
+          "exitCode": 0
+        },
+        {
+          "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/admission-ux.test.ts",
+          "exitCode": 1
+        },
+        {
+          "command": "pnpm test:admission",
+          "exitCode": 1
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/game-client/test/queue.test.ts",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/game-client/test/queue.test.ts",
+          "exitCode": 1
+        },
+        {
+          "command": "pnpm test:queue-ux",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test:queue-ux",
+          "exitCode": 1
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 1
+        },
+        {
+          "command": "pnpm typecheck",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm build",
+          "exitCode": 0
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "artifacts/vnext/n09-03/raw-index.json",
+          "sha256": "14af2bb62818195981c76574bb5069748791679dee26881b68447572ac4f7454",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N09-03-QUEUE-UX-CHECKS.json",
+          "sha256": "770878ecc3725a4e9d923e2021f0742e9d1c8d2db86c1fbfd5538f3dc70d09e5",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": true,
+      "limitations": [
+        "Shared waiting UI and real viewer-only HTTP preview are qualified; API remains LOCAL_ADMISSION_UX=0 by default and rejects1in production/versioned release profiles. No production/global admission activation,allocator timer,room/travel gate or cap raise. Hard0/target0/paused defaults unchanged.",
+        "Actual browser fixture uses disposable PostgreSQL,signed sessions and real API commands. Capacity1and ready offers are explicit synthetic DB fixtures; trusted allocator FIFO/races are separately exercised in the actual admission/integration suites. Network loss/lost ACK and late responses are labelled transport faults, not an Internet/staging load result.",
+        "Final12browser executions pin clean trackedc39c89b and the rebuilt portal/client. Backend698integration/225security qualification ran the preceding API source whose apps/platform-api,contracts,world-sdk bytes are identical to29b0eee and finalc39c89b. Only the queue-client lifecycle intersection/test changed afterward; final8controller/88governance/374unit/client build/types/browser checks cover it. No fresh whole backend rerun is invented.",
+        "Focused45admission cases passed before the additional final lifecycle case; current8controller cases and374unit run separately. Initial missing-route red,standard422-vs400 fixture mismatch,lint unused variable,short5second browser fixture expiry and lifecycle hidden-document resurrection red are retained. Fixture now reads canonical offer_ttl_ms rather than changing runtime TTL; no guard/threshold relaxed.",
+        "Screen readers are represented by actual DOM accessibility snapshots/keyboard/status/timer semantics, not a human assistive-technology session. Browser mobile emulation is not native Android/iOS queue authentication. Current mobilePlatform remains offline preview; N10-03 must supply native session/transport and physical queue use remains unqualified.",
+        "No ETA is inferred from rank; server range is null until measured. Local countdown is based on server timestamps and monotonic time,does not grant or authoritatively expire a slot. Background requires visible document plus active platform; only explicit user claim/reconnect/retry can mutate.",
+        "No source/SQL/avatar/asset/authority reset,privacy-export rollout,hosted/staging,image digest promotion,3D runtime,human usability or public/store release. Original50records/44SQL/Mxx/locked Android budgets and distributionfalse preserved. Owner .idea/ and infra/botkeep-ca.pem remain unread/unstaged."
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

@@ -510,12 +510,14 @@
       "next_action": "Complete independently reserved N10-02 in artifacts/vnext/n10-02/checkout: qualify shared Next/browser client and local Vite/Capacitor bundle, preserve browser cookie/Origin/CSRF/safety adapters and collect actual Android build/install evidence before VERIFIED. Keep native auth/gameplay unavailable until N10-03 and keep N14 conditional without Mac/Xcode/iPhone; continue only dependency-ready tasks."
     },
     "N09-03": {
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "owner": "Codex",
       "branch": "codex/vnext-n09-02-postgres",
-      "evidence_refs": [],
+      "evidence_refs": [
+        "n09-03-queue-ux-qualified-2026-11-06"
+      ],
       "blocker": null,
-      "next_action": "Waiting UI rank/ETA range/leave/ready countdown, accessible updates"
+      "next_action": "Reserve N06-11(priority81): extract engine-neutral renderer handle/factory, audit/pin ThreeWebGL2 dependencies, author original rig/fur/room technical slice under locked budgets and implement test:scene3d before claiming PASS. Qualify browser/packaged Android and physical scope honestly. N10-03 native auth still needed for real creator Save; emulator stopped until explicitly reused."
     },
     "N09-04": {
       "status": "TODO",
