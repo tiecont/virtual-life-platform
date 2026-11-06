@@ -498,12 +498,14 @@
       "next_action": "Reserve N09-02(priority101) on the reconciled branch. Audit current room/travel/identity/privacy/worker and migration ledger; reserve additive0044 only after checking next free number. Implement PostgreSQL atomic queue/reservation/claim/release/expiry with actor-derived identity, durable idempotency, bounded checkout/query, owner-failure fail-closed and default-unwired runtime. Prove>=2xcap actual concurrent/duplicate/reconnect/expiry/lost-ack/restart cases and preserve existing behavior before activation. Then continue ready N10/shared-client and the full plan through independent N14 preparation; keep actual staging/macOS/iPhone/store gates unmet."
     },
     "N09-02": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex Runtime lane",
+      "branch": "codex/vnext-n09-02-postgres",
+      "evidence_refs": [
+        "n09-02-2026-11-06"
+      ],
       "blocker": null,
-      "next_action": "Queue tickets, allocation transaction, TTL janitor, idempotent claim/release"
+      "next_action": "Complete independently reserved N10-02 in artifacts/vnext/n10-02/checkout: qualify shared Next/browser client and local Vite/Capacitor bundle, preserve browser cookie/Origin/CSRF/safety adapters and collect actual Android build/install evidence before VERIFIED. Keep native auth/gameplay unavailable until N10-03 and keep N14 conditional without Mac/Xcode/iPhone; continue only dependency-ready tasks."
     },
     "N09-03": {
       "status": "TODO",
@@ -541,12 +543,12 @@
       "next_action": "Reserve N01-01; implement a read-only per-file inventory with size/hash/classification and static/dynamic consumer mapping. Preserve source, migration, legacy and historical evidence; archive candidates are not deletion authorization."
     },
     "N10-02": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
+      "status": "IN_PROGRESS",
+      "owner": "Codex",
+      "branch": "codex/vnext-n10-02-shared-client",
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "game-client/client-sdk/platform interfaces; Next mounts package; Vite+Capacitor shell"
+      "next_action": "Extract browser-only shared room client behind explicit presentation/platform ports, preserve Next adapters, build pinned Vite/Capacitor local assets and qualify browser regression. Record missing Android native toolchain/device and separate iOS gates; no native/distribution PASS from bundle output."
     },
     "N10-03": {
       "status": "TODO",

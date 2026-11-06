@@ -1,3 +1,9 @@
+# N09-02 VERIFIED — 2026-11-06T12:02:49.885855+00:00
+
+N09-02 PostgreSQL preparation VERIFIED atf80fdde9aa984ff54d8bc50639bbffba8f9a9e7f: durable FIFO/expiry/grace, atomic counted reservation/claim/release, canonical durable retry, actor binding and single-owner recovery.33focused/16DB cases,84governance355unit693integration and225security; same-source strict44 API/admin6production scenarios each. Actual backend kills/deferred COMMIT/lost ACK/deletion ordering pass; failed runs retained. First43SQL/41priorrecords and one-owner/default behavior preserved. Admission remains unwired/default0paused; no real capacity/deployment/native claim.
+
+[Actual checks](../audit/N09-02-CHECKS.json). Next: Complete independently reserved N10-02 in artifacts/vnext/n10-02/checkout: qualify shared Next/browser client and local Vite/Capacitor bundle, preserve browser cookie/Origin/CSRF/safety adapters and collect actual Android build/install evidence before VERIFIED. Keep native auth/gameplay unavailable until N10-03 and keep N14 conditional without Mac/Xcode/iPhone; continue only dependency-ready tasks.
+
 # N09-01 VERIFIED — 2026-11-06T10:41:30.141728+00:00
 
 N09-01 contract/reference-model scope VERIFIED: own ticket/offer/lease schemas and disjoint active/grace/reserved occupancy, FIFO/TTL/duplicate tabs, room-full travel reuse, draining/no kicks and deferred hard reduction.16focused cases include1200mixed transition steps;84governance/354unit plus finaltypes/lint/build/architecture/CI and merged parity pass. Paused/draining priority corrected with retained failing assertions. Runtime remains unwired; no SQL/concurrency/capacity/native claim.43SQL/40priorrecords/defaults/unrelated tasks preserved.

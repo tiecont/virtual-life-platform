@@ -1,0 +1,131 @@
+{
+  "taskId": "N09-02",
+  "status": "VERIFIED",
+  "acceptance_met": true,
+  "sourceRevision": "f80fdde9aa984ff54d8bc50639bbffba8f9a9e7f",
+  "qualifiedSource": {
+    "baseRevision": "9c92ad6cca5a35082e277cfd63c0593e4f084d31",
+    "snapshotRevision": "f80fdde9aa984ff54d8bc50639bbffba8f9a9e7f",
+    "initialRevision": "493afa58b2453b8715919a4dab04de902acea0e6",
+    "files": [
+      "apps/admin-web/server/system-observations.unit.test.ts",
+      "apps/platform-api/src/admission/store.ts",
+      "apps/platform-api/src/admission/store.unit.test.ts",
+      "apps/platform-api/src/db/migrations/0044_platform_admission.sql",
+      "apps/platform-api/src/identity/service.ts",
+      "config/schema-compatibility.json",
+      "docs/adr/0127-postgres-admission-under-single-owner.md",
+      "docs/architecture/api-modules.json",
+      "docs/architecture/ownership.json",
+      "docs/operations/ADMISSION-POSTGRES.md",
+      "package.json",
+      "scripts/admin-image-smoke.mjs",
+      "scripts/api-image-smoke.mjs",
+      "tests/integration/admin-proxy.test.ts",
+      "tests/integration/admission.test.ts",
+      "tests/integration/telemetry.test.ts",
+      "tests/legacy-tsconfig.json",
+      "vitest.config.mts"
+    ],
+    "sha256": "3167d998dc19d9a8ea55cef6ae30142af3721cabf1aebb66df2750720807c318",
+    "createdAt": "2026-11-06T11:42:52.901522+00:00"
+  },
+  "environment": {
+    "observedAt": "2026-11-06T11:38:37.247Z",
+    "os": "Linux 7.2.9-2-cachyos x86_64 GNU/Linux",
+    "node": "v26.9.0",
+    "pnpm": "11.28.5",
+    "docker": "29.9.0/29.9.0",
+    "scope": "Disposable local PostgreSQL faults/concurrency, clean source regression and immutable local image qualification; no production migration, runtime queue or mobile/staging release"
+  },
+  "executedAt": "2026-11-06T12:02:49.885855+00:00",
+  "acceptance": {
+    "fifoAndExpiry": "PASS: unique queue sequence, stable duplicate age/TTL, deterministic head, missed offer/expired grace release exactly once and returning users requeue at tail; bounded100row/table janitor",
+    "atomicGrants": "PASS: actual disposable PostgreSQL cap3 with8real guest sessions, concurrent offers and24duplicate claims, multiple service instances, durable fingerprint/version receipts, canonical current-state replay, real deferred-COMMIT rejection and lost actual COMMIT acknowledgement",
+    "failureAndReconnection": "PASS: actual backend termination during reserve/claim/release, rollback/retry, bounded lock/statement/checkout, real owner backend loss/second-owner denial/replacement recovery; no phantom active/consent restoration",
+    "privacyAndBounds": "PASS: session-derived actor, suspended/revoked/foreign account deny, deletion ordering/cascades, own-only DTO, finite count/TTL/rate/retention, active slots retained while draining and hard decrease waits for occupancy",
+    "regression": "PASS: clean-source fullcheck84governance/355unit/693integration and all builds;33focused;225security; same-source strict44 API/admin six scenarios each;43oldSQL/41oldrecords/defaults preserved"
+  },
+  "actualVerification": {
+    "focusedCases": 33,
+    "disposableDatabaseCases": 16,
+    "governance": 84,
+    "unit": 355,
+    "integration": 693,
+    "security": 225,
+    "apiProductionScenarios": 6,
+    "adminProductionScenarios": 6,
+    "images": {
+      "api": {
+        "id": "sha256:532d18805a722e7fd95a74e3919165b20c32d4835d5f7035e38debe925562934",
+        "tag": "vlp-api:source-f80fdde9aa98-9ac1363e",
+        "sourceRevision": "f80fdde9aa984ff54d8bc50639bbffba8f9a9e7f",
+        "user": "node",
+        "workdir": "/app/apps/platform-api",
+        "sizeBytes": 437388137,
+        "identityScope": "Local Docker image ID, not a published registry digest"
+      },
+      "admin": {
+        "id": "sha256:ec31972ca95ee4ee3413a8d16b3f757b0ac48cb91c9d4616559502ce817a4dfc",
+        "tag": "vlp-admin:source-f80fdde9aa98-cf392b87",
+        "sourceRevision": "f80fdde9aa984ff54d8bc50639bbffba8f9a9e7f",
+        "user": "node",
+        "workdir": "/app/apps/admin-web",
+        "sizeBytes": 418408779,
+        "identityScope": "Local Docker image ID, not a published registry digest"
+      }
+    },
+    "preservation": {
+      "result": "PASS",
+      "baseRevision": "9c92ad6cca5a35082e277cfd63c0593e4f084d31",
+      "sourceRevision": "f80fdde9aa984ff54d8bc50639bbffba8f9a9e7f",
+      "matchingSourceFiles": 18,
+      "preservedProtectedFiles": 524,
+      "preservedSQL": 43,
+      "newSQL": 1,
+      "expectedMigrations": 44,
+      "preservedEvidence": 41,
+      "unrelatedTaskException": "N10-02 independently reserved; its code remains in a separate worktree/branch at this audit",
+      "contextsAndOtherTasks": "UNCHANGED",
+      "activation": "NOT_WIRED",
+      "oneOwnerAndSeparateWorker": "PRESERVED"
+    }
+  },
+  "retainedFailures": [
+    {
+      "label": "before",
+      "exitCode": 1,
+      "cause": "New store module absent before implementation; not scenario acceptance."
+    },
+    {
+      "label": "faults",
+      "exitCode": 1,
+      "cause": "29assertions passed but three real terminated allocation backends emitted uncaught client errors. Added owned-client error handling/destruction; rerun passes without uncaught errors."
+    },
+    {
+      "label": "types-expanded",
+      "exitCode": 2,
+      "cause": "Three test-only accesses to position did not narrow the own-state union. Replaced with state/position object assertions; final full types pass."
+    },
+    {
+      "label": "clean-check",
+      "exitCode": 1,
+      "cause": "Formatting removed the explanatory catch comment, triggering no-empty lint. Comment restored; final fullcheck passes."
+    },
+    {
+      "label": "deletion-before",
+      "exitCode": 1,
+      "cause": "Actual identity deletion stayed blocked while an allocator pinned the selected queue row. Removed redundant head FOR UPDATE under the policy lock; receipt FK custody precedes entry update. New assertion and full suite pass."
+    }
+  ],
+  "limitations": [
+    "AdmissionStore remains unwired: no HTTP/socket route, room/travel/lifecycle hook, polling scheduler, native bridge or operator cap change. hard/target default0 and paused; no current gameplay or release behavior is activated.",
+    "Single actual RoomAuthority and its stable lifetime epoch are trusted inputs. Multiple adapters must share that epoch; this is not multi-owner distributed fencing. Recovery may remove obsolete occupied rows only after the previous in-memory room owner ended; identity sessions and waiting tickets remain.",
+    "ACTIVE does not expire by wall clock. Expired rows beyond the bounded janitor batch remain conservatively counted; failed transactions roll cleanup back. A future trusted scheduler must retain these bounds.",
+    "Receipt replay returns current own state, never a stale authorization. Seven-day retention can turn an old enqueue into a fresh WAITING ticket; it cannot resurrect an old ACTIVE lease. Queue ceilings/test caps are not production CCU or authorization to raise capacity.",
+    "Future route/native integration must add and qualify transport Origin/CSRF/native-ticket binding, complete safety/consent checks, privacy-export registration and authoritative room/travel release hooks before enabling admission. Existing account deletion cascades entries/receipts and its lock order is retained.",
+    "Strict44 images were qualified on disposable local schemas. First43SQL unchanged; an old strict43 image is not a qualified rollback on44. No production migration/down-migration, registry publication, staging scrape/load, deployment or store/device result.",
+    "Security225 covers identical runtime consumers initially checked at493afa5; the finalf80fdde change touches only the unwired admission store/new integration test and ADR. Final complete integration and image checks run atf80fdde. Earlier image/source runs are retained historical scope.",
+    "N10-02 is independently reserved in another worktree/branch, outside this source qualification. N04-02/N07-04 remain external; N14 conditional/fiveTODO, no Mac/Xcode/iPhone, all platform distribution false and release NOT_REQUESTED. Raw artifacts private local only."
+  ]
+}

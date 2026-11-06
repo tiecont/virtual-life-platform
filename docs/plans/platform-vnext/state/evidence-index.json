@@ -25924,6 +25924,893 @@
         "Original43SQL, all40prior evidence records, historical151Mxx ledger, one owner/separate worker/defaults and every unrelated task/platform context preserved.",
         "N04-02 and N07-04 remain externally blocked for hosted/App and actual staging scrape. Owner has no Mac/Xcode/iPhone; N14 conditional/fiveTODO, distribution false, release NOT_REQUESTED. Raw artifacts private local, not off-host archived."
       ]
+    },
+    {
+      "id": "n09-02-2026-11-06",
+      "taskId": "N09-02",
+      "sourceRevision": "f80fdde9aa984ff54d8bc50639bbffba8f9a9e7f",
+      "environment": "CachyOS Linux amd64; Node26.9.0/pnpm11.28.5; real disposable PostgreSQL faults/concurrency, clean source regression and immutable local strict44 images",
+      "executedAt": "2026-11-06T12:02:49.885855+00:00",
+      "commands": [
+        {
+          "command": "pnpm test:admission",
+          "argv": [
+            "pnpm",
+            "test:admission"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 1,
+          "signal": null,
+          "startedAt": "2026-11-06T11:23:24.825Z",
+          "endedAt": "2026-11-06T11:23:46.140Z",
+          "log": "artifacts/vnext/n09-02/before.log",
+          "sha256": "d171f422d549a316a587a7d7d4d5d4ab5a4e9a1a248a6365e16699a48f3d2fa9"
+        },
+        {
+          "command": "node artifacts/vnext/n09-02/in-checkout.mjs pnpm check",
+          "argv": [
+            "node",
+            "artifacts/vnext/n09-02/in-checkout.mjs",
+            "pnpm",
+            "check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 1,
+          "signal": null,
+          "startedAt": "2026-11-06T11:39:00.491Z",
+          "endedAt": "2026-11-06T11:41:00.114Z",
+          "log": "artifacts/vnext/n09-02/clean-check.log",
+          "sha256": "aa76d1959a6a3a64d07601c7c09e1324f971588af35cbb40a9a74d99785dd93b"
+        },
+        {
+          "command": "node artifacts/vnext/n09-02/in-checkout.mjs pnpm check",
+          "argv": [
+            "node",
+            "artifacts/vnext/n09-02/in-checkout.mjs",
+            "pnpm",
+            "check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T11:43:00.260Z",
+          "endedAt": "2026-11-06T12:01:57.354Z",
+          "log": "artifacts/vnext/n09-02/clean-final.log",
+          "sha256": "3087915ef45efeb05e21d620664f49240e483e427e8faeea9e31af62605e5621"
+        },
+        {
+          "command": "node artifacts/vnext/n09-02/in-checkout.mjs pnpm install --offline --frozen-lockfile",
+          "argv": [
+            "node",
+            "artifacts/vnext/n09-02/in-checkout.mjs",
+            "pnpm",
+            "install",
+            "--offline",
+            "--frozen-lockfile"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T11:38:37.956Z",
+          "endedAt": "2026-11-06T11:38:40.359Z",
+          "log": "artifacts/vnext/n09-02/clean-install.log",
+          "sha256": "e9bdd02c7c5b6b93153512d60236dbd4d1502f76de8de316336eae5af0b97041"
+        },
+        {
+          "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project admission -t does not pin a queue row",
+          "argv": [
+            "node",
+            "scripts/with-test-db.mjs",
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "admission",
+            "-t",
+            "does not pin a queue row"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 1,
+          "signal": null,
+          "startedAt": "2026-11-06T11:41:46.135Z",
+          "endedAt": "2026-11-06T11:41:59.254Z",
+          "log": "artifacts/vnext/n09-02/deletion-before.log",
+          "sha256": "f5c9d0dfad86a334e459eb17e145969326d4479ee1f3c32b420d7d66a37bc593"
+        },
+        {
+          "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project admission -t does not pin a queue row",
+          "argv": [
+            "node",
+            "scripts/with-test-db.mjs",
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "admission",
+            "-t",
+            "does not pin a queue row"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T11:42:19.223Z",
+          "endedAt": "2026-11-06T11:42:27.455Z",
+          "log": "artifacts/vnext/n09-02/deletion-final.log",
+          "sha256": "33578c65b799bcb64c8bbe882cf6d80f6af77284013936c3813319a3f076e544"
+        },
+        {
+          "command": "pnpm test:admission",
+          "argv": [
+            "pnpm",
+            "test:admission"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T11:35:10.311Z",
+          "endedAt": "2026-11-06T11:35:46.119Z",
+          "log": "artifacts/vnext/n09-02/fault-final.log",
+          "sha256": "208cf949b123dc9af76f3aab128f02b6e3e12dc6fd602136e503df9b77e2d86f"
+        },
+        {
+          "command": "pnpm test:admission",
+          "argv": [
+            "pnpm",
+            "test:admission"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 1,
+          "signal": null,
+          "startedAt": "2026-11-06T11:34:11.700Z",
+          "endedAt": "2026-11-06T11:34:45.384Z",
+          "log": "artifacts/vnext/n09-02/faults.log",
+          "sha256": "874080eb1a0d650be2eba97e0dd98dc5de3b0daf4624d5189ed9da80d3d5db45"
+        },
+        {
+          "command": "pnpm test:admission",
+          "argv": [
+            "pnpm",
+            "test:admission"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T11:36:26.088Z",
+          "endedAt": "2026-11-06T11:37:06.682Z",
+          "log": "artifacts/vnext/n09-02/final-focused.log",
+          "sha256": "5c3459dbb73697e1ee4f80f980217cda1ab20df1a03ce3775f18f2a390cd6448"
+        },
+        {
+          "command": "pnpm image:check --target=admin --source-revision f80fdde9aa984ff54d8bc50639bbffba8f9a9e7f",
+          "argv": [
+            "pnpm",
+            "image:check",
+            "--target=admin",
+            "--source-revision",
+            "f80fdde9aa984ff54d8bc50639bbffba8f9a9e7f"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T11:43:01.425Z",
+          "endedAt": "2026-11-06T11:47:08.500Z",
+          "log": "artifacts/vnext/n09-02/final-images.log",
+          "sha256": "4282c44788283567fb2066a954b0e6d72bc56fa6a6e993d53d74d606b90f3bed"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T11:42:20.347Z",
+          "endedAt": "2026-11-06T11:42:32.035Z",
+          "log": "artifacts/vnext/n09-02/final-lint.log",
+          "sha256": "ea96ceb7bab71f4442a45933c47f5aeca669fd4f2419aa892092e18e24f389cf"
+        },
+        {
+          "command": "pnpm typecheck",
+          "argv": [
+            "pnpm",
+            "typecheck"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T11:36:27.244Z",
+          "endedAt": "2026-11-06T11:37:12.120Z",
+          "log": "artifacts/vnext/n09-02/final-types.log",
+          "sha256": "4d3a7c996846d075a83874d205d63f4fb0bab723f5309c3e762a12f8866496c1"
+        },
+        {
+          "command": "pnpm test:admission",
+          "argv": [
+            "pnpm",
+            "test:admission"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T11:28:40.886Z",
+          "endedAt": "2026-11-06T11:28:55.823Z",
+          "log": "artifacts/vnext/n09-02/first.log",
+          "sha256": "399bb1b673a77284499b256f5ddd95e38236293b64898f167677c0c4efe2d03c"
+        },
+        {
+          "command": "pnpm image:check --target=admin --source-revision 493afa58b2453b8715919a4dab04de902acea0e6",
+          "argv": [
+            "pnpm",
+            "image:check",
+            "--target=admin",
+            "--source-revision",
+            "493afa58b2453b8715919a4dab04de902acea0e6"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T11:39:01.655Z",
+          "endedAt": "2026-11-06T11:42:38.485Z",
+          "log": "artifacts/vnext/n09-02/images.log",
+          "sha256": "cb28ea96f087b482c5f5065a401ac2a978588da04e0f4da126c35b8ecd7eea26"
+        },
+        {
+          "command": "pnpm test:admission",
+          "argv": [
+            "pnpm",
+            "test:admission"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T11:43:02.600Z",
+          "endedAt": "2026-11-06T11:43:55.227Z",
+          "log": "artifacts/vnext/n09-02/immutable-focused.log",
+          "sha256": "7dd43397efd93d0ab0cf08428e4a24f121208b42698b1e2fa3d4acf0fd3b1e90"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T11:34:18.238Z",
+          "endedAt": "2026-11-06T11:34:29.735Z",
+          "log": "artifacts/vnext/n09-02/lint.log",
+          "sha256": "73bab6fa84111251c1a91ab57e7de1a95146c0d6bb4d62583f948c99b8c74493"
+        },
+        {
+          "command": "node artifacts/vnext/n09-02/preservation.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n09-02/preservation.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T11:58:00.206Z",
+          "endedAt": "2026-11-06T11:58:02.575Z",
+          "log": "artifacts/vnext/n09-02/preservation.log",
+          "sha256": "7200a2ccbb52904ee8e5defb91a4498e095e3f7aa0649ead9d802e19b1faa8c3"
+        },
+        {
+          "command": "pnpm test:security",
+          "argv": [
+            "pnpm",
+            "test:security"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T11:39:58.705Z",
+          "endedAt": "2026-11-06T11:45:19.303Z",
+          "log": "artifacts/vnext/n09-02/security.log",
+          "sha256": "af59033888819f83145a18d7ca8321a7547ddbe35c1d31a7582a0602d4f57315"
+        },
+        {
+          "command": "pnpm typecheck",
+          "argv": [
+            "pnpm",
+            "typecheck"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 2,
+          "signal": null,
+          "startedAt": "2026-11-06T11:35:11.473Z",
+          "endedAt": "2026-11-06T11:35:49.986Z",
+          "log": "artifacts/vnext/n09-02/types-expanded.log",
+          "sha256": "61e11538cdcf3cf8e2dc2a3fea929e217cb7bd692d340a683d566643a56f4402"
+        },
+        {
+          "command": "pnpm typecheck",
+          "argv": [
+            "pnpm",
+            "typecheck"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "signal": null,
+          "startedAt": "2026-11-06T11:29:50.405Z",
+          "endedAt": "2026-11-06T11:30:28.897Z",
+          "log": "artifacts/vnext/n09-02/types.log",
+          "sha256": "d12f56075407fb1f8cce6fcfeb332f69da4c63ee4a60735e4759d1cd1e0124ff"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "fifoAndExpiry",
+          "outcome": "PASS",
+          "notes": "PASS: unique queue sequence, stable duplicate age/TTL, deterministic head, missed offer/expired grace release exactly once and returning users requeue at tail; bounded100row/table janitor"
+        },
+        {
+          "name": "atomicGrants",
+          "outcome": "PASS",
+          "notes": "PASS: actual disposable PostgreSQL cap3 with8real guest sessions, concurrent offers and24duplicate claims, multiple service instances, durable fingerprint/version receipts, canonical current-state replay, real deferred-COMMIT rejection and lost actual COMMIT acknowledgement"
+        },
+        {
+          "name": "failureAndReconnection",
+          "outcome": "PASS",
+          "notes": "PASS: actual backend termination during reserve/claim/release, rollback/retry, bounded lock/statement/checkout, real owner backend loss/second-owner denial/replacement recovery; no phantom active/consent restoration"
+        },
+        {
+          "name": "privacyAndBounds",
+          "outcome": "PASS",
+          "notes": "PASS: session-derived actor, suspended/revoked/foreign account deny, deletion ordering/cascades, own-only DTO, finite count/TTL/rate/retention, active slots retained while draining and hard decrease waits for occupancy"
+        },
+        {
+          "name": "regression",
+          "outcome": "PASS",
+          "notes": "PASS: clean-source fullcheck84governance/355unit/693integration and all builds;33focused;225security; same-source strict44 API/admin six scenarios each;43oldSQL/41oldrecords/defaults preserved"
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "artifacts/image-admin-2d977bbe/application-sbom.cdx.json",
+          "sha256": "afbab09e06125969514a0e18755ed96824145f59ea0c87b3a0b0c1d02fb833ad",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/command-1.log",
+          "sha256": "ce48fe8d9b2491ea74abdbf6866e87461e7f7aa7b7ae8760a614305427848353",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/command-10.log",
+          "sha256": "8b5a99045204d0eac440c79c45eaf804c93af7ad407a52855a7955b50ef46e68",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/command-11.log",
+          "sha256": "c9be9fcd8f927c838c805ba03e90da02c5b1aad227681ce28ba61f708b23262e",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/command-12.log",
+          "sha256": "a33325787a5c75dd914e4f6ac9c82f842fec637fa7ceb23aa9af22b1ea568138",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/command-2.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/command-3.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/command-4.log",
+          "sha256": "c50044218a5c55acd793c0e161d1f313a7b5448482a0968286b3b2bb1274828e",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/command-5.log",
+          "sha256": "a44c44671fc69db364a8ec3d46246fc939f52b01662b45089667083778baaeda",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/command-6.log",
+          "sha256": "1f94aada65f973daab4070f71bbfc3949c91353ce200408500927a89ad6e2f3b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/command-7.log",
+          "sha256": "1f94aada65f973daab4070f71bbfc3949c91353ce200408500927a89ad6e2f3b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/command-8.log",
+          "sha256": "1f94aada65f973daab4070f71bbfc3949c91353ce200408500927a89ad6e2f3b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/command-9.log",
+          "sha256": "1f94aada65f973daab4070f71bbfc3949c91353ce200408500927a89ad6e2f3b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/commands.json",
+          "sha256": "a8de3bcea26b9530fcf94083b14ec3996e162198222f375df0a3849ffacdf3df",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/facts.json",
+          "sha256": "2ffbb1963431b080e9691f99160fc2294722d71b9a96fa9bbcb23600e64ff395",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/inspection.json",
+          "sha256": "e5e0bc0f40f0458a89a81cf50d8d6524ae0ce9c941f90dc8bd6eac56f40b135f",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/smoke/admin-desktop.png",
+          "sha256": "6ff665e0ab2e6c37d7659d8dfd9d910777b38149f1e11b46b8186fdce15703c4",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/smoke/admin-mobile.png",
+          "sha256": "2ac96b9c271147561b577ad58e54e14243f68942cced47d17a3e277137bf91f1",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/smoke/result.json",
+          "sha256": "a33325787a5c75dd914e4f6ac9c82f842fec637fa7ceb23aa9af22b1ea568138",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/smoke/system-desktop.png",
+          "sha256": "af7b3ff1d68ed9d1d686b06941a5fad6db680d160b957208aa7a037da6a83c3e",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-admin-2d977bbe/smoke/system-mobile.png",
+          "sha256": "9c75194177a7f7be9a0d91bb083f5942f7bd25db837272c712d69fc661b043d8",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-api-9ac1363e/application-sbom.cdx.json",
+          "sha256": "660fdaeca47f3c1eb0f6c8519df3462a3f77cff31fda565e8ce72cb6edb33a8f",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-api-9ac1363e/command-1.log",
+          "sha256": "ce48fe8d9b2491ea74abdbf6866e87461e7f7aa7b7ae8760a614305427848353",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-api-9ac1363e/command-2.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-api-9ac1363e/command-3.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-api-9ac1363e/command-4.log",
+          "sha256": "ce7802638a3db5ebd737c185d3907622ea59f4c7607181ec518a744e0055c642",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-api-9ac1363e/command-5.log",
+          "sha256": "1b0276e3915dd8be3f59cc18e97ea52f24852e8bd40f08d545e138006aa49c84",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-api-9ac1363e/command-6.log",
+          "sha256": "47043ba704411efe8f9b8dc591736b5dfebc4fe0c3fbced40e70698d7ae384ad",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-api-9ac1363e/command-7.log",
+          "sha256": "af11cceea0db7a44587e2cb5601a2e6fcfa1164fb3b47e7ceb816b2bbe13e8e2",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-api-9ac1363e/commands.json",
+          "sha256": "ca7c267c250abf4294443f3615b634f88d7fb16e7cf00c17b337b41ae8e16e56",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-api-9ac1363e/facts.json",
+          "sha256": "9a6599db57ffe0ec8a4fdd38bbbe383beab4bd95f5c5901a11d9f3d10a76f600",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-api-9ac1363e/inspection.json",
+          "sha256": "34218de6dfe8ef0d878fa4e600fb3c5eb0339fa558bba9db193f0688b776a1e5",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/image-api-9ac1363e/smoke/result.json",
+          "sha256": "d00af1e184cb9e05a81753c9cf4e283b381d50f7788560218a2892a47b3f8ad1",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/add-tests.py",
+          "sha256": "ba647a1b408377f7a9c3ea2ed81294e390b8ef2e9aab83e7b3c1b343a768029c",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/before.log",
+          "sha256": "d171f422d549a316a587a7d7d4d5d4ab5a4e9a1a248a6365e16699a48f3d2fa9",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/checkpoint.py",
+          "sha256": "86826c4001d8eeada51468feec0decc6ad1209303a889eea6a3ec8300d79ed65",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/clean-check.log",
+          "sha256": "aa76d1959a6a3a64d07601c7c09e1324f971588af35cbb40a9a74d99785dd93b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/clean-final.log",
+          "sha256": "3087915ef45efeb05e21d620664f49240e483e427e8faeea9e31af62605e5621",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/clean-install.log",
+          "sha256": "e9bdd02c7c5b6b93153512d60236dbd4d1502f76de8de316336eae5af0b97041",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-before.json",
+          "sha256": "6b734a9fa0d502474118633bbf2571347ea4cab76aadf99dcdf928ecc0b1f734",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-clean-check.json",
+          "sha256": "5aa646d19fece2f0491481c2c96df8479ab9bd7f967bfeaa186d4922fdf671c6",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-clean-final.json",
+          "sha256": "4dbc0770866ea62897bfbb289e764e8c0f1d236f8ccba8aa43308aba09351624",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-clean-install.json",
+          "sha256": "f12739ed883ce012a5e4084c677a265260f0f5a108f810659de6d22b628471b4",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-deletion-before.json",
+          "sha256": "0550b564bc626481c8a90ba479f6438b8ce8726923c731f4583deb04c73464f9",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-deletion-final.json",
+          "sha256": "1eee59adadef78678f5d1626fe5fd736e53053e1a51ec4bca8dae0ff2998eb8b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-fault-final.json",
+          "sha256": "27a23a7e7da4aeb2d78e85fb1c031924abac729619536b2f7aa27068c380a6b0",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-faults.json",
+          "sha256": "4846a255e8f4afa1da7a8a42bc550ead1db08914dbe4a13ff3979a0fae2c9e81",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-final-focused.json",
+          "sha256": "bb853e13482e86bffad4d7fb6572e7b41387e3ec9c1634d0c8df2dbccb9d0b6a",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-final-images.json",
+          "sha256": "1d5c3e4eaa7f2ed88931aef2f95da5e6d0160f9e2e576119069b316010741575",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-final-lint.json",
+          "sha256": "925944b6594a02c7daafa76d414132d5b43fa6104cce2f27a33d45137a8d96b7",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-final-types.json",
+          "sha256": "1c32e0b136bd1d2644c3e217605e7b4c2d13a124d4e9f672522d135b36cf072f",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-first.json",
+          "sha256": "9e5ca8ae8a9284efc7e6af0f334a7ed087e604bffd884cdd0852fd3baa23e49a",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-images.json",
+          "sha256": "91095ff58770f0b77047c821eb2d28147402caf8ff5aa78715aa247b819cc40d",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-immutable-focused.json",
+          "sha256": "0c994fdebd992901b92b6ff8e3c1d6aea9538ca802bdb3326e0bf78b544f0fff",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-lint.json",
+          "sha256": "8f38d26b1c5fa9dcc6708bd1f7fc1254e85f6a6acb1da6f6c8898a898ce65afb",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-preservation.json",
+          "sha256": "28cbb2d5cb03d011a22ffbd65978dda886e2fa3b5f27a70fb6dc478aad9d92bf",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-security.json",
+          "sha256": "7a4e0df32f346cc3bde770e7fe493e736eae5679fcffdf96d4bc341fe2e62041",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-types-expanded.json",
+          "sha256": "727fae8d40a5cab4e7da6125d8b1bf5c6c8c79e36624a93388d262778d1a237b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/command-types.json",
+          "sha256": "8b52841d77eeb6629c46ed526d7b5dce550d52d6f813bc47f62f7b7cb9e3ddfb",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/deletion-before.log",
+          "sha256": "f5c9d0dfad86a334e459eb17e145969326d4479ee1f3c32b420d7d66a37bc593",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/deletion-final.log",
+          "sha256": "33578c65b799bcb64c8bbe882cf6d80f6af77284013936c3813319a3f076e544",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/environment.json",
+          "sha256": "8498fce2f9d802faf157aac485864a73308d38ad55c095bd9577600d2c1f470d",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/fault-final.log",
+          "sha256": "208cf949b123dc9af76f3aab128f02b6e3e12dc6fd602136e503df9b77e2d86f",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/faults.log",
+          "sha256": "874080eb1a0d650be2eba97e0dd98dc5de3b0daf4624d5189ed9da80d3d5db45",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/final-focused.log",
+          "sha256": "5c3459dbb73697e1ee4f80f980217cda1ab20df1a03ce3775f18f2a390cd6448",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/final-images.log",
+          "sha256": "4282c44788283567fb2066a954b0e6d72bc56fa6a6e993d53d74d606b90f3bed",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/final-lint.log",
+          "sha256": "ea96ceb7bab71f4442a45933c47f5aeca669fd4f2419aa892092e18e24f389cf",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/final-types.log",
+          "sha256": "4d3a7c996846d075a83874d205d63f4fb0bab723f5309c3e762a12f8866496c1",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/first.log",
+          "sha256": "399bb1b673a77284499b256f5ddd95e38236293b64898f167677c0c4efe2d03c",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/images.log",
+          "sha256": "cb28ea96f087b482c5f5065a401ac2a978588da04e0f4da126c35b8ecd7eea26",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/immutable-focused.log",
+          "sha256": "7dd43397efd93d0ab0cf08428e4a24f121208b42698b1e2fa3d4acf0fd3b1e90",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/in-checkout.mjs",
+          "sha256": "975c507eeac0938e019eea4e766742c297a767151f05a770f0eab3d1852ca6b9",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/lint.log",
+          "sha256": "73bab6fa84111251c1a91ab57e7de1a95146c0d6bb4d62583f948c99b8c74493",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/prepare.mjs",
+          "sha256": "5b570368d0ebf9efeec65a383f77ad11a6c17c46558f4ba29e7b515592da9a4f",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/preservation.json",
+          "sha256": "4c3ae7c23093c5fd54572b743488117b55c610846e8c1e6c6b1f778a63868b3b",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/preservation.log",
+          "sha256": "7200a2ccbb52904ee8e5defb91a4498e095e3f7aa0649ead9d802e19b1faa8c3",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/preservation.mjs",
+          "sha256": "3cc50b6f45606b68d83314f393fa398705fef0f83b43213449df7c317039cea0",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/security.log",
+          "sha256": "af59033888819f83145a18d7ca8321a7547ddbe35c1d31a7582a0602d4f57315",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/source-before-deletion.json",
+          "sha256": "d4bca0a56108388e485141d5c40b96370d5fb0496e9272cfc13f81e077d947b1",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/source-before-deletion.patch",
+          "sha256": "f729e73f54dcd448f3f6b22cc8f9070de1fea1649677fe6a7baa289f82108d67",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/source.json",
+          "sha256": "bde9f71435a8c16980c68867803951453c089f9f738675ddd00807ca9b3fc515",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/source.patch",
+          "sha256": "3167d998dc19d9a8ea55cef6ae30142af3721cabf1aebb66df2750720807c318",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/types-expanded.log",
+          "sha256": "61e11538cdcf3cf8e2dc2a3fea929e217cb7bd692d340a683d566643a56f4402",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "artifacts/vnext/n09-02/types.log",
+          "sha256": "d12f56075407fb1f8cce6fcfeb332f69da4c63ee4a60735e4759d1cd1e0124ff",
+          "access": "private",
+          "retention": "Local until owner cleanup; not off-host archive"
+        },
+        {
+          "ref": "docs/adr/0127-postgres-admission-under-single-owner.md",
+          "sha256": "714abf77a4ba0f3b894fc3a73dbaddb3f83423c12af4167b065f33b42cb20c4c",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/architecture/N09-02-POSTGRES-ADMISSION.json",
+          "sha256": "a6e41882dfa345ef54d2d97836d172487144748d5b9dbd8d8ef986df44718827",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/operations/ADMISSION-POSTGRES.md",
+          "sha256": "e78437c7215857c2968436867105dcad1571417f3f8faa495286f07700932af6",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N09-02-CHECKS.json",
+          "sha256": "f81c63487180bf2deab2c6f76030bd9b4377a3d985be5ac9331d7283e96566d6",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": true,
+      "limitations": [
+        "AdmissionStore remains unwired: no HTTP/socket route, room/travel/lifecycle hook, polling scheduler, native bridge or operator cap change. hard/target default0 and paused; no current gameplay or release behavior is activated.",
+        "Single actual RoomAuthority and its stable lifetime epoch are trusted inputs. Multiple adapters must share that epoch; this is not multi-owner distributed fencing. Recovery may remove obsolete occupied rows only after the previous in-memory room owner ended; identity sessions and waiting tickets remain.",
+        "ACTIVE does not expire by wall clock. Expired rows beyond the bounded janitor batch remain conservatively counted; failed transactions roll cleanup back. A future trusted scheduler must retain these bounds.",
+        "Receipt replay returns current own state, never a stale authorization. Seven-day retention can turn an old enqueue into a fresh WAITING ticket; it cannot resurrect an old ACTIVE lease. Queue ceilings/test caps are not production CCU or authorization to raise capacity.",
+        "Future route/native integration must add and qualify transport Origin/CSRF/native-ticket binding, complete safety/consent checks, privacy-export registration and authoritative room/travel release hooks before enabling admission. Existing account deletion cascades entries/receipts and its lock order is retained.",
+        "Strict44 images were qualified on disposable local schemas. First43SQL unchanged; an old strict43 image is not a qualified rollback on44. No production migration/down-migration, registry publication, staging scrape/load, deployment or store/device result.",
+        "Security225 covers identical runtime consumers initially checked at493afa5; the finalf80fdde change touches only the unwired admission store/new integration test and ADR. Final complete integration and image checks run atf80fdde. Earlier image/source runs are retained historical scope.",
+        "N10-02 is independently reserved in another worktree/branch, outside this source qualification. N04-02/N07-04 remain external; N14 conditional/fiveTODO, no Mac/Xcode/iPhone, all platform distribution false and release NOT_REQUESTED. Raw artifacts private local only."
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."
