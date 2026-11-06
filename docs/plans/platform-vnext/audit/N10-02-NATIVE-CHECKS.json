@@ -1,0 +1,2754 @@
+{
+  "taskId": "N10-02",
+  "sourceRevision": "a8cfc0d129ab919198c18061de20eeffb3363519",
+  "executedAt": "2026-11-06T13:31:49.290112+00:00",
+  "environment": {
+    "os": "Linux-7.2.9-2-cachyos-x86_64-with-glibc2.44",
+    "node": "v26.9.0",
+    "pnpm": "11.28.5",
+    "device": {
+      "model": "23129RAA4G",
+      "android": "15",
+      "api": "35",
+      "webview": "com.google.android.webview 156.0.8078.47"
+    },
+    "toolchain": "JDK21.0.13+9, SDK36rev2/build-tools36.0.0,Gradle8.14.3/AGP8.13.0,Capacitor8.6.0; pins in docs/mobile/ANDROID-TOOLCHAIN.json"
+  },
+  "commands": [
+    {
+      "command": "python3 artifacts/vnext/n10-02/android-native/inspect-apk.py",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n10-02/android-native/inspect-apk.py"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T12:59:21.233Z",
+      "endedAt": "2026-11-06T12:59:21.744Z",
+      "log": "artifacts/vnext/n10-02/native-apk-inspect.log",
+      "sha256": "6e310931a0f9968a959908ebabf5e730d608922feda4019afe5791379f9e8f0d"
+    },
+    {
+      "command": "pnpm test:client-boundaries",
+      "argv": [
+        "pnpm",
+        "test:client-boundaries"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:21:19.445Z",
+      "endedAt": "2026-11-06T13:21:20.812Z",
+      "log": "artifacts/vnext/n10-02/native-backfix-boundaries.log",
+      "sha256": "f8d327b750d1dae8d625b9b55cb92490c12a9d8ce53364f5053a3fabb4ec8ec6"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm mobile:android:build",
+      "argv": [
+        "node",
+        "artifacts/vnext/n10-02/android-native/run.mjs",
+        "pnpm",
+        "mobile:android:build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:21:06.799Z",
+      "endedAt": "2026-11-06T13:21:53.717Z",
+      "log": "artifacts/vnext/n10-02/native-backfix-build.log",
+      "sha256": "e1361e9e3fe5aafee57869ed44800351403f5a5aaa39418a869201b5bd2c8a4e"
+    },
+    {
+      "command": "pnpm mobile:bundle:smoke",
+      "argv": [
+        "pnpm",
+        "mobile:bundle:smoke"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:22:17.564Z",
+      "endedAt": "2026-11-06T13:22:22.791Z",
+      "log": "artifacts/vnext/n10-02/native-backfix-bundle.log",
+      "sha256": "92d0d1dd57dcb21ec1383541ed9d317a7ef1ed8bc100985c7a9c8c3f4d4be4e8"
+    },
+    {
+      "command": "pnpm ci:check",
+      "argv": [
+        "pnpm",
+        "ci:check"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:20:43.171Z",
+      "endedAt": "2026-11-06T13:20:45.556Z",
+      "log": "artifacts/vnext/n10-02/native-backfix-ci.log",
+      "sha256": "0f0cbe0110c74122b07fd61c416a8fe6ca43453606ab9a7f94ad5214363992b4"
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/android-native/qualify-backfix.py",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n10-02/android-native/qualify-backfix.py"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:22:17.563Z",
+      "endedAt": "2026-11-06T13:22:27.991Z",
+      "log": "artifacts/vnext/n10-02/native-backfix-install.log",
+      "sha256": "846e3180004874f89951d037dec9db8155b0b0ecba565a9bece1b66f24bc9f90"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:20:34.691Z",
+      "endedAt": "2026-11-06T13:20:49.055Z",
+      "log": "artifacts/vnext/n10-02/native-backfix-lint.log",
+      "sha256": "b5f0464289ac9ab113d9a764abbc7821d91a49f4213749f52660270bf71379c0"
+    },
+    {
+      "command": "env ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb pnpm mobile:preview:smoke",
+      "argv": [
+        "env",
+        "ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb",
+        "pnpm",
+        "mobile:preview:smoke"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T13:23:34.778Z",
+      "endedAt": "2026-11-06T13:23:41.735Z",
+      "log": "artifacts/vnext/n10-02/native-backfix-phone-observed.log",
+      "sha256": "37081095eb54664575165f314ee574804add9d78c2e8ce8d988e2cc44232baf3"
+    },
+    {
+      "command": "env ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb pnpm mobile:preview:smoke",
+      "argv": [
+        "env",
+        "ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb",
+        "pnpm",
+        "mobile:preview:smoke"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T13:22:47.752Z",
+      "endedAt": "2026-11-06T13:22:52.638Z",
+      "log": "artifacts/vnext/n10-02/native-backfix-phone.log",
+      "sha256": "9b8fb36c7d39eeb4fb3bb53f0811c5be27d327f0354f91e5c67b6023918f8836"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/mobile typecheck",
+      "argv": [
+        "pnpm",
+        "--filter",
+        "@virtual-city/mobile",
+        "typecheck"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:20:43.170Z",
+      "endedAt": "2026-11-06T13:20:46.306Z",
+      "log": "artifacts/vnext/n10-02/native-backfix-types.log",
+      "sha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm mobile:android:build",
+      "argv": [
+        "node",
+        "artifacts/vnext/n10-02/android-native/run.mjs",
+        "pnpm",
+        "mobile:android:build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T12:55:07.536Z",
+      "endedAt": "2026-11-06T12:58:22.436Z",
+      "log": "artifacts/vnext/n10-02/native-build-ready.log",
+      "sha256": "ba5691be4f7fe399eec5f99829817bf1ec7b647e9cab20e34babbaa101f83103"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/in-android-build.mjs",
+      "argv": [
+        "node",
+        "artifacts/vnext/n10-02/in-android-build.mjs"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T12:11:29.570Z",
+      "endedAt": "2026-11-06T12:11:29.636Z",
+      "log": "artifacts/vnext/n10-02/native-build.log",
+      "sha256": "d3809c14bf8d7ab053fc8d7a1974e059ab2da18122622ddd65e8da23415577a4"
+    },
+    {
+      "command": "pnpm ci:check",
+      "argv": [
+        "pnpm",
+        "ci:check"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T12:56:28.685Z",
+      "endedAt": "2026-11-06T12:56:33.873Z",
+      "log": "artifacts/vnext/n10-02/native-cli-ci.log",
+      "sha256": "0f0cbe0110c74122b07fd61c416a8fe6ca43453606ab9a7f94ad5214363992b4"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T12:56:28.688Z",
+      "endedAt": "2026-11-06T12:56:54.460Z",
+      "log": "artifacts/vnext/n10-02/native-cli-lint.log",
+      "sha256": "b5f0464289ac9ab113d9a764abbc7821d91a49f4213749f52660270bf71379c0"
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/android-native/extract.py",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n10-02/android-native/extract.py"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T12:52:33.820Z",
+      "endedAt": "2026-11-06T12:52:35.178Z",
+      "log": "artifacts/vnext/n10-02/native-extract.log",
+      "sha256": "e822c0d024e076d1e880905184719a7d4a63a315b31f35f99d92a6edfc0fa1e9"
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/android-native/probe-input.py",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n10-02/android-native/probe-input.py"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:28:57.248Z",
+      "endedAt": "2026-11-06T13:28:59.853Z",
+      "log": "artifacts/vnext/n10-02/native-input-probe.log",
+      "sha256": "e11197c807b3c2395886fca5a164af87eb94e56eb98ccb01f8a0a81e5372df8b"
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/android-native/download.py jdk21.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jdk_x64_linux_hotspot_21.0.13_9.tar.gz d7f5d5cf865a2902b70ff549b97586a7d3f234e016f041ab447ea740c7d66d1c",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n10-02/android-native/download.py",
+        "jdk21.tar.gz",
+        "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jdk_x64_linux_hotspot_21.0.13_9.tar.gz",
+        "d7f5d5cf865a2902b70ff549b97586a7d3f234e016f041ab447ea740c7d66d1c"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T12:51:58.180Z",
+      "endedAt": "2026-11-06T12:52:06.508Z",
+      "log": "artifacts/vnext/n10-02/native-jdk-download.log",
+      "sha256": "7c6e801cbebc10ae35fe1db5e729c97d6f2da88f761d102361cc0b993136d086"
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/android-native/lifecycle-focus.py",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n10-02/android-native/lifecycle-focus.py"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:31:42.212Z",
+      "endedAt": "2026-11-06T13:31:43.276Z",
+      "log": "artifacts/vnext/n10-02/native-lifecycle-focus.log",
+      "sha256": "7558b63318b71f817a29f14c71148522d7b2b31f97cbb840fa35ef30a8fd7b7b"
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/android-native/phone-capture-observed.py first-screen",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n10-02/android-native/phone-capture-observed.py",
+        "first-screen"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:04:34.025Z",
+      "endedAt": "2026-11-06T13:04:37.138Z",
+      "log": "artifacts/vnext/n10-02/native-phone-capture-observed.log",
+      "sha256": "adc873e67fc1f41a7e033f0fadea3384da2cedb1253cef6f422781673eb0f718"
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/android-native/phone-capture-final.py first-screen",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n10-02/android-native/phone-capture-final.py",
+        "first-screen"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T13:02:48.383Z",
+      "endedAt": "2026-11-06T13:02:50.587Z",
+      "log": "artifacts/vnext/n10-02/native-phone-first-screen.log",
+      "sha256": "073423693daa1e89989423a0deaa93b6a00178d35ec3b4193897614149202daa"
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/android-native/focus.py",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n10-02/android-native/focus.py"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:02:35.300Z",
+      "endedAt": "2026-11-06T13:02:35.583Z",
+      "log": "artifacts/vnext/n10-02/native-phone-focus.log",
+      "sha256": "3a57d2a7cf2fb9bf2ce898b3eba2393f04c63b6987bfc109c3c6f8b4ba2a5818"
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/android-native/phone-capture.py first-screen",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n10-02/android-native/phone-capture.py",
+        "first-screen"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T13:01:49.646Z",
+      "endedAt": "2026-11-06T13:01:50.959Z",
+      "log": "artifacts/vnext/n10-02/native-phone-initial-screen.log",
+      "sha256": "f009fc61e716737cb755876179ecd51ead46d58b0aa45eb8ace6ef825eba36bc"
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/android-native/install-phone-final.py",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n10-02/android-native/install-phone-final.py"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:00:28.365Z",
+      "endedAt": "2026-11-06T13:00:41.755Z",
+      "log": "artifacts/vnext/n10-02/native-phone-install-final.log",
+      "sha256": "06c21b9e464c0194a9d2eba626c5b1c7c9ef6b0e08e1b77712d165ba0461f7e7"
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/android-native/install-phone.py",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n10-02/android-native/install-phone.py"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T12:59:52.052Z",
+      "endedAt": "2026-11-06T12:59:52.295Z",
+      "log": "artifacts/vnext/n10-02/native-phone-install.log",
+      "sha256": "e1ee18844e3c8a884804799bde28c14c34948db313ba55c20d02d33bb1b6a798"
+    },
+    {
+      "command": "env ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb pnpm mobile:preview:smoke",
+      "argv": [
+        "env",
+        "ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb",
+        "pnpm",
+        "mobile:preview:smoke"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T13:08:03.364Z",
+      "endedAt": "2026-11-06T13:08:16.407Z",
+      "log": "artifacts/vnext/n10-02/native-preview-label-final.log",
+      "sha256": "d9a495e6ae02675539eb669b7caac1fbbad40309e6440c4d8c5d00ade93b7fec"
+    },
+    {
+      "command": "env ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb pnpm mobile:preview:smoke",
+      "argv": [
+        "env",
+        "ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb",
+        "pnpm",
+        "mobile:preview:smoke"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T13:06:59.862Z",
+      "endedAt": "2026-11-06T13:07:03.801Z",
+      "log": "artifacts/vnext/n10-02/native-preview-smoke.log",
+      "sha256": "4963758b83c0c87df6f2f800365a961510b01a34fd4ddc39cb9ece854ed657dd"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm mobile:android:build",
+      "argv": [
+        "node",
+        "artifacts/vnext/n10-02/android-native/run.mjs",
+        "pnpm",
+        "mobile:android:build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:25:03.161Z",
+      "endedAt": "2026-11-06T13:25:40.635Z",
+      "log": "artifacts/vnext/n10-02/native-ready-build.log",
+      "sha256": "2942ed66c434e0fcbe972b2c398b0c056261187aa6800f6f974692f1b95b18a3"
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/android-native/qualify-ready.py",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n10-02/android-native/qualify-ready.py"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:25:46.721Z",
+      "endedAt": "2026-11-06T13:25:55.843Z",
+      "log": "artifacts/vnext/n10-02/native-ready-install.log",
+      "sha256": "a8ba46530d358a3c11dfde98e71fe13c7ab6d35ed16be0d9aa8922a714298fc9"
+    },
+    {
+      "command": "env ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb pnpm mobile:preview:smoke",
+      "argv": [
+        "env",
+        "ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb",
+        "pnpm",
+        "mobile:preview:smoke"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T13:26:12.111Z",
+      "endedAt": "2026-11-06T13:26:35.117Z",
+      "log": "artifacts/vnext/n10-02/native-ready-phone.log",
+      "sha256": "d4b943e088f9b2d429a77d90a5bcf7525ea64ef48349d6d6446454412d62c98b"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs sdk --channel=0 platforms;android-36 build-tools;36.0.0 platform-tools",
+      "argv": [
+        "node",
+        "artifacts/vnext/n10-02/android-native/run.mjs",
+        "sdk",
+        "--channel=0",
+        "platforms;android-36",
+        "build-tools;36.0.0",
+        "platform-tools"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T12:53:14.096Z",
+      "endedAt": "2026-11-06T12:53:26.470Z",
+      "log": "artifacts/vnext/n10-02/native-sdk-install.log",
+      "sha256": "56512f4c5a7a222a9a2dc58bda79f1436eeac52b000f9fb2c1750a160c0f4dc5"
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/android-native/download.py commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-15859902_latest.zip 4e4c464f145a7512b57d088ac6c278c03c9eea610886b35a5e0804e74eedf583",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n10-02/android-native/download.py",
+        "commandlinetools.zip",
+        "https://dl.google.com/android/repository/commandlinetools-linux-15859902_latest.zip",
+        "4e4c464f145a7512b57d088ac6c278c03c9eea610886b35a5e0804e74eedf583"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T12:52:07.823Z",
+      "endedAt": "2026-11-06T12:52:14.190Z",
+      "log": "artifacts/vnext/n10-02/native-sdktools-download.log",
+      "sha256": "9bc4aad09c4eb8d65da62c223434d5f445a24fd4cc603128f5bb804303fdb9b0"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/in-android.mjs",
+      "argv": [
+        "node",
+        "artifacts/vnext/n10-02/in-android.mjs"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-06T11:52:31.130Z",
+      "endedAt": "2026-11-06T11:52:31.178Z",
+      "log": "artifacts/vnext/n10-02/native-toolchain.log",
+      "sha256": "d3809c14bf8d7ab053fc8d7a1974e059ab2da18122622ddd65e8da23415577a4"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm mobile:android:build",
+      "argv": [
+        "node",
+        "artifacts/vnext/n10-02/android-native/run.mjs",
+        "pnpm",
+        "mobile:android:build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:29:41.307Z",
+      "endedAt": "2026-11-06T13:30:21.795Z",
+      "log": "artifacts/vnext/n10-02/native-touch-build.log",
+      "sha256": "db58fea1309ade43956d2d18a7e0b9750581d7e76264d6fd1d399f475e156ddf"
+    },
+    {
+      "command": "python3 artifacts/vnext/n10-02/android-native/qualify-touch.py",
+      "argv": [
+        "python3",
+        "artifacts/vnext/n10-02/android-native/qualify-touch.py"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:30:38.693Z",
+      "endedAt": "2026-11-06T13:30:47.389Z",
+      "log": "artifacts/vnext/n10-02/native-touch-install.log",
+      "sha256": "783343bfa4bf0503642d85f24b559a65808a6e85f968a41f7dda1b735f5adf84"
+    },
+    {
+      "command": "env ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb pnpm mobile:preview:smoke",
+      "argv": [
+        "env",
+        "ADB_PATH=/home/tiecont/Projects/virtual-city/artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb",
+        "pnpm",
+        "mobile:preview:smoke"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T13:30:52.045Z",
+      "endedAt": "2026-11-06T13:31:23.528Z",
+      "log": "artifacts/vnext/n10-02/native-touch-phone.log",
+      "sha256": "d06382d4034ee5b4f66d9bb6c383b37b281e14a98270e617a2848fa18bfddf68"
+    }
+  ],
+  "apk": {
+    "apkSHA256": "7186d3f3deefb66879bfcbcb4f6d4e2d4d575c39f3c544d2051d1ba66f1a6c2c",
+    "apkBytes": 5090986,
+    "targetSDK": 36,
+    "signatureVerified": true,
+    "packagedLocalFilesMatched": 17,
+    "remoteServerURL": false,
+    "mixedContent": false
+  },
+  "phoneScenarios": [
+    {
+      "name": "local canvas and logged-out authority",
+      "outcome": "PASS"
+    },
+    {
+      "name": "actual local navigation and return",
+      "outcome": "PASS"
+    },
+    {
+      "name": "Android back bridge",
+      "outcome": "PASS"
+    },
+    {
+      "name": "basic native background/foreground preview",
+      "outcome": "PASS"
+    },
+    {
+      "name": "own preview process restart",
+      "outcome": "PASS"
+    }
+  ],
+  "captureAttempts": [
+    {
+      "label": "initial",
+      "attempt": 0,
+      "expectedContentReady": false
+    },
+    {
+      "label": "initial",
+      "attempt": 1,
+      "expectedContentReady": true
+    },
+    {
+      "label": "identity-fallback",
+      "attempt": 0,
+      "expectedContentReady": true
+    },
+    {
+      "label": "navigation-return",
+      "attempt": 0,
+      "expectedContentReady": true
+    },
+    {
+      "label": "native-back",
+      "attempt": 0,
+      "expectedContentReady": true
+    },
+    {
+      "label": "foreground-return",
+      "attempt": 0,
+      "expectedContentReady": true
+    },
+    {
+      "label": "cold-restart",
+      "attempt": 0,
+      "expectedContentReady": false
+    },
+    {
+      "label": "cold-restart",
+      "attempt": 1,
+      "expectedContentReady": true
+    }
+  ],
+  "priorSharedSourceUnchanged": [
+    "packages/game-client",
+    "packages/client-sdk",
+    "packages/pixi-scene",
+    "apps/portal-web"
+  ],
+  "priorEvidenceRefs": [
+    "n10-02-preparation-2026-11-06",
+    "n10-02-usb-connected-2026-11-06"
+  ],
+  "acceptance": [
+    {
+      "requirement": "Shared packages exclude Next/Node/server environment dependencies",
+      "outcome": "PASS",
+      "actual": "Fresh test:client-boundaries; prior shared/Next source remains unchanged."
+    },
+    {
+      "requirement": "Local assets/index, lifecycle/navigation and safe fallback",
+      "outcome": "PASS",
+      "actual": "Gradle DEBUG build; all17local bundle files equal APK; signature/SDK36/no remote URL/mixed-content inspection; exact installed APK hash and5physical preview scenarios pass."
+    },
+    {
+      "requirement": "No new game-web deployment and existing web behavior preserved",
+      "outcome": "PASS",
+      "actual": "Shared/Next source byte-identical to prior118browser/6TLS-scenario qualification; fresh mobile bundle3cases pass. No deployment change."
+    }
+  ],
+  "acceptance_met": true,
+  "preservation": {
+    "priorEvidenceRecords": 44,
+    "sqlMigrations": 44,
+    "oldTaskIdsAndNewAnimalTasksPreserved": true,
+    "androidSpikeBudgetsUnchanged": true
+  },
+  "artifacts": [
+    {
+      "ref": "artifacts/mobile-bundle-8164b586/diagnostic-1280.png",
+      "sha256": "354a8c27508eb6f2a5ee9fa67ffecb6defef42713a2e492126207d7f42b4d308",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "artifacts/mobile-bundle-8164b586/diagnostic-360.png",
+      "sha256": "b2558792ba10185ca7cd34683e5e0b0416542cbd89f2e36d1c4a603ed86e6057",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "artifacts/mobile-bundle-8164b586/facts.json",
+      "sha256": "a6ebee4d8eb1e8e79efaab6d123910139a226434781f6a8ebeb838e90b73ae44",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "artifacts/mobile-bundle-8164b586/preview-1280.png",
+      "sha256": "354a8c27508eb6f2a5ee9fa67ffecb6defef42713a2e492126207d7f42b4d308",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "artifacts/mobile-bundle-8164b586/preview-360.png",
+      "sha256": "b2558792ba10185ca7cd34683e5e0b0416542cbd89f2e36d1c4a603ed86e6057",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "artifacts/mobile-android-build-53874b2c/app-debug.apk",
+      "sha256": "0618588159d21b402f9f23fff71b7b1a4225f66b925d3fb0b78280f4785d5afc",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-android-build-53874b2c/facts.json",
+      "sha256": "4cb954ece0c325354ca43d45ec81a111e96a44214f0882d90a3a3d93cf9daf1c",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-android-build-646b5edd/app-debug.apk",
+      "sha256": "7186d3f3deefb66879bfcbcb4f6d4e2d4d575c39f3c544d2051d1ba66f1a6c2c",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-android-build-646b5edd/facts.json",
+      "sha256": "4f52bc708a0032f9a3610cdd617ffb148087bde4026047f8ff05fc39aa2d71f0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-android-build-85979d16/app-debug.apk",
+      "sha256": "7186d3f3deefb66879bfcbcb4f6d4e2d4d575c39f3c544d2051d1ba66f1a6c2c",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-android-build-85979d16/facts.json",
+      "sha256": "3fb8e50670bee40dfe60b3f4ec0840318234e522c6d11e100424f2d6327d7a3d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-android-build-f7af2bdd/app-debug.apk",
+      "sha256": "7186d3f3deefb66879bfcbcb4f6d4e2d4d575c39f3c544d2051d1ba66f1a6c2c",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-android-build-f7af2bdd/facts.json",
+      "sha256": "8f4972a9c303f4ac19e582941c60b0d84763f75e5296b074a7e997cb6c741ff2",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/0-own-package.log",
+      "sha256": "7c26ea059da61e8227d7f71ae7179b676f9344d5a4c3ab250eca3e323a79d88d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/1-installed-apk-hash.log",
+      "sha256": "0c52bff2bdcfdc52a72a6a5b1702a9f6614f9c2dbf1aef79744218cbb0c0af60",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/10-read-initial.log",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/11-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/12-screen-initial.log",
+      "sha256": "f3c091f96987d9b528933fc4d7eb785422fa2ce004beffd794c3bec2ba8e1a3e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/13-foreground.log",
+      "sha256": "2ec27572ef58b8e671a0290db12f89bb99cd5f29de32d3e017fb740c4a686cd8",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/14-tap-own-Identity.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/15-foreground.log",
+      "sha256": "b3e52184eb530edba0716b8b887946c316d8067fb00796804f76caf2dc271ba0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/16-dump-identity-fallback.log",
+      "sha256": "3cbc0548fbde699651939c52f8c45e05fea90924b352f93bb1ddb36919b1e49b",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/17-read-identity-fallback.log",
+      "sha256": "78083d5af7e2aabe4a84b3690d4f0750bec27596a26fd30b158e555b4e75e440",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/18-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/19-screen-identity-fallback.log",
+      "sha256": "526f5f7f3dd2b5f3ecec769714c68e00e66fa81de3a8b0d72f7fc2d2e050f9c0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/2-initial-stop-own-preview.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/20-foreground.log",
+      "sha256": "b375e2c7c55b7f48db011a93429012a98c888c644ffc80bcdabd7e03c7582a11",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/21-tap-own-Return-to-preview.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/22-foreground.log",
+      "sha256": "89409a9ed94faaa5b72ab1f430bad2c78f141c1819c031c960ead36bc95ef15d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/23-dump-navigation-return.log",
+      "sha256": "d99e4d65cba3303e671daaba383db103def697f4e407ea4218eb0827ea003422",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/24-read-navigation-return.log",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/25-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/26-screen-navigation-return.log",
+      "sha256": "f3c091f96987d9b528933fc4d7eb785422fa2ce004beffd794c3bec2ba8e1a3e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/27-foreground.log",
+      "sha256": "82cfaec2f7a2432f5f1f1526846f3805e7964bb088556e9637d7b5f84ea51fd7",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/28-tap-own-Identity.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/29-native-back.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/3-launch.log",
+      "sha256": "1a091146d03b10ca743af6fac42405747f04aba8664b4c10a88e9f6c452f2a5f",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/30-foreground.log",
+      "sha256": "93795dbdcf87b889fbd463982127b42972e0a09a00fe360bc9d9f5fc2b166b97",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/31-dump-native-back.log",
+      "sha256": "3d19389596aaba54ef8823c721a370999a2e044449e1b17d36c612baa015092a",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/32-read-native-back.log",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/33-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/34-screen-native-back.log",
+      "sha256": "f3c091f96987d9b528933fc4d7eb785422fa2ce004beffd794c3bec2ba8e1a3e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/35-foreground.log",
+      "sha256": "798810db182ec693660f5d13765ddc1b301b8c6d837242faea0b5e4fb382ba44",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/36-background-home.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/37-foreground-return.log",
+      "sha256": "bf697c1e07a831d8aca8fcd86488de4be7b92f67b8e44541e16b8da7297e9044",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/38-foreground.log",
+      "sha256": "07500120a03aceea5762e19cf7c0114898f1689fadc73d42e8ad0dcf5f6ebd23",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/39-dump-foreground-return.log",
+      "sha256": "ba14751eb851726b68c1bdfaf81d839d5eebea74152a889cb21c493fb6bd4dd2",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/4-foreground.log",
+      "sha256": "7898c70528ce7d70a557d0ee5a5f5aec327e0824b79ad6e36e66a0821d14b956",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/40-read-foreground-return.log",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/41-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/42-screen-foreground-return.log",
+      "sha256": "f3c091f96987d9b528933fc4d7eb785422fa2ce004beffd794c3bec2ba8e1a3e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/43-stop-own-preview.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/44-cold-restart.log",
+      "sha256": "e05680e0ed9515e1ea55c3471f850a14e3ff11b8d6a106aad569016a452d9e50",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/45-foreground.log",
+      "sha256": "3324426140376a7fe227b89e8b6081e518958469fea8474d454ca45ffdd15eac",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/46-dump-cold-restart.log",
+      "sha256": "050477bee693f1e3c2bacc7f07abe28d45fa9f843d8cb0d9b6815ad77f188905",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/47-read-cold-restart.log",
+      "sha256": "c3da2c40b3bc16b8b1b1e9b8d97c8ea5ed64d15b7563305904742c7c390d61c0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/48-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/49-foreground.log",
+      "sha256": "3f7da16078edd0ea6e9303bf87e1fee334fb2621a2603f67955ddb8feef0dffb",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/5-dump-initial.log",
+      "sha256": "1f9cd8fed9d7dc95ed78651f9b346996266326a1b5d9172e229954bcd27c99b2",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/50-dump-cold-restart.log",
+      "sha256": "daa918c386319b8d7b215d64c3de1e1883025420651d98259ed72b0e4550cb0b",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/51-read-cold-restart.log",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/52-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/53-screen-cold-restart.log",
+      "sha256": "f3c091f96987d9b528933fc4d7eb785422fa2ce004beffd794c3bec2ba8e1a3e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/6-read-initial.log",
+      "sha256": "c3da2c40b3bc16b8b1b1e9b8d97c8ea5ed64d15b7563305904742c7c390d61c0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/7-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/8-foreground.log",
+      "sha256": "23c36e0b7713b630b4a171a18df7f39cefab10be7e281f577febee2544c0e563",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/9-dump-initial.log",
+      "sha256": "a69a150a1bd0ed86dc16bfb6e0ec159ed7b0bf09d7343c89b0de4d99c9c016d6",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/cold-restart-0.xml",
+      "sha256": "c3da2c40b3bc16b8b1b1e9b8d97c8ea5ed64d15b7563305904742c7c390d61c0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/cold-restart-1.xml",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/cold-restart.png",
+      "sha256": "f3c091f96987d9b528933fc4d7eb785422fa2ce004beffd794c3bec2ba8e1a3e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/devices.log",
+      "sha256": "065778814e55c95a49d60c183d904fdd6a9d3de75f18b364cd66fbc73ef46c87",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/facts.json",
+      "sha256": "0e9ae2b3a7d5634728c6b88a23e37ed39e89b984f942d2c8697c4cf4afba4a0d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/foreground-return-0.xml",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/foreground-return.png",
+      "sha256": "f3c091f96987d9b528933fc4d7eb785422fa2ce004beffd794c3bec2ba8e1a3e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/identity-fallback-0.xml",
+      "sha256": "78083d5af7e2aabe4a84b3690d4f0750bec27596a26fd30b158e555b4e75e440",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/identity-fallback.png",
+      "sha256": "526f5f7f3dd2b5f3ecec769714c68e00e66fa81de3a8b0d72f7fc2d2e050f9c0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/initial-0.xml",
+      "sha256": "c3da2c40b3bc16b8b1b1e9b8d97c8ea5ed64d15b7563305904742c7c390d61c0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/initial-1.xml",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/initial.png",
+      "sha256": "f3c091f96987d9b528933fc4d7eb785422fa2ce004beffd794c3bec2ba8e1a3e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/native-back-0.xml",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/native-back.png",
+      "sha256": "f3c091f96987d9b528933fc4d7eb785422fa2ce004beffd794c3bec2ba8e1a3e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/navigation-return-0.xml",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-6be87bf5/navigation-return.png",
+      "sha256": "f3c091f96987d9b528933fc4d7eb785422fa2ce004beffd794c3bec2ba8e1a3e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-99906ffd/0-own-package.log",
+      "sha256": "b4e4a6beaeab2edbee775f262ed55f9604b5e45a8021e74fc7b70e050076bb6d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-99906ffd/1-installed-apk-hash.log",
+      "sha256": "1850ac0403079c31d62bf53db15ef8a1d9b1fe7b8388db8ea28c8bceccaf5ae2",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-99906ffd/2-initial-stop-own-preview.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-99906ffd/3-launch.log",
+      "sha256": "bfd38fc3d0d81c581e51e89dbf123d42d377235ce9ecaf080df020af6aa78fd2",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-99906ffd/4-foreground.log",
+      "sha256": "feee7253556fec471a63905b02c3ef3d542623c5e455433dd8086123ffece1ef",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-99906ffd/5-dump-initial.log",
+      "sha256": "6725f2300cb62e737a82632dc1cce6bf4cc54acc69ede8e6b917fd0cc96762c7",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-99906ffd/devices.log",
+      "sha256": "065778814e55c95a49d60c183d904fdd6a9d3de75f18b364cd66fbc73ef46c87",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-99906ffd/facts.json",
+      "sha256": "ad60498be129b7c7e331eaa0252160f09ae5f7344e3e12121fd716af2e5560d9",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-cc13c21b/0-own-package.log",
+      "sha256": "b4e4a6beaeab2edbee775f262ed55f9604b5e45a8021e74fc7b70e050076bb6d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-cc13c21b/1-installed-apk-hash.log",
+      "sha256": "1850ac0403079c31d62bf53db15ef8a1d9b1fe7b8388db8ea28c8bceccaf5ae2",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-cc13c21b/2-initial-stop-own-preview.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-cc13c21b/3-launch.log",
+      "sha256": "48065091e95593533c6d5916c7d4868e00ac86c26f8d1c9f40085daa9e40b181",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-cc13c21b/4-foreground.log",
+      "sha256": "16344bde7e80e4a416fb3ba66a92b562bcf668dfa5949ca1a62f40eeaf675684",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-cc13c21b/5-dump-initial.log",
+      "sha256": "7a0565978f0ec4b9eb88401c522376ca0d7597552ad30bfce402298effa8c4e4",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-cc13c21b/6-read-initial.log",
+      "sha256": "c3da2c40b3bc16b8b1b1e9b8d97c8ea5ed64d15b7563305904742c7c390d61c0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-cc13c21b/7-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-cc13c21b/8-screen-initial.log",
+      "sha256": "d7c76f3cf6c528e9594ad9a54c9f1678f3d09ad2042b8b248cc072045f6eb94f",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-cc13c21b/devices.log",
+      "sha256": "065778814e55c95a49d60c183d904fdd6a9d3de75f18b364cd66fbc73ef46c87",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-cc13c21b/facts.json",
+      "sha256": "b0a3a8bd7d8287b553c8ddaffbdc7e3bbaf592ed8ffd48df5222087a2d12d7a2",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-cc13c21b/initial.png",
+      "sha256": "d7c76f3cf6c528e9594ad9a54c9f1678f3d09ad2042b8b248cc072045f6eb94f",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-cc13c21b/initial.xml",
+      "sha256": "c3da2c40b3bc16b8b1b1e9b8d97c8ea5ed64d15b7563305904742c7c390d61c0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/0-own-package.log",
+      "sha256": "d2fd794ca5b373ce8ed7b16a21fce50fa889e57417fc5749289f50da425b7e56",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/1-installed-apk-hash.log",
+      "sha256": "422101ce82ad2534b49623509adf8704257084290a57d975ff626fb45e146973",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/10-read-initial.log",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/11-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/12-screen-initial.log",
+      "sha256": "7685694178da0567cae69ef5d212e724cd4c9086122bc46bd1dc26340a7b028c",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/13-foreground.log",
+      "sha256": "e581a625bbd0d8ab8f13134883214124db06d4cee71d58e4d493a958608fc690",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/14-tap-own-Identity.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/15-foreground.log",
+      "sha256": "7e9b3f02a93e39a39739eb3904343755883d42a2d614870321df1ac356d03983",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/16-dump-identity-fallback.log",
+      "sha256": "9eb2ec76113f7d4dc94c83425f178f7b418e5c1e62bcd0235e3758ef598aa75e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/17-read-identity-fallback.log",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/18-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/19-foreground.log",
+      "sha256": "11be910b331e4bff9cda9e94fc2a2d1764fb416287bd56ba06deb257a35ffa1a",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/2-initial-stop-own-preview.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/20-dump-identity-fallback.log",
+      "sha256": "fa7a87d3055d1d6fc648cd45f5f5ccefcb911d07a8d2295d9f057dbb04b2ad10",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/21-read-identity-fallback.log",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/22-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/23-foreground.log",
+      "sha256": "9ceac5af649c0a04bdd3d5da01f31a5f7f9e78fcff78a0182e9cd5e650106df6",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/24-dump-identity-fallback.log",
+      "sha256": "6425d5f119f471113484c7365d98206fa1129600ad0d02cd83b5c87348aa2937",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/25-read-identity-fallback.log",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/26-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/27-foreground.log",
+      "sha256": "8259f823f2f360b8a923b0f08edb3ffdadd68bc5dce6a2f1f525c42d9454807a",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/28-dump-identity-fallback.log",
+      "sha256": "2a310d8902792c932181532969a0886b80095a99628a37c64797824c4624731c",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/29-read-identity-fallback.log",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/3-launch.log",
+      "sha256": "8c325b4acbfd4a104ef5fdf700b3e04ad8a1afa81c4a343fa36ac5f5c0e3bf5a",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/30-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/4-foreground.log",
+      "sha256": "57dc43a5aeefa619243e60cd43cd0a6f1fa19a4612b92e86cbad0534f2a0e990",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/5-dump-initial.log",
+      "sha256": "5c493ca9c0661da27b20d84e102d0ce85490ff38fb89e385d2cc3747829257ae",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/6-read-initial.log",
+      "sha256": "c3da2c40b3bc16b8b1b1e9b8d97c8ea5ed64d15b7563305904742c7c390d61c0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/7-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/8-foreground.log",
+      "sha256": "097d19d3f18db790026811e99bc5b16f7043a066790fbecb89419084ddc5c628",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/9-dump-initial.log",
+      "sha256": "6cee7787297e9e14c5c15c4aad0a6f0390c3fee66be6b31ee92b7e8ae827c178",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/devices.log",
+      "sha256": "065778814e55c95a49d60c183d904fdd6a9d3de75f18b364cd66fbc73ef46c87",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/facts.json",
+      "sha256": "c6b1ee1d953348cb6f2ebe376e436a54caec8afbdfd70ecf6f8e3b0e2914bbc8",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/identity-fallback-0.xml",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/identity-fallback-1.xml",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/identity-fallback-2.xml",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/identity-fallback-3.xml",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/initial-0.xml",
+      "sha256": "c3da2c40b3bc16b8b1b1e9b8d97c8ea5ed64d15b7563305904742c7c390d61c0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/initial-1.xml",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f12193d4/initial.png",
+      "sha256": "7685694178da0567cae69ef5d212e724cd4c9086122bc46bd1dc26340a7b028c",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/0-launch.log",
+      "sha256": "8e12ae2282a91f48741b6e73fa033a4b0b4514059b9a7950f0ec6452987ab1c2",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/1-foreground.log",
+      "sha256": "82c2145e7acf6bff7493d763ebb5cd2592072fe8d8bfd0532c04a4c918f4a56c",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/10-read-identity-fallback.log",
+      "sha256": "78083d5af7e2aabe4a84b3690d4f0750bec27596a26fd30b158e555b4e75e440",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/11-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/12-screen-identity-fallback.log",
+      "sha256": "db3be79c0e65331a4b08d864d1eb0179921c5c697b7e75906a6e01f3d78de492",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/13-foreground.log",
+      "sha256": "4edf08e02acca49312d8252b4afa7def94b042b668a6b8bbcf7c15065e1dada7",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/14-tap-own-Return-to-preview.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/15-foreground.log",
+      "sha256": "65d359baf08e1b6db136bb5390712933669b1a2e6e4776160a3147208dda15fc",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/16-dump-navigation-return.log",
+      "sha256": "053fb876ef16d3c6341c8c121fe9116598946405456b68dfe120c3f48ff3bea0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/17-read-navigation-return.log",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/18-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/19-screen-navigation-return.log",
+      "sha256": "3d5aafeba49b68607d5f533af4c886f4cff5cf8bbd12720fd7a52e96d78e2207",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/2-dump-initial.log",
+      "sha256": "366498083d61e3990ad960974504069e706ad472152fe03c881fdf2e77e87557",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/20-foreground.log",
+      "sha256": "46cc7bd36dd260bb5db8a1284ed6f5755ef3bba4885f2e241435d5e9006e6370",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/21-tap-own-Identity.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/22-native-back.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/23-foreground.log",
+      "sha256": "b58d5c8baca8dcaac3702612a656d959613cbd3a9f4dd3e204f7489c76916447",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/24-dump-native-back.log",
+      "sha256": "39d86dc8452a5ea32930f785d354889343e3dcbc5ec81e0ddd05f71bb0ce0468",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/25-read-native-back.log",
+      "sha256": "78083d5af7e2aabe4a84b3690d4f0750bec27596a26fd30b158e555b4e75e440",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/26-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/27-screen-native-back.log",
+      "sha256": "db3be79c0e65331a4b08d864d1eb0179921c5c697b7e75906a6e01f3d78de492",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/3-read-initial.log",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/4-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/5-screen-initial.log",
+      "sha256": "3d5aafeba49b68607d5f533af4c886f4cff5cf8bbd12720fd7a52e96d78e2207",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/6-foreground.log",
+      "sha256": "cf89c71fe2b04cc1835955bbed23023e24eb6e795d60bea9a5653f1f11a43d82",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/7-tap-own-Identity.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/8-foreground.log",
+      "sha256": "84633d1b0281244d451badf52e9d9d56cb87c0e87d089bef102f0be7adf6c5b9",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/9-dump-identity-fallback.log",
+      "sha256": "e7a5b3f38f61d9e8f3427629040a077b2710aaa72fdd1fbf7ebc15a9a9b308c2",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/devices.log",
+      "sha256": "065778814e55c95a49d60c183d904fdd6a9d3de75f18b364cd66fbc73ef46c87",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/facts.json",
+      "sha256": "bbd1bb905e2c1569ab1920ada96029755ca56b2c63fe34a98ffad98f8915f637",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/identity-fallback.png",
+      "sha256": "db3be79c0e65331a4b08d864d1eb0179921c5c697b7e75906a6e01f3d78de492",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/identity-fallback.xml",
+      "sha256": "78083d5af7e2aabe4a84b3690d4f0750bec27596a26fd30b158e555b4e75e440",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/initial.png",
+      "sha256": "3d5aafeba49b68607d5f533af4c886f4cff5cf8bbd12720fd7a52e96d78e2207",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/initial.xml",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/native-back.png",
+      "sha256": "db3be79c0e65331a4b08d864d1eb0179921c5c697b7e75906a6e01f3d78de492",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/native-back.xml",
+      "sha256": "78083d5af7e2aabe4a84b3690d4f0750bec27596a26fd30b158e555b4e75e440",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/navigation-return.png",
+      "sha256": "3d5aafeba49b68607d5f533af4c886f4cff5cf8bbd12720fd7a52e96d78e2207",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-f683ed11/navigation-return.xml",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-fb006ebd/0-launch.log",
+      "sha256": "9dddd62bdbc2745b3d013bc22f9d8eebdb2b32961b3b8288b7e8d14f0c6d24ef",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-fb006ebd/1-foreground.log",
+      "sha256": "d8674bcd6ae389f3293b7867b34d8149573dd90415ce67ef95aa7499fd31ca60",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-fb006ebd/2-dump-initial.log",
+      "sha256": "9d75044bb72640a1aa91540725198770f605acf65f2ad50e711a302de5ea45ce",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-fb006ebd/3-read-initial.log",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-fb006ebd/4-remove-own-dump.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-fb006ebd/5-screen-initial.log",
+      "sha256": "b5e1a2e218508f9221247a097cdd727f33e4f9b12222df3d2bc5e0d0489a7f59",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-fb006ebd/devices.log",
+      "sha256": "065778814e55c95a49d60c183d904fdd6a9d3de75f18b364cd66fbc73ef46c87",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-fb006ebd/facts.json",
+      "sha256": "ab9bdc5d9b4b33b97e011588eefd7ecc675b63db2aca63b31152500d58594b2a",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-fb006ebd/initial.png",
+      "sha256": "b5e1a2e218508f9221247a097cdd727f33e4f9b12222df3d2bc5e0d0489a7f59",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/mobile-preview-phone-fb006ebd/initial.xml",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/activity-private.log",
+      "sha256": "9c2eebed53cb01c7aefe6c3ee68eb9b97362c7ccf0dd47fd405a356ff2842342",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/apk-inspection.json",
+      "sha256": "a78d4ecee1b262a0fc24839c1fb0d048844c06de7ff90277c1b8cb851fd68ca3",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/backfix/android.log",
+      "sha256": "238903180cc104ec2c5d8b3f20c5bc61b389ec0a967df8cc208cdc7cd454174f",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/backfix/api.log",
+      "sha256": "90d7ec0f0acef104d8b6252794295f661a0149634868d02a1ae0c358099638f5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/backfix/apk-badging.log",
+      "sha256": "74847e07ed3417f27930899e8062d02a9974bb5fdd1c38184f65ff12fc8ebe47",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/backfix/apk-signature.log",
+      "sha256": "c8fcdecf2dbad90e95fa17d76995a9e078145878a7f96b6a2880ab7dc0407d20",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/backfix/cleanup-failed-dump.json",
+      "sha256": "2e62de5a113b291913c04d074849bae754a20589ad6793e7cd77794ba3bb7c7d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/backfix/devices.log",
+      "sha256": "065778814e55c95a49d60c183d904fdd6a9d3de75f18b364cd66fbc73ef46c87",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/backfix/facts.json",
+      "sha256": "8987ac99fb6a145d6ce15bff6a77241444cedc93128ba1a142c107862b11e3f8",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/backfix/install-update.log",
+      "sha256": "781a31c82430c97897af612ece5e0ca2205e301cb5ff121ce2660541ea5182c7",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/backfix/launch-update.log",
+      "sha256": "acf25c4fc509f0c524fce219cf3b6db1751068da9a29830398c3700b23193843",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/backfix/model.log",
+      "sha256": "b59fd67ece2ccb19535339c2d534ea6d600fa99547c0c5f44b4c8866d40e97aa",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/backfix/package-before.log",
+      "sha256": "71e9f09fc7c5acb6840ecaf8a8406012571ca47eefd83fba52f62e34f514e4ff",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/backfix/webview.log",
+      "sha256": "14359ee666e63831461aa2c46776e0eff073242f77ca4ac4ca79b31ee95b03bc",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/badging.log",
+      "sha256": "74847e07ed3417f27930899e8062d02a9974bb5fdd1c38184f65ff12fc8ebe47",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/cleanup-failed-dump.py",
+      "sha256": "8272f0935a0fef6c07629243d7ff37ff140b3d7b39a359c6ae693f6228049081",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/download.py",
+      "sha256": "a9236561a178e6c9fbd0eef5d11c269e3f1c1989eab434fe98beecaef164958e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/extract.py",
+      "sha256": "bb5f44a38c28ea75af031488ca268db420bb3452e3dbf8ddfd8a7e7cb2f81761",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/first-screen.json",
+      "sha256": "36cdfaaeeb0b0aae80c3b534681bff50fd74492bd043ffe73bee3d9b60510c2d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/first-screen.png",
+      "sha256": "436ec1eeff11bd9e22af6228e673cd0e45d5a06d506f890b752e666bf2c9eecd",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/first-screen.xml",
+      "sha256": "4d4fdf57b609faa99b1b5ecf5f32a336838d8c4808f6494e058121074997f4c5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/focus-background.log",
+      "sha256": "8ac61f0896c993b13eb129c7757eac17bb3b5d1b93ca22faa5001fdf8844920e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/focus-before.log",
+      "sha256": "fa9cc77ca033dd82850297522401c34bf6f93acbd81a2ac84e03998fc2bf0fcf",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/focus-foreground.log",
+      "sha256": "6402eeb44b5af385405843d192f65b6562c37025df5e5148ef3b2055c928c81a",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/focus-home.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/focus-resume.log",
+      "sha256": "65eb78b213121d79fdfdf31d3e6385e1a868a7b868bfd112d43ad5547b719aa9",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/focus.json",
+      "sha256": "d2cfa99fd99d5a6c89fba04819b7870a42a197f43b18c05291891649bd694099",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/focus.py",
+      "sha256": "e0a2fcc2d12310aaad572eed77961c09aaa87ef6cfcdd12451ef127e058cf4fb",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/input-probe/commands.json",
+      "sha256": "804d6f42fbde14ffae78dd68b5efbc0ae676e0f1251f50d6452dc25778f4a8b5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/input-probe/dump-after.log",
+      "sha256": "402ed05f55604618e767d732f78413a427041565062323d236bde5f1cfb1a0ab",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/input-probe/own-window.log",
+      "sha256": "ee8fe086841beca26f4b8f2f649eae8dbc813f93b9e6c941899b9ed130ef185b",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/input-probe/remove-own.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/input-probe/size.log",
+      "sha256": "07377115fb06f1cbbbfdc0f30fb6862024571638f1173d6dc4311c06f720df45",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/input-probe/tap-own-identity.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/input-probe/xml-after.log",
+      "sha256": "78083d5af7e2aabe4a84b3690d4f0750bec27596a26fd30b158e555b4e75e440",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/inspect-apk.py",
+      "sha256": "5eb9b5eca58bfc119013f6c2513eb83b6d8c3e773c84aef2502246b3d2d98143",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/install-devices-final.log",
+      "sha256": "065778814e55c95a49d60c183d904fdd6a9d3de75f18b364cd66fbc73ef46c87",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/install-devices.log",
+      "sha256": "065778814e55c95a49d60c183d904fdd6a9d3de75f18b364cd66fbc73ef46c87",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/install-final.log",
+      "sha256": "781a31c82430c97897af612ece5e0ca2205e301cb5ff121ce2660541ea5182c7",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/install-phone-final.py",
+      "sha256": "c76da8dd12976fdaf7b30b23d7bc6293c296e6a90a024ad3ec8870e73e5da069",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/install-phone.py",
+      "sha256": "6d8bf450a0b5ee4ce81f32bbd5ffdb5fb557b344f43de2ff1ff596c4b2fb660b",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/launch-final.log",
+      "sha256": "d1fbbcb8ab37734ca6f9d4c34766c4064511136570987294839635c6fcc516a9",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/lifecycle-focus.json",
+      "sha256": "df87e590979525d8464f517a11b33da552fc3bdc4cc59b47d2a389d00d77a6e3",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/lifecycle-focus.py",
+      "sha256": "d96ded308d1d373df093ca380ca461ec6d500f929776399c8677289a4f826045",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/local-env.json",
+      "sha256": "29f3e04fcfde4403590af5fd8f4a16869d628d25888716c4d635a4f52978928b",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/package-before-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/package-before.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/phone-capture-final.py",
+      "sha256": "e0b996fb3315c9cc0430513f76c034ef485cde0fddf019a1d4e6b61ae147ca30",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/phone-capture-observed.py",
+      "sha256": "a26741f65ba5683a05374a683c6899d2edb3dff9f4b5fc8b22d65f7e81022e31",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/phone-capture.py",
+      "sha256": "2911f31d96daf05912c76f12ac0d89082fb4519b09c235fc4d427616e24c5a5c",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/phone-install.json",
+      "sha256": "96909900f745a6ab5ebac966ba513acf84249a0a3a856a4c35a7584c9c8bea73",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/probe-input.py",
+      "sha256": "597a1bc5869ebee63c333e126a5aff5ead49acd337d9321c1e93ca58602bc898",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/qualify-backfix.py",
+      "sha256": "e6b9a8c7369367a6963919667b3f7e15d706efd2072de4bb6b0e15a4c12d15bc",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/qualify-ready.py",
+      "sha256": "a90708cd89454cf6d767c254ad87ac75b4c44e85330690dc24ee5a09c267bb0c",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/qualify-touch.py",
+      "sha256": "9dad20ca035b46b4b22c18cae583eb024366b0858c3acaeb17e2b610c36ae332",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/ready/android.log",
+      "sha256": "238903180cc104ec2c5d8b3f20c5bc61b389ec0a967df8cc208cdc7cd454174f",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/ready/api.log",
+      "sha256": "90d7ec0f0acef104d8b6252794295f661a0149634868d02a1ae0c358099638f5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/ready/apk-badging.log",
+      "sha256": "74847e07ed3417f27930899e8062d02a9974bb5fdd1c38184f65ff12fc8ebe47",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/ready/apk-signature.log",
+      "sha256": "c8fcdecf2dbad90e95fa17d76995a9e078145878a7f96b6a2880ab7dc0407d20",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/ready/devices.log",
+      "sha256": "065778814e55c95a49d60c183d904fdd6a9d3de75f18b364cd66fbc73ef46c87",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/ready/facts.json",
+      "sha256": "4ac19aa54f0f77f66325a0f1865b445be479650d5051dd16282c8fb554ad359c",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/ready/install-update.log",
+      "sha256": "781a31c82430c97897af612ece5e0ca2205e301cb5ff121ce2660541ea5182c7",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/ready/launch-update.log",
+      "sha256": "694731f8ccde8ab487d5eb3f4c38af7f6b0a4d4eb2fbec18e01ed6b140d75b37",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/ready/model.log",
+      "sha256": "b59fd67ece2ccb19535339c2d534ea6d600fa99547c0c5f44b4c8866d40e97aa",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/ready/package-before.log",
+      "sha256": "b4e4a6beaeab2edbee775f262ed55f9604b5e45a8021e74fc7b70e050076bb6d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/ready/webview.log",
+      "sha256": "14359ee666e63831461aa2c46776e0eff073242f77ca4ac4ca79b31ee95b03bc",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/record-qualification.py",
+      "sha256": "9a5937b39fe235ab60135d91b3bf83dceeda9f4377cd3967a64386f8d772094b",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/run.mjs",
+      "sha256": "27cf17fc313d2a8392d25800e3d039d3c35ca7f22b5f316979f594451b813e5b",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/signature.log",
+      "sha256": "c8fcdecf2dbad90e95fa17d76995a9e078145878a7f96b6a2880ab7dc0407d20",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/smoke-before-accessibility-label.py",
+      "sha256": "ec4f76518934491fc055f1c6ff6a97f29ad32098b828fde498364656ca2444fb",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/smoke-before-readiness.py",
+      "sha256": "9aa1fa24c017e69528678b672d5dd3a031b7dc15aa682021f446b1f34dd33a5e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/touch/android.log",
+      "sha256": "238903180cc104ec2c5d8b3f20c5bc61b389ec0a967df8cc208cdc7cd454174f",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/touch/api.log",
+      "sha256": "90d7ec0f0acef104d8b6252794295f661a0149634868d02a1ae0c358099638f5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/touch/apk-badging.log",
+      "sha256": "74847e07ed3417f27930899e8062d02a9974bb5fdd1c38184f65ff12fc8ebe47",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/touch/apk-signature.log",
+      "sha256": "c8fcdecf2dbad90e95fa17d76995a9e078145878a7f96b6a2880ab7dc0407d20",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/touch/devices.log",
+      "sha256": "065778814e55c95a49d60c183d904fdd6a9d3de75f18b364cd66fbc73ef46c87",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/touch/facts.json",
+      "sha256": "b379aae3590118a5b1a1886123b4341e7098d7625e6dd9e04b2add6236b4fe74",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/touch/install-update.log",
+      "sha256": "781a31c82430c97897af612ece5e0ca2205e301cb5ff121ce2660541ea5182c7",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/touch/launch-update.log",
+      "sha256": "c2ea1f4ea0541548180beb8c2a73a9a60121590a7cb826c4d3b4ce1f16f1d76f",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/touch/model.log",
+      "sha256": "b59fd67ece2ccb19535339c2d534ea6d600fa99547c0c5f44b4c8866d40e97aa",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/touch/package-before.log",
+      "sha256": "d2fd794ca5b373ce8ed7b16a21fce50fa889e57417fc5749289f50da425b7e56",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/touch/webview.log",
+      "sha256": "14359ee666e63831461aa2c46776e0eff073242f77ca4ac4ca79b31ee95b03bc",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/android-native/window-private.log",
+      "sha256": "8e41dd807c740e05df75843e086b62ec0423282b90f1f9ce6d6e1a55235c509d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-apk-inspect.json",
+      "sha256": "1359aa2554a2d40c7f6afc0168f531247f9a044b3f112f0eed3bf93e88b2df97",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-backfix-boundaries.json",
+      "sha256": "46b7400e840673e874971c74051c77e7a83b478616ca3a686244af3145fc287e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-backfix-build.json",
+      "sha256": "be47c130b43fc2c304c2ef51e5b9b5ccfabc6b14e22d7c46c8a47a6f73bfe2ff",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-backfix-bundle.json",
+      "sha256": "5796007d9bce9270dcd404bb593990bd4f9251f86dafc6d789a9bdf91c860ec4",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-backfix-ci.json",
+      "sha256": "ea2d54adeeaa85074e3958f89894ffbcca3a8fe30e95af62e5c00debb9fbe629",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-backfix-install.json",
+      "sha256": "9a972db27427d433b09d4b90cd36cb745d93830662423c6079cb5db0b1211969",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-backfix-lint.json",
+      "sha256": "dd782da88b9f9152e428f37b966577c1143d39d5b2f4f6682cee0e38d5610788",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-backfix-phone-observed.json",
+      "sha256": "4e19e0e9f92eee5b242b4ec6358839958bbe18700207050b2b3eed17095599a0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-backfix-phone.json",
+      "sha256": "053336c878c992f8e1492703db0de1892508a284511ee7db8f8ed953c3b1eb5a",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-backfix-types.json",
+      "sha256": "4ab782c0ea207bdd7d985fcf478bdfb4c9ca33811fbec27931783ce7b3737d92",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-build-ready.json",
+      "sha256": "fc77118974f621a3fe96a36bdd06c8ff7b8f1b7f9fff0e6af9b78199767a0bc3",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-build.json",
+      "sha256": "631604702c1d5413461b1faf221dfac90de5fa8b5e49f8b780dcc976ec668765",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-cli-ci.json",
+      "sha256": "ab2883c81c4b420748955e2caa7aa9cde1b16c67bbed922e66e0b9acdfda1a25",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-cli-lint.json",
+      "sha256": "af4c9b9a104051ce458774c378d5e64c2ac3ee13c04685a5515ce59620722e0d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-extract.json",
+      "sha256": "e4e43b54e64a2855152bb93240935490d7edc2454cd0e4fe730b08e8fc3ca3bd",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-input-probe.json",
+      "sha256": "580ba132e51dbcf314ad1e6bad9a4fd5ed7a5023e568bb4234b4ec134f96bba9",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-jdk-download.json",
+      "sha256": "7862671034a05c6aac06b01b5faf4fbaa6ad4588f6e716130a2a2ae66fdc45bd",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-lifecycle-focus.json",
+      "sha256": "83a19a6f1142e2c62c7b545e46cdcd8701c86fb641a81173cb3ba5fd7e54663d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-phone-capture-observed.json",
+      "sha256": "5f1619680dc8e73b46f876e2dd204499e86df43f85f8002037cc50a5c8aefa3d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-phone-first-screen.json",
+      "sha256": "7bafa5ffe64b395e372c981590f22b73fe8a5b4a3f6440e1fc03d33fd4a43910",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-phone-focus.json",
+      "sha256": "da3a8aae6a78473cf7166a71c23ef71726364c1299a0ef6573783c8f0595ef3c",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-phone-initial-screen.json",
+      "sha256": "4fa36a578135fa27882f7786ae73686e77e91ef1a7fe32ebb494c3b525eee045",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-phone-install-final.json",
+      "sha256": "1b05b4ad9db0fe8ff00d37076614d389365d21dd160334a96744542700abc6db",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-phone-install.json",
+      "sha256": "db3753220c367b4ffcf30f9aee2f9b6a1497a95eb43c868ec61dbc672d8afd68",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-preview-label-final.json",
+      "sha256": "b3708191cf42435969ffc1f5aed431492ac058adffe476a9c5d0262ca6a1c6dd",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-preview-smoke.json",
+      "sha256": "1f39fcad57da4a0ee34ac2d6376b334afb8163dd384d23c1ddf68a855d84a60f",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-ready-build.json",
+      "sha256": "3ebdd38c6ff0041843d0a87b50eba195a3d16448f73028d3e4b9e57b49b8bf6a",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-ready-install.json",
+      "sha256": "b56d8fad7262e919394f085acd20639d6d0f306c8663f413db26c8b3d6b72489",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-ready-phone.json",
+      "sha256": "9eeaaf29d4bedb2184bec52158a3f35311f733630bd4deb4647ec583db99cd2d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-sdk-install.json",
+      "sha256": "db8ad814af0bc5c614ec40e635382dcd92bfa4c3f06ad99a0cfba7d3b86933d3",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-sdktools-download.json",
+      "sha256": "180906508326b9baf305a6539f799d8317e7b5338cde14a00d4aacba222e196d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-toolchain.json",
+      "sha256": "0264a9fbe8390f765c72235fca368e2376e6e81392971feca8ca0b4320fb4fcd",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-touch-build.json",
+      "sha256": "28584a681275a6c6ff7d24b89ae97915c5814c47f3e73cd4012bae9a0482befb",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-touch-install.json",
+      "sha256": "0052af001c57e6dd5404660c0741851f8b13d2e353f25bac34f1f5771c8d9f7e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/command-native-touch-phone.json",
+      "sha256": "8d87628b11cd35f3df9ced4cde84d5db814bf1c5a3fc90ae7a968400f8c58207",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-apk-inspect.log",
+      "sha256": "6e310931a0f9968a959908ebabf5e730d608922feda4019afe5791379f9e8f0d",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-backfix-boundaries.log",
+      "sha256": "f8d327b750d1dae8d625b9b55cb92490c12a9d8ce53364f5053a3fabb4ec8ec6",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-backfix-build.log",
+      "sha256": "e1361e9e3fe5aafee57869ed44800351403f5a5aaa39418a869201b5bd2c8a4e",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-backfix-bundle.log",
+      "sha256": "92d0d1dd57dcb21ec1383541ed9d317a7ef1ed8bc100985c7a9c8c3f4d4be4e8",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-backfix-ci.log",
+      "sha256": "0f0cbe0110c74122b07fd61c416a8fe6ca43453606ab9a7f94ad5214363992b4",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-backfix-install.log",
+      "sha256": "846e3180004874f89951d037dec9db8155b0b0ecba565a9bece1b66f24bc9f90",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-backfix-lint.log",
+      "sha256": "b5f0464289ac9ab113d9a764abbc7821d91a49f4213749f52660270bf71379c0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-backfix-phone-observed.log",
+      "sha256": "37081095eb54664575165f314ee574804add9d78c2e8ce8d988e2cc44232baf3",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-backfix-phone.log",
+      "sha256": "9b8fb36c7d39eeb4fb3bb53f0811c5be27d327f0354f91e5c67b6023918f8836",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-backfix-types.log",
+      "sha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-build-ready.log",
+      "sha256": "ba5691be4f7fe399eec5f99829817bf1ec7b647e9cab20e34babbaa101f83103",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-build.log",
+      "sha256": "d3809c14bf8d7ab053fc8d7a1974e059ab2da18122622ddd65e8da23415577a4",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-cli-ci.log",
+      "sha256": "0f0cbe0110c74122b07fd61c416a8fe6ca43453606ab9a7f94ad5214363992b4",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-cli-lint.log",
+      "sha256": "b5f0464289ac9ab113d9a764abbc7821d91a49f4213749f52660270bf71379c0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-extract.log",
+      "sha256": "e822c0d024e076d1e880905184719a7d4a63a315b31f35f99d92a6edfc0fa1e9",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-input-probe.log",
+      "sha256": "e11197c807b3c2395886fca5a164af87eb94e56eb98ccb01f8a0a81e5372df8b",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-jdk-download.log",
+      "sha256": "7c6e801cbebc10ae35fe1db5e729c97d6f2da88f761d102361cc0b993136d086",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-lifecycle-focus.log",
+      "sha256": "7558b63318b71f817a29f14c71148522d7b2b31f97cbb840fa35ef30a8fd7b7b",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-phone-capture-observed.log",
+      "sha256": "adc873e67fc1f41a7e033f0fadea3384da2cedb1253cef6f422781673eb0f718",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-phone-first-screen.log",
+      "sha256": "073423693daa1e89989423a0deaa93b6a00178d35ec3b4193897614149202daa",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-phone-focus.log",
+      "sha256": "3a57d2a7cf2fb9bf2ce898b3eba2393f04c63b6987bfc109c3c6f8b4ba2a5818",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-phone-initial-screen.log",
+      "sha256": "f009fc61e716737cb755876179ecd51ead46d58b0aa45eb8ace6ef825eba36bc",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-phone-install-final.log",
+      "sha256": "06c21b9e464c0194a9d2eba626c5b1c7c9ef6b0e08e1b77712d165ba0461f7e7",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-phone-install.log",
+      "sha256": "e1ee18844e3c8a884804799bde28c14c34948db313ba55c20d02d33bb1b6a798",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-preview-label-final.log",
+      "sha256": "d9a495e6ae02675539eb669b7caac1fbbad40309e6440c4d8c5d00ade93b7fec",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-preview-smoke.log",
+      "sha256": "4963758b83c0c87df6f2f800365a961510b01a34fd4ddc39cb9ece854ed657dd",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-ready-build.log",
+      "sha256": "2942ed66c434e0fcbe972b2c398b0c056261187aa6800f6f974692f1b95b18a3",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-ready-install.log",
+      "sha256": "a8ba46530d358a3c11dfde98e71fe13c7ab6d35ed16be0d9aa8922a714298fc9",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-ready-phone.log",
+      "sha256": "d4b943e088f9b2d429a77d90a5bcf7525ea64ef48349d6d6446454412d62c98b",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-sdk-install.log",
+      "sha256": "56512f4c5a7a222a9a2dc58bda79f1436eeac52b000f9fb2c1750a160c0f4dc5",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-sdktools-download.log",
+      "sha256": "9bc4aad09c4eb8d65da62c223434d5f445a24fd4cc603128f5bb804303fdb9b0",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-toolchain.log",
+      "sha256": "d3809c14bf8d7ab053fc8d7a1974e059ab2da18122622ddd65e8da23415577a4",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-touch-build.log",
+      "sha256": "db58fea1309ade43956d2d18a7e0b9750581d7e76264d6fd1d399f475e156ddf",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-touch-install.log",
+      "sha256": "783343bfa4bf0503642d85f24b559a65808a6e85f968a41f7dda1b735f5adf84",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "artifacts/vnext/n10-02/native-touch-phone.log",
+      "sha256": "d06382d4034ee5b4f66d9bb6c383b37b281e14a98270e617a2848fa18bfddf68",
+      "access": "private",
+      "retention": "Private local until owner cleanup; no off-host archive"
+    },
+    {
+      "ref": "docs/mobile/ANDROID-TOOLCHAIN.json",
+      "sha256": "028a57583f501317ffa454b6c6204ed61f9f000f6669c4650182a6483f01dbd2",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/plans/platform-vnext/audit/N10-02-CHECKS.json",
+      "sha256": "31c8e5d6a80f97af19b08efde0985ff8ab8bb0f960062dfe3e5fb5c3c22f3acf",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    },
+    {
+      "ref": "docs/plans/platform-vnext/audit/N10-02-USB-CHECKS.json",
+      "sha256": "ef9417982bc64482441abef22d0ebce9e8864b620913caa9cc646be363cb62c0",
+      "access": "sanitized-public",
+      "retention": "Git history"
+    }
+  ],
+  "limitations": [
+    "N10-02 acceptance is the first shared/local logged-out DEBUG bundle, not authenticated gameplay, N10-03 native credential custody, N10-04 30min/20visits/10background performance, supported-device floor or store readiness.",
+    "New landscape/animal/modular-avatar direction remains N06-06..09 TODO. This starter preview and its 360px browser case do not qualify that direction.",
+    "Prior shared/Next tests at87ecc81 are historical: 87governance/357unit,118browser executions and6web/API TLS scenarios. Those shared/Next source paths are byte-identical at the final APK source; fresh mobile checks and3bundle cases are separately recorded. No full backend suite was rerun for this mobile-only fix.",
+    "Phone is the owner-controlled Xiaomi23129RAA4G Android15/API35 WebView156.0.8078.47, one USB device. Development install/update is not user/tester distribution; support/distribution context remains false.",
+    "Original native Back failure reproduced after2PASS scenarios at375125a; Shell lifetime fix is in64437f9. Original tooling failures retained: absent-package pm path handling, window-focus probe, UI dump and content-description selector.",
+    "Two attempts at64437f9 failed before scenarios: uiautomator exit137 after reporting a dump, and an empty accessibility tree while the captured screenshot displayed the scene. Root cause of process kill is unproved.70c2cc8 adds at most4 readiness probes/30s per snapshot, records all attempts/nonzero dumps and cleans owned temporary XML; this is not a cold-start timing PASS. Its next run passed the initial scenario but Identity did not transition after default-source input. A separate explicit-touchscreen input probe reached fallback; a8cfc0d selects that source. No root-cause claim about the earlier unobserved input dispatch.",
+    "SDK XML metadata and flatDir Gradle warnings retained despite successful builds. No permissions/OS security checks, test thresholds or original performance budgets disabled/changed.",
+    "Debug appId/template art/branding remain provisional. No bootloader/root/flash/reset, private ADB key/debug keystore reads, personal app-data wipe, production data or public deployment/store action.",
+    "N14 remains conditional without Mac/Xcode and physical-iPhone access; no iOS build/simulator/Keychain/iPhone/TestFlight PASS. Phase2 stays dormant until actual Phase1 checkpoint/handoff; owner authorization to continue code is already in the conversation."
+  ],
+  "nextExactAction": "Execute N06-06 (priority80): audit the existing art/prototype/provenance, create a reviewable animal style sheet, modular part/rig matrix and landscape storyboard with budgets locked before implementation; keep N06-01/02 evidence historical. Then N06-03 shell and N06-08 landscape; N06-07 requires N10-03 native auth for actual phone saves. Keep N14 conditional and transfer Phase2 ownership only at a real Phase1 checkpoint."
+}

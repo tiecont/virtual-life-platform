@@ -543,15 +543,14 @@
       "next_action": "Reserve N01-01; implement a read-only per-file inventory with size/hash/classification and static/dynamic consumer mapping. Preserve source, migration, legacy and historical evidence; archive candidates are not deletion authorization."
     },
     "N10-02": {
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "owner": "Codex",
-      "branch": "codex/vnext-n10-02-shared-client",
+      "branch": "codex/vnext-n09-02-postgres",
       "evidence_refs": [
-        "n10-02-preparation-2026-11-06",
-        "n10-02-usb-connected-2026-11-06"
+        "n10-02-native-qualified-2026-11-06"
       ],
       "blocker": null,
-      "next_action": "Continue N10-02 on the now-authorized Xiaomi23129RAA4G Android15/API35 phone. Use the verified isolated ADB under artifacts/vnext/n10-02/usb-connection/tools/root/usr/bin/adb. Prepare/lock JDK21 and SDK36/build-tools, run pnpm mobile:sync:android and actual Gradle assembleDebug, then install/run the local bundled preview on this device and record source/build/navigation/lifecycle evidence before VERIFIED. Do not repeat USB/RSA approval while this authorization remains valid. Native auth/N06-03/N14 gates remain separate."
+      "next_action": "Execute N06-06 (priority80): audit the existing art/prototype/provenance, create a reviewable animal style sheet, modular part/rig matrix and landscape storyboard with budgets locked before implementation; keep N06-01/02 evidence historical. Then N06-03 shell and N06-08 landscape; N06-07 requires N10-03 native auth for actual phone saves. Keep N14 conditional and transfer Phase2 ownership only at a real Phase1 checkpoint."
     },
     "N10-03": {
       "status": "TODO",

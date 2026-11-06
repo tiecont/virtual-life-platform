@@ -1,3 +1,7 @@
+# N10-02 native prerequisite resolved — 2026-11-06
+
+N10-02 first logged-out Android bundle now VERIFIED with actual native build/install, signature/asset inspection,3fresh browser bundle cases and5physical preview cases; see [native checks](../audit/N10-02-NATIVE-CHECKS.json). Initial absent JDK/SDK/ADB and later Back/input/capture failures below are retained historical findings. N10-03 auth/N10-04 full spike/new N06 animal/landscape work remain separate. N04-02 and N07-04 still BLOCKED_EXTERNAL; N14 conditional without actual Mac/Xcode/iPhone. Next ready task N06-06 priority80; no repeated USB permission request needed.
+
 # Android USB blocker cleared — 2026-11-06T12:48:08.887749+00:00
 
 Owner replugged and approved RSA. Verified isolated ADB now sees one actual USB device in state device: Xiaomi23129RAA4G,Android15/API35,WebView156.0.8078.47. N10-02 USB/resource blocker cleared; task resumes IN_PROGRESS. This is not build/install/app/native/spike acceptance. Application source/44SQL and prior43evidence records unchanged; no private serial or ADB key committed.
