@@ -1,0 +1,33 @@
+{
+  "taskId": "N06-10",
+  "revision": 1,
+  "createdAt": "2026-11-06T16:09:39.894803+00:00",
+  "assets": [
+    {
+      "id": "animals3d-lookdev-reference-v1",
+      "ref": "lookdev-reference-v1.png",
+      "sha256": "0b2c4bad5a0952e164f7a5667f7cd3349b5723ac33dab1bc0a8a636687b94828",
+      "bytes": 2765831,
+      "kind": "AI_GENERATED_RASTER_CONCEPT_NOT_RUNTIME_3D",
+      "tool": "built-in image_gen imagegen via imagegen skill",
+      "generationArtifact": "01a1abf5-4edf-7eb1-99a5-63e26cb85ab7/exec-d0b69b68-9212-4cf6-a6e2-ebdcf0d1ffee.png",
+      "promptFile": "CONCEPT-PROMPT.txt",
+      "promptSHA256": "79fcdb13f394ce4b421afa769ea812225cb5a59bbc3dc57071228cedf4daa02a",
+      "copiedWithoutEditing": true,
+      "runtimeConsumers": [],
+      "ownerArtApproval": false,
+      "mediaRightsSignoff": "NOT_ESTABLISHED_BY_THIS_CONCEPT",
+      "review": "Developer inspected generated artboard: good fur/eye/cloth/lighting direction; cinematic DOF and icon-only UI need adaptation, not gameplay proof"
+    }
+  ],
+  "productionAssets": {
+    "mesh": "NOT_CREATED",
+    "rig": "NOT_CREATED",
+    "groom": "NOT_CREATED",
+    "animationClips": "NOT_CREATED",
+    "textures": "NOT_CREATED",
+    "blenderInstalled": false
+  },
+  "originalEvidencePreserved": true,
+  "publicRelease": false
+}

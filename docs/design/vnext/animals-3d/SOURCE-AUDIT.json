@@ -1,0 +1,88 @@
+{
+  "taskId": "N06-10",
+  "auditedRevision": "1b4013f958017abf51ef973635a89b220ce729e4",
+  "reviewedAt": "2026-11-06T16:10:48.393120+00:00",
+  "scope": "Source inspection and design only; no renderer3D implementation,mesh export or performance measurement",
+  "files": [
+    {
+      "ref": "packages/game-client/src/renderer.ts",
+      "sha256": "4245b481964e9b5689132476c7e1513da10ec76a7423d4fa7229c38c5ce6f3fe"
+    },
+    {
+      "ref": "packages/game-client/src/WorldRoomPanel.tsx",
+      "sha256": "26f77fee37a34cc2b4938713ff43a9aeb572c2e41f1742830093a7d1224c7f51"
+    },
+    {
+      "ref": "packages/pixi-scene/src/renderer.ts",
+      "sha256": "1622aa6265d27dc2a4eeac0e09b98a212b08e6cd2cd035cadc57c376eb880e7d"
+    },
+    {
+      "ref": "packages/pixi-scene/src/avatar-art.ts",
+      "sha256": "8af395d4a474ab142167e4b5e5ecc93b6387f6dd86fd7c50c3640741dd75f5cf"
+    },
+    {
+      "ref": "packages/pixi-scene/src/entities.ts",
+      "sha256": "4e85084034064f8383086c16b788fe18ceeb18328c120c7904ed6c8308713d33"
+    },
+    {
+      "ref": "packages/pixi-scene/src/camera.ts",
+      "sha256": "7f5aca949072ae22b7116e683c8721475d3bf8d26ae421529992266545109c83"
+    },
+    {
+      "ref": "packages/contracts/src/avatar.ts",
+      "sha256": "03fc949ae80ec1f3341da96c8dcc7b997a8ed88f586031ccaeef9a048462b602"
+    },
+    {
+      "ref": "apps/mobile/src/main.tsx",
+      "sha256": "5fcafa1d4fc21a0184679e1ad0a955f35721a1c5265f3b0d78ea09a776491c7e"
+    },
+    {
+      "ref": "apps/platform-api/src/rooms/service.ts",
+      "sha256": "baf46d9273af262c48f2e0b2331669120dc5d74e78849b8f62ee965c1221cb6a"
+    }
+  ],
+  "findings": [
+    {
+      "boundary": "Renderer factory",
+      "observation": "Named/default factory adapter returns concrete Pixi createCafeScene type; extract engine-neutral handle/options before adding3D."
+    },
+    {
+      "boundary": "Lifecycle",
+      "observation": "Existing update,suspend,setReducedMotion,destroy and AbortSignal/ResizeObserver preserve viable integration points;3D GPU caches/mixers/imagebitmaps still need dedicated disposal/context-loss qualification."
+    },
+    {
+      "boundary": "Projection",
+      "observation": "sceneEntities/RoomSnapshot filter identity/context before interpolation; keep validated floor/seat IDs and motionPosition; rendering does not become authority."
+    },
+    {
+      "boundary": "Current art",
+      "observation": "Nearest-filtered32x48starter atlas and y-sorted sprites/Graphics interiors are pixel baseline, not3D mesh/fur/lighting evidence."
+    },
+    {
+      "boundary": "Appearance",
+      "observation": "Existing starter-v1 palette/outfit schema; new cosmetic catalog needs additive authoritative validation and v1 projection under N06-07, not a local editor save."
+    },
+    {
+      "boundary": "Platforms",
+      "observation": "Shared Next/Vite/Capacitor root has existing loader injection; Three/WebGL2 is a bounded candidate, no installed dependency or production renderer change yet."
+    }
+  ],
+  "proposedFloorMapping": {
+    "version": 1,
+    "tileMetersCandidate": 0.5,
+    "mapping": "server tile x,y -> world x,z; ground Y0,center offset0.5tile;3D height/seat/paw anchors cosmetic only",
+    "status": "Design candidate; raycast/seat/floor equivalence must be tested in N06-11"
+  },
+  "referenceReview": {
+    "asset": "lookdev-reference-v1.png",
+    "furMaterialDirection": "Suitable target; developer review only",
+    "issues": [
+      "Cinematic depth-of-field must not blur game action targets",
+      "Icon-only dock needs actual DOM names/labels",
+      "Raster cannot verify real rig,mesh seams,skin weights,animation or save",
+      "Offline render detail may exceed mobile budgets; translate with authored LOD/groom and measure"
+    ],
+    "ownerArtApproval": false
+  },
+  "implementationMeasurements": null
+}

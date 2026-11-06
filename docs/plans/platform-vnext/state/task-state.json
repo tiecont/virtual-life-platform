@@ -743,9 +743,9 @@
       "next_action": "Qualify actual3D/fur/animation/lighting/LOD and polished web/mobile UI, preserving pixel evidence as historical"
     },
     "N06-10": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
+      "status": "IN_PROGRESS",
+      "owner": "Codex",
+      "branch": "codex/vnext-n09-02-postgres",
       "evidence_refs": [],
       "blocker": null,
       "next_action": "Brief3D/fur/rig/UI và rendererport audit/ADR"
