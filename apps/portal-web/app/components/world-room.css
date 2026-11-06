@@ -1,2 +1,4 @@
 /* Compatibility entry for existing route imports. */
 @import '@virtual-city/game-client/styles.css';
+/* Room navigation keeps identity/city routes; compact gameplay avoids duplicate portal chrome. */
+@media(orientation:landscape) and (max-height:600px){body:has(.cafe-shell.scene-first) .city-header{display:none}}

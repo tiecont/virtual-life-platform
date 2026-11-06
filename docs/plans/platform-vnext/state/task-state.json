@@ -725,12 +725,12 @@
       "next_action": "Creator species/body/head/eyes/muzzle/ears/tail/fur-markings/hair/outfit/accessories với preview, preset, reset, Save/Cancel"
     },
     "N06-08": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
+      "status": "IN_PROGRESS",
+      "owner": "Codex",
+      "branch": "codex/vnext-n09-02-postgres",
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Scene-first landscape HUD/dock/drawers dùng chung web/native"
+      "next_action": "Implement gameplay-scoped Android landscape request/lease cleanup, actual responsive scene/HUD/dialog controls and portrait/keyboard/large-text fallback; qualify browser/API and physical Android APK evidence, without native-auth/gameplay/iOS claims."
     },
     "N06-09": {
       "status": "TODO",

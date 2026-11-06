@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState,type ReactNode,type ComponentType } from 'react';
+import { useEffect, useRef, useState,type ReactNode,type ComponentType,type RefObject } from 'react';
 import { io, type Socket } from 'socket.io-client';
 import { MeSchema, RoomAckSchema, WorldCatalogSchema, sceneManifestHash, type ClientProtocolOffer, type NegotiatedSession, type SceneIdentity, type Me, type RoomSnapshot,type SceneManifest,type TravelSource,type AvatarAppearance,type TravelDestination } from '@virtual-city/contracts';
 import { RoomRecovery, resolveClientCompatibility, createClientProtocolOffer, acceptSessionCompatibility, type ResolvedClientCompatibility, type RoomRecoveryView } from '@virtual-city/world-sdk';
@@ -32,11 +32,21 @@ export interface RoomWidgets {
  RoomInvitation:ComponentType<{me:Me;destination:TravelDestination;place?:'study'|'cafe';active?:boolean;purpose?:'focus'|'social'}>;
  RoomSafety:ComponentType<{me:Me;room:RoomSnapshot;active:boolean}>;
 }
+function RoomDrawer({enabled,title,drawerRef,onClosed,children}:{enabled:boolean;title:string;drawerRef:RefObject<HTMLDialogElement|null>;onClosed:()=>void;children:ReactNode}){
+ if(!enabled)return <>{children}</>;
+ return <dialog ref={drawerRef} className="cafe-drawer" aria-label={title} onClose={onClosed}><div className="cafe-drawer-heading"><h2>{title}</h2><button onClick={()=>drawerRef.current?.close()}>Close {title.toLowerCase()}</button></div>{children}</dialog>;
+}
 const defaultRenderer=()=>import('@virtual-city/pixi-scene/renderer');
 export interface WorldRoomPanelProps {sceneFirst?:boolean;rendererLoader?:()=>Promise<unknown>;socketOrigin:string;platform:ClientPlatform;widgets:RoomWidgets;experience?:RoomExperience;children?:ReactNode|((context:RoomChildContext)=>ReactNode)}
 export default function WorldRoomPanel({socketOrigin,platform,widgets,sceneFirst=false,rendererLoader=defaultRenderer,experience=sandboxExperience,children}:WorldRoomPanelProps) {
  const {Link,FocusPanel,Wardrobe,WorldEvents,RoomInvitation,RoomSafety}=widgets;
  const foreground=useRef(true);
+ const actionsDialog=useRef<HTMLDialogElement>(null),visitsDialog=useRef<HTMLDialogElement>(null);
+ const actionsButton=useRef<HTMLButtonElement>(null),actionsOpener=useRef<HTMLElement|null>(null),visitsOpener=useRef<HTMLElement|null>(null);
+ const [panel,setPanel]=useState<'actions'|'visit'|null>(null),[seatFilter,setSeatFilter]=useState('');
+ function showPanel(kind:'actions'|'visit',opener:HTMLElement|null){const dialog=kind==='actions'?actionsDialog.current:visitsDialog.current;if(!dialog)return;(kind==='actions'?actionsOpener:visitsOpener).current=opener;if(!dialog.open)dialog.showModal();setPanel(kind);}
+ function closedPanel(kind:'actions'|'visit'){setPanel(visitsDialog.current?.open?'visit':actionsDialog.current?.open?'actions':null);(kind==='actions'?actionsOpener:visitsOpener).current?.focus();}
+
   const manifest=experience.scene;
   const [me, setMe] = useState<Me | null>(null); const [available, setAvailable] = useState(false); const [loading, setLoading] = useState(true);
   const [view, setView] = useState(idle); const [message, setMessage] = useState(''); const [busy, setBusy] = useState(false);
@@ -60,12 +70,12 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,sceneFirst
     update(); media.addEventListener('change', update); return () => media.removeEventListener('change', update);
   }, []);
   useEffect(() => {
-    if (view.status === 'active' && focusIntent.current === 'actions') { document.getElementById('cafe-action-title')?.focus(); focusIntent.current = null; }
+    if (view.status === 'active' && focusIntent.current === 'actions') { if(sceneFirst)showPanel('actions',actionsButton.current);document.getElementById('cafe-action-title')?.focus(); focusIntent.current = null; }
     if (view.status === 'idle' && focusIntent.current === 'entry' && !busy) {
       const button = entryButton.current;
       if (button && !button.disabled) { button.focus(); if (document.activeElement === button) focusIntent.current = null; }
     }
-  }, [view, busy]);
+  }, [view, busy,sceneFirst]);
   useEffect(() => {
     const motion = view.snapshot?.self.motion; const serverTime = view.snapshot?.serverTime;
     const remaining = motion && serverTime !== undefined ? motion.startedAt + (motion.path.length - 1) * motion.stepMs - serverTime : 0;
@@ -231,25 +241,31 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,sceneFirst
     <a className="cafe-skip" href="#cafe-room-controls">Skip to room controls</a>
     <header className="cafe-nav"><Link href="/">Virtual Life Platform</Link><nav aria-label="Room navigation"><Link href="/identity">Identity</Link><Link href="/social">Your circle</Link></nav><span className="cafe-local">{experience.badge}</span></header>
     <div className="cafe-heading"><div><p className="cafe-eyebrow">{experience.eyebrow}</p><h1>{experience.title}</h1></div><div className="cafe-occupancy" aria-label={view.snapshot ? 'Room occupancy' : 'Room occupancy unconfirmed'}><strong>{view.snapshot?.occupancy ?? '—'}</strong><span>/ {view.snapshot?.capacity??experience.capacity??manifest.seats.length} present</span></div></div>
-    {sceneFirst&&<><div className="cafe-game-hud"><div className="cafe-game-status">{connection}{feedback}</div><div className="cafe-game-entry">{visitControls}</div></div>
-      <nav className="cafe-game-nav" aria-label="Activity shortcuts"><a href="#cafe-action-title">Seats &amp; movement</a><a href="#cafe-room-controls">People, safety &amp; options</a><Link href="/travel">Travel</Link></nav>
-      <details className="cafe-onboarding"><summary>New here?</summary><p>Enter when a place is available, then choose an open seat or activity. Your place is confirmed when the room responds. You can leave or open safety controls independently.</p><p>If a room is full, try another available place. Only confirmed room information is shown.</p></details></>}
+    {sceneFirst&&<><div className="cafe-game-hud"><div className="cafe-game-status">{panel===null&&<>{connection}{feedback}</>}</div><div className="cafe-game-entry">{visitControls}</div></div>
+      <nav className="cafe-game-nav" aria-label="Activity shortcuts"><button ref={actionsButton} onClick={event=>showPanel('actions',event.currentTarget)}>Room actions</button><button onClick={event=>showPanel('visit',event.currentTarget)}>People, safety &amp; options</button><Link href="/travel">Travel</Link></nav><p className="cafe-portrait-hint">Turn sideways for a wider view. All controls remain available.</p>
+      </>}
     <div className="cafe-main"><div className="cafe-scene-column">
       <div className="cafe-scene" ref={host} role="img" aria-busy={sceneState === 'loading'} aria-label={experience.sceneLabel}/>
       <div className="cafe-scene-caption"><span>{experience.caption}</span><span>{sceneState === 'loading' ? 'Loading scene...' : sceneState === 'failed' ? 'Scene unavailable. Seat controls remain available.' : 'Original starter art'}</span></div>
+      <RoomDrawer enabled={sceneFirst} title="Room actions" drawerRef={actionsDialog} onClosed={()=>closedPanel('actions')}>
+      {sceneFirst&&<div className="cafe-seat-search"><label>Find a seat<input type="search" value={seatFilter} onChange={event=>setSeatFilter(event.target.value)} autoComplete="off"/></label></div>}
+      {sceneFirst&&<><div className="cafe-drawer-status">{panel==='actions'&&<>{connection}{feedback}</>}</div><button className="cafe-drawer-safety" onClick={event=>showPanel('visit',event.currentTarget)}>People and safety</button></>}
       {experience.areas&&<section className="room-areas" aria-label={experience.areaLabel??'Library desk areas'}><h2>{experience.areaHeading??'A quiet place to read'}</h2><p>{experience.areaDescription??'Both desk areas share the same quiet room. No audio, book files or automatic social sharing.'}</p>{experience.areas.map(area=><div key={area.key}><h3>{area.title}</h3><p>{area.description}</p></div>)}<a href={experience.provenance??'/assets/library/provenance.json'}>Original {experience.noun} art provenance</a></section>}
       {typeof children==='function'?children({me,active,retainedSource:safetyRoom?{epoch:safetyRoom.epoch,roomId:safetyRoom.roomId,membershipId:safetyRoom.membershipId}:null,source:active&&view.snapshot?{epoch:view.snapshot.epoch,roomId:view.snapshot.roomId,membershipId:view.snapshot.membershipId}:null,seated:active&&!!view.snapshot?.self.seatId,transport:active?socket.current:null,participants:active&&view.snapshot?view.snapshot.participants:[]}):children}
       <section aria-label="Walk around"><h2 id="cafe-action-title" tabIndex={-1}>Walk around</h2><p className="cafe-note">{experience.movementHint??'Choose an open floor tile, or use a destination below. Tables and walls are solid.'}</p><div className="cafe-seat-grid">{experience.destinations.map(point => <button key={point.label} disabled={!active || busy || walking || !!view.snapshot?.self.seatId} onClick={() => moveRef.current({ x: point.x, y: point.y })}>Walk to {point.label.toLowerCase()}</button>)}</div></section>
       <section className="cafe-seats" aria-labelledby="cafe-seat-title"><div className="cafe-section-heading"><h2 id="cafe-seat-title">Choose a seat</h2>{view.snapshot?.self.seatId && <button disabled={busy} onClick={() => void mutate('seat.release', view.snapshot!.self.seatId!)}>Stand up</button>}</div>
-        <div className="cafe-seat-grid">{manifest.seats.map(point => {
+        <div className="cafe-seat-grid">{manifest.seats.filter(point=>!sceneFirst||point.label.toLocaleLowerCase().includes(seatFilter.toLocaleLowerCase())).map(point => {
           const seat = view.snapshot?.seats.find(seat => seat.seatId === point.seatId);
           return <button key={point.seatId} className={seat?.mine ? 'mine' : ''} disabled={!active || busy || seat?.state !== 'available' || !!view.snapshot?.self.seatId} aria-label={point.label + (seat?.mine ? ', your seat' : '')} onClick={() => void mutate('seat.claim', point.seatId)}><span>{point.seatId.slice(5).padStart(2, '0')}</span><span>{point.label.split(' ').slice(0, 2).join(' ')}<small>{seat?.mine ? 'Your seat' : !active ? 'Not connected' : seat?.state === 'held' ? 'Reconnecting' : seat?.state === 'occupied' ? 'Occupied' : 'Available'}</small></span></button>;
         })}</div>
-      </section>{me && <>{experience.focus&&<FocusPanel key={me.profile.id + ':' + me.csrfToken} me={me} source={active && view.snapshot?.self.seatId ? { epoch: view.snapshot.epoch, roomId: view.snapshot.roomId, membershipId: view.snapshot.membershipId } : null}/ >}{experience.wardrobe&&<Wardrobe key={'wardrobe:'+me.profile.id+':'+me.csrfToken} me={me} source={active&&view.snapshot?{epoch:view.snapshot.epoch,roomId:view.snapshot.roomId,membershipId:view.snapshot.membershipId}:null} effective={active?view.snapshot?.participants.find(person=>person.profile.id===me.profile.id)?.outfit??'casual':null}/ >}{experience.events&&available&&<WorldEvents key={'events:'+me.profile.id+':'+me.csrfToken} me={me} worldSlug={experience.slug} source={active&&view.snapshot?{epoch:view.snapshot.epoch,roomId:view.snapshot.roomId,membershipId:view.snapshot.membershipId}:null}/>}</>}<a className="cafe-action-back" href="#cafe-room-controls">Back to visit controls</a></div>
+      </section>{me && <>{experience.focus&&<FocusPanel key={me.profile.id + ':' + me.csrfToken} me={me} source={active && view.snapshot?.self.seatId ? { epoch: view.snapshot.epoch, roomId: view.snapshot.roomId, membershipId: view.snapshot.membershipId } : null}/ >}{experience.wardrobe&&<Wardrobe key={'wardrobe:'+me.profile.id+':'+me.csrfToken} me={me} source={active&&view.snapshot?{epoch:view.snapshot.epoch,roomId:view.snapshot.roomId,membershipId:view.snapshot.membershipId}:null} effective={active?view.snapshot?.participants.find(person=>person.profile.id===me.profile.id)?.outfit??'casual':null}/ >}{experience.events&&available&&<WorldEvents key={'events:'+me.profile.id+':'+me.csrfToken} me={me} worldSlug={experience.slug} source={active&&view.snapshot?{epoch:view.snapshot.epoch,roomId:view.snapshot.roomId,membershipId:view.snapshot.membershipId}:null}/>}</>}{!sceneFirst&&<a className="cafe-action-back" href="#cafe-room-controls">Back to visit controls</a>}</RoomDrawer></div>
+      <RoomDrawer enabled={sceneFirst} title="People and safety" drawerRef={visitsDialog} onClosed={()=>closedPanel('visit')}>
+      {sceneFirst&&<div className="cafe-drawer-status">{panel==='visit'&&<>{connection}{feedback}</>}</div>}
+      {sceneFirst&&<><nav className="cafe-drawer-links" aria-label="City and identity"><Link href="/">City</Link><Link href="/identity">Identity</Link><Link href="/social">Your circle</Link></nav><details className="cafe-onboarding"><summary>New here?</summary><p>Enter when a place is available, then choose an open seat or activity. Your place is confirmed when the room responds. You can leave or open safety controls independently.</p><p>If a room is full, try another available place. Only confirmed room information is shown.</p></details></>}
       <aside className="cafe-sidebar" id="cafe-room-controls" tabIndex={-1} aria-label="Your room"><h2>Your visit</h2>{!sceneFirst&&<>{connection}{feedback}{visitControls}</>}
         <label className="cafe-motion"><input type="checkbox" checked={lowMotion} onChange={event => { const value = event.target.checked; userMotion.current = value; lowMotionRef.current = value; setLowMotion(value); scene.current?.setReducedMotion(value); }}/>Reduce room motion</label>
         <div className="cafe-present"><h2>Visible here</h2>{view.snapshot?.participants.length ? <ul>{view.snapshot.participants.map(person => <li key={person.profile.id}><span>{person.profile.displayName}</span><small>{person.state === 'reconnecting' ? 'Reconnecting' : person.seatId ? 'Seated' : 'Standing'}</small></li>)}</ul> : <p className="cafe-note">No confirmed visible visitors.</p>}</div><Link href="/worlds/sdk-sandbox/avatar-lab">Preview avatar styles</Link>
         <Link href="/travel">Travel to another world</Link>{me&&safetyRoom&&(experience.slug==='library'||experience.roomInvites)&&<RoomInvitation active={active} place={experience.noun==='cafe'?'cafe':'study'} purpose={experience.slug==='maid'?'social':'focus'} key={safetyRoom.membershipId} me={me} destination={{worldSlug:experience.slug,worldVersion:experience.worldVersion,sceneVersion:manifest.version,roomId:safetyRoom.roomId}}/>}{me && safetyRoom && <RoomSafety key={me.profile.id + ':' + safetyRoom.membershipId} me={me} room={safetyRoom} active={active}/>}
-      </aside></div>
+      </aside></RoomDrawer></div>
   </main>;
 }

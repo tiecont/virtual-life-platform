@@ -71,7 +71,8 @@
     "mobile:android:build": "pnpm mobile:sync:android && node scripts/android-build.mjs",
     "mobile:preview:smoke": "python3 scripts/mobile-preview-smoke.py",
     "ux:animal-study": "node scripts/verify-animal-study.mjs",
-    "test:ux-core": "node scripts/run-ux-core.mjs"
+    "test:ux-core": "node scripts/run-ux-core.mjs",
+    "mobile:landscape:smoke": "python3 scripts/mobile-landscape-smoke.py"
   },
   "devDependencies": {
     "@eslint/js": "9.39.1",

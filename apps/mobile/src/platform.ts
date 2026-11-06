@@ -3,7 +3,7 @@ import {internalPath,type ClientPlatform} from '@virtual-city/client-sdk';
 // Back navigation belongs to the shell: a fallback route unmounts the room.
 export function bindMobileBack(navigate:(path:string)=>void):()=>void{
  let disposed=false;let handle:PluginListenerHandle|undefined;
- if(Capacitor.isNativePlatform())void App.addListener('backButton',()=>{if(!disposed)navigate('/');}).then(value=>{if(disposed)void value.remove();else handle=value;}).catch(()=>{});
+ if(Capacitor.isNativePlatform())void App.addListener('backButton',()=>{if(disposed)return;const dialog=Array.from(document.querySelectorAll<HTMLDialogElement>('dialog[open]')).at(-1);if(dialog){if(dialog.dispatchEvent(new Event('cancel',{cancelable:true})))dialog.close();return;}navigate('/');}).then(value=>{if(disposed)void value.remove();else handle=value;}).catch(()=>{});
  return()=>{disposed=true;if(handle)void handle.remove();};
 }
 export function mobilePlatform(navigate:(path:string)=>void):ClientPlatform{
