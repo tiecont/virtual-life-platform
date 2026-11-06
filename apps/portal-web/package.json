@@ -11,8 +11,8 @@
   "dependencies": {
     "@virtual-city/focus-ui": "workspace:*",
     "@virtual-city/library-world": "workspace:*",
-    "@virtual-city/deadline-world":"workspace:*",
-    "@virtual-city/maid-world":"workspace:*",
+    "@virtual-city/deadline-world": "workspace:*",
+    "@virtual-city/maid-world": "workspace:*",
     "@virtual-city/park-world": "workspace:*",
     "@virtual-city/restaurant-world": "workspace:*",
     "@virtual-city/lounge-world": "workspace:*",
@@ -22,6 +22,8 @@
     "next": "16.4.4",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "socket.io-client": "4.8.4"
+    "socket.io-client": "4.8.4",
+    "@virtual-city/game-client": "workspace:*",
+    "@virtual-city/client-sdk": "workspace:*"
   }
 }

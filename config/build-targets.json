@@ -5,7 +5,7 @@
   "packageManager": "pnpm@11.28.5",
   "rootBuild": "pnpm -r build",
   "packagesBuild": "pnpm --filter './packages/*' -r build",
-  "lockSha256": "d552edea9691e0fc71921ea21a2e3f80b5c9e213f87416e896cd3bc74bac7a03",
+  "lockSha256": "905fb65b746ae7ddb5864d8d5d05a6fcb9b5086611d3c695c861806709b63c35",
   "workspaceConfigSha256": "0c79bdd36e2d8eac11365b4cba92045f1d494d8e191f41de14298de2263d0ec1",
   "rootDependencies": {
     "dependencies": {},
@@ -38,14 +38,17 @@
   "buildOrder": [
     "@virtual-city/contracts",
     "@virtual-city/admin-web",
+    "@virtual-city/client-sdk",
     "@virtual-city/world-sdk",
     "@virtual-city/deadline-world",
     "@virtual-city/focus-ui",
+    "@virtual-city/pixi-scene",
+    "@virtual-city/game-client",
     "@virtual-city/library-world",
     "@virtual-city/lounge-world",
     "@virtual-city/maid-world",
+    "@virtual-city/mobile",
     "@virtual-city/park-world",
-    "@virtual-city/pixi-scene",
     "@virtual-city/restaurant-world",
     "@virtual-city/platform-api",
     "@virtual-city/portal-web"
@@ -82,6 +85,39 @@
       "applicationConsumers": []
     },
     {
+      "name": "@virtual-city/client-sdk",
+      "path": "packages/client-sdk",
+      "kind": "compiled-package",
+      "build": "tsc -p tsconfig.json",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "dependencies": [
+        "@virtual-city/config"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "packages/client-sdk/tsconfig.json",
+          "sha256": "b340a96b22d9777f7c746b57d42ce18a5dbcae2213253c1e3bb1b0943caf0fb7"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {},
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": [
+        "@virtual-city/mobile",
+        "@virtual-city/portal-web"
+      ]
+    },
+    {
       "name": "@virtual-city/config",
       "path": "packages/config",
       "kind": "source-only",
@@ -103,6 +139,7 @@
       },
       "applicationConsumers": [
         "@virtual-city/admin-web",
+        "@virtual-city/mobile",
         "@virtual-city/platform-api",
         "@virtual-city/portal-web"
       ]
@@ -139,6 +176,7 @@
       },
       "applicationConsumers": [
         "@virtual-city/admin-web",
+        "@virtual-city/mobile",
         "@virtual-city/platform-api",
         "@virtual-city/portal-web"
       ]
@@ -212,6 +250,46 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
+        "@virtual-city/portal-web"
+      ]
+    },
+    {
+      "name": "@virtual-city/game-client",
+      "path": "packages/game-client",
+      "kind": "compiled-package",
+      "build": "tsc -p tsconfig.json",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "dependencies": [
+        "@virtual-city/client-sdk",
+        "@virtual-city/config",
+        "@virtual-city/contracts",
+        "@virtual-city/pixi-scene",
+        "@virtual-city/world-sdk"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "packages/game-client/tsconfig.json",
+          "sha256": "fe6c337f5efe50664efa5025176d1592eed13ec5324cbfabf588946d32752f38"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {
+          "react": "19.3.1",
+          "socket.io-client": "4.8.4"
+        },
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": [
+        "@virtual-city/mobile",
         "@virtual-city/portal-web"
       ]
     },
@@ -321,6 +399,48 @@
       ]
     },
     {
+      "name": "@virtual-city/mobile",
+      "path": "apps/mobile",
+      "kind": "application",
+      "build": "tsc --noEmit && vite build",
+      "typecheck": "tsc --noEmit",
+      "dependencies": [
+        "@virtual-city/client-sdk",
+        "@virtual-city/config",
+        "@virtual-city/game-client",
+        "@virtual-city/pixi-scene"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "apps/mobile/tsconfig.json",
+          "sha256": "7b049154aa0211cb4bf6bc7cbadc82aaf53452a4172f121417d95b0f5804c913"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {
+          "@capacitor/android": "8.6.0",
+          "@capacitor/app": "8.0.0",
+          "@capacitor/core": "8.6.0",
+          "react": "19.3.1",
+          "react-dom": "19.3.1"
+        },
+        "devDependencies": {
+          "@capacitor/cli": "8.6.0",
+          "vite": "8.3.5"
+        },
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": []
+    },
+    {
       "name": "@virtual-city/park-world",
       "path": "packages/park-world",
       "kind": "compiled-package",
@@ -388,6 +508,7 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
+        "@virtual-city/mobile",
         "@virtual-city/portal-web"
       ]
     },
@@ -450,9 +571,11 @@
       "build": "next build --webpack",
       "typecheck": "tsc --noEmit",
       "dependencies": [
+        "@virtual-city/client-sdk",
         "@virtual-city/contracts",
         "@virtual-city/deadline-world",
         "@virtual-city/focus-ui",
+        "@virtual-city/game-client",
         "@virtual-city/library-world",
         "@virtual-city/lounge-world",
         "@virtual-city/maid-world",
@@ -565,6 +688,7 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
+        "@virtual-city/mobile",
         "@virtual-city/platform-api",
         "@virtual-city/portal-web"
       ]

@@ -1,0 +1,27 @@
+{
+  "name": "@virtual-city/game-client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./styles.css": "./src/world-room.css"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@virtual-city/client-sdk": "workspace:*",
+    "@virtual-city/contracts": "workspace:*",
+    "@virtual-city/world-sdk": "workspace:*",
+    "@virtual-city/pixi-scene": "workspace:*",
+    "react": "19.3.1",
+    "socket.io-client": "4.8.4"
+  }
+}

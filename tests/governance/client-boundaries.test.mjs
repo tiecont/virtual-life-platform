@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {assertBrowserManifest,assertBrowserSource} from '../../scripts/client-boundaries.mjs';
+test('browser packages reject Next, Node and database dependencies',()=>{for(const name of ['next','node:fs','pg','server-only'])assert.throws(()=>assertBrowserManifest({type:'module',dependencies:{[name]:'1.0.0'}}));});
+test('source guard catches static/re-export/require and computed server escape paths',()=>{for(const code of ["import Link from 'next/link'","export * from 'node:crypto'","const x=require('fs')","import(name)","const secret=process.env.SESSION_SECRET"])assert.throws(()=>assertBrowserSource(code,'client.ts'));});
+test('reviewed browser renderer import remains lazy and server globals remain absent',()=>{assert.doesNotThrow(()=>assertBrowserSource("import type {ClientPlatform} from '@virtual-city/client-sdk'; const start=()=>import('@virtual-city/pixi-scene/renderer');",'client.ts'));});
