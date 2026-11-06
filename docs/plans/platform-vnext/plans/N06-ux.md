@@ -2,7 +2,7 @@
 
 **Owner lane:** Experience  
 **Activation:** active · **Implementation:** TODO  
-**Goal:** Chuyển từ giao diện kiểm chứng nền tảng thành game social 2D đẹp, rõ, dễ trở lại, có kiểm tra usability.
+**Goal:** Chuyển giao diện kiểm chứng thành game social3D animals đẹp, lông/animation chi tiết, rõ, dễ trở lại, có kiểm tra usability trên web/mobile.
 
 ## Phạm vi file dự kiến
 
@@ -23,6 +23,8 @@ Path mới là đề xuất, không chứng minh source đã tồn tại. Đọc
 - [Task state](../state/task-state.json)
 
 ## Owner update 2026-11-06
+
+**Hướng hiện hành:** [animals3D/lông chi tiết/UI và Emulator](../architecture/07-3D-FUR-AND-EMULATOR.md). N06-06 design2D và N06-08 landscape giữ acceptance/revision lịch sử. N06-10/11 bổ sung brief/pipeline và renderer3D; N06-07 creator/N06-04 cảnh phải dùng model/rig/material/animation3D chung, N06-09 phải kiểm fur/LOD/animation/lighting/readability từ runtime3D web/mobile thật. Xem manifest cho dependency mới; không coi sprite/SVG study là final3D.
 
 [Animal/landscape visual direction](../architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md) bổ sung N06-06..09. N06-01/02 đã VERIFIED vẫn giữ acceptance/evidence lịch sử. Các task mới là TODO; đọc runtime state để biết tiến độ. Thứ tự implementation: N06-06 → N06-03 → N06-08/N06-07 → N06-04 → N06-09 → N06-05/N10-04.
 
@@ -225,7 +227,7 @@ Task thiết kế: ghi review/artifact hashes thực; không cần tạo tests m
 
 ### N06-07 — Modular animal creator, authoritative appearance và shared rendering
 
-**Depends on:** N06-03, N06-06, N02-04, N05-06, N10-03
+**Depends on:** N06-03, N06-06, N02-04, N05-06, N10-03, N06-11
 **Trạng thái ban đầu:** TODO
 **Priority:** 82.2
 
@@ -308,7 +310,7 @@ Scenario/review cần bằng chứng thật:
 
 ### N06-09 — Animal/landscape visual qualification và asset performance evidence
 
-**Depends on:** N06-04, N06-07, N06-08
+**Depends on:** N06-04, N06-07, N06-08, N06-11
 **Trạng thái ban đầu:** TODO
 **Priority:** 83.5
 
@@ -347,3 +349,23 @@ Scenario/review cần bằng chứng thật:
 **Rollback / recovery:** Rollback versioned scenes/shell/creator bằng flags và compatible catalog; giữ data và evidence, không hạ thresholds để PASS.
 
 **Required evidence:** source SHA/diff hash, environment/device, lệnh/exit hoặc review thực, artifacts/hash, acceptance và limitations; không coi plan validation là visual/gameplay PASS.
+
+### N06-10 — Art direction3D, fur/rig pipeline và budgets trước đo
+
+**Depends on:** N06-06,N06-08 · **Priority:**79 · **Initial:**TODO
+
+Deliverables: brief3D hiện hành, model/groom/material/animation/UI rubric, rendererport/source audit và ADR, provenance/pipeline và budgets có revision trước implementation. Chốt một animal close-up và một phòng đại diện; starter catalog hỗ trợ cat/dog/rabbit và các bộ phận owner yêu cầu.
+
+Acceptance: chuyển pixel sang3D đúng yêu cầu web/mobile; fur có hướng/mật độ/LOD/seams và lighting, không nhận primitive/SVG/concept là final; audit giữ identity/authority/server floor/receipts, locked Android thresholds và v1 selections. Đặt limits mesh/bones/cards/textures/drawcalls/download/shadows/quality tiers và điều kiện measurement riêng, không gán kết quả khi chưa chạy. Quyền asset và owner art review có trạng thái thật.
+
+Verification: review source/model pipeline/ADR/budget/provenance thực và plan validation. Đây là design scope, không tự phát minh PASS3D/physical/human. Rollback: version brief mới, giữ evidence/budgets cũ và renderer fallback. Evidence cần SHA/diff, commands/review outcomes, hashes, limitations và exact next action.
+
+### N06-11 — Shared3D renderer spike, rig/fur và phòng đại diện
+
+**Depends on:** N06-10,N10-05,N06-08 · **Priority:**81 · **Initial:**TODO
+
+Deliverables: renderer3D qua shared adapter, model rigged/fur/material và một góc phòng tương tác, loader/cache/dispose/context recovery, camera/LOD/quality settings; shared web/mobile build. Chọn/pin renderer theo ADR và phép đo, không rewrite backend/ORM.
+
+Acceptance: runtime3D thực có idle/walk/sit/serve và camera/resize; close-up fur và gameplay-distance LOD/readability, anchors/occlusion/shadow/color-space được review. Không texture/card leak sau travel/recreate; graphics failure vẫn có DOM/report/leave. Web + packaged Android Emulator chạy thực; physical Android kiểm riêng và iOS conditional. Ghi số đo GPU/frame/loading/memory và source/model/material hashes; emulator/softwareGPU không thay physical thermal/battery hoặc N10-04. Placeholder có nhãn; N06-09 vẫn cần final asset/visual acceptance.
+
+Verification hiện hữu cần chạy: pnpm lint, pnpm typecheck, pnpm build, pnpm test:client-boundaries, pnpm assets:check. **Planned, phải implement trước:** pnpm test:scene3d; pnpm mobile:emulator:smoke. Manual: actual browser/AVD/physical images/video/performance và failure/context-loss/lifecycle review theo brief07. Rollback bằng renderer flag/catalog compatibility, giữ Pixi/v1 data/receipts. Evidence SHA/diff, environment/device/GPU, actual commands/codes/hashes/limitations/exact next action.

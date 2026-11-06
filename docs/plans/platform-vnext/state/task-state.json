@@ -510,9 +510,9 @@
       "next_action": "Complete independently reserved N10-02 in artifacts/vnext/n10-02/checkout: qualify shared Next/browser client and local Vite/Capacitor bundle, preserve browser cookie/Origin/CSRF/safety adapters and collect actual Android build/install evidence before VERIFIED. Keep native auth/gameplay unavailable until N10-03 and keep N14 conditional without Mac/Xcode/iPhone; continue only dependency-ready tasks."
     },
     "N09-03": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
+      "status": "IN_PROGRESS",
+      "owner": "Codex",
+      "branch": "codex/vnext-n09-02-postgres",
       "evidence_refs": [],
       "blocker": null,
       "next_action": "Waiting UI rank/ETA range/leave/ready countdown, accessible updates"
@@ -722,7 +722,7 @@
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Creator species/body/head/eyes/muzzle/ears/tail/fur-markings/hair/outfit/accessories với preview, preset, reset, Save/Cancel"
+      "next_action": "Implement shared3D part-based creator after N06-11 and N10-03; authoritative Save/Cancel, existing v1/entitlement compatibility"
     },
     "N06-08": {
       "status": "VERIFIED",
@@ -740,7 +740,31 @@
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Source/asset-revision-bound screenshot/video matrix và visual review rubric"
+      "next_action": "Qualify actual3D/fur/animation/lighting/LOD and polished web/mobile UI, preserving pixel evidence as historical"
+    },
+    "N06-10": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Brief3D/fur/rig/UI và rendererport audit/ADR"
+    },
+    "N06-11": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Shared renderer3D adapter, rigged animal/fur/material/room technical slice"
+    },
+    "N10-05": {
+      "status": "IN_PROGRESS",
+      "owner": "Codex",
+      "branch": "codex/vnext-n09-02-postgres",
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "KVM API12 is accessible; pin/install Emulator37.2.13 and API35Google APIs x86_64rev9 in the isolated SDK; implement private AVD start/smoke/stop, actual own-APK qualification and evidence. No physical/iOS substitution."
     }
   },
   "runtime_context": {
@@ -748,7 +772,7 @@
     "android_clients_distributed": false,
     "ios_clients_distributed": false
   },
-  "plan_revision": "2.2-animal-landscape",
+  "plan_revision": "2.3-3d-animals",
   "planning_updates": [
     {
       "at": "2026-11-06",
@@ -758,6 +782,16 @@
         "N06-07",
         "N06-08",
         "N06-09"
+      ],
+      "implementation_evidence_added": false
+    },
+    {
+      "at": "2026-11-06",
+      "requirement": "Owner switches pixel2D to animated3D animals/detailed fur and polished web/mobile UI; authorizes self-run Android Emulator",
+      "new_tasks": [
+        "N06-10",
+        "N06-11",
+        "N10-05"
       ],
       "implementation_evidence_added": false
     }

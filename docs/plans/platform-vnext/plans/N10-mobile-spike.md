@@ -157,3 +157,13 @@ Scenario / evidence:
 **Rollback / recovery:** Keep shared contracts/backend; discard failed shell spike without rewriting platform.
 
 **Required evidence:** source SHA/diff hash, environment/device, command + exit code, acceptance từng mục, artifact refs/hash, limitations và exact next action. Không ghi secrets; không gọi historical results là fresh verification.
+
+### N10-05 — Android Emulator độc lập cho development và regression
+
+**Depends on:** N10-02 · **Priority:**78 · **Initial:**TODO
+
+Owner cho phép tự chạy máy ảo; xem [3D/emulator brief](../architecture/07-3D-FUR-AND-EMULATOR.md). Deliverables: preflight KVM/CPU/RAM/GPU/disk, pinned emulator/system image và AVD private, commands lifecycle/own-app smoke với serial chọn tường minh.
+
+Acceptance: actual boot/KVM/GPU mode, APK hash/install/local packaged scene/navigation/rotation/keyboard/Back/resume có logs và artifacts; tắt process thuộc task khi kết thúc kiểm chứng. Không thay ADB USB mặc định, đọc keys/other-app UI hoặc thay global host settings. Có giới hạn RAM/disk/CPU, fail closed khi sai serial/unknown AVD. Không lấy emulator làm Android thật30phút/performance/thermal/battery, store distribution, support floor hoặc iOS Simulator.
+
+Verification **planned, phải implement rồi chạy:** pnpm mobile:emulator:start; pnpm mobile:emulator:smoke; pnpm mobile:emulator:stop. Đọc actual emulator boot/package/GPU outcomes; chưa có command không ghi PASS. Rollback: stop only owned instance, giữ AVD/logs/evidence và SDK pins; không wipe owner devices. Evidence sourceSHA/APK/image hashes, host/AVD/GPU/KVM, actual commands/codes, limitations và next exact action.

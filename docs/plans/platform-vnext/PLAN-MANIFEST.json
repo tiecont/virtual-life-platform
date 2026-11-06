@@ -1223,7 +1223,8 @@
         "Ngồi/focus/leave/resume và order/service/reward diễn ra bằng intent validated server.",
         "Travel giữ identity, report/block ở đúng ngữ cảnh và không mở unsolicited interaction.",
         "Asset budgets, original/licensed provenance; không giả art approved.",
-        "Animal appearance dùng shared composer; hai cảnh landscape có lighting/props/animation và bản sắc nhất quán theo N06-06."
+        "Animal appearance dùng shared composer; hai cảnh landscape có lighting/props/animation và bản sắc nhất quán theo N06-06.",
+        "Qualify the integrated3D animal/fur/animation web/mobile build; old pixel preview and emulator FPS cannot replace final visual/physical acceptance."
       ],
       "verification": {
         "existing": [
@@ -1848,7 +1849,8 @@
         "30min gameplay,20enter/leave,10background/resume; test keyboard/safeareas/WiFi-cellular/process kill.",
         "Renderer pauses; focus time from server; resync before commands after foreground.",
         "Một Android thật đủ cho device-baseline gate; ghi giới hạn coverage, không suy rộng tới mọi Android hoặc iOS. Thiếu iPhone không chặn N10-04; iOS physical gate là N14-03. Nếu fail sau tối ưu có timebox, ADR so sánh renderer theo nhu cầu.",
-        "30min spike dùng build landscape/animal đã tích hợp, kiểm creator/travel/rotation và asset performance; giữ budgets cũ."
+        "30min spike dùng build landscape/animal đã tích hợp, kiểm creator/travel/rotation và asset performance; giữ budgets cũ.",
+        "Qualify the integrated3D animal/fur/animation web/mobile build; old pixel preview and emulator FPS cannot replace final visual/physical acceptance."
       ],
       "verification": {
         "existing": [],
@@ -2449,7 +2451,8 @@
         "N06-06",
         "N02-04",
         "N05-06",
-        "N10-03"
+        "N10-03",
+        "N06-11"
       ],
       "deliverables": [
         "Creator species/body/head/eyes/muzzle/ears/tail/fur-markings/hair/outfit/accessories với preview, preset, reset, Save/Cancel",
@@ -2461,7 +2464,8 @@
         "Save/equip do server xác nhận; reject unknown part/URL, incompatible species và unowned cosmetics; không tự cấp quyền từ preview.",
         "Duplicate save/lost ACK, account switch/late response, stale catalog và revoke entitlement có tests; private inventory không leak ra room/metrics.",
         "V1 profiles và selected outfit giữ dữ liệu; nếu cần SQL thì additive migration số mới; N/N−1 có runtime tests và fallback không ghi đè selection.",
-        "Travel/reconnect giữ identity và appearance; cosmetic không đổi hitbox/seat/role/reward; asset/WebGL failure vẫn có DOM/text path."
+        "Travel/reconnect giữ identity và appearance; cosmetic không đổi hitbox/seat/role/reward; asset/WebGL failure vẫn có DOM/text path.",
+        "Owner3D update: shared rigged3D animals, detailed groom/LOD/material/lighting/animation and polished web/mobile UI per architecture/07; pixel evidence is historical only."
       ],
       "verification": {
         "existing": [
@@ -2528,7 +2532,8 @@
       "depends_on": [
         "N06-04",
         "N06-07",
-        "N06-08"
+        "N06-08",
+        "N06-11"
       ],
       "deliverables": [
         "Source/asset-revision-bound screenshot/video matrix và visual review rubric",
@@ -2540,7 +2545,8 @@
         "Landscape web/Android thật đủ loading/empty/full/queue/offline/reconnect/denied, rotation/keyboard/safe-area/portrait fallback; không giả queue backend đã wiring.",
         "Hai vòng chơi, avatar Save/Cancel/travel/reconnect và safety giữ authoritative outcome; graphics không khóa report/block/leave.",
         "Đo asset/frame-time/memory/loading theo budgets khóa trước; giữ failed runs, model/OS/WebView/source/catalog hashes và single-device limitations.",
-        "Rubric composition/silhouette/animation/lighting/readability/consistency có reviewer và issues; technical QA không thành owner art approval, human usability hoặc retention claim."
+        "Rubric composition/silhouette/animation/lighting/readability/consistency có reviewer và issues; technical QA không thành owner art approval, human usability hoặc retention claim.",
+        "Owner3D update: shared rigged3D animals, detailed groom/LOD/material/lighting/animation and polished web/mobile UI per architecture/07; pixel evidence is historical only."
       ],
       "verification": {
         "existing": [
@@ -2561,6 +2567,103 @@
       "module": "N06",
       "priority": 83.5,
       "initial_status": "TODO"
+    },
+    {
+      "id": "N06-10",
+      "title": "Art direction3D, fur/rig pipeline và budgets trước đo",
+      "depends_on": [
+        "N06-06",
+        "N06-08"
+      ],
+      "deliverables": [
+        "Brief3D/fur/rig/UI và rendererport audit/ADR",
+        "Provenance/pipeline và budgets versioned trước implementation"
+      ],
+      "acceptance": [
+        "Owner yêu cầu3D/lông/animation/web/mobile được ghi đúng; không dùng pixel/SVG/primitive làm final proof",
+        "Catalog/rig/groom/LOD/lighting và gameplay/creator fidelity có rubric; v1/authority/locked thresholds giữ nguyên",
+        "Khóa mesh/bones/cards/textures/drawcalls/download/shadows trước đo; measured results chưa có là null"
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [],
+        "manual": [
+          "Review source, design brief/ADR, pipeline/budgets/provenance thực; không coi plan validation là3D PASS"
+        ]
+      },
+      "rollback": "Version brief/budgets, giữ renderer/profile/evidence cũ",
+      "module": "N06",
+      "priority": 79,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N06-11",
+      "title": "Shared3D renderer spike, rig/fur và phòng đại diện",
+      "depends_on": [
+        "N06-10",
+        "N10-05",
+        "N06-08"
+      ],
+      "deliverables": [
+        "Shared renderer3D adapter, rigged animal/fur/material/room technical slice",
+        "Camera/LOD/quality tiers/cache/disposal/context recovery và packaged Android support"
+      ],
+      "acceptance": [
+        "Runtime3D có animation/anchors/lighting/LOD/readability và shared web/mobile build, không đổi authoritative floor/intent",
+        "Actual browser/AVD/physical checks và source/asset/GPU hashes, không lấy emulator làm physical thermal/battery proof",
+        "Graphics failure/resize/lifecycle/context loss không khóa DOM/safety/leave hoặc ghi đè v1 appearance; placeholder có nhãn"
+      ],
+      "verification": {
+        "existing": [
+          "pnpm lint",
+          "pnpm typecheck",
+          "pnpm build",
+          "pnpm test:client-boundaries",
+          "pnpm assets:check"
+        ],
+        "planned": [
+          "pnpm test:scene3d (implement before claiming PASS)",
+          "pnpm mobile:emulator:smoke (implement before claiming PASS)"
+        ],
+        "manual": [
+          "Actual interactive3D image/video/animation/fur/room and budget review on browser,AVD,physical Android; iOS conditional"
+        ]
+      },
+      "rollback": "Renderer flag/catalog rollback giữ Pixi/v1 data/receipts",
+      "module": "N06",
+      "priority": 81,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N10-05",
+      "title": "Android Emulator độc lập cho development và regression",
+      "depends_on": [
+        "N10-02"
+      ],
+      "deliverables": [
+        "Pinned Android Emulator/system image và private AVD",
+        "Lifecycle/preflight/own-app smoke commands với explicit serial và resource budgets"
+      ],
+      "acceptance": [
+        "Actual KVM/boot/GPU mode/APK hash/install/local UI/rotation/keyboard/Back/resume evidence, stop owned instance",
+        "Không đổi USB default, đọc keys/other-app UI hay global host settings; fail closed unknown AVD/serial",
+        "Emulator không thay physical30minute/thermal/battery/store/support-floor/iOS gates"
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [
+          "pnpm mobile:emulator:start (implement before claiming PASS)",
+          "pnpm mobile:emulator:smoke (implement before claiming PASS)",
+          "pnpm mobile:emulator:stop (implement before claiming PASS)"
+        ],
+        "manual": [
+          "Read actual boot,installed APK,graphics mode and own-app/lifecycle outcomes; retain failures"
+        ]
+      },
+      "rollback": "Stop only task-owned instance, preserve AVD/logs/SDK pins; no owner-device wipe",
+      "module": "N10",
+      "priority": 78,
+      "initial_status": "TODO"
     }
   ],
   "implementation_state_at_generation": "NOT_STARTED",
@@ -2569,7 +2672,7 @@
     "ios_clients_distributed": "false while iOS has not been distributed/supported; true from first iOS distribution; null means unknown and requires iOS compatibility evidence. Do not mark iOS PASS using Android results.",
     "mobile_clients_distributed": "Aggregate: true if either platform is true, false if both are false, otherwise null. Never reset a platform to false while its clients remain supported."
   },
-  "plan_revision": "2.2-animal-landscape",
+  "plan_revision": "2.3-3d-animals",
   "execution_profile": {
     "source": "User-reported environment in this conversation, 2026-11-05; not independently inspected",
     "developer_os": "CachyOS Linux",
@@ -2583,15 +2686,18 @@
   },
   "product_direction": {
     "owner_requirement_date": "2026-11-06",
-    "scope": "Landscape gameplay, modular animal characters, visual quality across Virtual Life",
-    "specification": "architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md",
+    "scope": "Landscape3D gameplay, modular rigged animals with detailed fur/animation and polished game UI across web/mobile; Android Emulator development",
+    "specification": "architecture/07-3D-FUR-AND-EMULATOR.md",
     "new_tasks": [
       "N06-06",
       "N06-07",
       "N06-08",
-      "N06-09"
+      "N06-09",
+      "N06-10",
+      "N06-11",
+      "N10-05"
     ],
-    "implementation_status": "PLANNED_NOT_VERIFIED",
-    "prior_evidence_policy": "Keep historical N06-01/02 evidence; qualify new direction through N06-06..09"
+    "implementation_status": "3D_REQUEST_PLANNED_NOT_VERIFIED",
+    "prior_evidence_policy": "Preserve all previous evidence;2D/SVG/pixel/shell scope does not qualify new3D direction"
   }
 }

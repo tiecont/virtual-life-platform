@@ -400,3 +400,11 @@ Update `task-state.json` làm nguồn trạng thái duy nhất; prose này phả
 ## Revision 2.1
 
 Đã điều chỉnh plan cho thông tin user: CachyOS + một Android vật lý; không kiểm trực tiếp workstation/điện thoại. Android gates độc lập iOS, thêm N14 conditional và platform distribution contexts. Chỉ kiểm tính toàn vẹn plan/scheduler; chưa install/build/test ứng dụng. N13 và N14 chưa active.
+# Owner3D/emulator direction — active work, 2026-11-06
+
+Owner changes pixel2D to rigged3D animals with detailed fur/animation and polished web/mobile game UI, authorizing a self-run Android Emulator. Revision2.3 adds N06-10/11,N10-05;76tasks,48evidence records preserved. [Current3D brief](../architecture/07-3D-FUR-AND-EMULATOR.md) supersedes prior2D direction; existing VERIFIED scopes remain historical, not new3D acceptance. N06-07/09 now require N06-11. Lodge receives the same shared3D requirement without activation/ownership transfer.
+
+N09-03 remains IN_PROGRESS: shared queue UI/controller and local-only HTTP preview implemented;7controller cases pass, initial missing-route red and standard422-vs400 fixture mismatch retained. Full browser/security/regression acceptance not yet complete. No production queue activation, allocator timer or room hook. N10-05 IN_PROGRESS: actual KVM API12 available, isolated SDK installed Emulator37.2.13 and API35Google APIs x86_64rev9; AVD/boot/app verification still pending, not VERIFIED. All previous ledger/evidence,44SQL/Android thresholds/distributionfalse preserved.
+
+**Next exact action:** finish N09-03 actual browser/API/regression qualification while implementing N10-05 private AVD start/smoke/stop and actual APK checks. Then N06-10 design/budgets → N06-11 shared3D spike; N10-03 auth remains required for real creator Save. N14 still needs Mac/Xcode/iPhone, Android Emulator does not supply iOS Simulator.
+

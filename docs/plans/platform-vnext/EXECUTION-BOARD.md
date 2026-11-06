@@ -1,6 +1,6 @@
 # Execution Board — vNext
 
-**15 workstreams · 73 tasks (69 gốc + 4 animal/landscape tasks).** Implementation 0 VERIFIED là snapshot tại generation, không phải tiến độ hiện hành. Snapshot baseline: `cef7dc17172f7c6cda930c99648a5e3ad609cc55`. Trạng thái hiện hành chỉ nằm trong [state/task-state.json](state/task-state.json); bảng này là kế hoạch tại lúc tạo.
+**15 workstreams · 76 tasks (69 gốc + 4 animal/landscape + 3 yêu cầu3D/emulator).** Implementation 0 VERIFIED là snapshot tại generation, không phải tiến độ hiện hành. Snapshot baseline: `cef7dc17172f7c6cda930c99648a5e3ad609cc55`. Trạng thái hiện hành chỉ nằm trong [state/task-state.json](state/task-state.json); bảng này là kế hoạch tại lúc tạo. [Owner3D update](architecture/07-3D-FUR-AND-EMULATOR.md) giữ evidence cũ và thêm gates, chưa là3D PASS.
 
 ## Waves và demo phải có
 
@@ -96,3 +96,11 @@ Chạy `node tools/next-task.mjs` từ gói để xem ready tasks. Helper chỉ 
 | N14-03 | Physical iPhone spike và iOS UX/lifecycle gate | N14-02, N10-04, N11-02 | Mobile/Operations | [N14](plans/N14-ios-release.md) |
 | N14-04 | iOS/server version compatibility gate | N14-03, N11-03 | Mobile/Operations | [N14](plans/N14-ios-release.md) |
 | N14-05 | TestFlight, App Store dossier và review findings | N14-04, N06-05 | Mobile/Operations | [N14](plans/N14-ios-release.md) |
+
+## Owner3D/emulator additions — 2026-11-06
+
+| Task | Scope | Dependencies | Plan |
+|---|---|---|---|
+| N10-05 | Isolated Android Emulator actual development checks | N10-02 | [N10](plans/N10-mobile-spike.md) |
+| N06-10 | 3D/fur/rig/UI brief, pipeline and budgets | N06-06,N06-08 | [N06](plans/N06-ux.md) |
+| N06-11 | Shared3D renderer/rig/fur/room technical slice | N06-10,N10-05,N06-08 | [N06](plans/N06-ux.md) |
