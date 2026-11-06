@@ -1,3 +1,5 @@
+import {PrivacyRequestService} from './identity/privacy-requests';
+import {registerPrivacyRequests} from './identity/privacy-http';
 import {AccountControlService} from './identity/account-control';
 import 'reflect-metadata';
 import { DeadlineIdentityLinks } from './identity/legacy/service';
@@ -121,8 +123,9 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   });
   const identity = new IdentityService(db, config, options.now);
   const operator=config.OPERATOR_AUTH_KEY?new OperatorService(db,config.OPERATOR_AUTH_KEY,options.now):undefined;
+  const privacyRequests=new PrivacyRequestService(identity,config.SESSION_SECRET,operator,options.now);
   const accountControls=operator?new AccountControlService(identity,operator,options.now):undefined;
-  registerOperator(http,config,operator,options.now,accountControls);
+  registerOperator(http,config,operator,options.now,accountControls,privacyRequests);
   const deadlineIdentity=new DeadlineIdentityLinks(db,identity,config.NODE_ENV!=='production'&&config.LOCAL_DEADLINE_IDENTITY==='1'?(options.deadlineIdentity??new DeadlineHttpIdentityPort(config.DEADLINE_LEGACY_API_URL!)):undefined,options.now);
   identity.registerExportOwner('legacyIdentity',(account,transaction)=>deadlineIdentity.exportAccount(account,transaction));
   http.addHook('preClose',async()=>{deadlineIdentity.close();});
@@ -209,6 +212,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => { await rooms.close(); });
   registerWorlds(http, config, worlds.registry, options.now, rooms,discovery);
   registerIdentity(http, config, identity, options.now);
+  registerPrivacyRequests(http,config,privacyRequests,options.now);
   registerDeadlineIdentity(http,config,identity,deadlineIdentity,options.now);
   registerDatingProfiles(http,config,identity,datingProfiles,options.now);
   registerDatingMatching(http,config,identity,datingMatching,options.now);
@@ -269,5 +273,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => {stopDatabaseObservation(); roomMetrics.databaseAttached(false); stopEventLoopObservation(); roomMetrics.close();});
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity, deadlineIdentity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain };
+  return { app, http, identity,privacyRequests, deadlineIdentity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain };
 }

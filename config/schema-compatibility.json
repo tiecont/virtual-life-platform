@@ -4,9 +4,9 @@
   "mode": "strict",
   "journal": "city_schema_migrations",
   "metadataVersion": 1,
-  "runtimeManifestSha256": "19c70a10b7eb30e65faebbdf54f9a3fa41e8f261326d0938bc50051b71537bde",
-  "minimumDatabaseMigrations": 40,
-  "maximumDatabaseMigrations": 40,
+  "runtimeManifestSha256": "360349ed01452ddcd34cab7d6baac92191c9e015631ceda853adccd69bb1c72f",
+  "minimumDatabaseMigrations": 41,
+  "maximumDatabaseMigrations": 41,
   "reviewRef": null,
   "migrations": [
     {
@@ -168,6 +168,10 @@
     {
       "name": "0040_operator_account_controls.sql",
       "checksum": "01a19d1e1cf0b4b72f6fe1320278b431996a4fa7b24cd5ca91103cbd399417bd"
+    },
+    {
+      "name": "0041_privacy_requests.sql",
+      "checksum": "043fbca317f42c37d9418d291ad114e785166f47c909aec4e0996b5b24f87dbc"
     }
   ]
 }

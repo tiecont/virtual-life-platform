@@ -6,10 +6,11 @@ async function main() {
   const config = readConfig();
   const pool = new Pool({ connectionString: config.DATABASE_URL, max: 10, connectionTimeoutMillis: 2000 });
   pool.on('error', () => console.error('Database pool unavailable'));
-  const { app, beginDrain,identity, deadlineIdentity, social, worlds, rooms, reports, sanctions, travel, invitations, focus, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, progression } = await createApp(config, pool, true);
+  const { app, beginDrain,identity,privacyRequests, deadlineIdentity, social, worlds, rooms, reports, sanctions, travel, invitations, focus, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, progression } = await createApp(config, pool, true);
   await app.listen(config.PORT, config.HOST);
   const reloadWorlds = () => { void lifecycle.run(() => worlds.reloadFlags(), () => console.error('World flag reload failed; check local configuration and world health.')); };
   const lifecycle = new RuntimeLifecycle({beginDrain: () => {beginDrain(); process.removeListener('SIGHUP', reloadWorlds);}, closeApp: () => app.close(), closePool: () => pool.end()});
+  lifecycle.every(60000,()=>privacyRequests.maintain(),()=>console.error('Privacy retention maintenance unavailable'));
   lifecycle.every(300000, () => identity.purgeExpired().then(() => deadlineIdentity.maintain()).then(() => social.purgeExpired()).then(() => rooms.maintain()).then(() => reports.maintain()).then(() => sanctions.maintain()).then(() => travel.maintain()).then(() => invitations.maintain()).then(() => focus.maintain()), () => console.error('Platform maintenance unavailable'));
   lifecycle.every(3000, () => hospitality.maintain().then(() => config.DURABLE_JOB_ROLE === 'api' ? hospitalityOutbox.drain() : undefined).then(() => events.maintain()).then(() => stage.maintain()).then(() => audience.maintain()).then(() => datingProfiles.maintain()).then(() => datingContinuations.maintain()).then(() => datingMatching.maintain()).then(() => datingDates.maintain()).then(() => progression.maintain()), () => console.error('Service maintenance unavailable'));
   process.on('SIGHUP', reloadWorlds);

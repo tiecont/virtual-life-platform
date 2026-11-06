@@ -180,13 +180,28 @@ export class IdentityService {
   async export(token: string) {
     return this.tx(async db => {
       const s = await this.lockedSession(db, token);
-      const choices = (await db.query('SELECT choices FROM identity_privacy WHERE account_id=$1', [s.account_id])).rows[0].choices;
-      const consents = (await db.query('SELECT action,created_at FROM identity_consents WHERE account_id=$1 ORDER BY created_at', [s.account_id])).rows;
-      const credentials = (await db.query<{ login_name: string }>('SELECT login_name FROM identity_credentials WHERE account_id=$1', [s.account_id])).rows[0];
-      const domains: Record<string, unknown> = {};
-      for (const [owner, reader] of this.exportOwners) domains[owner] = await reader(s.account_id, db);
-      return { schemaVersion: 1, profile: this.public(s), kind: s.kind, privacy: PrivacySchema.parse(choices), consents, ...(Object.keys(domains).length ? { domains } : {}), ...(credentials ? { signInName: credentials.login_name } : {}) };
+      return this.exportForPrivacy(db,s.account_id);
     });
+  }
+  // Trusted identity-owned privacy port; caller holds the canonical account lock
+  // and has separately verified the request's owner, purpose and approval.
+  async exportForPrivacy(db:PoolClient,accountId:string){
+    const profile=(await db.query<{kind:'guest'|'registered';display_name:string;avatar_key:PublicProfile['avatarKey']}>('SELECT a.kind,p.display_name,p.avatar_key FROM identity_accounts a JOIN identity_profiles p ON p.account_id=a.id WHERE a.id=$1',[accountId])).rows[0];if(!profile)throw unauthorized();
+      const choices = (await db.query('SELECT choices FROM identity_privacy WHERE account_id=$1', [accountId])).rows[0].choices;
+      const consents = (await db.query('SELECT action,created_at FROM identity_consents WHERE account_id=$1 ORDER BY created_at', [accountId])).rows;
+      const credentials = (await db.query<{ login_name: string }>('SELECT login_name FROM identity_credentials WHERE account_id=$1', [accountId])).rows[0];
+      const domains: Record<string, unknown> = {};
+      for (const [owner, reader] of this.exportOwners) domains[owner] = await reader(accountId, db);
+      return { schemaVersion: 1, profile: {id:accountId,displayName:profile.display_name,avatarKey:profile.avatar_key}, kind: profile.kind, privacy: PrivacySchema.parse(choices), consents, ...(Object.keys(domains).length ? { domains } : {}), ...(credentials ? { signInName: credentials.login_name } : {}) };
+  }
+  async eraseForPrivacy(db:PoolClient,accountId:string){
+    const sessions=(await db.query<{id:string}>('SELECT id FROM identity_sessions WHERE account_id=$1',[accountId])).rows.map(row=>row.id);
+    for(const handler of this.deletionOwners.values())await handler(accountId,db);
+    await db.query('DELETE FROM identity_accounts WHERE id=$1',[accountId]);return sessions;
+  }
+  async verifyPrivacyOwner(loginName:string,password:string){
+    const row=(await this.pool.query<PasswordRecord & {account_id:string;login_name:string}>('SELECT account_id,login_name,salt,digest FROM identity_credentials WHERE login_name=$1',[loginName])).rows[0];
+    return await this.passwords.verify(password,row)?row:undefined;
   }
   async delete(token: string, requestId: string) {
     const receiptHash = this.keyed('delete:v1:' + requestId);

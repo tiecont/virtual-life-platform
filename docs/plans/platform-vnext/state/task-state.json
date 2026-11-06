@@ -414,12 +414,13 @@
     "N07-03": {
       "status": "IN_PROGRESS",
       "owner": "Admin + Runtime",
-      "branch": "codex/vnext-n07-03-operator-controls",
+      "branch": "codex/vnext-n07-03-privacy-workflow",
       "evidence_refs": [
-        "n07-03-accounts-2026-11-06"
+        "n07-03-accounts-2026-11-06",
+        "n07-03-privacy-2026-11-06"
       ],
       "blocker": null,
-      "next_action": "Continue N07-03 on the clean account-slice commit. Implement owner-verified suspended-account privacy export/deletion request/status and retention without reviving revoked player authority or exposing private payloads to the operator; then implement event draft/publish/cancel through event-owned transactions and durable runtime/maintenance controls bounded by immutable Git entitlement. Test every remaining requirement before VERIFIED; keep N04-02 externally blocked/N04-03 waiting and all real release/mobile/public gates closed."
+      "next_action": "Continue N07-03 with event calendar draft/publish/cancel through the existing event owner, fresh operator transactions, expected versions, fixed reasons/idempotency and before/after audit. Inspect current event service and callers first; preserve safety, consent, reservations and default-closed world gates. Then implement durable runtime/maintenance switches bounded by immutable Git entitlement and their audit UI. Keep N07-03 IN_PROGRESS until all acceptance passes; N04-02 remains externally blocked and no production/public/store release is authorized."
     },
     "N07-04": {
       "status": "TODO",
