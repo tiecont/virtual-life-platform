@@ -28,6 +28,7 @@
     "N05-06",
     "N06-01",
     "N06-02",
+    "N06-09",
     "N07-03",
     "N08-01",
     "N10-04"
@@ -179,7 +180,8 @@
       "acceptance": [
         "Đối chiếu M05/06/07/08/09/M13/Nxx hiện hữu; không tạo thêm identity/world room owner.",
         "Ba rulebooks có ví dụ/phase/timeouts/target audience, mọi đổi luật có ADR.",
-        "Tên/graphics/audio khác biệt, không dùng asset hoặc tên Party Animals trong sản phẩm."
+        "Tên/graphics/audio khác biệt, không dùng asset hoặc tên Party Animals trong sản phẩm.",
+        "Đối chiếu owner animal/landscape brief và shared-avatar ownership; art cụ thể còn cần review, không coi animal theme là quyền sao chép."
       ],
       "verification": {
         "existing": [
@@ -360,7 +362,8 @@
       "acceptance": [
         "Own hand/role only in per-account auth projection; spectator/public/metrics never contains secrets.",
         "Lost ACK/duplicate/out-of-order event/update account/reconnect all converge on server current view.",
-        "DOM action controls support keyboard/touch/reduced motion; status never claims success before ACK."
+        "DOM action controls support keyboard/touch/reduced motion; status never claims success before ACK.",
+        "Dùng shared landscape shell và modular animal appearance đã qualify tại N06-09; không tạo creator/catalog/orientation store riêng."
       ],
       "verification": {
         "existing": [
@@ -383,10 +386,12 @@
       "original_depends_on": [
         "N15-03",
         "N15-04",
-        "N05-04"
+        "N05-04",
+        "N06-09"
       ],
       "upstream_requires": [
-        "N05-04"
+        "N05-04",
+        "N06-09"
       ],
       "wave_id": "W0",
       "phase": "LAN-L02"
@@ -1155,7 +1160,8 @@
       "acceptance": [
         "Record model/OS/WebView/GPU and test coverage limit.",
         "All three modes core flows and hidden-privacy work on available real Android.",
-        "Do not mark iOS/Windows/Steam Deck tested using Android evidence."
+        "Do not mark iOS/Windows/Steam Deck tested using Android evidence.",
+        "Ba mode landscape trên Android thật, creator/equip→travel giữ appearance, rotation/Back/resume và asset frame-time/memory có source/catalog revision."
       ],
       "verification": {
         "existing": [
@@ -1201,7 +1207,8 @@
       "acceptance": [
         "Art rights, security, moderation/ops and game acceptance are reviewed; all flags OFF until owner-controlled staging activation.",
         "Staging candidate uses digest/ruleset/DB compatibility proof; public launch requires separate N12 release gates and explicit approvals.",
-        "Steam PC is future desktop adapter scope, not implied by a browser game; no false App Store/Play/Steam certification."
+        "Steam PC is future desktop adapter scope, not implied by a browser game; no false App Store/Play/Steam certification.",
+        "Ghi riêng technical visual QA, owner art review còn thiếu và human playtest findings; không suy ra đẹp/hay từ synthetic screenshots."
       ],
       "verification": {
         "existing": [
@@ -1232,5 +1239,6 @@
       "wave_id": "W4",
       "phase": "LAN-L02"
     }
-  ]
+  ],
+  "product_direction_revision": "owner-2026-11-06-animal-landscape"
 }

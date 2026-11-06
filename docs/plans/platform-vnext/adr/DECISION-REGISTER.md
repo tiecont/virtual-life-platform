@@ -21,6 +21,7 @@ Status `PROPOSED_BASELINE` nghĩa là lựa chọn kỹ thuật của bộ kế 
 | NEXT-ADR-013 | GitOps deployment vs DB runtime policy | Mỗi nhóm config một source; no imperative Argo drift from admin | Cross-region policy distribution need | N02/N07 |
 | NEXT-ADR-014 | One polished social/focus/service slice first | UI/UX kiểm bằng sử dụng thật; không mở rộng scope làm mỏng trải nghiệm | Usability/consented product evidence | N06 |
 | NEXT-ADR-015 | Android trước trên CachyOS, iOS conditional riêng | Một Android đủ đo baseline, macOS/iPhone access chưa có; giữ shared client và mục tiêu App Store | Có iOS resources hoặc device evidence đổi lựa chọn | N10/N11/N12/N14 |
+| NEXT-ADR-016 | Owner requirement 2026-11-06: landscape gameplay, animal theme và modular character creator; kỹ thuật rig/catalog/rendering còn phải triển khai | Ưu tiên scene/nhân vật đẹp, dùng chung identity và renderer hiện hữu; compatibility và performance có gates riêng | N06-06 chốt style/rig/budgets, physical evidence hoặc owner đổi hướng | N06-06..09, N10-04, N14, N15-05 |
 
 ## Quy tắc thay đổi quyết định
 

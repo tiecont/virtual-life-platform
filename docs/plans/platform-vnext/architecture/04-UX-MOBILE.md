@@ -1,5 +1,7 @@
 # 04 — Trải nghiệm người chơi và kiến trúc mobile
 
+**Bổ sung owner 2026-11-06:** Gameplay chính chuyển sang landscape, toàn Virtual Life theo chủ đề animals và có creator từng bộ phận. [Animal/landscape visual direction](06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md) là yêu cầu mới cho N06-03 trở đi; các đề xuất bottom navigation/portrait ở chapter này chỉ là baseline lịch sử hoặc fallback, không còn là gameplay chính. Evidence đã có giữ nguyên phạm vi revision cũ.
+
 **Trạng thái:** kiến trúc đề xuất để thực thi dần; chưa phải sản phẩm mobile đã kiểm chứng. **Mốc source rà soát:** `cef7dc17172f7c6cda930c99648a5e3ad609cc55`, ngày 05/11/2026.
 
 ## 1. Quyết định nền tảng

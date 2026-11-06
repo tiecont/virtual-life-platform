@@ -18,7 +18,7 @@
 | `N15-02` | Hợp đồng GameSession và pure rules engine | N15-01 | N02-01, N05-01 |
 | `N15-03` | World scene, table lobby, consent và permissions | N15-02 | N05-06, N06-02 |
 | `N15-04` | Encrypted durable game journal, idempotency và recovery | N15-02 | N02-04 |
-| `N15-05` | Shared match UI, recipient projections và reconnect | N15-03, N15-04 | N05-04 |
+| `N15-05` | Shared match UI, recipient projections và reconnect | N15-03, N15-04 | N05-04, N06-09 |
 | `N16-01` | Freeze 64-card deck, Glow và turn rules | N15-02 | — |
 | `N16-02` | Server reducer Sắc Đèn, receipts và authoritative timer | N16-01, N15-04 | — |
 | `N16-03` | UI đánh bài web/Android với icon hỗ trợ colorblind | N16-02, N15-05 | — |

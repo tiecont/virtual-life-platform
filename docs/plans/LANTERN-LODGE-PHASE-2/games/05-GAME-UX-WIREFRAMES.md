@@ -1,6 +1,6 @@
 # Game UX specification — shared Lodge shell
 
-**Not a rendered mockup; wireframes and interaction states for implementation/playtest.** Art direction: cozy, original 2D Lantern Lodge, warm glowing lanterns, wood/cloth geometry, readable glyphs and restrained nonblocking animation. Do not reuse Party Animals characters/board assets. Existing avatar renderer/asset provenance apply.
+**Not a rendered mockup; wireframes and interaction states for implementation/playtest.** Art direction: cozy, original 2D Lantern Lodge, warm glowing lanterns, wood/cloth geometry, readable glyphs and restrained nonblocking animation. Owner 2026-11-06 requires landscape gameplay and modular animal characters, shared across Virtual Life; see [animal/landscape integration](08-ANIMAL-LANDSCAPE-ART.md). Do not reuse Party Animals characters/board assets. Existing avatar renderer/asset provenance apply until the new shared composer is verified.
 
 ## Player journey (minimize friction)
 
@@ -22,7 +22,20 @@ City map → Lodge → occupied/available tables → choose mode/table → expli
 └────────────────────────────────────────────────────────────────────┘
 ```
 
-### Android portrait shell
+### Android landscape shell — primary gameplay
+
+```text
+┌──────────────────── Lantern Lodge / Your turn ──────────────────────┐
+│ City / Safety     animal avatars + ready/turn state       Network  │
+│                  PUBLIC BOARD / MAP / TABLE                         │
+│                  clear selection / legal action                     │
+│ Rules       YOUR HAND / YOUR ROLE       Cancel   Confirm     Leave │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+Use contextual drawers, safe-area insets and readable touch controls; the table remains visible. Both landscape directions, cutouts, keyboard and resize require real layout QA. Orientation does not reset a match or send a duplicate action.
+
+### Android portrait fallback — accessible recovery and narrow windows
 
 ```text
 ┌──────────────────────┐

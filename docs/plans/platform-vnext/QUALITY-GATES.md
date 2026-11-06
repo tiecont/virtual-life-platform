@@ -32,6 +32,8 @@ Các tên **đề xuất, phải implement trước khi dùng**: `test:contracts
 
 UI gate kiểm layout desktop/mobile, keyboard/screen reader alternatives, safe area, loading/error/offline/queue states và reduced motion. Screenshot đẹp không thay tương tác; E2E pass cũng không thay usability. Chương [UX/mobile](architecture/04-UX-MOBILE.md) giữ budget và scenario thiết bị.
 
+Owner update 2026-11-06 thêm gate [landscape/animal/visual](architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md): N06-06..09 phải có scene và creator từng bộ phận tương tác thật, appearance server-validated/compatible, landscape web/Android cùng portrait fallback và provenance/visual rubric có findings. N06-05 và N10-04 chờ N06-09; fresh physical spike phải dùng build/assets mới. Technical visual QA, owner art approval và usability là ba kết luận riêng. Không sửa thresholds cũ hoặc coi historical prototype đã đạt yêu cầu mới.
+
 ## 3. Deployment, dữ liệu và authoritative correctness
 
 Ma trận chính thức là **CD-01 đến CD-15** ở [chương CI/CD, mục 7](architecture/02-CI-CD-ARGOCD.md#7-ma-trận-deployment-regression). Staging-ready cần outcome/evidence cho đủ 15 scenario; không chép một checklist mới rồi bỏ qua failure paths.

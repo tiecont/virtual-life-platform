@@ -19,6 +19,8 @@ Các task dưới đây cần source audit, implementation và evidence thật. 
 - Ba rulebooks có ví dụ/phase/timeouts/target audience, mọi đổi luật có ADR.
 - Tên/graphics/audio khác biệt, không dùng asset hoặc tên Party Animals trong sản phẩm.
 
+- Đối chiếu owner animal/landscape brief và shared-avatar ownership; art cụ thể còn cần review, không coi animal theme là quyền sao chép.
+
 **Verification mới phải triển khai:**
 - `node scripts/verify-game-plan.mjs (implement before claiming PASS)`
 
@@ -95,7 +97,7 @@ Các task dưới đây cần source audit, implementation và evidence thật. 
 
 ### N15-05 — Shared match UI, recipient projections và reconnect
 
-**Phụ thuộc:** `N15-03`, `N15-04`, `N05-04`  
+**Phụ thuộc:** `N15-03`, `N15-04`, `N05-04`, `N06-09`
 **Đầu ra:**
 - Shared match shell and status UX
 - Recipient-scoped socket event projections
@@ -105,6 +107,8 @@ Các task dưới đây cần source audit, implementation và evidence thật. 
 - Own hand/role only in per-account auth projection; spectator/public/metrics never contains secrets.
 - Lost ACK/duplicate/out-of-order event/update account/reconnect all converge on server current view.
 - DOM action controls support keyboard/touch/reduced motion; status never claims success before ACK.
+
+- Dùng shared landscape shell và modular animal appearance đã qualify tại N06-09; không tạo creator/catalog/orientation store riêng.
 
 **Verification mới phải triển khai:**
 - `pnpm exec playwright test tests/e2e/game-shell.spec.ts (planned)`

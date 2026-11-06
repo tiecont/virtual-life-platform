@@ -1,13 +1,13 @@
-# Virtual Life Platform — Architecture & Agent Plan vNext 2.1
+# Virtual Life Platform — Architecture & Agent Plan vNext 2.2
 
 **Ngày rà soát:** 05/11/2026 · **Múi giờ báo cáo:** Asia/Saigon  
 **Repository:** https://github.com/tiecont/virtual-life-platform  
 **Snapshot được đọc:** `cef7dc17172f7c6cda930c99648a5e3ad609cc55`  
-**Trạng thái:** Thiết kế và kế hoạch thực thi; chưa áp dụng thay đổi source, chưa triển khai server.
+**Trạng thái tại generation:** thiết kế, chưa implementation. **Hiện hành:** xem state/handoff; bản cập nhật 2.2 là yêu cầu sản phẩm bổ sung, chưa triển khai graphics mới.
 
 ## Execution profile mới
 
-CachyOS Linux + một Android vật lý: Android được build/test trước; iOS giữ trong N14 conditional. Nhánh Android/web/backend không chờ Mac/iPhone. Đọc [05-CACHYOS-ANDROID-FIRST.md](architecture/05-CACHYOS-ANDROID-FIRST.md) và [thay đổi 2.1](REVISION-2.1.md). Gói có 15 modules / 69 tasks; tất cả implementation vẫn TODO.
+CachyOS Linux + một Android vật lý: Android được build/test trước; iOS giữ trong N14 conditional. Nhánh Android/web/backend không chờ Mac/iPhone. Đọc [05-CACHYOS-ANDROID-FIRST.md](architecture/05-CACHYOS-ANDROID-FIRST.md) và [thay đổi 2.1](REVISION-2.1.md). Bản gốc có 15 modules / 69 tasks. Owner update 2026-11-06 thêm [animal/landscape visual direction](architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md) và N06-06..09, tổng 73 tasks. Bốn task mới TODO; trạng thái implementation hiện hành đọc [task state](state/task-state.json), không dùng snapshot lúc tạo gói.
 
 ## Kết luận
 

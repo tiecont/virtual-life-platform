@@ -1,18 +1,20 @@
 # PHASE 2 — MASTER AGENT PLAN: Lantern Lodge
 
-**Scope:** 5 module `N15`–`N19`, 25 task. **Source:** v2.2 ZIP; tách riêng để vận hành sau kế hoạch Phase 1 đang chạy. **Status:** PLANNED/DORMANT.
+**Scope:** 5 module `N15`–`N19`, 25 task. **Source:** v2.2 ZIP + owner animal/landscape requirement 2026-11-06; tách riêng để vận hành sau kế hoạch Phase 1 đang chạy. **Status:** PLANNED/DORMANT.
 
 ## 1. Điều kiện bắt đầu, không làm phiền Phase 1
 
-- Tuyệt đối **không** sửa `docs/plans/platform-vnext/{PLAN-MANIFEST.json,state/*,MASTER-AGENT-PLAN.md}`, root `AGENTS.md`, các checkpoint M00–M24 hoặc source khi Phase 1 còn agent làm việc.
+- Phase 2 implementation agent **không** sửa `docs/plans/platform-vnext/{PLAN-MANIFEST.json,state/*,MASTER-AGENT-PLAN.md}`, root `AGENTS.md`, các checkpoint M00–M24 hoặc source khi Phase 1 còn agent làm việc. Phase 1 coordinator được đồng bộ planning requirements theo yêu cầu owner vào cả hai plan; việc cập nhật docs đó không kích hoạt Phase 2 hoặc chuyển source ownership.
 - Phase 2 dùng **trạng thái riêng** tại `state/task-state.json`; chỉ đọc Phase 1 để đối chiếu các `upstream_requires`.
 - Chỉ bắt đầu khi có **handoff rõ ràng** từ Phase 1 + owner đồng ý + không còn agent khác sở hữu files trùng phạm vi.
-- Không đòi tất cả 69 task upstream `VERIFIED`: N13 scale, N14 iOS và public rollout có thể là điều kiện riêng. Mỗi task Phase 2 chỉ đòi đúng các **upstream prerequisites** của nó; nhưng activation vẫn cần xác nhận Phase 1 đã dừng tại một checkpoint.
+- Không đòi tất cả task upstream `VERIFIED` (69 gốc + 4 animal/landscape tasks): N13 scale, N14 iOS và public rollout có thể là điều kiện riêng. Mỗi task Phase 2 chỉ đòi đúng các **upstream prerequisites** của nó; nhưng activation vẫn cần xác nhận Phase 1 đã dừng tại một checkpoint.
 - Không chạy đồng thời hai scheduler có N15–N19. Nếu Phase 1 đang chạy bản v2.2 đầy đủ, phải chọn **một** scheduler, bảo toàn mọi state/evidence trước chuyển giao; đọc [INTEGRATION-GUIDE.md](INTEGRATION-GUIDE.md).
 
 ## 2. Định hướng sản phẩm
 
 Làm một world gốc `lantern-lodge` (Hội Quán Ánh Đèn), ba mode `lantern-colors`, `mask-and-tell`, `mistbound-routes`. Bản gốc 2D hỗ trợ web và touch Android, có đường tương thích mobile/PC về sau. Không sao chép artwork, tên thương hiệu, thẻ bài có nhận diện hay luật độc quyền của Party Animals; luật gợi ý đã ghi tại `games/`.
+
+Yêu cầu owner 2026-11-06: [gameplay ngang và animal art](games/08-ANIMAL-LANDSCAPE-ART.md), dùng chung creator theo từng bộ phận/appearance với toàn Virtual Life, ưu tiên cảnh và nhân vật đẹp mắt. N15-05 thêm upstream N06-09 để shell Lodge dựa trên visual slice đã kiểm chứng; không sản xuất hệ avatar riêng. Style cụ thể và artwork vẫn cần review thật.
 
 **Core invariants:** giữ RoomAuthority singleton hiện hữu, seat game riêng seat room, một user không có hai match active, không tiết lộ bài/vai trò/đích ẩn, server-authoritative RNG/deadlines/commit, những kết quả không chắc chắn khi reconnect phải được giải quyết bằng receipt/snapshot. Spectator OFF ở v1; report/moderation và privacy luôn nằm ở platform owner hiện tại.
 

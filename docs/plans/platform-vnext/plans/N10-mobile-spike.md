@@ -128,7 +128,7 @@ Scenario / evidence:
 
 ### N10-04 — Physical Android spike và quyết định kiến trúc theo thiết bị
 
-**Depends on:** N10-03, N06-04, N05-04  
+**Depends on:** N10-03, N06-04, N05-04, N06-09
 **Trạng thái ban đầu:** TODO  
 **Priority:** 113
 
@@ -141,6 +141,8 @@ Scenario / evidence:
 - 30min gameplay,20enter/leave,10background/resume; test keyboard/safeareas/WiFi-cellular/process kill.
 - Renderer pauses; focus time from server; resync before commands after foreground.
 - Một Android thật đủ cho device-baseline gate; ghi giới hạn coverage, không suy rộng tới mọi Android hoặc iOS. Thiếu iPhone không chặn N10-04; iOS physical gate là N14-03. Nếu fail sau tối ưu có timebox, ADR so sánh renderer theo nhu cầu.
+
+- 30min spike dùng build landscape/animal đã tích hợp, kiểm creator/travel/rotation và asset performance; giữ budgets cũ.
 
 **Verification**
 

@@ -103,6 +103,8 @@ Scenario / evidence:
 - Đo native/JS memory, frame-time, startup và thermal/energy theo device budget chốt trước; thiếu số đo ghi thiếu, không PASS.
 - Thiếu physical-iPhone evidence thì gate iOS chưa đạt; kết quả Android hoặc cloud build không thay thế. Bounded optimization trước đổi stack.
 
+- Khi iOS lane có resources: landscape hai chiều, portrait fallback, animal creator/occlusion và VoiceOver với cùng appearance/catalog revision; Android không thay iPhone evidence.
+
 **Verification**
 
 Tên verification đề xuất; phải implement trước khi chạy hoặc đánh pass:

@@ -79,6 +79,8 @@ Các task dưới đây cần source audit, implementation và evidence thật. 
 - All three modes core flows and hidden-privacy work on available real Android.
 - Do not mark iOS/Windows/Steam Deck tested using Android evidence.
 
+- Ba mode landscape trên Android thật, creator/equip→travel giữ appearance, rotation/Back/resume và asset frame-time/memory có source/catalog revision.
+
 **Verification mới phải triển khai:**
 - `pnpm exec playwright test tests/e2e/lantern-lodge.mobile-web.spec.ts (planned)`
 
@@ -98,6 +100,8 @@ Các task dưới đây cần source audit, implementation và evidence thật. 
 - Art rights, security, moderation/ops and game acceptance are reviewed; all flags OFF until owner-controlled staging activation.
 - Staging candidate uses digest/ruleset/DB compatibility proof; public launch requires separate N12 release gates and explicit approvals.
 - Steam PC is future desktop adapter scope, not implied by a browser game; no false App Store/Play/Steam certification.
+
+- Ghi riêng technical visual QA, owner art review còn thiếu và human playtest findings; không suy ra đẹp/hay từ synthetic screenshots.
 
 **Verification mới phải triển khai:**
 - `pnpm infra:check`

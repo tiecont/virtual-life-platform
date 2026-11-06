@@ -1,6 +1,6 @@
 # Virtual Life Platform — Master Agent Plan vNext
 
-**Revision:** 2.1-android-first · **Baseline audit:** `cef7dc17172f7c6cda930c99648a5e3ad609cc55` · **Date:** 2026-11-05  
+**Revision:** 2.2-animal-landscape · **Baseline audit:** `cef7dc17172f7c6cda930c99648a5e3ad609cc55` · **Requirement update:** 2026-11-06
 **Scope:** Nâng nền tảng hiện hữu thành sản phẩm dễ chơi, triển khai được, đo được, có mobile và admin.  
 **Implementation state:** Các task Nxx khởi tạo TODO. Tạo gói thiết kế không đồng nghĩa thực thi task.
 
@@ -9,6 +9,7 @@
 - Một monorepo, nhiều bản build/deployable; CI phù hợp và ArgoCD trên server riêng.
 - Repo sạch, bố cục dễ phát triển, bỏ output không cần trong source tree bằng migration an toàn.
 - UI/UX là trục chính của sản phẩm, không chỉ đủ form và API.
+- Gameplay màn hình ngang, chủ đề animals cho toàn Virtual Life, tạo nhân vật theo từng bộ phận và ưu tiên đồ họa đẹp mắt. [Đặc tả mới](architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md) bổ sung N06-06..09 và gates cho UX/mobile/Lodge; chưa phải artwork hay implementation đã nghiệm thu.
 - Server-authoritative; lựa chọn giao thức phục vụ gameplay và vận hành.
 - App cho Google Play và App Store; chọn kiến trúc dựa trên source và phép thử thực tế. Profile mới: CachyOS + một Android vật lý; Android trước, iOS N14 conditional với macOS/iPhone testing access sau.
 - Admin dashboard cho đúng một tài khoản operator: events, accounts, metrics, capacity/load tests, queue, trạng thái hệ thống và traffic.
@@ -26,7 +27,7 @@ Các yêu cầu này đủ để thiết kế và làm công việc chuẩn bị
 | Build | Web/API/admin images; shared packages build nội bộ | Thêm deployable chỉ khi có vòng đời độc lập |
 | CD | Argo Application theo môi trường trong cùng repo; Git pin digest | Nhiều cluster/tenant mới cân nhắc ApplicationSet |
 | Realtime | Socket.IO qua WSS và HTTPS; contract không phụ thuộc renderer | Tính năng action cần transport khác sau benchmark |
-| UX | Shared game shell; một vòng chơi polished trước mở rộng world | Kết quả usability/retention có đồng thuận |
+| UX | Shared landscape game shell, modular animal avatar; một cảnh/vòng chơi polished trước mở rộng world | Visual QA, device budgets và usability có evidence |
 | Mobile | Shared React DOM/Pixi + Vite/Capacitor; Android trước, iOS N14 riêng | Physical spike của platform không đạt hoặc hướng game thay đổi |
 | Operator | Một danh tính admin, MFA/passkey và audit; service identities riêng | Chủ dự án yêu cầu thêm người vận hành |
 | Admission | Queue PostgreSQL bền vững; active/reserved slots nguyên tử | Queue throughput/latency thực sự cần Redis |
@@ -50,6 +51,7 @@ Có docs drift: tài liệu kiến trúc đầu kỳ vẫn nói “chưa mount P
 
 1. **Baseline:** N00, sau đó N01 cleanup + N02 boundaries.
 2. **Sản phẩm sớm:** N06-01/N06-02 và N10-01 spike được mở sau baseline cần thiết; không chờ toàn bộ hạ tầng mới bắt đầu UX/mobile.
+   Bổ sung owner 2026-11-06: giữ evidence N06-01/02 lịch sử, thực hiện N06-06 art/rig/landscape brief → N06-03 shell → N06-08 landscape và N06-07 animal creator → N06-04 polish → N06-09 visual qualification. N10-02 đang IN_PROGRESS phải checkpoint trước chuyển source slice; không lấy preview cũ chứng minh hướng mới.
 3. **Nền triển khai:** N03 build/CI → N04 Argo staging; N05 authority/transport song song.
 4. **Vận hành:** N07 admin → N08 observability/capacity → N09 admission/queue.
 5. **Android:** N10 shared-client/physical spike → N11 Android release lane, dựa trên UX/protocol ổn định. N14 iOS là nhánh conditional độc lập, không chặn Android/web.

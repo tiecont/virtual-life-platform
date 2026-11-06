@@ -1177,7 +1177,8 @@
       "depends_on": [
         "N06-02",
         "N10-02",
-        "N05-06"
+        "N05-06",
+        "N06-06"
       ],
       "deliverables": [
         "Scene-first shell, onboarding, navigation và shared state"
@@ -1185,7 +1186,8 @@
       "acceptance": [
         "Next portal mount shared game-client; không nhúng Next dependencies vào shared package.",
         "Identity/travel/queue status rõ và không duplicate authoritative state.",
-        "Không full reload/refresh form thủ công để cập nhật critical gameplay."
+        "Không full reload/refresh form thủ công để cập nhật critical gameplay.",
+        "Shared shell theo animal/landscape brief N06-06; chưa coi prototype cũ là visual acceptance."
       ],
       "verification": {
         "existing": [
@@ -1210,7 +1212,9 @@
       "title": "Polish hai vòng chơi Deadline/Maid",
       "depends_on": [
         "N06-03",
-        "N05-04"
+        "N05-04",
+        "N06-07",
+        "N06-08"
       ],
       "deliverables": [
         "Complete room scenes/animations/sound settings/interactions + first return journey"
@@ -1218,7 +1222,8 @@
       "acceptance": [
         "Ngồi/focus/leave/resume và order/service/reward diễn ra bằng intent validated server.",
         "Travel giữ identity, report/block ở đúng ngữ cảnh và không mở unsolicited interaction.",
-        "Asset budgets, original/licensed provenance; không giả art approved."
+        "Asset budgets, original/licensed provenance; không giả art approved.",
+        "Animal appearance dùng shared composer; hai cảnh landscape có lighting/props/animation và bản sắc nhất quán theo N06-06."
       ],
       "verification": {
         "existing": [
@@ -1241,7 +1246,8 @@
       "id": "N06-05",
       "title": "Usability, accessibility và product instrumentation",
       "depends_on": [
-        "N06-04"
+        "N06-04",
+        "N06-09"
       ],
       "deliverables": [
         "Usability observations, a11y report, privacy-aware activation/return event spec"
@@ -1249,7 +1255,8 @@
       "acceptance": [
         "Tối thiểu 5 target users do owner cung cấp: heuristic >=4/5 bắt đầu activity trong90s không hướng dẫn từng bước; report failures.",
         "Keyboard/touch/screenreader core tasks, reduced motion, no focus traps.",
-        "D1/D7 retention chỉ đo sau có user/cohort đủ và consent; không dùng synthetic tests chứng minh hay/giữ chân."
+        "D1/D7 retention chỉ đo sau có user/cohort đủ và consent; không dùng synthetic tests chứng minh hay/giữ chân.",
+        "Usability dùng build animal/landscape mới; ghi findings creator và gameplay ngang, không thay target-user evidence bằng screenshot diff."
       ],
       "verification": {
         "existing": [
@@ -1831,7 +1838,8 @@
       "depends_on": [
         "N10-03",
         "N06-04",
-        "N05-04"
+        "N05-04",
+        "N06-09"
       ],
       "deliverables": [
         "Physical Android results với model/OS/WebView/build/source/profile; ADR có phạm vi thiết bị đã chứng minh và iOS chưa kiểm chứng"
@@ -1839,7 +1847,8 @@
       "acceptance": [
         "30min gameplay,20enter/leave,10background/resume; test keyboard/safeareas/WiFi-cellular/process kill.",
         "Renderer pauses; focus time from server; resync before commands after foreground.",
-        "Một Android thật đủ cho device-baseline gate; ghi giới hạn coverage, không suy rộng tới mọi Android hoặc iOS. Thiếu iPhone không chặn N10-04; iOS physical gate là N14-03. Nếu fail sau tối ưu có timebox, ADR so sánh renderer theo nhu cầu."
+        "Một Android thật đủ cho device-baseline gate; ghi giới hạn coverage, không suy rộng tới mọi Android hoặc iOS. Thiếu iPhone không chặn N10-04; iOS physical gate là N14-03. Nếu fail sau tối ưu có timebox, ADR so sánh renderer theo nhu cầu.",
+        "30min spike dùng build landscape/animal đã tích hợp, kiểm creator/travel/rotation và asset performance; giữ budgets cũ."
       ],
       "verification": {
         "existing": [],
@@ -2327,7 +2336,8 @@
       "acceptance": [
         "30 phút gameplay, 20 enter/leave, 10 background/resume; keyboard/safe area/VoiceOver, Wi-Fi-cellular, process kill và foreground resync được kiểm.",
         "Đo native/JS memory, frame-time, startup và thermal/energy theo device budget chốt trước; thiếu số đo ghi thiếu, không PASS.",
-        "Thiếu physical-iPhone evidence thì gate iOS chưa đạt; kết quả Android hoặc cloud build không thay thế. Bounded optimization trước đổi stack."
+        "Thiếu physical-iPhone evidence thì gate iOS chưa đạt; kết quả Android hoặc cloud build không thay thế. Bounded optimization trước đổi stack.",
+        "Khi iOS lane có resources: landscape hai chiều, portrait fallback, animal creator/occlusion và VoiceOver với cùng appearance/catalog revision; Android không thay iPhone evidence."
       ],
       "verification": {
         "existing": [],
@@ -2401,6 +2411,156 @@
       "module": "N14",
       "priority": 215,
       "initial_status": "TODO"
+    },
+    {
+      "id": "N06-06",
+      "title": "Animal art direction, modular rig/catalog và landscape storyboard",
+      "depends_on": [
+        "N06-02"
+      ],
+      "deliverables": [
+        "Style sheet/palette/lighting và một cảnh đại diện, gắn provenance/review status",
+        "Starter animal species/body-part matrix, anchors/occlusion và idle/walk/sit/serve plan",
+        "Landscape/portrait-fallback storyboard và versioned asset/device budgets trước implementation"
+      ],
+      "acceptance": [
+        "Ghi đúng owner yêu cầu landscape/animals/tạo từng bộ phận; cozy 2D/2.5D là đề xuất, không giả owner duyệt art cụ thể.",
+        "Catalog nhỏ có lựa chọn từng bộ phận thực, compatibility loài/rig/outfit và v1 migration/fallback mapping; không chỉ tint sprite.",
+        "Review scene-first layout ở landscape viewports, safe area/keyboard/accessibility và loading/full/offline/reconnect states.",
+        "Provenance/rights status và budgets có revision, giữ thresholds android-spike.json đã khóa; concept không tính final asset hoặc measured performance."
+      ],
+      "verification": {
+        "existing": [],
+        "planned": [],
+        "manual": [
+          "Review style sheet, rig matrix, storyboard và provenance từng asset; chưa tuyên bố code/visual/device tests PASS."
+        ]
+      },
+      "rollback": "Version/revert design documents only; giữ assets, appearance v1 và evidence N06-01/02 nguyên vẹn.",
+      "module": "N06",
+      "priority": 80,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N06-07",
+      "title": "Modular animal creator, authoritative appearance và shared rendering",
+      "depends_on": [
+        "N06-03",
+        "N06-06",
+        "N02-04",
+        "N05-06",
+        "N10-03"
+      ],
+      "deliverables": [
+        "Creator species/body/head/eyes/muzzle/ears/tail/fur-markings/hair/outfit/accessories với preview, preset, reset, Save/Cancel",
+        "Versioned part catalog/appearance, server validation/persistence và N/N−1 projection",
+        "Shared layered composer cho editor, Deadline/Maid và avatar thumbnail"
+      ],
+      "acceptance": [
+        "Có biến thể nhìn thấy được theo từng bộ phận trong starter catalog N06-06; combinations hợp rig, đủ idle/walk/sit/serve và các hướng đã chốt.",
+        "Save/equip do server xác nhận; reject unknown part/URL, incompatible species và unowned cosmetics; không tự cấp quyền từ preview.",
+        "Duplicate save/lost ACK, account switch/late response, stale catalog và revoke entitlement có tests; private inventory không leak ra room/metrics.",
+        "V1 profiles và selected outfit giữ dữ liệu; nếu cần SQL thì additive migration số mới; N/N−1 có runtime tests và fallback không ghi đè selection.",
+        "Travel/reconnect giữ identity và appearance; cosmetic không đổi hitbox/seat/role/reward; asset/WebGL failure vẫn có DOM/text path."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm lint",
+          "pnpm typecheck",
+          "pnpm assets:check",
+          "pnpm test:integration",
+          "pnpm test:security",
+          "pnpm build"
+        ],
+        "planned": [
+          "pnpm test:avatar-creator (implement before claiming PASS)"
+        ],
+        "manual": [
+          "Creator→Save→Deadline/Maid→travel/reconnect trên browser và Android thật; kiểm seams/anchors/occlusion/animation và missing assets."
+        ]
+      },
+      "rollback": "Tắt creator mới theo flag, giữ appearance/catalog versions và receipts; v1 projection tương thích, không xóa hoặc reset customization.",
+      "module": "N06",
+      "priority": 82.2,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N06-08",
+      "title": "Landscape gameplay shell, native orientation và accessible fallback",
+      "depends_on": [
+        "N06-03",
+        "N06-06",
+        "N10-02"
+      ],
+      "deliverables": [
+        "Scene-first landscape HUD/dock/drawers dùng chung web/native",
+        "Gameplay-scoped native orientation adapter với cleanup và resize-safe fallback",
+        "Portrait recovery layout, DOM controls và safe-area/keyboard handling"
+      ],
+      "acceptance": [
+        "Gameplay ngang là layout chính; scene và critical actions không bị sidebar dài hoặc panel bắt buộc che khuất.",
+        "Hai chiều ngang, rotate/resize, Back/background/resume và OS không áp orientation lock không reset visit/match/avatar hoặc duplicate intent.",
+        "Portrait fallback có lời nhắc xoay không chặn report/block/leave/resync; auth/admin forms vẫn usable.",
+        "740×360,844×390,1280×720,1920×1080 và 360×740 fallback có evidence; viewport thực Android ghi riêng, không nhận là broad device coverage.",
+        "Keyboard/cutout/safe area/tăng chữ/reduced motion và touch/keyboard/screen-reader controls kiểm thật; iOS execution vẫn conditional N14."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm lint",
+          "pnpm typecheck",
+          "pnpm build"
+        ],
+        "planned": [
+          "pnpm test:ux-core (implement before claiming PASS)"
+        ],
+        "manual": [
+          "Landscape browser + APK Android thật, cả hai chiều ngang/portrait fallback, keyboard/cutout/Back/resume và late network responses."
+        ]
+      },
+      "rollback": "Tắt landscape shell/orientation policy theo flag và cleanup; giữ verified route adapter, room membership và accessible controls.",
+      "module": "N06",
+      "priority": 82.1,
+      "initial_status": "TODO"
+    },
+    {
+      "id": "N06-09",
+      "title": "Animal/landscape visual qualification và asset performance evidence",
+      "depends_on": [
+        "N06-04",
+        "N06-07",
+        "N06-08"
+      ],
+      "deliverables": [
+        "Source/asset-revision-bound screenshot/video matrix và visual review rubric",
+        "Provenance ledger, actual frame-time/memory/loading report, preserved failures",
+        "Technical visual acceptance summary, owner art-review status và exact remaining findings"
+      ],
+      "acceptance": [
+        "Actual interactive creator và Deadline/Maid có animal appearance đúng layer/pose/hướng; không lấy concept hoặc preview cũ làm bằng chứng.",
+        "Landscape web/Android thật đủ loading/empty/full/queue/offline/reconnect/denied, rotation/keyboard/safe-area/portrait fallback; không giả queue backend đã wiring.",
+        "Hai vòng chơi, avatar Save/Cancel/travel/reconnect và safety giữ authoritative outcome; graphics không khóa report/block/leave.",
+        "Đo asset/frame-time/memory/loading theo budgets khóa trước; giữ failed runs, model/OS/WebView/source/catalog hashes và single-device limitations.",
+        "Rubric composition/silhouette/animation/lighting/readability/consistency có reviewer và issues; technical QA không thành owner art approval, human usability hoặc retention claim."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm assets:check",
+          "pnpm lint",
+          "pnpm typecheck",
+          "pnpm build"
+        ],
+        "planned": [
+          "pnpm test:ux-core (implement before claiming PASS)",
+          "pnpm test:avatar-creator (implement before claiming PASS)"
+        ],
+        "manual": [
+          "Visual review theo architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md trên desktop và Android thật; ghi NOT_RUN cho coverage thiếu."
+        ]
+      },
+      "rollback": "Rollback versioned scenes/shell/creator bằng flags và compatible catalog; giữ data và evidence, không hạ thresholds để PASS.",
+      "module": "N06",
+      "priority": 83.5,
+      "initial_status": "TODO"
     }
   ],
   "implementation_state_at_generation": "NOT_STARTED",
@@ -2409,7 +2569,7 @@
     "ios_clients_distributed": "false while iOS has not been distributed/supported; true from first iOS distribution; null means unknown and requires iOS compatibility evidence. Do not mark iOS PASS using Android results.",
     "mobile_clients_distributed": "Aggregate: true if either platform is true, false if both are false, otherwise null. Never reset a platform to false while its clients remain supported."
   },
-  "plan_revision": "2.1-android-first",
+  "plan_revision": "2.2-animal-landscape",
   "execution_profile": {
     "source": "User-reported environment in this conversation, 2026-11-05; not independently inspected",
     "developer_os": "CachyOS Linux",
@@ -2420,5 +2580,18 @@
     "physical_iphone_access": "NOT_AVAILABLE_IN_REPORTED_SETUP",
     "initial_mobile_platform": "android",
     "future_ios_lane": "N14; conditional, not removed from product scope"
+  },
+  "product_direction": {
+    "owner_requirement_date": "2026-11-06",
+    "scope": "Landscape gameplay, modular animal characters, visual quality across Virtual Life",
+    "specification": "architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md",
+    "new_tasks": [
+      "N06-06",
+      "N06-07",
+      "N06-08",
+      "N06-09"
+    ],
+    "implementation_status": "PLANNED_NOT_VERIFIED",
+    "prior_evidence_policy": "Keep historical N06-01/02 evidence; qualify new direction through N06-06..09"
   }
 }

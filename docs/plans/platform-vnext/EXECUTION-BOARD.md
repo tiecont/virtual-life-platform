@@ -1,6 +1,6 @@
 # Execution Board — vNext
 
-**15 workstreams · 69 tasks · 0 implementation VERIFIED at generation.** Snapshot baseline: `cef7dc17172f7c6cda930c99648a5e3ad609cc55`. Trạng thái hiện hành chỉ nằm trong [state/task-state.json](state/task-state.json); bảng này là kế hoạch tại lúc tạo.
+**15 workstreams · 73 tasks (69 gốc + 4 animal/landscape tasks).** Implementation 0 VERIFIED là snapshot tại generation, không phải tiến độ hiện hành. Snapshot baseline: `cef7dc17172f7c6cda930c99648a5e3ad609cc55`. Trạng thái hiện hành chỉ nằm trong [state/task-state.json](state/task-state.json); bảng này là kế hoạch tại lúc tạo.
 
 ## Waves và demo phải có
 
@@ -53,9 +53,13 @@ Chạy `node tools/next-task.mjs` từ gói để xem ready tasks. Helper chỉ 
 | N05-06 | Protocol/content compatibility cho client N và N-1 | N05-01, N02-04 | Runtime | [N05](plans/N05-authority.md) |
 | N06-01 | Product journey và art direction | N00-02 | Experience | [N06](plans/N06-ux.md) |
 | N06-02 | Design system và prototype có trạng thái lỗi | N06-01 | Experience | [N06](plans/N06-ux.md) |
-| N06-03 | Implement shared game shell và điều hướng | N06-02, N10-02, N05-06 | Experience | [N06](plans/N06-ux.md) |
-| N06-04 | Polish hai vòng chơi Deadline/Maid | N06-03, N05-04 | Experience | [N06](plans/N06-ux.md) |
-| N06-05 | Usability, accessibility và product instrumentation | N06-04 | Experience | [N06](plans/N06-ux.md) |
+| N06-03 | Implement shared game shell và điều hướng | N06-02, N10-02, N05-06, N06-06 | Experience | [N06](plans/N06-ux.md) |
+| N06-04 | Polish hai vòng chơi Deadline/Maid | N06-03, N05-04, N06-07, N06-08 | Experience | [N06](plans/N06-ux.md) |
+| N06-05 | Usability, accessibility và product instrumentation | N06-04, N06-09 | Experience | [N06](plans/N06-ux.md) |
+| N06-06 | Animal art direction, modular rig/catalog và landscape storyboard | N06-02 | Experience | [N06](plans/N06-ux.md) |
+| N06-07 | Modular animal creator, authoritative appearance và shared rendering | N06-03, N06-06, N02-04, N05-06, N10-03 | Experience | [N06](plans/N06-ux.md) |
+| N06-08 | Landscape gameplay shell, native orientation và accessible fallback | N06-03, N06-06, N10-02 | Experience | [N06](plans/N06-ux.md) |
+| N06-09 | Animal/landscape visual qualification và asset performance evidence | N06-04, N06-07, N06-08 | Experience | [N06](plans/N06-ux.md) |
 | N07-01 | Operator identity, MFA và audit | N02-03, N05-01 | Admin + Runtime | [N07](plans/N07-admin.md) |
 | N07-02 | Admin shell và backend proxy boundaries | N07-01, N06-02 | Admin + Runtime | [N07](plans/N07-admin.md) |
 | N07-03 | Events/accounts/runtime controls | N07-01, N02-03 | Admin + Runtime | [N07](plans/N07-admin.md) |
@@ -74,7 +78,7 @@ Chạy `node tools/next-task.mjs` từ gói để xem ready tasks. Helper chỉ 
 | N10-01 | Thiết kế spike và device/performance budgets | N00-04, N06-01 | Experience/Mobile | [N10](plans/N10-mobile-spike.md) |
 | N10-02 | Tách browser-only game client và bundle mobile đầu tiên | N10-01, N02-02, N06-02 | Experience/Mobile | [N10](plans/N10-mobile-spike.md) |
 | N10-03 | Native sessions và one-time socket ticket | N10-02, N05-06, N02-03 | Experience/Mobile | [N10](plans/N10-mobile-spike.md) |
-| N10-04 | Physical Android spike và quyết định kiến trúc theo thiết bị | N10-03, N06-04, N05-04 | Experience/Mobile | [N10](plans/N10-mobile-spike.md) |
+| N10-04 | Physical Android spike và quyết định kiến trúc theo thiết bị | N10-03, N06-04, N05-04, N06-09 | Experience/Mobile | [N10](plans/N10-mobile-spike.md) |
 | N11-01 | Android signed build pipeline và artifact traceability | N10-04, N03-04 | Mobile | [N11](plans/N11-mobile-release.md) |
 | N11-02 | Android interaction và lifecycle hoàn chỉnh | N10-04, N09-03 | Mobile | [N11](plans/N11-mobile-release.md) |
 | N11-03 | Account deletion, UGC và Google Play dossier | N07-03, N10-03 | Mobile | [N11](plans/N11-mobile-release.md) |

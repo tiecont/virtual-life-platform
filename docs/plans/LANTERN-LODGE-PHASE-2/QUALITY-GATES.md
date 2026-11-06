@@ -2,6 +2,8 @@
 
 **Tất cả là yêu cầu, chưa có kết quả test gameplay thật.** Phạm vi game đề xuất dựa trên repo tại SHA audit, phải xác minh lại tại HEAD triển khai.
 
+Owner update 2026-11-06: áp dụng [animal/landscape art](games/08-ANIMAL-LANDSCAPE-ART.md), character creator từng bộ phận và scene-first gameplay ngang. N15-05 chờ upstream N06-09 VERIFIED, tái sử dụng shared appearance/landscape shell. N19-04 ghi actual Android landscape/rotation/avatar-travel/performance evidence cả ba mode; không dùng sơ đồ portrait hoặc preview cũ để đạt visual gate. Technical QA, owner art review và human playtest được ghi riêng.
+
 ## Gate 0: trước khi code
 
 1. Handoff Phase 1 và owner approval được ghi lại; không có hai scheduler N15–N19.

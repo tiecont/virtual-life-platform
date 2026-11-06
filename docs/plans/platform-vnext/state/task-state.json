@@ -704,6 +704,38 @@
       "evidence_refs": [],
       "blocker": null,
       "next_action": "TestFlight beta khi được phép, Apple disclosures/UGC/deletion dossier, device coverage và exact store release status"
+    },
+    "N06-06": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Style sheet/palette/lighting và một cảnh đại diện, gắn provenance/review status"
+    },
+    "N06-07": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Creator species/body/head/eyes/muzzle/ears/tail/fur-markings/hair/outfit/accessories với preview, preset, reset, Save/Cancel"
+    },
+    "N06-08": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Scene-first landscape HUD/dock/drawers dùng chung web/native"
+    },
+    "N06-09": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "next_action": "Source/asset-revision-bound screenshot/video matrix và visual review rubric"
     }
   },
   "runtime_context": {
@@ -711,5 +743,18 @@
     "android_clients_distributed": false,
     "ios_clients_distributed": false
   },
-  "plan_revision": "2.1-android-first"
+  "plan_revision": "2.2-animal-landscape",
+  "planning_updates": [
+    {
+      "at": "2026-11-06",
+      "requirement": "Owner: gameplay landscape, animal theme, part-based character creator, visual quality",
+      "new_tasks": [
+        "N06-06",
+        "N06-07",
+        "N06-08",
+        "N06-09"
+      ],
+      "implementation_evidence_added": false
+    }
+  ]
 }
