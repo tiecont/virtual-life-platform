@@ -7,10 +7,17 @@ import { PasswordHasher, type PasswordRecord } from './passwords';
 import { canViewPresence } from './policy';
 import {lockAccounts} from './account-locks';
 type DB = Pick<Pool, 'query'> | PoolClient;
+export type IdentityCredentialScope=Readonly<{credential:string;accountId:string;sessionId:string;expiresAt:number}>;
+export type IdentityCredentialResolver=(db:DB,reference:string)=>Promise<IdentityCredentialScope>;
 type Session = { id: string; account_id: string; expires_at: Date; revoked_at: Date | null; revoked_reason: string | null; kind: 'guest' | 'registered'; status:'active'|'suspended'; display_name: string; avatar_key: PublicProfile['avatarKey'] };
 export type IdentityContext = Readonly<{ accountId: string; sessionId: string; kind: 'guest' | 'registered'; expiresAt: number }>;
 const defaults: Privacy = { presence: 'hidden', analyticsConsent: false, worldVisibility: { dating: 'hidden' } };
 export class IdentityService {
+  private nativeCredentialResolver:IdentityCredentialResolver|undefined;
+  // Trusted native adapter only. Resolution also runs inside existing mutation
+  // transactions and again after canonical account-lock waits.
+  attachNativeCredentialResolver(resolver:IdentityCredentialResolver){if(this.nativeCredentialResolver)throw Error('Duplicate native identity resolver');this.nativeCredentialResolver=resolver;return()=>{if(this.nativeCredentialResolver===resolver)this.nativeCredentialResolver=undefined;};}
+  afterSessionRevocation(accountId:string,sessionIds:string[]){this.notify(accountId,sessionIds);}
   private exportOwners = new Map<string, (accountId: string, db: PoolClient) => Promise<unknown>>();
   registerExportOwner(owner: string, reader: (accountId: string, db: PoolClient) => Promise<unknown>) { if (this.exportOwners.has(owner)) throw new Error('Duplicate export owner'); this.exportOwners.set(owner, reader); }
   private deletionOwners = new Map<string, (id: string, db: PoolClient) => Promise<void>>();
@@ -49,11 +56,14 @@ export class IdentityService {
   }
   private async lock(client: PoolClient, key: string) { await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))', [key]); }
   private async session(token: string, db: DB = this.pool, allowRevoked = false): Promise<Session> {
-    if (!/^[a-f0-9]{64}$/.test(token)) throw unauthorized();
-    const result = await db.query<Session>('SELECT s.*, a.kind, a.status, p.display_name, p.avatar_key FROM identity_sessions s JOIN identity_accounts a ON a.id=s.account_id JOIN identity_profiles p ON p.account_id=a.id WHERE s.token_hash=$1', [this.hash(token)]);
+    let credential=token,native:IdentityCredentialScope|undefined;
+    if(token.startsWith('ni1.')){if(!this.nativeCredentialResolver)throw unauthorized();native=await this.nativeCredentialResolver(db,token);credential=native.credential;}
+    if (!/^[a-f0-9]{64}$/.test(credential)) throw unauthorized();
+    const result = await db.query<Session>('SELECT s.*, a.kind, a.status, p.display_name, p.avatar_key FROM identity_sessions s JOIN identity_accounts a ON a.id=s.account_id JOIN identity_profiles p ON p.account_id=a.id WHERE s.token_hash=$1', [this.hash(credential)]);
     const row = result.rows[0];
     if (!row || row.status!=='active' || row.expires_at.getTime() <= this.now() || (!allowRevoked && row.revoked_at)) throw unauthorized();
-    return row;
+    if(native&&(native.accountId!==row.account_id||native.sessionId!==row.id||native.expiresAt<=this.now()))throw unauthorized();
+    return native?{...row,expires_at:new Date(Math.min(row.expires_at.getTime(),native.expiresAt))}:row;
   }
   private async lockedSession(db: PoolClient, token: string, allowRevoked = false) {
     const initial = await this.session(token, db, true);

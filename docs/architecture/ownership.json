@@ -107,7 +107,11 @@
     "engine_event_operator_audit": "engine.events",
     "platform_admission_policy": "platform.admission",
     "platform_admission_entries": "platform.admission",
-    "platform_admission_receipts": "platform.admission"
+    "platform_admission_receipts": "platform.admission",
+    "native_device_sessions": "platform.identity",
+    "native_access_grants": "platform.identity",
+    "native_refresh_spent": "platform.identity",
+    "native_socket_tickets": "platform.identity"
   },
   "journalTable": "city_schema_migrations",
   "legacyDatabases": "not managed by city migrations",

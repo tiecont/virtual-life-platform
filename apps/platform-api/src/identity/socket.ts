@@ -1,15 +1,16 @@
 import { randomUUID } from 'node:crypto';
 import { Server, type Socket } from 'socket.io';
 import type { FastifyInstance } from 'fastify';
-import { SessionHandshakeSchema, SessionCheckSchema, SessionCheckAckSchema, negotiateClientProtocol, type NegotiatedSession } from '@virtual-city/contracts';
+import { SessionHandshakeSchema, SessionCheckSchema, SessionCheckAckSchema, NativeSocketHandshakeSchema,NATIVE_ANDROID_ORIGIN,negotiateClientProtocol, type NegotiatedSession } from '@virtual-city/contracts';
 import type { Config } from '../config';
 import { IdentityService, type IdentityContext } from './service';
 import { IdentityError, unauthorized } from './errors';
 import { sessionCookieName } from './http';
 import { WindowLimiter } from './limits';
 import { clientAddress } from '../common/proxy';
+import {NativeProtocolError,type NativeIdentityService} from './native-service';
 type Lease = { token: string; context: IdentityContext; cleanup: () => void; armExpiry: () => void; compatibility?: NegotiatedSession };
-export function createIdentityGateway(http: FastifyInstance, config: Config, identity: IdentityService, now = Date.now,available=()=>true) {
+export function createIdentityGateway(http: FastifyInstance, config: Config, identity: IdentityService, now = Date.now,available=()=>true,native?:NativeIdentityService) {
   const limits = new WindowLimiter(now);
   const leases = new WeakMap<Socket, Lease>();
   const sessions = new Map<string, Set<Socket>>();
@@ -17,10 +18,11 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
   const endedListeners = new Set<(context: IdentityContext) => void>();
   const io = new Server(http.server, {
     transports: ['websocket'], serveClient: false, maxHttpBufferSize: 8192, connectTimeout: 5000,
-    cors: { origin: config.WEB_ORIGIN, credentials: true },
+    cors: { origin: native?[config.WEB_ORIGIN,NATIVE_ANDROID_ORIGIN]:config.WEB_ORIGIN, credentials: true },
     allowRequest: (request, done) => {
       const address=clientAddress(request.socket.remoteAddress,request.headers['x-forwarded-for'],config.TRUSTED_PROXY_IP);
-      const allowed = available()&&request.headers.origin === config.WEB_ORIGIN && limits.take('handshake:' + address, 30) && io.engine.clientsCount < 1000;
+      const allowedOrigin=request.headers.origin===config.WEB_ORIGIN||!!native&&request.headers.origin===NATIVE_ANDROID_ORIGIN;
+      const allowed = available()&&allowedOrigin && limits.take('handshake:' + address, 30) && io.engine.clientsCount < 1000;
       done(null, allowed);
     },
   });
@@ -42,17 +44,22 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
   io.use(async (socket, next) => {
     try {
       if(!available())return next(new Error('WORLD_UNAVAILABLE'));
-      const handshake = SessionHandshakeSchema.parse(socket.handshake.auth);
-      const header = socket.handshake.headers.cookie ?? '';
-      if (header.length > 4096) throw unauthorized();
-      const signed = http.parseCookie(header)[sessionCookieName(config)];
-      if (!signed) throw unauthorized();
-      const parsed = http.unsignCookie(signed);
-      if (!parsed.valid || !parsed.value) throw unauthorized();
-      identity.verifyCsrf(parsed.value, handshake.csrfToken);
-      const context = await identity.authenticate(parsed.value);
+      let token:string,context:IdentityContext,compatibility:NegotiatedSession|null|undefined;
+      if(native&&socket.handshake.headers.origin===NATIVE_ANDROID_ORIGIN){
+        if(socket.handshake.headers.cookie!==undefined)throw unauthorized();
+        const handshake=NativeSocketHandshakeSchema.parse(socket.handshake.auth),admitted=await native.consumeTicket(handshake.nativeTicket,handshake.protocol);
+        if(admitted.ticketExpiresAt<=now())throw unauthorized();token=admitted.credential;context=await identity.authenticate(token);
+        if(context.accountId!==admitted.context.accountId||context.sessionId!==admitted.context.sessionId)throw unauthorized();compatibility=admitted.selection;
+      }else{
+        if(socket.handshake.headers.origin!==config.WEB_ORIGIN)throw unauthorized();
+        const handshake = SessionHandshakeSchema.parse(socket.handshake.auth),header = socket.handshake.headers.cookie ?? '';
+        if (header.length > 4096) throw unauthorized();
+        const signed = http.parseCookie(header)[sessionCookieName(config)];if (!signed) throw unauthorized();
+        const parsed = http.unsignCookie(signed);if (!parsed.valid || !parsed.value || !/^[a-f0-9]{64}$/.test(parsed.value)) throw unauthorized();
+        identity.verifyCsrf(parsed.value, handshake.csrfToken);token=parsed.value;context=await identity.authenticate(token);
+        compatibility=handshake.protocol?negotiateClientProtocol(handshake.protocol):undefined;
+      }
       if(!available())return next(new Error('WORLD_UNAVAILABLE'));
-      const compatibility = handshake.protocol ? negotiateClientProtocol(handshake.protocol) : undefined;
       if (compatibility === null) {
         const error = new Error('UPGRADE_REQUIRED') as Error & {data: {code: string; retryable: boolean}};
         error.data = {code: 'UPGRADE_REQUIRED', retryable: false}; return next(error);
@@ -73,9 +80,9 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
         timer = setTimeout(armExpiry, Math.min(remaining, 86400000)); timer.unref();
       };
       socket.conn.once('close', cleanup); socket.once('disconnect', cleanup);
-      leases.set(socket, { token: parsed.value, context, cleanup, armExpiry, ...(compatibility ? {compatibility} : {}) });
+      leases.set(socket, { token, context, cleanup, armExpiry, ...(compatibility ? {compatibility} : {}) });
       next();
-    } catch { next(new Error('UNAUTHENTICATED')); }
+    } catch(error) {if(error instanceof NativeProtocolError){const update=new Error('UPGRADE_REQUIRED') as Error&{data:{code:string;retryable:boolean}};update.data={code:'UPGRADE_REQUIRED',retryable:false};next(update);}else next(new Error('UNAUTHENTICATED'));}
   });
   io.on('connection', socket => {
     const lease = leases.get(socket); lease?.armExpiry();

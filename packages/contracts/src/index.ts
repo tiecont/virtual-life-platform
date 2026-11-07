@@ -1,11 +1,13 @@
 import { z } from 'zod';
 import { AvatarKeySchema, PublicProfileSchema } from './profiles';
 import {ClientProtocolOfferSchema} from './compatibility';
+import {NativeClientSchema,NativeDeviceLabelSchema,NativeTokensSchema} from './native-auth';
 export * from './profiles';
 export * from './world';
 export * from './rooms';
 export * from './protocol';
 export * from './compatibility';
+export * from './native-auth';
 export * from './content';
 export * from './operator';
 export * from './operator-controls';
@@ -49,6 +51,10 @@ export const ProfilePatchSchema = ProfileInputSchema.partial().refine(value => O
 export const LoginNameSchema = z.string().normalize('NFKC').trim().toLowerCase().regex(/^[a-z][a-z0-9_]{2,31}$/);
 export const UpgradeInputSchema = z.strictObject({ loginName: LoginNameSchema, password: z.string().min(12).max(128) });
 export const LoginInputSchema = UpgradeInputSchema.extend({ requestId: z.uuid() });
+export const NativeGuestInputSchema=NativeClientSchema.extend({deviceLabel:NativeDeviceLabelSchema,guest:GuestInputSchema});
+export const NativeLoginInputSchema=NativeClientSchema.extend({deviceLabel:NativeDeviceLabelSchema,login:LoginInputSchema});
+export const NativeUpgradeInputSchema=NativeClientSchema.extend({requestId:z.uuid(),upgrade:UpgradeInputSchema});
+export const NativeSessionResultSchema=z.strictObject({schemaVersion:z.literal(1),platform:z.literal('android'),me:MeSchema,tokens:NativeTokensSchema});
 export type UpgradeInput = z.infer<typeof UpgradeInputSchema>;
 // Identity transport only; room/world envelopes remain owned by M05/M06/M09.
 export const SessionHandshakeSchema = z.strictObject({ schemaVersion: z.literal(1), csrfToken: z.string().regex(/^[a-f0-9]{64}$/), protocol: ClientProtocolOfferSchema.optional() });

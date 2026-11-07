@@ -16,3 +16,4 @@ export function browserPlatform(visitChanged:()=>void,navigate?:(path:string)=>v
   watchIdentity(listener){const bus=typeof BroadcastChannel==='undefined'?null:new BroadcastChannel('virtual-city-identity');if(bus)bus.onmessage=listener;return()=>bus?.close();}};
 }
 export type {RoomSceneHandle,RoomSceneOptions,RoomSceneFactory,SceneQuality,AnimalStudyHandle} from './scene';
+export type {NativeSessionCustodyPort,NativeSessionState} from './native-session';

@@ -3,6 +3,8 @@ const Env = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   SESSION_SECRET: z.string().min(32),
   SESSION_TTL_SECONDS: z.coerce.number().int().min(300).max(2592000).default(2592000),
+  NATIVE_AUTH_ENABLED:z.enum(['0','1']).default('0'),
+  NATIVE_AUTH_KEY:z.preprocess(value=>value===''?undefined:value,z.string().regex(/^[a-f0-9]{64}$/i).optional()),
   HOST: z.string().default('127.0.0.1'),
   PORT: z.coerce.number().int().min(1).max(65535).default(4300),
   DATABASE_URL: z.string().url().refine(value => {
@@ -40,6 +42,11 @@ const Env = z.object({
   DATING_PROFILE_KEY_ID:z.string().regex(/^[a-z0-9-]{1,32}$/).default('local-v1'),
 }).superRefine((env, ctx) => {
   const origin = new URL(env.WEB_ORIGIN);
+  if(env.NATIVE_AUTH_ENABLED==='1'){
+    if(!env.NATIVE_AUTH_KEY)ctx.addIssue({code:'custom',path:['NATIVE_AUTH_KEY'],message:'Separate native encryption key required'});
+    if(env.WEB_ORIGIN==='https://localhost'||env.ADMIN_ORIGIN==='https://localhost')ctx.addIssue({code:'custom',path:['NATIVE_AUTH_ENABLED'],message:'Installed native origin must remain separate from browser/admin origins'});
+    if(env.NATIVE_AUTH_KEY&&[env.SESSION_SECRET,env.OPERATOR_AUTH_KEY,env.SAFETY_EVIDENCE_KEY,env.DATING_PROFILE_KEY].some(value=>value?.toLowerCase()===env.NATIVE_AUTH_KEY?.toLowerCase()))ctx.addIssue({code:'custom',path:['NATIVE_AUTH_KEY'],message:'Distinct native encryption key required'});
+  }
   if(Boolean(env.OPERATOR_AUTH_KEY)!==Boolean(env.ADMIN_ORIGIN))ctx.addIssue({code:'custom',path:['ADMIN_ORIGIN'],message:'Operator key and exact admin origin required together'});
   if(env.ADMIN_ORIGIN){const admin=new URL(env.ADMIN_ORIGIN);if(admin.origin!==env.ADMIN_ORIGIN||!['http:','https:'].includes(admin.protocol)||admin.origin===env.WEB_ORIGIN||(env.NODE_ENV==='production'&&admin.protocol!=='https:'))ctx.addIssue({code:'custom',path:['ADMIN_ORIGIN'],message:'Separate exact admin origin required; HTTPS in production'});}
   if(env.OPERATOR_AUTH_KEY===env.SESSION_SECRET)ctx.addIssue({code:'custom',path:['OPERATOR_AUTH_KEY'],message:'Separate operator key required'});

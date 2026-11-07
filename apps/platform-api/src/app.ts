@@ -22,6 +22,9 @@ import { SCHEMA_VERSION, SanctionChangedSchema } from '@virtual-city/contracts';
 import type { Config } from './config';
 import { IdentityService } from './identity/service';
 import { registerIdentity } from './identity/http';
+import {NativeIdentityService,registerNativePrivacy} from './identity/native-service';
+import {registerNativeIdentity,prepareNativeApiRequest,assertNativeTransport} from './identity/native-http';
+import {apiErrorHandler} from './common/http-errors';
 import {OperatorService} from './identity/operator-service';
 import {registerOperator} from './identity/operator-http';
 import { migrationManifest } from './db/migrations';
@@ -125,11 +128,16 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
     reply.header('x-request-id', req.id).header('x-content-type-options', 'nosniff').header('cache-control', 'no-store').header('referrer-policy', 'same-origin');
     if(draining&&!['/health/live','/health/ready'].includes(req.routeOptions.url??''))return reply.code(503).send({error:{code:'WORLD_UNAVAILABLE',message:'Server is stopping',requestId:req.id}});
     const allowedOrigin=(req.routeOptions.url??'').startsWith('/v1/operator/')?config.ADMIN_ORIGIN:config.WEB_ORIGIN;
-    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) && req.headers.origin !== allowedOrigin) {
+    let nativeRequest=false;
+    try{if(nativeIdentity&&(req.routeOptions.url??'').startsWith('/v1/native/')){assertNativeTransport(req);nativeRequest=true;}else nativeRequest=await prepareNativeApiRequest(req,nativeIdentity);}catch(error){return apiErrorHandler(error,req,reply);}
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) && req.headers.origin !== allowedOrigin && !nativeRequest) {
       return reply.code(403).send({ error: { code: 'FORBIDDEN', message: 'Origin is not allowed', requestId: req.id } });
     }
   });
   const identity = new IdentityService(db, config, options.now);
+  const nativeIdentity=config.NATIVE_AUTH_ENABLED==='1'?new NativeIdentityService(identity,config.NATIVE_AUTH_KEY!,options.now):undefined;
+  http.addHook('onClose',async()=>{nativeIdentity?.close();});
+  registerNativePrivacy(identity,options.now);
   const operator=config.OPERATOR_AUTH_KEY?new OperatorService(db,config.OPERATOR_AUTH_KEY,options.now):undefined;
   const privacyRequests=new PrivacyRequestService(identity,config.SESSION_SECRET,operator,options.now);
   const accountControls=operator?new AccountControlService(identity,operator,options.now):undefined;
@@ -233,6 +241,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => { await rooms.close(); });
   registerWorlds(http, config, worlds.registry, options.now, rooms,discovery);
   registerIdentity(http, config, identity, options.now);
+  registerNativeIdentity(http,nativeIdentity,options.now);
   registerPrivacyRequests(http,config,privacyRequests,options.now);
   registerDeadlineIdentity(http,config,identity,deadlineIdentity,options.now);
   registerDatingProfiles(http,config,identity,datingProfiles,options.now);
@@ -274,7 +283,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   });
   app.useGlobalFilters(new SafeHttpErrors());
   await app.init();
-  const gateway = createIdentityGateway(http, config, identity, options.now,()=>!draining);
+  const gateway = createIdentityGateway(http, config, identity, options.now,()=>!draining,nativeIdentity);
   const unsubscribePrivateDates=config.NODE_ENV==='test'&&config.LOCAL_DATING_PROTOTYPE==='1'?datingDates.attachGateway(gateway):()=>{};
   http.addHook('preClose',async()=>{unsubscribePrivateDates();});
   const unsubscribeRooms = registerRoomGateway(gateway, rooms, roomMetrics,telemetry);
@@ -296,5 +305,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => {stopDatabaseObservation(); roomMetrics.databaseAttached(false); stopEventLoopObservation(); roomMetrics.close();});
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity,privacyRequests,runtimeControls, deadlineIdentity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain,admission };
+  return { app, http, identity,nativeIdentity,privacyRequests,runtimeControls, deadlineIdentity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain,admission };
 }

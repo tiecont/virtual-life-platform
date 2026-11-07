@@ -7,6 +7,7 @@ import { IdentityService } from './service';
 import { IdentityError, unauthorized } from './errors';
 import { WindowLimiter } from './limits';
 import { apiErrorHandler } from '../common/http-errors';
+import {nativeRequestCredential} from './native-request';
 export function sessionCookieName(config: Config) { return config.NODE_ENV === 'production' ? '__Host-city_session' : 'city_session'; }
 export function registerIdentity(http: FastifyInstance, config: Config, service: IdentityService, now = Date.now) {
   const name = sessionCookieName(config); const limiter = new WindowLimiter(now);
@@ -70,9 +71,10 @@ export function registerIdentity(http: FastifyInstance, config: Config, service:
 }
 
 export function readSessionToken(req: FastifyRequest, config: Config, optional = false): string | undefined {
+    const native=nativeRequestCredential(req);if(native)return native;
     const signed = req.cookies[sessionCookieName(config)];
     if (!signed) { if (optional) return undefined; throw unauthorized(); }
     const result = req.unsignCookie(signed);
-    if (!result.valid || !result.value) { if (optional) return undefined; throw unauthorized(); }
+    if (!result.valid || !result.value || !/^[a-f0-9]{64}$/.test(result.value)) { if (optional) return undefined; throw unauthorized(); }
     return result.value;
   }
