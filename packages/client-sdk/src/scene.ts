@@ -25,5 +25,5 @@ export interface AnimalStudyHandle extends RoomSceneHandle {
  setOutfit(outfit:AvatarAppearance['outfit']):void;
  zoom(direction:'in'|'out'):void;
  resetMeasurements():void;
- diagnostics():{engine:string;scope:string;frames:number;geometry:number;textures:number;calls:number;triangles:number;frameP95Ms:number|null;frameSamples:number;measuredSeconds:number;timingScope:string;contextLost:boolean;resources:{cachedQualityTiers:number;references:number}};
+ diagnostics():{engine:string;scope:string;frames:number;geometry:number;textures:number;calls:number;triangles:number;frameP95Ms:number|null;frameSamples:number;measuredSeconds:number;timingScope:string;contextLost:boolean;resources:{cachedQualityTiers:number;references:number};serving?:{visible:boolean;triangles:number;supportDistance:number}};
 }

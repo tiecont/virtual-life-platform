@@ -1,6 +1,7 @@
 import * as T from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {compactFaceGeometry} from './face-geometry';
+import {createServingProp} from './serve-prop';
 import type {AnimationState,AvatarAppearance} from '@virtual-city/contracts';
 
 export type Quality='low'|'balanced'|'high';
@@ -62,13 +63,14 @@ export function createAnimal(quality:Quality='balanced',palette:AvatarAppearance
  const faceKey=quality==='low'?palette:'neutral',cachedFaces=shared.faces.get(faceKey),faceGeometry:T.BufferGeometry[][]=[];let batchIndex=0;
  for(const [mat,parts]of batches){let compact=cachedFaces?.[batchIndex++];if(!compact){const merged=mergeGeometries(parts,false);assertGeometry(merged);compact=compactFaceGeometry(merged);merged.dispose();}for(const part of parts)part.dispose();faceGeometry.push(compact);for(const geometry of compact){const face=new T.SkinnedMesh(geometry,mat);face.bind(skeletonInstance);face.frustumCulled=false;face.castShadow=true;group.add(face);faceMeshes.push(face);}}shared.faces.set(faceKey,faceGeometry);
  for(const object of extras)if(object!==apron)object.removeFromParent();for(const geometry of geometries.splice(0))if(geometry!==apron.geometry)geometry.dispose();geometries.push(apron.geometry);extras.length=0;eyeParts.length=0;
+ const serving=createServingProp(quality);group.add(serving.mesh);
  let baseTriangles=0;group.traverseVisible(object=>{if(object instanceof T.Mesh&&object!==fur)baseTriangles+=(object.geometry.index?.count??object.geometry.getAttribute('position').count)/3;});
  let disposed=false;const rotations=bones.map(bone=>bone.rotation.clone()),positions=bones.map(bone=>bone.position.clone());
  function update(seconds:number,pose:AnimationState='idle',reduced=false){if(disposed)return;for(let i=0;i<bones.length;i++){bones[i].rotation.copy(rotations[i]);bones[i].position.copy(positions[i]);}const time=reduced?0:seconds;const breath=reduced?0:Math.sin(time*1.7)*.012;bones[B.spine].rotation.z=breath;bones[B.head].rotation.y=reduced?0:Math.sin(time*.43)*.07;bones[B.tail0].rotation.y=pose==='sit'?1.15:Math.sin(time*.85)*.12;bones[B.tail2].rotation.z=Math.sin(time*.9)*.07;bones[B.earL].rotation.z=Math.sin(time*.73)*.035;bones[B.earR].rotation.z=-Math.sin(time*.67)*.035;
   if(pose==='walk'){const step=reduced?0:Math.sin(time*6);bones[B.legL].rotation.x=step*.5;bones[B.legR].rotation.x=-step*.5;bones[B.kneeL].rotation.x=Math.max(0,-step)*.55;bones[B.kneeR].rotation.x=Math.max(0,step)*.55;bones[B.armL].rotation.x=-step*.35;bones[B.armR].rotation.x=step*.35;}
   if(pose==='sit'){bones[B.legL].rotation.x=bones[B.legR].rotation.x=-1.2;bones[B.kneeL].rotation.x=bones[B.kneeR].rotation.x=1.3;bones[B.spine].rotation.x=-.05;}
   if(pose==='serve'){bones[B.armL].rotation.x=bones[B.armR].rotation.x=-.7;bones[B.elbowL].rotation.x=bones[B.elbowR].rotation.x=-.7;}
-  const blink=!reduced&&Math.sin(time*.9)>.996;for(const face of faceMeshes)if(face.morphTargetInfluences)face.morphTargetInfluences[0]=blink?1:0;group.updateMatrixWorld(true);
+  const blink=!reduced&&Math.sin(time*.9)>.996;for(const face of faceMeshes)if(face.morphTargetInfluences)face.morphTargetInfluences[0]=blink?1:0;group.updateMatrixWorld(true);serving.update(pose==='serve',bones[B.pawL],bones[B.pawR],group);
  }
- update(0);return {group,bones,body,fur,update,triangles:baseTriangles+shared.fur.getAttribute('position').count/3,dispose(){if(disposed)return;disposed=true;group.removeFromParent();skeletonInstance.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();if(--shared.refs===0){for(const geometry of new Set([...shared.faces.values()].flat(2)))geometry.dispose();shared.faces.clear();shared.body.dispose();shared.fur.dispose();shared.coat.dispose();shared.hair.dispose();shared.texture.dispose();shared.normal.dispose();cache.delete(quality);}}};
+ update(0);return {group,bones,body,fur,update,serving:()=>serving.diagnostics(),get triangles(){return baseTriangles+shared.fur.getAttribute('position').count/3+(serving.mesh.visible?serving.triangles:0);},dispose(){if(disposed)return;disposed=true;serving.dispose();group.removeFromParent();skeletonInstance.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();if(--shared.refs===0){for(const geometry of new Set([...shared.faces.values()].flat(2)))geometry.dispose();shared.faces.clear();shared.body.dispose();shared.fur.dispose();shared.coat.dispose();shared.hair.dispose();shared.texture.dispose();shared.normal.dispose();cache.delete(quality);}}};
 }
