@@ -2,7 +2,7 @@ import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {SceneManifestSchema,AvatarOutfitSchema,type SceneManifest,type RoomSnapshot} from '@virtual-city/contracts';
 import type {RoomSceneFactory,RoomSceneOptions,SceneQuality} from '@virtual-city/client-sdk';
-import {createAnimal,animalResourceSummary} from './animal';
+import {createAnimal,animalResourceSummary,animalCachedGeometries} from './animal';
 import {createRoomArt,TILE_METERS} from './room';
 import {RoomProjection,selectRoomLods,type RoomActor} from './projection';
 import {sceneResourceInventory} from './resources';
@@ -63,7 +63,7 @@ export async function createRoomScene(host:HTMLElement,input:SceneManifest,onSea
   function setReducedMotion(value:boolean,override=true){if(disposed)return;motionOverride=override;reduced=value;pause();wake();}
   function destroy(){if(disposed)return;disposed=true;pause();projection.clear();for(const dispose of cleanup.splice(0).reverse())dispose();}
   options.signal?.addEventListener('abort',destroy,{once:true});cleanup.push(()=>options.signal?.removeEventListener('abort',destroy));if(options.signal?.aborted){destroy();options.signal.throwIfAborted();}resize();
-  return{update(snapshot:RoomSnapshot|null){if(disposed)return;const prior=projection.context;try{if(!projection.accept(snapshot,performance.now()))return;}catch(error){clearPeople();wake();throw error;}if(projection.context!==prior)clearPeople();suspended=false;pause();wake(true);},suspend(){if(disposed)return;suspended=true;projection.clear();clearPeople();pause();render();},setReducedMotion,destroy,setQuality(value:SceneQuality){if(disposed||value===quality)return;if(!['low','balanced','high'].includes(value))throw Error('UNREVIEWED_SCENE_QUALITY');quality=value;for(const avatar of avatars.values())avatar.model.body.castShadow=quality!=='low'&&avatar.lod==='balanced';resetTiming();resize();},diagnostics,resourceInventory(){return sceneResourceInventory(world,people,sun.shadow,renderer.capabilities.maxTextureSize);},resetMeasurements:resetTiming};
+  return{update(snapshot:RoomSnapshot|null){if(disposed)return;const prior=projection.context;try{if(!projection.accept(snapshot,performance.now()))return;}catch(error){clearPeople();wake();throw error;}if(projection.context!==prior)clearPeople();suspended=false;pause();wake(true);},suspend(){if(disposed)return;suspended=true;projection.clear();clearPeople();pause();render();},setReducedMotion,destroy,setQuality(value:SceneQuality){if(disposed||value===quality)return;if(!['low','balanced','high'].includes(value))throw Error('UNREVIEWED_SCENE_QUALITY');quality=value;for(const avatar of avatars.values())avatar.model.body.castShadow=quality!=='low'&&avatar.lod==='balanced';resetTiming();resize();},diagnostics,resourceInventory(){return sceneResourceInventory(world,people,sun.shadow,renderer.capabilities.maxTextureSize,animalCachedGeometries());},resetMeasurements:resetTiming};
  }catch(error){disposed=true;cancelAnimationFrame(frame);for(const dispose of cleanup.splice(0).reverse()){try{dispose();}catch{/* Keep the original initialization error. */}}throw error;}
 }
 export const createCafeScene:RoomSceneFactory=createRoomScene;
