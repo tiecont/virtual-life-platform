@@ -5,7 +5,7 @@
   "packageManager": "pnpm@11.28.5",
   "rootBuild": "pnpm -r build",
   "packagesBuild": "pnpm --filter './packages/*' -r build",
-  "lockSha256": "03398b9dceee20fb0b86bafa53495f1916b2bf6893d5c96e91e29b3986a23931",
+  "lockSha256": "6758938135dc358cac6e65f784f1c4a5e825dd6d0c2bd38df650c3d77ca02c91",
   "workspaceConfigSha256": "0c79bdd36e2d8eac11365b4cba92045f1d494d8e191f41de14298de2263d0ec1",
   "rootDependencies": {
     "dependencies": {},
@@ -409,6 +409,7 @@
       "dependencies": [
         "@virtual-city/client-sdk",
         "@virtual-city/config",
+        "@virtual-city/contracts",
         "@virtual-city/game-client",
         "@virtual-city/pixi-scene",
         "@virtual-city/scene3d"
