@@ -1,3 +1,9 @@
+# ADR0131 native account erasure — 2026-11-07
+
+[ADR0131](../adr/0131-native-account-erasure-and-unconfirmed-delivery.md): dedicated native erasure,existing identity transaction,strict expected-account confirmation and explicit uncertain ACK. No new table,authority or retry authorization. [Actual partial checks](../plans/platform-vnext/audit/N11-03-DELETION-CHECKPOINT.json). No owner/legal/store acceptance.
+
+## Earlier checkpoints — historical
+
 # ADR0130 native device custody — 2026-11-07
 
 [ADR0130](../adr/0130-native-device-custody-and-one-use-tickets.md),runtime04b1b38: separate default-off native authority adapter,encrypted refresh custody,opaque scoped grants,atomic one-use tickets and explicit schema44→45 expansion policy;browser auth and one owner preserved. [Actual qualification](../plans/platform-vnext/audit/N10-03-NATIVE-CHECKS.json). No release/signing/support/iOS approval inferred.

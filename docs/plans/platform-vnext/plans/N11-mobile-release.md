@@ -1,5 +1,7 @@
 # N11 — Android app và Google Play release lane
 
+Current N11-03 is IN_PROGRESS: native account deletion and local web resource qualified as a partial slice at 929477142d4e96358db66d0e93ca6f43e4256838. [Actual checks](../audit/N11-03-DELETION-CHECKPOINT.json); draft dossier: `docs/mobile/ACCOUNT-DELETION-AND-PLAY-DRAFT.md`. Report/block/full disclosures/owner/store gates remain; initial task labels below are historical.
+
 **Owner lane:** Mobile  
 **Activation:** active · **Implementation:** TODO  
 **Goal:** Từ Android spike sang app dùng hàng ngày, signed artifacts và Play beta; phân biệt local install, store testing và public approval.

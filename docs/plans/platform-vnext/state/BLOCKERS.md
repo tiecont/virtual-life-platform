@@ -1,3 +1,11 @@
+# N11-03 remaining acceptance gates — 2026-11-07
+
+Deletion slice qualified only. Native report/block,full disclosure/age/SDK inventory,owner review and actual public support/retention/Play facts remain open. Independent local code can continue; no need to stop Android/web for missing Mac/iPhone. N06-11 final art/full rooms/loading/heap/physical,N10-04 integrated gameplay and existing staging/public gates remain.
+
+**Next exact action:** Continue N11-03 with one authenticated native report/block UI+custody-port slice: audit existing safety routes/CSRF and account-switch semantics,extend only explicit allowlisted operations,exercise actual two-user enforcement and stale-view rejection on owned AVD before claiming native UGC. Complete feature/SDK/privacy/data-safety/age inventory afterward; owner contact/public URL/backup retention/Play account facts stay UNKNOWN until evidenced. N06-11 final3D art/loading/heap/physical and N14 Apple access remain separate gates.
+
+## Earlier checkpoints — historical
+
 # Remaining gates after N10-03 — 2026-11-07
 
 N10-03 native account/ticket custody is VERIFIED in the closed local/AVD scope at04b1b38. It does not close N06-11 final art/anchors/full scenes/controlled loading/heap/physical findings or N10-04 gameplay/thermal/battery gates. No current USB qualification is inferred from old evidence. N14 still lacks Mac/Xcode/iPhone; N04-02/N07-04 remain external staging gates. No public/store release or support promotion. Independent N06-11 code can continue.

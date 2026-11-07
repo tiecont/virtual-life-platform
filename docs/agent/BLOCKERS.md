@@ -1,3 +1,9 @@
+# N11-03 partial scope and remaining gates — 2026-11-07
+
+[Current blockers](../plans/platform-vnext/state/BLOCKERS.md): deletion slice passes local/AVD checks; native UGC/disclosure/owner/Play facts still open. Physical Android,N14 Apple access and existing release/staging gates unchanged.
+
+## Earlier checkpoints — historical
+
 # vNext gates remain explicit — 2026-11-07
 
 N10-03 account/tickets now VERIFIED locally/AVD. [Current blockers](../plans/platform-vnext/state/BLOCKERS.md): N06-11 final3D/loading/heap/physical,N10-04 integrated gameplay,N14 Apple tooling/device access and existing staging/public/operator gates remain. Historical151Mxx task statuses are preserved.
