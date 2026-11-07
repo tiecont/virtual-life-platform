@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {test} from 'node:test';
+import {readFile} from 'node:fs/promises';
+import {evaluateWorkload} from '../../scripts/scene3d-workload-policy.mjs';
+const budget=JSON.parse(await readFile(new URL('../../docs/design/vnext/animals-3d/budgets-v1.json',import.meta.url)));
+const observation=()=>({quality:'low',diagnostics:{actors:20,nearActors:2,pixelRatio:1,shadowLights:0,shadowMapDimension:0,calls:100,triangles:100000},cache:{references:20},inventory:{unknownTextures:0,geometryBytes:1024,animationBytes:1024,characterTextureBytes:1024,environmentTextureBytes:1024,otherTextureBytes:1024,totalTextureBytes:3072,maxTextureDimension:16}});
+const measurement=()=>({...observation(),samples:[observation(),observation()],frameWindow:{samples:300,p95Ms:16.7}});
+test('an over-budget sampled frame cannot be hidden by a compliant final observation',()=>{const measured=measurement();measured.samples[0].diagnostics.calls=161;const result=evaluateWorkload(measured,budget,'mobile');assert.equal(result.checks.drawCalls,false);assert.equal(result.observedLimitsMet,false);assert.equal(result.peaks.calls,161);assert.equal(evaluateWorkload(measured,budget,'desktop').checks.drawCalls,true);});
+test('external frame intervals reject timing failure and missing timing evidence',()=>{const measured=measurement();assert.equal(evaluateWorkload(measured,budget,'androidAVD').observedLimitsMet,true);measured.frameWindow.p95Ms=50;assert.equal(evaluateWorkload(measured,budget,'androidAVD').checks.frameP95,false);measured.frameWindow={samples:0,p95Ms:null};assert.equal(evaluateWorkload(measured,budget,'androidAVD').checks.frameP95,false);});
+test('unknown texture residency and an excessive quality tier fail closed',()=>{const measured=measurement();measured.samples[1].inventory.unknownTextures=1;measured.diagnostics.nearActors=3;const result=evaluateWorkload(measured,budget,'mobile');assert.equal(result.checks.unknownTextures,false);assert.equal(result.checks.quality,false);assert.equal(result.observedLimitsMet,false);});

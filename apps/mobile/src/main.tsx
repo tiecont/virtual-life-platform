@@ -13,4 +13,7 @@ function Shell(){const [route,setRoute]=useState('/');const [orientation,setOrie
  if(route!=='/')return <main className="mobile-fallback"><h1>You're offline</h1><p>Sign-in and city visits are not available in this preview.</p><button onClick={()=>setRoute('/')}>Return to preview</button></main>;
  return <><div className="mobile-notice"><span>Local preview · City visits are unavailable</span>{studyEnabled&&<button onClick={()=>setRoute('/3d-study')}>3D animal studio</button>}{sceneFirst&&Capacitor.getPlatform()==='android'&&<button onClick={()=>setOrientation(value=>value==='secondary'?'primary':'secondary')}>Rotate view</button>}</div><WorldRoomPanel sceneFirst={sceneFirst} rendererLoader={rendererLoader} artLabel={room3d?'3D room study · original technical art':undefined} socketOrigin="https://native-session-unavailable.invalid" platform={platform} widgets={widgets}/></>;
 }
-createRoot(document.getElementById('root')!).render(<Shell/>);
+// An explicit build mode isolates synthetic performance fixtures from normal
+// product builds; no real identity,network or room authority is created.
+if(import.meta.env.MODE==='renderer-workload')void import('../../../tests/renderer-workload/main').then(module=>module.startRendererWorkload());
+else createRoot(document.getElementById('root')!).render(<Shell/>);
