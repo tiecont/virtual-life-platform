@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "updated_at": "2026-11-07T16:53:59.999Z",
+  "updated_at": "2026-11-07T17:20:40.087Z",
   "scope": "vNext implementation",
   "release_status": "NOT_REQUESTED",
   "module_activation": {
@@ -766,10 +766,11 @@
       "evidence_refs": [
         "n06-11-shared-3d-studio-partial-2026-11-07",
         "n06-11-authoritative-room-adapter-partial-2026-11-07",
-        "n06-11-twenty-actor-workload-partial-2026-11-07"
+        "n06-11-twenty-actor-workload-partial-2026-11-07",
+        "n06-11-serve-anchors-partial-2026-11-08"
       ],
       "blocker": null,
-      "next_action": "N10-03 native custody/tickets now VERIFIED. Continue labelled3D technical slice: resolve fur/silhouette/rig/cloth/serve anchors,camera/thumbnail and full room polish; implement controlled p75 load/heap verification before running it,then qualify available physical Android without changing locked budgets. Missing physical evidence remains explicit; N06-07 waits for whole N06-11 acceptance."
+      "next_action": "Implement a separate controlled cold/warm p75 loading and external CDP heap/GC harness before measuring; predeclare sample/network/CPU/tier/cache protocol without editing locked budgets and label procedural-only art limitations. Continue final fur/silhouette/cloth/camera/full Deadline/Maid scenes after the verified serving-anchor slice; qualify physical Android separately. N06-07 still waits for whole N06-11,N11 disclosure/retention/owner facts remain open,N14 Apple access and Phase2 dependency/handoff gates unchanged."
     },
     "N10-05": {
       "status": "VERIFIED",

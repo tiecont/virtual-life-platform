@@ -1,3 +1,11 @@
+# N06-11 and N11 remaining gates — 2026-11-08
+
+Serving-anchor slice is qualified only as procedural technical art. Final fur/silhouette/cloth/material/camera/full scenes,controlled loading/heap and physical Android remain open;N06-07 waits for whole N06-11. Native account erasure/report/block have separate N11 records56/57;disclosure/retention/owner/Play/public facts and full native gameplay remain open. N14 Apple access,N04-02/N07-04 staging and public/operator gates unchanged.
+
+**Next exact action:** Implement a separate controlled cold/warm p75 loading and external CDP heap/GC harness before measuring; predeclare sample/network/CPU/tier/cache protocol without editing locked budgets and label procedural-only art limitations. Continue final fur/silhouette/cloth/camera/full Deadline/Maid scenes after the verified serving-anchor slice; qualify physical Android separately. N06-07 still waits for whole N06-11,N11 disclosure/retention/owner facts remain open,N14 Apple access and Phase2 dependency/handoff gates unchanged.
+
+## Earlier checkpoints — historical
+
 # N11-03 disclosure/native gameplay and remaining gates — 2026-11-07
 
 Native account erasure and report/block slices have actual closed/AVD evidence. Whole N11-03 awaits owner/provider/disclosure/retention/age/candidate scope;public URLs/contact/backup/Play facts UNKNOWN. Draft metadata retention is not purge proof. N06-11 final art/full rooms/controlled loading/heap/physical,N10-04 integrated gameplay and existing staging/release gates remain. Continue independent code;missing Apple access does not stop Android/web.

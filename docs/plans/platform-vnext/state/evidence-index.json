@@ -35255,6 +35255,365 @@
           "reason": "Recorded signal termination; no integer exit code,not accepted"
         }
       ]
+    },
+    {
+      "id": "n06-11-serve-anchors-partial-2026-11-08",
+      "taskId": "N06-11",
+      "sourceRevision": "21cbc1f21d4ac8221805e49215aec3512542c712",
+      "environment": "CachyOS Linux7.2.9-2;Node26.9.0/pnpm11.28.5;Three0.187.0;Chromium SwiftShader desktop/landscape functional;owned Emulator37.2.13/API35/WebView124/AMD host GPU",
+      "executedAt": "2026-11-07T17:20:40.087Z",
+      "commands": [
+        {
+          "command": "pnpm architecture:check",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/architecture.log",
+          "sha256": "ad25abc90eea8e2e299c83ffbc7123edd32afae2d9147da01484722a05b58d5e",
+          "startedAt": "2026-11-07T17:10:03.239Z",
+          "endedAt": "2026-11-07T17:10:04.518Z"
+        },
+        {
+          "command": "pnpm assets:check",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/assets.log",
+          "sha256": "cf3949d2a0d2021cbdbcf3fc7b7bc64b9524ab39e18de5767b9a1943e7a51998",
+          "startedAt": "2026-11-07T17:10:05.578Z",
+          "endedAt": "2026-11-07T17:10:06.797Z"
+        },
+        {
+          "command": "pnpm test:client-boundaries",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/boundaries.log",
+          "sha256": "d2856d790b3e84d904acea4e599477c7d973202d8c7afd943d3d875e945ebc86",
+          "startedAt": "2026-11-07T17:10:06.751Z",
+          "endedAt": "2026-11-07T17:10:07.999Z"
+        },
+        {
+          "command": "env VITE_VLP_SCENE3D_STUDY=1 pnpm mobile:build:dev",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/build-studio.log",
+          "sha256": "1d4e37c609948a22524ad41767d42dba17db5e73c4a17d2b8ebe013b1897b507",
+          "startedAt": "2026-11-07T16:59:29.459Z",
+          "endedAt": "2026-11-07T16:59:45.792Z"
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/ci.log",
+          "sha256": "a7e9b16f6a387bb03df3d49761911d6dd854a9dde109f3ff37652afb06682644",
+          "startedAt": "2026-11-07T17:10:04.412Z",
+          "endedAt": "2026-11-07T17:10:05.839Z"
+        },
+        {
+          "command": "pnpm mobile:emulator:start",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/emulator-start.log",
+          "sha256": "27004a3767e2b1d5ddbf14f4afe832d4073b79d31bf7c450bff0dfb44429c474",
+          "startedAt": "2026-11-07T17:01:02.550Z",
+          "endedAt": "2026-11-07T17:01:32.523Z"
+        },
+        {
+          "command": "pnpm mobile:emulator:status",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/emulator-status.log",
+          "sha256": "8131b9b11baf8a8d09a7ed6af36a472a19fc8cd5d8beda177bb9aad047df5d16",
+          "startedAt": "2026-11-07T17:20:15.871Z",
+          "endedAt": "2026-11-07T17:20:16.389Z"
+        },
+        {
+          "command": "pnpm mobile:emulator:stop",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/emulator-stop.log",
+          "sha256": "bba27a1bc13b3fe3e352eace9dcbcf83592fa13cd7d2b37eca1e9b0777c1e52d",
+          "startedAt": "2026-11-07T17:19:30.222Z",
+          "endedAt": "2026-11-07T17:19:32.260Z"
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/final-lint.log",
+          "sha256": "73755aea120d30d73ce228feb6b7885cb77b52d05361841d84919e5f19a79c8a",
+          "startedAt": "2026-11-07T17:11:59.301Z",
+          "endedAt": "2026-11-07T17:12:18.462Z"
+        },
+        {
+          "command": "pnpm test",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/final-unit-governance.log",
+          "sha256": "d9341847591a0d6416de4de0c5e2fae7e3bb47dc6f030336b4c760b2b3d39f0a",
+          "startedAt": "2026-11-07T17:10:02.067Z",
+          "endedAt": "2026-11-07T17:10:29.811Z"
+        },
+        {
+          "command": "pnpm build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/full-build.log",
+          "sha256": "1cc1b27c0aba97b010331b7e13019703bbc1a627ce508b6ec8fab742193fa014",
+          "startedAt": "2026-11-07T17:11:58.123Z",
+          "endedAt": "2026-11-07T17:12:37.934Z"
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/lint.log",
+          "sha256": "73755aea120d30d73ce228feb6b7885cb77b52d05361841d84919e5f19a79c8a",
+          "startedAt": "2026-11-07T16:59:30.615Z",
+          "endedAt": "2026-11-07T16:59:44.725Z"
+        },
+        {
+          "command": "node --import tsx artifacts/vnext/n06-11/serve-v1/preserve-model.mts",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/model-preservation-esm.log",
+          "sha256": "9b235d4613b91a8d020c31f9616c72cc0e058a9a947a7f5932b1785e0c42a793",
+          "startedAt": "2026-11-07T17:03:11.954Z",
+          "endedAt": "2026-11-07T17:03:13.799Z"
+        },
+        {
+          "command": "node --import tsx artifacts/vnext/n06-11/serve-v1/preserve-model.ts",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/serve-v1/model-preservation.log",
+          "sha256": "539269dd6af769c444883d07b2b1d00bb8119ed65941069943422070afb5ea07",
+          "startedAt": "2026-11-07T17:02:13.041Z",
+          "endedAt": "2026-11-07T17:02:13.475Z"
+        },
+        {
+          "command": "pnpm mobile:bundle:smoke",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/normal-bundle.log",
+          "sha256": "89edccc7ec8d8f8ef97b38adfc8c89b177c9980bd4cf6521464f402e8a501559",
+          "startedAt": "2026-11-07T17:13:20.738Z",
+          "endedAt": "2026-11-07T17:13:25.156Z"
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs gradle :app:testDebugUnitTest :app:assembleDebug :app:assembleRelease",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/normal-debug-release.log",
+          "sha256": "ec7e841f5f944be9980701621cd146324d8b6b4e8e61eb540621843fa638c680",
+          "startedAt": "2026-11-07T17:14:05.343Z",
+          "endedAt": "2026-11-07T17:14:26.268Z"
+        },
+        {
+          "command": "node artifacts/vnext/n06-11/serve-v1/default-off.mjs",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/normal-default-off.log",
+          "sha256": "4595e12f722ce4ca7522f1c8448dbbb7195fe37fe3fad961ec85d50eb328ce8e",
+          "startedAt": "2026-11-07T17:16:15.503Z",
+          "endedAt": "2026-11-07T17:16:18.257Z"
+        },
+        {
+          "command": "python3 scripts/inspect-native-apk.py normal --task n06-11-serve",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/normal-inspection.log",
+          "sha256": "80152721421fc1b66551a86424d03d1b617ee52e54b6613c70323bf504d6ca2a",
+          "startedAt": "2026-11-07T17:16:14.868Z",
+          "endedAt": "2026-11-07T17:16:15.438Z"
+        },
+        {
+          "command": "pnpm mobile:emulator:smoke",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/normal-preview.log",
+          "sha256": "dc0508cb3e9e8597232cc502ab8af1e96cd426c6c4e667e1579746432bddf9d0",
+          "startedAt": "2026-11-07T17:17:38.621Z",
+          "endedAt": "2026-11-07T17:18:14.637Z"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/mobile cap sync android",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/normal-sync.log",
+          "sha256": "4ba35240873f2a45d7de26350d465ab2bb8743f23979f316d9c42ce957174225",
+          "startedAt": "2026-11-07T17:13:19.687Z",
+          "endedAt": "2026-11-07T17:13:20.679Z"
+        },
+        {
+          "command": "node artifacts/vnext/n06-11/serve-v1/attest.mjs",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/preservation.log",
+          "sha256": "02901771e0727b040a95ccd0de26656e147394b6dd21e29e8c7fc71c9a904677",
+          "startedAt": "2026-11-07T17:14:06.518Z",
+          "endedAt": "2026-11-07T17:14:08.874Z"
+        },
+        {
+          "command": "python3 scripts/inspect-native-apk.py release-unsigned --task n06-11-serve",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/release-inspection.log",
+          "sha256": "f48d907b2ee27613e18fc927cb3de5786ef648c1df55a6dfd1de8ce2b8edd29e",
+          "startedAt": "2026-11-07T17:16:14.871Z",
+          "endedAt": "2026-11-07T17:16:15.144Z"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/serve-green.log",
+          "sha256": "10fd339f1cd0499997224868fe5be2ec55f244ea235425e7baca8f58177420aa",
+          "startedAt": "2026-11-07T16:57:54.632Z",
+          "endedAt": "2026-11-07T16:57:56.700Z"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test/serve.test.ts",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/serve-v1/serve-red.log",
+          "sha256": "328540cb84ad8e0bd2d4526d170e7b9f9bd2ab0ad8c9a50c97dfd2e164c77e40",
+          "startedAt": "2026-11-07T16:56:45.497Z",
+          "endedAt": "2026-11-07T16:56:46.744Z"
+        },
+        {
+          "command": "python3 scripts/inspect-native-apk.py normal --task n06-11-serve",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/studio-apk-inspect.log",
+          "sha256": "d1c4c973a462110447efb8a26e90c5661327ef1ecfda64bba0fce248c69534f3",
+          "startedAt": "2026-11-07T17:02:37.360Z",
+          "endedAt": "2026-11-07T17:02:38.290Z"
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs gradle :app:testDebugUnitTest :app:assembleDebug",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/studio-apk.log",
+          "sha256": "7dd03e2714ed285126ec9ea5a0aae8ba4d764f696c3b3b8988716a9350524722",
+          "startedAt": "2026-11-07T17:01:37.057Z",
+          "endedAt": "2026-11-07T17:02:07.919Z"
+        },
+        {
+          "command": "pnpm mobile:emulator:scene3d",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/studio-avd.log",
+          "sha256": "e35a4ffe2ebac70d3d4703e8b37492a6f71a0214a925916fbb36e8a4f3fbe58f",
+          "startedAt": "2026-11-07T17:02:38.385Z",
+          "endedAt": "2026-11-07T17:03:38.263Z"
+        },
+        {
+          "command": "pnpm test:scene3d",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/studio-browser.log",
+          "sha256": "edb3372713845f4a740cae5f098c4852fab66968e3ba4caf2c6ba61aa10caaa2",
+          "startedAt": "2026-11-07T17:01:01.380Z",
+          "endedAt": "2026-11-07T17:04:15.493Z"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/mobile cap sync android",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/studio-sync.log",
+          "sha256": "77cc0bebc12289cb6a2f8f579e971a12feb13fbb16ca69e8188adbcf961d573d",
+          "startedAt": "2026-11-07T17:01:03.726Z",
+          "endedAt": "2026-11-07T17:01:05.118Z"
+        },
+        {
+          "command": "pnpm typecheck",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/types.log",
+          "sha256": "8c5d4b65c03536240da5af97cfa79a05063c79602af465d70f35c1464604c22b",
+          "startedAt": "2026-11-07T17:01:38.210Z",
+          "endedAt": "2026-11-07T17:03:02.861Z"
+        },
+        {
+          "command": "pnpm test",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/unit-governance.log",
+          "sha256": "f7fb64ea2214c6062e68f553553acf06ee9b9b223a068a4b924786796e7f87c2",
+          "startedAt": "2026-11-07T17:05:14.334Z",
+          "endedAt": "2026-11-07T17:05:53.059Z"
+        },
+        {
+          "command": "python3 artifacts/vnext/n06-11/serve-v1/check-workload-apk.py",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/workload-apk-proof.log",
+          "sha256": "6665f3e85705a19eced7a95fcd3df9abc0c9c8f14d95339c548fe3b902c60f0e",
+          "startedAt": "2026-11-07T17:08:49.484Z",
+          "endedAt": "2026-11-07T17:08:49.568Z"
+        },
+        {
+          "command": "env VLP_RENDERER_EVIDENCE_SET=serve-v1 pnpm mobile:emulator:workload",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/workload-avd-correct.log",
+          "sha256": "ac1bbfc5ea8e94e440c4746b6921297123459b41ff28af83b4c8fcba8fe376ad",
+          "startedAt": "2026-11-07T17:08:49.657Z",
+          "endedAt": "2026-11-07T17:09:40.584Z"
+        },
+        {
+          "command": "env VLP_RENDERER_EVIDENCE_SET=serve-v1 pnpm mobile:emulator:workload",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/serve-v1/workload-avd.log",
+          "sha256": "789863e347a765c36e802db069577b372908e7a5a9a1b6313104f8bbc3174539",
+          "startedAt": "2026-11-07T17:06:46.871Z",
+          "endedAt": "2026-11-07T17:07:49.564Z"
+        },
+        {
+          "command": "pnpm mobile:android:workload",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/serve-v1/workload-build.log",
+          "sha256": "c07e1024e1adf1525e4f7713f42f8ffcf5c8be47d223706ca8e6d255bd4f5c12",
+          "startedAt": "2026-11-07T17:05:13.169Z",
+          "endedAt": "2026-11-07T17:05:39.002Z"
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs gradle :app:assembleDebug",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/serve-v1/workload-pinned-apk.log",
+          "sha256": "55508806ea072f8f0dc3d5e09fd1e3ba8cbad67c7442241a1fca484c40f4f339",
+          "startedAt": "2026-11-07T17:07:29.545Z",
+          "endedAt": "2026-11-07T17:07:43.075Z"
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "docs/plans/platform-vnext/audit/N06-11-SERVE-CHECKPOINT.json",
+          "sha256": "e7e78aa2aeb709506ceb8db31289063d463b1d024c88eb82e7e335acd2e5700b",
+          "retention": "Owner-controlled repository summary or private local artifacts; no retention SLA",
+          "access": "sanitized-public"
+        },
+        {
+          "ref": "docs/design/vnext/animals-3d/SERVE-ANCHORS-REVISION-1.md",
+          "sha256": "e9d693b34a6a8c314e837ff26e57df1e5744390c14944cd8385188cefc55a7be",
+          "retention": "Owner-controlled repository summary or private local artifacts; no retention SLA",
+          "access": "sanitized-public"
+        },
+        {
+          "ref": "artifacts/vnext/n06-11/serve-v1/raw-index-v1.json",
+          "sha256": "1fc2dc0239f1d6c9118bc4767b08bc942b83399a49e0ba1c909ededc2d830b81",
+          "retention": "Owner-controlled repository summary or private local artifacts; no retention SLA",
+          "access": "private"
+        },
+        {
+          "ref": "artifacts/vnext/n06-11/serve-v1/source-attestation.json",
+          "sha256": "ac751e1a5f0aafb34b58c43adf37ab29750cda36e6798183ba2f0fe5790b4aa9",
+          "retention": "Owner-controlled repository summary or private local artifacts; no retention SLA",
+          "access": "private"
+        },
+        {
+          "ref": "artifacts/vnext/n06-11/serve-v1/model-preservation.json",
+          "sha256": "ec582a328820e9fb6d45a08b39746eed2540600ca21c24f4bdb960d11cb9083d",
+          "retention": "Owner-controlled repository summary or private local artifacts; no retention SLA",
+          "access": "private"
+        }
+      ],
+      "acceptance_met": false,
+      "scenarios": [
+        {
+          "name": "Two-paw serve contact through breathing/parent transforms,pose visibility,original ceilings and owned disposal",
+          "outcome": "PASS"
+        },
+        {
+          "name": "Actual Git-archived original skinned/morph streams identical in three tiers",
+          "outcome": "PASS"
+        },
+        {
+          "name": "Browser2profiles plus own packaged AVD studio/contexts/Back/rotation and isolated original20actor required Low/Balanced limits/20recreates",
+          "outcome": "PASS"
+        },
+        {
+          "name": "Normal APK exact assets/trust/default-off,3bundle and5AVD preview,owned stop",
+          "outcome": "PASS"
+        }
+      ],
+      "limitations": [
+        "Whole N06-11 IN_PROGRESS;final fur/silhouette/cloth/rig transitions/camera/full scenes and controlled p75 load/heap remain open.",
+        "Serving prop is original procedural technical art;single study material,faceted edge and unchanged sparse/bright fur do not meet reference/owner final-art acceptance.",
+        "No new authority or v1 appearance write;local serve preview grants no worker role/server service result.",
+        "Original20actor seated/walking/idle profile has no serve actors;hidden prop buffers are inventoried,not20simultaneous-serve performance acceptance.",
+        "Studio/software-GPU timings and screenshots are functional diagnostics;required AVD workload was isolated. High184draws remains predeclared desktop-tier diagnostic exceeding mobile160cap.",
+        "Emulator does not qualify physical30minute/thermal/battery/TalkBack/N10-04 or iOS;N14 still lacks Mac/Xcode/iPhone.",
+        "Backend/contracts/native custody/SQL/lock unchanged;fresh integration/security not rerun for this presentation slice. N11 record57 retains its separate source-bound729/256 outcomes.",
+        "Red tests,initial private-helper CJS failure,unconfigured workload build and premature wrong-APK verifier retained;only corrected pinned/asset-matched workload accepted.",
+        "No public/store/production/distribution/media-rights or owner-art approval promoted."
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

@@ -1,3 +1,9 @@
+# ADR0129 continuation: procedural serving anchors — 2026-11-08
+
+Existing3D pipeline/authority decision retained. [Serving-anchor review](../design/vnext/animals-3d/SERVE-ANCHORS-REVISION-1.md):one opaque prop,original skinned streams preserved,no new texture/bone/server outcome. Scope remains technical;no final-art/media/license approval. [Qualification](../plans/platform-vnext/audit/N06-11-SERVE-CHECKPOINT.json).
+
+## Earlier checkpoints — historical
+
 # ADR0132 explicit native safety ports — 2026-11-07
 
 [ADR0132](../adr/0132-explicit-native-safety-ports.md): dedicated fixed safety ports,expected-account assertion and existing report/social/room owners;generic native HTTP unchanged. Independent exact report retry survives a later block. No new DB/authority/automatic sanction or durable UI recovery promise. [Qualification](../plans/platform-vnext/audit/N11-03-SAFETY-CHECKPOINT.json).

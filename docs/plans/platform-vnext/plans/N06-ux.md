@@ -1,5 +1,7 @@
 # N06 — UI/UX và playable vertical slice
 
+Current N06-11 remains IN_PROGRESS after serving-anchor partial slice at21cbc1f21d4ac8221805e49215aec3512542c712. [Actual checks](../audit/N06-11-SERVE-CHECKPOINT.json);review `docs/design/vnext/animals-3d/SERVE-ANCHORS-REVISION-1.md`. Original character streams/budgets preserved;controlled loading/heap,final graphics/full scenes/physical still open.
+
 Current prerequisite update: N10-03 native account/tickets VERIFIED at04b1b38 ([checks](../audit/N10-03-NATIVE-CHECKS.json)); creator still needs whole N06-11 acceptance. Technical3D art/full scenes/controlled loading/heap/physical findings remain open. Historical checkpoint paragraphs below keep their original scope.
 
 **Owner lane:** Experience  

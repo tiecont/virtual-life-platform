@@ -1,3 +1,9 @@
+# Remaining3D/native release gates — 2026-11-08
+
+[Current blockers](../plans/platform-vnext/state/BLOCKERS.md):N06 serve anchors qualify a bounded technical slice;final graphics/loading/heap/physical and N11 disclosure/owner/public/Play plus N14 Apple access remain open.
+
+## Earlier checkpoints — historical
+
 # N11-03 remaining owner and product gates — 2026-11-07
 
 [Current blockers](../plans/platform-vnext/state/BLOCKERS.md):account safety is qualified only in closed synthetic room/AVD scope. Owner disclosure/retention/age/Play/public facts and full native gameplay/physical/iOS remain open.
