@@ -1,3 +1,11 @@
+# Remaining gates after N10-03 — 2026-11-07
+
+N10-03 native account/ticket custody is VERIFIED in the closed local/AVD scope at04b1b38. It does not close N06-11 final art/anchors/full scenes/controlled loading/heap/physical findings or N10-04 gameplay/thermal/battery gates. No current USB qualification is inferred from old evidence. N14 still lacks Mac/Xcode/iPhone; N04-02/N07-04 remain external staging gates. No public/store release or support promotion. Independent N06-11 code can continue.
+
+**Next exact action:** N11-03 is now dependency-ready: implement the account deletion/request + web resource and actual policy checks; missing owner/Play disclosure/testing details must remain explicit. Continue N06-11 final3D/controlled-load/heap preparation independently,with physical and N14 Apple access gates unmet.
+
+## Earlier checkpoints — historical
+
 # N06-11 workload measured; remaining art/loading/physical gates — 2026-11-07
 
 [Actual workload checkpoint](../audit/N06-11-WORKLOAD-CHECKPOINT.json),source5255a2e: required Low/Balanced20actor AVD observed limits now pass after bounding blink textures and sharing immutable face buffers. Native Low50ms and2976px failures remain. SwiftShader still exceeds frame budget; command exits1. High184calls exceeds mobile160cap and remains a predeclared desktop-only diagnostic. No threshold was raised.

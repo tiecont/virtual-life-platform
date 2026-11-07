@@ -1,3 +1,11 @@
+# N10-03 vNext native custody VERIFIED — 2026-11-07
+
+N10-03 VERIFIED at 04b1b38e29319824949846665b14eee13f8fb955: default-off opaque native grants/refresh/devices/one-use protocol tickets,additive SQL45 and bounded serialized Android Keystore/HTTPS custody. Browser cookie/Origin/CSRF,one RoomAuthority and worker separation preserved. Actual28native/246security/719integration with565stable tracked inputs,92governance/397unit/145protocol,types/build/lint/CI/architecture/boundaries PASS at recorded scopes. Actual4Keystore+5HTTPS AVD cases and own WebView form/WSS/process-restart/20parallel restores/upgrade/login/logout/200% text PASS. Genuine44-aware source-runtime rollback and stable-key native roll-forward PASS; no down migration. Normal signed DEBUG APK ae51ffa0d1d0fd294a0862514d4ed3af187f8e50657ebfe1a58a1d3dac920331 (8809851bytes),18exact assets,no test CA/fixture/local WSS,is restored/reinstalled;5preview/default-off scenarios PASS. Unsigned release policy inspection is local only. AVD STOPPED;owned TLS/schema/DB cleaned. All failures/unknown-exit interruption retained; only stable final gates accepted.54old records/2256private refs/48immutable files/437frozen workload files preserved; record55. Counts42VERIFIED/2BLOCKED_EXTERNAL/31TODO/1IN_PROGRESS. Native authenticated rooms/creator Save/physical30minute/iOS/public/store are not accepted; distributionfalse/releaseNOT_REQUESTED.
+
+[Actual checks](../plans/platform-vnext/audit/N10-03-NATIVE-CHECKS.json). Historical151Mxx ledger is unchanged.
+
+## Earlier checkpoints — historical
+
 # Agent progress
 
 ## M23-06 — VERIFIED final offline preparation and whole check

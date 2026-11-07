@@ -1,5 +1,7 @@
 # N10 — Shared client và Android architecture spike
 
+Current N10-03 checkpoint: native account/ticket slice VERIFIED at04b1b38 with actual Keystore/HTTPS/WebView/WSS and source-stable security/integration evidence. [Qualification](../audit/N10-03-NATIVE-CHECKS.json). N10-04 physical gameplay and N14 iOS remain separate; original task descriptions below retain their initial-state labels.
+
 **Owner lane:** Experience/Mobile  
 **Activation:** active · **Implementation:** TODO  
 **Goal:** Chốt shared React/Pixi + Capacitor trên Android vật lý hiện có; iOS được kiểm chứng riêng ở N14, không chặn nhánh Android.

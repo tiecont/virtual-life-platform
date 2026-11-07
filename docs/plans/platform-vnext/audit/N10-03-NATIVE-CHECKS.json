@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "taskId": "N10-03",
+  "sourceRevision": "04b1b38e29319824949846665b14eee13f8fb955",
+  "implementationCommit": "41b849922258d55f2f905ce2d1b52db327ac5ab0",
+  "executedAt": "2026-11-07T07:18:15.131Z",
+  "acceptance_met": true,
+  "environment": "CachyOS Linux7.2.9-2; Node26.9.0/pnpm11.28.5; PostgreSQL disposable local Docker; JDK21/SDK36/Gradle8.14.3; owned Emulator37.2.13/API35/WebView124",
+  "tests": {
+    "nativeFocused": 28,
+    "governance": 92,
+    "unit": 397,
+    "protocol": 145,
+    "security": 246,
+    "integration": 719,
+    "stableIntegrationInputs": 565,
+    "stableIntegrationDigest": "5a3aad0c1834d1cc3e76e3687880909d6d547d0eed23a6465fbd89d096137071",
+    "keystoreInstrumentation": 4,
+    "httpsInstrumentation": 5,
+    "applicationJVM": 7,
+    "normalNativePreview": 5
+  },
+  "sourceFilesDigest": "5f5c872486a552c3990ac4dd4347004b0ccf9258d74577df083251e08045b353",
+  "preservation": {
+    "priorEvidenceRecords": 54,
+    "immutableFiles": 48,
+    "priorPrivateArtifactRefs": 2256,
+    "frozenWorkloadFiles": 437,
+    "runtimeContextUnchanged": true
+  },
+  "apk": {
+    "qualifiedAccount": {
+      "sha256": "596f9d78062e5867d8e32ce69242c1666886bf609a2b06663ceae11f837b7491",
+      "bytes": 8809925
+    },
+    "restoredNormal": {
+      "sha256": "ae51ffa0d1d0fd294a0862514d4ed3af187f8e50657ebfe1a58a1d3dac920331",
+      "bytes": 8809851
+    },
+    "unsignedReleasePolicy": {
+      "sha256": "9a99c9779fabc96c2c374445d45ffaceb5ed52587c89ae2913e9d80954aa0cab",
+      "bytes": 4103010
+    },
+    "androidClientSourcesIdenticalBetweenImplementationAndFinalFix": true
+  },
+  "nativeScenarios": [
+    "Opaque grants and encrypted-at-rest core; canonical account-lock rechecks and access expiry during real SQL wait",
+    "Atomic refresh rotation,replay/race denial,wrong-secret DoS prevention,upgrade/login,own devices/revoke/export/erasure",
+    "Actual TCP ticket protocol/nonce/subject/session/audience/expiry/single-use/race; final reauthentication deadline red→green; browser cookie/CSRF/legacy unchanged",
+    "Actual Keystore ciphertext/nonexportable key,new-instance custody,tamper/wrong-origin/oversize failure",
+    "Actual pinned HTTPS independent cookie jar,redirect/Set-Cookie/oversize rejection,wrong-host trust denial",
+    "Actual bundled WebView guest/upgrade/login/logout,process restart,same account,20parallel restores,one-use WSS session.check,200% text",
+    "Normal APK default-off/native method rejection,exact assets/signature,no fixture/test CA/local WSS; unsigned release system-only trust",
+    "Genuine archived/rebuilt44-aware API/shared packages on actual SQL45; browser/socket continuity,strict/checksum denial,native stable-key roll-forward without down migration"
+  ],
+  "rawIndex": {
+    "ref": "artifacts/vnext/n10-03/raw-index-v1.json",
+    "sha256": "5459be9ca701ae37dfe068f5feb53f61dbae6d4568db46e2428d94b7c75f4f52",
+    "files": 586
+  },
+  "interruptions": [
+    {
+      "command": "pnpm test:integration",
+      "exitCode": null,
+      "log": "artifacts/vnext/n10-03/baseline-integration.log",
+      "reason": "Execution session unavailable and no owned test runner/container remains; last output was database-start. Exact exit status is unknown."
+    }
+  ],
+  "limitations": [
+    "Actual Android API35 AVD Keystore/HTTPS/WebView/WSS evidence; not hardware-backed-key,physical Android,broad support-floor,30minute gameplay,thermal/battery or iOS qualification.",
+    "Default server native auth OFF; normal Android/release origin empty; account-only opt-in does not activate room/social gameplay while safety/business adapters are missing.",
+    "iOS custody interface exists; Keychain,Xcode/Simulator/iPhone implementation and qualification remain N14.",
+    "Full integration attempts716/718 and mixed-source718/719 failed and are retained; only stable-input719/719 run supplies final full acceptance.",
+    "First red rejection assertion serialized a consumed fixture ticket; restricted original excluded from archive,redacted derivative indexed and bounded boolean assertion used thereafter.",
+    "Unsigned release is a local policy inspection artifact; distribution flags false/release NOT_REQUESTED; no public/store/staging promotion.",
+    "N06-11 final art/full scenes/controlled loading/heap/physical and N06-07/04/09/N10-04 remain separate."
+  ],
+  "publicRelease": false,
+  "storeRelease": false,
+  "ownedEmulatorStopped": true,
+  "ownedTLSAndDatabaseCleaned": true,
+  "cleanClientSourceProof": {
+    "inputsDigest": "1f3c74ba3e469da1809c05d09177ce76a9b32e70e501004ca1b2732f264acd00",
+    "inputsCount": 238,
+    "allTrackedSourcesMatchCommit": true,
+    "allRawInputHashesUnchanged": true,
+    "gitAttributeNormalization": "Tracked Android .gitattributes specifies Windows gradlew.bat CRLF; canonical Git blob identity plus exact before/after raw hashes,without editing source",
+    "authContainerIdenticalToEarlierArtifact": false,
+    "allAuthPayloadEntriesIdentical": true,
+    "newExactAuthArtifactRequalifiedOnOwnedAVD": true,
+    "normalContainerIdenticalToEarlierArtifact": true
+  }
+}

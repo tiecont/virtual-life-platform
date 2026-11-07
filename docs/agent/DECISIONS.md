@@ -1,3 +1,9 @@
+# ADR0130 native device custody — 2026-11-07
+
+[ADR0130](../adr/0130-native-device-custody-and-one-use-tickets.md),runtime04b1b38: separate default-off native authority adapter,encrypted refresh custody,opaque scoped grants,atomic one-use tickets and explicit schema44→45 expansion policy;browser auth and one owner preserved. [Actual qualification](../plans/platform-vnext/audit/N10-03-NATIVE-CHECKS.json). No release/signing/support/iOS approval inferred.
+
+## Earlier checkpoints — historical
+
 # Decisions
 
 M23-06 / ADR0100:finitehistoricaloperationalobservations andnullunmeasuredretention-cost-publicsafety,not inventedliveoperation. Read-onlyworld-taskhandoff/privateinputwhitelist/2newtests. Freshwhole28gov278unit553API/allbuild0/546stablehashes/147source-copy-originalstatusmatch.151tasks148verified3external/readyempty;M20-07/M23-03/M23-05 remainexplicitrealworld/publicgates. Offlineworkexhausted,allflagsOFF/no publicrelease/backgroundpromise.

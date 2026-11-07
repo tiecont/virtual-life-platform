@@ -1,3 +1,9 @@
+# vNext gates remain explicit — 2026-11-07
+
+N10-03 account/tickets now VERIFIED locally/AVD. [Current blockers](../plans/platform-vnext/state/BLOCKERS.md): N06-11 final3D/loading/heap/physical,N10-04 integrated gameplay,N14 Apple tooling/device access and existing staging/public/operator gates remain. Historical151Mxx task statuses are preserved.
+
+## Earlier checkpoints — historical
+
 # Blockers and scoped gates
 
 The owner confirmed reuse rights/current working-source copies for offline integration. [ADR0085](../adr/0085-owner-selected-offline-legacy-snapshots.md) resolves B-001/B-002 in that scope with independent pins. All local M15/M16/M17/M22 adapter/journey tasks are now verified. Historical checkpoint counts are not the current task set;run `node scripts/ops-watch.mjs` or `pnpm plan:status`. Public B-003 remains external.

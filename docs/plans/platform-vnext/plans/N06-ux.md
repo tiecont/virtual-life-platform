@@ -1,5 +1,7 @@
 # N06 — UI/UX và playable vertical slice
 
+Current prerequisite update: N10-03 native account/tickets VERIFIED at04b1b38 ([checks](../audit/N10-03-NATIVE-CHECKS.json)); creator still needs whole N06-11 acceptance. Technical3D art/full scenes/controlled loading/heap/physical findings remain open. Historical checkpoint paragraphs below keep their original scope.
+
 **Owner lane:** Experience  
 **Activation:** active · **Implementation:** TODO  
 **Goal:** Chuyển giao diện kiểm chứng thành game social3D animals đẹp, lông/animation chi tiết, rõ, dễ trở lại, có kiểm tra usability trên web/mobile.
