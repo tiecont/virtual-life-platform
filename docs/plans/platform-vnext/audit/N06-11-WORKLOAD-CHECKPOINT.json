@@ -1,0 +1,1843 @@
+{
+  "taskId": "N06-11",
+  "status": "IN_PROGRESS",
+  "acceptance_met": false,
+  "scope": "Synthetic20actor GPU/resource/disposal harness and bounded morph texture correction,not final task qualification",
+  "sourceRevision": "5255a2e07321fd04269a09be2caa095aae98a2ca",
+  "baselineSourceRevision": "39c0186741ee882e470c76c403f54a9f97dbcafa",
+  "executedAt": "2026-11-07T05:20:44.956Z",
+  "environment": "CachyOS Linux7.2.9-2; Node26.9.0/pnpm11.28.5; Three0.187.0; Chromium156 SwiftShader; owned Emulator37.2.13/API35/WebView124, AMD Radeon/Mesa26.2.4, KVM12; JDK21/SDK36/Gradle8.14.3 signed DEBUG",
+  "sourceFiles": [
+    {
+      "ref": "apps/mobile/package.json",
+      "sha256": "a966544b4a0406a9a957155db925e0216ea10174f7643635aab0614e37289cb0"
+    },
+    {
+      "ref": "apps/mobile/src/main.tsx",
+      "sha256": "08a7e1f52141d3c5f21b525c981f90cb94f40b030256dfd2a9ae8fcdfec3543c"
+    },
+    {
+      "ref": "apps/mobile/src/orientation.ts",
+      "sha256": "ffee764092fa1fe67bbaa86b98947895deca876f124d9d4bf7f96418e29a2e8d"
+    },
+    {
+      "ref": "apps/mobile/src/orientation.unit.test.ts",
+      "sha256": "406d07db6008a1d0915b9f62208c9dc57083b262b3baec275a447ca3375f1563"
+    },
+    {
+      "ref": "apps/mobile/src/platform.ts",
+      "sha256": "9e8cbd8aae086d42844473aad3ea0a8310cd8525055f8d0b65a2346aa42b2394"
+    },
+    {
+      "ref": "apps/mobile/src/platform.unit.test.ts",
+      "sha256": "8e25c7d0ce9b88591b57e801428a3b597b87e65947a30ea9f72312d02c459c6d"
+    },
+    {
+      "ref": "package.json",
+      "sha256": "d636d06808fa1ae54855763f5c6dfdc17c879aa0b2b8ebc97ef9cd0dc6c738cc"
+    },
+    {
+      "ref": "packages/scene3d/src/animal.ts",
+      "sha256": "b387b56f19516019bc4bb517d144a29677c42a26b030ef6e87fc32ddde67cedc"
+    },
+    {
+      "ref": "packages/scene3d/src/face-geometry.ts",
+      "sha256": "08b010552e9bdf7d3981d4d974096043afd89c5b641eaa39754f64d3c5c62e9f"
+    },
+    {
+      "ref": "packages/scene3d/src/index.ts",
+      "sha256": "3ff8f0d5376a170134d37b3e6b645f6161c6cc5fbc8dfde88c780427365c2543"
+    },
+    {
+      "ref": "packages/scene3d/src/projection.ts",
+      "sha256": "da825c5e941040978866d4d31c5cc58e7711a2a1c198f6a6d04978c88fcf6562"
+    },
+    {
+      "ref": "packages/scene3d/src/renderer.ts",
+      "sha256": "c24d45d03fb4a3d69db378ee06bfaaf4e075ee7bd4a68f56b89538a16bf11992"
+    },
+    {
+      "ref": "packages/scene3d/src/resources.ts",
+      "sha256": "0876671724a574cb359d0689774324c604a973b67e4762ab7e0b8065dafb38a7"
+    },
+    {
+      "ref": "packages/scene3d/src/room.ts",
+      "sha256": "9697d892c25135faba61242c761cca5bc9ed84e98995f1d45fab829a79e210dd"
+    },
+    {
+      "ref": "packages/scene3d/src/study.ts",
+      "sha256": "89d0911c8eb710dc3634060f5bd16f7b04820975b0917f24152896ee77c4a255"
+    },
+    {
+      "ref": "scripts/mobile-emulator-workload.mjs",
+      "sha256": "c88ed54f302a62d8b4b55cf3c4456a62bb931358c3b594c196e6d395127eedaa"
+    },
+    {
+      "ref": "scripts/mobile-emulator.mjs",
+      "sha256": "921ba851c198d1152659bda0f0542d630c4dddaf83fd4e392df5dfafcc806e3f"
+    },
+    {
+      "ref": "scripts/scene3d-workload-evidence.mjs",
+      "sha256": "ee95d65011c50f8734bfd8420d51057008cbfefb2db3f77d33f2af182490dba9"
+    },
+    {
+      "ref": "scripts/scene3d-workload-policy.mjs",
+      "sha256": "dec577ea4d8e8d475ed0044f1226f1cb4aade7422db0d2fe373e35f0d26de695"
+    },
+    {
+      "ref": "scripts/verify-scene3d-workload.mjs",
+      "sha256": "f54834a15ed55e3205ac5bb0f87cf8af4726b5b0c124bb55b50e75f57cc8d4fd"
+    },
+    {
+      "ref": "tests/renderer-workload/PROFILE.json",
+      "sha256": "35df48cc8ac4547c2a55f5404a8c214130b2ee40b191e7ae05cc6ed2fd52fd5f"
+    },
+    {
+      "ref": "tests/renderer-workload/fixture.ts",
+      "sha256": "1924412e856f99f818c87af12cafcdd929f8b419e598619627841c9038efe802"
+    },
+    {
+      "ref": "tests/renderer-workload/main.ts",
+      "sha256": "05bc3857e77fc5db6a0297625bd9dfe51d7900e3de34321b4744042faf9930db"
+    }
+  ],
+  "commands": [
+    {
+      "command": "pnpm build:packages",
+      "exitCode": 2,
+      "log": "artifacts/vnext/n06-11/workload-packages.log",
+      "sha256": "3b32a406e5df43f4deeeb17a9aaa81e646e466bb220c5f2bbaf6655e301342f6",
+      "startedAt": "2026-11-07T04:31:13.535Z",
+      "endedAt": "2026-11-07T04:31:21.592Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/scene3d/test/resources.test.ts",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-unit.log",
+      "sha256": "de920f9bdde6872460b4b6119b63020c024a2138bc08b364990132191cb758d7",
+      "startedAt": "2026-11-07T04:34:15.765Z",
+      "endedAt": "2026-11-07T04:34:16.874Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm test:scene3d-workload",
+      "exitCode": 2,
+      "log": "artifacts/vnext/n06-11/workload-first-browser.log",
+      "sha256": "00dc8b23606be005fb6f8eb2f2d5d79ba80bac8b61c38f5bca2874992933badb",
+      "startedAt": "2026-11-07T04:34:16.936Z",
+      "endedAt": "2026-11-07T04:34:26.177Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm test:scene3d-workload",
+      "exitCode": 1,
+      "log": "artifacts/vnext/n06-11/workload-browser-v2.log",
+      "sha256": "297f7c089fbd3e94bc920afdc1c1985609590ce9577d2b4210fce7a4558436ce",
+      "startedAt": "2026-11-07T04:36:47.210Z",
+      "endedAt": "2026-11-07T04:41:26.752Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 1,
+      "log": "artifacts/vnext/n06-11/workload-lint-first.log",
+      "sha256": "c7b3565512f46c02801d270a21f4f6e108f27051e5ec6309e1034b04db6d140a",
+      "startedAt": "2026-11-07T04:39:09.396Z",
+      "endedAt": "2026-11-07T04:39:24.163Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm typecheck",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-types.log",
+      "sha256": "63694aa1f0c2964add817e94c58e4be918fb5c4b9ebfb2b089cfc334c6aaaf3e",
+      "startedAt": "2026-11-07T04:39:10.560Z",
+      "endedAt": "2026-11-07T04:40:01.130Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm test",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-test.log",
+      "sha256": "4bfc2dce977542fb22ab1be26731e69acaa932fdc7d939adc8bda5b10bdb8e9e",
+      "startedAt": "2026-11-07T04:40:37.290Z",
+      "endedAt": "2026-11-07T04:41:10.623Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-lint.log",
+      "sha256": "08db9021e3d747f83ea2f6c017bb4949889142de63056724e576c90c60e6d3f7",
+      "startedAt": "2026-11-07T04:40:38.475Z",
+      "endedAt": "2026-11-07T04:40:56.665Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm ci:check",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-ci.log",
+      "sha256": "a7e9b16f6a387bb03df3d49761911d6dd854a9dde109f3ff37652afb06682644",
+      "startedAt": "2026-11-07T04:40:49.215Z",
+      "endedAt": "2026-11-07T04:40:51.378Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm build",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-build.log",
+      "sha256": "b0946b6569c152107c51dd99fa993267972fac2b993ff7b4ffdc78dfca4a89b9",
+      "startedAt": "2026-11-07T04:41:33.062Z",
+      "endedAt": "2026-11-07T04:42:15.025Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm test:client-boundaries",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-boundaries.log",
+      "sha256": "5495c798b65d6000b4c94f64a65df95c1cde20c2877ccd10f76f20396c99c9fd",
+      "startedAt": "2026-11-07T04:42:27.188Z",
+      "endedAt": "2026-11-07T04:42:28.156Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm assets:check",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-assets.log",
+      "sha256": "3b359bb4b909d1c6c87512cd3c684748b753fa133ffdc99114e2787c6190ad29",
+      "startedAt": "2026-11-07T04:42:28.212Z",
+      "endedAt": "2026-11-07T04:42:29.211Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/scene3d/test/resources.test.ts",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-final-unit.log",
+      "sha256": "cc39734934f8e87bda5b0d9386a254c1064ccef1120caf0932b16dbe11cecddf",
+      "startedAt": "2026-11-07T04:42:52.956Z",
+      "endedAt": "2026-11-07T04:42:54.002Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-final-lint.log",
+      "sha256": "08db9021e3d747f83ea2f6c017bb4949889142de63056724e576c90c60e6d3f7",
+      "startedAt": "2026-11-07T04:42:54.054Z",
+      "endedAt": "2026-11-07T04:43:04.421Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm test:scene3d-workload",
+      "exitCode": 1,
+      "log": "artifacts/vnext/n06-11/workload-browser-committed.log",
+      "sha256": "dcab00c3a03722fd3589dba8ecb280bbc972c1413326478ae951933cd3c7edc9",
+      "startedAt": "2026-11-07T04:43:29.563Z",
+      "endedAt": "2026-11-07T04:46:37.916Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "node --import tsx artifacts/vnext/n06-11/workload-v1/indexing-experiment.mjs",
+      "exitCode": 1,
+      "log": "artifacts/vnext/n06-11/workload-indexing-experiment.log",
+      "sha256": "87d8899dbbea0b95dddf999036185b34494dff905524e9a9b12ed26b96b6ab8d",
+      "startedAt": "2026-11-07T04:46:46.666Z",
+      "endedAt": "2026-11-07T04:46:47.174Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm mobile:android:workload",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-android-build.log",
+      "sha256": "c329aec4f35a79f30603fa45f237290669c00acb3a387ea1656817c7c1c271c5",
+      "startedAt": "2026-11-07T04:46:52.715Z",
+      "endedAt": "2026-11-07T04:47:19.992Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "node --import tsx artifacts/vnext/n06-11/workload-v1/indexing-experiment-v2.mjs",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-indexing-experiment-v2.log",
+      "sha256": "56e372d5d9248554c9dcabe336d98207db32cdc73db7ec609e012535502f7212",
+      "startedAt": "2026-11-07T04:47:05.292Z",
+      "endedAt": "2026-11-07T04:47:05.854Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm mobile:emulator:start",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-emulator-start.log",
+      "sha256": "ff1d49e026362bc385109d8aa612a6b02121a1ac466aa9cb45df265f5bd31528",
+      "startedAt": "2026-11-07T04:47:42.662Z",
+      "endedAt": "2026-11-07T04:48:01.116Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm exec python3 artifacts/vnext/n06-11/workload-v1/inspect-apk.py",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-apk-inspection.log",
+      "sha256": "c5cda6a060a9e4ea42e376726502f0576aa1535f4ee2bf60b1328e0a87255355",
+      "startedAt": "2026-11-07T04:47:49.640Z",
+      "endedAt": "2026-11-07T04:47:50.494Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm mobile:emulator:workload --apk artifacts/vnext/n06-11/workload-v1/app-debug.apk",
+      "exitCode": 1,
+      "log": "artifacts/vnext/n06-11/workload-android-baseline.log",
+      "sha256": "37dc6e177d5a570e0e9ebff438f305dd42ba0573f527f09c2182823bc4086330",
+      "startedAt": "2026-11-07T04:48:09.886Z",
+      "endedAt": "2026-11-07T04:49:02.777Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/scene3d/test/face-geometry.test.ts packages/scene3d/test/animal.test.ts packages/scene3d/test/resources.test.ts",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-compaction-unit.log",
+      "sha256": "b1ef0b52f7cb0669e99c12810d37ce1a669a41e80e81ff7c7ca578ef8a6672ef",
+      "startedAt": "2026-11-07T04:49:07.715Z",
+      "endedAt": "2026-11-07T04:49:09.971Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/scene3d typecheck",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-compaction-types.log",
+      "sha256": "38ac890c60e7f38d59ddfb410325cdfb5fca83c9411765c5481754e01c021630",
+      "startedAt": "2026-11-07T04:49:15.752Z",
+      "endedAt": "2026-11-07T04:49:17.788Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-compaction-lint.log",
+      "sha256": "1166505c2c23c22c8ce4bb87e9325915194367f6fa6fc6a31865518f3526605f",
+      "startedAt": "2026-11-07T04:49:16.927Z",
+      "endedAt": "2026-11-07T04:49:26.172Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm mobile:emulator:stop",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-emulator-stop-baseline.log",
+      "sha256": "74f2ce7c9024113fa982cc6eeb9d491083a62e5d36c678f4222130361970f52a",
+      "startedAt": "2026-11-07T04:49:22.564Z",
+      "endedAt": "2026-11-07T04:49:24.154Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "node --import tsx artifacts/vnext/n06-11/workload-v1/compare-compaction.mjs",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-compaction-preservation.log",
+      "sha256": "f56838c3bee6cb85cf6f99d9279ee9d7540fba655b2ba700e0e8dda1a9d5c1cd",
+      "startedAt": "2026-11-07T04:50:05.174Z",
+      "endedAt": "2026-11-07T04:50:11.273Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm test",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-compaction-all-tests.log",
+      "sha256": "42320c95c66d35d474c78222d6fb0ef89eddf5231e7cef8f5eef853aedcfcb20",
+      "startedAt": "2026-11-07T04:50:14.423Z",
+      "endedAt": "2026-11-07T04:50:39.573Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm test:scene3d-workload",
+      "exitCode": 1,
+      "log": "artifacts/vnext/n06-11/workload-browser-compacted.log",
+      "sha256": "eaa222f57e402ca7e0fa2b1a58cc0c20f1f286525f4f24498ff1112217cdd28a",
+      "startedAt": "2026-11-07T04:50:41.329Z",
+      "endedAt": "2026-11-07T04:54:01.951Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 1,
+      "log": "artifacts/vnext/n06-11/workload-viewport-lint.log",
+      "sha256": "e448092dfa813f04381ac5036923055424ab910dcf72766a3d0a355719d3bbf8",
+      "startedAt": "2026-11-07T04:52:22.354Z",
+      "endedAt": "2026-11-07T04:52:36.469Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-viewport-lint-final.log",
+      "sha256": "1166505c2c23c22c8ce4bb87e9325915194367f6fa6fc6a31865518f3526605f",
+      "startedAt": "2026-11-07T04:53:02.126Z",
+      "endedAt": "2026-11-07T04:53:14.076Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "node artifacts/vnext/n06-11/workload-v1/probe-usb.mjs",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-usb-counts.log",
+      "sha256": "5145726f36f6a4b4bc5b46e91584a9ee1289e7a066da4e2248e3a7e5acce4758",
+      "startedAt": "2026-11-07T04:54:04.282Z",
+      "endedAt": "2026-11-07T04:54:04.323Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm test:scene3d-workload",
+      "exitCode": 1,
+      "log": "artifacts/vnext/n06-11/workload-browser-final.log",
+      "sha256": "99ec9d7af7bcbe65531a60b9174d0600bd5f6bcd3da6dbab7a59f40a819086ea",
+      "startedAt": "2026-11-07T04:54:09.552Z",
+      "endedAt": "2026-11-07T04:57:28.510Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm mobile:android:workload",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-android-compacted.log",
+      "sha256": "b8bf7793ef3e93cafa61b5f333d00273d6b4474ac283cae891b5d6515fc54c9d",
+      "startedAt": "2026-11-07T04:57:46.021Z",
+      "endedAt": "2026-11-07T04:58:15.337Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm mobile:emulator:start",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-emulator-start-final.log",
+      "sha256": "14d8825bcf7a13ea9d048ea319d418e1db1fdfa4e375de6b25017d58ef03afe9",
+      "startedAt": "2026-11-07T04:57:56.008Z",
+      "endedAt": "2026-11-07T04:58:15.333Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm exec python3 artifacts/vnext/n06-11/workload-v1/compacted/inspect-apk.py",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-apk-compacted.log",
+      "sha256": "ae619e717076bcc03220988ad8e0c6eafa9d59af6df243d76b391ebfc9465f03",
+      "startedAt": "2026-11-07T04:58:56.218Z",
+      "endedAt": "2026-11-07T04:58:57.156Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm mobile:emulator:workload --apk artifacts/vnext/n06-11/workload-v1/compacted/app-debug.apk",
+      "exitCode": 1,
+      "log": "artifacts/vnext/n06-11/workload-native-final.log",
+      "sha256": "403c397ced2a1268b02a275b40a659d207a3a14f6adca65962350d053ea9dd2b",
+      "startedAt": "2026-11-07T04:58:57.209Z",
+      "endedAt": "2026-11-07T04:59:58.382Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm mobile:emulator:stop",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-emulator-stop-final.log",
+      "sha256": "4b2bc98e34f1e0c9744464c0a2d10ec2c50ca2d7d5b5abc01cae87addf7f1a7e",
+      "startedAt": "2026-11-07T05:01:32.743Z",
+      "endedAt": "2026-11-07T05:01:34.757Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "node --import tsx artifacts/vnext/n06-11/workload-v1/lod-cpu.mjs",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-lod-cpu-before.log",
+      "sha256": "ee3abf522561ecb06d487cbc4402998b0db26c7e837cb2439282ed8d89bbacba",
+      "startedAt": "2026-11-07T05:02:59.589Z",
+      "endedAt": "2026-11-07T05:03:01.480Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/scene3d/test/animal.test.ts packages/scene3d/test/face-geometry.test.ts packages/scene3d/test/resources.test.ts",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-face-cache-unit.log",
+      "sha256": "e831f03934fb698cf5950635093ab3431fd6f18fbce5c2c541f8a8c0748ad002",
+      "startedAt": "2026-11-07T05:03:34.168Z",
+      "endedAt": "2026-11-07T05:03:35.953Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/scene3d typecheck",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-face-cache-types.log",
+      "sha256": "38ac890c60e7f38d59ddfb410325cdfb5fca83c9411765c5481754e01c021630",
+      "startedAt": "2026-11-07T05:03:35.306Z",
+      "endedAt": "2026-11-07T05:03:37.376Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/scene3d/test/animal.test.ts packages/scene3d/test/face-geometry.test.ts packages/scene3d/test/resources.test.ts",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-face-cache-proof.log",
+      "sha256": "18f4a1cc3d2332c77b067d597cb0c1b455068b592c09778017e515a8703b18d4",
+      "startedAt": "2026-11-07T05:04:06.979Z",
+      "endedAt": "2026-11-07T05:04:08.921Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "node --import tsx artifacts/vnext/n06-11/workload-v1/lod-cpu.mjs",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-lod-cpu-after.log",
+      "sha256": "8fa09206a49fd50497fc9872f05bd3d62f107df89d82556c617074553a18cc64",
+      "startedAt": "2026-11-07T05:04:08.149Z",
+      "endedAt": "2026-11-07T05:04:08.985Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-face-cache-lint.log",
+      "sha256": "1166505c2c23c22c8ce4bb87e9325915194367f6fa6fc6a31865518f3526605f",
+      "startedAt": "2026-11-07T05:04:09.043Z",
+      "endedAt": "2026-11-07T05:04:17.995Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "node --import tsx artifacts/vnext/n06-11/workload-v1/compare-compaction.mjs",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-face-cache-preservation.log",
+      "sha256": "690850d7ae519acfe1a17df0263ad9ca3f1e620cd9540da5b02711ac99ac9339",
+      "startedAt": "2026-11-07T05:04:31.067Z",
+      "endedAt": "2026-11-07T05:04:36.941Z",
+      "purpose": "Preserved earlier or precommit attempt; not final runtime qualification"
+    },
+    {
+      "command": "pnpm test",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-face-cache-all-tests.log",
+      "sha256": "fe61021382d4023805434ba20d9c8aefd7328ebb5bcaa8b1372e5f70c2738617",
+      "startedAt": "2026-11-07T05:04:56.027Z",
+      "endedAt": "2026-11-07T05:05:21.737Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "node --import tsx artifacts/vnext/n06-11/workload-v1/lod-cpu.mjs",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-lod-cpu-committed.log",
+      "sha256": "f928f1bc52619b0d4bf587776997db874e5237974b3f13a2f9f0d2ad7c496e30",
+      "startedAt": "2026-11-07T05:04:57.197Z",
+      "endedAt": "2026-11-07T05:04:57.970Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "node --import tsx artifacts/vnext/n06-11/workload-v1/lod-cpu.mjs",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-lod-cpu-isolated.log",
+      "sha256": "1050faf9396dcdcb5e0718c515130caf04b2914c21505c5126210f6ba538249e",
+      "startedAt": "2026-11-07T05:05:40.861Z",
+      "endedAt": "2026-11-07T05:05:41.612Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "pnpm typecheck",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-final-types.log",
+      "sha256": "69f00cd01a01e2cf288dcba7aed6e3928dc64d4d960f290ff6d86d773b587633",
+      "startedAt": "2026-11-07T05:05:41.669Z",
+      "endedAt": "2026-11-07T05:06:19.794Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "pnpm build",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-final-build.log",
+      "sha256": "14e364414898763c51c5d4e22ea9f4cefbf59fdd11210668fe47cd607e1da478",
+      "startedAt": "2026-11-07T05:06:27.008Z",
+      "endedAt": "2026-11-07T05:07:02.003Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "pnpm ci:check",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-final-ci.log",
+      "sha256": "a7e9b16f6a387bb03df3d49761911d6dd854a9dde109f3ff37652afb06682644",
+      "startedAt": "2026-11-07T05:06:53.281Z",
+      "endedAt": "2026-11-07T05:06:54.600Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "pnpm assets:check",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-final-assets.log",
+      "sha256": "1d3fc171688e89e33e1ebf5b726731cf936dfbc5aa07a927b44220f47e47f705",
+      "startedAt": "2026-11-07T05:06:54.442Z",
+      "endedAt": "2026-11-07T05:06:55.300Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "pnpm test:client-boundaries",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-final-boundaries.log",
+      "sha256": "d0577c4c890d3e396885bb6af390ed73c18becb861d008c74501e7ff9a9ccdd9",
+      "startedAt": "2026-11-07T05:06:55.360Z",
+      "endedAt": "2026-11-07T05:06:56.180Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "env VITE_VLP_SCENE3D_STUDY=1 pnpm --filter @virtual-city/mobile build",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-final-normal-build.log",
+      "sha256": "86784739f20b7283fdc1d99ae12c04ba3b26e6005f050b13759a591a3f415406",
+      "startedAt": "2026-11-07T05:07:10.359Z",
+      "endedAt": "2026-11-07T05:07:13.552Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "pnpm mobile:bundle:smoke",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-final-normal-smoke.log",
+      "sha256": "2e22c66688cab1374292bd10ab75b7851d9210b919f74ad61ec73a8c0d1b0512",
+      "startedAt": "2026-11-07T05:07:42.286Z",
+      "endedAt": "2026-11-07T05:07:46.754Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "pnpm test:scene3d",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-final-studio.log",
+      "sha256": "9b056d4a1413f81c4603d01015f6d0d44022d71b6f53c777f316fbc228c9f8a3",
+      "startedAt": "2026-11-07T05:08:13.453Z",
+      "endedAt": "2026-11-07T05:10:17.188Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "pnpm test:scene3d-workload",
+      "exitCode": 1,
+      "log": "artifacts/vnext/n06-11/workload-browser-cached.log",
+      "sha256": "c282d86ebd5ba66e774420a265a3953892f3756439267c0a88951045643779b2",
+      "startedAt": "2026-11-07T05:10:35.162Z",
+      "endedAt": "2026-11-07T05:14:05.551Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "pnpm mobile:emulator:start",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-emulator-start-cached.log",
+      "sha256": "b80da4027b3d004e735c94b933b5ac3e0b476de6a8502df168950b8d9ab70eba",
+      "startedAt": "2026-11-07T05:14:26.506Z",
+      "endedAt": "2026-11-07T05:14:45.813Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm mobile:android:workload",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-android-cached-build.log",
+      "sha256": "1667db18ee05212513a1aebc6fe372e33bfdd17bd4bd193d5d130bacd0b98ce3",
+      "startedAt": "2026-11-07T05:14:26.518Z",
+      "endedAt": "2026-11-07T05:15:05.902Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm exec python3 artifacts/vnext/n06-11/workload-v1/cached/inspect-apk.py",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-apk-cached.log",
+      "sha256": "45d71735471f5910bfbc45ef3f4b77e7a71f29bf4530311d1cd29f2a510aa5db",
+      "startedAt": "2026-11-07T05:15:34.488Z",
+      "endedAt": "2026-11-07T05:15:35.462Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "pnpm mobile:emulator:workload --apk artifacts/vnext/n06-11/workload-v1/cached/app-debug.apk",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-native-cached.log",
+      "sha256": "7cca30f9bec140e8f2dfb7fd920c6e02c99b57977759b4fc9a4c00e6f6423a5d",
+      "startedAt": "2026-11-07T05:15:35.517Z",
+      "endedAt": "2026-11-07T05:16:27.693Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm mobile:android:build",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-final-restore.log",
+      "sha256": "7e4d5e3f9aaaaf49e71a198b56fb6d9b60c5464b522f667820e3e33efbf311df",
+      "startedAt": "2026-11-07T05:17:00.989Z",
+      "endedAt": "2026-11-07T05:17:29.559Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "pnpm mobile:emulator:stop",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-emulator-stop-cached.log",
+      "sha256": "2ee52f4b69d8e6ed1e19e914402f5bdb2482ca9ab29ae9bd74548ca8c2efe02d",
+      "startedAt": "2026-11-07T05:17:00.994Z",
+      "endedAt": "2026-11-07T05:17:03.009Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "pnpm mobile:bundle:smoke",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-final-bundle.log",
+      "sha256": "e850fe4e8f14fb655ec6f2bec8a0f8886a4955683d659b55aa928eed200825aa",
+      "startedAt": "2026-11-07T05:17:56.736Z",
+      "endedAt": "2026-11-07T05:18:01.312Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm exec python3 artifacts/vnext/n06-11/workload-v1/restored-normal/inspect-apk.py",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-normal-apk-inspection.log",
+      "sha256": "3b8c9dbeb54fe7f76d1c0e197382a87c7a994cbbe25980072910d927379d6085",
+      "startedAt": "2026-11-07T05:17:57.942Z",
+      "endedAt": "2026-11-07T05:17:58.884Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "pnpm mobile:emulator:start",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-normal-emulator-start.log",
+      "sha256": "9f446561c98141c8a779979fde052674899912b3a93b4f5b336fd6c10c365ebf",
+      "startedAt": "2026-11-07T05:17:58.948Z",
+      "endedAt": "2026-11-07T05:18:16.380Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "node artifacts/vnext/n06-11/workload-v1/probe-usb-final.mjs",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-usb-final.log",
+      "sha256": "9b87f0f2a348c0fa849625c41c827ab78315386faf5d234f5d88ae6391eeede7",
+      "startedAt": "2026-11-07T05:18:14.049Z",
+      "endedAt": "2026-11-07T05:18:14.092Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "pnpm mobile:emulator:smoke --apk artifacts/vnext/n06-11/workload-v1/restored-normal/app-debug.apk",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-normal-smoke.log",
+      "sha256": "ffcc124bae23210d89d54be49c6ddfa45192387be6034d94ba960ca3de8c2df9",
+      "startedAt": "2026-11-07T05:18:51.763Z",
+      "endedAt": "2026-11-07T05:19:28.382Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "pnpm mobile:emulator:stop",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-normal-emulator-stop.log",
+      "sha256": "e356deee3bbbdb124ca618a12739b7df1f8c5c3f599507aaeeba8dacfa96693a",
+      "startedAt": "2026-11-07T05:19:45.367Z",
+      "endedAt": "2026-11-07T05:19:47.372Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    },
+    {
+      "command": "pnpm mobile:emulator:status",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-11/workload-normal-emulator-status.log",
+      "sha256": "09785904d5efe045c15d822cf4c5a2837a3ed3f1fb9bff42cbdb134b7e00ac41",
+      "startedAt": "2026-11-07T05:20:19.194Z",
+      "endedAt": "2026-11-07T05:20:19.719Z",
+      "purpose": "Final committed runtime check; retain each command and artifact scope"
+    }
+  ],
+  "measured": {
+    "baselineBrowser": {
+      "result": "OBSERVED_LIMITS_EXCEEDED_NOT_PHYSICAL_QUALIFICATION",
+      "sourceRevision": "39c0186741ee882e470c76c403f54a9f97dbcafa",
+      "physicalPerformanceQualified": false,
+      "profiles": [
+        {
+          "name": "desktop",
+          "result": "FUNCTIONAL_PASS",
+          "gpu": {
+            "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+          },
+          "tiers": [
+            {
+              "quality": "low",
+              "required": true,
+              "scope": "Observed synthetic limits,not physical qualification",
+              "checks": {
+                "actors": true,
+                "quality": true,
+                "unknownTextures": true,
+                "geometryBytes": true,
+                "animationBytes": true,
+                "characterTextures": true,
+                "environmentTextures": true,
+                "otherTextures": true,
+                "totalTextures": true,
+                "maxTextureDimension": false,
+                "drawCalls": true,
+                "triangles": true,
+                "frameP95": false
+              },
+              "observedLimitsMet": false,
+              "peaks": {
+                "calls": 121,
+                "triangles": 114572,
+                "geometryBytes": 9389576,
+                "animationBytes": 46080,
+                "characterTextureBytes": 524288,
+                "environmentTextureBytes": 87380,
+                "otherTextureBytes": 1244928,
+                "totalTextureBytes": 1856596,
+                "maxTextureDimension": 2976
+              },
+              "frameWindow": {
+                "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+                "samples": 70,
+                "p95Ms": 133.39999999999964,
+                "maxMs": 250,
+                "stallsOver250Ms": 0,
+                "elapsedMs": 8617
+              },
+              "coldNavigationToFirst20Ms": 2097.5,
+              "rendererStartsMs": [
+                1913.1000000000931
+              ]
+            },
+            {
+              "quality": "balanced",
+              "required": true,
+              "scope": "Observed synthetic limits,not physical qualification",
+              "checks": {
+                "actors": true,
+                "quality": true,
+                "unknownTextures": true,
+                "geometryBytes": true,
+                "animationBytes": true,
+                "characterTextures": true,
+                "environmentTextures": true,
+                "otherTextures": true,
+                "totalTextures": true,
+                "maxTextureDimension": false,
+                "drawCalls": true,
+                "triangles": true,
+                "frameP95": false
+              },
+              "observedLimitsMet": false,
+              "peaks": {
+                "calls": 148,
+                "triangles": 163348,
+                "geometryBytes": 10622216,
+                "animationBytes": 46080,
+                "characterTextureBytes": 524288,
+                "environmentTextureBytes": 87380,
+                "otherTextureBytes": 9880064,
+                "totalTextureBytes": 10491732,
+                "maxTextureDimension": 2976
+              },
+              "frameWindow": {
+                "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+                "samples": 38,
+                "p95Ms": 199.90000000000146,
+                "maxMs": 200.10000000000218,
+                "stallsOver250Ms": 0,
+                "elapsedMs": 8557.600000000093
+              },
+              "coldNavigationToFirst20Ms": 2097.5,
+              "rendererStartsMs": [
+                1913.1000000000931,
+                2648
+              ]
+            },
+            {
+              "quality": "high",
+              "required": true,
+              "scope": "Observed synthetic limits,not physical qualification",
+              "checks": {
+                "actors": true,
+                "quality": true,
+                "unknownTextures": true,
+                "geometryBytes": true,
+                "animationBytes": true,
+                "characterTextures": true,
+                "environmentTextures": true,
+                "otherTextures": true,
+                "totalTextures": true,
+                "maxTextureDimension": false,
+                "drawCalls": true,
+                "triangles": true,
+                "frameP95": false
+              },
+              "observedLimitsMet": false,
+              "peaks": {
+                "calls": 184,
+                "triangles": 232752,
+                "geometryBytes": 13087496,
+                "animationBytes": 46080,
+                "characterTextureBytes": 524288,
+                "environmentTextureBytes": 87380,
+                "otherTextureBytes": 10373120,
+                "totalTextureBytes": 10984788,
+                "maxTextureDimension": 2976
+              },
+              "frameWindow": {
+                "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+                "samples": 34,
+                "p95Ms": 283.3000000000029,
+                "maxMs": 300,
+                "stallsOver250Ms": 2,
+                "elapsedMs": 8099.5
+              },
+              "coldNavigationToFirst20Ms": 2097.5,
+              "rendererStartsMs": [
+                1913.1000000000931,
+                2648,
+                3949.2999999998137
+              ]
+            }
+          ],
+          "recreateCycles": 20,
+          "approximateHeapAfter": 10600000
+        },
+        {
+          "name": "mobile",
+          "result": "FUNCTIONAL_PASS",
+          "gpu": {
+            "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+          },
+          "tiers": [
+            {
+              "quality": "low",
+              "required": true,
+              "scope": "Observed synthetic limits,not physical qualification",
+              "checks": {
+                "actors": true,
+                "quality": true,
+                "unknownTextures": true,
+                "geometryBytes": true,
+                "animationBytes": true,
+                "characterTextures": true,
+                "environmentTextures": true,
+                "otherTextures": true,
+                "totalTextures": true,
+                "maxTextureDimension": false,
+                "drawCalls": true,
+                "triangles": true,
+                "frameP95": false
+              },
+              "observedLimitsMet": false,
+              "peaks": {
+                "calls": 121,
+                "triangles": 114572,
+                "geometryBytes": 9389576,
+                "animationBytes": 46080,
+                "characterTextureBytes": 524288,
+                "environmentTextureBytes": 87380,
+                "otherTextureBytes": 1244928,
+                "totalTextureBytes": 1856596,
+                "maxTextureDimension": 2976
+              },
+              "frameWindow": {
+                "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+                "samples": 92,
+                "p95Ms": 100.09999999999945,
+                "maxMs": 200,
+                "stallsOver250Ms": 0,
+                "elapsedMs": 8331.100000000093
+              },
+              "coldNavigationToFirst20Ms": 2168.8000000002794,
+              "rendererStartsMs": [
+                1989
+              ]
+            },
+            {
+              "quality": "balanced",
+              "required": true,
+              "scope": "Observed synthetic limits,not physical qualification",
+              "checks": {
+                "actors": true,
+                "quality": true,
+                "unknownTextures": true,
+                "geometryBytes": true,
+                "animationBytes": true,
+                "characterTextures": true,
+                "environmentTextures": true,
+                "otherTextures": true,
+                "totalTextures": true,
+                "maxTextureDimension": false,
+                "drawCalls": true,
+                "triangles": true,
+                "frameP95": false
+              },
+              "observedLimitsMet": false,
+              "peaks": {
+                "calls": 148,
+                "triangles": 163348,
+                "geometryBytes": 10622216,
+                "animationBytes": 46080,
+                "characterTextureBytes": 524288,
+                "environmentTextureBytes": 87380,
+                "otherTextureBytes": 9880064,
+                "totalTextureBytes": 10491732,
+                "maxTextureDimension": 2976
+              },
+              "frameWindow": {
+                "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+                "samples": 66,
+                "p95Ms": 133.40000000000146,
+                "maxMs": 233.20000000000073,
+                "stallsOver250Ms": 0,
+                "elapsedMs": 8517.80000000028
+              },
+              "coldNavigationToFirst20Ms": 2168.8000000002794,
+              "rendererStartsMs": [
+                1989,
+                2135.899999999907
+              ]
+            },
+            {
+              "quality": "high",
+              "required": false,
+              "scope": "Observed synthetic limits,not physical qualification",
+              "checks": {
+                "actors": true,
+                "quality": true,
+                "unknownTextures": true,
+                "geometryBytes": true,
+                "animationBytes": true,
+                "characterTextures": true,
+                "environmentTextures": true,
+                "otherTextures": true,
+                "totalTextures": true,
+                "maxTextureDimension": false,
+                "drawCalls": false,
+                "triangles": true,
+                "frameP95": false
+              },
+              "observedLimitsMet": false,
+              "peaks": {
+                "calls": 184,
+                "triangles": 232752,
+                "geometryBytes": 13087496,
+                "animationBytes": 46080,
+                "characterTextureBytes": 524288,
+                "environmentTextureBytes": 87380,
+                "otherTextureBytes": 10373120,
+                "totalTextureBytes": 10984788,
+                "maxTextureDimension": 2976
+              },
+              "frameWindow": {
+                "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+                "samples": 47,
+                "p95Ms": 183.20000000000073,
+                "maxMs": 183.39999999999782,
+                "stallsOver250Ms": 0,
+                "elapsedMs": 8692.700000000186
+              },
+              "coldNavigationToFirst20Ms": 2168.8000000002794,
+              "rendererStartsMs": [
+                1989,
+                2135.899999999907,
+                2396.5
+              ]
+            }
+          ],
+          "recreateCycles": 20,
+          "approximateHeapAfter": 10600000
+        }
+      ]
+    },
+    "baselineNative": {
+      "result": "OBSERVED_LIMITS_EXCEEDED_NOT_PHYSICAL_QUALIFICATION",
+      "sourceRevision": "39c0186741ee882e470c76c403f54a9f97dbcafa",
+      "physicalPerformanceQualified": false,
+      "gpu": {
+        "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "Android Emulator OpenGL ES Translator (AMD Radeon Graphics (radeonsi, renoir, ACO, DRM 3.64, 7.2.9-2-cachyos))"
+      },
+      "device": {
+        "model": "sdk_gphone64_x86_64",
+        "android": "15",
+        "api": "35",
+        "webview": "Mozilla/5.0 (Linux; Android 15; sdk_gphone64_x86_64 Build/AE3A.240806.043; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/124.0.6367.219 Mobile Safari/537.36"
+      },
+      "tiers": [
+        {
+          "quality": "low",
+          "required": true,
+          "scope": "Observed synthetic limits,not physical qualification",
+          "checks": {
+            "actors": true,
+            "quality": true,
+            "unknownTextures": true,
+            "geometryBytes": true,
+            "animationBytes": true,
+            "characterTextures": true,
+            "environmentTextures": true,
+            "otherTextures": true,
+            "totalTextures": true,
+            "maxTextureDimension": false,
+            "drawCalls": true,
+            "triangles": true,
+            "frameP95": true
+          },
+          "observedLimitsMet": false,
+          "peaks": {
+            "calls": 121,
+            "triangles": 114572,
+            "geometryBytes": 9389576,
+            "animationBytes": 46080,
+            "characterTextureBytes": 524288,
+            "environmentTextureBytes": 87380,
+            "otherTextureBytes": 1244928,
+            "totalTextureBytes": 1856596,
+            "maxTextureDimension": 2976
+          },
+          "frameWindow": {
+            "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+            "samples": 346,
+            "p95Ms": 16.80000000000109,
+            "maxMs": 83.39999999999964,
+            "stallsOver250Ms": 0,
+            "elapsedMs": 8138.899999999998
+          },
+          "coldNavigationToFirst20Ms": 2051.5999999999985,
+          "rendererStartsMs": [
+            1383.2999999999993
+          ]
+        },
+        {
+          "quality": "balanced",
+          "required": true,
+          "scope": "Observed synthetic limits,not physical qualification",
+          "checks": {
+            "actors": true,
+            "quality": true,
+            "unknownTextures": true,
+            "geometryBytes": true,
+            "animationBytes": true,
+            "characterTextures": true,
+            "environmentTextures": true,
+            "otherTextures": true,
+            "totalTextures": true,
+            "maxTextureDimension": false,
+            "drawCalls": true,
+            "triangles": true,
+            "frameP95": true
+          },
+          "observedLimitsMet": false,
+          "peaks": {
+            "calls": 148,
+            "triangles": 163348,
+            "geometryBytes": 10622216,
+            "animationBytes": 46080,
+            "characterTextureBytes": 524288,
+            "environmentTextureBytes": 87380,
+            "otherTextureBytes": 9880064,
+            "totalTextureBytes": 10491732,
+            "maxTextureDimension": 2976
+          },
+          "frameWindow": {
+            "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+            "samples": 353,
+            "p95Ms": 16.799999999999272,
+            "maxMs": 83.29999999999927,
+            "stallsOver250Ms": 0,
+            "elapsedMs": 8168.199999999997
+          },
+          "coldNavigationToFirst20Ms": 2051.5999999999985,
+          "rendererStartsMs": [
+            1383.2999999999993,
+            1261.2999999999956
+          ]
+        },
+        {
+          "quality": "high",
+          "required": false,
+          "scope": "Observed synthetic limits,not physical qualification",
+          "checks": {
+            "actors": true,
+            "quality": true,
+            "unknownTextures": true,
+            "geometryBytes": true,
+            "animationBytes": true,
+            "characterTextures": true,
+            "environmentTextures": true,
+            "otherTextures": true,
+            "totalTextures": true,
+            "maxTextureDimension": false,
+            "drawCalls": false,
+            "triangles": true,
+            "frameP95": true
+          },
+          "observedLimitsMet": false,
+          "peaks": {
+            "calls": 184,
+            "triangles": 232752,
+            "geometryBytes": 13087496,
+            "animationBytes": 46080,
+            "characterTextureBytes": 524288,
+            "environmentTextureBytes": 87380,
+            "otherTextureBytes": 10373120,
+            "totalTextureBytes": 10984788,
+            "maxTextureDimension": 2976
+          },
+          "frameWindow": {
+            "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+            "samples": 355,
+            "p95Ms": 16.799999999999272,
+            "maxMs": 50,
+            "stallsOver250Ms": 0,
+            "elapsedMs": 8179.799999999996
+          },
+          "coldNavigationToFirst20Ms": 2051.5999999999985,
+          "rendererStartsMs": [
+            1383.2999999999993,
+            1261.2999999999956,
+            1049.0999999999985
+          ]
+        }
+      ],
+      "recreateCycles": 20,
+      "nativeTotalRSSKiB": {
+        "before": 239528,
+        "after": 232564
+      }
+    },
+    "compactedBeforeCacheNative": {
+      "result": "OBSERVED_LIMITS_EXCEEDED_NOT_PHYSICAL_QUALIFICATION",
+      "sourceRevision": "c93821a0acea995545f44de503fe9942a4e43602",
+      "physicalPerformanceQualified": false,
+      "gpu": {
+        "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "Android Emulator OpenGL ES Translator (AMD Radeon Graphics (radeonsi, renoir, ACO, DRM 3.64, 7.2.9-2-cachyos))"
+      },
+      "device": {
+        "model": "sdk_gphone64_x86_64",
+        "android": "15",
+        "api": "35",
+        "webview": "Mozilla/5.0 (Linux; Android 15; sdk_gphone64_x86_64 Build/AE3A.240806.043; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/124.0.6367.219 Mobile Safari/537.36"
+      },
+      "tiers": [
+        {
+          "quality": "low",
+          "required": true,
+          "scope": "Observed synthetic limits,not physical qualification",
+          "checks": {
+            "actors": true,
+            "quality": true,
+            "unknownTextures": true,
+            "geometryBytes": true,
+            "animationBytes": true,
+            "characterTextures": true,
+            "environmentTextures": true,
+            "otherTextures": true,
+            "totalTextures": true,
+            "maxTextureDimension": true,
+            "drawCalls": true,
+            "triangles": true,
+            "frameP95": false
+          },
+          "observedLimitsMet": false,
+          "peaks": {
+            "calls": 121,
+            "triangles": 114572,
+            "geometryBytes": 5792872,
+            "animationBytes": 46080,
+            "characterTextureBytes": 524288,
+            "environmentTextureBytes": 87380,
+            "otherTextureBytes": 495616,
+            "totalTextureBytes": 1107284,
+            "maxTextureDimension": 1155
+          },
+          "frameWindow": {
+            "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+            "samples": 323,
+            "p95Ms": 50,
+            "maxMs": 116.69999999999982,
+            "stallsOver250Ms": 0,
+            "elapsedMs": 8320
+          },
+          "coldNavigationToFirst20Ms": 2107.7000000000044,
+          "rendererStartsMs": [
+            1505.9000000000015
+          ]
+        },
+        {
+          "quality": "balanced",
+          "required": true,
+          "scope": "Observed synthetic limits,not physical qualification",
+          "checks": {
+            "actors": true,
+            "quality": true,
+            "unknownTextures": true,
+            "geometryBytes": true,
+            "animationBytes": true,
+            "characterTextures": true,
+            "environmentTextures": true,
+            "otherTextures": true,
+            "totalTextures": true,
+            "maxTextureDimension": true,
+            "drawCalls": true,
+            "triangles": true,
+            "frameP95": true
+          },
+          "observedLimitsMet": true,
+          "peaks": {
+            "calls": 148,
+            "triangles": 163348,
+            "geometryBytes": 6223368,
+            "animationBytes": 46080,
+            "characterTextureBytes": 524288,
+            "environmentTextureBytes": 87380,
+            "otherTextureBytes": 8964160,
+            "totalTextureBytes": 9575828,
+            "maxTextureDimension": 1155
+          },
+          "frameWindow": {
+            "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+            "samples": 330,
+            "p95Ms": 16.799999999999272,
+            "maxMs": 83.40000000000146,
+            "stallsOver250Ms": 0,
+            "elapsedMs": 8292.299999999988
+          },
+          "coldNavigationToFirst20Ms": 2107.7000000000044,
+          "rendererStartsMs": [
+            1505.9000000000015,
+            1492.2999999999884
+          ]
+        },
+        {
+          "quality": "high",
+          "required": false,
+          "scope": "Observed synthetic limits,not physical qualification",
+          "checks": {
+            "actors": true,
+            "quality": true,
+            "unknownTextures": true,
+            "geometryBytes": true,
+            "animationBytes": true,
+            "characterTextures": true,
+            "environmentTextures": true,
+            "otherTextures": true,
+            "totalTextures": true,
+            "maxTextureDimension": true,
+            "drawCalls": false,
+            "triangles": true,
+            "frameP95": false
+          },
+          "observedLimitsMet": false,
+          "peaks": {
+            "calls": 184,
+            "triangles": 232752,
+            "geometryBytes": 7084360,
+            "animationBytes": 46080,
+            "characterTextureBytes": 524288,
+            "environmentTextureBytes": 87380,
+            "otherTextureBytes": 9124032,
+            "totalTextureBytes": 9735700,
+            "maxTextureDimension": 1155
+          },
+          "frameWindow": {
+            "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+            "samples": 328,
+            "p95Ms": 50,
+            "maxMs": 83.40000000000146,
+            "stallsOver250Ms": 0,
+            "elapsedMs": 8291.699999999997
+          },
+          "coldNavigationToFirst20Ms": 2107.7000000000044,
+          "rendererStartsMs": [
+            1505.9000000000015,
+            1492.2999999999884,
+            1421.4000000000087
+          ]
+        }
+      ],
+      "recreateCycles": 20,
+      "nativeTotalRSSKiB": {
+        "before": 238180,
+        "after": 233552
+      }
+    },
+    "finalBrowser": {
+      "result": "OBSERVED_LIMITS_EXCEEDED_NOT_PHYSICAL_QUALIFICATION",
+      "sourceRevision": "5255a2e07321fd04269a09be2caa095aae98a2ca",
+      "physicalPerformanceQualified": false,
+      "profiles": [
+        {
+          "name": "desktop",
+          "result": "FUNCTIONAL_PASS",
+          "gpu": {
+            "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+          },
+          "tiers": [
+            {
+              "quality": "low",
+              "required": true,
+              "scope": "Observed synthetic limits,not physical qualification",
+              "checks": {
+                "actors": true,
+                "quality": true,
+                "unknownTextures": true,
+                "geometryBytes": true,
+                "animationBytes": true,
+                "characterTextures": true,
+                "environmentTextures": true,
+                "otherTextures": true,
+                "totalTextures": true,
+                "maxTextureDimension": true,
+                "drawCalls": true,
+                "triangles": true,
+                "frameP95": false
+              },
+              "observedLimitsMet": false,
+              "peaks": {
+                "calls": 121,
+                "triangles": 114572,
+                "geometryBytes": 4495752,
+                "animationBytes": 46080,
+                "characterTextureBytes": 524288,
+                "environmentTextureBytes": 87380,
+                "otherTextureBytes": 252368,
+                "totalTextureBytes": 864036,
+                "maxTextureDimension": 1155
+              },
+              "frameWindow": {
+                "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+                "samples": 73,
+                "p95Ms": 116.79999999999927,
+                "maxMs": 233.29999999999927,
+                "stallsOver250Ms": 0,
+                "elapsedMs": 8595.299999999814
+              },
+              "coldNavigationToFirst20Ms": 2151.7000000001863,
+              "rendererStartsMs": [
+                1989.3999999994412
+              ]
+            },
+            {
+              "quality": "balanced",
+              "required": true,
+              "scope": "Observed synthetic limits,not physical qualification",
+              "checks": {
+                "actors": true,
+                "quality": true,
+                "unknownTextures": true,
+                "geometryBytes": true,
+                "animationBytes": true,
+                "characterTextures": true,
+                "environmentTextures": true,
+                "otherTextures": true,
+                "totalTextures": true,
+                "maxTextureDimension": true,
+                "drawCalls": true,
+                "triangles": true,
+                "frameP95": false
+              },
+              "observedLimitsMet": false,
+              "peaks": {
+                "calls": 148,
+                "triangles": 163348,
+                "geometryBytes": 4495752,
+                "animationBytes": 46080,
+                "characterTextureBytes": 524288,
+                "environmentTextureBytes": 87380,
+                "otherTextureBytes": 8640976,
+                "totalTextureBytes": 9252644,
+                "maxTextureDimension": 1155
+              },
+              "frameWindow": {
+                "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+                "samples": 45,
+                "p95Ms": 200,
+                "maxMs": 250,
+                "stallsOver250Ms": 0,
+                "elapsedMs": 8446.199999999255
+              },
+              "coldNavigationToFirst20Ms": 2151.7000000001863,
+              "rendererStartsMs": [
+                1989.3999999994412,
+                3216.5999999996275
+              ]
+            },
+            {
+              "quality": "high",
+              "required": true,
+              "scope": "Observed synthetic limits,not physical qualification",
+              "checks": {
+                "actors": true,
+                "quality": true,
+                "unknownTextures": true,
+                "geometryBytes": true,
+                "animationBytes": true,
+                "characterTextures": true,
+                "environmentTextures": true,
+                "otherTextures": true,
+                "totalTextures": true,
+                "maxTextureDimension": true,
+                "drawCalls": true,
+                "triangles": true,
+                "frameP95": false
+              },
+              "observedLimitsMet": false,
+              "peaks": {
+                "calls": 184,
+                "triangles": 232752,
+                "geometryBytes": 4495752,
+                "animationBytes": 46080,
+                "characterTextureBytes": 524288,
+                "environmentTextureBytes": 87380,
+                "otherTextureBytes": 8640976,
+                "totalTextureBytes": 9252644,
+                "maxTextureDimension": 1155
+              },
+              "frameWindow": {
+                "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+                "samples": 41,
+                "p95Ms": 183.40000000000146,
+                "maxMs": 200,
+                "stallsOver250Ms": 0,
+                "elapsedMs": 8333.700000000186
+              },
+              "coldNavigationToFirst20Ms": 2151.7000000001863,
+              "rendererStartsMs": [
+                1989.3999999994412,
+                3216.5999999996275,
+                3478.9000000003725
+              ]
+            }
+          ],
+          "recreateCycles": 20,
+          "approximateHeapAfter": 10600000
+        },
+        {
+          "name": "mobile",
+          "result": "FUNCTIONAL_PASS",
+          "gpu": {
+            "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+          },
+          "tiers": [
+            {
+              "quality": "low",
+              "required": true,
+              "scope": "Observed synthetic limits,not physical qualification",
+              "checks": {
+                "actors": true,
+                "quality": true,
+                "unknownTextures": true,
+                "geometryBytes": true,
+                "animationBytes": true,
+                "characterTextures": true,
+                "environmentTextures": true,
+                "otherTextures": true,
+                "totalTextures": true,
+                "maxTextureDimension": true,
+                "drawCalls": true,
+                "triangles": true,
+                "frameP95": false
+              },
+              "observedLimitsMet": false,
+              "peaks": {
+                "calls": 121,
+                "triangles": 114572,
+                "geometryBytes": 4495752,
+                "animationBytes": 46080,
+                "characterTextureBytes": 524288,
+                "environmentTextureBytes": 87380,
+                "otherTextureBytes": 252368,
+                "totalTextureBytes": 864036,
+                "maxTextureDimension": 1155
+              },
+              "frameWindow": {
+                "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+                "samples": 68,
+                "p95Ms": 116.80000000000018,
+                "maxMs": 200,
+                "stallsOver250Ms": 0,
+                "elapsedMs": 8140.5999999996275
+              },
+              "coldNavigationToFirst20Ms": 2271.2000000001863,
+              "rendererStartsMs": [
+                2036.7999999998137
+              ]
+            },
+            {
+              "quality": "balanced",
+              "required": true,
+              "scope": "Observed synthetic limits,not physical qualification",
+              "checks": {
+                "actors": true,
+                "quality": true,
+                "unknownTextures": true,
+                "geometryBytes": true,
+                "animationBytes": true,
+                "characterTextures": true,
+                "environmentTextures": true,
+                "otherTextures": true,
+                "totalTextures": true,
+                "maxTextureDimension": true,
+                "drawCalls": true,
+                "triangles": true,
+                "frameP95": false
+              },
+              "observedLimitsMet": false,
+              "peaks": {
+                "calls": 148,
+                "triangles": 163348,
+                "geometryBytes": 4495752,
+                "animationBytes": 46080,
+                "characterTextureBytes": 524288,
+                "environmentTextureBytes": 87380,
+                "otherTextureBytes": 8640976,
+                "totalTextureBytes": 9252644,
+                "maxTextureDimension": 1155
+              },
+              "frameWindow": {
+                "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+                "samples": 43,
+                "p95Ms": 183.39999999999782,
+                "maxMs": 283.3000000000029,
+                "stallsOver250Ms": 1,
+                "elapsedMs": 8041.299999999814
+              },
+              "coldNavigationToFirst20Ms": 2271.2000000001863,
+              "rendererStartsMs": [
+                2036.7999999998137,
+                3075.5999999996275
+              ]
+            },
+            {
+              "quality": "high",
+              "required": false,
+              "scope": "Observed synthetic limits,not physical qualification",
+              "checks": {
+                "actors": true,
+                "quality": true,
+                "unknownTextures": true,
+                "geometryBytes": true,
+                "animationBytes": true,
+                "characterTextures": true,
+                "environmentTextures": true,
+                "otherTextures": true,
+                "totalTextures": true,
+                "maxTextureDimension": true,
+                "drawCalls": false,
+                "triangles": true,
+                "frameP95": false
+              },
+              "observedLimitsMet": false,
+              "peaks": {
+                "calls": 184,
+                "triangles": 232752,
+                "geometryBytes": 4495752,
+                "animationBytes": 46080,
+                "characterTextureBytes": 524288,
+                "environmentTextureBytes": 87380,
+                "otherTextureBytes": 8640976,
+                "totalTextureBytes": 9252644,
+                "maxTextureDimension": 1155
+              },
+              "frameWindow": {
+                "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+                "samples": 35,
+                "p95Ms": 250,
+                "maxMs": 316.5,
+                "stallsOver250Ms": 1,
+                "elapsedMs": 8315.200000000186
+              },
+              "coldNavigationToFirst20Ms": 2271.2000000001863,
+              "rendererStartsMs": [
+                2036.7999999998137,
+                3075.5999999996275,
+                2891.2000000001863
+              ]
+            }
+          ],
+          "recreateCycles": 20,
+          "approximateHeapAfter": 10600000
+        }
+      ]
+    },
+    "finalNative": {
+      "result": "OBSERVED_LIMITS_MET_NOT_PHYSICAL_QUALIFICATION",
+      "sourceRevision": "5255a2e07321fd04269a09be2caa095aae98a2ca",
+      "physicalPerformanceQualified": false,
+      "gpu": {
+        "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "Android Emulator OpenGL ES Translator (AMD Radeon Graphics (radeonsi, renoir, ACO, DRM 3.64, 7.2.9-2-cachyos))"
+      },
+      "device": {
+        "model": "sdk_gphone64_x86_64",
+        "android": "15",
+        "api": "35",
+        "webview": "Mozilla/5.0 (Linux; Android 15; sdk_gphone64_x86_64 Build/AE3A.240806.043; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/124.0.6367.219 Mobile Safari/537.36"
+      },
+      "tiers": [
+        {
+          "quality": "low",
+          "required": true,
+          "scope": "Observed synthetic limits,not physical qualification",
+          "checks": {
+            "actors": true,
+            "quality": true,
+            "unknownTextures": true,
+            "geometryBytes": true,
+            "animationBytes": true,
+            "characterTextures": true,
+            "environmentTextures": true,
+            "otherTextures": true,
+            "totalTextures": true,
+            "maxTextureDimension": true,
+            "drawCalls": true,
+            "triangles": true,
+            "frameP95": true
+          },
+          "observedLimitsMet": true,
+          "peaks": {
+            "calls": 121,
+            "triangles": 114572,
+            "geometryBytes": 4495752,
+            "animationBytes": 46080,
+            "characterTextureBytes": 524288,
+            "environmentTextureBytes": 87380,
+            "otherTextureBytes": 252368,
+            "totalTextureBytes": 864036,
+            "maxTextureDimension": 1155
+          },
+          "frameWindow": {
+            "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+            "samples": 351,
+            "p95Ms": 16.800000000000182,
+            "maxMs": 83.30000000000018,
+            "stallsOver250Ms": 0,
+            "elapsedMs": 8132.800000000003
+          },
+          "coldNavigationToFirst20Ms": 1766.699999999997,
+          "rendererStartsMs": [
+            1143.5999999999913
+          ]
+        },
+        {
+          "quality": "balanced",
+          "required": true,
+          "scope": "Observed synthetic limits,not physical qualification",
+          "checks": {
+            "actors": true,
+            "quality": true,
+            "unknownTextures": true,
+            "geometryBytes": true,
+            "animationBytes": true,
+            "characterTextures": true,
+            "environmentTextures": true,
+            "otherTextures": true,
+            "totalTextures": true,
+            "maxTextureDimension": true,
+            "drawCalls": true,
+            "triangles": true,
+            "frameP95": true
+          },
+          "observedLimitsMet": true,
+          "peaks": {
+            "calls": 148,
+            "triangles": 163348,
+            "geometryBytes": 4495752,
+            "animationBytes": 46080,
+            "characterTextureBytes": 524288,
+            "environmentTextureBytes": 87380,
+            "otherTextureBytes": 8640976,
+            "totalTextureBytes": 9252644,
+            "maxTextureDimension": 1155
+          },
+          "frameWindow": {
+            "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+            "samples": 359,
+            "p95Ms": 16.799999999999272,
+            "maxMs": 50,
+            "stallsOver250Ms": 0,
+            "elapsedMs": 8111.5
+          },
+          "coldNavigationToFirst20Ms": 1766.699999999997,
+          "rendererStartsMs": [
+            1143.5999999999913,
+            1115
+          ]
+        },
+        {
+          "quality": "high",
+          "required": false,
+          "scope": "Observed synthetic limits,not physical qualification",
+          "checks": {
+            "actors": true,
+            "quality": true,
+            "unknownTextures": true,
+            "geometryBytes": true,
+            "animationBytes": true,
+            "characterTextures": true,
+            "environmentTextures": true,
+            "otherTextures": true,
+            "totalTextures": true,
+            "maxTextureDimension": true,
+            "drawCalls": false,
+            "triangles": true,
+            "frameP95": true
+          },
+          "observedLimitsMet": false,
+          "peaks": {
+            "calls": 184,
+            "triangles": 232752,
+            "geometryBytes": 4495752,
+            "animationBytes": 46080,
+            "characterTextureBytes": 524288,
+            "environmentTextureBytes": 87380,
+            "otherTextureBytes": 8640976,
+            "totalTextureBytes": 9252644,
+            "maxTextureDimension": 1155
+          },
+          "frameWindow": {
+            "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+            "samples": 363,
+            "p95Ms": 16.799999999999272,
+            "maxMs": 33.29999999999927,
+            "stallsOver250Ms": 0,
+            "elapsedMs": 8155.800000000003
+          },
+          "coldNavigationToFirst20Ms": 1766.699999999997,
+          "rendererStartsMs": [
+            1143.5999999999913,
+            1115,
+            1063.699999999997
+          ]
+        }
+      ],
+      "recreateCycles": 20,
+      "nativeTotalRSSKiB": {
+        "before": 235168,
+        "after": 232548
+      }
+    }
+  },
+  "apk": {
+    "sha256": "4e20e478e24ef6d04d12b7377dd88d3cb73509effd7ae155d1cf6c7cfce3061d",
+    "bytes": 4945850,
+    "matchedAssets": 18,
+    "signatureExitCode": 0,
+    "distributed": false
+  },
+  "restoredNormalAPK": {
+    "sha256": "f88a8a51e27674c13804f5aa80c5c2a585122d23a9d0c4f1df59b3ec350de164",
+    "bytes": 5090987,
+    "matchedAssets": 19,
+    "signatureExitCode": 0,
+    "installedOnOwnedAVD": true,
+    "previewScenarios": 5,
+    "distributed": false
+  },
+  "preservation": {
+    "sourceBefore": "c0b632668919c314556bfb8483b16086aa55fcdd",
+    "evidencePrefixRecords": 53,
+    "immutableFiles": 47,
+    "sqlFiles": 44,
+    "priorRawFilesChecked": 1106,
+    "priorEvidenceUnchanged": true,
+    "closedContextUnchanged": true,
+    "ownerFilesInspected": false,
+    "checkedAt": "2026-11-07T05:20:44.956Z"
+  },
+  "rawIndex": {
+    "ref": "artifacts/vnext/n06-11/workload-v1/raw-index.json",
+    "sha256": "d52f575413464e357ac4d4d915a4b0f374abfe58e5532636232df6efb8a68a96",
+    "files": 437
+  },
+  "limitations": [
+    "Early TS/lint failures and a CPU-only High indexing experiment failure remain preserved. The first uncommitted browser prototype omitted internal morph dimensions from its maximum; the estimator was corrected before the committed2976px baseline and final resource checks. Those early observations are not final resource qualification.",
+    "N06-11 remains IN_PROGRESS. This implements and actually measures a synthetic20actor renderer workload,not20accounts,real sessions/server capacity,full Deadline/Maid gameplay,final art,creator Save,controlled p75 loading/heap growth or physical N10-04 acceptance.",
+    "Final desktop/mobile Chromium SwiftShader functional/resource/quality/disposal/viewport checks pass but framep95 still exceeds33.4ms; command exits1. Preserve all baselines and failures. No threshold increase,software GPU waiver or platform support promotion.",
+    "Final owned Android API35/WebView124/AMD GPU DEBUG workload completes required Low/Balanced measurements and20renderer recreations; read per-tier actual checks before accepting observed limits; High is a predeclared desktop-tier diagnostic and exceeds mobile draw caps. Short synthetic AVD timing,own-app RSS and approximate JS heap do not qualify physical30minutes,thermal/battery,authenticated20visits/10background cycles or broad hardware coverage.",
+    "Compaction preserves exact expanded triangle/base/skin/morph/material streams across six full original model variants. It indexes equal deformable vertices and splits High closeup geometry without changing Low/Balanced draws. Final fur/silhouette/rig/cloth/serve props/camera/thumbnail polish and owner art review remain pending.",
+    "92governance/390unit and scoped geometry/resource tests pass. Types/build/lint/CI/assets/boundary/default-bundle and High-studio results are source-scoped actual checks. API/contracts/44SQL are unchanged; historical integration/security/protocol totals are not fresh backend reruns.",
+    "Current USB inventory has0authorized devices; physical3D NOT_RUN. N14 remains conditional without Mac/Xcode/iPhone. N10-03 remains dependency-ready for native auth before N06-07 Save. N04-02/N07-04 staging gates and Phase2 ownership/task dependencies remain open. No public/store/production action,distribution or owner-file inspection; normal app build restored and owned AVD stopped."
+  ]
+}

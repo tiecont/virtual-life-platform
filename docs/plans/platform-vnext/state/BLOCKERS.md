@@ -1,3 +1,11 @@
+# N06-11 workload measured; remaining art/loading/physical gates — 2026-11-07
+
+[Actual workload checkpoint](../audit/N06-11-WORKLOAD-CHECKPOINT.json),source5255a2e: required Low/Balanced20actor AVD observed limits now pass after bounding blink textures and sharing immutable face buffers. Native Low50ms and2976px failures remain. SwiftShader still exceeds frame budget; command exits1. High184calls exceeds mobile160cap and remains a predeclared desktop-only diagnostic. No threshold was raised.
+
+N06-11 stays IN_PROGRESS for final art/anchors/camera/thumbnail,full Deadline/Maid scenes,controlled loading/heap and physical qualification. AVD short timing/disposal/RSS is not N10-04. Latest0authorized USB; N14 has no Mac/Xcode/iPhone. N10-03 native auth is independently ready and is the next code slice before N06-07 Save. Normal app restored/reinstalled and AVD STOPPED. Staging N04-02/N07-04 remain BLOCKED_EXTERNAL; public/store/Phase2 gates are unchanged. Missing hardware does not block independent Android/web code.
+
+## Earlier checkpoints — historical
+
 # N06-11 adapter implemented; remaining workload/art/device gates — 2026-11-07
 
 [Current partial adapter checkpoint](../audit/N06-11-ROOM-ADAPTER-CHECKPOINT.json), sourcecbae184: authoritative3D web room/intent/raycast/distance LOD and shared recovery are implemented;14actual web3D/12classic browser cases and6packaged AVD scenarios pass their respective scopes. N06-11 stays IN_PROGRESS. Implement the labelled20actor GPU/resource/loading harness next,then measure and optimize within locked budgets. Unit20skeleton/LOD checks and short one-cat AVD timing do not qualify that workload.

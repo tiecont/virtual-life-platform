@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "updated_at": "2026-11-07T04:23:30.952Z",
+  "updated_at": "2026-11-07T05:20:44.956Z",
   "scope": "vNext implementation",
   "release_status": "NOT_REQUESTED",
   "module_activation": {
@@ -760,10 +760,11 @@
       "branch": "codex/vnext-n09-02-postgres",
       "evidence_refs": [
         "n06-11-shared-3d-studio-partial-2026-11-07",
-        "n06-11-authoritative-room-adapter-partial-2026-11-07"
+        "n06-11-authoritative-room-adapter-partial-2026-11-07",
+        "n06-11-twenty-actor-workload-partial-2026-11-07"
       ],
       "blocker": null,
-      "next_action": "Continue N06-11 by implementing a clearly labelled20actor GPU/resource/loading benchmark harness before running it; measure the same committed renderer on browser and owned Android Emulator against the existing locked budgets, preserve failures and optimize within those limits. Fix unresolved fur/silhouette/cloth/serve/camera composition,then qualify physical Android when available. N10-03 native auth remains an independently ready prerequisite for N06-07 Save; final N06-04/09/N10-04 and conditional N14 remain open."
+      "next_action": "Continue the independently dependency-ready N10-03 native auth slice: audit current browser Origin/CSRF/session/socket gates, reserve the task, implement Android Keystore-backed device session/refresh/revoke and one-time protocol-bound socket ticket under closed defaults,then run actual security/integration/native checks. N06-11 remains IN_PROGRESS for final art,controlled load/heap/full-world/physical qualification; preserve workload failures and immutable budgets."
     },
     "N10-05": {
       "status": "VERIFIED",

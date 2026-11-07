@@ -1,3 +1,13 @@
+# N06-11 measured20actor workload checkpoint; IN_PROGRESS — 2026-11-07
+
+Source `5255a2e07321fd04269a09be2caa095aae98a2ca`; [actual checks](../audit/N06-11-WORKLOAD-CHECKPOINT.json). Implemented isolated synthetic20actor browser/DEBUG-APK harness,external frame windows,resource inventory including retained cache,source/bundle/APK hashes and20recreates. Corrected2976px blink texture with geometry-preserving compaction/chunking,then cached immutable face buffers with independent skeletons/materials/blinks. Six full model streams remain identical. Geometry4495752bytes/max texture1155px; Low/Balanced121/148draws unchanged.
+
+Final AVD required Low/Balanced observed limits PASS,p95≈16.8ms and20recreates. High184calls remains desktop-only diagnostic. Two final SwiftShader profiles pass functional/required resource/viewport/disposal checks but fail framep95; exit1. Native Low50ms pre-cache and all earlier failures remain.92governance/390unit,types/build/lint/CI/assets/boundaries,High studio/recovery/200%,normal bundle3cases and restored normal APK5AVD preview cases pass recorded scopes. Both APKs preserved/inspected; normal app reinstalled,AVD STOPPED. No physical/thermal/battery/p75 loading/controlled heap/final art/native-auth acceptance.
+
+Record54 preserves53prior records/1106old raw hashes/44SQL/Mxx/budgets/distributionfalse;437new private raw files. Counts41VERIFIED/2BLOCKED_EXTERNAL/32TODO/1IN_PROGRESS. Latest USB0authorized; N14 conditional without Mac/Xcode/iPhone. Owner files unread/unstaged. **Next exact action:** reserve N10-03,audit browser/native boundaries,implement Keystore device auth/refresh/revoke and one-time protocol-bound socket ticket with actual negative/security/integration/native checks. Keep N06-11 IN_PROGRESS for art/full scenes/loading/heap/physical; N06-07 Save and N06-04/09/N10-04 remain gated.
+
+## Earlier checkpoints — historical
+
 # N06-11 authoritative3D room adapter checkpoint; IN_PROGRESS — 2026-11-07
 
 Source `cbae1848fe1f75939e54a302010a31650df66578`; [actual partial checks](../audit/N06-11-ROOM-ADAPTER-CHECKPOINT.json). Shared public projection is moved byte-identically to world-sdk with the existing Pixi export preserved. New3D factory consumes authoritative snapshots,interpolates committed paths,raycasts existing move/seat intents,uses2/4/8near LOD1+LOD2 for all other visible actors,and disposes stale actor resources. Explicit `/worlds/sdk-sandbox/room3d` and default-off SDK/native flags preserve Pixi/v1 rollback; no new authority/auth/SQL/entitlement behavior. Graphics loss retains the shared DOM safety/seat/leave path.
