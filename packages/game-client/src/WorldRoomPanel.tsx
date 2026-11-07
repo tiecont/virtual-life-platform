@@ -36,8 +36,8 @@ function RoomDrawer({enabled,title,drawerRef,onClosed,children}:{enabled:boolean
  return <dialog ref={drawerRef} className="cafe-drawer" aria-label={title} onClose={onClosed}><div className="cafe-drawer-heading"><h2>{title}</h2><button onClick={()=>drawerRef.current?.close()}>Close {title.toLowerCase()}</button></div>{children}</dialog>;
 }
 const defaultRenderer=()=>import('@virtual-city/pixi-scene/renderer');
-export interface WorldRoomPanelProps {sceneFirst?:boolean;rendererLoader?:()=>Promise<unknown>;socketOrigin:string;platform:ClientPlatform;widgets:RoomWidgets;experience?:RoomExperience;children?:ReactNode|((context:RoomChildContext)=>ReactNode)}
-export default function WorldRoomPanel({socketOrigin,platform,widgets,sceneFirst=false,rendererLoader=defaultRenderer,experience=sandboxExperience,children}:WorldRoomPanelProps) {
+export interface WorldRoomPanelProps {sceneFirst?:boolean;rendererLoader?:()=>Promise<unknown>;artLabel?:string;socketOrigin:string;platform:ClientPlatform;widgets:RoomWidgets;experience?:RoomExperience;children?:ReactNode|((context:RoomChildContext)=>ReactNode)}
+export default function WorldRoomPanel({socketOrigin,platform,widgets,sceneFirst=false,rendererLoader=defaultRenderer,artLabel='Original starter art',experience=sandboxExperience,children}:WorldRoomPanelProps) {
  const {Link,FocusPanel,Wardrobe,WorldEvents,RoomInvitation,RoomSafety}=widgets;
  const foreground=useRef(true);
  const actionsDialog=useRef<HTMLDialogElement>(null),visitsDialog=useRef<HTMLDialogElement>(null);
@@ -124,7 +124,7 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,sceneFirst
   useEffect(() => {
     const element = host.current; if (!element) return;
     let cancelled = false; let owned: SceneView | undefined; const controller = new AbortController();
-    void rendererLoader().then(module => rendererFactory(module)(element, manifest, id => claimRef.current(id), { signal: controller.signal,theme:experience.theme, onMove: point => moveRef.current(point) })).then(renderer => {
+    void rendererLoader().then(module => rendererFactory(module)(element, manifest, id => claimRef.current(id), { signal: controller.signal,theme:experience.theme, onMove: point => moveRef.current(point),onGraphicsState:available=>{if(!cancelled)setSceneState(available?'ready':'failed');} })).then(renderer => {
       owned = renderer;
       if (cancelled) { renderer.destroy(); return; }
       scene.current = renderer; renderer.setReducedMotion(lowMotionRef.current); if(foreground.current)renderer.update(recovery.current.view.snapshot);else renderer.suspend(); setSceneState('ready');
@@ -245,7 +245,7 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,sceneFirst
       </>}
     <div className="cafe-main"><div className="cafe-scene-column">
       <div className="cafe-scene" ref={host} role="img" aria-busy={sceneState === 'loading'} aria-label={experience.sceneLabel}/>
-      <div className="cafe-scene-caption"><span>{experience.caption}</span><span>{sceneState === 'loading' ? 'Loading scene...' : sceneState === 'failed' ? 'Scene unavailable. Seat controls remain available.' : 'Original starter art'}</span></div>
+      <div className="cafe-scene-caption"><span>{experience.caption}</span><span>{sceneState === 'loading' ? 'Loading scene...' : sceneState === 'failed' ? 'Scene unavailable. Seat controls remain available.' : artLabel}</span></div>
       <RoomDrawer enabled={sceneFirst} title="Room actions" drawerRef={actionsDialog} onClosed={()=>closedPanel('actions')}>
       {sceneFirst&&<div className="cafe-seat-search"><label>Find a seat<input type="search" value={seatFilter} onChange={event=>setSeatFilter(event.target.value)} autoComplete="off"/></label></div>}
       {sceneFirst&&<><div className="cafe-drawer-status">{panel==='actions'&&<>{connection}{feedback}</>}</div><button className="cafe-drawer-safety" onClick={event=>showPanel('visit',event.currentTarget)}>People and safety</button></>}

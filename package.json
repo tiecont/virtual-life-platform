@@ -74,6 +74,7 @@
     "test:ux-core": "node scripts/run-ux-core.mjs",
     "test:queue-ux":"node scripts/run-queue-ux.mjs",
     "test:scene3d":"node scripts/verify-scene3d.mjs",
+    "test:scene3d-room":"node scripts/run-scene3d-room.mjs",
     "mobile:landscape:smoke": "python3 scripts/mobile-landscape-smoke.py",
     "mobile:emulator:start":"node scripts/mobile-emulator.mjs start",
     "mobile:emulator:smoke":"node scripts/mobile-emulator.mjs smoke",

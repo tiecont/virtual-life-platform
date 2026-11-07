@@ -21,9 +21,10 @@ export function createRoomArt(manifest?:SceneManifest){
    if(zone.kind==='wall'){const h=zone.y<2?2.1:zone.x<2?1.6:.08;box(w,h,d,cream,x,h/2,z);}
    else if(zone.kind==='table'){box(w,.07,d,wood,x,.63,z);for(const dx of [-w*.32,w*.32])for(const dz of [-d*.32,d*.32])box(.05,.60,.05,darkWood,x+dx,.30,z+dz);}
    else if(zone.kind==='counter'){box(w,.8,d,darkWood,x,.4,z);box(w+.035,.05,d+.04,wood,x,.825,z);}
+   else if(zone.kind==='planter')plant(x,z,Math.min(w,d)/.30);
+   else if(zone.kind==='stage')box(w,.16,d,wood,x,.08,z);
   }
-  for(const seat of manifest.seats)chair((seat.x+.5)*TILE_METERS,(seat.y+.5)*TILE_METERS,0);
-  plant(width-.65,.65,1.4);plant(.65,.8,1.1);
+  for(const seat of manifest.seats)chair((seat.x+.5)*TILE_METERS,(seat.y+.5)*TILE_METERS,seat.facing==='north'?Math.PI:0);
  }else{
   box(6,2.8,.10,cream,0,1.4,-2.5);box(.1,2.8,5,cream,-3,1.4,0);box(6,.12,.09,darkWood,0,.13,-2.42);
   const glass=material({color:'#cbd9d1',emissive:'#b7c9b4',emissiveIntensity:.3,roughness:.3});for(const x of [-1.8,0,1.8]){box(1.22,1.70,.03,darkWood,x,1.65,-2.40);box(1.08,1.54,.035,glass,x,1.65,-2.37);box(.035,1.54,.05,wood,x,1.65,-2.34);box(1.08,.035,.05,wood,x,1.65,-2.34);box(1.34,.065,.24,wood,x,.81,-2.30);}

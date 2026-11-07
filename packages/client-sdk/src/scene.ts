@@ -13,6 +13,8 @@ export interface RoomSceneOptions {
  outfit?:AvatarAppearance['outfit'];
  theme?:'cafe'|'reading-room'|'dining-room'|'lounge'|'park'|'deadline'|'maid';
  onMove?:(point:{x:number;y:number})=>void;
+ quality?:SceneQuality;
+ onGraphicsState?:(available:boolean)=>void;
 }
 export type RoomSceneFactory=(host:HTMLElement,scene:SceneManifest,onSeat:(seatId:string)=>void,options?:RoomSceneOptions)=>Promise<RoomSceneHandle>;
 export type SceneQuality='low'|'balanced'|'high';
