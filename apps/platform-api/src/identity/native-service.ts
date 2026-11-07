@@ -3,7 +3,7 @@ import type {Pool,PoolClient} from 'pg';
 import {
  NativeClientSchema,NativeGuestInputSchema,NativeLoginInputSchema,NativeUpgradeInputSchema,
  NativeRefreshInputSchema,NativeRefreshTokenSchema,NativeAccessTokenSchema,NativeSocketTicketSchema,
- NativeDevicesSchema,NativeTicketInputSchema,ClientProtocolOfferSchema,negotiateClientProtocol,
+ NativeDevicesSchema,NativeTicketInputSchema,NativeAccountDeleteInputSchema,ClientProtocolOfferSchema,negotiateClientProtocol,
  type NativeClient,type NativeTokens,type ClientProtocolOffer,type NegotiatedSession,
 } from '@virtual-city/contracts';
 import type {IdentityService} from './service';
@@ -142,6 +142,15 @@ export class NativeIdentityService{
  async devices(access:string){
   const auth=await this.authenticateAccess(access),rows=(await this.identity.pool.query<Family>('SELECT n.* FROM native_device_sessions n JOIN identity_sessions s ON s.id=n.identity_session_id WHERE n.account_id=$1 AND n.revoked_at IS NULL AND n.expires_at>$2 AND s.revoked_at IS NULL AND s.expires_at>$2 ORDER BY n.created_at,n.id LIMIT 10',[auth.context.accountId,new Date(this.now())])).rows;
   return NativeDevicesSchema.parse({schemaVersion:1,devices:rows.map(row=>({deviceId:row.id,platform:'android',label:row.label,createdAt:row.created_at.toISOString(),expiresAt:row.expires_at.toISOString(),current:row.id===auth.row.id}))});
+ }
+ async deleteAccount(access:string,csrf:unknown,input:unknown){
+  const body=NativeAccountDeleteInputSchema.parse(input),auth=await this.authenticateAccess(access);
+  this.identity.verifyCsrf(auth.credential,csrf);
+  if(auth.context.accountId!==body.expectedAccountId)throw new IdentityError('IDEMPOTENCY_CONFLICT',409,'Account changed; refresh before confirming');
+  // The existing identity owner rechecks scope after its canonical lock,erases
+  // all domain-owned data transactionally and only then notifies live sessions.
+  const result=await this.identity.delete(auth.credential,body.requestId);
+  return{schemaVersion:1 as const,...result};
  }
  async revokeDevice(access:string,id:string){
   const initial=await this.authenticateAccess(access),result=await this.tx(async db=>{

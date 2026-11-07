@@ -7,10 +7,12 @@
     "build": "tsc --noEmit && vite build",
     "build:workload":"tsc --noEmit && vite build --mode renderer-workload",
     "build:native-auth":"tsc --noEmit && vite build --mode native-auth-qualification",
+    "build:mobile-policy":"tsc --noEmit && vite build --mode native-policy-qualification",
     "typecheck": "tsc --noEmit",
     "cap": "cap"
   },
   "dependencies": {
+    "@virtual-city/contracts":"workspace:*",
     "@virtual-city/scene3d":"workspace:*",
     "@virtual-city/game-client": "workspace:*",
     "@virtual-city/client-sdk": "workspace:*",

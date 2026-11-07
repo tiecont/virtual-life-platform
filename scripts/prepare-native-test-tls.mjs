@@ -5,8 +5,8 @@ import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 
 // New task-owned test PKI only. Never consume owner/production CA or keys.
-assert.equal(process.argv.length,2);
-const root=resolve('artifacts/vnext/n10-03/tls');await mkdir(root,{recursive:true,mode:0o700});
+const task=process.argv[2]??'n10-03';assert(['n10-03','n11-03'].includes(task)&&process.argv.length<=3);
+const root=resolve('artifacts/vnext/'+task+'/tls');await mkdir(root,{recursive:true,mode:0o700});
 const run=args=>execFileSync('openssl',args,{cwd:root,stdio:'ignore'});
 run(['req','-x509','-newkey','rsa:2048','-nodes','-keyout','ca.key','-out','ca.pem','-days','2','-subj','/CN=VLP private N10-03 test CA']);
 run(['req','-newkey','rsa:2048','-nodes','-keyout','server.key','-out','server.csr','-subj','/CN=localhost']);

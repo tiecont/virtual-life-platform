@@ -95,6 +95,34 @@ final class NativeSessionEngine {
         if (!reply.ok()) { if (reply.status == 401) clear(); throw new IllegalStateException("Native devices unavailable"); }
         return reply.body;
     }
+    JSONObject deleteAccount(String requestId, String expectedAccountId, boolean confirmed) throws Exception {
+        String uuid = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
+        if (!confirmed || requestId == null || !requestId.matches(uuid) || expectedAccountId == null || !expectedAccountId.matches(uuid))
+            throw new IllegalArgumentException("Explicit account confirmation required");
+        authenticated();
+        if (!expectedAccountId.equals(me.getJSONObject("profile").getString("id")))
+            throw new IllegalStateException("Account changed; refresh before confirming");
+        NativeSessionHttp.Reply reply;
+        try {
+            JSONObject body = new JSONObject().put("schemaVersion", 1).put("requestId", requestId)
+                .put("expectedAccountId", expectedAccountId).put("confirmDelete", true);
+            reply = http.send("DELETE", "/v1/native/account", body, access, csrf, null);
+        } catch (Exception error) {
+            // The server may have committed before transport failed. Never
+            // retry or infer success from an ended session/deleted local file.
+            clear(); return deletionOutcome(false);
+        }
+        if (reply.status >= 400 && reply.status < 500) {
+            if (reply.status == 401) clear();
+            throw new IllegalStateException("Deletion rejected; refresh before confirming");
+        }
+        boolean deleted = reply.status == 200 && reply.body.length() == 2
+            && Integer.valueOf(1).equals(reply.body.opt("schemaVersion")) && Boolean.TRUE.equals(reply.body.opt("deleted"));
+        clear(); return deletionOutcome(deleted);
+    }
+    private JSONObject deletionOutcome(boolean deleted) throws Exception {
+        return new JSONObject().put("schemaVersion", 1).put("outcome", deleted ? "DELETED" : "UNCONFIRMED").put("localCleared", true);
+    }
     JSONObject revoke(String id) throws Exception {
         authenticated(); NativeSessionHttp.Reply reply = http.send("POST", "/v1/native/devices/revoke", new JSONObject().put("schemaVersion", 1).put("deviceId", id), access, null, null);
         if (!reply.ok()) { if (reply.status == 401) clear(); throw new IllegalStateException("Native devices unavailable"); }

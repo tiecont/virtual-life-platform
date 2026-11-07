@@ -20,4 +20,5 @@ function Shell(){const [route,setRoute]=useState('/');const [orientation,setOrie
 // product builds; no real identity,network or room authority is created.
 if(import.meta.env.MODE==='renderer-workload')void import('../../../tests/renderer-workload/main').then(module=>module.startRendererWorkload());
 else if(import.meta.env.MODE==='native-auth-qualification')void Promise.all([import('../../../tests/native-android/main'),import('./NativeAccountPanel')]).then(([fixture,account])=>{fixture.startNativeAccountQualification();const Account=account.NativeAccountPanel;createRoot(document.getElementById('root')!).render(<Account onLeave={()=>location.reload()}/>);});
+else if(import.meta.env.MODE==='native-policy-qualification')void Promise.all([import('../../../tests/mobile-policy/native-probe'),import('./NativeAccountPanel')]).then(([fixture,account])=>{fixture.startNativePolicyQualification();const Account=account.NativeAccountPanel;createRoot(document.getElementById('root')!).render(<Account onLeave={()=>location.reload()}/>);});
 else createRoot(document.getElementById('root')!).render(<Shell/>);

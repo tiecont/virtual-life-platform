@@ -28,3 +28,8 @@ export type NativeRefreshInput=z.infer<typeof NativeRefreshInputSchema>;
 export type NativeSocketHandshake=z.infer<typeof NativeSocketHandshakeSchema>;
 export type NativeDevices=z.infer<typeof NativeDevicesSchema>;
 export type NativeTicketResult=z.infer<typeof NativeTicketResultSchema>;
+// expectedAccountId is a stale-view guard,never authority to choose a target.
+export const NativeAccountDeleteInputSchema=z.strictObject({schemaVersion:z.literal(1),requestId:z.uuid().transform(value=>value.toLowerCase()),expectedAccountId:z.uuid().transform(value=>value.toLowerCase()),confirmDelete:z.literal(true)});
+export const NativeAccountDeleteResponseSchema=z.strictObject({schemaVersion:z.literal(1),deleted:z.literal(true)});
+export const NativeAccountDeleteOutcomeSchema=z.strictObject({schemaVersion:z.literal(1),outcome:z.enum(['DELETED','UNCONFIRMED']),localCleared:z.literal(true)});
+export type NativeAccountDeleteOutcome=z.infer<typeof NativeAccountDeleteOutcomeSchema>;

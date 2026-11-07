@@ -37,4 +37,8 @@ public class NativeSessionPlugin extends Plugin {
     @PluginMethod public void devices(PluginCall call) { dispatch(call, session -> session.devices()); }
     @PluginMethod public void revoke(PluginCall call) { dispatch(call, session -> session.revoke(call.getString("deviceId"))); }
     @PluginMethod public void logout(PluginCall call) { dispatch(call, session -> session.logout()); }
+    @PluginMethod public void deleteAccount(PluginCall call) {
+        if (!Boolean.TRUE.equals(call.getData().opt("confirmDelete"))) { call.reject("Explicit account confirmation required", "CONFIRMATION_REQUIRED"); return; }
+        dispatch(call, session -> session.deleteAccount(call.getString("requestId"), call.getString("expectedAccountId"), true));
+    }
 }

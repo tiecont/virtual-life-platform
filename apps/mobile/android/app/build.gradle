@@ -9,7 +9,9 @@ if (nativeTestCa) {
         throw new GradleException('Local test trust requires exact localhost HTTPS origin')
     }
     tasks.register('generateNativeTestTrust') {
-        def ca = rootProject.file('../../../artifacts/vnext/n10-03/tls/ca.pem')
+        def caTask = providers.gradleProperty('vlpNativeTestCaTask').getOrElse('n10-03')
+        if (!(caTask in ['n10-03', 'n11-03'])) { throw new GradleException('Unknown task-owned test CA') }
+        def ca = rootProject.file('../../../artifacts/vnext/' + caTask + '/tls/ca.pem')
         inputs.file(ca)
         outputs.dir(nativeTrustDir)
         doLast {

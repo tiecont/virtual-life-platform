@@ -110,6 +110,9 @@ importers:
       '@virtual-city/client-sdk':
         specifier: workspace:*
         version: link:../../packages/client-sdk
+      '@virtual-city/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@virtual-city/game-client':
         specifier: workspace:*
         version: link:../../packages/game-client

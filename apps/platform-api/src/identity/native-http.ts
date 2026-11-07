@@ -1,7 +1,7 @@
 import type {FastifyInstance,FastifyRequest,FastifyReply} from 'fastify';
 import {z,ZodError} from 'zod';
 import {createHash} from 'node:crypto';
-import {NativeSessionResultSchema,NativeLogoutInputSchema,NativeRevokeInputSchema,NativeAuthErrorSchema} from '@virtual-city/contracts';
+import {NativeSessionResultSchema,NativeLogoutInputSchema,NativeRevokeInputSchema,NativeAuthErrorSchema,NativeAccountDeleteResponseSchema} from '@virtual-city/contracts';
 import {DomainError} from '../common/errors';
 import {IdentityError,unauthorized} from './errors';
 import {WindowLimiter} from './limits';
@@ -35,6 +35,7 @@ export function registerNativeIdentity(http:FastifyInstance,native:NativeIdentit
   api.post('/session/logout',async req=>native.logout(NativeLogoutInputSchema.parse(req.body).refreshToken));
   api.post('/session/socket-ticket',async req=>{const token=access(req);if(!limits.take('native-ticket:'+createHash('sha256').update(token).digest('hex'),20))throw new IdentityError('RATE_LIMITED',429,'Please wait before connecting again');return native.ticket(token,req.body);});
   api.get('/devices',async req=>native.devices(access(req)));
+  api.delete('/account',async req=>{const token=access(req);if(!limits.take('native-delete:'+createHash('sha256').update(token).digest('hex'),5))throw new IdentityError('RATE_LIMITED',429,'Please wait before trying again');return NativeAccountDeleteResponseSchema.parse(await native.deleteAccount(token,req.headers['x-csrf-token'],req.body));});
   api.post('/devices/revoke',async req=>native.revokeDevice(access(req),NativeRevokeInputSchema.parse(req.body).deviceId));
  },{prefix:'/v1/native'});
 }
