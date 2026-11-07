@@ -34788,6 +34788,473 @@
           "reason": "Process absent after resumed user turn; fixture log records Docker EOF during cleanup. Exact subprocess exit unavailable."
         }
       ]
+    },
+    {
+      "id": "n11-03-native-safety-partial-2026-11-07",
+      "taskId": "N11-03",
+      "sourceRevision": "5ea296e5e9a70f10e6d3fd0a9d0e16ad80d6cc32",
+      "environment": "CachyOS Linux7.2.9-2; Node26.9.0/pnpm11.28.5; isolated PostgreSQL Docker; JDK21/SDK36/Gradle8.14.3; owned Emulator37.2.13/API35/WebView124",
+      "executedAt": "2026-11-07T16:53:59.999Z",
+      "commands": [
+        {
+          "command": "pnpm typecheck",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/all-types.log",
+          "sha256": "babd349746d4d6197d9d29b24758be91d27d6a91e11551199b8123779df53ddb",
+          "startedAt": "2026-11-07T16:26:09.640Z",
+          "endedAt": "2026-11-07T16:27:10.710Z",
+          "purpose": "Retained supporting or earlier attempt; not independently final acceptance"
+        },
+        {
+          "command": "pnpm test:client-boundaries",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/client-boundaries.log",
+          "sha256": "1e46c7e35f5e4c91944607424356e74345160aab66752e9c817d0acecdf0c743",
+          "startedAt": "2026-11-07T16:32:10.006Z",
+          "endedAt": "2026-11-07T16:32:10.894Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "python3 artifacts/vnext/n11-03/safety-v1/inventory.py",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/data-inventory.log",
+          "sha256": "c1234307fcb1047a97464fdadded9e6123ffdc7536348ca049a114b1715673f0",
+          "startedAt": "2026-11-07T16:36:32.986Z",
+          "endedAt": "2026-11-07T16:36:33.039Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "pnpm mobile:emulator:start",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/emulator-start.log",
+          "sha256": "7602b7931b4869442f003a3c10b1af6cb20fe57efbe8405148b7e716764bd522",
+          "startedAt": "2026-11-07T16:24:27.394Z",
+          "endedAt": "2026-11-07T16:24:47.953Z",
+          "purpose": "Retained supporting or earlier attempt; not independently final acceptance"
+        },
+        {
+          "command": "pnpm mobile:emulator:status",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/emulator-status.log",
+          "sha256": "4d742d3b6d9c9c9937fca8bbfd41b3b2031925e4613649e6eef0ba7402bdcc04",
+          "startedAt": "2026-11-07T16:36:33.116Z",
+          "endedAt": "2026-11-07T16:36:33.627Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "pnpm mobile:emulator:stop",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/emulator-stop.log",
+          "sha256": "1bb0ff8c993d8f039c85f2511340b29e209b16e9e8130c73849f220fb10f335f",
+          "startedAt": "2026-11-07T16:35:54.358Z",
+          "endedAt": "2026-11-07T16:35:55.989Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "pnpm mobile:sync:android",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/final-normal-sync.log",
+          "sha256": "3db180087623edccc5c1c202b966e90430ad8b2356904020f2347c41fe055275",
+          "startedAt": "2026-11-07T16:32:08.846Z",
+          "endedAt": "2026-11-07T16:32:26.521Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "node scripts/verify-mobile-safety-native.mjs",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/final-safety-avd.log",
+          "sha256": "6b8c811823d01626a0572b4b34d31b5ecc46545542761ea2bf089d36330a1218",
+          "startedAt": "2026-11-07T16:31:16.588Z",
+          "endedAt": "2026-11-07T16:31:23.781Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/mobile build:native-safety",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/final-safety-bundle.log",
+          "sha256": "ba44ba24844831b0d4988ad3721dace21d0cdffa910e5189f142438872cf0aa5",
+          "startedAt": "2026-11-07T16:29:49.976Z",
+          "endedAt": "2026-11-07T16:29:53.875Z",
+          "purpose": "Retained supporting or earlier attempt; not independently final acceptance"
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs gradle :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest -PvlpNativeOrigin=https://localhost:18443 -PvlpNativeTestCa=true -PvlpNativeTestCaTask=n11-03-safety",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/final-safety-debug.log",
+          "sha256": "add52e571b85195badc1450efe0e425dfdb88aa5dd4d988734e791f95443950b",
+          "startedAt": "2026-11-07T16:30:51.745Z",
+          "endedAt": "2026-11-07T16:31:06.581Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-safety-fixture.ts",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/final-safety-fixture.log",
+          "sha256": "c78d60510aeefc7c363af3ee7b738a0f6f1eea76d0361fe792f18bd9eb962824",
+          "startedAt": "2026-11-07T16:30:19.939Z",
+          "endedAt": "2026-11-07T16:32:08.781Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "python3 scripts/inspect-native-apk.py safety --task n11-03-safety",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/final-safety-inspection.log",
+          "sha256": "f185a074931ec8bcbcec7f39ec15010cc2d706b23c115d5224d168eb407c50f0",
+          "startedAt": "2026-11-07T16:31:16.096Z",
+          "endedAt": "2026-11-07T16:31:16.522Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/mobile cap sync android",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/final-safety-sync.log",
+          "sha256": "51a80df49d6caedd19de5bce9e547084e6d999248c47a5233c4d076f9b266938",
+          "startedAt": "2026-11-07T16:30:18.898Z",
+          "endedAt": "2026-11-07T16:30:19.883Z",
+          "purpose": "Retained supporting or earlier attempt; not independently final acceptance"
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/implementation-lint-latest.log",
+          "sha256": "ea7a1cb40da2e16360366819a471eb74a1f1db709c44167d6df186c0cff7cd8b",
+          "startedAt": "2026-11-07T16:24:29.715Z",
+          "endedAt": "2026-11-07T16:24:43.002Z",
+          "purpose": "Retained supporting or earlier attempt; not independently final acceptance"
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/implementation-lint.log",
+          "sha256": "ea7a1cb40da2e16360366819a471eb74a1f1db709c44167d6df186c0cff7cd8b",
+          "startedAt": "2026-11-07T16:20:45.775Z",
+          "endedAt": "2026-11-07T16:21:02.404Z",
+          "purpose": "Retained supporting or earlier attempt; not independently final acceptance"
+        },
+        {
+          "command": "python3 artifacts/vnext/n11-03/safety-v1/jvm-proof.py",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/jvm-proof.log",
+          "sha256": "1f5856a47ce73757e40af791edf6e606be14ca5db4a4004bcff4f066b97fcd38",
+          "startedAt": "2026-11-07T16:42:44.200Z",
+          "endedAt": "2026-11-07T16:42:44.268Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "pnpm mobile:bundle:smoke",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/normal-bundle-smoke.log",
+          "sha256": "7a0984178ee56ce9b8a30a522b608016316d445077062914e46bd615e36fc152",
+          "startedAt": "2026-11-07T16:32:31.428Z",
+          "endedAt": "2026-11-07T16:32:37.973Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs gradle :app:testDebugUnitTest :app:assembleDebug :app:assembleRelease",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/normal-debug-release.log",
+          "sha256": "c117cabc21f7138782b380177a983ab01f7dd4ed1bc6e7b68ecd81ddf6ee9c23",
+          "startedAt": "2026-11-07T16:32:29.091Z",
+          "endedAt": "2026-11-07T16:33:04.289Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "node scripts/verify-mobile-safety-native.mjs default-off",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/normal-default-off.log",
+          "sha256": "6e28ec1ba0d9d7fab78de8dde0354dddac6786978ddd6871e5ae212d3be9dbfb",
+          "startedAt": "2026-11-07T16:33:45.188Z",
+          "endedAt": "2026-11-07T16:33:49.791Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "python3 artifacts/vnext/n11-03/safety-v1/normal-final-assets.py",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/normal-final-assets.log",
+          "sha256": "e4d79377ef2e8b2bafb64554ae00f6dddf47fbccfa55717f35935d7b2f84e727",
+          "startedAt": "2026-11-07T16:49:50.376Z",
+          "endedAt": "2026-11-07T16:49:50.455Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "python3 scripts/inspect-native-apk.py normal --task n11-03-safety",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/normal-inspection.log",
+          "sha256": "8a1824bab8d9a8c8bc63a7b0b472e2aed3f98eb1a59b872cfa5650e009749a60",
+          "startedAt": "2026-11-07T16:33:43.959Z",
+          "endedAt": "2026-11-07T16:33:44.762Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "pnpm mobile:emulator:smoke",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/normal-preview-smoke.log",
+          "sha256": "8b7e008be435e2d7c0bf7069dbabe1c77c75a2ed2c0bf888faca6eeb299af394",
+          "startedAt": "2026-11-07T16:34:09.594Z",
+          "endedAt": "2026-11-07T16:34:50.182Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "node artifacts/vnext/n11-03/safety-v1/attest-source.mjs",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/preservation.log",
+          "sha256": "e3c039d6953027d758f5da97cabfeded3e83caf6b5902447672c395af7887c6e",
+          "startedAt": "2026-11-07T16:31:58.394Z",
+          "endedAt": "2026-11-07T16:32:00.886Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs gradle :app:dependencies --configuration releaseRuntimeClasspath --offline",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/release-dependencies.log",
+          "sha256": "2551224ee767cc92ac98f336e58829ee2a3f99bb2f48edc349ea246a38943718",
+          "startedAt": "2026-11-07T16:34:56.682Z",
+          "endedAt": "2026-11-07T16:35:14.396Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "python3 scripts/inspect-native-apk.py release-unsigned --task n11-03-safety",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/release-inspection.log",
+          "sha256": "c5aba8a6c226a7e2b756adecdc97795eb6fb4c646d2e8e021339d468b386fa48",
+          "startedAt": "2026-11-07T16:33:44.857Z",
+          "endedAt": "2026-11-07T16:33:45.108Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "pnpm test:mobile-policy",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/safety-api-green.log",
+          "sha256": "61127d5b0437467b6915c17b4083f4fafd75ab855b95a775610a814c1119ee5f",
+          "startedAt": "2026-11-07T16:20:44.605Z",
+          "endedAt": "2026-11-07T16:21:08.698Z",
+          "purpose": "Retained supporting or earlier attempt; not independently final acceptance"
+        },
+        {
+          "command": "python3 scripts/inspect-native-apk.py safety --task n11-03-safety",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/safety-apk-inspection.log",
+          "sha256": "9137c60c905d0598af2627f7a68655e2578dea9dbcf276d527014651222aebfa",
+          "startedAt": "2026-11-07T16:27:13.494Z",
+          "endedAt": "2026-11-07T16:27:13.963Z",
+          "purpose": "Retained supporting or earlier attempt; not independently final acceptance"
+        },
+        {
+          "command": "node scripts/verify-mobile-safety-native.mjs",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/safety-avd.log",
+          "sha256": "977bada2099857c56791ae24aba3d64e05e62b252c7c38785621560e09b275b6",
+          "startedAt": "2026-11-07T16:27:14.031Z",
+          "endedAt": "2026-11-07T16:27:21.724Z",
+          "purpose": "Retained supporting or earlier attempt; not independently final acceptance"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/mobile build:native-safety",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/safety-build.log",
+          "sha256": "0d632db5fe3be6ba894cd83b7b7a25e9e886d0944d3abbb26ca957c7b839146b",
+          "startedAt": "2026-11-07T16:23:42.044Z",
+          "endedAt": "2026-11-07T16:23:45.852Z",
+          "purpose": "Retained supporting or earlier attempt; not independently final acceptance"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/mobile cap sync android",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/safety-cap-sync.log",
+          "sha256": "69fcd06944ec8968730ad9913575c9ef86cdbc57fdf89140d2479da2ae165079",
+          "startedAt": "2026-11-07T16:25:47.361Z",
+          "endedAt": "2026-11-07T16:25:48.459Z",
+          "purpose": "Retained supporting or earlier attempt; not independently final acceptance"
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs gradle :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest -PvlpNativeOrigin=https://localhost:18443 -PvlpNativeTestCa=true -PvlpNativeTestCaTask=n11-03-safety",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/safety-debug-apk.log",
+          "sha256": "75d18e1a4fa315e17dc9ae3e6b5e87df9e1d62129c3875562ef464ee10cb760e",
+          "startedAt": "2026-11-07T16:26:08.461Z",
+          "endedAt": "2026-11-07T16:26:44.317Z",
+          "purpose": "Retained supporting or earlier attempt; not independently final acceptance"
+        },
+        {
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-safety-fixture.ts",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/safety-fixture.log",
+          "sha256": "3ddff2dcbe8d6752d91042f12b1e18c77d2d8a229bbfcc4ca1723f3a80941d0d",
+          "startedAt": "2026-11-07T16:24:28.550Z",
+          "endedAt": "2026-11-07T16:27:57.081Z",
+          "purpose": "Retained supporting or earlier attempt; not independently final acceptance"
+        },
+        {
+          "command": "pnpm test:mobile-policy",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n11-03/safety-v1/safety-red.log",
+          "sha256": "744de20dc361a6c45a7ec063b0b4f3fa68f1c564ff2b079efc4c5ab139940bee",
+          "startedAt": "2026-11-07T16:19:03.713Z",
+          "endedAt": "2026-11-07T16:19:30.260Z",
+          "purpose": "Retained supporting or earlier attempt; not independently final acceptance"
+        },
+        {
+          "command": "node scripts/prepare-native-test-tls.mjs n11-03-safety",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/safety-tls.log",
+          "sha256": "08f81dc8d8a7bc186614bec0e806e990982f8933717f181042ea4c9b9f2e306e",
+          "startedAt": "2026-11-07T16:23:43.216Z",
+          "endedAt": "2026-11-07T16:23:43.382Z",
+          "purpose": "Retained supporting or earlier attempt; not independently final acceptance"
+        },
+        {
+          "command": "pnpm check",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/stable-check.log",
+          "sha256": "811d3e7edd511a2cdfcd32055e84ccfe1ed84da5881db71c24616d0fd781b56e",
+          "startedAt": "2026-11-07T16:32:30.527Z",
+          "endedAt": "2026-11-07T16:48:59.051Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "pnpm test:mobile-policy",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/stable-mobile-policy.log",
+          "sha256": "5c71b9baec5e9da6e4abad235bbef26befcf09fc5668959f06b74bdb3e75e035",
+          "startedAt": "2026-11-07T16:53:20.445Z",
+          "endedAt": "2026-11-07T16:53:39.801Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "pnpm test:native-auth",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/stable-native.log",
+          "sha256": "2d758b78fe2bc1e76529e76e782cec38b3225c3408693c569ebfb25c9f2e5296",
+          "startedAt": "2026-11-07T16:52:58.642Z",
+          "endedAt": "2026-11-07T16:53:20.341Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "pnpm test:security",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/stable-security.log",
+          "sha256": "9997c7edfa71fa961b5082ed8bd2c93870d5966755121270ebb2820f13c82c1e",
+          "startedAt": "2026-11-07T16:48:59.182Z",
+          "endedAt": "2026-11-07T16:52:58.540Z",
+          "purpose": "Final scoped verification"
+        },
+        {
+          "command": "node artifacts/vnext/n11-03/safety-v1/stable-verification.mjs",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n11-03/safety-v1/stable-verification.log",
+          "sha256": "8b0d6cf2e0b99b9057e301b4c0ac44db9d9e456fdbdf94f944a115d30796207e",
+          "startedAt": "2026-11-07T16:32:30.258Z",
+          "endedAt": "2026-11-07T16:53:39.884Z",
+          "purpose": "Final scoped verification"
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "docs/plans/platform-vnext/audit/N11-03-SAFETY-CHECKPOINT.json",
+          "sha256": "ce0a12930942a42722eefc68a48869a92398d1d184e2d12ab325834fb0847e21",
+          "retention": "Owner-controlled repository summary or private local artifacts; no retention SLA",
+          "access": "sanitized-public"
+        },
+        {
+          "ref": "docs/mobile/N11-03-DATA-INVENTORY.md",
+          "sha256": "c933e59f7b74fafb21de97d3d5a8dc201baad7e9a46e577d30cbdf4d2f5a0a0e",
+          "retention": "Owner-controlled repository summary or private local artifacts; no retention SLA",
+          "access": "sanitized-public"
+        },
+        {
+          "ref": "artifacts/vnext/n11-03/safety-v1/raw-index-v1.json",
+          "sha256": "0af2c4fb1f6916c3a530eae940fc15c83240ec932883ddad815f65d7f64a1024",
+          "retention": "Owner-controlled repository summary or private local artifacts; no retention SLA",
+          "access": "private"
+        },
+        {
+          "ref": "artifacts/vnext/n11-03/safety-v1/source-attestation.json",
+          "sha256": "80bb8d855c63e7e9c188139fe989d6b18ba2abadd693770c598722ed6ad5a5eb",
+          "retention": "Owner-controlled repository summary or private local artifacts; no retention SLA",
+          "access": "private"
+        },
+        {
+          "ref": "artifacts/vnext/n11-03/safety-v1/stable-inputs.json",
+          "sha256": "a5650f817d5968b3445a82d4515818a6844d510185922336004d1becbbcfb1f4",
+          "retention": "Owner-controlled repository summary or private local artifacts; no retention SLA",
+          "access": "private"
+        },
+        {
+          "ref": "artifacts/vnext/n11-03/safety-v1/stable-result.json",
+          "sha256": "12d26683e2818d6ca50be85990e56e5739d34ced0c8b6c8f9797b3b4710adb25",
+          "retention": "Owner-controlled repository summary or private local artifacts; no retention SLA",
+          "access": "private"
+        },
+        {
+          "ref": "artifacts/vnext/n11-03/safety-v1/data-inventory.json",
+          "sha256": "5c47527929bb70289e3709c129711049a073f98e96f925b4798535ff9c8ad380",
+          "retention": "Owner-controlled repository summary or private local artifacts; no retention SLA",
+          "access": "private"
+        }
+      ],
+      "acceptance_met": false,
+      "scenarios": [
+        {
+          "name": "No-room state is truthful;string block confirmation and generic POST bridge requests are rejected",
+          "outcome": "PASS",
+          "notes": "Account safety slice only; not whole-task/native gameplay/store acceptance"
+        },
+        {
+          "name": "Actual native WSS membership exposes only projected peers and receives actual peer chat;credentials stay outside Web storage/public state",
+          "outcome": "PASS",
+          "notes": "Account safety slice only; not whole-task/native gameplay/store acceptance"
+        },
+        {
+          "name": "Two synchronous submissions initiate one report;actual post-COMMIT dropped TLS acknowledgement yields unconfirmed state with explicit exact retry",
+          "outcome": "PASS",
+          "notes": "Account safety slice only; not whole-task/native gameplay/store acceptance"
+        },
+        {
+          "name": "Real block hides peer and prevents peer message delivery while an independent witness receives the same actual broadcast",
+          "outcome": "PASS",
+          "notes": "Account safety slice only; not whole-task/native gameplay/store acceptance"
+        },
+        {
+          "name": "Unchanged report retries after block recover the original receipt with exactly one persisted case",
+          "outcome": "PASS",
+          "notes": "Account safety slice only; not whole-task/native gameplay/store acceptance"
+        },
+        {
+          "name": "Unblock is explicit and refreshes live projection;200% text remains within viewport",
+          "outcome": "PASS",
+          "notes": "Account safety slice only; not whole-task/native gameplay/store acceptance"
+        },
+        {
+          "name": "Stale displayed-account block is rejected inside native custody before any HTTP mutation on the new account",
+          "outcome": "PASS",
+          "notes": "Account safety slice only; not whole-task/native gameplay/store acceptance"
+        },
+        {
+          "name": "Actual process restart restores only the new account;final native logout clears own custody",
+          "outcome": "PASS",
+          "notes": "Account safety slice only; not whole-task/native gameplay/store acceptance"
+        }
+      ],
+      "limitations": [
+        "Whole N11-03 remains IN_PROGRESS: owner-reviewed disclosures/retention/SDK purposes/age and actual public support/privacy/deletion URL/Play facts still unconfirmed.",
+        "Qualified account safety in an isolated synthetic room does not enable full authenticated native gameplay,business/text/message-report widgets or production worlds.",
+        "Unconfirmed report drafts and displayed receipts are process-memory UI,not persistent recovery/history; no automatic retry or permanent receipt custody claim.",
+        "Actual merged release manifest/runtime dependency inventory is not SDK provider certification,content rating,legal review,store approval or release SBOM.",
+        "Draft case/audit metadata retention values do not establish automatic metadata purge;deployment backup/maintenance/retention implementation and owner policy remain gates.",
+        "One earlier normal-bundle restore ended SIGTERM/null exit; retained,not counted as a successful restore.",
+        "AVD results do not qualify physical Android lifecycle/TalkBack/performance or iOS;N14 Apple tooling/device access remains absent.",
+        "No new migration,room authority,production data change,public/store release or client distribution/support-context change."
+      ],
+      "interruptions": [
+        {
+          "command": "pnpm mobile:sync:android",
+          "exitCode": null,
+          "signal": "SIGTERM",
+          "log": "artifacts/vnext/n11-03/safety-v1/restore-normal-bundle.log",
+          "sha256": "880833cb9f8ee22eedbc24992ced595aced6e95e628e03ae8b896cdc8d337f5c",
+          "reason": "Recorded signal termination; no integer exit code,not accepted"
+        }
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

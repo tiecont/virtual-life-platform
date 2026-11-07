@@ -1,3 +1,11 @@
+# N11-03 disclosure/native gameplay and remaining gates — 2026-11-07
+
+Native account erasure and report/block slices have actual closed/AVD evidence. Whole N11-03 awaits owner/provider/disclosure/retention/age/candidate scope;public URLs/contact/backup/Play facts UNKNOWN. Draft metadata retention is not purge proof. N06-11 final art/full rooms/controlled loading/heap/physical,N10-04 integrated gameplay and existing staging/release gates remain. Continue independent code;missing Apple access does not stop Android/web.
+
+**Next exact action:** Use docs/mobile/N11-03-DATA-INVENTORY.md for remaining owner/provider/disclosure/retention review; retain UNKNOWN support/public URLs,backup policy,age/rating and Play account/tester facts. Native report/block account controls now have actual AVD enforcement/receipt evidence; full gameplay/message widgets remain gated. Continue independent N06-11 with a bounded final3D art/rig/serve-anchor polish slice and implemented controlled p75 loading/heap verification under locked budgets; preserve physical Android and N14 Mac/Xcode/iPhone gates and Phase2 dependency/handoff requirements.
+
+## Earlier checkpoints — historical
+
 # N11-03 remaining acceptance gates — 2026-11-07
 
 Deletion slice qualified only. Native report/block,full disclosure/age/SDK inventory,owner review and actual public support/retention/Play facts remain open. Independent local code can continue; no need to stop Android/web for missing Mac/iPhone. N06-11 final art/full rooms/loading/heap/physical,N10-04 integrated gameplay and existing staging/public gates remain.

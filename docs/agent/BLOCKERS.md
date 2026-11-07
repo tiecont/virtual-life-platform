@@ -1,3 +1,9 @@
+# N11-03 remaining owner and product gates — 2026-11-07
+
+[Current blockers](../plans/platform-vnext/state/BLOCKERS.md):account safety is qualified only in closed synthetic room/AVD scope. Owner disclosure/retention/age/Play/public facts and full native gameplay/physical/iOS remain open.
+
+## Earlier checkpoints — historical
+
 # N11-03 partial scope and remaining gates — 2026-11-07
 
 [Current blockers](../plans/platform-vnext/state/BLOCKERS.md): deletion slice passes local/AVD checks; native UGC/disclosure/owner/Play facts still open. Physical Android,N14 Apple access and existing release/staging gates unchanged.

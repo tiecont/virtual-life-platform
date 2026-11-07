@@ -1,3 +1,9 @@
+# ADR0132 explicit native safety ports — 2026-11-07
+
+[ADR0132](../adr/0132-explicit-native-safety-ports.md): dedicated fixed safety ports,expected-account assertion and existing report/social/room owners;generic native HTTP unchanged. Independent exact report retry survives a later block. No new DB/authority/automatic sanction or durable UI recovery promise. [Qualification](../plans/platform-vnext/audit/N11-03-SAFETY-CHECKPOINT.json).
+
+## Earlier checkpoints — historical
+
 # ADR0131 native account erasure — 2026-11-07
 
 [ADR0131](../adr/0131-native-account-erasure-and-unconfirmed-delivery.md): dedicated native erasure,existing identity transaction,strict expected-account confirmation and explicit uncertain ACK. No new table,authority or retry authorization. [Actual partial checks](../plans/platform-vnext/audit/N11-03-DELETION-CHECKPOINT.json). No owner/legal/store acceptance.
