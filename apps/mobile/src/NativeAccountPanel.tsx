@@ -2,6 +2,7 @@ import {useEffect,useRef,useState} from 'react';
 import type {NativeSessionState} from '@virtual-city/client-sdk';
 import {androidSession} from './native-session';
 import {NativeAccountDeletion} from './NativeAccountDeletion';
+import {NativeSafetyPanel} from './NativeSafetyPanel';
 import {AccountDeletionInfo} from '@virtual-city/game-client';
 
 // Account-only opt-in lane. It does not supply authenticated identity to the
@@ -9,6 +10,7 @@ import {AccountDeletionInfo} from '@virtual-city/game-client';
 export function NativeAccountPanel({onLeave}:{onLeave:()=>void}){
  const [state,setState]=useState<NativeSessionState|null>(null),[busy,setBusy]=useState(true),[message,setMessage]=useState('Checking your session…');
  const [mode,setMode]=useState<'guest'|'login'|'upgrade'>('guest');
+ const [safetyOpen,setSafetyOpen]=useState(false);
  const account=useRef<string|null>(null);
  function applyState(value:NativeSessionState|null){account.current=value?.me?.profile.id??null;setState(value);}
  async function work(action:()=>Promise<NativeSessionState>){setBusy(true);try{applyState(await action());setMode('guest');setMessage('');}catch{applyState(null);setMessage('Sign-in is unavailable. Please try again.');}finally{setBusy(false);}}
@@ -22,5 +24,6 @@ export function NativeAccountPanel({onLeave}:{onLeave:()=>void}){
  {!state?.authenticated&&<button type="button" disabled={busy} onClick={()=>setMode(mode==='guest'?'login':'guest')}>{mode==='guest'?'I have an account':'Create a guest instead'}</button>}
  </form>}
  {state?.authenticated&&state.me&&<><button type="button" disabled={busy} onClick={()=>void work(()=>androidSession().restore())}>Refresh account</button><NativeAccountDeletion key={state.me.profile.id} accountId={state.me.profile.id} displayName={state.me.profile.displayName} busy={busy} onBusy={setBusy} onResult={(expected,result)=>{if(account.current!==expected)return;applyState({schemaVersion:1,authenticated:false,me:null});setMode('guest');setBusy(false);setMessage(result.outcome==='DELETED'?'Your account has been deleted.':'Deletion could not be confirmed. This device is signed out; use account deletion help to check your options.');}}/></>}
+ {state?.authenticated&&state.me&&<><button type="button" disabled={busy} onClick={()=>setSafetyOpen(value=>!value)}>{safetyOpen?'Close safety controls':'Open safety controls'}</button>{safetyOpen&&<NativeSafetyPanel key={state.me.profile.id} accountId={state.me.profile.id} busy={busy} onBusy={setBusy}/>}</>}
  <details><summary>Account deletion help</summary><AccountDeletionInfo/></details></main>;
 }

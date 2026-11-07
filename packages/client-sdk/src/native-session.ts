@@ -1,4 +1,4 @@
-import type {ClientProtocolOffer,ProfileInput,Me,UpgradeInput,NativeDevices,NativeTicketResult,NativeAccountDeleteOutcome} from '@virtual-city/contracts';
+import type {ClientProtocolOffer,ProfileInput,Me,UpgradeInput,NativeDevices,NativeTicketResult,NativeAccountDeleteOutcome,NativeSafetyState,ReportInput,ReportReceipt} from '@virtual-city/contracts';
 
 // Custody is implemented by the native platform. There is deliberately no
 // getToken/exportRefresh method and no browser-storage fallback. iOS stays
@@ -16,4 +16,7 @@ export interface NativeSessionCustodyPort {
  revoke(input:{deviceId:string}):Promise<{schemaVersion:1;revoked:true}>;
  logout():Promise<{schemaVersion:1;authenticated:false;remoteRevoked:boolean}>;
  deleteAccount(input:{requestId:string;expectedAccountId:string;confirmDelete:true}):Promise<NativeAccountDeleteOutcome>;
+ safetyState(input:{expectedAccountId:string}):Promise<NativeSafetyState>;
+ report(input:{expectedAccountId:string;requestId:string;report:ReportInput}):Promise<ReportReceipt>;
+ setBlock(input:{expectedAccountId:string;requestId:string;targetId:string;blocked:boolean}):Promise<{blocked:boolean}>;
 }

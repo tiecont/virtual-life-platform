@@ -27,7 +27,11 @@ final class NativeSessionHttp {
     }
     NativeSessionHttp(String origin) { policy = new NativeEndpointPolicy(origin); }
     Reply send(String method, String path, JSONObject body, String access, String csrf, String requestId) throws Exception {
+        return send(method, path, body, access, csrf, requestId, null);
+    }
+    Reply send(String method, String path, JSONObject body, String access, String csrf, String requestId, String expectedAccountId) throws Exception {
         Request.Builder request = new Request.Builder().url(policy.endpoint(path)).header("Accept", "application/json");
+        if (expectedAccountId != null) request.header("X-Native-Account-Id", expectedAccountId);
         if (access != null) request.header("Authorization", "Bearer " + access);
         if (csrf != null) request.header("X-CSRF-Token", csrf);
         if (requestId != null) request.header("Idempotency-Key", requestId);

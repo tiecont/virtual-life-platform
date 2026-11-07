@@ -14,7 +14,14 @@ export async function prepareNativeApiRequest(req:FastifyRequest,native:NativeId
  if(!native||typeof req.headers.authorization!=='string'||!req.headers.authorization.startsWith('Bearer na1.'))return false;
  assertNativeTransport(req);const route=req.routeOptions.url??'';
  if(!route.startsWith('/v1/')||/^\/v1\/(?:session|native|operator)\//.test(route)||route.startsWith('/v1/me/legacy/'))throw new IdentityError('FORBIDDEN',403,'Native credential is not valid on this endpoint');
- const auth=await native.authenticateAccess(access(req));installNativeRequestCredential(req,auth.credential);return true;
+ const auth=await native.authenticateAccess(access(req));
+ // Safety views/actions cannot silently follow a switched native account.
+ // This header is a stale-view assertion, never authority to select an actor.
+ if(['/v1/me/room','/v1/safety/status','/v1/blocks','/v1/reports'].includes(route)||route==='/v1/reports/:id'){
+  const expected=z.uuid().parse(req.headers['x-native-account-id']).toLowerCase();
+  if(expected!==auth.context.accountId)throw new IdentityError('IDEMPOTENCY_CONFLICT',409,'Account changed; refresh before continuing');
+ }
+ installNativeRequestCredential(req,auth.credential);return true;
 }
 function errors(error:unknown,req:FastifyRequest,reply:FastifyReply){
  const status=error instanceof NativeProtocolError?409:error instanceof DomainError?error.status:error instanceof ZodError?422:503;

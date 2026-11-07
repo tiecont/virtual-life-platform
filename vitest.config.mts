@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitest/config';
 export default defineConfig({ test: { projects: [
-  {test:{name:'mobile-policy',include:['tests/integration/native-account-deletion.test.ts'],environment:'node',testTimeout:15000,hookTimeout:15000,fileParallelism:false}},
+  {test:{name:'mobile-policy',include:['tests/integration/native-account-deletion.test.ts','tests/integration/native-safety.test.ts'],environment:'node',testTimeout:15000,hookTimeout:15000,fileParallelism:false}},
   {test:{name:'native-auth',include:['apps/platform-api/src/identity/native-crypto.unit.test.ts','packages/contracts/test/native-auth.test.ts','tests/integration/native-auth.test.ts','tests/integration/native-auth-socket.test.ts'],environment:'node',testTimeout:15000,hookTimeout:15000,fileParallelism:false}},
   { test: { name: 'admission', include: ['packages/contracts/test/admission.test.ts','apps/platform-api/src/admission/model.unit.test.ts','tests/integration/admission.test.ts','tests/integration/admission-ux.test.ts','apps/platform-api/src/admission/store.unit.test.ts','packages/game-client/test/queue.test.ts'],environment:'node',testTimeout:15000,hookTimeout:15000,fileParallelism:false } },
   { test: { name: 'admission-contract', include: ['packages/contracts/test/admission.test.ts','apps/platform-api/src/admission/model.unit.test.ts'], environment:'node' } },
@@ -29,6 +29,7 @@ export default defineConfig({ test: { projects: [
   ], environment: 'node', testTimeout: 15000, hookTimeout: 15000, fileParallelism: false } },
   // These same files remain in the normal integration gate;the focused lane does not replace it.
   { test: { name: 'security', include: [
+    'tests/integration/native-safety.test.ts',
     'tests/integration/native-account-deletion.test.ts',
     'tests/integration/native-auth.test.ts','tests/integration/native-auth-socket.test.ts',
     'tests/integration/operator-identity.test.ts','tests/integration/operator-account-controls.test.ts','tests/integration/privacy-requests.test.ts','tests/integration/operator-events.test.ts','tests/integration/operator-runtime.test.ts',

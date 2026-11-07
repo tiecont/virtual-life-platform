@@ -95,6 +95,38 @@ final class NativeSessionEngine {
         if (!reply.ok()) { if (reply.status == 401) clear(); throw new IllegalStateException("Native devices unavailable"); }
         return reply.body;
     }
+    private void safetyAccount(String expectedAccountId) throws Exception {
+        if (expectedAccountId == null || !expectedAccountId.matches("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"))
+            throw new IllegalArgumentException("Refresh your account");
+        authenticated();
+        if (!expectedAccountId.equals(me.getJSONObject("profile").getString("id")))
+            throw new IllegalStateException("Account changed; refresh before continuing");
+    }
+    private JSONObject safetyReply(String method, String path, JSONObject body, String requestId, String expectedAccountId) throws Exception {
+        safetyAccount(expectedAccountId);
+        if (!method.equals("GET") && (requestId == null || !requestId.matches("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}")))
+            throw new IllegalArgumentException("Safety request unavailable");
+        // A lost acknowledgement is an error. The UI retains the exact request
+        // key for an explicit retry; this layer never retries or claims success.
+        NativeSessionHttp.Reply reply = http.send(method, path, body, access, method.equals("GET") ? null : csrf, requestId, expectedAccountId);
+        if (!reply.ok()) { if (reply.status == 401) clear(); throw new IllegalStateException("Safety action not confirmed"); }
+        return reply.body;
+    }
+    JSONObject safetyState(String expectedAccountId) throws Exception {
+        JSONObject visit = safetyReply("GET", "/v1/me/room", null, null, expectedAccountId);
+        JSONObject status = safetyReply("GET", "/v1/safety/status", null, null, expectedAccountId);
+        JSONObject blocks = safetyReply("GET", "/v1/blocks", null, null, expectedAccountId);
+        return new JSONObject().put("schemaVersion", 1).put("accountId", expectedAccountId).put("visit", visit)
+            .put("reportsAvailable", status.getBoolean("reportsAvailable")).put("blocks", blocks.getJSONArray("items"));
+    }
+    JSONObject report(String expectedAccountId, String requestId, JSONObject input) throws Exception {
+        return safetyReply("POST", "/v1/reports", input, requestId, expectedAccountId);
+    }
+    JSONObject setBlock(String expectedAccountId, String requestId, String targetId, boolean blocked) throws Exception {
+        if (targetId == null || !targetId.matches("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"))
+            throw new IllegalArgumentException("Choose a player");
+        return safetyReply("POST", "/v1/blocks", new JSONObject().put("targetId", targetId).put("blocked", blocked), requestId, expectedAccountId);
+    }
     JSONObject deleteAccount(String requestId, String expectedAccountId, boolean confirmed) throws Exception {
         String uuid = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
         if (!confirmed || requestId == null || !requestId.matches(uuid) || expectedAccountId == null || !expectedAccountId.matches(uuid))

@@ -3,15 +3,16 @@ from pathlib import Path
 import argparse, hashlib, json, os, re, subprocess, uuid, zipfile, shutil
 
 parser = argparse.ArgumentParser()
-parser.add_argument('mode', choices=['auth', 'policy', 'normal', 'release-unsigned'])
-parser.add_argument('--task', choices=['n10-03', 'n11-03'], default='n10-03')
+parser.add_argument('mode', choices=['auth', 'policy', 'safety', 'normal', 'release-unsigned'])
+parser.add_argument('--task', choices=['n10-03', 'n11-03', 'n11-03-safety'], default='n10-03')
 arguments = parser.parse_args()
 mode, task = arguments.mode, arguments.task
-qualification = mode in ['auth', 'policy']
+qualification = mode in ['auth', 'policy', 'safety']
+task_root = 'artifacts/vnext/' + ('n11-03/safety-v1' if task == 'n11-03-safety' else task)
 config = json.loads(Path('artifacts/vnext/n10-02/android-native/local-env.json').read_text())
 sdk = Path(config['sdkRoot'])
 apk = Path('apps/mobile/android/app/build/outputs/apk/release/app-release-unsigned.apk' if mode == 'release-unsigned' else 'apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk')
-directory = Path('artifacts/vnext/' + task + '/apk-' + mode + '-' + uuid.uuid4().hex[:8])
+directory = Path(task_root + '/apk-' + mode + '-' + uuid.uuid4().hex[:8])
 directory.mkdir(mode=0o700)
 digest = lambda value: hashlib.sha256(value).hexdigest()
 env = {**os.environ, 'JAVA_HOME': config['javaHome'], 'PATH': config['javaHome'] + '/bin:' + os.environ['PATH']}
@@ -55,11 +56,12 @@ try:
         raw_ca = 'res/raw/vlp_native_test_ca.pem'
         assert (raw_ca in archive.namelist()) == qualification
         if qualification:
-            assert archive.read(raw_ca) == Path('artifacts/vnext/' + task + '/tls/ca.pem').read_bytes()
+            assert archive.read(raw_ca) == Path(task_root + '/tls/ca.pem').read_bytes()
         html = archive.read('assets/public/index.html').decode()
         js = b''.join(archive.read(name) for name in archive.namelist() if name.startswith('assets/public/') and name.endswith('.js'))
         assert (b'nativeAccountQualification' in js) == (mode == 'auth')
         assert (b'nativePolicyQualification' in js) == (mode == 'policy')
+        assert (b'nativeSafetyQualification' in js) == (mode == 'safety')
         if qualification:
             assert "connect-src 'self' wss://localhost:18443;" in html
         else:

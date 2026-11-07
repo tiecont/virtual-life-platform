@@ -1,0 +1,13 @@
+# ADR0132 — Explicit native report and block ports
+
+Accepted for a bounded N11-03 account-safety slice, 2026-11-07; no whole-task, public, store or human-review acceptance.
+
+Reuse existing ReportService, SocialService, RoomService and their transactional locks, receipts, projections, confidential evidence and contact-withdrawal hooks. Add no table, migration, authority, report queue or moderation identity. Browser routes, cookie/Origin/CSRF and existing gameplay UI stay unchanged. Native bearer routes for safety require an expected account header; it rejects a stale view and never chooses the authenticated actor. Domain owners still reauthenticate under canonical account locks.
+
+Android exposes only safetyState, report and setBlock as dedicated fixed-endpoint operations. The general request port stays GET/PATCH own profile/privacy only. Native custody authenticates/restores and compares the expected account before HTTP, injects NI-bound CSRF/idempotency/header values, and uses its existing serial queue, cookie-free HTTPS and no transport retries. Reusable access/refresh/internal credentials do not enter JavaScript.
+
+The account panel lists only server-projected current-room peers, plus the account's own disclosed blocks. Reporting uses actual epoch/room/membership/target evidence, not typed arbitrary account IDs. Reports remain allegations; a receipt is not a sanction or response-time promise. Blocking is independent and its actual platform contact/projection enforcement is reused. Unblock restores neither friendships nor invitations.
+
+The mounted UI guards duplicate submission, unmount and account changes. Each operation retains its request key on an uncertain result. An unconfirmed report keeps an explicit unchanged retry draft in memory, independently of a later block. The existing report receipt can recover a committed report after block hides the peer; no second case or native replay authorization is invented. Process restart does not preserve an unconfirmed UI draft or receipt history; no durable reconciliation claim is made. Confirmed block plus failed view refresh remains a confirmed block with an explicit refresh warning.
+
+Qualify actual native bridge/forms/HTTPS/WSS using an isolated synthetic room and independent native TCP peers. Deliberately drop a TLS acknowledgement after real report commit, then block, verify recipient exclusion with a receiving witness, and retry the original report. Keep normal bundles/native login disabled, preserve all prior evidence and locked budgets, and restore/inspect the normal APK after qualification. Full native gameplay, text/message-report widgets, physical accessibility/lifecycle, owner/retention/age/store review and public URL remain separate gates.

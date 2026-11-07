@@ -1,6 +1,6 @@
 # Account deletion and Play dossier — N11-03 partial implementation
 
-Local draft, 2026-11-07. This is not a submitted Data safety form, legal approval, public support resource or whole N11-03 acceptance. [ADR0131](../adr/0131-native-account-erasure-and-unconfirmed-delivery.md) records the implementation decision. Native rooms, user content and their safety adapters remain gated.
+Local draft, 2026-11-07. This is not a submitted Data safety form, legal approval, public support resource or whole N11-03 acceptance. [ADR0131](../adr/0131-native-account-erasure-and-unconfirmed-delivery.md) records erasure semantics; [native account safety](NATIVE-SAFETY.md) adds explicit report/block ports and UI. Authenticated native gameplay and its complete content/safety widgets remain gated.
 
 ## Current implementation
 
@@ -25,7 +25,7 @@ For personal developer accounts created after 13 November 2023, the reviewed pro
 | Item | Evidence/status |
 | --- | --- |
 | Native deletion and local web resource | Implemented; actual command outcomes in the N11-03 evidence record |
-| Native report/block and enforcement UI | Not wired to authenticated gameplay; must be implemented and exercised |
+| Native report/block and enforcement UI | Account-panel ports/UI implemented against existing owners; synthetic-room/native qualification is recorded separately. Full authenticated gameplay/message-report widgets remain gated |
 | Privacy/Data safety inventory | Draft only: identity/login/profile/privacy, native device labels/grants, social/report/audit and domain records need a complete feature/SDK/data-flow inventory and owner review |
 | Android permissions | Source main manifest requests INTERNET only; merged release inventory still belongs to release qualification; no runtime permission grant claimed |
 | Age/rating and terms | Owner target audience, content rating, terms and actual enabled features need review; dating/random matching excluded from initial public mobile scope |
@@ -35,7 +35,7 @@ For personal developer accounts created after 13 November 2023, the reviewed pro
 
 ## Reproduction
 
-`pnpm test:mobile-policy` is now implemented: six real isolated database/API cases cover strict confirmation/CSRF/Origin/Cookie/stale-account denial, own erasure, real socket withdrawal, expiry during an actual lock wait, concurrent effects and transactional rollback/retry. It does not test the entire Play dossier or report/block.
+`pnpm test:mobile-policy` includes six real isolated erasure cases covering strict confirmation/CSRF/Origin/Cookie/stale-account denial, own erasure, real socket withdrawal, expiry during an actual lock wait, concurrent effects and transactional rollback/retry. It now also includes native safety cases; see [the safety guide](NATIVE-SAFETY.md) for their scope. It does not test the entire Play dossier.
 
 `pnpm mobile:build:policy` builds a separate local qualification bundle. With the owned emulator, task-local public test CA and isolated `scripts/native-policy-fixture.ts`, `node scripts/verify-mobile-policy-native.mjs` exercises actual forms, native bridge, HTTPS, WSS and process restart. `node scripts/verify-mobile-policy-web.mjs` starts its own production-mode Next server and exercises resource/guest deletion/privacy entry on desktop/mobile. Both require live PID/start-time ownership proofs. The fixture can deliberately drop one acknowledgement after a successful deletion commit; it is not a production route.
 
