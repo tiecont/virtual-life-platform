@@ -32301,6 +32301,243 @@
         "Default current playable rooms remain Pixi/v1. The SDK port is engine-neutral but the labelled studio rejects non-null snapshots. Real snapshot projection,intent raycasts,distance LOD,20actor/resource/loading and physical qualification remain before N06-11 acceptance. Native session/authN10-03 precedes N06-07 creator Save; N06-04/09 qualify final scenes/art.",
         "Mac/Xcode/iPhone are unavailable for conditional N14. Android AVD is not iOS Simulator. Existing release/distributionfalse,admission hard0target0paused,single RoomAuthority and old ledgers remain intact; no public deployment/store/production data change or Phase2 activation. Owner .idea/ and infra/botkeep-ca.pem unread/unstaged."
       ]
+    },
+    {
+      "id": "n06-11-authoritative-room-adapter-partial-2026-11-07",
+      "taskId": "N06-11",
+      "sourceRevision": "cbae1848fe1f75939e54a302010a31650df66578",
+      "environment": "CachyOS Linux7.2.9-2; Node26.9.0/pnpm11.28.5; Three0.187.0; Chromium156 SwiftShader desktop/mobile emulation; owned Android Emulator37.2.13/API35/WebView124 with AMD host WebGL2; JDK21/SDK36/Gradle8.14.3 DEBUG",
+      "executedAt": "2026-11-07T04:23:30.952Z",
+      "commands": [
+        {
+          "command": "env VITE_VLP_ROOM_3D=1 VITE_VLP_SCENE3D_STUDY=1 node artifacts/vnext/n10-02/android-native/run.mjs pnpm mobile:android:build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-android-build.log",
+          "sha256": "840724f7ccab2913a81d3fdc5db3566cadc32df8042bc8705f6c57034bd96086"
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm exec python3 artifacts/vnext/n06-11/room-adapter-v1/inspect-apk.py",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-apk-inspection.log",
+          "sha256": "dc4636c3b9a1adc84d966495192ae35fb428fd52d954bcc7473b3999cc8c5df3"
+        },
+        {
+          "command": "pnpm test:scene3d-room",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/room-browser-ack-fixture.log",
+          "sha256": "b777f99b856172ff2721a1b5543d5f84fd28f2be977524348119fdaa8b40d537"
+        },
+        {
+          "command": "pnpm test:scene3d-room",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/room-browser-first.log",
+          "sha256": "0d525c54db6a311baae75a4fbf6dd7a8523cfbdaea05bfcdd4db0f2dcc948cae"
+        },
+        {
+          "command": "pnpm test:scene3d-room",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-browser-resumed.log",
+          "sha256": "e6a34f6e17daf59f0f3df3378a4474b37ac69db62b3377ce03ba70ff44aa237b"
+        },
+        {
+          "command": "pnpm test:scene3d-room",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/room-browser-visible-rays.log",
+          "sha256": "41e2e8a99140151ab95e654536462e6f40c234f03eb56c830a01f06e082f3ad0"
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-ci.log",
+          "sha256": "a7e9b16f6a387bb03df3d49761911d6dd854a9dde109f3ff37652afb06682644"
+        },
+        {
+          "command": "pnpm test:ux-core --classic",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-classic-rollback.log",
+          "sha256": "edf829e86c68ddae07a869a8c0da69147452dca09a2ff8c311971ecb043a6422"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/mobile build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-default-mobile-build.log",
+          "sha256": "602e5ffecda4113a9f56bbaf46186c61d7aeccf6ac2ba3a558c8ca1904f7f08e"
+        },
+        {
+          "command": "pnpm mobile:bundle:smoke",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-default-mobile-smoke.log",
+          "sha256": "87fbdbefa811a8b44b8020ae8e1e648e971ef2be873c88b50eb6dc0e66ec3d02"
+        },
+        {
+          "command": "pnpm exec tsc -p tests/legacy-tsconfig.json",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-e2e-types.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "pnpm mobile:emulator:start",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-emulator-start.log",
+          "sha256": "264211c763083e37e8fe4f15482b91c2fc27cc51b46c0c7f5e2977f7ee75f50e"
+        },
+        {
+          "command": "pnpm mobile:emulator:status",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-emulator-status.log",
+          "sha256": "e076a30ea0ff182db6da3777af9d1d2960caa851f949cb284ce5d693a24884a8"
+        },
+        {
+          "command": "pnpm mobile:emulator:stop",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-emulator-stop.log",
+          "sha256": "cc2497bf46f34b0e543dbcd392485c7824cf8addd39f9688bf360ea7516522df"
+        },
+        {
+          "command": "pnpm assets:check",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-final-assets.log",
+          "sha256": "0c5ef8bfcadc14313ecbc7b98c725b50b3d4dffa73d3c3be33352f695b50bbe4"
+        },
+        {
+          "command": "pnpm test:client-boundaries",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-final-boundaries.log",
+          "sha256": "315e0a2b1d00b1b42724256263ab66aa0e250a8ffb73e6ac6c430a8a1a23beb0"
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-final-ci.log",
+          "sha256": "a7e9b16f6a387bb03df3d49761911d6dd854a9dde109f3ff37652afb06682644"
+        },
+        {
+          "command": "pnpm exec tsc -p tests/legacy-tsconfig.json",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-final-e2e-types.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-final-lint.log",
+          "sha256": "c5694bb720a73533b594b6a7b4278194f3754201a3a5d0311f1280a4839a2f3b"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/portal-web build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-final-next-build.log",
+          "sha256": "90a7009316dc53c5d40fcfba5133228d2a6055e4bfab6d761be2865bb671c9e1"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/scene3d build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-final-scene-build.log",
+          "sha256": "29c5ee0f6b0b20dbb259b99d01276198c3d28190090706394608d4deda6d2c0b"
+        },
+        {
+          "command": "pnpm build",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-full-build.log",
+          "sha256": "561833c2c8ae70d2684897573e2df4e697413c2f80a99518ff85e603d1e9caf8"
+        },
+        {
+          "command": "node --test tests/governance/admin-artifact.test.mjs tests/governance/admin-boundary.test.mjs tests/governance/admin-bundle.test.mjs tests/governance/api-runtime-package.test.mjs tests/governance/artifact-release.test.mjs tests/governance/backup.test.mjs tests/governance/boundaries.test.mjs tests/governance/ci.test.mjs tests/governance/client-boundaries.test.mjs tests/governance/client-legacy-fixture.test.mjs tests/governance/digest-promotion.test.mjs tests/governance/evidence-inventory.test.mjs tests/governance/evidence-output.test.mjs tests/governance/evidence-reader.test.mjs tests/governance/evidence-store.test.mjs tests/governance/image-inspection.test.mjs tests/governance/infra.test.mjs tests/governance/kubernetes.test.mjs tests/governance/legacy-snapshots.test.mjs tests/governance/ops-watch.test.mjs tests/governance/plan-status.test.mjs tests/governance/release.test.mjs tests/governance/resource-budget.test.mjs tests/governance/runtime-profile-comparison.test.mjs tests/governance/test-environment.test.mjs tests/governance/toolchain.test.mjs tests/governance/worker-boundary.test.mjs",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-governance.log",
+          "sha256": "517137e1bf8e5df8bf6e8a7845843c06bd6e34318f223e297816df5bb065c4ba"
+        },
+        {
+          "command": "env CITY_TEST_DB_PASSWORD=unused-cleanup-only docker compose -p virtual-city-test-90ef2b90 -f infra/compose/test.yml down --volumes --timeout 5",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-interrupted-cleanup.log",
+          "sha256": "02bb2de5238ebd0041ca9102d7f88cb8e445a953be1a8185efcc59642b6dcd8a"
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/room-lint-first.log",
+          "sha256": "68b7e64dc2617a56661b971c4701b67bcb9e2a959166337f2e37a35a5cf469e4"
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-lint.log",
+          "sha256": "c5694bb720a73533b594b6a7b4278194f3754201a3a5d0311f1280a4839a2f3b"
+        },
+        {
+          "command": "env VLP_EMULATOR_ROOM3D=1 pnpm mobile:emulator:scene3d --apk apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-native-smoke.log",
+          "sha256": "b874570f8d9e9943e8d8aa03852f0ae69d9e3d2058fe90ad6f5cc23347ee6eef"
+        },
+        {
+          "command": "pnpm build:packages",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-packages-first.log",
+          "sha256": "dc80c05de1035da6b9ac3ef34a85758a116140e283718f5ce5ee2055baa92e8a"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test/projection.test.ts",
+          "exitCode": 1,
+          "log": "artifacts/vnext/n06-11/room-projection-red.log",
+          "sha256": "81b4075c94f85318a878a3d48866779d4a12cd81bcdd78192edebabd862f6962"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test/projection.test.ts packages/pixi-scene/test/lifecycle.test.ts",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-projection-tests.log",
+          "sha256": "83b3a7efd5260f10193fce2f4bd14d02df8d5c8863ad8a55d1cddfc16eac97d4"
+        },
+        {
+          "command": "pnpm test:protocol",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-protocol.log",
+          "sha256": "4e60a4bd2357aeb7a492cde80904a95334a324dea0f24b288e48cf47cfb1d6ce"
+        },
+        {
+          "command": "pnpm typecheck",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-typecheck.log",
+          "sha256": "8dda90325f7415662750381efe6880a9e02902afd6b021c0f2904f822fb736cd"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/scene3d typecheck",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-types.log",
+          "sha256": "38ac890c60e7f38d59ddfb410325cdfb5fca83c9411765c5481754e01c021630"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit",
+          "exitCode": 0,
+          "log": "artifacts/vnext/n06-11/room-unit.log",
+          "sha256": "3ff3576fbd2d52ea0a8e47637cd282a96ee45a4d0de58c7bfcf1f806c5212b91"
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "artifacts/vnext/n06-11/room-adapter-v1/raw-index.json",
+          "sha256": "33908dbbb0dff699bfae7de830066a13bbc9af542c38b22c3bb344f44bbaffa2",
+          "access": "private",
+          "retention": "Private local until owner cleanup; no off-host archive"
+        },
+        {
+          "ref": "docs/plans/platform-vnext/audit/N06-11-ROOM-ADAPTER-CHECKPOINT.json",
+          "sha256": "18c722bb44eb321398b7090dfca2c2453707ea99dee34292ec27fe4d78ae4739",
+          "access": "sanitized-public",
+          "retention": "Git history"
+        }
+      ],
+      "acceptance_met": false,
+      "limitations": [
+        "N06-11 remains IN_PROGRESS. A real authoritative-snapshot3D adapter is implemented and qualified for the SDK sandbox web slice, but final fur/silhouette/cloth/serve art,20actor GPU/frame/geometry/texture/RSS/loading qualification and physical Android are still pending. Unit20skeleton sharing or LOD selection is not a20actor GPU benchmark.",
+        "The actual14browser executions use signed fixture sessions,disposable PostgreSQL44 and real singleton-owner HTTP/Socket.IO. Outgoing seat withholding,context loss and transport cuts are explicitly injected faults; no staging/load/public readiness is inferred. Chromium mobile profile is browser emulation with SwiftShader,not iOS/native/physical performance.",
+        "The exact clean-source DEBUG APK runs an empty logged-out3D room plus the local cat studio on the owned API35/WebView124 AVD/AMD host GPU. Six functional scenarios PASS. It is not native authenticated room participation,creator Save,20actors,N10-04 thirty minutes,physical thermal/battery or distribution proof. Short single-cat p95 diagnostics cannot supersede the older retained50ms observation or qualify the locked workload.",
+        "Full89governance/383unit,145protocol,types/build/lint/CI37specs/assets/boundary results are timestamped source-scoped checks. The pure projection body is byte-identical to5d10235 and the compiled Pixi re-export is the same function. apps/platform-api/contracts/44SQL are unchanged. Existing698integration/225security totals remain historical,not a new complete-backend rerun.",
+        "First module-not-created red and unused-variable lint failure remain. Browser fixture failures came from reading legacy HTTP motion,an offscreen831.7px click in a720px viewport,and an ambiguous mobile account-name selector; evidence ID propagation now uses the existing validated UX_EVIDENCE_RUN. One later run was interrupted by child SIGTERM plus Docker EOF; wrapper exit is unknown. Its original metadata/log and owned-project cleanup are retained; only the fresh complete14run is accepted.",
+        "Default Pixi/v1 rollback remains. Classic12browser scenarios PASS with2expected landscape-only skips; default native-bundle3browser cases PASS. The explicit3D route uses existing auth/catalog/compatibility/safety/recovery/receipts; graphics does not create a second RoomAuthority or grant local seats,identities,inventory or rewards. Public diagnostics exclude account IDs.",
+        "Current ADB inventory finds0authorized USB devices; physical3D NOT_RUN. Mac/Xcode/iPhone remain missing for conditional N14. N10-03 still gates native auth and N06-07 Save; N06-04/09/N10-04 remain separate. All52prior records,44SQL,Mxx ledger,locked budgets and closed release/distribution contexts are preserved. No production data/public/store/Phase2 activation or owner-file inspection."
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

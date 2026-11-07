@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "updated_at": "2026-11-06T18:09:09.580Z",
+  "updated_at": "2026-11-07T04:23:30.952Z",
   "scope": "vNext implementation",
   "release_status": "NOT_REQUESTED",
   "module_activation": {
@@ -759,10 +759,11 @@
       "owner": "Codex",
       "branch": "codex/vnext-n09-02-postgres",
       "evidence_refs": [
-        "n06-11-shared-3d-studio-partial-2026-11-07"
+        "n06-11-shared-3d-studio-partial-2026-11-07",
+        "n06-11-authoritative-room-adapter-partial-2026-11-07"
       ],
       "blocker": null,
-      "next_action": "Resume N06-11: implement the authoritative RoomSnapshot3D adapter and existing validated move/seat intent projection with distance LOD and Pixi/v1 rollback; fix unresolved fur/silhouette/cloth/serve art findings, then qualify20actors/loading/resources and physical Android when attached. Keep studio-only status explicit. N10-03 native auth independently gates N06-07 Save; N06-04/09/N10-04 and conditional N14 remain unqualified. Phase2 waits for real ownership handoff and task dependencies."
+      "next_action": "Continue N06-11 by implementing a clearly labelled20actor GPU/resource/loading benchmark harness before running it; measure the same committed renderer on browser and owned Android Emulator against the existing locked budgets, preserve failures and optimize within those limits. Fix unresolved fur/silhouette/cloth/serve/camera composition,then qualify physical Android when available. N10-03 native auth remains an independently ready prerequisite for N06-07 Save; final N06-04/09/N10-04 and conditional N14 remain open."
     },
     "N10-05": {
       "status": "VERIFIED",

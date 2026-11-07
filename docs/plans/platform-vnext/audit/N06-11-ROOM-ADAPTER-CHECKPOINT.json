@@ -1,0 +1,1035 @@
+{
+  "taskId": "N06-11",
+  "status": "IN_PROGRESS",
+  "acceptance_met": false,
+  "scope": "Authoritative3D SDK-sandbox web room adapter vertical slice plus logged-out packaged Android preview; not full task/art/performance completion",
+  "sourceRevision": "cbae1848fe1f75939e54a302010a31650df66578",
+  "baselineSourceRevision": "5d10235ee99af5ae36d8c8819b6533fdd943c591",
+  "executedAt": "2026-11-07T04:23:30.952Z",
+  "environment": "CachyOS Linux7.2.9-2; Node26.9.0/pnpm11.28.5; Three0.187.0; Chromium156 SwiftShader desktop/mobile emulation; owned Android Emulator37.2.13/API35/WebView124 with AMD host WebGL2; JDK21/SDK36/Gradle8.14.3 DEBUG",
+  "sourceFiles": [
+    {
+      "ref": "apps/mobile/src/main.tsx",
+      "sha256": "ba0b40374d99ca837270c996f5145b95e1e0e14c0d9e8dd94895a1cafbd91f5d"
+    },
+    {
+      "ref": "apps/portal-web/app/components/WorldRoomPanel.tsx",
+      "sha256": "edfd7f3dac88052421083b3700d3105c31c872ddfe707d41b3d9c5acdca04a69"
+    },
+    {
+      "ref": "apps/portal-web/app/worlds/sdk-sandbox/room3d/RoomClient.tsx",
+      "sha256": "089c244b3baf4075cbc596d3143d0582048ccc0b3410f701e9b76a986fbad9cb"
+    },
+    {
+      "ref": "apps/portal-web/app/worlds/sdk-sandbox/room3d/page.tsx",
+      "sha256": "e8bfcc04b4dabfae238f44c64d2a19c3837ef0bae9d3d6b776a179ab88c5c90f"
+    },
+    {
+      "ref": "config/ci-browser-groups.json",
+      "sha256": "de6223edf850635870030f471f3ed1f8ca61928d656109a94dd0f7c8ec94e115"
+    },
+    {
+      "ref": "docs/mobile/ROOM3D-ADAPTER.md",
+      "sha256": "ffa692e87389c7bd78b8751f45e465b283270da55d70509dc59055bb5322287c"
+    },
+    {
+      "ref": "package.json",
+      "sha256": "fd6a2237e66fd7b025a45bcaf2aaf8d5e0cb12a734b21351e42f3febdc8d298e"
+    },
+    {
+      "ref": "packages/client-sdk/src/scene.ts",
+      "sha256": "d77a8374309adc4928ee80d8d3f3d8f086b62089d1422a3d42e5ed3258496573"
+    },
+    {
+      "ref": "packages/game-client/src/WorldRoomPanel.tsx",
+      "sha256": "36b953254de4b30e783793bff140ab9bfb995a4dfb982b9902f08bc96b04696c"
+    },
+    {
+      "ref": "packages/pixi-scene/src/entities.ts",
+      "sha256": "e208a7b202b8f7c4b19f042198ead23be9e177bed3f74aea5f0965b6961dd064"
+    },
+    {
+      "ref": "packages/scene3d/src/index.ts",
+      "sha256": "3ff8f0d5376a170134d37b3e6b645f6161c6cc5fbc8dfde88c780427365c2543"
+    },
+    {
+      "ref": "packages/scene3d/src/projection.ts",
+      "sha256": "da825c5e941040978866d4d31c5cc58e7711a2a1c198f6a6d04978c88fcf6562"
+    },
+    {
+      "ref": "packages/scene3d/src/renderer.ts",
+      "sha256": "faaa862a76e812cb0f6fa01b74dc91051c0f8a213b30e1217354b98693364e32"
+    },
+    {
+      "ref": "packages/scene3d/src/room.ts",
+      "sha256": "9697d892c25135faba61242c761cca5bc9ed84e98995f1d45fab829a79e210dd"
+    },
+    {
+      "ref": "packages/scene3d/test/projection.test.ts",
+      "sha256": "0bf53192728de821acb2a3e82b3166509cd770def4891f88a2daf133241fd303"
+    },
+    {
+      "ref": "packages/world-sdk/src/index.ts",
+      "sha256": "5f063a109e54c022534ff17b3fb1b379c33f8befde03ecf66bd05af2eb03cd9b"
+    },
+    {
+      "ref": "packages/world-sdk/src/scene-entities.ts",
+      "sha256": "2b582b02eee80a87f0b76622442540b42215e473ce29ec00a232cea19493eeec"
+    },
+    {
+      "ref": "scripts/mobile-emulator-scene3d.mjs",
+      "sha256": "e4f526b73a7266cae4344e460bc98d9411a0877ffa1c96671982257df17699f8"
+    },
+    {
+      "ref": "scripts/run-scene3d-room.mjs",
+      "sha256": "dfa2404eba48123d4a6bf42b13973e84141c9eaa2582203a2d25e57c18f5bf50"
+    },
+    {
+      "ref": "tests/e2e/scene3d-room.spec.ts",
+      "sha256": "b6464beac81f3a28d931052fcdd26660617fd221e1b999704b435b6ad7a594ad"
+    }
+  ],
+  "commands": [
+    {
+      "command": "env VITE_VLP_ROOM_3D=1 VITE_VLP_SCENE3D_STUDY=1 node artifacts/vnext/n10-02/android-native/run.mjs pnpm mobile:android:build",
+      "argv": [
+        "env",
+        "VITE_VLP_ROOM_3D=1",
+        "VITE_VLP_SCENE3D_STUDY=1",
+        "node",
+        "artifacts/vnext/n10-02/android-native/run.mjs",
+        "pnpm",
+        "mobile:android:build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T04:15:11.193Z",
+      "endedAt": "2026-11-07T04:16:04.086Z",
+      "log": "artifacts/vnext/n06-11/room-android-build.log",
+      "sha256": "840724f7ccab2913a81d3fdc5db3566cadc32df8042bc8705f6c57034bd96086"
+    },
+    {
+      "command": "node artifacts/vnext/n10-02/android-native/run.mjs pnpm exec python3 artifacts/vnext/n06-11/room-adapter-v1/inspect-apk.py",
+      "argv": [
+        "node",
+        "artifacts/vnext/n10-02/android-native/run.mjs",
+        "pnpm",
+        "exec",
+        "python3",
+        "artifacts/vnext/n06-11/room-adapter-v1/inspect-apk.py"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T04:17:39.472Z",
+      "endedAt": "2026-11-07T04:17:41.538Z",
+      "log": "artifacts/vnext/n06-11/room-apk-inspection.log",
+      "sha256": "dc4636c3b9a1adc84d966495192ae35fb428fd52d954bcc7473b3999cc8c5df3"
+    },
+    {
+      "command": "pnpm test:scene3d-room",
+      "argv": [
+        "pnpm",
+        "test:scene3d-room"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-07T01:41:27.522Z",
+      "endedAt": "2026-11-07T01:42:49.076Z",
+      "log": "artifacts/vnext/n06-11/room-browser-ack-fixture.log",
+      "sha256": "b777f99b856172ff2721a1b5543d5f84fd28f2be977524348119fdaa8b40d537"
+    },
+    {
+      "command": "pnpm test:scene3d-room",
+      "argv": [
+        "pnpm",
+        "test:scene3d-room"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-07T01:39:13.695Z",
+      "endedAt": "2026-11-07T01:40:49.886Z",
+      "log": "artifacts/vnext/n06-11/room-browser-first.log",
+      "sha256": "0d525c54db6a311baae75a4fbf6dd7a8523cfbdaea05bfcdd4db0f2dcc948cae"
+    },
+    {
+      "command": "pnpm test:scene3d-room",
+      "argv": [
+        "pnpm",
+        "test:scene3d-room"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T04:11:21.739Z",
+      "endedAt": "2026-11-07T04:13:40.219Z",
+      "log": "artifacts/vnext/n06-11/room-browser-resumed.log",
+      "sha256": "e6a34f6e17daf59f0f3df3378a4474b37ac69db62b3377ce03ba70ff44aa237b"
+    },
+    {
+      "command": "pnpm test:scene3d-room",
+      "argv": [
+        "pnpm",
+        "test:scene3d-room"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-07T01:43:31.509Z",
+      "endedAt": "2026-11-07T01:46:05.104Z",
+      "log": "artifacts/vnext/n06-11/room-browser-visible-rays.log",
+      "sha256": "41e2e8a99140151ab95e654536462e6f40c234f03eb56c830a01f06e082f3ad0"
+    },
+    {
+      "command": "pnpm ci:check",
+      "argv": [
+        "pnpm",
+        "ci:check"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:38:40.815Z",
+      "endedAt": "2026-11-07T01:38:43.070Z",
+      "log": "artifacts/vnext/n06-11/room-ci.log",
+      "sha256": "a7e9b16f6a387bb03df3d49761911d6dd854a9dde109f3ff37652afb06682644"
+    },
+    {
+      "command": "pnpm test:ux-core --classic",
+      "argv": [
+        "pnpm",
+        "test:ux-core",
+        "--classic"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T04:14:36.261Z",
+      "endedAt": "2026-11-07T04:15:49.865Z",
+      "log": "artifacts/vnext/n06-11/room-classic-rollback.log",
+      "sha256": "edf829e86c68ddae07a869a8c0da69147452dca09a2ff8c311971ecb043a6422"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/mobile build",
+      "argv": [
+        "pnpm",
+        "--filter",
+        "@virtual-city/mobile",
+        "build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:50:30.684Z",
+      "endedAt": "2026-11-07T01:50:36.259Z",
+      "log": "artifacts/vnext/n06-11/room-default-mobile-build.log",
+      "sha256": "602e5ffecda4113a9f56bbaf46186c61d7aeccf6ac2ba3a558c8ca1904f7f08e"
+    },
+    {
+      "command": "pnpm mobile:bundle:smoke",
+      "argv": [
+        "pnpm",
+        "mobile:bundle:smoke"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:51:32.953Z",
+      "endedAt": "2026-11-07T01:51:40.726Z",
+      "log": "artifacts/vnext/n06-11/room-default-mobile-smoke.log",
+      "sha256": "87fbdbefa811a8b44b8020ae8e1e648e971ef2be873c88b50eb6dc0e66ec3d02"
+    },
+    {
+      "command": "pnpm exec tsc -p tests/legacy-tsconfig.json",
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "-p",
+        "tests/legacy-tsconfig.json"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:38:38.471Z",
+      "endedAt": "2026-11-07T01:38:49.511Z",
+      "log": "artifacts/vnext/n06-11/room-e2e-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "pnpm mobile:emulator:start",
+      "argv": [
+        "pnpm",
+        "mobile:emulator:start"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T04:14:37.435Z",
+      "endedAt": "2026-11-07T04:15:01.675Z",
+      "log": "artifacts/vnext/n06-11/room-emulator-start.log",
+      "sha256": "264211c763083e37e8fe4f15482b91c2fc27cc51b46c0c7f5e2977f7ee75f50e"
+    },
+    {
+      "command": "pnpm mobile:emulator:status",
+      "argv": [
+        "pnpm",
+        "mobile:emulator:status"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T04:20:16.695Z",
+      "endedAt": "2026-11-07T04:20:17.321Z",
+      "log": "artifacts/vnext/n06-11/room-emulator-status.log",
+      "sha256": "e076a30ea0ff182db6da3777af9d1d2960caa851f949cb284ce5d693a24884a8"
+    },
+    {
+      "command": "pnpm mobile:emulator:stop",
+      "argv": [
+        "pnpm",
+        "mobile:emulator:stop"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T04:20:03.887Z",
+      "endedAt": "2026-11-07T04:20:06.397Z",
+      "log": "artifacts/vnext/n06-11/room-emulator-stop.log",
+      "sha256": "cc2497bf46f34b0e543dbcd392485c7824cf8addd39f9688bf360ea7516522df"
+    },
+    {
+      "command": "pnpm assets:check",
+      "argv": [
+        "pnpm",
+        "assets:check"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:52:33.806Z",
+      "endedAt": "2026-11-07T01:52:34.907Z",
+      "log": "artifacts/vnext/n06-11/room-final-assets.log",
+      "sha256": "0c5ef8bfcadc14313ecbc7b98c725b50b3d4dffa73d3c3be33352f695b50bbe4"
+    },
+    {
+      "command": "pnpm test:client-boundaries",
+      "argv": [
+        "pnpm",
+        "test:client-boundaries"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:52:31.421Z",
+      "endedAt": "2026-11-07T01:52:32.720Z",
+      "log": "artifacts/vnext/n06-11/room-final-boundaries.log",
+      "sha256": "315e0a2b1d00b1b42724256263ab66aa0e250a8ffb73e6ac6c430a8a1a23beb0"
+    },
+    {
+      "command": "pnpm ci:check",
+      "argv": [
+        "pnpm",
+        "ci:check"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:52:32.601Z",
+      "endedAt": "2026-11-07T01:52:34.434Z",
+      "log": "artifacts/vnext/n06-11/room-final-ci.log",
+      "sha256": "a7e9b16f6a387bb03df3d49761911d6dd854a9dde109f3ff37652afb06682644"
+    },
+    {
+      "command": "pnpm exec tsc -p tests/legacy-tsconfig.json",
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "-p",
+        "tests/legacy-tsconfig.json"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:48:05.881Z",
+      "endedAt": "2026-11-07T01:48:18.580Z",
+      "log": "artifacts/vnext/n06-11/room-final-e2e-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:48:04.683Z",
+      "endedAt": "2026-11-07T01:48:22.388Z",
+      "log": "artifacts/vnext/n06-11/room-final-lint.log",
+      "sha256": "c5694bb720a73533b594b6a7b4278194f3754201a3a5d0311f1280a4839a2f3b"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/portal-web build",
+      "argv": [
+        "pnpm",
+        "--filter",
+        "@virtual-city/portal-web",
+        "build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:49:25.502Z",
+      "endedAt": "2026-11-07T01:50:02.449Z",
+      "log": "artifacts/vnext/n06-11/room-final-next-build.log",
+      "sha256": "90a7009316dc53c5d40fcfba5133228d2a6055e4bfab6d761be2865bb671c9e1"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/scene3d build",
+      "argv": [
+        "pnpm",
+        "--filter",
+        "@virtual-city/scene3d",
+        "build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:48:03.503Z",
+      "endedAt": "2026-11-07T01:48:07.517Z",
+      "log": "artifacts/vnext/n06-11/room-final-scene-build.log",
+      "sha256": "29c5ee0f6b0b20dbb259b99d01276198c3d28190090706394608d4deda6d2c0b"
+    },
+    {
+      "command": "pnpm build",
+      "argv": [
+        "pnpm",
+        "build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:36:52.404Z",
+      "endedAt": "2026-11-07T01:37:51.400Z",
+      "log": "artifacts/vnext/n06-11/room-full-build.log",
+      "sha256": "561833c2c8ae70d2684897573e2df4e697413c2f80a99518ff85e603d1e9caf8"
+    },
+    {
+      "command": "node --test tests/governance/admin-artifact.test.mjs tests/governance/admin-boundary.test.mjs tests/governance/admin-bundle.test.mjs tests/governance/api-runtime-package.test.mjs tests/governance/artifact-release.test.mjs tests/governance/backup.test.mjs tests/governance/boundaries.test.mjs tests/governance/ci.test.mjs tests/governance/client-boundaries.test.mjs tests/governance/client-legacy-fixture.test.mjs tests/governance/digest-promotion.test.mjs tests/governance/evidence-inventory.test.mjs tests/governance/evidence-output.test.mjs tests/governance/evidence-reader.test.mjs tests/governance/evidence-store.test.mjs tests/governance/image-inspection.test.mjs tests/governance/infra.test.mjs tests/governance/kubernetes.test.mjs tests/governance/legacy-snapshots.test.mjs tests/governance/ops-watch.test.mjs tests/governance/plan-status.test.mjs tests/governance/release.test.mjs tests/governance/resource-budget.test.mjs tests/governance/runtime-profile-comparison.test.mjs tests/governance/test-environment.test.mjs tests/governance/toolchain.test.mjs tests/governance/worker-boundary.test.mjs",
+      "argv": [
+        "node",
+        "--test",
+        "tests/governance/admin-artifact.test.mjs",
+        "tests/governance/admin-boundary.test.mjs",
+        "tests/governance/admin-bundle.test.mjs",
+        "tests/governance/api-runtime-package.test.mjs",
+        "tests/governance/artifact-release.test.mjs",
+        "tests/governance/backup.test.mjs",
+        "tests/governance/boundaries.test.mjs",
+        "tests/governance/ci.test.mjs",
+        "tests/governance/client-boundaries.test.mjs",
+        "tests/governance/client-legacy-fixture.test.mjs",
+        "tests/governance/digest-promotion.test.mjs",
+        "tests/governance/evidence-inventory.test.mjs",
+        "tests/governance/evidence-output.test.mjs",
+        "tests/governance/evidence-reader.test.mjs",
+        "tests/governance/evidence-store.test.mjs",
+        "tests/governance/image-inspection.test.mjs",
+        "tests/governance/infra.test.mjs",
+        "tests/governance/kubernetes.test.mjs",
+        "tests/governance/legacy-snapshots.test.mjs",
+        "tests/governance/ops-watch.test.mjs",
+        "tests/governance/plan-status.test.mjs",
+        "tests/governance/release.test.mjs",
+        "tests/governance/resource-budget.test.mjs",
+        "tests/governance/runtime-profile-comparison.test.mjs",
+        "tests/governance/test-environment.test.mjs",
+        "tests/governance/toolchain.test.mjs",
+        "tests/governance/worker-boundary.test.mjs"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:39:58.820Z",
+      "endedAt": "2026-11-07T01:40:20.204Z",
+      "log": "artifacts/vnext/n06-11/room-governance.log",
+      "sha256": "517137e1bf8e5df8bf6e8a7845843c06bd6e34318f223e297816df5bb065c4ba"
+    },
+    {
+      "command": "env CITY_TEST_DB_PASSWORD=unused-cleanup-only docker compose -p virtual-city-test-90ef2b90 -f infra/compose/test.yml down --volumes --timeout 5",
+      "argv": [
+        "env",
+        "CITY_TEST_DB_PASSWORD=unused-cleanup-only",
+        "docker",
+        "compose",
+        "-p",
+        "virtual-city-test-90ef2b90",
+        "-f",
+        "infra/compose/test.yml",
+        "down",
+        "--volumes",
+        "--timeout",
+        "5"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T04:10:43.310Z",
+      "endedAt": "2026-11-07T04:10:44.022Z",
+      "log": "artifacts/vnext/n06-11/room-interrupted-cleanup.log",
+      "sha256": "02bb2de5238ebd0041ca9102d7f88cb8e445a953be1a8185efcc59642b6dcd8a"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-07T01:33:07.086Z",
+      "endedAt": "2026-11-07T01:33:19.416Z",
+      "log": "artifacts/vnext/n06-11/room-lint-first.log",
+      "sha256": "68b7e64dc2617a56661b971c4701b67bcb9e2a959166337f2e37a35a5cf469e4"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:38:39.650Z",
+      "endedAt": "2026-11-07T01:38:54.622Z",
+      "log": "artifacts/vnext/n06-11/room-lint.log",
+      "sha256": "c5694bb720a73533b594b6a7b4278194f3754201a3a5d0311f1280a4839a2f3b"
+    },
+    {
+      "command": "env VLP_EMULATOR_ROOM3D=1 pnpm mobile:emulator:scene3d --apk apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk",
+      "argv": [
+        "env",
+        "VLP_EMULATOR_ROOM3D=1",
+        "pnpm",
+        "mobile:emulator:scene3d",
+        "--apk",
+        "apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T04:17:38.257Z",
+      "endedAt": "2026-11-07T04:18:31.028Z",
+      "log": "artifacts/vnext/n06-11/room-native-smoke.log",
+      "sha256": "b874570f8d9e9943e8d8aa03852f0ae69d9e3d2058fe90ad6f5cc23347ee6eef"
+    },
+    {
+      "command": "pnpm build:packages",
+      "argv": [
+        "pnpm",
+        "build:packages"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:31:47.659Z",
+      "endedAt": "2026-11-07T01:32:02.527Z",
+      "log": "artifacts/vnext/n06-11/room-packages-first.log",
+      "sha256": "dc80c05de1035da6b9ac3ef34a85758a116140e283718f5ce5ee2055baa92e8a"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/scene3d/test/projection.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "packages/scene3d/test/projection.test.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "signal": null,
+      "startedAt": "2026-11-07T01:30:01.683Z",
+      "endedAt": "2026-11-07T01:30:02.956Z",
+      "log": "artifacts/vnext/n06-11/room-projection-red.log",
+      "sha256": "81b4075c94f85318a878a3d48866779d4a12cd81bcdd78192edebabd862f6962"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/scene3d/test/projection.test.ts packages/pixi-scene/test/lifecycle.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "packages/scene3d/test/projection.test.ts",
+        "packages/pixi-scene/test/lifecycle.test.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:33:05.914Z",
+      "endedAt": "2026-11-07T01:33:07.371Z",
+      "log": "artifacts/vnext/n06-11/room-projection-tests.log",
+      "sha256": "83b3a7efd5260f10193fce2f4bd14d02df8d5c8863ad8a55d1cddfc16eac97d4"
+    },
+    {
+      "command": "pnpm test:protocol",
+      "argv": [
+        "pnpm",
+        "test:protocol"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:46:42.705Z",
+      "endedAt": "2026-11-07T01:50:11.212Z",
+      "log": "artifacts/vnext/n06-11/room-protocol.log",
+      "sha256": "4e60a4bd2357aeb7a492cde80904a95334a324dea0f24b288e48cf47cfb1d6ce"
+    },
+    {
+      "command": "pnpm typecheck",
+      "argv": [
+        "pnpm",
+        "typecheck"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:43:54.254Z",
+      "endedAt": "2026-11-07T01:45:20.903Z",
+      "log": "artifacts/vnext/n06-11/room-typecheck.log",
+      "sha256": "8dda90325f7415662750381efe6880a9e02902afd6b021c0f2904f822fb736cd"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/scene3d typecheck",
+      "argv": [
+        "pnpm",
+        "--filter",
+        "@virtual-city/scene3d",
+        "typecheck"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-06T16:38:04.664Z",
+      "endedAt": "2026-11-06T16:38:07.527Z",
+      "log": "artifacts/vnext/n06-11/room-types.log",
+      "sha256": "38ac890c60e7f38d59ddfb410325cdfb5fca83c9411765c5481754e01c021630"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "startedAt": "2026-11-07T01:40:00.074Z",
+      "endedAt": "2026-11-07T01:40:14.046Z",
+      "log": "artifacts/vnext/n06-11/room-unit.log",
+      "sha256": "3ff3576fbd2d52ea0a8e47637cd282a96ee45a4d0de58c7bfcf1f806c5212b91"
+    }
+  ],
+  "interruptedCommands": [
+    {
+      "ref": "artifacts/vnext/n06-11/command-room-browser-final.json",
+      "command": "pnpm test:scene3d-room",
+      "argv": [
+        "pnpm",
+        "test:scene3d-room"
+      ],
+      "status": "INTERRUPTED",
+      "exitCode": null,
+      "signal": "SIGTERM observed in Playwright child; wrapper exit unavailable",
+      "startedAt": "2026-11-07T01:50:29.498Z",
+      "endedAt": null,
+      "log": "artifacts/vnext/n06-11/room-browser-final.log",
+      "observedAt": "2026-11-07T04:10:44.106Z",
+      "sha256": "26a481f7ed850505d17cf5b59ec81fe406e36b618daeae5d2ecb46ba4fd6ad9c",
+      "observation": "No test-runner or wrapper process remains; ports3300/4300 free. Docker EOF interrupted cleanup; owned disposable project cleaned separately. Never counted PASS."
+    }
+  ],
+  "verification": {
+    "governance": 89,
+    "unit": 383,
+    "focusedProjectionAndPixi": 10,
+    "protocol": 145,
+    "actual3DBrowserExecutions": 14,
+    "classicBrowserExecutions": 12,
+    "classicExpectedSkips": 2,
+    "defaultMobileBundleExecutions": 3,
+    "nativeScenarios": 6,
+    "wholeTaskAccepted": false
+  },
+  "browser": {
+    "ref": "artifacts/vnext/n06-11/room-adapter-v1/run-4d4b38dc/facts.json",
+    "sha256": "9f514318e99e8558ca17d1b2be3b5ceeced20af805298182f0970741f21c67c7",
+    "sourceFilesByteAttestedAt": "cbae1848fe1f75939e54a302010a31650df66578",
+    "batches": [
+      {
+        "project": "desktop",
+        "batch": 1,
+        "filters": [
+          "tests/e2e/scene3d-room.spec.ts"
+        ],
+        "exitCode": 0
+      },
+      {
+        "project": "mobile",
+        "batch": 1,
+        "filters": [
+          "tests/e2e/scene3d-room.spec.ts"
+        ],
+        "exitCode": 0
+      }
+    ],
+    "gpu": {
+      "gpu": {
+        "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "runtimeErrors": []
+    }
+  },
+  "native": {
+    "ref": "artifacts/vnext/n06-11/native-study-51d6fe61/facts.json",
+    "sha256": "41676778db352be09dd4fe87d98df849255fe6035d48dfba61a31f013ef86250",
+    "device": {
+      "model": "sdk_gphone64_x86_64",
+      "android": "15",
+      "api": "35",
+      "webview": "Mozilla/5.0 (Linux; Android 15; sdk_gphone64_x86_64 Build/AE3A.240806.043; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/124.0.6367.219 Mobile Safari/537.36"
+    },
+    "rootRoom": {
+      "engine": "three-webgl2",
+      "entityCount": 0,
+      "gpu": "Android Emulator OpenGL ES Translator (AMD Radeon Graphics (radeonsi, renoir, ACO, DRM 3.64, 7.2.9-2-cachyos))",
+      "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "diagnostics": {
+        "scope": "OPT_IN_AUTHORITATIVE_ROOM_TECHNICAL_RENDERER_NOT_FINAL_ART_OR_PHYSICAL_ACCEPTANCE",
+        "quality": "low",
+        "frames": 5,
+        "actors": 0,
+        "nearActors": 0,
+        "calls": 7,
+        "triangles": 5072,
+        "geometry": 7,
+        "textures": 2,
+        "frameSamples": 0,
+        "frameP95Ms": null,
+        "measuredSeconds": 0,
+        "resources": {
+          "cachedQualityTiers": 0,
+          "references": 0
+        },
+        "rebuilds": 0,
+        "contextLost": false
+      }
+    },
+    "scenarios": [
+      {
+        "name": "Packaged3D room, no fabricated visitors and actual context recovery with DOM controls",
+        "result": "PASS",
+        "scope": "Logged-out preview; native auth/gameplay NOT_QUALIFIED"
+      },
+      {
+        "name": "Actual WebGL2 and four native local poses",
+        "result": "PASS"
+      },
+      {
+        "name": "Actual native Activity opposite landscape policies",
+        "rotations": [
+          "3",
+          "1"
+        ],
+        "result": "PASS"
+      },
+      {
+        "name": "Reduced-motion and actual Home/resume pause",
+        "result": "PASS"
+      },
+      {
+        "name": "Actual native WebGL context loss/restoration",
+        "result": "PASS"
+      },
+      {
+        "name": "Four actual native Back/recreate cycles retain one model lease",
+        "result": "PASS"
+      }
+    ],
+    "studioSingleCatTimingOnly": [
+      {
+        "quality": "low",
+        "frameP95Ms": 16.700000000000728,
+        "frameSamples": 300,
+        "measuredSeconds": 5.000099999999999
+      },
+      {
+        "quality": "balanced",
+        "frameP95Ms": 16.799999999999272,
+        "frameSamples": 300,
+        "measuredSeconds": 5.016700000000001
+      },
+      {
+        "quality": "high",
+        "frameP95Ms": 16.700000000004366,
+        "frameSamples": 300,
+        "measuredSeconds": 4.999900000000001
+      }
+    ],
+    "performanceQualified": false,
+    "apk": {
+      "sha256": "6624266f31d756b38a7897b1e1c788049ad59f512bc31c429cdf11f348b06867",
+      "bytes": 5347480,
+      "matchedAssets": 19,
+      "signatureExitCode": 0
+    },
+    "ownAppMemoryNotAggregated": [
+      "TOTAL PSS:   107328",
+      "TOTAL RSS:   238668"
+    ]
+  },
+  "projectionPreservation": {
+    "observedAt": "2026-11-07T01:46:35.469Z",
+    "result": "PASS",
+    "priorSource": "5d10235",
+    "bodyByteIdentical": true,
+    "bodySHA256": "6e1068d89fcc8289fba6c1da7311f6411e95445b97397bc8fdc451a6d9da3770",
+    "compiledPixiAndSdkFunctionIdentical": true,
+    "noEngineInWorldSdk": true
+  },
+  "preservation": {
+    "priorRecords": 52,
+    "priorRecordsSHA256": "cda58731a0ceb2957d12dbb0b544e5efdf2de6f46e8f5c416cc880fed4d4d5ee",
+    "immutableFiles": [
+      {
+        "ref": "apps/platform-api/src/db/migrations/0001_foundation.sql",
+        "sha256": "099761978bacbdd89080e42a9a2689be6477c381d949f5198f4c0349586048ac"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0002_identity.sql",
+        "sha256": "b4095a6baaba47da6bd93f5ca344c90c8264ffda517818fb972be49321d0c4fc"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0003_registered_identity.sql",
+        "sha256": "88e6dbf8df76bf23cc64193e9d56ca411b5f2b45b9ba98d023a2077e25942aa8"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0004_social.sql",
+        "sha256": "087a2c4c3cb230046691328034b7437ce1c103632184dda82fe832882e394eb8"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0005_reports.sql",
+        "sha256": "d34cec7bc6aa5b251c19ced1696521b21fd21b009d6a9290ed06bb24f805fb8d"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0006_sanctions.sql",
+        "sha256": "953c321a25c3ad91d93639ccd077a3a32c4ab9c62730a4089e7e307d0eada568"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0007_moderation_operations.sql",
+        "sha256": "9067ca731bb3ebafda08607fe4b324f5c462c7f8033cdb73daaecccc32760064"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0008_travel_intents.sql",
+        "sha256": "d98bc86645c87983328c04340e10e5c6ebfe24e047d7ce1a2beba1bcc066db38"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0009_invitations.sql",
+        "sha256": "4ce947a4a9374d390307c616f2a38ab5daf442c8ee35e3d0ffcd8e411cb0672f"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0010_travel_handoff.sql",
+        "sha256": "747c93b0cb69751c97f3cd98d7c9ebe13c3e00d9eccd368ca619e37258c5128e"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0011_invitation_groups.sql",
+        "sha256": "613c28338978865882945a616fe964161901d625790c7acd57b9fc3c3749082d"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0012_focus_engine.sql",
+        "sha256": "f484a146fd55e66d4faaaaf81c66f413ddd40a42c5277911bd84ccb08d178dce"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0013_focus_daily_index.sql",
+        "sha256": "1926843c9332404b13d9ac738fd43d0149d6026195847110df5e5337a6fdc7e5"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0014_hospitality_core.sql",
+        "sha256": "d4f7a058a7035059614c1d85be6e4f575136a744bfbb218d3262d704e68eef0d"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0015_hospitality_shifts.sql",
+        "sha256": "9061476891acee4f01deb648d7d30d24ea4b112075c56be089c2dde3bde750e3"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0016_hospitality_workflows.sql",
+        "sha256": "673f3c172e6a9f033f082bbb1e2ec047706d9258aafe99a9d82b86881330a5d8"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0017_hospitality_completion_outbox.sql",
+        "sha256": "1d52e16ce1c4cc68ff97fd625e74e3c218cda04da438da4507f8436b95622fbc"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0018_hospitality_service_consent.sql",
+        "sha256": "7e107ef384c0e05ea3707aa5cc8366921d511d2c02205c5ef6fd503b9bffd3de"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0019_events_and_rsvps.sql",
+        "sha256": "753d0fa0b74815737bb076088607487d4f8a282d2fa2003a4d9a89308f0fad37"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0020_reservation_slots_and_waitlist.sql",
+        "sha256": "d7641c192a2f04489b85b5dc8ca734021a76cdd68192864bb86fc1a2a0deaf62"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0021_event_governance_and_notices.sql",
+        "sha256": "ca11e518595ff05adde05c767443950a6d55cb55bfdda0ad6921143d98095f12"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0022_private_event_invitations.sql",
+        "sha256": "46b7fc51a943232cc5f224979bd8ea18ed46488e5880d0908eef4ef97119b20b"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0023_progression_ledger.sql",
+        "sha256": "e348d75170e25224d0ab4f66e921b7547a547a708c58779ee665e71af53486c7"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0024_selected_cosmetic.sql",
+        "sha256": "f30f30944c86ac45d1bb4ca14d1836bd51cfc0031f968885b438fc5f42adc6e6"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0025_progression_corrections.sql",
+        "sha256": "7bef90a912eb23fceaf1cf838c97f610162476892af5dbda4e8f72db03c66c38"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0026_reservation_parties.sql",
+        "sha256": "8f2b667316b5c6a03338e127f43d4cb60f5a3b0ee899f22f48a9dcca4505687b"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0027_hospitality_roles.sql",
+        "sha256": "943fa478826fcd6932eb47398f011368e0be05a5472a784ff3d34095e3ad5641"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0028_hospitality_kitchen_pass.sql",
+        "sha256": "cd81d8b177ef478571539079466e53c830b833977522d8a1addb98178f2aabe6"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0029_private_dinner_offers.sql",
+        "sha256": "792e1c61fc5e2ec42080773adaa6de0a83bc5c6b38af219fc7f1c4f7699c4f8c"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0030_event_stage_slots.sql",
+        "sha256": "edf8e9be2c16a9594ad27f859b12600a5f563a78e18274ad44157249b4f278d2"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0031_event_audience.sql",
+        "sha256": "93ee7f540b65f08869594fec5653f24c7a6dc3164e3d9189e0e72c19b1bcb691"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0032_audience_window_budget.sql",
+        "sha256": "bdaae7ec0a82c1fe043b0adfdc2c8cc3b7cab1b47ad99b4c2a4268abdc108e6f"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0033_private_dating_profiles.sql",
+        "sha256": "e99094b1a3200abf711c0fd7088c8282c3cba895bc8e10f6f8d5eef1a87caee9"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0034_private_dating_matching.sql",
+        "sha256": "b6fb30d23122a3476d11314b4ee3c8b7c00c342a009eb66a1e5f2fef2cc4c2a3"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0035_private_date_rooms.sql",
+        "sha256": "718e174cd9516b0ad812f4ff334078715df59b041a7e3921c29fdc9f0b9cf6a0"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0036_private_mutual_continuations.sql",
+        "sha256": "f44b5ecfed12f0011dd4174acad01132d61390caabfd95d9350b92cfdf17cd8d"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0037_legacy_identity_links.sql",
+        "sha256": "c602c7b25bb0d7ba0b3f297249e573ce662e99400b62cd444e59214a89d3b233"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0038_hospitality_recipe_compatibility.sql",
+        "sha256": "7989943f85f33ec6b3691126597a8a00ef44a80707919a94ea9f791378e40dec"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0039_operator_identity.sql",
+        "sha256": "e8ce7330b27cace5910fef0cc71ccea33ad8f90a1ea90a87ac4ee869af826f15"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0040_operator_account_controls.sql",
+        "sha256": "01a19d1e1cf0b4b72f6fe1320278b431996a4fa7b24cd5ca91103cbd399417bd"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0041_privacy_requests.sql",
+        "sha256": "043fbca317f42c37d9418d291ad114e785166f47c909aec4e0996b5b24f87dbc"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0042_operator_event_calendar.sql",
+        "sha256": "6154a817f60e6e17065698dee7938b2714bbff2b227c7d2f540c6ffe64ebaf48"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0043_operator_runtime_controls.sql",
+        "sha256": "6c51c5e21e333195ac48fd551c5d27f022f835420eddf0235dfc45f28c274db8"
+      },
+      {
+        "ref": "apps/platform-api/src/db/migrations/0044_platform_admission.sql",
+        "sha256": "147d3ee5814a1ef152c2394441e2768e2a1f02bd565c65ef5dbb356fb28247b1"
+      },
+      {
+        "ref": "docs/mobile/android-spike.json",
+        "sha256": "a490322765b931ee190bc43416070568a79c37e2cdddb039adc14f24817f47ca"
+      },
+      {
+        "ref": "docs/design/vnext/animals-3d/budgets-v1.json",
+        "sha256": "3bc3f4410522feb9cce6de81940642df37a1da48dad240c197979385a6b6df2a"
+      },
+      {
+        "ref": "docs/agent/task-state.json",
+        "sha256": "3db0b03f0c3ef9a055e554f1b78152e1bcfd4968e6a9c845476a0f018a6bbf5e"
+      }
+    ],
+    "oldPrivateIndexFilesVerified": 352,
+    "backendContractsAndSQLUnchanged": true,
+    "distributionChanged": false,
+    "ownerFilesRead": false
+  },
+  "physicalGate": {
+    "observedAt": "2026-11-07T04:13:59.201Z",
+    "scope": "ADB transport inventory only; no physical3D/auth/performance qualification",
+    "authorizedUSBDevices": 0,
+    "physical3D": "NOT_RUN",
+    "iosMacXcode": "UNAVAILABLE",
+    "distributed": false
+  },
+  "visualReview": "Inspected actual desktop seated animal and AVD empty3D room: floor/seat mapping and cutaway camera are visible. Simple materials,monolithic walls,sparse fur/silhouette and the retained pixel header thumbnail are technical/legacy findings,not final game art. Room zoom/layout and creator-thumbnail fidelity still require polish.",
+  "limitations": [
+    "N06-11 remains IN_PROGRESS. A real authoritative-snapshot3D adapter is implemented and qualified for the SDK sandbox web slice, but final fur/silhouette/cloth/serve art,20actor GPU/frame/geometry/texture/RSS/loading qualification and physical Android are still pending. Unit20skeleton sharing or LOD selection is not a20actor GPU benchmark.",
+    "The actual14browser executions use signed fixture sessions,disposable PostgreSQL44 and real singleton-owner HTTP/Socket.IO. Outgoing seat withholding,context loss and transport cuts are explicitly injected faults; no staging/load/public readiness is inferred. Chromium mobile profile is browser emulation with SwiftShader,not iOS/native/physical performance.",
+    "The exact clean-source DEBUG APK runs an empty logged-out3D room plus the local cat studio on the owned API35/WebView124 AVD/AMD host GPU. Six functional scenarios PASS. It is not native authenticated room participation,creator Save,20actors,N10-04 thirty minutes,physical thermal/battery or distribution proof. Short single-cat p95 diagnostics cannot supersede the older retained50ms observation or qualify the locked workload.",
+    "Full89governance/383unit,145protocol,types/build/lint/CI37specs/assets/boundary results are timestamped source-scoped checks. The pure projection body is byte-identical to5d10235 and the compiled Pixi re-export is the same function. apps/platform-api/contracts/44SQL are unchanged. Existing698integration/225security totals remain historical,not a new complete-backend rerun.",
+    "First module-not-created red and unused-variable lint failure remain. Browser fixture failures came from reading legacy HTTP motion,an offscreen831.7px click in a720px viewport,and an ambiguous mobile account-name selector; evidence ID propagation now uses the existing validated UX_EVIDENCE_RUN. One later run was interrupted by child SIGTERM plus Docker EOF; wrapper exit is unknown. Its original metadata/log and owned-project cleanup are retained; only the fresh complete14run is accepted.",
+    "Default Pixi/v1 rollback remains. Classic12browser scenarios PASS with2expected landscape-only skips; default native-bundle3browser cases PASS. The explicit3D route uses existing auth/catalog/compatibility/safety/recovery/receipts; graphics does not create a second RoomAuthority or grant local seats,identities,inventory or rewards. Public diagnostics exclude account IDs.",
+    "Current ADB inventory finds0authorized USB devices; physical3D NOT_RUN. Mac/Xcode/iPhone remain missing for conditional N14. N10-03 still gates native auth and N06-07 Save; N06-04/09/N10-04 remain separate. All52prior records,44SQL,Mxx ledger,locked budgets and closed release/distribution contexts are preserved. No production data/public/store/Phase2 activation or owner-file inspection."
+  ],
+  "nextExactAction": "Continue N06-11 by implementing a clearly labelled20actor GPU/resource/loading benchmark harness before running it; measure the same committed renderer on browser and owned Android Emulator against the existing locked budgets, preserve failures and optimize within those limits. Fix unresolved fur/silhouette/cloth/serve/camera composition,then qualify physical Android when available. N10-03 native auth remains an independently ready prerequisite for N06-07 Save; final N06-04/09/N10-04 and conditional N14 remain open."
+}

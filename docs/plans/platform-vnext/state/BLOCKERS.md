@@ -1,4 +1,12 @@
-# N06-11 remaining gates; code work continues — 2026-11-07
+# N06-11 adapter implemented; remaining workload/art/device gates — 2026-11-07
+
+[Current partial adapter checkpoint](../audit/N06-11-ROOM-ADAPTER-CHECKPOINT.json), sourcecbae184: authoritative3D web room/intent/raycast/distance LOD and shared recovery are implemented;14actual web3D/12classic browser cases and6packaged AVD scenarios pass their respective scopes. N06-11 stays IN_PROGRESS. Implement the labelled20actor GPU/resource/loading harness next,then measure and optimize within locked budgets. Unit20skeleton/LOD checks and short one-cat AVD timing do not qualify that workload.
+
+Final fur/silhouette/rig/cloth/serve/camera/thumbnail polish,physical Android and N10-03/native authenticated visits/creator Save remain open. Current0authorized USB,physical3D NOT_RUN; AVD STOPPED. N14 still lacks Mac/Xcode/iPhone. No gate blocks independent web/Android code work; N04-02/N07-04 remain the existing BLOCKED_EXTERNAL tasks. The earlier50ms observation and interrupted SIGTERM/Docker EOF run remain preserved; no threshold changed.
+
+## Earlier checkpoints — historical
+
+# N06-11 initial studio remaining gates at804c0f1 — 2026-11-07
 
 [Partial studio checkpoint](../audit/N06-11-STUDIO-CHECKPOINT.json): shared3D studio/browser/packaged AVD functionality works; task remains IN_PROGRESS. Authoritative snapshot/intent3D adapter,distance LOD,20actor/load/resources and final fur/rig/cloth/props are unfinished code/art work, not an external blocker. Latest short Balanced AVD p95 is50ms, above33.4ms, with a simultaneous web build; performance is not accepted. Do not raise budgets or substitute this for N10-04.
 
