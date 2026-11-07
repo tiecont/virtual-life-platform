@@ -24,6 +24,11 @@ it('accepts actual TCP native ticket auth,echoes the negotiated nonce and atomic
  const user=await guest(),grant=await ticket(user),connected=await connect(auth(grant));expect((await check(connected.socket)).ok).toBe(true);expect(connected.selections).toContainEqual(grant.selection);await expect(connect(auth(grant))).rejects.toBeDefined();
 });
 it('allows exactly one concurrent ticket consumer',async()=>{const user=await guest(),grant=await ticket(user),results=await Promise.allSettled([connect(auth(grant)),connect(auth(grant))]);expect(results.filter(value=>value.status==='fulfilled')).toHaveLength(1);expect((await pool.query('SELECT count(*)::int AS n FROM native_socket_tickets WHERE device_id=$1 AND consumed_at IS NOT NULL',[user.tokens.deviceId])).rows[0].n).toBe(1);});
+it('rejects a consumed ticket that expires during the final identity reauthentication await',async()=>{
+ const user=await guest(),grant=await ticket(user),original=server.identity.authenticate;
+ server.identity.authenticate=async function(token:string){const context=await original.call(this,token);if(token.startsWith('ni1.'))offset=31000;return context;};
+ try{const admitted=await connect(auth(grant)).then(()=>true,()=>false);expect(admitted).toBe(false);}finally{server.identity.authenticate=original;offset=0;}
+});
 it('rejects wrong protocol,expiry and browser-origin use of a native ticket',async()=>{
  const user=await guest(),grant=await ticket(user);await expect(connect({...auth(grant),protocol:{...grant.protocol,nonce:randomUUID()}})).rejects.toBeDefined();await expect(connect(auth(grant),{origin})).rejects.toBeDefined();expect((await check((await connect(auth(grant))).socket)).ok).toBe(true);
  const expired=await ticket(user);offset=31000;await expect(connect(auth(expired))).rejects.toBeDefined();

@@ -49,7 +49,7 @@ export function createIdentityGateway(http: FastifyInstance, config: Config, ide
         if(socket.handshake.headers.cookie!==undefined)throw unauthorized();
         const handshake=NativeSocketHandshakeSchema.parse(socket.handshake.auth),admitted=await native.consumeTicket(handshake.nativeTicket,handshake.protocol);
         if(admitted.ticketExpiresAt<=now())throw unauthorized();token=admitted.credential;context=await identity.authenticate(token);
-        if(context.accountId!==admitted.context.accountId||context.sessionId!==admitted.context.sessionId)throw unauthorized();compatibility=admitted.selection;
+        if(admitted.ticketExpiresAt<=now()||context.accountId!==admitted.context.accountId||context.sessionId!==admitted.context.sessionId)throw unauthorized();compatibility=admitted.selection;
       }else{
         if(socket.handshake.headers.origin!==config.WEB_ORIGIN)throw unauthorized();
         const handshake = SessionHandshakeSchema.parse(socket.handshake.auth),header = socket.handshake.headers.cookie ?? '';
