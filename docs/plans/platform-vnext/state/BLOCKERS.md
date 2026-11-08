@@ -1,3 +1,15 @@
+# Current creator/mobile external gates — 2026-11-08
+
+N06-07 physical Android creator→world→travel qualification remains NOT_RUN:read-only USB inventory0. AVD is supplementary;acceptancefalse and BLOCKED_EXTERNAL. No claim that N06-04/09 or N10-04 is complete.
+
+N11-03 code/inventory preparation is complete at this scope,but public privacy/support/deletion URLs,backup/provider retention,age/rating,Play account/testers and owner declarations remain UNKNOWN.
+
+N14 has no Mac/Xcode/iPhone;conditional modules N13/N14 remain inactive. N04-02 genuine hosted release candidate and N07-04 staging observations remain external. No public/store/distribution/production promotion.
+
+Continue dependency-ready work via the separate Phase2 handoff;do not mark blocked predecessors VERIFIED.
+
+## Earlier blockers — historical
+
 # N06-11 technical renderer spike VERIFIED;continuous execution — 2026-11-08
 
 Source d89d59bcccafc1a7bd7fb4b6326bc96e07b1654d. ADR0133 separates the technical spike from downstream integrated art/device qualification without changing budgets. Actual25focused/406unit/95governance,types/fullbuild/lint/CI/assets/architecture/boundaries,2browser studio profiles+import failure,5AVD studio,3normal bundle/5AVD preview/default-off7ports PASS.384rig samples preserved;groom/cloth intentionally refined. Required20actor Low/Balanced frame16.7/16.8ms,121/148calls,all resource checks PASS;20recreates zero leases/canvases. High184calls is desktop-only diagnostic. Normal APK9148df93…18exact assets restored/reinstalled;AVD STOPPED.

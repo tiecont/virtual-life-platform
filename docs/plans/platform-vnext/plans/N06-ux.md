@@ -1,5 +1,7 @@
 # N06 — UI/UX và playable vertical slice
 
+Current checkpoint2026-11-08: N06-11 technical renderer spike VERIFIED under ADR0133;N06-07 creator/authoritative Save/browser and packaged-native world/travel integration has actual partial evidence,with physical Android qualification BLOCKED_EXTERNAL (fresh USB0). [Native checks](../audit/N06-07-NATIVE-WORLD-CHECKPOINT.json) preserve431unit/740integration/267security,14browser creator+4travel and9AVD journey scenarios. N06-04/N06-09 final scene/art and their downstream tasks remain gated;do not treat technical art or AVD as those acceptances. Phase1 has a safe checkpoint for separate dependency-ready Lantern Lodge work. Earlier checkpoint paragraphs below are historical.
+
 Current N06-11 remains IN_PROGRESS after serving-anchor partial slice at21cbc1f21d4ac8221805e49215aec3512542c712. [Actual checks](../audit/N06-11-SERVE-CHECKPOINT.json);review `docs/design/vnext/animals-3d/SERVE-ANCHORS-REVISION-1.md`. Original character streams/budgets preserved;controlled loading/heap,final graphics/full scenes/physical still open.
 
 Current prerequisite update: N10-03 native account/tickets VERIFIED at04b1b38 ([checks](../audit/N10-03-NATIVE-CHECKS.json)); creator still needs whole N06-11 acceptance. Technical3D art/full scenes/controlled loading/heap/physical findings remain open. Historical checkpoint paragraphs below keep their original scope.

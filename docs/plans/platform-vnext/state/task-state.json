@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "updated_at": "2026-11-08T16:12:05.777Z",
+  "updated_at": "2026-11-08T16:59:28.128Z",
   "scope": "vNext implementation",
   "release_status": "NOT_REQUESTED",
   "module_activation": {
@@ -591,15 +591,16 @@
       "next_action": "Safearea/keyboard/back/deeplinks, notifications opt-in nếu cần, cache/error UX"
     },
     "N11-03": {
-      "status": "IN_PROGRESS",
+      "status": "BLOCKED_EXTERNAL",
       "owner": "Codex",
       "branch": "codex/vnext-n09-02-postgres",
       "evidence_refs": [
         "n11-03-account-deletion-partial-2026-11-07",
-        "n11-03-native-safety-partial-2026-11-07"
+        "n11-03-native-safety-partial-2026-11-07",
+        "n11-03-native-world-disclosure-preparation-2026-11-08"
       ],
-      "blocker": null,
-      "next_action": "Use docs/mobile/N11-03-DATA-INVENTORY.md for remaining owner/provider/disclosure/retention review; retain UNKNOWN support/public URLs,backup policy,age/rating and Play account/tester facts. Native report/block account controls now have actual AVD enforcement/receipt evidence; full gameplay/message widgets remain gated. Continue independent N06-11 with a bounded final3D art/rig/serve-anchor polish slice and implemented controlled p75 loading/heap verification under locked budgets; preserve physical Android and N14 Mac/Xcode/iPhone gates and Phase2 dependency/handoff requirements."
+      "blocker": "N11-03 code/inventory preparation is complete at this scope,but public privacy/support/deletion URLs,backup/provider retention,age/rating,Play account/testers and owner declarations remain UNKNOWN.",
+      "next_action": "Owner supplies/reviews privacy/support/deletion URLs,backup/provider retention,age/rating,Play account/tester and final disclosure facts against the actual future distributed build. Keep UNKNOWN and distributionfalse until evidenced."
     },
     "N11-04": {
       "status": "TODO",
@@ -724,14 +725,15 @@
       "next_action": "Execute N06-03 (priority82): read current shared WorldRoomPanel/widgets and Next local navigation docs; implement an opt-in scene-first shared shell and client navigation adapter, preserving authoritative recovery/safety/business controls and legacy rollback. Implement test:ux-core with actual browser/API verification; qualify before N06-08 landscape/native orientation. Continue N10-03 and later Phase2 per DAG; N14 stays conditional."
     },
     "N06-07": {
-      "status": "IN_PROGRESS",
+      "status": "BLOCKED_EXTERNAL",
       "owner": "Codex",
       "branch": "codex/vnext-n09-02-postgres",
       "evidence_refs": [
-        "n06-07-modular-creator-partial-2026-11-08"
+        "n06-07-modular-creator-partial-2026-11-08",
+        "n06-07-native-world-creator-partial-2026-11-08"
       ],
-      "blocker": null,
-      "next_action": "Continue N06-07:implement account-asserted dedicated Android world/travel operations and fresh protocol-bound one-use room tickets,shared native room/travel/safety UI;verify packaged Save→Deadline/Maid→travel/reconnect before treating physical hardware as the only creator gate. Preserve v1/browser behavior and default-off release policy."
+      "blocker": "N06-07 physical Android creator→world→travel qualification remains NOT_RUN:read-only USB inventory0. AVD is supplementary;acceptancefalse and BLOCKED_EXTERNAL. No claim that N06-04/09 or N10-04 is complete.",
+      "next_action": "When an authorized owned physical Android is available,record model/OS/WebView and isolated nonproduction test account/build,then execute creator Save→Deadline/Maid→travel/reconnect and visual/anchor checks on that phone. Do not substitute AVD for physical acceptance."
     },
     "N06-08": {
       "status": "VERIFIED",

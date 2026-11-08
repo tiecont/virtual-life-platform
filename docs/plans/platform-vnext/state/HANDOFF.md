@@ -1,3 +1,35 @@
+# Native world/creator checkpoint;ready for safe Phase2 handoff — 2026-11-08
+
+Source d2b3bf1 plus foreground fix3a3c880;native journey84acf5c;inventory/map review49eed56. Actual431unit/95governance/740integration/267security,14creator browser+4travel,11Android instrumentation and9packaged native creator/world/travel/safety/account scenarios PASS. Types/full build/lint/CI/assets/architecture/boundaries pass at their recorded source scopes. Normal signed DEBUG APK cb99c77c5abf7d28a3e159555f1ae9cd0aa791a4192b15e49d8ee16a262df59a (8809926bytes,19matched assets),unsigned-release policy inspection,18default-off ports/3bundle/5preview PASS;AVD STOPPED and HTTPS/schema/DB cleanup confirmed.
+
+64records;43VERIFIED/4BLOCKED_EXTERNAL/29TODO/0IN_PROGRESS. N06-07 physical0 and N11-03 owner disclosures are now honest external gates,not VERIFIED. Prior62records/49immutable files/9frozen indices2973files preserved;new raw index 312files SHA c6fd74639abe6bb020f533bd1bc8a8e17cb1e8f384bebf8ccfe8e2e45d545b32. Release NOT_REQUESTED;distributionfalse;N13/N14 inactive;Mxx/Phase2 unchanged. No public/store/production write. Owner files/private keys/SDK/AVD userdata unread/unstaged/unarchived.
+
+**Next exact action:** Create the real Phase1→Lantern Lodge handoff from this safe checkpoint;use existing explicit owner authorization to activate only the separate Phase2 scheduler,then validate/check-upstream/next-task and execute dependency-ready N15-01. Physical N06-07,N11 owner disclosures,N04/N07 staging and N14 Apple gates stay unresolved.
+
+N06-07 physical Android creator→world→travel qualification remains NOT_RUN:read-only USB inventory0. AVD is supplementary;acceptancefalse and BLOCKED_EXTERNAL. No claim that N06-04/09 or N10-04 is complete.
+
+Native supports room movement/seating/travel/context report/block. Focus,cafe service and messaging adapters remain explicitly unavailable and belong to downstream work.
+
+Final art is not approved:animals are very small in the whole-floor camera,groom sparse/light and model/environment visibly technical. Integrated20actor/final-art/loading/native-memory/thermal/battery and human usability remain open;previous loading FAIL unchanged.
+
+N11-03 code/inventory preparation is complete at this scope,but public privacy/support/deletion URLs,backup/provider retention,age/rating,Play account/testers and owner declarations remain UNKNOWN.
+
+N14 has no Mac/Xcode/iPhone;conditional modules N13/N14 remain inactive. N04-02 genuine hosted release candidate and N07-04 staging observations remain external. No public/store/distribution/production promotion.
+
+All fixture/driver/CI failures retained. The real foreground readiness race was fixed in3a3c880;selector/peer Origin,expiry and explicit synthetic privacy consent issues were fixed in test code without relaxing server policy.
+
+## Earlier checkpoints — historical
+
+# N06-07 ACTIVE — packaged native world/travel qualification
+
+Code d2b3bf1 plus fixture/driver refinements e27fff9/3520514/aaff7df. Dedicated account-asserted world operations and fresh room tickets,shared web/native TravelPanel and Android Deadline/Maid/safety UI implemented. Actual431unit/95governance,11AVD instrumentation and focused native API guard checks PASS;fixture types/lint/full build pass at their recorded sources. Browser creator14cases/regression and full integration/security are still running. No whole native journey acceptance yet.
+
+**Next exact action:** Await native world WebView exec25340 (current stage labels now precise),full regression72099 and browser80484;inspect/fix actual failures. Owned AVD5580 is RUNNING and scripts/native-world-fixture.ts is RUNNING via exec43949,PID480436/startTicks1791952;fresh world-v1/tls keys must never be regenerated/read/archived. Stop with that own root/stop marker and await schema/DB cleanup. Native APK qualification is opt-in only. Restore normal bundle/DEBUG/unsigned-release,inspect/check18default-off ports+ordinary preview and stop AVD before final world checkpoint. Continue subsequent dependency-ready plans after a real safe handoff;no final just because a commit exists.
+
+Fixture failures retained:invalid synthetic honey key,then missing native Origin;both corrected without weakening server validation. Premature instrumentation before ready retained FAIL;actual ready run11PASS. First WebView timeout retained,not yet diagnosed conclusively;new driver captures the exact failed stage/own UI and honors aria-disabled. Current62records/nine frozen indices (old8+creator392files) remain immutable. Never rerun helpers into catalog-v1/native-v1/TLS;world work only world-v1/newunique roots. Owner .idea/ and infra/botkeep-ca.pem unread/unstaged. Physical USB0,Apple/owner disclosures/final art/staging/release gates remain. No public/store/distribution.
+
+## Earlier checkpoints — historical
+
 # N06-07 creator partial checkpoint;continuous execution — 2026-11-08
 
 Feature a0ec8ab,refinement962304c,contact/hem059d0d5. Actual95governance/425unit before final geometry fix,38final scene,14browser,265security,9API/socket,strict45↔46schema/projection rollback,10Android instrumentation and native creator UI PASS. Full integration736/738pass;two stale migration assertions corrected and24cases rerun PASS,not a full738rerun. Normal DEBUG APK b862615fdede14bf632e367b13238ed236e617c722fc2800f584a2aedca4ed12 (19exact assets) restored;normal3bundle/5preview/16default-off checks PASS. Initial default-off driver lacked confirmation inputs;FAIL retained and corrected driver reran PASS. Own AVD STOPPED;HTTPS/schema/DB cleanup confirmed.
