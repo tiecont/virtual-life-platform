@@ -1,7 +1,7 @@
 {
   "schema_version": "phase2-state-1.0",
   "phase_id": "LAN-L02",
-  "last_updated": "2026-11-08T17:53:12.165959+00:00",
+  "last_updated": "2026-11-08T18:31:19.088325+00:00",
   "release_status": "NOT_REQUESTED",
   "tasks": {
     "N15-01": {
@@ -25,20 +25,22 @@
       "next_action": "Reserve N15-03:implement the original default-off Lodge world and roomId-bound consented table lobby with existing room/safety/travel owners;verify caps,races,stale membership/block/disabled and browser keyboard/mobile states. No game starts before durable journal and gated concrete mode tasks."
     },
     "N15-03": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "VERIFIED",
+      "owner": "Codex /root",
+      "branch": "codex/lantern-lodge-foundation",
+      "evidence_refs": [
+        "n15-03-room-bound-lobby-v1-2026-11-09"
+      ],
       "blocker": null,
-      "next_action": "packages/lantern-lodge-world original scene; Table lobby with join/ready/spectate options"
+      "next_action": "Continue N15-04 already reserved:implement encrypted durable claims/receipts and keyless truthful-abort recovery;run real DB fault/restore/migration compatibility checks. N15-05 remains gated by N06-09."
     },
     "N15-04": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
+      "status": "IN_PROGRESS",
+      "owner": "Codex /root",
+      "branch": "codex/lantern-lodge-foundation",
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Additive game migrations; Encrypted match state and unique receipts"
+      "next_action": "Prepare isolated encrypted journal files while N15-03 full regression finishes. Do not add migration until its running 46-migration suite completes. Then implement durable claims/receipts/recovery with real DB fault tests; no production activation or mode dealing."
     },
     "N15-05": {
       "status": "TODO",

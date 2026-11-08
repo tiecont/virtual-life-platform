@@ -1,6 +1,6 @@
 # ADR 0138 — Visit-bound Lantern Lodge lobby
 
-Status: accepted for local lobby foundation; N15-03 verification pending.
+Status: accepted and N15-03 VERIFIED for the local lobby foundation; see source-bound acceptance audit.
 
 One default-off original Lodge world consumes existing WorldRegistry, RoomAuthority, safety, chat and travel. Room capacity is eight. One table per exact room, mode caps six/six/eight and minimums two/three/four. Room seating never grants game consent. Installation, world enablement and lobby activation are independent; production refuses local controls. Existing catalog and export shapes remain unchanged when off.
 

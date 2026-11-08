@@ -606,6 +606,517 @@
         "Initial TS2589 build failure is retained as a tool-observed summary;initial test import failure retained as an actual log. Corrected links/types and final committed-source checks pass.",
         "Phase1 state/evidence/Mxx and first Phase2record/frozen proof remain unchanged;physical/art/Apple/owner/public-release gates unchanged."
       ]
+    },
+    {
+      "id": "n15-03-room-bound-lobby-v1-2026-11-09",
+      "taskId": "N15-03",
+      "sourceRevision": "df502c6878d928e349ddaf67ed83035935a45619",
+      "environment": "CachyOS Linux/Node26.9.0/pnpm11.28.5/PostgreSQL17.7/Socket.IO/Chromium desktop+mobile emulation;46 additive migrations",
+      "executedAt": "2026-11-08T18:31:19.088325+00:00",
+      "commands": [
+        {
+          "command": "pnpm architecture:check",
+          "argv": [
+            "pnpm",
+            "architecture:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:07:10.970Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/architecture-candidate.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:07:12.891Z",
+          "sha256": "b2a5200293c48866f588a58ad91465f9ccf1d52ee2a1bb3a055d9f48e247bbce"
+        },
+        {
+          "command": "pnpm architecture:check",
+          "argv": [
+            "pnpm",
+            "architecture:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:17:42.010Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/architecture-source.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:17:44.355Z",
+          "sha256": "b2a5200293c48866f588a58ad91465f9ccf1d52ee2a1bb3a055d9f48e247bbce"
+        },
+        {
+          "command": "pnpm assets:check",
+          "argv": [
+            "pnpm",
+            "assets:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:10:59.256Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/assets-candidate.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:11:00.094Z",
+          "sha256": "8e5b6a03a621100bb0d856a348315435bf014b2531b757a8c388e3711e068d1c"
+        },
+        {
+          "command": "pnpm assets:check",
+          "argv": [
+            "pnpm",
+            "assets:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:17:48.452Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/assets-source.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:17:49.778Z",
+          "sha256": "1ca5c4e70642a95ec53c22b782de232124a67cc907950fe33014e04e5b041e70"
+        },
+        {
+          "command": "node scripts/run-browser-tests.mjs tests/e2e/lodge-lobby.spec.ts",
+          "argv": [
+            "node",
+            "scripts/run-browser-tests.mjs",
+            "tests/e2e/lodge-lobby.spec.ts"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 143,
+          "startedAt": "2026-11-08T18:07:22.921Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/browser-candidate.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:09:44.615Z",
+          "sha256": "5563d7793e2ac71c9dd26389dabb16b6b42878039dbc888912ce9c135cb865a2"
+        },
+        {
+          "command": "node scripts/run-browser-tests.mjs tests/e2e/lodge-lobby.spec.ts",
+          "argv": [
+            "node",
+            "scripts/run-browser-tests.mjs",
+            "tests/e2e/lodge-lobby.spec.ts"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 1,
+          "startedAt": "2026-11-08T18:09:49.694Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/browser-flow-fixed.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:10:10.542Z",
+          "sha256": "7ce19547db43876c77f438b6b9e7cee5e76b2fd9be08581fa2058af6133ca8cd"
+        },
+        {
+          "command": "node scripts/run-browser-tests.mjs tests/e2e/lodge-lobby.spec.ts",
+          "argv": [
+            "node",
+            "scripts/run-browser-tests.mjs",
+            "tests/e2e/lodge-lobby.spec.ts"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 1,
+          "startedAt": "2026-11-08T18:11:01.956Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/browser-owned-cleanup.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:11:53.002Z",
+          "sha256": "3fb01cd61b529a733795f82d5472dbe2c512389dd09dd1b80b5bec6eb5dc9bff"
+        },
+        {
+          "command": "node scripts/run-browser-tests.mjs tests/e2e/lodge-lobby.spec.ts",
+          "argv": [
+            "node",
+            "scripts/run-browser-tests.mjs",
+            "tests/e2e/lodge-lobby.spec.ts"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:14:47.010Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/browser-source.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:16:11.212Z",
+          "sha256": "5fb72f9a56c573b4c5200fd5c6a37bb62a75f4d0aa27f613e2c69d66bdad0eb7"
+        },
+        {
+          "command": "node scripts/run-browser-tests.mjs tests/e2e/lodge-lobby.spec.ts",
+          "argv": [
+            "node",
+            "scripts/run-browser-tests.mjs",
+            "tests/e2e/lodge-lobby.spec.ts"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:27:28.838Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/browser-spacing.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:29:12.009Z",
+          "sha256": "9a4d8640c08cbcc6222ae890bc1f324233876fd4f4452c54f791d15c7b302674"
+        },
+        {
+          "command": "node scripts/run-browser-tests.mjs tests/e2e/lodge-lobby.spec.ts",
+          "argv": [
+            "node",
+            "scripts/run-browser-tests.mjs",
+            "tests/e2e/lodge-lobby.spec.ts"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:17:07.994Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/browser-visual-source.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:19:03.077Z",
+          "sha256": "2ad206c2ef7f3b069b5d79d9744c08d5464de80d994ba6e9d8fc2c2d5c860522"
+        },
+        {
+          "command": "pnpm build",
+          "argv": [
+            "pnpm",
+            "build"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:06:36.396Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/build-candidate.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:07:22.877Z",
+          "sha256": "95177cacca96d93bf334efb6b16de7f8c6f54f086dc75531d681a9a3c1404a3d"
+        },
+        {
+          "command": "pnpm build",
+          "argv": [
+            "pnpm",
+            "build"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:14:02.817Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/build-source.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:14:46.935Z",
+          "sha256": "87f9c6ef03065af7935df4471833af9278156f507d3a91177e3d2d9023c005ee"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/portal-web build",
+          "argv": [
+            "pnpm",
+            "--filter",
+            "@virtual-city/portal-web",
+            "build"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:27:07.251Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/build-spacing.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:27:28.794Z",
+          "sha256": "61ac3f08084bb5d4343af4f4bc64121da96d55d948d5ec5fc99e43788c177ae1"
+        },
+        {
+          "command": "pnpm ci:check",
+          "argv": [
+            "pnpm",
+            "ci:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:17:44.434Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/ci-source.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:17:46.795Z",
+          "sha256": "8c490a12fe7297c5cb7f4f6895069b19ba497a8e78849e9f83b000e141c50827"
+        },
+        {
+          "command": "pnpm test:client-boundaries",
+          "argv": [
+            "pnpm",
+            "test:client-boundaries"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:10:58.342Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/client-candidate.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:10:59.218Z",
+          "sha256": "5dddf77beed2cf76a8519854bcd49a046bd95cb42675c0f2c8a597d2ffccf077"
+        },
+        {
+          "command": "pnpm test:client-boundaries",
+          "argv": [
+            "pnpm",
+            "test:client-boundaries"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:17:46.850Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/client-source.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:17:48.381Z",
+          "sha256": "5dddf77beed2cf76a8519854bcd49a046bd95cb42675c0f2c8a597d2ffccf077"
+        },
+        {
+          "command": "pnpm exec tsc -p tests/games/tsconfig.json",
+          "argv": [
+            "pnpm",
+            "exec",
+            "tsc",
+            "-p",
+            "tests/games/tsconfig.json"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:04:49.302Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/games-types-fixed.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:04:54.801Z",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "pnpm exec tsc -p tests/games/tsconfig.json",
+          "argv": [
+            "pnpm",
+            "exec",
+            "tsc",
+            "-p",
+            "tests/games/tsconfig.json"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 2,
+          "startedAt": "2026-11-08T18:03:37.596Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/games-types.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:03:43.003Z",
+          "sha256": "ff942140e5d1cdde8a832764d6108a06670cf0abbcb47971c0624993f257ce25"
+        },
+        {
+          "command": "pnpm ci:check",
+          "argv": [
+            "pnpm",
+            "ci:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:10:56.997Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/guards-candidate.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:10:58.302Z",
+          "sha256": "8c490a12fe7297c5cb7f4f6895069b19ba497a8e78849e9f83b000e141c50827"
+        },
+        {
+          "command": "pnpm test:integration",
+          "argv": [
+            "pnpm",
+            "test:integration"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:08:08.046Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/integration-candidate.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:23:46.725Z",
+          "sha256": "e28f8830eaf9ecc1c1c6278b5cea081da489601c1185571510611f8aa9cb4b04"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:06:57.296Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/lint-candidate.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:07:10.933Z",
+          "sha256": "7d5c546390f8ba62f86054364479f77e059e796203dcaf1355bed15984bc79df"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:11:24.880Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/lint-final-candidate.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:11:43.048Z",
+          "sha256": "7d5c546390f8ba62f86054364479f77e059e796203dcaf1355bed15984bc79df"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:17:21.098Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/lint-source.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:17:41.941Z",
+          "sha256": "7d5c546390f8ba62f86054364479f77e059e796203dcaf1355bed15984bc79df"
+        },
+        {
+          "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/games/table-lobby.integration.test.ts",
+          "argv": [
+            "node",
+            "scripts/with-test-db.mjs",
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "integration",
+            "tests/games/table-lobby.integration.test.ts"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:04:40.747Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/lobby-tests-fixture-fixed.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:04:49.259Z",
+          "sha256": "f92fbd4af65efa0703ee1efc232e9859e666ec7a06fe6ca0e351e92a0910fda9"
+        },
+        {
+          "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/games/table-lobby.integration.test.ts",
+          "argv": [
+            "node",
+            "scripts/with-test-db.mjs",
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "integration",
+            "tests/games/table-lobby.integration.test.ts"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 1,
+          "startedAt": "2026-11-08T18:03:16.865Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/lobby-tests.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:04:11.123Z",
+          "sha256": "56ad4b14cfe01c4a4357680183363619d2f4a2941b87f5017984663e56d6c36e"
+        },
+        {
+          "command": "node scripts/verify-game-plan.mjs",
+          "argv": [
+            "node",
+            "scripts/verify-game-plan.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:17:49.816Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/plan-source.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:17:50.002Z",
+          "sha256": "00700a4d01bd942ff1b8b5d8e60e2aadf8e260a5358678aff907def0600a3a80"
+        },
+        {
+          "command": "pnpm typecheck",
+          "argv": [
+            "pnpm",
+            "typecheck"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:07:31.183Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/typecheck-candidate.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:09:08.144Z",
+          "sha256": "7eef6b647176409562fc1168fbce5ea8295b83a7dc8b56a69200020f6d47e7dd"
+        },
+        {
+          "command": "pnpm typecheck",
+          "argv": [
+            "pnpm",
+            "typecheck"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:16:24.400Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/typecheck-source.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:17:21.045Z",
+          "sha256": "7981f45a7cfa02937dda3227b52957044861fb48126114d62409a2928e654e6d"
+        },
+        {
+          "command": "pnpm test",
+          "argv": [
+            "pnpm",
+            "test"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:09:08.218Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/unit-candidate.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:10:56.948Z",
+          "sha256": "01b164e9f35540353aa1e88234c82baf2d738f05d7867c4e4296be116fdab961"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/portal-web typecheck",
+          "argv": [
+            "pnpm",
+            "--filter",
+            "@virtual-city/portal-web",
+            "typecheck"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T18:03:32.349Z",
+          "log": "artifacts/lantern-lodge/n15-03/lobby-v1/web-types.log",
+          "signal": null,
+          "endedAt": "2026-11-08T18:03:37.540Z",
+          "sha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92"
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "docs/plans/LANTERN-LODGE-PHASE-2/audit/N15-03-LOBBY-ACCEPTANCE.json",
+          "sha256": "23190f76a2d0bd27d25cf5d023366cc62bd28410913a3e9af3fa39d0f064bcff",
+          "access": "repository",
+          "retention": "Git tracked source-bound summary"
+        },
+        {
+          "ref": "docs/plans/LANTERN-LODGE-PHASE-2/audit/N15-03-LOBBY-REVIEW.md",
+          "sha256": "73c2daa12893ecc83f756ef62d2278dc7abcb5b473564bbe11b28fe766607152",
+          "access": "repository",
+          "retention": "Git tracked source-bound summary"
+        },
+        {
+          "ref": "artifacts/lantern-lodge/n15-03/lobby-v1/source-attestation.json",
+          "sha256": "2e38435cb6c2e05cd7fef9d25b6cab61559a07e5c44d3473bb8085483cbde401",
+          "access": "private",
+          "retention": "Private local evidence;archive before host cleanup"
+        },
+        {
+          "ref": "artifacts/lantern-lodge/n15-03/lobby-v1/raw-index-v1.json",
+          "sha256": "2b2a247b4a5e2c4333c1b7b5c97d3290cc27adeeb49b4e4d3b3d4b2cede7f1b1",
+          "access": "private",
+          "retention": "Private local evidence;archive before host cleanup"
+        }
+      ],
+      "acceptance_met": true,
+      "scenarios": [
+        {
+          "name": "Actual eight-person room and six/six/eight table cap races,one-account concurrent opens,strict consent/exact membership",
+          "outcome": "PASS"
+        },
+        {
+          "name": "Block/safety/disabled/stale generation/travel/restart; delayed safety read does not hold RoomService queue",
+          "outcome": "PASS"
+        },
+        {
+          "name": "Six desktop/mobile browser scenarios,held real ACK,actual periodic snapshot,keyboard/touch/text200 and private/full states",
+          "outcome": "PASS"
+        },
+        {
+          "name": "751integration/463unit/95governance,full types/build/lint/CI/architecture/assets/client boundaries",
+          "outcome": "PASS"
+        }
+      ],
+      "limitations": [
+        "Ephemeral waiting consent only; restart withdraws it. No dealing, concrete rules, durable match claim or journal accepted by N15-03.",
+        "Browser mobile is Chromium emulation, not physical Android or iOS evidence. Shared 3D scene is technical art; final groom/material/lighting/performance and human pilots unqualified.",
+        "Failures/cancellation/owned-port cleanup retained. Original first modal-failure transient screenshot was runner-cleaned before private copy; no preservation claim for that image. Later failure trace/screenshots retained.",
+        "Four new unindexed wrapper captures were relocated from the prior task directory byte-for-byte; all69 previously frozen Phase2 raw files verified unchanged.",
+        "No public/store/distribution/production activation; spectators and all game starts remain closed. Phase1 ledgers and earlier evidence remain unchanged."
+      ]
     }
   ]
 }

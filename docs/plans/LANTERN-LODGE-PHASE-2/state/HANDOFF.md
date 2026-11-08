@@ -1,3 +1,19 @@
+# N15-03 VERIFIED — local original Lodge and consent lobby — 2026-11-09
+
+Source40c57e2/23c7104/df502c6;751integration/463unit/95governance/6browser PASS. Full types/build/lint/CI/architecture/assets/client boundaries PASS. Actual periodic-resync withdrawal bug fixed; failures retained. Three Phase2records;69 prior frozen raw files and exact Phase1state/evidence unchanged. No playable mode, durable journal, native game, final art or release acceptance.
+
+**Next exact action:** Continue N15-04 already reserved. Isolated crypto draft has2unit checks PASS, but journal code has not been compiled/tested and no SQL migration added yet. Implement actual Room/Lobby authority adapter, additive journal schema, encrypted state+seed, durable unique claims/receipts, keyless truthful-abort recovery and actual DB fault/backup/compatibility evidence. No public mode starts. N15-05/N16 remain gated by upstreamN06-09. Continue without questions.
+
+## Earlier checkpoints — historical
+
+# N15-03 IN_PROGRESS — default-off Lodge consent lobby — 2026-11-09
+
+N15-02 acceptance committed9c843c6. New original scene, strict lobby DTOs, fenced RoomService lease, ephemeral consent table service and shared browser controls implemented. Initial focused backend10/10 PASS; full integration/typecheck/unit/build/browser work in progress. Browser fixture modal-flow failure/cancel and owned port cleanup retained; do not infer acceptance yet. No game starts, durable claims or gameplay rules activated. Phase1 ledger stays read-only.
+
+**Next exact action:** Finish keyboard/mobile empty/full/blocked browser flows, fresh full checks and source-bound acceptance for N15-03;then reserve N15-04 encrypted journal and durable active-match claims. Continue without questions. N15-05 remains gated by N06-09;physical/human/store/public gates unchanged.
+
+## Earlier checkpoints — historical
+
 # N15-02 VERIFIED — pure GameSession foundation only — 2026-11-09
 
 Source0d3e801;30focused/461unit/95governance,full typecheck/build/lint/CI/architecture/pure+client boundaries/assets/plan freeze PASS.21workspaces with one new pure core;no actual game mode registered. Initial type/import failures retained. Two Phase2records;first record/15frozen raw files and exact Phase1state/evidence preserved. No SQL/API/world/UI/native-game/runtime or release claim.
