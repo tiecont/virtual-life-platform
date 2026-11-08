@@ -1,3 +1,9 @@
+# ADR0129 continuation: controlled procedural loading/heap — 2026-11-08
+
+Keep original renderer/authority/budgets. [Loading protocol](../../tests/renderer-workload/LOADING-PROFILE-v1.json) committed before measurement:separate cold-context/HTTP-cache vs warm reload,10pairs/tier/profile,nearest-rank p75,external GC with consistent active baseline. Browser comparison does not qualify native process starts or final-art wait/catalog. [Actual loading exceeds limits;heap passes](../plans/platform-vnext/audit/N06-11-LOADING-CHECKPOINT.json);retain failures and profile for optimization comparison.
+
+## Earlier checkpoints — historical
+
 # ADR0129 continuation: procedural serving anchors — 2026-11-08
 
 Existing3D pipeline/authority decision retained. [Serving-anchor review](../design/vnext/animals-3d/SERVE-ANCHORS-REVISION-1.md):one opaque prop,original skinned streams preserved,no new texture/bone/server outcome. Scope remains technical;no final-art/media/license approval. [Qualification](../plans/platform-vnext/audit/N06-11-SERVE-CHECKPOINT.json).

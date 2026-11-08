@@ -1,3 +1,9 @@
+# Loading observations and remaining3D/native gates — 2026-11-08
+
+[Current blockers](../plans/platform-vnext/state/BLOCKERS.md):controlled Chromium all cold/Balanced warm loading exceed5000ms;heap passes in its bounded synthetic scope. N06-11 remains IN_PROGRESS for optimization/final graphics/native/physical. N11 owner disclosure/retention,Apple access and Phase2 gates unchanged.
+
+## Earlier checkpoints — historical
+
 # Remaining3D/native release gates — 2026-11-08
 
 [Current blockers](../plans/platform-vnext/state/BLOCKERS.md):N06 serve anchors qualify a bounded technical slice;final graphics/loading/heap/physical and N11 disclosure/owner/public/Play plus N14 Apple access remain open.

@@ -1,3 +1,9 @@
+# N06-11 observed loading failures and remaining gates — 2026-11-08
+
+[Controlled loading/heap](../audit/N06-11-LOADING-CHECKPOINT.json),source db6f428:all cold p75 and Balanced warm p75 exceed5000ms in locked Chromium SwiftShader CPU4x/network profile;Low warm and external-GC heap growth pass. N06-11 stays IN_PROGRESS for profiling/optimization,final fur/cloth/camera/full scenes,packaged-native controlled loading/heap and physical qualification. No changed threshold,art-wait/catalog/thermal/nativeRSS/iOS/owner approval inferred. Existing normal APK unchanged/18assets match;no new native run;own AVD STOPPED. N06-07 still waits for whole N06-11. N11 provider/retention/public-owner/Play facts,N14 Mac/Xcode/iPhone and Phase2 dependency/handoff gates remain unchanged. This work is actionable optimization,not a new external blocker.
+
+## Earlier checkpoints — historical
+
 # N06-11 and N11 remaining gates — 2026-11-08
 
 Serving-anchor slice is qualified only as procedural technical art. Final fur/silhouette/cloth/material/camera/full scenes,controlled loading/heap and physical Android remain open;N06-07 waits for whole N06-11. Native account erasure/report/block have separate N11 records56/57;disclosure/retention/owner/Play/public facts and full native gameplay remain open. N14 Apple access,N04-02/N07-04 staging and public/operator gates unchanged.

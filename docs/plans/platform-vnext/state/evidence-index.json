@@ -35614,6 +35614,362 @@
         "Red tests,initial private-helper CJS failure,unconfigured workload build and premature wrong-APK verifier retained;only corrected pinned/asset-matched workload accepted.",
         "No public/store/production/distribution/media-rights or owner-art approval promoted."
       ]
+    },
+    {
+      "id": "n06-11-controlled-loading-heap-partial-2026-11-08",
+      "taskId": "N06-11",
+      "sourceRevision": "db6f428c74193f07e46710672c9f202b2215484b",
+      "environment": "CachyOS Linux7.2.9-2;Node26.9.0/pnpm11.28.5;Chromium156.0.8078.4/ANGLE SwiftShader;HTTPgzip controlled network/CPU;desktop1280x720 DPR1 and landscape844x390 DPR2",
+      "executedAt": "2026-11-08T12:05:36.429Z",
+      "commands": [
+        {
+          "command": "node --test tests/governance/scene3d-loading.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/scene3d-loading.test.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T11:45:53.081Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/policy.log",
+          "signal": null,
+          "endedAt": "2026-11-08T11:45:53.190Z",
+          "sha256": "e44ec61c107d0462fc2f246a44da1c7c8336c209cf7a211ab27346ce71f55a6c"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 1,
+          "startedAt": "2026-11-08T11:45:53.236Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/lint.log",
+          "signal": null,
+          "endedAt": "2026-11-08T11:46:04.936Z",
+          "sha256": "b14f35abf6b1bb1ed2b5a0a7b7f6218f10233094c38083711de47673686b0f32"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T11:46:22.024Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/lint-fixed.log",
+          "signal": null,
+          "endedAt": "2026-11-08T11:46:31.712Z",
+          "sha256": "73755aea120d30d73ce228feb6b7885cb77b52d05361841d84919e5f19a79c8a"
+        },
+        {
+          "command": "pnpm mobile:build:dev",
+          "argv": [
+            "pnpm",
+            "mobile:build:dev"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T11:46:31.757Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/build-workload.log",
+          "signal": null,
+          "endedAt": "2026-11-08T11:46:47.690Z",
+          "sha256": "e0f00659d470540723fc4da34df60b3392dd27415879f95b5ae289d32c2c259f"
+        },
+        {
+          "command": "pnpm test:scene3d-loading",
+          "argv": [
+            "pnpm",
+            "test:scene3d-loading"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 1,
+          "startedAt": "2026-11-08T11:47:00.524Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/controlled-loading.log",
+          "signal": null,
+          "endedAt": "2026-11-08T12:01:06.531Z",
+          "sha256": "c3391850618bdeeb98417081ce5de83372bea8c0cdfdacfd9cf735da25e05a7d"
+        },
+        {
+          "command": "node artifacts/vnext/n06-11/loading-v1/archive-workload.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-11/loading-v1/archive-workload.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T12:01:25.036Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/archive-workload.log",
+          "signal": null,
+          "endedAt": "2026-11-08T12:01:25.114Z",
+          "sha256": "d0ae859cce7e4ac10e91bab65059bb371f16eb25f5dd550db22c61cbef7e633d"
+        },
+        {
+          "command": "pnpm test",
+          "argv": [
+            "pnpm",
+            "test"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T12:01:25.163Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/unit-governance.log",
+          "signal": null,
+          "endedAt": "2026-11-08T12:02:01.504Z",
+          "sha256": "7975651224fada2bfdb3ca1727c823adeee8443342226ccb360b24582e43b5b5"
+        },
+        {
+          "command": "pnpm typecheck",
+          "argv": [
+            "pnpm",
+            "typecheck"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T12:02:01.559Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/typecheck.log",
+          "signal": null,
+          "endedAt": "2026-11-08T12:03:02.288Z",
+          "sha256": "2c7258b4f80d778185fecb9ca21c5a4cea2b6e62e52e0d05710bcb4a7b30169c"
+        },
+        {
+          "command": "pnpm build",
+          "argv": [
+            "pnpm",
+            "build"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T12:03:02.346Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/full-build.log",
+          "signal": null,
+          "endedAt": "2026-11-08T12:03:47.610Z",
+          "sha256": "ed0c678a95b14847b6bb1f2787f2b11f9c72b240fd058dec9139bd7db7472ff2"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T12:03:47.654Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/lint-final.log",
+          "signal": null,
+          "endedAt": "2026-11-08T12:03:58.254Z",
+          "sha256": "73755aea120d30d73ce228feb6b7885cb77b52d05361841d84919e5f19a79c8a"
+        },
+        {
+          "command": "pnpm ci:check",
+          "argv": [
+            "pnpm",
+            "ci:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T12:03:58.300Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/ci.log",
+          "signal": null,
+          "endedAt": "2026-11-08T12:03:59.507Z",
+          "sha256": "a7e9b16f6a387bb03df3d49761911d6dd854a9dde109f3ff37652afb06682644"
+        },
+        {
+          "command": "pnpm architecture:check",
+          "argv": [
+            "pnpm",
+            "architecture:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T12:03:59.549Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/architecture.log",
+          "signal": null,
+          "endedAt": "2026-11-08T12:04:00.716Z",
+          "sha256": "ad25abc90eea8e2e299c83ffbc7123edd32afae2d9147da01484722a05b58d5e"
+        },
+        {
+          "command": "pnpm assets:check",
+          "argv": [
+            "pnpm",
+            "assets:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T12:04:00.760Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/assets.log",
+          "signal": null,
+          "endedAt": "2026-11-08T12:04:01.627Z",
+          "sha256": "81f4bba7027b6f572ccaed7fe7e4b1a8b0be52b732b23c7ffd06ad4b1004e6ca"
+        },
+        {
+          "command": "pnpm test:client-boundaries",
+          "argv": [
+            "pnpm",
+            "test:client-boundaries"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T12:04:01.661Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/boundaries.log",
+          "signal": null,
+          "endedAt": "2026-11-08T12:04:02.456Z",
+          "sha256": "d2856d790b3e84d904acea4e599477c7d973202d8c7afd943d3d875e945ebc86"
+        },
+        {
+          "command": "pnpm mobile:bundle:smoke",
+          "argv": [
+            "pnpm",
+            "mobile:bundle:smoke"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T12:04:02.504Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/normal-bundle.log",
+          "signal": null,
+          "endedAt": "2026-11-08T12:04:06.971Z",
+          "sha256": "ebc9e5f0fbb55d8e4dd20f5348af4679e9cb513a064403f9d6c635ac9800ba43"
+        },
+        {
+          "command": "python3 artifacts/vnext/n06-11/loading-v1/normal-artifact.py",
+          "argv": [
+            "python3",
+            "artifacts/vnext/n06-11/loading-v1/normal-artifact.py"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T12:04:07.018Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/normal-artifact.log",
+          "signal": null,
+          "endedAt": "2026-11-08T12:04:07.208Z",
+          "sha256": "0c33e09953a269bd6b606a59adb6940abab518f91d425c9f95c071df61ac1bbc"
+        },
+        {
+          "command": "pnpm mobile:emulator:status",
+          "argv": [
+            "pnpm",
+            "mobile:emulator:status"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T12:04:07.258Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/emulator-status.log",
+          "signal": null,
+          "endedAt": "2026-11-08T12:04:07.747Z",
+          "sha256": "aa9f38fa071f58b291e0b319fa8eccffcbb78d55364b60b0f5ae3c9936b70cd0"
+        },
+        {
+          "command": "node artifacts/vnext/n06-11/loading-v1/attest.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-11/loading-v1/attest.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T12:04:07.787Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/preservation.log",
+          "signal": null,
+          "endedAt": "2026-11-08T12:04:10.518Z",
+          "sha256": "9b8db7228e468eeb4b8d56b06a65f0f947460542d3ad0829e3726aca6d9e8b69"
+        },
+        {
+          "command": "node artifacts/vnext/n06-11/loading-v1/copy-checks.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-11/loading-v1/copy-checks.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T12:04:31.206Z",
+          "log": "artifacts/vnext/n06-11/loading-v1/copy-checks.log",
+          "signal": null,
+          "endedAt": "2026-11-08T12:04:31.242Z",
+          "sha256": "1552c907f7250a56912639324f41a7aca989a17d651942f35dc9115fc5eface0"
+        },
+        {
+          "command": "node docs/plans/platform-vnext/tools/validate-plan.mjs",
+          "exitCode": 1,
+          "purpose": "Recorded from actual tool output before correcting pack-relative documentation links; not a replay or fabricated successful run",
+          "log": "artifacts/vnext/n06-11/loading-plan-link-failure.json",
+          "sha256": "356d01e1f3aa4d5d390ed2fc9676766b6f2ad80719d46400323d2153ac85f360"
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "docs/plans/platform-vnext/audit/N06-11-LOADING-CHECKPOINT.json",
+          "sha256": "e930b0e804195a7888e1ab86dfe2ed5b899b31ceabc312503aa4cbe13cc01c9b",
+          "access": "sanitized-public",
+          "retention": "Repository history"
+        },
+        {
+          "ref": "artifacts/vnext/n06-11/loading-v1/raw-index-v1.json",
+          "sha256": "634e0cc381d93a64e755ca8611268dfc03fd4db7071989ebb3ed294ece776523",
+          "access": "private",
+          "retention": "Private local evidence; archive before host cleanup"
+        },
+        {
+          "ref": "artifacts/vnext/n06-11/loading-v1/browser-0970d5d8/facts.json",
+          "sha256": "a6db708d47089806edb66dabfbc44f0f243e5d341751003cdc5198679f7d831c",
+          "access": "private",
+          "retention": "Private local evidence; archive before host cleanup"
+        },
+        {
+          "ref": "artifacts/vnext/n06-11/loading-v1/source-attestation.json",
+          "sha256": "c5e6c428d95a6a03ebf42bc846081d9ee08fd61409da5c1456ebca1d4df2eff1",
+          "access": "private",
+          "retention": "Private local evidence; archive before host cleanup"
+        },
+        {
+          "ref": "artifacts/vnext/n06-11/loading-v1/normal-artifact.json",
+          "sha256": "60079ecbfc59a0f90906c2f82c44b4564b212c6f4bb3ce82b4d48814c381f27a",
+          "access": "private",
+          "retention": "Private local evidence; archive before host cleanup"
+        },
+        {
+          "ref": "artifacts/vnext/n06-11/loading-plan-link-failure.json",
+          "sha256": "356d01e1f3aa4d5d390ed2fc9676766b6f2ad80719d46400323d2153ac85f360",
+          "access": "private",
+          "retention": "Private local tool-output record;archive before host cleanup"
+        }
+      ],
+      "acceptance_met": false,
+      "scenarios": [
+        {
+          "name": "80 controlled initial-quality cold/warm samples with actual cache evidence and retained p75",
+          "outcome": "PASS"
+        },
+        {
+          "name": "Original5000ms loading comparison,all cold and Balanced warm exceed",
+          "outcome": "FAIL"
+        },
+        {
+          "name": "40 external-GC active recreates with zero-lease/canvas teardown and original heap growth rule",
+          "outcome": "PASS"
+        },
+        {
+          "name": "95governance/400unit/types/build/lint/CI/assets/boundaries and normal3browser/18exact APK assets",
+          "outcome": "PASS"
+        },
+        {
+          "name": "Packaged Android controlled loading/heap,physical30minute and final art/catalog wait",
+          "outcome": "NOT_RUN"
+        }
+      ],
+      "limitations": [
+        "Whole N06-11 remains IN_PROGRESS. Valid loading observations exceed5000ms for all cold groups and both Balanced warm groups; no threshold/profile change or discarded samples.",
+        "Chromium SwiftShader with controlled150ms/200000Bps download/CPU4x; cold means fresh context plus cleared HTTP cache,not cold OS/browser/GPU process. Warm cache verified on every pair.",
+        "Heap usedSize after external GC passes max(16MiB,20%) at consistent active20actor baseline; not driver/native RSS,authenticated20visits or physical30minute/thermal/battery evidence.",
+        "Procedural geometry has no separately downloaded final art;1500ms art wait and8/24MiB starter catalog remain NOT_QUALIFIED. No final art/owner approval or High-tier loading qualification.",
+        "Developer inspected actual desktop/landscape Balanced screenshots;technical sandbox/crowded synthetic cats and sparse groom remain below final visual target. Benchmark DOM is not polished product UI acceptance.",
+        "No production model/backend/contracts/native custody/lock/SQL changes. Integration/security/native/AVD execution not rerun for this harness-only slice;N11 record57 and serve record58 remain source-bound historical results.",
+        "Normal mobile output restored;existing normal DEBUG APK unchanged and18exact assets/3browser bundle cases PASS. No APK installation, native execution, new distribution or Apple qualification this slice. Own AVD status STOPPED.",
+        "Initial lint failure retained then fixed;loading command exit1 is retained as observed-limit failure,not functional failure. Preparatory command labelled build-workload actually ran normal mobile:build:dev;command argv/log is authoritative. No source change during quantitative run.",
+        "No public/store/production/media rights/distribution or owner-art approval promoted. N14 remains conditional;Phase2/Mxx ledgers and existing external gates unchanged.",
+        "Initial documentation validator rejected three out-of-pack Markdown links;failure retained separately,changed to repository code paths,then actual plan validation PASS59records/76tasks."
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."
