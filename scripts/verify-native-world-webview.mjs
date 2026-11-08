@@ -11,7 +11,7 @@ const paths=JSON.parse(await readFile('artifacts/vnext/n10-02/android-native/loc
 assert(process.argv.length===2||process.argv.length===3);assert.equal(instance.serial,serial);assert.equal(instance.avdName,config.avdName);assert.equal(instance.sdk,paths.sdkRoot);
 assert.equal((await readFile('/proc/'+instance.pid+'/stat','utf8')).split(') ').at(-1).split(' ')[19],instance.startTicks);
 const argv=(await readFile('/proc/'+instance.pid+'/cmdline','utf8')).split('\0');assert(argv.includes(config.avdName)&&argv.includes(String(config.port)));
-if(mode==='auth')assert.equal(JSON.parse(await readFile('artifacts/vnext/n06-07/world-v1/tls/ready.json')).ready,true);
+if(mode==='auth'){const ready=JSON.parse(await readFile('artifacts/vnext/n06-07/world-v1/tls/ready.json'));assert.equal(ready.ready,true);assert.equal(ready.fixtureSourceSha256,createHash('sha256').update(await readFile('scripts/native-world-fixture.ts')).digest('hex'),'Fixture source changed after startup');}
 const directory=resolve('artifacts/vnext/n06-07/world-v1/webview-'+randomUUID().slice(0,8));await mkdir(directory,{mode:0o700});
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex'),sleep=ms=>new Promise(ok=>setTimeout(ok,ms));
 const sourceFacts=await avatarSourceFacts();const facts={mode,...sourceFacts,scope:'DOM-driven packaged Android creator,real Deadline/Maid rooms,travel,reconnect and safety through native custody;not focus/service/chat,physical/final-art/usability/release acceptance',startedAt:new Date().toISOString(),commands:[],scenarios:[],criticalRuntimeErrors:[],physicalDevice:false,distributed:false};
