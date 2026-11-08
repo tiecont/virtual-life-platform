@@ -1,3 +1,15 @@
+# N06-11 technical renderer spike VERIFIED;continuous execution — 2026-11-08
+
+Source d89d59bcccafc1a7bd7fb4b6326bc96e07b1654d. ADR0133 separates the technical spike from downstream integrated art/device qualification without changing budgets. Actual25focused/406unit/95governance,types/fullbuild/lint/CI/assets/architecture/boundaries,2browser studio profiles+import failure,5AVD studio,3normal bundle/5AVD preview/default-off7ports PASS.384rig samples preserved;groom/cloth intentionally refined. Required20actor Low/Balanced frame16.7/16.8ms,121/148calls,all resource checks PASS;20recreates zero leases/canvases. High184calls is desktop-only diagnostic. Normal APK9148df93…18exact assets restored/reinstalled;AVD STOPPED.
+
+All80controlled loads/40external-GC recreates retained. Every cold and both Balanced warm p75 FAIL5000ms;Low warm and heap limits pass. Earlier Low49.9ms failure/ABBA remain unchanged. Technical assets are not final art or owner approval. Separate native-process/cache/GC,final catalog,full scenes and physical30minute/thermal/battery remain open. USB availability0;N11 owner facts,N14 missing Apple resources,N04/N07 staging gates persist.61records;43VERIFIED/2BLOCKED_EXTERNAL/30TODO/1IN_PROGRESS.60prior records/49immutable files/7prior frozen indices preserved;new frozen344files SHA0e08758fd2de301bac29ef976b01cc47df9114fe2ad76e94102ef0c180dc8df8. Mxx/Phase2/distribution/release/module activation unchanged.
+
+**Next exact action:** Reserve N06-07 immediately:implement shared versioned modular animal catalog/creator with authoritative Save,strict part/species/entitlement validation,v1/N-1 projection and account/retry safety;then integrate Deadline/Maid and N06-09. Preserve loading failures and separate physical/N11/Apple/staging/Phase2 gates. Continue across checkpoints under owner instruction.
+
+Owner explicitly requires continued execution through all available plan work;do not end at a review checkpoint. Never label an external gate complete without evidence. Current audit: `docs/plans/platform-vnext/audit/N06-11-SPIKE-CHECKPOINT.json`;art review: `docs/design/vnext/animals-3d/GROOM-AND-CLOTH-REVIEW-2.md`.
+
+## Earlier checkpoints — historical
+
 # N06-11 cached-face construction partial verification — 2026-11-08
 
 Source2b4c070:skip discarded geometry on cached faces,192exact visual-data snapshots PASS.95governance/401unit/types/build/lint/CI/assets/boundaries,corrected browser/AVD studio and normal bundle/default-off/preview PASS. Browser80loads:all warm comparisons pass,all cold exceed;landscape Low regresses. First AVD Low49.9ms FAIL retained;4run old/new/new/old diagnostic≈16.7–16.8ms required tiers,not a replacement. Normal APK9148df93…18assets restored/reinstalled,AVD STOPPED.59prior records/49immutables/2279private refs/6frozen indices preserved;record60 partial,N06-11 IN_PROGRESS. [Audit](../plans/platform-vnext/audit/N06-11-CACHE-CHECKPOINT.json). Next visible groom/cloth/silhouette revision under unchanged budgets;loading/native/physical/owner/Apple/Phase2 gates remain.

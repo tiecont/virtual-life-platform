@@ -36781,6 +36781,944 @@
         "Backend/contracts/native custody/lock/SQL unchanged;integration/security not rerun for this model-construction slice. Prior N11/serve results remain historical source-bound evidence. Normal DEBUG APK9148df93… unchanged with18exact assets,no probes/testCA,restored/reinstalled;own AVD STOPPED.",
         "No public/store/production/distribution/media-rights/owner-art promotion. Mxx/Phase2 ledgers,runtime platform context,external staging/owner and conditional Apple gates unchanged."
       ]
+    },
+    {
+      "id": "n06-11-technical-renderer-spike-2026-11-08",
+      "taskId": "N06-11",
+      "sourceRevision": "d89d59bcccafc1a7bd7fb4b6326bc96e07b1654d",
+      "environment": "CachyOS Linux7.2.9-2;Node26.9.0/pnpm11.28.5;Three0.187.0;Chromium156.0.8078.4/ANGLE SwiftShader controlledCPU4x/network;owned Emulator37.2.13/API35/WebView124/AMD host GPU",
+      "executedAt": "2026-11-08T14:26:40.818Z",
+      "commands": [
+        {
+          "command": "pnpm architecture:check",
+          "argv": [
+            "pnpm",
+            "architecture:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:18:02.394Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/architecture.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:18:03.747Z",
+          "sha256": "a688b456cfba3d2a56a8b5562ef6fbd33043157d520c9376f719581ccbd61e68"
+        },
+        {
+          "command": "pnpm assets:check",
+          "argv": [
+            "pnpm",
+            "assets:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:18:03.803Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/assets.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:18:04.677Z",
+          "sha256": "8b5799f92ce08d6a62be14286b9bf2b1f5d41a418e98bdd766729e24a977291d"
+        },
+        {
+          "command": "python3 artifacts/vnext/n06-11/groom-v1/before-bundle.py",
+          "argv": [
+            "python3",
+            "artifacts/vnext/n06-11/groom-v1/before-bundle.py"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:14:58.909Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/before-bundle.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:14:58.977Z",
+          "sha256": "b6d1e9416e6e60e54b7ebc94eb028bb2809178eba23f87d40e1f3618c9f46b66"
+        },
+        {
+          "command": "pnpm test:client-boundaries",
+          "argv": [
+            "pnpm",
+            "test:client-boundaries"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:18:04.732Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/boundaries.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:18:05.666Z",
+          "sha256": "db09e862cf714b8020d187da1a604c518d3a72b64fad8222560d25e15f076361"
+        },
+        {
+          "command": "pnpm ci:check",
+          "argv": [
+            "pnpm",
+            "ci:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:18:00.925Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/ci.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:18:02.348Z",
+          "sha256": "a7e9b16f6a387bb03df3d49761911d6dd854a9dde109f3ff37652afb06682644"
+        },
+        {
+          "command": "node --import tsx artifacts/vnext/n06-11/groom-v1/clearance.mts",
+          "argv": [
+            "node",
+            "--import",
+            "tsx",
+            "artifacts/vnext/n06-11/groom-v1/clearance.mts"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:25:06.601Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/clearance-diagnostic.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:25:11.533Z",
+          "sha256": "67dae1156352f4df1ae5b2fc827f2b79f433e72bac3e24752481eb54f5ebc0e4"
+        },
+        {
+          "command": "node artifacts/vnext/n06-11/groom-v1/compare-bundles.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-11/groom-v1/compare-bundles.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:15:34.330Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/compare-bundles.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:15:34.400Z",
+          "sha256": "867c555b8a29093eeab1d032657bc26613625578ca256936a00e42572b30d164"
+        },
+        {
+          "command": "env VLP_LOADING_EVIDENCE_SET=groom-v1 pnpm test:scene3d-loading",
+          "argv": [
+            "env",
+            "VLP_LOADING_EVIDENCE_SET=groom-v1",
+            "pnpm",
+            "test:scene3d-loading"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 1,
+          "startedAt": "2026-11-08T13:55:51.842Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/controlled-loading.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:09:36.206Z",
+          "sha256": "2ef6b35b401aa867cdb61568f5142b629223562a26af5eec07e3f883a89138dc"
+        },
+        {
+          "command": "node artifacts/vnext/n06-11/groom-v1/copy-checks.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-11/groom-v1/copy-checks.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:24:37.517Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/copy-checks.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:24:37.627Z",
+          "sha256": "b37f4ca3ee5ce92e684ec31774e1f2404daa2c79f787b7ac7f30cd03396cbbb4"
+        },
+        {
+          "command": "pnpm mobile:emulator:start",
+          "argv": [
+            "pnpm",
+            "mobile:emulator:start"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:18:36.539Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/emulator-restart-normal.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:18:54.978Z",
+          "sha256": "eb924d7a441e6069338eb975c5e570da0006e017776c849d4841eb2989ea9efb"
+        },
+        {
+          "command": "pnpm mobile:emulator:start",
+          "argv": [
+            "pnpm",
+            "mobile:emulator:start"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:50:51.347Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/emulator-start.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:51:11.147Z",
+          "sha256": "883923fba64766ac3fa16620f8fa1f0da69bf98e8c9ed87b2b11d5d471d4b129"
+        },
+        {
+          "command": "pnpm mobile:emulator:status",
+          "argv": [
+            "pnpm",
+            "mobile:emulator:status"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:55:51.221Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/emulator-status-for-browser.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:55:51.797Z",
+          "sha256": "6f6b5c1c57879b9fd1bbbb9eb7778084926e5169885fe155674d6abe0dcd20fa"
+        },
+        {
+          "command": "pnpm mobile:emulator:status",
+          "argv": [
+            "pnpm",
+            "mobile:emulator:status"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:19:49.911Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/emulator-status.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:19:50.504Z",
+          "sha256": "a186ea1e59cdaf4d4ae84937901f2ae69631fb377c960a4ddd7bb56813b4e6b0"
+        },
+        {
+          "command": "pnpm mobile:emulator:stop",
+          "argv": [
+            "pnpm",
+            "mobile:emulator:stop"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:55:49.587Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/emulator-stop-for-browser.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:55:51.175Z",
+          "sha256": "f1bc29e8aa5eb837a5335d50b9fbf2800be284511e10e8efbf8b502fdfddbfe0"
+        },
+        {
+          "command": "pnpm mobile:emulator:stop",
+          "argv": [
+            "pnpm",
+            "mobile:emulator:stop"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:19:48.261Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/emulator-stop.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:19:49.868Z",
+          "sha256": "07a460fd77a411d1118a1a58c6ddd6357d3e3c9ae3b1e34857bc1e1db14c3596"
+        },
+        {
+          "command": "pnpm build",
+          "argv": [
+            "pnpm",
+            "build"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:17:01.851Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/full-build.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:17:49.053Z",
+          "sha256": "5e80af37f42606ffdafa10e1dd7ebd439cd58fffd1df383e37f736bf549724c8"
+        },
+        {
+          "command": "python3 scripts/inspect-native-apk.py normal --task n06-11-groom",
+          "argv": [
+            "python3",
+            "scripts/inspect-native-apk.py",
+            "normal",
+            "--task",
+            "n06-11-groom"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:18:35.655Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/inspect-normal.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:18:36.142Z",
+          "sha256": "713716c58d1ec94cd9d22006fdf513ba0df66c18163b3e1ea60c2bad6a6e7fde"
+        },
+        {
+          "command": "python3 scripts/inspect-native-apk.py release-unsigned --task n06-11-groom",
+          "argv": [
+            "python3",
+            "scripts/inspect-native-apk.py",
+            "release-unsigned",
+            "--task",
+            "n06-11-groom"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:18:36.198Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/inspect-release.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:18:36.364Z",
+          "sha256": "aaabbfc05189188afba89bf79af4696697a783b0fefb36abfa55a858e1ff7bc9"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:42:09.094Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/lint-final-code.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:42:21.206Z",
+          "sha256": "cd2d40316002ed648f74329e5a079f04c3bb98cb69755832f2536ccbc98375a9"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:17:49.101Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/lint-final.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:18:00.879Z",
+          "sha256": "cd2d40316002ed648f74329e5a079f04c3bb98cb69755832f2536ccbc98375a9"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:34:29.311Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/lint.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:34:41.352Z",
+          "sha256": "cd2d40316002ed648f74329e5a079f04c3bb98cb69755832f2536ccbc98375a9"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test",
+          "argv": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "unit",
+            "packages/scene3d/test"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:12:02.713Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/model-unit.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:12:05.479Z",
+          "sha256": "fb4f5d525db1317fc04a2d0dcc005434792e13370bcb04e48d66b238ce4e271f"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test",
+          "argv": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "unit",
+            "packages/scene3d/test"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:32:21.452Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/model-v23-final.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:32:28.281Z",
+          "sha256": "13e168ad9d761d588a4dfb11468bca34abf46c951f29e6e6854ae3a44db4c03c"
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs gradle :app:assembleDebug :app:assembleRelease",
+          "argv": [
+            "node",
+            "artifacts/vnext/n10-02/android-native/run.mjs",
+            "gradle",
+            ":app:assembleDebug",
+            ":app:assembleRelease"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:18:11.493Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/normal-apk.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:18:35.597Z",
+          "sha256": "c186ef7ca7e71792cf887d72deb9b94eae2f2d69c0f9cd4922be2fbc058e6a93"
+        },
+        {
+          "command": "pnpm mobile:bundle:smoke",
+          "argv": [
+            "pnpm",
+            "mobile:bundle:smoke"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:18:05.707Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/normal-bundle.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:18:10.309Z",
+          "sha256": "f567159bcd5b757b5ea418e0ffcce93b0a6c8133fb3a9ce8f9f15c8c80494dd3"
+        },
+        {
+          "command": "node artifacts/vnext/n06-11/groom-v1/default-off.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-11/groom-v1/default-off.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:18:55.050Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/normal-native-disabled.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:19:07.048Z",
+          "sha256": "07c630b0afe0e429dd22c3f892c3f75c311dbc21bd29c397658eb980e25c76ce"
+        },
+        {
+          "command": "pnpm mobile:emulator:smoke",
+          "argv": [
+            "pnpm",
+            "mobile:emulator:smoke"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:19:07.130Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/normal-preview.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:19:48.213Z",
+          "sha256": "91b53259642be189b9977af446e3ac8fa9e75bc83a6863cf1b40587e0bd1b0f9"
+        },
+        {
+          "command": "python3 artifacts/vnext/n06-11/groom-v1/normal-proof.py",
+          "argv": [
+            "python3",
+            "artifacts/vnext/n06-11/groom-v1/normal-proof.py"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:18:36.418Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/normal-proof.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:18:36.488Z",
+          "sha256": "0ee63403308a9260362d1bc9464ea4dc95dc978b8f0377b38e704e9041294965"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/mobile cap sync android",
+          "argv": [
+            "pnpm",
+            "--filter",
+            "@virtual-city/mobile",
+            "cap",
+            "sync",
+            "android"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:18:10.364Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/normal-sync.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:18:11.451Z",
+          "sha256": "78d858c41d41655a740bf24a840d42e8c0236d0187f63d9b8fde05899d6df14e"
+        },
+        {
+          "command": "node artifacts/vnext/n06-11/groom-v1/physical-availability.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-11/groom-v1/physical-availability.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:19:13.316Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/physical-availability.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:19:13.393Z",
+          "sha256": "f9ac6bc47300749272ae3fe9a499e9783b681f60712ac7a35548223b9f975752"
+        },
+        {
+          "command": "node artifacts/vnext/n06-11/groom-v1/attest.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-11/groom-v1/attest.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:24:28.865Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/preservation.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:24:31.936Z",
+          "sha256": "a803366949e4d4a681646c125e52a4819d6be0094b173dbc80b10c6875a7f1cc"
+        },
+        {
+          "command": "node --import tsx artifacts/vnext/n06-11/groom-v1/rig-invariance.mts",
+          "argv": [
+            "node",
+            "--import",
+            "tsx",
+            "artifacts/vnext/n06-11/groom-v1/rig-invariance.mts"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:42:07.534Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/rig-invariance.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:42:09.054Z",
+          "sha256": "3453853433b5bb09e590adfd03fad17b17a278f78332bec68d3b2e9e40f0c382"
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs gradle :app:assembleDebug",
+          "argv": [
+            "node",
+            "artifacts/vnext/n10-02/android-native/run.mjs",
+            "gradle",
+            ":app:assembleDebug"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:50:37.280Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/studio-apk.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:50:51.302Z",
+          "sha256": "bc744f626c55e7c7ffe77a63c9931a81fc08e83a49568a2cb5f8739308fe9e85"
+        },
+        {
+          "command": "pnpm mobile:emulator:scene3d",
+          "argv": [
+            "pnpm",
+            "mobile:emulator:scene3d"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:51:11.223Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/studio-avd.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:52:10.497Z",
+          "sha256": "3291133efbbe336911c33eb36747ef4aee2809504220f3d8d7e2b40cc6f1eae8"
+        },
+        {
+          "command": "pnpm test:scene3d",
+          "argv": [
+            "pnpm",
+            "test:scene3d"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:47:53.068Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/studio-browser.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:50:36.241Z",
+          "sha256": "f0f55b4335435d28fd13ea4c72ebf7c622edcb45a27fefca8206b6f1e666b0b2"
+        },
+        {
+          "command": "env VITE_VLP_SCENE3D_STUDY=1 VITE_VLP_ROOM_3D=0 pnpm mobile:build:dev",
+          "argv": [
+            "env",
+            "VITE_VLP_SCENE3D_STUDY=1",
+            "VITE_VLP_ROOM_3D=0",
+            "pnpm",
+            "mobile:build:dev"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:13:26.975Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/studio-build.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:13:43.784Z",
+          "sha256": "70f01b80aed27f586fbc1e7087747cdd33a0049449d1ac5485ce2ea39084dd1c"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/mobile cap sync android",
+          "argv": [
+            "pnpm",
+            "--filter",
+            "@virtual-city/mobile",
+            "cap",
+            "sync",
+            "android"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:50:36.283Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/studio-sync.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:50:37.235Z",
+          "sha256": "73ca6d2ad0c803988915280a806e522d3ed585c8f5c26520733a55bee3c2baa6"
+        },
+        {
+          "command": "env VITE_VLP_SCENE3D_STUDY=1 VITE_VLP_ROOM_3D=0 pnpm mobile:build:dev",
+          "argv": [
+            "env",
+            "VITE_VLP_SCENE3D_STUDY=1",
+            "VITE_VLP_ROOM_3D=0",
+            "pnpm",
+            "mobile:build:dev"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:20:36.637Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/studio-v21.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:20:52.058Z",
+          "sha256": "d38634b8beb349ecd4d4f918f2386acc13d1bd62c0c03cddffe3f0da2b72dfae"
+        },
+        {
+          "command": "env VITE_VLP_SCENE3D_STUDY=1 VITE_VLP_ROOM_3D=0 pnpm mobile:build:dev",
+          "argv": [
+            "env",
+            "VITE_VLP_SCENE3D_STUDY=1",
+            "VITE_VLP_ROOM_3D=0",
+            "pnpm",
+            "mobile:build:dev"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:32:28.334Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/studio-v23.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:32:46.719Z",
+          "sha256": "f191d8c4c8c76cd52e99e6ffc69e2ebff00fac5f1cf2c80cb5cf30f5250526c2"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test",
+          "argv": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "unit",
+            "packages/scene3d/test"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:13:24.106Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/surfaces-unit.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:13:26.909Z",
+          "sha256": "35ea492716fcb410cb834fdaf0329661c6dd5083a112b604daeb8482834fc0f3"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test",
+          "argv": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "unit",
+            "packages/scene3d/test"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:20:33.947Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/surfaces-v21.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:20:36.591Z",
+          "sha256": "4a774401fb0a392ee13b16ea0fb7c30d6ca4fe528bc8ca10122d66339e1a5643"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test",
+          "argv": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "unit",
+            "packages/scene3d/test"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 1,
+          "startedAt": "2026-11-08T13:23:57.161Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/surfaces-v22.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:24:00.246Z",
+          "sha256": "915f569d68fafda7d6228bed735bc4d348a47eceba287b6900b3d8f489bba43f"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test",
+          "argv": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "unit",
+            "packages/scene3d/test"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:27:43.030Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/surfaces-v23.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:27:49.748Z",
+          "sha256": "4a5a7cfb016c100dac360f3df30a1af1d4a6ab0bcdec9ffc7186a731f91ce2a0"
+        },
+        {
+          "command": "pnpm typecheck",
+          "argv": [
+            "pnpm",
+            "typecheck"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:16:09.113Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/typecheck.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:17:01.805Z",
+          "sha256": "9a805f60ce7c469494e20b089fc9678c9c569e3528643bdaf1d420e2063475bf"
+        },
+        {
+          "command": "pnpm test",
+          "argv": [
+            "pnpm",
+            "test"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T14:15:34.445Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/unit-governance.log",
+          "signal": null,
+          "endedAt": "2026-11-08T14:16:09.067Z",
+          "sha256": "203b501fa6e6f9a40e6079e07ac8f2b300af698af2b7ae0c85835c58fd597748"
+        },
+        {
+          "command": "node artifacts/vnext/n06-11/groom-v1/visual.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-11/groom-v1/visual.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:14:59.027Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/visual-review.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:15:28.031Z",
+          "sha256": "ce4b09aef1d9bae93496aa367f53ba232c37717b019046badf90344caf6ab2e9"
+        },
+        {
+          "command": "node artifacts/vnext/n06-11/groom-v1/visual.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-11/groom-v1/visual.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:20:52.127Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/visual-v21.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:21:20.172Z",
+          "sha256": "4d9eb5b358b9e14b16fbf4b9fbf6ea43e33e17897b114f8bbf866b7568f31d5c"
+        },
+        {
+          "command": "node artifacts/vnext/n06-11/groom-v1/visual.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-11/groom-v1/visual.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:33:56.933Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/visual-v23.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:34:29.252Z",
+          "sha256": "7aafaaace3760d5632c73bff896a636d839e565696f276bac919f393817b0ad7"
+        },
+        {
+          "command": "node artifacts/vnext/n10-02/android-native/run.mjs gradle :app:assembleDebug",
+          "argv": [
+            "node",
+            "artifacts/vnext/n10-02/android-native/run.mjs",
+            "gradle",
+            ":app:assembleDebug"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:53:31.522Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/workload-apk.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:53:47.336Z",
+          "sha256": "3dea092ec27ca412aff79a88f62178298b75af4ebf6b94c30d11f9d49f19b2f1"
+        },
+        {
+          "command": "python3 artifacts/vnext/n06-11/groom-v1/workload-assets.py",
+          "argv": [
+            "python3",
+            "artifacts/vnext/n06-11/groom-v1/workload-assets.py"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:53:47.386Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/workload-assets.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:53:47.480Z",
+          "sha256": "5f314542897b9f98d97d581e5963e2c8692d07e6bedf2fc835bbfdebf796cba6"
+        },
+        {
+          "command": "env VLP_RENDERER_EVIDENCE_SET=groom-v1 pnpm mobile:emulator:workload",
+          "argv": [
+            "env",
+            "VLP_RENDERER_EVIDENCE_SET=groom-v1",
+            "pnpm",
+            "mobile:emulator:workload"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:53:47.528Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/workload-avd.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:54:41.580Z",
+          "sha256": "3ecd0e7681d4f08a617286e01bd2deb447609978ea05f62c565610825e92af3a"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/mobile build:workload",
+          "argv": [
+            "pnpm",
+            "--filter",
+            "@virtual-city/mobile",
+            "build:workload"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:53:25.236Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/workload-build.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:53:30.360Z",
+          "sha256": "e417edb1c354d2748033903ba0945e8b6c4396ff3bfeb38da831c9d778f7eb30"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/mobile cap sync android",
+          "argv": [
+            "pnpm",
+            "--filter",
+            "@virtual-city/mobile",
+            "cap",
+            "sync",
+            "android"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T13:53:30.409Z",
+          "log": "artifacts/vnext/n06-11/groom-v1/workload-sync.log",
+          "signal": null,
+          "endedAt": "2026-11-08T13:53:31.476Z",
+          "sha256": "540cf005b86947cbff45a198cedba04c1effa3030dc6fbb8234d2f5eb9feb5ab"
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "docs/plans/platform-vnext/audit/N06-11-SPIKE-CHECKPOINT.json",
+          "sha256": "8c231738c7602132fd2e3c2eed47ecce49aed814c5179db183e8b6f59d527a5e",
+          "access": "repository",
+          "retention": "Git tracked summary"
+        },
+        {
+          "ref": "docs/design/vnext/animals-3d/GROOM-AND-CLOTH-REVIEW-2.md",
+          "sha256": "e434025b3c5faee16282d4d7dda8a9b0e7b729e7655fcb530f1a7171a31792e3",
+          "access": "repository",
+          "retention": "Git tracked summary"
+        },
+        {
+          "ref": "docs/adr/0133-renderer-spike-and-integrated-qualification.md",
+          "sha256": "ca25e8391ee04c83bed5546cdc88166181e7390dd2b78519cb85f6353b9f1faa",
+          "access": "repository",
+          "retention": "Git tracked summary"
+        },
+        {
+          "ref": "artifacts/vnext/n06-11/groom-v1/raw-index-v1.json",
+          "sha256": "0e08758fd2de301bac29ef976b01cc47df9114fe2ad76e94102ef0c180dc8df8",
+          "access": "private",
+          "retention": "Private local evidence;archive before host cleanup"
+        },
+        {
+          "ref": "artifacts/vnext/n06-11/groom-v1/source-attestation.json",
+          "sha256": "b783b11817365edb6a6c45beadaa4e060c493e597af9779e7bde8422e39f211a",
+          "access": "private",
+          "retention": "Private local evidence;archive before host cleanup"
+        },
+        {
+          "ref": "artifacts/vnext/n06-11/groom-v1/rig-invariance.json",
+          "sha256": "89494b5dd2defc15f59e3224d0c389f66bb01e9d3f18a85807a580ba5f760e99",
+          "access": "private",
+          "retention": "Private local evidence;archive before host cleanup"
+        },
+        {
+          "ref": "artifacts/vnext/n06-11/groom-v1/android-0a2566b7/facts.json",
+          "sha256": "e1fcf3ac5938fc87ef022503adec1905257da613e3b4e966039090ca58f55c33",
+          "access": "private",
+          "retention": "Private local evidence;archive before host cleanup"
+        },
+        {
+          "ref": "artifacts/vnext/n06-11/groom-v1/browser-1b302a57/facts.json",
+          "sha256": "f93e29f2e809fcda5fc06e10a432c76936f7b8581e316bf353efd6a6b65285c0",
+          "access": "private",
+          "retention": "Private local evidence;archive before host cleanup"
+        },
+        {
+          "ref": "artifacts/vnext/n06-11/groom-v1/normal-proof.json",
+          "sha256": "fb7b950cb73dd01cc49ded38b399b7b84c04ea2dccca0805d7dba201f1197e15",
+          "access": "private",
+          "retention": "Private local evidence;archive before host cleanup"
+        },
+        {
+          "ref": "artifacts/vnext/n06-11/groom-v1/physical-inventory.json",
+          "sha256": "99d2e62941d241368656993fafe27c90f3676dff74e7b58f8e302e751ece74e3",
+          "access": "private",
+          "retention": "Private local evidence;archive before host cleanup"
+        }
+      ],
+      "acceptance_met": true,
+      "scenarios": [
+        {
+          "name": "Shared authoritative snapshot/intent adapter and classic rollback",
+          "outcome": "PASS",
+          "notes": "Current renderer model retains authority contract; earlier record53 actual14browser/API+6AVD adapter cases remain source-bound historical evidence,not rerun backend claims."
+        },
+        {
+          "name": "Current browser/packaged-AVD rig,poses,camera,resize,context loss,recovery and lifecycle",
+          "outcome": "PASS",
+          "notes": "Two browser profiles+import failure;five native studio scenarios."
+        },
+        {
+          "name": "Current groom/cloth technical visual review and384 archived/current rig samples",
+          "outcome": "PASS",
+          "notes": "Technical art only;see review2,not owner/final-art approval."
+        },
+        {
+          "name": "Required Low/Balanced synthetic20actor resource/frame observations and20recreates",
+          "outcome": "PASS",
+          "notes": "Immutable applicable ceilings;High desktop-only diagnostic184calls exceeds mobile160."
+        },
+        {
+          "name": "Implemented original loading/GC protocol,all80loads/40recreates retained",
+          "outcome": "PASS",
+          "notes": "Measurement completion only;heap limits pass,loading comparison failures below remain open."
+        },
+        {
+          "name": "Original5000ms cold/all Balanced warm comparison",
+          "outcome": "FAIL",
+          "notes": "All cold and both Balanced warm exceed;no threshold/sample changes."
+        },
+        {
+          "name": "Current406unit/95governance/types/build/lint/CI/assets/architecture/boundaries and restored normal APK checks",
+          "outcome": "PASS"
+        },
+        {
+          "name": "Integrated final-art/creator/worlds/physical30minute/iOS/store qualification",
+          "outcome": "NOT_RUN",
+          "notes": "Separate downstream tasks under ADR0133;USB availability0."
+        }
+      ],
+      "limitations": [
+        "VERIFIED scope is the technical renderer spike under ADR0133;N06-09 integrated art/target-device and N10-04 physical qualification remain unmet. No final art/owner approval,production/store/distribution claim.",
+        "All cold loading and both Balanced warm groups fail the unchanged5000ms comparison. This is an open integrated qualification finding,not a waived limit. Earlier first-boot Low49.9ms failure and separate ABBA diagnostic remain immutable.",
+        "Synthetic20actors are not authenticated sessions/serverCCU. Emulator external RAF/resource accounting is not physical GPU/thermal/battery/nativeRSS qualification. Optional High184calls is not mobile-supported.",
+        "Browser context cache/GC does not qualify packaged-native process/cache/GC;final-art1500ms wait and8/24MiB catalog remain NOT_QUALIFIED.",
+        "Backend/contracts/native custody/lock/SQL unchanged;integration/security were not rerun for this renderer-only source. Earlier source-bound evidence is preserved without attributing it to d89d59b.",
+        "Initial candidate garment clearance failure retained and fixed before final tests;loading command exit1 retained. Owner files/keys/SDK/AVD userdata never archived. Normal APK restored,own AVD STOPPED,USB probe0.",
+        "N11 owner/provider/disclosure/retention facts,N14 Mac/Xcode/iPhone,N04/N07 staging and Phase2 real-handoff gates remain. N13/N14 inactive;release NOT_REQUESTED;distribution false."
+      ]
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."
