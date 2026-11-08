@@ -18,7 +18,9 @@ export function shapePartGeometry(geometry:T.BufferGeometry,parts:AvatarParts,co
   }
   if(bone>=20){if(parts.tail==='plume')point.x*=1.5;if(parts.tail==='curl'){const dy=point.y-.48,dz=point.z+.11;point.y=.48+dy*.65;point.z=-.11+dz*.55+.12*Math.sin(dy*7);}if(parts.tail==='wag')point.x+=Math.sin((point.y-.48)*5)*.07;return point;}
   if(bone===5){if(parts.head==='wide')point.x*=1.13;const muzzle=T.MathUtils.smoothstep(point.z,.10,.17)*(1-T.MathUtils.smoothstep(point.y,1.04,1.10));point.z+=muzzle*(parts.species==='dog'?.065:parts.species==='rabbit'?.018:0);if(parts.muzzle==='small')point.z-=muzzle*.025;}
-  else if(parts.body==='slender')point.x*=.84;
+  // Body shape may narrow the torso/hips,not move paws/feet away from the
+  // shared serving and floor anchors owned by the unchanged24bone rig.
+  else if(parts.body==='slender'&&bone<=3)point.x*=.84;
   return point;
  };
  for(const attribute of [geometry.getAttribute('position'),...(geometry.morphAttributes.position??[])])for(let i=0;i<attribute.count;i++){p.fromBufferAttribute(attribute,i);deform(p,indices.getX(i));attribute.setXYZ(i,p.x,p.y,p.z);}
@@ -50,7 +52,9 @@ export function packPartGeometry(input:T.BufferGeometry,recomputeNormals=false){
  const packed=mergeVertices(geometry,1e-10);geometry.dispose();for(const name of temporary)packed.deleteAttribute(name);if(recomputeNormals)packed.computeVertexNormals();packed.computeBoundingSphere();return packed;
 }
 function torsoRadius(y:number){for(let i=1;i<TORSO_PROFILE.length;i++){const [r0,y0]=TORSO_PROFILE[i-1],[r1,y1]=TORSO_PROFILE[i];if(y<=y1)return T.MathUtils.lerp(r0,r1,T.MathUtils.clamp((y-y0)/(y1-y0),0,1));}return TORSO_PROFILE.at(-1)![0];}
-export function coveredByGarment(point:T.Vector3,parts?:AvatarParts){return parts?.outfit==='knit'&&point.y>.62&&point.y<.86&&Math.abs(point.x)<.18||parts?.outfit==='overalls'&&point.y>.57&&point.y<.79&&point.z>.05&&Math.abs(point.x)<.14;}
+// Include the roots just beyond a hem:their downward tips can otherwise cross
+// the fabric even when roots directly beneath it have already been hidden.
+export function coveredByGarment(point:T.Vector3,parts?:AvatarParts){return parts?.outfit==='knit'&&point.y>.60&&point.y<.90&&Math.abs(point.x)<.20||parts?.outfit==='overalls'&&point.y>.55&&point.y<.84&&point.z>.03&&Math.abs(point.x)<.16;}
 export function addPartDetails(parts:AvatarParts,quality:'low'|'balanced'|'high',add:(geometry:T.BufferGeometry,material:T.Material,parent:T.Object3D)=>T.Mesh,bones:T.Bone[],cloth:T.Material,dark:T.Material,hair:T.Material){
  const segments=quality==='low'?8:quality==='balanced'?12:20;
  if(parts.hair==='tuft')for(let i=0;i<3;i++){const tuft=add(new T.ConeGeometry(.027-i*.004,.09-i*.008,quality==='low'?5:8),hair,bones[5]);tuft.position.set((i-1)*.031,.19+i*.004,.025);tuft.rotation.z=(1-i)*.24;}
