@@ -1,5 +1,7 @@
 # Đề xuất ADR cần phê duyệt khi implementation
 
+Current2026-11-09:N15-01 adopts the foundation design choices through repository `docs/adr/0136-lantern-lodge-scope-and-proposal-v1.md`,including shared3D ownership and immutable proposal-v1. This accepts local scope/ownership/document inputs only;runtime modes,media rights,owner art,physical pilots and release are not approved. The table below remains the imported proposal history;later implementation decisions must reference their actual ADR/evidence.
+
 | Dự kiến | Quyết định mặc định | Khi nào cần xem lại |
 |---|---|---|
 | LL-ADR-01 | One `lantern-lodge` world, một room = một bàn MVP; giữ RoomAuthority hiện hữu | Khi có số đo chứng minh nhiều bàn/room không tạo rối capacity/UX |

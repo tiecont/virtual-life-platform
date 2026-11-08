@@ -1,16 +1,16 @@
 {
   "schema_version": "phase2-state-1.0",
   "phase_id": "LAN-L02",
-  "last_updated": "2026-11-06",
+  "last_updated": "2026-11-08T17:04:07.934662+00:00",
   "release_status": "NOT_REQUESTED",
   "tasks": {
     "N15-01": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
+      "status": "IN_PROGRESS",
+      "owner": "Codex /root",
+      "branch": "codex/lantern-lodge-foundation",
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "ADR game-lodge scope/ownership; Freeze proposal rule v1 docs and original naming"
+      "next_action": "Audit current shared owners and all3rulebooks;freeze proposal v1 with explicit pending downstream rule fixtures/IP/art gates,implement verify-game-plan and run actual review/verification."
     },
     "N15-02": {
       "status": "TODO",
@@ -146,7 +146,7 @@
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "7×7 responsive board, safe tile rotation UI; Compass and remaining-turn indicators"
+      "next_action": "7\u00d77 responsive board, safe tile rotation UI; Compass and remaining-turn indicators"
     },
     "N18-04": {
       "status": "TODO",
