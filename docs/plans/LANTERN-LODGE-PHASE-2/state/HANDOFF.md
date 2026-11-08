@@ -1,3 +1,11 @@
+# N15-02 VERIFIED — pure GameSession foundation only — 2026-11-09
+
+Source0d3e801;30focused/461unit/95governance,full typecheck/build/lint/CI/architecture/pure+client boundaries/assets/plan freeze PASS.21workspaces with one new pure core;no actual game mode registered. Initial type/import failures retained. Two Phase2records;first record/15frozen raw files and exact Phase1state/evidence preserved. No SQL/API/world/UI/native-game/runtime or release claim.
+
+**Next exact action:** Reserve N15-03:implement the original default-off Lodge world and roomId-bound consented table lobby with existing room/safety/travel owners;verify caps,races,stale membership/block/disabled and browser keyboard/mobile states. No game starts before durable journal and gated concrete mode tasks. Continue across checkpoints;owner explicitly requests no questions. N06-09/N10-04 remain unverified;later wave gates unchanged.
+
+## Earlier checkpoints — historical
+
 # N15-01 VERIFIED — foundation scope/proposal only — 2026-11-09
 
 Source699dba3;ADR0136,3immutable enriched v1rulebooks and13existing owner sources reviewed. Implemented verify-game-plan actuallyPASS;lint/architecture/CI/phase-plan/upstream all0. First Phase2record;no game runtime,art rights,physical or release claim. Phase1 state/evidence remain exact72d3713 snapshots.

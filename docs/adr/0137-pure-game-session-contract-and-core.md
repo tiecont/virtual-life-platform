@@ -1,6 +1,6 @@
 # ADR0137 — versioned GameSession data and pure reducer core
 
-Status: implemented candidate;verification pending. Date:2026-11-09. Task:N15-02;proposal baseline ADR0136. No game mode is registered or exposed by this change.
+Status: accepted foundation contract/core;actual30focused/461unit and95governance,types/full build/lint/CI/static guards pass at0d3e801. Date:2026-11-09. Task:N15-02;proposal baseline ADR0136. No game mode is registered or exposed by this change. These results are not game-rule,transport/persistence,fun or final-art acceptance.
 
 Add strict schemaVersion/protocolVersion1 command/ACK and public/own/spectator DTOs to existing contracts. Match/ruleset versions remain distinct. Commands carry expected state,generation and room-source assertions;account,clock,role,target or arbitrary private fields cannot become authority through a payload. Public fields have explicit mode allowlists;own hands are per-account,and only the mist private variant admits target knowledge. Crew rejects a target field. Hidden public profiles cannot reveal identifying cosmetic parts. Spectator v1 returns only disabled status. Receipt ACKs may identify an older committed revision alongside a newer current own view;rejected ACKs contain no private view.
 

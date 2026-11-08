@@ -1,7 +1,7 @@
 {
   "schema_version": "phase2-state-1.0",
   "phase_id": "LAN-L02",
-  "last_updated": "2026-11-08T17:21:28.697067+00:00",
+  "last_updated": "2026-11-08T17:53:12.165959+00:00",
   "release_status": "NOT_REQUESTED",
   "tasks": {
     "N15-01": {
@@ -15,12 +15,14 @@
       "next_action": "Reserve N15-02;implement strict versioned GameSession DTOs and a pure deterministic core reducer interface with recipient allowlists and negative/boundary tests;do not start later game waves."
     },
     "N15-02": {
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "owner": "Codex /root",
       "branch": "codex/lantern-lodge-foundation",
-      "evidence_refs": [],
+      "evidence_refs": [
+        "n15-02-game-contract-pure-core-v1-2026-11-09"
+      ],
       "blocker": null,
-      "next_action": "Implement strict GameSession DTOs,recipient allowlists and pure deterministic core/entropy interface;actual negative contracts and source-boundary tests. Keep concrete mode reducers and runtime exposure unregistered until their gated tasks."
+      "next_action": "Reserve N15-03:implement the original default-off Lodge world and roomId-bound consented table lobby with existing room/safety/travel owners;verify caps,races,stale membership/block/disabled and browser keyboard/mobile states. No game starts before durable journal and gated concrete mode tasks."
     },
     "N15-03": {
       "status": "TODO",

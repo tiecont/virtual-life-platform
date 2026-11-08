@@ -1,0 +1,412 @@
+{
+  "taskId": "N15-02",
+  "sourceRevision": "0d3e80144117b3ddaf8d50e390a7094d0770d1cc",
+  "executedAt": "2026-11-08T17:53:12.165959+00:00",
+  "acceptance_met": true,
+  "scope": "Strict versioned GameSession DTOs,pure reducer/projection/entropy interface and boundary/negative tests only",
+  "actual": {
+    "focused": 30,
+    "unit": 461,
+    "governance": 95,
+    "workspaces": 21,
+    "fullTypecheck": 0,
+    "fullBuild": 0,
+    "lint": 0,
+    "ciContract": 0,
+    "architecture": 0,
+    "pureBoundary": 0,
+    "clientBoundaries": 0,
+    "assets": 0,
+    "registeredActualModes": 0,
+    "phase1Unchanged": true
+  },
+  "commands": [
+    {
+      "command": "pnpm build:packages",
+      "argv": [
+        "pnpm",
+        "build:packages"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:37:47.893Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/build-dto-refinements.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:37:58.540Z",
+      "sha256": "160979c9fd0498753a73abb01531238c35401ff36b421bdfbaf7262161f50a1d"
+    },
+    {
+      "command": "pnpm build:packages",
+      "argv": [
+        "pnpm",
+        "build:packages"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:44:09.151Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/build-final-candidate.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:44:20.387Z",
+      "sha256": "13ef77c8b05db0f3a2c58fd2046a24466e99281f815e7f36c955b13afd05e3b3"
+    },
+    {
+      "command": "pnpm build:packages",
+      "argv": [
+        "pnpm",
+        "build:packages"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:33:17.012Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/build-initial-corrected.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:33:28.554Z",
+      "sha256": "3a692d4318efdd9e161c01eaead799dc3055306d89ec0c0d718f05a29f37b17b"
+    },
+    {
+      "command": "pnpm build:packages",
+      "argv": [
+        "pnpm",
+        "build:packages"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:35:02.427Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/build-with-fixtures.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:35:14.557Z",
+      "sha256": "87c38ed7f8af493ce104fd29b051ee8a58b4bcf0bfe3a5974218800dd4be397a"
+    },
+    {
+      "command": "pnpm exec vitest run tests/games/contracts.unit.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "tests/games/contracts.unit.test.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 1,
+      "startedAt": "2026-11-08T17:36:03.599Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/contracts-core-initial.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:36:04.880Z",
+      "sha256": "239c7a585379be34e57045b3cc3d3af873d4517fdc5b4f33b0dca7e642b21b97"
+    },
+    {
+      "command": "pnpm exec vitest run tests/games/contracts.unit.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "tests/games/contracts.unit.test.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:37:58.592Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/contracts-core-root-linked.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:38:00.135Z",
+      "sha256": "a914714143bc64adaac83e66074549f684ab85e12402d11cafb06bf54ae28576"
+    },
+    {
+      "command": "pnpm architecture:check",
+      "argv": [
+        "pnpm",
+        "architecture:check"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:47:28.283Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/final-architecture.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:47:30.351Z",
+      "sha256": "f8a5734d4388078729c889895f1bae9204786708e606c3b2badef817cae727f3"
+    },
+    {
+      "command": "pnpm assets:check",
+      "argv": [
+        "pnpm",
+        "assets:check"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:47:32.116Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/final-assets.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:47:33.580Z",
+      "sha256": "213cdaaf0d4c17b0e588cab1f2ff0a1208c28b9b1a8eab9615f0112f61277a61"
+    },
+    {
+      "command": "pnpm ci:check",
+      "argv": [
+        "pnpm",
+        "ci:check"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:47:26.029Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/final-ci.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:47:28.217Z",
+      "sha256": "152f8c2f2cc89bc1fccc1654e5ea9efde09453df31256be896cc5b5463ce9a46"
+    },
+    {
+      "command": "pnpm test:client-boundaries",
+      "argv": [
+        "pnpm",
+        "test:client-boundaries"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:47:30.419Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/final-client-boundaries.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:47:32.037Z",
+      "sha256": "20fe257c73f2fb81cd620cfbd89b94ddced3f928786fca8f3c9ad6d360431c23"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:47:08.946Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/final-lint.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:47:25.949Z",
+      "sha256": "4079ce3e8df85b479b562a29bb20322e894fab01a0051b12c2fb148a3bab3e88"
+    },
+    {
+      "command": "node scripts/verify-game-plan.mjs",
+      "argv": [
+        "node",
+        "scripts/verify-game-plan.mjs"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:47:33.642Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/final-plan-freeze.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:47:33.854Z",
+      "sha256": "3548aac431fd75cdbb7ff1f05ea410e7335cc905285a8d65a9cd59054addb66b"
+    },
+    {
+      "command": "node scripts/boardgame-boundary.mjs",
+      "argv": [
+        "node",
+        "scripts/boardgame-boundary.mjs"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:47:08.576Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/final-pure-boundary.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:47:08.903Z",
+      "sha256": "7db64977fce7b0497d91443f74038c63e270bb06ba88eaadd1f7724d88b6fd57"
+    },
+    {
+      "command": "pnpm exec tsc -p tests/games/tsconfig.json",
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "-p",
+        "tests/games/tsconfig.json"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:44:22.091Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/fixture-types-final.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:44:23.909Z",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "pnpm exec tsc -p tests/games/tsconfig.json",
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "-p",
+        "tests/games/tsconfig.json"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:38:00.202Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/fixture-types-initial.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:38:01.927Z",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "pnpm exec vitest run tests/games/contracts.unit.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "tests/games/contracts.unit.test.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:40:50.555Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/focused-core-guard-refined.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:40:52.156Z",
+      "sha256": "4d576bb4cb405c6a2307d557904b97b651baf20f554bf4ac61a1ff9e666dbb7e"
+    },
+    {
+      "command": "pnpm exec vitest run tests/games/contracts.unit.test.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "tests/games/contracts.unit.test.ts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:44:20.430Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/focused-final-candidate.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:44:22.047Z",
+      "sha256": "21ae4ff2e475a8a048fc21f6b14ec7f560adc9397209a1055a333d5c76b6602a"
+    },
+    {
+      "command": "pnpm build",
+      "argv": [
+        "pnpm",
+        "build"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:48:03.478Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/full-build.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:48:46.825Z",
+      "sha256": "cfc50ac857d7f5b02469bca1961375e0fc6dfddbd42eadc2e4e21d12cfaaf4d4"
+    },
+    {
+      "command": "pnpm typecheck",
+      "argv": [
+        "pnpm",
+        "typecheck"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:47:07.410Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/full-typecheck.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:48:03.439Z",
+      "sha256": "ed896e5aacbb5887e8db8908983365b92762b3841f7c561551f3ade506c810ff"
+    },
+    {
+      "command": "pnpm test",
+      "argv": [
+        "pnpm",
+        "test"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:48:46.874Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/full-unit-governance.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:50:24.258Z",
+      "sha256": "989afb30701d5396b53a90ed66516571a91d02cdcd6b6a1e2457a41e818585c8"
+    },
+    {
+      "command": "node scripts/verify-toolchain.mjs --write-map",
+      "argv": [
+        "node",
+        "scripts/verify-toolchain.mjs",
+        "--write-map"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:47:07.218Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/generate-build-map.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:47:07.276Z",
+      "sha256": "99ce6aee39474d7614e4b3d735a95d4ff1f06935df86bf0fa1a108b2ecccbdef"
+    },
+    {
+      "command": "pnpm install --offline --ignore-scripts",
+      "argv": [
+        "pnpm",
+        "install",
+        "--offline",
+        "--ignore-scripts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:37:45.652Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/install-root-fixture-link.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:37:47.853Z",
+      "sha256": "66e87771a4069fcf12409cfba2c8dddb1cd1114e05eff3ccb08233550c461662"
+    },
+    {
+      "command": "pnpm install --offline --ignore-scripts",
+      "argv": [
+        "pnpm",
+        "install",
+        "--offline",
+        "--ignore-scripts"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:33:16.065Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/install.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:33:16.947Z",
+      "sha256": "7f4ebcb9f3fafcf9f698124d7897fb0e40a0c64652cd1490b707ef1958b585e3"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:40:52.209Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/lint-initial.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:41:03.096Z",
+      "sha256": "4079ce3e8df85b479b562a29bb20322e894fab01a0051b12c2fb148a3bab3e88"
+    },
+    {
+      "command": "node scripts/boardgame-boundary.mjs",
+      "argv": [
+        "node",
+        "scripts/boardgame-boundary.mjs"
+      ],
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "startedAt": "2026-11-08T17:40:50.219Z",
+      "log": "artifacts/lantern-lodge/n15-02/core-v1/pure-boundary.log",
+      "signal": null,
+      "endedAt": "2026-11-08T17:40:50.517Z",
+      "sha256": "7db64977fce7b0497d91443f74038c63e270bb06ba88eaadd1f7724d88b6fd57"
+    }
+  ],
+  "rawIndex": {
+    "ref": "artifacts/lantern-lodge/n15-02/core-v1/raw-index-v1.json",
+    "sha256": "01972c6b6c16edb8e8847b44a06d8615d1dd4d72856ccfc3b5eee4b091acb115",
+    "files": 54
+  },
+  "limitations": [
+    "No actual mode reducers,game rules,balance,gameplay,SQL,HTTP/socket transport,world/lobby/UI or native game adapter is implemented by N15-02. Registry defaults empty;all modes unavailable.",
+    "Synthetic test adapters exercise the interface only. Full rule/conservation/fairness fixtures remain gated N16/N17/N18 tasks.",
+    "Host authentication/session/room/owner rechecks,atomic receipts/claims/encryption/broadcast are N15-03/N15-04 responsibilities;pure context/schema checks are not authentication or a security sandbox.",
+    "No integration/security/browser/native suite was newly run for this unused pure package/DTO namespace. Previous740integration/267security remain source-bound Phase1 history,not fresh N15-02 claims.",
+    "Initial TS2589 build failure is retained as a tool-observed summary;initial test import failure retained as an actual log. Corrected links/types and final committed-source checks pass.",
+    "Phase1 state/evidence/Mxx and first Phase2record/frozen proof remain unchanged;physical/art/Apple/owner/public-release gates unchanged."
+  ],
+  "nextExactAction": "Reserve N15-03:implement the original default-off Lodge world and roomId-bound consented table lobby with existing room/safety/travel owners;verify caps,races,stale membership/block/disabled and browser keyboard/mobile states. No game starts before durable journal and gated concrete mode tasks."
+}
