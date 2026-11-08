@@ -1,6 +1,6 @@
 # ADR 0139 — Encrypted game journal and fenced recovery
 
-Status: implementation candidate; N15-04 final verification pending.
+Status: accepted; N15-04 VERIFIED for the local journal foundation, with explicit downstream mode/device/release gates.
 
 N15-03's ephemeral waiting consent cannot authorize durable game state on its own. Add SQL0047 without editing the previous46 migrations. `engine_game_matches` owns a versioned encrypted state/seed, participants bind the original account/session/membership/seat, and `engine_game_active_claims.account_id` is the durable unique claim across all modes/tables. A partial unique index also bounds one active match per exact owner epoch/room. Request receipts and terminal results are unique; outbox rows contain recipient/version hints, not private views. No progression rewards or new RoomAuthority are created.
 

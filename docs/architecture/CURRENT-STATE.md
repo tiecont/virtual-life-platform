@@ -1,3 +1,13 @@
+# Lantern Lodge foundation checkpoint — 2026-11-09
+
+Phase2 source69566f24319c0ff351cf89f4d7a1f5113fd05e40 qualifies N15-01–N15-04: frozen original proposal, strict GameSession/pure core, default-off original3D Lodge/consent lobby, encrypted durable journal/claims/receipts/recovery. Actual770integration/467unit/95governance/6browser PASS;full types/build/lint/architecture/local CI/client/assets PASS. Actual child SIGKILL,SQL/backend/owner faults,committed-source encrypted pg_dump/pg_restore and archived46→47 rollback/roll-forward PASS. See [journal acceptance](../plans/LANTERN-LODGE-PHASE-2/audit/N15-04-JOURNAL-ACCEPTANCE.json),[review](../plans/LANTERN-LODGE-PHASE-2/audit/N15-04-JOURNAL-REVIEW.md) and [Phase2 handoff](../plans/LANTERN-LODGE-PHASE-2/state/HANDOFF.md).
+
+Phase2:4VERIFIED/21TODO,no dependency-ready task. N15-05 requires N06-09,which depends on N06-04 and physical N06-07 qualification. Final SDK adb observation2026-11-08T19:29:19Z exited0 with0physical devices/0emulators. Keep later waves closed;actual modes,recipient outbox transport/native game adapter,final art and release are unqualified. No public/store/distribution/production action. iOS remains conditional and is not the Android blocker.
+
+Phase1 ledger remains read-only at72d3713:64records,43VERIFIED/4external/29TODO. Rehashed3285Phase1+335priorPhase2raw files and49legacy immutable files unchanged;SQL0047 preserves the previous46 checksums. Owner files/keys/SDK/AVD userdata excluded. Next exact action:preserve this checkpoint;with an available authorized physical Android,transfer scheduling safely to Phase1 for N06-07→N06-04/N06-09,then resume N15-05. Existing native technical/normal-APK evidence below remains source-bound history.
+
+## Earlier checkpoints — historical
+
 # Native world/creator checkpoint;ready for safe Phase2 handoff — 2026-11-08
 
 Source d2b3bf1 plus foreground fix3a3c880;native journey84acf5c;inventory/map review49eed56. Actual431unit/95governance/740integration/267security,14creator browser+4travel,11Android instrumentation and9packaged native creator/world/travel/safety/account scenarios PASS. Types/full build/lint/CI/assets/architecture/boundaries pass at their recorded source scopes. Normal signed DEBUG APK cb99c77c5abf7d28a3e159555f1ae9cd0aa791a4192b15e49d8ee16a262df59a (8809926bytes,19matched assets),unsigned-release policy inspection,18default-off ports/3bundle/5preview PASS;AVD STOPPED and HTTPS/schema/DB cleanup confirmed.

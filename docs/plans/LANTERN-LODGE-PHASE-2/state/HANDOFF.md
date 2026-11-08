@@ -1,3 +1,21 @@
+# N15-04 VERIFIED — encrypted durable journal foundation — 2026-11-09
+
+Source69566f24319c0ff351cf89f4d7a1f5113fd05e40;770integration/467unit/95governance/6browser PASS. Full types/build/lint/architecture/local CI/client/assets PASS. Actual child SIGKILL,SQL/backend/owner faults,committed-source encrypted pg_dump/restore and archived46→47 rollback/roll-forward PASS. SQL0047 only;previous46 prefix unchanged. Four accepted Phase2records. All3285Phase1+335priorPhase2raw files and49legacy immutable files verified unchanged;Phase1state/evidence remain exact72d3713 snapshots. Owner files/keys/SDK/AVD userdata untouched. No concrete mode,recipient outbox transport,native game,final art,physical or public release acceptance.
+
+**Next exact action:** No dependency-ready Phase2 task. Preserve this checkpoint;when an authorized physical Android is available,transfer scheduling safely to Phase1 and qualify N06-07,then N06-04/N06-09;only then resume N15-05. Use fresh evidence labels,never overwrite frozen helpers/artifacts. Do not start later waves or claim final art/release.
+
+N15-05 stays TODO behind N06-09;N16–N19 wave gates stay closed. Fresh final pinned-SDK adb observation exited0 with0physical devices/0emulators. No owner questions are pending. iOS remains conditional/inactive and is not the Android blocker. No public/store/distribution/production operation occurred.
+
+## Earlier checkpoints — historical
+
+# N15-04 IN_PROGRESS — encrypted durable journal — 2026-11-09
+
+N15-03 acceptance5b020fc committed;three accepted Phase2records. N15-04 additiveSQL0047, AES-GCM state+seed, durable account claims/receipts/results/hint outbox, real Room/Lobby host, privacy/block hooks and bounded truthful recovery implemented. Draft full build/typecheck PASS;18storage/fault +11lobby focused integration and36unit foundation checks PASS (65total). Actual encrypted pg_dump/pg_restore and archived46-source/schema47 rollback/roll-forward drills PASS at candidate source. Final code commit/evidence not yet frozen. New actual OS SIGKILL test is being compiled/run;initial inferred Pool.connect type error retained and corrected. No concrete mode/runtime game route or native game adapter enabled.
+
+**Next exact action:** Complete SIGKILL test,commit source,then full integration/unit/types/build/guards and committed-source restore/compat drills. Keep draft failures and generated-key cleanup truthful. N15-05 remains blocked by N06-09;later waves stay closed. Phase1 state/evidence remain exact72d3713 snapshots. No owner questions or public/store/distribution/production actions.
+
+## Earlier checkpoints — historical
+
 # N15-03 VERIFIED — local original Lodge and consent lobby — 2026-11-09
 
 Source40c57e2/23c7104/df502c6;751integration/463unit/95governance/6browser PASS. Full types/build/lint/CI/architecture/assets/client boundaries PASS. Actual periodic-resync withdrawal bug fixed; failures retained. Three Phase2records;69 prior frozen raw files and exact Phase1state/evidence unchanged. No playable mode, durable journal, native game, final art or release acceptance.

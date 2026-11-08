@@ -1,7 +1,7 @@
 {
   "schema_version": "phase2-state-1.0",
   "phase_id": "LAN-L02",
-  "last_updated": "2026-11-08T18:31:19.088325+00:00",
+  "last_updated": "2026-11-08T19:30:51.057225+00:00",
   "release_status": "NOT_REQUESTED",
   "tasks": {
     "N15-01": {
@@ -35,20 +35,22 @@
       "next_action": "Continue N15-04 already reserved:implement encrypted durable claims/receipts and keyless truthful-abort recovery;run real DB fault/restore/migration compatibility checks. N15-05 remains gated by N06-09."
     },
     "N15-04": {
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "owner": "Codex /root",
       "branch": "codex/lantern-lodge-foundation",
-      "evidence_refs": [],
+      "evidence_refs": [
+        "n15-04-game-schema-expand-local-2026-11-09"
+      ],
       "blocker": null,
-      "next_action": "Prepare isolated encrypted journal files while N15-03 full regression finishes. Do not add migration until its running 46-migration suite completes. Then implement durable claims/receipts/recovery with real DB fault tests; no production activation or mode dealing."
+      "next_action": "No dependency-ready Phase2 task. Preserve this checkpoint;when an authorized physical Android is available,transfer scheduling safely to Phase1 and qualify N06-07,then N06-04/N06-09;only then resume N15-05. Use fresh evidence labels,never overwrite frozen helpers/artifacts. Do not start later waves or claim final art/release."
     },
     "N15-05": {
       "status": "TODO",
       "owner": null,
       "branch": null,
       "evidence_refs": [],
-      "blocker": null,
-      "next_action": "Shared match shell and status UX; Recipient-scoped socket event projections"
+      "blocker": "Upstream N06-09 not VERIFIED;requires N06-04 and physical portion of N06-07. Final SDK adb observation0 devices;later wave gates unchanged.",
+      "next_action": "Wait for VERIFIED N06-09;then implement shared recipient-scoped match shell/reconnect and native adapter using this qualified journal and existing appearance/auth owners. No game start while upstream gate is missing."
     },
     "N16-01": {
       "status": "TODO",
