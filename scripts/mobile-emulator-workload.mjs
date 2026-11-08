@@ -14,7 +14,7 @@ assert(adb&&serial==='emulator-'+config.port&&instance.serial===serial&&instance
 assert.equal(readFileSync('/proc/'+instance.pid+'/stat','utf8').split(') ').at(-1).split(' ')[19],instance.startTicks);
 const argv=readFileSync('/proc/'+instance.pid+'/cmdline','utf8').split('\0');assert(argv.includes(config.avdName)&&argv.includes(String(config.port)));
 assert((apk.startsWith(root+'/artifacts/')||apk.startsWith(root+'/apps/mobile/android/app/build/outputs/apk/'))&&apk.endsWith('.apk'));
-const evidenceSet=process.env.VLP_RENDERER_EVIDENCE_SET??'workload-v1';assert(['workload-v1','serve-v1'].includes(evidenceSet),'Unknown renderer evidence set');
+const evidenceSet=process.env.VLP_RENDERER_EVIDENCE_SET??'workload-v1';assert(['workload-v1','serve-v1','cache-v1'].includes(evidenceSet),'Unknown renderer evidence set');
 const output=resolve('artifacts/vnext/n06-11/'+evidenceSet+'/android-'+randomUUID().slice(0,8));await mkdir(output,{recursive:true,mode:0o700});
 const budget=JSON.parse(await readFile('docs/design/vnext/animals-3d/budgets-v1.json')),profile=JSON.parse(await readFile('tests/renderer-workload/PROFILE.json')),commands=[];
 const facts={scope:profile.scope,sourceRevision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),trackedDiffSha256:hash(execFileSync('git',['diff','--binary','HEAD'],{maxBuffer:32*1024*1024})),sourceFiles:await workloadSourceFiles(),budgetSHA256:hash(await readFile('docs/design/vnext/animals-3d/budgets-v1.json')),profileSHA256:hash(await readFile('tests/renderer-workload/PROFILE.json')),startedAt:new Date().toISOString(),commands,tiers:[],physicalPerformanceQualified:false,physicalDevice:false,distributed:false};

@@ -15,7 +15,9 @@ const budgetRef = 'docs/design/vnext/animals-3d/budgets-v1.json';
 const json = async ref => JSON.parse(await readFile(ref));
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const profile = await json(profileRef), budget = await json(budgetRef);
-const output = 'artifacts/vnext/n06-11/loading-v1/browser-' + randomUUID().slice(0, 8);
+const evidenceSet = process.env.VLP_LOADING_EVIDENCE_SET ?? 'loading-v1';
+assert(['loading-v1', 'cache-v1'].includes(evidenceSet), 'Unknown loading evidence set');
+const output = 'artifacts/vnext/n06-11/' + evidenceSet + '/browser-' + randomUUID().slice(0, 8);
 await mkdir(output, {recursive: true, mode: 0o700});
 const sourceFiles = async () => [...await workloadSourceFiles(), ...await Promise.all([
   'scripts/verify-scene3d-loading.mjs', 'scripts/scene3d-loading-policy.mjs',
