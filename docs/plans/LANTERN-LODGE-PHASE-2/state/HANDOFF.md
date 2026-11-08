@@ -1,3 +1,11 @@
+# Lantern Lodge active local foundation lane — 2026-11-09
+
+Real Phase1 checkpoint72d3713 and state/PHASE1-HANDOFF.md transfer sole scheduling ownership under the explicit existing owner request. Phase1:64records,43VERIFIED/4external/29TODO,no ready task;its ledger is read-only from this lane. N06-09/N10-04 remain unresolved. Phase2 implementation still25TODO;activation is not a game/runtime PASS.
+
+Next exact action:run validate-plan/check-upstream/next-task against the actual uppercase directory,then reserve N15-01 and read all three rulebooks/current ownership/provenance before implementing verify-game-plan and freezing rule proposal v1. No public/store/distribution/production or spectator activation. Owner files/keys untouched;sole/root agent,no delegates.
+
+## Earlier checkpoints — historical
+
 # Phase 2 handoff — not started
 
 **Phase state:** `WAITING_FOR_PHASE1_HANDOFF`. Không có implementation, commit, tests, migrations hoặc public release nào được thực hiện bởi gói plan này.
