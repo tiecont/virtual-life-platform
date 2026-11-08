@@ -1,5 +1,5 @@
 import {createServer} from 'node:https';
-import {readFile,writeFile,stat,rm} from 'node:fs/promises';
+import {readFile,writeFile,stat,rm,rename} from 'node:fs/promises';
 import {randomBytes,randomUUID} from 'node:crypto';
 import {Pool} from 'pg';
 import {createApp} from '../apps/platform-api/src/app';
@@ -9,7 +9,7 @@ async function main(){
  const root='artifacts/vnext/n06-07/native-v1/tls',url=new URL(process.env.TEST_DATABASE_URL??'');
  if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable DB required');
  const admin=new Pool({connectionString:url.toString()}),schema='native_avatar_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA "${schema}"`);url.searchParams.set('options','-c search_path='+schema);const pool=new Pool({connectionString:url.toString()});
- const facts={saveStarts:0,confirmedReturns:0,droppedCommitAcknowledgements:0,result:'RUNNING',cleanupComplete:false};let writes=Promise.resolve();const flush=()=>{const body=JSON.stringify(facts,null,2)+'\n';writes=writes.then(()=>writeFile(root+'/stats.json',body,{mode:0o600}));};
+ const facts={saveStarts:0,confirmedReturns:0,droppedCommitAcknowledgements:0,result:'RUNNING',cleanupComplete:false};let writes=Promise.resolve();const flush=()=>{const body=JSON.stringify(facts,null,2)+'\n';writes=writes.then(async()=>{await writeFile(root+'/stats-next.json',body,{mode:0o600});await rename(root+'/stats-next.json',root+'/stats.json');});};
  let api:Awaited<ReturnType<typeof createApp>>|undefined,https:ReturnType<typeof createServer>|undefined;
  try{
   await rm(root+'/ready.json',{force:true});
@@ -17,6 +17,14 @@ async function main(){
   // Two owned loopback ingress ports share this single API/RoomAuthority.
   await runtime.app.listen(18430,'127.0.0.1');
   https=createServer({key:await readFile(root+'/server.key'),cert:await readFile(root+'/server.pem')},async(request,response)=>{
+   if(request.url?.startsWith('/v1/fixture/')){
+    response.setHeader('Content-Type','application/json');
+    if(request.url==='/v1/fixture/redirect'){response.statusCode=302;response.setHeader('Location','https://localhost:18443/v1/fixture/redirect-target');response.end('{}');}
+    else if(request.url==='/v1/fixture/cookie'){response.setHeader('Set-Cookie','synthetic=fixture;Secure;HttpOnly');response.end('{}');}
+    else if(request.url==='/v1/fixture/oversized')response.end(JSON.stringify({padding:'x'.repeat(140000)}));
+    else response.end(JSON.stringify({cookiePresent:request.headers.cookie!==undefined,originPresent:request.headers.origin!==undefined,ok:true}));
+    return;
+   }
    if(request.method==='POST'&&request.url==='/v1/me/avatar'){
     facts.saveStarts++;flush();let drop=false;try{await stat(root+'/drop-next-save');await rm(root+'/drop-next-save');drop=true;}catch{/* No fault requested. */}
     if(drop){const end=response.end;response.end=((...args:Parameters<typeof end>)=>{if(response.statusCode===200){facts.droppedCommitAcknowledgements++;flush();request.socket.destroy();return response;}return Reflect.apply(end,response,args);}) as typeof response.end;}

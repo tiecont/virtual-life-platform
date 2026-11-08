@@ -23,12 +23,13 @@ try{
   const bytes=await readFile(file);facts[label]={sha256:hash(bytes),bytes:bytes.length};await writeFile(directory+'/'+label+'.apk',bytes,{mode:0o600});adbRun('install-'+label,['install','-r',resolve(file)]);
  }
  if(mode==='https'||mode==='avatar'){
-  assert.equal(JSON.parse(await readFile('artifacts/vnext/'+(mode==='avatar'?'n06-07/native-v1':'n10-03')+'/tls/ready.json')).ready,true);
+  const fixture=JSON.parse(await readFile('artifacts/vnext/'+(mode==='avatar'?'n06-07/native-v1':'n10-03')+'/tls/ready.json'));assert.equal(fixture.ready,true);
+  if(mode==='avatar'){assert.equal((await readFile('/proc/'+fixture.pid+'/stat','utf8')).split(') ').at(-1).split(' ')[19],fixture.startTicks);assert((await readFile('/proc/'+fixture.pid+'/cmdline','utf8')).split('\0').includes('scripts/native-avatar-fixture.ts'));}
   assert(!adbRun('existing-reverses',['reverse','--list']).split('\n').some(line=>line.split(/\s+/).includes('tcp:18443')),'Refusing to replace an existing reverse');
   adbRun('own-tls-reverse',['reverse','tcp:18443','tcp:18443']);reverse=true;
  }
  adbRun('stop-own-app',['shell','am','force-stop','life.virtualcity.spike']);
- const testClass='life.virtualcity.spike.'+(mode==='storage'?'NativeSessionStoreTest':mode==='avatar'?'NativeAvatarHttpsTest':'NativeSessionHttpsTest');
+ const testClass=mode==='avatar'?['NativeSessionStoreTest','NativeSessionHttpsTest','NativeAvatarHttpsTest'].map(name=>'life.virtualcity.spike.'+name).join(','):'life.virtualcity.spike.'+(mode==='storage'?'NativeSessionStoreTest':'NativeSessionHttpsTest');
  const output=adbRun('run-instrumentation',['shell','am','instrument','-w','-r','-e','class',testClass,'life.virtualcity.spike.test/androidx.test.runner.AndroidJUnitRunner'],240000);
  await writeFile(directory+'/instrumentation.log',output+'\n',{mode:0o600});
  assert(!/FAILURES|INSTRUMENTATION_FAILED|INSTRUMENTATION_ABORTED|shortMsg=/.test(output),'Android instrumentation failed');

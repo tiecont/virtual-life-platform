@@ -1,0 +1,25 @@
+# Modular animal creator — implementation and qualification scope
+
+Candidate source `a0ec8ab39fbeba6c21b474ff333ba173a24bfe52`,2026-11-08. N06-07 remains IN_PROGRESS. This guide records implemented commands and separates actual results from pending checks.
+
+Web `/character` uses the existing signed browser session. The same composer draws the editable character,static portrait and public parts on explicit `/worlds/deadline/room3d`, `/worlds/maid/room3d` and SDK room3d routes. Ordinary world routes keep their existing renderer configuration. Native account preparation opens the same creator through dedicated `avatarState`/`saveAvatar` custody ports;generic platform HTTP remains limited to own account settings. Normal/release native origin defaults remain disabled.
+
+The strict catalog contains cat/dog/rabbit and12categories. Species changes select compatible ears/tail;unknown IDs,URLs and incompatible combinations are rejected. Preview can display an unowned apron,but cannot grant it or Save it. World uniform policy remains with the existing appearance owner. Save requires the authenticated actor plus an expected-account assertion,expected revision,current catalog,CSRF and UUID receipt key. Uncertain Save retains one exact body/key;retry can recover its original revision alongside a newer current state. Identity invalidation clears the editor and destroys its graphics.
+
+Additive0046 leaves45historical SQL files and v1 profile/uniform rows unchanged. Advanced parts are never automatically overwritten by fallback. Only connections that explicitly join with `appearanceVersion:2` receive public parts. New clients probe the own-state endpoint before opting in;old servers retain v1. Public snapshots contain no inventory or receipt fields. Current export includes the selection;both new tables cascade on account deletion. Retention outside account erasure and backup behavior remain owner/deployment facts.
+
+Actual checks before this guide:18focused catalog/editor/model tests,9PostgreSQL/API/room tests and14browser cases pass. The latest browser run `artifacts/vnext/n06-07/run-546a6b70` includes actual Save→confirmed travel→Deadline/Maid→reconnect,lost successful response/retry,concurrent revision conflict,late old-account response,WebGL failure,keyboard and landscape/portrait200% text. Separate new garment clearance checks pass after correcting normals and torso-following cloth.425unit/95governance and actual45→46→45→46 source-runtime rollback pass;full integration/security and native checks are still pending when this guide is introduced. Their eventual audit is authoritative.
+
+Implemented web command: `pnpm test:avatar-creator`,after an ordinary `pnpm build`. It runs both desktop and Chromium mobile profiles against disposable PostgreSQL and actual Next/API/Socket.IO. It is browser emulation,not an Android-device or final-art certificate.
+
+Implemented native checks,not yet executed at guide creation:
+
+- `node scripts/prepare-native-test-tls.mjs n06-07` creates fresh task-owned localhost PKI under private `artifacts/vnext/n06-07/native-v1/tls`. Never regenerate a frozen historical task's PKI or archive private keys.
+- `pnpm mobile:build:native-auth`,then Capacitor sync and the existing pinned JDK21/SDK36 wrapper with `-PvlpNativeOrigin=https://localhost:18443 -PvlpNativeTestCa=true -PvlpNativeTestCaTask=n06-07 :app:assembleDebug :app:assembleDebugAndroidTest :app:testDebugUnitTest` create the explicit synthetic candidate. These are work commands,not a PASS claim.
+- `node scripts/with-test-db.mjs node --import tsx scripts/native-avatar-fixture.ts` starts only the owned loopback HTTPS/API fixture;stop it with its task-owned stop marker and await cleanup.
+- `python3 scripts/inspect-native-apk.py auth --task n06-07` inspects exact packaged assets,signature and local-only test trust. `node scripts/verify-native-android-instrumentation.mjs avatar` runs storage,HTTPS and avatar classes on the guarded owned AVD.
+- `node scripts/verify-native-avatar-webview.mjs` drives the actual native account/creator UI,post-COMMIT lost-ACK retry,poses,process restart and stale-account rejection. Its `default-off` mode checks16custody entrypoints after restoring a normal APK. No USB fallback is allowed in these drivers.
+
+After any fixture run,restore the normal web bundle and normal DEBUG/unsigned-release builds without test origin/trust,inspect them,run ordinary bundle/native preview checks,stop the owned AVD and verify fixture/DB cleanup. Private logs/APKs/runtime images retain failure history;Git carries summaries and hashes.
+
+No whole N06-07 acceptance follows from these partial checks. Physical creator/world/travel evidence is missing while USB inventory is empty. Full authenticated native gameplay widgets,integrated20actor resource/loading/animation and final art belong to their remaining gates. Earlier cold/Balanced-warm loading failures are preserved. N06-09,N10-04,Apple access,N11 owner disclosures and release/distribution gates remain separate.

@@ -1,5 +1,9 @@
 # Android disclosure inventory — owner-review draft
 
+N06-07 implementation update at `a0ec8ab39fbeba6c21b474ff333ba173a24bfe52`,2026-11-08: the opt-in native account lane now also has a shared modular animal creator and dedicated account-asserted avatar GET/Save ports. Browser/API tests have actual evidence;new packaged-native qualification is still pending at this update. This changes the inventory draft,not release/distribution or Play declarations. Normal native origin/release defaults remain disabled.
+
+The new flow stores bounded species/body/head/eyes/muzzle/ears/tail/fur/marking/hair/outfit/accessory IDs,catalog version,revision and change time in additive `engine_avatar_parts`;idempotency receipts store account/request IDs,fingerprint,revision and timestamp in `engine_avatar_part_mutations`. It does not capture photos,biometrics or arbitrary model URLs. Both tables cascade on account deletion;export includes the selected document. Mutation retention beyond live account erasure remains an owner/backend policy question;no automatic TTL or backup-erasure claim is introduced. Legacy profile/uniform data remains unchanged. Only privacy-filtered room participants receive public cosmetic parts;owned inventory and receipts stay private. Re-audit the actual eventual candidate before declaring shipped data categories.
+
 Inspected source `5ea296e5e9a70f10e6d3fd0a9d0e16ad80d6cc32`, 2026-11-07. This document is preparation for N11-03, not a submitted Data safety form, content rating, legal review or owner acceptance. Actual build/manifest/dependency facts are indexed in the native-safety checkpoint. No public privacy/support/deletion URL or store delivery is established.
 
 ## Artifact and feature scope

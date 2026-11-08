@@ -102,6 +102,8 @@
     "engine_progression_partners": "engine.progression",
     "engine_progression_appearance": "engine.progression",
     "engine_progression_appearance_mutations": "engine.progression",
+    "engine_avatar_parts": "engine.progression",
+    "engine_avatar_part_mutations": "engine.progression",
     "engine_progression_corrections": "engine.progression",
     "engine_event_drafts": "engine.events",
     "engine_event_operator_audit": "engine.events",
