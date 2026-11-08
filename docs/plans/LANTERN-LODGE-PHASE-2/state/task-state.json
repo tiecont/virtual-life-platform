@@ -1,16 +1,18 @@
 {
   "schema_version": "phase2-state-1.0",
   "phase_id": "LAN-L02",
-  "last_updated": "2026-11-08T17:04:07.934662+00:00",
+  "last_updated": "2026-11-08T17:13:58.612956+00:00",
   "release_status": "NOT_REQUESTED",
   "tasks": {
     "N15-01": {
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "owner": "Codex /root",
       "branch": "codex/lantern-lodge-foundation",
-      "evidence_refs": [],
+      "evidence_refs": [
+        "n15-01-scope-proposal-v1-2026-11-09"
+      ],
       "blocker": null,
-      "next_action": "Audit current shared owners and all3rulebooks;freeze proposal v1 with explicit pending downstream rule fixtures/IP/art gates,implement verify-game-plan and run actual review/verification."
+      "next_action": "Reserve N15-02;implement strict versioned GameSession DTOs and a pure deterministic core reducer interface with recipient allowlists and negative/boundary tests;do not start later game waves."
     },
     "N15-02": {
       "status": "TODO",

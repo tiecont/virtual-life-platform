@@ -1,3 +1,11 @@
+# N15-01 VERIFIED — foundation scope/proposal only — 2026-11-09
+
+Source699dba3;ADR0136,3immutable enriched v1rulebooks and13existing owner sources reviewed. Implemented verify-game-plan actuallyPASS;lint/architecture/CI/phase-plan/upstream all0. First Phase2record;no game runtime,art rights,physical or release claim. Phase1 state/evidence remain exact72d3713 snapshots.
+
+Next exact action:Reserve N15-02;implement strict versioned GameSession DTOs and a pure deterministic core reducer interface with recipient allowlists and negative/boundary tests;do not start later game waves. Continue across checkpoints per owner;do not ask routine questions.
+
+## Earlier checkpoints — historical
+
 # Lantern Lodge active local foundation lane — 2026-11-09
 
 Real Phase1 checkpoint72d3713 and state/PHASE1-HANDOFF.md transfer sole scheduling ownership under the explicit existing owner request. Phase1:64records,43VERIFIED/4external/29TODO,no ready task;its ledger is read-only from this lane. N06-09/N10-04 remain unresolved. Phase2 implementation still25TODO;activation is not a game/runtime PASS.

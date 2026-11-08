@@ -1,4 +1,168 @@
 {
   "schema_version": "1.0",
-  "records": []
+  "records": [
+    {
+      "id": "n15-01-scope-proposal-v1-2026-11-09",
+      "taskId": "N15-01",
+      "sourceRevision": "699dba36e4dd4fa79edeb82dcc67b50cc41f8873",
+      "environment": "CachyOS Linux7.2.9-2-cachyos;Node26.9.0/pnpm11.28.5;local repository documentation/static-source review",
+      "executedAt": "2026-11-08T17:13:58.612956+00:00",
+      "commands": [
+        {
+          "command": "pnpm architecture:check",
+          "argv": [
+            "pnpm",
+            "architecture:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T17:12:48.471Z",
+          "log": "artifacts/lantern-lodge/n15-01/checkpoint-v1/architecture.log",
+          "signal": null,
+          "endedAt": "2026-11-08T17:12:49.655Z",
+          "sha256": "3728f0c73ea3243b587fc8e6d9d459114bffb5e50f45c176c111ba9780dec727"
+        },
+        {
+          "command": "pnpm ci:check",
+          "argv": [
+            "pnpm",
+            "ci:check"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T17:12:49.715Z",
+          "log": "artifacts/lantern-lodge/n15-01/checkpoint-v1/ci.log",
+          "signal": null,
+          "endedAt": "2026-11-08T17:12:50.970Z",
+          "sha256": "556c90e212b3874da2c0bd2b2603f35146feb819dece9d2cb343a994cd5b7db2"
+        },
+        {
+          "command": "pnpm lint",
+          "argv": [
+            "pnpm",
+            "lint"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T17:12:37.289Z",
+          "log": "artifacts/lantern-lodge/n15-01/checkpoint-v1/lint.log",
+          "signal": null,
+          "endedAt": "2026-11-08T17:12:48.426Z",
+          "sha256": "136fc93eb3c75a45ccdac7858cff68e7c546421a36e439d39dc5106b1c482e9b"
+        },
+        {
+          "command": "node docs/plans/LANTERN-LODGE-PHASE-2/tools/validate-plan.mjs",
+          "argv": [
+            "node",
+            "docs/plans/LANTERN-LODGE-PHASE-2/tools/validate-plan.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T17:12:37.109Z",
+          "log": "artifacts/lantern-lodge/n15-01/checkpoint-v1/phase-plan.log",
+          "signal": null,
+          "endedAt": "2026-11-08T17:12:37.151Z",
+          "sha256": "1ccbdc00e544420ade5d6d5cf105a46052918e9485dbdc819a173d2c55eaf1b7"
+        },
+        {
+          "command": "node scripts/verify-game-plan.mjs",
+          "argv": [
+            "node",
+            "scripts/verify-game-plan.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T17:12:36.923Z",
+          "log": "artifacts/lantern-lodge/n15-01/checkpoint-v1/plan-freeze.log",
+          "signal": null,
+          "endedAt": "2026-11-08T17:12:37.064Z",
+          "sha256": "11edc48c34b58d36582057ff2352d17c5cb88af6ef44f3602f03a594678f731f"
+        },
+        {
+          "command": "node docs/plans/LANTERN-LODGE-PHASE-2/tools/check-upstream.mjs",
+          "argv": [
+            "node",
+            "docs/plans/LANTERN-LODGE-PHASE-2/tools/check-upstream.mjs"
+          ],
+          "status": "COMPLETED",
+          "exitCode": 0,
+          "startedAt": "2026-11-08T17:12:37.193Z",
+          "log": "artifacts/lantern-lodge/n15-01/checkpoint-v1/upstream.log",
+          "signal": null,
+          "endedAt": "2026-11-08T17:12:37.244Z",
+          "sha256": "1c18de23e49f0fb4dc4b35e0fab69c67e05aeba4c8c0773f5c7783cf50771988"
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "docs/plans/LANTERN-LODGE-PHASE-2/audit/N15-01-ACCEPTANCE.json",
+          "sha256": "71f2b1a6d4c24555798cd64afaeb6e04b969e3e8ee3a69f09f54278052df36ca",
+          "access": "repository",
+          "retention": "Git tracked source-bound review"
+        },
+        {
+          "ref": "docs/plans/LANTERN-LODGE-PHASE-2/audit/N15-01-SCOPE-REVIEW.md",
+          "sha256": "481fb97735e207bb086ca301d7c793bf9e9769170f1e6aac502607d05e6d831f",
+          "access": "repository",
+          "retention": "Git tracked source-bound review"
+        },
+        {
+          "ref": "docs/plans/LANTERN-LODGE-PHASE-2/games/PROPOSAL-v1.json",
+          "sha256": "3c5f361ce89beff78e5ab18838c47a15afc37cdf39eeb8cec3a13fab56f46c17",
+          "access": "repository",
+          "retention": "Git tracked source-bound review"
+        },
+        {
+          "ref": "docs/adr/0136-lantern-lodge-scope-and-proposal-v1.md",
+          "sha256": "829af4651b74057f5629ae5cebdf537f1da13044a1ab84d176458f5b4a140832",
+          "access": "repository",
+          "retention": "Git tracked source-bound review"
+        },
+        {
+          "ref": "scripts/verify-game-plan.mjs",
+          "sha256": "ea80080408dbe92c36d0b7ba5c3c0f6700071149769a901951444efde5fc568d",
+          "access": "repository",
+          "retention": "Git tracked source-bound review"
+        },
+        {
+          "ref": "artifacts/lantern-lodge/n15-01/plan-check-46f5e817/facts.json",
+          "sha256": "0260e6069d3bd90bbb5f10c4bfa8c4a3196254e56116e5e1ce58086a2df273e6",
+          "access": "private",
+          "retention": "Private local evidence;archive before host cleanup"
+        },
+        {
+          "ref": "artifacts/lantern-lodge/n15-01/checkpoint-v1/raw-index-v1.json",
+          "sha256": "429c3c2f8ba1a7262525793624d22879f097e7a0346e3cfaf9330cf25b102ca4",
+          "access": "private",
+          "retention": "Private local evidence;archive before host cleanup"
+        }
+      ],
+      "acceptance_met": true,
+      "scenarios": [
+        {
+          "name": "Existing ownership/journey/privacy/IP/3D scope review",
+          "outcome": "PASS",
+          "notes": "13existing owner sources;no new authority/media/runtime exposure."
+        },
+        {
+          "name": "Three immutable proposal-v1 rulebooks with examples,audience,phases/timeouts and explicit downstream questions",
+          "outcome": "PASS"
+        },
+        {
+          "name": "Implemented verify-game-plan and actual lint/architecture/CI/plan/upstream verification",
+          "outcome": "PASS"
+        },
+        {
+          "name": "Game logic,fun,media rights,physical/human/public release",
+          "outcome": "NOT_RUN"
+        }
+      ],
+      "limitations": [
+        "Document/scope/proposal integrity acceptance only;no GameSession/reducer/world/journal/UI/gameplay implemented by N15-01.",
+        "Mode-specific open mechanics require N16-01/N17-01/N18-01 executable fixtures before runtime.",
+        "No new media imported;rights,owner art,age/rating,physical/human pilots and public/store release remain unapproved.",
+        "N06-09/N10-04 remain unverified;strict later wave gates unchanged."
+      ]
+    }
+  ]
 }
