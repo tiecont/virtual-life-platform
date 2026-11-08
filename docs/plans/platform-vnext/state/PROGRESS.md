@@ -1,3 +1,21 @@
+# N06-07 creator partial checkpoint;continuous execution — 2026-11-08
+
+Feature a0ec8ab,refinement962304c,contact/hem059d0d5. Actual95governance/425unit before final geometry fix,38final scene,14browser,265security,9API/socket,strict45↔46schema/projection rollback,10Android instrumentation and native creator UI PASS. Full integration736/738pass;two stale migration assertions corrected and24cases rerun PASS,not a full738rerun. Normal DEBUG APK b862615fdede14bf632e367b13238ed236e617c722fc2800f584a2aedca4ed12 (19exact assets) restored;normal3bundle/5preview/16default-off checks PASS. Initial default-off driver lacked confirmation inputs;FAIL retained and corrected driver reran PASS. Own AVD STOPPED;HTTPS/schema/DB cleanup confirmed.
+
+62records;43VERIFIED/2BLOCKED_EXTERNAL/29TODO/2IN_PROGRESS. Prior61records/49immutables/8frozen indices2581files preserved. New creator raw index 392files SHA f857373a45b39cc96615fc221df4a480702bdbce8c3d3c1d3f9c46dab7c4cd6b. N06-07 acceptancefalse;N11-03 remains IN_PROGRESS. No public/store/distribution/release/Phase2 activation. Owner files and private TLS/signing/ADB keys unread/unstaged/unarchived.
+
+**Next exact action:** Continue N06-07:implement account-asserted dedicated Android world/travel operations and fresh protocol-bound one-use room tickets,shared native room/travel/safety UI;verify packaged Save→Deadline/Maid→travel/reconnect before treating physical hardware as the only creator gate. Preserve v1/browser behavior and default-off release policy.
+
+N06-07 remains IN_PROGRESS;account-only native creator does not complete native gameplay/world/travel. Physical Android creator journey is NOT_RUN (USB inventory0).
+
+Final art not approved:actual AVD images show faceted torso/limbs,sparse light groom and simple studio. N06-04/N06-09 integrated scene/art/loading/resource work remains. Earlier loading FAIL stays unchanged.
+
+Full integration actual736PASS/2FAIL of738;two stale45migration-count assertions corrected to46 and only their24tests reran PASS. No claim of a fresh738/738run.
+
+N14 lacks Mac/Xcode/iPhone;N11 owner disclosures/retention/support facts,N04/N07 staging and release/store gates remain. No distribution/public/production activation.
+
+## Earlier checkpoints — historical
+
 # N06-11 technical renderer spike VERIFIED;continuous execution — 2026-11-08
 
 Source d89d59bcccafc1a7bd7fb4b6326bc96e07b1654d. ADR0133 separates the technical spike from downstream integrated art/device qualification without changing budgets. Actual25focused/406unit/95governance,types/fullbuild/lint/CI/assets/architecture/boundaries,2browser studio profiles+import failure,5AVD studio,3normal bundle/5AVD preview/default-off7ports PASS.384rig samples preserved;groom/cloth intentionally refined. Required20actor Low/Balanced frame16.7/16.8ms,121/148calls,all resource checks PASS;20recreates zero leases/canvases. High184calls is desktop-only diagnostic. Normal APK9148df93…18exact assets restored/reinstalled;AVD STOPPED.

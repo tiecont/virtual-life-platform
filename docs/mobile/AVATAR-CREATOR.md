@@ -1,5 +1,9 @@
 # Modular animal creator — implementation and qualification scope
 
+Current partial checkpoint: [N06-07-CREATOR-CHECKPOINT.json](../plans/platform-vnext/audit/N06-07-CREATOR-CHECKPOINT.json),source059d0d5. Actual10Android instrumentation cases and native WebView creator Save/lost-ACK retry/4poses/200% text/process restart/stale-account rejection PASS. Normal DEBUG/unsigned-release asset/trust inspection,3bundle/5AVD preview cases and16default-off ports PASS;owned AVD stopped and fixture/schema/DB cleanup confirmed. Initial default-off driver sent incomplete confirmation inputs;that FAIL remains and the corrected input driver passed. The statements below describe the earlier implementation checkpoint,not current pending status.
+
+Native world/travel and contextual safety integration are the next authorized code slice. N06-07 remains IN_PROGRESS;physical Android journey is NOT_RUN. Current AVD screenshots also retain faceted body/limbs,sparse light groom and basic studio as final-art findings;functional PASS is not art approval.
+
 Candidate source `a0ec8ab39fbeba6c21b474ff333ba173a24bfe52`,2026-11-08. N06-07 remains IN_PROGRESS. This guide records implemented commands and separates actual results from pending checks.
 
 Web `/character` uses the existing signed browser session. The same composer draws the editable character,static portrait and public parts on explicit `/worlds/deadline/room3d`, `/worlds/maid/room3d` and SDK room3d routes. Ordinary world routes keep their existing renderer configuration. Native account preparation opens the same creator through dedicated `avatarState`/`saveAvatar` custody ports;generic platform HTTP remains limited to own account settings. Normal/release native origin defaults remain disabled.

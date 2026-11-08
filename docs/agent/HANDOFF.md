@@ -1,3 +1,57 @@
+# N06-07 creator partial checkpoint;continuous execution — 2026-11-08
+
+Feature a0ec8ab,refinement962304c,contact/hem059d0d5. Actual95governance/425unit before final geometry fix,38final scene,14browser,265security,9API/socket,strict45↔46schema/projection rollback,10Android instrumentation and native creator UI PASS. Full integration736/738pass;two stale migration assertions corrected and24cases rerun PASS,not a full738rerun. Normal DEBUG APK b862615fdede14bf632e367b13238ed236e617c722fc2800f584a2aedca4ed12 (19exact assets) restored;normal3bundle/5preview/16default-off checks PASS. Initial default-off driver lacked confirmation inputs;FAIL retained and corrected driver reran PASS. Own AVD STOPPED;HTTPS/schema/DB cleanup confirmed.
+
+62records;43VERIFIED/2BLOCKED_EXTERNAL/29TODO/2IN_PROGRESS. Prior61records/49immutables/8frozen indices2581files preserved. New creator raw index 392files SHA f857373a45b39cc96615fc221df4a480702bdbce8c3d3c1d3f9c46dab7c4cd6b. N06-07 acceptancefalse;N11-03 remains IN_PROGRESS. No public/store/distribution/release/Phase2 activation. Owner files and private TLS/signing/ADB keys unread/unstaged/unarchived.
+
+**Next exact action:** Continue N06-07:implement account-asserted dedicated Android world/travel operations and fresh protocol-bound one-use room tickets,shared native room/travel/safety UI;verify packaged Save→Deadline/Maid→travel/reconnect before treating physical hardware as the only creator gate. Preserve v1/browser behavior and default-off release policy.
+
+N06-07 remains IN_PROGRESS;account-only native creator does not complete native gameplay/world/travel. Physical Android creator journey is NOT_RUN (USB inventory0).
+
+Final art not approved:actual AVD images show faceted torso/limbs,sparse light groom and simple studio. N06-04/N06-09 integrated scene/art/loading/resource work remains. Earlier loading FAIL stays unchanged.
+
+Full integration actual736PASS/2FAIL of738;two stale45migration-count assertions corrected to46 and only their24tests reran PASS. No claim of a fresh738/738run.
+
+N14 lacks Mac/Xcode/iPhone;N11 owner disclosures/retention/support facts,N04/N07 staging and release/store gates remain. No distribution/public/production activation.
+
+## Earlier checkpoints — historical
+
+# N06-07 ACTIVE — native qualification next;do not stop at checkpoint
+
+Application feature a0ec8ab;test/ownership refinement962304ce9eb208dc36e94befb045271835cf3a80.425unit/95governance,14v3browser cases,265security,24corrected monitoring cases,types/build/lint/CI/assets/boundaries/architecture PASS. Full integration ran738:736PASS,2stale45migration-count assertions FAIL;those two files were corrected to46 and24cases reran PASS. Do not claim a new complete738/738run. Actual45↔46rollback plus archived strict45 RoomAck/modern optional projection checks PASS in schema-rollback-34daf57f;foreign-registry fixture/cleanup failures retained.
+
+Native DEBUG/auth APK+androidTest+7fresh JVM cases and inspection PASS at962304c;AVD booted,not yet installed/run. Fresh n06-07/native-v1 TLS exists and MUST NOT be regenerated/read/archived as private keys. No HTTPS fixture is running. A later contact fix is dirty:Slender narrows torso/hips only to preserve actual skinned paw/foot anchors;new contact test PASS. Expanded garment-root coverage fixes high/slender/overalls hem clipping;focused clearance PASS. Full38scene tests+lint are running in exec43468;await before committing3files and rebuilding native auth assets/APK. WebView driver now checks sanitized unhandled/shader errors,WebGL2 and Slender4pose screenshots. All preceding native APKs/logs remain historical;do not test the superseded APK as this source.
+
+**Next exact action:** Await43468,commit packages/scene3d/{src/parts-geometry.ts,test/parts.test.ts} and scripts/verify-native-avatar-webview.mjs,then rebuild/sync/Gradle inspect native-auth APK with n06-07 task CA. AVD already owns serial5580;no USB fallback. Start new native-avatar-fixture via with-test-db in a yielded session;wait for its own ready,run avatar instrumentation10tests then native-avatar WebView driver. Fix actual failures,retain evidence,restore normal web/APKs,inspect normal+unsigned-release,check16default-off ports+ordinary preview,stop AVD/fixture and await DB cleanup. Then source-bind/append partial vNext evidence without changing61prior records or8frozen indices.
+
+CONTINUE N06-07 after this slice:implement bounded account-asserted native world/travel operations and ticket auth,shared room/safety UI so packaged Save→Deadline/Maid→travel/reconnect is real. Current account-only creator is insufficient;do not mark VERIFIED or solely hardware-blocked while that code remains. Keep generic nativeHTTP closed and Web/v1 rollback unchanged. Physical USB still0at15:27UTC;Apple,owner disclosures,final art/perf,staging/release gates remain. No public/store/distribution. Owner .idea/ and infra/botkeep-ca.pem unread/unstaged.
+
+## Earlier checkpoints — historical
+
+# N06-07 ACTIVE — creator qualification and next native world slice
+
+Source a0ec8ab39fbeba6c21b474ff333ba173a24bfe52 implements modular creator/catalog/receipt/optional room projection/portrait/dedicated native avatar ports. Actual425unit/95governance,14v3browser end-to-end cases,9focused PostgreSQL/API/room and45→46→45→46 rollback checks PASS. Full regression pipeline exec75061 is still running integration,then security/CI/assets/boundaries;do not claim those PASS before actual completion. Candidate full build-v3 PASS. Three native fixture/driver refinements are dirty and need lint/commit before APK qualification;runtime application code remains unchanged.
+
+Fresh task-owned PKI was generated under artifacts/vnext/n06-07/native-v1/tls;do not regenerate it or read/archive private keys. Native fixture,APK builds/instrumentation/WebView scenarios are NOT_RUN. Owned AVD remains stopped. Read-only15:27UTC USB probe still0authorized devices.
+
+**Next exact action:** Await75061 and resolve any actual failures;lint/commit native test-driver refinements,then use pinned JDK21/SDK36 to build/sync/inspect the explicit native-auth candidate with n06-07 test CA. Start only the owned AVD and fresh native-avatar HTTPS fixture;run avatar instrumentation(all10storage/HTTPS/avatar cases) and native creator WebView driver. Restore and inspect normal DEBUG/unsigned-release APKs,check16default-off custody ports and ordinary native preview,stop AVD/fixture and verify DB cleanup. Preserve all logs/images/failures and61prior evidence records/eight frozen raw indices.
+
+After this reviewable creator slice,CONTINUE N06-07:implement a bounded,account-asserted native world/travel adapter with one-use ticket auth and complete supported safety controls so Save→Deadline/Maid→travel/reconnect can run in the packaged app. Current native account-only creator is not that full journey. Do not mark N06-07 VERIFIED or solely hardware-blocked while this authorized code remains. Keep generic HTTP allowlist closed;use dedicated operations,explicit compatibility/account/lifecycle checks and real verification. Physical qualification and N06-09/N10-04/Apple/owner/release gates remain separate.
+
+Owner requires continuous execution across checkpoints. No public/store/production/distribution promotion. Owner .idea/ and infra/botkeep-ca.pem remain unread/unstaged. Phase2 still needs a real safe Phase1 handoff;do not activate it mid-task.
+
+## Earlier checkpoints — historical
+
+# N06-07 ACTIVE continuous execution — 2026-11-08
+
+N06-11 technical spike VERIFIED at d89d59b/checkpoint97c5d86 per ADR0133;61records retained. N06-07 reserved IN_PROGRESS. New strict modular catalog,additive0046,account-locked Save/receipt,per-connection optional room projection,shared modular3D composer/creator/portrait and dedicated Android avatar ports are implemented in the current uncommitted slice.18focused catalog/editor/model cases and corrected9real PostgreSQL/API/room cases pass;initial timeout/privacy-fixture/boundary failures retained under artifacts/vnext/n06-07/catalog-v1. Types and candidate full builds pass at their logs;current browser/native driver scenarios are implemented but NOT yet run. No whole N06-07 acceptance.
+
+**Next exact action:** Await current build-portrait-candidate (exec27295),then execute implemented test:avatar-creator against actual Next/API/PostgreSQL,review runtime model/UI images and fix findings;run source-bound regression. Prepare fresh task-owned n06-07/native-v1 TLS (never rerun old frozen N10/N11 helpers),build/inspect own debug APK and execute new native avatar instrumentation/WebView driver;restore normal APK and stop AVD. Keep all failures. Physical USB probe0 means actual physical creator/world qualification remains missing;no Mac/Xcode/iPhone. Continue available plan work across checkpoints;do not end just because one slice is committed.
+
+All old evidence/45SQL/budgets/Mxx and eight frozen raw indices remain immutable;new0046 is additive only. Owner .idea/ and infra/botkeep-ca.pem remain unread/unstaged. No public/store/production/distribution or Phase2 gate change.
+
+## Earlier checkpoints — historical
+
 # N06-11 technical renderer spike VERIFIED;continuous execution — 2026-11-08
 
 Source d89d59bcccafc1a7bd7fb4b6326bc96e07b1654d. ADR0133 separates the technical spike from downstream integrated art/device qualification without changing budgets. Actual25focused/406unit/95governance,types/fullbuild/lint/CI/assets/architecture/boundaries,2browser studio profiles+import failure,5AVD studio,3normal bundle/5AVD preview/default-off7ports PASS.384rig samples preserved;groom/cloth intentionally refined. Required20actor Low/Balanced frame16.7/16.8ms,121/148calls,all resource checks PASS;20recreates zero leases/canvases. High184calls is desktop-only diagnostic. Normal APK9148df93…18exact assets restored/reinstalled;AVD STOPPED.
