@@ -7,6 +7,9 @@
     "node": "26.9.x"
   },
   "scripts": {
+    "test:games":"pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project unit --project integration tests/games apps/platform-api/src/games",
+    "game:restore:smoke":"pnpm build:packages && node --import tsx scripts/game-journal-restore-smoke.mjs",
+    "game:migration:compat":"pnpm build:packages && pnpm --filter @virtual-city/platform-api build && node scripts/with-test-db.mjs node --import tsx scripts/game-journal-migration-compat.mjs",
     "test:admission": "pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project admission",
     "test:admission-contract": "pnpm build:packages && pnpm exec vitest run --project admission-contract",
     "mobile:preflight": "node scripts/mobile-readiness.mjs",

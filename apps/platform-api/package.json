@@ -18,6 +18,7 @@
     "@opentelemetry/api": "1.10.0",
     "@opentelemetry/sdk-trace": "3.0.0",
     "@virtual-city/contracts": "workspace:*",
+    "@virtual-city/boardgame-core": "workspace:*",
     "@virtual-city/library-world": "workspace:*",
     "@virtual-city/park-world": "workspace:*",
     "@virtual-city/deadline-world":"workspace:*",

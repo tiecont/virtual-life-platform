@@ -165,6 +165,9 @@ importers:
       '@opentelemetry/sdk-trace':
         specifier: 3.0.0
         version: 3.0.0(@opentelemetry/api@1.10.0)
+      '@virtual-city/boardgame-core':
+        specifier: workspace:*
+        version: link:../../packages/boardgame-core
       '@virtual-city/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts

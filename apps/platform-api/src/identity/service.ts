@@ -73,7 +73,7 @@ export class IdentityService {
   // Internal platform transaction ports. Never handed to world/client modules.
   async lockAccounts(db: PoolClient, ids: string[]) {await lockAccounts(db, ids);}
   async contextInTransaction(db: PoolClient, token: string): Promise<IdentityContext> { const s = await this.session(token, db); return Object.freeze({ accountId: s.account_id, sessionId: s.id, kind: s.kind, expiresAt: s.expires_at.getTime() }); }
-  async hasConnectedSession(accountId: string, sessionIds: string[]) { return Boolean((await this.pool.query("SELECT 1 FROM identity_sessions s JOIN identity_accounts a ON a.id=s.account_id WHERE s.account_id=$1 AND s.id=ANY($2::uuid[]) AND a.status='active' AND s.revoked_at IS NULL AND s.expires_at>$3 LIMIT 1", [accountId, sessionIds, new Date(this.now())])).rowCount); }
+  async hasConnectedSession(accountId: string, sessionIds: string[], db:DB=this.pool) { return Boolean((await db.query("SELECT 1 FROM identity_sessions s JOIN identity_accounts a ON a.id=s.account_id WHERE s.account_id=$1 AND s.id=ANY($2::uuid[]) AND a.status='active' AND s.revoked_at IS NULL AND s.expires_at>$3 LIMIT 1", [accountId, sessionIds, new Date(this.now())])).rowCount); }
   // Trusted activity owner port. Called under the participant account lock.
   async connectedAuthority(db: PoolClient, accountId: string, sessionIds: string[]) {
     const row = (await db.query<{ until: Date | null }>("SELECT max(s.expires_at) AS until FROM identity_sessions s JOIN identity_accounts a ON a.id=s.account_id WHERE s.account_id=$1 AND s.id=ANY($2::uuid[]) AND a.kind='registered' AND a.status='active' AND s.revoked_at IS NULL AND s.expires_at>$3", [accountId, sessionIds, new Date(this.now())])).rows[0];

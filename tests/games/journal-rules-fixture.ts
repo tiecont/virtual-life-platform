@@ -1,0 +1,9 @@
+import type {GameModeRules} from '@virtual-city/boardgame-core';
+import {GameRulesEngine} from '@virtual-city/boardgame-core';
+import type {GameInitialFactory} from '../../apps/platform-api/src/games/journal-host';
+import {gameState,fixtureRules,transition} from './fixtures';
+// Synthetic two-player persistence adapter only. No actual game/deal/score or
+// card conservation/balance acceptance. Shared with the owned restore drill.
+const rules:GameModeRules={...fixtureRules('lantern-colors'),reduce(input){if(input.command.kind==='color.play'){const actor=input.state.members.find(m=>m.seatIndex===input.state.turnSeat)!,cardId=input.command.payload.cardId;if(!input.state.own[actor.accountId]?.hand.some(c=>'cardId'in c&&c.cardId===cardId))return {ok:false,error:'INVALID_CARD'};return {ok:true,next:transition(input.state,{status:'FINISHED',phase:'FINISHED',deadline:null,turnSeat:null,result:{outcome:'win',winnerSeats:[actor.seatIndex]}})};}const result=fixtureRules('lantern-colors').reduce(input);return result.ok?{...result,next:{...result.next,deadline:input.clock+60000}}:result;}};
+export const engine=new GameRulesEngine([rules]);
+export const factory:GameInitialFactory={mode:'lantern-colors',rulesetVersion:'1.0.0',create({admission,matchId,seed,seedCommitment,clock}){if(admission.members.length!==2)throw Error('Two-player synthetic storage fixture only');const base=gameState(),old=base.members;const members=admission.members.map(m=>({accountId:m.accountId,membershipId:m.membershipId,seatIndex:m.seatIndex,ready:true,connected:true,handCount:1}));return {...base,matchId,tableId:admission.tableId,generation:admission.generation,roomEpoch:admission.roomEpoch,roomId:admission.roomId,stateVersion:1,committedAt:clock,deadline:clock+60000,seedCommitment,members,own:Object.fromEntries(members.map((m,i)=>[m.accountId,base.own[old[i].accountId]])),internal:{secret:'SYNTHETIC_PRIVATE_DECK_ONLY',seedCopy:seed}};}};

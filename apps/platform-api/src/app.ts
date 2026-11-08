@@ -92,6 +92,11 @@ import { DiscoveryService } from './discovery/service';
 import { LibraryStudyService } from './library/study';
 import {GameLobbyService} from './games/lobby';
 import {registerGameLobby} from './games/http';
+import {GameJournal} from './games/journal';
+import {GameJournalCrypto} from './games/journal-crypto';
+import {createGameJournalHost} from './games/room-host';
+import type {GameInitialFactory} from './games/journal-host';
+import {GameRulesEngine} from '@virtual-city/boardgame-core';
 import { registerStudy } from './library/http';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
@@ -107,7 +112,8 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort } = {}) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]} } = {}) {
+  if(options.games){const target=new URL(config.DATABASE_URL);if(config.NODE_ENV!=='test'||!['127.0.0.1','localhost','[::1]'].includes(target.hostname)||!/^virtual_city_test(?:_|$)/.test(target.pathname.slice(1)))throw Error('Synthetic game rules require disposable local test runtime');}
   const safetyPolicy = await loadSafetyPolicy(options.safety?.policy,config.SAFETY_POLICY_FILE);
   const mediaClearance=await MediaClearanceGate.create(await loadMediaClearance(),[],options.now);
   const requiredMigrations = await migrationManifest();
@@ -200,7 +206,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const incidents = new IncidentService(db, identity, reports, rooms, () => [...new Set([...worlds.registry.slugs(),'dating'])], options.now);
   const travel = new TravelService(db, identity, rooms, options.now);
   const gameLobby=new GameLobbyService(identity,rooms,social,()=>config.NODE_ENV!=='production'&&config.LOCAL_GAME_LOBBY==='1',options.now);
-  const unsubscribeGameContact=social.onContactWithdrawn(async(_transaction,a,b)=>{gameLobby.revoke(a);gameLobby.revoke(b);});
+  const unsubscribeGameContact=social.onContactWithdrawn(async(transaction,a,b)=>{gameLobby.revoke(a);gameLobby.revoke(b);await gameJournal.withdrawContact(transaction,a,b);});
   // Default-off installations retain their existing export shape and routes.
   if(config.LOCAL_GAME_LOBBY==='1'){
     registerGameLobby(http,config,identity,gameLobby,options.now);
@@ -208,6 +214,13 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
     identity.registerDeletionOwner('gameLobby',async id=>gameLobby.revoke(id));
   }
   http.addHook('preClose',async()=>{unsubscribeGameContact();await gameLobby.close();});
+  // Concrete modes remain unregistered. Only a disposable test composition may
+  // inject synthetic reducers; enabling storage never exposes gameplay routes.
+  const gameHost=createGameJournalHost(rooms,gameLobby,mode=>config.NODE_ENV!=='production'&&config.LOCAL_GAME_JOURNAL==='1'&&!!options.games?.factories.some(factory=>factory.mode===mode));
+  const gameJournal=new GameJournal(db,identity,social,gameHost,config.LOCAL_GAME_JOURNAL==='1'?new GameJournalCrypto(config.GAME_STATE_KEY!,config.GAME_STATE_KEY_ID):undefined,options.games?.engine,options.games?.factories);
+  identity.registerExportOwner('gameJournal',(account,transaction)=>gameJournal.exportAccount(transaction,account));
+  identity.registerDeletionOwner('gameJournal',(account,transaction)=>gameJournal.redactAccount(transaction,account));
+  http.addHook('preClose',async()=>{await gameJournal.close();});
   const invitations = new InvitationService(db, identity, social, worlds.registry, options.now,rooms);
   const focus = new FocusService(db, identity, rooms, options.now);
   const hospitality = new HospitalityService(db, identity, rooms, social, options.hospitality?.staff, options.now);
@@ -320,5 +333,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => {stopDatabaseObservation(); roomMetrics.databaseAttached(false); stopEventLoopObservation(); roomMetrics.close();});
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity,nativeIdentity,privacyRequests,runtimeControls, deadlineIdentity, gateway, social, worlds, rooms, gameLobby, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain,admission };
+  return { app, http, identity,nativeIdentity,privacyRequests,runtimeControls, deadlineIdentity, gateway, social, worlds, rooms, gameLobby, gameJournal, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain,admission };
 }

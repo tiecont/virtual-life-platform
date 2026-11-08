@@ -377,6 +377,12 @@ export class RoomService {
   }
   // Return a fenced visit lease. Game DB/safety work runs after this queue is
   // released; it must recheck the lease before publishing or committing.
+  async assertGameOwner(){await this.authority.assert();if(this.#closed)throw new DomainError('WORLD_UNAVAILABLE',503,'Room authority unavailable');}
+  // Internal post-SQL-wait fence. Never enqueue behind a safety mutation which
+  // may itself be waiting for the transaction's identity locks.
+  gameVisitPresent(accountId:string,sessionId:string,source:TravelSource){
+    try{const room=this.#rooms.get(source.roomId),member=room?.members.get(accountId),context=this.registry.projectionContext('lantern-lodge');return !this.#closed&&this.authority.state==='held'&&source.epoch===this.epoch&&room?.slug==='lantern-lodge'&&room.capacity===8&&member?.id===source.membershipId&&[...member.connections.values()].includes(sessionId)&&context.valid();}catch{return false;}
+  }
   gameProjection(credential:string,source:TravelSource){
     return this.#run(async()=>{await this.#sweep();const actor=await this.identity.authenticate(credential),room=this.#rooms.get(this.#accounts.get(actor.accountId)??''),member=room?.members.get(actor.accountId);
       if(!room||!member||source.epoch!==this.epoch||source.roomId!==room.id||source.membershipId!==member.id||![...member.connections.values()].includes(actor.sessionId))throw new DomainError('NOT_IN_ROOM',409,'A current Lodge visit is required');

@@ -4,6 +4,9 @@ import type {IdentityService} from '../identity/service';
 import type {RoomService} from '../rooms/service';
 import type {SocialService} from '../social/service';
 import {DomainError} from '../common/errors';
+import {z} from 'zod';
+import {GameIdSchema,TravelSourceSchema} from '@virtual-city/contracts';
+import type {GameAdmission} from './journal-host';
 type Lease=Awaited<ReturnType<RoomService['gameProjection']>>;
 type Player={account:string;seat:number;ready:boolean;lease:Lease};
 type Table={id:string;generation:string;room:string;mode:GameMode;version:number;players:Map<string,Player>};
@@ -47,5 +50,12 @@ export class GameLobbyService{
   return this.view(table,account);
  });}
  exportAccount(account:string){this.prune();const table=this.#claims.get(account);return {schemaVersion:1,ephemeral:true,consented:!!table,...table?{tableId:table.id,mode:table.mode,ready:table.players.get(account)!.ready}:{}};}
+ // Trusted server-only admission; no transport can submit members, sessions or
+ // a valid() function. The journal consumes this readiness even on an ambiguous
+ // COMMIT, so a positive retry can never reuse an old group's consent.
+ admit(token:string,raw:unknown):Promise<GameAdmission>{const input=z.strictObject({schemaVersion:z.literal(1),requestId:GameIdSchema,source:TravelSourceSchema,tableId:GameIdSchema,generation:GameIdSchema,expectedVersion:z.number().int().min(1)}).parse(raw);return this.run(async()=>{
+  const lease=await this.rooms.gameProjection(token,input.source);this.prune();const table=this.#tables.get(input.source.roomId);if(!table||table.id!==input.tableId||table.generation!==input.generation||table.version!==input.expectedVersion||!table.players.has(lease.actor.accountId)||table.players.size<limits[table.mode].minimum||[...table.players.values()].some(p=>!p.ready||!p.lease.valid()))throw conflict();const version=table.version,valid=()=>!this.#closed&&this.enabled()&&lease.valid()&&this.#tables.get(table.room)===table&&table.version===version&&[...table.players.values()].every(p=>p.ready&&p.lease.valid());
+  return {tableId:table.id,generation:table.generation,roomEpoch:input.source.epoch,roomId:table.room,mode:table.mode,members:[...table.players.values()].map(p=>({accountId:p.account,membershipId:p.lease.source.membershipId,sessionId:p.lease.actor.sessionId,seatIndex:p.seat})),valid,consume:()=>{if(!valid())throw conflict();for(const player of table.players.values())player.ready=false;table.version++;}};
+ });}
  async close(){this.#closed=true;for(const unsubscribe of this.#unsubscribe)unsubscribe();await this.#tail;this.#tables.clear();this.#claims.clear();}
 }

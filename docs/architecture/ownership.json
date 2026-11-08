@@ -1,6 +1,12 @@
 {
   "schemaVersion": 1,
   "tables": {
+    "engine_game_matches":"engine.games",
+    "engine_game_participants":"engine.games",
+    "engine_game_active_claims":"engine.games",
+    "engine_game_receipts":"engine.games",
+    "engine_game_results":"engine.games",
+    "engine_game_outbox":"engine.games",
     "operator_runtime_controls": "platform.operations",
     "operator_runtime_audit": "platform.operations",
     "identity_privacy_requests": "platform.identity",

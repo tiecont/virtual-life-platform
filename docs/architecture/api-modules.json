@@ -10,8 +10,8 @@
   "modules": {
     "games": {
       "owner":"engine.games",
-      "responsibility":"Default-off visit-scoped table consent lobby; durable match journal is separate",
-      "currentPublicEntryFiles":["games/lobby","games/http"],
+      "responsibility":"Default-off visit-scoped consent lobby and encrypted durable match journal; concrete modes remain gated",
+      "currentPublicEntryFiles":["games/lobby","games/http","games/journal","games/journal-crypto","games/journal-host","games/room-host"],
       "targetBoundary":"Consumes fenced RoomService lease and safety/social owners; never constructs RoomAuthority"
     },
     "composition": {
@@ -280,6 +280,7 @@
     "engine.progression": "progression",
     "restricted.dating": "dating",
     "restricted.dating-test-fixtures": "dating",
-    "platform.admission": "admission"
+    "platform.admission": "admission",
+    "engine.games":"games"
   }
 }

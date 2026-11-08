@@ -5,7 +5,7 @@
   "packageManager": "pnpm@11.28.5",
   "rootBuild": "pnpm -r build",
   "packagesBuild": "pnpm --filter './packages/*' -r build",
-  "lockSha256": "03131c72287355e541100c3a342c3c318f056fabd7de3615183f4b4f8c42b224",
+  "lockSha256": "17af3572e3c5a682ea2b74faa4ff8b644b883afd5c64a8d96e4a6a67ac7210bc",
   "workspaceConfigSha256": "0c79bdd36e2d8eac11365b4cba92045f1d494d8e191f41de14298de2263d0ec1",
   "rootDependencies": {
     "dependencies": {},
@@ -117,7 +117,9 @@
         "peerDependencies": {},
         "optionalDependencies": {}
       },
-      "applicationConsumers": []
+      "applicationConsumers": [
+        "@virtual-city/platform-api"
+      ]
     },
     {
       "name": "@virtual-city/client-sdk",
@@ -596,6 +598,7 @@
       "build": "tsc -p tsconfig.json && node ../../scripts/copy-migrations.mjs",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
+        "@virtual-city/boardgame-core",
         "@virtual-city/config",
         "@virtual-city/contracts",
         "@virtual-city/deadline-world",
