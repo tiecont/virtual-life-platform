@@ -1,0 +1,13 @@
+{
+  "revision": "2.2",
+  "lockedBeforeMeasurement": true,
+  "predecessor": "GROOM-AND-CLOTH-RECIPE-v2_1.json",
+  "reason": "Retain2.1 review;match fur receiver shadows to body to avoid unshadowed bright tufts",
+  "furReceivesRoomShadows": true,
+  "furCastsShadows": false,
+  "bodyCastsShadows": true,
+  "geometryAndTextureRecipe": "Same2.1 seven-strand/torso-clearance recipe and counts",
+  "budgetPolicy": "Original budgets unchanged;measure actual shader/frame cost before qualification",
+  "ownerArtApproval": false,
+  "measurementResults": null
+}

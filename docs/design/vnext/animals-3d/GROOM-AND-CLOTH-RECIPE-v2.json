@@ -1,0 +1,15 @@
+{
+  "revision": 2,
+  "lockedBeforeMeasurement": true,
+  "scope": "Original representative cat surface/silhouette revision;not final art approval or creator/catalog expansion",
+  "provenance": "Project-authored deterministic procedural geometry and DataTextures;no third-party media or new licensing claim",
+  "furCards": {"low": 720, "balanced": 3600, "high": 11000},
+  "furAtlas": {"width": 128, "height": 256, "fiberBands": 6, "alphaTest": 0.18},
+  "groom": "Region-dependent cheek/chest/tail flow projected onto surface tangent;broader tapered cards,short ear coat and softer darker tips",
+  "cloth": {"normalTextureDimension": 64, "repeat": 6, "normalScale": 0.18, "apronGrid": {"low": [4,4], "balanced": [4,6], "high": [6,8]}, "wrapRadius": 0.17, "foldAmplitude": 0.003},
+  "silhouette": "Same head/shoulder vertex counts and rig;slightly fuller lower cheeks and smaller shoulder bulbs",
+  "unchanged": ["24bone hierarchy","animation/serve anchors","v1 palette/outfit IDs and server authority","cached face ownership","original3D/Android/2D budget files"],
+  "verification": "Implement then run unit/resource/disposal,actual closeup/gameplay before-after review,browser/packaged AVD lifecycle and unchanged controlled loading/heap/workload profiles;retain failures",
+  "ownerArtApproval": false,
+  "measurementResults": null
+}

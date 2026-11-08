@@ -2610,7 +2610,7 @@
       ],
       "acceptance": [
         "Runtime3D có animation/anchors/lighting/LOD/readability và shared web/mobile build, không đổi authoritative floor/intent",
-        "Actual browser/AVD/physical checks và source/asset/GPU hashes, không lấy emulator làm physical thermal/battery proof",
+        "Actual browser và packaged AVD technical-spike checks/source/asset/GPU hashes;ghi riêng physical coverage và giữ integrated physical gates ở N06-09/N10-04 theo ADR0133,không lấy emulator làm physical thermal/battery proof",
         "Graphics failure/resize/lifecycle/context loss không khóa DOM/safety/leave hoặc ghi đè v1 appearance; placeholder có nhãn"
       ],
       "verification": {
