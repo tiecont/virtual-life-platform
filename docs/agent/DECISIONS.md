@@ -1,3 +1,9 @@
+# ADR0129 continuation: cached-face construction — 2026-11-08
+
+Reuse immutable face buffers before constructing temporary attachments;retain original material order,Low palette separation,per-actor skeleton/blink and last-lease disposal.192source-archived visual-data snapshots match. [Review](../design/vnext/animals-3d/CACHED-FACE-REVISION-1.md) and[audit](../plans/platform-vnext/audit/N06-11-CACHE-CHECKPOINT.json) retain cold failures,landscape Low regression and first native49.9ms failure alongside separately declared ABBA diagnostic. No budget/authority/appearance/art-approval change;next bounded visible groom/cloth/silhouette work remains N06-11.
+
+## Earlier checkpoints — historical
+
 # ADR0129 continuation: controlled procedural loading/heap — 2026-11-08
 
 Keep original renderer/authority/budgets. [Loading protocol](../../tests/renderer-workload/LOADING-PROFILE-v1.json) committed before measurement:separate cold-context/HTTP-cache vs warm reload,10pairs/tier/profile,nearest-rank p75,external GC with consistent active baseline. Browser comparison does not qualify native process starts or final-art wait/catalog. [Actual loading exceeds limits;heap passes](../plans/platform-vnext/audit/N06-11-LOADING-CHECKPOINT.json);retain failures and profile for optimization comparison.

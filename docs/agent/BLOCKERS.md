@@ -1,3 +1,9 @@
+# Cache optimization and remaining3D/native gates — 2026-11-08
+
+[Current blockers](../plans/platform-vnext/state/BLOCKERS.md):cache CPU improves with exact visual-data preservation;all cold loading still exceeds5000ms,landscape Low regresses,and first AVD Low49.9ms remains FAIL despite ABBA passes. N06-11 IN_PROGRESS;next visible fur/cloth/silhouette revision,remaining native/physical/final-art,N11 owner/retention,Apple and Phase2 gates unchanged.
+
+## Earlier checkpoints — historical
+
 # Loading observations and remaining3D/native gates — 2026-11-08
 
 [Current blockers](../plans/platform-vnext/state/BLOCKERS.md):controlled Chromium all cold/Balanced warm loading exceed5000ms;heap passes in its bounded synthetic scope. N06-11 remains IN_PROGRESS for optimization/final graphics/native/physical. N11 owner disclosure/retention,Apple access and Phase2 gates unchanged.

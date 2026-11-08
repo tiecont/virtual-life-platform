@@ -1,3 +1,9 @@
+# N06-11 cache optimization with open loading/frame/art gates — 2026-11-08
+
+[Cache checkpoint](../audit/N06-11-CACHE-CHECKPOINT.json),source2b4c070:192exact visual-data snapshots and bounded CPU optimization verified. All browser cold p75 exceed5000ms;all warm comparisons pass but landscape Low regresses and Balanced4996.6ms has3.4ms headroom. First required AVD Low49.9ms exceeds33.4ms and remains FAIL. Predeclared old/new/new/old diagnostic required tiers pass16.7–16.8ms,without erasing failure or establishing a boot/thermal cause. N06-11 IN_PROGRESS for visible groom/cloth/silhouette,loading attribution,separate packaged-native process/cache/GC and physical/final-art qualification. No budget/owner/public approval changed. Normal APK9148df93…18assets restored/reinstalled;AVD STOPPED. N06-07 still waits for whole N06-11. N11 owner/provider/retention/disclosure,N14 Apple access and Phase2 dependency/handoff gates unchanged.
+
+## Earlier checkpoints — historical
+
 # N06-11 observed loading failures and remaining gates — 2026-11-08
 
 [Controlled loading/heap](../audit/N06-11-LOADING-CHECKPOINT.json),source db6f428:all cold p75 and Balanced warm p75 exceed5000ms in locked Chromium SwiftShader CPU4x/network profile;Low warm and external-GC heap growth pass. N06-11 stays IN_PROGRESS for profiling/optimization,final fur/cloth/camera/full scenes,packaged-native controlled loading/heap and physical qualification. No changed threshold,art-wait/catalog/thermal/nativeRSS/iOS/owner approval inferred. Existing normal APK unchanged/18assets match;no new native run;own AVD STOPPED. N06-07 still waits for whole N06-11. N11 provider/retention/public-owner/Play facts,N14 Mac/Xcode/iPhone and Phase2 dependency/handoff gates remain unchanged. This work is actionable optimization,not a new external blocker.

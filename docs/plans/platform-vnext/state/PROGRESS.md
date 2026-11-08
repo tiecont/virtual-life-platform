@@ -1,3 +1,9 @@
+# N06-11 cached-face construction partial verification — 2026-11-08
+
+Source2b4c070:skip discarded geometry on cached faces,192exact visual-data snapshots PASS.95governance/401unit/types/build/lint/CI/assets/boundaries,corrected browser/AVD studio and normal bundle/default-off/preview PASS. Browser80loads:all warm comparisons pass,all cold exceed;landscape Low regresses. First AVD Low49.9ms FAIL retained;4run old/new/new/old diagnostic≈16.7–16.8ms required tiers,not a replacement. Normal APK9148df93…18assets restored/reinstalled,AVD STOPPED.59prior records/49immutables/2279private refs/6frozen indices preserved;record60 partial,N06-11 IN_PROGRESS. [Audit](../audit/N06-11-CACHE-CHECKPOINT.json). Next visible groom/cloth/silhouette revision under unchanged budgets;loading/native/physical/owner/Apple/Phase2 gates remain.
+
+## Earlier checkpoints — historical
+
 # N06-11 controlled loading/heap partial verification — 2026-11-08
 
 Source db6f428:separate implemented/locked-before-run Chromium loading+external-GC harness. Actual80loads/40recreates complete;all cold and Balanced warm exceed5000ms,Low warm passes;heap grows≈1MiB per profile below16MiB with0lease/canvas teardown.95governance/400unit/types/build/lint/CI/architecture/assets/boundaries/3normal bundle cases PASS. Normal output/APK18assets unchanged,AVD STOPPED;no new native execution. Prior58records/49immutables/2274private refs/5frozen indices preserved;record59 partial,N06-11 IN_PROGRESS. [Audit](../audit/N06-11-LOADING-CHECKPOINT.json). Next:attribute and optimize procedural initialization without stream/budget/profile changes;native/art/physical/owner/Apple/Phase2 gates remain.

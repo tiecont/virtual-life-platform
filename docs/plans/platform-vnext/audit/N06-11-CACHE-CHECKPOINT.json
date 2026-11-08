@@ -1,0 +1,1345 @@
+{
+  "schemaVersion": 1,
+  "taskId": "N06-11",
+  "sourceRevision": "2b4c070bbe199514ba82031ddb72873c47acfe34",
+  "executedAt": "2026-11-08T12:53:46.532Z",
+  "acceptance_met": false,
+  "sliceVerification": "FUNCTIONAL_CPU_OPTIMIZATION_WITH_OPEN_COLD_LOADING_AND_FIRST_AVD_FRAME_FAILURE",
+  "environment": "CachyOS Linux7.2.9-2;Node26.9.0/pnpm11.28.5;Three0.187.0;Chromium156.0.8078.4/ANGLE SwiftShader controlledCPU4x/network;owned Emulator37.2.13/API35/WebView124/AMD host GPU",
+  "tests": {
+    "governance": 95,
+    "unit": 401,
+    "scene3dFocused": 20,
+    "modelPoseSnapshots": 192,
+    "loadingSamples": 80,
+    "browserExternalGCRecreates": 40,
+    "nativeWorkloadRuns": 5,
+    "nativeRecreateDiagnostics": 100,
+    "browserStudioProfiles": 2,
+    "nativeStudioScenarios": 5,
+    "normalBundleCases": 3,
+    "normalNativePreviewCases": 5,
+    "normalDisabledNativePorts": 7,
+    "jvmTask": "UP-TO-DATE;unchanged Java"
+  },
+  "nodeCPU": {
+    "before": {
+      "scope": "Node CPU attribution only,not browser/native loading or GPU qualification",
+      "rounds": 3,
+      "actors": 20,
+      "tiers": [
+        "low",
+        "balanced",
+        "high"
+      ],
+      "palettes": [
+        "fern",
+        "amber",
+        "indigo",
+        "rose",
+        "cloud",
+        "cocoa",
+        "mint",
+        "plum"
+      ],
+      "samplingIntervalMicroseconds": 1000,
+      "label": "before",
+      "sourceRevision": "04f86e6207efc3a8957db49bbcf9f1f44c08d1ca",
+      "sourceSha256": "4a0cb6dadd2f4d113785796f0e2c8fd44af87454a21dd9b9087d1420b6d1e2f3",
+      "timings": [
+        {
+          "quality": "low",
+          "round": 1,
+          "createMs": 241.729925
+        },
+        {
+          "quality": "low",
+          "round": 2,
+          "createMs": 155.86521199999999
+        },
+        {
+          "quality": "low",
+          "round": 3,
+          "createMs": 139.088487
+        },
+        {
+          "quality": "balanced",
+          "round": 1,
+          "createMs": 183.72806300000002
+        },
+        {
+          "quality": "balanced",
+          "round": 2,
+          "createMs": 164.65766399999995
+        },
+        {
+          "quality": "balanced",
+          "round": 3,
+          "createMs": 182.79193699999996
+        },
+        {
+          "quality": "high",
+          "round": 1,
+          "createMs": 258.17018899999994
+        },
+        {
+          "quality": "high",
+          "round": 2,
+          "createMs": 254.64719800000012
+        },
+        {
+          "quality": "high",
+          "round": 3,
+          "createMs": 250.13997000000018
+        }
+      ],
+      "inclusiveMicroseconds": [
+        [
+          "(root) :0",
+          1853475
+        ],
+        [
+          " file:///home/tiecont/Projects/virtual-city/artifacts/vnext/n06-11/cache-v1/profile.mts:0",
+          1768232
+        ],
+        [
+          "createAnimal file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          1736144
+        ],
+        [
+          "bind file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          396195
+        ],
+        [
+          "compactFaceGeometry file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/face-geometry.ts:1",
+          350337
+        ],
+        [
+          "acquire file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          295485
+        ],
+        [
+          "clone file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:19739",
+          266663
+        ],
+        [
+          "mergeVertices file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/examples/jsm/utils/BufferGeometryUtils.js:692",
+          243798
+        ],
+        [
+          "Color file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:14172",
+          218946
+        ],
+        [
+          "set file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:14220",
+          208196
+        ],
+        [
+          "setStyle file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:14357",
+          192017
+        ],
+        [
+          "toArray file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:14977",
+          161751
+        ],
+        [
+          "groom file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          153572
+        ],
+        [
+          "toNonIndexed file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:19517",
+          142282
+        ],
+        [
+          "TubeGeometry file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:37814",
+          141024
+        ],
+        [
+          "convertBufferAttribute file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:19519",
+          131858
+        ],
+        [
+          "SphereGeometry file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:37206",
+          105078
+        ],
+        [
+          "ExtrudeGeometry file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:35451",
+          93840
+        ],
+        [
+          "(garbage collector) :0",
+          84156
+        ],
+        [
+          "Float32BufferAttribute file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:17991",
+          75257
+        ],
+        [
+          "generateBufferData file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:37870",
+          71906
+        ],
+        [
+          "setHex file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:14275",
+          63197
+        ],
+        [
+          "addShape file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:35492",
+          59223
+        ],
+        [
+          "convert file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:6700",
+          56728
+        ],
+        [
+          "colorSpaceToWorking file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:6741",
+          56728
+        ],
+        [
+          "createServingProp file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/serve-prop.ts:1",
+          54876
+        ],
+        [
+          "SRGBToLinear file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:6842",
+          54591
+        ],
+        [
+          "generateSegment file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:37896",
+          47148
+        ],
+        [
+          " file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          40898
+        ],
+        [
+          "normalize file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:5564",
+          39744
+        ],
+        [
+          "applyMatrix4 file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:18778",
+          36007
+        ],
+        [
+          "computeFrenetFrames file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:32054",
+          33393
+        ],
+        [
+          "Object3D file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:11954",
+          31335
+        ],
+        [
+          "Uint16BufferAttribute file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:17754",
+          29906
+        ],
+        [
+          "getX file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:17348",
+          29305
+        ],
+        [
+          "copy file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:19751",
+          27268
+        ],
+        [
+          "BufferAttribute file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:16949",
+          27124
+        ],
+        [
+          "setIndex file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:18632",
+          26641
+        ],
+        [
+          "ellipsoid file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          25717
+        ],
+        [
+          "length file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:5541",
+          24681
+        ],
+        [
+          "RegExp: ^\\#([A-Fa-f\\d]+)$ :0",
+          24660
+        ],
+        [
+          "Mesh file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:24112",
+          24130
+        ],
+        [
+          "f4 file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:36120",
+          23789
+        ],
+        [
+          "sidewalls file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:36066",
+          23789
+        ],
+        [
+          "buildSideFaces file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:36043",
+          23789
+        ],
+        [
+          "getTangentAt file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:32039",
+          23630
+        ],
+        [
+          "clone file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:17582",
+          22959
+        ],
+        [
+          "getUtoTmapping file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:31924",
+          22504
+        ],
+        [
+          "computeVertexNormals file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:19399",
+          22330
+        ],
+        [
+          "coatAt file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          21792
+        ],
+        [
+          "fromBufferAttribute file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:5975",
+          21026
+        ],
+        [
+          "post node:inspector:115",
+          20688
+        ],
+        [
+          " file:///home/tiecont/Projects/virtual-city/artifacts/vnext/n06-11/cache-v1/profile.mts:1",
+          20688
+        ],
+        [
+          "getY file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:17381",
+          20042
+        ],
+        [
+          "MeshPhysicalMaterial file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:39474",
+          19072
+        ],
+        [
+          "CylinderGeometry file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:30746",
+          18741
+        ],
+        [
+          "material file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          18407
+        ],
+        [
+          "mergeGeometries file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/examples/jsm/utils/BufferGeometryUtils.js:156",
+          17515
+        ],
+        [
+          "furTexture file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          17079
+        ],
+        [
+          "copy file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:37330",
+          16135
+        ]
+      ],
+      "executedAt": "2026-11-08T12:10:54.312Z"
+    },
+    "after": {
+      "scope": "Node CPU attribution only,not browser/native loading or GPU qualification",
+      "rounds": 3,
+      "actors": 20,
+      "tiers": [
+        "low",
+        "balanced",
+        "high"
+      ],
+      "palettes": [
+        "fern",
+        "amber",
+        "indigo",
+        "rose",
+        "cloud",
+        "cocoa",
+        "mint",
+        "plum"
+      ],
+      "samplingIntervalMicroseconds": 1000,
+      "label": "after",
+      "sourceRevision": "04f86e6207efc3a8957db49bbcf9f1f44c08d1ca",
+      "sourceSha256": "7843ff9412ec26cc27e1ccd1f37989ddcefa421f903dc9d43464206adde26299",
+      "timings": [
+        {
+          "quality": "low",
+          "round": 1,
+          "createMs": 198.59892
+        },
+        {
+          "quality": "low",
+          "round": 2,
+          "createMs": 129.55049199999996
+        },
+        {
+          "quality": "low",
+          "round": 3,
+          "createMs": 111.34161799999993
+        },
+        {
+          "quality": "balanced",
+          "round": 1,
+          "createMs": 76.874822
+        },
+        {
+          "quality": "balanced",
+          "round": 2,
+          "createMs": 68.78962200000001
+        },
+        {
+          "quality": "balanced",
+          "round": 3,
+          "createMs": 71.82806700000003
+        },
+        {
+          "quality": "high",
+          "round": 1,
+          "createMs": 134.278589
+        },
+        {
+          "quality": "high",
+          "round": 2,
+          "createMs": 118.76961299999994
+        },
+        {
+          "quality": "high",
+          "round": 3,
+          "createMs": 129.139811
+        }
+      ],
+      "inclusiveMicroseconds": [
+        [
+          "(root) :0",
+          1065370
+        ],
+        [
+          " file:///home/tiecont/Projects/virtual-city/artifacts/vnext/n06-11/cache-v1/profile.mts:0",
+          984263
+        ],
+        [
+          "createAnimal file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          945149
+        ],
+        [
+          "compactFaceGeometry file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/face-geometry.ts:1",
+          355950
+        ],
+        [
+          "acquire file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          313638
+        ],
+        [
+          "mergeVertices file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/examples/jsm/utils/BufferGeometryUtils.js:692",
+          267927
+        ],
+        [
+          "groom file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          170900
+        ],
+        [
+          "clone file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:19739",
+          87600
+        ],
+        [
+          "(garbage collector) :0",
+          79973
+        ],
+        [
+          "bind file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          71796
+        ],
+        [
+          "createServingProp file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/serve-prop.ts:1",
+          48449
+        ],
+        [
+          "toArray file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:14977",
+          48241
+        ],
+        [
+          "TubeGeometry file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:37814",
+          46210
+        ],
+        [
+          "Color file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:14172",
+          37261
+        ],
+        [
+          "ExtrudeGeometry file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:35451",
+          36017
+        ],
+        [
+          " file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          34999
+        ],
+        [
+          "set file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:14220",
+          34238
+        ],
+        [
+          "toNonIndexed file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:19517",
+          33193
+        ],
+        [
+          "getX file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:17348",
+          32551
+        ],
+        [
+          "setStyle file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:14357",
+          31024
+        ],
+        [
+          "convertBufferAttribute file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:19519",
+          30165
+        ],
+        [
+          "generateBufferData file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:37870",
+          29009
+        ],
+        [
+          "Float32BufferAttribute file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:17991",
+          26525
+        ],
+        [
+          "ellipsoid file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          24885
+        ],
+        [
+          "getZ file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:17414",
+          23274
+        ],
+        [
+          "SphereGeometry file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:37206",
+          23224
+        ],
+        [
+          "post node:inspector:115",
+          22444
+        ],
+        [
+          " file:///home/tiecont/Projects/virtual-city/artifacts/vnext/n06-11/cache-v1/profile.mts:1",
+          22444
+        ],
+        [
+          "addShape file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:35492",
+          21663
+        ],
+        [
+          "coatAt file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          21620
+        ],
+        [
+          "Object3D file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:11954",
+          19385
+        ],
+        [
+          "mergeGeometries file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/examples/jsm/utils/BufferGeometryUtils.js:156",
+          19066
+        ],
+        [
+          "furTexture file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          18350
+        ],
+        [
+          "part file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/serve-prop.ts:1",
+          17875
+        ],
+        [
+          "fromBufferAttribute file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:5975",
+          16280
+        ],
+        [
+          "skeleton file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          15730
+        ],
+        [
+          "limb file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          15544
+        ],
+        [
+          "normalize file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:5564",
+          15049
+        ],
+        [
+          "copy file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:19751",
+          14294
+        ],
+        [
+          "fiberNormals file:///home/tiecont/Projects/virtual-city/packages/scene3d/src/animal.ts:1",
+          14145
+        ],
+        [
+          "toArray file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:5958",
+          13120
+        ],
+        [
+          "setHex file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:14275",
+          12967
+        ],
+        [
+          "computeFrenetFrames file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:32054",
+          12895
+        ],
+        [
+          "Bone file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:24959",
+          11811
+        ],
+        [
+          "computeVertexNormals file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:19399",
+          11501
+        ],
+        [
+          "clone file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:17582",
+          11418
+        ],
+        [
+          "getY file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:17381",
+          11228
+        ],
+        [
+          "SRGBToLinear file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:6842",
+          10844
+        ],
+        [
+          "convert file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:6700",
+          10844
+        ],
+        [
+          "colorSpaceToWorking file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:6741",
+          10844
+        ],
+        [
+          "BufferAttribute file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:16949",
+          10786
+        ],
+        [
+          "generateSegment file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:37896",
+          10645
+        ],
+        [
+          "mergeAttributes file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/examples/jsm/utils/BufferGeometryUtils.js:373",
+          10139
+        ],
+        [
+          "Mesh file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:24112",
+          9931
+        ],
+        [
+          "divideScalar file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:5335",
+          9645
+        ],
+        [
+          "CylinderGeometry file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:30746",
+          9060
+        ],
+        [
+          "applyMatrix4 file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:18778",
+          8644
+        ],
+        [
+          "computeBoundingSphere file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:19120",
+          8638
+        ],
+        [
+          "getTangentAt file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:32039",
+          8577
+        ],
+        [
+          "Uint16BufferAttribute file:///home/tiecont/Projects/virtual-city/node_modules/.pnpm/three@0.187.0/node_modules/three/build/three.core.js:17754",
+          8543
+        ]
+      ],
+      "executedAt": "2026-11-08T12:13:13.796Z"
+    }
+  },
+  "loading": [
+    {
+      "profile": "desktop",
+      "gpu": {
+        "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "tiers": [
+        {
+          "quality": "low",
+          "samples": 20,
+          "evaluation": {
+            "cold": {
+              "complete": true,
+              "cacheEvidence": true,
+              "p75Ms": 6066.700000000186,
+              "limitMs": 5000,
+              "observedLimitMet": false
+            },
+            "warm": {
+              "complete": true,
+              "cacheEvidence": true,
+              "p75Ms": 3594,
+              "limitMs": 5000,
+              "observedLimitMet": true
+            }
+          },
+          "baseline": {
+            "cold": {
+              "complete": true,
+              "cacheEvidence": true,
+              "p75Ms": 6691.099999999977,
+              "limitMs": 5000,
+              "observedLimitMet": false
+            },
+            "warm": {
+              "complete": true,
+              "cacheEvidence": true,
+              "p75Ms": 4045.5,
+              "limitMs": 5000,
+              "observedLimitMet": true
+            }
+          },
+          "changePercent": {
+            "cold": -9.331798956820148,
+            "warm": -11.16054875787913
+          }
+        },
+        {
+          "quality": "balanced",
+          "samples": 20,
+          "evaluation": {
+            "cold": {
+              "complete": true,
+              "cacheEvidence": true,
+              "p75Ms": 7053.600000000093,
+              "limitMs": 5000,
+              "observedLimitMet": false
+            },
+            "warm": {
+              "complete": true,
+              "cacheEvidence": true,
+              "p75Ms": 4503.200000000186,
+              "limitMs": 5000,
+              "observedLimitMet": true
+            }
+          },
+          "baseline": {
+            "cold": {
+              "complete": true,
+              "cacheEvidence": true,
+              "p75Ms": 8201.599999999977,
+              "limitMs": 5000,
+              "observedLimitMet": false
+            },
+            "warm": {
+              "complete": true,
+              "cacheEvidence": true,
+              "p75Ms": 5538.20000000007,
+              "limitMs": 5000,
+              "observedLimitMet": false
+            }
+          },
+          "changePercent": {
+            "cold": -13.997268825593622,
+            "warm": -18.688382506949374
+          }
+        }
+      ],
+      "heap": {
+        "baseline": {
+          "usedSize": 13950212,
+          "totalSize": 14487552,
+          "embedderHeapUsedSize": 716744,
+          "backingStorageSize": 7697462,
+          "gcCompleted": true,
+          "at": "2026-11-08T12:20:08.979Z"
+        },
+        "evaluation": {
+          "complete": true,
+          "growthBytes": 1508716,
+          "peakGrowthBytes": 2816768,
+          "allowedGrowthBytes": 16777216,
+          "observedLimitMet": true
+        },
+        "cycles": 20,
+        "stopped": {
+          "usedSize": 9659180,
+          "totalSize": 10293248,
+          "embedderHeapUsedSize": 461160,
+          "backingStorageSize": 1510419,
+          "gcCompleted": true,
+          "at": "2026-11-08T12:22:00.627Z",
+          "references": 0,
+          "canvases": 0
+        }
+      }
+    },
+    {
+      "profile": "landscape",
+      "gpu": {
+        "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "tiers": [
+        {
+          "quality": "low",
+          "samples": 20,
+          "evaluation": {
+            "cold": {
+              "complete": true,
+              "cacheEvidence": true,
+              "p75Ms": 7498.899999999907,
+              "limitMs": 5000,
+              "observedLimitMet": false
+            },
+            "warm": {
+              "complete": true,
+              "cacheEvidence": true,
+              "p75Ms": 4488.799999999814,
+              "limitMs": 5000,
+              "observedLimitMet": true
+            }
+          },
+          "baseline": {
+            "cold": {
+              "complete": true,
+              "cacheEvidence": true,
+              "p75Ms": 7139.90000000014,
+              "limitMs": 5000,
+              "observedLimitMet": false
+            },
+            "warm": {
+              "complete": true,
+              "cacheEvidence": true,
+              "p75Ms": 4230,
+              "limitMs": 5000,
+              "observedLimitMet": true
+            }
+          },
+          "changePercent": {
+            "cold": 5.028081625789715,
+            "warm": 6.118203309688264
+          }
+        },
+        {
+          "quality": "balanced",
+          "samples": 20,
+          "evaluation": {
+            "cold": {
+              "complete": true,
+              "cacheEvidence": true,
+              "p75Ms": 8324.899999999907,
+              "limitMs": 5000,
+              "observedLimitMet": false
+            },
+            "warm": {
+              "complete": true,
+              "cacheEvidence": true,
+              "p75Ms": 4996.600000000093,
+              "limitMs": 5000,
+              "observedLimitMet": true
+            }
+          },
+          "baseline": {
+            "cold": {
+              "complete": true,
+              "cacheEvidence": true,
+              "p75Ms": 8705.600000000093,
+              "limitMs": 5000,
+              "observedLimitMet": false
+            },
+            "warm": {
+              "complete": true,
+              "cacheEvidence": true,
+              "p75Ms": 6323.399999999907,
+              "limitMs": 5000,
+              "observedLimitMet": false
+            }
+          },
+          "changePercent": {
+            "cold": -4.373047233966442,
+            "warm": -20.98238289527522
+          }
+        }
+      ],
+      "heap": {
+        "baseline": {
+          "usedSize": 13970224,
+          "totalSize": 15011840,
+          "embedderHeapUsedSize": 580920,
+          "backingStorageSize": 7697462,
+          "gcCompleted": true,
+          "at": "2026-11-08T12:26:52.090Z"
+        },
+        "evaluation": {
+          "complete": true,
+          "growthBytes": 1077352,
+          "peakGrowthBytes": 1319760,
+          "allowedGrowthBytes": 16777216,
+          "observedLimitMet": true
+        },
+        "cycles": 20,
+        "stopped": {
+          "usedSize": 9681364,
+          "totalSize": 10555392,
+          "embedderHeapUsedSize": 465912,
+          "backingStorageSize": 1510419,
+          "gcCompleted": true,
+          "at": "2026-11-08T12:28:39.105Z",
+          "references": 0,
+          "canvases": 0
+        }
+      }
+    }
+  ],
+  "native": {
+    "first": {
+      "ref": "artifacts/vnext/n06-11/cache-v1/android-f6ebc48a/facts.json",
+      "result": "OBSERVED_LIMITS_EXCEEDED_NOT_PHYSICAL_QUALIFICATION",
+      "tiers": [
+        {
+          "quality": "low",
+          "required": true,
+          "evaluation": {
+            "scope": "Observed synthetic limits,not physical qualification",
+            "checks": {
+              "actors": true,
+              "quality": true,
+              "unknownTextures": true,
+              "geometryBytes": true,
+              "animationBytes": true,
+              "characterTextures": true,
+              "environmentTextures": true,
+              "otherTextures": true,
+              "totalTextures": true,
+              "maxTextureDimension": true,
+              "drawCalls": true,
+              "triangles": true,
+              "frameP95": false
+            },
+            "observedLimitsMet": false,
+            "peaks": {
+              "calls": 121,
+              "triangles": 114572,
+              "geometryBytes": 4730704,
+              "animationBytes": 46080,
+              "characterTextureBytes": 524288,
+              "environmentTextureBytes": 87380,
+              "otherTextureBytes": 252368,
+              "totalTextureBytes": 864036,
+              "maxTextureDimension": 1155
+            },
+            "frameWindow": {
+              "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+              "samples": 291,
+              "p95Ms": 49.899999999999636,
+              "maxMs": 100,
+              "stallsOver250Ms": 0,
+              "elapsedMs": 8035.700000000004
+            }
+          }
+        },
+        {
+          "quality": "balanced",
+          "required": true,
+          "evaluation": {
+            "scope": "Observed synthetic limits,not physical qualification",
+            "checks": {
+              "actors": true,
+              "quality": true,
+              "unknownTextures": true,
+              "geometryBytes": true,
+              "animationBytes": true,
+              "characterTextures": true,
+              "environmentTextures": true,
+              "otherTextures": true,
+              "totalTextures": true,
+              "maxTextureDimension": true,
+              "drawCalls": true,
+              "triangles": true,
+              "frameP95": true
+            },
+            "observedLimitsMet": true,
+            "peaks": {
+              "calls": 148,
+              "triangles": 163348,
+              "geometryBytes": 4742376,
+              "animationBytes": 46080,
+              "characterTextureBytes": 524288,
+              "environmentTextureBytes": 87380,
+              "otherTextureBytes": 8640976,
+              "totalTextureBytes": 9252644,
+              "maxTextureDimension": 1155
+            },
+            "frameWindow": {
+              "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+              "samples": 365,
+              "p95Ms": 16.700000000000728,
+              "maxMs": 16.80000000000291,
+              "stallsOver250Ms": 0,
+              "elapsedMs": 8106.299999999996
+            }
+          }
+        },
+        {
+          "quality": "high",
+          "required": false,
+          "evaluation": {
+            "scope": "Observed synthetic limits,not physical qualification",
+            "checks": {
+              "actors": true,
+              "quality": true,
+              "unknownTextures": true,
+              "geometryBytes": true,
+              "animationBytes": true,
+              "characterTextures": true,
+              "environmentTextures": true,
+              "otherTextures": true,
+              "totalTextures": true,
+              "maxTextureDimension": true,
+              "drawCalls": false,
+              "triangles": true,
+              "frameP95": true
+            },
+            "observedLimitsMet": false,
+            "peaks": {
+              "calls": 184,
+              "triangles": 232752,
+              "geometryBytes": 4765720,
+              "animationBytes": 46080,
+              "characterTextureBytes": 524288,
+              "environmentTextureBytes": 87380,
+              "otherTextureBytes": 8640976,
+              "totalTextureBytes": 9252644,
+              "maxTextureDimension": 1155
+            },
+            "frameWindow": {
+              "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+              "samples": 368,
+              "p95Ms": 16.799999999999272,
+              "maxMs": 16.80000000000291,
+              "stallsOver250Ms": 0,
+              "elapsedMs": 8143.299999999992
+            }
+          }
+        }
+      ]
+    },
+    "abbaProtocol": {
+      "ref": "artifacts/vnext/n06-11/cache-v1/ABBA-PROFILE.json",
+      "sha256": "b25ea3a6078f1c7f9db4373d1d0897c5890a6736935d01dea168ceb05a91cd93"
+    },
+    "abbaRuns": [
+      {
+        "order": 1,
+        "binary": "old",
+        "binarySourceRevision": "21cbc1f21d4ac8221805e49215aec3512542c712",
+        "binarySha256": "96ed0652bc75bc2db2e9d88b3d38479ebc61398ee463125b39bcfae641695028",
+        "executingHarnessSourceRevision": "2b4c070bbe199514ba82031ddb72873c47acfe34",
+        "host": {
+          "loadavg": [
+            3.07,
+            6.3,
+            6.46
+          ],
+          "freeMemoryBytes": 5962641408,
+          "uptimeSeconds": 3632.79
+        },
+        "exitCode": 0,
+        "outer": "artifacts/vnext/n10-05/workload-4a9795c1",
+        "artifactDirectory": "artifacts/vnext/n06-11/cache-v1/android-f0d2928f",
+        "result": "OBSERVED_LIMITS_MET_NOT_PHYSICAL_QUALIFICATION",
+        "tiers": [
+          {
+            "quality": "low",
+            "required": true,
+            "observedLimitsMet": true,
+            "frame": {
+              "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+              "samples": 353,
+              "p95Ms": 16.799999999999272,
+              "maxMs": 66.70000000000073,
+              "stallsOver250Ms": 0,
+              "elapsedMs": 8122.899999999994
+            }
+          },
+          {
+            "quality": "balanced",
+            "required": true,
+            "observedLimitsMet": true,
+            "frame": {
+              "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+              "samples": 359,
+              "p95Ms": 16.799999999999272,
+              "maxMs": 33.399999999999636,
+              "stallsOver250Ms": 0,
+              "elapsedMs": 8114
+            }
+          },
+          {
+            "quality": "high",
+            "required": false,
+            "observedLimitsMet": false,
+            "frame": {
+              "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+              "samples": 355,
+              "p95Ms": 16.80000000000291,
+              "maxMs": 50.099999999998545,
+              "stallsOver250Ms": 0,
+              "elapsedMs": 8221.300000000017
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "binary": "new",
+        "binarySourceRevision": "2b4c070bbe199514ba82031ddb72873c47acfe34",
+        "binarySha256": "856cefc2037559718b45094a77359b753da7d3fffb7b8bc5ab7e8d1d14cbad47",
+        "executingHarnessSourceRevision": "2b4c070bbe199514ba82031ddb72873c47acfe34",
+        "host": {
+          "loadavg": [
+            3.55,
+            5.88,
+            6.31
+          ],
+          "freeMemoryBytes": 5860950016,
+          "uptimeSeconds": 3693.05
+        },
+        "exitCode": 0,
+        "outer": "artifacts/vnext/n10-05/workload-c83c1fc5",
+        "artifactDirectory": "artifacts/vnext/n06-11/cache-v1/android-6910cefe",
+        "result": "OBSERVED_LIMITS_MET_NOT_PHYSICAL_QUALIFICATION",
+        "tiers": [
+          {
+            "quality": "low",
+            "required": true,
+            "observedLimitsMet": true,
+            "frame": {
+              "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+              "samples": 361,
+              "p95Ms": 16.800000000000182,
+              "maxMs": 50,
+              "stallsOver250Ms": 0,
+              "elapsedMs": 8098.899999999965
+            }
+          },
+          {
+            "quality": "balanced",
+            "required": true,
+            "observedLimitsMet": true,
+            "frame": {
+              "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+              "samples": 367,
+              "p95Ms": 16.799999999999272,
+              "maxMs": 16.80000000000109,
+              "stallsOver250Ms": 0,
+              "elapsedMs": 8138.299999999988
+            }
+          },
+          {
+            "quality": "high",
+            "required": false,
+            "observedLimitsMet": false,
+            "frame": {
+              "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+              "samples": 369,
+              "p95Ms": 16.799999999999272,
+              "maxMs": 16.799999999999272,
+              "stallsOver250Ms": 0,
+              "elapsedMs": 8171.200000000012
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "binary": "new",
+        "binarySourceRevision": "2b4c070bbe199514ba82031ddb72873c47acfe34",
+        "binarySha256": "856cefc2037559718b45094a77359b753da7d3fffb7b8bc5ab7e8d1d14cbad47",
+        "executingHarnessSourceRevision": "2b4c070bbe199514ba82031ddb72873c47acfe34",
+        "host": {
+          "loadavg": [
+            3.26,
+            5.42,
+            6.12
+          ],
+          "freeMemoryBytes": 6187880448,
+          "uptimeSeconds": 3751.38
+        },
+        "exitCode": 0,
+        "outer": "artifacts/vnext/n10-05/workload-18c708e8",
+        "artifactDirectory": "artifacts/vnext/n06-11/cache-v1/android-c66e1a1d",
+        "result": "OBSERVED_LIMITS_MET_NOT_PHYSICAL_QUALIFICATION",
+        "tiers": [
+          {
+            "quality": "low",
+            "required": true,
+            "observedLimitsMet": true,
+            "frame": {
+              "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+              "samples": 365,
+              "p95Ms": 16.799999999999272,
+              "maxMs": 49.899999999999636,
+              "stallsOver250Ms": 0,
+              "elapsedMs": 8137.5
+            }
+          },
+          {
+            "quality": "balanced",
+            "required": true,
+            "observedLimitsMet": true,
+            "frame": {
+              "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+              "samples": 367,
+              "p95Ms": 16.700000000000728,
+              "maxMs": 16.80000000000109,
+              "stallsOver250Ms": 0,
+              "elapsedMs": 8118.5
+            }
+          },
+          {
+            "quality": "high",
+            "required": false,
+            "observedLimitsMet": false,
+            "frame": {
+              "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+              "samples": 370,
+              "p95Ms": 16.700000000000728,
+              "maxMs": 16.799999999999272,
+              "stallsOver250Ms": 0,
+              "elapsedMs": 8189.5
+            }
+          }
+        ]
+      },
+      {
+        "order": 4,
+        "binary": "old",
+        "binarySourceRevision": "21cbc1f21d4ac8221805e49215aec3512542c712",
+        "binarySha256": "96ed0652bc75bc2db2e9d88b3d38479ebc61398ee463125b39bcfae641695028",
+        "executingHarnessSourceRevision": "2b4c070bbe199514ba82031ddb72873c47acfe34",
+        "host": {
+          "loadavg": [
+            4.93,
+            5.73,
+            6.2
+          ],
+          "freeMemoryBytes": 6300205056,
+          "uptimeSeconds": 3808.62
+        },
+        "exitCode": 0,
+        "outer": "artifacts/vnext/n10-05/workload-0dac54c5",
+        "artifactDirectory": "artifacts/vnext/n06-11/cache-v1/android-4d1fd3be",
+        "result": "OBSERVED_LIMITS_MET_NOT_PHYSICAL_QUALIFICATION",
+        "tiers": [
+          {
+            "quality": "low",
+            "required": true,
+            "observedLimitsMet": true,
+            "frame": {
+              "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+              "samples": 351,
+              "p95Ms": 16.800000000000182,
+              "maxMs": 50,
+              "stallsOver250Ms": 0,
+              "elapsedMs": 8102.099999999977
+            }
+          },
+          {
+            "quality": "balanced",
+            "required": true,
+            "observedLimitsMet": true,
+            "frame": {
+              "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+              "samples": 357,
+              "p95Ms": 16.80000000000291,
+              "maxMs": 33.400000000001455,
+              "stallsOver250Ms": 0,
+              "elapsedMs": 8094.5
+            }
+          },
+          {
+            "quality": "high",
+            "required": false,
+            "observedLimitsMet": false,
+            "frame": {
+              "scope": "External RAF intervals after2second warmup,all retained samples; no forced GPU fence",
+              "samples": 360,
+              "p95Ms": 16.80000000000291,
+              "maxMs": 50,
+              "stallsOver250Ms": 0,
+              "elapsedMs": 8215.600000000035
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "preservation": {
+    "priorEvidenceRecords": 59,
+    "immutableFiles": 49,
+    "priorPrivateArtifactRefs": 2279,
+    "frozenIndexes": [
+      {
+        "ref": "artifacts/vnext/n06-11/workload-v1/raw-index.json",
+        "sha256": "d52f575413464e357ac4d4d915a4b0f374abfe58e5532636232df6efb8a68a96",
+        "files": 437
+      },
+      {
+        "ref": "artifacts/vnext/n10-03/raw-index-v1.json",
+        "sha256": "5459be9ca701ae37dfe068f5feb53f61dbae6d4568db46e2428d94b7c75f4f52",
+        "files": 586
+      },
+      {
+        "ref": "artifacts/vnext/n11-03/raw-index-v1.json",
+        "sha256": "4741e312e5adaff9dc7a1fc7ba11ac8495d0ac1868d40072af6a768bce05e1c0",
+        "files": 279
+      },
+      {
+        "ref": "artifacts/vnext/n11-03/safety-v1/raw-index-v1.json",
+        "sha256": "0af2c4fb1f6916c3a530eae940fc15c83240ec932883ddad815f65d7f64a1024",
+        "files": 258
+      },
+      {
+        "ref": "artifacts/vnext/n06-11/serve-v1/raw-index-v1.json",
+        "sha256": "1fc2dc0239f1d6c9118bc4767b08bc942b83399a49e0ba1c909ededc2d830b81",
+        "files": 298
+      },
+      {
+        "ref": "artifacts/vnext/n06-11/loading-v1/raw-index-v1.json",
+        "sha256": "634e0cc381d93a64e755ca8611268dfc03fd4db7071989ebb3ed294ece776523",
+        "files": 76
+      }
+    ],
+    "backendContractsNativeCustodyAndLockUnchanged": true,
+    "runtimeContextUnchanged": true
+  },
+  "sourceFilesDigest": "47f5ed9096e68637659a410e0a189902667b12996ef52d113fc59da9424fd015",
+  "normalArtifact": {
+    "apk": {
+      "sha256": "9148df939e206f8c885676214e8f38d0e4abb01394f20913660b7dd9de565f03",
+      "bytes": 8809851
+    },
+    "exactAssets": 18,
+    "reinstalled": true,
+    "ownedEmulatorStopped": true
+  },
+  "rawIndex": {
+    "ref": "artifacts/vnext/n06-11/cache-v1/raw-index-v1.json",
+    "sha256": "fb42d01840bd2a73675f1340c58a7a78cf5076bf08251250565a35262e901e5e",
+    "files": 303
+  },
+  "limitations": [
+    "Whole N06-11 IN_PROGRESS. All controlled Chromium cold p75 groups exceed5000ms;all warm groups meet the comparison,but landscape Balanced4996.6ms has only3.4ms headroom and landscape Low cold/warm regresses against baseline. No trimmed samples,threshold/profile changes or robust device-performance claim.",
+    "Node CPU before/after isolates procedural model construction,not GPU/OS or real game launch. After-profile recorded precommit HEAD04f86e6 plus actual model SHA,which matches committed2b4c070;inclusive CPU stacks overlap and must not be summed as independent percentages.",
+    "First fresh-boot optimized AVD required Low49.9ms exceeds33.4ms and remains FAIL. Separate predeclared old/new/new/old diagnostic gives16.7–16.8ms required tiers in all4runs;no causal boot/thermal conclusion or erasure of first failure. High184calls remains optional desktop-tier diagnostic above mobile160.",
+    "ABBA old APK96ed0652… is source21cbc1f,new APK856cefc2… source2b4c070;executing harness/sourceFiles are2b4c070 for all nested facts. Old optional initial-quality hook predates db6f428;default Low fixture and unchanged model/native custody match. Bind counterfactual binary by its APK hash,not current harness sourceFiles.",
+    "Exact3tier8palette2outfit4pose streams/materials/texture/matrices/visibility/prop match archived source. Developer inspected actual browser/AVD images;art remains technical with sparse bright groom,rounded shoulder joins,flat apron and faceted tray. No final-art/owner approval.",
+    "40browser external-GC recreates use consistent active baseline and pass original max(16MiB,20%) rule;100native recreate diagnostics span3optimized+2old APK runs and are not external-GC/authenticated visits/nativeRSS/physical acceptance.",
+    "No separately downloaded final art:1500ms art wait and8/24MiB catalog remain NOT_QUALIFIED. Native controlled process/cache/heap,physical30minute/thermal/battery and iOS NOT_RUN. Browser context cold is not OS/browser/GPU process cold.",
+    "Initial browser studio import-failure test used room3D=1,which preloaded its module;retained failure. Corrected study1/room0 lazy build passes2profiles+actual import-failure case. First raw-freeze helper rejected archived.ts extension,then fixed before index creation;vendor symlink/SDK/AVD/keys/owner files excluded.",
+    "Actual95governance/401unit,types/build/lint/CI/architecture/assets/boundaries,2browser/5AVD studio,3normal bundle/5normal preview/default-off7ports PASS. Gradle JVM task UP-TO-DATE with unchanged Java,not a fresh7test execution claim.",
+    "Backend/contracts/native custody/lock/SQL unchanged;integration/security not rerun for this model-construction slice. Prior N11/serve results remain historical source-bound evidence. Normal DEBUG APK9148df93… unchanged with18exact assets,no probes/testCA,restored/reinstalled;own AVD STOPPED.",
+    "No public/store/production/distribution/media-rights/owner-art promotion. Mxx/Phase2 ledgers,runtime platform context,external staging/owner and conditional Apple gates unchanged."
+  ],
+  "nextExactAction": "Implement one visible original groom/cloth/silhouette revision for the representative cat,with before/after runtime images and review rubric under unchanged3D budgets;preserve cached-face fast path and v1 appearance/authority. Keep cold-start attribution and a separately predeclared packaged-native process/cache/GC protocol open;do not replace the first AVD Low49.9ms failure with ABBA passes. N06-07 waits for whole N06-11;full scenes/physical,N11 disclosure/retention/owner facts,N14 Apple access and Phase2 dependency/handoff gates remain unchanged.",
+  "publicRelease": false,
+  "storeRelease": false
+}

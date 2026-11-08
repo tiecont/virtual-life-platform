@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "updated_at": "2026-11-08T12:05:36.429Z",
+  "updated_at": "2026-11-08T12:53:46.532Z",
   "scope": "vNext implementation",
   "release_status": "NOT_REQUESTED",
   "module_activation": {
@@ -768,10 +768,11 @@
         "n06-11-authoritative-room-adapter-partial-2026-11-07",
         "n06-11-twenty-actor-workload-partial-2026-11-07",
         "n06-11-serve-anchors-partial-2026-11-08",
-        "n06-11-controlled-loading-heap-partial-2026-11-08"
+        "n06-11-controlled-loading-heap-partial-2026-11-08",
+        "n06-11-cached-face-construction-partial-2026-11-08"
       ],
       "blocker": null,
-      "next_action": "Profile procedural renderer initialization (including face geometry constructed before cachedFaces is reused) against preserved db6f428/loading-v1 baseline. Implement one measured hot-path optimization only after attribution; preserve exact visual/skin/morph/material streams and original budgets/profile, then rerun all10 cold/warm pairs per Low/Balanced desktop/landscape and20 external-GC recreates. Predeclare a separate packaged-AVD process/cache/heap protocol before native measurement; browser cold contexts are not OS/process cold starts. Final fur/silhouette/cloth/camera/full Deadline/Maid art and physical qualification remain open. N06-07 waits for whole N06-11; N11 owner/provider/retention/disclosure, N14 Apple access and Phase2 dependency/handoff gates remain unchanged."
+      "next_action": "Implement one visible original groom/cloth/silhouette revision for the representative cat,with before/after runtime images and review rubric under unchanged3D budgets;preserve cached-face fast path and v1 appearance/authority. Keep cold-start attribution and a separately predeclared packaged-native process/cache/GC protocol open;do not replace the first AVD Low49.9ms failure with ABBA passes. N06-07 waits for whole N06-11;full scenes/physical,N11 disclosure/retention/owner facts,N14 Apple access and Phase2 dependency/handoff gates remain unchanged."
     },
     "N10-05": {
       "status": "VERIFIED",
