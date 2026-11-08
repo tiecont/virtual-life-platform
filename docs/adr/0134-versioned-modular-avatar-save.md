@@ -1,0 +1,13 @@
+# ADR0134 — Account-bound modular appearance with legacy projection
+
+Date:2026-11-08. Status:Implementation in progress;no release or final-art acceptance.
+
+The v1 profile and uniform tables remain authoritative for their existing scopes. Additive migration0046 stores a separate versioned parts document and account-scoped mutation receipts. Cat/dog/rabbit share the24bone renderer rig;cosmetics never affect room floor,seat allocation,staff roles or rewards. Preview never grants ownership.
+
+`GET/POST /v1/me/avatar` authenticate through the existing identity owner. Save requires CSRF,UUID idempotency key,expected account,expected revision and a compatible bounded catalog document. The expected account is a stale-view assertion,never actor selection. Lock the authenticated account,recheck the session after waiting,and commit selection plus receipt together. Receipt replay precedes revision/entitlement checks and returns its original saved revision alongside current effective state;it cannot overwrite a later save. Revoked apparel remains selected in storage and projects to an available fallback. Existing uniform policy remains world-specific. Export includes the new selection;account deletion cascades both tables.
+
+Room opt-in uses optional `appearanceVersion:2` on each join,independently of motion. New clients probe their own versioned endpoint before sending it;404/unavailable/incompatible servers retain v1. No new mandatory global capability is added. Only already privacy-filtered participants receive public appearance projections;inventory and receipts never enter room snapshots. Snapshot/delta caching includes both negotiated flags per connection,including multiple connections of one account. Disconnect/revocation/travel rollback clean up or restore the flag alongside the existing ownership map.
+
+The same shared composer supplies creator and opt-in world rendering. V2 geometry may be indexed and use normalized packed attributes to bound distinct variants;the v1 path keeps its prior buffers and rollback. Model/pose/garment/resource/visual evidence must be collected before claiming acceptance. UI Save retains one exact request after uncertain transport and discards late results after identity invalidation.
+
+Android adds dedicated account-asserted `avatarState` and `saveAvatar` ports. Its fixed HTTPS destination,Keystore custody and generic GET/PATCH account allowlist remain unchanged. Neither JavaScript nor assets receive refresh/access credentials. Actual packaged checks are still required. Physical Android is currently absent;N06-07 whole-task acceptance,integrated N06-09,N10-04 and conditional N14 gates are not supplied by this ADR or emulator tests.

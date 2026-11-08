@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState,type ReactNode,type ComponentType,type RefObject } from 'react';
 import { io, type Socket } from 'socket.io-client';
-import { MeSchema, RoomAckSchema, WorldCatalogSchema, sceneManifestHash, type ClientProtocolOffer, type NegotiatedSession, type SceneIdentity, type Me, type RoomSnapshot,type SceneManifest,type TravelSource,type AvatarAppearance,type TravelDestination } from '@virtual-city/contracts';
+import { MeSchema,AvatarOwnStateSchema, RoomAckSchema, WorldCatalogSchema, sceneManifestHash, type ClientProtocolOffer, type NegotiatedSession, type SceneIdentity, type Me, type RoomSnapshot,type SceneManifest,type TravelSource,type AvatarAppearance,type TravelDestination } from '@virtual-city/contracts';
 import { RoomRecovery, resolveClientCompatibility, createClientProtocolOffer, acceptSessionCompatibility, type ResolvedClientCompatibility, type RoomRecoveryView } from '@virtual-city/world-sdk';
 import { sandboxScene } from '@virtual-city/pixi-scene';
 import {rendererFactory} from './renderer';
@@ -36,8 +36,8 @@ function RoomDrawer({enabled,title,drawerRef,onClosed,children}:{enabled:boolean
  return <dialog ref={drawerRef} className="cafe-drawer" aria-label={title} onClose={onClosed}><div className="cafe-drawer-heading"><h2>{title}</h2><button onClick={()=>drawerRef.current?.close()}>Close {title.toLowerCase()}</button></div>{children}</dialog>;
 }
 const defaultRenderer=()=>import('@virtual-city/pixi-scene/renderer');
-export interface WorldRoomPanelProps {sceneFirst?:boolean;rendererLoader?:()=>Promise<unknown>;artLabel?:string;socketOrigin:string;platform:ClientPlatform;widgets:RoomWidgets;experience?:RoomExperience;children?:ReactNode|((context:RoomChildContext)=>ReactNode)}
-export default function WorldRoomPanel({socketOrigin,platform,widgets,sceneFirst=false,rendererLoader=defaultRenderer,artLabel='Original starter art',experience=sandboxExperience,children}:WorldRoomPanelProps) {
+export interface WorldRoomPanelProps {modularAppearance?:boolean;sceneFirst?:boolean;rendererLoader?:()=>Promise<unknown>;artLabel?:string;socketOrigin:string;platform:ClientPlatform;widgets:RoomWidgets;experience?:RoomExperience;children?:ReactNode|((context:RoomChildContext)=>ReactNode)}
+export default function WorldRoomPanel({socketOrigin,platform,widgets,modularAppearance=false,sceneFirst=false,rendererLoader=defaultRenderer,artLabel='Original starter art',experience=sandboxExperience,children}:WorldRoomPanelProps) {
  const {Link,FocusPanel,Wardrobe,WorldEvents,RoomInvitation,RoomSafety}=widgets;
  const foreground=useRef(true);
  const actionsDialog=useRef<HTMLDialogElement>(null),visitsDialog=useRef<HTMLDialogElement>(null);
@@ -59,6 +59,7 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,sceneFirst
   const alive = useRef(true); const desired = useRef(false); const inFlight = useRef(false); const sequence = useRef(0);
   const compatibility = useRef<ResolvedClientCompatibility | null>(null), sceneIdentity = useRef<SceneIdentity | undefined>(undefined);
   const negotiated = useRef<NegotiatedSession | null>(null), clientSequence = useRef(0);
+  const appearanceVersion=useRef<2|undefined>(undefined);
   const compatibilityTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const announcedVisit=useRef<string|null>(null);
   const claimRef = useRef<(seatId: string) => void>(() => {});
@@ -102,17 +103,20 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,sceneFirst
       pending?.abort(); const controller = new AbortController(); pending = controller;
       setLoading(true); setMe(null); setAvailable(false); setMessage('');
       compatibility.current = null; sceneIdentity.current = undefined;
+      appearanceVersion.current=undefined;
       try {
         const signal=AbortSignal.any([controller.signal,AbortSignal.timeout(8000)]);
         const [identity, catalog, discovery] = await Promise.all([platform.request('/v1/me', { cache: 'no-store', signal }), platform.request('/v1/worlds', { cache: 'no-store', signal }), platform.request('/v1/client-compatibility', {cache: 'no-store', signal})]);
         if (!identity.ok) throw new Error('Open identity to create a guest or sign in.');
         const nextMe = MeSchema.parse(await identity.json());
+        let partsVersion:2|undefined;
+        if(modularAppearance){try{const response=await platform.request('/v1/me/avatar',{cache:'no-store',signal});if(response.ok){const own=AvatarOwnStateSchema.safeParse(await response.json());if(own.success&&own.data.accountId===nextMe.profile.id)partsVersion=2;}}catch{/* N-1 server or unavailable optional presentation endpoint:keep v1 projection. */}}
         if (!catalog.ok) throw new Error('The city is unavailable. Try again shortly.');
         const worlds = WorldCatalogSchema.parse(await catalog.json()); const world = worlds.worlds.find(world => world.slug === experience.slug);
         const selected = resolveClientCompatibility(discovery.status, discovery.status === 200 ? await discovery.json() : undefined);
         let digest: SceneIdentity | undefined;
         if (selected.mode === 'negotiated') {try {digest = {schemaVersion: manifest.schemaVersion, sha256: await sceneManifestHash(manifest)};} catch {throw new Error('This place changed. Reload before entering.');}}
-        if (!disposed && !controller.signal.aborted) { compatibility.current = selected; sceneIdentity.current = digest; setMe(nextMe); setAvailable(world?.availability === 'available'&&world.version===experience.worldVersion&&world.sceneRef.version===manifest.version); }
+        if (!disposed && !controller.signal.aborted) { appearanceVersion.current=partsVersion;compatibility.current = selected; sceneIdentity.current = digest; setMe(nextMe); setAvailable(world?.availability === 'available'&&world.version===experience.worldVersion&&world.sceneRef.version===manifest.version); }
       } catch (error) { if (!disposed && !controller.signal.aborted) setMessage(error instanceof Error ? error.message : 'The city is unavailable.'); }
       finally { if (!disposed && !controller.signal.aborted) setLoading(false); }
     }
@@ -120,7 +124,7 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,sceneFirst
     const unwatch=platform.watchIdentity(()=>{closeConnection();void load();});
     const stopLifecycle=platform.lifecycle?.subscribe(active=>{foreground.current=active;closeConnection();if(!active){pending?.abort();scene.current?.suspend();}else void load();});
     return () => { disposed = true; pending?.abort(); alive.current = false; closeConnection(); unwatch();stopLifecycle?.(); };
-  }, [experience,manifest,platform]);
+  }, [experience,manifest,platform,modularAppearance]);
   useEffect(() => {
     const element = host.current; if (!element) return;
     let cancelled = false; let owned: SceneView | undefined; const controller = new AbortController();
@@ -139,7 +143,7 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,sceneFirst
     inFlight.current = true; if (alive.current) setBusy(true);
     const operation = ++sequence.current; const ticket = recovery.current.beginSync(); publish();
     try {
-      const input = joining ? { schemaVersion: 1, requestId: crypto.randomUUID(), worldSlug: experience.slug, worldVersion: experience.worldVersion, sceneVersion: manifest.version, motionVersion: 1, ...(sceneIdentity.current ? {sceneIdentity: sceneIdentity.current} : {}) } : commandInput(previous!);
+      const input = joining ? { schemaVersion: 1, requestId: crypto.randomUUID(), worldSlug: experience.slug, worldVersion: experience.worldVersion, sceneVersion: manifest.version, motionVersion: 1,...(appearanceVersion.current?{appearanceVersion:appearanceVersion.current}:{}), ...(sceneIdentity.current ? {sceneIdentity: sceneIdentity.current} : {}) } : commandInput(previous!);
       const ack = RoomAckSchema.parse(await client.timeout(5000).emitWithAck(joining ? 'room.join' : 'room.snapshot', input));
       if (socket.current !== client || !client.connected || !desired.current || sequence.current !== operation) return;
       if (!ack.ok) throw new Error(messages[ack.error.code] ?? 'Your room could not be confirmed. Rejoin to continue.');

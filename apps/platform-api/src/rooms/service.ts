@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { RoomSnapshotSchema, RoomEndedSchema, sceneManifestHash, type WorldCard, type WorldDefinition, type AvatarAppearance, type TravelSource, type TravelDestination, type RoomMotion, type RoomMove, type RoomJoin, type RoomOwnCommand, type RoomSnapshot, type RoomEnded, type SeatClaim, type SeatRelease, type PublicProfile } from '@virtual-city/contracts';
+import { RoomSnapshotSchema, RoomEndedSchema, sceneManifestHash,AVATAR_CATALOG_VERSION, type AvatarParts,type WorldCard, type WorldDefinition, type AvatarAppearance, type TravelSource, type TravelDestination, type RoomMotion, type RoomMove, type RoomJoin, type RoomOwnCommand, type RoomSnapshot, type RoomEnded, type SeatClaim, type SeatRelease, type PublicProfile } from '@virtual-city/contracts';
 import { findScenePath, motionPosition, type WorldRegistry, type WorldActor } from '@virtual-city/world-sdk';
 import type { IdentityService } from '../identity/service';
 import { DomainError } from '../common/errors';
@@ -20,17 +20,21 @@ export interface RoomProjection {
 export type RoomUpdate = { connectionId: string; fromVersion: number; snapshot: RoomSnapshot };
 export interface RoomSafetyPort { assert(accountId: string, worldSlug: string, roomId?: string, chat?: boolean): Promise<void> }
 export type RoomAppearanceReader=(account:string,world:WorldDefinition,source:TravelSource,connected:boolean)=>Promise<AvatarAppearance['outfit']>;
+export type RoomPartsReader=(account:string,palette:PublicProfile['avatarKey'],uniform:AvatarAppearance['outfit'])=>Promise<AvatarParts>;
 export type RoomDiscoveryObservation={observedAt:string;worlds:WorldCard[];rooms:{worldSlug:string;roomId:string;capacity:number;occupancy:number}[]};
 export type StudyRoomProjection={worldSlug:string;source:TravelSource;actor:WorldActor;capacity:number;exists:()=>boolean;valid:()=>boolean;members:{accountId:string;membershipId:string;valid:()=>boolean;allowed:()=>Promise<boolean>}[]};
 export class RoomService {
   #appearance?: RoomAppearanceReader;
   setAppearanceProjection(reader: RoomAppearanceReader) { this.#appearance=reader; }
+  #parts?: RoomPartsReader;
+  setPartsProjection(reader:RoomPartsReader) { this.#parts=reader; }
   readonly epoch = randomUUID();
   #rooms = new Map<string, Room>();
   #travelHolds = new Map<string, TravelHold>();
   #accounts = new Map<string, string>();
   #connections = new Map<string, { roomId: string; accountId: string; sessionId: string }>();
   #motionConnections = new Set<string>();
+  #appearanceConnections = new Set<string>();
   #receipts = new Map<string, Receipt>();
   #tail: Promise<void> = Promise.resolve();
   #pending = 0;
@@ -81,7 +85,7 @@ export class RoomService {
       const room = this.#rooms.get(this.#accounts.get(accountId) ?? ''); const member = room?.members.get(accountId);
       if (!room || !member) return;
       const fromVersion = room.version;
-      for (const [id, ownerSession] of member.connections) if (ownerSession === sessionId) { member.connections.delete(id); member.commandSequences?.delete(id); this.#connections.delete(id); this.#motionConnections.delete(id); }
+      for (const [id, ownerSession] of member.connections) if (ownerSession === sessionId) { member.connections.delete(id); member.commandSequences?.delete(id); this.#connections.delete(id); this.#motionConnections.delete(id); this.#appearanceConnections.delete(id); }
       member.sessions.delete(sessionId);
       if (member.sessions.size === 0) this.#removeMember(room, member, 'disconnected');
       else if (member.connections.size === 0 && member.disconnectedUntil === null) { this.#freezeMotion(member); member.disconnectedUntil = this.now() + DISCONNECT_GRACE_MS; room.version++; }
@@ -134,7 +138,7 @@ export class RoomService {
   }
   #removeMember(room: Room, member: Member, reason: RoomEnded['reason']) {
     this.#emitEnded(room, member, reason);
-    for (const id of member.connections.keys()) { this.#connections.delete(id); this.#motionConnections.delete(id); }
+    for (const id of member.connections.keys()) { this.#connections.delete(id); this.#motionConnections.delete(id); this.#appearanceConnections.delete(id); }
     member.commandSequences?.clear();
     if (member.seatId) room.seats.set(member.seatId, null);
     room.members.delete(member.accountId); this.#accounts.delete(member.accountId); room.version++;
@@ -153,7 +157,7 @@ export class RoomService {
     for (const [key, receipt] of this.#receipts) if (receipt.until <= time) this.#receipts.delete(key);
   }
   #holds(room: Room) { return [...this.#travelHolds.values()].filter(hold => hold.room.id === room.id).length; }
-  async #snapshot(room: Room, member: Member, withMotion = false): Promise<RoomSnapshot> {
+  async #snapshot(room: Room, member: Member, withMotion = false,withParts=false): Promise<RoomSnapshot> {
     return this.metrics.phase('projection', async () => {
     const projection=this.registry.projectionContext(room.slug);
     const seats = [...room.seats].map(([seatId, ownerId]) => ({ seatId, state: ownerId ? room.members.get(ownerId)?.disconnectedUntil !== null ? 'held' : 'occupied' : 'available', mine: ownerId === member.accountId }));
@@ -161,7 +165,11 @@ export class RoomService {
     const relationships = this.projection ? await this.projection.relationships(member.accountId, ids) : new Map(ids.map(id => [id, { blocked: id !== member.accountId, friends: false }]));
     const profiles = this.projection ? await this.projection.profiles(member.accountId, ids, room.slug, relationships) : [];
     const profileMap = new Map(profiles.map(profile => [profile.id, profile]));
-    const participants = await Promise.all([...room.members.values()].filter(candidate => profileMap.has(candidate.accountId)).map(async candidate => ({ profile: profileMap.get(candidate.accountId)!, seatId: candidate.seatId, state: candidate.disconnectedUntil === null ? 'active' as const : 'reconnecting' as const, ...(withMotion && candidate.motion ? { motion: candidate.motion } : {}),outfit:projection.definition.appearancePolicy&&projection.definition.appearancePolicy.apron!=='forbidden'?await this.#appearance?.(candidate.accountId,projection.definition,{epoch:this.epoch,roomId:room.id,membershipId:candidate.id},candidate.connections.size>0&&(projection.definition.appearancePolicy.apron!=='on-shift'||await this.identity.hasConnectedSession(candidate.accountId,[...candidate.connections.values()])))??'casual' as const:'casual' as const })));
+    const participants = await Promise.all([...room.members.values()].filter(candidate => profileMap.has(candidate.accountId)).map(async candidate => {
+     const profile=profileMap.get(candidate.accountId)!,outfit=projection.definition.appearancePolicy&&projection.definition.appearancePolicy.apron!=='forbidden'?await this.#appearance?.(candidate.accountId,projection.definition,{epoch:this.epoch,roomId:room.id,membershipId:candidate.id},candidate.connections.size>0&&(projection.definition.appearancePolicy.apron!=='on-shift'||await this.identity.hasConnectedSession(candidate.accountId,[...candidate.connections.values()])))??'casual' as const:'casual' as const;
+     const parts=withParts?await this.#parts?.(candidate.accountId,profile.avatarKey,outfit):undefined;
+     return {profile,seatId:candidate.seatId,state:candidate.disconnectedUntil===null?'active' as const:'reconnecting' as const,...(withMotion&&candidate.motion?{motion:candidate.motion}:{}),outfit,...(parts?{appearance:{schemaVersion:2 as const,catalogVersion:AVATAR_CATALOG_VERSION,parts}}:{})};
+    }));
     if(!projection.valid())throw new DomainError('WORLD_UNAVAILABLE',503,'World appearance changed');
     return RoomSnapshotSchema.parse({ schemaVersion: 1, type: 'snapshot', epoch: this.epoch, roomId: room.id, worldSlug: room.slug, roomVersion: room.version, capacity: room.capacity, occupancy: room.members.size, membershipId: member.id, self: { accountId: member.accountId, seatId: member.seatId, ...(withMotion && member.motion ? { motion: member.motion } : {}) }, ...(withMotion ? { serverTime: this.now() } : {}), seats, participants });
     });
@@ -174,12 +182,12 @@ export class RoomService {
     const project = async () => {
       try {
         while (!failed && next < members.length) {
-          const index = next++, member = members[index], snapshots = new Map<boolean, RoomSnapshot>();
+          const index = next++, member = members[index], snapshots = new Map<number, RoomSnapshot>();
           for (const connectionId of member.connections.keys()) {
             if (![...this.#changed.values()].some(accepts => accepts(connectionId))) continue;
-            const motion = this.#motionConnections.has(connectionId);
-            if (!snapshots.has(motion)) snapshots.set(motion, await this.#snapshot(room, member, motion));
-            projected[index].push({ connectionId, fromVersion, snapshot: snapshots.get(motion)! });
+            const motion = this.#motionConnections.has(connectionId),parts=this.#appearanceConnections.has(connectionId),variant=Number(motion)+Number(parts)*2;
+            if (!snapshots.has(variant)) snapshots.set(variant, await this.#snapshot(room, member, motion,parts));
+            projected[index].push({ connectionId, fromVersion, snapshot: snapshots.get(variant)! });
           }
         }
       } catch (error) { failed = true; throw error; }
@@ -241,7 +249,8 @@ export class RoomService {
         member.sessions.add(actor.sessionId);
         member.connections.set(connectionId, actor.sessionId); this.#connections.set(connectionId, { roomId: current.id, accountId: actor.accountId, sessionId: actor.sessionId });
         if (input.motionVersion) this.#motionConnections.add(connectionId); else this.#motionConnections.delete(connectionId);
-        this.#remember(actor, request, current, member, 'join'); if (current.version !== fromVersion) await this.#notifyChanged(current, fromVersion); return this.#snapshot(current, member, this.#motionConnections.has(connectionId));
+        if(input.appearanceVersion===2)this.#appearanceConnections.add(connectionId);else this.#appearanceConnections.delete(connectionId);
+        this.#remember(actor, request, current, member, 'join'); if (current.version !== fromVersion) await this.#notifyChanged(current, fromVersion); return this.#snapshot(current, member, this.#motionConnections.has(connectionId),this.#appearanceConnections.has(connectionId));
       }
       let room = input.roomId ? this.#rooms.get(input.roomId) : [...this.#rooms.values()].filter(room => room.slug === input.worldSlug && room.members.size + this.#holds(room) < room.capacity).sort((a, b) => b.members.size - a.members.size)[0];
       if (input.roomId && (!room || room.slug !== input.worldSlug)) throw new DomainError('NOT_FOUND', 404, 'Room not found');
@@ -256,13 +265,14 @@ export class RoomService {
       const member: Member = { id: randomUUID(), accountId: actor.accountId, worldVersion: input.worldVersion, sceneVersion: input.sceneVersion, connections: new Map([[connectionId, actor.sessionId]]), sessions: new Set([actor.sessionId]), disconnectedUntil: null, seatId: null, ...(definition.scene ? { motion: { path: [definition.scene.spawn], startedAt: this.now(), stepMs: 150 } as RoomMotion } : {}) };
       room.members.set(actor.accountId, member); this.#accounts.set(actor.accountId, room.id); this.#connections.set(connectionId, { roomId: room.id, accountId: actor.accountId, sessionId: actor.sessionId });
       if (input.motionVersion) this.#motionConnections.add(connectionId);
+      if(input.appearanceVersion===2)this.#appearanceConnections.add(connectionId);
       try {
         await this.registry.dispatch(credential, room.slug, { schemaVersion: 1, worldVersion: input.worldVersion, sceneVersion: input.sceneVersion, membershipId: member.id, action: 'join' });
         if (generation !== (this.#worldGenerations.get(input.worldSlug) ?? 0)) throw new DomainError('WORLD_UNAVAILABLE', 503, 'World unavailable');
         await this.authority.assert();
         if (!connected()) throw new DomainError('UNAUTHENTICATED', 401, 'Connection closed');
       } catch (error) { this.#removeMember(room, member, 'disconnected'); if (created) this.#rooms.delete(room.id); throw error; }
-      room.version++; this.#remember(actor, request, room, member, 'join'); await this.#notifyChanged(room, room.version - 1); return this.#snapshot(room, member, this.#motionConnections.has(connectionId));
+      room.version++; this.#remember(actor, request, room, member, 'join'); await this.#notifyChanged(room, room.version - 1); return this.#snapshot(room, member, this.#motionConnections.has(connectionId),this.#appearanceConnections.has(connectionId));
     }, false, 'room.join');
   }
   #own(actor: WorldActor, connectionId: string, input: RoomOwnCommand) {
@@ -273,7 +283,7 @@ export class RoomService {
   snapshot(credential: string, connectionId: string, input: RoomOwnCommand) {
     return this.#run(async () => {
       await this.#sweep(); const actor = await this.identity.authenticate(credential); const { room, member } = this.#own(actor, connectionId, input);
-      await this.registry.authorizeWorld(credential, room.slug); return this.#snapshot(room, member, this.#motionConnections.has(connectionId));
+      await this.registry.authorizeWorld(credential, room.slug); return this.#snapshot(room, member, this.#motionConnections.has(connectionId),this.#appearanceConnections.has(connectionId));
     }, false, 'room.snapshot');
   }
   leave(credential: string, connectionId: string, input: RoomOwnCommand) {
@@ -293,7 +303,7 @@ export class RoomService {
     return this.#control('detach:' + connectionId, async () => {
       const connection = this.#connections.get(connectionId); if (!connection) return;
       const room = this.#rooms.get(connection.roomId); const member = room?.members.get(connection.accountId);
-      this.#connections.delete(connectionId); this.#motionConnections.delete(connectionId); member?.connections.delete(connectionId); member?.commandSequences?.delete(connectionId);
+      this.#connections.delete(connectionId); this.#motionConnections.delete(connectionId); this.#appearanceConnections.delete(connectionId); member?.connections.delete(connectionId); member?.commandSequences?.delete(connectionId);
       if (room && member && member.connections.size === 0) { this.#freezeMotion(member); member.disconnectedUntil = this.now() + DISCONNECT_GRACE_MS; const fromVersion = room.version; room.version++; await this.#notifyChanged(room, fromVersion); } await this.#sweep();
     });
   }
@@ -305,7 +315,7 @@ export class RoomService {
       const request = this.#receipt(actor, input.requestId, operation, input);
       if (request.receipt) {
         if (request.receipt.membershipId !== member.id) throw new DomainError('NOT_IN_ROOM', 409, 'Previous membership ended');
-        return this.#snapshot(room, member, this.#motionConnections.has(connectionId));
+        return this.#snapshot(room, member, this.#motionConnections.has(connectionId),this.#appearanceConnections.has(connectionId));
       }
       if (!room.seats.has(input.seatId)) throw new DomainError('NOT_FOUND', 404, 'Seat not found');
       this.#assertSequence(member, connectionId, input);
@@ -328,7 +338,7 @@ export class RoomService {
         if (owner && owner !== actor.accountId) throw new DomainError('FORBIDDEN', 403, 'Seat ownership required');
         if (owner === actor.accountId) { this.#freezeMotion(member); room.seats.set(input.seatId, null); member.seatId = null; room.version++; }
       }
-      this.#remember(actor, request, room, member, operation); this.#rememberSequence(member, connectionId, input); if (room.version !== fromVersion) await this.#notifyChanged(room, fromVersion); return this.#snapshot(room, member, this.#motionConnections.has(connectionId));
+      this.#remember(actor, request, room, member, operation); this.#rememberSequence(member, connectionId, input); if (room.version !== fromVersion) await this.#notifyChanged(room, fromVersion); return this.#snapshot(room, member, this.#motionConnections.has(connectionId),this.#appearanceConnections.has(connectionId));
     }, false, operation);
   }
   list(credential: string, slug: string) {
@@ -513,18 +523,18 @@ export class RoomService {
       await this.authority.assert();
       const valid = () => !this.#closed && this.authority.state === 'held' && connected() && authorization.expiresAt > this.now() && hold.admission!.valid() && this.#rooms.get(target.id) === target && hold.generation === (this.#worldGenerations.get(target.slug) ?? 0) && (!source || sourceGeneration === (this.#worldGenerations.get(source.slug) ?? 0));
       if (!valid()) throw new DomainError('WORLD_UNAVAILABLE', 503, 'Preparation ended');
-      let applied = false; const motion = new Set(this.#motionConnections), sourceFrom = source?.version ?? 0, targetFrom = target.version;
+      let applied = false; const motion = new Set(this.#motionConnections), appearance=new Set(this.#appearanceConnections),sourceFrom = source?.version ?? 0, targetFrom = target.version;
       const undo = () => {
-        if (!applied) return; target.members.delete(actor.accountId); this.#connections.delete(connectionId); this.#motionConnections.delete(connectionId);
-        if (source && sourceMember) { source.members.set(actor.accountId, sourceMember); this.#accounts.set(actor.accountId, source.id); if (sourceMember.seatId) source.seats.set(sourceMember.seatId, actor.accountId); for (const [id, sessionId] of sourceMember.connections) { this.#connections.set(id, { roomId: source.id, accountId: actor.accountId, sessionId }); if (motion.has(id)) this.#motionConnections.add(id); } }
+        if (!applied) return; target.members.delete(actor.accountId); this.#connections.delete(connectionId); this.#motionConnections.delete(connectionId); this.#appearanceConnections.delete(connectionId);
+        if (source && sourceMember) { source.members.set(actor.accountId, sourceMember); this.#accounts.set(actor.accountId, source.id); if (sourceMember.seatId) source.seats.set(sourceMember.seatId, actor.accountId); for (const [id, sessionId] of sourceMember.connections) { this.#connections.set(id, { roomId: source.id, accountId: actor.accountId, sessionId }); if (motion.has(id)) this.#motionConnections.add(id);if(appearance.has(id))this.#appearanceConnections.add(id); } }
         else this.#accounts.delete(actor.accountId);
         applied = false;
       };
       try {
         await persist({ roomId: target.id, membershipId: member.id }, () => {
           if (applied || !valid()) throw new DomainError('WORLD_UNAVAILABLE', 503, 'Preparation ended');
-          if (source && sourceMember) { source.members.delete(actor.accountId); if (sourceMember.seatId) source.seats.set(sourceMember.seatId, null); for (const id of sourceMember.connections.keys()) { this.#connections.delete(id); this.#motionConnections.delete(id); } }
-          target.members.set(actor.accountId, member); this.#accounts.set(actor.accountId, target.id); this.#connections.set(connectionId, { roomId: target.id, accountId: actor.accountId, sessionId: actor.sessionId }); applied = true;
+          if (source && sourceMember) { source.members.delete(actor.accountId); if (sourceMember.seatId) source.seats.set(sourceMember.seatId, null); for (const id of sourceMember.connections.keys()) { this.#connections.delete(id); this.#motionConnections.delete(id); this.#appearanceConnections.delete(id); } }
+          target.members.set(actor.accountId, member); this.#accounts.set(actor.accountId, target.id); this.#connections.set(connectionId, { roomId: target.id, accountId: actor.accountId, sessionId: actor.sessionId });if(appearance.has(connectionId))this.#appearanceConnections.add(connectionId); applied = true;
         });
         if (!applied) throw new DomainError('WORLD_UNAVAILABLE', 503, 'Admission unconfirmed');
       } catch (error) { if (!this.#closed && this.authority.state === 'held') undo(); throw error; }
@@ -539,7 +549,7 @@ export class RoomService {
         await this.registry.authorizeWorld(credential, target.slug); await this.safety?.assert(actor.accountId, target.slug, target.id); await this.authority.assert();
         if (source) await this.#notifyChanged(source, sourceFrom);
         await this.#notifyChanged(target, targetFrom);
-        return await this.#snapshot(target, member);
+        return await this.#snapshot(target, member,false,this.#appearanceConnections.has(connectionId));
       } catch {
         // A committed receipt is history after current authorization is lost.
         // Its source resources have been released; return truthful lobby state.
@@ -559,7 +569,7 @@ export class RoomService {
     return this.#run(async () => {
       const connection = this.#connections.get(connectionId); if (!connection) return null;
       const room = this.#rooms.get(connection.roomId); const member = room?.members.get(connection.accountId);
-      return room && member ? this.#snapshot(room, member, this.#motionConnections.has(connectionId)) : null;
+      return room && member ? this.#snapshot(room, member, this.#motionConnections.has(connectionId),this.#appearanceConnections.has(connectionId)) : null;
     });
   }
   refreshAccounts(accountIds: string[]) {
@@ -632,7 +642,7 @@ export class RoomService {
       const request = this.#receipt(actor, input.requestId, 'room.move', input);
       if (request.receipt) {
         if (request.receipt.membershipId !== member.id) throw new DomainError('NOT_IN_ROOM', 409, 'Previous membership ended');
-        return this.#snapshot(room, member, true);
+        return this.#snapshot(room, member, true,this.#appearanceConnections.has(connectionId));
       }
       this.#assertSequence(member, connectionId, input);
       if (member.seatId) throw new DomainError('ALREADY_SEATED', 409, 'Stand up before walking');
@@ -643,7 +653,7 @@ export class RoomService {
       const fromVersion = room.version;
       member.motion = { path, startedAt: this.now(), stepMs: 150 }; room.version++;
       this.#remember(actor, request, room, member, 'room.move'); this.#rememberSequence(member, connectionId, input); await this.#notifyChanged(room, fromVersion);
-      return this.#snapshot(room, member, true);
+      return this.#snapshot(room, member, true,this.#appearanceConnections.has(connectionId));
     }, false, 'room.move');
   }
   #abandon() {

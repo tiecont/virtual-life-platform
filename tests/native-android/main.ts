@@ -9,6 +9,8 @@ async function connect(auth:Record<string,unknown>,origin:string):Promise<Socket
  return new Promise((resolve,reject)=>{socket.once('connect',()=>resolve(socket));socket.once('connect_error',()=>{socket.close();reject(Error('Native socket unavailable'));});socket.connect();});
 }
 const probe={
+ async avatar(){const state=await session.restore();if(!state.me)throw Error('Fixture account unavailable');return session.avatarState({expectedAccountId:state.me.profile.id});},
+ async switchAvatarAccount(){await session.logout();const state=await session.guest({deviceLabel:'Synthetic owned creator AVD',guest:{requestId:crypto.randomUUID(),displayName:'New Native Animal',avatarKey:'cloud'}});return state.me?.profile.id;},
  async reset(){return session.logout();},
  async identity(){const state=await session.restore();return state.me?.profile.id??null;},
  async parallelRestore(){const states=await Promise.all(Array.from({length:20},()=>session.restore()));return states.every(state=>state.authenticated&&state.me?.profile.id===states[0].me?.profile.id);},

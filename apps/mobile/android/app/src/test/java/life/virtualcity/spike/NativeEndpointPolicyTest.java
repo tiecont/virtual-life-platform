@@ -19,8 +19,9 @@ public class NativeEndpointPolicyTest {
     @Test public void publicPortIsLimitedToAccountSettings() {
         NativeEndpointPolicy policy = new NativeEndpointPolicy("https://api.example.invalid");
         policy.publicRequest("GET", "/v1/me"); policy.publicRequest("PATCH", "/v1/me/privacy");
-        for (String value : new String[]{"/v1/native/session/refresh", "/v1/session/guest", "/v1/operator/accounts", "/v1/me/legacy/import", "/v1/travel-intents", "/v1/native/devices"}) {
+        for (String value : new String[]{"/v1/me/avatar", "/v1/native/session/refresh", "/v1/session/guest", "/v1/operator/accounts", "/v1/me/legacy/import", "/v1/travel-intents", "/v1/native/devices"}) {
             try { policy.publicRequest("POST", value); fail("Unreviewed route accepted"); } catch (IllegalArgumentException expected) { }
         }
+        try {policy.publicRequest("GET","/v1/me/avatar");fail("Dedicated avatar GET escaped generic policy");}catch(IllegalArgumentException expected){}
     }
 }

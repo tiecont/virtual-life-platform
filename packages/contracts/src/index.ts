@@ -16,6 +16,7 @@ export * from './operator-events';
 export * from './runtime-controls';
 export * from './scene';
 export * from './avatar';
+export * from './avatar-parts';
 export * from './safety';
 export * from './chat';
 // Foundation status only. World/session/room schemas belong to their gated modules.

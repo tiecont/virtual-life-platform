@@ -9,7 +9,8 @@ import { DomainError } from '../common/errors';
 import { apiErrorHandler } from '../common/http-errors';
 import type { ProgressionService } from './service';
 import type { AppearanceService } from './appearance';
-export function registerProgression(http:FastifyInstance,config:Config,identity:IdentityService,service:ProgressionService,appearance:AppearanceService,now=Date.now) {
+import type {AvatarPartsService} from './avatar-parts';
+export function registerProgression(http:FastifyInstance,config:Config,identity:IdentityService,service:ProgressionService,appearance:AppearanceService,now=Date.now,avatar?:AvatarPartsService) {
   const limiter=new WindowLimiter(now),token=(req:FastifyRequest)=>readSessionToken(req,config)!;
   http.register(async api=>{
     api.setErrorHandler(apiErrorHandler);
@@ -17,6 +18,7 @@ export function registerProgression(http:FastifyInstance,config:Config,identity:
     api.addHook('preHandler',async req=>{if(!limiter.take('session:'+identity.hash(token(req)),60))throw new DomainError('RATE_LIMITED',429,'Please wait before trying again');z.strictObject({}).parse(req.query);});
     api.get('/me/progression',req=>service.own(token(req)));
     api.get('/me/cosmetics',req=>service.inventory(token(req)));
+    if(avatar){api.get('/me/avatar',req=>avatar.own(token(req)));api.post('/me/avatar',req=>{const value=token(req);identity.verifyCsrf(value,req.headers['x-csrf-token']);return avatar.save(value,req.headers['idempotency-key'],req.body);});}
     api.post('/me/appearance',req=>{const value=token(req);identity.verifyCsrf(value,req.headers['x-csrf-token']);return appearance.equip(value,z.uuid().parse(req.headers['idempotency-key']),req.body);});
     api.post('/me/progression/claim-focus',req=>{const value=token(req);identity.verifyCsrf(value,req.headers['x-csrf-token']);const input=ProgressionClaimFocusSchema.parse(req.body);return service.claimFocus(value,input.focusId);});
   },{prefix:'/v1'});

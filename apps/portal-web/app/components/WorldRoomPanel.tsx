@@ -13,5 +13,5 @@ export default function WorldRoomPanel(props:Omit<WorldRoomPanelProps,'platform'
  const router=useRouter(),sceneFirst=props.sceneFirst??process.env.NEXT_PUBLIC_VLP_SCENE_FIRST==='1';
  const room3d=process.env.NEXT_PUBLIC_VLP_ROOM_3D==='1'&&(props.experience?.slug??'sdk-sandbox')==='sdk-sandbox';
  const platform=useMemo(()=>sceneFirst?browserPlatform(announceVisitChange,path=>router.push(path)):classicPlatform,[router,sceneFirst]);
- return <SharedRoom {...props} sceneFirst={sceneFirst} rendererLoader={props.rendererLoader??(room3d?room3dRenderer:undefined)} artLabel={props.artLabel??(room3d?'3D room study · original technical art':undefined)} platform={platform} widgets={widgets}/>;
+ return <SharedRoom {...props} modularAppearance={props.modularAppearance??room3d} sceneFirst={sceneFirst} rendererLoader={props.rendererLoader??(room3d?room3dRenderer:undefined)} artLabel={props.artLabel??(room3d?'3D room study · original technical art':undefined)} platform={platform} widgets={widgets}/>;
 }

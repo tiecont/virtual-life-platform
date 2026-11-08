@@ -170,6 +170,7 @@
       "responsibility": "Reward ledger and appearance projection",
       "currentPublicEntryFiles": [
         "progression/appearance",
+        "progression/avatar-parts",
         "progression/ledger",
         "progression/http",
         "progression/service"

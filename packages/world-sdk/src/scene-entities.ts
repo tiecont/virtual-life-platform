@@ -19,7 +19,7 @@ export function sceneEntities(scene: SceneManifest, input: RoomSnapshot) {
     if (person.motion && (state.serverTime === undefined || !person.motion.path.every(point => isWalkable(scene, point)))) throw new Error('SCENE_MOTION_MISMATCH');
     const position = person.motion ? motionPosition(person.motion, state.serverTime!) : point;
     const moving = 'moving' in position && position.moving;
-    return { id: person.profile.id, palette: person.profile.avatarKey, outfit:person.outfit??'casual' as const, ...tileCenter(scene, position), motion: person.motion, settledPose: seat ? 'sit' as const : 'idle' as const, pose: moving ? 'walk' as const : seat ? 'sit' as const : 'idle' as const,
+    return { id: person.profile.id, palette: person.profile.avatarKey, outfit:person.outfit??'casual' as const,...(person.appearance?{appearance:person.appearance}:{}), ...tileCenter(scene, position), motion: person.motion, settledPose: seat ? 'sit' as const : 'idle' as const, pose: moving ? 'walk' as const : seat ? 'sit' as const : 'idle' as const,
       self: person.profile.id === state.self.accountId, opacity: person.state === 'reconnecting' ? .4 : 1 };
   });
   return { state, entities };

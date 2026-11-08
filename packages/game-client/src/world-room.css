@@ -1,3 +1,4 @@
+@import './avatar-creator.css';
 body:has(.cafe-shell){background:#f8faf9}.cafe-shell{max-width:1440px;padding:0 32px 40px;color:#243d35;background:#f8faf9;min-height:100vh;letter-spacing:0}
 .room-areas{margin:24px 0;font-size:14px;line-height:1.6}.room-areas h2{font-size:20px}.room-areas h3{font-size:16px}.room-areas a{display:inline-flex;min-height:44px;align-items:center}
 .study-progress{margin-top:20px;padding-top:12px;border-top:1px solid #a8bcb0}.study-progress dl{display:grid;grid-template-columns:1fr auto;gap:8px}.study-progress dd{margin:0;font-weight:600}.room-events select{box-sizing:border-box;min-height:44px;max-width:100%;width:100%;margin:8px 0;padding:8px;font:inherit;color:#243d35;background:#fff}

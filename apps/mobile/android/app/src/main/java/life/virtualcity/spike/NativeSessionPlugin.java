@@ -36,6 +36,8 @@ public class NativeSessionPlugin extends Plugin {
     @PluginMethod public void request(PluginCall call) { dispatch(call, session -> session.request(call.getString("method", "GET"), call.getString("path"), call.getObject("body"), call.getString("requestId"))); }
     @PluginMethod public void devices(PluginCall call) { dispatch(call, session -> session.devices()); }
     @PluginMethod public void safetyState(PluginCall call) { dispatch(call, session -> session.safetyState(call.getString("expectedAccountId"))); }
+    @PluginMethod public void avatarState(PluginCall call) { dispatch(call, session -> session.avatarState(call.getString("expectedAccountId"))); }
+    @PluginMethod public void saveAvatar(PluginCall call) { dispatch(call, session -> session.saveAvatar(call.getString("expectedAccountId"), call.getString("requestId"), call.getObject("save"))); }
     @PluginMethod public void report(PluginCall call) { dispatch(call, session -> session.report(call.getString("expectedAccountId"), call.getString("requestId"), call.getObject("report"))); }
     @PluginMethod public void setBlock(PluginCall call) {
         Object blocked = call.getData().opt("blocked");

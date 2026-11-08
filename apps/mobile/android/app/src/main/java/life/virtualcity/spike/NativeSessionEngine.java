@@ -12,6 +12,7 @@ import org.json.JSONObject;
 /** Access/CSRF live in this native object only. Call exclusively on the plugin's
  * process-wide serial queue, including Activity recreation and refresh. */
 final class NativeSessionEngine {
+    private static final class AccountChanged extends IllegalStateException {}
     final NativeSessionStore store;
     final NativeSessionHttp http;
     private String access, csrf, deviceId;
@@ -100,7 +101,7 @@ final class NativeSessionEngine {
             throw new IllegalArgumentException("Refresh your account");
         authenticated();
         if (!expectedAccountId.equals(me.getJSONObject("profile").getString("id")))
-            throw new IllegalStateException("Account changed; refresh before continuing");
+            throw new AccountChanged();
     }
     private JSONObject safetyReply(String method, String path, JSONObject body, String requestId, String expectedAccountId) throws Exception {
         safetyAccount(expectedAccountId);
@@ -121,6 +122,24 @@ final class NativeSessionEngine {
     }
     JSONObject report(String expectedAccountId, String requestId, JSONObject input) throws Exception {
         return safetyReply("POST", "/v1/reports", input, requestId, expectedAccountId);
+    }
+    JSONObject avatarState(String expectedAccountId) throws Exception {
+        safetyAccount(expectedAccountId);
+        NativeSessionHttp.Reply reply = http.send("GET", "/v1/me/avatar", null, access, null, null, expectedAccountId);
+        if (!reply.ok()) { if (reply.status == 401) clear(); throw new IllegalStateException("Wardrobe unavailable"); }
+        if (!expectedAccountId.equals(reply.body.getString("accountId"))) throw new IllegalStateException("Account changed; refresh before editing");
+        return reply.body;
+    }
+    JSONObject saveAvatar(String expectedAccountId, String requestId, JSONObject input) throws Exception {
+        try {safetyAccount(expectedAccountId);}catch(AccountChanged changed){return new JSONObject().put("status",409).put("body",new JSONObject().put("error",new JSONObject().put("code","IDEMPOTENCY_CONFLICT")));}
+        if (requestId == null || !requestId.matches("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}")
+                || input == null || !expectedAccountId.equals(input.optString("expectedAccountId")))
+            throw new IllegalArgumentException("Character save unavailable");
+        // Dedicated account-asserted endpoint,not an expansion of publicRequest.
+        // Never retry a possibly committed save or export credential custody.
+        NativeSessionHttp.Reply reply = http.send("POST", "/v1/me/avatar", input, access, csrf, requestId, expectedAccountId);
+        if (reply.status == 401) clear();
+        return new JSONObject().put("status", reply.status).put("body", reply.body);
     }
     JSONObject setBlock(String expectedAccountId, String requestId, String targetId, boolean blocked) throws Exception {
         if (targetId == null || !targetId.matches("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"))

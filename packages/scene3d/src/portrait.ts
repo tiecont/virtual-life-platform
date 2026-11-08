@@ -1,0 +1,14 @@
+import * as T from 'three';
+import {AvatarPartsSchema,type AvatarParts} from '@virtual-city/contracts';
+import {createAnimal} from './animal';
+// Static portrait from the same composer/rig/materials as creator and rooms.
+// No network URLs,animation loop,authority or saved-selection mutation.
+export function createAvatarPortrait(host:HTMLElement,initial:AvatarParts,options:{signal?:AbortSignal;onContext?:(available:boolean)=>void}={}){
+ const parts=AvatarPartsSchema.parse(initial);options.signal?.throwIfAborted();const renderer=new T.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});let animal:ReturnType<typeof createAnimal>|undefined,observer:ResizeObserver|undefined,disposed=false,lost=false;
+ const canvas=renderer.domElement,scene=new T.Scene(),camera=new T.PerspectiveCamera(32,1,.05,8);camera.position.set(0,1.1,1.05);camera.lookAt(0,1.08,0);
+ renderer.setPixelRatio(1);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;scene.add(new T.HemisphereLight('#fff3db','#8c8b77',1.25));const sun=new T.DirectionalLight('#ffe1b2',2.1);sun.position.set(-2.5,4.5,3);scene.add(sun);const fill=new T.DirectionalLight('#dce6e5',.5);fill.position.set(3,2,-2);scene.add(fill);canvas.setAttribute('aria-hidden','true');canvas.dataset.avatarPortrait='shared-composer-v2';
+ const draw=()=>{if(disposed||lost||!host.clientWidth||!host.clientHeight)return;camera.aspect=host.clientWidth/host.clientHeight;camera.updateProjectionMatrix();renderer.setSize(host.clientWidth,host.clientHeight,false);renderer.render(scene,camera);};
+ const lose=(event:Event)=>{event.preventDefault();if(disposed)return;lost=true;options.onContext?.(false);},restore=()=>{if(disposed)return;lost=false;draw();options.onContext?.(true);};
+ function destroy(){if(disposed)return;disposed=true;observer?.disconnect();options.signal?.removeEventListener('abort',destroy);canvas.removeEventListener('webglcontextlost',lose);canvas.removeEventListener('webglcontextrestored',restore);animal?.dispose();renderer.dispose();renderer.forceContextLoss();canvas.remove();}
+ try{animal=createAnimal('low',parts.fur,'casual',parts);animal.update(0,'idle',true);scene.add(animal.group);host.appendChild(canvas);canvas.addEventListener('webglcontextlost',lose);canvas.addEventListener('webglcontextrestored',restore);observer=new ResizeObserver(draw);observer.observe(host);options.signal?.addEventListener('abort',destroy,{once:true});if(options.signal?.aborted){destroy();options.signal.throwIfAborted();}draw();return{setAppearance(input:AvatarParts){if(disposed)return;const next=AvatarPartsSchema.parse(input),replacement=createAnimal('low',next.fur,'casual',next);replacement.update(0,'idle',true);animal?.dispose();animal=replacement;scene.add(replacement.group);draw();},destroy};}catch(error){destroy();throw error;}
+}

@@ -29,6 +29,7 @@ export default defineConfig({ test: { projects: [
   ], environment: 'node', testTimeout: 15000, hookTimeout: 15000, fileParallelism: false } },
   // These same files remain in the normal integration gate;the focused lane does not replace it.
   { test: { name: 'security', include: [
+    'tests/integration/avatar-parts.test.ts',
     'tests/integration/native-safety.test.ts',
     'tests/integration/native-account-deletion.test.ts',
     'tests/integration/native-auth.test.ts','tests/integration/native-auth-socket.test.ts',

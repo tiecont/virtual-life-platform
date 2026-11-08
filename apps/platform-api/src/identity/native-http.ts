@@ -17,7 +17,7 @@ export async function prepareNativeApiRequest(req:FastifyRequest,native:NativeId
  const auth=await native.authenticateAccess(access(req));
  // Safety views/actions cannot silently follow a switched native account.
  // This header is a stale-view assertion, never authority to select an actor.
- if(['/v1/me/room','/v1/safety/status','/v1/blocks','/v1/reports'].includes(route)||route==='/v1/reports/:id'){
+ if(['/v1/me/avatar','/v1/me/room','/v1/safety/status','/v1/blocks','/v1/reports'].includes(route)||route==='/v1/reports/:id'){
   const expected=z.uuid().parse(req.headers['x-native-account-id']).toLowerCase();
   if(expected!==auth.context.accountId)throw new IdentityError('IDEMPOTENCY_CONFLICT',409,'Account changed; refresh before continuing');
  }

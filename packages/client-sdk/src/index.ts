@@ -15,5 +15,5 @@ export function browserPlatform(visitChanged:()=>void,navigate?:(path:string)=>v
  return {request:(path,init)=>fetch(internalPath(path),init),navigate:path=>{const safe=internalPath(path);if(navigate)navigate(safe);else window.location.assign(safe);},visitChanged,
   watchIdentity(listener){const bus=typeof BroadcastChannel==='undefined'?null:new BroadcastChannel('virtual-city-identity');if(bus)bus.onmessage=listener;return()=>bus?.close();}};
 }
-export type {RoomSceneHandle,RoomSceneOptions,RoomSceneFactory,SceneQuality,AnimalStudyHandle} from './scene';
+export type {RoomSceneHandle,RoomSceneOptions,RoomSceneFactory,SceneQuality,AnimalStudyHandle,AnimalCreatorHandle} from './scene';
 export type {NativeSessionCustodyPort,NativeSessionState} from './native-session';
