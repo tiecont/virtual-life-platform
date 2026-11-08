@@ -40,6 +40,7 @@ export interface WorldRoomPanelProps {modularAppearance?:boolean;sceneFirst?:boo
 export default function WorldRoomPanel({socketOrigin,platform,widgets,modularAppearance=false,sceneFirst=false,rendererLoader=defaultRenderer,artLabel='Original starter art',experience=sandboxExperience,children}:WorldRoomPanelProps) {
  const {Link,FocusPanel,Wardrobe,WorldEvents,RoomInvitation,RoomSafety}=widgets;
  const foreground=useRef(true);
+ const [foregroundActive,setForegroundActive]=useState(true);
  const actionsDialog=useRef<HTMLDialogElement>(null),visitsDialog=useRef<HTMLDialogElement>(null);
  const actionsButton=useRef<HTMLButtonElement>(null),actionsOpener=useRef<HTMLElement|null>(null),visitsOpener=useRef<HTMLElement|null>(null);
  const [panel,setPanel]=useState<'actions'|'visit'|null>(null),[seatFilter,setSeatFilter]=useState('');
@@ -122,7 +123,7 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,modularApp
     }
     void load();
     const unwatch=platform.watchIdentity(()=>{closeConnection();void load();});
-    const stopLifecycle=platform.lifecycle?.subscribe(active=>{foreground.current=active;closeConnection();if(!active){pending?.abort();scene.current?.suspend();}else void load();});
+    const stopLifecycle=platform.lifecycle?.subscribe(active=>{foreground.current=active;setForegroundActive(active);closeConnection();if(!active){pending?.abort();setAvailable(false);setLoading(true);scene.current?.suspend();}else void load();});
     return () => { disposed = true; pending?.abort(); alive.current = false; closeConnection(); unwatch();stopLifecycle?.(); };
   }, [experience,manifest,platform,modularAppearance]);
   useEffect(() => {
@@ -247,7 +248,7 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,modularApp
   const connection=<p className="cafe-connection" role="status" aria-live="polite">{loading ? 'Checking your session...' : status}</p>;
   const feedback=message&&<p className="cafe-message" aria-live="polite">{message}</p>;
   const visitControls=<>{me || loading ? <>{me && <><p className="cafe-identity">{me.profile.displayName}</p><p className="cafe-note" aria-live="polite">{active ? walking ? view.snapshot?.self.seatId ? 'Walking to your reserved seat.' : 'Walking across the '+experience.noun+' floor.' : view.snapshot?.self.seatId ? 'Seated at ' + manifest.seats.find(seat => seat.seatId === view.snapshot?.self.seatId)?.label : 'On the '+experience.noun+' floor' : 'No confirmed place'}</p></>}
-    {active ? <button className="cafe-primary" disabled={busy} onClick={() => void mutate('room.leave')}>Leave {experience.noun}</button> : <button ref={entryButton} className="cafe-primary" aria-disabled={!available || loading} disabled={busy || view.status === 'syncing'} onClick={enter}>{(view.status === 'idle' ? 'Enter ' : 'Rejoin ')+experience.noun}</button>}
+    {active ? <button className="cafe-primary" disabled={busy} onClick={() => void mutate('room.leave')}>Leave {experience.noun}</button> : <button ref={entryButton} className="cafe-primary" aria-disabled={!available || loading || !foregroundActive} disabled={busy || view.status === 'syncing' || !foregroundActive} onClick={enter}>{(view.status === 'idle' ? 'Enter ' : 'Rejoin ')+experience.noun}</button>}
   </> : !loading && <Link href="/identity">Open identity</Link>}
   {experience.portalReturn&&<button disabled={busy||loading||view.status==='syncing'||view.status==='reconnecting'} onClick={()=>void returnToCity()}>{active?'Leave and return to city':'Return to city'}</button>}</>;
   return <main className={'cafe-shell'+(sceneFirst?' scene-first':'')} data-shell={sceneFirst?'scene-first':'classic'} data-world={experience.slug}>
