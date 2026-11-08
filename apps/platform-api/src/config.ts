@@ -32,6 +32,8 @@ const Env = z.object({
   LOCAL_PARK_WORLD: z.enum(['0', '1']).default('0'),
   LOCAL_DEADLINE_WORLD:z.enum(['0','1']).default('0'),
   LOCAL_MAID_WORLD:z.enum(['0','1']).default('0'),
+  LOCAL_LANTERN_LODGE_WORLD:z.enum(['0','1']).default('0'),
+  LOCAL_GAME_LOBBY:z.enum(['0','1']).default('0'),
   LOCAL_DEADLINE_IDENTITY:z.enum(['0','1']).default('0'),
   DEADLINE_LEGACY_API_URL:z.preprocess(value=>value===''?undefined:value,z.string().url().optional()),
   LOCAL_RESTAURANT_WORLD: z.enum(['0', '1']).default('0'),
@@ -42,6 +44,8 @@ const Env = z.object({
   DATING_PROFILE_KEY_ID:z.string().regex(/^[a-z0-9-]{1,32}$/).default('local-v1'),
 }).superRefine((env, ctx) => {
   const origin = new URL(env.WEB_ORIGIN);
+  if(env.LOCAL_GAME_LOBBY==='1'&&env.LOCAL_LANTERN_LODGE_WORLD!=='1')ctx.addIssue({code:'custom',path:['LOCAL_GAME_LOBBY'],message:'Local Lodge installation required'});
+  if(env.NODE_ENV==='production'&&(env.LOCAL_LANTERN_LODGE_WORLD==='1'||env.LOCAL_GAME_LOBBY==='1'))ctx.addIssue({code:'custom',path:['LOCAL_GAME_LOBBY'],message:'Local Lodge cannot run in production'});
   if(env.NATIVE_AUTH_ENABLED==='1'){
     if(!env.NATIVE_AUTH_KEY)ctx.addIssue({code:'custom',path:['NATIVE_AUTH_KEY'],message:'Separate native encryption key required'});
     if(env.WEB_ORIGIN==='https://localhost'||env.ADMIN_ORIGIN==='https://localhost')ctx.addIssue({code:'custom',path:['NATIVE_AUTH_ENABLED'],message:'Installed native origin must remain separate from browser/admin origins'});

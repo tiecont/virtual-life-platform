@@ -12,7 +12,7 @@ export function assertImportAllowed(from, specifier, root) {
   const project = path.split('/').slice(0, 2).join('/');
   if (target.startsWith('../') || target.startsWith('/')) throw new Error(`Import escapes workspace: ${path} → ${target}`);
   const targetProject = target.split('/').slice(0, 2).join('/');
-  const worldPackages=['library-world','restaurant-world','lounge-world','park-world','deadline-world','maid-world'];
+  const worldPackages=['library-world','restaurant-world','lounge-world','park-world','deadline-world','maid-world','lantern-lodge-world'];
   if (layer === 'packages' && worldPackages.some(name=>target.startsWith('packages/'+name+'/')&&!path.startsWith('packages/'+name+'/'))) throw new Error(`Shared package imports world implementation: ${path}`);
   if (target.startsWith('apps/') && targetProject !== project) throw new Error(`Cross-app import: ${path} → ${target}`);
   if (path.startsWith('packages/contracts/') && target.startsWith('packages/') && !target.startsWith('packages/contracts/') && !target.startsWith('packages/config/')) throw new Error(`Contracts import higher package: ${path} → ${target}`);

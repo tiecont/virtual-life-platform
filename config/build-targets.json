@@ -5,7 +5,7 @@
   "packageManager": "pnpm@11.28.5",
   "rootBuild": "pnpm -r build",
   "packagesBuild": "pnpm --filter './packages/*' -r build",
-  "lockSha256": "29d965fd31aedd0c962895345a93862bd89009eb904ffb129ac421000153d69b",
+  "lockSha256": "03131c72287355e541100c3a342c3c318f056fabd7de3615183f4b4f8c42b224",
   "workspaceConfigSha256": "0c79bdd36e2d8eac11365b4cba92045f1d494d8e191f41de14298de2263d0ec1",
   "rootDependencies": {
     "dependencies": {},
@@ -46,6 +46,7 @@
     "@virtual-city/focus-ui",
     "@virtual-city/pixi-scene",
     "@virtual-city/game-client",
+    "@virtual-city/lantern-lodge-world",
     "@virtual-city/library-world",
     "@virtual-city/lounge-world",
     "@virtual-city/maid-world",
@@ -330,6 +331,41 @@
       ]
     },
     {
+      "name": "@virtual-city/lantern-lodge-world",
+      "path": "packages/lantern-lodge-world",
+      "kind": "compiled-package",
+      "build": "tsc -p tsconfig.json",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "dependencies": [
+        "@virtual-city/config",
+        "@virtual-city/contracts",
+        "@virtual-city/world-sdk"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "packages/lantern-lodge-world/tsconfig.json",
+          "sha256": "a3f73a7f13fb41e0068e26863ac4edd58f347bc5d16cfdea13f3fa4c421c0626"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {},
+        "devDependencies": {},
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": [
+        "@virtual-city/platform-api",
+        "@virtual-city/portal-web"
+      ]
+    },
+    {
       "name": "@virtual-city/library-world",
       "path": "packages/library-world",
       "kind": "compiled-package",
@@ -563,6 +599,7 @@
         "@virtual-city/config",
         "@virtual-city/contracts",
         "@virtual-city/deadline-world",
+        "@virtual-city/lantern-lodge-world",
         "@virtual-city/library-world",
         "@virtual-city/lounge-world",
         "@virtual-city/maid-world",
@@ -617,6 +654,7 @@
         "@virtual-city/deadline-world",
         "@virtual-city/focus-ui",
         "@virtual-city/game-client",
+        "@virtual-city/lantern-lodge-world",
         "@virtual-city/library-world",
         "@virtual-city/lounge-world",
         "@virtual-city/maid-world",

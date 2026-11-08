@@ -18,6 +18,7 @@
     "@virtual-city/restaurant-world": "workspace:*",
     "@virtual-city/lounge-world": "workspace:*",
     "@virtual-city/contracts": "workspace:*",
+    "@virtual-city/lantern-lodge-world": "workspace:*",
     "@virtual-city/world-sdk": "workspace:*",
     "@virtual-city/pixi-scene": "workspace:*",
     "next": "16.4.4",

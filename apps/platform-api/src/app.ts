@@ -90,6 +90,8 @@ import { AppearanceService } from './progression/appearance';
 import {AvatarPartsService} from './progression/avatar-parts';
 import { DiscoveryService } from './discovery/service';
 import { LibraryStudyService } from './library/study';
+import {GameLobbyService} from './games/lobby';
+import {registerGameLobby} from './games/http';
 import { registerStudy } from './library/http';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
@@ -197,6 +199,15 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const sanctions = new SanctionService(db, identity, reports, rooms, safetyPolicy, config.NODE_ENV, config.SAFETY_EVIDENCE_KEY, config.SAFETY_EVIDENCE_KEY_ID, options.now,worlds.releasePolicy?.confidentialEvidence);
   const incidents = new IncidentService(db, identity, reports, rooms, () => [...new Set([...worlds.registry.slugs(),'dating'])], options.now);
   const travel = new TravelService(db, identity, rooms, options.now);
+  const gameLobby=new GameLobbyService(identity,rooms,social,()=>config.NODE_ENV!=='production'&&config.LOCAL_GAME_LOBBY==='1',options.now);
+  const unsubscribeGameContact=social.onContactWithdrawn(async(_transaction,a,b)=>{gameLobby.revoke(a);gameLobby.revoke(b);});
+  // Default-off installations retain their existing export shape and routes.
+  if(config.LOCAL_GAME_LOBBY==='1'){
+    registerGameLobby(http,config,identity,gameLobby,options.now);
+    identity.registerExportOwner('gameLobby',async id=>gameLobby.exportAccount(id));
+    identity.registerDeletionOwner('gameLobby',async id=>gameLobby.revoke(id));
+  }
+  http.addHook('preClose',async()=>{unsubscribeGameContact();await gameLobby.close();});
   const invitations = new InvitationService(db, identity, social, worlds.registry, options.now,rooms);
   const focus = new FocusService(db, identity, rooms, options.now);
   const hospitality = new HospitalityService(db, identity, rooms, social, options.hospitality?.staff, options.now);
@@ -309,5 +320,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => {stopDatabaseObservation(); roomMetrics.databaseAttached(false); stopEventLoopObservation(); roomMetrics.close();});
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity,nativeIdentity,privacyRequests,runtimeControls, deadlineIdentity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain,admission };
+  return { app, http, identity,nativeIdentity,privacyRequests,runtimeControls, deadlineIdentity, gateway, social, worlds, rooms, gameLobby, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain,admission };
 }

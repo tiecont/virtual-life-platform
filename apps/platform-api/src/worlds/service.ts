@@ -9,6 +9,7 @@ import { createLibraryWorld } from '@virtual-city/library-world';
 import { createParkWorld } from '@virtual-city/park-world';
 import { createDeadlineWorld } from '@virtual-city/deadline-world';
 import { createMaidWorld } from '@virtual-city/maid-world';
+import {createLanternLodgeWorld} from '@virtual-city/lantern-lodge-world';
 import { createRestaurantWorld } from '@virtual-city/restaurant-world';
 import { createLoungeWorld } from '@virtual-city/lounge-world';
 import {createReleaseWorldRuntime} from './release-installation';
@@ -42,6 +43,7 @@ export async function createWorldRuntime(config: Config, identity: IdentityServi
   if (config.NODE_ENV !== 'production' && config.LOCAL_PARK_WORLD === '1') registry.register(createParkWorld());
   if(config.NODE_ENV!=='production'&&config.LOCAL_DEADLINE_WORLD==='1')registry.register(createDeadlineWorld());
   if(config.NODE_ENV!=='production'&&config.LOCAL_MAID_WORLD==='1')registry.register(createMaidWorld());
+  if(config.NODE_ENV!=='production'&&config.LOCAL_LANTERN_LODGE_WORLD==='1')registry.register(createLanternLodgeWorld());
   if (config.NODE_ENV !== 'production' && config.LOCAL_RESTAURANT_WORLD === '1') registry.register(createRestaurantWorld());
   if (config.NODE_ENV !== 'production' && config.LOCAL_LOUNGE_WORLD === '1') registry.register(createLoungeWorld());
   if (config.NODE_ENV !== 'production' && config.LOCAL_TRAVEL_FIXTURES === '1') for (const fixture of createTravelFixtures()) registry.register(fixture);

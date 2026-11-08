@@ -375,6 +375,17 @@ export class RoomService {
       if(definition.version!==destination.worldVersion||definition.sceneRef.version!==destination.sceneVersion)throw new DomainError('WORLD_VERSION_MISMATCH',409,'Refresh world assets');await this.safety?.assert(actor.accountId,room.slug,room.id);
     });
   }
+  // Return a fenced visit lease. Game DB/safety work runs after this queue is
+  // released; it must recheck the lease before publishing or committing.
+  gameProjection(credential:string,source:TravelSource){
+    return this.#run(async()=>{await this.#sweep();const actor=await this.identity.authenticate(credential),room=this.#rooms.get(this.#accounts.get(actor.accountId)??''),member=room?.members.get(actor.accountId);
+      if(!room||!member||source.epoch!==this.epoch||source.roomId!==room.id||source.membershipId!==member.id||![...member.connections.values()].includes(actor.sessionId))throw new DomainError('NOT_IN_ROOM',409,'A current Lodge visit is required');
+      const context=this.registry.projectionContext(room.slug);await this.registry.authorizeWorld(credential,room.slug);await this.safety?.assert(actor.accountId,room.slug,room.id);
+      if(room.slug!=='lantern-lodge'||context.definition.capacity!==8||room.capacity!==8)throw new DomainError('NOT_AVAILABLE',404,'Lodge table unavailable');
+      const exists=()=>!this.#closed&&this.authority.state==='held'&&context.valid()&&this.#rooms.get(room.id)?.members.get(actor.accountId)===member;
+      return {actor,source:{epoch:this.epoch,roomId:room.id,membershipId:member.id},valid:()=>exists()&&this.now()<actor.expiresAt&&[...member.connections.values()].includes(actor.sessionId)};
+    });
+  }
   studyProjection(credential:string,source:TravelSource):Promise<StudyRoomProjection>{
     return this.#run(async()=>{await this.#sweep();const actor=await this.identity.authenticate(credential),room=this.#rooms.get(this.#accounts.get(actor.accountId)??''),member=room?.members.get(actor.accountId);
       if(!room||!member||source.epoch!==this.epoch||source.roomId!==room.id||source.membershipId!==member.id||![...member.connections.values()].includes(actor.sessionId))throw new DomainError('NOT_IN_ROOM',409,'An active study visit is required');

@@ -171,6 +171,9 @@ importers:
       '@virtual-city/deadline-world':
         specifier: workspace:*
         version: link:../../packages/deadline-world
+      '@virtual-city/lantern-lodge-world':
+        specifier: workspace:*
+        version: link:../../packages/lantern-lodge-world
       '@virtual-city/library-world':
         specifier: workspace:*
         version: link:../../packages/library-world
@@ -228,6 +231,9 @@ importers:
       '@virtual-city/game-client':
         specifier: workspace:*
         version: link:../../packages/game-client
+      '@virtual-city/lantern-lodge-world':
+        specifier: workspace:*
+        version: link:../../packages/lantern-lodge-world
       '@virtual-city/library-world':
         specifier: workspace:*
         version: link:../../packages/library-world
@@ -327,6 +333,15 @@ importers:
       socket.io-client:
         specifier: 4.8.4
         version: 4.8.4(supports-color@7.2.0)
+
+  packages/lantern-lodge-world:
+    dependencies:
+      '@virtual-city/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@virtual-city/world-sdk':
+        specifier: workspace:*
+        version: link:../world-sdk
 
   packages/library-world:
     dependencies:

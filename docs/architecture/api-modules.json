@@ -8,6 +8,12 @@
     "apiReplicas": 1
   },
   "modules": {
+    "games": {
+      "owner":"engine.games",
+      "responsibility":"Default-off visit-scoped table consent lobby; durable match journal is separate",
+      "currentPublicEntryFiles":["games/lobby","games/http"],
+      "targetBoundary":"Consumes fenced RoomService lease and safety/social owners; never constructs RoomAuthority"
+    },
     "composition": {
       "owner": "Coordinator",
       "responsibility": "app.ts and main.ts lifecycle wiring",
@@ -251,7 +257,8 @@
     "lounge-world",
     "park-world",
     "deadline-world",
-    "maid-world"
+    "maid-world",
+    "lantern-lodge-world"
   ],
   "limitations": [
     "Static literal imports are a lower bound; not a runtime call graph or security sandbox",
