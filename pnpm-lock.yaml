@@ -29,6 +29,9 @@ importers:
       '@types/react-dom':
         specifier: 19.3.0
         version: 19.3.0(@types/react@19.3.0)
+      '@virtual-city/boardgame-core':
+        specifier: workspace:*
+        version: link:packages/boardgame-core
       '@virtual-city/contracts':
         specifier: workspace:*
         version: link:packages/contracts
@@ -261,6 +264,12 @@ importers:
       socket.io-client:
         specifier: 4.8.4
         version: 4.8.4(supports-color@7.2.0)
+
+  packages/boardgame-core:
+    dependencies:
+      '@virtual-city/contracts':
+        specifier: workspace:*
+        version: link:../contracts
 
   packages/client-sdk:
     dependencies:

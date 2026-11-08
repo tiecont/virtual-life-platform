@@ -1,7 +1,7 @@
 {
   "schema_version": "phase2-state-1.0",
   "phase_id": "LAN-L02",
-  "last_updated": "2026-11-08T17:13:58.612956+00:00",
+  "last_updated": "2026-11-08T17:21:28.697067+00:00",
   "release_status": "NOT_REQUESTED",
   "tasks": {
     "N15-01": {
@@ -15,12 +15,12 @@
       "next_action": "Reserve N15-02;implement strict versioned GameSession DTOs and a pure deterministic core reducer interface with recipient allowlists and negative/boundary tests;do not start later game waves."
     },
     "N15-02": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
+      "status": "IN_PROGRESS",
+      "owner": "Codex /root",
+      "branch": "codex/lantern-lodge-foundation",
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "packages/contracts game DTO version 1; packages/boardgame-core pure reducer interface"
+      "next_action": "Implement strict GameSession DTOs,recipient allowlists and pure deterministic core/entropy interface;actual negative contracts and source-boundary tests. Keep concrete mode reducers and runtime exposure unregistered until their gated tasks."
     },
     "N15-03": {
       "status": "TODO",
