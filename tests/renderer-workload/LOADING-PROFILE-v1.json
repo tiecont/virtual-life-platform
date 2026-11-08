@@ -1,0 +1,30 @@
+{
+  "revision": 1,
+  "lockedBeforeFirstRun": true,
+  "scope": "Chromium synthetic procedural 20-actor renderer; not authenticated gameplay, native packaged assets, physical Android, final-art or full starter-catalog qualification",
+  "tiers": ["low", "balanced"],
+  "profiles": [
+    {"name": "desktop", "viewport": {"width": 1280, "height": 720}, "deviceScaleFactor": 1},
+    {"name": "landscape", "viewport": {"width": 844, "height": 390}, "deviceScaleFactor": 2, "isMobile": true, "hasTouch": true}
+  ],
+  "pairsPerTier": 10,
+  "percentile": "nearest rank: sorted[ceil(n*0.75)-1]; no trimming, retries or discarded slow samples",
+  "network": {"offline": false, "latency": 150, "downloadThroughput": 200000, "uploadThroughput": 93750, "connectionType": "cellular4g"},
+  "networkUnits": "CDP latency milliseconds and throughput bytes/second; gzip HTTP bodies and exact lengths, loopback only",
+  "cpuRate": 4,
+  "cold": "Fresh isolated browser context per pair, service workers blocked, CDP clearBrowserCache then cache enabled; fresh document and renderer, not a cold OS/browser/GPU process",
+  "warm": "One normal page.reload in the same context immediately after cold; HTTP cache enabled, no clearing; require positive asset cache evidence",
+  "ready": "Navigation start to 20 synthetic actors rendered through two RAF callbacks; initial quality selected before any renderer construction",
+  "art": "No separately downloaded final art in this procedural fixture; resource transfer sizes are reported but final art wait and 8/24MiB catalog qualification remain NOT_QUALIFIED",
+  "heap": {
+    "quality": "balanced",
+    "warmRecreates": 2,
+    "cycles": 20,
+    "idleMilliseconds": 1000,
+    "garbageCollectionsPerSample": 2,
+    "protocol": "Separate unthrottled same-profile context. Active 20-actor warm baseline and each active recreate sample use external HeapProfiler.collectGarbage twice with 1000ms idle between, then Runtime.getHeapUsage. Final active usedSize minus warm active usedSize compared to max(16MiB,20% baseline). Missing GC/heap evidence fails; stopped zero-lease/canvas plus post-stop heap reported separately. Not driver/native RSS or authenticated travel."
+  },
+  "navigationDeadlineMilliseconds": 60000,
+  "budgets": "docs/design/vnext/animals-3d/budgets-v1.json",
+  "changePolicy": "Keep v1 and all failures; never edit original thresholds or this profile after measurement. A different protocol needs a separately versioned profile."
+}
