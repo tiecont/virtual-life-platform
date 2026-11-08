@@ -113,9 +113,15 @@ importers:
       '@virtual-city/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@virtual-city/deadline-world':
+        specifier: workspace:*
+        version: link:../../packages/deadline-world
       '@virtual-city/game-client':
         specifier: workspace:*
         version: link:../../packages/game-client
+      '@virtual-city/maid-world':
+        specifier: workspace:*
+        version: link:../../packages/maid-world
       '@virtual-city/pixi-scene':
         specifier: workspace:*
         version: link:../../packages/pixi-scene

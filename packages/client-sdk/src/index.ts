@@ -1,9 +1,12 @@
+import type {ClientProtocolOffer,NativeSocketHandshake} from '@virtual-city/contracts';
 export interface ClientPlatform {
   request(path:string,init?:RequestInit):Promise<Response>;
   navigate(path:string):void;
   visitChanged():void;
   watchIdentity(listener:()=>void):()=>void;
   lifecycle?:{subscribe(listener:(active:boolean)=>void):()=>void};
+  socketAuth?(input:{expectedAccountId:string;protocol:ClientProtocolOffer}):Promise<NativeSocketHandshake>;
+  sessionEnded?():void;
 }
 export function internalPath(path:string){
   if(!/^\/(?!\/)[^\s\\]*$/.test(path)||Array.from(path).some(char=>char.charCodeAt(0)<32))throw Error('Navigation unavailable');
@@ -16,4 +19,4 @@ export function browserPlatform(visitChanged:()=>void,navigate?:(path:string)=>v
   watchIdentity(listener){const bus=typeof BroadcastChannel==='undefined'?null:new BroadcastChannel('virtual-city-identity');if(bus)bus.onmessage=listener;return()=>bus?.close();}};
 }
 export type {RoomSceneHandle,RoomSceneOptions,RoomSceneFactory,SceneQuality,AnimalStudyHandle,AnimalCreatorHandle} from './scene';
-export type {NativeSessionCustodyPort,NativeSessionState} from './native-session';
+export type {NativeSessionCustodyPort,NativeSessionState,NativeWorldCall} from './native-session';

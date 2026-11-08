@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState,type ReactNode,type ComponentType,type RefObject } from 'react';
 import { io, type Socket } from 'socket.io-client';
-import { MeSchema,AvatarOwnStateSchema, RoomAckSchema, WorldCatalogSchema, sceneManifestHash, type ClientProtocolOffer, type NegotiatedSession, type SceneIdentity, type Me, type RoomSnapshot,type SceneManifest,type TravelSource,type AvatarAppearance,type TravelDestination } from '@virtual-city/contracts';
+import { MeSchema,AvatarOwnStateSchema,NativeSocketHandshakeSchema, RoomAckSchema, WorldCatalogSchema, sceneManifestHash, type ClientProtocolOffer, type NegotiatedSession, type SceneIdentity, type Me, type RoomSnapshot,type SceneManifest,type TravelSource,type AvatarAppearance,type TravelDestination } from '@virtual-city/contracts';
 import { RoomRecovery, resolveClientCompatibility, createClientProtocolOffer, acceptSessionCompatibility, type ResolvedClientCompatibility, type RoomRecoveryView } from '@virtual-city/world-sdk';
 import { sandboxScene } from '@virtual-city/pixi-scene';
 import {rendererFactory} from './renderer';
@@ -164,9 +164,18 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,modularApp
     closeConnection(); focusIntent.current = 'actions'; desired.current = true;
     setBusy(true);
     let offer: ClientProtocolOffer | null = null;
-    const client = io(socketOrigin, { forceNew: true, autoConnect: false, reconnection: true, reconnectionAttempts: 3, reconnectionDelay: 1000, transports: ['websocket'], withCredentials: true, auth: complete => {
+    let authentication=0;
+    const client = io(socketOrigin, { forceNew: true, autoConnect: false, reconnection: true, reconnectionAttempts: 3, reconnectionDelay: 1000, transports: ['websocket'], withCredentials: !platform.socketAuth, auth: complete => {
       const protocol = compatibility.current?.mode === 'negotiated' ? createClientProtocolOffer(crypto.randomUUID()) : undefined;
-      offer = protocol ?? null; complete({schemaVersion: 1, csrfToken: me.csrfToken, ...(protocol ? {protocol} : {})});
+      offer = protocol ?? null;
+      if(!platform.socketAuth){complete({schemaVersion:1,csrfToken:me.csrfToken,...(protocol?{protocol}:{})});return;}
+      // A reconnect must mint a fresh one-use ticket. A late native queue reply
+      // cannot reconnect an unmounted,backgrounded or switched-account view.
+      const attempt=++authentication,generation=sequence.current;
+      const current=()=>alive.current&&foreground.current&&desired.current&&socket.current===client&&authentication===attempt&&sequence.current===generation;
+      const failed=()=>{if(current()){closeConnection();setMessage('Connection unavailable. Refresh your account before rejoining.');}};
+      if(!protocol){failed();return;}
+      void platform.socketAuth({expectedAccountId:me.profile.id,protocol}).then(input=>{if(!current())return;const auth=NativeSocketHandshakeSchema.parse(input);if(JSON.stringify(auth.protocol)!==JSON.stringify(protocol))throw Error('Connection changed');complete(auth);}).catch(failed);
     } });
     socket.current = client;
     client.on('connect', () => {
@@ -198,6 +207,7 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,modularApp
     });
     client.on('session.revoked', () => {
       if (socket.current !== client || !alive.current) return;
+      platform.sessionEnded?.();
       desired.current = false; recovery.current.disconnect(); publish(); setMe(null); setMessage('Your session ended. Open identity to continue.'); client.close();
     });
     client.connect();

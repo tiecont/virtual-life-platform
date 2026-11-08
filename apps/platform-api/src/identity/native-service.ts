@@ -158,10 +158,11 @@ export class NativeIdentityService{
    const row=(await db.query<Family>('SELECT * FROM native_device_sessions WHERE id=$1 AND account_id=$2 FOR UPDATE',[id,current.accountId])).rows[0];if(!row)throw new IdentityError('NOT_FOUND',404,'Device unavailable');return this.revoke(db,row);
   });this.notify(result);return{schemaVersion:1 as const,revoked:true as const};
  }
- async ticket(access:string,input:unknown){
+ async ticket(access:string,input:unknown,expectedAccountId?:string){
   const body=NativeTicketInputSchema.parse(input),client=this.client(body),initial=await this.authenticateAccess(access);
   const result=await this.tx(async db=>{
    await this.identity.lockAccounts(db,[initial.context.accountId]);const current=await this.identity.contextInTransaction(db,initial.credential),row=await this.grant(db,initial.row.grant_id);
+   if(expectedAccountId!==undefined&&current.accountId!==expectedAccountId)throw new IdentityError('IDEMPOTENCY_CONFLICT',409,'Account changed; refresh before connecting');
    if(row.client_build!==client.clientBuild)throw new NativeProtocolError();await this.prune(db,row.id);
    const token='nt1.'+randomBytes(32).toString('hex'),expires=new Date(Math.min(current.expiresAt,this.now()+NATIVE_TICKET_TTL_MS)),selection=negotiateClientProtocol(client.protocol)!;
    await db.query('INSERT INTO native_socket_tickets(token_hash,device_id,grant_id,account_id,identity_session_id,audience,protocol,protocol_hash,expires_at,created_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)',[this.identity.hash(token),row.id,row.grant_id,current.accountId,current.sessionId,'native-socket-v1',client.protocol,this.identity.fingerprint(client.protocol),expires,new Date(this.now())]);

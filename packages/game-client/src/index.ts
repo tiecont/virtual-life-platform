@@ -7,4 +7,5 @@ export {AvatarThumbnail} from './AvatarThumbnail';
 export {browserAvatarStore,AvatarStoreError} from './avatar-editor';
 export type {AvatarStorePort} from './avatar-editor';
 export {AccountDeletionInfo} from './AccountDeletionInfo';
+export {TravelPanel} from './TravelPanel';
 export type {RoomExperience,RoomChildContext,RoomWidgets,WorldRoomPanelProps} from './WorldRoomPanel';

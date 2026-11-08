@@ -79,3 +79,17 @@ it('account erasure cascades native credentials,grants,spent refresh and tickets
  expect((await server.http.inject({method:'DELETE',url:'/v1/me',headers:{...bearer(current),'x-csrf-token':current.me.csrfToken,'idempotency-key':randomUUID()},payload:{}})).statusCode).toBe(200);
  for(const table of ['native_device_sessions','native_access_grants','native_refresh_spent','native_socket_tickets']){const column=table==='native_device_sessions'?'id':'device_id';expect((await pool.query(`SELECT count(*)::int AS n FROM ${table} WHERE ${column}=$1`,[user.tokens.deviceId])).rows[0].n).toBe(0);}expect((await refresh(current.tokens.refreshToken)).statusCode).toBe(401);
 });
+it('rejects a stale expected native account before issuing any room ticket and retains the legacy ticket lane',async()=>{
+ const user=await guest(),body=client(),count=async()=>Number((await pool.query('SELECT count(*)::int AS n FROM native_socket_tickets WHERE account_id=$1',[user.me.profile.id])).rows[0].n);
+ expect(await count()).toBe(0);
+ const wrong=await server.http.inject({method:'POST',url:'/v1/native/session/socket-ticket',headers:{...bearer(user),'x-native-account-id':randomUUID()},payload:body});expect(wrong.statusCode).toBe(409);expect(await count()).toBe(0);
+ expect((await server.http.inject({method:'POST',url:'/v1/native/session/socket-ticket',headers:{...bearer(user),'x-native-account-id':user.me.profile.id},payload:body})).statusCode).toBe(200);expect(await count()).toBe(1);
+ expect((await server.http.inject({method:'POST',url:'/v1/native/session/socket-ticket',headers:bearer(user),payload:client()})).statusCode).toBe(200);expect(await count()).toBe(2);
+});
+it('honors native stale-view assertions on catalog,discovery and travel without changing unasserted legacy reads',async()=>{
+ const user=await guest(),wrong={...bearer(user),'x-native-account-id':randomUUID()},own={...bearer(user),'x-native-account-id':user.me.profile.id};
+ for(const url of ['/v1/worlds','/v1/client-compatibility','/v1/me/room','/v1/travel-intents/'+randomUUID()])expect((await server.http.inject({url,headers:wrong})).statusCode).toBe(409);
+ expect((await server.http.inject({method:'POST',url:'/v1/travel-intents',headers:{...wrong,'x-csrf-token':user.me.csrfToken,'idempotency-key':randomUUID()},payload:{}})).statusCode).toBe(409);
+ for(const url of ['/v1/worlds','/v1/client-compatibility']){expect((await server.http.inject({url,headers:own})).statusCode).toBe(200);expect((await server.http.inject({url,headers:bearer(user)})).statusCode).toBe(200);}
+ expect((await server.http.inject({url:'/v1/me/room',headers:own})).statusCode).toBe(200);
+});

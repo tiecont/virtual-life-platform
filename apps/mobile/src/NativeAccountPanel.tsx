@@ -8,7 +8,7 @@ import {NativeAvatarCreator} from './NativeAvatarCreator';
 
 // Account-only opt-in lane. It does not supply authenticated identity to the
 // room preview while social safety/business widgets are still unavailable.
-export function NativeAccountPanel({onLeave}:{onLeave:()=>void}){
+export function NativeAccountPanel({onLeave,onExplore}:{onLeave:()=>void;onExplore?:(me:NonNullable<NativeSessionState['me']>)=>void}){
  const [state,setState]=useState<NativeSessionState|null>(null),[busy,setBusy]=useState(true),[message,setMessage]=useState('Checking your session…');
  const [mode,setMode]=useState<'guest'|'login'|'upgrade'>('guest');
  const [safetyOpen,setSafetyOpen]=useState(false);
@@ -18,7 +18,7 @@ export function NativeAccountPanel({onLeave}:{onLeave:()=>void}){
  async function work(action:()=>Promise<NativeSessionState>){setBusy(true);try{applyState(await action());setMode('guest');setMessage('');}catch{applyState(null);setMessage('Sign-in is unavailable. Please try again.');}finally{setBusy(false);}}
  useEffect(()=>{let active=true;void Promise.resolve().then(()=>androidSession().restore()).then(value=>{if(active){applyState(value);setMessage('');}}).catch(()=>{if(active)setMessage('Sign-in is unavailable.');}).finally(()=>{if(active)setBusy(false);});return()=>{active=false;};},[]);
  if(creatorOpen&&state?.authenticated&&state.me)return <NativeAvatarCreator me={state.me} onClose={()=>setCreatorOpen(false)}/>;
- return <main className="mobile-account"><header><button onClick={onLeave}>Back to preview</button><h1>Your account</h1></header><p>Account preview · City visits are being prepared.</p><p role="status">{message}</p>
+ return <main className="mobile-account"><header><button onClick={onLeave}>Back to preview</button><h1>Your account</h1></header><p>{onExplore?'Your character and city visits':'Account preview · City visits are being prepared.'}</p><p role="status">{message}</p>{onExplore&&state?.authenticated&&state.me&&<button disabled={busy} onClick={()=>onExplore(state.me!)}>Explore the city</button>}
  {state?.authenticated&&<><h2>{state.me?.profile.displayName}</h2><p>{state.me?.kind==='guest'?'Guest account':'Registered account'}</p>{state.me?.kind==='guest'&&<button disabled={busy} onClick={()=>setMode('upgrade')}>Keep this character</button>}<button disabled={busy} onClick={()=>{setBusy(true);void androidSession().logout().then(value=>{applyState({schemaVersion:1,authenticated:false,me:null});setMode('guest');setMessage(value.remoteRevoked?'Signed out.':'Signed out on this device. Remote sign-out was not confirmed.');}).catch(()=>setMessage('Sign-out is unavailable.')).finally(()=>setBusy(false));}}>Sign out</button></>}
  {(!state?.authenticated||mode==='upgrade')&&<form onSubmit={event=>{event.preventDefault();const form=event.currentTarget,data=new FormData(form),requestId=crypto.randomUUID();const password=String(data.get('password')??'');form.reset();void work(()=>mode==='guest'?androidSession().guest({deviceLabel:'Android app',guest:{requestId,displayName:String(data.get('displayName')),avatarKey:'fern'}}):mode==='login'?androidSession().login({deviceLabel:'Android app',login:{requestId,loginName:String(data.get('loginName')),password}}):androidSession().upgrade({requestId,upgrade:{loginName:String(data.get('loginName')),password}}));}}>
  <h2>{mode==='guest'?'Create a guest':mode==='login'?'Sign in':'Keep your account'}</h2>

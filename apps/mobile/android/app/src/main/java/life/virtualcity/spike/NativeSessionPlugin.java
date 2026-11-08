@@ -33,6 +33,8 @@ public class NativeSessionPlugin extends Plugin {
     @PluginMethod public void login(PluginCall call) { dispatch(call, session -> session.bootstrap("login", call.getObject("login"), call.getString("deviceLabel"))); }
     @PluginMethod public void upgrade(PluginCall call) { dispatch(call, session -> session.upgrade(call.getObject("upgrade"), call.getString("requestId"))); }
     @PluginMethod public void ticket(PluginCall call) { dispatch(call, session -> session.ticket(call.getObject("protocol"))); }
+    @PluginMethod public void roomTicket(PluginCall call) { dispatch(call, session -> session.roomTicket(call.getString("expectedAccountId"), call.getObject("protocol"))); }
+    @PluginMethod public void world(PluginCall call) { dispatch(call, session -> session.world(call.getString("expectedAccountId"), call.getString("operation"), call.getString("intentId"), call.getString("requestId"), call.getObject("input"))); }
     @PluginMethod public void request(PluginCall call) { dispatch(call, session -> session.request(call.getString("method", "GET"), call.getString("path"), call.getObject("body"), call.getString("requestId"))); }
     @PluginMethod public void devices(PluginCall call) { dispatch(call, session -> session.devices()); }
     @PluginMethod public void safetyState(PluginCall call) { dispatch(call, session -> session.safetyState(call.getString("expectedAccountId"))); }

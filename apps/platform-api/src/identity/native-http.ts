@@ -17,7 +17,7 @@ export async function prepareNativeApiRequest(req:FastifyRequest,native:NativeId
  const auth=await native.authenticateAccess(access(req));
  // Safety views/actions cannot silently follow a switched native account.
  // This header is a stale-view assertion, never authority to select an actor.
- if(['/v1/me/avatar','/v1/me/room','/v1/safety/status','/v1/blocks','/v1/reports'].includes(route)||route==='/v1/reports/:id'){
+ if(['/v1/me/avatar','/v1/me/room','/v1/safety/status','/v1/blocks','/v1/reports'].includes(route)||route==='/v1/reports/:id'||req.headers['x-native-account-id']!==undefined){
   const expected=z.uuid().parse(req.headers['x-native-account-id']).toLowerCase();
   if(expected!==auth.context.accountId)throw new IdentityError('IDEMPOTENCY_CONFLICT',409,'Account changed; refresh before continuing');
  }
@@ -40,7 +40,7 @@ export function registerNativeIdentity(http:FastifyInstance,native:NativeIdentit
   api.post('/session/upgrade',async req=>{if(!limits.take('native-upgrade:'+req.ip,5))throw new IdentityError('RATE_LIMITED',429,'Please wait before trying again');const result=await native.upgrade(access(req),req.body);return NativeSessionResultSchema.parse({schemaVersion:1,platform:'android',...result});});
   api.post('/session/refresh',async req=>{if(!limits.take('native-refresh:'+req.ip,20))throw new IdentityError('RATE_LIMITED',429,'Please wait before trying again');const result=await native.refresh(req.body);return NativeSessionResultSchema.parse({schemaVersion:1,platform:'android',...result});});
   api.post('/session/logout',async req=>native.logout(NativeLogoutInputSchema.parse(req.body).refreshToken));
-  api.post('/session/socket-ticket',async req=>{const token=access(req);if(!limits.take('native-ticket:'+createHash('sha256').update(token).digest('hex'),20))throw new IdentityError('RATE_LIMITED',429,'Please wait before connecting again');return native.ticket(token,req.body);});
+  api.post('/session/socket-ticket',async req=>{const token=access(req);if(!limits.take('native-ticket:'+createHash('sha256').update(token).digest('hex'),20))throw new IdentityError('RATE_LIMITED',429,'Please wait before connecting again');const expected=req.headers['x-native-account-id'];return native.ticket(token,req.body,expected===undefined?undefined:z.uuid().parse(expected).toLowerCase());});
   api.get('/devices',async req=>native.devices(access(req)));
   api.delete('/account',async req=>{const token=access(req);if(!limits.take('native-delete:'+createHash('sha256').update(token).digest('hex'),5))throw new IdentityError('RATE_LIMITED',429,'Please wait before trying again');return NativeAccountDeleteResponseSchema.parse(await native.deleteAccount(token,req.headers['x-csrf-token'],req.body));});
   api.post('/devices/revoke',async req=>native.revokeDevice(access(req),NativeRevokeInputSchema.parse(req.body).deviceId));

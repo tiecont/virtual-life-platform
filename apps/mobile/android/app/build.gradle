@@ -10,8 +10,8 @@ if (nativeTestCa) {
     }
     tasks.register('generateNativeTestTrust') {
         def caTask = providers.gradleProperty('vlpNativeTestCaTask').getOrElse('n10-03')
-        if (!(caTask in ['n10-03', 'n11-03', 'n11-03-safety', 'n06-07'])) { throw new GradleException('Unknown task-owned test CA') }
-        def ca = rootProject.file('../../../artifacts/vnext/' + (caTask == 'n11-03-safety' ? 'n11-03/safety-v1' : caTask == 'n06-07' ? 'n06-07/native-v1' : caTask) + '/tls/ca.pem')
+        if (!(caTask in ['n10-03', 'n11-03', 'n11-03-safety', 'n06-07', 'n06-07-world'])) { throw new GradleException('Unknown task-owned test CA') }
+        def ca = rootProject.file('../../../artifacts/vnext/' + (caTask == 'n11-03-safety' ? 'n11-03/safety-v1' : caTask == 'n06-07' ? 'n06-07/native-v1' : caTask == 'n06-07-world' ? 'n06-07/world-v1' : caTask) + '/tls/ca.pem')
         inputs.file(ca)
         outputs.dir(nativeTrustDir)
         doLast {

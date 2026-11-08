@@ -73,8 +73,15 @@ final class NativeSessionEngine {
         catch (Exception error) { clear(); throw error; }
     }
     JSONObject ticket(JSONObject protocol) throws Exception {
+        return ticket(protocol, null);
+    }
+    JSONObject roomTicket(String expectedAccountId, JSONObject protocol) throws Exception {
+        safetyAccount(expectedAccountId);
+        return ticket(protocol, expectedAccountId);
+    }
+    private JSONObject ticket(JSONObject protocol, String expectedAccountId) throws Exception {
         authenticated(); JSONObject input = client().put("protocol", protocol);
-        NativeSessionHttp.Reply reply = http.send("POST", "/v1/native/session/socket-ticket", input, access, null, null);
+        NativeSessionHttp.Reply reply = http.send("POST", "/v1/native/session/socket-ticket", input, access, null, null, expectedAccountId);
         if (!reply.ok()) { if (reply.status == 401) clear(); throw new IllegalStateException("Native connection unavailable"); }
         JSONObject body = reply.body;
         if (!body.getString("ticket").matches("nt1\\.[a-f0-9]{64}")) throw new IllegalStateException("Native connection unavailable");
@@ -129,6 +136,26 @@ final class NativeSessionEngine {
         if (!reply.ok()) { if (reply.status == 401) clear(); throw new IllegalStateException("Wardrobe unavailable"); }
         if (!expectedAccountId.equals(reply.body.getString("accountId"))) throw new IllegalStateException("Account changed; refresh before editing");
         return reply.body;
+    }
+    JSONObject world(String expectedAccountId, String operation, String intentId, String requestId, JSONObject input) throws Exception {
+        safetyAccount(expectedAccountId);
+        String method = "GET", path;
+        switch (operation == null ? "" : operation) {
+            case "catalog": path = "/v1/worlds"; break;
+            case "compatibility": path = "/v1/client-compatibility"; break;
+            case "visit": path = "/v1/me/room"; break;
+            case "travel-create": path = "/v1/travel-intents"; method = "POST"; if (input == null) throw new IllegalArgumentException("Travel input required"); break;
+            case "travel-read": case "travel-cancel":
+                if (intentId == null || !intentId.matches("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}")) throw new IllegalArgumentException("Travel receipt unavailable");
+                path = "/v1/travel-intents/" + intentId;
+                if (operation.equals("travel-cancel")) { method = "POST"; path += "/cancel"; input = new JSONObject(); }
+                break;
+            default: throw new IllegalArgumentException("World operation unavailable");
+        }
+        if (method.equals("POST") && (requestId == null || !requestId.matches("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"))) throw new IllegalArgumentException("Travel receipt key required");
+        NativeSessionHttp.Reply reply = http.send(method, path, method.equals("GET") ? null : input, access, method.equals("GET") ? null : csrf, method.equals("GET") ? null : requestId, expectedAccountId);
+        if (reply.status == 401) clear();
+        return new JSONObject().put("status", reply.status).put("body", reply.body);
     }
     JSONObject saveAvatar(String expectedAccountId, String requestId, JSONObject input) throws Exception {
         try {safetyAccount(expectedAccountId);}catch(AccountChanged changed){return new JSONObject().put("status",409).put("body",new JSONObject().put("error",new JSONObject().put("code","IDEMPOTENCY_CONFLICT")));}
