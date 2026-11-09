@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "updated_at": "2026-11-08T16:59:28.128Z",
+  "updated_at": "2026-11-09T00:28:57.350142+00:00",
   "scope": "vNext implementation",
   "release_status": "NOT_REQUESTED",
   "module_activation": {
@@ -45,12 +45,14 @@
       "evidence_ref": null
     },
     "N10": {
-      "state": "ACTIVE",
-      "evidence_ref": null
+      "state": "CONDITIONAL_NOT_ACTIVE",
+      "evidence_ref": null,
+      "reason": "Owner defers native development; web/server first (revision 2.4)."
     },
     "N11": {
-      "state": "ACTIVE",
-      "evidence_ref": null
+      "state": "CONDITIONAL_NOT_ACTIVE",
+      "evidence_ref": null,
+      "reason": "Owner defers native development; web/server first (revision 2.4)."
     },
     "N12": {
       "state": "ACTIVE",
@@ -62,7 +64,8 @@
     },
     "N14": {
       "state": "CONDITIONAL_NOT_ACTIVE",
-      "evidence_ref": null
+      "evidence_ref": null,
+      "reason": "Owner defers native development; web/server first (revision 2.4)."
     }
   },
   "tasks": {
@@ -567,31 +570,49 @@
       "next_action": "Native account/ticket slice verified at04b1b38; retain closed defaults. Reserve ready N11-03 for in-app deletion/request,web resource and actual UGC/data-safety/age-policy verification without invented owner/Play approvals. Continue N06-11 final3D art/anchors/loading/heap and physical qualification; N06-07/N10-04 and conditional iOS remain gated."
     },
     "N10-04": {
-      "status": "TODO",
+      "status": "DEFERRED_APPROVED",
       "owner": null,
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Physical Android results với model/OS/WebView/build/source/profile; ADR có phạm vi thiết bị đã chứng minh và iOS chưa kiểm chứng"
+      "next_action": "Resume only on owner mobile reactivation; then audit source/support inventory and qualify real native device/auth/lifecycle/performance/store gates. Existing evidence remains historical.",
+      "previous_status_before_mobile_deferral": "TODO",
+      "defer_approval": {
+        "by": "Repository owner",
+        "at": "2026-11-09T00:28:57.350142+00:00",
+        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+      }
     },
     "N11-01": {
-      "status": "TODO",
+      "status": "DEFERRED_APPROVED",
       "owner": null,
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Linux CI tạo signed APK để cài thử và signed AAB candidate cho Google Play; build/protocol/assets/source mapping"
+      "next_action": "Resume only on owner mobile reactivation; then audit source/support inventory and qualify real native device/auth/lifecycle/performance/store gates. Existing evidence remains historical.",
+      "previous_status_before_mobile_deferral": "TODO",
+      "defer_approval": {
+        "by": "Repository owner",
+        "at": "2026-11-09T00:28:57.350142+00:00",
+        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+      }
     },
     "N11-02": {
-      "status": "TODO",
+      "status": "DEFERRED_APPROVED",
       "owner": null,
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Safearea/keyboard/back/deeplinks, notifications opt-in nếu cần, cache/error UX"
+      "next_action": "Resume only on owner mobile reactivation; then audit source/support inventory and qualify real native device/auth/lifecycle/performance/store gates. Existing evidence remains historical.",
+      "previous_status_before_mobile_deferral": "TODO",
+      "defer_approval": {
+        "by": "Repository owner",
+        "at": "2026-11-09T00:28:57.350142+00:00",
+        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+      }
     },
     "N11-03": {
-      "status": "BLOCKED_EXTERNAL",
+      "status": "DEFERRED_APPROVED",
       "owner": "Codex",
       "branch": "codex/vnext-n09-02-postgres",
       "evidence_refs": [
@@ -600,15 +621,27 @@
         "n11-03-native-world-disclosure-preparation-2026-11-08"
       ],
       "blocker": "N11-03 code/inventory preparation is complete at this scope,but public privacy/support/deletion URLs,backup/provider retention,age/rating,Play account/testers and owner declarations remain UNKNOWN.",
-      "next_action": "Owner supplies/reviews privacy/support/deletion URLs,backup/provider retention,age/rating,Play account/tester and final disclosure facts against the actual future distributed build. Keep UNKNOWN and distributionfalse until evidenced."
+      "next_action": "Resume only on owner mobile reactivation; then audit source/support inventory and qualify real native device/auth/lifecycle/performance/store gates. Existing evidence remains historical.",
+      "previous_status_before_mobile_deferral": "BLOCKED_EXTERNAL",
+      "defer_approval": {
+        "by": "Repository owner",
+        "at": "2026-11-09T00:28:57.350142+00:00",
+        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+      }
     },
     "N11-04": {
-      "status": "TODO",
+      "status": "DEFERRED_APPROVED",
       "owner": null,
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Google Play internal/closed track artifacts khi có quyền; Android crash/perf/UX findings, tested-device matrix và release decision"
+      "next_action": "Resume only on owner mobile reactivation; then audit source/support inventory and qualify real native device/auth/lifecycle/performance/store gates. Existing evidence remains historical.",
+      "previous_status_before_mobile_deferral": "TODO",
+      "defer_approval": {
+        "by": "Repository owner",
+        "at": "2026-11-09T00:28:57.350142+00:00",
+        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+      }
     },
     "N12-01": {
       "status": "TODO",
@@ -627,12 +660,18 @@
       "next_action": "Encrypted off-host backup/restore exercise, alert/incident runbooks, observed RPO/RTO"
     },
     "N12-03": {
-      "status": "TODO",
+      "status": "DEFERRED_APPROVED",
       "owner": null,
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Android supported N/N-1 binary matrix với server candidate và rollback; iOS matrix thuộc N14-04"
+      "next_action": "Resume only on owner mobile reactivation; then audit source/support inventory and qualify real native device/auth/lifecycle/performance/store gates. Existing evidence remains historical.",
+      "previous_status_before_mobile_deferral": "TODO",
+      "defer_approval": {
+        "by": "Repository owner",
+        "at": "2026-11-09T00:28:57.350142+00:00",
+        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+      }
     },
     "N12-04": {
       "status": "TODO",
@@ -675,44 +714,74 @@
       "next_action": "Multi-owner capacity+chaos+rollout report and updated admission policy"
     },
     "N14-01": {
-      "status": "TODO",
+      "status": "DEFERRED_APPROVED",
       "owner": null,
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Owner confirmed no Mac/Xcode/iPhone on2026-11-06. Obtain authorized macOS/Xcode build access and usable physical-iPhone path; record actual versions/resources through active N10/N00 evidence before N14 activation. No signing/archive/device/TestFlight result exists."
+      "next_action": "Resume only on owner mobile reactivation; then audit source/support inventory and qualify real native device/auth/lifecycle/performance/store gates. Existing evidence remains historical.",
+      "previous_status_before_mobile_deferral": "TODO",
+      "defer_approval": {
+        "by": "Repository owner",
+        "at": "2026-11-09T00:28:57.350142+00:00",
+        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+      }
     },
     "N14-02": {
-      "status": "TODO",
+      "status": "DEFERRED_APPROVED",
       "owner": null,
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "iOS Capacitor target, Keychain/session bridge, platform lifecycle adapters, signed archive/IPA và source mapping"
+      "next_action": "Resume only on owner mobile reactivation; then audit source/support inventory and qualify real native device/auth/lifecycle/performance/store gates. Existing evidence remains historical.",
+      "previous_status_before_mobile_deferral": "TODO",
+      "defer_approval": {
+        "by": "Repository owner",
+        "at": "2026-11-09T00:28:57.350142+00:00",
+        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+      }
     },
     "N14-03": {
-      "status": "TODO",
+      "status": "DEFERRED_APPROVED",
       "owner": null,
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "iPhone model/OS/build/source profiles, gameplay/performance/security evidence và iOS architecture ADR"
+      "next_action": "Resume only on owner mobile reactivation; then audit source/support inventory and qualify real native device/auth/lifecycle/performance/store gates. Existing evidence remains historical.",
+      "previous_status_before_mobile_deferral": "TODO",
+      "defer_approval": {
+        "by": "Repository owner",
+        "at": "2026-11-09T00:28:57.350142+00:00",
+        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+      }
     },
     "N14-04": {
-      "status": "TODO",
+      "status": "DEFERRED_APPROVED",
       "owner": null,
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "iOS supported binary matrix với backend candidate/rollback và content/protocol revisions"
+      "next_action": "Resume only on owner mobile reactivation; then audit source/support inventory and qualify real native device/auth/lifecycle/performance/store gates. Existing evidence remains historical.",
+      "previous_status_before_mobile_deferral": "TODO",
+      "defer_approval": {
+        "by": "Repository owner",
+        "at": "2026-11-09T00:28:57.350142+00:00",
+        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+      }
     },
     "N14-05": {
-      "status": "TODO",
+      "status": "DEFERRED_APPROVED",
       "owner": null,
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "TestFlight beta khi được phép, Apple disclosures/UGC/deletion dossier, device coverage và exact store release status"
+      "next_action": "Resume only on owner mobile reactivation; then audit source/support inventory and qualify real native device/auth/lifecycle/performance/store gates. Existing evidence remains historical.",
+      "previous_status_before_mobile_deferral": "TODO",
+      "defer_approval": {
+        "by": "Repository owner",
+        "at": "2026-11-09T00:28:57.350142+00:00",
+        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+      }
     },
     "N06-06": {
       "status": "VERIFIED",
@@ -725,15 +794,16 @@
       "next_action": "Execute N06-03 (priority82): read current shared WorldRoomPanel/widgets and Next local navigation docs; implement an opt-in scene-first shared shell and client navigation adapter, preserving authoritative recovery/safety/business controls and legacy rollback. Implement test:ux-core with actual browser/API verification; qualify before N06-08 landscape/native orientation. Continue N10-03 and later Phase2 per DAG; N14 stays conditional."
     },
     "N06-07": {
-      "status": "BLOCKED_EXTERNAL",
+      "status": "TODO",
       "owner": "Codex",
       "branch": "codex/vnext-n09-02-postgres",
       "evidence_refs": [
         "n06-07-modular-creator-partial-2026-11-08",
         "n06-07-native-world-creator-partial-2026-11-08"
       ],
-      "blocker": "N06-07 physical Android creator→world→travel qualification remains NOT_RUN:read-only USB inventory0. AVD is supplementary;acceptancefalse and BLOCKED_EXTERNAL. No claim that N06-04/09 or N10-04 is complete.",
-      "next_action": "When an authorized owned physical Android is available,record model/OS/WebView and isolated nonproduction test account/build,then execute creator Save→Deadline/Maid→travel/reconnect and visual/anchor checks on that phone. Do not substitute AVD for physical acceptance."
+      "blocker": null,
+      "next_action": "Reserve web-only N06-07 at current source: requalify authoritative creator/appearance and browser creator→Save→Deadline/Maid→travel/reconnect; retain prior native evidence and final-art findings. No ADB/APK/physical device prerequisite. Then N06-04 and N06-09 web visual qualification; do not mark VERIFIED from this replan.",
+      "previous_status_before_web_split": "BLOCKED_EXTERNAL"
     },
     "N06-08": {
       "status": "VERIFIED",
@@ -790,14 +860,29 @@
       ],
       "blocker": null,
       "next_action": "Finish current N09-03 browser/security/integration qualification; then N06-10 current3D/fur/rig/UI source audit/ADR/locked budgets before N06-11 renderer spike. Emulator is stopped; reuse explicit lifecycle commands for development, never replace N10-04 physical or N14 gates."
+    },
+    "N10-06": {
+      "status": "DEFERRED_APPROVED",
+      "owner": "Mobile lane",
+      "branch": null,
+      "evidence_refs": [],
+      "blocker": null,
+      "defer_approval": {
+        "by": "Repository owner",
+        "at": "2026-11-09T00:28:57.350142+00:00",
+        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+      },
+      "next_action": "Resume only after explicit owner reactivation; read N10-06 plan and qualify current packaged native creator/world using real device evidence, then N10-04 performance."
     }
   },
   "runtime_context": {
     "mobile_clients_distributed": false,
     "android_clients_distributed": false,
-    "ios_clients_distributed": false
+    "ios_clients_distributed": false,
+    "development_priority": "WEB_SERVER_FIRST",
+    "mobile_development_deferred": true
   },
-  "plan_revision": "2.3-3d-animals",
+  "plan_revision": "2.4-web-server-first",
   "planning_updates": [
     {
       "at": "2026-11-06",
@@ -819,6 +904,73 @@
         "N10-05"
       ],
       "implementation_evidence_added": false
+    },
+    {
+      "at": "2026-11-09T00:28:57.350142+00:00",
+      "requirement": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans.",
+      "new_tasks": [
+        "N10-06"
+      ],
+      "dependency_changes": [
+        {
+          "id": "N06-03",
+          "old": [
+            "N06-02",
+            "N10-02",
+            "N05-06",
+            "N06-06"
+          ],
+          "new": [
+            "N06-02",
+            "N05-06",
+            "N06-06"
+          ]
+        },
+        {
+          "id": "N06-07",
+          "old": [
+            "N06-03",
+            "N06-06",
+            "N02-04",
+            "N05-06",
+            "N10-03",
+            "N06-11"
+          ],
+          "new": [
+            "N06-03",
+            "N06-06",
+            "N02-04",
+            "N05-06",
+            "N06-11"
+          ]
+        },
+        {
+          "id": "N06-08",
+          "old": [
+            "N06-03",
+            "N06-06",
+            "N10-02"
+          ],
+          "new": [
+            "N06-03",
+            "N06-06"
+          ]
+        },
+        {
+          "id": "N06-11",
+          "old": [
+            "N06-10",
+            "N10-05",
+            "N06-08"
+          ],
+          "new": [
+            "N06-10",
+            "N06-08"
+          ]
+        }
+      ],
+      "implementation_evidence_added": false,
+      "historical_evidence_preserved": true
     }
   ]
 }

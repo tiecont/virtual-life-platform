@@ -154,7 +154,7 @@
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "7\u00d77 responsive board, safe tile rotation UI; Compass and remaining-turn indicators"
+      "next_action": "7×7 responsive board, safe tile rotation UI; Compass and remaining-turn indicators"
     },
     "N18-04": {
       "status": "TODO",
@@ -197,12 +197,17 @@
       "next_action": "Admin view mode status, live tables and queue metrics; Mode/config audit and emergency disable"
     },
     "N19-04": {
-      "status": "TODO",
+      "status": "DEFERRED_APPROVED",
       "owner": null,
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Physical Android ADB/build/session evidence; Touch/back/background/reconnect screenshots and timings"
+      "next_action": "Resume after explicit owner mobile reactivation and real N10-04 evidence; no web/platform gating.",
+      "defer_approval": {
+        "by": "Repository owner",
+        "at": "2026-11-09T00:28:57.350142+00:00",
+        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+      }
     },
     "N19-05": {
       "status": "TODO",
@@ -212,5 +217,6 @@
       "blocker": null,
       "next_action": "Internal staging playtest release dossier; Explicit web/Android/Steam readiness status per platform"
     }
-  }
+  },
+  "updated_at": "2026-11-09T00:28:57.350142+00:00"
 }

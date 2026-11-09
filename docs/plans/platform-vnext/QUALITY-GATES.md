@@ -1,5 +1,7 @@
 # Quality gates — từ source tới release có bằng chứng
 
+> Current owner policy (2026-11-09): **web/server/platform first; native mobile deferred**. See [revision 2.4](REVISION-2.4-WEB-FIRST.md). Physical devices/APK/AVD/store work do not block web features. Responsive browser quality and supported-client compatibility gates remain. Earlier Android-first wording below is historical where not explicitly revised.
+
 **Trạng thái:** tiêu chí nghiệm thu đề xuất; tài liệu này không chứng nhận test/build/deploy đã pass.  
 **Baseline:** `cef7dc17172f7c6cda930c99648a5e3ad609cc55`. Khi thực thi trên HEAD mới, audit delta và giữ kết quả lỗi có sẵn. Chỉ chạy phạm vi đủ giải quyết rủi ro của change; contract, database, authority và release cần ma trận rộng hơn một sửa UI nhỏ.
 

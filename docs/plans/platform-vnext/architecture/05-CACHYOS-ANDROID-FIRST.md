@@ -1,5 +1,7 @@
 # 05 — Phát triển trên CachyOS với một điện thoại Android
 
+> Scheduling update: [revision 2.4](../REVISION-2.4-WEB-FIRST.md) makes web/server first. Preserve this design/budgets/evidence; native physical/build/AVD scenarios move to deferred N10-06/N10-04/N11/N14. They are not web acceptance prerequisites.
+
 **Revision:** 2.1-android-first · **Ngày cập nhật:** 05/11/2026. Chủ dự án cho biết đang dùng CachyOS Linux và có một Android vật lý. CPU/RAM/GPU của máy tính, model/OS/WebView của điện thoại và store accounts chưa được kiểm. Đây là execution profile để áp dụng kế hoạch; không phải báo cáo đã cài hoặc chạy ứng dụng trên máy người dùng.
 
 ## 1. Quyết định

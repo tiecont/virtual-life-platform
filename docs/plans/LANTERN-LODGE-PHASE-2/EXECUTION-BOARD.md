@@ -1,6 +1,8 @@
 # EXECUTION BOARD — PHASE 2 ONLY
 
-**Tất cả 25 task TODO. DORMANT cho đến khi Phase 1 handoff + owner approval.**
+> Owner revision 2026-11-09: [web/server first; mobile later](games/10-WEB-FIRST-EXECUTION.md). N15–N18 and N19 platform work use web/responsive browser scope. N19-04 native is DEFERRED_APPROVED; no physical Android/APK/AVD prerequisite blocks web features. Existing sequential wave/art/privacy/authority/release gates remain.
+
+**Current:4VERIFIED/20TODO/1DEFERRED_APPROVED. State/handoff are authoritative; native N19-04 deferred by owner.**
 
 | Wave | Module | Unlock after | Task IDs |
 |---|---|---|---|
@@ -21,7 +23,7 @@
 | `N15-05` | Shared match UI, recipient projections và reconnect | N15-03, N15-04 | N05-04, N06-09 |
 | `N16-01` | Freeze 64-card deck, Glow và turn rules | N15-02 | — |
 | `N16-02` | Server reducer Sắc Đèn, receipts và authoritative timer | N16-01, N15-04 | — |
-| `N16-03` | UI đánh bài web/Android với icon hỗ trợ colorblind | N16-02, N15-05 | — |
+| `N16-03` | UI đánh bài web và responsive browser với icon hỗ trợ colorblind | N16-02, N15-05 | — |
 | `N16-04` | Concurrency, security và một ván Sắc Đèn end-to-end | N16-03, N15-03 | — |
 | `N16-05` | Pilot UX và cân bằng Sắc Đèn | N16-04 | — |
 | `N17-01` | Freeze face-down claim, challenge and six-round rules | N15-02 | — |
@@ -31,7 +33,7 @@
 | `N17-05` | Pilot social bluff và diễn đạt luật | N17-04 | — |
 | `N18-01` | Freeze 7×7 map, connector tiles, hidden factions và objective | N15-02 | — |
 | `N18-02` | Authoritative tile placement, compass và BFS settlement | N18-01, N15-04 | — |
-| `N18-03` | UX bản đồ và thao tác xoay thẻ trên web/Android | N18-02, N15-05 | — |
+| `N18-03` | UX bản đồ và thao tác xoay thẻ trên web và responsive browser | N18-02, N15-05 | — |
 | `N18-04` | Hidden-role anti-cheat, solvability và acceptance | N18-03, N15-03 | — |
 | `N18-05` | Pilot cân bằng phe ẩn và khả năng giải được | N18-04 | — |
 | `N19-01` | Cross-mode privacy, authority, room/travel/reconnect regressions | N16-04, N17-04, N18-04 | — |
@@ -42,4 +44,4 @@
 
 `tools/next-task.mjs` trả task được phép chạy tại checkpoint hiện hành. Kết quả READY không phải proof task hoàn thành.
 
-Trước khi chuyển task thành VERIFIED, cập nhật evidence thực trong `state/evidence-index.json` và `state/HANDOFF.md`. Không edit upstream task-state.
+Trước khi chuyển task thành VERIFIED, cập nhật evidence thực trong `state/evidence-index.json` và `state/HANDOFF.md`. Phase2 feature execution does not edit upstream state. Only the sole coordinator may revise upstream at a safe checkpoint with a fresh source-bound handoff.

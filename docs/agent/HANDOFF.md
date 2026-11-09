@@ -1,3 +1,11 @@
+# Web/server first; native mobile deferred — 2026-11-09
+
+Owner explicitly requests platform development before mobile. Revision 2.4 removes hard native prerequisites from web/Lodge, preserves all historical evidence and moves packaged creator/world qualification to new N10-06. vNext: 77 tasks,43VERIFIED/2BLOCKED_EXTERNAL/20TODO/12DEFERRED_APPROVED;64existing evidence records unchanged. N06-07 is TODO for its revised web-only scope, not VERIFIED. Android/iOS distribution context remains false; true/unknown future supported-client compatibility gates stay fail-closed. Final-art/loading/privacy/public/staging gates remain. Phase2 scheduling temporarily PAUSED for a fresh source-bound upstream handoff;4accepted game records are preserved.
+
+**Next exact action:** Complete current Docker/CI Compose verification, commit/push and start retained local vc-* stack as requested; pin fresh web-first upstream handoff, then reserve N06-07 web creator qualification → N06-04 web loops → N06-09 web visual qualification → N15-05. No APK/ADB/AVD/physical phone prerequisite for this chain. Mobile resumes only on explicit owner instruction. No public/store/production action.
+
+## Earlier checkpoints — historical
+
 # Native world/creator checkpoint;ready for safe Phase2 handoff — 2026-11-08
 
 Source d2b3bf1 plus foreground fix3a3c880;native journey84acf5c;inventory/map review49eed56. Actual431unit/95governance/740integration/267security,14creator browser+4travel,11Android instrumentation and9packaged native creator/world/travel/safety/account scenarios PASS. Types/full build/lint/CI/assets/architecture/boundaries pass at their recorded source scopes. Normal signed DEBUG APK cb99c77c5abf7d28a3e159555f1ae9cd0aa791a4192b15e49d8ee16a262df59a (8809926bytes,19matched assets),unsigned-release policy inspection,18default-off ports/3bundle/5preview PASS;AVD STOPPED and HTTPS/schema/DB cleanup confirmed.

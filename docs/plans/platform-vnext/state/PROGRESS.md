@@ -1,3 +1,9 @@
+# Revision2.4 web-first checkpoint — 2026-11-09
+
+77tasks:43VERIFIED/2BLOCKED_EXTERNAL/20TODO/12DEFERRED_APPROVED.64old evidence records unchanged. Native work deferred by owner;N06-07 changed from physical BLOCKED_EXTERNAL to web-scope TODO,never auto-VERIFIED. New N10-06 retains packaged native creator/world gate for later. Next:N06-07→N06-04→N06-09 web,then N15-05. Current Docker image/Compose verification is tracked separately;no public/native release.
+
+## Earlier checkpoints — historical
+
 # Native world/creator checkpoint;ready for safe Phase2 handoff — 2026-11-08
 
 Source d2b3bf1 plus foreground fix3a3c880;native journey84acf5c;inventory/map review49eed56. Actual431unit/95governance/740integration/267security,14creator browser+4travel,11Android instrumentation and9packaged native creator/world/travel/safety/account scenarios PASS. Types/full build/lint/CI/assets/architecture/boundaries pass at their recorded source scopes. Normal signed DEBUG APK cb99c77c5abf7d28a3e159555f1ae9cd0aa791a4192b15e49d8ee16a262df59a (8809926bytes,19matched assets),unsigned-release policy inspection,18default-off ports/3bundle/5preview PASS;AVD STOPPED and HTTPS/schema/DB cleanup confirmed.

@@ -1,5 +1,7 @@
 # Virtual Life Platform — Architecture & Agent Plan vNext 2.2
 
+> Current owner policy (2026-11-09): **web/server/platform first; native mobile deferred**. See [revision 2.4](REVISION-2.4-WEB-FIRST.md). Physical devices/APK/AVD/store work do not block web features. Responsive browser quality and supported-client compatibility gates remain. Earlier Android-first wording below is historical where not explicitly revised.
+
 **Ngày rà soát:** 05/11/2026 · **Múi giờ báo cáo:** Asia/Saigon  
 **Repository:** https://github.com/tiecont/virtual-life-platform  
 **Snapshot được đọc:** `cef7dc17172f7c6cda930c99648a5e3ad609cc55`  
@@ -7,7 +9,7 @@
 
 ## Execution profile mới
 
-CachyOS Linux + một Android vật lý: Android được build/test trước; iOS giữ trong N14 conditional. Nhánh Android/web/backend không chờ Mac/iPhone. Đọc [05-CACHYOS-ANDROID-FIRST.md](architecture/05-CACHYOS-ANDROID-FIRST.md) và [thay đổi 2.1](REVISION-2.1.md). Bản gốc có 15 modules / 69 tasks. Owner update 2026-11-06 thêm [animal/landscape visual direction](architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md) và N06-06..09, tổng 73 tasks. Bốn task mới TODO; trạng thái implementation hiện hành đọc [task state](state/task-state.json), không dùng snapshot lúc tạo gói.
+CachyOS Linux: web/server/platform được build/test trước; N10/N11/N12-03/N14 native mobile deferred theo owner. Web không chờ APK, emulator, Android vật lý hoặc Mac/iPhone. Đọc [05-CACHYOS-ANDROID-FIRST.md](architecture/05-CACHYOS-ANDROID-FIRST.md) và [thay đổi 2.1](REVISION-2.1.md). Bản gốc có 15 modules / 69 tasks. Owner update 2026-11-06 thêm [animal/landscape visual direction](architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md) và N06-06..09, tổng 73 tasks. Bốn task mới TODO; trạng thái implementation hiện hành đọc [task state](state/task-state.json), không dùng snapshot lúc tạo gói.
 
 ## Kết luận
 

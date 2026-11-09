@@ -1,3 +1,9 @@
+# Current web-first blockers — 2026-11-09
+
+Mobile is owner-deferred,not a platform feature blocker. N06-07 web scope is TODO/ready;physical native qualification moved to deferred N10-06/N10-04. Final web art/loading/integrated visual and human usability remain unverified;N04-02 real hosted candidate and N07-04 staging observations remain external. Keep existing failed runs/budgets. No public/store/production authorization;true/unknown supported-native compatibility contexts still gate backend release.
+
+## Earlier checkpoints — historical
+
 # Current creator/mobile external gates — 2026-11-08
 
 N06-07 physical Android creator→world→travel qualification remains NOT_RUN:read-only USB inventory0. AVD is supplementary;acceptancefalse and BLOCKED_EXTERNAL. No claim that N06-04/09 or N10-04 is complete.

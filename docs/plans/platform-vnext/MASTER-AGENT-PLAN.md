@@ -1,6 +1,8 @@
 # Virtual Life Platform — Master Agent Plan vNext
 
-**Revision:** 2.3-3d-animals · **Baseline audit:** `cef7dc17172f7c6cda930c99648a5e3ad609cc55` · **Requirement update:** 2026-11-06
+**Revision:** 2.4-web-server-first · **Baseline audit:** `cef7dc17172f7c6cda930c99648a5e3ad609cc55` · **Requirement update:** 2026-11-09
+
+**Current execution policy:** [Web/server trước; mobile sau](REVISION-2.4-WEB-FIRST.md) supersedes Android-first scheduling. No native device/build/store gate blocks web/platform/Lantern Lodge features. Keep responsive browser quality, final3D art/budgets and conditional supported-client compatibility/release gates. Existing evidence remains source-bound; no task becomes VERIFIED from replanning.
 **Scope:** Nâng nền tảng hiện hữu thành sản phẩm dễ chơi, triển khai được, đo được, có mobile và admin.  
 **Implementation state:** Các task Nxx khởi tạo TODO. Tạo gói thiết kế không đồng nghĩa thực thi task.
 
@@ -12,7 +14,7 @@
 - Gameplay màn hình ngang, chủ đề animals cho toàn Virtual Life, tạo nhân vật theo từng bộ phận và ưu tiên đồ họa đẹp mắt. [Đặc tả mới](architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md) bổ sung N06-06..09 và gates cho UX/mobile/Lodge; chưa phải artwork hay implementation đã nghiệm thu.
 - Cập nhật tiếp của owner: chuyển pixel/2D sang **animals3D có hoạt ảnh và lông chi tiết**, cảnh/UI có chất lượng game cho cả web và mobile; tự chạy Android Emulator để phát triển. [Đặc tả3D hiện hành](architecture/07-3D-FUR-AND-EMULATOR.md) thay hướng2D trong brief06, thêm N06-10/11,N10-05. Evidence pixel/SVG/shell trước đây giữ scope lịch sử, không thành3D acceptance.
 - Server-authoritative; lựa chọn giao thức phục vụ gameplay và vận hành.
-- App cho Google Play và App Store; chọn kiến trúc dựa trên source và phép thử thực tế. Profile mới: CachyOS + một Android vật lý; Android trước, iOS N14 conditional với macOS/iPhone testing access sau.
+- App cho Google Play và App Store; chọn kiến trúc dựa trên source và phép thử thực tế. Profile hiện hành: CachyOS, web/server trước; mobile hoãn theo owner 2026-11-09. Android/iOS sẽ có device/signing/store gates riêng khi resume.
 - Admin dashboard cho đúng một tài khoản operator: events, accounts, metrics, capacity/load tests, queue, trạng thái hệ thống và traffic.
 - Ưu tiên tốc độ và đơn giản; chấp nhận thêm một thành phần kiến trúc khi nó làm nghiệp vụ hoặc consistency rõ ràng hơn.
 
@@ -51,13 +53,13 @@ Có docs drift: tài liệu kiến trúc đầu kỳ vẫn nói “chưa mount P
 Ưu tiên theo các nhánh song song:
 
 1. **Baseline:** N00, sau đó N01 cleanup + N02 boundaries.
-2. **Sản phẩm sớm:** N06-01/N06-02 và N10-01 spike được mở sau baseline cần thiết; không chờ toàn bộ hạ tầng mới bắt đầu UX/mobile.
-   Bổ sung owner 2026-11-06: N06-06 design2D/N06-03 shell/N06-08 landscape đã có scope evidence riêng; giữ lịch sử. Hướng hiện hành là N10-05 Emulator và N06-10 brief3D/fur/budgets → N06-11 shared renderer3D spike → N06-07 creator3D (còn cần N10-03 auth) → N06-04 hai vòng3D/UI polished → N06-09 visual qualification. Không lấy preview pixel/SVG hay máy ảo chứng minh final3D hoặc physical performance.
+2. **Sản phẩm web:** N06-01/02/06 design → browser shared shell/landscape → N06-10/11 brief/renderer → N06-07 web creator → N06-04 hai vòng3D polished → N06-09 web visual qualification. No dependency on N10 auth/emulator/device. Preserve prior pixel/AVD evidence and final-art/loading findings; do not lower budgets.
 3. **Nền triển khai:** N03 build/CI → N04 Argo staging; N05 authority/transport song song.
 4. **Vận hành:** N07 admin → N08 observability/capacity → N09 admission/queue.
-5. **Android:** N10 shared-client/physical spike → N11 Android release lane, dựa trên UX/protocol ổn định. N14 iOS là nhánh conditional độc lập, không chặn Android/web.
+5. **Lantern Lodge web:** handoff an toàn; N15→N16→N17→N18→N19 platform QA/ops. Native N19-04 deferred; web game development has no physical Android prerequisite.
 6. **Nghiệm thu:** N12 deployment, recovery, regression và quyết định release cụ thể.
 7. **Tăng quy mô:** N13 chỉ kích hoạt khi benchmark chứng minh nhu cầu; không là điều kiện beta.
+8. **Mobile sau, khi owner resume:** N10-06 native creator/world → N10-04 device performance → N11/N12-03 Android; N14 iOS conditional. Existing native code/evidence retained. Distributed/supported native clients still require conditional compatibility gates during backend releases.
 
 Dependency ở cấp task và conditional client-support gates quyết định có được chạy hay không; không suy ra rằng mọi task trong một module phải chờ tất cả module khác hoàn thành. Agent có thể làm nhiều nhánh không xung đột.
 

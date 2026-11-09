@@ -1,5 +1,7 @@
 # virtual-life-platform — MASTER AGENT ORCHESTRATOR PLAN
 
+> Current owner policy 2026-11-09: web/server/platform first, native mobile later. See the vNext revision 2.4 and its manifest/state. Physical Android/APK/AVD/Mac/iPhone gates do not block platform web features; responsive browser and supported-client compatibility gates remain. Preserve historical ledgers and evidence.
+
 > **Continuation (2026-11-05):** New work follows the [vNext 2.1 Android-first master](docs/plans/platform-vnext/MASTER-AGENT-PLAN.md), [Nxx state](docs/plans/platform-vnext/state/task-state.json) and [current architecture/evidence index](docs/architecture/CURRENT-STATE.md). This original M00–M24 product/dependency specification and its historical evidence are preserved. vNext adds mobile/Kubernetes scope; public, restricted-world and production-data gates still apply. The old offline handoff is a completed scope checkpoint, not a stop on authorized vNext work.
 
 > **Version:** 1.0 | **Language:** Vietnamese | **Status:** PLAN ONLY — NOT IMPLEMENTED  

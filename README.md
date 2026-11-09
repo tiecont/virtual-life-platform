@@ -1,6 +1,6 @@
 # virtual-life-platform
 
-Continue implementation from the [vNext 2.1 master](docs/plans/platform-vnext/MASTER-AGENT-PLAN.md) and [current handoff](docs/plans/platform-vnext/state/HANDOFF.md). The [current architecture/evidence index](docs/architecture/CURRENT-STATE.md) separates implemented local gameplay, fresh baseline results, historical evidence and proposed work. The original Mxx ledger remains intact. Android comes first on CachyOS; iOS is a separate conditional lane. No public/store release is approved.
+Continue implementation from the [vNext 2.4 master](docs/plans/platform-vnext/MASTER-AGENT-PLAN.md) and [current handoff](docs/plans/platform-vnext/state/HANDOFF.md). The [current architecture/evidence index](docs/architecture/CURRENT-STATE.md) separates implemented local gameplay, fresh baseline results, historical evidence and proposed work. The original Mxx ledger remains intact. Web/server comes first on CachyOS; native Android/iOS development is deferred by owner. Responsive browsers remain in scope. See [revision 2.4](docs/plans/platform-vnext/REVISION-2.4-WEB-FIRST.md). No public/store release is approved.
 
 Use the [current documentation index](docs/README.md) and [clean-checkout procedure](docs/operations/CLEAN-CHECKOUT.md). Historical raw outputs now live in the original private Git revision and an additional authenticated archive; [indexed retrieval](docs/evidence/README.md) preserves their hashes without requiring author artifacts. Git history is retained.
 
@@ -28,7 +28,7 @@ The [city load profiles](docs/architecture/CITY-LOAD-PROFILES.md) run guarded lo
 
 The [local accessibility audit](docs/architecture/ACCESSIBILITY-AUDIT.md) records keyboard/native-control,focus,reduced-motion,selected contrast and mobile-target evidence,with explicit remaining human/device/legacy review work.
 
-Project repository: `git@github.com:tiecont/virtual-life-platform.git` (configured locally; no push performed). The Virtual City plan is the product specification.
+Project repository: `git@github.com:tiecont/virtual-life-platform.git` (current branch delivery is tracked in the vNext handoff). The Virtual City plan is the product specification.
 
 The [shared hospitality engine](docs/architecture/HOSPITALITY.md) provides private policy-gated orders,atomic claims,voluntary shifts,reusable timed courses,transactional completion hooks and service refusal/block/safety recovery. Optional progression consumers and actual local Maid recipe/service-loop integration are verified in their scoped evidence. No public hospitality world is enabled.
 

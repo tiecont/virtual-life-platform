@@ -5,6 +5,7 @@ import {verifyToolchain} from './verify-toolchain.mjs';
 import {verifyArtifactWorkflows} from './verify-artifact-workflows.mjs';
 import {checkCommittedManifests} from './release-manifest.mjs';
 import {checkAdminBoundary} from './admin-boundary.mjs';
+import {verifyWebFirstPlan} from './verify-web-first-plan.mjs';
 async function main(){
  const plan=await browserPlan(),workflow=await readFile('.github/workflows/quality.yml','utf8'),pins=JSON.parse(await readFile('config/ci-actions.json','utf8'));
  assert(!/pull_request_target|secrets\.|continue-on-error|\|\|\s*true/.test(workflow));
@@ -19,6 +20,7 @@ async function main(){
  await verifyArtifactWorkflows();
  await checkCommittedManifests();
  await checkAdminBoundary();
+ await verifyWebFirstPlan();
  console.log(JSON.stringify({toolchain:{node:toolchain.node,pnpm:toolchain.pnpm,workspaces:toolchain.workspaces,buildTargets:toolchain.buildTargets,installedDeclarations:toolchain.installedDeclarations,strategy:toolchain.strategy}}));
  console.log(JSON.stringify({groups:Object.keys(plan.groups),specs:Object.values(plan.groups).flat().length,requiredCheck:'quality',scope:'Local workflow contract only;hosted run/required-check settings NOT_RUN'}));
 }

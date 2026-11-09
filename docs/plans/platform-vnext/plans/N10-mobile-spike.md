@@ -1,5 +1,7 @@
 # N10 — Shared client và Android architecture spike
 
+> Revision 2.4: native lane DEFERRED_APPROVED by owner. Existing VERIFIED evidence remains historical; no web/server task waits for ADB, APK/AAB, emulator, signing, Mac or physical phones. Resume only on explicit owner instruction.
+
 Current N10-03 checkpoint: native account/ticket slice VERIFIED at04b1b38 with actual Keystore/HTTPS/WebView/WSS and source-stable security/integration evidence. [Qualification](../audit/N10-03-NATIVE-CHECKS.json). N10-04 physical gameplay and N14 iOS remain separate; original task descriptions below retain their initial-state labels.
 
 **Owner lane:** Experience/Mobile  
@@ -130,7 +132,7 @@ Scenario / evidence:
 
 ### N10-04 — Physical Android spike và quyết định kiến trúc theo thiết bị
 
-**Depends on:** N10-03, N06-04, N05-04, N06-09
+**Depends on:** N10-03, N06-04, N05-04, N06-09, N10-06
 **Trạng thái ban đầu:** TODO  
 **Priority:** 113
 
@@ -169,3 +171,29 @@ Owner cho phép tự chạy máy ảo; xem [3D/emulator brief](../architecture/0
 Acceptance: actual boot/KVM/GPU mode, APK hash/install/local packaged scene/navigation/rotation/keyboard/Back/resume có logs và artifacts; tắt process thuộc task khi kết thúc kiểm chứng. Không thay ADB USB mặc định, đọc keys/other-app UI hoặc thay global host settings. Có giới hạn RAM/disk/CPU, fail closed khi sai serial/unknown AVD. Không lấy emulator làm Android thật30phút/performance/thermal/battery, store distribution, support floor hoặc iOS Simulator.
 
 Verification **planned, phải implement rồi chạy:** pnpm mobile:emulator:start; pnpm mobile:emulator:smoke; pnpm mobile:emulator:stop. Đọc actual emulator boot/package/GPU outcomes; chưa có command không ghi PASS. Rollback: stop only owned instance, giữ AVD/logs/evidence và SDK pins; không wipe owner devices. Evidence sourceSHA/APK/image hashes, host/AVD/GPU/KVM, actual commands/codes, limitations và next exact action.
+
+### N10-06 — Native creator/world qualification sau platform web
+
+**Depends on:** N10-03, N10-05, N06-09
+
+**Deliverables**
+
+- Source-bound native animal creator/world/travel/safety qualification on packaged Android
+- Actual device/AVD evidence with explicit coverage; preserve prior N06-07 native findings
+
+**Acceptance / Definition of done**
+
+- Owner explicitly resumes mobile lane; web/platform features do not depend on this task.
+- Creator Save/Cancel, account switch, Deadline/Maid travel/reconnect and report/block use native auth and one-use tickets; no generic token escape hatch.
+- Packaged Android both landscape orientations, Back/background/resume/keyboard/cutouts/context recovery and actual physical device qualification; AVD supplementary only.
+- Current source/catalog/assets/protocol hashes and physical coverage recorded; native failures are not web feature blockers while no supported/distributed native clients exist.
+
+**Verification — run actual commands; never infer PASS from this plan**
+
+- Existing commands: pnpm typecheck; pnpm build; pnpm test:client-boundaries
+- Proposed; implement before claiming execution: Implement source-bound native creator/world qualification runner before claiming it ran.
+- Manual scenarios: Authorized physical Android and separate packaged AVD scenarios; iOS stays N14.
+
+**Rollback / recovery:** Disable native-only feature/route; preserve shared appearance/schema/receipts, web behavior and supported client compatibility.
+
+**Required evidence:** source SHA/diff hash, environment, commands/exits, artifacts/hashes, failures, limitations and exact next action.

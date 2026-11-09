@@ -1,5 +1,7 @@
 # Đưa Phase 2 vào đúng lúc — không làm hỏng plan đang chạy
 
+> Owner revision 2026-11-09: [web/server first; mobile later](games/10-WEB-FIRST-EXECUTION.md). N15–N18 and N19 platform work use web/responsive browser scope. N19-04 native is DEFERRED_APPROVED; no physical Android/APK/AVD prerequisite blocks web features. Existing sequential wave/art/privacy/authority/release gates remain.
+
 ## Trường hợp A — Phase 1 v2.1 chỉ chứa N00–N14 (khuyến nghị)
 
 Đợi agent Phase 1 dừng ở checkpoint hợp lệ. Không copy ZIP trong lúc agent đang sửa manifest/state/AGENTS. Sau handoff, commit hoặc snapshot trạng thái Phase 1, sau đó copy **nội dung** `LANTERN-LODGE-PHASE-2/` vào `docs/plans/lantern-lodge-phase2/` ở PR/commit riêng. Không thay đổi `docs/plans/platform-vnext/`.

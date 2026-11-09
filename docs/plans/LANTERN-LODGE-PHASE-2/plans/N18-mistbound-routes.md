@@ -8,109 +8,134 @@ Các task dưới đây cần source audit, implementation và evidence thật. 
 
 ### N18-01 — Freeze 7×7 map, connector tiles, hidden factions và objective
 
-**Phụ thuộc:** `N15-02`  
-**Đầu ra:**
+**Depends on:** N15-02
+
+**Deliverables**
+
 - Role allocation policy and ruleset v1
 - Tile generator/solvability test harness
 - Independent hidden-target projection tests
 
-**Nghiệm thu:**
+**Acceptance / Definition of done**
+
 - Phe Sương Mù 1 người khi 4–5, 2 khi 6–8; chỉ current player thấy role.
 - Three exits one true target; board geometry and enough solvable turns verified by generator/test.
 - No external party art or licensed board designs.
+- Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates.
 
-**Verification mới phải triển khai:**
-- `pnpm exec vitest run tests/games/mistbound-routes.generator.test.ts (planned)`
+**Verification — run actual commands; never infer PASS from this plan**
 
-**Manual review:**
-- Pilot paper puzzles; record whether map choices are understandable.
+- Existing commands: pnpm architecture:check; pnpm governance:check
+- Proposed; implement before claiming execution: pnpm exec vitest run tests/games/mistbound-routes.generator.test.ts (planned)
+- Manual scenarios: Pilot paper puzzles; record whether map choices are understandable.
 
-**Rollback/Recovery:** Remove invalid seeds/rules before launch, preserve old ruleset if matches already live.
+**Rollback / recovery:** Remove invalid seeds/rules before launch, preserve old ruleset if matches already live.
+
+**Required evidence:** source SHA/diff hash, environment, commands/exits, artifacts/hashes, failures, limitations and exact next action.
 
 ### N18-02 — Authoritative tile placement, compass và BFS settlement
 
-**Phụ thuộc:** `N18-01`, `N15-04`  
-**Đầu ra:**
+**Depends on:** N18-01, N15-04
+
+**Deliverables**
+
 - Path/rotation reducer with directed N/E/S/W checks
 - Compass scan policy, role-bound secret
 - Atomic crew/mist victory
 
-**Nghiệm thu:**
+**Acceptance / Definition of done**
+
 - Server alone computes connected route, tile legality and actual treasure goal.
 - Concurrent same-cell moves -> one accepted; stale second rejected; invalid moves never decrement hand.
 - Role/goal encrypted and never included in public delta until authorized settlement.
+- Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates.
 
-**Verification mới phải triển khai:**
-- `pnpm exec vitest run tests/games/mistbound-routes.integration.test.ts (planned)`
+**Verification — run actual commands; never infer PASS from this plan**
 
-**Manual review:**
-- Check one full 4-player and 8-player action trace.
+- Existing commands: pnpm lint; pnpm typecheck; pnpm test:integration; pnpm build
+- Proposed; implement before claiming execution: pnpm exec vitest run tests/games/mistbound-routes.integration.test.ts (planned)
+- Manual scenarios: Check one full 4-player and 8-player action trace.
 
-**Rollback/Recovery:** Disable mode, retain compatible match reducer; no destructive ruleset migration.
+**Rollback / recovery:** Disable mode, retain compatible match reducer; no destructive ruleset migration.
 
-### N18-03 — UX bản đồ và thao tác xoay thẻ trên web/Android
+**Required evidence:** source SHA/diff hash, environment, commands/exits, artifacts/hashes, failures, limitations and exact next action.
 
-**Phụ thuộc:** `N18-02`, `N15-05`  
-**Đầu ra:**
+### N18-03 — UX bản đồ và thao tác xoay thẻ trên web và responsive browser
+
+**Depends on:** N18-02, N15-05
+
+**Deliverables**
+
 - 7×7 responsive board, safe tile rotation UI
 - Compass and remaining-turn indicators
 - Explicit path reachability hints
 
-**Nghiệm thu:**
+**Acceptance / Definition of done**
+
 - Tap-to-select/rotate/confirm, keyboard equivalent; not drag-only.
 - Map reveals no secret true exit to crew/spectators even through alt text/test ids.
 - Glitches/reconnect maintain tile orientation and turn deadline server-authoritative.
+- Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates.
 
-**Verification mới phải triển khai:**
-- `pnpm exec playwright test tests/e2e/mistbound-routes.spec.ts (planned)`
+**Verification — run actual commands; never infer PASS from this plan**
 
-**Manual review:**
-- Physical Android zoom/pan performance and small-screen usability.
+- Existing commands: pnpm lint; pnpm typecheck; pnpm test:integration; pnpm build
+- Proposed; implement before claiming execution: pnpm exec playwright test tests/e2e/mistbound-routes.spec.ts (planned)
+- Manual scenarios: Browser zoom/pan performance and small viewport usability; native performance deferred N19-04.
 
-**Rollback/Recovery:** Mode OFF while preserving shared shell and other games.
+**Rollback / recovery:** Mode OFF while preserving shared shell and other games.
+
+**Required evidence:** source SHA/diff hash, environment, commands/exits, artifacts/hashes, failures, limitations and exact next action.
 
 ### N18-04 — Hidden-role anti-cheat, solvability và acceptance
 
-**Phụ thuộc:** `N18-03`, `N15-03`  
-**Đầu ra:**
+**Depends on:** N18-03, N15-03
+
+**Deliverables**
+
 - Role privacy/simulation suite
 - Concurrent path/race/restart tests
 - Full-match winner cases for both factions
 
-**Nghiệm thu:**
+**Acceptance / Definition of done**
+
 - Generator cannot produce impossible start under defined constraints; document rejected seeds.
 - Neither public/spectator/admin stats nor browser secrets reveal target/other player role.
 - Both victory paths, abort conditions and tie policy stable with retries/owner loss.
+- Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates.
 
-**Verification mới phải triển khai:**
-- `pnpm exec vitest run tests/games/mistbound-routes.property.test.ts (planned)`
-- `pnpm exec playwright test tests/e2e/mistbound-routes.spec.ts (planned)`
+**Verification — run actual commands; never infer PASS from this plan**
 
-**Manual review:**
-- Inspect whether accessibility cues reveal roles by accident.
+- Existing commands: pnpm lint; pnpm typecheck; pnpm test:integration; pnpm build
+- Proposed; implement before claiming execution: pnpm exec vitest run tests/games/mistbound-routes.property.test.ts (planned); pnpm exec playwright test tests/e2e/mistbound-routes.spec.ts (planned)
+- Manual scenarios: Inspect whether accessibility cues reveal roles by accident.
 
-**Rollback/Recovery:** Disable new match starts; existing matches settle under v1 or truthful ABORT.
+**Rollback / recovery:** Disable new match starts; existing matches settle under v1 or truthful ABORT.
+
+**Required evidence:** source SHA/diff hash, environment, commands/exits, artifacts/hashes, failures, limitations and exact next action.
 
 ### N18-05 — Pilot cân bằng phe ẩn và khả năng giải được
 
-**Phụ thuộc:** `N18-04`  
-**Đầu ra:**
+**Depends on:** N18-04
+
+**Deliverables**
+
 - Simulation reports with sample counts and seeds
 - Human prototype feedback for teamwork/sabotage
 
-**Nghiệm thu:**
+**Acceptance / Definition of done**
+
 - Report role win rate, stale/game length, invalid move frequencies by sample size.
 - Do not claim statistically balanced from 1 test run; tune after recorded data.
 - Avoid punitive report flow for ordinary permitted bluff/team gameplay.
+- Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates.
 
-**Verification mới phải triển khai:**
-- `pnpm exec vitest run tests/games/mistbound-routes.simulation.test.ts (planned)`
+**Verification — run actual commands; never infer PASS from this plan**
 
-**Manual review:**
-- Moderated 4–8 player pilot; ensure multiple iterations before production.
+- Existing commands: pnpm lint; pnpm typecheck; pnpm test:integration; pnpm build
+- Proposed; implement before claiming execution: pnpm exec vitest run tests/games/mistbound-routes.simulation.test.ts (planned)
+- Manual scenarios: Moderated 4–8 player pilot; ensure multiple iterations before production.
 
-**Rollback/Recovery:** Keep mode in private preview until balanced enough for agreed product goal.
+**Rollback / recovery:** Keep mode in private preview until balanced enough for agreed product goal.
 
-## Tài liệu tham chiếu
-
-[Game rules](../games/03-HAI-DO-SUONG-MU.md) · [QA](../games/06-CROSS-GAME-QA.md)
+**Required evidence:** source SHA/diff hash, environment, commands/exits, artifacts/hashes, failures, limitations and exact next action.

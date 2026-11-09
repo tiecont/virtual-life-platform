@@ -30,6 +30,6 @@ Yêu cầu mới cho phép Kubernetes/ArgoCD và native mobile preparation. Hand
 
 Giữ một room-owner đến khi multi-owner gate đạt. Worker dùng entrypoint riêng không dựng RoomAuthority. Chỉ pin digest đã kiểm thử; native client giữ auth và protocol compatibility riêng.
 
-Execution profile: CachyOS + một Android thật; N10/N11/N12-03 cho Android, N14 iOS conditional. Thiếu Mac/iPhone không chặn Android/web. Ngay khi phân phối mobile, cập nhật platform context và support inventory; backend gates theo platform supported/distributed. Android evidence không thay iOS evidence.
+Execution profile (owner 2026-11-09): web/server/platform trước, native mobile sau. Đọc revision 2.4 trong vNext; không dùng APK/ADB/AVD/physical Android/iOS làm hard gate cho tính năng web hoặc Lantern Lodge web. N10/N11/N12-03/N14 và N19-04 native được hoãn theo owner; giữ code/evidence cũ, chỉ resume khi owner yêu cầu. Responsive browser vẫn trong web scope. Ngay khi hỗ trợ/phân phối mobile, cập nhật platform context và support inventory; backend compatibility gates theo platform supported/distributed (true/unknown fail-closed). Android evidence không thay iOS evidence.
 
 Cập nhật `docs/plans/platform-vnext/state/` sau mỗi task. Raw logs/screenshots lớn ở private artifacts; repository giữ summaries/hash. Evidence cần SHA/diff hash, môi trường, lệnh và kết quả thật. Không đánh VERIFIED vì file tồn tại.

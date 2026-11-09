@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "phase_id": "LAN-L02",
-  "phase_state": "ACTIVE",
+  "phase_state": "PAUSED",
   "owner_approved_start": true,
   "owner_approval_ref": "conversation: explicit Lantern Lodge request after N14 plus repeated complete-all-plans instruction;see state/PHASE1-HANDOFF.md",
   "handoff_record": "state/PHASE1-HANDOFF.md",
@@ -10,5 +10,5 @@
   "source_delta_reviewed": true,
   "activated_at": "2026-11-08T17:03:02.465890+00:00",
   "public_release_authorized": false,
-  "notes": "Activated by the sole coordinator under existing explicit owner instructions after real Phase1 checkpoint72d3713;not inferred from green tests. Physical/art/Apple/store/public gates remain;only task-specific verified upstream dependencies open work."
+  "notes": "Owner-authorized web-first replan: sole coordinator updates upstream scheduling at a safe checkpoint. Await fresh source-bound handoff after plan validation; prior Phase1 and Phase2 evidence retained, no duplicate scheduler."
 }

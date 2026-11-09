@@ -181,7 +181,8 @@
         "Đối chiếu M05/06/07/08/09/M13/Nxx hiện hữu; không tạo thêm identity/world room owner.",
         "Ba rulebooks có ví dụ/phase/timeouts/target audience, mọi đổi luật có ADR.",
         "Tên/graphics/audio khác biệt, không dùng asset hoặc tên Party Animals trong sản phẩm.",
-        "Đối chiếu owner animal/landscape brief và shared-avatar ownership; art cụ thể còn cần review, không coi animal theme là quyền sao chép."
+        "Đối chiếu owner animal/landscape brief và shared-avatar ownership; art cụ thể còn cần review, không coi animal theme là quyền sao chép.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -224,7 +225,8 @@
       "acceptance": [
         "Mỗi mode nhận deterministic state+command+clock và trả nextState/effects, không import network/DB/React.",
         "Phân tách public/own/spectator projection bằng allowlist và version; invalid commands không thay state.",
-        "Không thư viện world nào được import API repository trực tiếp; boundary guard bắt lỗi."
+        "Không thư viện world nào được import API repository trực tiếp; boundary guard bắt lỗi.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -270,7 +272,8 @@
       "acceptance": [
         "Table join không tạo world membership thứ hai; room current policy kiểm trên mọi entry path.",
         "Table cap 2–6/3–6/4–8 có race tests; một account chỉ ở một game active.",
-        "Default flags OFF; origin/provenance art; invite không tự ép join hoặc travel."
+        "Default flags OFF; origin/provenance art; invite không tự ép join hoặc travel.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -316,7 +319,8 @@
       "acceptance": [
         "Một accepted command = một persisted stateVersion và result; same key never duplicates result.",
         "Encrypted hands/roles/deck/target at rest; missing key fails closed; backups/key custody reviewed.",
-        "Restart/DB outage/owner-loss cleanup không tuyên bố phantom win, không giữ pending unfair secret."
+        "Restart/DB outage/owner-loss cleanup không tuyên bố phantom win, không giữ pending unfair secret.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -363,7 +367,8 @@
         "Own hand/role only in per-account auth projection; spectator/public/metrics never contains secrets.",
         "Lost ACK/duplicate/out-of-order event/update account/reconnect all converge on server current view.",
         "DOM action controls support keyboard/touch/reduced motion; status never claims success before ACK.",
-        "Dùng shared landscape shell và modular animal appearance đã qualify tại N06-09; không tạo creator/catalog/orientation store riêng."
+        "Dùng shared landscape shell và modular animal appearance đã qualify tại N06-09; không tạo creator/catalog/orientation store riêng.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -376,7 +381,7 @@
           "pnpm exec playwright test tests/e2e/game-shell.spec.ts (planned)"
         ],
         "manual": [
-          "Inspect desktop/Android prototype screenshots at error/reconnect/timeout."
+          "Inspect desktop/responsive browser screenshots at error/reconnect/timeout."
         ]
       },
       "rollback": "Unregister shell routes and flags; no destructive match state change.",
@@ -409,7 +414,8 @@
       "acceptance": [
         "Màu/số/action/wild/PIVOT đều có cases positive+negative.",
         "2-player REVERSE, final action, recycle draw pile, tie/timeout được xác định.",
-        "Reducer không có infinite turn hoặc âm Glow; no stacking trong v1."
+        "Reducer không có infinite turn hoặc âm Glow; no stacking trong v1.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -449,7 +455,8 @@
       "acceptance": [
         "Không thể đánh card không thuộc hand; old requestId replay không thêm action.",
         "Server tôn trọng current identity/table/phase/deadline, không dùng client timer.",
-        "Draw + PLAY_DRAWN optional và effects apply đúng một lần, không double winner/XP."
+        "Draw + PLAY_DRAWN optional và effects apply đúng một lần, không double winner/XP.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -479,7 +486,7 @@
     },
     {
       "id": "N16-03",
-      "title": "UI đánh bài web/Android với icon hỗ trợ colorblind",
+      "title": "UI đánh bài web và responsive browser với icon hỗ trợ colorblind",
       "depends_on": [
         "N16-02",
         "N15-05"
@@ -491,7 +498,8 @@
       "acceptance": [
         "User có thể chọn/lấy/thả bài qua tap/keyboard, không chỉ drag.",
         "Color luôn đi với chữ/glyph; disabled actions giải thích lý do.",
-        "Delay/reconnect không làm card biến mất trước authoritative ACK."
+        "Delay/reconnect không làm card biến mất trước authoritative ACK.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -504,7 +512,7 @@
           "pnpm exec playwright test tests/e2e/lantern-colors.spec.ts (planned)"
         ],
         "manual": [
-          "Check one physical Android + desktop browser after available; no iPhone claim."
+          "Check desktop and responsive browser; physical native coverage deferred N19-04."
         ]
       },
       "rollback": "Route disabled per game flag; source unchanged for other modes.",
@@ -533,7 +541,8 @@
       "acceptance": [
         "64-card invariant, 2-tab replay, two concurrent turns and timeout pass.",
         "Spectator/admin/report path không lộ bài, all outcomes 1 winner or explicit ties.",
-        "No regression M06 room/seat, M08 safety, M09 travel, N05 reconnection."
+        "No regression M06 room/seat, M08 safety, M09 travel, N05 reconnection.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -575,7 +584,8 @@
       "acceptance": [
         "Recorded feedback from multiple human testers, not only bot pass.",
         "Mismatch between rule wording and UI fixed or blocked explicitly.",
-        "Any rule balance change increments rulesetVersion rather than mutating old matches."
+        "Any rule balance change increments rulesetVersion rather than mutating old matches.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -615,7 +625,8 @@
       "acceptance": [
         "Exactly 1–2 owned cards per claim, 4-claim max/round, target symbol server-owned.",
         "Correct/false challenges score exactly once, credibility bounded and no random violence.",
-        "Timeout default trust does not auto-submit an impostor claim; max rounds finite."
+        "Timeout default trust does not auto-submit an impostor claim; max rounds finite.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -655,7 +666,8 @@
       "acceptance": [
         "Unchallenged cards never leak, challenged reveal only last claim.",
         "Two challengers/trust simultaneous -> one effective state transition.",
-        "No user may forge deck content, symbol or owner role, even using old client."
+        "No user may forge deck content, symbol or owner role, even using old client.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -698,7 +710,8 @@
       "acceptance": [
         "Opponent hand/secret not in browser state, even hidden DOM/data attributes.",
         "Tap/keyboard handles choice and 1–2 card confirmation.",
-        "Reveal animation mirrors committed transition only; reduced-motion substitute works."
+        "Reveal animation mirrors committed transition only; reduced-motion substitute works.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -711,7 +724,7 @@
           "pnpm exec playwright test tests/e2e/mask-and-tell.spec.ts (planned)"
         ],
         "manual": [
-          "Desktop + physical Android viewport where available."
+          "Desktop + responsive browser viewport; native coverage deferred N19-04."
         ]
       },
       "rollback": "Disable UI mode flag, retain backend support for ongoing compatible matches.",
@@ -740,7 +753,8 @@
       "acceptance": [
         "One challenge winner/loser, no leak of hidden cards or previous unchallenged claims.",
         "Timeout, reconnect, account block, host disconnect and stale phase recovery are safe.",
-        "No extra punitive content or gambling progression introduced."
+        "No extra punitive content or gambling progression introduced.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -782,7 +796,8 @@
       "acceptance": [
         "Testers understand exactly whose cards are challenged and what is lost.",
         "No harassment built into default quick-emote presets; report/block easy.",
-        "Changes to win condition versioned; data not fabricated as measured retention."
+        "Changes to win condition versioned; data not fabricated as measured retention.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -823,7 +838,8 @@
       "acceptance": [
         "Phe Sương Mù 1 người khi 4–5, 2 khi 6–8; chỉ current player thấy role.",
         "Three exits one true target; board geometry and enough solvable turns verified by generator/test.",
-        "No external party art or licensed board designs."
+        "No external party art or licensed board designs.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -863,7 +879,8 @@
       "acceptance": [
         "Server alone computes connected route, tile legality and actual treasure goal.",
         "Concurrent same-cell moves -> one accepted; stale second rejected; invalid moves never decrement hand.",
-        "Role/goal encrypted and never included in public delta until authorized settlement."
+        "Role/goal encrypted and never included in public delta until authorized settlement.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -893,7 +910,7 @@
     },
     {
       "id": "N18-03",
-      "title": "UX bản đồ và thao tác xoay thẻ trên web/Android",
+      "title": "UX bản đồ và thao tác xoay thẻ trên web và responsive browser",
       "depends_on": [
         "N18-02",
         "N15-05"
@@ -906,7 +923,8 @@
       "acceptance": [
         "Tap-to-select/rotate/confirm, keyboard equivalent; not drag-only.",
         "Map reveals no secret true exit to crew/spectators even through alt text/test ids.",
-        "Glitches/reconnect maintain tile orientation and turn deadline server-authoritative."
+        "Glitches/reconnect maintain tile orientation and turn deadline server-authoritative.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -919,7 +937,7 @@
           "pnpm exec playwright test tests/e2e/mistbound-routes.spec.ts (planned)"
         ],
         "manual": [
-          "Physical Android zoom/pan performance and small-screen usability."
+          "Browser zoom/pan performance and small viewport usability; native performance deferred N19-04."
         ]
       },
       "rollback": "Mode OFF while preserving shared shell and other games.",
@@ -949,7 +967,8 @@
       "acceptance": [
         "Generator cannot produce impossible start under defined constraints; document rejected seeds.",
         "Neither public/spectator/admin stats nor browser secrets reveal target/other player role.",
-        "Both victory paths, abort conditions and tie policy stable with retries/owner loss."
+        "Both victory paths, abort conditions and tie policy stable with retries/owner loss.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -991,7 +1010,8 @@
       "acceptance": [
         "Report role win rate, stale/game length, invalid move frequencies by sample size.",
         "Do not claim statistically balanced from 1 test run; tune after recorded data.",
-        "Avoid punitive report flow for ordinary permitted bluff/team gameplay."
+        "Avoid punitive report flow for ordinary permitted bluff/team gameplay.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -1033,7 +1053,8 @@
       "acceptance": [
         "No secret card/role/target in spectator/metrics/chat reports.",
         "Single table/account and RoomAuthority one-owner invariants preserved.",
-        "Interrupted matches recover or truthfully abort; no phantom wins/rewards."
+        "Interrupted matches recover or truthfully abort; no phantom wins/rewards.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -1074,7 +1095,8 @@
       "acceptance": [
         "Metadata cardinality bounded by mode/status; no game IDs/role/secret in labels.",
         "Report actual admitted tables/players and rejected commands, not only connected sockets.",
-        "No claim of 100+ tables or p95 target without actual hardware evidence."
+        "No claim of 100+ tables or p95 target without actual hardware evidence.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -1117,7 +1139,8 @@
       "acceptance": [
         "Single operator principal and existing MFA/audit boundaries apply.",
         "Admin cannot inspect hidden hands/roles/targets in day-to-day metrics.",
-        "Disable blocks new start; in-flight match drain/abort policy tested and visibly explained."
+        "Disable blocks new start; in-flight match drain/abort policy tested and visibly explained.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -1208,7 +1231,8 @@
         "Art rights, security, moderation/ops and game acceptance are reviewed; all flags OFF until owner-controlled staging activation.",
         "Staging candidate uses digest/ruleset/DB compatibility proof; public launch requires separate N12 release gates and explicit approvals.",
         "Steam PC is future desktop adapter scope, not implied by a browser game; no false App Store/Play/Steam certification.",
-        "Ghi riêng technical visual QA, owner art review còn thiếu và human playtest findings; không suy ra đẹp/hay từ synthetic screenshots."
+        "Ghi riêng technical visual QA, owner art review còn thiếu và human playtest findings; không suy ra đẹp/hay từ synthetic screenshots.",
+        "Current execution scope is web/responsive browser. Native Android/iOS implementation and device checks are deferred; no web feature acceptance depends on N19-04/N10/N11/N14. Supported/distributed native clients still require compatibility gates."
       ],
       "verification": {
         "existing": [
@@ -1240,5 +1264,11 @@
       "phase": "LAN-L02"
     }
   ],
-  "product_direction_revision": "owner-2026-11-06-animal-landscape"
+  "product_direction_revision": "owner-2026-11-06-animal-landscape",
+  "execution_policy": {
+    "priority": "WEB_SERVER_FIRST",
+    "native_task": "N19-04",
+    "mobile_deferred_by_owner": true,
+    "scope": "N15-N18 and N19 platform QA/ops/playtest accept web/responsive browser evidence; native device/store gates separately deferred, never implied by browser tests."
+  }
 }

@@ -1,5 +1,7 @@
 # Lantern Lodge — Phase 2 (để chạy **sau** plan đang thực thi)
 
+> Owner revision 2026-11-09: [web/server first; mobile later](games/10-WEB-FIRST-EXECUTION.md). N15–N18 and N19 platform work use web/responsive browser scope. N19-04 native is DEFERRED_APPROVED; no physical Android/APK/AVD prerequisite blocks web features. Existing sequential wave/art/privacy/authority/release gates remain.
+
 **Bộ kế hoạch độc lập**, chỉ gồm N15–N19 / **25 task** được trích từ gói v2.2; không chứa 69 task N00–N14. Bản tách giữ nguyên ID, nội dung nghiệm thu và tài liệu trò chơi; bổ sung dependency gate, checkpoint riêng và thứ tự wave để các agent đang chạy không va chạm.
 
 - **Repo tham chiếu lúc thiết kế:** `cef7dc17172f7c6cda930c99648a5e3ad609cc55`; đây không phải SHA đã kiểm thử Phase 2.

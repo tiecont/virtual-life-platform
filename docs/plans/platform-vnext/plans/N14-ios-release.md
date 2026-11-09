@@ -1,5 +1,7 @@
 # N14 — iOS toolchain, physical validation và release lane
 
+> Revision 2.4: native lane DEFERRED_APPROVED by owner. Existing VERIFIED evidence remains historical; no web/server task waits for ADB, APK/AAB, emulator, signing, Mac or physical phones. Resume only on explicit owner instruction.
+
 **Owner lane:** Mobile/Operations  
 **Activation:** conditional · **Implementation:** TODO  
 **Goal:** Giữ mục tiêu App Store nhưng chỉ thực thi native iOS lane khi có macOS/Xcode access và đường kiểm thử iPhone thật; không chặn Android/web.

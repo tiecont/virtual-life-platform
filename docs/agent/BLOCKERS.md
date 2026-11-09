@@ -1,3 +1,9 @@
+# Current web-first scope — 2026-11-09
+
+Physical Android/iOS/ADB/APK/AVD/signing/store/disclosures are deferred native-lane prerequisites and no longer block platform web features. N06-07 web-only is ready,not VERIFIED. Final-art/readability/groom/loading findings still require real web work;N04-02 hosted candidate and N07-04 staging observations remain external. No public release/production/store authorization. Supported/distributed-native compatibility remains fail-closed;current inventory/context false unchanged.
+
+## Earlier checkpoints — historical
+
 # N06-11 technical renderer spike VERIFIED;continuous execution — 2026-11-08
 
 Source d89d59bcccafc1a7bd7fb4b6326bc96e07b1654d. ADR0133 separates the technical spike from downstream integrated art/device qualification without changing budgets. Actual25focused/406unit/95governance,types/fullbuild/lint/CI/assets/architecture/boundaries,2browser studio profiles+import failure,5AVD studio,3normal bundle/5AVD preview/default-off7ports PASS.384rig samples preserved;groom/cloth intentionally refined. Required20actor Low/Balanced frame16.7/16.8ms,121/148calls,all resource checks PASS;20recreates zero leases/canvases. High184calls is desktop-only diagnostic. Normal APK9148df93…18exact assets restored/reinstalled;AVD STOPPED.

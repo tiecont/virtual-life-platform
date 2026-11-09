@@ -92,9 +92,9 @@ Scenario / evidence:
 
 ### N06-03 — Implement shared game shell và điều hướng
 
-**Depends on:** N06-02, N10-02, N05-06, N06-06
-**Trạng thái ban đầu:** TODO  
-**Priority:** 82
+**Depends on:** N06-02, N05-06, N06-06
+
+**Execution scope:** WEB_AND_RESPONSIVE_BROWSER; native follow-up N10-06/N10-04/N11/N14 deferred by owner
 
 **Deliverables**
 
@@ -105,34 +105,24 @@ Scenario / evidence:
 - Next portal mount shared game-client; không nhúng Next dependencies vào shared package.
 - Identity/travel/queue status rõ và không duplicate authoritative state.
 - Không full reload/refresh form thủ công để cập nhật critical gameplay.
-
 - Shared shell theo animal/landscape brief N06-06; chưa coi prototype cũ là visual acceptance.
+- Web acceptance độc lập với APK/ADB/AVD/iPhone/native orientation; không hạ quality budgets, final-art findings, authority/privacy/accessibility hoặc public release gates. Native scenarios chuyển sang N10-06/N10-04/N11/N14.
 
-**Verification**
+**Verification — run actual commands; never infer PASS from this plan**
 
-Scripts/commands đã tồn tại ở baseline (xác minh lại tại HEAD):
-
-- `pnpm lint`
-- `pnpm typecheck`
-- `pnpm build`
-
-Tên verification đề xuất; phải implement trước khi chạy hoặc đánh pass:
-
-- `pnpm test:ux-core`
-
-Scenario / evidence:
-
-- Desktop/mobile browser flows gồm error/permission/loading và stale events.
+- Existing commands: pnpm lint; pnpm typecheck; pnpm build
+- Proposed; implement before claiming execution: pnpm test:ux-core
+- Manual scenarios: Desktop/mobile browser flows gồm error/permission/loading và stale events.
 
 **Rollback / recovery:** Feature-flag new shell, retain verified route adapter.
 
-**Required evidence:** source SHA/diff hash, môi trường, lệnh + exit code, acceptance từng mục, artifact refs/hash, limitations, exact next action. Không lưu secrets; không gọi kết quả lịch sử là fresh verification.
+**Required evidence:** source SHA/diff hash, environment, commands/exits, artifacts/hashes, failures, limitations and exact next action.
 
 ### N06-04 — Polish hai vòng chơi Deadline/Maid
 
 **Depends on:** N06-03, N05-04, N06-07, N06-08
-**Trạng thái ban đầu:** TODO  
-**Priority:** 83
+
+**Execution scope:** WEB_AND_RESPONSIVE_BROWSER; native follow-up N10-06/N10-04/N11/N14 deferred by owner
 
 **Deliverables**
 
@@ -143,27 +133,19 @@ Scenario / evidence:
 - Ngồi/focus/leave/resume và order/service/reward diễn ra bằng intent validated server.
 - Travel giữ identity, report/block ở đúng ngữ cảnh và không mở unsolicited interaction.
 - Asset budgets, original/licensed provenance; không giả art approved.
-
 - Animal appearance dùng shared composer; hai cảnh landscape có lighting/props/animation và bản sắc nhất quán theo N06-06.
+- Qualify the integrated3D animal/fur/animation web và responsive browser build; old pixel preview cannot replace final web visual acceptance; native physical acceptance is deferred to N10-06/N10-04.
+- Web acceptance độc lập với APK/ADB/AVD/iPhone/native orientation; không hạ quality budgets, final-art findings, authority/privacy/accessibility hoặc public release gates. Native scenarios chuyển sang N10-06/N10-04/N11/N14.
 
-**Verification**
+**Verification — run actual commands; never infer PASS from this plan**
 
-Scripts/commands đã tồn tại ở baseline (xác minh lại tại HEAD):
-
-- `pnpm assets:check`
-- `pnpm test:integration`
-
-Tên verification đề xuất; phải implement trước khi chạy hoặc đánh pass:
-
-- `pnpm test:ux-core`
-
-Scenario / evidence:
-
-- Browser journey thật và visual QA; responsive network/reconnect states.
+- Existing commands: pnpm assets:check; pnpm test:integration
+- Proposed; implement before claiming execution: pnpm test:ux-core
+- Manual scenarios: Browser journey thật và visual QA; responsive network/reconnect states.
 
 **Rollback / recovery:** Roll back new scenes/shell bằng feature flag, keep asset version for old clients.
 
-**Required evidence:** source SHA/diff hash, môi trường, lệnh + exit code, acceptance từng mục, artifact refs/hash, limitations, exact next action. Không lưu secrets; không gọi kết quả lịch sử là fresh verification.
+**Required evidence:** source SHA/diff hash, environment, commands/exits, artifacts/hashes, failures, limitations and exact next action.
 
 ### N06-05 — Usability, accessibility và product instrumentation
 
@@ -235,9 +217,9 @@ Task thiết kế: ghi review/artifact hashes thực; không cần tạo tests m
 
 ### N06-07 — Modular animal creator, authoritative appearance và shared rendering
 
-**Depends on:** N06-03, N06-06, N02-04, N05-06, N10-03, N06-11
-**Trạng thái ban đầu:** TODO
-**Priority:** 82.2
+**Depends on:** N06-03, N06-06, N02-04, N05-06, N06-11
+
+**Execution scope:** WEB_AND_RESPONSIVE_BROWSER; native follow-up N10-06/N10-04/N11/N14 deferred by owner
 
 **Deliverables**
 
@@ -252,40 +234,29 @@ Task thiết kế: ghi review/artifact hashes thực; không cần tạo tests m
 - Duplicate save/lost ACK, account switch/late response, stale catalog và revoke entitlement có tests; private inventory không leak ra room/metrics.
 - V1 profiles và selected outfit giữ dữ liệu; nếu cần SQL thì additive migration số mới; N/N−1 có runtime tests và fallback không ghi đè selection.
 - Travel/reconnect giữ identity và appearance; cosmetic không đổi hitbox/seat/role/reward; asset/WebGL failure vẫn có DOM/text path.
+- Owner3D update: shared rigged3D animals, detailed groom/LOD/material/lighting/animation and polished web và responsive browser UI per architecture/07; pixel evidence is historical only.
+- Web acceptance độc lập với APK/ADB/AVD/iPhone/native orientation; không hạ quality budgets, final-art findings, authority/privacy/accessibility hoặc public release gates. Native scenarios chuyển sang N10-06/N10-04/N11/N14.
 
-**Verification**
+**Verification — run actual commands; never infer PASS from this plan**
 
-Scripts có trong package.json tại planning checkpoint; phải chạy thực khi implementation:
-
-- pnpm lint
-- pnpm typecheck
-- pnpm assets:check
-- pnpm test:integration
-- pnpm test:security
-- pnpm build
-
-Tên command đề xuất, chưa implement/chạy trong task cập nhật plan này:
-
-- pnpm test:avatar-creator (implement before claiming PASS)
-
-Scenario/review cần bằng chứng thật:
-
-- Creator→Save→Deadline/Maid→travel/reconnect trên browser và Android thật; kiểm seams/anchors/occlusion/animation và missing assets.
+- Existing commands: pnpm lint; pnpm typecheck; pnpm assets:check; pnpm test:integration; pnpm test:security; pnpm build
+- Proposed; implement before claiming execution: pnpm test:avatar-creator (implement before claiming PASS)
+- Manual scenarios: Creator→Save→Deadline/Maid→travel/reconnect trên desktop/responsive browser; kiểm seams/anchors/occlusion/animation/missing assets. Native qualification deferred N10-06.
 
 **Rollback / recovery:** Tắt creator mới theo flag, giữ appearance/catalog versions và receipts; v1 projection tương thích, không xóa hoặc reset customization.
 
-**Required evidence:** source SHA/diff hash, environment/device, lệnh/exit hoặc review thực, artifacts/hash, acceptance và limitations; không coi plan validation là visual/gameplay PASS.
+**Required evidence:** source SHA/diff hash, environment, commands/exits, artifacts/hashes, failures, limitations and exact next action.
 
-### N06-08 — Landscape gameplay shell, native orientation và accessible fallback
+### N06-08 — Landscape web gameplay shell và accessible fallback; native orientation deferred
 
-**Depends on:** N06-03, N06-06, N10-02
-**Trạng thái ban đầu:** TODO
-**Priority:** 82.1
+**Depends on:** N06-03, N06-06
+
+**Execution scope:** WEB_AND_RESPONSIVE_BROWSER; native follow-up N10-06/N10-04/N11/N14 deferred by owner
 
 **Deliverables**
 
 - Scene-first landscape HUD/dock/drawers dùng chung web/native
-- Gameplay-scoped native orientation adapter với cleanup và resize-safe fallback
+- Browser resize/landscape handling; existing native adapter retained with deferred native qualification N10-06
 - Portrait recovery layout, DOM controls và safe-area/keyboard handling
 
 **Acceptance / Definition of done**
@@ -293,34 +264,25 @@ Scenario/review cần bằng chứng thật:
 - Gameplay ngang là layout chính; scene và critical actions không bị sidebar dài hoặc panel bắt buộc che khuất.
 - Hai chiều ngang, rotate/resize, Back/background/resume và OS không áp orientation lock không reset visit/match/avatar hoặc duplicate intent.
 - Portrait fallback có lời nhắc xoay không chặn report/block/leave/resync; auth/admin forms vẫn usable.
-- 740×360,844×390,1280×720,1920×1080 và 360×740 fallback có evidence; viewport thực Android ghi riêng, không nhận là broad device coverage.
+- 740×360,844×390,1280×720,1920×1080 và 360×740 fallback có evidence; viewport browser thực ghi riêng, không nhận là broad device coverage.
 - Keyboard/cutout/safe area/tăng chữ/reduced motion và touch/keyboard/screen-reader controls kiểm thật; iOS execution vẫn conditional N14.
+- Web acceptance độc lập với APK/ADB/AVD/iPhone/native orientation; không hạ quality budgets, final-art findings, authority/privacy/accessibility hoặc public release gates. Native scenarios chuyển sang N10-06/N10-04/N11/N14.
 
-**Verification**
+**Verification — run actual commands; never infer PASS from this plan**
 
-Scripts có trong package.json tại planning checkpoint; phải chạy thực khi implementation:
-
-- pnpm lint
-- pnpm typecheck
-- pnpm build
-
-Tên command đề xuất, chưa implement/chạy trong task cập nhật plan này:
-
-- pnpm test:ux-core (implement before claiming PASS)
-
-Scenario/review cần bằng chứng thật:
-
-- Landscape browser + APK Android thật, cả hai chiều ngang/portrait fallback, keyboard/cutout/Back/resume và late network responses.
+- Existing commands: pnpm lint; pnpm typecheck; pnpm build
+- Proposed; implement before claiming execution: pnpm test:ux-core (implement before claiming PASS)
+- Manual scenarios: Landscape desktop/responsive browser, cả hai chiều ngang/portrait fallback, keyboard/cutout/Back/resume và late network responses.
 
 **Rollback / recovery:** Tắt landscape shell/orientation policy theo flag và cleanup; giữ verified route adapter, room membership và accessible controls.
 
-**Required evidence:** source SHA/diff hash, environment/device, lệnh/exit hoặc review thực, artifacts/hash, acceptance và limitations; không coi plan validation là visual/gameplay PASS.
+**Required evidence:** source SHA/diff hash, environment, commands/exits, artifacts/hashes, failures, limitations and exact next action.
 
 ### N06-09 — Animal/landscape visual qualification và asset performance evidence
 
 **Depends on:** N06-04, N06-07, N06-08, N06-11
-**Trạng thái ban đầu:** TODO
-**Priority:** 83.5
+
+**Execution scope:** WEB_AND_RESPONSIVE_BROWSER; native follow-up N10-06/N10-04/N11/N14 deferred by owner
 
 **Deliverables**
 
@@ -331,32 +293,22 @@ Scenario/review cần bằng chứng thật:
 **Acceptance / Definition of done**
 
 - Actual interactive creator và Deadline/Maid có animal appearance đúng layer/pose/hướng; không lấy concept hoặc preview cũ làm bằng chứng.
-- Landscape web/Android thật đủ loading/empty/full/queue/offline/reconnect/denied, rotation/keyboard/safe-area/portrait fallback; không giả queue backend đã wiring.
+- Landscape desktop/responsive browser đủ loading/empty/full/queue/offline/reconnect/denied, rotation/keyboard/safe-area/portrait fallback; không giả queue backend đã wiring.
 - Hai vòng chơi, avatar Save/Cancel/travel/reconnect và safety giữ authoritative outcome; graphics không khóa report/block/leave.
-- Đo asset/frame-time/memory/loading theo budgets khóa trước; giữ failed runs, model/OS/WebView/source/catalog hashes và single-device limitations.
+- Đo asset/frame-time/memory/loading theo budgets khóa trước; giữ failed runs, browser/GPU/OS/source/catalog hashes và coverage limitations.
 - Rubric composition/silhouette/animation/lighting/readability/consistency có reviewer và issues; technical QA không thành owner art approval, human usability hoặc retention claim.
+- Owner3D update: shared rigged3D animals, detailed groom/LOD/material/lighting/animation and polished web và responsive browser UI per architecture/07; pixel evidence is historical only.
+- Web acceptance độc lập với APK/ADB/AVD/iPhone/native orientation; không hạ quality budgets, final-art findings, authority/privacy/accessibility hoặc public release gates. Native scenarios chuyển sang N10-06/N10-04/N11/N14.
 
-**Verification**
+**Verification — run actual commands; never infer PASS from this plan**
 
-Scripts có trong package.json tại planning checkpoint; phải chạy thực khi implementation:
-
-- pnpm assets:check
-- pnpm lint
-- pnpm typecheck
-- pnpm build
-
-Tên command đề xuất, chưa implement/chạy trong task cập nhật plan này:
-
-- pnpm test:ux-core (implement before claiming PASS)
-- pnpm test:avatar-creator (implement before claiming PASS)
-
-Scenario/review cần bằng chứng thật:
-
-- Visual review theo architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md trên desktop và Android thật; ghi NOT_RUN cho coverage thiếu.
+- Existing commands: pnpm assets:check; pnpm lint; pnpm typecheck; pnpm build
+- Proposed; implement before claiming execution: pnpm test:ux-core (implement before claiming PASS); pnpm test:avatar-creator (implement before claiming PASS)
+- Manual scenarios: Visual review theo architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md trên desktop và responsive browser; ghi NOT_RUN cho coverage thiếu.
 
 **Rollback / recovery:** Rollback versioned scenes/shell/creator bằng flags và compatible catalog; giữ data và evidence, không hạ thresholds để PASS.
 
-**Required evidence:** source SHA/diff hash, environment/device, lệnh/exit hoặc review thực, artifacts/hash, acceptance và limitations; không coi plan validation là visual/gameplay PASS.
+**Required evidence:** source SHA/diff hash, environment, commands/exits, artifacts/hashes, failures, limitations and exact next action.
 
 ### N06-10 — Art direction3D, fur/rig pipeline và budgets trước đo
 
@@ -370,24 +322,28 @@ Verification: review source/model pipeline/ADR/budget/provenance thực và plan
 
 ### N06-11 — Shared3D renderer spike, rig/fur và phòng đại diện
 
-**Depends on:** N06-10,N10-05,N06-08 · **Priority:**81 · **Initial:**TODO
+**Depends on:** N06-10, N06-08
 
-Scope clarification before the next measurement: `docs/adr/0133-renderer-spike-and-integrated-qualification.md` follows architecture07's existing browser+packaged-WebView promotion gate. N06-11 qualifies the technical rig/fur/room/adapter spike with actual functional/resource/measurement evidence;it does not require the creator/full worlds that depend on it to already exist. N06-09 keeps final integrated visual/target-device qualification,N10-04 keeps full physical gameplay,and N14/release/owner gates remain unchanged. All numeric budgets and failed observations remain intact. This clarification alone does not mark the task VERIFIED;current-source checks and a source-bound acceptance matrix are still required.
+**Execution scope:** WEB_AND_RESPONSIVE_BROWSER; native follow-up N10-06/N10-04/N11/N14 deferred by owner
 
-Cached-face checkpoint at2b4c070,2026-11-08:[actual CPU/192snapshot/loading/ABBA/native checks](../audit/N06-11-CACHE-CHECKPOINT.json). Cache hits skip discarded geometry while keeping original visual data and per-actor state.95governance/401unit,corrected browser/AVD studio/normal checks pass. Browser all warm comparisons pass,all cold fail;landscape Low regresses. First AVD Low49.9ms failure remains alongside separately predeclared ABBA required-tier passes. Whole task IN_PROGRESS;next bounded visible groom/cloth/silhouette revision under old budgets,remaining cold/native/physical/art gates unchanged. Repository review `docs/design/vnext/animals-3d/CACHED-FACE-REVISION-1.md` records actual images and limitations.
+**Deliverables**
 
-Controlled loading/heap partial checkpoint at db6f428,2026-11-08: `pnpm test:scene3d-loading` implemented with protocol committed before first run,then actually executed. [Actual80load/40external-GC results](../audit/N06-11-LOADING-CHECKPOINT.json):all cold and Balanced warm p75 exceed5000ms;Low warm and consistent-baseline heap pass. Exit1 retained as observed-limit failure,whole N06-11 IN_PROGRESS. Repository guide `docs/mobile/SCENE3D-LOADING.md` distinguishes synthetic/HTTP-context cache,procedural art,packaged-native and physical scopes. Next profile/optimize attributed initialization while preserving exact visual streams and original thresholds/profile;native controlled process/cache/heap and final art/full scenes remain open. No new native execution or owner/public approval.
+- Shared renderer3D adapter, rigged animal/fur/material/room technical slice
+- Camera/LOD/quality tiers/cache/disposal/context recovery và packaged Android support
 
-Earlier partial checkpoint at5255a2e,2026-11-07: [actual20actor workload evidence](../audit/N06-11-WORKLOAD-CHECKPOINT.json), run/scope guide in repository `docs/mobile/SCENE3D-WORKLOAD.md`. `test:scene3d-workload`, `mobile:android:workload` và `mobile:emulator:workload` đã implement rồi chạy thực. Required Low/Balanced AVD observed limits pass at≈16.8ms p95;20recreates release all leases. High remains desktop-only diagnostic; SwiftShader frame failure,2976px texture failure and native Low50ms pre-cache failure are preserved. Indexed/chunked and shared face geometry keeps triangle/skin/morph/material streams intact and inventory includes retained cache. Whole task stays IN_PROGRESS for final art/full scenes/controlled load/heap/physical qualification; no N10-04 or final visual claim. N10-03 native auth was the independent next ready prerequisite for creator Save at that earlier checkpoint.
+**Acceptance / Definition of done**
 
-Deliverables: renderer3D qua shared adapter, model rigged/fur/material và một góc phòng tương tác, loader/cache/dispose/context recovery, camera/LOD/quality settings; shared web/mobile build. Chọn/pin renderer theo ADR và phép đo, không rewrite backend/ORM.
+- Runtime3D có animation/anchors/lighting/LOD/readability và shared web và responsive browser build, không đổi authoritative floor/intent
+- Actual browser technical-spike checks/source/asset/GPU hashes; historical AVD evidence retained, native qualification separately deferred to N10-06/N10-04
+- Graphics failure/resize/lifecycle/context loss không khóa DOM/safety/leave hoặc ghi đè v1 appearance; placeholder có nhãn
+- Web acceptance độc lập với APK/ADB/AVD/iPhone/native orientation; không hạ quality budgets, final-art findings, authority/privacy/accessibility hoặc public release gates. Native scenarios chuyển sang N10-06/N10-04/N11/N14.
 
-Acceptance: runtime3D thực có idle/walk/sit/serve và camera/resize; close-up fur và gameplay-distance LOD/readability, anchors/occlusion/shadow/color-space được review. Không texture/card leak sau travel/recreate; graphics failure vẫn có DOM/report/leave. Web + packaged Android Emulator chạy thực; physical Android kiểm riêng và iOS conditional. Ghi số đo GPU/frame/loading/memory và source/model/material hashes; emulator/softwareGPU không thay physical thermal/battery hoặc N10-04. Placeholder có nhãn; N06-09 vẫn cần final asset/visual acceptance.
+**Verification — run actual commands; never infer PASS from this plan**
 
-Verification entrypoints đã implement,cần chạy thực theo scope mỗi source: pnpm lint,pnpm typecheck,pnpm build,pnpm test:client-boundaries,pnpm assets:check,pnpm test:scene3d,pnpm test:scene3d-loading,pnpm mobile:emulator:smoke. Tên command không phải PASS;checkpoints ghi exit codes và giới hạn thật. Manual: actual browser/AVD/physical images/video/performance và failure/context-loss/lifecycle review theo brief07. Rollback bằng renderer flag/catalog compatibility,giữ Pixi/v1 data/receipts. Evidence SHA/diff,environment/device/GPU,actual commands/codes/hashes/limitations/exact next action.
+- Existing commands: pnpm lint; pnpm typecheck; pnpm build; pnpm test:client-boundaries; pnpm assets:check
+- Proposed; implement before claiming execution: pnpm test:scene3d (implement before claiming PASS)
+- Manual scenarios: Actual interactive3D image/video/animation/fur/room and budget review on browser; native device execution deferred
 
-Initial studio checkpoint at804c0f1,2026-11-07: `test:scene3d` và `mobile:emulator:scene3d` đã được implement và chạy thật cho shared local studio; [evidence partial](../audit/N06-11-STUDIO-CHECKPOINT.json). Runtime state vẫn IN_PROGRESS, không VERIFIED. Original24bone cat/groom/room, extracted engine-neutral port, opt-in web/mobile study, source-bound DEBUG APK và browser/AVD lifecycle/context/rotation/Back checks có kết quả thực. Authoritative room snapshot/intent/distance LOD,20actor/loading/resources/physical qualification và final fur/rig/cloth/serve art còn thiếu tại checkpoint này. Không nhận studio chỉ xem mẫu là playable3D room hay full N06-11 acceptance; N06-07/04/09 và N10-03/04 vẫn riêng.
+**Rollback / recovery:** Renderer flag/catalog rollback giữ Pixi/v1 data/receipts
 
-Room-adapter checkpoint atcbae184,2026-11-07: shared projection giữ nguyên body và Pixi re-export; renderer3D nhận snapshot thật,nội suy path đã commit,raycast các intent hiện hữu,LOD1/2 và cleanup/recovery. `pnpm test:scene3d-room` đã implement và chạy14case browser/API thực;12classic rollback cases(+2layout skips),3default bundle,89governance/383unit/145protocol và6AVD scenarios có evidence trong [checkpoint partial mới](../audit/N06-11-ROOM-ADAPTER-CHECKPOINT.json). Native vẫn là logged-out preview,không nhận room auth/Save đã xong. State vẫn IN_PROGRESS:20actor GPU/loading/resources/physical và final art/camera/thumbnail còn thiếu. Next: implement labelled20actor benchmark harness trước khi chạy; không tính unit20skeleton hoặc one-cat timing là benchmark đó. Scope/cờ rollback ở `docs/mobile/ROOM3D-ADAPTER.md`.
-
-Technical spike acceptance at d89d59b,2026-11-08: [actual acceptance matrix](../audit/N06-11-SPIKE-CHECKPOINT.json). N06-11 VERIFIED for ADR0133 technical scope;N06-07 may start. Loading failures,final-art and physical/N10-04 gates remain open;no owner approval or numerical budget change.
+**Required evidence:** source SHA/diff hash, environment, commands/exits, artifacts/hashes, failures, limitations and exact next action.

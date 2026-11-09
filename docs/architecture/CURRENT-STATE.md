@@ -1,3 +1,11 @@
+# Web-first revision2.4 and local delivery — 2026-11-09
+
+Owner now prioritizes web/server/platform and defers native mobile. See [revision2.4](../plans/platform-vnext/REVISION-2.4-WEB-FIRST.md). vNext77tasks:43VERIFIED/2external/20TODO/12DEFERRED_APPROVED;64historical records unchanged. Phase2:4VERIFIED/20TODO/1DEFERRED_APPROVED. N06-07 web creator is dependency-ready;native physical gate moves to N10-06,not waived. Then N06-04/N06-09 web→N15-05. No gameplay/final-art acceptance follows from this replan.
+
+Actual source-built API/web/admin images at e56d881 each pass6runtime scenarios;release metadata matches47SQL migrations. New [local Compose](../operations/LOCAL-DOCKER.md) passes6HTTPS/WSS/browser/persistence scenarios with disposable cleanup.97governance/lint/local CI contract PASS. These are local results;hosted pipeline,retained startup and push are recorded separately in the delivery handoff. Current normal mobile APK/evidence remain unchanged;no native/physical run or public/store/production operation.
+
+## Earlier checkpoints — historical
+
 # Lantern Lodge foundation checkpoint — 2026-11-09
 
 Phase2 source69566f24319c0ff351cf89f4d7a1f5113fd05e40 qualifies N15-01–N15-04: frozen original proposal, strict GameSession/pure core, default-off original3D Lodge/consent lobby, encrypted durable journal/claims/receipts/recovery. Actual770integration/467unit/95governance/6browser PASS;full types/build/lint/architecture/local CI/client/assets PASS. Actual child SIGKILL,SQL/backend/owner faults,committed-source encrypted pg_dump/pg_restore and archived46→47 rollback/roll-forward PASS. See [journal acceptance](../plans/LANTERN-LODGE-PHASE-2/audit/N15-04-JOURNAL-ACCEPTANCE.json),[review](../plans/LANTERN-LODGE-PHASE-2/audit/N15-04-JOURNAL-REVIEW.md) and [Phase2 handoff](../plans/LANTERN-LODGE-PHASE-2/state/HANDOFF.md).

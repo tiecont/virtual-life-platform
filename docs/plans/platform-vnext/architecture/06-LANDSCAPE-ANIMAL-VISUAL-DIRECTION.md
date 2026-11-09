@@ -1,5 +1,7 @@
 # 06 — Gameplay ngang, animal characters và chất lượng hình ảnh
 
+> Scheduling update: [revision 2.4](../REVISION-2.4-WEB-FIRST.md) makes web/server first. Preserve this design/budgets/evidence; native physical/build/AVD scenarios move to deferred N10-06/N10-04/N11/N14. They are not web acceptance prerequisites.
+
 **Owner requirement:** 2026-11-06, chủ dự án yêu cầu gameplay màn hình ngang, đẹp mắt, nhân vật tạo theo từng bộ phận và chủ đề animals cho toàn Virtual Life. **Trạng thái:** yêu cầu sản phẩm đã được đưa vào plan; implementation, artwork, animation và nghiệm thu mới chưa hoàn thành. Đây là bổ sung cho baseline, không viết lại bằng chứng N06-01/N06-02 đã VERIFIED.
 
 ## 1. Trải nghiệm đích

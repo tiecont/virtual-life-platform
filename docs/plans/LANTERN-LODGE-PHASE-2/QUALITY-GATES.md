@@ -1,5 +1,7 @@
 # Phase 2 — quality gates (chỉ dành cho ba mini-game)
 
+> Owner revision 2026-11-09: [web/server first; mobile later](games/10-WEB-FIRST-EXECUTION.md). N15–N18 and N19 platform work use web/responsive browser scope. N19-04 native is DEFERRED_APPROVED; no physical Android/APK/AVD prerequisite blocks web features. Existing sequential wave/art/privacy/authority/release gates remain.
+
 **Tất cả là yêu cầu, chưa có kết quả test gameplay thật.** Phạm vi game đề xuất dựa trên repo tại SHA audit, phải xác minh lại tại HEAD triển khai.
 
 Owner update 2026-11-06: áp dụng [animal/landscape art](games/08-ANIMAL-LANDSCAPE-ART.md), character creator từng bộ phận và scene-first gameplay ngang. N15-05 chờ upstream N06-09 VERIFIED, tái sử dụng shared appearance/landscape shell. N19-04 ghi actual Android landscape/rotation/avatar-travel/performance evidence cả ba mode; không dùng sơ đồ portrait hoặc preview cũ để đạt visual gate. Technical QA, owner art review và human playtest được ghi riêng.

@@ -1,5 +1,7 @@
 # Animal characters và gameplay ngang — Lodge integration
 
+> Current scheduling: [web first, native later](10-WEB-FIRST-EXECUTION.md). Preserve this visual direction and quality budgets; Android physical/device checks apply only to deferred N19-04/native lanes, not web feature acceptance.
+
 **Owner requirement 2026-11-06:** Virtual Life dùng chủ đề động vật, gameplay ngang và tạo nhân vật theo từng bộ phận; ưu tiên đồ họa đẹp. Đây là cập nhật plan khi Phase 2 còn dormant, chưa phải implementation hoặc activation.
 
 Đặc tả sản phẩm chính ở `docs/plans/platform-vnext/architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md`. Phase 1 coordinator sở hữu N06-06..09; Phase 2 đọc handoff/evidence thực và tái sử dụng kết quả. Không tạo catalog/avatar editor, storage hoặc orientation policy thứ hai trong Lodge.

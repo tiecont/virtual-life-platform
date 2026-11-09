@@ -1,5 +1,7 @@
 # N12 — Regression, recovery và release
 
+> Revision2.4: web deployment/recovery/release remains active;N12-03 native is DEFERRED_APPROVED. N12-01/04/05 still require platform compatibility when the corresponding supported/distributed context is true or unknown. No mobile device/store gate for web-only development while no native binary is supported/distributed.
+
 **Owner lane:** Coordinator + QA/Operations  
 **Activation:** active · **Implementation:** TODO  
 **Goal:** Chứng minh platform từ image đến gameplay/ops/recovery; tách technical readiness khỏi phát hành thật.

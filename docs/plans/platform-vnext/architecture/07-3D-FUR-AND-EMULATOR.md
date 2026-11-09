@@ -1,5 +1,7 @@
 # 07 — Animals 3D, lông chi tiết và phát triển bằng Android Emulator
 
+> Scheduling update: [revision 2.4](../REVISION-2.4-WEB-FIRST.md) makes web/server first. Preserve this design/budgets/evidence; native physical/build/AVD scenarios move to deferred N10-06/N10-04/N11/N14. They are not web acceptance prerequisites.
+
 **Owner update 2026-11-06:** đổi hướng pixel/2D sang nhân vật và thế giới **3D có hoạt ảnh**, lông động vật chi tiết, UI đẹp và cảm giác chơi game cho **cả web và mobile**. Owner cho phép tự chạy máy ảo để tiếp tục phát triển. Yêu cầu này thay hướng cozy2D/2.5D trong brief06; không phải duyệt một mẫu art cụ thể hoặc khẳng định renderer mới đã được triển khai.
 
 N06-06 design SVG, N06-03 shell, N06-08 landscape và N10-02 preview giữ VERIFIED trong scope/revision cũ. Chúng không chứng minh chất lượng 3D, lông, animation hoặc game mới. Evidence/SQL/profile cũ không bị reset; baseline Pixi được giữ làm rollback và compatibility trong khi renderer3D được kiểm chứng riêng.

@@ -1,3 +1,9 @@
+# Web-first replan and local Docker qualification — 2026-11-09
+
+Revision2.4:77vNext tasks,43VERIFIED/2BLOCKED_EXTERNAL/20TODO/12DEFERRED_APPROVED;64old evidence records preserved. Phase2:4VERIFIED/20TODO/1DEFERRED_APPROVED;4old records preserved. No implementation acceptance added by replanning. Native pending work deferred by actual owner instruction;N06-07 web scope TODO and dependency-ready. Current Docker API/web/admin image suites each6scenarios PASS;Compose6scenarios PASS;97governance/lint/CI contract PASS. Hosted checks/push/retained startup still to be recorded separately.
+
+## Earlier checkpoints — historical
+
 # N06-11 technical renderer spike VERIFIED;continuous execution — 2026-11-08
 
 Source d89d59bcccafc1a7bd7fb4b6326bc96e07b1654d. ADR0133 separates the technical spike from downstream integrated art/device qualification without changing budgets. Actual25focused/406unit/95governance,types/fullbuild/lint/CI/assets/architecture/boundaries,2browser studio profiles+import failure,5AVD studio,3normal bundle/5AVD preview/default-off7ports PASS.384rig samples preserved;groom/cloth intentionally refined. Required20actor Low/Balanced frame16.7/16.8ms,121/148calls,all resource checks PASS;20recreates zero leases/canvases. High184calls is desktop-only diagnostic. Normal APK9148df93…18exact assets restored/reinstalled;AVD STOPPED.

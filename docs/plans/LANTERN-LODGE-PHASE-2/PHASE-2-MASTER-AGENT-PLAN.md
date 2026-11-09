@@ -1,6 +1,8 @@
 # PHASE 2 — MASTER AGENT PLAN: Lantern Lodge
 
-**Scope:** 5 module `N15`–`N19`, 25 task. **Source:** v2.2 ZIP + owner animal/landscape requirement 2026-11-06; tách riêng để vận hành sau kế hoạch Phase 1 đang chạy. **Status:** PLANNED/DORMANT.
+> Owner revision 2026-11-09: [web/server first; mobile later](games/10-WEB-FIRST-EXECUTION.md). N15–N18 and N19 platform work use web/responsive browser scope. N19-04 native is DEFERRED_APPROVED; no physical Android/APK/AVD prerequisite blocks web features. Existing sequential wave/art/privacy/authority/release gates remain.
+
+**Scope:** 5 module `N15`–`N19`, 25 task. **Source:** v2.2 ZIP + owner animal/landscape requirement 2026-11-06; tách riêng để vận hành sau kế hoạch Phase 1 đang chạy. **Current state:**4accepted foundation tasks;read state/handoff for scheduling and owner-deferred native scope.
 
 ## 1. Điều kiện bắt đầu, không làm phiền Phase 1
 
@@ -26,7 +28,7 @@ Yêu cầu owner 2026-11-06: [gameplay ngang và animal art](games/08-ANIMAL-LAN
 | W1 | N16 | Sắc Đèn chơi trọn một ván và pilot có evidence (`N16-05`) |
 | W2 | N17 | Mặt Nạ chơi trọn một ván và pilot bảo mật bluff (`N17-05`) |
 | W3 | N18 | Hải Đồ có cả hai lối thắng, kiểm phe ẩn và pilot (`N18-05`) |
-| W4 | N19 | Cross-game QA, metrics, admin, Android thật và staged internal playtest |
+| W4 | N19 | Cross-game web QA, metrics, admin và staged internal playtest; native N19-04 deferred |
 
 Mỗi wave sau không được scheduler mở nếu task milestone của wave trước chưa `VERIFIED`. Việc này cố ý nghiêm ngặt hơn DAG chung v2.2 để tránh agent dàn trải khi bạn đã có plan khác chạy.
 

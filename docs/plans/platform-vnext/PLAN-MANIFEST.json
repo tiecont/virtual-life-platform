@@ -182,7 +182,7 @@
       "title": "Shared client và Android architecture spike",
       "owner": "Experience/Mobile",
       "priority": 110,
-      "goal": "Chốt shared React/Pixi + Capacitor trên Android vật lý hiện có; iOS được kiểm chứng riêng ở N14, không chặn nhánh Android.",
+      "goal": "Deferred mobile lane: resume only after owner reactivation; retain existing implementation/evidence and native qualification requirements.",
       "paths": [
         "packages/game-client/*",
         "packages/client-sdk/*",
@@ -191,7 +191,7 @@
         "apps/platform-api/src/identity/*",
         "packages/contracts/*"
       ],
-      "activation": "active",
+      "activation": "conditional",
       "file": "plans/N10-mobile-spike.md"
     },
     {
@@ -199,7 +199,7 @@
       "title": "Android app và Google Play release lane",
       "owner": "Mobile",
       "priority": 120,
-      "goal": "Từ Android spike sang app dùng hàng ngày, signed artifacts và Play beta; phân biệt local install, store testing và public approval.",
+      "goal": "Deferred mobile lane: resume only after owner reactivation; retain existing implementation/evidence and native qualification requirements.",
       "paths": [
         "apps/mobile/*",
         ".github/workflows/*",
@@ -207,7 +207,7 @@
         "apps/platform-api/src/identity/*",
         "docs/runbooks/*"
       ],
-      "activation": "active",
+      "activation": "conditional",
       "file": "plans/N11-mobile-release.md"
     },
     {
@@ -1176,7 +1176,6 @@
       "title": "Implement shared game shell và điều hướng",
       "depends_on": [
         "N06-02",
-        "N10-02",
         "N05-06",
         "N06-06"
       ],
@@ -1187,7 +1186,8 @@
         "Next portal mount shared game-client; không nhúng Next dependencies vào shared package.",
         "Identity/travel/queue status rõ và không duplicate authoritative state.",
         "Không full reload/refresh form thủ công để cập nhật critical gameplay.",
-        "Shared shell theo animal/landscape brief N06-06; chưa coi prototype cũ là visual acceptance."
+        "Shared shell theo animal/landscape brief N06-06; chưa coi prototype cũ là visual acceptance.",
+        "Web acceptance độc lập với APK/ADB/AVD/iPhone/native orientation; không hạ quality budgets, final-art findings, authority/privacy/accessibility hoặc public release gates. Native scenarios chuyển sang N10-06/N10-04/N11/N14."
       ],
       "verification": {
         "existing": [
@@ -1205,7 +1205,8 @@
       "rollback": "Feature-flag new shell, retain verified route adapter.",
       "module": "N06",
       "priority": 82,
-      "initial_status": "TODO"
+      "initial_status": "TODO",
+      "execution_scope": "WEB_AND_RESPONSIVE_BROWSER; native follow-up N10-06/N10-04/N11/N14 deferred by owner"
     },
     {
       "id": "N06-04",
@@ -1224,7 +1225,8 @@
         "Travel giữ identity, report/block ở đúng ngữ cảnh và không mở unsolicited interaction.",
         "Asset budgets, original/licensed provenance; không giả art approved.",
         "Animal appearance dùng shared composer; hai cảnh landscape có lighting/props/animation và bản sắc nhất quán theo N06-06.",
-        "Qualify the integrated3D animal/fur/animation web/mobile build; old pixel preview and emulator FPS cannot replace final visual/physical acceptance."
+        "Qualify the integrated3D animal/fur/animation web và responsive browser build; old pixel preview cannot replace final web visual acceptance; native physical acceptance is deferred to N10-06/N10-04.",
+        "Web acceptance độc lập với APK/ADB/AVD/iPhone/native orientation; không hạ quality budgets, final-art findings, authority/privacy/accessibility hoặc public release gates. Native scenarios chuyển sang N10-06/N10-04/N11/N14."
       ],
       "verification": {
         "existing": [
@@ -1241,7 +1243,8 @@
       "rollback": "Roll back new scenes/shell bằng feature flag, keep asset version for old clients.",
       "module": "N06",
       "priority": 83,
-      "initial_status": "TODO"
+      "initial_status": "TODO",
+      "execution_scope": "WEB_AND_RESPONSIVE_BROWSER; native follow-up N10-06/N10-04/N11/N14 deferred by owner"
     },
     {
       "id": "N06-05",
@@ -1840,7 +1843,8 @@
         "N10-03",
         "N06-04",
         "N05-04",
-        "N06-09"
+        "N06-09",
+        "N10-06"
       ],
       "deliverables": [
         "Physical Android results với model/OS/WebView/build/source/profile; ADR có phạm vi thiết bị đã chứng minh và iOS chưa kiểm chứng"
@@ -2451,7 +2455,6 @@
         "N06-06",
         "N02-04",
         "N05-06",
-        "N10-03",
         "N06-11"
       ],
       "deliverables": [
@@ -2465,7 +2468,8 @@
         "Duplicate save/lost ACK, account switch/late response, stale catalog và revoke entitlement có tests; private inventory không leak ra room/metrics.",
         "V1 profiles và selected outfit giữ dữ liệu; nếu cần SQL thì additive migration số mới; N/N−1 có runtime tests và fallback không ghi đè selection.",
         "Travel/reconnect giữ identity và appearance; cosmetic không đổi hitbox/seat/role/reward; asset/WebGL failure vẫn có DOM/text path.",
-        "Owner3D update: shared rigged3D animals, detailed groom/LOD/material/lighting/animation and polished web/mobile UI per architecture/07; pixel evidence is historical only."
+        "Owner3D update: shared rigged3D animals, detailed groom/LOD/material/lighting/animation and polished web và responsive browser UI per architecture/07; pixel evidence is historical only.",
+        "Web acceptance độc lập với APK/ADB/AVD/iPhone/native orientation; không hạ quality budgets, final-art findings, authority/privacy/accessibility hoặc public release gates. Native scenarios chuyển sang N10-06/N10-04/N11/N14."
       ],
       "verification": {
         "existing": [
@@ -2480,33 +2484,34 @@
           "pnpm test:avatar-creator (implement before claiming PASS)"
         ],
         "manual": [
-          "Creator→Save→Deadline/Maid→travel/reconnect trên browser và Android thật; kiểm seams/anchors/occlusion/animation và missing assets."
+          "Creator→Save→Deadline/Maid→travel/reconnect trên desktop/responsive browser; kiểm seams/anchors/occlusion/animation/missing assets. Native qualification deferred N10-06."
         ]
       },
       "rollback": "Tắt creator mới theo flag, giữ appearance/catalog versions và receipts; v1 projection tương thích, không xóa hoặc reset customization.",
       "module": "N06",
       "priority": 82.2,
-      "initial_status": "TODO"
+      "initial_status": "TODO",
+      "execution_scope": "WEB_AND_RESPONSIVE_BROWSER; native follow-up N10-06/N10-04/N11/N14 deferred by owner"
     },
     {
       "id": "N06-08",
-      "title": "Landscape gameplay shell, native orientation và accessible fallback",
+      "title": "Landscape web gameplay shell và accessible fallback; native orientation deferred",
       "depends_on": [
         "N06-03",
-        "N06-06",
-        "N10-02"
+        "N06-06"
       ],
       "deliverables": [
         "Scene-first landscape HUD/dock/drawers dùng chung web/native",
-        "Gameplay-scoped native orientation adapter với cleanup và resize-safe fallback",
+        "Browser resize/landscape handling; existing native adapter retained with deferred native qualification N10-06",
         "Portrait recovery layout, DOM controls và safe-area/keyboard handling"
       ],
       "acceptance": [
         "Gameplay ngang là layout chính; scene và critical actions không bị sidebar dài hoặc panel bắt buộc che khuất.",
         "Hai chiều ngang, rotate/resize, Back/background/resume và OS không áp orientation lock không reset visit/match/avatar hoặc duplicate intent.",
         "Portrait fallback có lời nhắc xoay không chặn report/block/leave/resync; auth/admin forms vẫn usable.",
-        "740×360,844×390,1280×720,1920×1080 và 360×740 fallback có evidence; viewport thực Android ghi riêng, không nhận là broad device coverage.",
-        "Keyboard/cutout/safe area/tăng chữ/reduced motion và touch/keyboard/screen-reader controls kiểm thật; iOS execution vẫn conditional N14."
+        "740×360,844×390,1280×720,1920×1080 và 360×740 fallback có evidence; viewport browser thực ghi riêng, không nhận là broad device coverage.",
+        "Keyboard/cutout/safe area/tăng chữ/reduced motion và touch/keyboard/screen-reader controls kiểm thật; iOS execution vẫn conditional N14.",
+        "Web acceptance độc lập với APK/ADB/AVD/iPhone/native orientation; không hạ quality budgets, final-art findings, authority/privacy/accessibility hoặc public release gates. Native scenarios chuyển sang N10-06/N10-04/N11/N14."
       ],
       "verification": {
         "existing": [
@@ -2518,13 +2523,14 @@
           "pnpm test:ux-core (implement before claiming PASS)"
         ],
         "manual": [
-          "Landscape browser + APK Android thật, cả hai chiều ngang/portrait fallback, keyboard/cutout/Back/resume và late network responses."
+          "Landscape desktop/responsive browser, cả hai chiều ngang/portrait fallback, keyboard/cutout/Back/resume và late network responses."
         ]
       },
       "rollback": "Tắt landscape shell/orientation policy theo flag và cleanup; giữ verified route adapter, room membership và accessible controls.",
       "module": "N06",
       "priority": 82.1,
-      "initial_status": "TODO"
+      "initial_status": "TODO",
+      "execution_scope": "WEB_AND_RESPONSIVE_BROWSER; native follow-up N10-06/N10-04/N11/N14 deferred by owner"
     },
     {
       "id": "N06-09",
@@ -2542,11 +2548,12 @@
       ],
       "acceptance": [
         "Actual interactive creator và Deadline/Maid có animal appearance đúng layer/pose/hướng; không lấy concept hoặc preview cũ làm bằng chứng.",
-        "Landscape web/Android thật đủ loading/empty/full/queue/offline/reconnect/denied, rotation/keyboard/safe-area/portrait fallback; không giả queue backend đã wiring.",
+        "Landscape desktop/responsive browser đủ loading/empty/full/queue/offline/reconnect/denied, rotation/keyboard/safe-area/portrait fallback; không giả queue backend đã wiring.",
         "Hai vòng chơi, avatar Save/Cancel/travel/reconnect và safety giữ authoritative outcome; graphics không khóa report/block/leave.",
-        "Đo asset/frame-time/memory/loading theo budgets khóa trước; giữ failed runs, model/OS/WebView/source/catalog hashes và single-device limitations.",
+        "Đo asset/frame-time/memory/loading theo budgets khóa trước; giữ failed runs, browser/GPU/OS/source/catalog hashes và coverage limitations.",
         "Rubric composition/silhouette/animation/lighting/readability/consistency có reviewer và issues; technical QA không thành owner art approval, human usability hoặc retention claim.",
-        "Owner3D update: shared rigged3D animals, detailed groom/LOD/material/lighting/animation and polished web/mobile UI per architecture/07; pixel evidence is historical only."
+        "Owner3D update: shared rigged3D animals, detailed groom/LOD/material/lighting/animation and polished web và responsive browser UI per architecture/07; pixel evidence is historical only.",
+        "Web acceptance độc lập với APK/ADB/AVD/iPhone/native orientation; không hạ quality budgets, final-art findings, authority/privacy/accessibility hoặc public release gates. Native scenarios chuyển sang N10-06/N10-04/N11/N14."
       ],
       "verification": {
         "existing": [
@@ -2560,13 +2567,14 @@
           "pnpm test:avatar-creator (implement before claiming PASS)"
         ],
         "manual": [
-          "Visual review theo architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md trên desktop và Android thật; ghi NOT_RUN cho coverage thiếu."
+          "Visual review theo architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md trên desktop và responsive browser; ghi NOT_RUN cho coverage thiếu."
         ]
       },
       "rollback": "Rollback versioned scenes/shell/creator bằng flags và compatible catalog; giữ data và evidence, không hạ thresholds để PASS.",
       "module": "N06",
       "priority": 83.5,
-      "initial_status": "TODO"
+      "initial_status": "TODO",
+      "execution_scope": "WEB_AND_RESPONSIVE_BROWSER; native follow-up N10-06/N10-04/N11/N14 deferred by owner"
     },
     {
       "id": "N06-10",
@@ -2601,7 +2609,6 @@
       "title": "Shared3D renderer spike, rig/fur và phòng đại diện",
       "depends_on": [
         "N06-10",
-        "N10-05",
         "N06-08"
       ],
       "deliverables": [
@@ -2609,9 +2616,10 @@
         "Camera/LOD/quality tiers/cache/disposal/context recovery và packaged Android support"
       ],
       "acceptance": [
-        "Runtime3D có animation/anchors/lighting/LOD/readability và shared web/mobile build, không đổi authoritative floor/intent",
-        "Actual browser và packaged AVD technical-spike checks/source/asset/GPU hashes;ghi riêng physical coverage và giữ integrated physical gates ở N06-09/N10-04 theo ADR0133,không lấy emulator làm physical thermal/battery proof",
-        "Graphics failure/resize/lifecycle/context loss không khóa DOM/safety/leave hoặc ghi đè v1 appearance; placeholder có nhãn"
+        "Runtime3D có animation/anchors/lighting/LOD/readability và shared web và responsive browser build, không đổi authoritative floor/intent",
+        "Actual browser technical-spike checks/source/asset/GPU hashes; historical AVD evidence retained, native qualification separately deferred to N10-06/N10-04",
+        "Graphics failure/resize/lifecycle/context loss không khóa DOM/safety/leave hoặc ghi đè v1 appearance; placeholder có nhãn",
+        "Web acceptance độc lập với APK/ADB/AVD/iPhone/native orientation; không hạ quality budgets, final-art findings, authority/privacy/accessibility hoặc public release gates. Native scenarios chuyển sang N10-06/N10-04/N11/N14."
       ],
       "verification": {
         "existing": [
@@ -2622,17 +2630,17 @@
           "pnpm assets:check"
         ],
         "planned": [
-          "pnpm test:scene3d (implement before claiming PASS)",
-          "pnpm mobile:emulator:smoke (implement before claiming PASS)"
+          "pnpm test:scene3d (implement before claiming PASS)"
         ],
         "manual": [
-          "Actual interactive3D image/video/animation/fur/room and budget review on browser,AVD,physical Android; iOS conditional"
+          "Actual interactive3D image/video/animation/fur/room and budget review on browser; native device execution deferred"
         ]
       },
       "rollback": "Renderer flag/catalog rollback giữ Pixi/v1 data/receipts",
       "module": "N06",
       "priority": 81,
-      "initial_status": "TODO"
+      "initial_status": "TODO",
+      "execution_scope": "WEB_AND_RESPONSIVE_BROWSER; native follow-up N10-06/N10-04/N11/N14 deferred by owner"
     },
     {
       "id": "N10-05",
@@ -2664,6 +2672,42 @@
       "module": "N10",
       "priority": 78,
       "initial_status": "TODO"
+    },
+    {
+      "id": "N10-06",
+      "module": "N10",
+      "title": "Native creator/world qualification sau platform web",
+      "priority": 134,
+      "initial_status": "TODO",
+      "depends_on": [
+        "N10-03",
+        "N10-05",
+        "N06-09"
+      ],
+      "deliverables": [
+        "Source-bound native animal creator/world/travel/safety qualification on packaged Android",
+        "Actual device/AVD evidence with explicit coverage; preserve prior N06-07 native findings"
+      ],
+      "acceptance": [
+        "Owner explicitly resumes mobile lane; web/platform features do not depend on this task.",
+        "Creator Save/Cancel, account switch, Deadline/Maid travel/reconnect and report/block use native auth and one-use tickets; no generic token escape hatch.",
+        "Packaged Android both landscape orientations, Back/background/resume/keyboard/cutouts/context recovery and actual physical device qualification; AVD supplementary only.",
+        "Current source/catalog/assets/protocol hashes and physical coverage recorded; native failures are not web feature blockers while no supported/distributed native clients exist."
+      ],
+      "verification": {
+        "existing": [
+          "pnpm typecheck",
+          "pnpm build",
+          "pnpm test:client-boundaries"
+        ],
+        "planned": [
+          "Implement source-bound native creator/world qualification runner before claiming it ran."
+        ],
+        "manual": [
+          "Authorized physical Android and separate packaged AVD scenarios; iOS stays N14."
+        ]
+      },
+      "rollback": "Disable native-only feature/route; preserve shared appearance/schema/receipts, web behavior and supported client compatibility."
     }
   ],
   "implementation_state_at_generation": "NOT_STARTED",
@@ -2672,7 +2716,7 @@
     "ios_clients_distributed": "false while iOS has not been distributed/supported; true from first iOS distribution; null means unknown and requires iOS compatibility evidence. Do not mark iOS PASS using Android results.",
     "mobile_clients_distributed": "Aggregate: true if either platform is true, false if both are false, otherwise null. Never reset a platform to false while its clients remain supported."
   },
-  "plan_revision": "2.3-3d-animals",
+  "plan_revision": "2.4-web-server-first",
   "execution_profile": {
     "source": "User-reported environment in this conversation, 2026-11-05; not independently inspected",
     "developer_os": "CachyOS Linux",
@@ -2699,5 +2743,12 @@
     ],
     "implementation_status": "3D_REQUEST_PLANNED_NOT_VERIFIED",
     "prior_evidence_policy": "Preserve all previous evidence;2D/SVG/pixel/shell scope does not qualify new3D direction"
+  },
+  "execution_policy": {
+    "priority": "WEB_SERVER_FIRST",
+    "mobile_development": "DEFERRED_BY_OWNER",
+    "browser_mobile_viewports": "IN_SCOPE",
+    "native_resume": "Explicit owner resumption after platform milestone; retain platform-specific device/auth/store gates",
+    "distributed_client_compatibility": "N12 conditional gates remain true/unknown fail-closed"
   }
 }

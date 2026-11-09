@@ -1,3 +1,11 @@
+# Owner web-first replan; native deferred — 2026-11-09
+
+Owner now prioritizes web/server/platform and asks to defer mobile without blocking features. N15–N18/N19 platform scope is web/responsive browser. N19-04 is DEFERRED_APPROVED;4VERIFIED/20TODO/1DEFERRED_APPROVED. All4accepted evidence records and old raw artifacts remain unchanged. N15-05 still waits for real N06-09 web visual qualification, not physical Android.
+
+**Next exact action:** Sole coordinator completes Docker/local delivery and revised Phase1 checkpoint, then creates a fresh source-bound handoff before resuming Phase2 reading. Execute N06-07 web-only → N06-04 → N06-09 in upstream; then resume N15-05 and unchanged sequential wave gates. Do not infer implementation/art/gameplay/release acceptance from the replan.
+
+## Earlier checkpoints — historical
+
 # N15-04 VERIFIED — encrypted durable journal foundation — 2026-11-09
 
 Source69566f24319c0ff351cf89f4d7a1f5113fd05e40;770integration/467unit/95governance/6browser PASS. Full types/build/lint/architecture/local CI/client/assets PASS. Actual child SIGKILL,SQL/backend/owner faults,committed-source encrypted pg_dump/restore and archived46→47 rollback/roll-forward PASS. SQL0047 only;previous46 prefix unchanged. Four accepted Phase2records. All3285Phase1+335priorPhase2raw files and49legacy immutable files verified unchanged;Phase1state/evidence remain exact72d3713 snapshots. Owner files/keys/SDK/AVD userdata untouched. No concrete mode,recipient outbox transport,native game,final art,physical or public release acceptance.

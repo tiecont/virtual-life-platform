@@ -1,5 +1,7 @@
 # N11 — Android app và Google Play release lane
 
+> Revision 2.4: native lane DEFERRED_APPROVED by owner. Existing VERIFIED evidence remains historical; no web/server task waits for ADB, APK/AAB, emulator, signing, Mac or physical phones. Resume only on explicit owner instruction.
+
 Current N11-03 remains IN_PROGRESS after qualified account erasure and native report/block slices at5ea296e5e9a70f10e6d3fd0a9d0e16ad80d6cc32. [Safety checks](../audit/N11-03-SAFETY-CHECKPOINT.json);owner-review inventory `docs/mobile/N11-03-DATA-INVENTORY.md`. Full candidate/disclosure/retention/owner/age/store acceptance remains open;initial task labels below are historical.
 
 Current N11-03 is IN_PROGRESS: native account deletion and local web resource qualified as a partial slice at 929477142d4e96358db66d0e93ca6f43e4256838. [Actual checks](../audit/N11-03-DELETION-CHECKPOINT.json); draft dossier: `docs/mobile/ACCOUNT-DELETION-AND-PLAY-DRAFT.md`. Report/block/full disclosures/owner/store gates remain; initial task labels below are historical.
