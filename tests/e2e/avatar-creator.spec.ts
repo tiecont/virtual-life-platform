@@ -75,7 +75,7 @@ test('the first preview starts with the saved account appearance and a failed wa
 
 for(const slug of ['deadline','maid'])test(`${slug} camera follows the saved animal through committed seating and walking without camera commands or persistence`,async({page,context},info)=>{
  let cameraMutations=0;page.on('websocket',socket=>socket.on('framesent',frame=>{if(typeof frame.payload==='string'&&/"(?:room.move|seat.claim|seat.release|room.leave)"/.test(frame.payload))cameraMutations++;}));
- const me=await guest(context,'Camera visitor'),parts=starterAvatarParts('heather','rabbit');
+ const me=await guest(context,'Camera visitor'),parts=starterAvatarParts('plum','rabbit');
  const saved=await context.request.post('/v1/me/avatar',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{schemaVersion:2,catalogVersion:AVATAR_CATALOG_VERSION,expectedAccountId:me.profile.id,expectedRevision:0,parts}});expect(saved.status()).toBe(200);
  const beforeOwn=await own(context);await page.goto('/worlds/'+slug+'/room3d');
  const room=page.locator('canvas[data-engine="three-webgl2"]'),cameraControls=page.getByRole('group',{name:'Room camera',exact:true});
