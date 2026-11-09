@@ -147,6 +147,8 @@ jobs:
       # Image smoke drivers import compiled shared contracts on the host too.
       - run: pnpm build:packages
       - run: node scripts/release-bundle.mjs --output artifacts/release-bundle
+      - name: Verify local Compose from the tested web and API images
+        run: node scripts/local-compose-smoke.mjs --bundle artifacts/release-bundle/bundle.json
       - name: Preserve image failure summaries
         if: ${{ failure() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -159,8 +161,6 @@ jobs:
             artifacts/image-*/smoke/commands.json
           if-no-files-found: warn
           retention-days: 7
-      - name: Verify local Compose from the tested web and API images
-        run: node scripts/local-compose-smoke.mjs --bundle artifacts/release-bundle/bundle.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: verified-image-metadata-${{ github.sha }}-${{ github.run_attempt }}

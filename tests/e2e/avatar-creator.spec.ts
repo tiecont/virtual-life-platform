@@ -88,7 +88,7 @@ for(const slug of ['deadline','maid'])test(`${slug} camera follows the saved ani
  await expect(room).toHaveAttribute('data-camera-framing','self');expect(Number(await room.getAttribute('data-self-height-px'))).toBeGreaterThan(wholeHeight*1.5);
  expect((await(await context.request.get('/v1/me/room')).json()).snapshot).toMatchObject({epoch:snapshot.epoch,membershipId:snapshot.membershipId,roomVersion:snapshot.roomVersion,self:snapshot.self});
  for(const viewport of [{width:740,height:360},{width:360,height:740}]){
-  await page.setViewportSize(viewport);await expect.poll(async()=>{const point=JSON.parse((await room.getAttribute('data-self-screen'))!),box=(await room.boundingBox())!;return Math.abs(point.x-box.width/2)+Math.abs(point.y-box.height/2);}).toBeLessThan(2);
+  await page.setViewportSize(viewport);await expect.poll(async()=>{const raw=await room.getAttribute('data-self-screen');if(!raw)return Infinity;const point=JSON.parse(raw),box=(await room.boundingBox())!;return Math.abs(point.x-box.width/2)+Math.abs(point.y-box.height/2);}).toBeLessThan(2);
   await expect(room).toHaveAttribute('data-camera-framing','self');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  }
  expect(cameraMutations).toBe(0);await page.setViewportSize(info.project.name==='mobile'?{width:844,height:390}:{width:1280,height:900});
@@ -104,7 +104,7 @@ for(const slug of ['deadline','maid'])test(`${slug} camera follows the saved ani
  await page.emulateMedia({reducedMotion:'no-preference'});await expect(room).toHaveAttribute('data-reduced-motion','false');
  await page.getByRole('button',{name:'Walk to central aisle',exact:true}).click();await closeActions(page);
  await expect(room).toHaveAttribute('data-self-position',slug==='deadline'?'12.00:8.00':'12.00:10.00',{timeout:15000});await expect(room).toHaveAttribute('data-camera-framing','self');
- const center=JSON.parse((await room.getAttribute('data-self-screen'))!),box=(await room.boundingBox())!;expect(Math.abs(center.x-box.width/2)).toBeLessThan(2);expect(Math.abs(center.y-box.height/2)).toBeLessThan(2);
+ await expect.poll(async()=>{const raw=await room.getAttribute('data-self-screen');if(!raw)return Infinity;const center=JSON.parse(raw),box=(await room.boundingBox())!;return Math.max(Math.abs(center.x-box.width/2),Math.abs(center.y-box.height/2));}).toBeLessThan(2);
  await page.screenshot({path:output+'/follow-walked.png',fullPage:true});
  await cameraControls.getByRole('button',{name:'Whole room',exact:true}).click();await expect(room).toHaveAttribute('data-camera-framing','room');
  expect(await own(context)).toEqual(beforeOwn);expect((await(await context.request.get('/v1/me')).json()).profile).toEqual(me.profile);

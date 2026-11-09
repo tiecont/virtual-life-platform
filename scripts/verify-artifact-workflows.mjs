@@ -18,6 +18,7 @@ export function assertArtifactWorkflows(quality, publish, pins) {
   const hostPackages=imageJob.indexOf('run: pnpm build:packages');
   assert(hostPackages>=0&&hostPackages<imageJob.indexOf('node scripts/release-bundle.mjs'), 'Build host shared contracts before production image smoke drivers');
   assert(imageJob.includes('if: ${{ failure() }}')&&imageJob.includes('artifacts/image-*/smoke/result.json'), 'Preserve bounded failure-stage summaries');
+  assert(imageJob.indexOf('name: Preserve image failure summaries')>imageJob.indexOf('node scripts/local-compose-smoke.mjs'), 'Capture failures after all image and Compose checks');
   assert(imageJob.includes('node scripts/local-compose-smoke.mjs --bundle artifacts/release-bundle/bundle.json'), 'Test the shipped local Compose against verified artifacts');
   assert(imageJob.includes('runtime-images-${{ github.sha }}-${{ github.run_attempt }}'));
   assert(publish.startsWith('name: Publish verified artifacts\non:\n  workflow_run:\n    workflows: [Quality]\n    types: [completed]\n    branches: [main]\npermissions:\n  contents: read\n'));
