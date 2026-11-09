@@ -21,6 +21,7 @@ export function createAnimalStudy(host:HTMLElement,options:{signal?:AbortSignal;
  let quality:Quality=options.quality??'balanced',appearance=options.appearance?AvatarPartsSchema.parse(options.appearance):undefined,outfit:AvatarAppearance['outfit']='casual',animal=createAnimal(quality,'cocoa',outfit,appearance),pose:AnimationState='idle',disposed=false,suspended=false,documentActive=document.visibilityState!=='hidden',lost=false,reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches,frames=0,frame=0,lastFrame:number|null=null,measureAfter=performance.now()+2000;const intervals:number[]=[];cleanup.push(()=>animal.dispose());
  function resetMeasurements(){intervals.length=0;lastFrame=null;measureAfter=performance.now()+2000;}
  scene.add(animal.group);animal.group.position.z=.45;const started=performance.now();
+ if(appearance){canvas.dataset.appearance=JSON.stringify(appearance);canvas.dataset.initialAppearance=JSON.stringify(appearance);}
  let framing:AvatarFraming|null=null,frameZoom=1;
  function fitInspection(){
   if(!framing||disposed)return;

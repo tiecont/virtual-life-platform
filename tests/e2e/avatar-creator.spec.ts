@@ -64,3 +64,10 @@ test('inspects real face,outfit and tail details without saving or losing framin
  await page.getByRole('button',{name:'Whole character',exact:true}).click();await expect(canvas(page)).toHaveAttribute('data-framing','character');await capture(page,'inspect-return-whole');
  expect(await own(context)).toEqual(before);
 });
+test('the first preview starts with the saved account appearance and a failed wardrobe read creates no placeholder model',async({page,context})=>{
+ const me=await guest(context),parts=starterAvatarParts('plum','rabbit');
+ const saved=await context.request.post('/v1/me/avatar',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{schemaVersion:2,catalogVersion:AVATAR_CATALOG_VERSION,expectedAccountId:me.profile.id,expectedRevision:0,parts}});expect(saved.status()).toBe(200);
+ await page.route('**/v1/me/avatar',route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:{code:'UNAVAILABLE'}})}));
+ await page.goto('/character');await expect(page.getByRole('button',{name:'Refresh wardrobe',exact:true})).toBeVisible();await expect(canvas(page)).toHaveCount(0);await expect(page.getByRole('button',{name:'Save character',exact:true})).toBeDisabled();
+ await page.unroute('**/v1/me/avatar');await page.getByRole('button',{name:'Refresh wardrobe',exact:true}).click();await expect(canvas(page)).toBeVisible({timeout:20000});await expect(canvas(page)).toHaveAttribute('data-initial-appearance',JSON.stringify(parts));await expect(canvas(page)).toHaveAttribute('data-appearance',JSON.stringify(parts));expect((await own(context)).revision).toBe(1);await capture(page,'account-owned-first-preview');
+});
