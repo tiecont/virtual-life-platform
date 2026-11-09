@@ -18,3 +18,9 @@ test('UX fixtures propagate only a bounded layout mode and opaque run id',()=>{
  const a=testEnvironment({UX_SHELL_MODE:'scene-first',UX_EVIDENCE_RUN:'a1b2c3d4',NEXT_PUBLIC_VLP_SCENE_FIRST:'1',UNEXPECTED_PRIVATE_VALUE:'private-parent-marker'},url,'synthetic');assert.equal(a.UX_SHELL_MODE,'scene-first');assert.equal(a.UX_EVIDENCE_RUN,'a1b2c3d4');assert.equal(a.NEXT_PUBLIC_VLP_SCENE_FIRST,undefined);assert(!JSON.stringify(a).includes('private-parent-marker'));
  for(const parent of [{UX_SHELL_MODE:'arbitrary'},{UX_EVIDENCE_RUN:'../../outside'},{UX_EVIDENCE_RUN:'a1b2c3d4/extra'}])assert.throws(()=>testEnvironment(parent,url,'synthetic'));
 });
+
+test('CPU profiling is a finite opt-in diagnostic without inherited app configuration',()=>{
+ for(const value of ['0','1']){const env=testEnvironment({SCENE_CPU_PROFILE:value,PRIVATE_DIAGNOSTIC:'parent-private-marker'},url,'synthetic');assert.equal(env.SCENE_CPU_PROFILE,value);assert.equal(env.PRIVATE_DIAGNOSTIC,undefined);}
+ assert.equal(testEnvironment({},url,'synthetic').SCENE_CPU_PROFILE,'0');
+ for(const value of ['true','profile;outside',''])assert.throws(()=>testEnvironment({SCENE_CPU_PROFILE:value},url,'synthetic'));
+});
