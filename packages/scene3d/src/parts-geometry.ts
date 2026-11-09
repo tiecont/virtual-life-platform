@@ -1,5 +1,5 @@
 import * as T from 'three';
-import {mergeVertices} from 'three/addons/utils/BufferGeometryUtils.js';
+import {indexGeometry} from './index-geometry';
 import type {AvatarParts} from '@virtual-city/contracts';
 import {TORSO_PROFILE} from './surfaces';
 const coatColors={fern:['#a99d7e','#f0e5cf'],amber:['#c49a65','#f5dfba'],indigo:['#7a879c','#e0e5ec'],rose:['#bb928c','#f5dfd5'],cloud:['#c6cccb','#f8f3e7'],cocoa:['#927563','#ebd5be'],mint:['#8da89c','#e5eee1'],plum:['#a48a9e','#efe1e8']} as const;
@@ -48,8 +48,7 @@ export function packPartGeometry(input:T.BufferGeometry,recomputeNormals=false){
   if(name==='uv')geometry.setAttribute(name,new T.Uint16BufferAttribute(Uint16Array.from(attribute.array,v=>Math.round(T.MathUtils.clamp(Number(v),0,1)*65535)),attribute.itemSize,true));
  }
  // Include morphs in the vertex key,as in the established face compressor.
- const temporary:string[]=[];for(const targets of Object.values(geometry.morphAttributes))for(const target of targets){const name='__part_morph_'+temporary.length;geometry.setAttribute(name,target);temporary.push(name);}
- const packed=mergeVertices(geometry,1e-10);geometry.dispose();for(const name of temporary)packed.deleteAttribute(name);if(recomputeNormals)packed.computeVertexNormals();packed.computeBoundingSphere();return packed;
+ const packed=indexGeometry(geometry,1e-10);geometry.dispose();if(recomputeNormals)packed.computeVertexNormals();packed.computeBoundingSphere();return packed;
 }
 function torsoRadius(y:number){for(let i=1;i<TORSO_PROFILE.length;i++){const [r0,y0]=TORSO_PROFILE[i-1],[r1,y1]=TORSO_PROFILE[i];if(y<=y1)return T.MathUtils.lerp(r0,r1,T.MathUtils.clamp((y-y0)/(y1-y0),0,1));}return TORSO_PROFILE.at(-1)![0];}
 // Include the roots just beyond a hem:their downward tips can otherwise cross

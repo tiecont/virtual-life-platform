@@ -1,13 +1,10 @@
 import * as T from 'three';
-import {mergeVertices} from 'three/addons/utils/BufferGeometryUtils.js';
+import {indexGeometry} from './index-geometry';
 
 // Preserve skin/morph seams when indexing the original technical face batches.
 // Three's ordinary mergeVertices key includes base attributes only.
 export function compactFaceGeometry(geometry:T.BufferGeometry,maximumDimension=2048):T.BufferGeometry[]{
- const source=geometry.clone(),temporary:string[]=[];
- let serial=0;
- for(const targets of Object.values(source.morphAttributes))for(const target of targets){let name;do{name='__vc_morph_'+serial++;}while(source.hasAttribute(name));source.setAttribute(name,target);temporary.push(name);}
- const indexed=mergeVertices(source,1e-12);source.dispose();for(const name of temporary)indexed.deleteAttribute(name);
+ const indexed=indexGeometry(geometry,1e-12);
  const stride=indexed.morphAttributes.color?3:indexed.morphAttributes.normal?2:1,maximumVertices=Math.floor(maximumDimension/stride);
  if(indexed.getAttribute('position').count<=maximumVertices)return[indexed];
  // Only the closeup High ear batch currently needs splitting. Preserve the
