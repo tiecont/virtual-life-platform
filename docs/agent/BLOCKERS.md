@@ -1,3 +1,11 @@
+# Current N06-04 performance/recovery gates — 2026-11-09
+
+Source 6002bb8 fixes required draw-call caps with two marker batches. Focused checks pass: 8 units, 2 actual browser cases, build/types/lint/governance. N06-04 remains IN_PROGRESS: all required 20-actor 33.4 ms frame gates fail; Deadline desktop final heap growth of 19.85 MiB exceeds 16 MiB; the old High-dog 20 s unit timeout remains. Full room checks yield desktop 7 PASS/2 initial Connected 5 s failures; mobile is not reached. Keep every failure and unchanged budget. A 6046 ms projection gap is observed, not attributed. Controlled loading, final art and owner/human review remain open. See `docs/plans/platform-vnext/audit/N06-04-SEAT-BATCH-CHECKPOINT.json`.
+
+Hosted 9227c67 core/images pass, but Quality fails in five browser groups; no current-source hosted PASS is claimed. Native remains deferred, Phase2 PAUSED, and Arena PLANNED behind actual web qualification. Retained vc-* images/data are unchanged. No deployment/public/store/production action occurred.
+
+## Earlier checkpoints — historical
+
 # Pet Arena planning context — 2026-11-09
 
 Planning review complete;Arena implementation remains TODO/PLANNED. Owner priority is PvE before Lodge;see `docs/plans/DEVELOPMENT-ROADMAP.md`. Active source task N06-04 retains performance/art/loading findings and its unverified renderer experiment;N06-09 is still a real web gate. No physical Android prerequisite blocks web. Phase2 stays PAUSED;no task was promoted or release approved by this plan update.

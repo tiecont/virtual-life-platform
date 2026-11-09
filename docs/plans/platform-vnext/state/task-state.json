@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "updated_at": "2026-11-09T14:44:17.796819+00:00",
+  "updated_at": "2026-11-09T15:42:22.431Z",
   "scope": "vNext implementation",
   "release_status": "NOT_REQUESTED",
   "module_activation": {
@@ -237,10 +237,11 @@
         "n03-04-2026-11-05",
         "n03-04-fresh-checkout-local-2026-11-09",
         "n03-04-report-output-safety-2026-11-09",
-        "n03-04-smoke-diagnostics-2026-11-09"
+        "n03-04-smoke-diagnostics-2026-11-09",
+        "n03-04-core-timeout-2026-11-09"
       ],
       "blocker": null,
-      "next_action": "Continue N06-04:fix hosted core30minute timeout in a separate N03-04 CI slice without omitting checks;then qualify integrated cafe20actor resources/frame/loading/remount at locked budgets and refine groom/material/room/UI art before N06-09. Sandbox baseline350ms,caching/RAF experiments116.7-333.3ms all fail100ms;Pixi restored. Observe exact pushed-SHA hosted Quality. Phase2 stays PAUSED pending fresh qualified upstream handoff;native remains owner-deferred."
+      "next_action": "Hosted9227c67 core/images PASS;QualityFAIL in five browser groups. Keep current-source full checks and exact pushed-SHA observation as a gate;no hosted green or release inferred from local CI contracts."
     },
     "N03-05": {
       "status": "VERIFIED",
@@ -391,10 +392,11 @@
         "n06-04-web-stability-partial-2026-11-09",
         "n06-04-raf-profile-partial-2026-11-09",
         "n06-04-camera-recovery-partial-2026-11-09",
-        "n06-04-cafe-room-art-partial-2026-11-09"
+        "n06-04-cafe-room-art-partial-2026-11-09",
+        "n06-04-seat-batches-partial-2026-11-09"
       ],
       "blocker": null,
-      "next_action": "Continue the current web/art/performance slice with inherited renderer changes preserved and verified; qualify N06-09 under unchanged budgets. Owner now prioritizes Pet Arena PvE before Lodge: after N06-09 checkpoint/handoff to Arena PA-001/002 and S1 through PA-017; no native hard gate. See docs/plans/DEVELOPMENT-ROADMAP.md. Phase2 remains PAUSED."
+      "next_action": "Continue N06-04 without relaxing gates:profile initial room confirmation/SwiftShader loading and twenty-actor frame stalls at33.4ms;investigate Deadline desktop heap growth over16MiB,resolve unchanged High-dog20s timeout and complete default desktop/mobile room regression. Then controlled loading and integrated art/groom/readability qualification before N06-09. Owner priority remains Pet Arena PvE before Lodge;handoff to PA-001/002 and S1 after real upstream web qualification. Phase2 stays PAUSED;native deferred."
     },
     "N06-05": {
       "status": "TODO",

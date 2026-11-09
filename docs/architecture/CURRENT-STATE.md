@@ -1,3 +1,19 @@
+# Seat-marker batching checkpoint — N06-04 remains IN_PROGRESS — 2026-11-09
+
+Source `6002bb8` batches 3D seat markers into two opacity groups, updates sparse slot/raycast bounds, and disposes instance buffers explicitly. Resource inventory includes full matrix/colour capacity. Actual checks pass: 8 focused units, strict source/test types, lint, full build, CI contract, 100 governance tests and both boundary checks. The distant-seat → stand → return regression passes actual desktop/mobile browser/API/DB executions.
+
+With the unchanged cafe workload, both cafes now use 113/146/186 draw calls in Low/Balanced/High (previous Deadline: 171/204/244; Maid: 159/192/232). All required GPU resource/draw limits pass; all required 33.4 ms frame limits fail. All 80 external-GC recreates complete. Deadline desktop final growth of 19.85 MiB fails the 16 MiB limit; the other 3 profiles pass the existing final-growth rule. Large intermediate peaks are retained. Zero leases/canvases after teardown does not establish absence of a leak. Controlled loading, final art and native remain unqualified.
+
+Retained failures: full scene checks yield 45 PASS/6 timeouts during build, then 50 PASS/1 High-dog 20 s timeout sequentially; animal/parts sources are unchanged. Full room browser checks yield desktop 7 PASS/2 FAIL at the initial Connected 5 s expectation; mobile is not reached. The trace shows a 6046 ms suspension-to-first-actor gap, without CPU/shader attribution. Focused passes do not erase complete-suite failures. Gates, timeouts and profiles remain unchanged.
+
+There are 74 vNext records. Prior 73 objects/serialization, 56 immutable inputs and all available frozen members are preserved. Two historical auxiliary Lounge HTML losses remain explicit. The new 160-file private index has SHA `b6766204958d68c67a4d151fdf186832beb3d39c8d047072ed209adf55e6e9ab`. Audit: `docs/plans/platform-vnext/audit/N06-04-SEAT-BATCH-CHECKPOINT.json`; architecture note: `docs/architecture/SCENE3D-SEAT-MARKERS.md`. Existing N03 timeout evidence is retained. Hosted 9227c67 core/images pass, but Quality fails in five browser groups; this is not current-source hosted green.
+
+Retained vc-* images/data remain at 67ff2d4; new code is not deployed there. Phase2 stays PAUSED, native is owner-deferred, and all 20 Arena tasks remain TODO/PLANNED. Owner priority remains Arena PvE before Lodge. No public/native/store/registry/production action occurred.
+
+**Next exact action:** Trace initial room update/model/shader/render timing under unchanged 5 s/33.4 ms budgets. Take a source-bound heap diagnostic for Deadline desktop 20-cycle growth and variant/LOD allocation; resolve the unchanged High-dog 20 s timeout and complete the full desktop/mobile room regression. Then qualify controlled loading and integrated groom/material/readability/art before N06-09. After real upstream qualification, hand off to Arena PA-001/002 and S1 through PA-017 before Lodge. Keep owner `.idea/` and `infra/botkeep-ca.pem` unread/untracked/unstaged.
+
+## Earlier checkpoints — historical
+
 # Cafe room art checkpoint; N06-04 remains in progress - 2026-11-09
 
 Source05a3fcc adds four wall windows/counter detail,18Deadline laptop stations and6Maid tea settings with separate fabric accents;original creator/unselected recipe retained. Actual6browser journeys,54scene/Pixi units,package+portal builds,scene/browser types,lint/localCI contract PASS. Twelve canvas-only captures are nonblank and four seat-to-walk pairs change pixels. Actual two-cafe static inventory:11batches each,16028/16700triangles,1538688/1603200geometry bytes and87380texture bytes each. These static counts do not qualify20actor performance/loading/remount. [Source-bound checkpoint](../plans/platform-vnext/audit/N06-04-ROOM-ART-CHECKPOINT.json).

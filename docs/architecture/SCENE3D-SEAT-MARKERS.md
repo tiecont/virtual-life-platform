@@ -1,0 +1,15 @@
+# Batched 3D seat markers — partial N06-04
+
+Source `6002bb8` replaces one transparent circle mesh per seat with two instanced opacity groups. Geometry, colours, height and hit radius remain the same. The planar circles use one double-sided pass; available/occupied seats retain opacity0.22 and the current visitor's seat retains opacity0.45. The current parsed room snapshot supplies the slot-to-seat mapping; markers never grant a seat or move a player.
+
+Matrices/colours upload only on accepted seat-state or visibility changes. Each update recomputes the batch bounding sphere, including when a sparse batch moves between distant seats. Suspension and empty state remove all hit targets. Disposal releases both meshes' instance buffers, the shared geometry and both materials exactly once. Resource inventory now includes complete matrix/colour buffer capacity, including unused slots, without counting shared geometry twice.
+
+Four marker regressions cover sparse/reordered snapshots, distant highlight changes, held/available/own colours, visibility and independent sibling disposal. Combined with resource tests,8focused units and strict source/test types pass. The new real browser regression claims one table,stands,claims a distant table,then returns to the first table;desktop and Chromium mobile emulation pass against actual HTTP/PostgreSQL/Socket.IO state.
+
+The complete room suite has a retained desktop7PASS/2FAIL observation at the initial5second Connected expectation;mobile was not reached by that failed batch. Scene units have a retained45PASS/6timeout observation during build and50PASS/1High-dog20second timeout sequentially. Animal/parts sources in those timed-out tests are unchanged. Focused qualification does not erase these failures or establish their cause.
+
+Codex inspected the actual Deadline20-actor desktop Balanced screenshot and the mobile distant-table screenshot. The cafe remains nonblank,with the original art/props and synthetic mixture;the browser image shows the server-confirmed seat and independent Leave/safety controls. Tiny whole-room animals,groom/material/Low-facet findings and technical-art labels remain. This is an AI technical review,not owner art approval,human usability or final-graphics acceptance.
+
+The unchanged cafe workload profile and budgets measure both actual cafe manifests,20synthetic actors,all three tiers and20external-GC recreates per viewport. Raw baseline/current measurements,remaining frame/heap failures,source/GPU hashes and report preservation are in the [checkpoint](../plans/platform-vnext/audit/N06-04-SEAT-BATCH-CHECKPOINT.json). Controlled cold/warm loading and native RSS are outside that workload driver. No performance threshold,timeout,sample rule,retry,tier,appearance,SQL,protocol or authority policy changed.
+
+Rollback is a source/image rollback of the renderer package;there is no persisted marker state or migration. Retained local vc-* images were not updated by this slice. N06-04 remains IN_PROGRESS until its full art,loading,performance,recovery and browser gates are actually qualified.

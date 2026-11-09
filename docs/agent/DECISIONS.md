@@ -303,3 +303,7 @@ M10-02 / ADR0024: trusted account-owned persistent focus,seat-authorized start a
 ## 2026-11-09 — Pet Arena product scheduling and proposal adaptation
 
 Owner explicitly prioritizes Pet Arena PvE before Lantern Lodge. Follow `docs/plans/DEVELOPMENT-ROADMAP.md`: web foundation → Arena S1 → Lodge N15/N16 → Arena S2 → Lodge remainder → PvP. Preserve original proposal and PA-001..016 IDs;add PA-017/018 acceptance gates,PA-019 independent-deployment proof and PA-020 privacy lifecycle. All20 implementation tasks TODO;module topology remains a proposed baseline pending PA-001 ADR. Separate ledgers and scoped handoffs prevent source ownership conflicts;native remains deferred. Planning review and real commands are indexed under the Arena audit,not added as game implementation evidence.
+
+## 2026-11-09 — Seat markers and unrelaxed performance gates
+
+Source6002bb8 uses two instanced opacity groups for planar markers,updates batch bounds with authoritative state,owns instance-buffer disposal and counts full GPU buffer capacity. This reduces draw calls without changing animal geometry,appearance,floor,protocol or authority. N06-04 remains IN_PROGRESS because frame/heap and complete-suite failures remain;focused units/browser passes are scoped evidence. Preserve every failed run and existing deadlines;next diagnostics must attribute the observed6046ms room projection gap and19.85MiB active heap growth rather than change the profile. No final-art,public or native acceptance follows.

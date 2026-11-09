@@ -9,7 +9,12 @@
   "at": "2026-11-09T09:47:00.701Z",
   "imageSourceRevision": "67ff2d4d9d889c3855750474a4bf4322f4bd613f",
   "composeSourceRevision": "67ff2d4d9d889c3855750474a4bf4322f4bd613f",
-  "runtimeSourceDeltaSinceImages": [],
+  "runtimeSourceDeltaSinceImages": [
+    "packages/scene3d/src/renderer.ts",
+    "packages/scene3d/src/resources.ts",
+    "packages/scene3d/src/room.ts",
+    "packages/scene3d/src/seat-markers.ts"
+  ],
   "images": {
     "api": "sha256:ad79744b5983598bffd75464c0537f0946b4d44d551f038178ea7f2d84622554",
     "web": "sha256:b65c15a258da2597a7bec1562479c0874686f91e7e7a61082074f5f1c7d698f2",
@@ -146,15 +151,21 @@
     "fixedSourceHosted": "NOT_RUN_AT_SEAL",
     "audit": "docs/plans/platform-vnext/audit/N06-04-RAF-PROFILE-CHECKPOINT.json",
     "latestObservation": {
-      "run": 42596287142,
-      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
-      "result": "CANCELLED",
+      "run": 42616271459,
+      "sourceRevision": "9227c67dd17622e118620f3c976d67c2dbf7e296",
+      "result": "FAILURE",
+      "core": "PASS",
       "images": "PASS",
-      "core": "CANCELLED_TIMEOUT_30MIN",
-      "browser": "SKIPPED",
+      "browserFailures": [
+        "browser (rendering)",
+        "browser (social)",
+        "browser (study)",
+        "browser (legacy)",
+        "browser (hospitality)"
+      ],
       "quality": "FAILURE",
-      "at": "2026-11-09T10:37:06.515Z",
-      "audit": "docs/plans/platform-vnext/audit/N06-04-ROOM-ART-CHECKPOINT.json"
+      "at": "2026-11-09T15:14:07.616Z",
+      "audit": "docs/plans/platform-vnext/audit/N06-04-SEAT-BATCH-CHECKPOINT.json"
     }
   },
   "registryPublish": "NOT_RUN",
@@ -322,7 +333,7 @@
       }
     ]
   },
-  "nextExactAction": "Continue N06-04:fix hosted core30minute timeout in a separate N03-04 CI slice without omitting checks;then qualify integrated cafe20actor resources/frame/loading/remount at locked budgets and refine groom/material/room/UI art before N06-09. Sandbox baseline350ms,caching/RAF experiments116.7-333.3ms all fail100ms;Pixi restored. Observe exact pushed-SHA hosted Quality. Phase2 stays PAUSED pending fresh qualified upstream handoff;native remains owner-deferred.",
+  "nextExactAction": "Continue N06-04 without relaxing gates:profile initial room confirmation/SwiftShader loading and twenty-actor frame stalls at33.4ms;investigate Deadline desktop heap growth over16MiB,resolve unchanged High-dog20s timeout and complete default desktop/mobile room regression. Then controlled loading and integrated art/groom/readability qualification before N06-09. Owner priority remains Pet Arena PvE before Lodge;handoff to PA-001/002 and S1 after real upstream web qualification. Phase2 stays PAUSED;native deferred.",
   "previousSelectionBeforeCamera": {
     "at": "2026-11-09T03:31:18.589534+00:00",
     "imageSourceRevision": "983d25748a608e22eed5086ad19fc460467d41bf",

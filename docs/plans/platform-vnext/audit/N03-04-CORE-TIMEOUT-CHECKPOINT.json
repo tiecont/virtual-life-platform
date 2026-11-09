@@ -1,0 +1,69 @@
+{
+  "taskId": "N03-04",
+  "sourceRevision": "9227c67dd17622e118620f3c976d67c2dbf7e296",
+  "executedAt": "2026-11-09T12:43:07.698Z",
+  "scope": "Bounded CI job duration correction;not a hosted Quality acceptance",
+  "acceptance_met": true,
+  "workflowSha256": "e817137f820ffc8ec89d4bfdc4b07bbb5e2d905d2ff950519944cf071bff9277",
+  "previous": {
+    "run": 42596287142,
+    "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+    "conclusion": "cancelled",
+    "annotation": "The job has exceeded the maximum execution time of 30m0s",
+    "observedUnits": 470,
+    "observedIntegration": 770,
+    "finalStage": "Portal final build;static pages complete"
+  },
+  "change": {
+    "coreJobMinutesBefore": 30,
+    "coreJobMinutesAfter": 45,
+    "requiredCommandsIdentical": true,
+    "performanceBudgetsUnchanged": true
+  },
+  "commands": [
+    {
+      "command": "pnpm ci:check",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n03-04/core-timeout-v1/ci-contract-8f8577f5.json",
+      "log": "artifacts/vnext/n03-04/core-timeout-v1/ci-contract-8f8577f5.log",
+      "sourceRevision": "af6a46996ce2d8f2b267f85f2ccbe4f81ba28d58",
+      "trackedDiffSha256": "ccea9695c1d05fae20755e3c5ce23d246be27aea32ab1bdabfc08927294ff304"
+    },
+    {
+      "command": "node --test tests/governance/admin-artifact.test.mjs tests/governance/admin-boundary.test.mjs tests/governance/admin-bundle.test.mjs tests/governance/api-runtime-package.test.mjs tests/governance/artifact-release.test.mjs tests/governance/backup.test.mjs tests/governance/boundaries.test.mjs tests/governance/browser-report-directory.test.mjs tests/governance/ci.test.mjs tests/governance/client-boundaries.test.mjs tests/governance/client-legacy-fixture.test.mjs tests/governance/digest-promotion.test.mjs tests/governance/evidence-inventory.test.mjs tests/governance/evidence-output.test.mjs tests/governance/evidence-reader.test.mjs tests/governance/evidence-store.test.mjs tests/governance/image-inspection.test.mjs tests/governance/infra.test.mjs tests/governance/kubernetes.test.mjs tests/governance/legacy-snapshots.test.mjs tests/governance/ops-watch.test.mjs tests/governance/plan-status.test.mjs tests/governance/release.test.mjs tests/governance/resource-budget.test.mjs tests/governance/runtime-profile-comparison.test.mjs tests/governance/scene3d-loading.test.mjs tests/governance/scene3d-workload.test.mjs tests/governance/source-schema-policy.test.mjs tests/governance/test-environment.test.mjs tests/governance/toolchain.test.mjs tests/governance/web-first-plan.test.mjs tests/governance/worker-boundary.test.mjs",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n03-04/core-timeout-v1/governance-64b81875.json",
+      "log": "artifacts/vnext/n03-04/core-timeout-v1/governance-64b81875.log",
+      "sourceRevision": "af6a46996ce2d8f2b267f85f2ccbe4f81ba28d58",
+      "trackedDiffSha256": "ccea9695c1d05fae20755e3c5ce23d246be27aea32ab1bdabfc08927294ff304"
+    }
+  ],
+  "hostedObservation": {
+    "run": 42616271459,
+    "sourceRevision": "9227c67dd17622e118620f3c976d67c2dbf7e296",
+    "status": "in_progress",
+    "conclusion": "",
+    "jobs": [
+      {
+        "name": "core-checks",
+        "status": "in_progress",
+        "conclusion": ""
+      },
+      {
+        "name": "change-plan",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "runtime-images",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42616271459"
+  },
+  "limitations": [
+    "Local workflow contract and100governance pass;hosted run42616271459 still source-bound to9227c67 and must be observed. No product deadline,sample count,retry,loading/frame/memory budget or required command changed."
+  ],
+  "nextExactAction": "Observe hosted42616271459 at9227c67;continue N06-04 actual cafe20actor workload and preserve every failing budget/frozen artifact. No additional push until this run reaches a reviewable observation unless a new fix requires it."
+}

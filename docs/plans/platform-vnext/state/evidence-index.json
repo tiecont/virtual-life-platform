@@ -41711,6 +41711,422 @@
         "Retained Docker at67ff2d4 is unchanged;this new art is not deployed there. No native/public/store/registry/production action."
       ],
       "nextExactAction": "Continue N06-04:fix hosted core30minute timeout in a separate N03-04 CI slice without omitting checks;then qualify integrated cafe20actor resources/frame/loading/remount at locked budgets and refine groom/material/room/UI art before N06-09. Sandbox baseline350ms,caching/RAF experiments116.7-333.3ms all fail100ms;Pixi restored. Observe exact pushed-SHA hosted Quality. Phase2 stays PAUSED pending fresh qualified upstream handoff;native remains owner-deferred."
+    },
+    {
+      "id": "n03-04-core-timeout-2026-11-09",
+      "taskId": "N03-04",
+      "sourceRevision": "9227c67dd17622e118620f3c976d67c2dbf7e296",
+      "environment": "CachyOS Linux;Node26.9.0/pnpm11.28.5;local workflow contracts;GitHub hosted Ubuntu26.04 observation",
+      "executedAt": "2026-11-09T12:43:07.698Z",
+      "commands": [
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0,
+          "facts": "artifacts/vnext/n03-04/core-timeout-v1/ci-contract-8f8577f5.json",
+          "log": "artifacts/vnext/n03-04/core-timeout-v1/ci-contract-8f8577f5.log",
+          "sourceRevision": "af6a46996ce2d8f2b267f85f2ccbe4f81ba28d58",
+          "trackedDiffSha256": "ccea9695c1d05fae20755e3c5ce23d246be27aea32ab1bdabfc08927294ff304"
+        },
+        {
+          "command": "node --test tests/governance/admin-artifact.test.mjs tests/governance/admin-boundary.test.mjs tests/governance/admin-bundle.test.mjs tests/governance/api-runtime-package.test.mjs tests/governance/artifact-release.test.mjs tests/governance/backup.test.mjs tests/governance/boundaries.test.mjs tests/governance/browser-report-directory.test.mjs tests/governance/ci.test.mjs tests/governance/client-boundaries.test.mjs tests/governance/client-legacy-fixture.test.mjs tests/governance/digest-promotion.test.mjs tests/governance/evidence-inventory.test.mjs tests/governance/evidence-output.test.mjs tests/governance/evidence-reader.test.mjs tests/governance/evidence-store.test.mjs tests/governance/image-inspection.test.mjs tests/governance/infra.test.mjs tests/governance/kubernetes.test.mjs tests/governance/legacy-snapshots.test.mjs tests/governance/ops-watch.test.mjs tests/governance/plan-status.test.mjs tests/governance/release.test.mjs tests/governance/resource-budget.test.mjs tests/governance/runtime-profile-comparison.test.mjs tests/governance/scene3d-loading.test.mjs tests/governance/scene3d-workload.test.mjs tests/governance/source-schema-policy.test.mjs tests/governance/test-environment.test.mjs tests/governance/toolchain.test.mjs tests/governance/web-first-plan.test.mjs tests/governance/worker-boundary.test.mjs",
+          "exitCode": 0,
+          "facts": "artifacts/vnext/n03-04/core-timeout-v1/governance-64b81875.json",
+          "log": "artifacts/vnext/n03-04/core-timeout-v1/governance-64b81875.log",
+          "sourceRevision": "af6a46996ce2d8f2b267f85f2ccbe4f81ba28d58",
+          "trackedDiffSha256": "ccea9695c1d05fae20755e3c5ce23d246be27aea32ab1bdabfc08927294ff304"
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "docs/plans/platform-vnext/audit/N03-04-CORE-TIMEOUT-CHECKPOINT.json",
+          "sha256": "dd190d07c0c0be894b1fc8a3ddb01d028446f415c1327974f6474655bc64f429"
+        },
+        {
+          "ref": "artifacts/vnext/n03-04/core-timeout-v1/raw-index.json",
+          "sha256": "226db9757278c1512aa3d9f91371bef86e31e09f8bb50abf98abc3445daf3529",
+          "files": 6
+        }
+      ],
+      "acceptance_met": true,
+      "scope": "Bounded CI job duration correction;not a hosted Quality acceptance",
+      "limitations": [
+        "Local workflow contract and100governance pass;hosted run42616271459 still source-bound to9227c67 and must be observed. No product deadline,sample count,retry,loading/frame/memory budget or required command changed."
+      ],
+      "nextExactAction": "Observe hosted42616271459 at9227c67;continue N06-04 actual cafe20actor workload and preserve every failing budget/frozen artifact. No additional push until this run reaches a reviewable observation unless a new fix requires it."
+    },
+    {
+      "id": "n06-04-seat-batches-partial-2026-11-09",
+      "taskId": "N06-04",
+      "sourceRevision": "6002bb8fec7216b7eeeb58aae1991cb45402cca5",
+      "environment": "CachyOS Linux;Node26.9.0/pnpm11.28.5;Three0.187.0;Chromium156.0.8078.4 SwiftShader;desktop/mobile emulation;disposable PostgreSQL;not native/physical qualification",
+      "executedAt": "2026-11-09T15:42:22.431Z",
+      "commands": [
+        {
+          "command": "pnpm exec vitest run --project unit --maxWorkers=1 packages/scene3d/test",
+          "argv": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "unit",
+            "--maxWorkers=1",
+            "packages/scene3d/test"
+          ],
+          "exitCode": 1,
+          "sourceRevision": "6b54a6008d4120dbdb304e7c40e79efaef996978",
+          "trackedDiffSha256": "43f42e11e8559dc26c2ca5cd97b1ff5d7eaacd596ba65a4fca231544ab06c2cd",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-all-units-38b7767a.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-all-units-38b7767a.log"
+        },
+        {
+          "command": "node scripts/check-boundaries.mjs",
+          "argv": [
+            "node",
+            "scripts/check-boundaries.mjs"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "6002bb8fec7216b7eeeb58aae1991cb45402cca5",
+          "trackedDiffSha256": "3d3fb06b90a751bae1c855c5e296db7373af44c9c884fe631fe43ff64fd508f0",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-boundaries-f887236f.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-boundaries-f887236f.log"
+        },
+        {
+          "command": "pnpm build",
+          "argv": [
+            "pnpm",
+            "build"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "6b54a6008d4120dbdb304e7c40e79efaef996978",
+          "trackedDiffSha256": "43f42e11e8559dc26c2ca5cd97b1ff5d7eaacd596ba65a4fca231544ab06c2cd",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-build-5bfe8543.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-build-5bfe8543.log"
+        },
+        {
+          "command": "pnpm test:cafe-workload",
+          "argv": [
+            "pnpm",
+            "test:cafe-workload"
+          ],
+          "exitCode": 1,
+          "sourceRevision": "6002bb8fec7216b7eeeb58aae1991cb45402cca5",
+          "trackedDiffSha256": "3d3fb06b90a751bae1c855c5e296db7373af44c9c884fe631fe43ff64fd508f0",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-cafe-workload-7698369a.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-cafe-workload-7698369a.log"
+        },
+        {
+          "command": "pnpm ci:check",
+          "argv": [
+            "pnpm",
+            "ci:check"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "6b54a6008d4120dbdb304e7c40e79efaef996978",
+          "trackedDiffSha256": "9dadb2574d2d197dad65195bc9c1c95a195853b744cab71aee02262af471f623",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-ci-79d1333e.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-ci-79d1333e.log"
+        },
+        {
+          "command": "node scripts/client-boundaries.mjs",
+          "argv": [
+            "node",
+            "scripts/client-boundaries.mjs"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "6002bb8fec7216b7eeeb58aae1991cb45402cca5",
+          "trackedDiffSha256": "3d3fb06b90a751bae1c855c5e296db7373af44c9c884fe631fe43ff64fd508f0",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-client-boundaries-66c799cc.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-client-boundaries-66c799cc.log"
+        },
+        {
+          "command": "pnpm exec eslint packages/scene3d/src/renderer.ts packages/scene3d/src/seat-markers.ts packages/scene3d/src/resources.ts packages/scene3d/test/seat-markers.test.ts packages/scene3d/test/resources.test.ts tests/e2e/scene3d-room.spec.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "packages/scene3d/src/renderer.ts",
+            "packages/scene3d/src/seat-markers.ts",
+            "packages/scene3d/src/resources.ts",
+            "packages/scene3d/test/seat-markers.test.ts",
+            "packages/scene3d/test/resources.test.ts",
+            "tests/e2e/scene3d-room.spec.ts"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "6b54a6008d4120dbdb304e7c40e79efaef996978",
+          "trackedDiffSha256": "9dadb2574d2d197dad65195bc9c1c95a195853b744cab71aee02262af471f623",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-final-check-lint-e8080e23.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-final-check-lint-e8080e23.log"
+        },
+        {
+          "command": "pnpm exec eslint packages/scene3d/src/renderer.ts packages/scene3d/src/seat-markers.ts packages/scene3d/src/resources.ts packages/scene3d/test/seat-markers.test.ts packages/scene3d/test/resources.test.ts tests/e2e/scene3d-room.spec.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "packages/scene3d/src/renderer.ts",
+            "packages/scene3d/src/seat-markers.ts",
+            "packages/scene3d/src/resources.ts",
+            "packages/scene3d/test/seat-markers.test.ts",
+            "packages/scene3d/test/resources.test.ts",
+            "tests/e2e/scene3d-room.spec.ts"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "6b54a6008d4120dbdb304e7c40e79efaef996978",
+          "trackedDiffSha256": "9dadb2574d2d197dad65195bc9c1c95a195853b744cab71aee02262af471f623",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-final-lint-4437d1c3.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-final-lint-4437d1c3.log"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test/seat-markers.test.ts packages/scene3d/test/resources.test.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "unit",
+            "packages/scene3d/test/seat-markers.test.ts",
+            "packages/scene3d/test/resources.test.ts"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "6b54a6008d4120dbdb304e7c40e79efaef996978",
+          "trackedDiffSha256": "9dadb2574d2d197dad65195bc9c1c95a195853b744cab71aee02262af471f623",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-focused-final-7fb18392.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-focused-final-7fb18392.log"
+        },
+        {
+          "command": "node --test tests/governance/admin-artifact.test.mjs tests/governance/admin-boundary.test.mjs tests/governance/admin-bundle.test.mjs tests/governance/api-runtime-package.test.mjs tests/governance/artifact-release.test.mjs tests/governance/backup.test.mjs tests/governance/boundaries.test.mjs tests/governance/browser-report-directory.test.mjs tests/governance/ci.test.mjs tests/governance/client-boundaries.test.mjs tests/governance/client-legacy-fixture.test.mjs tests/governance/digest-promotion.test.mjs tests/governance/evidence-inventory.test.mjs tests/governance/evidence-output.test.mjs tests/governance/evidence-reader.test.mjs tests/governance/evidence-store.test.mjs tests/governance/image-inspection.test.mjs tests/governance/infra.test.mjs tests/governance/kubernetes.test.mjs tests/governance/legacy-snapshots.test.mjs tests/governance/ops-watch.test.mjs tests/governance/plan-status.test.mjs tests/governance/release.test.mjs tests/governance/resource-budget.test.mjs tests/governance/runtime-profile-comparison.test.mjs tests/governance/scene3d-loading.test.mjs tests/governance/scene3d-workload.test.mjs tests/governance/source-schema-policy.test.mjs tests/governance/test-environment.test.mjs tests/governance/toolchain.test.mjs tests/governance/web-first-plan.test.mjs tests/governance/worker-boundary.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/admin-artifact.test.mjs",
+            "tests/governance/admin-boundary.test.mjs",
+            "tests/governance/admin-bundle.test.mjs",
+            "tests/governance/api-runtime-package.test.mjs",
+            "tests/governance/artifact-release.test.mjs",
+            "tests/governance/backup.test.mjs",
+            "tests/governance/boundaries.test.mjs",
+            "tests/governance/browser-report-directory.test.mjs",
+            "tests/governance/ci.test.mjs",
+            "tests/governance/client-boundaries.test.mjs",
+            "tests/governance/client-legacy-fixture.test.mjs",
+            "tests/governance/digest-promotion.test.mjs",
+            "tests/governance/evidence-inventory.test.mjs",
+            "tests/governance/evidence-output.test.mjs",
+            "tests/governance/evidence-reader.test.mjs",
+            "tests/governance/evidence-store.test.mjs",
+            "tests/governance/image-inspection.test.mjs",
+            "tests/governance/infra.test.mjs",
+            "tests/governance/kubernetes.test.mjs",
+            "tests/governance/legacy-snapshots.test.mjs",
+            "tests/governance/ops-watch.test.mjs",
+            "tests/governance/plan-status.test.mjs",
+            "tests/governance/release.test.mjs",
+            "tests/governance/resource-budget.test.mjs",
+            "tests/governance/runtime-profile-comparison.test.mjs",
+            "tests/governance/scene3d-loading.test.mjs",
+            "tests/governance/scene3d-workload.test.mjs",
+            "tests/governance/source-schema-policy.test.mjs",
+            "tests/governance/test-environment.test.mjs",
+            "tests/governance/toolchain.test.mjs",
+            "tests/governance/web-first-plan.test.mjs",
+            "tests/governance/worker-boundary.test.mjs"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "6002bb8fec7216b7eeeb58aae1991cb45402cca5",
+          "trackedDiffSha256": "3d3fb06b90a751bae1c855c5e296db7373af44c9c884fe631fe43ff64fd508f0",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-governance-3def6a9e.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-governance-3def6a9e.log"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit --maxWorkers=1 packages/scene3d/test",
+          "argv": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "unit",
+            "--maxWorkers=1",
+            "packages/scene3d/test"
+          ],
+          "exitCode": 1,
+          "sourceRevision": "6b54a6008d4120dbdb304e7c40e79efaef996978",
+          "trackedDiffSha256": "9dadb2574d2d197dad65195bc9c1c95a195853b744cab71aee02262af471f623",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-isolated-units-f6b4d298.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-isolated-units-f6b4d298.log"
+        },
+        {
+          "command": "pnpm exec eslint packages/scene3d/src/renderer.ts packages/scene3d/src/seat-markers.ts packages/scene3d/src/resources.ts packages/scene3d/test/seat-markers.test.ts packages/scene3d/test/resources.test.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "packages/scene3d/src/renderer.ts",
+            "packages/scene3d/src/seat-markers.ts",
+            "packages/scene3d/src/resources.ts",
+            "packages/scene3d/test/seat-markers.test.ts",
+            "packages/scene3d/test/resources.test.ts"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "6b54a6008d4120dbdb304e7c40e79efaef996978",
+          "trackedDiffSha256": "43f42e11e8559dc26c2ca5cd97b1ff5d7eaacd596ba65a4fca231544ab06c2cd",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-lint-5fed0104.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-lint-5fed0104.log"
+        },
+        {
+          "command": "env BROWSER_REPORT_SCOPE=ci/vnext/n06-seat-ray-e28ebf94 UX_EVIDENCE_RUN=e28ebf94 node scripts/run-browser-tests.mjs tests/e2e/scene3d-room.spec.ts --grep seat marker batches",
+          "argv": [
+            "env",
+            "BROWSER_REPORT_SCOPE=ci/vnext/n06-seat-ray-e28ebf94",
+            "UX_EVIDENCE_RUN=e28ebf94",
+            "node",
+            "scripts/run-browser-tests.mjs",
+            "tests/e2e/scene3d-room.spec.ts",
+            "--grep",
+            "seat marker batches"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "6002bb8fec7216b7eeeb58aae1991cb45402cca5",
+          "trackedDiffSha256": "3d3fb06b90a751bae1c855c5e296db7373af44c9c884fe631fe43ff64fd508f0",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-ray-focused-e3cbd3e9.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-ray-focused-e3cbd3e9.log"
+        },
+        {
+          "command": "pnpm test:scene3d-room",
+          "argv": [
+            "pnpm",
+            "test:scene3d-room"
+          ],
+          "exitCode": 1,
+          "sourceRevision": "6002bb8fec7216b7eeeb58aae1991cb45402cca5",
+          "trackedDiffSha256": "3d3fb06b90a751bae1c855c5e296db7373af44c9c884fe631fe43ff64fd508f0",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-room-browser-10659c0b.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-room-browser-10659c0b.log"
+        },
+        {
+          "command": "pnpm exec tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --resolveJsonModule --esModuleInterop --strict --skipLibCheck --types node --lib ES2022,DOM tests/e2e/scene3d-room.spec.ts packages/scene3d/test/seat-markers.test.ts packages/scene3d/test/resources.test.ts playwright.config.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "tsc",
+            "--noEmit",
+            "--target",
+            "ES2022",
+            "--module",
+            "ESNext",
+            "--moduleResolution",
+            "Bundler",
+            "--resolveJsonModule",
+            "--esModuleInterop",
+            "--strict",
+            "--skipLibCheck",
+            "--types",
+            "node",
+            "--lib",
+            "ES2022,DOM",
+            "tests/e2e/scene3d-room.spec.ts",
+            "packages/scene3d/test/seat-markers.test.ts",
+            "packages/scene3d/test/resources.test.ts",
+            "playwright.config.ts"
+          ],
+          "exitCode": 2,
+          "sourceRevision": "6b54a6008d4120dbdb304e7c40e79efaef996978",
+          "trackedDiffSha256": "9dadb2574d2d197dad65195bc9c1c95a195853b744cab71aee02262af471f623",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-test-types-bec3b9f5.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-test-types-bec3b9f5.log"
+        },
+        {
+          "command": "pnpm exec tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --resolveJsonModule --esModuleInterop --strict --skipLibCheck --types node --lib ES2022,DOM tests/e2e/scene3d-room.spec.ts packages/scene3d/test/seat-markers.test.ts packages/scene3d/test/resources.test.ts playwright.config.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "tsc",
+            "--noEmit",
+            "--target",
+            "ES2022",
+            "--module",
+            "ESNext",
+            "--moduleResolution",
+            "Bundler",
+            "--resolveJsonModule",
+            "--esModuleInterop",
+            "--strict",
+            "--skipLibCheck",
+            "--types",
+            "node",
+            "--lib",
+            "ES2022,DOM",
+            "tests/e2e/scene3d-room.spec.ts",
+            "packages/scene3d/test/seat-markers.test.ts",
+            "packages/scene3d/test/resources.test.ts",
+            "playwright.config.ts"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "6b54a6008d4120dbdb304e7c40e79efaef996978",
+          "trackedDiffSha256": "9dadb2574d2d197dad65195bc9c1c95a195853b744cab71aee02262af471f623",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-test-types-final-2adbdc6a.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-test-types-final-2adbdc6a.log"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/scene3d typecheck",
+          "argv": [
+            "pnpm",
+            "--filter",
+            "@virtual-city/scene3d",
+            "typecheck"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "6b54a6008d4120dbdb304e7c40e79efaef996978",
+          "trackedDiffSha256": "43f42e11e8559dc26c2ca5cd97b1ff5d7eaacd596ba65a4fca231544ab06c2cd",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-types-29724568.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-types-29724568.log"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test/seat-markers.test.ts packages/scene3d/test/resources.test.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "unit",
+            "packages/scene3d/test/seat-markers.test.ts",
+            "packages/scene3d/test/resources.test.ts"
+          ],
+          "exitCode": 1,
+          "sourceRevision": "6b54a6008d4120dbdb304e7c40e79efaef996978",
+          "trackedDiffSha256": "43f42e11e8559dc26c2ca5cd97b1ff5d7eaacd596ba65a4fca231544ab06c2cd",
+          "facts": "artifacts/vnext/n06-04/seat-batches-v2/seat-units-6aa2698b.json",
+          "log": "artifacts/vnext/n06-04/seat-batches-v2/seat-units-6aa2698b.log"
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "docs/plans/platform-vnext/audit/N06-04-SEAT-BATCH-CHECKPOINT.json",
+          "sha256": "354f75366d57e3e7e852305447d16c47678cbacb024618e67891e7718d4b4abd"
+        },
+        {
+          "ref": "artifacts/vnext/n06-04/seat-batches-v2/raw-index.json",
+          "sha256": "b6766204958d68c67a4d151fdf186832beb3d39c8d047072ed209adf55e6e9ab",
+          "files": 160
+        }
+      ],
+      "acceptance_met": false,
+      "scope": "Instanced seat markers with authoritative slot mapping,updated ray bounds,owned GPU buffers and conservative instance-buffer inventory;partial N06-04",
+      "limitations": [
+        "N06-04 remains IN_PROGRESS;all required GPU draw-call/resource limits met in this synthetic run;Deadline desktop heap growth exceeds16MiB and all required33.4ms frame limits still fail. This is not whole-task performance/final-art/human/native acceptance.",
+        "Full scene units:45PASS/6timeouts during concurrent build,then50PASS/1High-dog20s timeout sequential. Relevant animal/parts source unchanged;root cause not established. Focused marker/resource8PASS and strict types PASS.",
+        "Full room browser desktop7PASS/2FAIL at initial Connected5s expectation;mobile not run after failed desktop batch. Focused repeated distant-seat raycast independently passes desktop/mobile with original budgets. Failures retained,not replaced by focused qualification.",
+        "Earlier unit fixture had no allocated own-marker colour buffer;strict test types then found an EventDispatcher union error. Both corrected with separate actual passing checks.",
+        "Controlled cold/warm loading remains NOT_RUN by this workload driver;historical5000ms loading failures,1500ms art wait,Low faceting,groom/material/readability and owner review findings remain open.",
+        "No frame,heap,resource,timeout,retry,sampling or required-tier relaxation. Mobile High remains the existing desktop-only diagnostic. JS heap is not native RSS or driver memory.",
+        "Hosted9227c67 core/images PASS,QualityFAIL with five failed browser groups. No current-source hosted QualityPASS is claimed.",
+        "Prior73evidence objects and available frozen members preserved;two previously recorded auxiliary Lounge HTML losses remain explicit.",
+        "Retained vc-* images/data are unchanged;this source is not deployed there. No native/public/store/registry/production action."
+      ],
+      "nextExactAction": "Continue N06-04 without relaxing gates:profile initial room confirmation/SwiftShader loading and twenty-actor frame stalls at33.4ms;investigate Deadline desktop heap growth over16MiB,resolve unchanged High-dog20s timeout and complete default desktop/mobile room regression. Then controlled loading and integrated art/groom/readability qualification before N06-09. Owner priority remains Pet Arena PvE before Lodge;handoff to PA-001/002 and S1 after real upstream web qualification. Phase2 stays PAUSED;native deferred."
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."
