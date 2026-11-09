@@ -1,0 +1,95 @@
+{
+  "status": "VERIFIED",
+  "scope": "Local Docker packaging and production-mode disposable artifact qualification only",
+  "taskIds": [
+    "N03-02",
+    "N03-03",
+    "N03-04"
+  ],
+  "at": "2026-11-09T01:16:26.654512+00:00",
+  "imageSourceRevision": "e56d88167a2b9a2c6acdff3ea36894a19b3d28b5",
+  "composeSourceRevision": "3f58f92",
+  "runtimeSourceDeltaSinceImages": [],
+  "images": {
+    "api": "sha256:2563de5a1f97f036e340d483375cd21c9408c3eaeda168e394ce7a0c4c98d1df",
+    "web": "sha256:1772bff6d7b1eb757550bd06e21767a0935e97a3239cfece22738f3da8b78939",
+    "admin": "sha256:ebef645f7717b73c2416d93e485a34a6b238a0bd9c613e18b778b66513ebc47e"
+  },
+  "schemaMigrations": 47,
+  "environment": {
+    "os": "CachyOS Linux",
+    "node": "26.9.0",
+    "pnpm": "11.28.5",
+    "docker": "29.9.0",
+    "compose": "5.6.0"
+  },
+  "commands": [
+    {
+      "command": "node scripts/release-bundle.mjs --output artifacts/docker-delivery-20261109-v1/release-bundle",
+      "exitCode": 0,
+      "actualOutcome": "API/web/admin6runtime scenarios each;file/credential/SBOM/source inspections;47SQL release metadata;archives of tested images"
+    },
+    {
+      "command": "node scripts/local-compose-smoke.mjs --bundle artifacts/docker-delivery-20261109-v1/release-bundle/bundle.json",
+      "exitCode": 0,
+      "actualOutcome": "6scenarios including HTTPS/WSS/browser/persistence;owned stack/volume/secrets cleanup complete"
+    },
+    {
+      "command": "node --test tests/governance/*.test.mjs",
+      "exitCode": 0,
+      "actualOutcome": "97/97 PASS"
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm ci:check",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm infra:check",
+      "exitCode": 0
+    },
+    {
+      "command": "node scripts/verify-game-plan.mjs",
+      "exitCode": 0
+    },
+    {
+      "command": "node docs/plans/platform-vnext/tools/validate-plan.mjs",
+      "exitCode": 0
+    },
+    {
+      "command": "node docs/plans/LANTERN-LODGE-PHASE-2/tools/validate-plan.mjs",
+      "exitCode": 0
+    },
+    {
+      "command": "node scripts/verify-web-first-plan.mjs",
+      "exitCode": 0
+    }
+  ],
+  "failuresRetained": [
+    "Initial Docker build missing6mobile build-only TS inputs",
+    "BusyBox CA flag unsupported",
+    "Caddy file capability denied by empty bounding set;allow onlyNET_BIND_SERVICE and local TLS owner UID",
+    "Fixture port inspection included unboundnullEXPOSE entries",
+    "Fixture pooled TLS socket stale across deliberate edge down/up;fresh transport required"
+  ],
+  "rawEvidence": {
+    "ref": "artifacts/docker-delivery-20261109-v1/raw-index.json",
+    "sha256": "a8345732715a098490283d12d6c28b8d110872e13f0e1ea81174bf195c7ad09e",
+    "files": 257,
+    "access": "private local artifacts;not off-host retention"
+  },
+  "retainedLocalStack": "PENDING_AFTER_PUSH",
+  "hostedCI": "NOT_RUN",
+  "registryPublish": "NOT_RUN",
+  "publicRelease": false,
+  "nativeDevelopment": "DEFERRED_APPROVED",
+  "limitations": [
+    "No new full770integration/native/physical run;prior results stay historical",
+    "Current final-art/loading/usability and external staging/public release gates remain",
+    "Local images carry their exact tested source label;later commits onlyops/planning/evidence and no app/runtime/config/Dockerfile delta"
+  ],
+  "nextExactAction": "Commit/push branch,prepare selected tested bundle and start retained vc-* Compose;then N06-07 web-only qualification under sole coordinator."
+}

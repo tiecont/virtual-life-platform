@@ -1,3 +1,11 @@
+# Fresh web-first handoff pinned — 2026-11-09
+
+Upstream checkpoint `0b19b94e21ad0e0e89d6e1d16bccc9face3a1f3f` is pinned by Phase2 state/WEB-FIRST-HANDOFF.md;historical64+4evidence records preserved. Phase2 ACTIVE but no ready game task until real N06-09 web qualification. Only sole coordinator schedules work.
+
+**Next exact action:** Push current branch and start retained vc-* local Compose;then pause Phase2 before reserving N06-07 web-only→N06-04→N06-09. Refresh source-bound handoff and resume N15-05 afterward. Native deferred by owner;no mobile device/build/store gate blocks this web chain.
+
+## Earlier checkpoints — historical
+
 # Web/server first; native mobile deferred — 2026-11-09
 
 Owner explicitly requests platform development before mobile. Revision 2.4 removes hard native prerequisites from web/Lodge, preserves all historical evidence and moves packaged creator/world qualification to new N10-06. vNext: 77 tasks,43VERIFIED/2BLOCKED_EXTERNAL/20TODO/12DEFERRED_APPROVED;64existing evidence records unchanged. N06-07 is TODO for its revised web-only scope, not VERIFIED. Android/iOS distribution context remains false; true/unknown future supported-client compatibility gates stay fail-closed. Final-art/loading/privacy/public/staging gates remain. Phase2 scheduling temporarily PAUSED for a fresh source-bound upstream handoff;4accepted game records are preserved.

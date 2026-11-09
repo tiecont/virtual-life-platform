@@ -1,3 +1,11 @@
+# Fresh web-first handoff pinned — 2026-11-09
+
+Upstream checkpoint `0b19b94e21ad0e0e89d6e1d16bccc9face3a1f3f` is pinned by Phase2 state/WEB-FIRST-HANDOFF.md;historical64+4evidence records preserved. Phase2 ACTIVE but no ready game task until real N06-09 web qualification. Only sole coordinator schedules work.
+
+**Next exact action:** Push current branch and start retained vc-* local Compose;then pause Phase2 before reserving N06-07 web-only→N06-04→N06-09. Refresh source-bound handoff and resume N15-05 afterward. Native deferred by owner;no mobile device/build/store gate blocks this web chain.
+
+## Earlier checkpoints — historical
+
 # Owner web-first replan; native deferred — 2026-11-09
 
 Owner now prioritizes web/server/platform and asks to defer mobile without blocking features. N15–N18/N19 platform scope is web/responsive browser. N19-04 is DEFERRED_APPROVED;4VERIFIED/20TODO/1DEFERRED_APPROVED. All4accepted evidence records and old raw artifacts remain unchanged. N15-05 still waits for real N06-09 web visual qualification, not physical Android.
