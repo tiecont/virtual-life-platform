@@ -101,6 +101,7 @@ for(const slug of ['deadline','maid'])test(`${slug} camera follows the saved ani
  await closeActions(page);await expect(room).toHaveAttribute('data-camera-framing','self');
  const output=evidenceOutput(`docs/agent/evidence/n06-room-camera-${slug}-${info.project.name}`);await mkdir(output,{recursive:true});await page.screenshot({path:output+'/follow-seated.png',fullPage:true});
  await page.getByRole('button',{name:'Room actions',exact:true}).click();await page.getByRole('button',{name:'Stand up',exact:true}).click();await expect(page.getByText('You stood up.',{exact:true})).toBeVisible();
+ await page.emulateMedia({reducedMotion:'no-preference'});await expect(room).toHaveAttribute('data-reduced-motion','false');
  await page.getByRole('button',{name:'Walk to central aisle',exact:true}).click();await closeActions(page);
  await expect(room).toHaveAttribute('data-self-position',slug==='deadline'?'12.00:8.00':'12.00:10.00',{timeout:15000});await expect(room).toHaveAttribute('data-camera-framing','self');
  const center=JSON.parse((await room.getAttribute('data-self-screen'))!),box=(await room.boundingBox())!;expect(Math.abs(center.x-box.width/2)).toBeLessThan(2);expect(Math.abs(center.y-box.height/2)).toBeLessThan(2);
