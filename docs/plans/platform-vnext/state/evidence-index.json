@@ -42127,6 +42127,628 @@
         "Retained vc-* images/data are unchanged;this source is not deployed there. No native/public/store/registry/production action."
       ],
       "nextExactAction": "Continue N06-04 without relaxing gates:profile initial room confirmation/SwiftShader loading and twenty-actor frame stalls at33.4ms;investigate Deadline desktop heap growth over16MiB,resolve unchanged High-dog20s timeout and complete default desktop/mobile room regression. Then controlled loading and integrated art/groom/readability qualification before N06-09. Owner priority remains Pet Arena PvE before Lodge;handoff to PA-001/002 and S1 after real upstream web qualification. Phase2 stays PAUSED;native deferred."
+    },
+    {
+      "id": "n06-04-geometry-surfaces-partial-2026-11-09",
+      "taskId": "N06-04",
+      "sourceRevision": "19874e00e29ebf469e67579f1c6a9e0bf44c0800",
+      "environment": "CachyOS Linux;Node26.9.0/pnpm11.28.5;Three0.187.0;Chromium156.0.8078.4;default SwiftShader and separate asserted headed AMD diagnostic;desktop/mobile emulation;disposable PostgreSQL;not native/physical qualification",
+      "executedAt": "2026-11-09T16:47:54.806Z",
+      "commands": [
+        {
+          "command": "node --import tsx artifacts/vnext/n06-04/render-diagnostics-v1/asset-compat.mts",
+          "argv": [
+            "node",
+            "--import",
+            "tsx",
+            "artifacts/vnext/n06-04/render-diagnostics-v1/asset-compat.mts"
+          ],
+          "exitCode": 1,
+          "sourceRevision": "13bd0b6b68ee4c37b102310569e46b59fce6d8c3",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/assets-before-1bd620e2.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/assets-before-1bd620e2.log"
+        },
+        {
+          "command": "node --import tsx artifacts/vnext/n06-04/render-diagnostics-v1/asset-compat.mts before",
+          "argv": [
+            "node",
+            "--import",
+            "tsx",
+            "artifacts/vnext/n06-04/render-diagnostics-v1/asset-compat.mts",
+            "before"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "13bd0b6b68ee4c37b102310569e46b59fce6d8c3",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/assets-before-args-ebd793f1.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/assets-before-args-ebd793f1.log"
+        },
+        {
+          "command": "node artifacts/vnext/n06-04/render-diagnostics-v1/profile-browser.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-04/render-diagnostics-v1/profile-browser.mjs"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "13bd0b6b68ee4c37b102310569e46b59fce6d8c3",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/browser-cpu-before-1cdf6bc8.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/browser-cpu-before-1cdf6bc8.log"
+        },
+        {
+          "command": "node artifacts/vnext/n06-04/render-diagnostics-v1/profile-compositor.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-04/render-diagnostics-v1/profile-compositor.mjs"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "3e14fc24f3a433a01c6cdb002ee183e08e4802e5",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/compositor-baseline-cpu-a606dc39.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/compositor-baseline-cpu-a606dc39.log"
+        },
+        {
+          "command": "node artifacts/vnext/n06-04/render-diagnostics-v1/profile-current-browser.mjs after-surfaces",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-04/render-diagnostics-v1/profile-current-browser.mjs",
+            "after-surfaces"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "3e14fc24f3a433a01c6cdb002ee183e08e4802e5",
+          "trackedDiffSha256": "c5784f5d12a3ffafb45ddfc6624cf9cbb36d3f85676c43c50e73e2d5124aabc3",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/current-after-surfaces-f239d27a.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/current-after-surfaces-f239d27a.log"
+        },
+        {
+          "command": "node artifacts/vnext/n06-04/render-diagnostics-v1/profile-current-browser.mjs before-surfaces",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-04/render-diagnostics-v1/profile-current-browser.mjs",
+            "before-surfaces"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "3e14fc24f3a433a01c6cdb002ee183e08e4802e5",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/current-before-surfaces-9df71314.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/current-before-surfaces-9df71314.log"
+        },
+        {
+          "command": "node artifacts/vnext/n06-04/render-diagnostics-v1/gpu-probe.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-04/render-diagnostics-v1/gpu-probe.mjs"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "19874e00e29ebf469e67579f1c6a9e0bf44c0800",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/gpu-capability-5392ac40.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/gpu-capability-5392ac40.log"
+        },
+        {
+          "command": "node artifacts/vnext/n06-04/render-diagnostics-v1/hardware-diagnostic.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-04/render-diagnostics-v1/hardware-diagnostic.mjs"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "19874e00e29ebf469e67579f1c6a9e0bf44c0800",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/hardware-frames-5a89383d.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/hardware-frames-5a89383d.log"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit --maxWorkers=1 packages/scene3d/test packages/pixi-scene/test",
+          "argv": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "unit",
+            "--maxWorkers=1",
+            "packages/scene3d/test",
+            "packages/pixi-scene/test"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "13bd0b6b68ee4c37b102310569e46b59fce6d8c3",
+          "trackedDiffSha256": "ebda4eb9dfb99308fe6a7041ff0a96676562996b7781142007742ab256c99dcb",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/index-all-units-7d4c1d62.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/index-all-units-7d4c1d62.log"
+        },
+        {
+          "command": "node --import tsx artifacts/vnext/n06-04/render-diagnostics-v1/asset-compat.mts after",
+          "argv": [
+            "node",
+            "--import",
+            "tsx",
+            "artifacts/vnext/n06-04/render-diagnostics-v1/asset-compat.mts",
+            "after"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "13bd0b6b68ee4c37b102310569e46b59fce6d8c3",
+          "trackedDiffSha256": "ebda4eb9dfb99308fe6a7041ff0a96676562996b7781142007742ab256c99dcb",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/index-assets-after-395ec532.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/index-assets-after-395ec532.log"
+        },
+        {
+          "command": "pnpm build",
+          "argv": [
+            "pnpm",
+            "build"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "13bd0b6b68ee4c37b102310569e46b59fce6d8c3",
+          "trackedDiffSha256": "ebda4eb9dfb99308fe6a7041ff0a96676562996b7781142007742ab256c99dcb",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/index-full-build-bf3629f6.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/index-full-build-bf3629f6.log"
+        },
+        {
+          "command": "pnpm exec eslint packages/scene3d/src/index-geometry.ts packages/scene3d/src/parts-geometry.ts packages/scene3d/src/face-geometry.ts packages/scene3d/test/index-geometry.test.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "packages/scene3d/src/index-geometry.ts",
+            "packages/scene3d/src/parts-geometry.ts",
+            "packages/scene3d/src/face-geometry.ts",
+            "packages/scene3d/test/index-geometry.test.ts"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "13bd0b6b68ee4c37b102310569e46b59fce6d8c3",
+          "trackedDiffSha256": "ebda4eb9dfb99308fe6a7041ff0a96676562996b7781142007742ab256c99dcb",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/index-lint-2f731e28.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/index-lint-2f731e28.log"
+        },
+        {
+          "command": "pnpm exec tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --resolveJsonModule --esModuleInterop --strict --skipLibCheck --types node --lib ES2022,DOM packages/scene3d/test/index-geometry.test.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "tsc",
+            "--noEmit",
+            "--target",
+            "ES2022",
+            "--module",
+            "ESNext",
+            "--moduleResolution",
+            "Bundler",
+            "--resolveJsonModule",
+            "--esModuleInterop",
+            "--strict",
+            "--skipLibCheck",
+            "--types",
+            "node",
+            "--lib",
+            "ES2022,DOM",
+            "packages/scene3d/test/index-geometry.test.ts"
+          ],
+          "exitCode": 2,
+          "sourceRevision": "13bd0b6b68ee4c37b102310569e46b59fce6d8c3",
+          "trackedDiffSha256": "ebda4eb9dfb99308fe6a7041ff0a96676562996b7781142007742ab256c99dcb",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/index-test-types-5c1e56d0.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/index-test-types-5c1e56d0.log"
+        },
+        {
+          "command": "pnpm exec tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --resolveJsonModule --esModuleInterop --strict --skipLibCheck --types node --lib ES2022,DOM packages/scene3d/test/index-geometry.test.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "tsc",
+            "--noEmit",
+            "--target",
+            "ES2022",
+            "--module",
+            "ESNext",
+            "--moduleResolution",
+            "Bundler",
+            "--resolveJsonModule",
+            "--esModuleInterop",
+            "--strict",
+            "--skipLibCheck",
+            "--types",
+            "node",
+            "--lib",
+            "ES2022,DOM",
+            "packages/scene3d/test/index-geometry.test.ts"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "13bd0b6b68ee4c37b102310569e46b59fce6d8c3",
+          "trackedDiffSha256": "ebda4eb9dfb99308fe6a7041ff0a96676562996b7781142007742ab256c99dcb",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/index-test-types-fixed-5916c91b.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/index-test-types-fixed-5916c91b.log"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/scene3d typecheck",
+          "argv": [
+            "pnpm",
+            "--filter",
+            "@virtual-city/scene3d",
+            "typecheck"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "13bd0b6b68ee4c37b102310569e46b59fce6d8c3",
+          "trackedDiffSha256": "ebda4eb9dfb99308fe6a7041ff0a96676562996b7781142007742ab256c99dcb",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/index-types-bc74fc57.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/index-types-bc74fc57.log"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test/index-geometry.test.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "unit",
+            "packages/scene3d/test/index-geometry.test.ts"
+          ],
+          "exitCode": 1,
+          "sourceRevision": "13bd0b6b68ee4c37b102310569e46b59fce6d8c3",
+          "trackedDiffSha256": "ebda4eb9dfb99308fe6a7041ff0a96676562996b7781142007742ab256c99dcb",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/index-units-6fd94ece.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/index-units-6fd94ece.log"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test/index-geometry.test.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "unit",
+            "packages/scene3d/test/index-geometry.test.ts"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "13bd0b6b68ee4c37b102310569e46b59fce6d8c3",
+          "trackedDiffSha256": "ebda4eb9dfb99308fe6a7041ff0a96676562996b7781142007742ab256c99dcb",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/index-units-final-470cd0db.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/index-units-final-470cd0db.log"
+        },
+        {
+          "command": "node --import tsx artifacts/vnext/n06-04/render-diagnostics-v1/profile-model-after.mts",
+          "argv": [
+            "node",
+            "--import",
+            "tsx",
+            "artifacts/vnext/n06-04/render-diagnostics-v1/profile-model-after.mts"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "13bd0b6b68ee4c37b102310569e46b59fce6d8c3",
+          "trackedDiffSha256": "ebda4eb9dfb99308fe6a7041ff0a96676562996b7781142007742ab256c99dcb",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/model-cpu-after-c1f9498a.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/model-cpu-after-c1f9498a.log"
+        },
+        {
+          "command": "node --import tsx artifacts/vnext/n06-04/render-diagnostics-v1/profile-model.ts",
+          "argv": [
+            "node",
+            "--import",
+            "tsx",
+            "artifacts/vnext/n06-04/render-diagnostics-v1/profile-model.ts"
+          ],
+          "exitCode": 1,
+          "sourceRevision": "13bd0b6b68ee4c37b102310569e46b59fce6d8c3",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/model-cpu-before-add3807e.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/model-cpu-before-add3807e.log"
+        },
+        {
+          "command": "node --import tsx artifacts/vnext/n06-04/render-diagnostics-v1/profile-model.mts",
+          "argv": [
+            "node",
+            "--import",
+            "tsx",
+            "artifacts/vnext/n06-04/render-diagnostics-v1/profile-model.mts"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "13bd0b6b68ee4c37b102310569e46b59fce6d8c3",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/model-cpu-before-esm-4b702e7b.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/model-cpu-before-esm-4b702e7b.log"
+        },
+        {
+          "command": "node scripts/client-boundaries.mjs",
+          "argv": [
+            "node",
+            "scripts/client-boundaries.mjs"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "19874e00e29ebf469e67579f1c6a9e0bf44c0800",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/optimized-boundaries-13940372.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/optimized-boundaries-13940372.log"
+        },
+        {
+          "command": "pnpm test:cafe-workload",
+          "argv": [
+            "pnpm",
+            "test:cafe-workload"
+          ],
+          "exitCode": 1,
+          "sourceRevision": "19874e00e29ebf469e67579f1c6a9e0bf44c0800",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/optimized-cafe-workload-aa254090.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/optimized-cafe-workload-aa254090.log"
+        },
+        {
+          "command": "pnpm ci:check",
+          "argv": [
+            "pnpm",
+            "ci:check"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "19874e00e29ebf469e67579f1c6a9e0bf44c0800",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/optimized-ci-26cd926e.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/optimized-ci-26cd926e.log"
+        },
+        {
+          "command": "node --test tests/governance/browser-report-directory.test.mjs tests/governance/scene3d-workload.test.mjs tests/governance/scene3d-loading.test.mjs tests/governance/web-first-plan.test.mjs",
+          "argv": [
+            "node",
+            "--test",
+            "tests/governance/browser-report-directory.test.mjs",
+            "tests/governance/scene3d-workload.test.mjs",
+            "tests/governance/scene3d-loading.test.mjs",
+            "tests/governance/web-first-plan.test.mjs"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "19874e00e29ebf469e67579f1c6a9e0bf44c0800",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/optimized-governance-ab209633.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/optimized-governance-ab209633.log"
+        },
+        {
+          "command": "node docs/plans/platform-vnext/tools/next-task.mjs",
+          "argv": [
+            "node",
+            "docs/plans/platform-vnext/tools/next-task.mjs"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "19874e00e29ebf469e67579f1c6a9e0bf44c0800",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/optimized-plan-83579570.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/optimized-plan-83579570.log"
+        },
+        {
+          "command": "pnpm test:scene3d-room",
+          "argv": [
+            "pnpm",
+            "test:scene3d-room"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "19874e00e29ebf469e67579f1c6a9e0bf44c0800",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/optimized-room-full-d7282fc9.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/optimized-room-full-d7282fc9.log"
+        },
+        {
+          "command": "node scripts/check-boundaries.mjs",
+          "argv": [
+            "node",
+            "scripts/check-boundaries.mjs"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "19874e00e29ebf469e67579f1c6a9e0bf44c0800",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/optimized-source-boundaries-93b28ebd.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/optimized-source-boundaries-93b28ebd.log"
+        },
+        {
+          "command": "node artifacts/vnext/n06-04/render-diagnostics-v1/sparse-skin-diagnostic.mjs",
+          "argv": [
+            "node",
+            "artifacts/vnext/n06-04/render-diagnostics-v1/sparse-skin-diagnostic.mjs"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "19874e00e29ebf469e67579f1c6a9e0bf44c0800",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/sparse-skin-experiment-f0cbaf0a.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/sparse-skin-experiment-f0cbaf0a.log"
+        },
+        {
+          "command": "node --import tsx artifacts/vnext/n06-04/render-diagnostics-v1/asset-compat.mts surfaces",
+          "argv": [
+            "node",
+            "--import",
+            "tsx",
+            "artifacts/vnext/n06-04/render-diagnostics-v1/asset-compat.mts",
+            "surfaces"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "3e14fc24f3a433a01c6cdb002ee183e08e4802e5",
+          "trackedDiffSha256": "59a27c96708b335e4518896c1ed3cb065a5a176f2fc9db147748c3ff489fccfa",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-assets-952e304e.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-assets-952e304e.log"
+        },
+        {
+          "command": "pnpm build",
+          "argv": [
+            "pnpm",
+            "build"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "3e14fc24f3a433a01c6cdb002ee183e08e4802e5",
+          "trackedDiffSha256": "59a27c96708b335e4518896c1ed3cb065a5a176f2fc9db147748c3ff489fccfa",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-build-78c8aa07.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-build-78c8aa07.log"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit --maxWorkers=1 packages/scene3d/test/surfaces.test.ts packages/scene3d/test/index-geometry.test.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "unit",
+            "--maxWorkers=1",
+            "packages/scene3d/test/surfaces.test.ts",
+            "packages/scene3d/test/index-geometry.test.ts"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "19874e00e29ebf469e67579f1c6a9e0bf44c0800",
+          "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-final-focused-d5262fca.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-final-focused-d5262fca.log"
+        },
+        {
+          "command": "pnpm exec eslint packages/scene3d/src/animal.ts packages/scene3d/src/index-geometry.ts packages/scene3d/src/parts-geometry.ts packages/scene3d/src/face-geometry.ts packages/scene3d/test/surfaces.test.ts packages/scene3d/test/index-geometry.test.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "packages/scene3d/src/animal.ts",
+            "packages/scene3d/src/index-geometry.ts",
+            "packages/scene3d/src/parts-geometry.ts",
+            "packages/scene3d/src/face-geometry.ts",
+            "packages/scene3d/test/surfaces.test.ts",
+            "packages/scene3d/test/index-geometry.test.ts"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "3e14fc24f3a433a01c6cdb002ee183e08e4802e5",
+          "trackedDiffSha256": "c5784f5d12a3ffafb45ddfc6624cf9cbb36d3f85676c43c50e73e2d5124aabc3",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-lint-ee40b8df.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-lint-ee40b8df.log"
+        },
+        {
+          "command": "pnpm exec eslint packages/scene3d/src/animal.ts packages/scene3d/test/surfaces.test.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "eslint",
+            "packages/scene3d/src/animal.ts",
+            "packages/scene3d/test/surfaces.test.ts"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "3e14fc24f3a433a01c6cdb002ee183e08e4802e5",
+          "trackedDiffSha256": "59a27c96708b335e4518896c1ed3cb065a5a176f2fc9db147748c3ff489fccfa",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-lint-final-7ab97ec7.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-lint-final-7ab97ec7.log"
+        },
+        {
+          "command": "pnpm exec tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --resolveJsonModule --esModuleInterop --strict --skipLibCheck --types node --lib ES2022,DOM packages/scene3d/test/surfaces.test.ts packages/scene3d/test/index-geometry.test.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "tsc",
+            "--noEmit",
+            "--target",
+            "ES2022",
+            "--module",
+            "ESNext",
+            "--moduleResolution",
+            "Bundler",
+            "--resolveJsonModule",
+            "--esModuleInterop",
+            "--strict",
+            "--skipLibCheck",
+            "--types",
+            "node",
+            "--lib",
+            "ES2022,DOM",
+            "packages/scene3d/test/surfaces.test.ts",
+            "packages/scene3d/test/index-geometry.test.ts"
+          ],
+          "exitCode": 2,
+          "sourceRevision": "3e14fc24f3a433a01c6cdb002ee183e08e4802e5",
+          "trackedDiffSha256": "c5784f5d12a3ffafb45ddfc6624cf9cbb36d3f85676c43c50e73e2d5124aabc3",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-test-types-58d7560f.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-test-types-58d7560f.log"
+        },
+        {
+          "command": "pnpm exec tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --resolveJsonModule --esModuleInterop --strict --skipLibCheck --types node --lib ES2022,DOM packages/scene3d/test/surfaces.test.ts packages/scene3d/test/index-geometry.test.ts",
+          "argv": [
+            "pnpm",
+            "exec",
+            "tsc",
+            "--noEmit",
+            "--target",
+            "ES2022",
+            "--module",
+            "ESNext",
+            "--moduleResolution",
+            "Bundler",
+            "--resolveJsonModule",
+            "--esModuleInterop",
+            "--strict",
+            "--skipLibCheck",
+            "--types",
+            "node",
+            "--lib",
+            "ES2022,DOM",
+            "packages/scene3d/test/surfaces.test.ts",
+            "packages/scene3d/test/index-geometry.test.ts"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "3e14fc24f3a433a01c6cdb002ee183e08e4802e5",
+          "trackedDiffSha256": "59a27c96708b335e4518896c1ed3cb065a5a176f2fc9db147748c3ff489fccfa",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-test-types-fixed-568a6109.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-test-types-fixed-568a6109.log"
+        },
+        {
+          "command": "pnpm --filter @virtual-city/scene3d typecheck",
+          "argv": [
+            "pnpm",
+            "--filter",
+            "@virtual-city/scene3d",
+            "typecheck"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "3e14fc24f3a433a01c6cdb002ee183e08e4802e5",
+          "trackedDiffSha256": "c5784f5d12a3ffafb45ddfc6624cf9cbb36d3f85676c43c50e73e2d5124aabc3",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-types-e04bc4e5.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-types-e04bc4e5.log"
+        },
+        {
+          "command": "pnpm exec vitest run --project unit --maxWorkers=1 packages/scene3d/test packages/pixi-scene/test",
+          "argv": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "--project",
+            "unit",
+            "--maxWorkers=1",
+            "packages/scene3d/test",
+            "packages/pixi-scene/test"
+          ],
+          "exitCode": 0,
+          "sourceRevision": "3e14fc24f3a433a01c6cdb002ee183e08e4802e5",
+          "trackedDiffSha256": "c5784f5d12a3ffafb45ddfc6624cf9cbb36d3f85676c43c50e73e2d5124aabc3",
+          "facts": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-units-bc606ac3.json",
+          "log": "artifacts/vnext/n06-04/render-diagnostics-v1/surfaces-units-bc606ac3.log"
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "docs/plans/platform-vnext/audit/N06-04-GEOMETRY-SURFACE-CHECKPOINT.json",
+          "sha256": "3f2eb615b7bd3601ed5cc225aeebb32c27bc1b29e46232a1dbd0f8137b2f9918"
+        },
+        {
+          "ref": "artifacts/vnext/n06-04/render-diagnostics-v1/raw-index.json",
+          "sha256": "7b0bb4d68cae6607236ea198dcd500c626fef9709cbf023980c752a328a66784",
+          "files": 231
+        }
+      ],
+      "acceptance_met": false,
+      "scope": "Exact-output numeric geometry indexing and shared immutable surface leases across modular animals;partial N06-04",
+      "limitations": [
+        "N06-04 remains IN_PROGRESS. These are geometry/texture ownership and scoped regression results,not whole-task acceptance.",
+        "Every required default-Chromium frame result is retained under the unchanged33.4ms rule;GPU diagnostics cannot replace a failed original workload.",
+        "All80external-GC recreates and intermediate peaks are recorded. Zero actor leases/canvases alone is not proof of no browser/driver memory leak.",
+        "The separate hardware diagnostic asserts actual AMD GPU/compositing and uses the frozen same-source fixture;it does not qualify physical Android/iOS,native memory,controlled loading or final art.",
+        "Controlled loading/final-art wait/full starter-catalog qualification and integrated groom/material/Low-facet/readability/owner review remain open.",
+        "Earlier CJS top-level-await,missing phase argument,Float64 attribute fixture,strict test typing and historical timeout/browser failures remain in indexed evidence.",
+        "No timeout,retry,quality,LOD,shadow,sampling or budget relaxation. The prior full browser failures are retained separately from this fresh18PASS source.",
+        "Hosted9227c67 core/images PASS,QualityFAIL remains the last recorded hosted outcome;no current-source hosted green is claimed.",
+        "Prior74serialized evidence records and available frozen members are preserved;two previously recorded auxiliary Lounge HTML losses remain explicit.",
+        "Retained vc-* images/data remain unchanged at67ff2d4. No public/native/store/registry/production action."
+      ],
+      "nextExactAction": "Continue N06-04 with a bounded per-active-appearance geometry lease for the two gameplay LODs. Reuse cached body/groom/face buffers across LOD switches;evict on appearance change,actor departure,suspend and destroy. Keep20active actor references and conservatively count all retained arrays/morph textures under24MiB/16MiB and unchanged heap/frame gates. Do not change LOD selection,quality or shaders. Retain the rejected conditional-bone-fetch diagnostic. Then controlled cold/warm loading and integrated art/readability review before N06-09. After real upstream web qualification hand off to Arena PA-001/002 and S1 through PA-017 before Lodge. Native stays deferred;Phase2 PAUSED;Arena PLANNED."
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

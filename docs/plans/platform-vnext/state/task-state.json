@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "updated_at": "2026-11-09T15:42:22.431Z",
+  "updated_at": "2026-11-09T16:47:54.806Z",
   "scope": "vNext implementation",
   "release_status": "NOT_REQUESTED",
   "module_activation": {
@@ -393,10 +393,11 @@
         "n06-04-raf-profile-partial-2026-11-09",
         "n06-04-camera-recovery-partial-2026-11-09",
         "n06-04-cafe-room-art-partial-2026-11-09",
-        "n06-04-seat-batches-partial-2026-11-09"
+        "n06-04-seat-batches-partial-2026-11-09",
+        "n06-04-geometry-surfaces-partial-2026-11-09"
       ],
       "blocker": null,
-      "next_action": "Continue N06-04 without relaxing gates:profile initial room confirmation/SwiftShader loading and twenty-actor frame stalls at33.4ms;investigate Deadline desktop heap growth over16MiB,resolve unchanged High-dog20s timeout and complete default desktop/mobile room regression. Then controlled loading and integrated art/groom/readability qualification before N06-09. Owner priority remains Pet Arena PvE before Lodge;handoff to PA-001/002 and S1 after real upstream web qualification. Phase2 stays PAUSED;native deferred."
+      "next_action": "Continue N06-04 with a bounded per-active-appearance geometry lease for the two gameplay LODs. Reuse cached body/groom/face buffers across LOD switches;evict on appearance change,actor departure,suspend and destroy. Keep20active actor references and conservatively count all retained arrays/morph textures under24MiB/16MiB and unchanged heap/frame gates. Do not change LOD selection,quality or shaders. Retain the rejected conditional-bone-fetch diagnostic. Then controlled cold/warm loading and integrated art/readability review before N06-09. After real upstream web qualification hand off to Arena PA-001/002 and S1 through PA-017 before Lodge. Native stays deferred;Phase2 PAUSED;Arena PLANNED."
     },
     "N06-05": {
       "status": "TODO",

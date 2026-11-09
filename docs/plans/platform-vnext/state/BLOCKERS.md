@@ -1,3 +1,9 @@
+# Current geometry/surface gates - 2026-11-09
+
+N06-04 remains IN_PROGRESS at19874e0. Fresh64scene/Pixi units,18browser cases and80external-GC recreates pass at their scopes;the prior High-dog and Connected failures are retained but do not reproduce in this full-source run. All four final heap-growth rules pass. Every required default SwiftShader33.4ms frame limit still fails. Separate asserted AMD results also fail High and Maid Balanced with frequent LOD rebuilds;they do not replace the original workload. Conditional bone fetch remains a rejected diagnostic. Next:bounded appearance-owned geometry retention across the two gameplay LODs,with complete resource/disposal/heap/frame accounting. Controlled loading,final art/readability/owner review and current hosted Quality remain open. See N06-04-GEOMETRY-SURFACE-CHECKPOINT.json. No gate or task status was relaxed;Arena remains PLANNED,Lodge PAUSED,native deferred.
+
+## Earlier checkpoints - historical
+
 # Current N06-04 performance/recovery gates — 2026-11-09
 
 Source 6002bb8 fixes required draw-call caps with two marker batches. Focused checks pass: 8 units, 2 actual browser cases, build/types/lint/governance. N06-04 remains IN_PROGRESS: all required 20-actor 33.4 ms frame gates fail; Deadline desktop final heap growth of 19.85 MiB exceeds 16 MiB; the old High-dog 20 s unit timeout remains. Full room checks yield desktop 7 PASS/2 initial Connected 5 s failures; mobile is not reached. Keep every failure and unchanged budget. A 6046 ms projection gap is observed, not attributed. Controlled loading, final art and owner/human review remain open. See `docs/plans/platform-vnext/audit/N06-04-SEAT-BATCH-CHECKPOINT.json`.

@@ -1,3 +1,11 @@
+# Geometry equality and surface texture leases - 2026-11-09
+
+Use full quantized row equality after numeric hashing,including morphs;retain Three remapping/fallback semantics and exact authored outputs. Surface recipes are immutable across tier/species/style,so one refcounted surface set belongs to live geometry-cache entries;actor materials/skeletons/poses retain their existing independence. Dispose textures on the final entry and recreate identical bytes afterward. See `docs/architecture/SCENE3D-GEOMETRY-AND-SURFACE-CACHE.md` and N06-04-GEOMETRY-SURFACE-CHECKPOINT.json.
+
+Keep default SwiftShader failures separate from the predeclared,asserted AMD diagnostic. Do not adopt the conditional-bone-fetch shader experiment because it still fails33.4ms. Investigate LOD geometry reuse with a bounded per-appearance lease instead of changing quality/selection;count every retained buffer and preserve active actor references and teardown guards. Current18browser/64unit/80recreate scopes do not qualify final art/loading or the entire task.
+
+## Earlier decisions - historical
+
 # Cafe room art and rejected performance experiments - 2026-11-09
 
 Keep the current manifest/RoomAuthority/seat and travel contracts. Theme-only procedural room detail uses original code primitives/wood texture,static material batching and independent idempotent disposal. Actual two-cafe inventory complements Sandbox unit fixtures;static counts and one-actor browser captures do not supply20actor/frame/loading/heap acceptance. Preserve default/creator recipe and owner art-review gate. No new external media or license inference.

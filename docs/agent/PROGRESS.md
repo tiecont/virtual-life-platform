@@ -1,3 +1,15 @@
+# Geometry/surface checkpoint - N06-04 remains IN_PROGRESS - 2026-11-09
+
+Source `3e14fc2` replaces decimal geometry keys with collision-checked numeric buckets; `19874e0` shares three immutable surface textures across animal variants. Actual full build/types/lint pass, 64 scene/Pixi units pass, 10 final focused cases pass, all 18 desktop/mobile room scenarios pass, and 120 authored model streams match exactly. The unchanged High-dog 20 s case passes. Character texture inventory falls from 5,679,760 to 283,988 bytes without changing triangles or draws.
+
+All 80 external-GC recreates finish; all four final heap-growth comparisons pass (Deadline desktop -3,285,764; Deadline mobile +2,838,720; Maid desktop +6,513,680; Maid mobile -1,273,680 bytes, versus the unchanged 16 MiB floor). Peaks and old failures remain. All required default SwiftShader frame limits still fail. A separate asserted AMD GPU diagnostic passes Low and Deadline Balanced but fails High and Maid Balanced during frequent LOD rebuilds. A conditional-bone-fetch shader experiment still fails 33.4 ms and is not adopted. No original gate is replaced.
+
+Audit: `docs/plans/platform-vnext/audit/N06-04-GEOMETRY-SURFACE-CHECKPOINT.json`; architecture: `docs/architecture/SCENE3D-GEOMETRY-AND-SURFACE-CACHE.md`. There are 75 vNext records; prior 74 serialized records, 58 immutable inputs/47 SQL and available frozen members are preserved. The new 231-file private index has SHA `7b0bb4d68cae6607236ea198dcd500c626fef9709cbf023980c752a328a66784`. Two historical auxiliary HTML losses remain explicit. Controlled loading, final art/readability, owner review and current hosted Quality remain unqualified. Retained vc-* stays at 67ff2d4; native deferred, Lodge PAUSED, Arena PLANNED. No public/store/production action.
+
+**Next exact action:** Implement a bounded per-active-appearance geometry lease for the two gameplay LODs; retain buffers across tier switches and release them on appearance/departure/suspend/destroy. Keep 20 active actor references, conservatively count retained arrays/morph textures, and remeasure original 24 MiB/16 MiB resource and frame/heap gates. Preserve LOD selection, quality and shaders. Then controlled loading/art and N06-09 before Arena PvE, then Lodge. Owner `.idea/`, `infra/botkeep-ca.pem` and `docs/plans/Archive.tar.gz` remain unread/untracked/unstaged.
+
+## Earlier checkpoints - historical
+
 # Seat-marker batching checkpoint — N06-04 remains IN_PROGRESS — 2026-11-09
 
 Source `6002bb8` batches 3D seat markers into two opacity groups, updates sparse slot/raycast bounds, and disposes instance buffers explicitly. Resource inventory includes full matrix/colour capacity. Actual checks pass: 8 focused units, strict source/test types, lint, full build, CI contract, 100 governance tests and both boundary checks. The distant-seat → stand → return regression passes actual desktop/mobile browser/API/DB executions.
