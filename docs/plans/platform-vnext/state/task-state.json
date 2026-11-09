@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "updated_at": "2026-11-09T03:49:14.646409+00:00",
+  "updated_at": "2026-11-09T09:47:00.701Z",
   "scope": "vNext implementation",
   "release_status": "NOT_REQUESTED",
   "module_activation": {
@@ -236,7 +236,8 @@
       "evidence_refs": [
         "n03-04-2026-11-05",
         "n03-04-fresh-checkout-local-2026-11-09",
-        "n03-04-report-output-safety-2026-11-09"
+        "n03-04-report-output-safety-2026-11-09",
+        "n03-04-smoke-diagnostics-2026-11-09"
       ],
       "blocker": null,
       "next_action": "Observe exact pushed-SHA hosted images/Quality;preserve report-output guard and recorded2auxiliary HTML loss. Create fresh artifacts/vnext/n06-04/web-v2 (never rerun web-v1 outputs). Use saved Sandbox timeline c07d86d4 to attribute GLContextEGL::MakeCurrent stalls and qualify both declared-profile cases at unchanged100ms/>10sample/loading/heap limits. Continue integrated Deadline/Maid3D camera/readability/art and N06-09;Phase2 stays paused until a fresh qualified upstream handoff. Inspect hosted Quality for the exact pushed SHA."
@@ -388,10 +389,11 @@
       "branch": "codex/lantern-lodge-foundation",
       "evidence_refs": [
         "n06-04-web-stability-partial-2026-11-09",
-        "n06-04-raf-profile-partial-2026-11-09"
+        "n06-04-raf-profile-partial-2026-11-09",
+        "n06-04-camera-recovery-partial-2026-11-09"
       ],
       "blocker": null,
-      "next_action": "Create fresh artifacts/vnext/n06-04/web-v2 (never rerun web-v1 outputs). Use saved Sandbox timeline c07d86d4 to attribute GLContextEGL::MakeCurrent stalls and qualify both declared-profile cases at unchanged100ms/>10sample/loading/heap limits. Continue integrated Deadline/Maid3D camera/readability/art and N06-09;Phase2 stays paused until a fresh qualified upstream handoff. Inspect hosted Quality for the exact pushed SHA."
+      "next_action": "Continue N06-04:attribute Sandbox GLContextEGL::MakeCurrent stalls from saved c07d86d4 timeline and compare actual Pixi batches/static Graphics at unchanged100ms/>10samples/loading/heap limits;qualify desktop and mobile rendering specs without skips/retries. Refine integrated fur/material/room/UI art before N06-09. Observe exact pushed-SHA hosted Quality. Phase2 remains PAUSED until a fresh qualified upstream handoff;native remains owner-deferred."
     },
     "N06-05": {
       "status": "TODO",

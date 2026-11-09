@@ -1,3 +1,11 @@
+# Current camera/art/performance gates - 2026-11-09
+
+N06-04 camera/recovery slice passes4focused+22creator+16room browser cases;100governance/build/types/lint and source67ff2d4 images18+Compose6+retained HTTPS4PASS. This does not qualify final3D groom/materials,Low faceting,controlled loading,human usability or owner art approval. Sandbox declared-profile desktop166.7ms/mobile150ms still exceed100ms. Preserve unchanged limits and all failures;native remains deferred and Phase2 paused.
+
+Hosted42558723242 at150dd18 failed coreTS7016/images. Local declaration/host shared-package build/failure-summary fixes pass relevant checks;exact pushed-SHA hosted result remains to observe. Earlier4b2a973 migrator failure did not reproduce with identical images;cause unconfirmed. Wrong-image negative verifies bounded pre-cleanup owned diagnostics and cleanup. Current local vc-* runs67ff2d4 healthy with47SQL/vc_data retained. Two earlier auxiliary HTML losses remain explicit;no new evidence loss.
+
+## Earlier checkpoints - historical
+
 # Current web gates — 2026-11-09
 
 N06-04 IN_PROGRESS:declared-profile Deadline2cases pass,but Sandbox desktop166.7ms/mobile150ms exceed100ms. Preserve failures and profileGL context switching;do not claim global performance qualification. Final3D groom/material/readability/loading/human/owner art remain unqualified. Native is deferred,not a web blocker. Local images18+Compose6 and retained HTTPS update PASS;fresh hosted pushed-SHA Quality remains required.

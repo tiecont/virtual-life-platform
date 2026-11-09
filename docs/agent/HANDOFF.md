@@ -1,3 +1,17 @@
+# Camera/recovery slice qualified locally; N06-04 remains in progress - 2026-11-09
+
+Source67ff2d4:optional whole-room/follow-character camera now enlarges the saved animal without gameplay commands or account persistence. Compact landscape reserves camera-toolbar space. Authoritative refresh retains a disabled Leave command instead of replacing it with Rejoin;real held-refresh regression fails on the old build and passes desktop/mobile after56047f1. Actual4focused camera+22creator+16room browser cases,45scene units,100governance,full build/types/lint/strict browser types/localCI contract and scene-pixel checks PASS. [Source-bound checkpoint](../plans/platform-vnext/audit/N06-04-CAMERA-CHECKPOINT.json) preserves failed fixtures,overlap,creator19PASS/3FAIL and the interrupted run;no gate was relaxed.
+
+API/web/admin each6runtime scenarios and Compose6PASS. Retained https://localhost:3443 now runs tested67ff2d4 API/web images;vc-db/vc-api/vc-web/vc-edge healthy,vc-migrate exited0,47SQL/vc_data retained. Authenticated encrypted backup and4read-only HTTPS camera probes PASS. The previous4b2a973 migration failure did not reproduce with the exact same images;root cause remains unknown. A deliberate wrong-image negative proves bounded owned migrator diagnostics are captured before cleanup. No public/store/registry/production action.
+
+71vNext records;prior69serialized objects,50immutable SQL/Mxx/Phase2inputs and455+132+153+391available frozen members preserved;two previously lost auxiliary Lounge HTML indexes remain explicit. New492file private index SHAa9f31147b74af927697f7d8e8e967cb20dda39ed7d92384f81f0eb8b9f0c131b. Counts unchanged:44VERIFIED/2external/18TODO/12deferred/1IN_PROGRESS. Phase2 PAUSED;native owner-deferred. Hosted42558723242 at150dd18 FAILED(coreTS7016/images);declaration,host package build and failure-summary fixes await exact pushed-SHA hosted observation.
+
+N06-04 is not final-art/performance acceptance. Sparse/speckled groom,technical room/materials,Low faceting,controlled loading and human/owner approval remain open. Sandbox declared-profile desktop166.7ms/mobile150ms still exceed100ms;no performance rerun or threshold/sample/retry changes in this slice.
+
+**Next exact action:** Attribute Sandbox GLContextEGL::MakeCurrent stalls using savedc07d86d4 timeline;compare actual Pixi batches/static Graphics and qualify both rendering specs under unchanged100ms/>10samples/loading/heap limits. Refine integrated fur/material/room/UI art before N06-09;observe exact pushed-SHA hosted Quality. Refresh upstream handoff before Phase2 resumes. Keep vc-* running and owner paths unread/untracked/unstaged.
+
+## Earlier checkpoints - historical
+
 # Local Docker updated; web quality remains in progress — 2026-11-09
 
 N03 local packaging at983d257:actual API/web/admin6scenarios each,Compose6scenarios and authenticated encrypted-backup/retained HTTPS update PASS. vc-db/vc-api/vc-web/vc-edge are healthy;vc-migrate exited0,47SQL and vc_data/session configuration retained. Open https://localhost:3443. [Fresh-checkout acceptance](../plans/platform-vnext/audit/N03-04-FRESH-CHECKOUT-ACCEPTANCE.json). No registry/public/store/production action.

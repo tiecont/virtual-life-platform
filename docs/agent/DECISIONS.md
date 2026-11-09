@@ -1,3 +1,11 @@
+# Presentation camera and stable room actions - 2026-11-09
+
+RoomSceneHandle exposes optional framing capability;old adapters remain compatible. Whole-room and follow-self use conservative animal bounds and translate only the camera,target and client hit targets;server geometry,membership and saved appearance do not change. Context/account changes reset framing;temporary same-context sync may preserve it. During authoritative refresh retain a disabled Leave command with distinct React keys instead of replacing it with Rejoin under an in-progress pointer click. Read camera diagnostics and dimensions atomically in browser assertions.
+
+Image smoke captures bounded owned migrator logs/state before cleanup,without inspecting environment. Exact previously failed images pass a new disposable6scenario run;do not infer the initial cause or erase its failure. Expected wrong-image negative verifies diagnostics/cleanup. Hosted core requires the checked-in declaration for the report helper;image smoke host imports need build:packages before release-bundle on clean checkout. Actual hosted verification remains independent.
+
+## Earlier decisions - historical
+
 # Browser measurement and report custody — 2026-11-09
 
 ADR0140 separates the declared SwiftShader compositor measurement context and keeps both existing cases in dedicated CI workers;actual backend is asserted. Deadline2PASS and Sandbox2FAIL do not qualify the whole profile or final3D art. Preserve all prior default-compositor failures and locked limits.

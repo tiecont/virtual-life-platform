@@ -1,3 +1,9 @@
+# Camera checkpoint gates - 2026-11-09
+
+N06-04 camera/recovery functional slice passes4camera+22creator+16room browser cases;source67ff2d4 image18/Compose6/retained HTTPS4PASS. Final art/groom/materials/Low faceting/loading/human approval remain unqualified;Sandbox desktop166.7ms/mobile150ms exceed100ms and require actual profiling/fix under unchanged limits. Native is owner-deferred,Phase2 PAUSED. Hosted150dd18 failed coreTS7016/images;fixes require exact pushed-SHA observation. Earlier migration failure is unreproduced,not diagnosed. Two known auxiliary HTML losses remain explicit;old69records/50inputs and available frozen members preserved.
+
+## Earlier checkpoints - historical
+
 # Current web gates — 2026-11-09
 
 N06-04 IN_PROGRESS:declared-profile Deadline2cases pass,but Sandbox desktop166.7ms/mobile150ms exceed100ms. Preserve failures and profileGL context switching;do not claim global performance qualification. Final3D groom/material/readability/loading/human/owner art remain unqualified. Native is deferred,not a web blocker. Local images18+Compose6 and retained HTTPS update PASS;fresh hosted pushed-SHA Quality remains required.

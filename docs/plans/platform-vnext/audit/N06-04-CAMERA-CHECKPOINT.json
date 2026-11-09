@@ -1,0 +1,899 @@
+{
+  "taskId": "N06-04",
+  "sourceRevision": "67ff2d4d9d889c3855750474a4bf4322f4bd613f",
+  "at": "2026-11-09T09:47:00.701Z",
+  "scope": "Whole-room/follow-character camera and stable Leave command with actual web recovery regression;partial N06-04",
+  "acceptance_met": false,
+  "actualOutcomes": {
+    "camera": 4,
+    "creator": 22,
+    "room": 16,
+    "sceneUnits": 45,
+    "governance": 100,
+    "typecheck": "PASS",
+    "build": "PASS",
+    "lint": "PASS",
+    "browserTypes": "PASS",
+    "pixelChecks": "8nonblank scene crops;4changed seat-to-walk pairs;manual desktop/mobile review",
+    "refreshRed": "Old built application failed missing Leave while syncing;fixed desktop/mobile cases pass",
+    "images": {
+      "sourceRevision": "67ff2d4d9d889c3855750474a4bf4322f4bd613f",
+      "result": "PASS",
+      "apiScenarios": 6,
+      "webScenarios": 6,
+      "adminScenarios": 6,
+      "cleanupComplete": true,
+      "images": {
+        "api": "sha256:ad79744b5983598bffd75464c0537f0946b4d44d551f038178ea7f2d84622554",
+        "web": "sha256:b65c15a258da2597a7bec1562479c0874686f91e7e7a61082074f5f1c7d698f2",
+        "admin": "sha256:bd5119df550106b37f80703c5f9d88e03b23804fd8ad1d718e06dea011066214"
+      },
+      "inspection": {
+        "api": {
+          "uid": 1000,
+          "node": "26.9.0",
+          "firstPartyPackages": [
+            "@virtual-city/boardgame-core",
+            "@virtual-city/contracts",
+            "@virtual-city/deadline-world",
+            "@virtual-city/lantern-lodge-world",
+            "@virtual-city/library-world",
+            "@virtual-city/lounge-world",
+            "@virtual-city/maid-world",
+            "@virtual-city/park-world",
+            "@virtual-city/platform-api",
+            "@virtual-city/restaurant-world",
+            "@virtual-city/world-sdk"
+          ],
+          "files": 11348,
+          "inventorySha256": "b7f1132e499b3100e79377b63e0667bd295c6e26644e5216178c700becb84b5e",
+          "migrations": 47,
+          "credentialScan": {
+            "scannedTextFiles": 7439,
+            "patterns": [
+              "PEM private key body",
+              "AWS access key ID",
+              "GitHub classic token",
+              "credential filenames"
+            ],
+            "findings": 0,
+            "scope": "Application dependency filesystem; bounded text files; not a CVE or universal secret certification"
+          },
+          "filesystemWriteDenied": true
+        },
+        "web": {
+          "uid": 1000,
+          "node": "26.9.0",
+          "filesystemWriteDenied": true,
+          "buildId": "7PHcA8DLey8aX5x6Y2WQi",
+          "files": 2327,
+          "inventorySha256": "c1dd56c7535ce0cdfb5fd668698aa5a55f4765562f9f6b07b1861cc458ff1665",
+          "clientJs": 58,
+          "clientCss": 13,
+          "scannedTextFiles": 2245,
+          "definedCredentialFindings": 0,
+          "browserBuildOriginAbsent": true
+        },
+        "admin": {
+          "uid": 1000,
+          "node": "26.9.0",
+          "filesystemWriteDenied": true,
+          "buildId": "LjhUOVVvjEcOQq3koEFqX",
+          "files": 2128,
+          "inventorySha256": "ae096d08057c34e0c9a0232417176f2594d670fc4f2c05ad87e6d5ec3fe24ef9",
+          "clientJs": 20,
+          "clientCss": 1,
+          "scannedTextFiles": 2115,
+          "definedCredentialFindings": 0,
+          "syntheticBuildMarkersAndPrivateRouteAbsent": true
+        }
+      }
+    },
+    "localStack": {
+      "sourceRevision": "67ff2d4d9d889c3855750474a4bf4322f4bd613f",
+      "scope": "Retained loopback development stack only;no destructive SQL or database restore",
+      "publicRelease": false,
+      "steps": [
+        {
+          "command": "compose stop edge web api",
+          "exitCode": 0
+        },
+        {
+          "command": "pg_dump to existing sealArchive/openArchive;no plaintext file",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm docker:up (Compose wait and certificate-verified TLS readiness)",
+          "exitCode": 0
+        },
+        {
+          "command": "Read-only schema count and owned container health",
+          "exitCode": 0
+        }
+      ],
+      "backup": {
+        "authenticatedEncryption": "AES-256-GCM",
+        "roundTripAuthenticated": true,
+        "encryptedBytes": 378549,
+        "sha256": "8eb6a43d20b83ce845e4e3452d7fb7654ddac78b5ad03096da0f8dff8241188a",
+        "restoreRun": false,
+        "keyExcludedFromEvidence": true
+      },
+      "containers": [
+        {
+          "name": "/vc-api",
+          "image": "sha256:ad79744b5983598bffd75464c0537f0946b4d44d551f038178ea7f2d84622554",
+          "health": "healthy"
+        },
+        {
+          "name": "/vc-web",
+          "image": "sha256:b65c15a258da2597a7bec1562479c0874686f91e7e7a61082074f5f1c7d698f2",
+          "health": "healthy"
+        },
+        {
+          "name": "/vc-db",
+          "image": "sha256:bb377b7239d2774ac8cc76f481596ce96c5a6b5e9d141f6d0a0ee371a6e7c0f2",
+          "health": "healthy"
+        },
+        {
+          "name": "/vc-edge",
+          "image": "sha256:e70b164da81ef698b3ad19af799ea6086ce6d9e48ed4079eb9fe26f6fbf14ee5",
+          "health": "healthy"
+        }
+      ],
+      "migrations": 47,
+      "result": "PASS",
+      "origin": "https://localhost:3443",
+      "volumeRetained": "vc_data",
+      "at": "2026-11-09T09:45:49.994Z"
+    }
+  },
+  "commands": [
+    {
+      "command": "pnpm exec tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --resolveJsonModule --esModuleInterop --strict --skipLibCheck --types node --lib ES2022,DOM tests/e2e/avatar-creator.spec.ts tests/e2e/scene3d-room.spec.ts tests/support/scene-rendering-profile.ts playwright.config.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "--noEmit",
+        "--target",
+        "ES2022",
+        "--module",
+        "ESNext",
+        "--moduleResolution",
+        "Bundler",
+        "--resolveJsonModule",
+        "--esModuleInterop",
+        "--strict",
+        "--skipLibCheck",
+        "--types",
+        "node",
+        "--lib",
+        "ES2022,DOM",
+        "tests/e2e/avatar-creator.spec.ts",
+        "tests/e2e/scene3d-room.spec.ts",
+        "tests/support/scene-rendering-profile.ts",
+        "playwright.config.ts"
+      ],
+      "exitCode": 2,
+      "sourceRevision": "59462efb7e5f41430a3be85920acbcff80580822",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/browser-types-46d1b9a4.json",
+      "log": "artifacts/vnext/n06-04/web-v2/browser-types-46d1b9a4.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --resolveJsonModule --esModuleInterop --strict --skipLibCheck --types node --lib ES2022,DOM tests/e2e/avatar-creator.spec.ts tests/e2e/scene3d-room.spec.ts tests/support/scene-rendering-profile.ts playwright.config.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "--noEmit",
+        "--target",
+        "ES2022",
+        "--module",
+        "ESNext",
+        "--moduleResolution",
+        "Bundler",
+        "--resolveJsonModule",
+        "--esModuleInterop",
+        "--strict",
+        "--skipLibCheck",
+        "--types",
+        "node",
+        "--lib",
+        "ES2022,DOM",
+        "tests/e2e/avatar-creator.spec.ts",
+        "tests/e2e/scene3d-room.spec.ts",
+        "tests/support/scene-rendering-profile.ts",
+        "playwright.config.ts"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "4b2a9739589ffb81ffb55b53972229806a5e2730",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/browser-types-final-ca49d703.json",
+      "log": "artifacts/vnext/n06-04/web-v2/browser-types-final-ca49d703.log"
+    },
+    {
+      "command": "pnpm build",
+      "argv": [
+        "pnpm",
+        "build"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "b894e4cca030363b59696971946aece86f04c4bf",
+      "trackedDiffSha256": "547d3e0ca9028dd2ef1d74c214a9dda657e9121ed02f84a1c2a8f39c8fd029cc",
+      "facts": "artifacts/vnext/n06-04/web-v2/build-984064b7.json",
+      "log": "artifacts/vnext/n06-04/web-v2/build-984064b7.log"
+    },
+    {
+      "command": "pnpm build",
+      "argv": [
+        "pnpm",
+        "build"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "f19ade88d607c9904aeeff905af9292b0beef9b1",
+      "trackedDiffSha256": "27f842847486a08dfa4914bc8ca8a65b3ad4643cdc744f9a1c4b9b2ec6fe1b90",
+      "facts": "artifacts/vnext/n06-04/web-v2/build-camera-sync-411e09b7.json",
+      "log": "artifacts/vnext/n06-04/web-v2/build-camera-sync-411e09b7.log"
+    },
+    {
+      "command": "pnpm build",
+      "argv": [
+        "pnpm",
+        "build"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "6e3fc770e11ebf40581d594758c561c4d19230d5",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/build-final-1ce08830.json",
+      "log": "artifacts/vnext/n06-04/web-v2/build-final-1ce08830.log"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/avatar-creator.spec.ts --grep=camera follows --output=test-results/ci/vnext/n06-04-camera-4a338154",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "playwright",
+        "test",
+        "tests/e2e/avatar-creator.spec.ts",
+        "--grep=camera follows",
+        "--output=test-results/ci/vnext/n06-04-camera-4a338154"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "f19ade88d607c9904aeeff905af9292b0beef9b1",
+      "trackedDiffSha256": "27f842847486a08dfa4914bc8ca8a65b3ad4643cdc744f9a1c4b9b2ec6fe1b90",
+      "facts": "artifacts/vnext/n06-04/web-v2/camera-4a338154.json",
+      "log": "artifacts/vnext/n06-04/web-v2/camera-4a338154.log"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/avatar-creator.spec.ts --grep=camera follows --output=test-results/ci/vnext/n06-04-camera-ba6aceaa",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "playwright",
+        "test",
+        "tests/e2e/avatar-creator.spec.ts",
+        "--grep=camera follows",
+        "--output=test-results/ci/vnext/n06-04-camera-ba6aceaa"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "049202ad772aebfc34628070bdc6e6ed7485109c",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/camera-ba6aceaa.json",
+      "log": "artifacts/vnext/n06-04/web-v2/camera-ba6aceaa.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --resolveJsonModule --esModuleInterop --strict --skipLibCheck --types node --lib ES2022,DOM tests/e2e/avatar-creator.spec.ts tests/e2e/scene3d-room.spec.ts tests/support/scene-rendering-profile.ts playwright.config.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "--noEmit",
+        "--target",
+        "ES2022",
+        "--module",
+        "ESNext",
+        "--moduleResolution",
+        "Bundler",
+        "--resolveJsonModule",
+        "--esModuleInterop",
+        "--strict",
+        "--skipLibCheck",
+        "--types",
+        "node",
+        "--lib",
+        "ES2022,DOM",
+        "tests/e2e/avatar-creator.spec.ts",
+        "tests/e2e/scene3d-room.spec.ts",
+        "tests/support/scene-rendering-profile.ts",
+        "playwright.config.ts"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "67ff2d4d9d889c3855750474a4bf4322f4bd613f",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/camera-browser-types-c605fcb6.json",
+      "log": "artifacts/vnext/n06-04/web-v2/camera-browser-types-c605fcb6.log"
+    },
+    {
+      "command": "pnpm ci:check",
+      "argv": [
+        "pnpm",
+        "ci:check"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "67ff2d4d9d889c3855750474a4bf4322f4bd613f",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/camera-ci-33ed9f26.json",
+      "log": "artifacts/vnext/n06-04/web-v2/camera-ci-33ed9f26.log"
+    },
+    {
+      "command": "node scripts/local-compose-smoke.mjs --bundle artifacts/vnext/n03-04/camera-20261109-v1/release-bundle/bundle.json",
+      "argv": [
+        "node",
+        "scripts/local-compose-smoke.mjs",
+        "--bundle",
+        "artifacts/vnext/n03-04/camera-20261109-v1/release-bundle/bundle.json"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "67ff2d4d9d889c3855750474a4bf4322f4bd613f",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/camera-compose-19c2bcc1.json",
+      "log": "artifacts/vnext/n06-04/web-v2/camera-compose-19c2bcc1.log"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/avatar-creator.spec.ts --grep=camera follows --output=test-results/ci/vnext/n06-04-camera-d25be75a",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "playwright",
+        "test",
+        "tests/e2e/avatar-creator.spec.ts",
+        "--grep=camera follows",
+        "--output=test-results/ci/vnext/n06-04-camera-d25be75a"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "6e3fc770e11ebf40581d594758c561c4d19230d5",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/camera-d25be75a.json",
+      "log": "artifacts/vnext/n06-04/web-v2/camera-d25be75a.log"
+    },
+    {
+      "command": "pnpm typecheck",
+      "argv": [
+        "pnpm",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "56047f15beb2a9ca112222bc060d5b688fa75df1",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/camera-final-types-ba1f1e52.json",
+      "log": "artifacts/vnext/n06-04/web-v2/camera-final-types-ba1f1e52.log"
+    },
+    {
+      "command": "node --test tests/governance/admin-artifact.test.mjs tests/governance/admin-boundary.test.mjs tests/governance/admin-bundle.test.mjs tests/governance/api-runtime-package.test.mjs tests/governance/artifact-release.test.mjs tests/governance/backup.test.mjs tests/governance/boundaries.test.mjs tests/governance/browser-report-directory.test.mjs tests/governance/ci.test.mjs tests/governance/client-boundaries.test.mjs tests/governance/client-legacy-fixture.test.mjs tests/governance/digest-promotion.test.mjs tests/governance/evidence-inventory.test.mjs tests/governance/evidence-output.test.mjs tests/governance/evidence-reader.test.mjs tests/governance/evidence-store.test.mjs tests/governance/image-inspection.test.mjs tests/governance/infra.test.mjs tests/governance/kubernetes.test.mjs tests/governance/legacy-snapshots.test.mjs tests/governance/ops-watch.test.mjs tests/governance/plan-status.test.mjs tests/governance/release.test.mjs tests/governance/resource-budget.test.mjs tests/governance/runtime-profile-comparison.test.mjs tests/governance/scene3d-loading.test.mjs tests/governance/scene3d-workload.test.mjs tests/governance/source-schema-policy.test.mjs tests/governance/test-environment.test.mjs tests/governance/toolchain.test.mjs tests/governance/web-first-plan.test.mjs tests/governance/worker-boundary.test.mjs",
+      "argv": [
+        "node",
+        "--test",
+        "tests/governance/admin-artifact.test.mjs",
+        "tests/governance/admin-boundary.test.mjs",
+        "tests/governance/admin-bundle.test.mjs",
+        "tests/governance/api-runtime-package.test.mjs",
+        "tests/governance/artifact-release.test.mjs",
+        "tests/governance/backup.test.mjs",
+        "tests/governance/boundaries.test.mjs",
+        "tests/governance/browser-report-directory.test.mjs",
+        "tests/governance/ci.test.mjs",
+        "tests/governance/client-boundaries.test.mjs",
+        "tests/governance/client-legacy-fixture.test.mjs",
+        "tests/governance/digest-promotion.test.mjs",
+        "tests/governance/evidence-inventory.test.mjs",
+        "tests/governance/evidence-output.test.mjs",
+        "tests/governance/evidence-reader.test.mjs",
+        "tests/governance/evidence-store.test.mjs",
+        "tests/governance/image-inspection.test.mjs",
+        "tests/governance/infra.test.mjs",
+        "tests/governance/kubernetes.test.mjs",
+        "tests/governance/legacy-snapshots.test.mjs",
+        "tests/governance/ops-watch.test.mjs",
+        "tests/governance/plan-status.test.mjs",
+        "tests/governance/release.test.mjs",
+        "tests/governance/resource-budget.test.mjs",
+        "tests/governance/runtime-profile-comparison.test.mjs",
+        "tests/governance/scene3d-loading.test.mjs",
+        "tests/governance/scene3d-workload.test.mjs",
+        "tests/governance/source-schema-policy.test.mjs",
+        "tests/governance/test-environment.test.mjs",
+        "tests/governance/toolchain.test.mjs",
+        "tests/governance/web-first-plan.test.mjs",
+        "tests/governance/worker-boundary.test.mjs"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "67ff2d4d9d889c3855750474a4bf4322f4bd613f",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/camera-governance-9c0b887c.json",
+      "log": "artifacts/vnext/n06-04/web-v2/camera-governance-9c0b887c.log"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "56047f15beb2a9ca112222bc060d5b688fa75df1",
+      "trackedDiffSha256": "845f45c7f45a3ef1772526e3d4282f380c480b7cbb917631cae3ad5c5b4ca5ed",
+      "facts": "artifacts/vnext/n06-04/web-v2/camera-lint-d0df359b.json",
+      "log": "artifacts/vnext/n06-04/web-v2/camera-lint-d0df359b.log"
+    },
+    {
+      "command": "node artifacts/vnext/n06-04/web-v2/update-local.mjs artifacts/image-web-00b8ca3b/facts.json",
+      "argv": [
+        "node",
+        "artifacts/vnext/n06-04/web-v2/update-local.mjs",
+        "artifacts/image-web-00b8ca3b/facts.json"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "67ff2d4d9d889c3855750474a4bf4322f4bd613f",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/camera-local-update-03734aaf.json",
+      "log": "artifacts/vnext/n06-04/web-v2/camera-local-update-03734aaf.log"
+    },
+    {
+      "command": "node artifacts/vnext/n06-04/web-v2/check-camera-pixels.mjs",
+      "argv": [
+        "node",
+        "artifacts/vnext/n06-04/web-v2/check-camera-pixels.mjs"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "67ff2d4d9d889c3855750474a4bf4322f4bd613f",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/camera-pixels-86a8533a.json",
+      "log": "artifacts/vnext/n06-04/web-v2/camera-pixels-86a8533a.log"
+    },
+    {
+      "command": "node scripts/release-bundle.mjs --output artifacts/vnext/n03-04/camera-20261109-v1/release-bundle --source-revision 67ff2d4d9d889c3855750474a4bf4322f4bd613f",
+      "argv": [
+        "node",
+        "scripts/release-bundle.mjs",
+        "--output",
+        "artifacts/vnext/n03-04/camera-20261109-v1/release-bundle",
+        "--source-revision",
+        "67ff2d4d9d889c3855750474a4bf4322f4bd613f"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "67ff2d4d9d889c3855750474a4bf4322f4bd613f",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/camera-release-bundle-95b6059c.json",
+      "log": "artifacts/vnext/n06-04/web-v2/camera-release-bundle-95b6059c.log"
+    },
+    {
+      "command": "node artifacts/vnext/n06-04/web-v2/probe-local-camera.mjs",
+      "argv": [
+        "node",
+        "artifacts/vnext/n06-04/web-v2/probe-local-camera.mjs"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "67ff2d4d9d889c3855750474a4bf4322f4bd613f",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/camera-retained-probe-fbf114c3.json",
+      "log": "artifacts/vnext/n06-04/web-v2/camera-retained-probe-fbf114c3.log"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/scene3d/test/room-camera.test.ts --maxWorkers=1",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "packages/scene3d/test/room-camera.test.ts",
+        "--maxWorkers=1"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "b894e4cca030363b59696971946aece86f04c4bf",
+      "trackedDiffSha256": "547d3e0ca9028dd2ef1d74c214a9dda657e9121ed02f84a1c2a8f39c8fd029cc",
+      "facts": "artifacts/vnext/n06-04/web-v2/camera-unit-022953d8.json",
+      "log": "artifacts/vnext/n06-04/web-v2/camera-unit-022953d8.log"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/scene3d/test/room-camera.test.ts --maxWorkers=1",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "packages/scene3d/test/room-camera.test.ts",
+        "--maxWorkers=1"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "b894e4cca030363b59696971946aece86f04c4bf",
+      "trackedDiffSha256": "547d3e0ca9028dd2ef1d74c214a9dda657e9121ed02f84a1c2a8f39c8fd029cc",
+      "facts": "artifacts/vnext/n06-04/web-v2/camera-unit-ea635297.json",
+      "log": "artifacts/vnext/n06-04/web-v2/camera-unit-ea635297.log"
+    },
+    {
+      "command": "pnpm ci:check",
+      "argv": [
+        "pnpm",
+        "ci:check"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "150dd182775551c39e713199dd4ff9a22d3ed844",
+      "trackedDiffSha256": "4c3fdbd5809daa9c1a8b3d8945def5da09a04fbab70fb361d20a957b7e744d43",
+      "facts": "artifacts/vnext/n06-04/web-v2/ci-72aa57b6.json",
+      "log": "artifacts/vnext/n06-04/web-v2/ci-72aa57b6.log"
+    },
+    {
+      "command": "pnpm ci:check",
+      "argv": [
+        "pnpm",
+        "ci:check"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "6081f2c0325fb6a5376fb0c2d9447c946fc881ad",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/ci-final-fd46fbd1.json",
+      "log": "artifacts/vnext/n06-04/web-v2/ci-final-fd46fbd1.log"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/avatar-creator.spec.ts --output=test-results/ci/vnext/n06-04-creator-80d3cf6d",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "playwright",
+        "test",
+        "tests/e2e/avatar-creator.spec.ts",
+        "--output=test-results/ci/vnext/n06-04-creator-80d3cf6d"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "56047f15beb2a9ca112222bc060d5b688fa75df1",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/creator-80d3cf6d.json",
+      "log": "artifacts/vnext/n06-04/web-v2/creator-80d3cf6d.log"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/avatar-creator.spec.ts --output=test-results/ci/vnext/n06-04-creator-f2c0a441",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "playwright",
+        "test",
+        "tests/e2e/avatar-creator.spec.ts",
+        "--output=test-results/ci/vnext/n06-04-creator-f2c0a441"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "6081f2c0325fb6a5376fb0c2d9447c946fc881ad",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/creator-f2c0a441.json",
+      "log": "artifacts/vnext/n06-04/web-v2/creator-f2c0a441.log"
+    },
+    {
+      "command": "node --test tests/governance/admin-artifact.test.mjs tests/governance/admin-boundary.test.mjs tests/governance/admin-bundle.test.mjs tests/governance/api-runtime-package.test.mjs tests/governance/artifact-release.test.mjs tests/governance/backup.test.mjs tests/governance/boundaries.test.mjs tests/governance/browser-report-directory.test.mjs tests/governance/ci.test.mjs tests/governance/client-boundaries.test.mjs tests/governance/client-legacy-fixture.test.mjs tests/governance/digest-promotion.test.mjs tests/governance/evidence-inventory.test.mjs tests/governance/evidence-output.test.mjs tests/governance/evidence-reader.test.mjs tests/governance/evidence-store.test.mjs tests/governance/image-inspection.test.mjs tests/governance/infra.test.mjs tests/governance/kubernetes.test.mjs tests/governance/legacy-snapshots.test.mjs tests/governance/ops-watch.test.mjs tests/governance/plan-status.test.mjs tests/governance/release.test.mjs tests/governance/resource-budget.test.mjs tests/governance/runtime-profile-comparison.test.mjs tests/governance/scene3d-loading.test.mjs tests/governance/scene3d-workload.test.mjs tests/governance/source-schema-policy.test.mjs tests/governance/test-environment.test.mjs tests/governance/toolchain.test.mjs tests/governance/web-first-plan.test.mjs tests/governance/worker-boundary.test.mjs",
+      "argv": [
+        "node",
+        "--test",
+        "tests/governance/admin-artifact.test.mjs",
+        "tests/governance/admin-boundary.test.mjs",
+        "tests/governance/admin-bundle.test.mjs",
+        "tests/governance/api-runtime-package.test.mjs",
+        "tests/governance/artifact-release.test.mjs",
+        "tests/governance/backup.test.mjs",
+        "tests/governance/boundaries.test.mjs",
+        "tests/governance/browser-report-directory.test.mjs",
+        "tests/governance/ci.test.mjs",
+        "tests/governance/client-boundaries.test.mjs",
+        "tests/governance/client-legacy-fixture.test.mjs",
+        "tests/governance/digest-promotion.test.mjs",
+        "tests/governance/evidence-inventory.test.mjs",
+        "tests/governance/evidence-output.test.mjs",
+        "tests/governance/evidence-reader.test.mjs",
+        "tests/governance/evidence-store.test.mjs",
+        "tests/governance/image-inspection.test.mjs",
+        "tests/governance/infra.test.mjs",
+        "tests/governance/kubernetes.test.mjs",
+        "tests/governance/legacy-snapshots.test.mjs",
+        "tests/governance/ops-watch.test.mjs",
+        "tests/governance/plan-status.test.mjs",
+        "tests/governance/release.test.mjs",
+        "tests/governance/resource-budget.test.mjs",
+        "tests/governance/runtime-profile-comparison.test.mjs",
+        "tests/governance/scene3d-loading.test.mjs",
+        "tests/governance/scene3d-workload.test.mjs",
+        "tests/governance/source-schema-policy.test.mjs",
+        "tests/governance/test-environment.test.mjs",
+        "tests/governance/toolchain.test.mjs",
+        "tests/governance/web-first-plan.test.mjs",
+        "tests/governance/worker-boundary.test.mjs"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "59462efb7e5f41430a3be85920acbcff80580822",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/governance-0ae8d557.json",
+      "log": "artifacts/vnext/n06-04/web-v2/governance-0ae8d557.log"
+    },
+    {
+      "command": "node scripts/web-image-smoke.mjs --web sha256:55b196a8f48e1633f8a534341b89bf4d1dc0bad8ee5614d47fe332a6b874036a --api sha256:55b196a8f48e1633f8a534341b89bf4d1dc0bad8ee5614d47fe332a6b874036a --context artifacts/image-web-cf0fd337/source --output artifacts/image-web-migrator-negative-20261109-v1/smoke",
+      "argv": [
+        "node",
+        "scripts/web-image-smoke.mjs",
+        "--web",
+        "sha256:55b196a8f48e1633f8a534341b89bf4d1dc0bad8ee5614d47fe332a6b874036a",
+        "--api",
+        "sha256:55b196a8f48e1633f8a534341b89bf4d1dc0bad8ee5614d47fe332a6b874036a",
+        "--context",
+        "artifacts/image-web-cf0fd337/source",
+        "--output",
+        "artifacts/image-web-migrator-negative-20261109-v1/smoke"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "56047f15beb2a9ca112222bc060d5b688fa75df1",
+      "trackedDiffSha256": "845f45c7f45a3ef1772526e3d4282f380c480b7cbb917631cae3ad5c5b4ca5ed",
+      "facts": "artifacts/vnext/n06-04/web-v2/image-diagnostics-negative-e3c3be8e.json",
+      "log": "artifacts/vnext/n06-04/web-v2/image-diagnostics-negative-e3c3be8e.log"
+    },
+    {
+      "command": "node scripts/web-image-smoke.mjs --web sha256:55b196a8f48e1633f8a534341b89bf4d1dc0bad8ee5614d47fe332a6b874036a --api sha256:f116e86b79edf3f7af1958f374a8bacb044f960eeee6e1fdb8847b9847bdd2ca --context artifacts/image-web-cf0fd337/source --output artifacts/image-web-migrate-reproduce-20261109-v1/smoke",
+      "argv": [
+        "node",
+        "scripts/web-image-smoke.mjs",
+        "--web",
+        "sha256:55b196a8f48e1633f8a534341b89bf4d1dc0bad8ee5614d47fe332a6b874036a",
+        "--api",
+        "sha256:f116e86b79edf3f7af1958f374a8bacb044f960eeee6e1fdb8847b9847bdd2ca",
+        "--context",
+        "artifacts/image-web-cf0fd337/source",
+        "--output",
+        "artifacts/image-web-migrate-reproduce-20261109-v1/smoke"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "56047f15beb2a9ca112222bc060d5b688fa75df1",
+      "trackedDiffSha256": "845f45c7f45a3ef1772526e3d4282f380c480b7cbb917631cae3ad5c5b4ca5ed",
+      "facts": "artifacts/vnext/n06-04/web-v2/image-migrate-reproduce-1229843e.json",
+      "log": "artifacts/vnext/n06-04/web-v2/image-migrate-reproduce-1229843e.log"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "6e3fc770e11ebf40581d594758c561c4d19230d5",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/lint-fd262747.json",
+      "log": "artifacts/vnext/n06-04/web-v2/lint-fd262747.log"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "6081f2c0325fb6a5376fb0c2d9447c946fc881ad",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/lint-final-08e01927.json",
+      "log": "artifacts/vnext/n06-04/web-v2/lint-final-08e01927.log"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/portal-web build",
+      "argv": [
+        "pnpm",
+        "--filter",
+        "@virtual-city/portal-web",
+        "build"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "6081f2c0325fb6a5376fb0c2d9447c946fc881ad",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/portal-landscape-build-bc31c020.json",
+      "log": "artifacts/vnext/n06-04/web-v2/portal-landscape-build-bc31c020.log"
+    },
+    {
+      "command": "node artifacts/vnext/n06-04/web-v2/preserve.mjs",
+      "argv": [
+        "node",
+        "artifacts/vnext/n06-04/web-v2/preserve.mjs"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "6081f2c0325fb6a5376fb0c2d9447c946fc881ad",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/preservation-c35bb8bc.json",
+      "log": "artifacts/vnext/n06-04/web-v2/preservation-c35bb8bc.log"
+    },
+    {
+      "command": "env PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report/ci/vnext/n06-04-refresh-red-1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/scene3d-room.spec.ts --grep=periodic refresh --project=desktop --output=test-results/ci/vnext/n06-04-refresh-red-1",
+      "argv": [
+        "env",
+        "PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report/ci/vnext/n06-04-refresh-red-1",
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "playwright",
+        "test",
+        "tests/e2e/scene3d-room.spec.ts",
+        "--grep=periodic refresh",
+        "--project=desktop",
+        "--output=test-results/ci/vnext/n06-04-refresh-red-1"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "f19ade88d607c9904aeeff905af9292b0beef9b1",
+      "trackedDiffSha256": "27f842847486a08dfa4914bc8ca8a65b3ad4643cdc744f9a1c4b9b2ec6fe1b90",
+      "facts": "artifacts/vnext/n06-04/web-v2/refresh-red-058b0376.json",
+      "log": "artifacts/vnext/n06-04/web-v2/refresh-red-058b0376.log"
+    },
+    {
+      "command": "node scripts/release-bundle.mjs --output artifacts/vnext/n03-04/camera-web-v2/release-bundle --source-revision 4b2a9739589ffb81ffb55b53972229806a5e2730",
+      "argv": [
+        "node",
+        "scripts/release-bundle.mjs",
+        "--output",
+        "artifacts/vnext/n03-04/camera-web-v2/release-bundle",
+        "--source-revision",
+        "4b2a9739589ffb81ffb55b53972229806a5e2730"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "4b2a9739589ffb81ffb55b53972229806a5e2730",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/release-bundle-26f9e5b1.json",
+      "log": "artifacts/vnext/n06-04/web-v2/release-bundle-26f9e5b1.log"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/scene3d-room.spec.ts --output=test-results/ci/vnext/n06-04-room-cd8f2916",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "playwright",
+        "test",
+        "tests/e2e/scene3d-room.spec.ts",
+        "--output=test-results/ci/vnext/n06-04-room-cd8f2916"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "67ff2d4d9d889c3855750474a4bf4322f4bd613f",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/room-cd8f2916.json",
+      "log": "artifacts/vnext/n06-04/web-v2/room-cd8f2916.log"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/scene3d/test packages/game-client/test/avatar-editor.test.ts --maxWorkers=1",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "packages/scene3d/test",
+        "packages/game-client/test/avatar-editor.test.ts",
+        "--maxWorkers=1"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "6e3fc770e11ebf40581d594758c561c4d19230d5",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/scene-units-6b0f6d07.json",
+      "log": "artifacts/vnext/n06-04/web-v2/scene-units-6b0f6d07.log"
+    },
+    {
+      "command": "pnpm typecheck",
+      "argv": [
+        "pnpm",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "150dd182775551c39e713199dd4ff9a22d3ed844",
+      "trackedDiffSha256": "4c3fdbd5809daa9c1a8b3d8945def5da09a04fbab70fb361d20a957b7e744d43",
+      "facts": "artifacts/vnext/n06-04/web-v2/typecheck-db17a32b.json",
+      "log": "artifacts/vnext/n06-04/web-v2/typecheck-db17a32b.log"
+    },
+    {
+      "command": "pnpm typecheck",
+      "argv": [
+        "pnpm",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "66e97c438d48ef48baa0b2bc9290e228830f7126",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v2/typecheck-final-a0999868.json",
+      "log": "artifacts/vnext/n06-04/web-v2/typecheck-final-a0999868.log"
+    },
+    {
+      "command": "node --test tests/governance/artifact-release.test.mjs tests/governance/browser-report-directory.test.mjs",
+      "argv": [
+        "node",
+        "--test",
+        "tests/governance/artifact-release.test.mjs",
+        "tests/governance/browser-report-directory.test.mjs"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "6e3fc770e11ebf40581d594758c561c4d19230d5",
+      "trackedDiffSha256": "42216f6d6d4660c2e3f7bd063656553fd881b84731ff01841f2d44ed463aab2c",
+      "facts": "artifacts/vnext/n06-04/web-v2/workflow-tests-882151f0.json",
+      "log": "artifacts/vnext/n06-04/web-v2/workflow-tests-882151f0.log"
+    }
+  ],
+  "rawIndex": {
+    "ref": "artifacts/vnext/n06-04/web-v2/camera-raw-index.json",
+    "sha256": "a9f31147b74af927697f7d8e8e967cb20dda39ed7d92384f81f0eb8b9f0c131b",
+    "files": 492
+  },
+  "preservation": {
+    "at": "2026-11-09T09:47:00.701Z",
+    "baseline": "150dd182775551c39e713199dd4ff9a22d3ed844",
+    "sourceRevision": "67ff2d4d9d889c3855750474a4bf4322f4bd613f",
+    "priorRecords": 69,
+    "priorSerializedRecordsPreserved": true,
+    "indices": [
+      {
+        "ref": "artifacts/vnext/n06-07/web-v2/raw-index.json",
+        "sha256": "8d8a867fe86b538e150d9f759c816407d063ee0d965a6a881aa469ea8611c179",
+        "checked": 455,
+        "recordedMissing": 0
+      },
+      {
+        "ref": "artifacts/vnext/n06-04/web-v1/lounge-index.json",
+        "sha256": "7a2ecde5b9854fba641f6a139cff7ea9a8d891f9d47800a20f198266c4ea75c5",
+        "checked": 132,
+        "recordedMissing": 2
+      },
+      {
+        "ref": "artifacts/vnext/n06-04/web-v1/delivery-index.json",
+        "sha256": "eb4dad7ee65398f24f3597881160ca5873416b93cfdaef5e34c01c2aacce81e1",
+        "checked": 153,
+        "recordedMissing": 0
+      },
+      {
+        "ref": "artifacts/vnext/n06-04/web-v1/profile-index.json",
+        "sha256": "b479258f321137ee9e159a6d51800bbd8e935f37d2ebc631dd22a821806cd3cc",
+        "checked": 391,
+        "recordedMissing": 0
+      }
+    ],
+    "immutableInputs": 50,
+    "ownerPathsRead": false,
+    "privateKeysRead": false
+  },
+  "hostedPrevious": {
+    "run": 42558723242,
+    "sourceRevision": "150dd182775551c39e713199dd4ff9a22d3ed844",
+    "result": "FAILURE",
+    "currentSource": "NOT_YET_OBSERVED"
+  },
+  "failuresRetained": {
+    "cameraFixture": "4FAIL heather key corrected to catalog plum",
+    "landscape": "2PASS/2FAIL toolbar overlap;fixed flex sizing without deadlines changed",
+    "creatorF2c0a441": "19PASS/3FAIL stale diagnostics and Leave race",
+    "refreshRed": "1FAIL old build;new held-refresh2PASS",
+    "releaseOld": "API6PASS;web migrationFAIL;exact image rerun6PASS;initial cause unconfirmed",
+    "negativeDiagnostics": "Deliberate web image used as API:exit1 as expected;bounded owned ps/migrator logs present;cleanup and secrets removal true",
+    "creator3f8d3066": "NOT_COMPLETED;no exit inferred"
+  },
+  "limitations": [
+    "N06-04 IN_PROGRESS;camera functionality is not final3D art,owner approval,human usability or performance qualification.",
+    "Sparse/speckled groom,technical room materials,Low faceting and controlled loading findings remain open.",
+    "Sandbox declared-profile desktop166.7ms/mobile150ms still exceed100ms;no performance measurement rerun or relaxed limits in this slice.",
+    "No new full integration/security/native test suite;backend/wire/47SQL unchanged.",
+    "Hosted42558723242 at150dd18 FAILED:core TS7016 and images failure;declaration/host shared-package build/failure evidence fixes require actual hosted observation.",
+    "Original failed fixtures,landscape overlap,creator19PASS/3FAIL,old refresh red and incomplete creator run are retained.",
+    "Two known auxiliary original Lounge HTML losses remain explicitly recorded;all available frozen members and prior69records/50inputs preserved.",
+    "No native/public/store/registry/production action."
+  ],
+  "nextExactAction": "Continue N06-04:attribute Sandbox GLContextEGL::MakeCurrent stalls from saved c07d86d4 timeline and compare actual Pixi batches/static Graphics at unchanged100ms/>10samples/loading/heap limits;qualify desktop and mobile rendering specs without skips/retries. Refine integrated fur/material/room/UI art before N06-09. Observe exact pushed-SHA hosted Quality. Phase2 remains PAUSED until a fresh qualified upstream handoff;native remains owner-deferred."
+}
