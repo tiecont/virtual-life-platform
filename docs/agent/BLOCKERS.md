@@ -1,3 +1,11 @@
+# Current web gates — 2026-11-09
+
+N06-04 IN_PROGRESS:declared-profile Deadline2cases pass,but Sandbox desktop166.7ms/mobile150ms exceed100ms. Preserve failures and profileGL context switching;do not claim global performance qualification. Final3D groom/material/readability/loading/human/owner art remain unqualified. Native is deferred,not a web blocker. Local images18+Compose6 and retained HTTPS update PASS;fresh hosted pushed-SHA Quality remains required.
+
+Two auxiliary original Lounge HTML report indexes were lost during unscoped --list;24copies restored exactly. Raw logs/facts/screenshots/test-result traces remain;custody addendum is explicit and old indices unchanged. Fresh-output/root-rejection guard has actual positive/negative CLI evidence. Staging/public/production/store gates remain unchanged.
+
+## Earlier checkpoints — historical
+
 # Active web findings — 2026-11-09
 
 N06-04 IN_PROGRESS:32Lounge browser/24integration cases now pass at scoped fix0d39226;28ms expiry diagnosis is confirmed and old9s-duration claim corrected. Original hosted failures remain preserved. RAF performance failures and final3D groom/material/Low faceting/full-floor camera/readability/loading remain actionable web work. Fresh-checkout image output-parent defect has code/regression fix008ed22;full current-source images/hosted Quality must be observed,not inferred. Native remains deferred and does not block web. Public/staging/human usability/owner art gates remain unchanged.

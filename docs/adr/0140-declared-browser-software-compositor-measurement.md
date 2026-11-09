@@ -11,3 +11,5 @@ Move the two unchanged performance cases to dedicated worker-scoped specs in the
 New results are source-bound evidence for this declared environment. They do not replace historical default-compositor failures,physical/native/final-art qualification,controlled3D loading failures or hosted CI results. Actual desktop/mobile Deadline and sandbox executions are required before claiming the new profile is verified. Raw diagnostic protocol/results remain under private artifacts/vnext/n06-04/web-v1;repository evidence records their hashes.
 
 Rollback:revert the scoped test launch/profile helper;retain both generations of measurements. Do not lower the existing limits or silently fall back to a different renderer.
+
+Qualification checkpoint:ec81262 Deadline desktop/mobile PASS p9516.8ms;Sandbox desktop166.7ms/mobile150ms FAIL100ms. Therefore the profile is NOT fully qualified. Both cases remain in required CI and N06-04 stays IN_PROGRESS. See docs/plans/platform-vnext/audit/N06-04-RAF-PROFILE-CHECKPOINT.json.

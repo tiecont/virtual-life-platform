@@ -1,3 +1,17 @@
+# Local Docker updated; web quality remains in progress — 2026-11-09
+
+N03 local packaging at983d257:actual API/web/admin6scenarios each,Compose6scenarios and authenticated encrypted-backup/retained HTTPS update PASS. vc-db/vc-api/vc-web/vc-edge are healthy;vc-migrate exited0,47SQL and vc_data/session configuration retained. Open https://localhost:3443. [Fresh-checkout acceptance](../audit/N03-04-FRESH-CHECKOUT-ACCEPTANCE.json). No registry/public/store/production action.
+
+N06-04 remains IN_PROGRESS. Lounge expiry fix0d39226 passes32browser/24integration;after splitting measurement workers,4original functional regression cases pass. ADR0140 identifies an explicitly asserted SwiftShader compositor environment;Deadline desktop/mobile pass p9516.8ms,but Sandbox desktop166.7ms/mobile150ms still FAIL100ms. [Profile checkpoint](../audit/N06-04-RAF-PROFILE-CHECKPOINT.json) is NOT qualification. Original default-compositor failures,budgets,sampling,trace and retry settings remain preserved;rendering now has its own CI group without omitting either case. Latest100governance,lint,localCI contract and focused profile types PASS;not a hosted Quality PASS.
+
+Report custody incident:an unscoped Playwright --list removed auxiliary Lounge HTML report copies.24files restored with matching hashes;2original HTML index files are unrecoverable. CLI logs/facts/screenshots/test-result traces and all455earlier creator-indexed members remain present. Existing ledgers/raw indices were not rewritten. [Custody addendum and guard](../audit/N03-04-REPORT-OUTPUT-CHECKPOINT.json):fresh default output directories/root-path rejection now pass actual CLI preservation/negative checks. Never rerun frozen web-v1 helpers or use unscoped reporter output paths.
+
+69vNext records;prior67objects/serialization and original65prefix preserved.77tasks:44VERIFIED/2BLOCKED_EXTERNAL/18TODO/12DEFERRED_APPROVED/1IN_PROGRESS.47SQL/Mxx/Phase2evidence/proposal unchanged. Phase2 remains PAUSED;native owner-deferred. Previous-source hosted42552544733 FAILED:core and5browser groups PASS,images output-parent and legacy/study RAF FAIL. Current fixes need a fresh pushed-SHA hosted result.
+
+**Next exact action:** Create fresh artifacts/vnext/n06-04/web-v2;use saved Sandbox timeline c07d86d4 to attribute GLContextEGL::MakeCurrent stalls and qualify both declared-profile cases under unchanged100ms/>10sample/loading/heap limits. Then finish integrated Deadline/Maid3D camera/readability/art and N06-09 before refreshing the Phase2 handoff. Inspect hosted Quality for the exact pushed SHA. Keep vc-* running;owner .idea/ and infra/botkeep-ca.pem remain unread/untracked/unstaged.
+
+## Earlier checkpoints — historical
+
 # N06-04 web stability checkpoint — 2026-11-09
 
 N06-04 is IN_PROGRESS. Lounge fix `0d39226` preserves confirmed action outcomes when anonymous observations have expired,without claiming current counts or offering a resend. Actual32browser cases (16desktop/16Chromium mobile emulation,including6new expiry cases),24Lounge integration,portal build/types/lint/localCI contract/client boundaries PASS. Two held-reply tests failed on the old application as expected. [Scoped acceptance](../audit/N06-04-WEB-STABILITY-CHECKPOINT.json) retains raw evidence;this is not whole N06-04/final-art acceptance.

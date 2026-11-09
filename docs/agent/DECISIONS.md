@@ -1,3 +1,11 @@
+# Browser measurement and report custody — 2026-11-09
+
+ADR0140 separates the declared SwiftShader compositor measurement context and keeps both existing cases in dedicated CI workers;actual backend is asserted. Deadline2PASS and Sandbox2FAIL do not qualify the whole profile or final3D art. Preserve all prior default-compositor failures and locked limits.
+
+Unscoped HTML reporters can clear earlier run directories even with --list. Default output is now a fresh local run directory,explicit root/traversal/absolute outputs are rejected,and ordinary browser batches get a fresh default scope. Actual CLI regression preserves94earlier files and rejects root output. Record the2unrecoverable auxiliary Lounge HTML indexes and24hash-matching restorations;do not fabricate replacement originals or rewrite frozen indices. Logs/facts/PNG/test-result traces remain authoritative for the executed cases.
+
+## Earlier decisions — historical
+
 # Web stability implementation — 2026-11-09
 
 Keep the existing three-second/ten-second anonymous observation expiry and account/room/permission generations. An acknowledged mutation with an expired observation has a confirmed outcome but no current view;UI must state both facts without resending. Browser happy-path fixtures wait for a bounded fresh observation rather than changing production TTL. No final N06-04 art or RAF acceptance is inferred. Fresh release output creates private missing parents and preserves exclusive leaf creation/source commit verification;never reuse partial bundles.

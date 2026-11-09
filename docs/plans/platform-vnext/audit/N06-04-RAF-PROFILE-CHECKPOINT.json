@@ -1,0 +1,168 @@
+{
+  "taskId": "N06-04",
+  "sourceRevision": "5b29c88057d0676c9f45f572f802d5ff9f66b35f",
+  "at": "2026-11-09T03:49:14.646409+00:00",
+  "scope": "RAF diagnostic/declared-measurement implementation partial slice;not final N06-04/3D/native/human acceptance",
+  "acceptance_met": false,
+  "decision": "ADR0140 declares a separately identified SwiftShader compositor profile,asserts actual backend,and isolates existing cases in rendering workers. No production renderer or budget/sample/trace/retry changes.",
+  "actualOutcomes": {
+    "defaultProfile": {
+      "abbaP95Ms": [
+        133.4,
+        150.1,
+        133.4,
+        133.4
+      ],
+      "noCaptureP95Ms": 133.4,
+      "recordingHypothesisResolved": "Turning recording off did not resolve failure.",
+      "timeline": "19GLES2::ReadPixels calls totaled2712.65ms on the main-thread layer-update path;diagnostic overhead applies."
+    },
+    "declaredProfile": {
+      "DeadlineDesktop": {
+        "exitCode": 0,
+        "samples": 114,
+        "rafP95GapMs": 16.8
+      },
+      "DeadlineMobileChromium": {
+        "exitCode": 0,
+        "samples": 126,
+        "rafP95GapMs": 16.8
+      },
+      "SandboxDesktop": {
+        "exitCode": 1,
+        "samples": 42,
+        "rafP95GapMs": 166.7
+      },
+      "SandboxMobileChromium": {
+        "exitCode": 1,
+        "samples": 59,
+        "rafP95GapMs": 150
+      },
+      "result": "NOT_QUALIFIED",
+      "meaning": "Deadline passes the new environment;Sandbox still exceeds100ms. No global performance or application speedup claim."
+    },
+    "SandboxTimeline": "Separate diagnostic shows968.253ms GLContextEGL::MakeCurrent cumulative;not a fully attributed/fixed root cause. Canvas snapshots confirm original2D renderer,not inadvertent3D.",
+    "functionalRegression": {
+      "deadlineKeyboard": 2,
+      "sandboxEntrySeat": 2,
+      "passed": 4,
+      "failed": 0
+    },
+    "governance": {
+      "passed": 100,
+      "failed": 0
+    },
+    "profileTypecheck": "PASS",
+    "localCiContract": "PASS",
+    "lint": "PASS"
+  },
+  "commands": [
+    {
+      "command": "taskset -c 0,1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/deadline-performance.spec.ts --project=desktop --grep=scene loading --output=test-results/ci/vnext/n06-04-deadline-affinity-f5c9ada4",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/deadline-affinity-f5c9ada4.json"
+    },
+    {
+      "command": "taskset -c 0,1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/deadline-performance.spec.ts --project=mobile --grep=scene loading --output=test-results/ci/vnext/n06-04-deadline-affinity-5756ac34",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/deadline-affinity-5756ac34.json"
+    },
+    {
+      "command": "taskset -c 0,1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/scene-performance.spec.ts --project=desktop --grep=scene loading --output=test-results/ci/vnext/n06-04-scene-affinity-b9795ef3",
+      "exitCode": 1,
+      "facts": "artifacts/vnext/n06-04/web-v1/scene-affinity-b9795ef3.json"
+    },
+    {
+      "command": "taskset -c 0,1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/scene-performance.spec.ts --project=mobile --grep=scene loading --output=test-results/ci/vnext/n06-04-scene-affinity-a49b10f0",
+      "exitCode": 1,
+      "facts": "artifacts/vnext/n06-04/web-v1/scene-affinity-a49b10f0.json"
+    },
+    {
+      "command": "taskset -c 0,1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/scene-performance.spec.ts --project=desktop --grep=scene loading --output=test-results/ci/vnext/n06-04-scene-affinity-c07d86d4",
+      "exitCode": 1,
+      "facts": "artifacts/vnext/n06-04/web-v1/scene-affinity-c07d86d4.json"
+    },
+    {
+      "command": "env BROWSER_DEADLINE_WORLD=1 BROWSER_REPORT_SCOPE=ci/vnext/n06-04-keyboard-regression-v1 PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report/ci/vnext/n06-04-keyboard-regression-v1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/deadline-acceptance.spec.ts --grep Deadline keyboard --output=test-results/ci/vnext/n06-04-keyboard-regression-v1",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/keyboard-regression-272bf7a6.json"
+    },
+    {
+      "command": "env BROWSER_REPORT_SCOPE=ci/vnext/n06-04-sandbox-regression-v1 PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report/ci/vnext/n06-04-sandbox-regression-v1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/scene.spec.ts --grep actual cafe scene and keyboard seat controls --output=test-results/ci/vnext/n06-04-sandbox-regression-v1",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/sandbox-regression-466b3750.json"
+    },
+    {
+      "command": "pnpm ci:check",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/final-ci-7b846477.json"
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/final-lint-a74dd5f0.json"
+    },
+    {
+      "command": "node --test tests/governance/admin-artifact.test.mjs tests/governance/admin-boundary.test.mjs tests/governance/admin-bundle.test.mjs tests/governance/api-runtime-package.test.mjs tests/governance/artifact-release.test.mjs tests/governance/backup.test.mjs tests/governance/boundaries.test.mjs tests/governance/ci.test.mjs tests/governance/client-boundaries.test.mjs tests/governance/client-legacy-fixture.test.mjs tests/governance/digest-promotion.test.mjs tests/governance/evidence-inventory.test.mjs tests/governance/evidence-output.test.mjs tests/governance/evidence-reader.test.mjs tests/governance/evidence-store.test.mjs tests/governance/image-inspection.test.mjs tests/governance/infra.test.mjs tests/governance/kubernetes.test.mjs tests/governance/legacy-snapshots.test.mjs tests/governance/ops-watch.test.mjs tests/governance/plan-status.test.mjs tests/governance/release.test.mjs tests/governance/resource-budget.test.mjs tests/governance/runtime-profile-comparison.test.mjs tests/governance/scene3d-loading.test.mjs tests/governance/scene3d-workload.test.mjs tests/governance/source-schema-policy.test.mjs tests/governance/test-environment.test.mjs tests/governance/toolchain.test.mjs tests/governance/web-first-plan.test.mjs tests/governance/worker-boundary.test.mjs",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/final-governance-47975bff.json"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --resolveJsonModule --esModuleInterop --skipLibCheck --allowJs --types node --lib ES2022,DOM tests/support/scene-rendering-profile.ts tests/support/scene-profile.ts tests/support/sandbox-browser-fixtures.ts tests/e2e/deadline-performance.spec.ts tests/e2e/scene-performance.spec.ts",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/profile-types-7904b688.json"
+    },
+    {
+      "command": "node artifacts/vnext/n06-04/web-v1/check-report-preservation.mjs",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/report-preservation-754416bd.json"
+    },
+    {
+      "command": "node --test tests/governance/admin-artifact.test.mjs tests/governance/admin-boundary.test.mjs tests/governance/admin-bundle.test.mjs tests/governance/api-runtime-package.test.mjs tests/governance/artifact-release.test.mjs tests/governance/backup.test.mjs tests/governance/boundaries.test.mjs tests/governance/browser-report-directory.test.mjs tests/governance/ci.test.mjs tests/governance/client-boundaries.test.mjs tests/governance/client-legacy-fixture.test.mjs tests/governance/digest-promotion.test.mjs tests/governance/evidence-inventory.test.mjs tests/governance/evidence-output.test.mjs tests/governance/evidence-reader.test.mjs tests/governance/evidence-store.test.mjs tests/governance/image-inspection.test.mjs tests/governance/infra.test.mjs tests/governance/kubernetes.test.mjs tests/governance/legacy-snapshots.test.mjs tests/governance/ops-watch.test.mjs tests/governance/plan-status.test.mjs tests/governance/release.test.mjs tests/governance/resource-budget.test.mjs tests/governance/runtime-profile-comparison.test.mjs tests/governance/scene3d-loading.test.mjs tests/governance/scene3d-workload.test.mjs tests/governance/source-schema-policy.test.mjs tests/governance/test-environment.test.mjs tests/governance/toolchain.test.mjs tests/governance/web-first-plan.test.mjs tests/governance/worker-boundary.test.mjs",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/custody-governance-ee30fa18.json"
+    },
+    {
+      "command": "pnpm ci:check",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/custody-ci-4725a003.json"
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/custody-lint-c84c164a.json"
+    }
+  ],
+  "failuresRetained": [
+    "First CPU diagnostic flag was filtered by fixture environment;raw observation explicitly records cpuProfilerEnabled=false. Added finite allowlisted flag and reran actual CPU sampling.",
+    "A proposed describe-level launchOptions setup was rejected before measuring. Moved only existing performance cases to dedicated worker specs;setup failure retained.",
+    "First split-file lint caught an unused import;original keyboard evidence write restored and2actual keyboard cases pass.",
+    "Default-profile failures,matrix failures,Sandbox declared-profile failures remain unchanged."
+  ],
+  "hostedPreviousCheckpoint": {
+    "run": 42552544733,
+    "sourceRevision": "212cdc056b57609bfa75fd7fbbe34dedfc1170b4",
+    "conclusion": "FAILURE",
+    "core": "SUCCESS",
+    "images": "FAILURE_ENOENT_PARENT",
+    "legacyRafP95GapMs": 216.7,
+    "studyRafP95GapMs": 133.2,
+    "hospitality": "SUCCESS",
+    "otherBrowserGroups": "SUCCESS",
+    "currentFixHosted": "NOT_RUN_AT_SEAL"
+  },
+  "rawIndex": {
+    "ref": "artifacts/vnext/n06-04/web-v1/profile-index.json",
+    "sha256": "b479258f321137ee9e159a6d51800bbd8e935f37d2ebc631dd22a821806cd3cc",
+    "files": 391
+  },
+  "limitations": [
+    "N06-04 remains IN_PROGRESS;no final3D art/groom/material/readability/loading/human qualification.",
+    "New compositor profile is NOT fully qualified because both Sandbox sizes fail. Existing historical default-compositor results are not replaced.",
+    "Actual local API/web/admin image18+Compose6checks and retained HTTPS update are separately pinned to983d257. Later source changes affect test/CI evidence only.",
+    "Native remains deferred;no APK/ADB/AVD/iOS/public/store/production/distribution action.",
+    "Private raw evidence is local retention,not an off-host archive.",
+    "Two original auxiliary Lounge HTML report indexes were lost to an unscoped --list invocation.24copies restored by hash;raw logs/facts/screenshots/test-result traces remain. Frozen Lounge index is unchanged and its two missing members are explicitly recorded by the custody addendum."
+  ],
+  "nextExactAction": "Create fresh artifacts/vnext/n06-04/web-v2 (never rerun web-v1 outputs). Use saved Sandbox timeline c07d86d4 to attribute GLContextEGL::MakeCurrent stalls and qualify both declared-profile cases at unchanged100ms/>10sample/loading/heap limits. Continue integrated Deadline/Maid3D camera/readability/art and N06-09;Phase2 stays paused until a fresh qualified upstream handoff. Inspect hosted Quality for the exact pushed SHA."
+}

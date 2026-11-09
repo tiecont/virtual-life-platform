@@ -40089,6 +40089,199 @@
         "No native/device/iOS,public/store,production or distribution action. Retained vc-* remains source80107b5."
       ],
       "nextExactAction": "Complete fresh-checkout image-bundle verification;profile retained RAF failures at unchanged budgets,then implement integrated Deadline/Maid camera/readability and final web qualification before N06-09/Phase2 resume."
+    },
+    {
+      "id": "n03-04-fresh-checkout-local-2026-11-09",
+      "taskId": "N03-04",
+      "sourceRevision": "983d25748a608e22eed5086ad19fc460467d41bf",
+      "environment": "CachyOS Linux x64;Node26.9.0/pnpm11.28.5;Docker29.9.0/Compose5.6.0;production-mode local images/disposable PostgreSQL17.7/TLS Chromium",
+      "executedAt": "2026-11-09T03:31:18.589534+00:00",
+      "commands": [
+        {
+          "command": "node --test tests/governance/artifact-release.test.mjs",
+          "exitCode": 0
+        },
+        {
+          "command": "node scripts/release-bundle.mjs --output artifacts/vnext/n03-04/fresh-current-2/release-bundle --source-revision 983d25748a608e22eed5086ad19fc460467d41bf",
+          "exitCode": 0
+        },
+        {
+          "command": "node scripts/local-compose-smoke.mjs --bundle artifacts/vnext/n03-04/fresh-current-2/release-bundle/bundle.json",
+          "exitCode": 0
+        },
+        {
+          "command": "node artifacts/vnext/n06-04/web-v1/update-local.mjs artifacts/image-web-4d0d2b16/facts.json",
+          "exitCode": 0
+        },
+        {
+          "command": "node --test tests/governance/admin-artifact.test.mjs tests/governance/admin-boundary.test.mjs tests/governance/admin-bundle.test.mjs tests/governance/api-runtime-package.test.mjs tests/governance/artifact-release.test.mjs tests/governance/backup.test.mjs tests/governance/boundaries.test.mjs tests/governance/ci.test.mjs tests/governance/client-boundaries.test.mjs tests/governance/client-legacy-fixture.test.mjs tests/governance/digest-promotion.test.mjs tests/governance/evidence-inventory.test.mjs tests/governance/evidence-output.test.mjs tests/governance/evidence-reader.test.mjs tests/governance/evidence-store.test.mjs tests/governance/image-inspection.test.mjs tests/governance/infra.test.mjs tests/governance/kubernetes.test.mjs tests/governance/legacy-snapshots.test.mjs tests/governance/ops-watch.test.mjs tests/governance/plan-status.test.mjs tests/governance/release.test.mjs tests/governance/resource-budget.test.mjs tests/governance/runtime-profile-comparison.test.mjs tests/governance/scene3d-loading.test.mjs tests/governance/scene3d-workload.test.mjs tests/governance/source-schema-policy.test.mjs tests/governance/test-environment.test.mjs tests/governance/toolchain.test.mjs tests/governance/web-first-plan.test.mjs tests/governance/worker-boundary.test.mjs",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0
+        },
+        {
+          "command": "node scripts/verify-web-first-plan.mjs",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "docs/plans/platform-vnext/audit/N03-04-FRESH-CHECKOUT-ACCEPTANCE.json",
+          "sha256": "1abeda841e946e054ab3ee75f66cf4b1336f04b953dfc97280d9093b5df7698d"
+        },
+        {
+          "ref": "artifacts/vnext/n06-04/web-v1/delivery-index.json",
+          "sha256": "eb4dad7ee65398f24f3597881160ca5873416b93cfdaef5e34c01c2aacce81e1"
+        }
+      ],
+      "acceptance_met": true,
+      "scope": "Fresh-checkout local release-bundle initialization and production-mode image/Compose regression;not hosted/public release acceptance",
+      "limitations": [
+        "Local image IDs and archives;no registry publication or public/store/production action.",
+        "Images pin source983d257;later changes are browser measurement harness/CI grouping/evidence,not runtime app/package/infra.",
+        "No full integration/security/native rerun for unchanged backend;Lounge24integration and32browser fresh results are separately pinned.",
+        "Default-compositor RAF failures and new declared-profile qualification are separate evidence. N06-04 stays IN_PROGRESS.",
+        "Backup is authenticated encrypted local recovery material,not offsite retention or an actual DB restore."
+      ],
+      "nextExactAction": "Push finalized branch and observe fresh hosted runtime-images/Quality results;do not infer hosted green from local checks. Continue N06-04 camera/readability/final-art and N06-09 web qualification before Phase2 resumes. Native stays deferred."
+    },
+    {
+      "id": "n06-04-raf-profile-partial-2026-11-09",
+      "taskId": "N06-04",
+      "sourceRevision": "5b29c88057d0676c9f45f572f802d5ff9f66b35f",
+      "environment": "CachyOS Linux/Node26.9.0/pnpm11.28.5/Playwright1.64.1 Chromium156;disposable PostgreSQL17.7;CPU4x/40ms12Mbps,two allowed CPUs0,1;SwiftShader compositor asserted;no physical qualification",
+      "executedAt": "2026-11-09T03:49:14.646409+00:00",
+      "commands": [
+        {
+          "command": "taskset -c 0,1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/deadline-performance.spec.ts --project=desktop --grep=scene loading --output=test-results/ci/vnext/n06-04-deadline-affinity-f5c9ada4",
+          "exitCode": 0
+        },
+        {
+          "command": "taskset -c 0,1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/deadline-performance.spec.ts --project=mobile --grep=scene loading --output=test-results/ci/vnext/n06-04-deadline-affinity-5756ac34",
+          "exitCode": 0
+        },
+        {
+          "command": "taskset -c 0,1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/scene-performance.spec.ts --project=desktop --grep=scene loading --output=test-results/ci/vnext/n06-04-scene-affinity-b9795ef3",
+          "exitCode": 1
+        },
+        {
+          "command": "taskset -c 0,1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/scene-performance.spec.ts --project=mobile --grep=scene loading --output=test-results/ci/vnext/n06-04-scene-affinity-a49b10f0",
+          "exitCode": 1
+        },
+        {
+          "command": "taskset -c 0,1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/scene-performance.spec.ts --project=desktop --grep=scene loading --output=test-results/ci/vnext/n06-04-scene-affinity-c07d86d4",
+          "exitCode": 1
+        },
+        {
+          "command": "env BROWSER_DEADLINE_WORLD=1 BROWSER_REPORT_SCOPE=ci/vnext/n06-04-keyboard-regression-v1 PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report/ci/vnext/n06-04-keyboard-regression-v1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/deadline-acceptance.spec.ts --grep Deadline keyboard --output=test-results/ci/vnext/n06-04-keyboard-regression-v1",
+          "exitCode": 0
+        },
+        {
+          "command": "env BROWSER_REPORT_SCOPE=ci/vnext/n06-04-sandbox-regression-v1 PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report/ci/vnext/n06-04-sandbox-regression-v1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/scene.spec.ts --grep actual cafe scene and keyboard seat controls --output=test-results/ci/vnext/n06-04-sandbox-regression-v1",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        },
+        {
+          "command": "node --test tests/governance/admin-artifact.test.mjs tests/governance/admin-boundary.test.mjs tests/governance/admin-bundle.test.mjs tests/governance/api-runtime-package.test.mjs tests/governance/artifact-release.test.mjs tests/governance/backup.test.mjs tests/governance/boundaries.test.mjs tests/governance/ci.test.mjs tests/governance/client-boundaries.test.mjs tests/governance/client-legacy-fixture.test.mjs tests/governance/digest-promotion.test.mjs tests/governance/evidence-inventory.test.mjs tests/governance/evidence-output.test.mjs tests/governance/evidence-reader.test.mjs tests/governance/evidence-store.test.mjs tests/governance/image-inspection.test.mjs tests/governance/infra.test.mjs tests/governance/kubernetes.test.mjs tests/governance/legacy-snapshots.test.mjs tests/governance/ops-watch.test.mjs tests/governance/plan-status.test.mjs tests/governance/release.test.mjs tests/governance/resource-budget.test.mjs tests/governance/runtime-profile-comparison.test.mjs tests/governance/scene3d-loading.test.mjs tests/governance/scene3d-workload.test.mjs tests/governance/source-schema-policy.test.mjs tests/governance/test-environment.test.mjs tests/governance/toolchain.test.mjs tests/governance/web-first-plan.test.mjs tests/governance/worker-boundary.test.mjs",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm exec tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --resolveJsonModule --esModuleInterop --skipLibCheck --allowJs --types node --lib ES2022,DOM tests/support/scene-rendering-profile.ts tests/support/scene-profile.ts tests/support/sandbox-browser-fixtures.ts tests/e2e/deadline-performance.spec.ts tests/e2e/scene-performance.spec.ts",
+          "exitCode": 0
+        },
+        {
+          "command": "node artifacts/vnext/n06-04/web-v1/check-report-preservation.mjs",
+          "exitCode": 0
+        },
+        {
+          "command": "node --test tests/governance/admin-artifact.test.mjs tests/governance/admin-boundary.test.mjs tests/governance/admin-bundle.test.mjs tests/governance/api-runtime-package.test.mjs tests/governance/artifact-release.test.mjs tests/governance/backup.test.mjs tests/governance/boundaries.test.mjs tests/governance/browser-report-directory.test.mjs tests/governance/ci.test.mjs tests/governance/client-boundaries.test.mjs tests/governance/client-legacy-fixture.test.mjs tests/governance/digest-promotion.test.mjs tests/governance/evidence-inventory.test.mjs tests/governance/evidence-output.test.mjs tests/governance/evidence-reader.test.mjs tests/governance/evidence-store.test.mjs tests/governance/image-inspection.test.mjs tests/governance/infra.test.mjs tests/governance/kubernetes.test.mjs tests/governance/legacy-snapshots.test.mjs tests/governance/ops-watch.test.mjs tests/governance/plan-status.test.mjs tests/governance/release.test.mjs tests/governance/resource-budget.test.mjs tests/governance/runtime-profile-comparison.test.mjs tests/governance/scene3d-loading.test.mjs tests/governance/scene3d-workload.test.mjs tests/governance/source-schema-policy.test.mjs tests/governance/test-environment.test.mjs tests/governance/toolchain.test.mjs tests/governance/web-first-plan.test.mjs tests/governance/worker-boundary.test.mjs",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "docs/plans/platform-vnext/audit/N06-04-RAF-PROFILE-CHECKPOINT.json",
+          "sha256": "cbab06b8c6f47c402c919b14b96128d89c2d9d04f6047b71ac90b56243bfbaf5"
+        },
+        {
+          "ref": "artifacts/vnext/n06-04/web-v1/profile-index.json",
+          "sha256": "b479258f321137ee9e159a6d51800bbd8e935f37d2ebc631dd22a821806cd3cc"
+        }
+      ],
+      "acceptance_met": false,
+      "limitations": [
+        "N06-04 remains IN_PROGRESS;no final3D art/groom/material/readability/loading/human qualification.",
+        "New compositor profile is NOT fully qualified because both Sandbox sizes fail. Existing historical default-compositor results are not replaced.",
+        "Actual local API/web/admin image18+Compose6checks and retained HTTPS update are separately pinned to983d257. Later source changes affect test/CI evidence only.",
+        "Native remains deferred;no APK/ADB/AVD/iOS/public/store/production/distribution action.",
+        "Private raw evidence is local retention,not an off-host archive.",
+        "Two original auxiliary Lounge HTML report indexes were lost to an unscoped --list invocation.24copies restored by hash;raw logs/facts/screenshots/test-result traces remain. Frozen Lounge index is unchanged and its two missing members are explicitly recorded by the custody addendum."
+      ],
+      "nextExactAction": "Create fresh artifacts/vnext/n06-04/web-v2 (never rerun web-v1 outputs). Use saved Sandbox timeline c07d86d4 to attribute GLContextEGL::MakeCurrent stalls and qualify both declared-profile cases at unchanged100ms/>10sample/loading/heap limits. Continue integrated Deadline/Maid3D camera/readability/art and N06-09;Phase2 stays paused until a fresh qualified upstream handoff. Inspect hosted Quality for the exact pushed SHA."
+    },
+    {
+      "id": "n03-04-report-output-safety-2026-11-09",
+      "taskId": "N03-04",
+      "sourceRevision": "5b29c88057d0676c9f45f572f802d5ff9f66b35f",
+      "environment": "Node26.9.0/pnpm11.28.5/Playwright1.64.1;actual local CLI --list positive and denied-root runs;no app server/native operation",
+      "executedAt": "2026-11-09T03:49:14.646409+00:00",
+      "commands": [
+        {
+          "command": "node artifacts/vnext/n06-04/web-v1/check-report-preservation.mjs",
+          "exitCode": 0
+        },
+        {
+          "command": "node --test tests/governance/*.test.mjs",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "docs/plans/platform-vnext/audit/N03-04-REPORT-OUTPUT-CHECKPOINT.json",
+          "sha256": "723b035d13e3c6405a968597d5388785535ba22364455c006db8cfd617006de3"
+        },
+        {
+          "ref": "artifacts/vnext/n06-04/web-v1/profile-index.json",
+          "sha256": "b479258f321137ee9e159a6d51800bbd8e935f37d2ebc631dd22a821806cd3cc"
+        }
+      ],
+      "acceptance_met": true,
+      "scope": "Report-output safety implementation and actual CLI regression;not restoration of lost originals",
+      "limitations": [
+        "Two original auxiliary HTML index files cannot be restored to their original hashes;do not fabricate replacements or rewrite old evidence.",
+        "No new gameplay test execution is inferred from --list or governance commands.",
+        "N06-04 remains IN_PROGRESS and both Sandbox performance profiles still fail100ms."
+      ],
+      "nextExactAction": "Create fresh artifacts/vnext/n06-04/web-v2 (never rerun web-v1 outputs). Use saved Sandbox timeline c07d86d4 to attribute GLContextEGL::MakeCurrent stalls and qualify both declared-profile cases at unchanged100ms/>10sample/loading/heap limits. Continue integrated Deadline/Maid3D camera/readability/art and N06-09;Phase2 stays paused until a fresh qualified upstream handoff. Inspect hosted Quality for the exact pushed SHA."
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

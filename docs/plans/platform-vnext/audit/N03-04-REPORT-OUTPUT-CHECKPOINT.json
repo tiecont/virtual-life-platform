@@ -1,0 +1,63 @@
+{
+  "taskId": "N03-04",
+  "sourceRevision": "5b29c88057d0676c9f45f572f802d5ff9f66b35f",
+  "at": "2026-11-09T03:49:14.646409+00:00",
+  "scope": "Report-output safety implementation and actual CLI regression;not restoration of lost originals",
+  "acceptance_met": true,
+  "incident": {
+    "originalMissing": 26,
+    "restoredExactCopies": 24,
+    "unrecoverableOriginalFiles": [
+      {
+        "ref": "playwright-report/ci/vnext/n06-04-lounge-all-adbeb8ab/index.html",
+        "sha256": "bbef5af381b52d3d22123486c97caf58b01599db57f5cfd001a36c29cff08654",
+        "bytes": 721368
+      },
+      {
+        "ref": "playwright-report/ci/vnext/n06-04-lounge-red-72f1d318/index.html",
+        "sha256": "d96990483aaab1a939d09b1d034385245d94a0eae092bce715d9376fc16194f2",
+        "bytes": 554308
+      }
+    ],
+    "rawLogsFactsScreenshotsAndTestResultTracesIntact": true,
+    "earlierCreatorIndexedMembersPresent": 455,
+    "existingLoungeIndexUnchanged": true
+  },
+  "implementedFix": "Bare Playwright invocations receive a fresh local HTML output directory.Explicit root/traversal/absolute outputs are rejected.Ordinary browser runner also uses a fresh default run scope.",
+  "actualCliRegression": {
+    "at": "2026-11-09T03:46:59.748Z",
+    "sourceRevision": "5b29c88057d0676c9f45f572f802d5ff9f66b35f",
+    "result": "PASS",
+    "scope": "Actual CLI --list reporter output safety,not browser gameplay execution",
+    "command": [
+      "pnpm",
+      "exec",
+      "playwright",
+      "test",
+      "tests/e2e/deadline-performance.spec.ts",
+      "tests/e2e/scene-performance.spec.ts",
+      "--list"
+    ],
+    "positiveExitCode": 0,
+    "rootDeniedExitCode": 1,
+    "earlierFilesHashVerified": 94,
+    "sentinelUnchanged": true,
+    "newScopedReports": [
+      "playwright-report/local/run-90c01885-3d17-4da2-9a93-c689816c1d36/index.html"
+    ],
+    "htmlRootUnchanged": true
+  },
+  "governancePassed": 100,
+  "ciContract": "PASS",
+  "lint": "PASS",
+  "rawIndex": {
+    "ref": "artifacts/vnext/n06-04/web-v1/profile-index.json",
+    "sha256": "b479258f321137ee9e159a6d51800bbd8e935f37d2ebc631dd22a821806cd3cc"
+  },
+  "limitations": [
+    "Two original auxiliary HTML index files cannot be restored to their original hashes;do not fabricate replacements or rewrite old evidence.",
+    "No new gameplay test execution is inferred from --list or governance commands.",
+    "N06-04 remains IN_PROGRESS and both Sandbox performance profiles still fail100ms."
+  ],
+  "nextExactAction": "Create fresh artifacts/vnext/n06-04/web-v2 (never rerun web-v1 outputs). Use saved Sandbox timeline c07d86d4 to attribute GLContextEGL::MakeCurrent stalls and qualify both declared-profile cases at unchanged100ms/>10sample/loading/heap limits. Continue integrated Deadline/Maid3D camera/readability/art and N06-09;Phase2 stays paused until a fresh qualified upstream handoff. Inspect hosted Quality for the exact pushed SHA."
+}

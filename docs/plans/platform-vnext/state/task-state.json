@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "updated_at": "2026-11-09T03:13:07.358796+00:00",
+  "updated_at": "2026-11-09T03:49:14.646409+00:00",
   "scope": "vNext implementation",
   "release_status": "NOT_REQUESTED",
   "module_activation": {
@@ -234,10 +234,12 @@
       "owner": "Foundation/CI",
       "branch": "codex/vnext-n03-04-release-ci",
       "evidence_refs": [
-        "n03-04-2026-11-05"
+        "n03-04-2026-11-05",
+        "n03-04-fresh-checkout-local-2026-11-09",
+        "n03-04-report-output-safety-2026-11-09"
       ],
       "blocker": null,
-      "next_action": "Reserve N05-01 on a new branch; read current authority/contract and N02-01 dependency evidence, audit actor/action/payload receipts, socket adapters and seat/order/reward/travel concurrency/privacy guards. Implement one compatible protocol/envelope vertical slice with bounded sequencing and explicit current adapters; implement test:protocol before executing it, run applicable unit/integration/security verification, preserve the singleton/global serialization/38 SQL and prior evidence, then update exact state/action."
+      "next_action": "Observe exact pushed-SHA hosted images/Quality;preserve report-output guard and recorded2auxiliary HTML loss. Create fresh artifacts/vnext/n06-04/web-v2 (never rerun web-v1 outputs). Use saved Sandbox timeline c07d86d4 to attribute GLContextEGL::MakeCurrent stalls and qualify both declared-profile cases at unchanged100ms/>10sample/loading/heap limits. Continue integrated Deadline/Maid3D camera/readability/art and N06-09;Phase2 stays paused until a fresh qualified upstream handoff. Inspect hosted Quality for the exact pushed SHA."
     },
     "N03-05": {
       "status": "VERIFIED",
@@ -385,10 +387,11 @@
       "owner": "Codex Experience",
       "branch": "codex/lantern-lodge-foundation",
       "evidence_refs": [
-        "n06-04-web-stability-partial-2026-11-09"
+        "n06-04-web-stability-partial-2026-11-09",
+        "n06-04-raf-profile-partial-2026-11-09"
       ],
       "blocker": null,
-      "next_action": "Complete fresh-checkout image-bundle verification;profile retained RAF failures at unchanged budgets,then implement integrated Deadline/Maid camera/readability and final web qualification before N06-09/Phase2 resume."
+      "next_action": "Create fresh artifacts/vnext/n06-04/web-v2 (never rerun web-v1 outputs). Use saved Sandbox timeline c07d86d4 to attribute GLContextEGL::MakeCurrent stalls and qualify both declared-profile cases at unchanged100ms/>10sample/loading/heap limits. Continue integrated Deadline/Maid3D camera/readability/art and N06-09;Phase2 stays paused until a fresh qualified upstream handoff. Inspect hosted Quality for the exact pushed SHA."
     },
     "N06-05": {
       "status": "TODO",
@@ -803,7 +806,7 @@
         "n06-07-web-creator-acceptance-2026-11-09"
       ],
       "blocker": null,
-      "next_action": "Preserve this scoped N06-07 web acceptance;N06-04 is dependency-ready. Reproduce retained hosted RAF/Lounge failures without lowering budgets or skipping groups,then polish integrated Deadline/Maid camera/readability/interactions;keep Phase2 paused until fresh upstream handoff.",
+      "next_action": "Preserve scoped source80107b5 web creator acceptance;continue active N06-04 per its RAF/art checkpoint.Native qualification remains deferred.",
       "previous_status_before_web_split": "BLOCKED_EXTERNAL",
       "historical_evidence_refs": [
         "n06-07-modular-creator-partial-2026-11-08",

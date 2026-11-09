@@ -1,89 +1,72 @@
 {
   "status": "VERIFIED",
-  "scope": "Local Docker packaging and production-mode disposable artifact qualification only",
+  "scope": "Fresh-checkout local release-bundle initialization and production-mode image/Compose regression;not hosted/public release acceptance",
   "taskIds": [
     "N03-02",
     "N03-03",
     "N03-04"
   ],
-  "at": "2026-11-09T01:16:26.654512+00:00",
-  "imageSourceRevision": "e56d88167a2b9a2c6acdff3ea36894a19b3d28b5",
-  "composeSourceRevision": "3f58f9204102523497ae8b7457c9b366177c3dcd",
+  "at": "2026-11-09T03:31:18.589534+00:00",
+  "imageSourceRevision": "983d25748a608e22eed5086ad19fc460467d41bf",
+  "composeSourceRevision": "983d25748a608e22eed5086ad19fc460467d41bf",
   "runtimeSourceDeltaSinceImages": [],
   "images": {
-    "api": "sha256:2563de5a1f97f036e340d483375cd21c9408c3eaeda168e394ce7a0c4c98d1df",
-    "web": "sha256:1772bff6d7b1eb757550bd06e21767a0935e97a3239cfece22738f3da8b78939",
-    "admin": "sha256:ebef645f7717b73c2416d93e485a34a6b238a0bd9c613e18b778b66513ebc47e"
+    "api": "sha256:d94e51f29ae178b28a28741cd4a3be29dc0f1bc1889ba25c3891f2f7939f89b4",
+    "web": "sha256:45ccdcff1be0c4c1202481d3f160864fa56df5074f66715f9ebddc10a1a4b86f",
+    "admin": "sha256:4102d25acecb130728cd5f6a886c25239d3991348c4c0f93884e95fed1ed7bd3"
   },
   "schemaMigrations": 47,
-  "environment": {
-    "os": "CachyOS Linux",
-    "node": "26.9.0",
-    "pnpm": "11.28.5",
-    "docker": "29.9.0",
-    "compose": "5.6.0"
-  },
   "commands": [
     {
-      "command": "node scripts/release-bundle.mjs --output artifacts/docker-delivery-20261109-v1/release-bundle",
+      "command": "node --test tests/governance/artifact-release.test.mjs",
       "exitCode": 0,
-      "actualOutcome": "API/web/admin6runtime scenarios each;file/credential/SBOM/source inspections;47SQL release metadata;archives of tested images"
+      "facts": "artifacts/vnext/n06-04/web-v1/release-regression-7f94017c.json"
     },
     {
-      "command": "node scripts/local-compose-smoke.mjs --bundle artifacts/docker-delivery-20261109-v1/release-bundle/bundle.json",
+      "command": "node scripts/release-bundle.mjs --output artifacts/vnext/n03-04/fresh-current-2/release-bundle --source-revision 983d25748a608e22eed5086ad19fc460467d41bf",
       "exitCode": 0,
-      "actualOutcome": "6scenarios including HTTPS/WSS/browser/persistence;owned stack/volume/secrets cleanup complete"
+      "facts": "artifacts/vnext/n06-04/web-v1/release-bundle-664fe24b.json"
     },
     {
-      "command": "node --test tests/governance/*.test.mjs",
+      "command": "node scripts/local-compose-smoke.mjs --bundle artifacts/vnext/n03-04/fresh-current-2/release-bundle/bundle.json",
       "exitCode": 0,
-      "actualOutcome": "97/97 PASS"
+      "facts": "artifacts/vnext/n06-04/web-v1/compose-smoke-ab9582d6.json"
     },
     {
-      "command": "pnpm lint",
-      "exitCode": 0
+      "command": "node artifacts/vnext/n06-04/web-v1/update-local.mjs artifacts/image-web-4d0d2b16/facts.json",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/local-update-f1dbfb3f.json"
+    },
+    {
+      "command": "node --test tests/governance/admin-artifact.test.mjs tests/governance/admin-boundary.test.mjs tests/governance/admin-bundle.test.mjs tests/governance/api-runtime-package.test.mjs tests/governance/artifact-release.test.mjs tests/governance/backup.test.mjs tests/governance/boundaries.test.mjs tests/governance/ci.test.mjs tests/governance/client-boundaries.test.mjs tests/governance/client-legacy-fixture.test.mjs tests/governance/digest-promotion.test.mjs tests/governance/evidence-inventory.test.mjs tests/governance/evidence-output.test.mjs tests/governance/evidence-reader.test.mjs tests/governance/evidence-store.test.mjs tests/governance/image-inspection.test.mjs tests/governance/infra.test.mjs tests/governance/kubernetes.test.mjs tests/governance/legacy-snapshots.test.mjs tests/governance/ops-watch.test.mjs tests/governance/plan-status.test.mjs tests/governance/release.test.mjs tests/governance/resource-budget.test.mjs tests/governance/runtime-profile-comparison.test.mjs tests/governance/scene3d-loading.test.mjs tests/governance/scene3d-workload.test.mjs tests/governance/source-schema-policy.test.mjs tests/governance/test-environment.test.mjs tests/governance/toolchain.test.mjs tests/governance/web-first-plan.test.mjs tests/governance/worker-boundary.test.mjs",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/governance-final-4aa5479d.json"
     },
     {
       "command": "pnpm ci:check",
-      "exitCode": 0
-    },
-    {
-      "command": "pnpm infra:check",
-      "exitCode": 0
-    },
-    {
-      "command": "node scripts/verify-game-plan.mjs",
-      "exitCode": 0
-    },
-    {
-      "command": "node docs/plans/platform-vnext/tools/validate-plan.mjs",
-      "exitCode": 0
-    },
-    {
-      "command": "node docs/plans/LANTERN-LODGE-PHASE-2/tools/validate-plan.mjs",
-      "exitCode": 0
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/ci-final-91126eea.json"
     },
     {
       "command": "node scripts/verify-web-first-plan.mjs",
-      "exitCode": 0
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/web-first-e55e6bc2.json"
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/lint-final-e78476b5.json"
     }
   ],
-  "failuresRetained": [
-    "Initial Docker build missing6mobile build-only TS inputs",
-    "BusyBox CA flag unsupported",
-    "Caddy file capability denied by empty bounding set;allow onlyNET_BIND_SERVICE and local TLS owner UID",
-    "Fixture port inspection included unboundnullEXPOSE entries",
-    "Fixture pooled TLS socket stale across deliberate edge down/up;fresh transport required"
-  ],
   "rawEvidence": {
-    "ref": "artifacts/docker-delivery-20261109-v1/raw-index.json",
-    "sha256": "a8345732715a098490283d12d6c28b8d110872e13f0e1ea81174bf195c7ad09e",
-    "files": 257,
-    "access": "private local artifacts;not off-host retention"
+    "ref": "artifacts/vnext/n06-04/web-v1/delivery-index.json",
+    "sha256": "eb4dad7ee65398f24f3597881160ca5873416b93cfdaef5e34c01c2aacce81e1",
+    "files": 153
   },
   "retainedLocalStack": {
     "status": "RUNNING_HEALTHY",
     "origin": "https://localhost:3443",
+    "sourceRevision": "983d25748a608e22eed5086ad19fc460467d41bf",
     "containerNames": [
       "vc-db",
       "vc-migrate",
@@ -93,60 +76,192 @@
     ],
     "migrateExitCode": 0,
     "databaseVolume": "vc_data",
-    "readiness": {
-      "status": "ready",
-      "schemaVersion": 1
+    "backup": {
+      "authenticatedEncryption": "AES-256-GCM",
+      "roundTripAuthenticated": true,
+      "encryptedBytes": 378549,
+      "sha256": "6ac63b3425b324da25100b596c751cfdaa5e553132970a7e6ce7274596b06952",
+      "restoreRun": false,
+      "keyExcludedFromEvidence": true
     },
     "artifact": {
-      "ref": "artifacts/docker-local-up-20261109-v1/result.json",
-      "sha256": "8e2be20eddc207e0169c2402488426249dc8ea7a1d5b14cac83c7d45de00fe45"
-    },
-    "sourceRevision": "80107b5f2f65eeb19a1a242b672c178d6339c0f5"
+      "ref": "artifacts/vnext/n06-04/web-v1/local-update-result.json",
+      "sha256": "69a22021542084024db968d1f153d014afa2b043cf13a099d4c2e0ccfea182d6"
+    }
   },
   "hostedCI": {
-    "status": "FAILURE_AT_PREVIOUS_SOURCE",
-    "sourceRevision": "4de0252ad68cccb53d8e64b7672d1d7d64100728",
-    "run": "https://github.com/tiecont/virtual-life-platform/actions/runs/42544861119",
-    "failedGroups": [
-      "legacy",
-      "study",
-      "hospitality"
-    ],
+    "sourceRevision": "212cdc056b57609bfa75fd7fbbe34dedfc1170b4",
+    "run": "https://github.com/tiecont/virtual-life-platform/actions/runs/42552544733",
+    "status": "FAILURE_AT_PREVIOUS_CHECKPOINT",
     "core": "SUCCESS",
-    "currentCreatorSourceHosted": "NOT_RUN",
-    "audit": "docs/plans/platform-vnext/audit/N03-04-HOSTED-2026-11-09.json"
+    "images": "FAILURE_ENOENT_PARENT",
+    "legacyRafP95GapMs": 216.7,
+    "studyRafP95GapMs": 133.2,
+    "otherBrowserGroups": "SUCCESS",
+    "fixedSourceHosted": "NOT_RUN_AT_SEAL",
+    "audit": "docs/plans/platform-vnext/audit/N06-04-RAF-PROFILE-CHECKPOINT.json"
   },
   "registryPublish": "NOT_RUN",
   "publicRelease": false,
   "nativeDevelopment": "DEFERRED_APPROVED",
   "limitations": [
-    "No new full770integration/native/physical run;prior results stay historical",
-    "Current final-art/loading/usability and external staging/public release gates remain",
-    "Local images carry their exact tested source label;later commits onlyops/planning/evidence and no app/runtime/config/Dockerfile delta"
+    "Local image IDs and archives;no registry publication or public/store/production action.",
+    "Images pin source983d257;later changes are browser measurement harness/CI grouping/evidence,not runtime app/package/infra.",
+    "No full integration/security/native rerun for unchanged backend;Lounge24integration and32browser fresh results are separately pinned.",
+    "Default-compositor RAF failures and new declared-profile qualification are separate evidence. N06-04 stays IN_PROGRESS.",
+    "Backup is authenticated encrypted local recovery material,not offsite retention or an actual DB restore."
   ],
-  "nextExactAction": "Preserve this scoped N06-07 web acceptance;N06-04 is dependency-ready. Reproduce retained hosted RAF/Lounge failures without lowering budgets or skipping groups,then polish integrated Deadline/Maid camera/readability/interactions;keep Phase2 paused until fresh upstream handoff.",
-  "push": {
-    "status": "SUCCESS",
-    "branch": "codex/lantern-lodge-foundation",
-    "sourceRevision": "fcec6487984f9ea2456206dd408dabb66d782e68",
-    "remote": "origin"
-  },
-  "updates": [
-    {
-      "taskId": "N06-07",
-      "sourceRevision": "80107b5f2f65eeb19a1a242b672c178d6339c0f5",
-      "at": "2026-11-09T02:38:24.995943+00:00",
-      "origin": "https://localhost:3443",
-      "images": {
-        "vc-api": "sha256:6b441c3bc41663634569b0fc6fc35f1dc1fb9c0e2387fcdd4d22761a33e766c9",
-        "vc-web": "sha256:db2e951021e87ff9a9050a2c28920102ea3a78b37f83344cf753300cf46cf94c",
-        "vc-db": "sha256:bb377b7239d2774ac8cc76f481596ce96c5a6b5e9d141f6d0a0ee371a6e7c0f2",
-        "vc-edge": "sha256:e70b164da81ef698b3ad19af799ea6086ce6d9e48ed4079eb9fe26f6fbf14ee5"
+  "previousQualification": {
+    "status": "VERIFIED",
+    "scope": "Local Docker packaging and production-mode disposable artifact qualification only",
+    "taskIds": [
+      "N03-02",
+      "N03-03",
+      "N03-04"
+    ],
+    "at": "2026-11-09T01:16:26.654512+00:00",
+    "imageSourceRevision": "e56d88167a2b9a2c6acdff3ea36894a19b3d28b5",
+    "composeSourceRevision": "3f58f9204102523497ae8b7457c9b366177c3dcd",
+    "runtimeSourceDeltaSinceImages": [],
+    "images": {
+      "api": "sha256:2563de5a1f97f036e340d483375cd21c9408c3eaeda168e394ce7a0c4c98d1df",
+      "web": "sha256:1772bff6d7b1eb757550bd06e21767a0935e97a3239cfece22738f3da8b78939",
+      "admin": "sha256:ebef645f7717b73c2416d93e485a34a6b238a0bd9c613e18b778b66513ebc47e"
+    },
+    "schemaMigrations": 47,
+    "environment": {
+      "os": "CachyOS Linux",
+      "node": "26.9.0",
+      "pnpm": "11.28.5",
+      "docker": "29.9.0",
+      "compose": "5.6.0"
+    },
+    "commands": [
+      {
+        "command": "node scripts/release-bundle.mjs --output artifacts/docker-delivery-20261109-v1/release-bundle",
+        "exitCode": 0,
+        "actualOutcome": "API/web/admin6runtime scenarios each;file/credential/SBOM/source inspections;47SQL release metadata;archives of tested images"
       },
-      "volumeRetained": "vc_data",
-      "migrations": 47,
-      "audit": "docs/plans/platform-vnext/audit/N06-07-WEB-ACCEPTANCE.json",
-      "auditSha256": "cd47e0d78d32bb9e61757abfb99a1ddbab856858bb44983fc8f7545bab697148"
-    }
-  ]
+      {
+        "command": "node scripts/local-compose-smoke.mjs --bundle artifacts/docker-delivery-20261109-v1/release-bundle/bundle.json",
+        "exitCode": 0,
+        "actualOutcome": "6scenarios including HTTPS/WSS/browser/persistence;owned stack/volume/secrets cleanup complete"
+      },
+      {
+        "command": "node --test tests/governance/*.test.mjs",
+        "exitCode": 0,
+        "actualOutcome": "97/97 PASS"
+      },
+      {
+        "command": "pnpm lint",
+        "exitCode": 0
+      },
+      {
+        "command": "pnpm ci:check",
+        "exitCode": 0
+      },
+      {
+        "command": "pnpm infra:check",
+        "exitCode": 0
+      },
+      {
+        "command": "node scripts/verify-game-plan.mjs",
+        "exitCode": 0
+      },
+      {
+        "command": "node docs/plans/platform-vnext/tools/validate-plan.mjs",
+        "exitCode": 0
+      },
+      {
+        "command": "node docs/plans/LANTERN-LODGE-PHASE-2/tools/validate-plan.mjs",
+        "exitCode": 0
+      },
+      {
+        "command": "node scripts/verify-web-first-plan.mjs",
+        "exitCode": 0
+      }
+    ],
+    "failuresRetained": [
+      "Initial Docker build missing6mobile build-only TS inputs",
+      "BusyBox CA flag unsupported",
+      "Caddy file capability denied by empty bounding set;allow onlyNET_BIND_SERVICE and local TLS owner UID",
+      "Fixture port inspection included unboundnullEXPOSE entries",
+      "Fixture pooled TLS socket stale across deliberate edge down/up;fresh transport required"
+    ],
+    "rawEvidence": {
+      "ref": "artifacts/docker-delivery-20261109-v1/raw-index.json",
+      "sha256": "a8345732715a098490283d12d6c28b8d110872e13f0e1ea81174bf195c7ad09e",
+      "files": 257,
+      "access": "private local artifacts;not off-host retention"
+    },
+    "retainedLocalStack": {
+      "status": "RUNNING_HEALTHY",
+      "origin": "https://localhost:3443",
+      "containerNames": [
+        "vc-db",
+        "vc-migrate",
+        "vc-api",
+        "vc-web",
+        "vc-edge"
+      ],
+      "migrateExitCode": 0,
+      "databaseVolume": "vc_data",
+      "readiness": {
+        "status": "ready",
+        "schemaVersion": 1
+      },
+      "artifact": {
+        "ref": "artifacts/docker-local-up-20261109-v1/result.json",
+        "sha256": "8e2be20eddc207e0169c2402488426249dc8ea7a1d5b14cac83c7d45de00fe45"
+      },
+      "sourceRevision": "80107b5f2f65eeb19a1a242b672c178d6339c0f5"
+    },
+    "hostedCI": {
+      "status": "FAILURE_AT_PREVIOUS_SOURCE",
+      "sourceRevision": "4de0252ad68cccb53d8e64b7672d1d7d64100728",
+      "run": "https://github.com/tiecont/virtual-life-platform/actions/runs/42544861119",
+      "failedGroups": [
+        "legacy",
+        "study",
+        "hospitality"
+      ],
+      "core": "SUCCESS",
+      "currentCreatorSourceHosted": "NOT_RUN",
+      "audit": "docs/plans/platform-vnext/audit/N03-04-HOSTED-2026-11-09.json"
+    },
+    "registryPublish": "NOT_RUN",
+    "publicRelease": false,
+    "nativeDevelopment": "DEFERRED_APPROVED",
+    "limitations": [
+      "No new full770integration/native/physical run;prior results stay historical",
+      "Current final-art/loading/usability and external staging/public release gates remain",
+      "Local images carry their exact tested source label;later commits onlyops/planning/evidence and no app/runtime/config/Dockerfile delta"
+    ],
+    "nextExactAction": "Preserve this scoped N06-07 web acceptance;N06-04 is dependency-ready. Reproduce retained hosted RAF/Lounge failures without lowering budgets or skipping groups,then polish integrated Deadline/Maid camera/readability/interactions;keep Phase2 paused until fresh upstream handoff.",
+    "push": {
+      "status": "SUCCESS",
+      "branch": "codex/lantern-lodge-foundation",
+      "sourceRevision": "fcec6487984f9ea2456206dd408dabb66d782e68",
+      "remote": "origin"
+    },
+    "updates": [
+      {
+        "taskId": "N06-07",
+        "sourceRevision": "80107b5f2f65eeb19a1a242b672c178d6339c0f5",
+        "at": "2026-11-09T02:38:24.995943+00:00",
+        "origin": "https://localhost:3443",
+        "images": {
+          "vc-api": "sha256:6b441c3bc41663634569b0fc6fc35f1dc1fb9c0e2387fcdd4d22761a33e766c9",
+          "vc-web": "sha256:db2e951021e87ff9a9050a2c28920102ea3a78b37f83344cf753300cf46cf94c",
+          "vc-db": "sha256:bb377b7239d2774ac8cc76f481596ce96c5a6b5e9d141f6d0a0ee371a6e7c0f2",
+          "vc-edge": "sha256:e70b164da81ef698b3ad19af799ea6086ce6d9e48ed4079eb9fe26f6fbf14ee5"
+        },
+        "volumeRetained": "vc_data",
+        "migrations": 47,
+        "audit": "docs/plans/platform-vnext/audit/N06-07-WEB-ACCEPTANCE.json",
+        "auditSha256": "cd47e0d78d32bb9e61757abfb99a1ddbab856858bb44983fc8f7545bab697148"
+      }
+    ]
+  },
+  "nextExactAction": "Create fresh artifacts/vnext/n06-04/web-v2 (never rerun web-v1 outputs). Use saved Sandbox timeline c07d86d4 to attribute GLContextEGL::MakeCurrent stalls and qualify both declared-profile cases at unchanged100ms/>10sample/loading/heap limits. Continue integrated Deadline/Maid3D camera/readability/art and N06-09;Phase2 stays paused until a fresh qualified upstream handoff. Inspect hosted Quality for the exact pushed SHA."
 }

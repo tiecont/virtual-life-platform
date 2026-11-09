@@ -1,0 +1,143 @@
+{
+  "taskId": "N03-04",
+  "sourceRevision": "983d25748a608e22eed5086ad19fc460467d41bf",
+  "at": "2026-11-09T03:31:18.589534+00:00",
+  "scope": "Fresh-checkout local release-bundle initialization and production-mode image/Compose regression;not hosted/public release acceptance",
+  "acceptance_met": true,
+  "implementedFix": "Create missing private output parents,retain exclusive leaf creation and verify source is an actual Git commit before image work.",
+  "commands": [
+    {
+      "command": "node --test tests/governance/artifact-release.test.mjs",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/release-regression-7f94017c.json"
+    },
+    {
+      "command": "node scripts/release-bundle.mjs --output artifacts/vnext/n03-04/fresh-current-2/release-bundle --source-revision 983d25748a608e22eed5086ad19fc460467d41bf",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/release-bundle-664fe24b.json"
+    },
+    {
+      "command": "node scripts/local-compose-smoke.mjs --bundle artifacts/vnext/n03-04/fresh-current-2/release-bundle/bundle.json",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/compose-smoke-ab9582d6.json"
+    },
+    {
+      "command": "node artifacts/vnext/n06-04/web-v1/update-local.mjs artifacts/image-web-4d0d2b16/facts.json",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/local-update-f1dbfb3f.json"
+    },
+    {
+      "command": "node --test tests/governance/admin-artifact.test.mjs tests/governance/admin-boundary.test.mjs tests/governance/admin-bundle.test.mjs tests/governance/api-runtime-package.test.mjs tests/governance/artifact-release.test.mjs tests/governance/backup.test.mjs tests/governance/boundaries.test.mjs tests/governance/ci.test.mjs tests/governance/client-boundaries.test.mjs tests/governance/client-legacy-fixture.test.mjs tests/governance/digest-promotion.test.mjs tests/governance/evidence-inventory.test.mjs tests/governance/evidence-output.test.mjs tests/governance/evidence-reader.test.mjs tests/governance/evidence-store.test.mjs tests/governance/image-inspection.test.mjs tests/governance/infra.test.mjs tests/governance/kubernetes.test.mjs tests/governance/legacy-snapshots.test.mjs tests/governance/ops-watch.test.mjs tests/governance/plan-status.test.mjs tests/governance/release.test.mjs tests/governance/resource-budget.test.mjs tests/governance/runtime-profile-comparison.test.mjs tests/governance/scene3d-loading.test.mjs tests/governance/scene3d-workload.test.mjs tests/governance/source-schema-policy.test.mjs tests/governance/test-environment.test.mjs tests/governance/toolchain.test.mjs tests/governance/web-first-plan.test.mjs tests/governance/worker-boundary.test.mjs",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/governance-final-4aa5479d.json"
+    },
+    {
+      "command": "pnpm ci:check",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/ci-final-91126eea.json"
+    },
+    {
+      "command": "node scripts/verify-web-first-plan.mjs",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/web-first-e55e6bc2.json"
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "facts": "artifacts/vnext/n06-04/web-v1/lint-final-e78476b5.json"
+    }
+  ],
+  "actualOutcomes": {
+    "apiScenarios": 6,
+    "webScenarios": 6,
+    "adminScenarios": 6,
+    "composeScenarios": 6,
+    "governancePassed": 99,
+    "testedArchivesHashVerified": 3,
+    "retainedLocalStack": {
+      "sourceRevision": "983d25748a608e22eed5086ad19fc460467d41bf",
+      "scope": "Retained loopback development stack only;no destructive SQL or database restore",
+      "publicRelease": false,
+      "backupDirectory": "/home/tiecont/Projects/virtual-city/artifacts/local-docker/backups/web-stability-aa9b0477",
+      "steps": [
+        {
+          "command": "compose stop edge web api",
+          "exitCode": 0
+        },
+        {
+          "command": "pg_dump \u2192 existing sealArchive/openArchive;no plaintext file",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm docker:up (Compose wait + certificate-verified TLS readiness)",
+          "exitCode": 0
+        },
+        {
+          "command": "Read-only schema count and owned container health",
+          "exitCode": 0
+        }
+      ],
+      "backup": {
+        "authenticatedEncryption": "AES-256-GCM",
+        "roundTripAuthenticated": true,
+        "encryptedBytes": 378549,
+        "sha256": "6ac63b3425b324da25100b596c751cfdaa5e553132970a7e6ce7274596b06952",
+        "restoreRun": false,
+        "keyExcludedFromEvidence": true
+      },
+      "containers": [
+        {
+          "name": "/vc-api",
+          "image": "sha256:d94e51f29ae178b28a28741cd4a3be29dc0f1bc1889ba25c3891f2f7939f89b4",
+          "health": "healthy"
+        },
+        {
+          "name": "/vc-web",
+          "image": "sha256:45ccdcff1be0c4c1202481d3f160864fa56df5074f66715f9ebddc10a1a4b86f",
+          "health": "healthy"
+        },
+        {
+          "name": "/vc-db",
+          "image": "sha256:bb377b7239d2774ac8cc76f481596ce96c5a6b5e9d141f6d0a0ee371a6e7c0f2",
+          "health": "healthy"
+        },
+        {
+          "name": "/vc-edge",
+          "image": "sha256:e70b164da81ef698b3ad19af799ea6086ce6d9e48ed4079eb9fe26f6fbf14ee5",
+          "health": "healthy"
+        }
+      ],
+      "migrations": 47,
+      "result": "PASS",
+      "origin": "https://localhost:3443",
+      "volumeRetained": "vc_data",
+      "at": "2026-11-09T03:20:41.780Z"
+    }
+  },
+  "hostedBaseline": {
+    "run": 42552544733,
+    "sourceRevision": "212cdc056b57609bfa75fd7fbbe34dedfc1170b4",
+    "core": "SUCCESS",
+    "images": "FAILURE_ENOENT_OUTPUT_PARENT",
+    "remainingBrowserJobs": "NOT_YET_COMPLETE_AT_OBSERVATION",
+    "fixedSourceHosted": "NOT_RUN",
+    "rawLog": "artifacts/vnext/n06-04/web-v1/hosted-images-128951170514.log"
+  },
+  "failuresRetained": [
+    "Initial bootstrap regression expected wrong lower-layer error;actual Git40hex rev-parse did not verify commit existence. Added explicit^{commit} verification and actual7test rerun PASS.",
+    "First local bundle CLI used incorrectly transcribed SHA;new source guard correctly denied it. Correct run read sourceRevision directly from Git and used a fresh output path."
+  ],
+  "rawIndex": {
+    "ref": "artifacts/vnext/n06-04/web-v1/delivery-index.json",
+    "sha256": "eb4dad7ee65398f24f3597881160ca5873416b93cfdaef5e34c01c2aacce81e1",
+    "files": 153
+  },
+  "limitations": [
+    "Local image IDs and archives;no registry publication or public/store/production action.",
+    "Images pin source983d257;later changes are browser measurement harness/CI grouping/evidence,not runtime app/package/infra.",
+    "No full integration/security/native rerun for unchanged backend;Lounge24integration and32browser fresh results are separately pinned.",
+    "Default-compositor RAF failures and new declared-profile qualification are separate evidence. N06-04 stays IN_PROGRESS.",
+    "Backup is authenticated encrypted local recovery material,not offsite retention or an actual DB restore."
+  ],
+  "nextExactAction": "Push finalized branch and observe fresh hosted runtime-images/Quality results;do not infer hosted green from local checks. Continue N06-04 camera/readability/final-art and N06-09 web qualification before Phase2 resumes. Native stays deferred."
+}
