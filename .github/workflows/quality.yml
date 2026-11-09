@@ -31,7 +31,8 @@ jobs:
   core:
     name: core-checks
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # 770 integration cases took20minutes;leave bounded time for checks/builds.
+    timeout-minutes: 45
     outputs:
       groups: ${{ steps.browser-plan.outputs.groups }}
     services:
