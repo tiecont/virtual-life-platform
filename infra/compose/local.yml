@@ -91,7 +91,9 @@ services:
       api: {condition: service_healthy}
       web: {condition: service_healthy}
     healthcheck:
-      test: [CMD-SHELL, 'wget -q -O /dev/null --ca-certificate=/run/tls/cert.pem https://localhost:$${CITY_SITE_ADDRESS##*:}/health/ready']
+      # The pinned Alpine image has BusyBox wget without CA-file support.
+      # Check listener liveness here; smoke/up verifies HTTPS with the local CA.
+      test: [CMD-SHELL, 'nc -z -w 2 127.0.0.1 "$${CITY_SITE_ADDRESS##*:}"']
       interval: 3s
       timeout: 5s
       retries: 20

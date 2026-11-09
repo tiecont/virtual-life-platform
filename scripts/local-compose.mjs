@@ -3,6 +3,7 @@ import {execFileSync} from 'node:child_process';
 import {randomBytes} from 'node:crypto';
 import {chmod, mkdir, readFile, writeFile} from 'node:fs/promises';
 import net from 'node:net';
+import https from 'node:https';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 
@@ -79,7 +80,17 @@ async function main() {
     assert(args.length === 0 && ['up', 'stop', 'down', 'status', 'config'].includes(action), 'Expected prepare/up/stop/down/status/config');
     const commands = {up: ['up', '-d', '--wait', '--wait-timeout', '180'], stop: ['stop'], down: ['down'], status: ['ps', '-a'], config: ['config', '--quiet']};
     console.log(compose(defaultRoot, commands[action]));
-    if (action === 'up') console.log(JSON.parse(await readFile(resolve(defaultRoot, 'selection.json'))).origin);
+    if (action === 'up') {
+      const selection = JSON.parse(await readFile(resolve(defaultRoot, 'selection.json')));
+      const ca = await readFile(resolve(defaultRoot, 'tls/cert.pem'));
+      await new Promise((ok, no) => {
+        const request = https.get(selection.origin + '/health/ready', {ca}, response => {
+          response.resume(); response.on('end', () => response.statusCode === 200 ? ok() : no(Error('TLS readiness unavailable')));
+        });
+        request.on('error', no); request.setTimeout(10000, () => request.destroy(Error('TLS readiness deadline')));
+      });
+      console.log(selection.origin);
+    }
   }
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

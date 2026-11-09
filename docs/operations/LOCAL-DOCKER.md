@@ -25,7 +25,8 @@ Never disable TLS checks globally. This certificate expires after 90 days.
 
 Names: `vc-db`, `vc-migrate`, `vc-api`, `vc-web`, `vc-edge`.
 The migrator exits successfully after applying additive SQL. The other four
-services have health checks. Only TLS port 3443 is published, on 127.0.0.1;
+services have health checks (edge checks listener liveness; `docker:up` also
+verifies TLS/API readiness with the generated certificate). Only TLS port 3443 is published, on 127.0.0.1;
 web, API and database stay on the private Docker network. No host DB port.
 The generator inventories host/Docker subnets and refuses name/port conflicts.
 Images must have matching source labels and immutable local IDs. These IDs
