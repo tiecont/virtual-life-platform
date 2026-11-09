@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {randomBytes, randomUUID, createHash, createHmac, X509Certificate} from 'node:crypto';
-import {readFile, rm, writeFile} from 'node:fs/promises';
+import {readFile, readdir, rm, writeFile} from 'node:fs/promises';
 import {resolve, sep} from 'node:path';
 import https from 'node:https';
 import net from 'node:net';
@@ -12,6 +12,7 @@ assert(args.length === 8 && args[0] === '--admin' && args[2] === '--api' && args
 const admin = args[1], api = args[3], contextRoot = resolve(args[5]), directory = resolve(args[7]);
 assert([admin, api].every(value => /^sha256:[a-f0-9]{64}$/.test(value)));
 assert(directory.startsWith(resolve('artifacts') + sep + 'image-admin-') && directory.endsWith('/smoke'));
+const expectedMigrations = (await readdir(resolve(contextRoot, 'apps/platform-api/src/db/migrations'))).filter(name => name.endsWith('.sql')).length;
 const {run: execute, save, commands, signal, dispose} = await imageTestTools(directory);
 const project = 'virtual-city-admin-image-' + randomUUID().slice(0, 8), sockets = new Set();
 let stage = 'prepare', browser, started = false, cert, probe;
@@ -93,7 +94,7 @@ try {
     if(!cookies){await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Authenticator code').fill(code);await page.getByRole('button',{name:'Sign in',exact:true}).click();}
     await expect(page.getByRole('heading',{name:'City at a glance'})).toBeVisible();
     await page.getByRole('button',{name:'Refresh snapshot'}).click();await expect(page.getByText('Fresh observation',{exact:true})).toBeVisible();
-    await page.getByRole('button',{name:'System & traffic',exact:true}).click();await page.getByRole('button',{name:'Refresh system snapshot',exact:true}).click();await expect(page.getByText('Fresh observation',{exact:true})).toBeVisible();await expect(page.getByRole('heading',{name:'Configured system map'})).toBeVisible();const system=await page.evaluate(async()=>(await fetch('/api/admin/observations?view=system&range=current')).json());assert.equal(system.status,'FRESH');assert.equal(system.observation.schemaVersion,2);assert.equal(system.observation.source,'platform-api');const ownerSources=await page.evaluate(async()=>(await fetch('/api/admin/system-state?view=system&range=current')).json());assert.equal(ownerSources.status,'FRESH');assert.equal(ownerSources.system.database.status,'OBSERVED');assert.equal(ownerSources.system.pool.status,'OBSERVED');assert.equal(ownerSources.system.versions.expectedSchemaVersion,1);assert.equal(ownerSources.system.versions.expectedMigrationCount,44);assert(!/traceId|spanId|roomKey/.test(JSON.stringify(system)));assert(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth));await page.screenshot({path:resolve(directory,'system-'+profile.name+'.png'),fullPage:true});
+    await page.getByRole('button',{name:'System & traffic',exact:true}).click();await page.getByRole('button',{name:'Refresh system snapshot',exact:true}).click();await expect(page.getByText('Fresh observation',{exact:true})).toBeVisible();await expect(page.getByRole('heading',{name:'Configured system map'})).toBeVisible();const system=await page.evaluate(async()=>(await fetch('/api/admin/observations?view=system&range=current')).json());assert.equal(system.status,'FRESH');assert.equal(system.observation.schemaVersion,2);assert.equal(system.observation.source,'platform-api');const ownerSources=await page.evaluate(async()=>(await fetch('/api/admin/system-state?view=system&range=current')).json());assert.equal(ownerSources.status,'FRESH');assert.equal(ownerSources.system.database.status,'OBSERVED');assert.equal(ownerSources.system.pool.status,'OBSERVED');assert.equal(ownerSources.system.versions.expectedSchemaVersion,1);assert.equal(ownerSources.system.versions.expectedMigrationCount,expectedMigrations);assert(!/traceId|spanId|roomKey/.test(JSON.stringify(system)));assert(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth));await page.screenshot({path:resolve(directory,'system-'+profile.name+'.png'),fullPage:true});
     await page.getByRole('button',{name:'Audit trail',exact:true}).click();await page.getByRole('button',{name:'Load audit'}).click();await expect(page.getByRole('cell',{name:'bootstrap',exact:true})).toBeVisible();
     cookies=await context.cookies(origin);const cookie=cookies.find(value=>value.name==='__Host-city_operator');assert(cookie?.secure&&cookie.httpOnly&&cookie.sameSite==='Strict'&&cookie.path==='/');assert(!(await page.evaluate(()=>document.cookie)).includes('__Host-city_operator'));
     session=await page.evaluate(async()=>(await fetch('/api/admin/session')).json());assert(/^[a-f0-9]{64}$/.test(session.csrfToken));

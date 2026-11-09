@@ -11,6 +11,8 @@ import {imageTestTools} from './image-test-tools.mjs';
 const args = process.argv.slice(2);
 assert(args.length === 4 && args[0] === '--image' && /^sha256:[a-f0-9]{64}$/.test(args[1]) && args[2] === '--output');
 const image = args[1], directory = resolve(args[3]);
+const expectedMigrations = JSON.parse((await import('node:child_process')).execFileSync('docker', ['run', '--rm', '--network', 'none', '--read-only', '--entrypoint', 'node', image, '-e', "console.log(require('node:fs').readdirSync('dist/db/migrations').filter(n=>n.endsWith('.sql')).length)"], {encoding: 'utf8'}));
+assert(Number.isSafeInteger(expectedMigrations) && expectedMigrations > 0);
 assert(directory.startsWith(resolve('artifacts') + sep + 'image-api-') && directory.endsWith(sep + 'smoke'));
 const {run: execute, save, commands, signal, dispose} = await imageTestTools(directory);
 const id = randomUUID().slice(0, 8), owned = new Set(), origin = 'https://api-image.example.invalid';
@@ -86,7 +88,7 @@ try {
   socket = await connect(api, cookie, identity);
   const deniedObservation=await http(api.url+'/internal/observations',{headers:{cookie}});assert.equal(deniedObservation.status,404);
   const observed=await http(api.url+'/internal/observations',{headers:{authorization:'Bearer '+common.OPERATOR_TELEMETRY_TOKEN}});assert.equal(observed.status,200);const aggregate=OperationalObservationSchema.parse(await observed.json());assert.equal(aggregate.durations.window,'PROCESS_LIFETIME');assert.equal(aggregate.source,'platform-api');assert(aggregate.http.requests>0);assert.equal(aggregate.coverage.workerBacklog,'NOT_OBSERVED');assert(!JSON.stringify(aggregate).includes(common.OPERATOR_TELEMETRY_TOKEN));
-  const systemResponse=await http(api.url+'/internal/system-state',{headers:{authorization:'Bearer '+common.OPERATOR_TELEMETRY_TOKEN}});assert.equal(systemResponse.status,200);const system=SystemObservationSchema.parse(await systemResponse.json());assert.equal(system.database.status,'OBSERVED');assert.equal(system.pool.status,'OBSERVED');assert.equal(system.versions.expectedMigrationCount,44);assert.equal((await http(api.url+'/internal/system-state',{headers:{cookie}})).status,404);
+  const systemResponse=await http(api.url+'/internal/system-state',{headers:{authorization:'Bearer '+common.OPERATOR_TELEMETRY_TOKEN}});assert.equal(systemResponse.status,200);const system=SystemObservationSchema.parse(await systemResponse.json());assert.equal(system.database.status,'OBSERVED');assert.equal(system.pool.status,'OBSERVED');assert.equal(system.versions.expectedMigrationCount,expectedMigrations);assert.equal((await http(api.url+'/internal/system-state',{headers:{cookie}})).status,404);
   result.scenarios.push({id: 'API-03', realHttpSessionAndSocket: true, readonlyNonrootRuntime: true,aggregateObservations:true,actualSystemSources:true,observationCookieDenied:true});
   stage = 'checksum'; const original = history[0];
   await pool.query('UPDATE city_schema_migrations SET checksum=$2 WHERE name=$1', [original.name, '0'.repeat(64)]);

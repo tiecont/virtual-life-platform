@@ -4,6 +4,7 @@ import {copyFile, mkdir, readFile, writeFile} from 'node:fs/promises';
 import {dirname, resolve} from 'node:path';
 import {hash, jsonBytes} from './release-manifest.mjs';
 import {repository, shaPattern} from './artifact-policy.mjs';
+import {sourceSchemaPolicy} from './source-schema-policy.mjs';
 
 const args = process.argv.slice(2);
 assert(args[0] === '--output' && (args.length === 2 || args.length === 4 && args[2] === '--source-revision' && shaPattern.test(args[3])));
@@ -16,7 +17,8 @@ assert.equal(admin.result, 'PASS'); assert.equal(admin.sourceRevision, sourceRev
 assert.equal(web.result, 'PASS'); assert.equal(api.result, 'PASS'); assert.equal(api.sourceRevision, sourceRevision); assert.equal(web.sourceRevision, sourceRevision);
 assert(web.runtime.cleanupComplete && web.runtime.generatedSecretsRemoved && api.runtime.cleanupComplete);
 const sourceFile = path => execFileSync('git', ['show', sourceRevision + ':' + path]);
-const schemaBytes = sourceFile('config/schema-compatibility.json'), schema = JSON.parse(schemaBytes.toString());
+const schema = sourceSchemaPolicy(sourceRevision), schemaBytes = jsonBytes(schema);
+assert.equal(api.inspection.migrations, schema.minimumDatabaseMigrations, 'Release schema must match tested API');
 const protocol = Number(sourceFile('packages/contracts/src/index.ts').toString().match(/export const SCHEMA_VERSION = (\d+) as const;/)?.[1]); assert(Number.isSafeInteger(protocol) && protocol >= 1);
 const assets = execFileSync('git', ['ls-tree', '-r', '--full-tree', sourceRevision, '--', 'apps/portal-web/public'], {encoding: 'utf8'});
 const checks = {sourceRevision, result: 'PASS', apiScenarios: api.runtime.scenarios.length, webScenarios: web.runtime.scenarios.length, adminScenarios: admin.runtime.scenarios.length, cleanupComplete: true, images: {api: api.image.id, web: web.image.id, admin: admin.image.id}, inspection: {api: api.inspection, web: web.inspection, admin: admin.inspection}};

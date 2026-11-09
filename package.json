@@ -7,6 +7,11 @@
     "node": "26.9.x"
   },
   "scripts": {
+    "docker:prepare": "node scripts/local-compose.mjs prepare",
+    "docker:up": "node scripts/local-compose.mjs up",
+    "docker:stop": "node scripts/local-compose.mjs stop",
+    "docker:down": "node scripts/local-compose.mjs down",
+    "docker:status": "node scripts/local-compose.mjs status",
     "test:games":"pnpm build:packages && node scripts/with-test-db.mjs pnpm exec vitest run --project unit --project integration tests/games apps/platform-api/src/games",
     "game:restore:smoke":"pnpm build:packages && node --import tsx scripts/game-journal-restore-smoke.mjs",
     "game:migration:compat":"pnpm build:packages && pnpm --filter @virtual-city/platform-api build && node scripts/with-test-db.mjs node --import tsx scripts/game-journal-migration-compat.mjs",

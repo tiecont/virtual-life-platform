@@ -15,6 +15,7 @@ export function assertArtifactWorkflows(quality, publish, pins) {
   const imageJob = quality.split('\n  images:')[1]?.split('\n  quality:')[0];
   assert(imageJob?.includes("if: ${{ needs.plan.outputs.images == 'true' }}"));
   assert(imageJob.includes('node scripts/release-bundle.mjs --output artifacts/release-bundle'));
+  assert(imageJob.includes('node scripts/local-compose-smoke.mjs --bundle artifacts/release-bundle/bundle.json'), 'Test the shipped local Compose against verified artifacts');
   assert(imageJob.includes('runtime-images-${{ github.sha }}-${{ github.run_attempt }}'));
   assert(publish.startsWith('name: Publish verified artifacts\non:\n  workflow_run:\n    workflows: [Quality]\n    types: [completed]\n    branches: [main]\npermissions:\n  contents: read\n'));
   assert.equal((publish.match(/: write\b/g) ?? []).length, 1);

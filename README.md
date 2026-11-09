@@ -64,6 +64,10 @@ The [safety threat model and escalation contract](docs/product/SAFETY-THREAT-MOD
 
 ## Local setup
 
+For fully containerized web/API/PostgreSQL with short `vc-*` names, see
+[local Docker setup](docs/operations/LOCAL-DOCKER.md). It uses verified images,
+private retained data and loopback HTTPS at `https://localhost:3443`.
+
 Linux, Node **26.9.0** (`.node-version`), pnpm **11.28.5**, Docker Engine + Compose v2. Exact dependency pins and pnpm-lock.yaml are committed. The Node pin describes the verified environment, not an LTS claim.
 
 ```sh
