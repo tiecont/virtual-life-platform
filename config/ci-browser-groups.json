@@ -1,12 +1,62 @@
 {
- "schemaVersion":1,
- "groups":{
-  "admin":["admin.spec.ts","privacy.spec.ts","calendar.spec.ts","runtime.spec.ts"],
-  "city":["city-activity.spec.ts","city-header.spec.ts","city-map.spec.ts","discovery.spec.ts","foundation.spec.ts","portal-route.spec.ts","park.spec.ts","park-safety.spec.ts"],
-  "social":["identity.spec.ts","invitations.spec.ts","safety.spec.ts","social.spec.ts","travel.spec.ts","avatar-creator.spec.ts"],
-  "study":["client-compatibility.spec.ts","focus.spec.ts","library.spec.ts","scene.spec.ts","wardrobe.spec.ts","ux-core.spec.ts","queue-ux.spec.ts","scene3d-room.spec.ts"],
-  "hospitality":["lounge.spec.ts","restaurant.spec.ts","lodge-lobby.spec.ts"],
-  "private":["dating-continuation.spec.ts","dating-profile.spec.ts"],
-  "legacy":["deadline-identity.spec.ts","deadline.spec.ts","deadline-safety.spec.ts","deadline-acceptance.spec.ts","maid.spec.ts","maid-safety.spec.ts","maid-travel.spec.ts","maid-acceptance.spec.ts"]
- }
+  "schemaVersion": 1,
+  "groups": {
+    "admin": [
+      "admin.spec.ts",
+      "privacy.spec.ts",
+      "calendar.spec.ts",
+      "runtime.spec.ts"
+    ],
+    "city": [
+      "city-activity.spec.ts",
+      "city-header.spec.ts",
+      "city-map.spec.ts",
+      "discovery.spec.ts",
+      "foundation.spec.ts",
+      "portal-route.spec.ts",
+      "park.spec.ts",
+      "park-safety.spec.ts"
+    ],
+    "social": [
+      "identity.spec.ts",
+      "invitations.spec.ts",
+      "safety.spec.ts",
+      "social.spec.ts",
+      "travel.spec.ts",
+      "avatar-creator.spec.ts"
+    ],
+    "study": [
+      "client-compatibility.spec.ts",
+      "focus.spec.ts",
+      "library.spec.ts",
+      "scene.spec.ts",
+      "wardrobe.spec.ts",
+      "ux-core.spec.ts",
+      "queue-ux.spec.ts",
+      "scene3d-room.spec.ts"
+    ],
+    "hospitality": [
+      "lounge.spec.ts",
+      "restaurant.spec.ts",
+      "lodge-lobby.spec.ts"
+    ],
+    "private": [
+      "dating-continuation.spec.ts",
+      "dating-profile.spec.ts"
+    ],
+    "legacy": [
+      "deadline-identity.spec.ts",
+      "deadline.spec.ts",
+      "deadline-safety.spec.ts",
+      "deadline-acceptance.spec.ts",
+      "maid.spec.ts",
+      "maid-safety.spec.ts",
+      "maid-travel.spec.ts",
+      "maid-acceptance.spec.ts"
+    ],
+    "rendering": [
+      "deadline-performance.spec.ts",
+      "scene-performance.spec.ts"
+    ]
+  }
 }
