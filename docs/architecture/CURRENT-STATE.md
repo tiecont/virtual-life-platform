@@ -1,3 +1,15 @@
+# N06-04 web stability checkpoint — 2026-11-09
+
+N06-04 is IN_PROGRESS. Lounge fix `0d39226` preserves confirmed action outcomes when anonymous observations have expired,without claiming current counts or offering a resend. Actual32browser cases (16desktop/16Chromium mobile emulation,including6new expiry cases),24Lounge integration,portal build/types/lint/localCI contract/client boundaries PASS. Two held-reply tests failed on the old application as expected. [Scoped acceptance](../plans/platform-vnext/audit/N06-04-WEB-STABILITY-CHECKPOINT.json) retains raw evidence;this is not whole N06-04/final-art acceptance.
+
+Hosted trace42544861119 confirms the applied Clap response had28ms observation TTL;the event was still LIVE. The prior9second-duration description was incorrect:9seconds is the start lead;duration600000ms. Original logs/Git history preserved. RAF100ms/sample>10 failures remain open;fresh two-CPU reproduction fails116.8ms,another133.4ms and an opt-in CPU diagnostic149.9ms. No threshold/sample relaxation. Current image pipeline also exposed absent output-parent initialization on a clean checkout;code fix008ed22/regression7PASS,full image verification recorded separately when complete.
+
+66vNext records;prior65objects/serialization preserved.77tasks:44VERIFIED/2BLOCKED_EXTERNAL/18TODO/12DEFERRED_APPROVED/1IN_PROGRESS.47SQL/Mxx/Phase2evidence/proposal unchanged. Phase2 remains PAUSED;native deferred. Retained local vc-* source80107b5 remains healthy at https://localhost:3443 with retained data. No public/store/distribution/production action.
+
+**Next exact action:** Finish fresh-checkout release-bundle/Compose verification and unchanged-profile RAF attribution,then implement integrated Deadline/Maid camera/readability/gameplay polish and N06-09 before refreshing Phase2 handoff. Keep existing failed loading/art findings and supported-client gates. Owner .idea/ and infra/botkeep-ca.pem remain unread/untracked/unstaged.
+
+## Earlier checkpoints — historical
+
 # Web creator qualification and retained local images — 2026-11-09
 
 N06-07 web functionality at80107b5 is VERIFIED:part inspection/correct first appearance,18browser/43isolated unit/9avatar integration/267security,full build/types/guards and actual API/web image6+6checks PASS. [Acceptance](../plans/platform-vnext/audit/N06-07-WEB-ACCEPTANCE.json) and [visual review](../design/vnext/animals-3d/CREATOR-INSPECTION-REVIEW.md) retain initial5s live-probe failure,concurrent High unit timeouts and open groom/material/Low faceting/loading findings. Technical creator acceptance is not final art or N06-09.

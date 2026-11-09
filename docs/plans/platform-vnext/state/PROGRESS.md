@@ -1,3 +1,15 @@
+# N06-04 web stability checkpoint — 2026-11-09
+
+N06-04 is IN_PROGRESS. Lounge fix `0d39226` preserves confirmed action outcomes when anonymous observations have expired,without claiming current counts or offering a resend. Actual32browser cases (16desktop/16Chromium mobile emulation,including6new expiry cases),24Lounge integration,portal build/types/lint/localCI contract/client boundaries PASS. Two held-reply tests failed on the old application as expected. [Scoped acceptance](../audit/N06-04-WEB-STABILITY-CHECKPOINT.json) retains raw evidence;this is not whole N06-04/final-art acceptance.
+
+Hosted trace42544861119 confirms the applied Clap response had28ms observation TTL;the event was still LIVE. The prior9second-duration description was incorrect:9seconds is the start lead;duration600000ms. Original logs/Git history preserved. RAF100ms/sample>10 failures remain open;fresh two-CPU reproduction fails116.8ms,another133.4ms and an opt-in CPU diagnostic149.9ms. No threshold/sample relaxation. Current image pipeline also exposed absent output-parent initialization on a clean checkout;code fix008ed22/regression7PASS,full image verification recorded separately when complete.
+
+66vNext records;prior65objects/serialization preserved.77tasks:44VERIFIED/2BLOCKED_EXTERNAL/18TODO/12DEFERRED_APPROVED/1IN_PROGRESS.47SQL/Mxx/Phase2evidence/proposal unchanged. Phase2 remains PAUSED;native deferred. Retained local vc-* source80107b5 remains healthy at https://localhost:3443 with retained data. No public/store/distribution/production action.
+
+**Next exact action:** Finish fresh-checkout release-bundle/Compose verification and unchanged-profile RAF attribution,then implement integrated Deadline/Maid camera/readability/gameplay polish and N06-09 before refreshing Phase2 handoff. Keep existing failed loading/art findings and supported-client gates. Owner .idea/ and infra/botkeep-ca.pem remain unread/untracked/unstaged.
+
+## Earlier checkpoints — historical
+
 # N06-07 web creator VERIFIED — 2026-11-09
 
 Source `80107b5f2f65eeb19a1a242b672c178d6339c0f5`: selected-part/whole-character framing and first account-owned preview implemented. Actual18browser/43isolated scene-editor unit/9avatar integration/267security PASS;full build/types/lint/CI contract/assets/architecture/client boundaries PASS. API/web images6scenarios each and3retained HTTPS creator probes PASS. Earlier5s probe failure and3High unit timeouts under concurrent load retained;no thresholds changed. Final art/groom/material/loading/usability acceptance is still N06-04/N06-09,not supplied by this functional creator result.

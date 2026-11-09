@@ -26,7 +26,7 @@
     "hospitality": {
       "job": 128934502286,
       "test": "lounge.spec.ts:70",
-      "actual": "Anonymous reaction count unavailable;Clap1 expectation timed out5s. Fixture duration9s observed in source;event/observation expiry is a hypothesis,not a diagnosed cause."
+      "actual": "Anonymous reaction count unavailable;Clap1 expectation timed out5s. Trace confirms applied send returned Clap1 with only28ms observation TTL at the ten-second boundary;the event was still LIVE."
     }
   },
   "rawLogs": [
@@ -47,5 +47,11 @@
     }
   ],
   "scope": "Existing hosted baseline failure before creator slice;not a new-source hosted result",
-  "nextExactAction": "Reproduce/profiling RAF sample/cadence on the declared profile and diagnose the Lounge fixture/event lifetime;retain failures and original thresholds. Do not skip failing groups or claim green CI."
+  "nextExactAction": "Verify truthful expired-success Lounge UI and boundary regression;continue RAF profiling at unchanged thresholds and sample method.",
+  "correction": {
+    "supersedesDescriptionAt": "212cdc056b57609bfa75fd7fbbe34dedfc1170b4",
+    "priorDescription": "Anonymous reaction count unavailable;Clap1 expectation timed out5s. Fixture duration9s observed in source;event/observation expiry is a hypothesis,not a diagnosed cause.",
+    "finding": "stageFixture(...,9000) is a9s start lead,not event duration. Event ends600000ms after creation;expiry of the event did not cause this failure. Original raw logs and Git history preserved.",
+    "diagnosticRef": "artifacts/vnext/n06-04/web-v1/lounge-hosted-response-timing.json"
+  }
 }

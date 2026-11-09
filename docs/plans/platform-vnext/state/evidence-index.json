@@ -40034,6 +40034,61 @@
         "Old indexed raw payloads not fully rehashed;critical47SQL/Mxx/old ledger/proposal inputs verified unchanged"
       ],
       "next_action": "Preserve this scoped N06-07 web acceptance;N06-04 is dependency-ready. Reproduce retained hosted RAF/Lounge failures without lowering budgets or skipping groups,then polish integrated Deadline/Maid camera/readability/interactions;keep Phase2 paused until fresh upstream handoff."
+    },
+    {
+      "id": "n06-04-web-stability-partial-2026-11-09",
+      "taskId": "N06-04",
+      "sourceRevision": "0d3922618313564106a93d7382a83292426332b6",
+      "environment": "CachyOS/Linux x64;Node26.9.0/pnpm11.28.5;disposable PostgreSQL17.7;Playwright1.64.1 Chromium desktop/mobile emulation;no native qualification",
+      "executedAt": "2026-11-09T03:13:07.358796+00:00",
+      "commands": [
+        {
+          "command": "pnpm --filter @virtual-city/portal-web build",
+          "exitCode": 0
+        },
+        {
+          "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/audience.test.ts tests/integration/lounge.test.ts tests/integration/lounge-operations.test.ts",
+          "exitCode": 0
+        },
+        {
+          "command": "node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/lounge.spec.ts --output=test-results/ci/vnext/n06-04-lounge-all-adbeb8ab",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm typecheck",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test:client-boundaries",
+          "exitCode": 0
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "docs/plans/platform-vnext/audit/N06-04-WEB-STABILITY-CHECKPOINT.json",
+          "sha256": "a938660bc7272d8a94f0ebbafdaef8a1995e4868c6f3bd364dec5800f0d425a3"
+        },
+        {
+          "ref": "artifacts/vnext/n06-04/web-v1/lounge-index.json",
+          "sha256": "7a2ecde5b9854fba641f6a139cff7ea9a8d891f9d47800a20f198266c4ea75c5"
+        }
+      ],
+      "acceptance_met": false,
+      "limitations": [
+        "N06-04 remains IN_PROGRESS;no final-art/groom/material/readability/loading or human usability acceptance.",
+        "Legacy/study RAF failures remain open;CPU/timeline profiling is diagnostic only.",
+        "Hosted Quality is not green;fresh-checkout release-bundle output failure is a separate N03-04 fix.",
+        "No native/device/iOS,public/store,production or distribution action. Retained vc-* remains source80107b5."
+      ],
+      "nextExactAction": "Complete fresh-checkout image-bundle verification;profile retained RAF failures at unchanged budgets,then implement integrated Deadline/Maid camera/readability and final web qualification before N06-09/Phase2 resume."
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

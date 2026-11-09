@@ -1,3 +1,9 @@
+# Active web findings — 2026-11-09
+
+N06-04 IN_PROGRESS:32Lounge browser/24integration cases now pass at scoped fix0d39226;28ms expiry diagnosis is confirmed and old9s-duration claim corrected. Original hosted failures remain preserved. RAF performance failures and final3D groom/material/Low faceting/full-floor camera/readability/loading remain actionable web work. Fresh-checkout image output-parent defect has code/regression fix008ed22;full current-source images/hosted Quality must be observed,not inferred. Native remains deferred and does not block web. Public/staging/human usability/owner art gates remain unchanged.
+
+## Earlier checkpoints — historical
+
 # Remaining web quality/hosted findings — 2026-11-09
 
 N06-07 functional web creator VERIFIED;N06-04 is ready. Final groom/Low faceting/material/full-floor readability and locked loading/human usability remain unqualified. Prior-source hosted Quality42544861119 fails legacy RAF samples,study RAF p95 and Lounge reaction observation;core passes. Record is audit/N03-04-HOSTED-2026-11-09.json. Do not skip failing groups,raise budgets or claim hosted green. Native is owner-deferred and is not a web feature blocker. N04-02 genuine candidate and N07-04 staging observations remain external;no public/store/production approval.

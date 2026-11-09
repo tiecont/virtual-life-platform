@@ -1,3 +1,9 @@
+# Web stability implementation — 2026-11-09
+
+Keep the existing three-second/ten-second anonymous observation expiry and account/room/permission generations. An acknowledged mutation with an expired observation has a confirmed outcome but no current view;UI must state both facts without resending. Browser happy-path fixtures wait for a bounded fresh observation rather than changing production TTL. No final N06-04 art or RAF acceptance is inferred. Fresh release output creates private missing parents and preserves exclusive leaf creation/source commit verification;never reuse partial bundles.
+
+## Earlier decisions — historical
+
 # Account-owned creator initialization and optional camera port — 2026-11-09
 
 Retain existing RoomAuthority,avatar catalog/rig/schema and server Save ownership. Add only an optional client presentation focus port,computed from current skinned vertices;older factories retain setAppearance fallback. Defer GPU creation until a valid own wardrobe draft and initialize the first model with those exact parts. No new media,geometry/wire/SQL/permission changes. Preserve failed first-load/concurrent-unit and hosted RAF/Lounge evidence;functional20s deadlines are not the unchanged5000ms loading qualification.

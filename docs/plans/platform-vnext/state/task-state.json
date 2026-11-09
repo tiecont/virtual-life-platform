@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "updated_at": "2026-11-09T02:38:24.995943+00:00",
+  "updated_at": "2026-11-09T03:13:07.358796+00:00",
   "scope": "vNext implementation",
   "release_status": "NOT_REQUESTED",
   "module_activation": {
@@ -187,7 +187,7 @@
         "n02-03-2026-11-05"
       ],
       "blocker": null,
-      "next_action": "Reserve N02-04; implement explicit checksum-prefix schema compatibility without weakening defaults, then prove disposable38→approved-expand schema with actual previous runtime/image rollback and negative checksum/unknown-tail/metadata cases. Existing M23 image builder assumes38 and src/dist packages; adapt only necessary fixture/build support, preserving source pins and no production SQL edits."
+      "next_action": "Reserve N02-04; implement explicit checksum-prefix schema compatibility without weakening defaults, then prove disposable38\u2192approved-expand schema with actual previous runtime/image rollback and negative checksum/unknown-tail/metadata cases. Existing M23 image builder assumes38 and src/dist packages; adapt only necessary fixture/build support, preserving source pins and no production SQL edits."
     },
     "N02-04": {
       "status": "VERIFIED",
@@ -288,7 +288,7 @@
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Observed Argo revision/digests, TLS/WS browser smoke và failure logs"
+      "next_action": "Observed Argo revision/digests, TLS/WS browser smoke v\u00e0 failure logs"
     },
     "N05-01": {
       "status": "VERIFIED",
@@ -381,12 +381,14 @@
       "next_action": "Execute N06-08 (priority82.1): audit the camera fit/resize and mobile Shell/native MainActivity; implement scene-first landscape HUD/context panels, gameplay-scoped Android orientation with cleanup/restoration and usable portrait/large-text/keyboard/safe-area fallback. Qualify actual browser and owner-authorized Android DEBUG build/install/rotation/Back/resume with source/APK hashes; keep native auth/animal saves/performance/iOS gates separate."
     },
     "N06-04": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
-      "evidence_refs": [],
+      "status": "IN_PROGRESS",
+      "owner": "Codex Experience",
+      "branch": "codex/lantern-lodge-foundation",
+      "evidence_refs": [
+        "n06-04-web-stability-partial-2026-11-09"
+      ],
       "blocker": null,
-      "next_action": "Complete room scenes/animations/sound settings/interactions + first return journey"
+      "next_action": "Complete fresh-checkout image-bundle verification;profile retained RAF failures at unchanged budgets,then implement integrated Deadline/Maid camera/readability and final web qualification before N06-09/Phase2 resume."
     },
     "N06-05": {
       "status": "TODO",
@@ -448,7 +450,7 @@
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Private admin deployment, audit evidence và release/backup status view"
+      "next_action": "Private admin deployment, audit evidence v\u00e0 release/backup status view"
     },
     "N08-01": {
       "status": "VERIFIED",
@@ -466,7 +468,7 @@
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Prometheus/collector cấu hình theo resource budget, alert rules và ops panels"
+      "next_action": "Prometheus/collector c\u1ea5u h\u00ecnh theo resource budget, alert rules v\u00e0 ops panels"
     },
     "N08-03": {
       "status": "TODO",
@@ -474,7 +476,7 @@
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Socket.IO-aware workload runner image, staging Job templates và start/cancel API/UI"
+      "next_action": "Socket.IO-aware workload runner image, staging Job templates v\u00e0 start/cancel API/UI"
     },
     "N08-04": {
       "status": "TODO",
@@ -482,7 +484,7 @@
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Step/ramp/burst/soak/reconnect profile reports với hardware/network/digest"
+      "next_action": "Step/ramp/burst/soak/reconnect profile reports v\u1edbi hardware/network/digest"
     },
     "N08-05": {
       "status": "TODO",
@@ -528,7 +530,7 @@
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Versioned caps, queue pause/maintenance, DRAINING_LIMIT view và audit"
+      "next_action": "Versioned caps, queue pause/maintenance, DRAINING_LIMIT view v\u00e0 audit"
     },
     "N09-05": {
       "status": "TODO",
@@ -580,7 +582,7 @@
       "defer_approval": {
         "by": "Repository owner",
         "at": "2026-11-09T00:28:57.350142+00:00",
-        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+        "reason": "Conversation: mobile n\u00ean ph\u00e1t tri\u1ec3n sau; kh\u00f4ng l\u00e0m block c\u00e1c t\u00ednh n\u0103ng c\u1ee7a platform l\u00fac ph\u00e1t tri\u1ec3n. Vi\u1ebft l\u1ea1i plans."
       }
     },
     "N11-01": {
@@ -594,7 +596,7 @@
       "defer_approval": {
         "by": "Repository owner",
         "at": "2026-11-09T00:28:57.350142+00:00",
-        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+        "reason": "Conversation: mobile n\u00ean ph\u00e1t tri\u1ec3n sau; kh\u00f4ng l\u00e0m block c\u00e1c t\u00ednh n\u0103ng c\u1ee7a platform l\u00fac ph\u00e1t tri\u1ec3n. Vi\u1ebft l\u1ea1i plans."
       }
     },
     "N11-02": {
@@ -608,7 +610,7 @@
       "defer_approval": {
         "by": "Repository owner",
         "at": "2026-11-09T00:28:57.350142+00:00",
-        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+        "reason": "Conversation: mobile n\u00ean ph\u00e1t tri\u1ec3n sau; kh\u00f4ng l\u00e0m block c\u00e1c t\u00ednh n\u0103ng c\u1ee7a platform l\u00fac ph\u00e1t tri\u1ec3n. Vi\u1ebft l\u1ea1i plans."
       }
     },
     "N11-03": {
@@ -626,7 +628,7 @@
       "defer_approval": {
         "by": "Repository owner",
         "at": "2026-11-09T00:28:57.350142+00:00",
-        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+        "reason": "Conversation: mobile n\u00ean ph\u00e1t tri\u1ec3n sau; kh\u00f4ng l\u00e0m block c\u00e1c t\u00ednh n\u0103ng c\u1ee7a platform l\u00fac ph\u00e1t tri\u1ec3n. Vi\u1ebft l\u1ea1i plans."
       }
     },
     "N11-04": {
@@ -640,7 +642,7 @@
       "defer_approval": {
         "by": "Repository owner",
         "at": "2026-11-09T00:28:57.350142+00:00",
-        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+        "reason": "Conversation: mobile n\u00ean ph\u00e1t tri\u1ec3n sau; kh\u00f4ng l\u00e0m block c\u00e1c t\u00ednh n\u0103ng c\u1ee7a platform l\u00fac ph\u00e1t tri\u1ec3n. Vi\u1ebft l\u1ea1i plans."
       }
     },
     "N12-01": {
@@ -649,7 +651,7 @@
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "15-scenario matrix theo architecture02 với source/digest/environment artifacts"
+      "next_action": "15-scenario matrix theo architecture02 v\u1edbi source/digest/environment artifacts"
     },
     "N12-02": {
       "status": "TODO",
@@ -670,7 +672,7 @@
       "defer_approval": {
         "by": "Repository owner",
         "at": "2026-11-09T00:28:57.350142+00:00",
-        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+        "reason": "Conversation: mobile n\u00ean ph\u00e1t tri\u1ec3n sau; kh\u00f4ng l\u00e0m block c\u00e1c t\u00ednh n\u0103ng c\u1ee7a platform l\u00fac ph\u00e1t tri\u1ec3n. Vi\u1ebft l\u1ea1i plans."
       }
     },
     "N12-04": {
@@ -724,7 +726,7 @@
       "defer_approval": {
         "by": "Repository owner",
         "at": "2026-11-09T00:28:57.350142+00:00",
-        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+        "reason": "Conversation: mobile n\u00ean ph\u00e1t tri\u1ec3n sau; kh\u00f4ng l\u00e0m block c\u00e1c t\u00ednh n\u0103ng c\u1ee7a platform l\u00fac ph\u00e1t tri\u1ec3n. Vi\u1ebft l\u1ea1i plans."
       }
     },
     "N14-02": {
@@ -738,7 +740,7 @@
       "defer_approval": {
         "by": "Repository owner",
         "at": "2026-11-09T00:28:57.350142+00:00",
-        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+        "reason": "Conversation: mobile n\u00ean ph\u00e1t tri\u1ec3n sau; kh\u00f4ng l\u00e0m block c\u00e1c t\u00ednh n\u0103ng c\u1ee7a platform l\u00fac ph\u00e1t tri\u1ec3n. Vi\u1ebft l\u1ea1i plans."
       }
     },
     "N14-03": {
@@ -752,7 +754,7 @@
       "defer_approval": {
         "by": "Repository owner",
         "at": "2026-11-09T00:28:57.350142+00:00",
-        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+        "reason": "Conversation: mobile n\u00ean ph\u00e1t tri\u1ec3n sau; kh\u00f4ng l\u00e0m block c\u00e1c t\u00ednh n\u0103ng c\u1ee7a platform l\u00fac ph\u00e1t tri\u1ec3n. Vi\u1ebft l\u1ea1i plans."
       }
     },
     "N14-04": {
@@ -766,7 +768,7 @@
       "defer_approval": {
         "by": "Repository owner",
         "at": "2026-11-09T00:28:57.350142+00:00",
-        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+        "reason": "Conversation: mobile n\u00ean ph\u00e1t tri\u1ec3n sau; kh\u00f4ng l\u00e0m block c\u00e1c t\u00ednh n\u0103ng c\u1ee7a platform l\u00fac ph\u00e1t tri\u1ec3n. Vi\u1ebft l\u1ea1i plans."
       }
     },
     "N14-05": {
@@ -780,7 +782,7 @@
       "defer_approval": {
         "by": "Repository owner",
         "at": "2026-11-09T00:28:57.350142+00:00",
-        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+        "reason": "Conversation: mobile n\u00ean ph\u00e1t tri\u1ec3n sau; kh\u00f4ng l\u00e0m block c\u00e1c t\u00ednh n\u0103ng c\u1ee7a platform l\u00fac ph\u00e1t tri\u1ec3n. Vi\u1ebft l\u1ea1i plans."
       }
     },
     "N06-06": {
@@ -874,7 +876,7 @@
       "defer_approval": {
         "by": "Repository owner",
         "at": "2026-11-09T00:28:57.350142+00:00",
-        "reason": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans."
+        "reason": "Conversation: mobile n\u00ean ph\u00e1t tri\u1ec3n sau; kh\u00f4ng l\u00e0m block c\u00e1c t\u00ednh n\u0103ng c\u1ee7a platform l\u00fac ph\u00e1t tri\u1ec3n. Vi\u1ebft l\u1ea1i plans."
       },
       "next_action": "Resume only after explicit owner reactivation; read N10-06 plan and qualify current packaged native creator/world using real device evidence, then N10-04 performance."
     }
@@ -911,7 +913,7 @@
     },
     {
       "at": "2026-11-09T00:28:57.350142+00:00",
-      "requirement": "Conversation: mobile nên phát triển sau; không làm block các tính năng của platform lúc phát triển. Viết lại plans.",
+      "requirement": "Conversation: mobile n\u00ean ph\u00e1t tri\u1ec3n sau; kh\u00f4ng l\u00e0m block c\u00e1c t\u00ednh n\u0103ng c\u1ee7a platform l\u00fac ph\u00e1t tri\u1ec3n. Vi\u1ebft l\u1ea1i plans.",
       "new_tasks": [
         "N10-06"
       ],
