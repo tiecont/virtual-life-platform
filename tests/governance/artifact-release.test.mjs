@@ -60,6 +60,7 @@ test('trusted-main proof rejects forks, PRs, wrong workflow/branch/SHA, partial 
 test('workflow and policy retain read-only PR/security lanes and grant only bounded same-repository main publishing', async () => {
   const quality = await readFile('.github/workflows/quality.yml', 'utf8'), publish = await readFile('.github/workflows/publish.yml', 'utf8'), pins = JSON.parse(await readFile('config/ci-actions.json', 'utf8'));
   assertArtifactWorkflows(quality, publish, pins);
+  for(const mutation of [q=>q.replace('      - run: pnpm build:packages\n',''),q=>q.replace('artifacts/image-*/smoke/result.json','artifacts/foreign/result.json')])assert.throws(()=>assertArtifactWorkflows(mutation(quality),publish,pins));
   for (const mutation of [p => p.replace("github.event.workflow_run.event == 'push'", "github.event.workflow_run.event == 'pull_request'"), p => p.replace('head_repository.full_name == github.repository', 'head_repository.full_name != github.repository'), p => p.replace('packages: write', 'contents: write'), p => p.replace('node scripts/release-publish.mjs authorize', 'echo approved'), p => p + '\n  other:\n    permissions: write-all\n', p => p.replace('run-id: ${{ github.event.workflow_run.id }}', 'run-id: 123')]) assert.throws(() => assertArtifactWorkflows(quality, mutation(publish), pins));
   const policy = JSON.parse(await readFile('config/artifact-release.json', 'utf8')); validateArtifactPolicy(policy);
   for (const field of ['autoMerge', 'productionAutoPromotion']) assert.throws(() => validateArtifactPolicy({...policy, [field]: true}));
