@@ -88,6 +88,7 @@
     "test:scene3d": "node scripts/verify-scene3d.mjs",
     "test:scene3d-room": "node scripts/run-scene3d-room.mjs",
     "test:avatar-creator": "node scripts/run-avatar-creator.mjs",
+    "test:cafe-workload": "pnpm build:packages && node scripts/verify-cafe-workload.mjs",
     "test:scene3d-workload": "pnpm build:packages && pnpm --filter @virtual-city/mobile build:workload && node scripts/verify-scene3d-workload.mjs",
     "test:scene3d-loading": "pnpm build:packages && pnpm --filter @virtual-city/mobile build:workload && node scripts/verify-scene3d-loading.mjs",
     "mobile:android:workload": "pnpm build:packages && pnpm --filter @virtual-city/mobile build:workload && pnpm --filter @virtual-city/mobile cap sync android && node scripts/android-build.mjs",
