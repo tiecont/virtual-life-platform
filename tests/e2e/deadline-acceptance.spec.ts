@@ -1,3 +1,4 @@
+import {profileSceneMovement} from '../support/scene-profile';
 import {evidenceOutput} from '../../scripts/evidence-output.mjs';
 import { test,expect } from '@playwright/test';
 import { mkdir,writeFile } from 'node:fs/promises';
@@ -65,7 +66,7 @@ test('Deadline scene loading,cache,idle work and SPA lifetimes fit the unchanged
   const beforeIdle = Number(await canvas.getAttribute('data-render-count')); await page.waitForTimeout(performanceBudget.idleWindowMs);
   const idleRenders = Number(await canvas.getAttribute('data-render-count')) - beforeIdle; expect(idleRenders).toBe(performanceBudget.idleMaxRenders);
   const profileCpu = process.env.SCENE_CPU_PROFILE === '1';
-  if (profileCpu) { await cdp.send('Profiler.enable'); await cdp.send('Profiler.start'); }
+  const stopProfile = profileCpu ? await profileSceneMovement(cdp, 'm15', test.info().project.name) : null;
   await page.getByRole('button', { name: 'Walk to window aisle', exact: true }).click(); await expect(canvas).toHaveAttribute('data-moving-count', '1');
   const cadence = await canvas.evaluate(element => new Promise<number[]>((resolve, reject) => {
     const gaps: number[] = []; let last = performance.now(); const start = last;
@@ -77,7 +78,7 @@ test('Deadline scene loading,cache,idle work and SPA lifetimes fit the unchanged
     }
     requestAnimationFrame(sample);
   }));
-  if (profileCpu) { const { profile } = await cdp.send('Profiler.stop'); await writeFile(evidenceOutput(`docs/agent/evidence/m15-movement-cpu-${test.info().project.name}.cpuprofile`), JSON.stringify(profile)); await cdp.send('Profiler.disable'); }
+  await stopProfile?.();
   const sortedGaps = cadence.filter(gap => gap > 0).sort((a, b) => a - b); const rafP95GapMs = sortedGaps[Math.ceil(sortedGaps.length * .95) - 1];
   await writeFile(evidenceOutput(`docs/agent/evidence/m15-movement-cadence-${test.info().project.name}.json`), JSON.stringify({ profile: performanceBudget.profile, rawGapsMs: cadence, samples: sortedGaps.length, rafP95GapMs, minimumSamplesExclusive: 10, rafP95GapMaxMs: performanceBudget.rafP95GapMaxMs, observedBeforeAcceptance: true, cpuProfilerEnabled: profileCpu }, null, 2));
   expect(sortedGaps.length).toBeGreaterThan(10); expect(rafP95GapMs).toBeLessThan(performanceBudget.rafP95GapMaxMs);
