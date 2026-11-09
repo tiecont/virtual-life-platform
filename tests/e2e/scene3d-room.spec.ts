@@ -23,6 +23,17 @@ test('actual3D seat raycast waits for the real outgoing command and authoritativ
  try{await guest(context,'3D Pointer Visitor');await enter(page);const before=await current(context),targets=JSON.parse((await canvas(page).getAttribute('data-seat-targets'))!);await pointClick(page,targets.find((value:{seatId:string})=>value.seatId==='seat-1'));await held;expect((await current(context)).self.seatId).toBeNull();await expect(canvas(page)).toHaveAttribute('data-sitting-count','0');release!();await expect(page.getByText('Your seat is confirmed.',{exact:true})).toHaveCount(1);await expect(canvas(page)).toHaveAttribute('data-sitting-count','1',{timeout:15000});const state=await current(context);expect(state.self.seatId).toBe('seat-1');expect(state.membershipId).toBe(before.membershipId);await expect(canvas(page)).toHaveAttribute('data-avatar-core','starter-v1');await capture(page,'committed-ray-seat');}finally{release?.();}
 });
 
+test('seat marker batches retain authoritative pointer targets after moving the highlight between distant tables',async({page,context})=>{
+ await guest(context,'3D Batch Visitor');await enter(page);const before=await current(context);
+ for(const [index,seatId]of ['seat-1','seat-8','seat-1'].entries()){
+  if(index){await page.getByRole('button',{name:'Room actions',exact:true}).click();await page.getByRole('button',{name:'Stand up',exact:true}).click();await expect(page.getByText('You stood up.',{exact:true})).toBeVisible();await closeActions(page);await expect(canvas(page)).toHaveAttribute('data-sitting-count','0');}
+  const targets=JSON.parse((await canvas(page).getAttribute('data-seat-targets'))!);await pointClick(page,targets.find((target:{seatId:string})=>target.seatId===seatId));
+  await expect(canvas(page)).toHaveAttribute('data-sitting-count','1',{timeout:15000});const state=await current(context);expect(state.self.seatId).toBe(seatId);expect(state.membershipId).toBe(before.membershipId);
+  if(index===1)await capture(page,'rebatch-distant-table');
+ }
+ await capture(page,'rebatch-returned-table');
+});
+
 test('actual floor raycast follows the committed server path without changing identity or floor geometry',async({page,context})=>{
  let approvedDestination:unknown=null;
  page.on('websocket',socket=>socket.on('framereceived',frame=>{const text=typeof frame.payload==='string'?frame.payload:'';if(!/^43\d+\[/.test(text))return;try{const parsed=RoomAckSchema.safeParse(JSON.parse(text.slice(text.indexOf('[')))[0]);if(parsed.success&&parsed.data.ok&&parsed.data.result.type==='snapshot'&&parsed.data.result.self.motion)approvedDestination=parsed.data.result.self.motion.path.at(-1);}catch{/* Only validated ACKs provide motion evidence. */}}));
