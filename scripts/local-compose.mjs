@@ -42,9 +42,13 @@ export async function prepareLocal({root = defaultRoot, api, web, name = 'vc', p
   const inspected = JSON.parse(command('docker', ['image', 'inspect', api, web]));
   const revisions = inspected.map(image => image.Config.Labels?.['org.opencontainers.image.revision']);
   assert(revisions.every(value => /^[a-f0-9]{40}$/.test(value)) && revisions[0] === revisions[1], 'API/web source revisions differ');
+  assert.equal(inspected[0].Config.Labels?.['org.opencontainers.image.title'], 'vlp-api');
+  assert.equal(inspected[1].Config.Labels?.['org.opencontainers.image.title'], 'vlp-web');
   assert(inspected.every(image => image.Config.User === 'node'));
   const names = new Set(command('docker', ['ps', '-a', '--format', '{{.Names}}']).trim().split('\n'));
   for (const service of ['db', 'migrate', 'api', 'web', 'edge']) assert(!names.has(name + '-' + service), 'Container name already owned; choose another prefix');
+  const volumes = command('docker', ['volume', 'ls', '--format', '{{.Name}}']).trim().split('\n');
+  assert(!volumes.includes(name + '_data'), 'Retained database already exists; restore its original private environment');
   const server = net.createServer();
   await new Promise((ok, no) => {server.once('error', no); server.listen(port, '127.0.0.1', ok);});
   await new Promise(ok => server.close(ok));

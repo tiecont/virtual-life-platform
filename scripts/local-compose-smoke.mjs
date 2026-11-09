@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {createHash, randomUUID, X509Certificate} from 'node:crypto';
-import {readFile, rm, writeFile} from 'node:fs/promises';
+import {mkdir, readFile, rm, writeFile} from 'node:fs/promises';
 import https from 'node:https';
 import net from 'node:net';
 import {resolve} from 'node:path';
@@ -79,9 +79,10 @@ finally {
   socket?.close(); await browser?.close();
   if (prepared) {
     try {compose(root, ['down', '--volumes']); facts.cleanupComplete = true;} catch {facts.cleanupComplete = false; process.exitCode = 1;}
-    await rm(resolve(root, 'runtime.env'), {force: true}); await rm(resolve(root, 'tls/key.pem'), {force: true});
-    facts.generatedSecretsRemoved = true;
   }
+  await mkdir(root, {recursive: true, mode: 0o700});
+  await rm(resolve(root, 'runtime.env'), {force: true}); await rm(resolve(root, 'tls/key.pem'), {force: true});
+  facts.generatedSecretsRemoved = true;
   await writeFile(resolve(root, 'result.json'), JSON.stringify(facts, null, 2) + '\n', {mode: 0o600, flag: 'wx'});
   console.log(JSON.stringify({...facts, artifacts: root}, null, 2));
 }
