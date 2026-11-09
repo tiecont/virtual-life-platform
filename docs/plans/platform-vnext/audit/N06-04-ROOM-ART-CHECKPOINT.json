@@ -1,0 +1,782 @@
+{
+  "taskId": "N06-04",
+  "sourceRevision": "05a3fccd99a58b72bef29b03855219c7687af358",
+  "baseline": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+  "at": "2026-11-09T11:54:52.476Z",
+  "scope": "Theme-specific procedural cafe windows,workstations and tea settings with owned disposal;partial N06-04",
+  "acceptance_met": false,
+  "sourceFiles": [
+    {
+      "ref": "packages/scene3d/src/room.ts",
+      "sha256": "2deda5f2ef6c260e566cd0de931d752fe9685715826da3523e86914b3da6f929"
+    },
+    {
+      "ref": "packages/scene3d/src/renderer.ts",
+      "sha256": "ed983f8e394627d5891321f53b53d1b37dc96eec49c6270538a1c862ba6c2c9e"
+    },
+    {
+      "ref": "packages/scene3d/test/room.test.ts",
+      "sha256": "84aa5f7a67489ddc39a62355eddda3b416ad5994f78597e0ac31810b2e18bc56"
+    },
+    {
+      "ref": "tests/e2e/avatar-creator.spec.ts",
+      "sha256": "d36c443bdfe3fc9abcaae6ef4e3438f6a567f358e5e393b52005f7a00a71c2a3"
+    },
+    {
+      "ref": "docs/design/vnext/animals-3d/CAFE-ROOM-REVIEW-1.md",
+      "sha256": "aeb13a5eb5d76c890cb527a45e2520e1820e95fcc8e794cdee2b911230dc5e4b"
+    }
+  ],
+  "actualOutcomes": {
+    "browserCases": 6,
+    "sceneAndPixiUnits": 54,
+    "packageBuild": "PASS",
+    "portalBuild": "PASS",
+    "sceneTypes": "PASS",
+    "browserTypes": "PASS",
+    "lint": "PASS",
+    "ciContract": "PASS",
+    "pixels": "12nonblank canvas images;4changed seat-to-walk pairs",
+    "staticRooms": {
+      "at": "2026-11-09T10:37:35.643Z",
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "scope": "Actual cafe static room resources only;no actors,no GPU execution,no frame-time/heap qualification",
+      "scenes": [
+        {
+          "theme": "deadline",
+          "manifestSha256": "e2918fee06b5f30bf6a9f9e0e8848b05237826133b8ca71fa0897c267b8bc198",
+          "art": {
+            "revision": "cafe-details-v2",
+            "theme": "deadline",
+            "windows": 4,
+            "workstations": 18,
+            "teaSets": 0
+          },
+          "bounds": {
+            "min": [
+              -0.0035000001080334187,
+              -0.06499999761581421,
+              0
+            ],
+            "max": [
+              12,
+              2.0999999046325684,
+              8
+            ]
+          },
+          "staticDraws": 11,
+          "staticTriangles": 16028,
+          "resources": {
+            "accounting": "Conservative live plus retained cache arrays/decoded texture+mips plus estimated internal morph,bone and shadow storage; not driver/process measurement",
+            "geometryBytes": 1538688,
+            "animationBytes": 0,
+            "characterTextureBytes": 0,
+            "environmentTextureBytes": 87380,
+            "otherTextureBytes": 0,
+            "totalTextureBytes": 87380,
+            "maxTextureDimension": 128,
+            "unknownTextures": 0,
+            "geometries": 11,
+            "skeletons": 0
+          },
+          "baseline": {
+            "accounting": "Conservative live plus retained cache arrays/decoded texture+mips plus estimated internal morph,bone and shadow storage; not driver/process measurement",
+            "geometryBytes": 817536,
+            "animationBytes": 0,
+            "characterTextureBytes": 0,
+            "environmentTextureBytes": 87380,
+            "otherTextureBytes": 0,
+            "totalTextureBytes": 87380,
+            "maxTextureDimension": 128,
+            "unknownTextures": 0,
+            "geometries": 7,
+            "skeletons": 0
+          },
+          "staticResourceLimitsMet": true
+        },
+        {
+          "theme": "maid",
+          "manifestSha256": "c0bd59059a2281ac15ae52aa619acbc8e6393dfa8ace5c1077dc8e78b901efb7",
+          "art": {
+            "revision": "cafe-details-v2",
+            "theme": "maid",
+            "windows": 4,
+            "workstations": 0,
+            "teaSets": 6
+          },
+          "bounds": {
+            "min": [
+              -0.0035000001080334187,
+              -0.06499999761581421,
+              0
+            ],
+            "max": [
+              12,
+              2.0999999046325684,
+              9
+            ]
+          },
+          "staticDraws": 11,
+          "staticTriangles": 16700,
+          "resources": {
+            "accounting": "Conservative live plus retained cache arrays/decoded texture+mips plus estimated internal morph,bone and shadow storage; not driver/process measurement",
+            "geometryBytes": 1603200,
+            "animationBytes": 0,
+            "characterTextureBytes": 0,
+            "environmentTextureBytes": 87380,
+            "otherTextureBytes": 0,
+            "totalTextureBytes": 87380,
+            "maxTextureDimension": 128,
+            "unknownTextures": 0,
+            "geometries": 11,
+            "skeletons": 0
+          },
+          "baseline": {
+            "accounting": "Conservative live plus retained cache arrays/decoded texture+mips plus estimated internal morph,bone and shadow storage; not driver/process measurement",
+            "geometryBytes": 686208,
+            "animationBytes": 0,
+            "characterTextureBytes": 0,
+            "environmentTextureBytes": 87380,
+            "otherTextureBytes": 0,
+            "totalTextureBytes": 87380,
+            "maxTextureDimension": 128,
+            "unknownTextures": 0,
+            "geometries": 7,
+            "skeletons": 0
+          },
+          "staticResourceLimitsMet": true
+        }
+      ],
+      "result": "PASS_STATIC_ONLY"
+    },
+    "hosted": {
+      "run": 42596287142,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "conclusion": "cancelled",
+      "jobs": [
+        {
+          "name": "core-checks",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "change-plan",
+          "conclusion": "success"
+        },
+        {
+          "name": "runtime-images",
+          "conclusion": "success"
+        },
+        {
+          "name": "quality",
+          "conclusion": "failure"
+        },
+        {
+          "name": "browser (${{ matrix.group }})",
+          "conclusion": "skipped"
+        }
+      ],
+      "reason": "The job has exceeded the maximum execution time of 30m0s"
+    }
+  },
+  "performanceExperiments": [
+    {
+      "id": "sandbox-current-124a82e6",
+      "p95Ms": 350
+    },
+    {
+      "id": "sandbox-cached-39737395",
+      "p95Ms": 116.7
+    },
+    {
+      "id": "sandbox-raf-6112ddbd",
+      "p95Ms": 333.3
+    },
+    {
+      "id": "sandbox-layers-734d42d5",
+      "p95Ms": 133.3
+    },
+    {
+      "id": "sandbox-layers-raf-032ac358",
+      "p95Ms": 150
+    }
+  ],
+  "commands": [
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/avatar-creator.spec.ts --grep=camera follows|Save reaches --output=test-results/ci/vnext/n06-04-art-93020fa8",
+      "argv": [
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "playwright",
+        "test",
+        "tests/e2e/avatar-creator.spec.ts",
+        "--grep=camera follows|Save reaches",
+        "--output=test-results/ci/vnext/n06-04-art-93020fa8"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/art-93020fa8.json",
+      "log": "artifacts/vnext/n06-04/web-v3/art-93020fa8.log"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/portal-web build",
+      "argv": [
+        "pnpm",
+        "--filter",
+        "@virtual-city/portal-web",
+        "build"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "6c7a2328d98b61340f4278040252600c128b13a2376884705717e6620e1885af",
+      "facts": "artifacts/vnext/n06-04/web-v3/cache-portal-build-24b14140.json",
+      "log": "artifacts/vnext/n06-04/web-v3/cache-portal-build-24b14140.log"
+    },
+    {
+      "command": "pnpm build:packages",
+      "argv": [
+        "pnpm",
+        "build:packages"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "2f1ece181ce3cc7a0733a7fb0c3bb642a5dd08de8a113351d9c6a1d3cdb95068",
+      "facts": "artifacts/vnext/n06-04/web-v3/layers-build-9c2780b8.json",
+      "log": "artifacts/vnext/n06-04/web-v3/layers-build-9c2780b8.log"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/portal-web build",
+      "argv": [
+        "pnpm",
+        "--filter",
+        "@virtual-city/portal-web",
+        "build"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "2f1ece181ce3cc7a0733a7fb0c3bb642a5dd08de8a113351d9c6a1d3cdb95068",
+      "facts": "artifacts/vnext/n06-04/web-v3/layers-portal-build-63470f30.json",
+      "log": "artifacts/vnext/n06-04/web-v3/layers-portal-build-63470f30.log"
+    },
+    {
+      "command": "pnpm build:packages",
+      "argv": [
+        "pnpm",
+        "build:packages"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "15e6b35c734e7af8aff1741121ef52a31ceaac32f885a97d42355bdc356546ce",
+      "facts": "artifacts/vnext/n06-04/web-v3/layers-raf-build-de9055d9.json",
+      "log": "artifacts/vnext/n06-04/web-v3/layers-raf-build-de9055d9.log"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/portal-web build",
+      "argv": [
+        "pnpm",
+        "--filter",
+        "@virtual-city/portal-web",
+        "build"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "15e6b35c734e7af8aff1741121ef52a31ceaac32f885a97d42355bdc356546ce",
+      "facts": "artifacts/vnext/n06-04/web-v3/layers-raf-portal-build-89de5f03.json",
+      "log": "artifacts/vnext/n06-04/web-v3/layers-raf-portal-build-89de5f03.log"
+    },
+    {
+      "command": "pnpm build:packages",
+      "argv": [
+        "pnpm",
+        "build:packages"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "97c1884af0bffe07d32af26878c3db22972fcdca03b2939b3eb3289671b6c0ad",
+      "facts": "artifacts/vnext/n06-04/web-v3/raf-build-3c044637.json",
+      "log": "artifacts/vnext/n06-04/web-v3/raf-build-3c044637.log"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/portal-web build",
+      "argv": [
+        "pnpm",
+        "--filter",
+        "@virtual-city/portal-web",
+        "build"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "97c1884af0bffe07d32af26878c3db22972fcdca03b2939b3eb3289671b6c0ad",
+      "facts": "artifacts/vnext/n06-04/web-v3/raf-portal-build-f518157e.json",
+      "log": "artifacts/vnext/n06-04/web-v3/raf-portal-build-f518157e.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --resolveJsonModule --esModuleInterop --strict --skipLibCheck --types node --lib ES2022,DOM tests/e2e/avatar-creator.spec.ts playwright.config.ts",
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "--noEmit",
+        "--target",
+        "ES2022",
+        "--module",
+        "ESNext",
+        "--moduleResolution",
+        "Bundler",
+        "--resolveJsonModule",
+        "--esModuleInterop",
+        "--strict",
+        "--skipLibCheck",
+        "--types",
+        "node",
+        "--lib",
+        "ES2022,DOM",
+        "tests/e2e/avatar-creator.spec.ts",
+        "playwright.config.ts"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-browser-types-9841d594.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-browser-types-9841d594.log"
+    },
+    {
+      "command": "pnpm build:packages",
+      "argv": [
+        "pnpm",
+        "build:packages"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "72a0b3ecedbb5fbca4dc89b539039ea79d0aaebcd0e4786609d663e69fdbe341",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-build-7ded467f.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-build-7ded467f.log"
+    },
+    {
+      "command": "pnpm ci:check",
+      "argv": [
+        "pnpm",
+        "ci:check"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-checks-531685c9.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-checks-531685c9.log"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-complete-lint-8350a4c2.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-complete-lint-8350a4c2.log"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/scene3d/test packages/pixi-scene/test --maxWorkers=1",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "packages/scene3d/test",
+        "packages/pixi-scene/test",
+        "--maxWorkers=1"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-complete-units-25d703fd.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-complete-units-25d703fd.log"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "d5c40426e0db7faeca567cd93c366c78ef0f15c5e5e1e10635db9e5962d65b37",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-final-lint-e96f452e.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-final-lint-e96f452e.log"
+    },
+    {
+      "command": "pnpm build:packages",
+      "argv": [
+        "pnpm",
+        "build:packages"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-final-packages-86f74f5b.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-final-packages-86f74f5b.log"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/portal-web build",
+      "argv": [
+        "pnpm",
+        "--filter",
+        "@virtual-city/portal-web",
+        "build"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-final-portal-build-a749f857.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-final-portal-build-a749f857.log"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/scene3d/test/room.test.ts --maxWorkers=1",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "packages/scene3d/test/room.test.ts",
+        "--maxWorkers=1"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-final-tests-c0246366.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-final-tests-c0246366.log"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/scene3d/test packages/pixi-scene/test --maxWorkers=1",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "packages/scene3d/test",
+        "packages/pixi-scene/test",
+        "--maxWorkers=1"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-final-units-21c42177.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-final-units-21c42177.log"
+    },
+    {
+      "command": "node artifacts/vnext/n06-04/web-v3/observe-hosted.mjs",
+      "argv": [
+        "node",
+        "artifacts/vnext/n06-04/web-v3/observe-hosted.mjs"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-hosted-b0826d4c.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-hosted-b0826d4c.log"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/scene3d/test packages/pixi-scene/test tests/scene3d --maxWorkers=1",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "packages/scene3d/test",
+        "packages/pixi-scene/test",
+        "tests/scene3d",
+        "--maxWorkers=1"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "d5c40426e0db7faeca567cd93c366c78ef0f15c5e5e1e10635db9e5962d65b37",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-isolated-units-26b71726.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-isolated-units-26b71726.log"
+    },
+    {
+      "command": "pnpm lint",
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-lint-10882f60.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-lint-10882f60.log"
+    },
+    {
+      "command": "node artifacts/vnext/n06-04/web-v3/check-art-pixels.mjs",
+      "argv": [
+        "node",
+        "artifacts/vnext/n06-04/web-v3/check-art-pixels.mjs"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-pixels-0a55b82a.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-pixels-0a55b82a.log"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/portal-web build",
+      "argv": [
+        "pnpm",
+        "--filter",
+        "@virtual-city/portal-web",
+        "build"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-portal-build-73429e08.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-portal-build-73429e08.log"
+    },
+    {
+      "command": "node --import tsx artifacts/vnext/n06-04/web-v3/inspect-room-resources.mjs",
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "artifacts/vnext/n06-04/web-v3/inspect-room-resources.mjs"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-resources-68f4742a.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-resources-68f4742a.log"
+    },
+    {
+      "command": "node --import tsx artifacts/vnext/n06-04/web-v3/inspect-room-resources.mjs",
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "artifacts/vnext/n06-04/web-v3/inspect-room-resources.mjs"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-resources-fixed-81fa9827.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-resources-fixed-81fa9827.log"
+    },
+    {
+      "command": "pnpm --filter @virtual-city/scene3d typecheck",
+      "argv": [
+        "pnpm",
+        "--filter",
+        "@virtual-city/scene3d",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-types-cc25b89b.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-types-cc25b89b.log"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/scene3d/test packages/pixi-scene/test --maxWorkers=1",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--project",
+        "unit",
+        "packages/scene3d/test",
+        "packages/pixi-scene/test",
+        "--maxWorkers=1"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "ed479cc6f0549795b40fa4578e7a7515d90b1c92b78d9ca6e1ec8ca078554a7f",
+      "facts": "artifacts/vnext/n06-04/web-v3/room-art-units-22518973.json",
+      "log": "artifacts/vnext/n06-04/web-v3/room-art-units-22518973.log"
+    },
+    {
+      "command": "taskset -c 0,1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/scene-performance.spec.ts --project=desktop --grep=scene loading --output=test-results/ci/vnext/n06-04-sandbox-cached-39737395",
+      "argv": [
+        "taskset",
+        "-c",
+        "0,1",
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "playwright",
+        "test",
+        "tests/e2e/scene-performance.spec.ts",
+        "--project=desktop",
+        "--grep=scene loading",
+        "--output=test-results/ci/vnext/n06-04-sandbox-cached-39737395"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "6c7a2328d98b61340f4278040252600c128b13a2376884705717e6620e1885af",
+      "facts": "artifacts/vnext/n06-04/web-v3/sandbox-cached-39737395.json",
+      "log": "artifacts/vnext/n06-04/web-v3/sandbox-cached-39737395.log"
+    },
+    {
+      "command": "taskset -c 0,1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/scene-performance.spec.ts --project=desktop --grep=scene loading --output=test-results/ci/vnext/n06-04-sandbox-current-124a82e6",
+      "argv": [
+        "taskset",
+        "-c",
+        "0,1",
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "playwright",
+        "test",
+        "tests/e2e/scene-performance.spec.ts",
+        "--project=desktop",
+        "--grep=scene loading",
+        "--output=test-results/ci/vnext/n06-04-sandbox-current-124a82e6"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "facts": "artifacts/vnext/n06-04/web-v3/sandbox-current-124a82e6.json",
+      "log": "artifacts/vnext/n06-04/web-v3/sandbox-current-124a82e6.log"
+    },
+    {
+      "command": "taskset -c 0,1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/scene-performance.spec.ts --project=desktop --grep=scene loading --output=test-results/ci/vnext/n06-04-sandbox-layers-734d42d5",
+      "argv": [
+        "taskset",
+        "-c",
+        "0,1",
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "playwright",
+        "test",
+        "tests/e2e/scene-performance.spec.ts",
+        "--project=desktop",
+        "--grep=scene loading",
+        "--output=test-results/ci/vnext/n06-04-sandbox-layers-734d42d5"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "2f1ece181ce3cc7a0733a7fb0c3bb642a5dd08de8a113351d9c6a1d3cdb95068",
+      "facts": "artifacts/vnext/n06-04/web-v3/sandbox-layers-734d42d5.json",
+      "log": "artifacts/vnext/n06-04/web-v3/sandbox-layers-734d42d5.log"
+    },
+    {
+      "command": "taskset -c 0,1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/scene-performance.spec.ts --project=desktop --grep=scene loading --output=test-results/ci/vnext/n06-04-sandbox-layers-raf-032ac358",
+      "argv": [
+        "taskset",
+        "-c",
+        "0,1",
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "playwright",
+        "test",
+        "tests/e2e/scene-performance.spec.ts",
+        "--project=desktop",
+        "--grep=scene loading",
+        "--output=test-results/ci/vnext/n06-04-sandbox-layers-raf-032ac358"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "15e6b35c734e7af8aff1741121ef52a31ceaac32f885a97d42355bdc356546ce",
+      "facts": "artifacts/vnext/n06-04/web-v3/sandbox-layers-raf-032ac358.json",
+      "log": "artifacts/vnext/n06-04/web-v3/sandbox-layers-raf-032ac358.log"
+    },
+    {
+      "command": "taskset -c 0,1 node scripts/with-test-db.mjs pnpm exec playwright test tests/e2e/scene-performance.spec.ts --project=desktop --grep=scene loading --output=test-results/ci/vnext/n06-04-sandbox-raf-6112ddbd",
+      "argv": [
+        "taskset",
+        "-c",
+        "0,1",
+        "node",
+        "scripts/with-test-db.mjs",
+        "pnpm",
+        "exec",
+        "playwright",
+        "test",
+        "tests/e2e/scene-performance.spec.ts",
+        "--project=desktop",
+        "--grep=scene loading",
+        "--output=test-results/ci/vnext/n06-04-sandbox-raf-6112ddbd"
+      ],
+      "exitCode": 1,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "trackedDiffSha256": "97c1884af0bffe07d32af26878c3db22972fcdca03b2939b3eb3289671b6c0ad",
+      "facts": "artifacts/vnext/n06-04/web-v3/sandbox-raf-6112ddbd.json",
+      "log": "artifacts/vnext/n06-04/web-v3/sandbox-raf-6112ddbd.log"
+    }
+  ],
+  "rawIndex": {
+    "ref": "artifacts/vnext/n06-04/web-v3/room-art-raw-index.json",
+    "sha256": "726ec88471b83fe4e9205807bcebb247545ed48dd37adbc289de3a322f4d25f1",
+    "files": 247
+  },
+  "preservation": {
+    "at": "2026-11-09T11:54:52.476Z",
+    "baseline": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+    "sourceRevision": "05a3fccd99a58b72bef29b03855219c7687af358",
+    "priorRecords": 71,
+    "priorSerializedRecordsPreserved": true,
+    "indices": [
+      {
+        "ref": "artifacts/vnext/n06-07/web-v2/raw-index.json",
+        "sha256": "8d8a867fe86b538e150d9f759c816407d063ee0d965a6a881aa469ea8611c179",
+        "checked": 455,
+        "recordedMissing": 0
+      },
+      {
+        "ref": "artifacts/vnext/n06-04/web-v1/lounge-index.json",
+        "sha256": "7a2ecde5b9854fba641f6a139cff7ea9a8d891f9d47800a20f198266c4ea75c5",
+        "checked": 132,
+        "recordedMissing": 2
+      },
+      {
+        "ref": "artifacts/vnext/n06-04/web-v1/delivery-index.json",
+        "sha256": "eb4dad7ee65398f24f3597881160ca5873416b93cfdaef5e34c01c2aacce81e1",
+        "checked": 153,
+        "recordedMissing": 0
+      },
+      {
+        "ref": "artifacts/vnext/n06-04/web-v1/profile-index.json",
+        "sha256": "b479258f321137ee9e159a6d51800bbd8e935f37d2ebc631dd22a821806cd3cc",
+        "checked": 391,
+        "recordedMissing": 0
+      },
+      {
+        "ref": "artifacts/vnext/n06-04/web-v2/camera-raw-index.json",
+        "sha256": "a9f31147b74af927697f7d8e8e967cb20dda39ed7d92384f81f0eb8b9f0c131b",
+        "checked": 492,
+        "recordedMissing": 0
+      }
+    ],
+    "immutableInputs": 50,
+    "pixiRendererIdenticalToBaseline": true,
+    "ownerPathsRead": false,
+    "privateKeysRead": false
+  },
+  "limitations": [
+    "N06-04 IN_PROGRESS;technical cafe art is not final-art,owner approval,human usability or performance acceptance.",
+    "Sparse/speckled groom,Low facets,small whole-room animals,warm wood dominance,angular furniture and controlled loading findings remain open.",
+    "Actual static cafe resources measured without actors/GPU;20actor new-art performance,controlled loading and remount/heap NOT_RUN.",
+    "Five Sandbox experiments fail unchanged100ms cap;no threshold,sampling,deadline or retry relaxation;all experiments reverted.",
+    "Initial strict floor assertion,unit timeouts during concurrent builds/browser,boundary import lint,external Three import and resource CJS import failures preserved. Final54units and lint pass.",
+    "Hosted8450ba7 images pass;core canceled by explicit30minute maximum,browser skipped,quality failure. Not a Quality PASS.",
+    "Prior71evidence objects/serialization,50SQL/Mxx/Phase2inputs and all available frozen members preserved;two previously recorded auxiliary Lounge HTML losses remain explicit.",
+    "Retained Docker at67ff2d4 is unchanged;this new art is not deployed there. No native/public/store/registry/production action."
+  ],
+  "nextExactAction": "Continue N06-04:fix hosted core30minute timeout in a separate N03-04 CI slice without omitting checks;then qualify integrated cafe20actor resources/frame/loading/remount at locked budgets and refine groom/material/room/UI art before N06-09. Sandbox baseline350ms,caching/RAF experiments116.7-333.3ms all fail100ms;Pixi restored. Observe exact pushed-SHA hosted Quality. Phase2 stays PAUSED pending fresh qualified upstream handoff;native remains owner-deferred."
+}

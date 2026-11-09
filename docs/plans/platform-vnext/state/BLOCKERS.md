@@ -1,3 +1,9 @@
+# Current cafe art and hosted gates - 2026-11-09
+
+N06-04 remains IN_PROGRESS after05a3fcc:6browser/54unit checks pass;static cafe geometry/texture budgets pass. Final art/groom/Low facets/whole-room readability/wood-dominant lighting/loading/human approval and new20actor/remount performance remain unqualified. Five Sandbox experiments fail100ms;Pixi restored with no relaxed gate. Hosted42596287142 at8450ba7 images PASS but core exceeds30minutes,so browser skipped/quality failure. Fix orchestration separately and observe a fresh exact-SHA run. Retained Docker remains67ff2d4. Native owner-deferred;Phase2 PAUSED;staging/public/production/store gates unchanged. Prior71records/50inputs/available frozen members preserved;two known auxiliary HTML losses remain explicit.
+
+## Earlier checkpoints - historical
+
 # Camera checkpoint gates - 2026-11-09
 
 N06-04 camera/recovery functional slice passes4camera+22creator+16room browser cases;source67ff2d4 image18/Compose6/retained HTTPS4PASS. Final art/groom/materials/Low faceting/loading/human approval remain unqualified;Sandbox desktop166.7ms/mobile150ms exceed100ms and require actual profiling/fix under unchanged limits. Native is owner-deferred,Phase2 PAUSED. Hosted150dd18 failed coreTS7016/images;fixes require exact pushed-SHA observation. Earlier migration failure is unreproduced,not diagnosed. Two known auxiliary HTML losses remain explicit;old69records/50inputs and available frozen members preserved.

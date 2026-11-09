@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "updated_at": "2026-11-09T09:47:00.701Z",
+  "updated_at": "2026-11-09T11:54:52.476Z",
   "scope": "vNext implementation",
   "release_status": "NOT_REQUESTED",
   "module_activation": {
@@ -240,7 +240,7 @@
         "n03-04-smoke-diagnostics-2026-11-09"
       ],
       "blocker": null,
-      "next_action": "Observe exact pushed-SHA hosted images/Quality;preserve report-output guard and recorded2auxiliary HTML loss. Create fresh artifacts/vnext/n06-04/web-v2 (never rerun web-v1 outputs). Use saved Sandbox timeline c07d86d4 to attribute GLContextEGL::MakeCurrent stalls and qualify both declared-profile cases at unchanged100ms/>10sample/loading/heap limits. Continue integrated Deadline/Maid3D camera/readability/art and N06-09;Phase2 stays paused until a fresh qualified upstream handoff. Inspect hosted Quality for the exact pushed SHA."
+      "next_action": "Continue N06-04:fix hosted core30minute timeout in a separate N03-04 CI slice without omitting checks;then qualify integrated cafe20actor resources/frame/loading/remount at locked budgets and refine groom/material/room/UI art before N06-09. Sandbox baseline350ms,caching/RAF experiments116.7-333.3ms all fail100ms;Pixi restored. Observe exact pushed-SHA hosted Quality. Phase2 stays PAUSED pending fresh qualified upstream handoff;native remains owner-deferred."
     },
     "N03-05": {
       "status": "VERIFIED",
@@ -390,10 +390,11 @@
       "evidence_refs": [
         "n06-04-web-stability-partial-2026-11-09",
         "n06-04-raf-profile-partial-2026-11-09",
-        "n06-04-camera-recovery-partial-2026-11-09"
+        "n06-04-camera-recovery-partial-2026-11-09",
+        "n06-04-cafe-room-art-partial-2026-11-09"
       ],
       "blocker": null,
-      "next_action": "Continue N06-04:attribute Sandbox GLContextEGL::MakeCurrent stalls from saved c07d86d4 timeline and compare actual Pixi batches/static Graphics at unchanged100ms/>10samples/loading/heap limits;qualify desktop and mobile rendering specs without skips/retries. Refine integrated fur/material/room/UI art before N06-09. Observe exact pushed-SHA hosted Quality. Phase2 remains PAUSED until a fresh qualified upstream handoff;native remains owner-deferred."
+      "next_action": "Continue N06-04:fix hosted core30minute timeout in a separate N03-04 CI slice without omitting checks;then qualify integrated cafe20actor resources/frame/loading/remount at locked budgets and refine groom/material/room/UI art before N06-09. Sandbox baseline350ms,caching/RAF experiments116.7-333.3ms all fail100ms;Pixi restored. Observe exact pushed-SHA hosted Quality. Phase2 stays PAUSED pending fresh qualified upstream handoff;native remains owner-deferred."
     },
     "N06-05": {
       "status": "TODO",

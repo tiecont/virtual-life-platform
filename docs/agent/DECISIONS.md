@@ -1,3 +1,11 @@
+# Cafe room art and rejected performance experiments - 2026-11-09
+
+Keep the current manifest/RoomAuthority/seat and travel contracts. Theme-only procedural room detail uses original code primitives/wood texture,static material batching and independent idempotent disposal. Actual two-cafe inventory complements Sandbox unit fixtures;static counts and one-actor browser captures do not supply20actor/frame/loading/heap acceptance. Preserve default/creator recipe and owner art-review gate. No new external media or license inference.
+
+Reject and revert five Sandbox baseline/cache/RAF experiments that fail the locked100ms cap;GLContextEGL::MakeCurrent waiting observations do not establish a final root cause. Preserve source/diff hashes,logs and old failures. Hosted8450ba7 core hit its explicit30minute job limit after770integration cases;images passed. Adjust CI orchestration in a separate slice,retaining every product test and performance limit.
+
+## Earlier decisions - historical
+
 # Presentation camera and stable room actions - 2026-11-09
 
 RoomSceneHandle exposes optional framing capability;old adapters remain compatible. Whole-room and follow-self use conservative animal bounds and translate only the camera,target and client hit targets;server geometry,membership and saved appearance do not change. Context/account changes reset framing;temporary same-context sync may preserve it. During authoritative refresh retain a disabled Leave command with distinct React keys instead of replacing it with Rejoin under an in-progress pointer click. Read camera diagnostics and dimensions atomically in browser assertions.

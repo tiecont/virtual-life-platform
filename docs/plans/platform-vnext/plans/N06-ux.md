@@ -1,5 +1,7 @@
 Current web-first checkpoint2026-11-09:N06-07 web creator VERIFIED;N06-04 IN_PROGRESS. Lounge32browser/24integration PASS;new declared compositor Deadline2PASS/Sandbox2FAIL,so no whole performance/final-art acceptance. See [RAF checkpoint](../audit/N06-04-RAF-PROFILE-CHECKPOINT.json). Native stays owner-deferred;historical native/physical paragraphs below retain their original scope.
 
+Current cafe art checkpoint2026-11-09:05a3fcc has6browser/54unit PASS,12nonblank canvas captures and actual static two-cafe resource inventory. See [room art checkpoint](../audit/N06-04-ROOM-ART-CHECKPOINT.json). N06-04 remains IN_PROGRESS;final art/loading/new20actor performance are not qualified. Five Sandbox experiments fail100ms and are reverted. Hosted8450ba7 images pass/core30minute timeout/browser skipped/quality failure. Native deferred;Phase2 PAUSED.
+
 # N06 — UI/UX và playable vertical slice
 
 Current checkpoint2026-11-08: N06-11 technical renderer spike VERIFIED under ADR0133;N06-07 creator/authoritative Save/browser and packaged-native world/travel integration has actual partial evidence,with physical Android qualification BLOCKED_EXTERNAL (fresh USB0). [Native checks](../audit/N06-07-NATIVE-WORLD-CHECKPOINT.json) preserve431unit/740integration/267security,14browser creator+4travel and9AVD journey scenarios. N06-04/N06-09 final scene/art and their downstream tasks remain gated;do not treat technical art or AVD as those acceptances. Phase1 has a safe checkpoint for separate dependency-ready Lantern Lodge work. Earlier checkpoint paragraphs below are historical.

@@ -1,3 +1,15 @@
+# Cafe room art checkpoint; N06-04 remains in progress - 2026-11-09
+
+Source05a3fcc adds four wall windows/counter detail,18Deadline laptop stations and6Maid tea settings with separate fabric accents;original creator/unselected recipe retained. Actual6browser journeys,54scene/Pixi units,package+portal builds,scene/browser types,lint/localCI contract PASS. Twelve canvas-only captures are nonblank and four seat-to-walk pairs change pixels. Actual two-cafe static inventory:11batches each,16028/16700triangles,1538688/1603200geometry bytes and87380texture bytes each. These static counts do not qualify20actor performance/loading/remount. [Source-bound checkpoint](../plans/platform-vnext/audit/N06-04-ROOM-ART-CHECKPOINT.json).
+
+72vNext records;prior71serialized objects,50immutable SQL/Mxx/Phase2inputs and all available frozen455+132+153+391+492members preserved. Two previously recorded auxiliary Lounge HTML losses remain explicit. New247file private index SHA726ec88471b83fe4e9205807bcebb247545ed48dd37adbc289de3a322f4d25f1. Counts unchanged:44VERIFIED/2external/18TODO/12deferred/1IN_PROGRESS. Phase2 PAUSED;native owner-deferred. Retained Docker https://localhost:3443 still runs tested67ff2d4;new art not deployed there.
+
+Sandbox baseline350ms;rejected caching/RAF experiments116.7/333.3/133.3/150ms all fail100ms. Pixi source restored exactly;no gate relaxed. Keep sparse/speckled groom,Low facets,small whole-room animals,warm wood dominance,angular furniture,controlled loading and human/owner art findings open. Hosted8450ba7 run42596287142:images PASS,core CANCELLED with explicit30minute maximum annotation,browser SKIPPED,quality FAILURE;not Quality green. No native/public/store/registry/production action.
+
+**Next exact action:** Fix hosted core timeout in a separate N03-04 CI slice without omitting checks;then qualify actual cafe20actor resources/frame/loading/remount at locked budgets and refine groom/material/room/UI art before N06-09. Observe exact pushed-SHA Quality. Refresh upstream handoff before Phase2 resumes. Keep vc-* running and owner paths unread/untracked/unstaged.
+
+## Earlier checkpoints - historical
+
 # Camera/recovery slice qualified locally; N06-04 remains in progress - 2026-11-09
 
 Source67ff2d4:optional whole-room/follow-character camera now enlarges the saved animal without gameplay commands or account persistence. Compact landscape reserves camera-toolbar space. Authoritative refresh retains a disabled Leave command instead of replacing it with Rejoin;real held-refresh regression fails on the old build and passes desktop/mobile after56047f1. Actual4focused camera+22creator+16room browser cases,45scene units,100governance,full build/types/lint/strict browser types/localCI contract and scene-pixel checks PASS. [Source-bound checkpoint](../plans/platform-vnext/audit/N06-04-CAMERA-CHECKPOINT.json) preserves failed fixtures,overlap,creator19PASS/3FAIL and the interrupted run;no gate was relaxed.

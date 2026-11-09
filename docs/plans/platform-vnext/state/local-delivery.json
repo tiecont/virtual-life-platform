@@ -146,10 +146,15 @@
     "fixedSourceHosted": "NOT_RUN_AT_SEAL",
     "audit": "docs/plans/platform-vnext/audit/N06-04-RAF-PROFILE-CHECKPOINT.json",
     "latestObservation": {
-      "run": 42558723242,
-      "sourceRevision": "150dd182775551c39e713199dd4ff9a22d3ed844",
-      "result": "FAILURE",
-      "currentSource": "NOT_YET_OBSERVED"
+      "run": 42596287142,
+      "sourceRevision": "8450ba7ecb256198ee8559b7662b409d59fddfb5",
+      "result": "CANCELLED",
+      "images": "PASS",
+      "core": "CANCELLED_TIMEOUT_30MIN",
+      "browser": "SKIPPED",
+      "quality": "FAILURE",
+      "at": "2026-11-09T10:37:06.515Z",
+      "audit": "docs/plans/platform-vnext/audit/N06-04-ROOM-ART-CHECKPOINT.json"
     }
   },
   "registryPublish": "NOT_RUN",
@@ -317,7 +322,7 @@
       }
     ]
   },
-  "nextExactAction": "Continue N06-04:attribute Sandbox GLContextEGL::MakeCurrent stalls from saved c07d86d4 timeline and compare actual Pixi batches/static Graphics at unchanged100ms/>10samples/loading/heap limits;qualify desktop and mobile rendering specs without skips/retries. Refine integrated fur/material/room/UI art before N06-09. Observe exact pushed-SHA hosted Quality. Phase2 remains PAUSED until a fresh qualified upstream handoff;native remains owner-deferred.",
+  "nextExactAction": "Continue N06-04:fix hosted core30minute timeout in a separate N03-04 CI slice without omitting checks;then qualify integrated cafe20actor resources/frame/loading/remount at locked budgets and refine groom/material/room/UI art before N06-09. Sandbox baseline350ms,caching/RAF experiments116.7-333.3ms all fail100ms;Pixi restored. Observe exact pushed-SHA hosted Quality. Phase2 stays PAUSED pending fresh qualified upstream handoff;native remains owner-deferred.",
   "previousSelectionBeforeCamera": {
     "at": "2026-11-09T03:31:18.589534+00:00",
     "imageSourceRevision": "983d25748a608e22eed5086ad19fc460467d41bf",
