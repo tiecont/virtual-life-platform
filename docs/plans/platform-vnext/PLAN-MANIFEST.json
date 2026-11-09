@@ -2478,11 +2478,10 @@
           "pnpm assets:check",
           "pnpm test:integration",
           "pnpm test:security",
-          "pnpm build"
+          "pnpm build",
+          "pnpm test:avatar-creator"
         ],
-        "planned": [
-          "pnpm test:avatar-creator (implement before claiming PASS)"
-        ],
+        "planned": [],
         "manual": [
           "Creator→Save→Deadline/Maid→travel/reconnect trên desktop/responsive browser; kiểm seams/anchors/occlusion/animation/missing assets. Native qualification deferred N10-06."
         ]

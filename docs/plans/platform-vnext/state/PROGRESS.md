@@ -1,3 +1,15 @@
+# N06-07 web creator VERIFIED — 2026-11-09
+
+Source `80107b5f2f65eeb19a1a242b672c178d6339c0f5`: selected-part/whole-character framing and first account-owned preview implemented. Actual18browser/43isolated scene-editor unit/9avatar integration/267security PASS;full build/types/lint/CI contract/assets/architecture/client boundaries PASS. API/web images6scenarios each and3retained HTTPS creator probes PASS. Earlier5s probe failure and3High unit timeouts under concurrent load retained;no thresholds changed. Final art/groom/material/loading/usability acceptance is still N06-04/N06-09,not supplied by this functional creator result.
+
+65vNext records;previous64record objects/serialization preserved.77tasks:44VERIFIED/2BLOCKED_EXTERNAL/19TODO/12DEFERRED_APPROVED.47SQL and Mxx ledger unchanged;Phase2 evidence4records unchanged. Phase2 scheduler stays PAUSED while upstream implementation continues;native remains owner-deferred. No public/store/distribution/production change.
+
+Retained local https://localhost:3443 runs source80107b5 API/web images with vc-* names,healthy services and47SQL;vc_data/session configuration preserved. Encrypted local backups created with keys excluded from evidence;no DB restore or destructive SQL. Only synthetic probe accounts were created/deleted.
+
+Hosted Quality at previous source4de0252 FAILED:core passed,images skipped correctly for docs-only changes;legacy RAF sample count7(required>10),study RAF p95 gap166.8ms(100ms cap),hospitality missing Clap count. See audit/N03-04-HOSTED-2026-11-09.json;local CI contract is not a hosted PASS. Cause of Lounge expiry remains a hypothesis. Preserve traces/raw failure logs and budgets;no skips or tolerance increases.
+
+## Earlier checkpoints — historical
+
 # Revision2.4 web-first checkpoint — 2026-11-09
 
 77tasks:43VERIFIED/2BLOCKED_EXTERNAL/20TODO/12DEFERRED_APPROVED.64old evidence records unchanged. Native work deferred by owner;N06-07 changed from physical BLOCKED_EXTERNAL to web-scope TODO,never auto-VERIFIED. New N10-06 retains packaged native creator/world gate for later. Next:N06-07→N06-04→N06-09 web,then N15-05. Current Docker image/Compose verification is tracked separately;no public/native release.

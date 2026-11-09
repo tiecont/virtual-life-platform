@@ -240,7 +240,7 @@ Task thiết kế: ghi review/artifact hashes thực; không cần tạo tests m
 **Verification — run actual commands; never infer PASS from this plan**
 
 - Existing commands: pnpm lint; pnpm typecheck; pnpm assets:check; pnpm test:integration; pnpm test:security; pnpm build
-- Proposed; implement before claiming execution: pnpm test:avatar-creator (implement before claiming PASS)
+- Implemented and executed for this web qualification: pnpm test:avatar-creator (18 cases at recorded source; see acceptance evidence)
 - Manual scenarios: Creator→Save→Deadline/Maid→travel/reconnect trên desktop/responsive browser; kiểm seams/anchors/occlusion/animation/missing assets. Native qualification deferred N10-06.
 
 **Rollback / recovery:** Tắt creator mới theo flag, giữ appearance/catalog versions và receipts; v1 projection tương thích, không xóa hoặc reset customization.

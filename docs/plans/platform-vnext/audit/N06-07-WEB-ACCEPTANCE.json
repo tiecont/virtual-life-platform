@@ -1,0 +1,190 @@
+{
+  "taskId": "N06-07",
+  "result": "VERIFIED",
+  "acceptanceScope": "Revision2.4 modular creator web functionality/shared rendering and accessible inspection;not N06-09 final art/performance",
+  "sourceRevision": "80107b5f2f65eeb19a1a242b672c178d6339c0f5",
+  "imageSourceRevision": "80107b5f2f65eeb19a1a242b672c178d6339c0f5",
+  "environment": {
+    "os": "CachyOS Linux",
+    "node": "26.9.0",
+    "pnpm": "11.28.5",
+    "browser": "Playwright Chromium desktop + mobile emulation;actual local TLS production images"
+  },
+  "at": "2026-11-09T02:37:28.303774+00:00",
+  "counts": {
+    "browser": 18,
+    "sceneEditorUnit": 43,
+    "avatarIntegration": 9,
+    "security": 267,
+    "apiImageScenarios": 6,
+    "webImageScenarios": 6,
+    "retainedProductionBrowserProbes": 3
+  },
+  "commands": [
+    {
+      "command": "pnpm build",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-07/web-v2/initial-preview-build-final.log",
+      "sha256": "95f1c2c13cda54f4e470d200cac5722fef906f29b7e81b44a166984335277c31"
+    },
+    {
+      "command": "pnpm typecheck",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-07/web-v2/typecheck-final.log",
+      "sha256": "2e98243e95ed8689536b86baf4ea76f020771e25df5ca5f35fa5a3e39cca7f24"
+    },
+    {
+      "command": "pnpm test:avatar-creator",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-07/web-v2/browser-first-frame.log",
+      "sha256": "17d91a238e74e31a51d482dca1051b43af66717f399d2069b014eacab411d40d"
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/scene3d/test packages/game-client/test/avatar-editor.test.ts --maxWorkers=1",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-07/web-v2/scene-editor-unit-isolated.log",
+      "sha256": "45aaae8efaf6070678f257d4b8ca446fcf3cc1d8bee61a6ccc9d478477179002"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/avatar-parts.test.ts",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-07/web-v2/avatar-integration.log",
+      "sha256": "9dffaf0b0d34f7aaec8c78f47a086375318e5c47c012d868b23e4d72ff18d218"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project security",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-07/web-v2/security.log",
+      "sha256": "61a745bd224c8661d0584e8e5371ef111064d20def0d379461fac1bbffcfa54d"
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-07/web-v2/lint-qualification.log",
+      "sha256": "2727261cbd88bec100b57d3c004d7b899c6fee87143190392aa173a971027811"
+    },
+    {
+      "command": "pnpm ci:check",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-07/web-v2/ci-qualification.log",
+      "sha256": "8c490a12fe7297c5cb7f4f6895069b19ba497a8e78849e9f83b000e141c50827"
+    },
+    {
+      "command": "pnpm test:client-boundaries",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-07/web-v2/client-qualification.log",
+      "sha256": "aad448fcc42efd10bab9171cccb68584eba9802c555d3cc1e943a054321bf9aa"
+    },
+    {
+      "command": "pnpm architecture:check",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-07/web-v2/architecture-qualification.log",
+      "sha256": "75f5ef6d19575184ba4444f8af9cb8ab3e03a1a903ced7b336b5a044cab6940c"
+    },
+    {
+      "command": "pnpm assets:check",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-07/web-v2/assets-qualification.log",
+      "sha256": "da62dc3d5832c3647ed96d34f1bd02d11ff3da9a42c375012e9743a64495652b"
+    },
+    {
+      "command": "pnpm image:check --target=web",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-07/web-v2/image-web-initial-preview.log",
+      "sha256": "458c5088288dbc50322b4f4c9fae914157155d318ff33314702b90985acced5b"
+    },
+    {
+      "command": "node artifacts/vnext/n06-07/web-v2/update-local-initial-preview.mjs artifacts/image-web-9b7c1723/facts.json",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-07/web-v2/local-update-initial-preview.log",
+      "sha256": "fa9695926ea62e7e551ed71954aff737ce4eb74304e4bc4a2ea81a621a76993b"
+    },
+    {
+      "command": "node artifacts/vnext/n06-07/web-v2/local-creator-post-fix.mjs post-1",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-07/web-v2/local-creator-post-1.log",
+      "sha256": "701548aef832af3edc3dbca42151618388904e6d714bdf06af49ee557c77fc04"
+    },
+    {
+      "command": "node artifacts/vnext/n06-07/web-v2/local-creator-post-fix.mjs post-2",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-07/web-v2/local-creator-post-2.log",
+      "sha256": "8409073a969c3c660624b40d533738dc297fabcfd19214863005b3eea68bd42f"
+    },
+    {
+      "command": "node artifacts/vnext/n06-07/web-v2/local-creator-post-fix.mjs post-3",
+      "exitCode": 0,
+      "log": "artifacts/vnext/n06-07/web-v2/local-creator-post-3.log",
+      "sha256": "8ef7880e8bf1f935917abdf7d46faf987f3af498527cd13614d976d2b54cc105"
+    }
+  ],
+  "earlierVerificationSource": {
+    "avatarIntegrationAndSecurity": "225331ef384c172f87f955a1602990173f15e3d6",
+    "backendContractsWorldSdkLockDeltaToCurrent": []
+  },
+  "initialFailures": [
+    {
+      "scope": "Initial retained image default5s probe",
+      "exitCode": 1,
+      "stage": "NOT_RECORDED",
+      "ref": "artifacts/vnext/n06-07/web-v2/local-creator-result.json",
+      "notes": "Unchanged retry passed;later functional probes use20s consistent with browser suite;original5000ms loading gate unchanged"
+    },
+    {
+      "scope": "Concurrent heavy build/browser/unit run",
+      "exitCode": 1,
+      "failedCases": 3,
+      "reason": "High variants timed out20000ms;unchanged isolated1worker execution43PASS with same deadlines"
+    }
+  ],
+  "review": {
+    "ref": "docs/design/vnext/animals-3d/CREATOR-INSPECTION-REVIEW.md",
+    "sha256": "14ed3cc5fb1ba434f0cf0ee121dea27fc9f024b5264408f4d708c785e56b5cc7"
+  },
+  "rawEvidence": {
+    "ref": "artifacts/vnext/n06-07/web-v2/raw-index.json",
+    "sha256": "8d8a867fe86b538e150d9f759c816407d063ee0d965a6a881aa469ea8611c179",
+    "files": 455,
+    "access": "private local artifacts;not off-host archive"
+  },
+  "localStack": {
+    "origin": "https://localhost:3443",
+    "sourceRevision": "80107b5f2f65eeb19a1a242b672c178d6339c0f5",
+    "images": {
+      "vc-api": "sha256:6b441c3bc41663634569b0fc6fc35f1dc1fb9c0e2387fcdd4d22761a33e766c9",
+      "vc-web": "sha256:db2e951021e87ff9a9050a2c28920102ea3a78b37f83344cf753300cf46cf94c",
+      "vc-db": "sha256:bb377b7239d2774ac8cc76f481596ce96c5a6b5e9d141f6d0a0ee371a6e7c0f2",
+      "vc-edge": "sha256:e70b164da81ef698b3ad19af799ea6086ce6d9e48ed4079eb9fe26f6fbf14ee5"
+    },
+    "databaseVolumeRetained": "vc_data",
+    "migrations": 47,
+    "backup": {
+      "authenticatedEncryption": "AES-256-GCM",
+      "roundTripAuthenticated": true,
+      "encryptedBytes": 378059,
+      "sha256": "2e31b2d82a5a95eeaea59ac3aa63b883c1d7b0c5283a8af4cf2a86075b89296e",
+      "restoreRun": false,
+      "keyExcludedFromEvidence": true
+    },
+    "keyExcluded": true
+  },
+  "noDatabaseOrWireSchemaChanges": true,
+  "nativeRun": false,
+  "ownerArtApproved": false,
+  "publicRelease": false,
+  "hostedCI": {
+    "result": "FAILURE_AT_PREVIOUS_SOURCE",
+    "sourceRevision": "4de0252ad68cccb53d8e64b7672d1d7d64100728",
+    "run": 42544861119,
+    "summary": "docs/plans/platform-vnext/audit/N03-04-HOSTED-2026-11-09.json"
+  },
+  "limitations": [
+    "Final groom/material/Low faceting/full-room readability and locked loading findings remain for N06-04/N06-09;not owner art/human usability approval",
+    "No full770integration rerun;focused9 plus267security cover unchanged backend source",
+    "No physical/native/store run;native remains owner-deferred",
+    "Current source has local verification;latest hosted baseline fails three browser groups. No threshold changes/skips or green CI claim",
+    "Performance readiness probes are uncontrolled functional samples,not locked p75 or comparison proof",
+    "Old indexed raw payloads not fully rehashed;critical47SQL/Mxx/old ledger/proposal inputs verified unchanged"
+  ],
+  "nextExactAction": "Preserve this scoped N06-07 web acceptance;N06-04 is dependency-ready. Reproduce retained hosted RAF/Lounge failures without lowering budgets or skipping groups,then polish integrated Deadline/Maid camera/readability/interactions;keep Phase2 paused until fresh upstream handoff."
+}

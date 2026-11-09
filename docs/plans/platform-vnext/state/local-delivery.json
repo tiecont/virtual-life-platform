@@ -100,12 +100,21 @@
     "artifact": {
       "ref": "artifacts/docker-local-up-20261109-v1/result.json",
       "sha256": "8e2be20eddc207e0169c2402488426249dc8ea7a1d5b14cac83c7d45de00fe45"
-    }
+    },
+    "sourceRevision": "80107b5f2f65eeb19a1a242b672c178d6339c0f5"
   },
   "hostedCI": {
-    "status": "STARTED_NOT_YET_PASSED",
-    "run": "https://github.com/tiecont/virtual-life-platform/actions/runs/42544708489",
-    "sourceRevision": "fcec6487984f9ea2456206dd408dabb66d782e68"
+    "status": "FAILURE_AT_PREVIOUS_SOURCE",
+    "sourceRevision": "4de0252ad68cccb53d8e64b7672d1d7d64100728",
+    "run": "https://github.com/tiecont/virtual-life-platform/actions/runs/42544861119",
+    "failedGroups": [
+      "legacy",
+      "study",
+      "hospitality"
+    ],
+    "core": "SUCCESS",
+    "currentCreatorSourceHosted": "NOT_RUN",
+    "audit": "docs/plans/platform-vnext/audit/N03-04-HOSTED-2026-11-09.json"
   },
   "registryPublish": "NOT_RUN",
   "publicRelease": false,
@@ -115,11 +124,29 @@
     "Current final-art/loading/usability and external staging/public release gates remain",
     "Local images carry their exact tested source label;later commits onlyops/planning/evidence and no app/runtime/config/Dockerfile delta"
   ],
-  "nextExactAction": "Run N06-07 web-only creator qualification under sole coordinator: pause Phase2 before upstream state mutations; then N06-04/N06-09 web and fresh handoff to N15-05. Native remains owner-deferred.",
+  "nextExactAction": "Preserve this scoped N06-07 web acceptance;N06-04 is dependency-ready. Reproduce retained hosted RAF/Lounge failures without lowering budgets or skipping groups,then polish integrated Deadline/Maid camera/readability/interactions;keep Phase2 paused until fresh upstream handoff.",
   "push": {
     "status": "SUCCESS",
     "branch": "codex/lantern-lodge-foundation",
     "sourceRevision": "fcec6487984f9ea2456206dd408dabb66d782e68",
     "remote": "origin"
-  }
+  },
+  "updates": [
+    {
+      "taskId": "N06-07",
+      "sourceRevision": "80107b5f2f65eeb19a1a242b672c178d6339c0f5",
+      "at": "2026-11-09T02:38:24.995943+00:00",
+      "origin": "https://localhost:3443",
+      "images": {
+        "vc-api": "sha256:6b441c3bc41663634569b0fc6fc35f1dc1fb9c0e2387fcdd4d22761a33e766c9",
+        "vc-web": "sha256:db2e951021e87ff9a9050a2c28920102ea3a78b37f83344cf753300cf46cf94c",
+        "vc-db": "sha256:bb377b7239d2774ac8cc76f481596ce96c5a6b5e9d141f6d0a0ee371a6e7c0f2",
+        "vc-edge": "sha256:e70b164da81ef698b3ad19af799ea6086ce6d9e48ed4079eb9fe26f6fbf14ee5"
+      },
+      "volumeRetained": "vc_data",
+      "migrations": 47,
+      "audit": "docs/plans/platform-vnext/audit/N06-07-WEB-ACCEPTANCE.json",
+      "auditSha256": "cd47e0d78d32bb9e61757abfb99a1ddbab856858bb44983fc8f7545bab697148"
+    }
+  ]
 }

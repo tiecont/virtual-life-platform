@@ -1,3 +1,9 @@
+# Account-owned creator initialization and optional camera port — 2026-11-09
+
+Retain existing RoomAuthority,avatar catalog/rig/schema and server Save ownership. Add only an optional client presentation focus port,computed from current skinned vertices;older factories retain setAppearance fallback. Defer GPU creation until a valid own wardrobe draft and initialize the first model with those exact parts. No new media,geometry/wire/SQL/permission changes. Preserve failed first-load/concurrent-unit and hosted RAF/Lounge evidence;functional20s deadlines are not the unchanged5000ms loading qualification.
+
+## Earlier checkpoints — historical
+
 # Owner priority: web/server first — 2026-11-09
 
 Actual owner instruction defers native mobile and removes it as a hard prerequisite of platform features. Revision2.4 splits native creator/world qualification into N10-06;N10/N11/N14 inactive,pending native tasks/N12-03/N19-04 DEFERRED_APPROVED. Web/3D quality,authority/privacy/report/block,release approval and supported/distributed-client compatibility remain mandatory. No stack/ORM/renderer replacement or acceptance from documents.

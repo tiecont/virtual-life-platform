@@ -1,3 +1,17 @@
+# N06-07 web creator VERIFIED — 2026-11-09
+
+Source `80107b5f2f65eeb19a1a242b672c178d6339c0f5`: selected-part/whole-character framing and first account-owned preview implemented. Actual18browser/43isolated scene-editor unit/9avatar integration/267security PASS;full build/types/lint/CI contract/assets/architecture/client boundaries PASS. API/web images6scenarios each and3retained HTTPS creator probes PASS. Earlier5s probe failure and3High unit timeouts under concurrent load retained;no thresholds changed. Final art/groom/material/loading/usability acceptance is still N06-04/N06-09,not supplied by this functional creator result.
+
+65vNext records;previous64record objects/serialization preserved.77tasks:44VERIFIED/2BLOCKED_EXTERNAL/19TODO/12DEFERRED_APPROVED.47SQL and Mxx ledger unchanged;Phase2 evidence4records unchanged. Phase2 scheduler stays PAUSED while upstream implementation continues;native remains owner-deferred. No public/store/distribution/production change.
+
+Retained local https://localhost:3443 runs source80107b5 API/web images with vc-* names,healthy services and47SQL;vc_data/session configuration preserved. Encrypted local backups created with keys excluded from evidence;no DB restore or destructive SQL. Only synthetic probe accounts were created/deleted.
+
+Hosted Quality at previous source4de0252 FAILED:core passed,images skipped correctly for docs-only changes;legacy RAF sample count7(required>10),study RAF p95 gap166.8ms(100ms cap),hospitality missing Clap count. See audit/N03-04-HOSTED-2026-11-09.json;local CI contract is not a hosted PASS. Cause of Lounge expiry remains a hypothesis. Preserve traces/raw failure logs and budgets;no skips or tolerance increases.
+
+**Next exact action:** N06-04 is dependency-ready. First reproduce/profile the retained hosted RAF and Lounge failure with declared fixtures and unchanged budgets,then improve integrated Deadline/Maid character readability/camera/gameplay polish and continue N06-09. Keep Phase2 paused;only after real upstream qualification create a fresh source-bound handoff to resume N15-05. Keep vc-* running. Owner paths .idea/ and infra/botkeep-ca.pem remain unread/untracked/unstaged.
+
+## Earlier checkpoints — historical
+
 # Docker local running; web-first plan ready — 2026-11-09
 
 Authorized branch push fcec648 succeeded. Retained local Compose https://localhost:3443 is certificate-verified ready:vc-db/vc-api/vc-web/vc-edge healthy,vc-migrate exited0;47SQL migrations;vc_data retained. Tested immutable sourcee56d881 images have no app/package/config/Dockerfile delta at current checkout. API/web/admin6checks each+Compose6PASS;97governance/lint/localCI/plan checks PASS. Hosted Quality started;not yet claimed PASS. See vNext state/local-delivery.json. No public/store/native distribution.

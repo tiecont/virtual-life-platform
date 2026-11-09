@@ -1,3 +1,9 @@
+# Remaining web quality/hosted findings — 2026-11-09
+
+N06-07 functional web creator VERIFIED;N06-04 is ready. Final groom/Low faceting/material/full-floor readability and locked loading/human usability remain unqualified. Prior-source hosted Quality42544861119 fails legacy RAF samples,study RAF p95 and Lounge reaction observation;core passes. Record is audit/N03-04-HOSTED-2026-11-09.json. Do not skip failing groups,raise budgets or claim hosted green. Native is owner-deferred and is not a web feature blocker. N04-02 genuine candidate and N07-04 staging observations remain external;no public/store/production approval.
+
+## Earlier checkpoints — historical
+
 # Current web-first scope — 2026-11-09
 
 Physical Android/iOS/ADB/APK/AVD/signing/store/disclosures are deferred native-lane prerequisites and no longer block platform web features. N06-07 web-only is ready,not VERIFIED. Final-art/readability/groom/loading findings still require real web work;N04-02 hosted candidate and N07-04 staging observations remain external. No public release/production/store authorization. Supported/distributed-native compatibility remains fail-closed;current inventory/context false unchanged.

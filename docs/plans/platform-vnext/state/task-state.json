@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "updated_at": "2026-11-09T00:28:57.350142+00:00",
+  "updated_at": "2026-11-09T02:38:24.995943+00:00",
   "scope": "vNext implementation",
   "release_status": "NOT_REQUESTED",
   "module_activation": {
@@ -794,16 +794,20 @@
       "next_action": "Execute N06-03 (priority82): read current shared WorldRoomPanel/widgets and Next local navigation docs; implement an opt-in scene-first shared shell and client navigation adapter, preserving authoritative recovery/safety/business controls and legacy rollback. Implement test:ux-core with actual browser/API verification; qualify before N06-08 landscape/native orientation. Continue N10-03 and later Phase2 per DAG; N14 stays conditional."
     },
     "N06-07": {
-      "status": "TODO",
-      "owner": "Codex",
-      "branch": "codex/vnext-n09-02-postgres",
+      "status": "VERIFIED",
+      "owner": "Codex Experience",
+      "branch": "codex/lantern-lodge-foundation",
       "evidence_refs": [
+        "n06-07-web-creator-acceptance-2026-11-09"
+      ],
+      "blocker": null,
+      "next_action": "Preserve this scoped N06-07 web acceptance;N06-04 is dependency-ready. Reproduce retained hosted RAF/Lounge failures without lowering budgets or skipping groups,then polish integrated Deadline/Maid camera/readability/interactions;keep Phase2 paused until fresh upstream handoff.",
+      "previous_status_before_web_split": "BLOCKED_EXTERNAL",
+      "historical_evidence_refs": [
         "n06-07-modular-creator-partial-2026-11-08",
         "n06-07-native-world-creator-partial-2026-11-08"
       ],
-      "blocker": null,
-      "next_action": "Reserve web-only N06-07 at current source: requalify authoritative creator/appearance and browser creator→Save→Deadline/Maid→travel/reconnect; retain prior native evidence and final-art findings. No ADB/APK/physical device prerequisite. Then N06-04 and N06-09 web visual qualification; do not mark VERIFIED from this replan.",
-      "previous_status_before_web_split": "BLOCKED_EXTERNAL"
+      "acceptance_scope": "Revision2.4 modular creator web functionality/shared rendering and accessible inspection;not N06-09 final art/performance"
     },
     "N06-08": {
       "status": "VERIFIED",

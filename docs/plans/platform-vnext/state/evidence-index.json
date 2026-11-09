@@ -39927,6 +39927,113 @@
         "N11-03 code/inventory preparation is complete at this scope,but public privacy/support/deletion URLs,backup/provider retention,age/rating,Play account/testers and owner declarations remain UNKNOWN.",
         "N14 has no Mac/Xcode/iPhone;conditional modules N13/N14 remain inactive. N04-02 genuine hosted release candidate and N07-04 staging observations remain external. No public/store/distribution/production promotion."
       ]
+    },
+    {
+      "id": "n06-07-web-creator-acceptance-2026-11-09",
+      "taskId": "N06-07",
+      "sourceRevision": "80107b5f2f65eeb19a1a242b672c178d6339c0f5",
+      "environment": "CachyOS Linux;Node26.9.0/pnpm11.28.5;Playwright Chromium desktop/mobile emulation;Docker production-mode web/API and PostgreSQL17.7",
+      "executedAt": "2026-11-09T02:38:24.995943+00:00",
+      "commands": [
+        {
+          "command": "pnpm build",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm typecheck",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test:avatar-creator",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm exec vitest run --project unit packages/scene3d/test packages/game-client/test/avatar-editor.test.ts --maxWorkers=1",
+          "exitCode": 0
+        },
+        {
+          "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/avatar-parts.test.ts",
+          "exitCode": 0
+        },
+        {
+          "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project security",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm lint",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm ci:check",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm test:client-boundaries",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm architecture:check",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm assets:check",
+          "exitCode": 0
+        },
+        {
+          "command": "pnpm image:check --target=web",
+          "exitCode": 0
+        },
+        {
+          "command": "node artifacts/vnext/n06-07/web-v2/update-local-initial-preview.mjs artifacts/image-web-9b7c1723/facts.json",
+          "exitCode": 0
+        },
+        {
+          "command": "node artifacts/vnext/n06-07/web-v2/local-creator-post-fix.mjs post-1",
+          "exitCode": 0
+        },
+        {
+          "command": "node artifacts/vnext/n06-07/web-v2/local-creator-post-fix.mjs post-2",
+          "exitCode": 0
+        },
+        {
+          "command": "node artifacts/vnext/n06-07/web-v2/local-creator-post-fix.mjs post-3",
+          "exitCode": 0
+        }
+      ],
+      "artifacts": [
+        {
+          "ref": "docs/plans/platform-vnext/audit/N06-07-WEB-ACCEPTANCE.json",
+          "sha256": "cd47e0d78d32bb9e61757abfb99a1ddbab856858bb44983fc8f7545bab697148"
+        },
+        {
+          "ref": "artifacts/vnext/n06-07/web-v2/raw-index.json",
+          "sha256": "8d8a867fe86b538e150d9f759c816407d063ee0d965a6a881aa469ea8611c179",
+          "files": 455,
+          "access": "private local artifacts;not off-host archive"
+        },
+        {
+          "ref": "docs/design/vnext/animals-3d/CREATOR-INSPECTION-REVIEW.md",
+          "sha256": "14ed3cc5fb1ba434f0cf0ee121dea27fc9f024b5264408f4d708c785e56b5cc7"
+        }
+      ],
+      "acceptance_met": true,
+      "acceptance_scope": "Revision2.4 modular creator web functionality/shared rendering and accessible inspection;not N06-09 final art/performance",
+      "acceptance": [
+        "All starter part categories/species/compatible rig variants;43scene/editor tests with LOD/pose/resource guards and real skinned inspection framing",
+        "Authoritative Save/revision/idempotency/entitlement/account/revoke/legacy projection/export/delete tested against real DB/API;9focused integration and267security",
+        "18browser scenarios verify Save→Deadline/Maid→travel/reconnect,lost ACK/conflict/identity switch,graphics failure,keyboard/text/viewport and first account-owned appearance",
+        "Actual production images pass6API+6web scenarios;retained TLS creator passes3functional probes with exact first parts and no preview persistence;synthetic accounts deleted",
+        "No new SQL/wire/catalog/model geometry;shared original3D composer/groom/lighting/animations preserved;camera/UI technical findings reviewed without granting final-art acceptance"
+      ],
+      "limitations": [
+        "Final groom/material/Low faceting/full-room readability and locked loading findings remain for N06-04/N06-09;not owner art/human usability approval",
+        "No full770integration rerun;focused9 plus267security cover unchanged backend source",
+        "No physical/native/store run;native remains owner-deferred",
+        "Current source has local verification;latest hosted baseline fails three browser groups. No threshold changes/skips or green CI claim",
+        "Performance readiness probes are uncontrolled functional samples,not locked p75 or comparison proof",
+        "Old indexed raw payloads not fully rehashed;critical47SQL/Mxx/old ledger/proposal inputs verified unchanged"
+      ],
+      "next_action": "Preserve this scoped N06-07 web acceptance;N06-04 is dependency-ready. Reproduce retained hosted RAF/Lounge failures without lowering budgets or skipping groups,then polish integrated Deadline/Maid camera/readability/interactions;keep Phase2 paused until fresh upstream handoff."
     }
   ],
   "note": "N00-01 baseline evidence reconciled into supplied revision 2.1. Runtime source unchanged; Android/iOS gates and all new task IDs preserved."

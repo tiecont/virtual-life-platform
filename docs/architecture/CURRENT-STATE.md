@@ -1,3 +1,13 @@
+# Web creator qualification and retained local images — 2026-11-09
+
+N06-07 web functionality at80107b5 is VERIFIED:part inspection/correct first appearance,18browser/43isolated unit/9avatar integration/267security,full build/types/guards and actual API/web image6+6checks PASS. [Acceptance](../plans/platform-vnext/audit/N06-07-WEB-ACCEPTANCE.json) and [visual review](../design/vnext/animals-3d/CREATOR-INSPECTION-REVIEW.md) retain initial5s live-probe failure,concurrent High unit timeouts and open groom/material/Low faceting/loading findings. Technical creator acceptance is not final art or N06-09.
+
+Local https://localhost:3443 now serves source80107b5 images;vc_data/secrets retained,private authenticated encrypted backup taken,no destructive SQL/restore.3actual TLS creator probes confirm exact initial parts/preview-only and own synthetic-account cleanup.65vNext records,44VERIFIED/2external/19TODO/12DEFERRED_APPROVED;previous64records/47SQL/Mxx/Phase2evidence unchanged. N06-04 ready;Phase2 staysPAUSED until fresh upstream handoff;native deferred.
+
+[Previous-source hosted CI failures](../plans/platform-vnext/audit/N03-04-HOSTED-2026-11-09.json):corePASS,but legacy/study RAF and Lounge observation fail at4de0252. No current-source hosted PASS or budget relaxation is claimed. Reproduce/profile those failures while progressing N06-04→N06-09;then resume N15-05 with a new source-bound handoff. No public/store/distribution/production operation.
+
+## Earlier checkpoints — historical
+
 # Web-first revision2.4 and local delivery — 2026-11-09
 
 Owner now prioritizes web/server/platform and defers native mobile. See [revision2.4](../plans/platform-vnext/REVISION-2.4-WEB-FIRST.md). vNext77tasks:43VERIFIED/2external/20TODO/12DEFERRED_APPROVED;64historical records unchanged. Phase2:4VERIFIED/20TODO/1DEFERRED_APPROVED. N06-07 web creator is dependency-ready;native physical gate moves to N10-06,not waived. Then N06-04/N06-09 web→N15-05. No gameplay/final-art acceptance follows from this replan.
