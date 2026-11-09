@@ -1,3 +1,11 @@
+# Docker local running; web-first plan ready — 2026-11-09
+
+Authorized branch push fcec648 succeeded. Retained local Compose https://localhost:3443 is certificate-verified ready:vc-db/vc-api/vc-web/vc-edge healthy,vc-migrate exited0;47SQL migrations;vc_data retained. Tested immutable sourcee56d881 images have no app/package/config/Dockerfile delta at current checkout. API/web/admin6checks each+Compose6PASS;97governance/lint/localCI/plan checks PASS. Hosted Quality started;not yet claimed PASS. See vNext state/local-delivery.json. No public/store/native distribution.
+
+**Next exact action:** N06-07 web-only creator qualification→N06-04→N06-09. Pause Phase2 before upstream state changes;refresh source-bound handoff before resuming N15-05. Native stays DEFERRED_APPROVED and never blocks this web chain. Keep vc-* running;stop only with pnpm docker:stop,retain database.
+
+## Earlier checkpoints — historical
+
 # Fresh web-first handoff pinned — 2026-11-09
 
 Upstream checkpoint `0b19b94e21ad0e0e89d6e1d16bccc9face3a1f3f` is pinned by Phase2 state/WEB-FIRST-HANDOFF.md;historical64+4evidence records preserved. Phase2 ACTIVE but no ready game task until real N06-09 web qualification. Only sole coordinator schedules work.

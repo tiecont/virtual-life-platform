@@ -8,7 +8,7 @@
   ],
   "at": "2026-11-09T01:16:26.654512+00:00",
   "imageSourceRevision": "e56d88167a2b9a2c6acdff3ea36894a19b3d28b5",
-  "composeSourceRevision": "3f58f92",
+  "composeSourceRevision": "3f58f9204102523497ae8b7457c9b366177c3dcd",
   "runtimeSourceDeltaSinceImages": [],
   "images": {
     "api": "sha256:2563de5a1f97f036e340d483375cd21c9408c3eaeda168e394ce7a0c4c98d1df",
@@ -81,8 +81,32 @@
     "files": 257,
     "access": "private local artifacts;not off-host retention"
   },
-  "retainedLocalStack": "PENDING_AFTER_PUSH",
-  "hostedCI": "NOT_RUN",
+  "retainedLocalStack": {
+    "status": "RUNNING_HEALTHY",
+    "origin": "https://localhost:3443",
+    "containerNames": [
+      "vc-db",
+      "vc-migrate",
+      "vc-api",
+      "vc-web",
+      "vc-edge"
+    ],
+    "migrateExitCode": 0,
+    "databaseVolume": "vc_data",
+    "readiness": {
+      "status": "ready",
+      "schemaVersion": 1
+    },
+    "artifact": {
+      "ref": "artifacts/docker-local-up-20261109-v1/result.json",
+      "sha256": "8e2be20eddc207e0169c2402488426249dc8ea7a1d5b14cac83c7d45de00fe45"
+    }
+  },
+  "hostedCI": {
+    "status": "STARTED_NOT_YET_PASSED",
+    "run": "https://github.com/tiecont/virtual-life-platform/actions/runs/42544708489",
+    "sourceRevision": "fcec6487984f9ea2456206dd408dabb66d782e68"
+  },
   "registryPublish": "NOT_RUN",
   "publicRelease": false,
   "nativeDevelopment": "DEFERRED_APPROVED",
@@ -91,5 +115,11 @@
     "Current final-art/loading/usability and external staging/public release gates remain",
     "Local images carry their exact tested source label;later commits onlyops/planning/evidence and no app/runtime/config/Dockerfile delta"
   ],
-  "nextExactAction": "Commit/push branch,prepare selected tested bundle and start retained vc-* Compose;then N06-07 web-only qualification under sole coordinator."
+  "nextExactAction": "Run N06-07 web-only creator qualification under sole coordinator: pause Phase2 before upstream state mutations; then N06-04/N06-09 web and fresh handoff to N15-05. Native remains owner-deferred.",
+  "push": {
+    "status": "SUCCESS",
+    "branch": "codex/lantern-lodge-foundation",
+    "sourceRevision": "fcec6487984f9ea2456206dd408dabb66d782e68",
+    "remote": "origin"
+  }
 }
