@@ -123,7 +123,18 @@ try {
   const currentWeb = (await compose(['ps', '-q', 'web'])).stdout.trim(); assert.equal((await run('docker', ['inspect', '--format', '{{.Image}}', currentWeb])).stdout.trim(), web);
   facts.scenarios.push({id: 'WEB-06', sameImageAfterRuntimeRestart: true, newApiOriginAndQueryUsed: true, newPublicSocketOriginRendered: true});
   assert(!signal.aborted); facts.result = 'PASS';
-} catch (error) {facts.result = 'FAIL'; facts.failedStage = stage; facts.error = error.message; process.exitCode = 1;}
+} catch (error) {
+  facts.result = 'FAIL'; facts.failedStage = stage; facts.error = error.message; process.exitCode = 1;
+  if (started) {
+    stage = 'failure-diagnostics';
+    // Capture the owned migrator before cleanup; never inspect its environment.
+    try {
+      await compose(['ps', '-a', '--format', 'json'], {allowFailure: true, ignoreCancellation: true, timeout: 10000});
+      await compose(['logs', '--no-color', '--tail', '40', 'migrate'], {allowFailure: true, ignoreCancellation: true, timeout: 10000});
+      facts.failureDiagnostics = {scope: 'Owned Compose state and bounded migrator log; private command journal', attempted: true};
+    } catch {facts.failureDiagnostics = {attempted: true, unavailable: true};}
+  }
+}
 finally {
   stage = 'cleanup'; for (const socket of sockets) socket.close(); await browser?.close().catch(() => {});
   let cleaned = true;
