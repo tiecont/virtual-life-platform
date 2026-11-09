@@ -88,8 +88,9 @@ loading, browser recovery and integrated art acceptance need their own evidence.
 
 ## Gameplay LOD Lease Measurement
 
-The 20-actor synthetic workload was re-run on the lease source (`071bcbb`) with
-the locked profile and budgets: artifact
+The synthetic 20-actor workload (`pnpm test:scene3d-workload`, distinct from
+the cafe workload in the adoption checkpoint) was re-run on the lease source
+(`071bcbb`) with the locked profile and budgets: artifact
 `artifacts/vnext/n06-11/workload-v1/browser-423f5375`. Geometry stayed at
 5,100,832/5,113,336/5,138,344 bytes for Low/Balanced/High against the 24 MiB
 resident limit; other/shadow textures peaked at 8,640,976 bytes against 16 MiB;
