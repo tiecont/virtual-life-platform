@@ -88,7 +88,7 @@ for(const slug of ['deadline','maid'])test(`${slug} camera follows the saved ani
  await expect(room).toHaveAttribute('data-camera-framing','self');expect(Number(await room.getAttribute('data-self-height-px'))).toBeGreaterThan(wholeHeight*1.5);
  expect((await(await context.request.get('/v1/me/room')).json()).snapshot).toMatchObject({epoch:snapshot.epoch,membershipId:snapshot.membershipId,roomVersion:snapshot.roomVersion,self:snapshot.self});
  for(const viewport of [{width:740,height:360},{width:360,height:740}]){
-  await page.setViewportSize(viewport);await expect.poll(async()=>{const raw=await room.getAttribute('data-self-screen');if(!raw)return Infinity;const point=JSON.parse(raw),box=(await room.boundingBox())!;return Math.abs(point.x-box.width/2)+Math.abs(point.y-box.height/2);}).toBeLessThan(2);
+  await page.setViewportSize(viewport);await expect.poll(()=>room.evaluate(canvas=>{const raw=canvas.dataset.selfScreen;if(!raw)return Infinity;const point=JSON.parse(raw),box=canvas.getBoundingClientRect();return Math.abs(point.x-box.width/2)+Math.abs(point.y-box.height/2);})).toBeLessThan(2);
   await expect(room).toHaveAttribute('data-camera-framing','self');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  }
  expect(cameraMutations).toBe(0);await page.setViewportSize(info.project.name==='mobile'?{width:844,height:390}:{width:1280,height:900});
@@ -104,10 +104,10 @@ for(const slug of ['deadline','maid'])test(`${slug} camera follows the saved ani
  await page.emulateMedia({reducedMotion:'no-preference'});await expect(room).toHaveAttribute('data-reduced-motion','false');
  await page.getByRole('button',{name:'Walk to central aisle',exact:true}).click();await closeActions(page);
  await expect(room).toHaveAttribute('data-self-position',slug==='deadline'?'12.00:8.00':'12.00:10.00',{timeout:15000});await expect(room).toHaveAttribute('data-camera-framing','self');
- await expect.poll(async()=>{const raw=await room.getAttribute('data-self-screen');if(!raw)return Infinity;const center=JSON.parse(raw),box=(await room.boundingBox())!;return Math.max(Math.abs(center.x-box.width/2),Math.abs(center.y-box.height/2));}).toBeLessThan(2);
+ await expect.poll(()=>room.evaluate(canvas=>{const raw=canvas.dataset.selfScreen;if(!raw)return Infinity;const center=JSON.parse(raw),box=canvas.getBoundingClientRect();return Math.max(Math.abs(center.x-box.width/2),Math.abs(center.y-box.height/2));})).toBeLessThan(2);
  await page.screenshot({path:output+'/follow-walked.png',fullPage:true});
  await cameraControls.getByRole('button',{name:'Whole room',exact:true}).click();await expect(room).toHaveAttribute('data-camera-framing','room');
  expect(await own(context)).toEqual(beforeOwn);expect((await(await context.request.get('/v1/me')).json()).profile).toEqual(me.profile);
- await page.getByRole('button',{name:'Leave cafe',exact:true}).click();await expect(room).toHaveAttribute('data-entity-count','0');await expect(cameraControls.getByRole('button',{name:'Follow my character',exact:true})).toBeDisabled();
+ await page.getByRole('button',{name:'Leave cafe',exact:true}).click();await expect(page.getByText('You left the cafe.',{exact:true})).toBeVisible();expect((await(await context.request.get('/v1/me/room')).json()).snapshot).toBeNull();await expect(room).toHaveAttribute('data-entity-count','0');await expect(cameraControls.getByRole('button',{name:'Follow my character',exact:true})).toBeDisabled();
  await writeFile(output+'/facts.json',JSON.stringify({world:slug,actualOwnSavedRabbit:true,cameraOnlyMutations:0,allJourneyMutations:cameraMutations,identityPreserved:true,membershipPreserved:snapshot.membershipId===seated.membershipId,seatingAndWalkingServerConfirmed:true,aspectResizeCentered:true,savedAppearanceUnchanged:true,ownCameraResetOnLeave:true,wholeRoomRetained:true,limitations:'Functional camera/readability slice;not final art or frame-budget qualification'},null,2));
 });

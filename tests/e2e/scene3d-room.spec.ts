@@ -33,6 +33,34 @@ test('context loss exposes graphics fallback while real seat and leave controls 
 
 test('real transport interruption hides stale actors and restores one current membership',async({page,context})=>{let client:WebSocketRoute|undefined,server:WebSocketRoute|undefined,connections=0,resume!:()=>void;const gate=new Promise<void>(ok=>resume=ok);await page.routeWebSocket('**/socket.io/**',async route=>{if(++connections>1)await gate;client=route;server=route.connectToServer();});try{await guest(context,'3D Recovery Visitor');await enter(page);const before=await current(context);await client!.close({code:1012,reason:'Synthetic3D transport interruption'});await server!.close();await expect(page.getByRole('status')).toHaveText('Connection lost. Your place is unconfirmed.');await expect(canvas(page)).toHaveAttribute('data-entity-count','0');await capture(page,'transport-lost');resume();await expect(page.getByRole('status')).toHaveText('Connected',{timeout:15000});await expect(canvas(page)).toHaveAttribute('data-entity-count','1');expect((await current(context)).membershipId).toBe(before.membershipId);await capture(page,'transport-resynced');}finally{resume();}});
 
+test('periodic refresh retains a disabled Leave command and never replaces it with Rejoin',async({page,context})=>{
+ let release:(()=>void)|undefined,joins=0,leaves=0;
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.routeWebSocket('**/socket.io/**',client=>{
+  const server=client.connectToServer();
+  client.onMessage(message=>{
+   if(typeof message==='string'){
+    if(message.includes('"room.join"'))joins++;
+    if(message.includes('"room.leave"'))leaves++;
+    if(message.includes('"room.snapshot"')&&!release){let sent=false;release=()=>{if(!sent){sent=true;server.send(message);}};return;}
+   }
+   server.send(message);
+  });
+  server.onMessage(message=>client.send(message));
+ });
+ try{
+  await guest(context,'3D Refresh Visitor');await enter(page);const before=await current(context);
+  await expect(page.getByRole('status')).toHaveText('Confirming your place...',{timeout:20000});
+  await expect(page.getByRole('button',{name:'Leave cafe',exact:true})).toBeDisabled();
+  await expect(page.getByRole('button',{name:'Rejoin cafe',exact:true})).toHaveCount(0);
+  expect((await current(context)).membershipId).toBe(before.membershipId);
+  release!();await expect(page.getByRole('status')).toHaveText('Connected');
+  await page.getByRole('button',{name:'Leave cafe',exact:true}).click();
+  await expect(page.getByText('You left the cafe.',{exact:true})).toBeVisible();
+  expect(await current(context)).toBeNull();expect(joins).toBe(1);expect(leaves).toBe(1);
+ }finally{release?.();}
+});
+
 test('logout clears3D actors and cache leases before a new account enters the same document',async({page,context})=>{
  const first=await guest(context,'3D Previous Account');await enter(page);await page.getByRole('button',{name:'Follow my character',exact:true}).click();await expect(canvas(page)).toHaveAttribute('data-camera-framing','self');expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':first.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);
  await page.evaluate(()=>{const bus=new BroadcastChannel('virtual-city-identity');bus.postMessage({changed:true});bus.close();});await expect(page.getByRole('link',{name:'Open identity',exact:true})).toBeVisible();await expect(canvas(page)).toHaveAttribute('data-entity-count','0');await expect(canvas(page)).toHaveAttribute('data-camera-framing','room');await expect(page.getByRole('button',{name:'Follow my character',exact:true})).toBeDisabled();await expect.poll(async()=>JSON.parse((await canvas(page).getAttribute('data-scene3d-diagnostics'))!).resources.references).toBe(0);
