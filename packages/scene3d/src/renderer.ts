@@ -2,7 +2,7 @@ import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {SceneManifestSchema,AvatarOutfitSchema,type SceneManifest,type RoomSnapshot} from '@virtual-city/contracts';
 import type {RoomSceneFactory,RoomSceneOptions,SceneQuality} from '@virtual-city/client-sdk';
-import {createAnimal,animalResourceSummary,animalCachedGeometries} from './animal';
+import {createAnimalVariants,animalResourceSummary,animalCachedGeometries} from './animal';
 import {createRoomArt,TILE_METERS} from './room';
 import {RoomProjection,selectRoomLods,type RoomActor} from './projection';
 import {sceneResourceInventory} from './resources';
@@ -24,14 +24,14 @@ export async function createRoomScene(host:HTMLElement,input:SceneManifest,onSea
   const controls=new OrbitControls(camera,canvas);cleanup.push(()=>controls.dispose());controls.target.copy(room.center);controls.enablePan=false;controls.enableDamping=false;controls.minPolarAngle=.4;controls.maxPolarAngle=1.2;controls.minAzimuthAngle=-Math.PI/3;controls.maxAzimuthAngle=Math.PI/3;controls.minZoom=.7;controls.maxZoom=3;controls.update();
   world.add(new T.HemisphereLight('#fff3db','#8c8b77',1.25));const sun=new T.DirectionalLight('#ffe1b2',2.1);sun.position.set(room.center.x-span*.4,span,room.center.z+span*.4);sun.target.position.copy(room.center);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);Object.assign(sun.shadow.camera,{left:-span*.7,right:span*.7,top:span*.7,bottom:-span*.7,near:.1,far:span*3});sun.shadow.normalBias=.025;sun.shadow.bias=-.0002;world.add(sun,sun.target);cleanup.push(()=>sun.shadow.dispose());
   sun.shadow.camera.updateProjectionMatrix();
-  type Avatar={model:ReturnType<typeof createAnimal>;lod:'low'|'balanced';appearance:string;opacityMaterials:T.Material[];last:{x:number;y:number};actor:RoomActor};
+  type Avatar={model:ReturnType<ReturnType<typeof createAnimalVariants>['create']>;variants:ReturnType<typeof createAnimalVariants>;lod:'low'|'balanced';appearance:string;opacityMaterials:T.Material[];last:{x:number;y:number};actor:RoomActor};
   const avatars=new Map<string,Avatar>();let created=0,removed=0,rebuilds=0,renderCount=0,nextLod=0,lastFrame:number|null=null,warmAfter=performance.now()+2000,nextDiagnostics=0;const intervals:number[]=[];
   const start=performance.now();let framing:'room'|'self'='room',cameraContext='';
   const roomBounds=new T.Box3(new T.Vector3(0,0,0),new T.Vector3(room.width,2.1,room.depth)),homeOffset=new T.Vector3(span*.18,span*.78-room.center.y,span*.88);
   function restoreRoomCamera(){framing='room';controls.target.copy(room.center);camera.position.copy(room.center).add(homeOffset);camera.zoom=1;camera.lookAt(controls.target);controls.update();}
   function followSelf(actors:RoomActor[]){if(framing!=='self')return;const self=actors.find(actor=>actor.self);if(!self)return;const bounds=selfCameraBounds(self),target=bounds.getCenter(new T.Vector3());translateCameraTarget(camera,controls.target,target);}
 
-  function release(avatar:Avatar){for(const material of avatar.opacityMaterials)material.dispose();avatar.model.dispose();}
+  function release(avatar:Avatar,keepVariants=false){for(const material of avatar.opacityMaterials)material.dispose();avatar.model.dispose();if(!keepVariants)avatar.variants.dispose();}
   function clearPeople(){for(const avatar of avatars.values()){release(avatar);removed++;}avatars.clear();}
   cleanup.push(clearPeople);
   const seatMarkers=createSeatMarkers(manifest.seats);world.add(seatMarkers.group);cleanup.push(()=>seatMarkers.dispose());
@@ -45,7 +45,7 @@ export async function createRoomScene(host:HTMLElement,input:SceneManifest,onSea
    const previous=new Map([...avatars].map(([id,avatar])=>[id,avatar.lod]));
    const lods=force||now>=nextLod?selectRoomLods(actors,{x:camera.position.x/TILE_METERS-.5,y:camera.position.z/TILE_METERS-.5},quality,previous):previous;if(force||now>=nextLod)nextLod=now+300;
    for(const actor of actors){let avatar=avatars.get(actor.id);const lod=lods.get(actor.id)??'low',appearance=JSON.stringify([actor.palette,actor.outfit,actor.opacity,actor.appearance]);
-    if(!avatar||avatar.lod!==lod||avatar.appearance!==appearance){const model=createAnimal(lod,actor.palette,actor.outfit,actor.appearance?.parts),opacityMaterials:T.Material[]=[];model.group.traverse(object=>{if(!(object instanceof T.Mesh))return;object.castShadow=object===model.body&&lod==='balanced'&&quality!=='low';if(actor.opacity<1){const originals=Array.isArray(object.material)?object.material:[object.material],clones=originals.map(material=>{const clone=material.clone();clone.transparent=true;clone.opacity=actor.opacity;clone.depthWrite=false;opacityMaterials.push(clone);return clone;});object.material=Array.isArray(object.material)?clones:clones[0];}});const prior=avatar;if(prior){release(prior);rebuilds++;}else created++;avatar={model,lod,appearance,opacityMaterials,last:prior?.last??{x:actor.x,y:actor.y},actor};avatars.set(actor.id,avatar);people.add(model.group);}
+    if(!avatar||avatar.lod!==lod||avatar.appearance!==appearance){const prior=avatar,keepVariants=prior?.appearance===appearance,variants=keepVariants?prior.variants:createAnimalVariants(actor.palette,actor.outfit,actor.appearance?.parts);let model:Avatar['model'];try{model=variants.create(lod);}catch(error){if(!keepVariants)variants.dispose();throw error;}const opacityMaterials:T.Material[]=[];model.group.traverse(object=>{if(!(object instanceof T.Mesh))return;object.castShadow=object===model.body&&lod==='balanced'&&quality!=='low';if(actor.opacity<1){const originals=Array.isArray(object.material)?object.material:[object.material],clones=originals.map(material=>{const clone=material.clone();clone.transparent=true;clone.opacity=actor.opacity;clone.depthWrite=false;opacityMaterials.push(clone);return clone;});object.material=Array.isArray(object.material)?clones:clones[0];}});if(prior){release(prior,keepVariants);rebuilds++;}else created++;avatar={model,variants,lod,appearance,opacityMaterials,last:prior?.last??{x:actor.x,y:actor.y},actor};avatars.set(actor.id,avatar);people.add(model.group);}
     const dx=actor.x-avatar.last.x,dz=actor.y-avatar.last.y;if(actor.pose==='sit')avatar.model.group.rotation.y=actor.facing;else if(Math.hypot(dx,dz)>.0001)avatar.model.group.rotation.y=Math.atan2(dx,dz);
     avatar.model.group.position.set((actor.x+.5)*TILE_METERS,actor.pose==='sit'?.025:0,(actor.y+.5)*TILE_METERS);avatar.model.update((now-start)/1000,actor.pose,reduced);avatar.last={x:actor.x,y:actor.y};avatar.actor=actor;
    }
