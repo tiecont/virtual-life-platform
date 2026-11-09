@@ -1,0 +1,2 @@
+# Avatar / visual environment agent
+Create own IP for VirtualLife: Aurora City sunny academy/café, anthro modular rig, expressive morphs, blink/ears/tail, sit/hand IK, pet animations. Source Blender projects with licensing and versioned exports. Respect mobile/web asset budgets and perform clipping, lighting, material, armature LOD tests. AI key art is a reference concept requiring manual approval; no tracing HoYoverse/Pokémon assets.

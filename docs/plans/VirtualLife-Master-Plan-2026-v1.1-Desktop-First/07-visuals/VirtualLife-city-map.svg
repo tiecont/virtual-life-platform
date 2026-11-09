@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" role="img" aria-labelledby="title subtitle">
+<title id="title">VirtualLife — bản đồ minh họa thành phố Aurora</title><desc id="subtitle">Bản đồ conceptual sáng sủa với tám địa danh, đường đi và bến dịch chuyển; không phải navigation collision map.</desc>
+<defs>
+<linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ECF7FF"/><stop offset="1" stop-color="#FFF4FB"/></linearGradient>
+<linearGradient id="water" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#B5EAFA"/><stop offset="1" stop-color="#8ECDE8"/></linearGradient>
+<linearGradient id="park" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#C9F3DB"/><stop offset="1" stop-color="#A5E6CD"/></linearGradient>
+<filter id="shadow"><feDropShadow dx="0" dy="5" stdDeviation="9" flood-color="#365B8C" flood-opacity=".15"/></filter>
+</defs>
+<rect width="1200" height="780" fill="url(#sky)"/>
+<path d="M0 140C230 57 373 190 580 99S1004 53 1200 153V0H0Z" fill="#D7F4F4" opacity=".5"/>
+<path d="M0 650C180 595 251 703 396 672S788 625 1200 691V780H0Z" fill="#E1F0FD"/>
+<path d="M0 515Q180 390 301 452T590 410T890 345T1200 259" stroke="url(#water)" stroke-width="75" fill="none" stroke-linecap="round"/>
+<path d="M0 515Q180 390 301 452T590 410T890 345T1200 259" stroke="#F6FFFE" stroke-width="3" opacity=".55" fill="none"/>
+<path d="M56 278L470 260 670 180 1100 204M95 600L290 522 685 545 1130 578M301 62L345 280 468 480 511 715M838 58L800 260 724 510 813 719" stroke="#fff" stroke-width="33" stroke-linejoin="round" fill="none"/>
+<path d="M56 278L470 260 670 180 1100 204M95 600L290 522 685 545 1130 578M301 62L345 280 468 480 511 715M838 58L800 260 724 510 813 719" stroke="#CADCE8" stroke-width="4" stroke-dasharray="7 17" stroke-linejoin="round" fill="none"/>
+<ellipse cx="300" cy="340" rx="250" ry="134" fill="url(#park)"/><ellipse cx="935" cy="533" rx="220" ry="138" fill="url(#park)"/>
+<ellipse cx="730" cy="157" rx="265" ry="126" fill="#D5E6FE"/><ellipse cx="180" cy="665" rx="160" ry="88" fill="#FBE2EF"/>
+<!-- ambient buildings -->
+<g stroke="#9FC8E4" stroke-width="3"><rect x="89" y="129" width="91" height="85" rx="11" fill="#FFFFFF"/><path d="M80 130L136 92 190 130Z" fill="#9EDDC8"/><rect x="397" y="78" width="91" height="68" rx="11" fill="#FCFCFF"/><path d="M392 79L443 42 497 79Z" fill="#BDCBF8"/>
+<rect x="913" y="85" width="116" height="70" rx="12" fill="#fff"/><path d="M899 86L972 32 1041 86Z" fill="#B2CFFF"/><rect x="1000" y="645" width="100" height="67" rx="11" fill="#fff"/><path d="M994 645L1052 603 1110 645Z" fill="#F9BCD2"/></g>
+<!-- tree groups -->
+<g fill="#8AD9B8" stroke="#5FCFA2" stroke-width="3"><circle cx="73" cy="367" r="24"/><circle cx="116" cy="386" r="18"/><circle cx="195" cy="369" r="20"/><circle cx="297" cy="416" r="22"/><circle cx="399" cy="340" r="18"/><circle cx="636" cy="256" r="23"/><circle cx="1035" cy="495" r="27"/><circle cx="1079" cy="532" r="21"/><circle cx="890" cy="637" r="25"/><circle cx="780" cy="608" r="17"/></g>
+<!-- place markers -->
+<g font-family="Arial, sans-serif" text-anchor="middle" filter="url(#shadow)">
+<g transform="translate(240 295)"><circle r="40" fill="#4B91FF" stroke="white" stroke-width="7"/><text y="11" font-size="31" font-weight="bold" fill="white">A</text><rect x="-89" y="49" rx="14" width="178" height="36" fill="white"/><text y="73" font-size="17" font-weight="bold" fill="#1E3153">Aurora Plaza</text></g>
+<g transform="translate(420 211)"><circle r="35" fill="#F6A2C1" stroke="white" stroke-width="7"/><text y="11" font-size="27" font-weight="bold" fill="white">C</text><rect x="-76" y="42" rx="12" width="152" height="35" fill="white"/><text y="64" font-size="16" font-weight="bold" fill="#1E3153">Café Lumi</text></g>
+<g transform="translate(681 316)"><circle r="35" fill="#8168E9" stroke="white" stroke-width="7"/><text y="9" font-size="28" fill="white">♠</text><rect x="-98" y="43" rx="12" width="196" height="36" fill="white"/><text y="65" font-size="16" font-weight="bold" fill="#1E3153">Starlit Card Lounge</text></g>
+<g transform="translate(922 445)"><circle r="42" fill="#59BBE1" stroke="white" stroke-width="7"/><text y="12" font-size="30" font-weight="bold" fill="white">P</text><rect x="-95" y="49" rx="12" width="190" height="38" fill="white"/><text y="73" font-size="17" font-weight="bold" fill="#1E3153">Pet District</text></g>
+<g transform="translate(1068 626)"><circle r="35" fill="#F6BD70" stroke="white" stroke-width="7"/><text y="11" font-size="27" font-weight="bold" fill="white">T</text><rect x="-76" y="43" rx="12" width="152" height="37" fill="white"/><text y="67" font-size="16" font-weight="bold" fill="#1E3153">Pet Arena</text></g>
+<g transform="translate(727 99)"><circle r="35" fill="#69D7BA" stroke="white" stroke-width="7"/><text y="11" font-size="27" font-weight="bold" fill="white">S</text><rect x="-93" y="42" rx="12" width="186" height="35" fill="white"/><text y="64" font-size="16" font-weight="bold" fill="#1E3153">Academy Walk</text></g>
+<g transform="translate(197 626)"><circle r="33" fill="#EBA3BF" stroke="white" stroke-width="6"/><text y="10" font-size="26" font-weight="bold" fill="white">M</text><rect x="-99" y="41" rx="12" width="198" height="37" fill="white"/><text y="65" font-size="16" font-weight="bold" fill="#1E3153">Bellflower Maid Café</text></g>
+<g transform="translate(1012 176)"><circle r="35" fill="#85A1D8" stroke="white" stroke-width="6"/><text y="11" font-size="27" font-weight="bold" fill="white">L</text><rect x="-82" y="43" rx="12" width="164" height="35" fill="white"/><text y="65" font-size="16" font-weight="bold" fill="#1E3153">Lantern Lodge</text></g>
+</g>
+<rect x="24" y="18" rx="20" width="324" height="58" fill="white" opacity=".9"/><text x="44" y="56" font-family="Arial, sans-serif" font-weight="bold" font-size="30" fill="#1E3153">VirtualLife · Aurora City</text>
+<rect x="28" y="733" rx="11" width="474" height="29" fill="white" opacity=".86"/><text x="43" y="753" font-family="Arial, sans-serif" font-size="14" fill="#50627C">CONCEPT MAP · not actual navmesh, dimensions or live POI status</text>
+</svg>

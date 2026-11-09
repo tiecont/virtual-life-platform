@@ -1,5 +1,9 @@
 # virtual-life-platform — MASTER AGENT ORCHESTRATOR PLAN
 
+> **Active owner direction 2026-11-10:** use [VirtualLife v1.1 Desktop First](docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/START-HERE.md), its [task graph](docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/06-execution/TASKS.json) and [live runtime](docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/README.md). Windows Unity/URP is the primary client; Rust owns new gameplay and Nest remains control plane and legacy authority. Agent 1 coordinates A0/A1/A2; Agent 2 owns Unity/frontend. Keep Pet Arena PvE before new Lodge gameplay. [Source reconciliation](docs/execution/desktop-first/README.md) preserves the old ledgers; no legacy status is promoted. No public, signing, production or license approval follows from adopting the plan.
+
+> **Historical text below:** Mxx/vNext scheduling paragraphs retain their original scope. Deleted `docs/plans/...` references resolve through [LEGACY-INDEX.json](docs/execution/desktop-first/LEGACY-INDEX.json); historical web gates do not block new Windows tasks unless an actual shared contract dependency requires them.
+
 > Current owner policy 2026-11-09: web/server/platform first, native mobile later. See the vNext revision 2.4 and its manifest/state. Physical Android/APK/AVD/Mac/iPhone gates do not block platform web features; responsive browser and supported-client compatibility gates remain. Preserve historical ledgers and evidence.
 
 > Product scheduling update 2026-11-09: see [web → Pet Arena PvE → Lodge roadmap](docs/plans/DEVELOPMENT-ROADMAP.md). Pet Arena uses its own PA ledger and repository-adapted execution overlay; importing its proposal does not activate implementation or replace the active vNext task.

@@ -1,0 +1,61 @@
+syntax = "proto3";
+package virtuallife.runtime.v1;
+// PROPOSAL ONLY; assign stable field numbers and review with existing contracts before production.
+
+message VersionStamp {
+  uint32 public_protocol = 1;
+  string ruleset_version = 2;
+  string content_catalog_hash = 3;
+  uint64 state_version = 4;
+  uint64 authority_epoch = 5;
+}
+message VerifiedActorContext {
+  string actor_id = 1;        // derived from trusted platform auth, never client
+  string account_id = 2;
+  string audience = 3;
+  uint64 policy_generation = 4; // authoritative version for freshness check
+  int64 expires_at_unix_ms = 5;
+  bytes signed_grant = 6;    // signed scoped identity assertion
+}
+message GameCommand {
+  string command_id = 1;
+  string game_session_id = 2;
+  string game_type = 3;
+  uint64 expected_state_version = 4;
+  bytes action_payload = 5;       // type-defined canonical payload; never client damage
+  bytes payload_fingerprint = 6;
+  VerifiedActorContext actor = 7;
+  VersionStamp version = 8;
+  string trace_id = 9;
+}
+message GameReceipt {
+  string command_id = 1;
+  string receipt_id = 2;
+  bool committed = 3;
+  string outcome = 4;
+  string error_code = 5;
+  uint64 committed_state_version = 6;
+  bytes authorized_projection = 7; // NEVER global/private hand for all viewers
+  string trace_id = 8;
+}
+message GetReceiptRequest {
+  string game_session_id = 1;
+  string command_id = 2;
+  VerifiedActorContext actor = 3;
+}
+message SnapshotRequest {
+  string game_session_id = 1;
+  VerifiedActorContext actor = 2;
+  uint64 last_seen_version = 3;
+}
+message AuthorizedSnapshot {
+  uint64 state_version = 1;
+  string ruleset_version = 2;
+  bytes authorized_projection = 3;
+  string error_code = 4;
+}
+service ActivityRuntime {
+  rpc ExecuteGameCommand(GameCommand) returns (GameReceipt);
+  rpc GetReceipt(GetReceiptRequest) returns (GameReceipt);
+  rpc GetAuthorizedSnapshot(SnapshotRequest) returns (AuthorizedSnapshot);
+}

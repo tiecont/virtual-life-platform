@@ -1,0 +1,781 @@
+{
+  "schemaVersion": "1.0",
+  "createdAt": "2026-11-09",
+  "planStatus": "PLANNING_ONLY",
+  "releaseStatus": "NOT_REQUESTED",
+  "sourceHeadAudited": false,
+  "legacyLedgersUntouched": true,
+  "tasks": {
+    "VL-001": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-002": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-003": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-004": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-005": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-006": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-007": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-008": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-009": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-010": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-011": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-012": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-013": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-014": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-015": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-016": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-017": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-018": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-019": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-020": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-021": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-022": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-023": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-024": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-025": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-026": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-027": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-028": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-029": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-030": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-031": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-032": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-033": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-034": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-035": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-036": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-037": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-038": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-039": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-040": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-041": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-042": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-043": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-044": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-045": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-046": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-047": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-048": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-049": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-050": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-051": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-052": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-053": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-054": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-055": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-056": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-057": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-058": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-059": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-060": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-061": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-062": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-063": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-064": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-065": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-066": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-067": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-068": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-069": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-070": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-071": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-072": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-073": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-074": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-075": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-076": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-077": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-078": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-079": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-080": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-081": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-082": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-083": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-084": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-085": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-086": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-087": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-088": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-089": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-090": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-091": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-092": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-093": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-094": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-095": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-096": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-097": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-098": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-099": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-100": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-101": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-102": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-103": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-104": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-105": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-106": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-107": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-108": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-109": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    },
+    "VL-110": {
+      "status": "TODO",
+      "owner": null,
+      "branch": null,
+      "evidenceRefs": [],
+      "blocker": null
+    }
+  },
+  "revision": "1.1-desktop-first"
+}

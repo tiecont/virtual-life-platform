@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
+import {legacyVnextRoot, legacyLodgeRoot} from './legacy-plan-paths.mjs';
 
 export const nativeTask = task => ['N10', 'N11', 'N14'].includes(task.module) || ['N12-03', 'N19-04'].includes(task.id);
 export function webDependencyFailures(upstream, phase) {
@@ -22,7 +23,7 @@ export function webDependencyFailures(upstream, phase) {
 }
 export async function verifyWebFirstPlan() {
   const json = async ref => JSON.parse(await readFile(ref, 'utf8'));
-  const root = 'docs/plans/platform-vnext/', phaseRoot = 'docs/plans/LANTERN-LODGE-PHASE-2/';
+  const root = legacyVnextRoot + '/', phaseRoot = legacyLodgeRoot + '/';
   const [manifest, state, phase, phaseState] = await Promise.all([json(root + 'PLAN-MANIFEST.json'), json(root + 'state/task-state.json'), json(phaseRoot + 'PLAN-MANIFEST.json'), json(phaseRoot + 'state/task-state.json')]);
   assert.equal(manifest.execution_policy.priority, 'WEB_SERVER_FIRST');
   assert.equal(phase.execution_policy.priority, 'WEB_SERVER_FIRST');

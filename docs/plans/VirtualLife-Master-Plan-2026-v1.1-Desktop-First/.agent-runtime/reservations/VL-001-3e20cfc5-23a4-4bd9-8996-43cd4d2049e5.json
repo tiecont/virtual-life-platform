@@ -1,0 +1,30 @@
+{
+  "id": "VL-001-3e20cfc5-23a4-4bd9-8996-43cd4d2049e5",
+  "ref": "reservations/VL-001-3e20cfc5-23a4-4bd9-8996-43cd4d2049e5.json",
+  "taskId": "VL-001",
+  "owner": "agent1",
+  "paths": [
+    "scripts/desktop-scheduler.mjs",
+    "scripts/legacy-plan-paths.mjs",
+    "scripts/verify-web-first-plan.mjs",
+    "scripts/verify-game-plan.mjs",
+    "scripts/mobile-readiness.mjs",
+    "tests/governance/desktop-scheduler.test.mjs",
+    "docs/execution/desktop-first",
+    "docs/legacy-plans/2026-11-10",
+    "AGENTS.md",
+    "MASTER-AGENT-PLAN.md",
+    "README.md",
+    "docs/README.md",
+    "docs/agent/PROGRESS.md",
+    "docs/agent/HANDOFF.md",
+    "docs/agent/BLOCKERS.md",
+    "docs/agent/DECISIONS.md",
+    "docs/architecture/CURRENT-STATE.md",
+    "docs/architecture/SCENE3D-GEOMETRY-AND-SURFACE-CACHE.md"
+  ],
+  "branch": "codex/desktop-first-backend",
+  "worktree": "/home/tiecont/Projects/virtual-city",
+  "sourceRevision": "071bcbbdc63ea28ba43dc7e11b68869793019da0",
+  "createdAt": "2026-11-09T17:24:25.921Z"
+}

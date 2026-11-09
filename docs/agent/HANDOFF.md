@@ -1,3 +1,30 @@
+# Desktop First Handoff - 2026-11-10
+
+Use [live coordination](../plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/README.md)
+and [the source audit](../execution/desktop-first/README.md). VL-001 audit/scheduler
+is ready for independent Agent 2 review; no dependent task may start before approval.
+Source baseline071bcbb; concurrent documentation commits8e2dbbb/bffe7e9 retained.
+Agent 1 owns A0/A1/A2/live state; Agent 2 owns Unity/frontend and review files.
+106 governance,11 backend units,23 actual PG integration cases,lint/CI contract
+pass. New checks and hashes are in docs/execution/desktop-first/VL-001-CHECKS.json.
+
+209 legacy files were relocated byte-for-byte,not reset. 75 vNext records and
+legacy statuses remain unchanged. N06-04 final in-flight addendum has80GC samples
+with all four final-growth comparisons PASS,but required default frame limits
+FAIL. It remains IN_PROGRESS optional web compatibility,outside Windows critical
+path. Rust owns new namespaces only after verified contracts;Nest retains legacy
+authority. Pet Arena PvE precedes new Lodge gameplay. No Unity/frontend edits,
+production migration,public/registry/store action or paid resource operation.
+
+**Next exact action:** Read `.agent-runtime/handoffs/VL-001.json` when published;
+Agent 2 writes its independent review for the handoff SHA. Only the coordinator
+verifies it and reserves VL-002/003. Tool thread listings returned an all-zero ID
+for every session,so routing a direct Agent 2 message is unresolved;the file
+handoff is canonical. Do not manufacture reviewer approval or poll indefinitely.
+The baseline `next_task.py` intentionally ignores live execution.
+
+## Earlier Checkpoints - Historical
+
 # Geometry/surface checkpoint - N06-04 remains IN_PROGRESS - 2026-11-09
 
 Source `3e14fc2` replaces decimal geometry keys with collision-checked numeric buckets; `19874e0` shares three immutable surface textures across animal variants. Actual full build/types/lint pass, 64 scene/Pixi units pass, 10 final focused cases pass, all 18 desktop/mobile room scenarios pass, and 120 authored model streams match exactly. The unchanged High-dog 20 s case passes. Character texture inventory falls from 5,679,760 to 283,988 bytes without changing triangles or draws.

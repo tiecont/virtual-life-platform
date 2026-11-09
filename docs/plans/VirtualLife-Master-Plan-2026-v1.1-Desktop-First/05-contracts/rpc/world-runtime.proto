@@ -1,0 +1,52 @@
+syntax = "proto3";
+package virtuallife.world.v1;
+// Internal RPC proposal. Web/mobile gameplay realtime WSS envelope remains a separately versioned contract.
+
+message AuthContext {
+  string account_id = 1;
+  string session_id = 2;
+  uint64 policy_generation = 3;
+  int64 expires_at_unix_ms = 4;
+  bytes signed_grant = 5;
+}
+message SpawnPoint { string destination_id = 1; float x = 2; float y = 3; float z = 4; float yaw = 5; }
+message TeleportRequest {
+  string command_id = 1;
+  string expected_source_instance = 2;
+  uint64 expected_source_epoch = 3;
+  string destination_id = 4; // allowlisted catalog ID, no arbitrary coords
+  AuthContext actor = 5;
+}
+message TeleportResult {
+  string command_id = 1;
+  string status = 2; // RESERVED, COMMITTED, CANCELLED, DENIED
+  string hold_id = 3;
+  string target_instance_id = 4;
+  int64 hold_expires_at_unix_ms = 5;
+  uint64 committed_epoch = 6;
+  SpawnPoint spawn = 7;
+  string error_code = 8;
+}
+message TeleportConfirm {
+  string command_id = 1;
+  string hold_id = 2;
+  AuthContext actor = 3;
+}
+message SeatRequest {
+  string command_id = 1;
+  string instance_id = 2;
+  string seat_guid = 3;
+  uint64 expected_instance_epoch = 4;
+  AuthContext actor = 5;
+}
+message SeatResult {
+  bool accepted = 1;
+  string seat_lease_id = 2;
+  uint64 state_version = 3;
+  string error_code = 4;
+}
+service WorldRuntime {
+  rpc ReserveTeleport(TeleportRequest) returns (TeleportResult);
+  rpc ConfirmTeleport(TeleportConfirm) returns (TeleportResult);
+  rpc ReserveSeat(SeatRequest) returns (SeatResult);
+}

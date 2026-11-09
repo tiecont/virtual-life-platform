@@ -1,0 +1,3 @@
+# A7/A2/A5 — Windows release engineer and signing owner
+
+Secure signing keys off normal PR/agent CI. Code-sign Windows installer, sign release/patch manifests, check SHA256/content and Unity Addressables catalog compatibility, run install/update/disk-full/rollback on clean machine. Next website shows only reviewed release metadata, no dummy/stale links. Decide whether Tauri separate launcher is justified; Tauri signs only its own updater artifacts, external Unity game payload needs independent signing and atomic patch verification. Canary + rollback before public. Require explicit legal and owner approval.

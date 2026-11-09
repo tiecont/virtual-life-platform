@@ -1,3 +1,23 @@
+# Desktop First Adoption And Coordination - 2026-11-10
+
+Owner explicitly selected the new master and assigned Agent 1 Rust/backend
+architecture plus sole live-state coordination. Agent 2 owns Unity/Desktop/
+frontend. Keep the supplied105-file planning baseline unchanged and execute via
+`.agent-runtime/`;six negative/concurrency/review scheduler tests enforce task
+dependencies,path conflicts and exact-source independent review. Adoption is
+product direction,not approval of licensing,signing,public release or production
+data changes. Formal architecture signoff remains VL-002 after VL-001 review.
+
+Move all209 deleted old plan files into a byte-identical read-only snapshot with
+an explicit original-path/hash index. Do not mutate75vNext records or legacy
+Nxx/PA/Lodge statuses. Store the final N06-04 result as a separate addendum. Keep
+Nest as the only legacy writer;new Rust world/game namespaces start disabled
+and require their own protocol,receipt/replay/security tests. Do not use browser
+AMD/SwiftShader evidence as Windows Unity certification. Pet Arena PvE remains
+ahead of new Lodge gameplay. Optional web3D is outside Windows critical path.
+
+## Earlier Decisions - Historical
+
 # Geometry equality and surface texture leases - 2026-11-09
 
 Use full quantized row equality after numeric hashing,including morphs;retain Three remapping/fallback semantics and exact authored outputs. Surface recipes are immutable across tier/species/style,so one refcounted surface set belongs to live geometry-cache entries;actor materials/skeletons/poses retain their existing independence. Dispose textures on the final entry and recreate identical bytes afterward. See `docs/architecture/SCENE3D-GEOMETRY-AND-SURFACE-CACHE.md` and N06-04-GEOMETRY-SURFACE-CHECKPOINT.json.

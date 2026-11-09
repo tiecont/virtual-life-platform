@@ -1,0 +1,26 @@
+# Live Coordination
+
+The owner assigned Agent 1 as coordinator and Rust/backend architect on
+2026-11-10. The surrounding package remains an immutable planning baseline.
+
+- `live-state.json`: runtime status for all 110 VL tasks; Agent 1 is sole writer.
+- `reservations/`: coordinator-issued task, branch/worktree and path ownership.
+- `handoffs/`: exact source SHA, actual checks and acceptance limitations.
+- `reviews/`: independent Agent 2 review of the exact handoff hash and source.
+- `blockers/`: missing inputs and decisions; never implicit approvals.
+
+Run `node scripts/desktop-scheduler.mjs status agent1` from the repository root.
+Agent 2 can use `status agent2`. The exported coordinator API serializes mutations
+using an exclusive directory lock; abandoned locks require inspection. Dependency,
+lane, external-gate and overlapping-path checks fail closed. Reviews cannot be
+authored by the task owner. No successor is READY while its prerequisite remains
+IN_REVIEW. Review files are requests/results, not permission for public deployment.
+
+Do not edit `../06-execution/STATE.json` or `../FILE-MANIFEST.json`. Do not run the
+baseline `next_task.py` as the live scheduler; it intentionally shows baseline TODO.
+Only Agent 1 changes live state. Agent 2 may audit read-only and place review files
+here before requesting a source reservation. No Unity, frontend or visual files
+are reserved by Agent 1 during VL-001.
+
+See `docs/execution/desktop-first/README.md` for legacy evidence mapping and the
+N06-04 handoff. Existing mobile deferrals do not constitute Windows qualification.

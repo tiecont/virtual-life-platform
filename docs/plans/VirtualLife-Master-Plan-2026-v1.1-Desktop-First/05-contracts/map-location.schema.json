@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://virtuallife.example/schemas/map-location.v1.json",
+  "title": "VirtualLife place catalogue v1 (design schema)",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "places"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string"
+    },
+    "places": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "districtId",
+          "type",
+          "isTeleportTarget",
+          "sceneId"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "districtId": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "plaza",
+              "cafe",
+              "game-lounge",
+              "arena",
+              "academy",
+              "event",
+              "portal",
+              "lodging"
+            ]
+          },
+          "sceneId": {
+            "type": "string"
+          },
+          "isTeleportTarget": {
+            "type": "boolean"
+          },
+          "requiresUnlock": {
+            "type": "boolean"
+          },
+          "entryPolicyId": {
+            "type": "string"
+          },
+          "previewAssetHash": {
+            "type": "string"
+          },
+          "capacityPolicyId": {
+            "type": "string"
+          },
+          "mapX": {
+            "type": "number"
+          },
+          "mapY": {
+            "type": "number"
+          },
+          "visible": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

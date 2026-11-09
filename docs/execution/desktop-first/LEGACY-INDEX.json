@@ -1,0 +1,1262 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "071bcbbdc63ea28ba43dc7e11b68869793019da0",
+  "archiveRoot": "docs/legacy-plans/2026-11-10",
+  "policy": "READ_ONLY_HISTORICAL_NOT_ACTIVE_SCHEDULER",
+  "files": [
+    {
+      "originalRef": "docs/plans/DEVELOPMENT-ROADMAP.md",
+      "ref": "docs/legacy-plans/2026-11-10/DEVELOPMENT-ROADMAP.md",
+      "sha256": "32f14f1c3c316f15faa9f1a64f9e0ddf2d694563fa5a6924be600d394888c4a8",
+      "bytes": 4985
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/AGENT-ENTRYPOINT.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/AGENT-ENTRYPOINT.md",
+      "sha256": "472ac519ffd612d3ef998835753a415d4cdf6f02704bb9c36b33fe4360b17695",
+      "bytes": 1372
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/DECISION-REGISTER.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/DECISION-REGISTER.md",
+      "sha256": "dc72bdbafe2fdb1201ca8c52e6abe7048e33413a4844e3924eac8fd661ae7234",
+      "bytes": 2115
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/EXECUTION-BOARD.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/EXECUTION-BOARD.md",
+      "sha256": "65e94231a5ae732c846343c35cf03be2e219f20bc74486ce2114cf32d94c83ce",
+      "bytes": 3768
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/HANDOFF-FROM-PHASE-1.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/HANDOFF-FROM-PHASE-1.md",
+      "sha256": "e2aee1987c68c01dc1b117e68b8073abbd8795abd098103d5891c30d9233e45b",
+      "bytes": 2427
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/INTEGRATION-GUIDE.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/INTEGRATION-GUIDE.md",
+      "sha256": "cb6e90ee4f4c669ab5b616f0f044704feea5fdb8767e9c4e13051d8d6bbd6616",
+      "bytes": 3376
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/PHASE-2-MASTER-AGENT-PLAN.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/PHASE-2-MASTER-AGENT-PLAN.md",
+      "sha256": "48ed495b533089f80178ce9ebfb0de08331bca1ebd02535c9da1d75afd81b67a",
+      "bytes": 6171
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/PLAN-MANIFEST.json",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/PLAN-MANIFEST.json",
+      "sha256": "514359d9579b951912b0960dff9e514faa1d2752361965314c17a0373633a98e",
+      "bytes": 47187
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/QUALITY-GATES.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/QUALITY-GATES.md",
+      "sha256": "4f118c7ebadde9d5b937ed4f7ae0e33c0fdf92fb6252f649fe3e64c4ede3e2b3",
+      "bytes": 4245
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/SOURCE-PROVENANCE.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/SOURCE-PROVENANCE.md",
+      "sha256": "48d54b57aac9faf7c4822c2b5d9f4c9dd148d5552c2fc1d8c25d4d42c894c848",
+      "bytes": 1207
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/START-HERE.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/START-HERE.md",
+      "sha256": "4e54fd6d97809778922a1a651558bfae06400316a8288b8998dc67690d8658c0",
+      "bytes": 3518
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/architecture/06-LANTERN-LODGE-GAME-ARCHITECTURE.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/architecture/06-LANTERN-LODGE-GAME-ARCHITECTURE.md",
+      "sha256": "d3c41d4d26050464bb460df77475753a42ffc1392742544cb7d0b83f4aff74a0",
+      "bytes": 13223
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/audit/N15-01-ACCEPTANCE.json",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/audit/N15-01-ACCEPTANCE.json",
+      "sha256": "71f2b1a6d4c24555798cd64afaeb6e04b969e3e8ee3a69f09f54278052df36ca",
+      "bytes": 4421
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/audit/N15-01-SCOPE-REVIEW.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/audit/N15-01-SCOPE-REVIEW.md",
+      "sha256": "481fb97735e207bb086ca301d7c793bf9e9769170f1e6aac502607d05e6d831f",
+      "bytes": 3431
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/audit/N15-02-CORE-ACCEPTANCE.json",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/audit/N15-02-CORE-ACCEPTANCE.json",
+      "sha256": "896cadc52f5d8d119dc239015e8fd6197361ba5e7e804bbcebe0afadfa940e89",
+      "bytes": 14122
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/audit/N15-03-LOBBY-ACCEPTANCE.json",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/audit/N15-03-LOBBY-ACCEPTANCE.json",
+      "sha256": "23190f76a2d0bd27d25cf5d023366cc62bd28410913a3e9af3fa39d0f064bcff",
+      "bytes": 16408
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/audit/N15-03-LOBBY-REVIEW.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/audit/N15-03-LOBBY-REVIEW.md",
+      "sha256": "73c2daa12893ecc83f756ef62d2278dc7abcb5b473564bbe11b28fe766607152",
+      "bytes": 4412
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/audit/N15-04-JOURNAL-ACCEPTANCE.json",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/audit/N15-04-JOURNAL-ACCEPTANCE.json",
+      "sha256": "30b163b3193e01f04c174ce04ece8a58edcb197488f0479c6c7101ece9ddf8f7",
+      "bytes": 23416
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/audit/N15-04-JOURNAL-REVIEW.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/audit/N15-04-JOURNAL-REVIEW.md",
+      "sha256": "d694af183a2996a1fa5c5c61793d00c93d5b1140d9a8eed2572cfec6f4b1d613",
+      "bytes": 6605
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/audit/PACK-VALIDATION.json",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/audit/PACK-VALIDATION.json",
+      "sha256": "b166f57066a75b034eb6f547fe7d6235450ef6ed0211d9072b8f3859f0e96a3b",
+      "bytes": 3659
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/contracts/EVIDENCE.schema.json",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/contracts/EVIDENCE.schema.json",
+      "sha256": "fe4025cbb3e91418f3766a881fabd4e8bd10c11cdcbd57c1e930755153a1d866",
+      "bytes": 2336
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/contracts/GAME-SESSION-v1.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/contracts/GAME-SESSION-v1.md",
+      "sha256": "8e3a497a23379cc0d4645cc24bdeafeed183b9223cc4c76f23e1b298a1e1b0e7",
+      "bytes": 3269
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/games/01-SAC-DEN.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/games/01-SAC-DEN.md",
+      "sha256": "d113f3039a35033d1470a5f8fec22cc609ae9e355191ed2cfc6b0872de41fbd9",
+      "bytes": 5458
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/games/02-MAT-NA.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/games/02-MAT-NA.md",
+      "sha256": "93724ecf383608bf260f8b05737213d0f0e0baea97177e58ed0ee32f6ccf7cfd",
+      "bytes": 5168
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/games/03-HAI-DO-SUONG-MU.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/games/03-HAI-DO-SUONG-MU.md",
+      "sha256": "f6bc5d6fe9667a3b50ecf756bc38bff1e349921b4b3663860f97287aee6ce670",
+      "bytes": 6165
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/games/04-MATCH-PROTOCOL.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/games/04-MATCH-PROTOCOL.md",
+      "sha256": "9f7b6c02c803e8279ab20c4aff6084568fd59b02fad82b8d49cd666b3f3a9691",
+      "bytes": 6025
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/games/05-GAME-UX-WIREFRAMES.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/games/05-GAME-UX-WIREFRAMES.md",
+      "sha256": "a7aa91774e420b0ce4af696724db27977363a37fcf11ba268e35d2dc0dd4af03",
+      "bytes": 5946
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/games/06-CROSS-GAME-QA.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/games/06-CROSS-GAME-QA.md",
+      "sha256": "e28678dfed3f9166d154e8597cc2ac5b7c980c1aae2509e130d5d5e090a22cf2",
+      "bytes": 4525
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/games/07-IP-CONTENT-DECISIONS.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/games/07-IP-CONTENT-DECISIONS.md",
+      "sha256": "880c0511edd2ab30462d60b105e89e6d75e67b69e7c4af529fdbb9fbee4befe4",
+      "bytes": 2708
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/games/08-ANIMAL-LANDSCAPE-ART.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/games/08-ANIMAL-LANDSCAPE-ART.md",
+      "sha256": "c4fc658c8dc890e55a8b04ed9031c986bca6a32058946cd76b8800248208814f",
+      "bytes": 3706
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/games/09-3D-ART-ADDENDUM.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/games/09-3D-ART-ADDENDUM.md",
+      "sha256": "7def1aa24da76f0c92d3a98ee954109af4ea9c67d8dbcfd14fb13a17e211cdbf",
+      "bytes": 1610
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/games/10-WEB-FIRST-EXECUTION.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/games/10-WEB-FIRST-EXECUTION.md",
+      "sha256": "9a7c68330b0a26e359f07b403428bb16b3371c2d5adc7701443602b7d00dda68",
+      "bytes": 2090
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/games/PROPOSAL-v1.json",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/games/PROPOSAL-v1.json",
+      "sha256": "3c5f361ce89beff78e5ab18838c47a15afc37cdf39eeb8cec3a13fab56f46c17",
+      "bytes": 8225
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/games/v1/LANTERN-COLORS.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/games/v1/LANTERN-COLORS.md",
+      "sha256": "b56cd94938222d7b1a158ee084aadbc01b6daf8cd587cdc77d4a80bdc5d7f5ac",
+      "bytes": 6613
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/games/v1/MASK-AND-TELL.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/games/v1/MASK-AND-TELL.md",
+      "sha256": "8116ee1802a0512cee0db04bb970b41a94d013769acb7e86ae6051f013ddae6b",
+      "bytes": 6525
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/games/v1/MISTBOUND-ROUTES.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/games/v1/MISTBOUND-ROUTES.md",
+      "sha256": "45d1c4b0533329403598263c09302938cf651f6712c45eaff262f44ea8c12062",
+      "bytes": 7553
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/plans/N15-lantern-lodge-foundation.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/plans/N15-lantern-lodge-foundation.md",
+      "sha256": "113c4a9d0ab365416568605fdd9833ebf9dff1dda07b0cce63b18ed95840266b",
+      "bytes": 8218
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/plans/N16-lantern-colors.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/plans/N16-lantern-colors.md",
+      "sha256": "7d21bdb23533b8072babcbf1800ce0aaaccff852eff04f573ff98819aa9a48da",
+      "bytes": 7206
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/plans/N17-mask-and-tell.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/plans/N17-mask-and-tell.md",
+      "sha256": "1644637820f5dfa575f35bba3f50d427a860490867c11e1167604074167da1a6",
+      "bytes": 7157
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/plans/N18-mistbound-routes.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/plans/N18-mistbound-routes.md",
+      "sha256": "3bf3afb2a4f01313d2ad4dea61a4339cdc167fb7d9476872d5d591bd30db57b3",
+      "bytes": 7549
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/plans/N19-mini-game-acceptance.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/plans/N19-mini-game-acceptance.md",
+      "sha256": "c95b81ea475083df464d278cee651624edcd6240d6d3ec47a961cf4843267a8e",
+      "bytes": 7272
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/state/HANDOFF.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/state/HANDOFF.md",
+      "sha256": "2b685119025ff511fed71ba64fe2dcd8ce2a829fec1094b2d8c00494cc36c1df",
+      "bytes": 12354
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/state/PHASE1-HANDOFF.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/state/PHASE1-HANDOFF.md",
+      "sha256": "f24d41c3234093d5a66c611d0cae7149e193e29fe9f551f730204cc81c1e8ebb",
+      "bytes": 5415
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/state/PROGRESS.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/state/PROGRESS.md",
+      "sha256": "8f524ec63130582d285746aea8fcacad84f2903c3a7d47c72dcbdfd310c6be73",
+      "bytes": 1532
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/state/WEB-FIRST-HANDOFF.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/state/WEB-FIRST-HANDOFF.md",
+      "sha256": "f51d64b762878c9c30bb9ca0567c7ff986b25b65e530fd38dcb3ce9d0d0f0bf7",
+      "bytes": 2388
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/state/evidence-index.json",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/state/evidence-index.json",
+      "sha256": "ef3a27be80e012f7d8c8e6241037400b064e86073e14fd88730de78890b8be25",
+      "bytes": 71912
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/state/phase-gate.json",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/state/phase-gate.json",
+      "sha256": "32b8976e64b8d93d1eead721114cf8041d70e085ccaf4f4b7d26c5e3eb534fe1",
+      "bytes": 758
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/state/task-state.json",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/state/task-state.json",
+      "sha256": "c3ccc681b4c7c391a1b74d91680105143dbdf06324d807bbbf71cb92bdc14207",
+      "bytes": 8079
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/tools/README.md",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/tools/README.md",
+      "sha256": "238ea3558781c736af0437e46d9d6c0d8ee2ce99383a22ea03aebad82cd00c1d",
+      "bytes": 1093
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/tools/check-upstream.mjs",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/tools/check-upstream.mjs",
+      "sha256": "7dcc4fd07f63f3eb00ee5540dd2194631a14e48b448f86d0ea06e240762bd5ea",
+      "bytes": 4123
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/tools/next-task.mjs",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/tools/next-task.mjs",
+      "sha256": "dcea650fb5843f0c39811228c73b896372a43125dc6228d3e4888004f68f3b62",
+      "bytes": 1729
+    },
+    {
+      "originalRef": "docs/plans/LANTERN-LODGE-PHASE-2/tools/validate-plan.mjs",
+      "ref": "docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/tools/validate-plan.mjs",
+      "sha256": "d88b629f8bbc1a0c9ac465f4c4647c5cf79dc65b66b6b2fc363ed01913795e5f",
+      "bytes": 7863
+    },
+    {
+      "originalRef": "docs/plans/ROADMAP-STATE.json",
+      "ref": "docs/legacy-plans/2026-11-10/ROADMAP-STATE.json",
+      "sha256": "a631b3db0125f223a0c0cbb7bf9704aa5158340869263de3e58080bbe03414bc",
+      "bytes": 711
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/AGENTS-ADDENDUM.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/AGENTS-ADDENDUM.md",
+      "sha256": "0e6ac13e986e398dcc95f47660e9fe56f0c6dc4cf31f7d1be55deffe512efedc",
+      "bytes": 1977
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/EXECUTION-BOARD.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/EXECUTION-BOARD.md",
+      "sha256": "f28f3710deddece92377442dffe93167426601e0210e8eb4a2c3b4458bb9bf94",
+      "bytes": 12583
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/LEGACY-PLAN-MAPPING.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/LEGACY-PLAN-MAPPING.md",
+      "sha256": "61ce5bba7fbe6d942fac17f2eeee905490354f9e9404db19ae3eefa5257c9d70",
+      "bytes": 7596
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/MASTER-AGENT-PLAN.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/MASTER-AGENT-PLAN.md",
+      "sha256": "06c5ea1931e678b2a73e6d497697ab690be3a2a18f461f08eaec99bbd0a6269d",
+      "bytes": 15396
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/PLAN-MANIFEST.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/PLAN-MANIFEST.json",
+      "sha256": "381bddc545d7b5e6d64b2fca41761121a28c9e85a8234c69a9eb672e566d2955",
+      "bytes": 108245
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/QUALITY-GATES.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/QUALITY-GATES.md",
+      "sha256": "ef67dd565b6cf426f1d4a9648193b77aa355e8aa390f8d6dd104cc66426db042",
+      "bytes": 16731
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/README.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/README.md",
+      "sha256": "94887d8174550f20efa43497c2c8ae4166a5429bea54e76347a73936399c1d9a",
+      "bytes": 6131
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/REVISION-2.1.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/REVISION-2.1.md",
+      "sha256": "c2c6eb0875aa77a4c2ae8d038bd7bbe624d91a17a358c78ff43d89f3ddd196cf",
+      "bytes": 1989
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/REVISION-2.4-WEB-FIRST.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/REVISION-2.4-WEB-FIRST.md",
+      "sha256": "2c0af69e2c5d7e81c469dd9045f7d3b00090740966f1b48edb866f3fe4242dce",
+      "bytes": 4331
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/SOURCES.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/SOURCES.md",
+      "sha256": "6105ad348ef4ee3f8243c563f0e9f8102d105c9b5b24b9b93684852870166171",
+      "bytes": 15920
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/adr/DECISION-REGISTER.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/adr/DECISION-REGISTER.md",
+      "sha256": "9fb642ec5ef94ee18fa6672a5f0cfaafe3b36d924016b6c97929860ad04d584c",
+      "bytes": 4899
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/architecture/00-PLATFORM-ARCHITECTURE.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/architecture/00-PLATFORM-ARCHITECTURE.md",
+      "sha256": "6a9f857493e02bb2548d19b264ef5118b63014637ee925d6fa1f8031768a582e",
+      "bytes": 15913
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/architecture/01-REPOSITORY-BOUNDARIES.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/architecture/01-REPOSITORY-BOUNDARIES.md",
+      "sha256": "80d691dd38fe96e7b8c1611147a1ea7e0f46342d269c4be8a58361a407195334",
+      "bytes": 7948
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/architecture/02-CI-CD-ARGOCD.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/architecture/02-CI-CD-ARGOCD.md",
+      "sha256": "4bd42bf1062dc7f49c4ad6c8dc42e22db643951cc3535ad0ff59206774b18282",
+      "bytes": 23638
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/architecture/03-RUNTIME-ADMIN-CAPACITY.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/architecture/03-RUNTIME-ADMIN-CAPACITY.md",
+      "sha256": "65207537ee287042815be0e0184f29eee4169acbd186cb8f7323bf2e18497bd9",
+      "bytes": 25590
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/architecture/04-UX-MOBILE.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/architecture/04-UX-MOBILE.md",
+      "sha256": "77ad15b92d22a367a310a74fb1d4ac2c50dc62eaf58d56679c4718e71eed95a8",
+      "bytes": 21223
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/architecture/05-CACHYOS-ANDROID-FIRST.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/architecture/05-CACHYOS-ANDROID-FIRST.md",
+      "sha256": "fa1d015d1d30decb01f4870c2fd67f9b7f6d08bcfedb8ce56c90df09eb2bbfe4",
+      "bytes": 12275
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/architecture/06-LANDSCAPE-ANIMAL-VISUAL-DIRECTION.md",
+      "sha256": "e610102059fe360102cc0ed4492717899de86a7cb2f6e9e0bb0c203e6c903ce5",
+      "bytes": 11566
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/architecture/07-3D-FUR-AND-EMULATOR.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/architecture/07-3D-FUR-AND-EMULATOR.md",
+      "sha256": "bd98489babe6bd77dbcc43a2e47119561877c893dc84b1d763ac244aba3b1589",
+      "bytes": 8933
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/architecture/ENVIRONMENT-MATRIX.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/architecture/ENVIRONMENT-MATRIX.md",
+      "sha256": "8149c5415ea6feff27fc286007efa25bfac195a14e4fd1e437d338333b6d9bc5",
+      "bytes": 4594
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/ANIMAL-LANDSCAPE-PLAN-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/ANIMAL-LANDSCAPE-PLAN-CHECKS.json",
+      "sha256": "f305c751722cbd9fafedf3febe879f4f120c7052321c3f73b66d32e24b49c009",
+      "bytes": 13879
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N00-01-BASELINE.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N00-01-BASELINE.md",
+      "sha256": "e205fa113af7ecaed11a6658db285ffe88e8fdc4a0b0528c7f9fa4dc75edf552",
+      "bytes": 10138
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N00-01-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N00-01-CHECKS.json",
+      "sha256": "26edd203c5ec98f556cadb3a9bc888e194d2425af680ae650092c0fbe3516e97",
+      "bytes": 29837
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N00-02-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N00-02-CHECKS.json",
+      "sha256": "88185807a3593700d126e98c2fa1d5703db49184a2586eacacc4dbd88aa1b9c5",
+      "bytes": 5540
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N00-03-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N00-03-CHECKS.json",
+      "sha256": "a8445b4b4a385d03b54eb32617e4f33f10696aa56441831702650be906da3cab",
+      "bytes": 3822
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N00-04-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N00-04-CHECKS.json",
+      "sha256": "975f2668a907a1f7ff42ff4a6638e0e3fceec192a165d873775e40c42a6f2b7f",
+      "bytes": 3737
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N01-01-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N01-01-CHECKS.json",
+      "sha256": "9dcacd41295858d641bd73e6305525eafb9e3ffa603fe6192200c03570ea1272",
+      "bytes": 16392
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N01-02-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N01-02-CHECKS.json",
+      "sha256": "265f6ab013bf3ad5a3d4bb04fb9d2c53dfa39ca17f52c843d56d806660ba8179",
+      "bytes": 15857
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N01-03-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N01-03-CHECKS.json",
+      "sha256": "236a484d908e9ef1bda30110ee72fe729ea234d1a5036a883949c74655b30bb8",
+      "bytes": 33144
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N01-04-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N01-04-CHECKS.json",
+      "sha256": "0d9363006e6a44d4c5898bda75be37519dd7c7e4ddef6bb95702ff60cecb784c",
+      "bytes": 9425
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N01-05-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N01-05-CHECKS.json",
+      "sha256": "10cde0d69b1f750e9e1b1e2b38b70900f191e6b4275f02965880a434832076a6",
+      "bytes": 16853
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N02-01-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N02-01-CHECKS.json",
+      "sha256": "70e94cc1023be5d90804a4fb3b3d5410f693ac1319a17bfc700e7e801ac1eaa0",
+      "bytes": 11269
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N02-02-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N02-02-CHECKS.json",
+      "sha256": "5ec85daa3c39eff7efec2618772128711f911fbe7bf22efe62190ce1309de42e",
+      "bytes": 10241
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N02-03-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N02-03-CHECKS.json",
+      "sha256": "9aecb1a7c2485a200841947080b2908b69b5d6d1c3c4271d8e0d105f54531087",
+      "bytes": 28352
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N02-04-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N02-04-CHECKS.json",
+      "sha256": "56a803d8f04d3367869916c89d0905e8af9c8054747e4beaf80003f0aa3386b6",
+      "bytes": 20147
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N03-01-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N03-01-CHECKS.json",
+      "sha256": "887f2dfe0369a7e7e756baf8264fd8bc3cc1fae7640e824c41af7585e5056b57",
+      "bytes": 17928
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N03-02-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N03-02-CHECKS.json",
+      "sha256": "2c89e5a2c14fa9e80f1dfbb832e80d24871b63641a045dde4fe26315d0a98b79",
+      "bytes": 30177
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N03-03-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N03-03-CHECKS.json",
+      "sha256": "b0e1fbd46be9429f786f7f0438eb31894698bbd516f1693e1cab2a46fbf2474b",
+      "bytes": 22293
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N03-04-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N03-04-CHECKS.json",
+      "sha256": "bd77a5868d77311356d08c138ae56e88ec21d8878061e8d9d14f822dc7d84683",
+      "bytes": 39393
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N03-04-CORE-TIMEOUT-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N03-04-CORE-TIMEOUT-CHECKPOINT.json",
+      "sha256": "dd190d07c0c0be894b1fc8a3ddb01d028446f415c1327974f6474655bc64f429",
+      "bytes": 4053
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N03-04-FRESH-CHECKOUT-ACCEPTANCE.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N03-04-FRESH-CHECKOUT-ACCEPTANCE.json",
+      "sha256": "1abeda841e946e054ab3ee75f66cf4b1336f04b953dfc97280d9093b5df7698d",
+      "bytes": 7348
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N03-04-HOSTED-2026-11-09.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N03-04-HOSTED-2026-11-09.json",
+      "sha256": "98334674524c133e99595f713bb79029483fb0ffaafe0fb700c5af57300ec492",
+      "bytes": 2521
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N03-04-REPORT-OUTPUT-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N03-04-REPORT-OUTPUT-CHECKPOINT.json",
+      "sha256": "723b035d13e3c6405a968597d5388785535ba22364455c006db8cfd617006de3",
+      "bytes": 2908
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N03-05-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N03-05-CHECKS.json",
+      "sha256": "f65b4378dafd32638a5bbc1dae174ce0c5125d110e828f5f95f7329d25c009a0",
+      "bytes": 38256
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N04-01-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N04-01-CHECKS.json",
+      "sha256": "c9208fb3d9cf5f3330188d384763dc1606162e484b18f6af5809ea2cf8f6c300",
+      "bytes": 34234
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N04-02-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N04-02-CHECKS.json",
+      "sha256": "60183d4f6d10ec258a8dd206f86c119375be0b326edece1b68b3415019056e11",
+      "bytes": 30769
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N05-01-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N05-01-CHECKS.json",
+      "sha256": "c1fa79dcba37fca9ca78b866238a2dea29564f15332352fe19ea6ab4e8a63f41",
+      "bytes": 18821
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N05-02-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N05-02-CHECKS.json",
+      "sha256": "474388540da2e83749022b58a84a5e6d7d276350e272cfd4c9c9575c0b04f5a9",
+      "bytes": 29102
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N05-03-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N05-03-CHECKS.json",
+      "sha256": "b33d9987515abccd5709325933444bc8704fd7ac2a29a9201a13edde9210d62f",
+      "bytes": 17640
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N05-04-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N05-04-CHECKS.json",
+      "sha256": "4fb9de1f322cabdc40ef68be6fa4df3e5a91d1759fc5891ab161932a395f32de",
+      "bytes": 24198
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N05-05-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N05-05-CHECKS.json",
+      "sha256": "6fcb017efece6d5c9bc7deb603454ee36a6cbfe5236fc8ae7d8c688b07b0da61",
+      "bytes": 35023
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N05-06-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N05-06-CHECKS.json",
+      "sha256": "b5bfdffc415fbf7702c1d813b3d43f3f050965fff4d4dfb340e68f53d331779b",
+      "bytes": 58703
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-01-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-01-CHECKS.json",
+      "sha256": "495ba362067cfb82ae93b5ee7502664c0c5f05a2736304d05a1cd668f9cf3cb9",
+      "bytes": 2863
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-02-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-02-CHECKS.json",
+      "sha256": "299849ebca47fea552e12ee2ccb7835fde6351bca2e6dea67c40208b8feb79b0",
+      "bytes": 14907
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-03-SHELL-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-03-SHELL-CHECKS.json",
+      "sha256": "6cc7faeed03ab43f351aef60f7da1c9b80a71ca23c10c4ba75ebc37aae15cabb",
+      "bytes": 15754
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-04-CAMERA-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-04-CAMERA-CHECKPOINT.json",
+      "sha256": "6189ba59f55a774274df86b7e50767bb9387d44f60c7241b174e411e3f5c4570",
+      "bytes": 40364
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-04-GEOMETRY-SURFACE-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-04-GEOMETRY-SURFACE-CHECKPOINT.json",
+      "sha256": "3f2eb615b7bd3601ed5cc225aeebb32c27bc1b29e46232a1dbd0f8137b2f9918",
+      "bytes": 75716
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-04-RAF-PROFILE-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-04-RAF-PROFILE-CHECKPOINT.json",
+      "sha256": "cbab06b8c6f47c402c919b14b96128d89c2d9d04f6047b71ac90b56243bfbaf5",
+      "bytes": 11384
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-04-ROOM-ART-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-04-ROOM-ART-CHECKPOINT.json",
+      "sha256": "126967f2be065377e002850ec2f5fb6d1bade049506e5dc3e60f44f5eef2b258",
+      "bytes": 30265
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-04-SEAT-BATCH-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-04-SEAT-BATCH-CHECKPOINT.json",
+      "sha256": "354f75366d57e3e7e852305447d16c47678cbacb024618e67891e7718d4b4abd",
+      "bytes": 45464
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-04-WEB-STABILITY-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-04-WEB-STABILITY-CHECKPOINT.json",
+      "sha256": "a938660bc7272d8a94f0ebbafdaef8a1995e4868c6f3bd364dec5800f0d425a3",
+      "bytes": 4192
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-06-DESIGN-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-06-DESIGN-CHECKS.json",
+      "sha256": "b84393ab74cabb5bf6605a76caad37cebeafff01d28352eee8a1eea7893b158b",
+      "bytes": 17865
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-07-CREATOR-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-07-CREATOR-CHECKPOINT.json",
+      "sha256": "049a316dcb4afc5d8d3bc3b47ca6592f04484f3e1ffd1153228b2b20cb7a3c96",
+      "bytes": 31612
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-07-NATIVE-WORLD-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-07-NATIVE-WORLD-CHECKPOINT.json",
+      "sha256": "290af0601c8e2289563bf3e66cd5f03e2fb0a81f0d989218a43cdba3e343ca85",
+      "bytes": 39145
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-07-WEB-ACCEPTANCE.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-07-WEB-ACCEPTANCE.json",
+      "sha256": "cd47e0d78d32bb9e61757abfb99a1ddbab856858bb44983fc8f7545bab697148",
+      "bytes": 8344
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-08-LANDSCAPE-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-08-LANDSCAPE-CHECKS.json",
+      "sha256": "c7828e0df157ddaa37417d56141382a9e4df615feebe00dac1b2276a08bfcf9b",
+      "bytes": 20422
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-10-3D-DESIGN-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-10-3D-DESIGN-CHECKS.json",
+      "sha256": "f50b5bea1673dfbde4ef7a6397bb4c5d1267e5dd0285138f8bbc6999ac122656",
+      "bytes": 6870
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-11-CACHE-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-11-CACHE-CHECKPOINT.json",
+      "sha256": "86b6ccbb1a88f04bc4359594d180c7cb40867a4df59aaa1cf01edb5c7cbf5df7",
+      "bytes": 50266
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-11-LOADING-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-11-LOADING-CHECKPOINT.json",
+      "sha256": "e930b0e804195a7888e1ab86dfe2ed5b899b31ceabc312503aa4cbe13cc01c9b",
+      "bytes": 9854
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-11-ROOM-ADAPTER-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-11-ROOM-ADAPTER-CHECKPOINT.json",
+      "sha256": "18c722bb44eb321398b7090dfca2c2453707ea99dee34292ec27fe4d78ae4739",
+      "bytes": 40952
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-11-SERVE-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-11-SERVE-CHECKPOINT.json",
+      "sha256": "e7e78aa2aeb709506ceb8db31289063d463b1d024c88eb82e7e335acd2e5700b",
+      "bytes": 7751
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-11-SPIKE-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-11-SPIKE-CHECKPOINT.json",
+      "sha256": "8c231738c7602132fd2e3c2eed47ecce49aed814c5179db183e8b6f59d527a5e",
+      "bytes": 37443
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-11-STUDIO-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-11-STUDIO-CHECKPOINT.json",
+      "sha256": "48765dff0030bfaf49610da873d8d1e5ec7e2eb0f9edaf455f77da627a5cf879",
+      "bytes": 56797
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N06-11-WORKLOAD-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N06-11-WORKLOAD-CHECKPOINT.json",
+      "sha256": "50a944d92b025027ff46c249e5b13122dca056562494541a7a7909c0ed0d0be2",
+      "bytes": 76795
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N07-01-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N07-01-CHECKS.json",
+      "sha256": "4b9c34f9b7303227044f0826ed12cf20ff20a6efe1a934a61962a2c73b542fc7",
+      "bytes": 49001
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N07-02-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N07-02-CHECKS.json",
+      "sha256": "51c60b3761e89df0b41a7c9953b435eea7b7cd2b07785999e331935ba19b4c13",
+      "bytes": 69794
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N07-03-ACCOUNTS-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N07-03-ACCOUNTS-CHECKS.json",
+      "sha256": "b3277374257579bffdcbfa866161dd86a994d974abadbbe2c5cd4fa96c6b9f3d",
+      "bytes": 40348
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N07-03-CALENDAR-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N07-03-CALENDAR-CHECKS.json",
+      "sha256": "30f7db2a44b4b3e10236330ab3b3b9068577d3d79e0264a067eb806e45fcc802",
+      "bytes": 32905
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N07-03-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N07-03-CHECKS.json",
+      "sha256": "20577dcd6472d5a07ae715dfb90c94ea8e5669f9b0572c0844776940f0095dec",
+      "bytes": 24327
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N07-03-PRIVACY-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N07-03-PRIVACY-CHECKS.json",
+      "sha256": "f5d822d2552ccd1bcfce8e4b1df6ad2ce3ea8a4e6774bfb8fc361448a4c5a1d8",
+      "bytes": 43844
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N07-03-RUNTIME-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N07-03-RUNTIME-CHECKS.json",
+      "sha256": "7d3158e6c512f4e4dce088eecf5578568df80806aee8f4f89c3c213277743b57",
+      "bytes": 29939
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N07-04-OBSERVATION-UI-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N07-04-OBSERVATION-UI-CHECKS.json",
+      "sha256": "928ffa885202529c92eb8f92e6f63cd5e6186b37a18407221acd1114ee46f5bf",
+      "bytes": 26582
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N07-04-SOURCES-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N07-04-SOURCES-CHECKS.json",
+      "sha256": "10fc0f50559837db9e56ab47d84d91cef2e41c0da0d36a39386bf7aa317e9448",
+      "bytes": 31453
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N08-01-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N08-01-CHECKS.json",
+      "sha256": "2b874aaf2a745d6d5a2dfe14d6968722854b6ddedc2ab1c949a8611a19001776",
+      "bytes": 26462
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N09-01-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N09-01-CHECKS.json",
+      "sha256": "27bd6877b87ad6f60a3ef1403bcc071ace03dca9fed44b65814c9cb81d70926e",
+      "bytes": 29125
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N09-02-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N09-02-CHECKS.json",
+      "sha256": "f81c63487180bf2deab2c6f76030bd9b4377a3d985be5ac9331d7283e96566d6",
+      "bytes": 37131
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N09-03-QUEUE-UX-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N09-03-QUEUE-UX-CHECKS.json",
+      "sha256": "770878ecc3725a4e9d923e2021f0742e9d1c8d2db86c1fbfd5538f3dc70d09e5",
+      "bytes": 17292
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N10-01-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N10-01-CHECKS.json",
+      "sha256": "846d781f7a7049ff4574f33fff9ff773a0b09acc8e3a6588ce2e4e6bfc839f78",
+      "bytes": 7253
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N10-01-IOS-PREPARATION.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N10-01-IOS-PREPARATION.json",
+      "sha256": "c82203cae0c4a3e55b90d150ff3ba62f5dc7191e2d299e3260251ace912d1d0f",
+      "bytes": 9455
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N10-02-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N10-02-CHECKS.json",
+      "sha256": "31c8e5d6a80f97af19b08efde0985ff8ab8bb0f960062dfe3e5fb5c3c22f3acf",
+      "bytes": 77469
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N10-02-NATIVE-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N10-02-NATIVE-CHECKS.json",
+      "sha256": "ca9dcd44a4468c2492c15e5d02eca0fcf0287c2a6601aa35f48c93169b862812",
+      "bytes": 121252
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N10-02-USB-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N10-02-USB-CHECKS.json",
+      "sha256": "ef9417982bc64482441abef22d0ebce9e8864b620913caa9cc646be363cb62c0",
+      "bytes": 4011
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N10-03-NATIVE-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N10-03-NATIVE-CHECKS.json",
+      "sha256": "6fc532a88ff7d0000952918f4ee63c9c73be491d1b76717bcfdd9a4a5645f9f2",
+      "bytes": 5087
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N10-05-EMULATOR-CHECKS.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N10-05-EMULATOR-CHECKS.json",
+      "sha256": "4cf8576986cbc55a581ceff569b6c1259eb59aebe3accc6608780a5ec3eddfbc",
+      "bytes": 10119
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N11-03-DELETION-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N11-03-DELETION-CHECKPOINT.json",
+      "sha256": "6a784fbeca9eab04b484dbd993727b7ce790d542758d591e74cdefa419b0e8b7",
+      "bytes": 5058
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/N11-03-SAFETY-CHECKPOINT.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/N11-03-SAFETY-CHECKPOINT.json",
+      "sha256": "ce0a12930942a42722eefc68a48869a92398d1d184e2d12ab325834fb0847e21",
+      "bytes": 5486
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/PACK-VALIDATION.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/PACK-VALIDATION.json",
+      "sha256": "6772fc520225462c09e82a6c9fdd7bb39974f8edd09f4414e2fcade78a62b2b3",
+      "bytes": 2181
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/PET-ARENA-PLAN-REVIEW.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/PET-ARENA-PLAN-REVIEW.json",
+      "sha256": "857d2adb54998310ea4b996a71f7d98ee74ad9e1afdbdd0cb2ac9018f4f34f22",
+      "bytes": 6620
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/REPOSITORY-REVIEW.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/REPOSITORY-REVIEW.md",
+      "sha256": "b7ffcdd3a72e21e2d1fc870c41caa906a6108d23e4e27a75a2b05a99ab70c96e",
+      "bytes": 18727
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/REVIEW-PROVENANCE.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/REVIEW-PROVENANCE.json",
+      "sha256": "9dc28008b4aebd61436104213bde5a58d502ed0eb3de023fafbd3340a749334e",
+      "bytes": 2862
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/audit/WEB-FIRST-REPLAN.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/audit/WEB-FIRST-REPLAN.json",
+      "sha256": "a63f64793e70475502c090fec4fcce71c3999c693babcff8858e5650311eedf1",
+      "bytes": 2867
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/contracts/CONTRACT-REGISTRY.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/contracts/CONTRACT-REGISTRY.md",
+      "sha256": "1228009c56f9019b8d8105315a1b22015ae481b3ae0196633d3a76d94871dce1",
+      "bytes": 8678
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/contracts/EVIDENCE.schema.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/contracts/EVIDENCE.schema.json",
+      "sha256": "fe4025cbb3e91418f3766a881fabd4e8bd10c11cdcbd57c1e930755153a1d866",
+      "bytes": 2336
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/plans/N00-baseline.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/plans/N00-baseline.md",
+      "sha256": "c2964ddbb73ebc31f40a152ade4d72aaefe027185960f59c5018498c15cd0ec1",
+      "bytes": 5707
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/plans/N01-repository.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/plans/N01-repository.md",
+      "sha256": "6f7cecdfc2e172ddc7dcfd873cb4ef09d37be3fb9c33d85fb7e830fba514ec94",
+      "bytes": 6593
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/plans/N02-boundaries.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/plans/N02-boundaries.md",
+      "sha256": "84de1362e2fdc569f1c8b0d73746f2e2072604ff1b43cac8a495cbc5e0caaefa",
+      "bytes": 5658
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/plans/N03-build-ci.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/plans/N03-build-ci.md",
+      "sha256": "aff3ca64950d4c598602b811fc53dd35bd0fd2105e463f885e0a0f00eff06868",
+      "bytes": 7604
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/plans/N04-argocd.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/plans/N04-argocd.md",
+      "sha256": "1f89494bfe4d1bd81f11ae6ef705a95e30b62dd0d759a636c8c1faf952913dd6",
+      "bytes": 5861
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/plans/N05-authority.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/plans/N05-authority.md",
+      "sha256": "379c2d6ccce3d2765653fd809dfe94942d327a8bdb5c104191ba101398594eb4",
+      "bytes": 8558
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/plans/N06-ux.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/plans/N06-ux.md",
+      "sha256": "1d5da0f06d618f271fd5311dec313b400d14efc726b53e111f1fb506e023c876",
+      "bytes": 23498
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/plans/N07-admin.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/plans/N07-admin.md",
+      "sha256": "e6bb27fa84c3dfd501a1a2b36db24a9c40564ed661e16954c041128d328e94e4",
+      "bytes": 6943
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/plans/N08-capacity.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/plans/N08-capacity.md",
+      "sha256": "e7ba0876684c4e45815930d0f4355bf3c8854be9ac307b74523a0360ecb6293c",
+      "bytes": 7127
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/plans/N09-admission.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/plans/N09-admission.md",
+      "sha256": "c0eebe56feffeed040a1a9b2bb1aebe62617ae67bb0e3b201ae02d3e193b297e",
+      "bytes": 6791
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/plans/N10-mobile-spike.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/plans/N10-mobile-spike.md",
+      "sha256": "083f508d954318a8e6616862068917e20fc4ce5e3ed64c105e55dbada5bc369c",
+      "bytes": 10414
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/plans/N11-mobile-release.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/plans/N11-mobile-release.md",
+      "sha256": "dce1ea1532eff28c4d70046cf9b2f3f70e234cb414f4201d314f88c6314b51d4",
+      "bytes": 8152
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/plans/N12-release-regression.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/plans/N12-release-regression.md",
+      "sha256": "6aa7a3449b5f07827c139d09d035116700660d02c92c0e5982febfa96f5c45ad",
+      "bytes": 8986
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/plans/N13-scaling.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/plans/N13-scaling.md",
+      "sha256": "01ee2edc3e3d16fff5eaabdc3d7ba04ae431521289a2558c007de060446ad45b",
+      "bytes": 4349
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/plans/N14-ios-release.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/plans/N14-ios-release.md",
+      "sha256": "41e08460ee1e983506a3d4b421878086d18cd61612c81825f2dcc0f022626ba3",
+      "bytes": 9193
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/state/BLOCKERS.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/state/BLOCKERS.md",
+      "sha256": "be6382045916a1dec178f845836fe95e2bc5bfb069a15ec282c2121cdcf150c1",
+      "bytes": 25546
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/state/HANDOFF.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/state/HANDOFF.md",
+      "sha256": "82d59a71aa2aea531beae8b45f8252f7e083b8b43c0e9ab373e96d46d5837481",
+      "bytes": 95202
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/state/PROGRESS.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/state/PROGRESS.md",
+      "sha256": "df3ff37b479221ccb587ab1d894b438737fddb6cd8cb14c76e7471b4d52cbf25",
+      "bytes": 118861
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/state/evidence-index.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/state/evidence-index.json",
+      "sha256": "863bce03bc1e944b4a98da9c867a4c63fa53dcdc0583050846f0161d9446701d",
+      "bytes": 1909185
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/state/local-delivery.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/state/local-delivery.json",
+      "sha256": "8088eff858c99dfb3a821552cf13466299e095eaccbe3a34bf67bcb72aa384d2",
+      "bytes": 19242
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/state/roadmap-context.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/state/roadmap-context.json",
+      "sha256": "43b6bf5b0df90beba65952cc19b18ec4d161e1bec8969130a37b0fadc0cd8334",
+      "bytes": 557
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/state/task-state.json",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/state/task-state.json",
+      "sha256": "25742b77a6e7af664bcc71bb489c9090c50854a86b07c8a942d02949580a48fa",
+      "bytes": 49400
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/tools/README.md",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/tools/README.md",
+      "sha256": "83d4a868388749e6e663b1147adeae5b1de8267400632cb150991e6eb492e4e0",
+      "bytes": 1614
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/tools/next-task.mjs",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/tools/next-task.mjs",
+      "sha256": "ffbad28299574dc340c02e6b4436efeeb738b2cc57744648d608f88123400abd",
+      "bytes": 1288
+    },
+    {
+      "originalRef": "docs/plans/platform-vnext/tools/validate-plan.mjs",
+      "ref": "docs/legacy-plans/2026-11-10/platform-vnext/tools/validate-plan.mjs",
+      "sha256": "b13c6628a76b1882da07a19f3d52b2fa6ddb767a87a2345a576709deaf0b5558",
+      "bytes": 8799
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/00_product/vision_prd.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/00_product/vision_prd.md",
+      "sha256": "d50688fe68606b7526ec12f2d3f69a281e0ab0b28c2169be3ec8ca096f094b13",
+      "bytes": 3329
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/01_game_design/combat_v1.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/01_game_design/combat_v1.md",
+      "sha256": "fd39e698ea3c8ae2a8d1c8ba963e6b42772cfd2b5dc23ed47bbb0c444db42a62",
+      "bytes": 5852
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/01_game_design/modes_social_economy.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/01_game_design/modes_social_economy.md",
+      "sha256": "a0eda8572ae1675148d000fe90e02aa0b2101e2a017f9206f3dcdfd7374cef48",
+      "bytes": 2692
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/01_game_design/pets_and_progression.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/01_game_design/pets_and_progression.md",
+      "sha256": "ae837f0649b0f55cc5c2dfbc3c8a9e8934b811a8dbf18dc4f14099944e9c0190",
+      "bytes": 3215
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/02_architecture/api_events.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/02_architecture/api_events.md",
+      "sha256": "b67aa9188a4c9cdf1ec14f5ba9c11855f1ef2d95483a04b7204980a4292c8ab3",
+      "bytes": 3273
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/02_architecture/module_and_integrations.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/02_architecture/module_and_integrations.md",
+      "sha256": "475bfaf556bf038df44551c09bf9181096ac07f19786cf540b4afb2e1de1d2e2",
+      "bytes": 4512
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/03_delivery/acceptance_test_matrix.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/03_delivery/acceptance_test_matrix.md",
+      "sha256": "4e79d4eca908776a317098a85bf501cadb93a32a37fcd44a1070d541def3f6f6",
+      "bytes": 3746
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/03_delivery/agent_prompts.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/03_delivery/agent_prompts.md",
+      "sha256": "29bd42aa6c579f7c84f247a32c9921fe021900b1331536605e0fa2973a5372bf",
+      "bytes": 3698
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/03_delivery/agent_workstreams.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/03_delivery/agent_workstreams.md",
+      "sha256": "5d4d0565ffb4dc6a00d787e8990e1106446e28e92369192e91cb5ad7842f5aff",
+      "bytes": 4118
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/03_delivery/decision_log.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/03_delivery/decision_log.md",
+      "sha256": "9dd8b4250f80e935e91ce500297d20d2d99f0b63df85aaf36e6ea3447644ecf1",
+      "bytes": 1970
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/03_delivery/roadmap_and_gates.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/03_delivery/roadmap_and_gates.md",
+      "sha256": "4a5d840f4cd9559f957d51d8375786896d6ec5265f6484229c8f170405211fdd",
+      "bytes": 2895
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/AGENTS.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/AGENTS.md",
+      "sha256": "b1ec08a2e4c1966da532bc6f42a25d222d2e8084bb474bd729c69fb486486f7f",
+      "bytes": 1652
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/EXECUTION-PLAN.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/EXECUTION-PLAN.md",
+      "sha256": "b3d308ecd7998cf38b15b72bdfc70c897223bada8bb936911e1abe742263f65a",
+      "bytes": 9099
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/README.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/README.md",
+      "sha256": "aa5aa36165b788eec40d322bc30f1693cca3222c3e54d9bd1708453b09bac369",
+      "bytes": 3806
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/audit/PLANNING-REVIEW-2026-11-09.json",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/audit/PLANNING-REVIEW-2026-11-09.json",
+      "sha256": "4367f1492d32f526f70e73a8ad0d352ace772079db2fa0d98af6caceec04c56c",
+      "bytes": 9516
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/contracts/domain-types.ts",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/contracts/domain-types.ts",
+      "sha256": "090f6ae33e607d3cf9fadc1b6d0420127ffa6ef5402076fd7ebd8ad38cb0911f",
+      "bytes": 1879
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/execution/CONTRACT-GAPS.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/execution/CONTRACT-GAPS.md",
+      "sha256": "3594c5d21073184868bf4a3b3bd1e9ca145e157ae6e91df32f4bbb67e88fdbf2",
+      "bytes": 3701
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/execution/HANDOFF.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/execution/HANDOFF.md",
+      "sha256": "1d18740cda0cf61d94f64f095880e06b71b6066698ad36f81d101c862b9aae77",
+      "bytes": 1473
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/execution/PLAN-MANIFEST.json",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/execution/PLAN-MANIFEST.json",
+      "sha256": "b8eb751d3d777ff41b7f50d99d779e52da644b01ef83474d93ff7ff47aaa87ce",
+      "bytes": 12708
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/execution/PROPOSAL-SNAPSHOT.json",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/execution/PROPOSAL-SNAPSHOT.json",
+      "sha256": "7f74219f7c087ae50af118100ed6fb7b6e9a602d0e9e555b2e3e6770345092f2",
+      "bytes": 2240
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/execution/REPOSITORY-INTEGRATION.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/execution/REPOSITORY-INTEGRATION.md",
+      "sha256": "f014fe670dc4cd06be2235029359849d4593d8138752b3bb2b48b59c516c8874",
+      "bytes": 4830
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/execution/evidence-index.json",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/execution/evidence-index.json",
+      "sha256": "5875752b9c5032c7aa8d054444968ab5bac2a8c849827647ef8bdb4c631517da",
+      "bytes": 110
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/execution/state.json",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/execution/state.json",
+      "sha256": "b27c750f4dd1b6d510dea018b4aa342112c228bb17c292ac057cc99e54d799c9",
+      "bytes": 1848
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/manifest.json",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/manifest.json",
+      "sha256": "a391ed7bbf885da4a78a2198c19868e4b593823c66f4f41edd46e05d94f5b261",
+      "bytes": 1091
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/tools/README.md",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/tools/README.md",
+      "sha256": "2fea5792279e2b0311468c8091b73976928f643514e93a55ec94a076241c5f5f",
+      "bytes": 999
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/tools/next-task.mjs",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/tools/next-task.mjs",
+      "sha256": "740f53942f0993c62d09275de2f134f298cb45cf50b00df5406dfee70867bd1f",
+      "bytes": 2320
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/tools/plan.test.mjs",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/tools/plan.test.mjs",
+      "sha256": "9b482cf3e729fd31334244518f76473b2f8db56007bdcc82e272f3c9f2a0c552",
+      "bytes": 3360
+    },
+    {
+      "originalRef": "docs/plans/vlp-pet-arena-plan-v0.1/tools/validate-plan.mjs",
+      "ref": "docs/legacy-plans/2026-11-10/vlp-pet-arena-plan-v0.1/tools/validate-plan.mjs",
+      "sha256": "a5948df790e8041f11ec5e93b07c3906ab3764a63b24b5e0d63e031d76740490",
+      "bytes": 5300
+    }
+  ]
+}

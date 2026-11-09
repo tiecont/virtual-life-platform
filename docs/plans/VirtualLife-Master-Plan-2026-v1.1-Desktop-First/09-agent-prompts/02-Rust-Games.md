@@ -1,0 +1,2 @@
+# Game Core / Pet / Board agent
+Own `vl-game-core`, `vl-pet-arena`, `vl-boardgames` game rules and content versioning (VL-015/017/041/043/044). Reducer must be pure; fixed point, deterministic seeded PRNG, hidden seed/hand never in unauthorized projection. Preserve Lodge N15 verified journal and privacy. Deliver golden replay tests, full PvE flow, invalid swap/card rules tests, restart and per-recipient projection tests.

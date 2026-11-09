@@ -1,6 +1,6 @@
 # virtual-life-platform
 
-Continue implementation from the [vNext 2.4 master](docs/plans/platform-vnext/MASTER-AGENT-PLAN.md) and [current handoff](docs/plans/platform-vnext/state/HANDOFF.md). The [current architecture/evidence index](docs/architecture/CURRENT-STATE.md) separates implemented local gameplay, fresh baseline results, historical evidence and proposed work. The original Mxx ledger remains intact. Web/server comes first on CachyOS; native Android/iOS development is deferred by owner. Responsive browsers remain in scope. See [revision 2.4](docs/plans/platform-vnext/REVISION-2.4-WEB-FIRST.md). No public/store release is approved.
+Continue from the [VirtualLife v1.1 Desktop First master](docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/START-HERE.md) and [live execution workspace](docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/README.md). Agent 1 coordinates Rust/backend; Agent 2 owns Unity/Desktop/frontend. The [source reconciliation](docs/execution/desktop-first/README.md) preserves Mxx/Nxx/PA/Lodge evidence and separates historical browser checks from future Windows verification. No public/store release is approved.
 
 Use the [current documentation index](docs/README.md) and [clean-checkout procedure](docs/operations/CLEAN-CHECKOUT.md). Historical raw outputs now live in the original private Git revision and an additional authenticated archive; [indexed retrieval](docs/evidence/README.md) preserves their hashes without requiring author artifacts. Git history is retained.
 

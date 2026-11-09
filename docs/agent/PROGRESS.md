@@ -1,3 +1,32 @@
+# Desktop First Coordination - 2026-11-10
+
+Owner adopted VirtualLife v1.1 and assigned Agent 1 A0/A1/A2; Agent 2 owns
+Unity/Desktop/frontend. Active state is now the supplied plan's `.agent-runtime/`,
+managed solely by Agent 1. The 110-task checksum baseline remains unchanged.
+See [source audit](../execution/desktop-first/README.md) and the live scheduler:
+`node scripts/desktop-scheduler.mjs status agent1`.
+
+VL-001 has executable coordination code and source-bound audit evidence; independent
+Agent 2 review is still required. Six scheduler tests cover dependencies, ownership,
+concurrent reservation, hash drift and review binding. All 106 governance cases,
+11 backend unit cases, 23 real-PostgreSQL authority/journal/crash cases, lint and
+local CI contract pass. The 209 relocated legacy files, 105 owner input files,
+47 SQL and 75 vNext record bytes are preserved. No VL task is VERIFIED yet.
+
+The N06-04 addendum preserves 68 units, 40 browser cases, 120 authored stream
+matches and all 80 GC samples. Four final heap deltas pass; default frame p95
+still fails. Separate AMD diagnostics do not replace that failure. Legacy N06-04
+stays IN_PROGRESS; optional browser work no longer blocks Unity Windows. Pet Arena
+PvE remains ahead of new Lodge gameplay. No runtime migration or deployment.
+
+**Next exact action:** Agent 2 reviews the committed VL-001 handoff under
+`.agent-runtime/reviews/`. Coordinator ingests an approved exact-SHA review, then
+reserves VL-002 and VL-003. Do not start VL-004 before those prerequisites are
+VERIFIED. Missing Rust toolchain, Windows GPU/runner and Unity/license/signing
+qualification remain explicit. Earlier checkpoints below are historical.
+
+## Earlier Checkpoints
+
 # Gameplay LOD lease checkpoint - N06-04 remains IN_PROGRESS - 2026-11-10
 
 Source `071bcbb` adds `createAnimalVariants()`: one active appearance retains only its Low/Balanced cache entries, actor references stay independent, and appearance replacement/departure/suspend/destroy release the lease exactly once; a third gameplay tier is refused. Actual `packages/scene3d/test` unit suite passes 13 files/60 tests (exit0), together with `pnpm --filter @virtual-city/scene3d typecheck` and ESLint on the changed source/test files. These prove the ownership path, not final art or performance.

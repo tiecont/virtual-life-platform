@@ -2,16 +2,17 @@ import assert from 'node:assert/strict';
 import {readFile,writeFile,mkdir,readdir} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 import {createHash,randomUUID} from 'node:crypto';
-import {validatePlan} from '../docs/plans/LANTERN-LODGE-PHASE-2/tools/validate-plan.mjs';
-import {inspectUpstream} from '../docs/plans/LANTERN-LODGE-PHASE-2/tools/check-upstream.mjs';
-const root='docs/plans/LANTERN-LODGE-PHASE-2',sha=b=>createHash('sha256').update(b).digest('hex'),json=async ref=>JSON.parse(await readFile(ref));
+import {validatePlan} from '../docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/tools/validate-plan.mjs';
+import {inspectUpstream} from '../docs/legacy-plans/2026-11-10/LANTERN-LODGE-PHASE-2/tools/check-upstream.mjs';
+import {legacyVnextRoot,legacyLodgeRoot} from './legacy-plan-paths.mjs';
+const root=legacyLodgeRoot,sha=b=>createHash('sha256').update(b).digest('hex'),json=async ref=>JSON.parse(await readFile(ref));
 const directory='artifacts/lantern-lodge/n15-01/plan-check-'+randomUUID().slice(0,8);await mkdir(directory,{recursive:true,mode:0o700});
 const facts={scope:'FROZEN_DOCUMENTS_AND_STATIC_OWNERSHIP_REVIEW_ONLY_NOT_GAMEPLAY',sourceRevision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),trackedDiffSha256:sha(execFileSync('git',['diff','--binary','HEAD'],{maxBuffer:32*1024*1024})),at:new Date().toISOString(),runtimeVerified:false,ownerArtApproved:false,rightsApproved:false,physicalVerified:false};
 try{
  assert.equal(process.argv.length,2,'No scope overrides');
  const {manifest,gate,errors}=validatePlan();assert.deepEqual(errors,[]);const upstream=inspectUpstream(manifest,gate);assert.equal(upstream.status,'ACTIVE');
  for(const id of ['N00-02','N06-01']){assert.equal(upstream.upstreamTasks[id].status,'VERIFIED');assert(upstream.upstreamTasks[id].evidence_refs.length);}
- for(const name of ['task-state.json','evidence-index.json']){const ref='docs/plans/platform-vnext/state/'+name,committed=execFileSync('git',['show',gate.handoff_source_sha+':'+ref],{maxBuffer:16*1024*1024});assert.equal(sha(await readFile(ref)),sha(committed),'Phase1 changed without a fresh handoff: '+name);}
+ for(const name of ['task-state.json','evidence-index.json']){const originalRef='docs/plans/platform-vnext/state/'+name,committed=execFileSync('git',['show',gate.handoff_source_sha+':'+originalRef],{maxBuffer:16*1024*1024});assert.equal(sha(await readFile(legacyVnextRoot+'/state/'+name)),sha(committed),'Phase1 changed without a fresh handoff: '+name);}
  const lock=await json(root+'/games/PROPOSAL-v1.json');assert.equal(lock.schemaVersion,1);assert.equal(lock.status,'FROZEN_PROPOSAL_NOT_RUNTIME');assert.equal(lock.scope.worldSlug,'lantern-lodge');assert.equal(lock.scope.roomCapacity,8);assert.equal(lock.scope.maxTablesPerRoom,1);assert.equal(lock.scope.maxActiveMatchesPerAccount,1);
  for(const key of ['spectators','rewards','separateIdentity','separateRoomAuthority','separateAvatarCatalog','newRenderer','nativeWorldService','publicRelease'])assert.equal(lock.scope[key],false,key);assert.equal(lock.scope.sharedAnimal3D,true);assert(Object.values(lock.proposedExposureFlags).every(value=>value===false));
  assert.deepEqual(lock.modes.map(mode=>mode.id),['lantern-colors','mask-and-tell','mistbound-routes']);assert.deepEqual(lock.modes.map(mode=>[mode.players.min,mode.players.max]),[[2,6],[3,6],[4,8]]);
@@ -24,6 +25,6 @@ try{
  assert.deepEqual(Object.fromEntries(manifest.waves.filter(wave=>wave.unlock_after).map(wave=>[wave.id,wave.unlock_after])),lock.unchangedWaveGates);
  const changedOwners=[];for(const owner of lock.sourceOwners){assert(/^(apps\/platform-api\/src|packages\/world-sdk\/src)\/[a-z0-9/.-]+\.ts$/.test(owner.ref));const old=execFileSync('git',['show',lock.reviewSourceRevision+':'+owner.ref],{maxBuffer:2*1024*1024});assert.equal(sha(old),owner.sha256AtReview);if(sha(await readFile(owner.ref))!==owner.sha256AtReview)changedOwners.push(owner.ref);}
  const declarations=[],constructors=[];async function scan(path){for(const entry of await readdir(path,{withFileTypes:true})){const ref=path+'/'+entry.name;if(entry.isDirectory())await scan(ref);else if(entry.name.endsWith('.ts')&&!entry.name.endsWith('.test.ts')){const source=await readFile(ref,'utf8');if(/export class RoomAuthority\b/.test(source))declarations.push(ref);if(/new RoomAuthority\(/.test(source))constructors.push(ref);}}}await scan('apps/platform-api/src');assert.deepEqual(declarations,['apps/platform-api/src/rooms/authority.ts']);assert.deepEqual(constructors,['apps/platform-api/src/app.ts']);
- facts.proposalSha256=sha(await readFile(root+'/games/PROPOSAL-v1.json'));facts.rulebooks=lock.modes.map(mode=>({id:mode.id,ref:root+'/'+mode.rulebook,sha256:mode.rulebookSha256}));facts.reviewedOwners=lock.sourceOwners.length;facts.changedOwnersSinceReview=changedOwners;facts.upstreamStateSha256=sha(await readFile('docs/plans/platform-vnext/state/task-state.json'));facts.result='PASS';
+ facts.proposalSha256=sha(await readFile(root+'/games/PROPOSAL-v1.json'));facts.rulebooks=lock.modes.map(mode=>({id:mode.id,ref:root+'/'+mode.rulebook,sha256:mode.rulebookSha256}));facts.reviewedOwners=lock.sourceOwners.length;facts.changedOwnersSinceReview=changedOwners;facts.upstreamStateSha256=sha(await readFile(legacyVnextRoot+'/state/task-state.json'));facts.result='PASS';
 }catch(error){facts.result='FAIL';facts.error=error.message;process.exitCode=1;}
 await writeFile(directory+'/facts.json',JSON.stringify(facts,null,2)+'\n',{mode:0o600});console.log(JSON.stringify({result:facts.result,scope:facts.scope,runtimeVerified:false,rulebooks:facts.rulebooks?.length,owners:facts.reviewedOwners,error:facts.error,artifactDirectory:directory}));

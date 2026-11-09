@@ -1,0 +1,2 @@
+# Coordinator agent brief
+Read `START-HERE.md`, all original ledgers and the live repo HEAD. Preserve verified evidence and current N06 ownership. Own `VL-001`, `VL-002`, `VL-009`, gate decisions and cross-team file reservations. Generate actual reviewable handoff with branch SHA, dirty paths and migration reservations. Do not alter legacy statuses, flip public release flags or assign multiple agents same hot files. Use `TASKS.json` & tools. Hand back blockers honestly.

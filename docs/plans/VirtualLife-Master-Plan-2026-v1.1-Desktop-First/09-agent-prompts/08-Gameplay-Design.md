@@ -1,0 +1,2 @@
+# Game design and playtest agent
+Own scoped one-district product flow, game rules content, activity/venue player journey, pet training progression and honest playtests. Walk into a café, sit, play a deterministic board game, leave, M teleport, Pet Arena PvE; no menu-only disconnected UX. Keep SFW maid café and opt-in social, avoid pay-to-win. Document accepted ruleset version, balance simulations and real player observations, not fabricated retention claims.

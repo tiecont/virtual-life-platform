@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "channel": "alpha",
+  "version": "0.0.0-dev-example",
+  "platform": "windows-x64",
+  "minimumProtocolVersion": 1,
+  "assetCatalogHash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "executable": {
+    "url": "https://example.invalid/downloads/VirtualLife-setup-example.exe",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "byteSize": 0,
+    "codeSigningPublisher": "PLACEHOLDER-UNAPPROVED"
+  },
+  "signature": "NOT-A-REAL-SIGNATURE",
+  "mandatory": false,
+  "notes": "Illustrative schema only. Never ship or trust this fixture as a release manifest."
+}

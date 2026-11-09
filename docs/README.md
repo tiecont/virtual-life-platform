@@ -1,8 +1,8 @@
 # Current documentation entrypoints
 
-Follow the [vNext master](plans/platform-vnext/MASTER-AGENT-PLAN.md), [current handoff](plans/platform-vnext/state/HANDOFF.md), [task state](plans/platform-vnext/state/task-state.json) and the dependency-ready module plan. The [architecture/evidence map](architecture/CURRENT-STATE.md) describes implemented source and the limits of its verification. Plans and proposed commands are requirements until implemented and actually executed.
+Follow the [Desktop First master](plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/START-HERE.md), [live state and reservations](plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/README.md) and [source audit](execution/desktop-first/README.md). Plans and proposed commands remain requirements until executed and independently reviewed.
 
-Product order across the active web work, Lantern Lodge and the new Pet Arena proposal is in the [development roadmap](plans/DEVELOPMENT-ROADMAP.md). Read the [Pet Arena execution overlay](plans/vlp-pet-arena-plan-v0.1/EXECUTION-PLAN.md) before its original generic agent prompts. Its PA implementation ledger remains PLANNED; Nxx history and ownership are retained.
+The older table below is historical. Legacy packs moved without byte changes to [the read-only snapshot](legacy-plans/2026-11-10/); [LEGACY-INDEX.json](execution/desktop-first/LEGACY-INDEX.json) maps every former path. Existing browser/Nxx evidence does not certify Unity Windows, and Pet Arena PvE remains ahead of new Lodge gameplay.
 
 | Topic | Canonical entrypoint | Applicability |
 |---|---|---|

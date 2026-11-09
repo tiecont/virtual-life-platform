@@ -1,3 +1,21 @@
+# Desktop First Gates - 2026-11-10
+
+VL-001 independent Agent 2 review is pending;all successor tasks remain unready.
+The coordinator implementation and scoped source audit pass actual checks,not
+review approval. Thread discovery returns duplicate all-zero IDs,so direct
+review routing needs a real Agent 2 identifier or its review file. The runtime
+workspace names exact source/handoff hashes and does not invent a review.
+
+Rust/rustup/dotnet/Unity are absent from PATH. Physical Windows GPU tiers,Windows
+build runner,Unity licensing/brand/signing are unqualified. These observations
+do not promote or change VL-078/080 statuses. New Rust runtime must keep a distinct
+namespace from the existing Nest singleton;47SQL remain unchanged. Legacy web
+frame/loading/art findings remain open but no longer block the Windows critical
+path by owner direction. Imported VL-027 still has leftover browser acceptance;
+resolve via controlled overlay before that task,not baseline checksum edits.
+
+## Earlier Checkpoints - Historical
+
 # Current geometry/surface gates - 2026-11-09
 
 N06-04 remains IN_PROGRESS at19874e0. Fresh64scene/Pixi units,18browser cases and80external-GC recreates pass at their scopes;the prior High-dog and Connected failures are retained but do not reproduce in this full-source run. All four final heap-growth rules pass. Every required default SwiftShader33.4ms frame limit still fails. Separate asserted AMD results also fail High and Maid Balanced with frequent LOD rebuilds;they do not replace the original workload. Conditional bone fetch remains a rejected diagnostic. Next:bounded appearance-owned geometry retention across the two gameplay LODs,with complete resource/disposal/heap/frame accounting. Controlled loading,final art/readability/owner review and current hosted Quality remain open. See N06-04-GEOMETRY-SURFACE-CHECKPOINT.json. No gate or task status was relaxed;Arena remains PLANNED,Lodge PAUSED,native deferred.

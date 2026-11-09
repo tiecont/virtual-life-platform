@@ -1,0 +1,31 @@
+{
+  "taskId": "VL-001",
+  "sourceRevision": "bffe7e9f2004fee8fa1811f8f935e9da55704250",
+  "sourceFileHashes": "VL-001-CHECKS.json#/sourceFiles",
+  "scope": "Actual direct command results; complete raw output returned through tool session, not a claimed archived raw log",
+  "commands": [
+    {
+      "command": "node --test tests/governance/*.test.mjs",
+      "exitCode": 0,
+      "tests": 106,
+      "pass": 106,
+      "fail": 0,
+      "skipped": 0,
+      "toolSession": 21141
+    },
+    {
+      "command": "python3 docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/tools/validate_plan.py",
+      "exitCode": 0,
+      "tasks": 110,
+      "warning": "Manifest file count differs because the authorized .agent-runtime directory is outside the immutable baseline; all original checksums pass"
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0
+    }
+  ],
+  "limitations": [
+    "These checks do not constitute independent review or promote a VL task.",
+    "Focused governance, lint, CI and actual backend unit/integration raw log hashes are recorded separately in VL-001-CHECKS.json."
+  ]
+}

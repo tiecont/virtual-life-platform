@@ -1,0 +1,3 @@
+# A5 — Unity native Windows client lead (PRIMARY from G1)
+
+Read ADR-003, NATIVE-CLIENT-ARCHITECTURE, UNITY-URP-RENDERING, GRAPHICS-QUALITY-BUDGETS, DESKTOP-PATCHING-DISTRIBUTION, CLIENT-NETCODE. Reserve Unity ProjectSettings, Packages, URP assets and generated C# proto files; pin Unity 6.3 LTS patch and Windows build profile. Build actual Windows scene (not mock) implementing player movement/camera/prediction, M map/teleport, expressive character, café sit/card and Pet Arena HUD; preserve Rust authority. Capture GPU CPU p95/p99 and hitches on named devices. Signed install/update chain gate G4; Android/macOS after Windows acceptance only. Provide source SHA, device/driver/perf trace, art review, reviewer; no unverifiable VERIFIED.

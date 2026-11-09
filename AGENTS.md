@@ -2,6 +2,26 @@
 
 **MUST READ FIRST:** [`MASTER-AGENT-PLAN.md`](MASTER-AGENT-PLAN.md). Đây là file điều phối dự án. Mỗi module có plan riêng dưới `plans/`.
 
+## Current Owner Instruction - Desktop First (2026-11-10)
+
+The active plan is [VirtualLife v1.1 Desktop First](docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/START-HERE.md).
+Read its AGENTS, task graph and architecture before work. Agent 1 owns A0/A1/A2
+and is the sole writer of `.agent-runtime/live-state.json` and reservations.
+Agent 2 owns Unity/Desktop/frontend and writes independent reviews under
+`.agent-runtime/reviews/`; it must request a coordinator reservation before source edits.
+Use `node scripts/desktop-scheduler.mjs status agent1` (or `agent2`) for live readiness.
+The checksum baseline `06-execution/STATE.json` and `FILE-MANIFEST.json` are immutable.
+VERIFIED requires exact committed source, actual checks and another agent's review.
+
+Legacy plans are preserved byte-for-byte under `docs/legacy-plans/2026-11-10/`;
+[the relocation index](docs/execution/desktop-first/LEGACY-INDEX.json) resolves old
+evidence paths. Do not change their statuses or treat archive acceptance as a fresh
+run. N06-04 is checkpointed IN_PROGRESS and optional web compatibility is outside
+the Windows critical path. Existing Nest RoomAuthority remains the only legacy
+writer; new Rust namespaces require their own verified contracts and default-off
+activation. Pet Arena PvE precedes new Lodge gameplay. Mobile remains conditional.
+The older vNext instructions below describe the historical execution profile.
+
 ## Agent boot protocol
 
 1. Xem `git status`, repo tree, runtime, README, scripts, migrations, tests, hai ứng dụng hiện hữu (nếu truy cập được).

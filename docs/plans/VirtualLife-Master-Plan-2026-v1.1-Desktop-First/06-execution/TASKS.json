@@ -1,0 +1,2211 @@
+{
+  "schemaVersion": "1.0",
+  "planName": "VirtualLife Master Development Plan",
+  "createdAt": "2026-11-09",
+  "status": "PLANNING_ONLY",
+  "taskCount": 110,
+  "tasks": [
+    {
+      "id": "VL-001",
+      "phase": "G0",
+      "lane": "A0-Coordinator",
+      "title": "Source HEAD and ledger audit",
+      "objective": "Compare live HEAD with archived N/PA/Lodge status, migrations, renderer, open worktrees, active N06 owner.",
+      "depends_on": [],
+      "acceptance": [
+        "SHA and dirty-path inventory recorded",
+        "44/4/0 verified archived counts reconciled to live state without writing them"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 1,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-002",
+      "phase": "G0",
+      "lane": "A0-Coordinator",
+      "title": "Approve desktop-first ADR-003 and one-authority architecture",
+      "objective": "Owner approves Rust gameplay authority, Unity Windows primary client and Next.js official portal. Resolve N06 in-flight/legacy source ownership before code.",
+      "depends_on": [
+        "VL-001"
+      ],
+      "acceptance": [
+        "Signed ADR-003 and v1.1 scope supersession recorded",
+        "One-writer-per-world/domain matrix, explicit rollback and N06-04 handoff policy approved"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 2,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-003",
+      "phase": "G0",
+      "lane": "A2-Persistence-Security",
+      "title": "Current DB/identity contracts inventory",
+      "objective": "Read real auth/session/CSRF/rooms/PG migrations and find safe Rust integration seam.",
+      "depends_on": [
+        "VL-001"
+      ],
+      "acceptance": [
+        "Diagram existing callers+DB ownership",
+        "migration number reserved through current journal and no new autoschema race"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 3,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-004",
+      "phase": "G0",
+      "lane": "A1-Rust-Game-Core",
+      "title": "Rust workspace and version pin",
+      "objective": "Build minimal game runtime executable, cargo workspace, formatter, CI and Docker.",
+      "depends_on": [
+        "VL-002",
+        "VL-003"
+      ],
+      "acceptance": [
+        "cargo fmt/check/clippy unit clean",
+        "OCI health endpoint and pinned toolchain built in CI"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 4,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-005",
+      "phase": "G0",
+      "lane": "A3-Web-UX",
+      "title": "Preserve legacy N06 Web renderer audit and isolate optional teaser",
+      "objective": "Read existing Three/Pixi/N06 renderer traces and source ownership; preserve VERIFIED work but remove full web 3D from Windows release critical path.",
+      "depends_on": [
+        "VL-001"
+      ],
+      "acceptance": [
+        "Baseline measurements and no-loss fallback demonstrated",
+        "N06-04 ownership checkpoint collected before touching files"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [
+        "N06-04 active lane source handoff"
+      ],
+      "priority": 5,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-006",
+      "phase": "G0",
+      "lane": "A4-Avatar-Art",
+      "title": "VirtualLife visual brand review",
+      "objective": "Convert logo/key-art concept into owner-approved style sheet and source asset checklist.",
+      "depends_on": [
+        "VL-001"
+      ],
+      "acceptance": [
+        "wordmark spelling VirtualLife and icon rights reviewed",
+        "palette contrast assessed, art concepts explicitly nonproduction"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 6,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-007",
+      "phase": "G0",
+      "lane": "A7-QA-SRE",
+      "title": "Lock Windows PC hardware + Web Vitals QA harness",
+      "objective": "Define physical Windows device tier matrix, GPU perf routes/driver logging, plus separate official-site Core Web Vitals instrumentation.",
+      "depends_on": [
+        "VL-001"
+      ],
+      "acceptance": [
+        "Named Windows CPU/GPU/VRAM/SSD/driver matrix and 3 routes agreed",
+        "Distinct profiler p95/p99 frame and site LCP/INP/CLS metrics specified"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 7,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-008",
+      "phase": "G0",
+      "lane": "A2-Persistence-Security",
+      "title": "Threat model and failure taxonomy",
+      "objective": "Threat model tickets, direct WSS, venue state, hidden hand, game reward and teleport.",
+      "depends_on": [
+        "VL-002",
+        "VL-003"
+      ],
+      "acceptance": [
+        "security reviewer signs attack tree",
+        "negative test map for replay/ID collision/policy revoke/DB crash"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 8,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-009",
+      "phase": "G0",
+      "lane": "A0-Coordinator",
+      "title": "Existing plan crosswalk decision",
+      "objective": "Obtain formal scheduling checkpoint N06→PA→Lodge; route VL tasks without changing other ledgers.",
+      "depends_on": [
+        "VL-001",
+        "VL-002"
+      ],
+      "acceptance": [
+        "file reservation/handoff documented",
+        "legacy task IDs/verified evidence unchanged"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 9,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-010",
+      "phase": "G0",
+      "lane": "A6-Gameplay",
+      "title": "Desktop-first vertical slice and playable floorplan",
+      "objective": "Define one district, two avatar variants, walk-in cafe/card/Pet flow, M map/teleport and point-click navigation; site is separate publishing portal.",
+      "depends_on": [
+        "VL-002",
+        "VL-006"
+      ],
+      "acceptance": [
+        "clickable user flow accepted",
+        "scope ceiling excludes infinite city/AAA release claims"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 10,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-011",
+      "phase": "G1",
+      "lane": "A3-Web-UX",
+      "title": "Unity URP production renderer spike + optional web teaser cost",
+      "objective": "Run compiled Windows Unity anime-stylized shader test on named GPU against original art; preserve web renderer optional as N06 compatibility.",
+      "depends_on": [
+        "VL-005",
+        "VL-007",
+        "VL-006",
+        "VL-080",
+        "VL-082"
+      ],
+      "acceptance": [
+        "Compiled Windows native scene has recorded p95/p99 GPU+CPU/VRAM/shader logs with hardware profile",
+        "One-page decision shows native URP suitability and web teaser not on game critical path"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [
+        "N06-04 worktree checkout handoff"
+      ],
+      "priority": 11,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-012",
+      "phase": "G1",
+      "lane": "A1-Rust-Game-Core",
+      "title": "Versioned proto and client binding tooling",
+      "objective": "Define public WSS envelope and internal tonic gRPC, TS and C# generation boundaries.",
+      "depends_on": [
+        "VL-004",
+        "VL-008"
+      ],
+      "acceptance": [
+        "backward compatibility test and valid sample exchange",
+        "invalid version/oversize rejected"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 12,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-013",
+      "phase": "G1",
+      "lane": "A2-Persistence-Security",
+      "title": "Rust ticket trust and policy generations",
+      "objective": "Nest issues short-lived tickets; Rust verifies scope/aud/nonce/policy freshness before writes.",
+      "depends_on": [
+        "VL-003",
+        "VL-008",
+        "VL-012"
+      ],
+      "acceptance": [
+        "expired/forged/replayed/revoked negatives pass",
+        "no unauthorized game command persisted"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 13,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-014",
+      "phase": "G1",
+      "lane": "A7-QA-SRE",
+      "title": "Windows native and Rust performance baseline lock",
+      "objective": "Instrument compiled Windows player and Rust session baseline separately; record cold/warm load, shader hitch, p95/p99, VRAM, tick overrun, reconnection.",
+      "depends_on": [
+        "VL-007",
+        "VL-011"
+      ],
+      "acceptance": [
+        "Three golden scene routes and target Windows hardware/driver locked in checked-in manifest",
+        "Repeatable profiler and server tick load harness outputs real data fields, no synthetic values promoted"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 14,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-015",
+      "phase": "G1",
+      "lane": "A1-Rust-Game-Core",
+      "title": "Pure game reducer and canonical RNG",
+      "objective": "Implement deterministic action reducer with versioned content and fixed-point arithmetic.",
+      "depends_on": [
+        "VL-004",
+        "VL-012"
+      ],
+      "acceptance": [
+        "same event stream/replay hashes across runs",
+        "property tests invalid actions and edge cases pass"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 15,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-016",
+      "phase": "G1",
+      "lane": "A2-Persistence-Security",
+      "title": "Game schema, receipts and migration",
+      "objective": "Add game schema/state/event/outbox with uniqueness/fencing, single shared DB migration journal.",
+      "depends_on": [
+        "VL-003",
+        "VL-012",
+        "VL-015"
+      ],
+      "acceptance": [
+        "real PG concurrency test only one settlement",
+        "migration expand/rollback compatibility report"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 16,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-017",
+      "phase": "G1",
+      "lane": "A1-Rust-Game-Core",
+      "title": "Game turn orchestration and persistence",
+      "objective": "Execute per-match commands, transactional version check+commit then ACK/projection.",
+      "depends_on": [
+        "VL-013",
+        "VL-015",
+        "VL-016"
+      ],
+      "acceptance": [
+        "unknown-ACK retrieval returns same receipt",
+        "game restarts with authoritative snapshot and valid turn order"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 17,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-018",
+      "phase": "G1",
+      "lane": "A2-Persistence-Security",
+      "title": "Outbox/inbox and platform reward ledger",
+      "objective": "Implement game settlement event and dedupe in Nest worker/platform ledger.",
+      "depends_on": [
+        "VL-016",
+        "VL-017"
+      ],
+      "acceptance": [
+        "same event retry results one grant",
+        "late worker shows REWARD_PENDING then reconciles"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 18,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-019",
+      "phase": "G1",
+      "lane": "A1-Rust-Game-Core",
+      "title": "World actor and AOI prototype",
+      "objective": "Build Rust per-zone actor/AOI live state prototype independent of any client shader benchmark or web screenshot.",
+      "depends_on": [
+        "VL-012",
+        "VL-013"
+      ],
+      "acceptance": [
+        "20 scripted actors stable bounded queues",
+        "no DB per-frame writes",
+        "trace tick p95 and overrun measured"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 19,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-020",
+      "phase": "G1",
+      "lane": "A2-Persistence-Security",
+      "title": "Private projection by actor/viewer",
+      "objective": "Ensure one private hand/viewer, public spectator view, zero information in generic logs.",
+      "depends_on": [
+        "VL-013",
+        "VL-017"
+      ],
+      "acceptance": [
+        "negative multiuser scope test passes",
+        "seeds/cards not leaked to other recipients"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 20,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-021",
+      "phase": "G1",
+      "lane": "A7-QA-SRE",
+      "title": "Replay/crash chaos suite",
+      "objective": "Kill runtime pre/post commit, replay duplications, validate restore and version fences.",
+      "depends_on": [
+        "VL-017",
+        "VL-018",
+        "VL-020"
+      ],
+      "acceptance": [
+        "zero duplicate effects, deterministic hash restored",
+        "restart journal/incompatibility outcomes documented"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 21,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-022",
+      "phase": "G1",
+      "lane": "A1-Rust-Game-Core",
+      "title": "Direct WSS authoritative gateway",
+      "objective": "Issue world ticket from Nest then WSS connect Rust; verify ACK/seq/resync and overload.",
+      "depends_on": [
+        "VL-012",
+        "VL-013",
+        "VL-019"
+      ],
+      "acceptance": [
+        "real browser and Rust integration test",
+        "replayed/expired tickets and oversized packets rejected"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 22,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-023",
+      "phase": "G1",
+      "lane": "A0-Coordinator",
+      "title": "G1 signoff: headless game vertical slice",
+      "objective": "Review command/transaction/secret/protocol and rollback evidence.",
+      "depends_on": [
+        "VL-017",
+        "VL-018",
+        "VL-020",
+        "VL-021",
+        "VL-022"
+      ],
+      "acceptance": [
+        "G1 decision record with attached test artifacts",
+        "no release status changed without reviewer"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 23,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-024",
+      "phase": "G2",
+      "lane": "A4-Avatar-Art",
+      "title": "Native Aurora Plaza blockout, scale & navmesh authoring",
+      "objective": "Blender/Unity scale/navmesh anchors and walkable blockout for a single compact district plus portals/café sit anchors.",
+      "depends_on": [
+        "VL-010",
+        "VL-023"
+      ],
+      "acceptance": [
+        "geometry GUID manifest and server simplified collision exported",
+        "walk path from spawn to café and Arena reachable"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 24,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-025",
+      "phase": "G2",
+      "lane": "A4-Avatar-Art",
+      "title": "Pilot anthro rig skeleton, ears and tail",
+      "objective": "Create production-candidate original cat/fox parts for one shared body rig.",
+      "depends_on": [
+        "VL-006",
+        "VL-010"
+      ],
+      "acceptance": [
+        "Blender source+license manifest, rig deformation test",
+        "LOD 0/1/2 export to web baseline"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 25,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-026",
+      "phase": "G2",
+      "lane": "A4-Avatar-Art",
+      "title": "Facial morph, emote, sit and IK authoring",
+      "objective": "Produce 12+ facial expressions and 8–12 emotes on approved pilot character.",
+      "depends_on": [
+        "VL-025"
+      ],
+      "acceptance": [
+        "near/mid pose screenshot, eye blink, tail-chair clearance",
+        "no unreviewed clipping on sit/drink"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 26,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-027",
+      "phase": "G2",
+      "lane": "A3-Web-UX",
+      "title": "Unity Windows Aurora Plaza first rendered district",
+      "objective": "Implement compiled Windows Unity URP plaza native scene, asset streaming and LOD budget; Three.js is optional prior-art adapter.",
+      "depends_on": [
+        "VL-024",
+        "VL-025",
+        "VL-080",
+        "VL-082",
+        "VL-105"
+      ],
+      "acceptance": [
+        "desktop browser usable on real machine",
+        "web-lite fallback and measured size/GPU budget"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 27,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-028",
+      "phase": "G2",
+      "lane": "A1-Rust-Game-Core",
+      "title": "Movement and collision server authority",
+      "objective": "Validate speed/nav bounds/proximity, per actor reconciliation and area interest.",
+      "depends_on": [
+        "VL-019",
+        "VL-022",
+        "VL-024"
+      ],
+      "acceptance": [
+        "client cannot teleport via position spoof",
+        "network jitter test movement reconciles"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 28,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-029",
+      "phase": "G2",
+      "lane": "A3-Web-UX",
+      "title": "Unity native third-person camera and player control",
+      "objective": "WASD, mouse/gamepad, motion sensitivity, M key focus policy, Rust-authorized move with local smoothing and click-to-move override.",
+      "depends_on": [
+        "VL-027",
+        "VL-028",
+        "VL-084"
+      ],
+      "acceptance": [
+        "30/60fps target profiled by device",
+        "input latency, pause, scroll, alt-tab, focus handled"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 29,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-030",
+      "phase": "G2",
+      "lane": "A3-Web-UX",
+      "title": "Unity native avatar builder and expression showcase",
+      "objective": "Editable, entitlement-scoped anthro avatar looks with face/ear/tail animation preview; shared source rig no character duplication.",
+      "depends_on": [
+        "VL-025",
+        "VL-026",
+        "VL-027",
+        "VL-086"
+      ],
+      "acceptance": [
+        "authenticated save projection and retry",
+        "old v1 appearance loads with explicit mapping"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [
+        "N06-07 creator compatibility verified in source"
+      ],
+      "priority": 30,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-031",
+      "phase": "G2",
+      "lane": "A3-Web-UX",
+      "title": "Windows native M-map basic HUD and POI preview",
+      "objective": "Unity M-map main screen, input focus, original city map art and safe semantic POI preview; no free client coordinate teleport.",
+      "depends_on": [
+        "VL-027",
+        "VL-010"
+      ],
+      "acceptance": [
+        "M/Esc toggles with focus correctly, chat input not hijacked",
+        "mobile map icon + keyboard navigation pass"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 31,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-032",
+      "phase": "G2",
+      "lane": "A4-Avatar-Art",
+      "title": "Unity city ambience/NPC schedule visuals and distant LOD",
+      "objective": "Render client-only trees/wind/ambient crowd; Rust-owned interactive NPC goals; batch/LOD and day/night animation budgets.",
+      "depends_on": [
+        "VL-024",
+        "VL-085",
+        "VL-104"
+      ],
+      "acceptance": [
+        "desktop/mobile web shader frame/memory visual capture",
+        "interactive NPC separated from cosmetic loops"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 32,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-033",
+      "phase": "G2",
+      "lane": "A7-QA-SRE",
+      "title": "Compiled Windows Aurora City visual/perf acceptance",
+      "objective": "Test city/camera/avatar/animation on actual Windows PCs with profiles, frame hitches, facial and outfit clipping; no web 3D parity requirement.",
+      "depends_on": [
+        "VL-026",
+        "VL-027",
+        "VL-029",
+        "VL-030",
+        "VL-032",
+        "VL-087"
+      ],
+      "acceptance": [
+        "Compiled Windows player captured for Aurora Noon/Sunset and avatar closeup with real p95/p99/VRAM stats",
+        "Art/animation review and accessibility plus tier downgrade measured, no frame screenshots treated as performance proof"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [
+        "N06-09 web gate before integrated acceptance"
+      ],
+      "priority": 33,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-034",
+      "phase": "G2",
+      "lane": "A0-Coordinator",
+      "title": "G2 signoff: expressive walkable Unity Windows Aurora City",
+      "objective": "Coordinator certifies one district and safe Rust-authoritative movement/interactions using native Windows player.",
+      "depends_on": [
+        "VL-028",
+        "VL-030",
+        "VL-031",
+        "VL-033",
+        "VL-088"
+      ],
+      "acceptance": [
+        "world run reproducible browser demo and privacy projection",
+        "source-bound performance report and art signoff"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 34,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-035",
+      "phase": "G3",
+      "lane": "A2-Persistence-Security",
+      "title": "Place catalog and destination entitlement",
+      "objective": "Versioned map POI and scoped access/capacity/private status.",
+      "depends_on": [
+        "VL-023",
+        "VL-031"
+      ],
+      "acceptance": [
+        "schema validation and unauthorized private locations absent",
+        "stale POI never confers permission"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 35,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-036",
+      "phase": "G3",
+      "lane": "A1-Rust-Game-Core",
+      "title": "Teleport reservation/commit saga",
+      "objective": "Rust owns allowlisted target hold, source release, epoch fencing, safe rollback.",
+      "depends_on": [
+        "VL-019",
+        "VL-028",
+        "VL-035"
+      ],
+      "acceptance": [
+        "target full, timeouts, duplicate clicks and concurrent transfer no ghost membership"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 36,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-037",
+      "phase": "G3",
+      "lane": "A3-Web-UX",
+      "title": "Unity native M-map teleport preview and confirmation UI",
+      "objective": "Full POI map with place images and explicit Navigate vs Teleport; client preloads target only after Rust reservation.",
+      "depends_on": [
+        "VL-031",
+        "VL-035",
+        "VL-036",
+        "VL-088"
+      ],
+      "acceptance": [
+        "keyboard/mobile usable, destination image + label",
+        "client only moves after authoritative receipt"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 37,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-038",
+      "phase": "G3",
+      "lane": "A4-Avatar-Art",
+      "title": "Café interior, doors, tables and seat anchors",
+      "objective": "Produce Café Lumi interior with 4 seat anchors, appropriate camera/sit alignment.",
+      "depends_on": [
+        "VL-024",
+        "VL-026"
+      ],
+      "acceptance": [
+        "reviewed scene and anchor GUID export",
+        "chair collisions/animation pose verified"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 38,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-039",
+      "phase": "G3",
+      "lane": "A1-Rust-Game-Core",
+      "title": "Venue entry and seat activity FSM",
+      "objective": "Implement proximity/enter/reserve/sit/stand/forfeit and exclusive seat lease.",
+      "depends_on": [
+        "VL-028",
+        "VL-036",
+        "VL-038"
+      ],
+      "acceptance": [
+        "2-user seat race one owner",
+        "disconnect/block/account-switch cleanup and TTL proven"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 39,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-040",
+      "phase": "G3",
+      "lane": "A3-Web-UX",
+      "title": "Unity native café walk-in/seat/standing scene and UI",
+      "objective": "Café scene transition, camera, hand/seat IK with Rust hold/commit and optional game overlay; handle failure gracefully.",
+      "depends_on": [
+        "VL-037",
+        "VL-038",
+        "VL-039",
+        "VL-089"
+      ],
+      "acceptance": [
+        "visual E/tap affordance, genuine seat ACK before sit",
+        "network unknown state resumes correctly"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 40,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-041",
+      "phase": "G3",
+      "lane": "A6-Gameplay",
+      "title": "Board game v1 rules and privacy adapter",
+      "objective": "Implement one small ruleset and route original N15 journal compatibility, no secret spectator projection.",
+      "depends_on": [
+        "VL-017",
+        "VL-020",
+        "VL-039"
+      ],
+      "acceptance": [
+        "2-player complete round+restart, hidden hand test, old journal fixture unchanged"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [
+        "N15-05/N16 product scheduling and ownership handoff"
+      ],
+      "priority": 41,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-042",
+      "phase": "G3",
+      "lane": "A6-Gameplay",
+      "title": "Table invitation and game session host",
+      "objective": "Invite/ready/decline/timeout, owner seat checks and match-reconnect, spectator policy.",
+      "depends_on": [
+        "VL-039",
+        "VL-041"
+      ],
+      "acceptance": [
+        "2 real clients join and play seated",
+        "forfeit/abort one receipt, no phantom continuation"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 42,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-043",
+      "phase": "G3",
+      "lane": "A6-Gameplay",
+      "title": "Pet Arena new ruleset content",
+      "objective": "Design 8 Pet/6 stage/boss first pass with fixed-point, seeds, status examples.",
+      "depends_on": [
+        "VL-015",
+        "VL-023"
+      ],
+      "acceptance": [
+        "unit fixture 100% reproducible, content id/version pinned",
+        "negative invalid swap+telegraph tests"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 43,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-044",
+      "phase": "G3",
+      "lane": "A1-Rust-Game-Core",
+      "title": "Pet Arena Rust combat and AI",
+      "objective": "Implement board generator/cascades/combo/skill/AI in Rust reducer, replay.",
+      "depends_on": [
+        "VL-017",
+        "VL-043"
+      ],
+      "acceptance": [
+        "one full PvE match in Rust with restart/seed hash",
+        "no client damage calculation"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 44,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-045",
+      "phase": "G3",
+      "lane": "A4-Avatar-Art",
+      "title": "Pet District and training arena visuals",
+      "objective": "Small Pet lobby, arena summon pad, 3 hero Pet representations and attack FX.",
+      "depends_on": [
+        "VL-024",
+        "VL-043"
+      ],
+      "acceptance": [
+        "original source art provenance and low/high fidelity exports",
+        "damage FX driven by canonical event IDs"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 45,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-046",
+      "phase": "G3",
+      "lane": "A3-Web-UX",
+      "title": "Unity native Pet District roam and battle HUD",
+      "objective": "Move into Pet Arena from city then overlay tactical match-3 + Pet animation/VFX in Unity; Rust computes results.",
+      "depends_on": [
+        "VL-037",
+        "VL-044",
+        "VL-045",
+        "VL-091"
+      ],
+      "acceptance": [
+        "real browser completes match and resumes same authorized world",
+        "reduced motion and web-lite gameplay"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 46,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-047",
+      "phase": "G3",
+      "lane": "A2-Persistence-Security",
+      "title": "Real reward settlement with platform inbox",
+      "objective": "Reward proposal after accepted result, ledger pending/committed read API and account scoping.",
+      "depends_on": [
+        "VL-018",
+        "VL-044"
+      ],
+      "acceptance": [
+        "server results only, retry settlement no duplicate platform grant",
+        "forged client rewards denied"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 47,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-048",
+      "phase": "G3",
+      "lane": "A7-QA-SRE",
+      "title": "Rust + compiled Windows client e2e city/café/card/Pet Arena",
+      "objective": "E2E native two-player seat/private game and Pet Arena transition with teleport, reconnect, ledger settlement, no duplicate rewards.",
+      "depends_on": [
+        "VL-037",
+        "VL-040",
+        "VL-042",
+        "VL-046",
+        "VL-047",
+        "VL-090",
+        "VL-091",
+        "VL-109"
+      ],
+      "acceptance": [
+        "all user paths pass incl account block/revoke",
+        "teleport and game state one writer each"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 48,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-049",
+      "phase": "G3",
+      "lane": "A0-Coordinator",
+      "title": "G3 acceptance playable vertical slice",
+      "objective": "Sign complete world+game slice with ticket/actor/DB receipts and real web demo.",
+      "depends_on": [
+        "VL-048"
+      ],
+      "acceptance": [
+        "G3 report references PA-017 evidence separately",
+        "no legacy plan status fabricated"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 49,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-050",
+      "phase": "G4",
+      "lane": "A2-Persistence-Security",
+      "title": "Revocation, report/block, age and consent integration",
+      "objective": "Runtime enforces current platform safety generation at command and recipient projection.",
+      "depends_on": [
+        "VL-049",
+        "VL-008"
+      ],
+      "acceptance": [
+        "stale permissions mid-seat/teleport/settlement rejected",
+        "moderation UI same platform policy"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 50,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-051",
+      "phase": "G4",
+      "lane": "A7-QA-SRE",
+      "title": "Load/stress and memory leak profiling",
+      "objective": "Run defined city activities for 30 min across desktop and mobile web tier.",
+      "depends_on": [
+        "VL-049",
+        "VL-014"
+      ],
+      "acceptance": [
+        "actual p95 frametime tick/queue/DB metrics",
+        "no OOM, sustainable degraded tier and resource report"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 51,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-052",
+      "phase": "G4",
+      "lane": "A4-Avatar-Art",
+      "title": "Polish final art and appearance clipping",
+      "objective": "Repair clothing/tail/ears/fur, lighting, VFX/readability in day/evening and café.",
+      "depends_on": [
+        "VL-034",
+        "VL-048"
+      ],
+      "acceptance": [
+        "art director signoff with annotated approved comparisons",
+        "asset provenance verified before release"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 52,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-053",
+      "phase": "G4",
+      "lane": "A3-Web-UX",
+      "title": "Windows native HUD/input/accessibility/localization pass",
+      "objective": "Font/contrast/control focus/reduced motion, controller mapping and Vietnamese/English for map/chat/card/pet interfaces.",
+      "depends_on": [
+        "VL-040",
+        "VL-046",
+        "VL-088"
+      ],
+      "acceptance": [
+        "keyboard/touch/gamepad paths tested",
+        "contrast/scale & 16:9, 19.5:9, portrait fallback report"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 53,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-054",
+      "phase": "G4",
+      "lane": "A7-QA-SRE",
+      "title": "Usability cohort and game fun audit",
+      "objective": "Observe player first-play, map discovery, café sitting and Pet Arena, track confusion.",
+      "depends_on": [
+        "VL-049",
+        "VL-053"
+      ],
+      "acceptance": [
+        "real participant notes and anonymized metrics",
+        "backlog prioritized, no simulated playtest claims"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 54,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-055",
+      "phase": "G4",
+      "lane": "A2-Persistence-Security",
+      "title": "Durable backup, privacy and hidden data recovery",
+      "objective": "Restore game schema and legacy Lodge encrypted history under account privacy.",
+      "depends_on": [
+        "VL-021",
+        "VL-041",
+        "VL-050"
+      ],
+      "acceptance": [
+        "restore/hash tests pass, keyless abort truthful",
+        "delete/export retention risk reviewed"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 55,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-056",
+      "phase": "G4",
+      "lane": "A3-Web-UX",
+      "title": "Unity native shader/animation/transition polish and GPU fallback",
+      "objective": "Profile and polish shaders, eyes/hair/fur, scene streaming hitches, indoor lighting, low/medium/ultra visual degradation.",
+      "depends_on": [
+        "VL-051",
+        "VL-052",
+        "VL-053",
+        "VL-087"
+      ],
+      "acceptance": [
+        "browser device quality auto detected/overridable",
+        "no black screen on unsupported GPUs"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 56,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-057",
+      "phase": "G4",
+      "lane": "A7-QA-SRE",
+      "title": "Security penetration and game adversarial suite",
+      "objective": "Threat automation: counterfeit tickets, replay, colluding game clients, spam, content mismatch.",
+      "depends_on": [
+        "VL-050",
+        "VL-055"
+      ],
+      "acceptance": [
+        "all critical negative tests execute with artifact hashes",
+        "finding register and zero unmitigated CRITICAL"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 57,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-058",
+      "phase": "G4",
+      "lane": "A0-Coordinator",
+      "title": "G4 Windows native closed-beta readiness decision",
+      "objective": "Sign off Rust authority correctness, Unity compiled performance/safety and signed Windows release flow with official site.",
+      "depends_on": [
+        "VL-051",
+        "VL-052",
+        "VL-054",
+        "VL-056",
+        "VL-057",
+        "VL-095",
+        "VL-096",
+        "VL-097",
+        "VL-098",
+        "VL-103",
+        "VL-106"
+      ],
+      "acceptance": [
+        "Owner-reviewed Windows native profile, source hashes, legal/art and security QA gate recorded",
+        "Signed installer update/rollback and website download/account UX tested before closed beta"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [
+        "N06-09 web qualification verified",
+        "human art/UX review"
+      ],
+      "priority": 58,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-059",
+      "phase": "G5",
+      "lane": "A5-Native",
+      "title": "G5 optional macOS/mobile port approval and device/license audit",
+      "objective": "After Windows gate, review actual demand, Apple hardware/accounts, Android physical devices and native cross-platform scope.",
+      "depends_on": [
+        "VL-099"
+      ],
+      "acceptance": [
+        "signed ADR with license/OS/team/toolchain assumptions",
+        "conditional native original plan not bypassed"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [
+        "owner activates native workstream"
+      ],
+      "priority": 59,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-060",
+      "phase": "G5",
+      "lane": "A5-Native",
+      "title": "Unity macOS/mobile conditional cross-platform proof",
+      "objective": "Use pinned existing Windows Unity project/rig/proto and renderer tiers for real macOS or mobile build pilots; do not duplicate engine.",
+      "depends_on": [
+        "VL-059",
+        "VL-022",
+        "VL-025"
+      ],
+      "acceptance": [
+        "Android install/test with real server ACK",
+        "no native gameplay authority/damage duplication"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 60,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-061",
+      "phase": "G5",
+      "lane": "A4-Avatar-Art",
+      "title": "Cross-platform asset/rig/material parity proof after Windows",
+      "objective": "Verify subset of Windows-approved facial/rig, content bundles and quality tier on activated macOS/mobile platform.",
+      "depends_on": [
+        "VL-060",
+        "VL-052"
+      ],
+      "acceptance": [
+        "annotated cross renderer screenshots and animation parity",
+        "per-platform LOD budgets exposed"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 61,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-062",
+      "phase": "G5",
+      "lane": "A5-Native",
+      "title": "Android physical device controls and 30min thermal pilot",
+      "objective": "Adapt gameplay input and URP quality for actual Android devices; only after G5 approval.",
+      "depends_on": [
+        "VL-060",
+        "VL-061"
+      ],
+      "acceptance": [
+        "real Android physical device profiler with 30m traces",
+        "WSS reconnect and scene loading tests"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [
+        "physical Android device and owner authorization"
+      ],
+      "priority": 62,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-063",
+      "phase": "G5",
+      "lane": "A5-Native",
+      "title": "iOS pilot conditional on Mac/Xcode/Apple devices",
+      "objective": "Compile and profile real iPhone iOS Unity build with consent and entitlements; no claim based on emulator.",
+      "depends_on": [
+        "VL-060",
+        "VL-061"
+      ],
+      "acceptance": [
+        "Mac/Xcode + physical iPhone evidence; if not, BLOCKED_EXTERNAL truthful"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [
+        "Mac/Xcode/Apple team/iPhone resources"
+      ],
+      "priority": 63,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-064",
+      "phase": "G5",
+      "lane": "A0-Coordinator",
+      "title": "G5 platform port go/no-go independent of Windows release",
+      "objective": "Evaluate activated port quality and business need; Windows launch remains independent.",
+      "depends_on": [
+        "VL-062"
+      ],
+      "acceptance": [
+        "explicit decision/rollback and device table",
+        "no store release without N11/N14 actual gates"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [
+        "N10/N11/N14 original release approval"
+      ],
+      "priority": 64,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-065",
+      "phase": "G6",
+      "lane": "A7-QA-SRE",
+      "title": "CI/CD, game runtime deployment and telemetry",
+      "objective": "Use existing Argo/GHCR tooling, readiness, WSS draining and safe migrations.",
+      "depends_on": [
+        "VL-023",
+        "VL-049"
+      ],
+      "acceptance": [
+        "staging deploy with versioned digest and trace correlation",
+        "one writer and legacy route unaffected"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 65,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-066",
+      "phase": "G6",
+      "lane": "A2-Persistence-Security",
+      "title": "Production-grade operational security",
+      "objective": "Verify mTLS/internal identity, secrets, CSP/WSS ingress, abuse and data deletion path.",
+      "depends_on": [
+        "VL-050",
+        "VL-055",
+        "VL-065"
+      ],
+      "acceptance": [
+        "security signoff, compliant retention and no exposed internal endpoints"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 66,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-067",
+      "phase": "G6",
+      "lane": "A7-QA-SRE",
+      "title": "Disaster rollback drill and game reconciliation",
+      "objective": "Kill workloads, force backup restore and rollback under versions/active games.",
+      "depends_on": [
+        "VL-055",
+        "VL-065"
+      ],
+      "acceptance": [
+        "real staging report RTO/RPO measured",
+        "no double membership/currency/hidden info loss"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 67,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-068",
+      "phase": "G6",
+      "lane": "A6-Gameplay",
+      "title": "Live events and transparent progression",
+      "objective": "Implement small café festival + cosmetic achievement loop with anti-pay-to-win gating.",
+      "depends_on": [
+        "VL-047",
+        "VL-058"
+      ],
+      "acceptance": [
+        "event config from signed catalog and ledger only",
+        "no score/currency client authority"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 68,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-069",
+      "phase": "G6",
+      "lane": "A0-Coordinator",
+      "title": "Public Windows official release legal/site/support security signoff",
+      "objective": "Confirm brand/trademark/rights, privacy/moderation/support, stable website/download funnel, signed release and legal obligations.",
+      "depends_on": [
+        "VL-058",
+        "VL-066",
+        "VL-098"
+      ],
+      "acceptance": [
+        "owner-approved compliance/provenance checklist",
+        "unknowns listed no false approvals"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 69,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-070",
+      "phase": "G6",
+      "lane": "A7-QA-SRE",
+      "title": "Windows native + Rust official-release canary/monitoring",
+      "objective": "Canary users install signed Windows client from official site, play Rust game, safely rollback service/asset/client version.",
+      "depends_on": [
+        "VL-067",
+        "VL-068",
+        "VL-069",
+        "VL-102"
+      ],
+      "acceptance": [
+        "dashboard SLO, alerts, rollback drill and player reporting proven",
+        "go/no-go recorded"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [
+        "staging/hosting credentials and human beta consent"
+      ],
+      "priority": 70,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-071",
+      "phase": "G7",
+      "lane": "A1-Rust-Game-Core",
+      "title": "Zone lease/epoch model for multiple owners",
+      "objective": "Implement fenced instance directory and takeover on observed scale need.",
+      "depends_on": [
+        "VL-070"
+      ],
+      "acceptance": [
+        "network partition cannot create two successful writers",
+        "epoch and membership replay tested"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 71,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-072",
+      "phase": "G7",
+      "lane": "A2-Persistence-Security",
+      "title": "Legacy RoomAuthority Rust cutover pilot",
+      "objective": "Migrate **one** legacy world with full travel/seat/safety and journal compatible adapter.",
+      "depends_on": [
+        "VL-071",
+        "VL-055"
+      ],
+      "acceptance": [
+        "old N05/N15 fixtures pass real recovery and rollback",
+        "at most one authority and no privacy regressions"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [
+        "owner approves legacy cutover ADR"
+      ],
+      "priority": 72,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-073",
+      "phase": "G7",
+      "lane": "A7-QA-SRE",
+      "title": "Scale capacity tests and autoscaling decision",
+      "objective": "Benchmark 2+ owner workloads, AOI fanout, persistence and routing costs.",
+      "depends_on": [
+        "VL-071",
+        "VL-072"
+      ],
+      "acceptance": [
+        "measured saturation and partition chaos pass",
+        "HPA decision based on data not assumption"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 73,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-074",
+      "phase": "G7",
+      "lane": "A6-Gameplay",
+      "title": "Expand city districts and activities",
+      "objective": "Ship one new district+1 venue+1 game through same content/contract pipeline.",
+      "depends_on": [
+        "VL-070",
+        "VL-073"
+      ],
+      "acceptance": [
+        "no contract forks, safe map target and deterministic game acceptance"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 74,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-075",
+      "phase": "G7",
+      "lane": "A4-Avatar-Art",
+      "title": "Next species/outfit expansion on approved Unity avatar rig",
+      "objective": "Grow avatar variants without changing game collision stats; maintain approved Windows profile and future mobile parity.",
+      "depends_on": [
+        "VL-061",
+        "VL-070"
+      ],
+      "acceptance": [
+        "new species fits chair/emotes/LOD, license manifest and device metrics pass"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 75,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-076",
+      "phase": "G7",
+      "lane": "A0-Coordinator",
+      "title": "Creator/community roadmap and tech debt re-evaluation",
+      "objective": "Review traction, moderation cost, runtime ops and native decision before opening UGC.",
+      "depends_on": [
+        "VL-073",
+        "VL-074",
+        "VL-075"
+      ],
+      "acceptance": [
+        "prioritized ADRs backed by usage/perf data",
+        "no arbitrary untrusted scripts enabled"
+      ],
+      "evidence_required": "PR commit SHA, reproducible test log, reviewer signoff",
+      "external_gates": [],
+      "priority": 76,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-077",
+      "phase": "G0",
+      "lane": "A0-Coordinator",
+      "title": "Desktop-first roadmap and old-plan handoff decision",
+      "objective": "Owner approves Windows-native as release product, browser portal as public site; map N06/PA/Lodge effects.",
+      "depends_on": [
+        "VL-001",
+        "VL-002"
+      ],
+      "acceptance": [
+        "Desktop ADR-003 signed with exceptions",
+        "Legacy plan N06 owner/handoff and file reservation documented"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 77,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-078",
+      "phase": "G0",
+      "lane": "A5-Native",
+      "title": "Unity Windows hardware/licenses/build capability audit",
+      "objective": "Enumerate supported test PCs GPU/driver, Unity seats/CI, build runner and legal signing needs.",
+      "depends_on": [
+        "VL-001",
+        "VL-007"
+      ],
+      "acceptance": [
+        "Named physical Win PC low/balanced/ultra list or recorded external blockers",
+        "Unity build/license/CI requirements written without inventing compliance"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [
+        "Windows real GPU devices; Unity editor/license terms review"
+      ],
+      "priority": 78,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-079",
+      "phase": "G0",
+      "lane": "A3-Web-UX",
+      "title": "Official VirtualLife portal IA and hero media direction",
+      "objective": "Define website download/account/news/gallery/support structure without open world browser shader requirement.",
+      "depends_on": [
+        "VL-006",
+        "VL-010"
+      ],
+      "acceptance": [
+        "IA/content/design + reduced-motion and mobile poster strategy reviewed",
+        "Download page fields and media provenance requirements specified"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 79,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-080",
+      "phase": "G1",
+      "lane": "A5-Native",
+      "title": "Pinned Unity URP Windows project scaffolding and CI smoke",
+      "objective": "Create Unity LTS project, asmdefs, URP presets and standalone Windows build scripts.",
+      "depends_on": [
+        "VL-077",
+        "VL-078"
+      ],
+      "acceptance": [
+        "Pinned Unity exact editor and package lock + URP Windows player build CI artifact",
+        "Headless/runner limitations recorded, real player opens a simple scene"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [
+        "Windows-capable build runner; Unity licensing if applicable"
+      ],
+      "priority": 80,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-081",
+      "phase": "G1",
+      "lane": "A5-Native",
+      "title": "Native Unity ↔ Rust generated C# protocol and login proof",
+      "objective": "Generate C# from proto and connect Unity client to Rust WSS scoped ticket, reconnect.",
+      "depends_on": [
+        "VL-080",
+        "VL-012",
+        "VL-013"
+      ],
+      "acceptance": [
+        "Real native Unity login and scoped WSS roundtrip with traced server receipt",
+        "Schema mismatch, timeout, expired ticket and reconnect tested"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 81,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-082",
+      "phase": "G1",
+      "lane": "A5-Native",
+      "title": "URP anime shader/lighting GPU proof on Windows",
+      "objective": "Prototype face/hair/eye/toon outlines and one plaza/café lighting sample with profiles.",
+      "depends_on": [
+        "VL-080",
+        "VL-105"
+      ],
+      "acceptance": [
+        "Golden scene screenshots/video from compiled Win build and shader variant log",
+        "CPU/GPU/VRAM p95/p99 baseline on named Windows GPU or external gate blocker"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [
+        "Named Windows test GPU"
+      ],
+      "priority": 82,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-083",
+      "phase": "G1",
+      "lane": "A3-Web-UX",
+      "title": "Next.js official website shell with accessible hero/download routes",
+      "objective": "Build site routes, asset strategy, account integration placeholder and localized structure.",
+      "depends_on": [
+        "VL-079",
+        "VL-002"
+      ],
+      "acceptance": [
+        "Landing/news/world/download/support routes render mobile and desktop",
+        "No full game WebGL bundle or fake working download; accessible keyboard and reduced-motion"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 83,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-084",
+      "phase": "G2",
+      "lane": "A5-Native",
+      "title": "Unity local movement prediction + Rust reconciliation",
+      "objective": "Client inputs immediate, smooth corrections and packet-loss/reconnect safety.",
+      "depends_on": [
+        "VL-081",
+        "VL-028",
+        "VL-027"
+      ],
+      "acceptance": [
+        "Local control responsive under 40/80/150ms RTT injected tests",
+        "Rust rejects speedhack and client resync is stable, profiler output attached"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 84,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-085",
+      "phase": "G2",
+      "lane": "A5-Native",
+      "title": "Unity city scene streaming, camera framing and visual continuity",
+      "objective": "Addressables district cell/chunk prefetch, bake/probes, day-sunset scenario, transitions.",
+      "depends_on": [
+        "VL-024",
+        "VL-027",
+        "VL-082"
+      ],
+      "acceptance": [
+        "Compiled native Aurora Plaza loads/evicts scenes without missing assets or authority loss",
+        "Golden noon/dusk scene profiles and stream hitch count captured"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 85,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-086",
+      "phase": "G2",
+      "lane": "A4-Avatar-Art",
+      "title": "Unity native facial animation, ear/tail and sit IK integration",
+      "objective": "Connect Blender rig morphs/emotes to native Blend Tree/Animation Rigging and close/mid/far LOD.",
+      "depends_on": [
+        "VL-026",
+        "VL-027",
+        "VL-082"
+      ],
+      "acceptance": [
+        "12+ semantic expression channels and hair/ear/tail mood QA on actual model",
+        "Sitting/hand/drink no major clipping with quality tiers and reduced motion"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 86,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-087",
+      "phase": "G2",
+      "lane": "A5-Native",
+      "title": "Windows graphics profiles + shader prewarm + GPU telemetry",
+      "objective": "Dynamic resolution/LOD/shadows/postFX profiles and shader warmup, persisted safe defaults.",
+      "depends_on": [
+        "VL-085",
+        "VL-086",
+        "VL-014"
+      ],
+      "acceptance": [
+        "Low/Balanced/Ultra profiles selectable and automatic safe tier discovery",
+        "GPU/p95/p99, variant count and frame hitch logs from compiled player"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [
+        "Named Windows test PCs"
+      ],
+      "priority": 87,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-088",
+      "phase": "G2",
+      "lane": "A5-Native",
+      "title": "Unity HUD/M-map focus, UI and controls integration",
+      "objective": "Desktop gamepad/keyboard chat focus, M map, POI cards and UI render quality.",
+      "depends_on": [
+        "VL-031",
+        "VL-081",
+        "VL-085"
+      ],
+      "acceptance": [
+        "M/map/escape/chat focus/rebind and controller flows tested",
+        "No map input steals chat text; meaningful preview and teleport permissions"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 88,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-089",
+      "phase": "G3",
+      "lane": "A5-Native",
+      "title": "Unity café enter/seat/stand animation and runtime session adapter",
+      "objective": "Café interior and IK/chair with Rust seat reservation and content hash gating.",
+      "depends_on": [
+        "VL-038",
+        "VL-039",
+        "VL-085",
+        "VL-086"
+      ],
+      "acceptance": [
+        "Two players cannot own same seat; animation matches canonical seat anchor",
+        "Disconnect/blocked seat and return to walkable world tested"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 89,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-090",
+      "phase": "G3",
+      "lane": "A5-Native",
+      "title": "Unity in-world private card table UI with spectator mode",
+      "objective": "Render table mini-game in café and reliable projection-aware hidden hands.",
+      "depends_on": [
+        "VL-041",
+        "VL-042",
+        "VL-089"
+      ],
+      "acceptance": [
+        "Owner sees private cards and spectator cannot via renderer or logs",
+        "Invite/start/forfeit/leave/reconnect works without world ghost avatar"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 90,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-091",
+      "phase": "G3",
+      "lane": "A5-Native",
+      "title": "Unity Pet Arena walk-in training PvE and match-3 board",
+      "objective": "Native world arena gate + tactical combat board and safe cinematic VFX, Rust rules.",
+      "depends_on": [
+        "VL-044",
+        "VL-045",
+        "VL-085"
+      ],
+      "acceptance": [
+        "Arena stage from city gate playable in Win build with deterministic result",
+        "Hero VFX meets flash/readability constraints and returns to free roaming"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 91,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-092",
+      "phase": "G3",
+      "lane": "A3-Web-UX",
+      "title": "VirtualLife official promotional pages and character gallery",
+      "objective": "High-impact original preview media, clear Windows CTA and launch community funnels.",
+      "depends_on": [
+        "VL-083",
+        "VL-079"
+      ],
+      "acceptance": [
+        "Website shows world/characters/activities/news/support/download states",
+        "Responsive image/video reduced-motion and correct concept-vs-gameplay labeling"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 92,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-093",
+      "phase": "G3",
+      "lane": "A7-QA-SRE",
+      "title": "Windows release manifest, immutable bundle and distribution design",
+      "objective": "Define executable manifest signing, content catalog hashing, CDN and release channels.",
+      "depends_on": [
+        "VL-080",
+        "VL-083"
+      ],
+      "acceptance": [
+        "Example signed schema/CI restricts secrets and includes rollback design",
+        "Installer/game vs launcher update distinction and threat model reviewed"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [
+        "Windows signing environment and official publisher verification"
+      ],
+      "priority": 93,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-094",
+      "phase": "G4",
+      "lane": "A5-Native",
+      "title": "Signed Windows install/clean machine and crash report pilot",
+      "objective": "Package Win player with verified publisher/signature, version metadata, safe crash telemetry.",
+      "depends_on": [
+        "VL-093",
+        "VL-087"
+      ],
+      "acceptance": [
+        "Win10/11 clean install/uninstall, hash signature validation and crash restart proof",
+        "No private hands/auth tokens in diagnostics and non-admin scenario tested"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [
+        "Windows code signing materials"
+      ],
+      "priority": 94,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-095",
+      "phase": "G4",
+      "lane": "A7-QA-SRE",
+      "title": "Native G4 GPU/art/performance certification",
+      "objective": "Capture 3 golden scene profiles on named GPUs after warm/cold runs and soak.",
+      "depends_on": [
+        "VL-087",
+        "VL-089",
+        "VL-091",
+        "VL-104"
+      ],
+      "acceptance": [
+        "p50/p95/p99 CPU+GPU/VRAM/GC/hitches across 3 scenarios documented",
+        "Human art/perf signoff with hardware/driver/build source and profile hashes"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [
+        "Physical Windows GPU tiers"
+      ],
+      "priority": 95,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-096",
+      "phase": "G4",
+      "lane": "A7-QA-SRE",
+      "title": "Rust+Unity E2E privacy/reconnect/ownership stress suite",
+      "objective": "Test native compiled game with lost/duplicate packets, failed transfer, private cards and ledger.",
+      "depends_on": [
+        "VL-048",
+        "VL-090",
+        "VL-091",
+        "VL-081"
+      ],
+      "acceptance": [
+        "Native test user can city→cafe→card→Pet and back across reconnect",
+        "No double settlement, hidden card leak, ghost seat or unauthorized teleport"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 96,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-097",
+      "phase": "G4",
+      "lane": "A7-QA-SRE",
+      "title": "Windows binary/asset updater and rollback drills",
+      "objective": "Test launcher candidate if approved or signed installer-only upgrade; distinguish Unity Addressables.",
+      "depends_on": [
+        "VL-093",
+        "VL-094"
+      ],
+      "acceptance": [
+        "Interrupted download/disk-full/invalid signature cannot compromise previous install",
+        "Executable/version and content catalog rollback tested with incompatible schema path"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [
+        "Restricted signing pipeline"
+      ],
+      "priority": 97,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-098",
+      "phase": "G4",
+      "lane": "A3-Web-UX",
+      "title": "Official website security/Web Vitals/download funnel acceptance",
+      "objective": "Measure real responsive pages, safe auth/deeplink and signed Windows download.",
+      "depends_on": [
+        "VL-092",
+        "VL-094",
+        "VL-110"
+      ],
+      "acceptance": [
+        "Core Web Vitals p75 and accessibility with device/network profile reported",
+        "Signed Windows asset link/version/hash verified; support/legal/version compatibility flows pass"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 98,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-099",
+      "phase": "G4",
+      "lane": "A0-Coordinator",
+      "title": "Desktop first Windows closed-beta independently reviewed G4 gate",
+      "objective": "Owner reviews all native client, Rust correctness, website, signing and visual evidence.",
+      "depends_on": [
+        "VL-058",
+        "VL-095",
+        "VL-096",
+        "VL-097",
+        "VL-098"
+      ],
+      "acceptance": [
+        "Independent source-bound pass/no-go with open blockers and supported GPU list",
+        "Windows beta evidence bundle not based on key-art/mock UI"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 99,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-100",
+      "phase": "G5",
+      "lane": "A5-Native",
+      "title": "macOS Apple Silicon candidate build and Metal shader check",
+      "objective": "Prove macOS Unity app + networking/input + signature/notarization if funded.",
+      "depends_on": [
+        "VL-059",
+        "VL-061"
+      ],
+      "acceptance": [
+        "Mac build/render/driver QA or clear BLOCKED_EXTERNAL if no Mac/license",
+        "Profile named Apple Silicon with account/login and avatar scene"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [
+        "Mac hardware, Apple signing/notarization resources"
+      ],
+      "priority": 100,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-101",
+      "phase": "G5",
+      "lane": "A7-QA-SRE",
+      "title": "Android/iOS candidate economic performance decision",
+      "objective": "Compare app size/thermal/art adaptation and market need; Android/iOS separate release gates.",
+      "depends_on": [
+        "VL-062",
+        "VL-064"
+      ],
+      "acceptance": [
+        "Real device metrics with cost/scope and quality downgrade matrix",
+        "Owner records go/no-go independent from Windows desktop release"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [
+        "Physical mobile devices"
+      ],
+      "priority": 101,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-102",
+      "phase": "G6",
+      "lane": "A7-QA-SRE",
+      "title": "Production official portal + signed Windows client release certification",
+      "objective": "Prepare staged download, version compatibility, backend canary, status and rollback.",
+      "depends_on": [
+        "VL-099",
+        "VL-094",
+        "VL-098",
+        "VL-067"
+      ],
+      "acceptance": [
+        "Public release site points to verified signed installer with live version/size/checksum",
+        "Canary and rollback with Rust/PG restore and support runbook approved"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [
+        "Owner/legal/signing/CDN production gate"
+      ],
+      "priority": 102,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-103",
+      "phase": "G4",
+      "lane": "A5-Native",
+      "title": "Keyboard/controller accessibility and motion comfort pass",
+      "objective": "Remap keys, camera sensitivity, subtitle and no-shake controls in native HUD.",
+      "depends_on": [
+        "VL-053",
+        "VL-087"
+      ],
+      "acceptance": [
+        "Reduced-motion removes optional camera shake/particles and fast flashes",
+        "Controller/keyboard/chat map focus tested with QA report"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 103,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-104",
+      "phase": "G2",
+      "lane": "A4-Avatar-Art",
+      "title": "Animate ambient city wind, signs, crowd and safe NPC life",
+      "objective": "Create local foliage/banner shader animation, instanced ambient crowds and interactive NPC server schedule split.",
+      "depends_on": [
+        "VL-085",
+        "VL-087"
+      ],
+      "acceptance": [
+        "Ambient motion visible with near/far LOD and no server leaf/wind state",
+        "Client-only NPC effects never imply interactable authority; GPU budget measured"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 104,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-105",
+      "phase": "G1",
+      "lane": "A4-Avatar-Art",
+      "title": "Blender→Unity rig and per-scene shader/material/LOD budgets",
+      "objective": "Define texture, bone, draw, materials and shader keyword budget for first 3 golden scenes.",
+      "depends_on": [
+        "VL-006",
+        "VL-078"
+      ],
+      "acceptance": [
+        "Signed art/tech-art scale/rig/material/LOD authoring conventions",
+        "Shader variant and VRAM audit fields documented"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 105,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-106",
+      "phase": "G4",
+      "lane": "A3-Web-UX",
+      "title": "Desktop accessibility and localized brand copy cross-check",
+      "objective": "Validate client and portal shared language tokens, safety UX, and card/map contrast.",
+      "depends_on": [
+        "VL-053",
+        "VL-098",
+        "VL-103"
+      ],
+      "acceptance": [
+        "Reviewed vi/en strings and contrast/keyboard focus for game+site",
+        "No risky emotes/flash in reduced-motion setting"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 106,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-107",
+      "phase": "G7",
+      "lane": "A6-Gameplay",
+      "title": "Native photo mode and creator district expansion evaluation",
+      "objective": "Only after successful Windows release, test low-risk social/photo/UGC alternatives.",
+      "depends_on": [
+        "VL-070",
+        "VL-075"
+      ],
+      "acceptance": [
+        "Value/cost hypothesis and game privacy/screenshot policy documented",
+        "No automatic UGC store publication without moderation controls"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 107,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-108",
+      "phase": "G0",
+      "lane": "A6-Gameplay",
+      "title": "Autonomous NPC behaviors and click-to-move navigation design",
+      "objective": "Specify what Rust must validate vs decorative city movement done by Unity.",
+      "depends_on": [
+        "VL-010"
+      ],
+      "acceptance": [
+        "Click-to-move vs teleport, NPC interactive vs ambient state machines reviewed",
+        "Server navmesh/target privacy/attack surface and UX route IDs specified"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 108,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-109",
+      "phase": "G3",
+      "lane": "A1-Rust-Game-Core",
+      "title": "Rust auto-navigation target and interaction path validation",
+      "objective": "Server authorizes POI pathing, cancels on manual control and prevents moving into locked venues.",
+      "depends_on": [
+        "VL-028",
+        "VL-039",
+        "VL-108"
+      ],
+      "acceptance": [
+        "Path intent reaches legal target and fails clearly on obstacle/closed POI",
+        "Speedhack/teleport spoof and seat transition policy negative tests"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 109,
+      "status": "TODO"
+    },
+    {
+      "id": "VL-110",
+      "phase": "G4",
+      "lane": "A4-Avatar-Art",
+      "title": "Actual Windows gameplay capture and launch-media provenance",
+      "objective": "Capture launch-ready windows build screenshots and hero video from real app after graphics QA.",
+      "depends_on": [
+        "VL-095",
+        "VL-052"
+      ],
+      "acceptance": [
+        "Source/build hash and signed art rights attached to actual capture",
+        "Website clearly labels approved gameplay vs remaining concept art"
+      ],
+      "evidence_required": "PR/source SHA; runnable test and source-bound logs; named review owner; real Windows build/device profile if rendering; signatures if release",
+      "external_gates": [],
+      "priority": 110,
+      "status": "TODO"
+    }
+  ],
+  "revision": "1.1-desktop-first",
+  "updatedAt": "2026-11-09"
+}

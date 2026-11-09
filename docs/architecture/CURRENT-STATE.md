@@ -1,3 +1,30 @@
+# Desktop First Source Index - 2026-11-10
+
+Active owner direction is [VirtualLife v1.1 Desktop First](../plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/START-HERE.md).
+Use [live coordination](../plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/README.md)
+and [the source reconciliation](../execution/desktop-first/README.md). Imported
+110-task state remains immutable;VL-001 audit is pending independent review and
+no VL task is VERIFIED. Current actual checks:106governance,11backend units,
+23real-PG authority/journal/crash cases,lint and localCI contract PASS.
+
+Implemented production authority is still Nest RoomAuthority,constructed only
+in app.ts;worker remains separate. No Rust workspace,Unity project or new gameplay
+authority has been added.47SQL and ledger checksums remain unchanged. Rust will
+own new namespaces after verified contracts and default-off activation,with
+explicit legacy epoch fencing before any future cutover.
+
+209legacy plan files are preserved byte-for-byte under docs/legacy-plans/2026-11-10;
+[LEGACY-INDEX.json](../execution/desktop-first/LEGACY-INDEX.json) maps historical
+references.75vNext records and legacy44/4/0VERIFIED counts remain historical claims.
+The [N06-04 LOD addendum](../execution/desktop-first/N06-04-LOD-LEASE-CHECKPOINT.json)
+records40browser passes,68units,120exact streams,80GC recreates/all final heap
+rules PASS,and unchanged default frame gates FAIL. Separate AMD checks do not
+replace failures or qualify Unity Windows. Native hardware/build/license/signing
+remain unqualified. Browser3D is optional compatibility outside Windows critical
+path;Pet Arena PvE precedes new Lodge gameplay. No deployment/public/store action.
+
+## Earlier Checkpoints - Historical
+
 # Geometry/surface checkpoint - N06-04 remains IN_PROGRESS - 2026-11-09
 
 Source `3e14fc2` replaces decimal geometry keys with collision-checked numeric buckets; `19874e0` shares three immutable surface textures across animal variants. Actual full build/types/lint pass, 64 scene/Pixi units pass, 10 final focused cases pass, all 18 desktop/mobile room scenarios pass, and 120 authored model streams match exactly. The unchanged High-dog 20 s case passes. Character texture inventory falls from 5,679,760 to 283,988 bytes without changing triangles or draws.
