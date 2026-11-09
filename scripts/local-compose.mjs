@@ -59,7 +59,7 @@ export async function prepareLocal({root = defaultRoot, api, web, name = 'vc', p
   const tls = resolve(root, 'tls'); await mkdir(tls, {mode: 0o700});
   command('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', resolve(tls, 'key.pem'), '-out', resolve(tls, 'cert.pem'), '-days', '90', '-subj', '/CN=localhost', '-addext', 'subjectAltName=DNS:localhost,IP:127.0.0.1']);
   await chmod(resolve(tls, 'key.pem'), 0o600);
-  const environment = {VC_NAME: name, VC_PORT: String(port), VC_API_IMAGE: api, VC_WEB_IMAGE: web, VC_DB_PASSWORD: randomBytes(32).toString('hex'),
+  const environment = {VC_NAME: name, VC_PORT: String(port), VC_UID: String(process.getuid()), VC_GID: String(process.getgid()), VC_API_IMAGE: api, VC_WEB_IMAGE: web, VC_DB_PASSWORD: randomBytes(32).toString('hex'),
     VC_SESSION_SECRET: randomBytes(48).toString('hex'), VC_SUBNET: network.subnet, VC_DYNAMIC_RANGE: network.dynamic, VC_PROXY_IP: network.proxy, VC_TLS_DIRECTORY: tls};
   assert(Object.values(environment).every(value => !/[\r\n$#'"\s]/.test(value)), 'Unsupported local environment path');
   await writeFile(resolve(root, 'runtime.env'), Object.entries(environment).map(([key, value]) => key + '=' + value).join('\n') + '\n', {mode: 0o600, flag: 'wx'});

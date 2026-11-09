@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
 import {createHash, randomUUID, X509Certificate} from 'node:crypto';
 import {mkdir, readFile, rm, writeFile} from 'node:fs/promises';
 import https from 'node:https';
@@ -26,7 +27,9 @@ try {
   const cert = await readFile(resolve(root, 'tls/cert.pem'));
   function request(path, options = {}) {
     return new Promise((ok, no) => {
-      const req = https.request({hostname: '127.0.0.1', servername: 'localhost', port, path, ca: cert, method: options.method ?? 'GET', headers: {host: 'localhost:' + port, ...options.headers}}, res => {
+      // Each probe owns a fresh transport: down/up intentionally destroys the
+      // previous edge process, so do not reuse Node's pooled TLS connection.
+      const req = https.request({hostname: '127.0.0.1', servername: 'localhost', port, path, ca: cert, agent: false, method: options.method ?? 'GET', headers: {host: 'localhost:' + port, ...options.headers}}, res => {
         const chunks = []; res.on('data', chunk => chunks.push(chunk)); res.on('end', () => ok({status: res.statusCode, headers: res.headers, body: Buffer.concat(chunks).toString()}));
       });
       req.on('error', no); req.setTimeout(10000, () => req.destroy(Error('HTTPS deadline'))); if (options.body) req.write(options.body); req.end();
@@ -37,7 +40,10 @@ try {
     const metadata = JSON.parse(command('docker', ['inspect', '--format', '{"ports":{{json .NetworkSettings.Ports}},"readonly":{{json .HostConfig.ReadonlyRootfs}},"user":{{json .Config.User}},"health":{{json .State.Health.Status}}}', name + '-' + service]));
     assert.equal(metadata.health, 'healthy');
     if (service !== 'edge') assert(Object.values(metadata.ports ?? {}).every(value => value === null));
-    else assert(Object.values(metadata.ports).flat().every(binding => binding.HostIp === '127.0.0.1'));
+    else {
+      const published = Object.values(metadata.ports).flat().filter(Boolean);
+      assert(published.length === 1 && published.every(binding => binding.HostIp === '127.0.0.1' && Number(binding.HostPort) === port));
+    }
     if (['api', 'web'].includes(service)) assert(metadata.readonly && metadata.user === 'node');
   }
   assert.equal((await request('/health/ready')).status, 200);
@@ -78,6 +84,13 @@ try {
 finally {
   socket?.close(); await browser?.close();
   if (prepared) {
+    if (facts.result === 'FAIL') {
+      try {
+        const logs = spawnSync('docker', ['logs', '--tail', '40', name + '-edge'], {encoding: 'utf8', timeout: 5000});
+        await writeFile(resolve(root, 'edge-failure.log'), logs.stdout + logs.stderr, {mode: 0o600, flag: 'wx'});
+      } catch { /* Preserve other failure evidence if no edge exists. */ }
+      try {facts.edgeHealth = JSON.parse(command('docker', ['inspect', '--format', '{{json .State.Health}}', name + '-edge']));} catch { /* The startup failure may precede edge creation. */ }
+    }
     try {compose(root, ['down', '--volumes']); facts.cleanupComplete = true;} catch {facts.cleanupComplete = false; process.exitCode = 1;}
   }
   await mkdir(root, {recursive: true, mode: 0o700});

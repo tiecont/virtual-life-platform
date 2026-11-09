@@ -76,6 +76,11 @@ services:
     <<: *app
     image: caddy:2.11.7-alpine
     container_name: ${VC_NAME:-vc}-edge
+    # Read the private generated TLS directory without DAC override capability.
+    user: ${VC_UID:?Run docker:prepare}:${VC_GID:?Run docker:prepare}
+    # Upstream caddy carries this file capability; dropping it from the bounding
+    # set prevents exec entirely, even when listening on an unprivileged port.
+    cap_add: [NET_BIND_SERVICE]
     environment:
       CITY_SITE_ADDRESS: https://localhost:${VC_PORT:-3443}
       CITY_TLS_CERT: /run/tls/cert.pem
