@@ -27,4 +27,9 @@ export interface AnimalStudyHandle extends RoomSceneHandle {
  resetMeasurements():void;
  diagnostics():{engine:string;scope:string;frames:number;geometry:number;textures:number;calls:number;triangles:number;frameP95Ms:number|null;frameSamples:number;measuredSeconds:number;timingScope:string;contextLost:boolean;resources:{cachedQualityTiers:number;references:number};serving?:{visible:boolean;triangles:number;supportDistance:number}};
 }
-export interface AnimalCreatorHandle extends AnimalStudyHandle {setAppearance(parts:AvatarParts):void}
+export type AvatarFraming='character'|'face'|'outfit'|'tail';
+export interface AnimalCreatorHandle extends AnimalStudyHandle {
+ setAppearance(parts:AvatarParts):void;
+ // Optional presentation extension: older composer adapters retain their view.
+ focus?(framing:AvatarFraming):void;
+}

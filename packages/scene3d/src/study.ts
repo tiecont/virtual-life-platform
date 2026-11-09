@@ -1,9 +1,10 @@
 import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {AvatarPartsSchema,type AvatarParts,type AnimationState,type AvatarAppearance} from '@virtual-city/contracts';
-import type {AnimalCreatorHandle} from '@virtual-city/client-sdk';
+import type {AnimalCreatorHandle,AvatarFraming} from '@virtual-city/client-sdk';
 import {createAnimal,animalResourceSummary,type Quality} from './animal';
 import {createRoomArt} from './room';
+import {creatorFrame} from './creator-framing';
 
 export type {AnimalStudyHandle} from '@virtual-city/client-sdk';
 export function createAnimalStudy(host:HTMLElement,options:{signal?:AbortSignal;quality?:Quality;appearance?:AvatarParts;onContext?:(available:boolean)=>void}={}):AnimalCreatorHandle{
@@ -20,12 +21,20 @@ export function createAnimalStudy(host:HTMLElement,options:{signal?:AbortSignal;
  let quality:Quality=options.quality??'balanced',appearance=options.appearance?AvatarPartsSchema.parse(options.appearance):undefined,outfit:AvatarAppearance['outfit']='casual',animal=createAnimal(quality,'cocoa',outfit,appearance),pose:AnimationState='idle',disposed=false,suspended=false,documentActive=document.visibilityState!=='hidden',lost=false,reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches,frames=0,frame=0,lastFrame:number|null=null,measureAfter=performance.now()+2000;const intervals:number[]=[];cleanup.push(()=>animal.dispose());
  function resetMeasurements(){intervals.length=0;lastFrame=null;measureAfter=performance.now()+2000;}
  scene.add(animal.group);animal.group.position.z=.45;const started=performance.now();
+ let framing:AvatarFraming|null=null,frameZoom=1;
+ function fitInspection(){
+  if(!framing||disposed)return;
+  animal.update((performance.now()-started)/1000,pose,reduced);
+  const view=creatorFrame(animal.body,framing,camera.fov,camera.aspect),direction=camera.position.clone().sub(controls.target).normalize();
+  controls.target.copy(view.target);controls.minDistance=.45;controls.maxDistance=Math.max(5.5,view.distance*2);
+  camera.position.copy(view.target).addScaledVector(direction,view.distance*frameZoom);controls.update();
+ }
  function render(time=performance.now()){
   if(disposed||suspended||!documentActive||lost)return;animal.update((time-started)/1000,pose,reduced);renderer.render(scene,camera);frames++;canvas.dataset.frames=String(frames);canvas.dataset.pose=pose;canvas.dataset.quality=quality;
  }
  function animate(time:number){frame=0;if(disposed||suspended||!documentActive||lost||reduced)return;if(time>=measureAfter&&lastFrame!==null){intervals.push(time-lastFrame);if(intervals.length>300)intervals.shift();}lastFrame=time;render(time);frame=requestAnimationFrame(animate);}
  function wake(){if(disposed||suspended||!documentActive||lost)return;render();if(!reduced&&!frame)frame=requestAnimationFrame(animate);}
- function resize(){if(disposed||!host.clientWidth||!host.clientHeight)return;const width=host.clientWidth,height=host.clientHeight;camera.aspect=width/height;camera.updateProjectionMatrix();renderer.shadowMap.enabled=quality!=='low';room.group.traverse(object=>{if(object instanceof T.PointLight)object.visible=quality!=='low';});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,quality==='high'?2:quality==='balanced'?1.25:1));renderer.setSize(width,height,false);wake();}
+ function resize(){if(disposed||!host.clientWidth||!host.clientHeight)return;const width=host.clientWidth,height=host.clientHeight;camera.aspect=width/height;camera.updateProjectionMatrix();fitInspection();renderer.shadowMap.enabled=quality!=='low';room.group.traverse(object=>{if(object instanceof T.PointLight)object.visible=quality!=='low';});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,quality==='high'?2:quality==='balanced'?1.25:1));renderer.setSize(width,height,false);wake();}
  function pause(){cancelAnimationFrame(frame);frame=0;resetMeasurements();}
  const visibility=()=>{documentActive=document.visibilityState!=='hidden';if(!documentActive)pause();else wake();};
  const contextLost=(event:Event)=>{event.preventDefault();lost=true;pause();canvas.dataset.context='lost';options.onContext?.(false);};const contextRestored=()=>{if(disposed)return;lost=false;canvas.dataset.context='restored';options.onContext?.(true);resize();};
@@ -39,12 +48,13 @@ export function createAnimalStudy(host:HTMLElement,options:{signal?:AbortSignal;
  return {
   update(snapshot){if(snapshot)throw Error('This labelled local art study is not an authoritative room renderer');suspended=false;wake();},
   suspend(){suspended=true;pause();},setReducedMotion(value){override=true;reduced=value;pause();wake();},destroy,
-  setPose(value){pose=value;animal.group.position.z=pose==='sit'?0:.45;wake();},
-  setView(view){const angle=Math.atan2(camera.position.x-controls.target.x,camera.position.z-controls.target.z);animal.group.rotation.y=angle+{front:0,left:Math.PI/2,back:Math.PI,right:-Math.PI/2}[view];wake();},
+  setPose(value){pose=value;animal.group.position.z=pose==='sit'?0:.45;fitInspection();wake();},
+  setView(view){const angle=Math.atan2(camera.position.x-controls.target.x,camera.position.z-controls.target.z);animal.group.rotation.y=angle+{front:0,left:Math.PI/2,back:Math.PI,right:-Math.PI/2}[view];fitInspection();wake();},
+  focus(value){if(disposed)return;framing=value;frameZoom=1;canvas.dataset.framing=value;fitInspection();wake();},
   setQuality(value){if(value===quality||disposed)return;const rotation=animal.group.rotation.y,replacement=createAnimal(value,'cocoa',outfit,appearance);animal.dispose();quality=value;animal=replacement;animal.group.position.z=pose==='sit'?0:.45;animal.group.rotation.y=rotation;scene.add(animal.group);resetMeasurements();resize();},
-  setOutfit(value){if(value===outfit||disposed)return;const rotation=animal.group.rotation.y,replacement=createAnimal(quality,'cocoa',value,appearance);animal.dispose();outfit=value;animal=replacement;animal.group.position.z=pose==='sit'?0:.45;animal.group.rotation.y=rotation;scene.add(animal.group);resetMeasurements();wake();},
-  setAppearance(input){if(disposed)return;const next=AvatarPartsSchema.parse(input);if(JSON.stringify(next)===JSON.stringify(appearance))return;const rotation=animal.group.rotation.y,replacement=createAnimal(quality,'cocoa',outfit,next);animal.dispose();appearance=next;animal=replacement;animal.group.position.z=pose==='sit'?0:.45;animal.group.rotation.y=rotation;scene.add(animal.group);canvas.dataset.appearance=JSON.stringify(next);resetMeasurements();wake();},
-  zoom(direction){const offset=camera.position.clone().sub(controls.target),length=T.MathUtils.clamp(offset.length()*(direction==='in'?.85:1.18),controls.minDistance,controls.maxDistance);camera.position.copy(controls.target).add(offset.setLength(length));controls.update();wake();},resetMeasurements,
+  setOutfit(value){if(value===outfit||disposed)return;const rotation=animal.group.rotation.y,replacement=createAnimal(quality,'cocoa',value,appearance);animal.dispose();outfit=value;animal=replacement;animal.group.position.z=pose==='sit'?0:.45;animal.group.rotation.y=rotation;scene.add(animal.group);resetMeasurements();fitInspection();wake();},
+  setAppearance(input){if(disposed)return;const next=AvatarPartsSchema.parse(input);if(JSON.stringify(next)===JSON.stringify(appearance))return;const rotation=animal.group.rotation.y,replacement=createAnimal(quality,'cocoa',outfit,next);animal.dispose();appearance=next;animal=replacement;animal.group.position.z=pose==='sit'?0:.45;animal.group.rotation.y=rotation;scene.add(animal.group);canvas.dataset.appearance=JSON.stringify(next);resetMeasurements();fitInspection();wake();},
+  zoom(direction){if(framing)frameZoom=T.MathUtils.clamp(frameZoom*(direction==='in'?.85:1.18),.5,1.8);const offset=camera.position.clone().sub(controls.target),length=T.MathUtils.clamp(offset.length()*(direction==='in'?.85:1.18),controls.minDistance,controls.maxDistance);camera.position.copy(controls.target).add(offset.setLength(length));controls.update();wake();},resetMeasurements,
   diagnostics(){const sorted=intervals.slice().sort((a,b)=>a-b);return {engine:'three-webgl2',scope:'LOCAL_PROCEDURAL_ART_STUDY_NOT_FINAL_GAMEPLAY_OR_N10_04',frames,geometry:renderer.info.memory.geometries,textures:renderer.info.memory.textures,calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,frameP95Ms:sorted.length?sorted[Math.min(sorted.length-1,Math.ceil(sorted.length*.95)-1)]:null,frameSamples:sorted.length,measuredSeconds:intervals.reduce((sum,value)=>sum+value,0)/1000,timingScope:'RAF_AFTER_2S_WARMUP_NOT_PHYSICAL_ACCEPTANCE',contextLost:lost,resources:animalResourceSummary(),serving:animal.serving()};}
  };
  }catch(error){for(const dispose of cleanup.splice(0).reverse()){try{dispose();}catch{/* Preserve the original initialization failure. */}}throw error;}
