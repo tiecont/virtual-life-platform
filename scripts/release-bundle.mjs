@@ -8,8 +8,12 @@ import {sourceSchemaPolicy} from './source-schema-policy.mjs';
 
 const args = process.argv.slice(2);
 assert(args[0] === '--output' && (args.length === 2 || args.length === 4 && args[2] === '--source-revision' && shaPattern.test(args[3])));
-const directory = resolve(args[1]); await mkdir(directory, {mode: 0o700});
-const sourceRevision = execFileSync('git', ['rev-parse', args[3] ?? 'HEAD'], {encoding: 'utf8'}).trim(); assert(shaPattern.test(sourceRevision));
+const directory = resolve(args[1]);
+// Fresh CI checkouts have no ignored artifacts directory. Keep the final output
+// exclusive so an existing or partial bundle can never be reused or overwritten.
+await mkdir(dirname(directory), {recursive: true, mode: 0o700});
+await mkdir(directory, {mode: 0o700});
+const sourceRevision = execFileSync('git', ['rev-parse', '--verify', (args[3] ?? 'HEAD') + '^{commit}'], {encoding: 'utf8'}).trim(); assert(shaPattern.test(sourceRevision));
 const web = JSON.parse(execFileSync('node', ['scripts/check-web-image.mjs', '--target=web', '--source-revision', sourceRevision], {encoding: 'utf8', timeout: 1800000, maxBuffer: 32 * 1024 * 1024}));
 const api = JSON.parse(await readFile(resolve(dirname(web.api.artifacts.ref), 'facts.json'), 'utf8'));
 const admin = JSON.parse(execFileSync('node', ['scripts/check-admin-image.mjs', '--target=admin', '--source-revision', sourceRevision, '--api-facts', resolve(dirname(web.api.artifacts.ref), 'facts.json')], {encoding: 'utf8', timeout: 1800000, maxBuffer: 32 * 1024 * 1024}));

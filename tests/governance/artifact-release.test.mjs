@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {execFileSync, spawnSync} from 'node:child_process';
-import {mkdir, mkdtemp, readFile, rm, symlink, writeFile} from 'node:fs/promises';
+import {mkdir, mkdtemp, readFile, rm, stat, symlink, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {dirname, join, resolve} from 'node:path';
 import {artifactCiResult, imageChanges, qualityWorkflow, repository, trustedRun, validateArtifactPolicy} from '../../scripts/artifact-policy.mjs';
@@ -94,4 +94,21 @@ test('manifest binds immutable image/source/run, checks, package SBOM and unsign
     await writeFile(join(overlayRoot, 'config/artifact-release.json'), await readFile('config/artifact-release.json')); await writeFile(join(overlayRoot, 'releases/bad/release.json'), '{}');
     assert.equal(spawnSync('node', [resolve('scripts/release-manifest.mjs')], {cwd: overlayRoot}).status, 1, 'Unselected committed release metadata must still be validated');
   } finally {await rm(directory, {recursive: true, force: true});}
+});
+
+
+test('release bundle on a clean checkout creates missing private parents and refuses to reuse any output', async () => {
+  const temporary = await mkdtemp(join(tmpdir(), 'vlp-fresh-bundle-')), output = join(temporary, 'artifacts/release-bundle');
+  try {
+    // An absent source must fail before Docker is invoked;exercise the real CLI
+    // initialization without images,registry writes or an existing artifacts tree.
+    const args = ['scripts/release-bundle.mjs', '--output', output, '--source-revision', 'f'.repeat(40)];
+    const first = spawnSync('node', args, {encoding: 'utf8'});
+    assert.equal(first.status, 1); assert.match(first.stderr, /unknown revision|bad revision|ambiguous argument|Needed a single revision/i);
+    for (const path of [dirname(output), output]) {const info = await stat(path);assert(info.isDirectory());assert.equal(info.mode & 0o777, 0o700);}
+    const marker = join(output, 'existing-bundle-proof'); await writeFile(marker, 'preserve this partial output');
+    const repeated = spawnSync('node', args, {encoding: 'utf8'});
+    assert.equal(repeated.status, 1); assert.match(repeated.stderr, /EEXIST/);
+    assert.equal(await readFile(marker, 'utf8'), 'preserve this partial output');
+  } finally {await rm(temporary, {recursive: true, force: true});}
 });
