@@ -1,3 +1,9 @@
+# Pet Arena planning context — 2026-11-09
+
+Planning review complete;Arena implementation remains TODO/PLANNED. Owner priority is PvE before Lodge;see `docs/plans/DEVELOPMENT-ROADMAP.md`. Active source task N06-04 retains performance/art/loading findings and its unverified renderer experiment;N06-09 is still a real web gate. No physical Android prerequisite blocks web. Phase2 stays PAUSED;no task was promoted or release approved by this plan update.
+
+## Earlier checkpoints — historical
+
 # Current cafe art and hosted gates - 2026-11-09
 
 N06-04 remains IN_PROGRESS after05a3fcc:6browser/54unit checks pass;static cafe geometry/texture budgets pass. Final art/groom/Low facets/whole-room readability/wood-dominant lighting/loading/human approval and new20actor/remount performance remain unqualified. Five Sandbox experiments fail100ms;Pixi restored with no relaxed gate. Hosted42596287142 at8450ba7 images PASS but core exceeds30minutes,so browser skipped/quality failure. Fix orchestration separately and observe a fresh exact-SHA run. Retained Docker remains67ff2d4. Native owner-deferred;Phase2 PAUSED;staging/public/production/store gates unchanged. Prior71records/50inputs/available frozen members preserved;two known auxiliary HTML losses remain explicit.

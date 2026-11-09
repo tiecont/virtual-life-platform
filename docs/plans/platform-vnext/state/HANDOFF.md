@@ -1,3 +1,15 @@
+# Pet Arena priority and plan integration — 2026-11-09
+
+Owner chose **Pet Arena PvE before Lantern Lodge**. Product order is web N06-04/N06-09 → Arena S0/S1 through PA-017 → Lodge N15/N16 → Arena S2 → remaining Lodge web modes → Arena PvP. See `docs/plans/DEVELOPMENT-ROADMAP.md` and the repository-adapted Arena `EXECUTION-PLAN.md`.
+
+All20 Arena implementation tasks remain TODO/PLANNED; existing Nxx statuses/evidence and Lodge PAUSED gate are unchanged. Proposal15files,47SQL migrations, prior evidence/budgets and inherited dirty renderer are preserved. S1 no longer requires S2 progression/social/cross-rewards; deploy-independent remains a target to prove at PA-019. S3 requires both S1/S2 acceptance. Native stays owner-deferred. No runtime/migration/deployment change in this planning slice.
+
+Three plan validators,7Arena negative scheduling tests,8existing plan regressions,focused lint,CI contract and preservation PASS. Review: `docs/plans/vlp-pet-arena-plan-v0.1/audit/PLANNING-REVIEW-2026-11-09.json`. Prior planning link/fixture/lint failures are retained in private indexed artifacts. These checks do not qualify game implementation or the inherited renderer experiment.
+
+**Next exact action:** Resume N06-04 at its renderer/workload checkpoint;preserve uncommitted changes and qualify N06-09 under unchanged budgets. Then checkpoint/handoff to Arena PA-001/002 and S1 through PA-017 before Lodge N15-05/N16. Keep Arena S2/PvP out of active scope until the scheduled handoff. Owner paths `.idea/` and `infra/botkeep-ca.pem`,and inherited CI evidence/audit remain outside this planning commit.
+
+## Earlier checkpoints — historical
+
 # Cafe room art checkpoint; N06-04 remains in progress - 2026-11-09
 
 Source05a3fcc adds four wall windows/counter detail,18Deadline laptop stations and6Maid tea settings with separate fabric accents;original creator/unselected recipe retained. Actual6browser journeys,54scene/Pixi units,package+portal builds,scene/browser types,lint/localCI contract PASS. Twelve canvas-only captures are nonblank and four seat-to-walk pairs change pixels. Actual two-cafe static inventory:11batches each,16028/16700triangles,1538688/1603200geometry bytes and87380texture bytes each. These static counts do not qualify20actor performance/loading/remount. [Source-bound checkpoint](../audit/N06-04-ROOM-ART-CHECKPOINT.json).

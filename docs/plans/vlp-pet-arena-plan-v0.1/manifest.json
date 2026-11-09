@@ -1,0 +1,39 @@
+{
+  "name": "VLP Pet Arena — 2026 Modernization Blueprint",
+  "version": "0.1.0",
+  "created": "2026-11-09",
+  "purpose": "Original-IP match-3 pet battle module planning package for Virtual Life Platform",
+  "files": [
+    "00_product/vision_prd.md",
+    "01_game_design/combat_v1.md",
+    "01_game_design/modes_social_economy.md",
+    "01_game_design/pets_and_progression.md",
+    "02_architecture/api_events.md",
+    "02_architecture/module_and_integrations.md",
+    "03_delivery/acceptance_test_matrix.md",
+    "03_delivery/agent_prompts.md",
+    "03_delivery/agent_workstreams.md",
+    "03_delivery/decision_log.md",
+    "03_delivery/roadmap_and_gates.md",
+    "AGENTS.md",
+    "README.md",
+    "contracts/domain-types.ts"
+  ],
+  "agents": [
+    "A0-integration",
+    "A1-engine",
+    "A2-content",
+    "A3-service",
+    "A4-client",
+    "A5-vlp-bridge",
+    "A6-qa"
+  ],
+  "stages": [
+    "S0-contracts",
+    "S1-pve",
+    "S2-vlp-persistence",
+    "S3-pvp-beta",
+    "S4-future"
+  ],
+  "code_claim": "No existing VLP source code was inspected; paths/contracts are suggested only."
+}

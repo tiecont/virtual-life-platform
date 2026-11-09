@@ -1,0 +1,13 @@
+{
+  "at": "2026-11-09T14:44:17.796819+00:00",
+  "scope": "Owner-requested Pet Arena plan review; no runtime/task acceptance",
+  "roadmap": "docs/plans/DEVELOPMENT-ROADMAP.md",
+  "arena_execution": "docs/plans/vlp-pet-arena-plan-v0.1/EXECUTION-PLAN.md",
+  "priority": "VNEXT_WEB -> PET_ARENA_S1 -> LODGE_N15_N16 -> PET_ARENA_S2 -> LODGE_N17_N19_WEB -> PET_ARENA_S3",
+  "active_lane": "VNEXT",
+  "active_task": "N06-04",
+  "arena_activation": "PLANNED",
+  "native_policy": "OWNER_DEFERRED",
+  "task_status_changes": [],
+  "public_release_authorized": false
+}

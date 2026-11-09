@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "updated_at": "2026-11-09T11:54:52.476Z",
+  "updated_at": "2026-11-09T14:44:17.796819+00:00",
   "scope": "vNext implementation",
   "release_status": "NOT_REQUESTED",
   "module_activation": {
@@ -394,7 +394,7 @@
         "n06-04-cafe-room-art-partial-2026-11-09"
       ],
       "blocker": null,
-      "next_action": "Continue N06-04:fix hosted core30minute timeout in a separate N03-04 CI slice without omitting checks;then qualify integrated cafe20actor resources/frame/loading/remount at locked budgets and refine groom/material/room/UI art before N06-09. Sandbox baseline350ms,caching/RAF experiments116.7-333.3ms all fail100ms;Pixi restored. Observe exact pushed-SHA hosted Quality. Phase2 stays PAUSED pending fresh qualified upstream handoff;native remains owner-deferred."
+      "next_action": "Continue the current web/art/performance slice with inherited renderer changes preserved and verified; qualify N06-09 under unchanged budgets. Owner now prioritizes Pet Arena PvE before Lodge: after N06-09 checkpoint/handoff to Arena PA-001/002 and S1 through PA-017; no native hard gate. See docs/plans/DEVELOPMENT-ROADMAP.md. Phase2 remains PAUSED."
     },
     "N06-05": {
       "status": "TODO",
@@ -833,7 +833,7 @@
       "branch": null,
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Qualify actual3D/fur/animation/lighting/LOD and polished web/mobile UI, preserving pixel evidence as historical"
+      "next_action": "Qualify actual3D/fur/animation/lighting/LOD, responsive web UI and unchanged resource/loading budgets with source-bound review. After actual acceptance, hand off to Pet Arena PA-001/002 and S1 through PA-017 before Lodge N15-05/N16. Native remains deferred; plan review is not acceptance."
     },
     "N06-10": {
       "status": "VERIFIED",

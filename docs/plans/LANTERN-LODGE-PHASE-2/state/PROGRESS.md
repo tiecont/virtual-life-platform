@@ -1,3 +1,11 @@
+# Pet Arena PvE scheduled before Lodge — 2026-11-09
+
+Owner priority is web foundation → Arena S1 through PA-017 → Lodge N15-05/N16 → Arena S2 → N17/N18/N19 web → Arena PvP. Read `docs/plans/DEVELOPMENT-ROADMAP.md`. This is product priority,not a new technical dependency or source activation. Phase2 remains PAUSED,all25task statuses and four evidence records unchanged. N15-04/05 next-action/blocker text now reflects web-first policy;physical Android no longer blocks Lodge web. Existing wave milestones and upstream N06-09 remain mandatory.
+
+**Next exact action:** Wait for the actual web qualification and scheduled Arena S1 checkpoint,then refresh the source-bound handoff and use the existing activation/ownership protocol before N15-05. Never bypass an external milestone by labeling it VERIFIED. Preserve all historical handoffs and raw evidence.
+
+## Earlier checkpoints — historical
+
 # Phase 2 progress — 0/25 implemented
 
 - N15 Shared foundation: 0/5

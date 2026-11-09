@@ -6,6 +6,8 @@
 **Scope:** Nâng nền tảng hiện hữu thành sản phẩm dễ chơi, triển khai được, đo được, có mobile và admin.  
 **Implementation state:** Các task Nxx khởi tạo TODO. Tạo gói thiết kế không đồng nghĩa thực thi task.
 
+**Product coordination 2026-11-09:** Roadmap `docs/plans/DEVELOPMENT-ROADMAP.md` ghi thứ tự owner chọn: vNext web → Pet Arena PvE → Lodge N15/N16 → Arena S2 → Lodge còn lại → PvP; dependency kỹ thuật và source-bound acceptance vẫn do ledger riêng quyết định. Gói Arena giữ namespace PA-001..020, không thêm vào manifest Nxx; active lane vẫn N06-04. Native tiếp tục owner-deferred.
+
 ## 1. Yêu cầu đã có của chủ dự án
 
 - Một monorepo, nhiều bản build/deployable; CI phù hợp và ArgoCD trên server riêng.

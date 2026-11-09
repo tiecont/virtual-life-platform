@@ -2,6 +2,8 @@
 
 Follow the [vNext master](plans/platform-vnext/MASTER-AGENT-PLAN.md), [current handoff](plans/platform-vnext/state/HANDOFF.md), [task state](plans/platform-vnext/state/task-state.json) and the dependency-ready module plan. The [architecture/evidence map](architecture/CURRENT-STATE.md) describes implemented source and the limits of its verification. Plans and proposed commands are requirements until implemented and actually executed.
 
+Product order across the active web work, Lantern Lodge and the new Pet Arena proposal is in the [development roadmap](plans/DEVELOPMENT-ROADMAP.md). Read the [Pet Arena execution overlay](plans/vlp-pet-arena-plan-v0.1/EXECUTION-PLAN.md) before its original generic agent prompts. Its PA implementation ledger remains PLANNED; Nxx history and ownership are retained.
+
 | Topic | Canonical entrypoint | Applicability |
 |---|---|---|
 | Task scheduling and evidence | [vNext state](plans/platform-vnext/state/) / [quality gates](plans/platform-vnext/QUALITY-GATES.md) | Nxx implementation and exact next action; release readiness is separate |

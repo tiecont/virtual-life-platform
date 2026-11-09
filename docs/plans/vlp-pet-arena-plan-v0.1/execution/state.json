@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "activation": "PLANNED",
+  "release_status": "NOT_REQUESTED",
+  "handoff": {
+    "source_revision": null,
+    "source_ownership_cleared": false,
+    "record": null
+  },
+  "tasks": {
+    "PA-001": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-002": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-003": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-004": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-005": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-006": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-007": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-008": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-009": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-010": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-011": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-012": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-013": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-014": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-015": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-016": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-017": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-018": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-019": {
+      "status": "TODO",
+      "evidence_refs": []
+    },
+    "PA-020": {
+      "status": "TODO",
+      "evidence_refs": []
+    }
+  },
+  "note": "Planning only; preserve PA-001..016 identifiers with corrected dependency scope. No task implementation acceptance.",
+  "active_stages": [
+    "S0",
+    "S1"
+  ]
+}

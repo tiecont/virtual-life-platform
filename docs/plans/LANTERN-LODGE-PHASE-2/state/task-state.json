@@ -42,15 +42,15 @@
         "n15-04-game-schema-expand-local-2026-11-09"
       ],
       "blocker": null,
-      "next_action": "No dependency-ready Phase2 task. Preserve this checkpoint;when an authorized physical Android is available,transfer scheduling safely to Phase1 and qualify N06-07,then N06-04/N06-09;only then resume N15-05. Use fresh evidence labels,never overwrite frozen helpers/artifacts. Do not start later waves or claim final art/release."
+      "next_action": "Preserve this verified foundation checkpoint. Upstream continues N06-04/N06-09 web; owner prioritizes Pet Arena PvE through PA-017 before Lodge. Resume N15-05 only after a fresh source-bound handoff and scheduler activation. No physical Android prerequisite for web; preserve old evidence and wave gates."
     },
     "N15-05": {
       "status": "TODO",
       "owner": null,
       "branch": null,
       "evidence_refs": [],
-      "blocker": "Upstream N06-09 not VERIFIED;requires N06-04 and physical portion of N06-07. Final SDK adb observation0 devices;later wave gates unchanged.",
-      "next_action": "Wait for VERIFIED N06-09;then implement shared recipient-scoped match shell/reconnect and native adapter using this qualified journal and existing appearance/auth owners. No game start while upstream gate is missing."
+      "blocker": "Upstream N06-09 is not VERIFIED. Phase2 remains PAUSED; owner priority places Pet Arena S1 acceptance PA-017 before Lodge in product scheduling, without adding a technical dependency or any native prerequisite.",
+      "next_action": "After actual N06-09 web qualification and Arena S1 checkpoint per product roadmap, refresh upstream handoff and activate Lodge safely; implement recipient-scoped web match shell/reconnect using the qualified journal and shared appearance. Native remains owner-deferred."
     },
     "N16-01": {
       "status": "TODO",

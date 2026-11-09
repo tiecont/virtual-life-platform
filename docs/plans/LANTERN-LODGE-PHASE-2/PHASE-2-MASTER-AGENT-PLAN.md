@@ -4,6 +4,8 @@
 
 **Scope:** 5 module `N15`–`N19`, 25 task. **Source:** v2.2 ZIP + owner animal/landscape requirement 2026-11-06; tách riêng để vận hành sau kế hoạch Phase 1 đang chạy. **Current state:**4accepted foundation tasks;read state/handoff for scheduling and owner-deferred native scope.
 
+**Product coordination 2026-11-09:** Roadmap `docs/plans/DEVELOPMENT-ROADMAP.md` ghi owner ưu tiên Pet Arena PvE trước Lodge. Sau Arena PA-017, resume N15-05/N16; checkpoint sau N16-05 để làm Arena S2, rồi resume N17→N18→N19 web. Đây không phải dependency mới hoặc reset wave. Chuyển lane cần checkpoint/pause và source handoff thật; Phase2 hiện vẫn PAUSED, không tự activate từ kế hoạch này. PA tasks có ledger riêng.
+
 ## 1. Điều kiện bắt đầu, không làm phiền Phase 1
 
 - Phase 2 implementation agent **không** sửa `docs/plans/platform-vnext/{PLAN-MANIFEST.json,state/*,MASTER-AGENT-PLAN.md}`, root `AGENTS.md`, các checkpoint M00–M24 hoặc source khi Phase 1 còn agent làm việc. Phase 1 coordinator được đồng bộ planning requirements theo yêu cầu owner vào cả hai plan; việc cập nhật docs đó không kích hoạt Phase 2 hoặc chuyển source ownership.
