@@ -1,3 +1,4 @@
+import {sceneRenderingProfile,assertSceneRenderingProfile} from '../support/scene-rendering-profile';
 import {profileSceneMovement} from '../support/scene-profile';
 import {evidenceOutput} from '../../scripts/evidence-output.mjs';
 import { test,expect } from '@playwright/test';
@@ -42,8 +43,11 @@ test('Deadline keyboard focus,timer actions,reduced motion and readable controls
  await writeFile(`${dir}/${info.project.name}-deadline.json`,JSON.stringify({nativeEntrySeatTimerAndExit:true,systemReducedMotion:true,noIdleFrames:true,timerLiveRegionOff:true,contrast,targets},null,2));
 });
 
+test.describe('declared SwiftShader compositor measurement',()=>{
+ test.use({launchOptions:{args:[...sceneRenderingProfile.launchArguments]}});
 test('Deadline scene loading,cache,idle work and SPA lifetimes fit the unchanged local browser budget', async ({ page, context }) => {
   test.setTimeout(60000); // Dedicated CPU4x/network/remount profile, not an assertion retry.
+  const renderingProfile = await assertSceneRenderingProfile(context);
   const cdp = await context.newCDPSession(page);
   await cdp.send('Network.enable'); await cdp.send('Performance.enable');
   await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
@@ -60,7 +64,7 @@ test('Deadline scene loading,cache,idle work and SPA lifetimes fit the unchanged
   const js = cold.resources.filter(entry => entry.path.endsWith('.js'));
   const jsDecoded = js.reduce((sum, entry) => sum + entry.decoded, 0), jsEncoded = js.reduce((sum, entry) => sum + entry.encoded, 0);
   const avatar = cold.resources.find(entry => entry.path.endsWith('/starter-v1.svg'))!;
-  await mkdir('artifacts', { recursive: true }); await writeFile(evidenceOutput(`docs/agent/evidence/m15-deadline-performance-cold-${test.info().project.name}.json`), JSON.stringify({ ...cold, profile: performanceBudget.profile, jsDecoded, jsEncoded, cacheControl }, null, 2));
+  await mkdir('artifacts', { recursive: true }); await writeFile(evidenceOutput(`docs/agent/evidence/m15-deadline-performance-cold-${test.info().project.name}.json`), JSON.stringify({ ...cold, profile: performanceBudget.profile, renderingProfile, jsDecoded, jsEncoded, cacheControl }, null, 2));
   expect(cold.readyMs).toBeLessThan(performanceBudget.readyMaxMs); expect(jsDecoded).toBeLessThan(performanceBudget.jsDecodedMaxBytes);
   expect(jsEncoded).toBeLessThan(performanceBudget.jsEncodedMaxBytes); expect(avatar.decoded).toBeGreaterThan(0); expect(avatar.decoded).toBeLessThan(performanceBudget.avatarDecodedMaxBytes);
   const beforeIdle = Number(await canvas.getAttribute('data-render-count')); await page.waitForTimeout(performanceBudget.idleWindowMs);
@@ -80,7 +84,7 @@ test('Deadline scene loading,cache,idle work and SPA lifetimes fit the unchanged
   }));
   await stopProfile?.();
   const sortedGaps = cadence.filter(gap => gap > 0).sort((a, b) => a - b); const rafP95GapMs = sortedGaps[Math.ceil(sortedGaps.length * .95) - 1];
-  await writeFile(evidenceOutput(`docs/agent/evidence/m15-movement-cadence-${test.info().project.name}.json`), JSON.stringify({ profile: performanceBudget.profile, rawGapsMs: cadence, samples: sortedGaps.length, rafP95GapMs, minimumSamplesExclusive: 10, rafP95GapMaxMs: performanceBudget.rafP95GapMaxMs, observedBeforeAcceptance: true, cpuProfilerEnabled: profileCpu }, null, 2));
+  await writeFile(evidenceOutput(`docs/agent/evidence/m15-movement-cadence-${test.info().project.name}.json`), JSON.stringify({ profile: performanceBudget.profile, renderingProfile, rawGapsMs: cadence, samples: sortedGaps.length, rafP95GapMs, minimumSamplesExclusive: 10, rafP95GapMaxMs: performanceBudget.rafP95GapMaxMs, observedBeforeAcceptance: true, cpuProfilerEnabled: profileCpu }, null, 2));
   expect(sortedGaps.length).toBeGreaterThan(10); expect(rafP95GapMs).toBeLessThan(performanceBudget.rafP95GapMaxMs);
   await page.getByRole('button', { name: 'Leave cafe', exact: true }).click(); await page.getByRole('link', { name: 'Identity', exact: true }).click(); await expect(canvas).toHaveCount(0);
   async function heapBytes() { await cdp.send('HeapProfiler.collectGarbage'); const result = await cdp.send('Performance.getMetrics'); return result.metrics.find(metric => metric.name === 'JSHeapUsedSize')!.value; }
@@ -99,6 +103,8 @@ test('Deadline scene loading,cache,idle work and SPA lifetimes fit the unchanged
     expect(warmAsset).toBeDefined(); expect(warmAsset!.transferSize).toBe(0);
     await second.getByRole('button', { name: 'Leave cafe', exact: true }).click();
     await mkdir('artifacts', { recursive: true });
-    await writeFile(evidenceOutput(`docs/agent/evidence/m15-deadline-performance-${test.info().project.name}.json`), JSON.stringify({ profile: performanceBudget.profile, readyMs: cold.readyMs, jsDecodedBytes: jsDecoded, jsEncodedBytes: jsEncoded, coldAvatar: avatar, cacheControl, warmAssetTransferBytes: warmAsset!.transferSize, idleWindowMs: performanceBudget.idleWindowMs, idleRenders, rafSamples: sortedGaps.length, rafP95GapMs, remountCycles: performanceBudget.remountCycles, warmHeapBytes, afterHeapBytes, heapGrowthBytes, atlasSourcePixelBytes: 512 * 768 * 4, resources: cold.resources, limits: 'Short local emulated Chromium profile; rAF cadence is not GPU throughput; forced-GC JS heap is not total browser/GPU memory or leak certification.' }, null, 2));
+    await writeFile(evidenceOutput(`docs/agent/evidence/m15-deadline-performance-${test.info().project.name}.json`), JSON.stringify({ profile: performanceBudget.profile, renderingProfile, readyMs: cold.readyMs, jsDecodedBytes: jsDecoded, jsEncodedBytes: jsEncoded, coldAvatar: avatar, cacheControl, warmAssetTransferBytes: warmAsset!.transferSize, idleWindowMs: performanceBudget.idleWindowMs, idleRenders, rafSamples: sortedGaps.length, rafP95GapMs, remountCycles: performanceBudget.remountCycles, warmHeapBytes, afterHeapBytes, heapGrowthBytes, atlasSourcePixelBytes: 512 * 768 * 4, resources: cold.resources, limits: 'Short local emulated Chromium profile; rAF cadence is not GPU throughput; forced-GC JS heap is not total browser/GPU memory or leak certification.' }, null, 2));
   } finally { await second.close(); }
+});
+
 });
