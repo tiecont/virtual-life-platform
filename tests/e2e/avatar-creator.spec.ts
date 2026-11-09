@@ -82,6 +82,8 @@ for(const slug of ['deadline','maid'])test(`${slug} camera follows the saved ani
  await expect(room).toBeVisible({timeout:20000});await expect(cameraControls.getByRole('button',{name:'Follow my character',exact:true})).toBeDisabled();
  await page.getByRole('button',{name:'Enter cafe',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');await closeActions(page);
  await expect(room).toHaveAttribute('data-self-parts',JSON.stringify(parts));const snapshot=(await(await context.request.get('/v1/me/room')).json()).snapshot;
+ const roomArt=JSON.parse((await room.getAttribute('data-room-art'))!);expect(roomArt).toEqual({revision:'cafe-details-v2',theme:slug,windows:4,workstations:slug==='deadline'?18:0,teaSets:slug==='maid'?6:0});
+ const output=evidenceOutput(`docs/agent/evidence/n06-room-camera-${slug}-${info.project.name}`);await mkdir(output,{recursive:true});await page.screenshot({path:output+'/whole-room.png',fullPage:true});await room.screenshot({path:output+'/whole-room-canvas.png'});
  const wholeHeight=Number(await room.getAttribute('data-self-height-px'));
  // Existing socket is already connected;also compare the server state directly.
  await cameraControls.getByRole('button',{name:'Follow my character',exact:true}).focus();await page.keyboard.press('Enter');
@@ -99,15 +101,16 @@ for(const slug of ['deadline','maid'])test(`${slug} camera follows the saved ani
  const firstSeat=page.locator('.cafe-seats .cafe-seat-grid button').first();await firstSeat.click();await expect(room).toHaveAttribute('data-sitting-count','1');
  const seated=(await(await context.request.get('/v1/me/room')).json()).snapshot;expect(seated.self.seatId).not.toBeNull();
  await closeActions(page);await expect(room).toHaveAttribute('data-camera-framing','self');
- const output=evidenceOutput(`docs/agent/evidence/n06-room-camera-${slug}-${info.project.name}`);await mkdir(output,{recursive:true});await page.screenshot({path:output+'/follow-seated.png',fullPage:true});
+ await page.screenshot({path:output+'/follow-seated.png',fullPage:true});await room.screenshot({path:output+'/follow-seated-canvas.png'});
  await page.getByRole('button',{name:'Room actions',exact:true}).click();await page.getByRole('button',{name:'Stand up',exact:true}).click();await expect(page.getByText('You stood up.',{exact:true})).toBeVisible();
  await page.emulateMedia({reducedMotion:'no-preference'});await expect(room).toHaveAttribute('data-reduced-motion','false');
  await page.getByRole('button',{name:'Walk to central aisle',exact:true}).click();await closeActions(page);
  await expect(room).toHaveAttribute('data-self-position',slug==='deadline'?'12.00:8.00':'12.00:10.00',{timeout:15000});await expect(room).toHaveAttribute('data-camera-framing','self');
  await expect.poll(()=>room.evaluate(canvas=>{const raw=canvas.dataset.selfScreen;if(!raw)return Infinity;const center=JSON.parse(raw),box=canvas.getBoundingClientRect();return Math.max(Math.abs(center.x-box.width/2),Math.abs(center.y-box.height/2));})).toBeLessThan(2);
  await page.screenshot({path:output+'/follow-walked.png',fullPage:true});
+ await room.screenshot({path:output+'/follow-walked-canvas.png'});
  await cameraControls.getByRole('button',{name:'Whole room',exact:true}).click();await expect(room).toHaveAttribute('data-camera-framing','room');
  expect(await own(context)).toEqual(beforeOwn);expect((await(await context.request.get('/v1/me')).json()).profile).toEqual(me.profile);
  await page.getByRole('button',{name:'Leave cafe',exact:true}).click();await expect(page.getByText('You left the cafe.',{exact:true})).toBeVisible();expect((await(await context.request.get('/v1/me/room')).json()).snapshot).toBeNull();await expect(room).toHaveAttribute('data-entity-count','0');await expect(cameraControls.getByRole('button',{name:'Follow my character',exact:true})).toBeDisabled();
- await writeFile(output+'/facts.json',JSON.stringify({world:slug,actualOwnSavedRabbit:true,cameraOnlyMutations:0,allJourneyMutations:cameraMutations,identityPreserved:true,membershipPreserved:snapshot.membershipId===seated.membershipId,seatingAndWalkingServerConfirmed:true,aspectResizeCentered:true,savedAppearanceUnchanged:true,ownCameraResetOnLeave:true,wholeRoomRetained:true,limitations:'Functional camera/readability slice;not final art or frame-budget qualification'},null,2));
+ await writeFile(output+'/facts.json',JSON.stringify({world:slug,roomArt,actualOwnSavedRabbit:true,cameraOnlyMutations:0,allJourneyMutations:cameraMutations,identityPreserved:true,membershipPreserved:snapshot.membershipId===seated.membershipId,seatingAndWalkingServerConfirmed:true,aspectResizeCentered:true,savedAppearanceUnchanged:true,ownCameraResetOnLeave:true,wholeRoomRetained:true,limitations:'Functional room-art/camera slice;not final art or frame-budget qualification'},null,2));
 });

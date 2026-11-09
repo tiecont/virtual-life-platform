@@ -17,7 +17,7 @@ export async function createRoomScene(host:HTMLElement,input:SceneManifest,onSea
  try{
   renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;renderer.shadowMap.type=T.PCFSoftShadowMap;
   const canvas=renderer.domElement;canvas.setAttribute('aria-hidden','true');canvas.dataset.scene=manifest.key;canvas.dataset.engine='three-webgl2';canvas.dataset.rendererRevision='animals3d-room-v1';host.appendChild(canvas);cleanup.push(()=>canvas.remove());
-  const world=new T.Scene();world.background=new T.Color('#e8dfd0');const room=createRoomArt(manifest);cleanup.push(()=>room.dispose());world.add(room.group);
+  const world=new T.Scene();world.background=new T.Color('#e8dfd0');const room=createRoomArt(manifest,options.theme==='deadline'||options.theme==='maid'?options.theme:undefined);cleanup.push(()=>room.dispose());world.add(room.group);canvas.dataset.roomArt=JSON.stringify(room.art);
   const people=new T.Group();world.add(people);const projection=new RoomProjection(manifest);
   const camera=new T.OrthographicCamera(-1,1,1,-1,.1,150),span=Math.max(room.width,room.depth);camera.position.set(room.center.x+span*.18,span*.78,room.center.z+span*.88);
   const controls=new OrbitControls(camera,canvas);cleanup.push(()=>controls.dispose());controls.target.copy(room.center);controls.enablePan=false;controls.enableDamping=false;controls.minPolarAngle=.4;controls.maxPolarAngle=1.2;controls.minAzimuthAngle=-Math.PI/3;controls.maxAzimuthAngle=Math.PI/3;controls.minZoom=.7;controls.maxZoom=3;controls.update();
