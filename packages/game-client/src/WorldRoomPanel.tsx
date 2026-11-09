@@ -50,6 +50,7 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,modularApp
   const manifest=experience.scene;
   const [me, setMe] = useState<Me | null>(null); const [available, setAvailable] = useState(false); const [loading, setLoading] = useState(true);
   const [view, setView] = useState(idle); const [message, setMessage] = useState(''); const [busy, setBusy] = useState(false);
+  const [framingSupported,setFramingSupported]=useState(false),[cameraFraming,setCameraFraming]=useState<'room'|'self'>('room');
   const [sceneState, setSceneState] = useState<'loading' | 'ready' | 'failed'>('loading');
   const [lowMotion, setLowMotion] = useState(false); const lowMotionRef = useRef(false); const userMotion = useRef<boolean | null>(null);
   const [walking, setWalking] = useState(false);
@@ -61,6 +62,7 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,modularApp
   const compatibility = useRef<ResolvedClientCompatibility | null>(null), sceneIdentity = useRef<SceneIdentity | undefined>(undefined);
   const negotiated = useRef<NegotiatedSession | null>(null), clientSequence = useRef(0);
   const appearanceVersion=useRef<2|undefined>(undefined);
+  useEffect(()=>{if(!['active','syncing'].includes(view.status)){setCameraFraming('room');scene.current?.setFraming?.('room');}},[view.status]);
   const compatibilityTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const announcedVisit=useRef<string|null>(null);
   const claimRef = useRef<(seatId: string) => void>(() => {});
@@ -128,11 +130,12 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,modularApp
   }, [experience,manifest,platform,modularAppearance]);
   useEffect(() => {
     const element = host.current; if (!element) return;
+    setFramingSupported(false);setCameraFraming('room');
     let cancelled = false; let owned: SceneView | undefined; const controller = new AbortController();
     void rendererLoader().then(module => rendererFactory(module)(element, manifest, id => claimRef.current(id), { signal: controller.signal,theme:experience.theme, onMove: point => moveRef.current(point),onGraphicsState:available=>{if(!cancelled)setSceneState(available?'ready':'failed');} })).then(renderer => {
       owned = renderer;
       if (cancelled) { renderer.destroy(); return; }
-      scene.current = renderer; renderer.setReducedMotion(lowMotionRef.current); if(foreground.current)renderer.update(recovery.current.view.snapshot);else renderer.suspend(); setSceneState('ready');
+      scene.current = renderer;setFramingSupported(typeof renderer.setFraming==='function');setCameraFraming('room'); renderer.setReducedMotion(lowMotionRef.current); if(foreground.current)renderer.update(recovery.current.view.snapshot);else renderer.suspend(); setSceneState('ready');
     }).catch(() => { if (!cancelled) setSceneState('failed'); });
     return () => { cancelled = true; controller.abort(); owned?.destroy(); if (scene.current === owned) scene.current = null; };
   }, [experience.theme,manifest,rendererLoader]);
@@ -260,6 +263,7 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,modularApp
       </>}
     <div className="cafe-main"><div className="cafe-scene-column">
       <div className="cafe-scene" ref={host} role="img" aria-busy={sceneState === 'loading'} aria-label={experience.sceneLabel}/>
+      {framingSupported&&<div className="cafe-camera-controls" role="group" aria-label="Room camera"><button disabled={sceneState!=='ready'} aria-pressed={cameraFraming==='room'} onClick={()=>{scene.current?.setFraming?.('room');setCameraFraming('room');}}>Whole room</button><button disabled={sceneState!=='ready'||view.status!=='active'} aria-pressed={cameraFraming==='self'} onClick={()=>{scene.current?.setFraming?.('self');setCameraFraming('self');}}>Follow my character</button><span>Drag to look around. Choose Whole room to see every seat.</span></div>}
       <div className="cafe-scene-caption"><span>{experience.caption}</span><span>{sceneState === 'loading' ? 'Loading scene...' : sceneState === 'failed' ? 'Scene unavailable. Seat controls remain available.' : artLabel}</span></div>
       <RoomDrawer enabled={sceneFirst} title="Room actions" drawerRef={actionsDialog} onClosed={()=>closedPanel('actions')}>
       {sceneFirst&&<div className="cafe-seat-search"><label>Find a seat<input type="search" value={seatFilter} onChange={event=>setSeatFilter(event.target.value)} autoComplete="off"/></label></div>}

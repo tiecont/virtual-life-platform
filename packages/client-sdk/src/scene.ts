@@ -7,6 +7,8 @@ export interface RoomSceneHandle {
  suspend():void;
  setReducedMotion(value:boolean,override?:boolean):void;
  destroy():void;
+ // Optional presentation capability;older renderers retain their existing camera.
+ setFraming?(view:'room'|'self'):void;
 }
 export interface RoomSceneOptions {
  signal?:AbortSignal;

@@ -1,3 +1,4 @@
+import {evidenceOutput} from '../../scripts/evidence-output.mjs';
 import {test,expect,type BrowserContext,type Page} from '@playwright/test';
 import {request} from 'node:http';
 import {randomUUID} from 'node:crypto';
@@ -70,4 +71,40 @@ test('the first preview starts with the saved account appearance and a failed wa
  await page.route('**/v1/me/avatar',route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:{code:'UNAVAILABLE'}})}));
  await page.goto('/character');await expect(page.getByRole('button',{name:'Refresh wardrobe',exact:true})).toBeVisible();await expect(canvas(page)).toHaveCount(0);await expect(page.getByRole('button',{name:'Save character',exact:true})).toBeDisabled();
  await page.unroute('**/v1/me/avatar');await page.getByRole('button',{name:'Refresh wardrobe',exact:true}).click();await expect(canvas(page)).toBeVisible({timeout:20000});await expect(canvas(page)).toHaveAttribute('data-initial-appearance',JSON.stringify(parts));await expect(canvas(page)).toHaveAttribute('data-appearance',JSON.stringify(parts));expect((await own(context)).revision).toBe(1);await capture(page,'account-owned-first-preview');
+});
+
+for(const slug of ['deadline','maid'])test(`${slug} camera follows the saved animal through committed seating and walking without camera commands or persistence`,async({page,context},info)=>{
+ let cameraMutations=0;page.on('websocket',socket=>socket.on('framesent',frame=>{if(typeof frame.payload==='string'&&/"(?:room.move|seat.claim|seat.release|room.leave)"/.test(frame.payload))cameraMutations++;}));
+ const me=await guest(context,'Camera visitor'),parts=starterAvatarParts('heather','rabbit');
+ const saved=await context.request.post('/v1/me/avatar',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{schemaVersion:2,catalogVersion:AVATAR_CATALOG_VERSION,expectedAccountId:me.profile.id,expectedRevision:0,parts}});expect(saved.status()).toBe(200);
+ const beforeOwn=await own(context);await page.goto('/worlds/'+slug+'/room3d');
+ const room=page.locator('canvas[data-engine="three-webgl2"]'),cameraControls=page.getByRole('group',{name:'Room camera',exact:true});
+ await expect(room).toBeVisible({timeout:20000});await expect(cameraControls.getByRole('button',{name:'Follow my character',exact:true})).toBeDisabled();
+ await page.getByRole('button',{name:'Enter cafe',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');await closeActions(page);
+ await expect(room).toHaveAttribute('data-self-parts',JSON.stringify(parts));const snapshot=(await(await context.request.get('/v1/me/room')).json()).snapshot;
+ const wholeHeight=Number(await room.getAttribute('data-self-height-px'));
+ // Existing socket is already connected;also compare the server state directly.
+ await cameraControls.getByRole('button',{name:'Follow my character',exact:true}).focus();await page.keyboard.press('Enter');
+ await expect(room).toHaveAttribute('data-camera-framing','self');expect(Number(await room.getAttribute('data-self-height-px'))).toBeGreaterThan(wholeHeight*1.5);
+ expect((await(await context.request.get('/v1/me/room')).json()).snapshot).toMatchObject({epoch:snapshot.epoch,membershipId:snapshot.membershipId,roomVersion:snapshot.roomVersion,self:snapshot.self});
+ for(const viewport of [{width:740,height:360},{width:360,height:740}]){
+  await page.setViewportSize(viewport);await expect.poll(async()=>{const point=JSON.parse((await room.getAttribute('data-self-screen'))!),box=(await room.boundingBox())!;return Math.abs(point.x-box.width/2)+Math.abs(point.y-box.height/2);}).toBeLessThan(2);
+  await expect(room).toHaveAttribute('data-camera-framing','self');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ }
+ expect(cameraMutations).toBe(0);await page.setViewportSize(info.project.name==='mobile'?{width:844,height:390}:{width:1280,height:900});
+ await page.getByRole('button',{name:'Room actions',exact:true}).click();
+ // Use the actual first authoritative seat label;no assumed shared world naming.
+ const firstSeat=page.locator('.cafe-seats .cafe-seat-grid button').first();await firstSeat.click();await expect(room).toHaveAttribute('data-sitting-count','1');
+ const seated=(await(await context.request.get('/v1/me/room')).json()).snapshot;expect(seated.self.seatId).not.toBeNull();
+ await closeActions(page);await expect(room).toHaveAttribute('data-camera-framing','self');
+ const output=evidenceOutput(`docs/agent/evidence/n06-room-camera-${slug}-${info.project.name}`);await mkdir(output,{recursive:true});await page.screenshot({path:output+'/follow-seated.png',fullPage:true});
+ await page.getByRole('button',{name:'Room actions',exact:true}).click();await page.getByRole('button',{name:'Stand up',exact:true}).click();await expect(page.getByText('You stood up.',{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Walk to central aisle',exact:true}).click();await closeActions(page);
+ await expect(room).toHaveAttribute('data-self-position',slug==='deadline'?'12.00:8.00':'12.00:10.00',{timeout:15000});await expect(room).toHaveAttribute('data-camera-framing','self');
+ const center=JSON.parse((await room.getAttribute('data-self-screen'))!),box=(await room.boundingBox())!;expect(Math.abs(center.x-box.width/2)).toBeLessThan(2);expect(Math.abs(center.y-box.height/2)).toBeLessThan(2);
+ await page.screenshot({path:output+'/follow-walked.png',fullPage:true});
+ await cameraControls.getByRole('button',{name:'Whole room',exact:true}).click();await expect(room).toHaveAttribute('data-camera-framing','room');
+ expect(await own(context)).toEqual(beforeOwn);expect((await(await context.request.get('/v1/me')).json()).profile).toEqual(me.profile);
+ await page.getByRole('button',{name:'Leave cafe',exact:true}).click();await expect(room).toHaveAttribute('data-entity-count','0');await expect(cameraControls.getByRole('button',{name:'Follow my character',exact:true})).toBeDisabled();
+ await writeFile(output+'/facts.json',JSON.stringify({world:slug,actualOwnSavedRabbit:true,cameraOnlyMutations:0,allJourneyMutations:cameraMutations,identityPreserved:true,membershipPreserved:snapshot.membershipId===seated.membershipId,seatingAndWalkingServerConfirmed:true,aspectResizeCentered:true,savedAppearanceUnchanged:true,ownCameraResetOnLeave:true,wholeRoomRetained:true,limitations:'Functional camera/readability slice;not final art or frame-budget qualification'},null,2));
 });
