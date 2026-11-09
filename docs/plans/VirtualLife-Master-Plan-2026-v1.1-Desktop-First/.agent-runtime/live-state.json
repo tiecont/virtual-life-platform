@@ -27,10 +27,12 @@
   },
   "tasks": {
     "VL-001": {
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "owner": "agent1",
       "evidenceRefs": [],
-      "reservationId": "VL-001-3e20cfc5-23a4-4bd9-8996-43cd4d2049e5"
+      "reservationId": "VL-001-3e20cfc5-23a4-4bd9-8996-43cd4d2049e5",
+      "handoffRef": "handoffs/VL-001.json",
+      "handoffSha256": "076e6110324225cbceaba39cfc559ca50c4ee57ea9a048067b24b4f7afbd9477"
     },
     "VL-002": {
       "status": "TODO",
@@ -611,5 +613,5 @@
     }
   },
   "gateEvidence": {},
-  "updatedAt": "2026-11-09T17:24:25.929Z"
+  "updatedAt": "2026-11-09T17:51:08.685Z"
 }

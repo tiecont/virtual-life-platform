@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-001",
+  "owner": "agent1",
+  "requestedReviewer": "agent2",
+  "sourceRevision": "ec80cec2e5c008f0b468f3730adc178355a04ca9",
+  "auditedBaseline": "071bcbbdc63ea28ba43dc7e11b68869793019da0",
+  "branch": "codex/desktop-first-backend",
+  "worktree": "/home/tiecont/Projects/virtual-city",
+  "planVersion": "1.1-desktop-first",
+  "status": "SUBMITTED_FOR_INDEPENDENT_REVIEW",
+  "acceptanceMet": true,
+  "acceptanceScope": "Author assessment of VL-001 source/ledger audit and live scheduler; independent review still required before VERIFIED",
+  "acceptance": [
+    "Source SHA, retained concurrent documentation commits and scoped dirty-path inventory recorded",
+    "44 vNext and 4 Lodge VERIFIED plus 20 Arena TODO entries reconciled without mutating old ledgers",
+    "All 209 old plan files and 105 owner input files preserved exactly, with hash indices",
+    "47 migration SQL files and audited authority/identity/journal/worker sources match071bcbb",
+    "Live coordinator state, reservations and exact-source independent review workflow implemented and tested"
+  ],
+  "environment": "CachyOS Linux;Node26.9.0;pnpm11.28.5;disposable Docker PostgreSQL for integration;not Windows/Unity qualification",
+  "dependencies": [],
+  "commands": [
+    {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "tests": 106},
+    {"command": "pnpm exec vitest run --project unit --maxWorkers=1 apps/platform-api/src/rooms/authority.unit.test.ts apps/platform-api/src/config/schema-compatibility.unit.test.ts apps/platform-api/src/games/journal-config.unit.test.ts apps/platform-api/src/games/journal-crypto.unit.test.ts", "exitCode": 0, "tests": 11},
+    {"command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration --maxWorkers=1 tests/integration/room-owner.test.ts tests/games/persistence.integration.test.ts tests/games/crash-recovery.integration.test.ts tests/games/fault-recovery.integration.test.ts", "exitCode": 0, "tests": 23},
+    {"command": "pnpm lint", "exitCode": 0},
+    {"command": "pnpm ci:check", "exitCode": 0},
+    {"command": "python3 docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/tools/validate_plan.py", "exitCode": 0, "warning": "Additional authorized runtime files; all original checksums pass"},
+    {"command": "node docs/execution/desktop-first/verify-adoption.mjs", "exitCode": 0, "observedCommittedHead": "ec80cec2e5c008f0b468f3730adc178355a04ca9"},
+    {"command": "git diff --cached --check", "exitCode": 0}
+  ],
+  "artifacts": [
+    {"ref": "docs/execution/desktop-first/VL-001-CHECKS.json", "sha256": "26cd9aa30c18e1bff4c694f06a4e55cc7b4e47dfeac851183e50d45daaf85242"},
+    {"ref": "docs/execution/desktop-first/VL-001-DIRECT-CHECKS.json", "sha256": "f2e50fd7e1d286e9289d5171c8ce991745d87b6eaec711bddc3d020ce8cfab1d"},
+    {"ref": "docs/execution/desktop-first/LEGACY-INDEX.json", "sha256": "bd72f1c23aeea59bb05ef4e3cc3f66a0298b92b84fc4bbea5fbad13b3c236f38"},
+    {"ref": "docs/execution/desktop-first/INPUT-MANIFEST.json", "sha256": "9135018c59444bd7bf040380ceb588088e85a2f73f32913864de3896d5caa0d3"},
+    {"ref": "scripts/desktop-scheduler.mjs", "sha256": "7b0716ccd27996b2fb4306223788d1995ba059fa1833c309780ce13e455fcd15"}
+  ],
+  "changedFiles": {
+    "implementation": ["scripts/desktop-scheduler.mjs", "tests/governance/desktop-scheduler.test.mjs", "scripts/legacy-plan-paths.mjs", "scripts/verify-web-first-plan.mjs", "scripts/verify-game-plan.mjs", "scripts/mobile-readiness.mjs"],
+    "coordination": ["AGENTS.md", "MASTER-AGENT-PLAN.md", "README.md", "docs/README.md", "docs/agent/PROGRESS.md", "docs/agent/HANDOFF.md", "docs/agent/BLOCKERS.md", "docs/agent/DECISIONS.md", "docs/architecture/CURRENT-STATE.md", "docs/execution/desktop-first/", "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/"],
+    "importsAndRelocations": "The 105-file owner input is unchanged;209 old plan files relocated with100percent byte identity. See indexed allowlists."
+  },
+  "excludedOwnership": ["Unity scenes/project/URP/render assets", "frontend layouts/visual design", "runtime gameplay/backend source", "proto/generated C#", "migration SQL", "release/signing credentials", ".idea/", "infra/botkeep-ca.pem"],
+  "migrationReservation": "NONE; VL-003 must recheck and reserve after0047 when dependency-ready",
+  "legacyN06Handoff": "N06-04 remains IN_PROGRESS in immutable ledger;final071bcbb LOD result is a separate addendum. Default frame fail and art/loading findings remain. Optional web compatibility is not a Windows dependency.",
+  "rollback": "Revert coordinator/import changes through a reviewed Git commit;preserve readonly snapshots,original history and raw evidence. No DB migration/data/runtime cutover occurred.",
+  "reviewerDecision": "PENDING;do not fabricate a review file or mark VERIFIED",
+  "blockers": ["Independent Agent2 source/contract review pending", "Thread discovery returns duplicate all-zero IDs;direct routing unresolved", "Rust/Unity/Windows capability and brand/signing/licensing gates remain unqualified"],
+  "limitations": ["No Rust or Unity implementation and no release acceptance is claimed by VL-001.", "Historical VERIFIED counts do not recertify all existing features;only the documented current cases are fresh.", "106governance includes6new scheduler cases;focused12case result is not another106case run.", "Private LOD index251files retains80heap samples;default performance failure is not waived by AMD diagnostics.", "No public/store/registry/production action;old ledger bytes and checksum baseline unchanged."],
+  "nextExactAction": "Agent2 reviews ec80cec and this exact handoff hash;writes an independent review JSON under reviews/. Agent1 ingests approval through schedulerStore.verify,then reserves VL-002 and VL-003 by dependency/priority. Do not begin VL-004 before both are VERIFIED."
+}
