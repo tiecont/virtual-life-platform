@@ -5,8 +5,8 @@ import { io, type Socket } from 'socket.io-client';
 import { MeSchema, RoomAckSchema, TravelAckSchema, TravelIntentReceiptSchema, type Me, type RoomSnapshot, type TravelSource, type TravelDestination } from '@virtual-city/contracts';
 import { defineWorld } from '@virtual-city/world-sdk';
 import { createApp } from '../../apps/platform-api/src/app';
-import { readConfig } from '../../apps/platform-api/src/config';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 
 const origin = 'http://127.0.0.1:3300'; let serial = 0; let admin: Pool;
 const opened: { app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: string }[] = [], clients = new Set<Socket>();
@@ -383,6 +383,20 @@ it('rolls back the unannounced index switch and source seat when a deferred data
   await r.pool.query('CREATE CONSTRAINT TRIGGER fail_travel_commit AFTER UPDATE ON travel_intents DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION fail_travel_commit()');
   expect(await transfer(peer, issued)).toMatchObject({ ok: false, error: { code: 'INTERNAL_ERROR' } }); expect(ended).toEqual([]);
   expect(r.app.rooms.diagnostics()).toMatchObject({ memberships: 1, occupiedSeats: 1, travelHolds: 0 }); expect(RoomAckSchema.parse(await peer.socket.timeout(5000).emitWithAck('room.snapshot', own(peer.state))).ok).toBe(true);
+  expect((await get(r, u, issued.intentId)).json().phase).toBe('FAILED');
+});
+
+it('preserves the source command watermark across a failed durable travel commit and index compensation', async () => {
+  const r = await open(), u = await guest(r), peer = await join(r, u);
+  const command = async (event: string, extra: Record<string, unknown>) => RoomAckSchema.parse(await peer.socket.timeout(5000).emitWithAck(event, {...own(peer.state), ...extra}));
+  expect((await command('seat.claim', {seatId: 'seat-1', clientSeq: 5})).ok).toBe(true);
+  const issued = await create(r, u, peer.source);
+  await r.pool.query("CREATE FUNCTION fail_ordered_travel() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.phase='COMMITTED' THEN RAISE EXCEPTION 'synthetic ordered travel commit failure'; END IF; RETURN NEW; END $$");
+  await r.pool.query('CREATE CONSTRAINT TRIGGER fail_ordered_travel AFTER UPDATE ON travel_intents DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION fail_ordered_travel()');
+  expect(await transfer(peer, issued)).toMatchObject({ok: false, error: {code: 'INTERNAL_ERROR'}});
+  expect(await command('seat.release', {seatId: 'seat-1', clientSeq: 4})).toMatchObject({ok: false, error: {code: 'IDEMPOTENCY_CONFLICT'}});
+  expect(r.app.rooms.diagnostics()).toMatchObject({memberships: 1, occupiedSeats: 1, travelHolds: 0});
+  expect((await command('seat.release', {seatId: 'seat-1', clientSeq: 6})).ok).toBe(true);
   expect((await get(r, u, issued.intentId)).json().phase).toBe('FAILED');
 });
 

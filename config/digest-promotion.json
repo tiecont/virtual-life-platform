@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "repository": "tiecont/virtual-life-platform",
+  "branch": "main",
+  "manualWorkflowEnabled": false,
+  "automaticPromotion": false,
+  "autoMerge": false,
+  "productionAutoPromotion": false,
+  "ownerReviewRequired": true
+}

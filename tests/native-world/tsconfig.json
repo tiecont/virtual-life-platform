@@ -1,0 +1,5 @@
+{
+ "extends":"../../packages/config/tsconfig.json",
+ "compilerOptions":{"noEmit":true,"module":"ESNext","moduleResolution":"Bundler","jsx":"react-jsx","experimentalDecorators":true,"emitDecoratorMetadata":true},
+ "include":["main.ts","../../scripts/native-world-fixture.ts"]
+}

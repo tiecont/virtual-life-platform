@@ -1,0 +1,2 @@
+import {defineConfig} from 'vite';import {resolve} from 'node:path';
+export default defineConfig(({mode})=>({base:'./',publicDir:resolve(import.meta.dirname,'../../apps/portal-web/public'),server:{host:'127.0.0.1'},build:{target:'es2022',sourcemap:false},plugins:['native-auth-qualification','native-policy-qualification','native-safety-qualification','native-world-qualification'].includes(mode)?[{name:'local-native-wss-qualification',transformIndexHtml(html){return html.replace("connect-src 'self';","connect-src 'self' wss://localhost:18443;");}}]:[]}));

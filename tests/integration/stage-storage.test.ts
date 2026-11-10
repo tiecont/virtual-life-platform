@@ -1,7 +1,7 @@
 import { beforeAll,afterAll,beforeEach,it,expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { Pool,type PoolClient } from 'pg';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 // Storage invariants only:synthetic account/event/room references,not admission,
 // organizer grants,performer grants or a completed Stage HTTP implementation.
 const schema='stage_storage_'+randomUUID().replaceAll('-',''),actors=Array.from({length:5},()=>randomUUID());let admin:Pool,pool:Pool,event:string,room:string,at:number;

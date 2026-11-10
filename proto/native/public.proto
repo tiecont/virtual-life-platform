@@ -1,0 +1,89 @@
+syntax = "proto3";
+package virtuallife.public.v1;
+option csharp_namespace = "VirtualLife.Native.Public.V1";
+
+// Client input only. Identity, authority, damage and rewards have no public fields.
+message ClientEnvelope {
+  uint32 protocol_version = 1;
+  bytes command_id = 2; // UUID bytes, exactly 16.
+  uint64 sequence = 3;
+  reserved 4 to 9;
+  oneof body {
+    Hello hello = 10;
+    GameIntent game_intent = 11;
+    MoveIntent move_intent = 12;
+    Resync resync = 13;
+  }
+}
+message Hello {
+  string ticket = 1; // VL-013 must authenticate; never a URL parameter.
+  string client_build = 2;
+  bytes content_hash = 3; // SHA256, exactly 32 bytes.
+  optional string platform_label = 4; // Additive diagnostic, never authority.
+}
+message GameIntent {
+  bytes game_session_id = 1;
+  uint64 expected_state_version = 2;
+  string kind = 3;
+  bytes action_payload = 4; // Typed reducer validation is mandatory later.
+}
+message MoveIntent {
+  uint64 input_sequence = 1;
+  sint32 direction_x = 2; // Quantized -1000..1000; not a client position.
+  sint32 direction_z = 3;
+}
+// A fresh authorized own snapshot, never an instruction to trust client state.
+message Resync { uint64 last_seen_epoch = 1; uint64 last_seen_tick = 2; }
+message ServerEnvelope {
+  uint32 protocol_version = 1;
+  bytes command_id = 2;
+  uint64 canonical_version = 3;
+  reserved 4 to 9;
+  oneof body {
+    HelloAccepted hello = 10;
+    Receipt receipt = 11;
+    Rejection rejection = 12;
+    WorldSnapshot snapshot = 13;
+  }
+}
+message HelloAccepted {
+  bytes content_hash = 1;
+  uint32 state_schema_version = 2;
+  WorldSnapshot snapshot = 3;
+  bytes runtime_boot_id = 4;
+}
+// VL-022 exports only the caller's own state. AOI candidates are not recipients.
+// Authorized peer projections remain a separate VL-020/028 contract.
+message WorldSnapshot {
+  uint64 authority_epoch = 1;
+  uint64 tick = 2;
+  OwnActor own_actor = 3;
+}
+message OwnActor {
+  sint32 x_mm = 1;
+  sint32 z_mm = 2;
+  uint64 last_input_sequence = 3;
+}
+message Receipt {
+  bool committed = 1;
+  bytes authorized_projection = 2; // Per recipient only; VL-020 owns filtering.
+}
+message Rejection { ErrorCode code = 1; bool retryable = 2; bytes trace_id = 3; }
+enum ErrorCode {
+  ERROR_UNSPECIFIED = 0;
+  UNAUTHENTICATED = 1;
+  POLICY_REVOKED = 2;
+  CONTENT_MISMATCH = 3;
+  STALE_VERSION = 4;
+  STALE_EPOCH = 5;
+  NOT_IN_PROXIMITY = 6;
+  SEAT_TAKEN = 7;
+  GAME_ALREADY_ACTIVE = 8;
+  TELEPORT_DENIED = 9;
+  TARGET_CAPACITY_FULL = 10;
+  COMMAND_ID_COLLISION = 11;
+  BACKPRESSURE = 12;
+  TEMPORARILY_UNAVAILABLE = 13;
+  REWARD_PENDING = 14;
+  UNSUPPORTED_CLIENT = 15;
+}

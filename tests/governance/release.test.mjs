@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { readFile } from 'node:fs/promises';
 import { checkRelease, validateRelease, validateDecision } from '../../scripts/verify-release.mjs';
 
-const inputs = await Promise.all(['config/release-trains.json', 'config/rollout.json', 'config/safety-policy.json', 'config/dating-policy.json', 'PLAN-MANIFEST.json', 'docs/agent/task-state.json'].map(async path => JSON.parse(await readFile(path, 'utf8'))));
+const inputs = await Promise.all(['config/release-trains.json', 'config/rollout.json', 'config/safety-policy.json', 'config/dating-policy.json', 'tests/fixtures/historical-release/manifest.json', 'tests/fixtures/historical-release/task-state.json'].map(async path => JSON.parse(await readFile(path, 'utf8'))));
 test('offline inventory covers seven worlds with public gates and honest operator vacancies', async () => {
   const result = await checkRelease();
   assert.equal(result.publicRelease, false);

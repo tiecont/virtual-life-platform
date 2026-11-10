@@ -2,6 +2,7 @@ node_modules/
 **/dist/
 **/.next*/
 **/*.tsbuildinfo
+apps/admin-web/next-env.d.ts
 .env
 .env.*
 !.env.example
@@ -9,3 +10,7 @@ coverage/
 playwright-report/
 test-results/
 artifacts/
+/docs/agent/evidence/
+.idea/
+**/.idea/
+infra/botkeep-ca.pem

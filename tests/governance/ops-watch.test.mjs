@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readFile } from 'node:fs/promises';
 import { checkOpsWatch, watchReport } from '../../scripts/ops-watch.mjs';
-const inputs = await Promise.all(['config/ops-watch.json', 'docs/agent/evidence/m23-rehearsal-staging-facts.json', 'docs/agent/evidence/m23-recovery-backup-facts.json', 'docs/agent/evidence/m23-rehearsal-browser-artifacts/m16-native-safety-visual/desktop-moderation.json', 'infra/environments/resource-budget.json'].map(async path => JSON.parse(await readFile(path, 'utf8'))));
+import {readHistoricalJson} from '../../scripts/evidence-reader.mjs';
+const inputs = await Promise.all(['config/ops-watch.json', 'docs/agent/evidence/m23-rehearsal-staging-facts.json', 'docs/agent/evidence/m23-recovery-backup-facts.json', 'docs/agent/evidence/m23-rehearsal-browser-artifacts/m16-native-safety-visual/desktop-moderation.json', 'infra/environments/resource-budget.json'].map(async path => path.startsWith('docs/agent/evidence/') ? readHistoricalJson(path) : JSON.parse(await readFile(path, 'utf8'))));
 test('actual local samples remain separate from unavailable retention,costs and public safety metrics', async () => {
   const data = await checkOpsWatch();
   assert.equal(data.errors.requests, 10); assert.equal(data.errors.errorsIncludingExpectedDenials, 1);

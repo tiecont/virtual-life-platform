@@ -1,3 +1,4 @@
+import {browserReportDirectory} from './scripts/browser-report-directory.mjs';
 import { defineConfig, devices } from '@playwright/test';
 import { resolve } from 'node:path';
 const journey=process.env.BROWSER_CITY_JOURNEY==='1';
@@ -10,7 +11,7 @@ const privateProfile=process.env.BROWSER_DATING_PROFILE==='1';
 const worldFlags=journey?'journey-flags':maid?'maid-flags':deadlineWorld?'deadline-flags':park?'park-flags':lounge?'lounge-flags':process.env.BROWSER_RESTAURANT_WORLD==='1'?(process.env.BROWSER_LIBRARY_WORLD==='1'?'restaurant-library-flags':'restaurant-flags'):process.env.BROWSER_LIBRARY_WORLD==='1'?'library-flags':'world-flags';
 export default defineConfig({
   testDir: 'tests/e2e', workers: 1, retries: 0,
-  reporter: [['list'], ['html', { open: 'never' }]],
+  reporter: [['list'], ['html', { open: 'never', outputFolder: browserReportDirectory(process.env.PLAYWRIGHT_HTML_OUTPUT_DIR) }]],
   use: { baseURL: 'http://127.0.0.1:3300', trace: 'retain-on-failure', screenshot: 'only-on-failure' },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },

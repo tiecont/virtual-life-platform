@@ -1,28 +1,23 @@
 import { Pool } from 'pg';
-import { readConfig } from './config';
+import { readConfig } from './shared/config/environment';
 import { createApp } from './app';
+import { RuntimeLifecycle } from './features/operations/modules/lifecycle/application/runtime-lifecycle';
 async function main() {
   const config = readConfig();
   const pool = new Pool({ connectionString: config.DATABASE_URL, max: 10, connectionTimeoutMillis: 2000 });
   pool.on('error', () => console.error('Database pool unavailable'));
-  const { app, beginDrain,identity, deadlineIdentity, social, worlds, rooms, reports, sanctions, travel, invitations, focus, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, progression } = await createApp(config, pool, true);
+  const { app, beginDrain,identity,privacyRequests,runtimeControls, deadlineIdentity, social, worlds, rooms, gameJournal, reports, sanctions, travel, invitations, focus, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, progression } = await createApp(config, pool, true);
   await app.listen(config.PORT, config.HOST);
-  const maintenance = setInterval(() => { void identity.purgeExpired().then(() => deadlineIdentity.maintain()).then(() => social.purgeExpired()).then(() => rooms.maintain()).then(() => reports.maintain()).then(() => sanctions.maintain()).then(() => travel.maintain()).then(() => invitations.maintain()).then(() => focus.maintain()).catch(() => console.error('Platform maintenance unavailable')); }, 300000);
-  maintenance.unref();
-  const serviceMaintenance = setInterval(() => { void hospitality.maintain().then(() => hospitalityOutbox.drain()).then(() => events.maintain()).then(() => stage.maintain()).then(() => audience.maintain()).then(() => datingProfiles.maintain()).then(() => datingContinuations.maintain()).then(() => datingMatching.maintain()).then(() => datingDates.maintain()).then(() => progression.maintain()).catch(() => console.error('Service maintenance unavailable')); }, 3000);
-  serviceMaintenance.unref();
-  const reloadWorlds = () => { void worlds.reloadFlags().catch(() => console.error('World flag reload failed; check local configuration and world health.')); };
+  const reloadWorlds = () => { void lifecycle.run(() => worlds.reloadFlags(), () => console.error('World flag reload failed; check local configuration and world health.')); };
+  const lifecycle = new RuntimeLifecycle({beginDrain: () => {beginDrain(); process.removeListener('SIGHUP', reloadWorlds);}, closeApp: () => app.close(), closePool: () => pool.end()});
+  lifecycle.every(60000,()=>privacyRequests.maintain(),()=>console.error('Privacy retention maintenance unavailable'));
+  lifecycle.every(3000,()=>runtimeControls.maintain(),()=>console.error('Runtime control reconciliation unavailable'));
+  if(config.LOCAL_GAME_JOURNAL==='1')lifecycle.every(3000,()=>gameJournal.recover(),()=>console.error('Local game recovery unavailable'));
+  lifecycle.every(300000, () => identity.purgeExpired().then(() => deadlineIdentity.maintain()).then(() => social.purgeExpired()).then(() => rooms.maintain()).then(() => reports.maintain()).then(() => sanctions.maintain()).then(() => travel.maintain()).then(() => invitations.maintain()).then(() => focus.maintain()), () => console.error('Platform maintenance unavailable'));
+  lifecycle.every(3000, () => hospitality.maintain().then(() => config.DURABLE_JOB_ROLE === 'api' ? hospitalityOutbox.drain() : undefined).then(() => events.maintain()).then(() => stage.maintain()).then(() => audience.maintain()).then(() => datingProfiles.maintain()).then(() => datingContinuations.maintain()).then(() => datingMatching.maintain()).then(() => datingDates.maintain()).then(() => progression.maintain()), () => console.error('Service maintenance unavailable'));
   process.on('SIGHUP', reloadWorlds);
-  let stopping = false;
   const stop = async () => {
-    if (stopping) return;
-    stopping = true;
-    beginDrain();
-    const deadline=setTimeout(()=>{console.error('Platform shutdown deadline exceeded');process.exit(1);},12000);
-    clearInterval(maintenance);
-    clearInterval(serviceMaintenance);
-    process.removeListener('SIGHUP', reloadWorlds);
-    try { await app.close(); await pool.end(); } catch { console.error('Platform shutdown failed');process.exit(1); } finally {clearTimeout(deadline);}
+    try {await lifecycle.stop();} catch {console.error('Platform shutdown failed or deadline exceeded'); process.exit(1);}
   };
   process.once('SIGTERM', () => { void stop(); });
   process.once('SIGINT', () => { void stop(); });

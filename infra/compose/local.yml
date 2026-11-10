@@ -1,0 +1,116 @@
+# Production artifacts on a private, retained local database. No public ingress.
+name: ${VC_NAME:-vc}
+x-api-env: &api-env
+  NODE_ENV: production
+  HOST: 0.0.0.0
+  PORT: '4300'
+  DATABASE_URL: postgresql://vc:${VC_DB_PASSWORD:?Run docker:prepare}@db:5432/vc
+  SESSION_SECRET: ${VC_SESSION_SECRET:?Run docker:prepare}
+  WEB_ORIGIN: https://localhost:${VC_PORT:-3443}
+  TRUSTED_PROXY_IP: ${VC_PROXY_IP:?Run docker:prepare}
+x-app: &app
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  pids_limit: 256
+  stop_grace_period: 20s
+  networks: [city]
+services:
+  db:
+    image: postgres:17.7-alpine
+    container_name: ${VC_NAME:-vc}-db
+    environment:
+      POSTGRES_USER: vc
+      POSTGRES_DB: vc
+      POSTGRES_PASSWORD: ${VC_DB_PASSWORD:?}
+    volumes: [data:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U vc -d vc]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+    networks: [city]
+  migrate:
+    <<: *app
+    image: ${VC_API_IMAGE:?Select tested API image ID}
+    container_name: ${VC_NAME:-vc}-migrate
+    environment: *api-env
+    command: [node, dist/shared/database/migrate.js]
+    depends_on:
+      db: {condition: service_healthy}
+  api:
+    <<: *app
+    image: ${VC_API_IMAGE:?}
+    container_name: ${VC_NAME:-vc}-api
+    environment: *api-env
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:4300/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+  web:
+    <<: *app
+    image: ${VC_WEB_IMAGE:?Select tested web image ID}
+    container_name: ${VC_NAME:-vc}-web
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: '3300'
+      NEXT_TELEMETRY_DISABLED: '1'
+      API_INTERNAL_URL: http://api:4300
+      PUBLIC_SOCKET_ORIGIN: https://localhost:${VC_PORT:-3443}
+    tmpfs: ['/tmp:size=32m,uid=1000,gid=1000,mode=0700', '/app/apps/portal-web/.next/cache:size=64m,uid=1000,gid=1000,mode=0700']
+    depends_on:
+      api: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3300').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+  edge:
+    <<: *app
+    image: caddy:2.11.7-alpine
+    container_name: ${VC_NAME:-vc}-edge
+    # Read the private generated TLS directory without DAC override capability.
+    user: ${VC_UID:?Run docker:prepare}:${VC_GID:?Run docker:prepare}
+    # Upstream caddy carries this file capability; dropping it from the bounding
+    # set prevents exec entirely, even when listening on an unprivileged port.
+    cap_add: [NET_BIND_SERVICE]
+    environment:
+      CITY_SITE_ADDRESS: https://localhost:${VC_PORT:-3443}
+      CITY_TLS_CERT: /run/tls/cert.pem
+      CITY_TLS_KEY: /run/tls/key.pem
+      XDG_DATA_HOME: /tmp/caddy-data
+      XDG_CONFIG_HOME: /tmp/caddy-config
+    volumes:
+      - ../caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ${VC_TLS_DIRECTORY:?Run docker:prepare}:/run/tls:ro
+    ports: ['127.0.0.1:${VC_PORT:-3443}:${VC_PORT:-3443}']
+    tmpfs: [/tmp]
+    depends_on:
+      api: {condition: service_healthy}
+      web: {condition: service_healthy}
+    healthcheck:
+      # The pinned Alpine image has BusyBox wget without CA-file support.
+      # Check listener liveness here; smoke/up verifies HTTPS with the local CA.
+      test: [CMD-SHELL, 'nc -z -w 2 127.0.0.1 "$${CITY_SITE_ADDRESS##*:}"']
+      interval: 3s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks:
+      city:
+        ipv4_address: ${VC_PROXY_IP:?}
+networks:
+  city:
+    ipam:
+      config:
+        - subnet: ${VC_SUBNET:?Run docker:prepare}
+          ip_range: ${VC_DYNAMIC_RANGE:?Run docker:prepare}
+volumes:
+  data:

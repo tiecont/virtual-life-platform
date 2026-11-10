@@ -1,0 +1,24 @@
+{
+  "authentication": "Wire data only;VL-013 remains required",
+  "compilerCrate": "protoc-bin-vendored@3.3.0",
+  "compilerSha256": "f6ee22d65361338459208da8bff801c9ca689741cba9187b34990dd45198f864",
+  "compilerVersion": "libprotoc 36.2",
+  "csharpRuntimeCompilation": "NOT_RUN;requires target-compatible Google.Protobuf/runtime and Unity gate VL-081",
+  "generated": [
+    {
+      "ref": "contracts/generated/csharp/Public.cs",
+      "sha256": "69279d7e98a5672aea238424ad2f535a9069f2e132b1837344bc62f4ed20430d"
+    },
+    {
+      "ref": "packages/native-protocol/src/generated/public_pb.ts",
+      "sha256": "73c43222d193e8ac640c975b9349a477ba23041a5a6402943416c89836d11736"
+    }
+  ],
+  "generationHost": "linux-x86_64",
+  "internalProtoSha256": "0b83537bd8752132d36accc1591cd3ebbff8b9aa0d81490e1b1075fb71fcb6f8",
+  "internalRpcVersion": 1,
+  "publicProtoSha256": "f0bd382af2f4b9f0e57c0498fc71df49883085b6c0ea56ca1c7f4433af2c32ba",
+  "publicProtocolVersion": 1,
+  "schemaVersion": 1,
+  "typescriptGenerator": "2.17.0"
+}

@@ -1,4 +1,4 @@
-import LibraryRoom from './LibraryRoom';
+import LibraryRoom from '../../../features/library/modules/room/presentation/LibraryRoom';
 export const dynamic='force-dynamic';
 export default function LibraryPage(){
  const value=process.env.PUBLIC_SOCKET_ORIGIN??'http://127.0.0.1:4300',origin=new URL(value);

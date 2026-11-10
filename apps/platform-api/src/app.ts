@@ -1,7 +1,17 @@
+import {PrivacyRequestService} from './features/identity/modules/privacy/application/privacy-requests';
+import {AdmissionStore} from './features/admission/modules/allocation/infrastructure/store';
+import {registerAdmissionQueue} from './features/admission/modules/allocation/presentation/http';
+import {RuntimePolicyStore} from './features/operations/modules/controls/infrastructure/runtime-policy-store';
+import {OperatorRuntimeControls} from './features/operations/modules/controls/application/operator-runtime';
+import {registerRuntimeControls} from './features/operations/modules/controls/presentation/operator-http';
+import {OperatorEventCalendar} from './features/events/modules/calendar/application/operator-calendar';
+import {registerOperatorEvents} from './features/events/modules/calendar/presentation/operator-http';
+import {registerPrivacyRequests} from './features/identity/modules/privacy/presentation/privacy-http';
+import {AccountControlService} from './features/identity/modules/accounts/application/account-control';
 import 'reflect-metadata';
-import { DeadlineIdentityLinks } from './identity/legacy/service';
-import { DeadlineHttpIdentityPort,type DeadlineIdentityPort } from './identity/legacy/deadline-port';
-import { registerDeadlineIdentity } from './identity/legacy/http';
+import { DeadlineIdentityLinks } from './features/identity/modules/legacy/application/service';
+import { DeadlineHttpIdentityPort,type DeadlineIdentityPort } from './features/identity/modules/legacy/application/deadline-port';
+import { registerDeadlineIdentity } from './features/identity/modules/legacy/presentation/http';
 import { randomUUID } from 'node:crypto';
 import { Module, Catch, HttpException, type ExceptionFilter, type ArgumentsHost } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
@@ -9,68 +19,85 @@ import { FastifyAdapter, type NestFastifyApplication } from '@nestjs/platform-fa
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { Pool } from 'pg';
 import { SCHEMA_VERSION, SanctionChangedSchema } from '@virtual-city/contracts';
-import type { Config } from './config';
-import { IdentityService } from './identity/service';
-import { registerIdentity } from './identity/http';
-import { migrationManifest } from './db/migrations';
-import { createIdentityGateway } from './identity/socket';
-import { SocialService, type SocialPresencePort } from './social/service';
-import { registerSocial } from './social/http';
-import { createWorldRuntime, type WorldRuntimeOptions } from './worlds/service';
-import { registerWorlds } from './worlds/http';
-import { RoomService } from './rooms/service';
-import { registerRoomGateway } from './rooms/socket';
-import { RoomMetrics } from './rooms/metrics';
-import { RoomAuthority } from './rooms/authority';
-import { createSafetyRuntime, loadSafetyPolicy, type SafetyRuntimeOptions } from './safety/runtime';
-import { registerChatGateway } from './safety/socket';
-import { ReportService } from './safety/reports';
-import { registerReports } from './safety/http';
-import { SanctionPolicy, SanctionService } from './safety/sanctions';
-import { IncidentPolicy, IncidentService } from './safety/incidents';
-import { DomainError } from './common/errors';
-import { TravelService } from './travel/service';
-import { registerTravel } from './travel/http';
-import { registerTravelGateway } from './travel/socket';
-import { InvitationService } from './invitations/service';
-import { registerInvitations } from './invitations/http';
-import { FocusService } from './focus/service';
-import { registerFocus } from './focus/http';
-import { HospitalityService, type HospitalityStaffPort } from './hospitality/service';
-import { registerHospitality } from './hospitality/http';
-import { HospitalityOutbox, type HospitalityCompletionSink } from './hospitality/outbox';
-import { EventService, type EventOrganizerPort } from './events/service';
-import { registerEvents } from './events/http';
-import { ReservationService } from './events/reservations';
-import { registerReservations } from './events/reservations-http';
-import { ReservationParties } from './events/parties';
-import { EventPermissions } from './events/permissions';
-import { StageService } from './events/stage';
-import { registerStage } from './events/stage-http';
-import { AudienceService } from './events/audience';
-import { registerAudience } from './events/audience-http';
-import { MediaClearanceGate,loadMediaClearance } from './events/media-clearance';
-import { registerMedia } from './events/media-http';
-import { DatingProfiles,testDatingEligibility,type SyntheticDatingEligibility } from './dating/profiles';
-import { registerDatingProfiles } from './dating/http';
-import { DatingMatching } from './dating/matching';
-import { registerDatingMatching } from './dating/matching-http';
-import { DatingDates } from './dating/dates';
-import { registerDatingDates } from './dating/date-http';
-import { DatingContinuations } from './dating/continuations';
-import { registerDatingContinuations } from './dating/continuation-http';
-import { isTrustedProxy } from './common/proxy';
-import { OperationalTelemetry } from './operations/telemetry';
-import { registerOperations } from './operations/http';
-import { operationalRequestLog,operationalErrorLog } from './operations/log';
-import { ReadinessProbe } from './operations/readiness';
-import { EventInvitationService } from './events/invitations';
-import { ProgressionService } from './progression/service';
-import { registerProgression } from './progression/http';
-import { AppearanceService } from './progression/appearance';
-import { DiscoveryService } from './discovery/service';
-import { LibraryStudyService } from './library/study';
-import { registerStudy } from './library/http';
+import type { Config } from './shared/config/environment';
+import { IdentityService } from './features/identity/modules/accounts/application/service';
+import { registerIdentity } from './features/identity/modules/accounts/presentation/http';
+import {NativeIdentityService,registerNativePrivacy} from './features/identity/modules/native-auth/application/native-service';
+import {registerNativeIdentity,prepareNativeApiRequest,assertNativeTransport} from './features/identity/modules/native-auth/presentation/native-http';
+import {apiErrorHandler} from './shared/common/http-errors';
+import {OperatorService} from './features/identity/modules/operators/application/operator-service';
+import {registerOperator} from './features/identity/modules/operators/presentation/operator-http';
+import { migrationManifest } from './shared/database/migrations';
+import {loadSchemaCompatibility} from './shared/config/schema-compatibility';
+import { createIdentityGateway } from './features/identity/modules/accounts/presentation/socket';
+import { SocialService, type SocialPresencePort } from './features/social/modules/relationships/application/service';
+import { registerSocial } from './features/social/modules/relationships/presentation/http';
+import { createWorldRuntime, type WorldRuntimeOptions } from './features/worlds/modules/registry/application/service';
+import { registerWorlds } from './features/worlds/modules/registry/presentation/http';
+import { RoomService } from './features/rooms/modules/presence/application/service';
+import { registerRoomGateway } from './features/rooms/modules/presence/presentation/socket';
+import { RoomMetrics } from './features/rooms/modules/presence/application/metrics';
+import { RoomAuthority } from './features/rooms/modules/presence/application/authority';
+import { createSafetyRuntime, loadSafetyPolicy, type SafetyRuntimeOptions } from './features/safety/modules/moderation/application/runtime';
+import { registerChatGateway } from './features/safety/modules/moderation/presentation/socket';
+import { ReportService } from './features/safety/modules/reporting/application/reports';
+import { registerReports } from './features/safety/modules/moderation/presentation/http';
+import { SanctionPolicy, SanctionService } from './features/safety/modules/sanctions/application/sanctions';
+import { IncidentPolicy, IncidentService } from './features/safety/modules/incidents/application/incidents';
+import { DomainError } from './shared/common/errors';
+import { TravelService } from './features/travel/modules/transfers/application/service';
+import { registerTravel } from './features/travel/modules/transfers/presentation/http';
+import { registerTravelGateway } from './features/travel/modules/transfers/presentation/socket';
+import { InvitationService } from './features/invitations/modules/consent/application/service';
+import { registerInvitations } from './features/invitations/modules/consent/presentation/http';
+import { FocusService } from './features/focus/modules/timers/application/service';
+import { registerFocus } from './features/focus/modules/timers/presentation/http';
+import { HospitalityService, type HospitalityStaffPort } from './features/hospitality/modules/service/application/service';
+import { registerHospitality } from './features/hospitality/modules/service/presentation/http';
+import { HospitalityOutbox, type HospitalityCompletionSink } from './features/hospitality/modules/service/infrastructure/outbox';
+import { EventService, type EventOrganizerPort } from './features/events/modules/calendar/application/service';
+import { registerEvents } from './features/events/modules/calendar/presentation/http';
+import { ReservationService } from './features/events/modules/reservations/application/reservations';
+import { registerReservations } from './features/events/modules/reservations/presentation/reservations-http';
+import { ReservationParties } from './features/events/modules/parties/application/parties';
+import { EventPermissions } from './features/events/modules/calendar/application/permissions';
+import { StageService } from './features/events/modules/stage/application/stage';
+import { registerStage } from './features/events/modules/stage/presentation/stage-http';
+import { AudienceService } from './features/events/modules/audience/application/audience';
+import { registerAudience } from './features/events/modules/audience/presentation/audience-http';
+import { MediaClearanceGate,loadMediaClearance } from './features/events/modules/media/infrastructure/media-clearance';
+import { registerMedia } from './features/events/modules/media/presentation/media-http';
+import { DatingProfiles,testDatingEligibility,type SyntheticDatingEligibility } from './features/dating/modules/profiles/application/profiles';
+import { registerDatingProfiles } from './features/dating/modules/profiles/presentation/http';
+import { DatingMatching } from './features/dating/modules/matching/application/matching';
+import { registerDatingMatching } from './features/dating/modules/matching/presentation/matching-http';
+import { DatingDates } from './features/dating/modules/dates/application/dates';
+import { registerDatingDates } from './features/dating/modules/dates/presentation/date-http';
+import { DatingContinuations } from './features/dating/modules/continuations/application/continuations';
+import { registerDatingContinuations } from './features/dating/modules/continuations/presentation/continuation-http';
+import { isTrustedProxy } from './shared/common/proxy';
+import {SystemObservations} from './features/operations/modules/observability/application/system-observation';
+import { OperationalTelemetry } from './features/operations/modules/observability/infrastructure/telemetry';
+import { registerOperations } from './features/operations/modules/observability/presentation/http';
+import { operationalRequestLog,operationalErrorLog } from './features/operations/modules/observability/infrastructure/log';
+import { ReadinessProbe } from './features/operations/modules/health/application/readiness';
+import {observePool} from './shared/database/observe-pool';
+import { EventInvitationService } from './features/events/modules/parties/application/invitations';
+import { ProgressionService } from './features/progression/modules/rewards/application/service';
+import {loadProgressionPolicy} from './shared/config/progression';
+import { registerProgression } from './features/progression/modules/rewards/presentation/http';
+import { AppearanceService } from './features/progression/modules/rewards/application/appearance';
+import {AvatarPartsService} from './features/progression/modules/rewards/application/avatar-parts';
+import { DiscoveryService } from './features/discovery/modules/catalog/application/service';
+import { LibraryStudyService } from './features/library/modules/study/application/study';
+import {GameLobbyService} from './features/games/modules/sessions/application/lobby';
+import {registerGameLobby} from './features/games/modules/sessions/presentation/http';
+import {GameJournal} from './features/games/modules/persistence/infrastructure/journal';
+import {GameJournalCrypto} from './features/games/modules/persistence/infrastructure/journal-crypto';
+import {createGameJournalHost} from './features/games/modules/sessions/application/room-host';
+import type {GameInitialFactory} from './features/games/modules/persistence/infrastructure/journal-host';
+import {GameRulesEngine} from '@virtual-city/boardgame-core';
+import { registerStudy } from './features/library/modules/study/presentation/http';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -85,10 +112,12 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort } = {}) {
-  const safetyPolicy = await loadSafetyPolicy(options.safety?.policy);
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]} } = {}) {
+  if(options.games){const target=new URL(config.DATABASE_URL);if(config.NODE_ENV!=='test'||!['127.0.0.1','localhost','[::1]'].includes(target.hostname)||!/^virtual_city_test(?:_|$)/.test(target.pathname.slice(1)))throw Error('Synthetic game rules require disposable local test runtime');}
+  const safetyPolicy = await loadSafetyPolicy(options.safety?.policy,config.SAFETY_POLICY_FILE);
   const mediaClearance=await MediaClearanceGate.create(await loadMediaClearance(),[],options.now);
   const requiredMigrations = await migrationManifest();
+  const schemaCompatibility=await loadSchemaCompatibility(config.SCHEMA_COMPATIBILITY_FILE,requiredMigrations);
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
     trustProxy:config.TRUSTED_PROXY_IP?(address=>isTrustedProxy(address,config.TRUSTED_PROXY_IP)):false,
     bodyLimit: 8192, requestTimeout: 10000, genReqId: () => randomUUID(),
@@ -107,11 +136,21 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onRequest', async (req, reply) => {
     reply.header('x-request-id', req.id).header('x-content-type-options', 'nosniff').header('cache-control', 'no-store').header('referrer-policy', 'same-origin');
     if(draining&&!['/health/live','/health/ready'].includes(req.routeOptions.url??''))return reply.code(503).send({error:{code:'WORLD_UNAVAILABLE',message:'Server is stopping',requestId:req.id}});
-    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) && req.headers.origin !== config.WEB_ORIGIN) {
+    const allowedOrigin=(req.routeOptions.url??'').startsWith('/v1/operator/')?config.ADMIN_ORIGIN:config.WEB_ORIGIN;
+    let nativeRequest=false;
+    try{if(nativeIdentity&&(req.routeOptions.url??'').startsWith('/v1/native/')){assertNativeTransport(req);nativeRequest=true;}else nativeRequest=await prepareNativeApiRequest(req,nativeIdentity);}catch(error){return apiErrorHandler(error,req,reply);}
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) && req.headers.origin !== allowedOrigin && !nativeRequest) {
       return reply.code(403).send({ error: { code: 'FORBIDDEN', message: 'Origin is not allowed', requestId: req.id } });
     }
   });
   const identity = new IdentityService(db, config, options.now);
+  const nativeIdentity=config.NATIVE_AUTH_ENABLED==='1'?new NativeIdentityService(identity,config.NATIVE_AUTH_KEY!,options.now):undefined;
+  http.addHook('onClose',async()=>{nativeIdentity?.close();});
+  registerNativePrivacy(identity,options.now);
+  const operator=config.OPERATOR_AUTH_KEY?new OperatorService(db,config.OPERATOR_AUTH_KEY,options.now):undefined;
+  const privacyRequests=new PrivacyRequestService(identity,config.SESSION_SECRET,operator,options.now);
+  const accountControls=operator?new AccountControlService(identity,operator,options.now):undefined;
+  registerOperator(http,config,operator,options.now,accountControls,privacyRequests);
   const deadlineIdentity=new DeadlineIdentityLinks(db,identity,config.NODE_ENV!=='production'&&config.LOCAL_DEADLINE_IDENTITY==='1'?(options.deadlineIdentity??new DeadlineHttpIdentityPort(config.DEADLINE_LEGACY_API_URL!)):undefined,options.now);
   identity.registerExportOwner('legacyIdentity',(account,transaction)=>deadlineIdentity.exportAccount(account,transaction));
   http.addHook('preClose',async()=>{deadlineIdentity.close();});
@@ -130,15 +169,27 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const sanctionsPolicy = new SanctionPolicy(db, options.now), incidentPolicy = new IncidentPolicy(db);
   const safetyGuard = { permits: async (id: string, world: string) => await incidentPolicy.permits(id, world) && await sanctionsPolicy.permits(id, world), assert: async (id: string, world: string, room?: string, chat?: boolean) => { await incidentPolicy.assert(id, world, room, chat); await sanctionsPolicy.assert(id, world, room, chat); } };
   let roomService: RoomService | undefined = undefined;
-  const worlds = await createWorldRuntime(config, identity, { ...options.worlds, safety: safetyGuard, membership: options.worlds?.membership ?? { permits: async (actor, slug, membershipId) => roomService?.permits(actor, slug, membershipId) ?? false } });
+  const runtimeStore=new RuntimePolicyStore(db);
+  const worlds = await createWorldRuntime(config, identity, { ...options.worlds, runtimeControls:runtimeStore,safety: safetyGuard,safetyPolicy, membership: options.worlds?.membership ?? { permits: async (actor, slug, membershipId) => roomService?.permits(actor, slug, membershipId) ?? false } });
+  const runtimeControls=new OperatorRuntimeControls(runtimeStore,operator,worlds.releasePolicy?.controls);
+  registerRuntimeControls(http,config,runtimeControls,options.now);
   const roomAuthority = new RoomAuthority(db);
+  // No allocator timer, room hook or production activation in this UI slice.
+  const admission=config.NODE_ENV!=='production'&&config.LOCAL_ADMISSION_UX==='1'?new AdmissionStore(db,identity,{epoch:randomUUID(),assert:()=>roomAuthority.assert()}):undefined;
+  if(admission){
+    try {if(!await admission.recover())throw new Error('Queue preview requires bounded recovery before startup');}
+    catch(error){admission.close();roomAuthority.close();await app.close();throw error;}
+    registerAdmissionQueue(http,config,identity,admission,options.now);
+    http.addHook('preClose',async()=>{admission.close();});
+  }
+  const roomMetrics = new RoomMetrics();
   roomService = new RoomService(worlds.registry, identity, roomAuthority, options.now, {
     relationships: (viewer, targets) => social.roomRelationships(viewer, targets),
     profiles: (viewer, targets, world, relationships) => identity.visibleRoomProfiles(viewer, targets, world, relationships),
-  }, safetyGuard);
+  }, safetyGuard, roomMetrics);
   if (!roomService) throw new Error('Room service failed to initialize');
   const rooms = roomService;
-  const reports = new ReportService(db, identity, rooms, safetyPolicy, config.NODE_ENV, config.SAFETY_EVIDENCE_KEY, config.SAFETY_EVIDENCE_KEY_ID, options.now);
+  const reports = new ReportService(db, identity, rooms, safetyPolicy, config.NODE_ENV, config.SAFETY_EVIDENCE_KEY, config.SAFETY_EVIDENCE_KEY_ID, options.now,worlds.releasePolicy?.confidentialEvidence);
   const datingDates=new DatingDates(db,identity,social,datingMatching,reports,safetyPolicy,options.now);
   const datingContinuations=new DatingContinuations(db,identity,social,datingProfiles,datingDates,datingMatching,options.now);
   continuationOwner.current=datingContinuations;
@@ -151,17 +202,35 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   identity.registerExportOwner('privateDates',(account,transaction)=>datingDates.exportAccount(account,transaction));
   registerDatingDates(http,config,identity,datingDates,datingMatching,options.now);
   http.addHook('preClose',async()=>{await datingDates.close();});
-  const sanctions = new SanctionService(db, identity, reports, rooms, safetyPolicy, config.NODE_ENV, config.SAFETY_EVIDENCE_KEY, config.SAFETY_EVIDENCE_KEY_ID, options.now);
+  const sanctions = new SanctionService(db, identity, reports, rooms, safetyPolicy, config.NODE_ENV, config.SAFETY_EVIDENCE_KEY, config.SAFETY_EVIDENCE_KEY_ID, options.now,worlds.releasePolicy?.confidentialEvidence);
   const incidents = new IncidentService(db, identity, reports, rooms, () => [...new Set([...worlds.registry.slugs(),'dating'])], options.now);
   const travel = new TravelService(db, identity, rooms, options.now);
+  const gameLobby=new GameLobbyService(identity,rooms,social,()=>config.NODE_ENV!=='production'&&config.LOCAL_GAME_LOBBY==='1',options.now);
+  const unsubscribeGameContact=social.onContactWithdrawn(async(transaction,a,b)=>{gameLobby.revoke(a);gameLobby.revoke(b);await gameJournal.withdrawContact(transaction,a,b);});
+  // Default-off installations retain their existing export shape and routes.
+  if(config.LOCAL_GAME_LOBBY==='1'){
+    registerGameLobby(http,config,identity,gameLobby,options.now);
+    identity.registerExportOwner('gameLobby',async id=>gameLobby.exportAccount(id));
+    identity.registerDeletionOwner('gameLobby',async id=>gameLobby.revoke(id));
+  }
+  http.addHook('preClose',async()=>{unsubscribeGameContact();await gameLobby.close();});
+  // Concrete modes remain unregistered. Only a disposable test composition may
+  // inject synthetic reducers; enabling storage never exposes gameplay routes.
+  const gameHost=createGameJournalHost(rooms,gameLobby,mode=>config.NODE_ENV!=='production'&&config.LOCAL_GAME_JOURNAL==='1'&&!!options.games?.factories.some(factory=>factory.mode===mode));
+  const gameJournal=new GameJournal(db,identity,social,gameHost,config.LOCAL_GAME_JOURNAL==='1'?new GameJournalCrypto(config.GAME_STATE_KEY!,config.GAME_STATE_KEY_ID):undefined,options.games?.engine,options.games?.factories);
+  identity.registerExportOwner('gameJournal',(account,transaction)=>gameJournal.exportAccount(transaction,account));
+  identity.registerDeletionOwner('gameJournal',(account,transaction)=>gameJournal.redactAccount(transaction,account));
+  http.addHook('preClose',async()=>{await gameJournal.close();});
   const invitations = new InvitationService(db, identity, social, worlds.registry, options.now,rooms);
   const focus = new FocusService(db, identity, rooms, options.now);
   const hospitality = new HospitalityService(db, identity, rooms, social, options.hospitality?.staff, options.now);
-  const progression = new ProgressionService(db, identity, focus, async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account,world) && await new SanctionPolicy(transaction, options.now).permits(account,world), options.progression?.policy, options.now,options.progression?.correctionOperators);
+  const progression = new ProgressionService(db, identity, focus, async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account,world) && await new SanctionPolicy(transaction, options.now).permits(account,world), options.progression?.policy ?? await loadProgressionPolicy(config.PROGRESSION_POLICY_FILE), options.now,options.progression?.correctionOperators);
   const appearance=new AppearanceService(db,identity,rooms,hospitality,options.now);rooms.setAppearanceProjection((account,world,source,connected)=>appearance.project(account,world,source,connected));
   const hospitalityOutbox = new HospitalityOutbox(db, identity, [...options.hospitality?.completionSinks ?? [], ...progression.policy.enabled ? [progression.hospitalitySink()] : []], options.now);
   const eventPermissions = new EventPermissions(reports, options.now);
   const events = new EventService(db, identity, social, worlds.registry, { permits: async (transaction, account, world) => await new IncidentPolicy(transaction).permits(account, world) && await new SanctionPolicy(transaction, options.now).permits(account, world) }, options.events?.organizers ?? eventPermissions, options.now, eventPermissions);
+  const operatorEvents=operator?new OperatorEventCalendar(identity,operator,events,options.now):undefined;
+  registerOperatorEvents(http,config,operatorEvents,options.now);
   const reservations = new ReservationService(db, identity, social, rooms, events, options.now); events.attachReservations(reservations);
   const stage=new StageService(db,identity,social,rooms,events,eventPermissions,worlds.registry,options.now);events.attachStage(stage);
   const audience=new AudienceService(db,identity,social,rooms,events,eventPermissions,worlds.registry,{permits:async(transaction,account,world,room)=>{if(!await new SanctionPolicy(transaction,options.now).permits(account,world,room,true))return false;try{await new IncidentPolicy(transaction).assert(account,world,room,true);return true;}catch(error){if(error instanceof DomainError&&error.status===403)return false;throw error;}}},options.now);events.attachAudience(audience);
@@ -191,12 +260,14 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const unsubscribeDinnerContact=social.onContactWithdrawn((transaction,a,b)=>reservationParties.withdrawOfferContact(transaction,a,b));
   const unsubscribeEventInvitationWithdrawal = social.onContactWithdrawn((transaction, a, b) => eventInvitations.withdrawContact(transaction, a, b));
   const unsubscribeEventConsent = invitations.onConsentWithdrawn((transaction, account) => eventInvitations.withdrawAll(transaction, account));
-  const quickOnlyWorlds=[...new Set([...(options.safety?.quickOnlyWorlds??[]),...(config.LOCAL_PARK_WORLD==='1'?['park']:[]),...(config.LOCAL_MAID_WORLD==='1'?['maid']:[])])];
-  const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, quickOnlyWorlds, policy: safetyPolicy, evidence: reports.cache }, options.now);
+  const quickOnlyWorlds=worlds.releasePolicy?.quickOnlyWorlds??[...new Set([...(options.safety?.quickOnlyWorlds??[]),...(config.LOCAL_PARK_WORLD==='1'?['park']:[]),...(config.LOCAL_MAID_WORLD==='1'?['maid']:[])])];
+  const chat = await createSafetyRuntime(config, rooms, identity, { ...options.safety, enabled:worlds.releasePolicy?false:options.safety?.enabled,quickAccess:worlds.releasePolicy?.permitsQuick,quickOnlyWorlds, policy: safetyPolicy, evidence: reports.cache }, options.now);
   http.addHook('onClose', async () => { await worlds.registry.close(); });
   http.addHook('onClose', async () => { await rooms.close(); });
   registerWorlds(http, config, worlds.registry, options.now, rooms,discovery);
   registerIdentity(http, config, identity, options.now);
+  registerNativeIdentity(http,nativeIdentity,options.now);
+  registerPrivacyRequests(http,config,privacyRequests,options.now);
   registerDeadlineIdentity(http,config,identity,deadlineIdentity,options.now);
   registerDatingProfiles(http,config,identity,datingProfiles,options.now);
   registerDatingMatching(http,config,identity,datingMatching,options.now);
@@ -206,7 +277,10 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerInvitations(http, config, identity, invitations, options.now);
   registerFocus(http, config, identity, focus, options.now);
   registerStudy(http,config,identity,study,options.now);
-  registerProgression(http, config, identity, progression, appearance, options.now);
+  const avatarParts=new AvatarPartsService(db,identity,accounts=>rooms.refreshAccounts(accounts),options.now);
+  rooms.setPartsProjection((account,palette,uniform)=>avatarParts.project(account,palette,uniform));
+  registerProgression(http, config, identity, progression, appearance, options.now,avatarParts);
+  identity.registerExportOwner('avatarParts',(id,transaction)=>avatarParts.exportAccount(id,transaction));
   identity.registerExportOwner('appearance',(id,transaction)=>appearance.exportAccount(id,transaction));
   identity.registerExportOwner('progression', (id, transaction) => progression.exportAccount(id,transaction));
   registerHospitality(http, config, identity, hospitality, options.now);
@@ -230,19 +304,20 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   identity.registerExportOwner('social', (id, transaction) => social.exportAccount(id, transaction));
   // Emit truthful room interruption events while sockets are still connected; the gateway closes immediately after this hook.
   http.addHook('preClose', async () => { chat.close(); await events.close(); await hospitalityOutbox.close(); await hospitality.close(); await focus.close(); await invitations.close(); await travel.close(); await reports.close(); await rooms.close(); roomAuthority.close(); });
-  const readiness=new ReadinessProbe(db,requiredMigrations,roomAuthority,()=>draining);
+  const readiness=new ReadinessProbe(db,requiredMigrations,roomAuthority,()=>draining,schemaCompatibility);
   http.get('/health/live', async () => ({ status: 'ok' }));
   http.get('/health/ready', async (_req, reply) => {
     return await readiness.check()?{status:'ready',schemaVersion:SCHEMA_VERSION}:reply.code(503).send({status:'unavailable'});
   });
   app.useGlobalFilters(new SafeHttpErrors());
   await app.init();
-  const gateway = createIdentityGateway(http, config, identity, options.now,()=>!draining);
+  const gateway = createIdentityGateway(http, config, identity, options.now,()=>!draining,nativeIdentity);
   const unsubscribePrivateDates=config.NODE_ENV==='test'&&config.LOCAL_DATING_PROTOTYPE==='1'?datingDates.attachGateway(gateway):()=>{};
   http.addHook('preClose',async()=>{unsubscribePrivateDates();});
-  const roomMetrics = new RoomMetrics();
   const unsubscribeRooms = registerRoomGateway(gateway, rooms, roomMetrics,telemetry);
-  registerOperations(http,config.OPERATOR_TELEMETRY_TOKEN,telemetry,{online:()=>rooms.diagnostics(),rooms:()=>roomMetrics.snapshot(),orders:()=>hospitality.operationalSummary()},options.now);
+  const systemObservations=new SystemObservations(db,transaction=>hospitalityOutbox.operationalBacklog(transaction),()=>{const context=worlds.releasePolicy?.controls.context() as {releaseVersion?:number}|undefined;return {authority:{configuredOwners:1,state:roomAuthority.state},versions:{expectedSchemaVersion:SCHEMA_VERSION,expectedMigrationCount:Object.keys(requiredMigrations).length,releaseVersion:context?.releaseVersion??null,artifactRevision:null}};},options.now);
+  http.addHook('preClose',async()=>{systemObservations.close();});
+  registerOperations(http,config.OPERATOR_TELEMETRY_TOKEN,telemetry,{online:()=>rooms.diagnostics(),rooms:()=>roomMetrics.snapshot(),orders:()=>hospitality.operationalSummary(),system:systemObservations},options.now);
   registerChatGateway(gateway, chat);
   registerTravelGateway(gateway, travel);
   const unsubscribeSanctions = sanctions.onChanged(id => gateway.emitToAccount(id, 'sanction.changed', SanctionChangedSchema.parse({ schemaVersion: 1 })));
@@ -253,7 +328,10 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const unsubscribeRoomSocial = social.onChanged(ids => { void rooms.refreshAccounts(ids); });
   const unsubscribeRoomIdentity = identity.onChanged(id => { void rooms.refreshAccounts([id]); });
   http.addHook('onClose', async () => { unsubscribeInvitations(); unsubscribeEventNotices(); unsubscribeEventInvitations(); unsubscribeEventInvitationWithdrawal(); unsubscribeEventConsent(); unsubscribeInvitationWithdrawal(); unsubscribeHospitalityWithdrawal(); unsubscribeEventWithdrawal(); unsubscribeReservationWithdrawal(); unsubscribeSanctions(); unsubscribeSocial(); unsubscribeRoomSocial(); unsubscribeRoomIdentity(); unsubscribeRooms(); });
+  const stopDatabaseObservation = observePool(db), stopEventLoopObservation = roomMetrics.observeEventLoop();
+  roomMetrics.databaseAttached(true);
+  http.addHook('onClose', async () => {stopDatabaseObservation(); roomMetrics.databaseAttached(false); stopEventLoopObservation(); roomMetrics.close();});
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity, deadlineIdentity, gateway, social, worlds, rooms, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain };
+  return { app, http, identity,nativeIdentity,privacyRequests,runtimeControls, deadlineIdentity, gateway, social, worlds, rooms, gameLobby, gameJournal, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain,admission };
 }

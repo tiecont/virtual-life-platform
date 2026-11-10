@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "profile": "vl013-durable-probe-v1",
+  "activation": "DISABLED",
+  "qualification": "Disposable authenticated role proof; not production provisioning or future gameplay grants",
+  "select": {
+    "identity_accounts": ["id", "status"],
+    "identity_sessions": ["id", "account_id", "revoked_at", "expires_at"],
+    "safety_sanctions": ["subject_id", "revoked_at", "effective_at", "expires_at", "kind", "world_slug"],
+    "platform_native_worlds": ["world_id", "boot_id", "content_hash", "generation", "enabled", "lease_until"],
+    "platform_native_admissions": ["account_id", "session_id", "world_id", "generation", "world_generation", "allowed", "valid_until"],
+    "platform_native_ticket_uses": ["nonce", "account_id", "session_id", "boot_id", "world_id", "expires_at"],
+    "game_native_matches": ["id", "world_id", "ruleset_id", "ruleset_version", "content_hash", "engine_hash", "protocol_version", "canonical_version", "rng_version", "owner_boot_id", "epoch", "state_version", "server_tick", "logical_time_ms", "rng_cursor", "status", "seed_commitment", "audit_hash", "snapshot_key_id", "snapshot_nonce", "snapshot_tag", "sealed_snapshot", "created_at", "updated_at"],
+    "game_native_receipts": ["match_id"]
+  },
+  "insert": ["platform_native_ticket_uses", "game_native_receipts"],
+  "update": {"game_native_matches": ["state_version"]}
+}

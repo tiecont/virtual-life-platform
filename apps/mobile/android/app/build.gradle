@@ -1,0 +1,96 @@
+apply plugin: 'com.android.application'
+
+// Exact, opt-in local TLS fixture; no user CA or trust-all setting. Generated
+// debug resources are ignored outputs and never enter the release source set.
+def nativeTestCa = providers.gradleProperty('vlpNativeTestCa').getOrElse('false') == 'true'
+def nativeTrustDir = layout.buildDirectory.dir('generated/nativeTestTrust')
+if (nativeTestCa) {
+    if (!(providers.gradleProperty('vlpNativeOrigin').getOrElse('') ==~ /https:\/\/localhost:[1-9][0-9]{0,4}/)) {
+        throw new GradleException('Local test trust requires exact localhost HTTPS origin')
+    }
+    tasks.register('generateNativeTestTrust') {
+        def caTask = providers.gradleProperty('vlpNativeTestCaTask').getOrElse('n10-03')
+        if (!(caTask in ['n10-03', 'n11-03', 'n11-03-safety', 'n06-07', 'n06-07-world'])) { throw new GradleException('Unknown task-owned test CA') }
+        def ca = rootProject.file('../../../artifacts/vnext/' + (caTask == 'n11-03-safety' ? 'n11-03/safety-v1' : caTask == 'n06-07' ? 'n06-07/native-v1' : caTask == 'n06-07-world' ? 'n06-07/world-v1' : caTask) + '/tls/ca.pem')
+        inputs.file(ca)
+        outputs.dir(nativeTrustDir)
+        doLast {
+            def destination = nativeTrustDir.get().asFile
+            new File(destination, 'raw').mkdirs(); new File(destination, 'xml').mkdirs()
+            new File(destination, 'raw/vlp_native_test_ca.pem').bytes = ca.bytes
+            new File(destination, 'xml/native_network_security.xml').text = '''<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+  <base-config cleartextTrafficPermitted="false"><trust-anchors><certificates src="system" /></trust-anchors></base-config>
+  <domain-config cleartextTrafficPermitted="false"><domain includeSubdomains="false">localhost</domain><trust-anchors><certificates src="system" /><certificates src="@raw/vlp_native_test_ca" /></trust-anchors></domain-config>
+</network-security-config>
+'''
+        }
+    }
+    tasks.configureEach { if (name == 'preDebugBuild') dependsOn('generateNativeTestTrust') }
+}
+
+android {
+    if (nativeTestCa) { sourceSets.debug.res.srcDir(nativeTrustDir) }
+    buildFeatures { buildConfig = true }
+    namespace = "life.virtualcity.spike"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "life.virtualcity.spike"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    buildTypes {
+        debug {
+            // Local qualification only. Release stays disabled until reviewed
+            // platform-support, signing and distribution gates are satisfied.
+            def nativeOrigin = providers.gradleProperty('vlpNativeOrigin').getOrElse('')
+            if (nativeOrigin && !(nativeOrigin ==~ /https:\/\/[A-Za-z0-9.-]+(?::[1-9][0-9]{0,4})?/)) {
+                throw new GradleException('Invalid fixed native HTTPS origin')
+            }
+            buildConfigField 'String', 'NATIVE_API_ORIGIN', '"' + nativeOrigin + '"'
+        }
+        release {
+            buildConfigField 'String', 'NATIVE_API_ORIGIN', '""'
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}

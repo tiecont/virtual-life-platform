@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile, access } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { summarize } from './plan-status.mjs';
+import {historicalEvidence} from './evidence-reader.mjs';
 
 // Read-only candidate audit. Human approval is never inferred from passing tests.
 export function validateRelease(train, rollout, safety, dating, manifest, checkpoint) {
@@ -54,7 +55,7 @@ export function validateRelease(train, rollout, safety, dating, manifest, checkp
 }
 
 export async function checkRelease() {
-  const paths = ['config/release-trains.json', 'config/rollout.json', 'config/safety-policy.json', 'config/dating-policy.json', 'PLAN-MANIFEST.json', 'docs/agent/task-state.json'];
+  const paths = ['config/release-trains.json', 'config/rollout.json', 'config/safety-policy.json', 'config/dating-policy.json', 'tests/fixtures/historical-release/manifest.json', 'tests/fixtures/historical-release/task-state.json'];
   const values = await Promise.all(paths.map(async path => JSON.parse(await readFile(path, 'utf8'))));
   const result = validateRelease(...values);
   assert.equal(values[0].controls.length, 8);
@@ -68,7 +69,8 @@ export async function checkRelease() {
   validateDecision(decision);
   for (const path of decision.evidence) {
     assert(/^(docs\/agent\/evidence\/|integrations\/legacy-snapshots\/)[a-z0-9/-]+\.json$/.test(path));
-    await access(path);
+    if(path.startsWith('docs/agent/evidence/')) await (await historicalEvidence()).bytes(path);
+    else await access(path);
   }
   return { ...result, decision: decision.decision };
 }

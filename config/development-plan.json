@@ -1,0 +1,2575 @@
+{
+  "schemaVersion": 2,
+  "product": "VirtualLife",
+  "execution": "single-agent",
+  "primaryClient": "Windows Unity URP",
+  "authority": "Rust new gameplay; Nest legacy rooms and control plane",
+  "archive": "archive/pre-cleanup-2026-11-10",
+  "policy": {
+    "reservationsRequired": false,
+    "independentReviewRequired": false,
+    "verification": "Exact committed source, actual checks, self-audit honestly labeled, actual CI before merge",
+    "qualification": "Hardware, content rights, signing and deployment requirements apply to their own acceptance or release; do not gate unrelated implementation",
+    "priority": "Pet Arena PvE before new Lodge gameplay; mobile conditional"
+  },
+  "tasks": [
+    {
+      "id": "VL-001",
+      "feature": "Coordinator",
+      "title": "Source HEAD and ledger audit",
+      "objective": "Compare live HEAD with archived N/PA/Lodge status, migrations, renderer, open worktrees, active N06 owner.",
+      "dependsOn": [],
+      "acceptance": [
+        "SHA and dirty-path inventory recorded",
+        "44/4/0 verified archived counts reconciled to live state without writing them"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "e942fdcaad056ceb4967f0818ded9196aab3742c",
+        "commands": [
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "115 PASS;15 scheduler cases including5 nested negative cases"
+          },
+          {
+            "command": "pnpm lint",
+            "exitCode": 0,
+            "result": "PASS"
+          },
+          {
+            "command": "pnpm ci:check",
+            "exitCode": 0,
+            "result": "PASS"
+          },
+          {
+            "command": "python3 docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/tools/validate_plan.py",
+            "exitCode": 0,
+            "result": "PASS"
+          },
+          {
+            "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+            "exitCode": 0,
+            "result": "PASS"
+          }
+        ],
+        "reviewMode": "HISTORICAL_INDEPENDENT",
+        "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-001-revision2.json"
+      }
+    },
+    {
+      "id": "VL-002",
+      "feature": "Coordinator",
+      "title": "Approve desktop-first ADR-003 and one-authority architecture",
+      "objective": "Owner approves Rust gameplay authority, Unity Windows primary client and Next.js official portal. Resolve N06 in-flight/legacy source ownership before code.",
+      "dependsOn": [
+        "VL-001"
+      ],
+      "acceptance": [
+        "Signed ADR-003 and v1.1 scope supersession recorded",
+        "One-writer-per-world/domain matrix, explicit rollback and N06-04 handoff policy approved"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "7e4f45a8f72eb8501ca0261185cb31cf41c6f7b7",
+        "commands": [
+          {
+            "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+            "exitCode": 0,
+            "result": "209 legacy,105 owner files,47 SQL preserved; one production RoomAuthority"
+          },
+          {
+            "command": "python3 docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/tools/validate_plan.py",
+            "exitCode": 0,
+            "result": "110 tasks and baseline checksums PASS; expected additional runtime files warning"
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "reviewMode": "HISTORICAL_INDEPENDENT",
+        "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-002.json"
+      }
+    },
+    {
+      "id": "VL-003",
+      "feature": "Persistence-Security",
+      "title": "Current DB/identity contracts inventory",
+      "objective": "Read real auth/session/CSRF/rooms/PG migrations and find safe Rust integration seam.",
+      "dependsOn": [
+        "VL-001"
+      ],
+      "acceptance": [
+        "Diagram existing callers+DB ownership",
+        "migration number reserved through current journal and no new autoschema race"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "7e4f45a8f72eb8501ca0261185cb31cf41c6f7b7",
+        "commands": [
+          {
+            "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+            "exitCode": 0,
+            "result": "209 legacy,105 owner files,47 SQL preserved; one production RoomAuthority"
+          },
+          {
+            "command": "python3 docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/tools/validate_plan.py",
+            "exitCode": 0,
+            "result": "110 tasks and baseline checksums PASS; expected additional runtime files warning"
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/desktop-db-inventory.mjs",
+            "exitCode": 0,
+            "result": "Two real concurrent migrators; exact47 journal checksums,13source hashes, Android-only native schema, cleanup PASS"
+          },
+          {
+            "command": "pnpm exec eslint scripts/desktop-db-inventory.mjs",
+            "exitCode": 0
+          }
+        ],
+        "reviewMode": "HISTORICAL_INDEPENDENT",
+        "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-003.json"
+      }
+    },
+    {
+      "id": "VL-004",
+      "feature": "Rust-Game-Core",
+      "title": "Rust workspace and version pin",
+      "objective": "Build minimal game runtime executable, cargo workspace, formatter, CI and Docker.",
+      "dependsOn": [
+        "VL-002",
+        "VL-003"
+      ],
+      "acceptance": [
+        "cargo fmt/check/clippy unit clean",
+        "OCI health endpoint and pinned toolchain built in CI"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "6f6d5f1831774eed4e6cedd0ab0755c308a88bac",
+        "commands": [
+          {
+            "command": "env RUSTUP_HOME=/tmp/virtual-life-rustup CARGO_HOME=/tmp/virtual-life-cargo /tmp/virtual-life-cargo/bin/cargo fmt --all -- --check",
+            "exitCode": 0
+          },
+          {
+            "command": "env RUSTUP_HOME=/tmp/virtual-life-rustup CARGO_HOME=/tmp/virtual-life-cargo /tmp/virtual-life-cargo/bin/cargo check --workspace --all-targets --locked",
+            "exitCode": 0
+          },
+          {
+            "command": "env RUSTUP_HOME=/tmp/virtual-life-rustup CARGO_HOME=/tmp/virtual-life-cargo /tmp/virtual-life-cargo/bin/cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "env RUSTUP_HOME=/tmp/virtual-life-rustup CARGO_HOME=/tmp/virtual-life-cargo /tmp/virtual-life-cargo/bin/cargo test --workspace --locked",
+            "exitCode": 0,
+            "tests": 3
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "tests": 117
+          },
+          {
+            "command": "pnpm lint",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm ci:check",
+            "exitCode": 0
+          },
+          {
+            "command": "docker build --build-arg SOURCE_REVISION=06edfb83194afad2d0ccfe7eb4b230b8a68d525a -f apps/game-runtime/Dockerfile -t vl-runtime-local:06edfb8 .",
+            "exitCode": 0
+          },
+          {
+            "command": "python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-local:06edfb8",
+            "exitCode": 0
+          },
+          {
+            "command": "gh run view 42737799637 --repo tiecont/virtual-life-platform --exit-status",
+            "exitCode": 0
+          }
+        ],
+        "reviewMode": "HISTORICAL_INDEPENDENT",
+        "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-004.json"
+      }
+    },
+    {
+      "id": "VL-005",
+      "feature": "Web-UX",
+      "title": "Preserve legacy N06 Web renderer audit and isolate optional teaser",
+      "objective": "Read existing Three/Pixi/N06 renderer traces and source ownership; preserve VERIFIED work but remove full web 3D from Windows release critical path.",
+      "dependsOn": [
+        "VL-001"
+      ],
+      "acceptance": [
+        "Baseline measurements and no-loss fallback demonstrated",
+        "N06-04 ownership checkpoint collected before touching files"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [
+        "N06-04 active lane source handoff"
+      ],
+      "verification": {
+        "sourceRevision": "16d866dd2b8b661ec7bcc227e99698950e9bcc3a",
+        "commands": [
+          {
+            "command": "pnpm exec vitest run --project unit --maxWorkers=1 packages/pixi-scene/test/lifecycle.test.ts packages/pixi-scene/test/spec.test.ts packages/scene3d/test/projection.test.ts packages/scene3d/test/room.test.ts",
+            "exitCode": 0,
+            "tests": 17,
+            "files": 4
+          },
+          {
+            "command": "pnpm build:packages",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm --filter @virtual-city/platform-api build",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm --filter @virtual-city/portal-web build",
+            "exitCode": 1,
+            "result": "Initial child sandbox: Next could not parse TypeScript --showConfig subprocess output; failure retained",
+            "required": false,
+            "limitation": "Retained child-sandbox build failure;actual elevated rerun passes. Audit acceptance uses successful scoped rerun."
+          },
+          {
+            "command": "pnpm --filter @virtual-city/portal-web build",
+            "exitCode": 0,
+            "result": "Approved outside-sandbox rerun PASS"
+          },
+          {
+            "command": "env UX_EVIDENCE_RUN=ab05c005 BROWSER_REPORT_SCOPE=ci/local/vl005-context-ab05c005 node scripts/run-browser-tests.mjs tests/e2e/scene3d-room.spec.ts --grep 'context loss exposes'",
+            "exitCode": 0,
+            "tests": 2,
+            "desktop": 1,
+            "mobile": 1,
+            "result": "Real WebGL loss notice; camera action disabled; DOM seat-2 claim confirmed by HTTP; restoration; confirmed leave/null snapshot; owned DBs/networks removed"
+          }
+        ],
+        "reviewMode": "HISTORICAL_INDEPENDENT",
+        "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-005.json"
+      }
+    },
+    {
+      "id": "VL-006",
+      "feature": "Avatar-Art",
+      "title": "VirtualLife visual brand review",
+      "objective": "Convert logo/key-art concept into owner-approved style sheet and source asset checklist.",
+      "dependsOn": [
+        "VL-001"
+      ],
+      "acceptance": [
+        "wordmark spelling VirtualLife and icon rights reviewed",
+        "palette contrast assessed, art concepts explicitly nonproduction"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Original or licensed production brand assets and owner rights review"
+      ]
+    },
+    {
+      "id": "VL-007",
+      "feature": "QA-SRE",
+      "title": "Lock Windows PC hardware + Web Vitals QA harness",
+      "objective": "Define physical Windows device tier matrix, GPU perf routes/driver logging, plus separate official-site Core Web Vitals instrumentation.",
+      "dependsOn": [
+        "VL-001"
+      ],
+      "acceptance": [
+        "Named Windows CPU/GPU/VRAM/SSD/driver matrix and 3 routes agreed",
+        "Distinct profiler p95/p99 frame and site LCP/INP/CLS metrics specified"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Named physical Windows GPU tiers for native certification"
+      ]
+    },
+    {
+      "id": "VL-008",
+      "feature": "Persistence-Security",
+      "title": "Threat model and failure taxonomy",
+      "objective": "Threat model tickets, direct WSS, venue state, hidden hand, game reward and teleport.",
+      "dependsOn": [
+        "VL-002",
+        "VL-003"
+      ],
+      "acceptance": [
+        "security reviewer signs attack tree",
+        "negative test map for replay/ID collision/policy revoke/DB crash"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "6f6d5f1831774eed4e6cedd0ab0755c308a88bac",
+        "commands": [
+          {
+            "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+            "exitCode": 0,
+            "result": "209 legacy/105 baseline/47 SQL and original source preserved; new Rust inventoried without gameplay qualification"
+          },
+          {
+            "command": "python3 docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/tools/validate_plan.py",
+            "exitCode": 0,
+            "result": "110task checksums/DAG PASS; expected runtime addition warning"
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "reviewMode": "HISTORICAL_INDEPENDENT",
+        "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-008.json"
+      }
+    },
+    {
+      "id": "VL-009",
+      "feature": "Coordinator",
+      "title": "Existing plan crosswalk decision",
+      "objective": "Obtain formal scheduling checkpoint N06→PA→Lodge; route VL tasks without changing other ledgers.",
+      "dependsOn": [
+        "VL-001",
+        "VL-002"
+      ],
+      "acceptance": [
+        "file reservation/handoff documented",
+        "legacy task IDs/verified evidence unchanged"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "6f6d5f1831774eed4e6cedd0ab0755c308a88bac",
+        "commands": [
+          {
+            "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+            "exitCode": 0,
+            "result": "209 legacy/105 baseline/47 SQL and original source preserved; new Rust inventoried without gameplay qualification"
+          },
+          {
+            "command": "python3 docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/tools/validate_plan.py",
+            "exitCode": 0,
+            "result": "110task checksums/DAG PASS; expected runtime addition warning"
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "reviewMode": "HISTORICAL_INDEPENDENT",
+        "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-009.json"
+      }
+    },
+    {
+      "id": "VL-010",
+      "feature": "Gameplay",
+      "title": "Desktop-first vertical slice and playable floorplan",
+      "objective": "Define one district, two avatar variants, walk-in cafe/card/Pet flow, M map/teleport and point-click navigation; site is separate publishing portal.",
+      "dependsOn": [
+        "VL-002"
+      ],
+      "acceptance": [
+        "clickable user flow accepted",
+        "scope ceiling excludes infinite city/AAA release claims"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "qualificationDependencies": [
+        "VL-006"
+      ]
+    },
+    {
+      "id": "VL-011",
+      "feature": "Web-UX",
+      "title": "Unity URP production renderer spike + optional web teaser cost",
+      "objective": "Run compiled Windows Unity anime-stylized shader test on named GPU against original art; preserve web renderer optional as N06 compatibility.",
+      "dependsOn": [
+        "VL-005",
+        "VL-007",
+        "VL-006",
+        "VL-080",
+        "VL-082"
+      ],
+      "acceptance": [
+        "Compiled Windows native scene has recorded p95/p99 GPU+CPU/VRAM/shader logs with hardware profile",
+        "One-page decision shows native URP suitability and web teaser not on game critical path"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-012",
+      "feature": "Rust-Game-Core",
+      "title": "Versioned proto and client binding tooling",
+      "objective": "Define public WSS envelope and internal tonic gRPC, TS and C# generation boundaries.",
+      "dependsOn": [
+        "VL-004",
+        "VL-008"
+      ],
+      "acceptance": [
+        "backward compatibility test and valid sample exchange",
+        "invalid version/oversize rejected"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "9cfd8ea4c7f758119ed874e983ae1fa6728e2151",
+        "commands": [
+          {
+            "command": "env RUSTUP_HOME=/tmp/virtual-life-rustup CARGO_HOME=/tmp/virtual-life-cargo /tmp/virtual-life-cargo/bin/cargo fmt --all -- --check",
+            "exitCode": 0
+          },
+          {
+            "command": "env RUSTUP_HOME=/tmp/virtual-life-rustup CARGO_HOME=/tmp/virtual-life-cargo /tmp/virtual-life-cargo/bin/cargo check --workspace --all-targets --locked",
+            "exitCode": 0
+          },
+          {
+            "command": "env RUSTUP_HOME=/tmp/virtual-life-rustup CARGO_HOME=/tmp/virtual-life-cargo /tmp/virtual-life-cargo/bin/cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "env RUSTUP_HOME=/tmp/virtual-life-rustup CARGO_HOME=/tmp/virtual-life-cargo /tmp/virtual-life-cargo/bin/cargo test --workspace --locked",
+            "exitCode": 0,
+            "tests": 8,
+            "protocolTests": 5
+          },
+          {
+            "command": "env RUSTUP_HOME=/tmp/virtual-life-rustup CARGO_HOME=/tmp/virtual-life-cargo /tmp/virtual-life-cargo/bin/cargo run --locked --package vl-protocol --bin native-codegen -- --check",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm --filter @virtual-city/native-protocol typecheck",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm --filter @virtual-city/native-protocol build",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm exec vitest run --project unit packages/native-protocol/test/wire.test.ts",
+            "exitCode": 0,
+            "tests": 4
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "tests": 117
+          },
+          {
+            "command": "pnpm lint",
+            "exitCode": 0,
+            "warning": "One unused eslint-disable directive in generated Buf code;no errors"
+          },
+          {
+            "command": "pnpm ci:check",
+            "exitCode": 0
+          },
+          {
+            "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "python3 docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/tools/validate_plan.py",
+            "exitCode": 0
+          },
+          {
+            "command": "gh run view 42741549539 --repo tiecont/virtual-life-platform --exit-status",
+            "exitCode": 0
+          }
+        ],
+        "reviewMode": "HISTORICAL_INDEPENDENT",
+        "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-012.json"
+      }
+    },
+    {
+      "id": "VL-013",
+      "feature": "Persistence-Security",
+      "title": "Rust ticket trust and policy generations",
+      "objective": "Nest issues short-lived tickets; Rust verifies scope/aud/nonce/policy freshness before writes.",
+      "dependsOn": [
+        "VL-003",
+        "VL-008",
+        "VL-012"
+      ],
+      "acceptance": [
+        "expired/forged/replayed/revoked negatives pass",
+        "no unauthorized game command persisted"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "81dda8571bc6a5577ca6950ac8c6b48ca3eb70fe",
+        "commands": [
+          {
+            "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/native-game-schema.test.ts tests/integration/runtime-admission.test.ts",
+            "exitCode": 0,
+            "tests": 12
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx --test tests/unit/runtime-tickets.test.ts",
+            "exitCode": 0,
+            "tests": 3
+          },
+          {
+            "command": "cargo test --locked --workspace (task-local pinned Rust1.99.1 homes)",
+            "exitCode": 0,
+            "tests": 25,
+            "compileFailDoctests": 1
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx artifacts/desktop-first/vl013/postcheck/run.mjs",
+            "exitCode": 0,
+            "scenarios": 19,
+            "limitation": "Supplemental same-agent public API probe; not independent review or production gameplay"
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/runtime-admission-migration-compat.mjs",
+            "exitCode": 0,
+            "outcome": "Archived47/48 API expand/rollback/roll-forward through49; unknown tail and corrupt checksums rejected; cleanupComplete true"
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "tests": 121
+          },
+          {
+            "command": "pnpm exec eslint scripts/desktop-scheduler.mjs tests/governance/desktop-scheduler.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm ci:check",
+            "exitCode": 0
+          },
+          {
+            "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "git diff --exit-code 55514e15209c0818aedc0145136d0ebe988973bf -- crates/vl-security apps/platform-api/src/identity/runtime-tickets.ts apps/platform-api/src/identity/runtime-admission.ts apps/platform-api/src/db/migrations/0049_native_runtime_admission.sql config/native-runtime-db-privileges.json scripts/runtime-admission-durable-check.mjs scripts/runtime-admission-test-tls.mjs scripts/runtime-admission-migration-compat.mjs tests/integration/runtime-admission.test.ts tests/unit/runtime-tickets.test.ts",
+            "exitCode": 0,
+            "outcome": "Audited security source byte-identical to the implementation qualified by Rust42793186850"
+          }
+        ],
+        "reviewMode": "SINGLE_AGENT_SEQUENTIAL_AUDIT",
+        "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-013-single-agent-v1.json"
+      }
+    },
+    {
+      "id": "VL-014",
+      "feature": "QA-SRE",
+      "title": "Windows native and Rust performance baseline lock",
+      "objective": "Instrument compiled Windows player and Rust session baseline separately; record cold/warm load, shader hitch, p95/p99, VRAM, tick overrun, reconnection.",
+      "dependsOn": [
+        "VL-007",
+        "VL-011"
+      ],
+      "acceptance": [
+        "Three golden scene routes and target Windows hardware/driver locked in checked-in manifest",
+        "Repeatable profiler and server tick load harness outputs real data fields, no synthetic values promoted"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-015",
+      "feature": "Rust-Game-Core",
+      "title": "Pure game reducer and canonical RNG",
+      "objective": "Implement deterministic action reducer with versioned content and fixed-point arithmetic.",
+      "dependsOn": [
+        "VL-004",
+        "VL-012"
+      ],
+      "acceptance": [
+        "same event stream/replay hashes across runs",
+        "property tests invalid actions and edge cases pass"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "5386a8cd3cf3e4360fd55f8f06bc84d159ff540b",
+        "commands": [
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0,
+            "tests": 25,
+            "compileFailDoctests": 1,
+            "propertyCasesPerProperty": 256
+          },
+          {
+            "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          },
+          {
+            "command": "node crates/vl-game-core/tools/check-replay.mjs",
+            "exitCode": 0,
+            "processes": 2,
+            "frozenTurnsPerProcess": 5
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "tests": 118
+          },
+          {
+            "command": "node --test tests/governance/desktop-scheduler.test.mjs",
+            "exitCode": 0,
+            "tests": 16
+          },
+          {
+            "command": "pnpm lint",
+            "exitCode": 0,
+            "warning": "Existing unused eslint-disable in generated public_pb.ts"
+          },
+          {
+            "command": "pnpm ci:check",
+            "exitCode": 0
+          },
+          {
+            "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "python3 tools/validate_plan.py (cwd active plan)",
+            "exitCode": 0,
+            "warning": "Added evidence count differs from immutable manifest"
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "reviewMode": "HISTORICAL_INDEPENDENT",
+        "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-015.json"
+      }
+    },
+    {
+      "id": "VL-016",
+      "feature": "Persistence-Security",
+      "title": "Game schema, receipts and migration",
+      "objective": "Add game schema/state/event/outbox with uniqueness/fencing, single shared DB migration journal.",
+      "dependsOn": [
+        "VL-003",
+        "VL-012",
+        "VL-015"
+      ],
+      "acceptance": [
+        "real PG concurrency test only one settlement",
+        "migration expand/rollback compatibility report"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "0033fcd1330cce1fb6dbb81bd3b14d12fba01c2a",
+        "commands": [
+          {
+            "command": "gh run view 42825269524 --json status,conclusion,jobs",
+            "exitCode": 0,
+            "outcome": "Exact0033fcd aggregate Quality success:core,runtime images/Compose,all8browser groups and aggregate"
+          },
+          {
+            "command": "gh run view 42825269546 --json status,conclusion,jobs",
+            "exitCode": 0,
+            "outcome": "Exact0033fcd Rust success:actual PG schema/admission,archived migration expansion/rollback,bindings and OCI"
+          },
+          {
+            "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/invitations.test.ts tests/integration/native-game-schema.test.ts",
+            "exitCode": 0,
+            "tests": 25,
+            "scope": "Postcommit same-agent audit;all named VL016 source blobs equal0033fcd"
+          },
+          {
+            "command": "Independent Git blob comparison of all24 acceptance artifacts between0033fcd and current committed HEAD",
+            "exitCode": 0,
+            "outcome": "Source unchanged;all24hashes match committed source"
+          },
+          {
+            "command": "node scripts/check-scene-provenance.mjs",
+            "exitCode": 0,
+            "outcome": "7manifests/16source references;all release approvals false"
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "tests": 121,
+            "scope": "Current source postcommit;not an additional historical independent review"
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "reviewMode": "SINGLE_AGENT_SEQUENTIAL_AUDIT",
+        "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-016-single-agent-v5.json"
+      }
+    },
+    {
+      "id": "VL-017",
+      "feature": "Rust-Game-Core",
+      "title": "Game turn orchestration and persistence",
+      "objective": "Execute per-match commands, transactional version check+commit then ACK/projection.",
+      "dependsOn": [
+        "VL-013",
+        "VL-015",
+        "VL-016"
+      ],
+      "acceptance": [
+        "unknown-ACK retrieval returns same receipt",
+        "game restarts with authoritative snapshot and valid turn order"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "2801a3c7f205e09695d487da9d03d57c08b5f0b1",
+        "commands": [
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0,
+            "tests": 40,
+            "compileFailDoctests": 1
+          },
+          {
+            "command": "cargo build --locked --package vl-persistence --example orchestration",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs",
+            "exitCode": 0,
+            "scenarios": 24,
+            "deniedPrivileges": 12
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "tests": 121
+          },
+          {
+            "command": "pnpm lint",
+            "exitCode": 0,
+            "warning": "Existing generated public_pb.ts unused eslint-disable warning"
+          },
+          {
+            "command": "pnpm ci:check",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm architecture:check",
+            "exitCode": 0
+          },
+          {
+            "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "python3 docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/tools/validate_plan.py",
+            "exitCode": 0
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "reviewMode": "SINGLE_AGENT_SEQUENTIAL_AUDIT",
+        "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-017-single-agent-v1.json"
+      }
+    },
+    {
+      "id": "VL-018",
+      "feature": "Persistence-Security",
+      "title": "Outbox/inbox and platform reward ledger",
+      "objective": "Implement game settlement event and dedupe in Nest worker/platform ledger.",
+      "dependsOn": [
+        "VL-016",
+        "VL-017"
+      ],
+      "acceptance": [
+        "same event retry results one grant",
+        "late worker shows REWARD_PENDING then reconciles"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-019",
+      "feature": "Rust-Game-Core",
+      "title": "World actor and AOI prototype",
+      "objective": "Build Rust per-zone actor/AOI live state prototype independent of any client shader benchmark or web screenshot.",
+      "dependsOn": [
+        "VL-012",
+        "VL-013"
+      ],
+      "acceptance": [
+        "20 scripted actors stable bounded queues",
+        "no DB per-frame writes",
+        "trace tick p95 and overrun measured"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "ba3aad32b63c820aeeb0a93457f7be234beb3805",
+        "commands": [
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0,
+            "tests": 30,
+            "compileFailDoctests": 1
+          },
+          {
+            "command": "cargo run --locked --package vl-world --example zone-probe",
+            "exitCode": 0,
+            "outcome": "20 actors,2000 inputs,102ticks; initial p95=73us and separate audit p95=50us; compute overruns0,late wakes0,mailbox peak20/32"
+          },
+          {
+            "command": "cargo test --locked --package vl-world (postcommit audit)",
+            "exitCode": 0,
+            "tests": 5
+          },
+          {
+            "command": "cargo run --offline --manifest-path artifacts/desktop-first/vl019/audit-probe/Cargo.toml",
+            "exitCode": 0,
+            "outcome": "Cancelled join cleanup,full mailbox,cross-zone isolation,200live replies,tick progress,u64 exhaustion and joined shutdown PASS"
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "tests": 121
+          },
+          {
+            "command": "node --test tests/governance/rust-workflow.test.mjs tests/governance/desktop-scheduler.test.mjs (postcommit audit)",
+            "exitCode": 0,
+            "tests": 20
+          },
+          {
+            "command": "pnpm exec eslint scripts/verify-artifact-workflows.mjs tests/governance/rust-workflow.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm ci:check",
+            "exitCode": 0
+          },
+          {
+            "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "git diff --exit-code HEAD -- crates Cargo.toml Cargo.lock apps/game-runtime/Dockerfile .github/workflows/rust-runtime.yml scripts/verify-artifact-workflows.mjs tests/governance/rust-workflow.test.mjs",
+            "exitCode": 0
+          }
+        ],
+        "reviewMode": "SINGLE_AGENT_SEQUENTIAL_AUDIT",
+        "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-019-single-agent-v1.json"
+      }
+    },
+    {
+      "id": "VL-020",
+      "feature": "Persistence-Security",
+      "title": "Private projection by actor/viewer",
+      "objective": "Ensure one private hand/viewer, public spectator view, zero information in generic logs.",
+      "dependsOn": [
+        "VL-013",
+        "VL-017"
+      ],
+      "acceptance": [
+        "negative multiuser scope test passes",
+        "seeds/cards not leaked to other recipients"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-021",
+      "feature": "QA-SRE",
+      "title": "Replay/crash chaos suite",
+      "objective": "Kill runtime pre/post commit, replay duplications, validate restore and version fences.",
+      "dependsOn": [
+        "VL-017",
+        "VL-018",
+        "VL-020"
+      ],
+      "acceptance": [
+        "zero duplicate effects, deterministic hash restored",
+        "restart journal/incompatibility outcomes documented"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-022",
+      "feature": "Rust-Game-Core",
+      "title": "Direct WSS authoritative gateway",
+      "objective": "Issue world ticket from Nest then WSS connect Rust; verify ACK/seq/resync and overload.",
+      "dependsOn": [
+        "VL-012",
+        "VL-013",
+        "VL-019"
+      ],
+      "acceptance": [
+        "real browser and Rust integration test",
+        "replayed/expired tickets and oversized packets rejected"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "edf45c734ebb6bf6f37ee028059437c064df5ba2",
+        "commands": [
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0,
+            "tests": 38,
+            "compileFailDoctests": 1
+          },
+          {
+            "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo run --locked --package vl-protocol --bin native-codegen -- --check",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs",
+            "exitCode": 0,
+            "scenarios": 14
+          },
+          {
+            "command": "pnpm --filter @virtual-city/platform-api build",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm --filter @virtual-city/native-protocol typecheck",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm exec vitest run --project unit packages/native-protocol/test/wire.test.ts",
+            "exitCode": 0,
+            "tests": 4
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "tests": 121,
+            "scope": "Separate postcommit audit"
+          },
+          {
+            "command": "pnpm lint",
+            "exitCode": 0,
+            "warning": "Existing generated unused eslint-disable warning"
+          },
+          {
+            "command": "pnpm architecture:check",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm ci:check",
+            "exitCode": 0
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "reviewMode": "SINGLE_AGENT_SEQUENTIAL_AUDIT",
+        "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-022-single-agent-v1.json"
+      }
+    },
+    {
+      "id": "VL-023",
+      "feature": "Coordinator",
+      "title": "G1 signoff: headless game vertical slice",
+      "objective": "Review command/transaction/secret/protocol and rollback evidence.",
+      "dependsOn": [
+        "VL-017",
+        "VL-018",
+        "VL-020",
+        "VL-021",
+        "VL-022"
+      ],
+      "acceptance": [
+        "G1 decision record with attached test artifacts",
+        "no release status changed without reviewer"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-024",
+      "feature": "Avatar-Art",
+      "title": "Native Aurora Plaza blockout, scale & navmesh authoring",
+      "objective": "Blender/Unity scale/navmesh anchors and walkable blockout for a single compact district plus portals/café sit anchors.",
+      "dependsOn": [
+        "VL-010"
+      ],
+      "acceptance": [
+        "geometry GUID manifest and server simplified collision exported",
+        "walk path from spawn to café and Arena reachable"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "qualificationDependencies": [
+        "VL-023"
+      ]
+    },
+    {
+      "id": "VL-025",
+      "feature": "Avatar-Art",
+      "title": "Pilot anthro rig skeleton, ears and tail",
+      "objective": "Create production-candidate original cat/fox parts for one shared body rig.",
+      "dependsOn": [
+        "VL-010"
+      ],
+      "acceptance": [
+        "Blender source+license manifest, rig deformation test",
+        "LOD 0/1/2 export to web baseline"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "qualificationDependencies": [
+        "VL-006"
+      ]
+    },
+    {
+      "id": "VL-026",
+      "feature": "Avatar-Art",
+      "title": "Facial morph, emote, sit and IK authoring",
+      "objective": "Produce 12+ facial expressions and 8–12 emotes on approved pilot character.",
+      "dependsOn": [
+        "VL-025"
+      ],
+      "acceptance": [
+        "near/mid pose screenshot, eye blink, tail-chair clearance",
+        "no unreviewed clipping on sit/drink"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-027",
+      "feature": "Web-UX",
+      "title": "Unity Windows Aurora Plaza first rendered district",
+      "objective": "Implement compiled Windows Unity URP plaza native scene, asset streaming and LOD budget; Three.js is optional prior-art adapter.",
+      "dependsOn": [
+        "VL-024",
+        "VL-025",
+        "VL-080",
+        "VL-082",
+        "VL-105"
+      ],
+      "acceptance": [
+        "desktop browser usable on real machine",
+        "web-lite fallback and measured size/GPU budget"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-028",
+      "feature": "Rust-Game-Core",
+      "title": "Movement and collision server authority",
+      "objective": "Validate speed/nav bounds/proximity, per actor reconciliation and area interest.",
+      "dependsOn": [
+        "VL-019",
+        "VL-022",
+        "VL-024"
+      ],
+      "acceptance": [
+        "client cannot teleport via position spoof",
+        "network jitter test movement reconciles"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-029",
+      "feature": "Web-UX",
+      "title": "Unity native third-person camera and player control",
+      "objective": "WASD, mouse/gamepad, motion sensitivity, M key focus policy, Rust-authorized move with local smoothing and click-to-move override.",
+      "dependsOn": [
+        "VL-027",
+        "VL-028",
+        "VL-084"
+      ],
+      "acceptance": [
+        "30/60fps target profiled by device",
+        "input latency, pause, scroll, alt-tab, focus handled"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-030",
+      "feature": "Web-UX",
+      "title": "Unity native avatar builder and expression showcase",
+      "objective": "Editable, entitlement-scoped anthro avatar looks with face/ear/tail animation preview; shared source rig no character duplication.",
+      "dependsOn": [
+        "VL-025",
+        "VL-026",
+        "VL-027",
+        "VL-086"
+      ],
+      "acceptance": [
+        "authenticated save projection and retry",
+        "old v1 appearance loads with explicit mapping"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "N06-07 creator compatibility verified in source"
+      ]
+    },
+    {
+      "id": "VL-031",
+      "feature": "Web-UX",
+      "title": "Windows native M-map basic HUD and POI preview",
+      "objective": "Unity M-map main screen, input focus, original city map art and safe semantic POI preview; no free client coordinate teleport.",
+      "dependsOn": [
+        "VL-027",
+        "VL-010"
+      ],
+      "acceptance": [
+        "M/Esc toggles with focus correctly, chat input not hijacked",
+        "mobile map icon + keyboard navigation pass"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-032",
+      "feature": "Avatar-Art",
+      "title": "Unity city ambience/NPC schedule visuals and distant LOD",
+      "objective": "Render client-only trees/wind/ambient crowd; Rust-owned interactive NPC goals; batch/LOD and day/night animation budgets.",
+      "dependsOn": [
+        "VL-024",
+        "VL-085",
+        "VL-104"
+      ],
+      "acceptance": [
+        "desktop/mobile web shader frame/memory visual capture",
+        "interactive NPC separated from cosmetic loops"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-033",
+      "feature": "QA-SRE",
+      "title": "Compiled Windows Aurora City visual/perf acceptance",
+      "objective": "Test city/camera/avatar/animation on actual Windows PCs with profiles, frame hitches, facial and outfit clipping; no web 3D parity requirement.",
+      "dependsOn": [
+        "VL-026",
+        "VL-027",
+        "VL-029",
+        "VL-030",
+        "VL-032",
+        "VL-087"
+      ],
+      "acceptance": [
+        "Compiled Windows player captured for Aurora Noon/Sunset and avatar closeup with real p95/p99/VRAM stats",
+        "Art/animation review and accessibility plus tier downgrade measured, no frame screenshots treated as performance proof"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "N06-09 web gate before integrated acceptance"
+      ]
+    },
+    {
+      "id": "VL-034",
+      "feature": "Coordinator",
+      "title": "G2 signoff: expressive walkable Unity Windows Aurora City",
+      "objective": "Coordinator certifies one district and safe Rust-authoritative movement/interactions using native Windows player.",
+      "dependsOn": [
+        "VL-028",
+        "VL-030",
+        "VL-031",
+        "VL-033",
+        "VL-088"
+      ],
+      "acceptance": [
+        "world run reproducible browser demo and privacy projection",
+        "source-bound performance report and art signoff"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-035",
+      "feature": "Persistence-Security",
+      "title": "Place catalog and destination entitlement",
+      "objective": "Versioned map POI and scoped access/capacity/private status.",
+      "dependsOn": [
+        "VL-013",
+        "VL-019"
+      ],
+      "acceptance": [
+        "schema validation and unauthorized private locations absent",
+        "stale POI never confers permission"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "qualificationDependencies": [
+        "VL-023",
+        "VL-031"
+      ]
+    },
+    {
+      "id": "VL-036",
+      "feature": "Rust-Game-Core",
+      "title": "Teleport reservation/commit saga",
+      "objective": "Rust owns allowlisted target hold, source release, epoch fencing, safe rollback.",
+      "dependsOn": [
+        "VL-019",
+        "VL-028",
+        "VL-035"
+      ],
+      "acceptance": [
+        "target full, timeouts, duplicate clicks and concurrent transfer no ghost membership"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-037",
+      "feature": "Web-UX",
+      "title": "Unity native M-map teleport preview and confirmation UI",
+      "objective": "Full POI map with place images and explicit Navigate vs Teleport; client preloads target only after Rust reservation.",
+      "dependsOn": [
+        "VL-031",
+        "VL-035",
+        "VL-036",
+        "VL-088"
+      ],
+      "acceptance": [
+        "keyboard/mobile usable, destination image + label",
+        "client only moves after authoritative receipt"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-038",
+      "feature": "Avatar-Art",
+      "title": "Café interior, doors, tables and seat anchors",
+      "objective": "Produce Café Lumi interior with 4 seat anchors, appropriate camera/sit alignment.",
+      "dependsOn": [
+        "VL-024"
+      ],
+      "acceptance": [
+        "reviewed scene and anchor GUID export",
+        "chair collisions/animation pose verified"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "qualificationDependencies": [
+        "VL-026"
+      ]
+    },
+    {
+      "id": "VL-039",
+      "feature": "Rust-Game-Core",
+      "title": "Venue entry and seat activity FSM",
+      "objective": "Implement proximity/enter/reserve/sit/stand/forfeit and exclusive seat lease.",
+      "dependsOn": [
+        "VL-028",
+        "VL-036",
+        "VL-038"
+      ],
+      "acceptance": [
+        "2-user seat race one owner",
+        "disconnect/block/account-switch cleanup and TTL proven"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-040",
+      "feature": "Web-UX",
+      "title": "Unity native café walk-in/seat/standing scene and UI",
+      "objective": "Café scene transition, camera, hand/seat IK with Rust hold/commit and optional game overlay; handle failure gracefully.",
+      "dependsOn": [
+        "VL-037",
+        "VL-038",
+        "VL-039",
+        "VL-089"
+      ],
+      "acceptance": [
+        "visual E/tap affordance, genuine seat ACK before sit",
+        "network unknown state resumes correctly"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-041",
+      "feature": "Gameplay",
+      "title": "Board game v1 rules and privacy adapter",
+      "objective": "Implement one small ruleset and route original N15 journal compatibility, no secret spectator projection.",
+      "dependsOn": [
+        "VL-017",
+        "VL-020",
+        "VL-039"
+      ],
+      "acceptance": [
+        "2-player complete round+restart, hidden hand test, old journal fixture unchanged"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-042",
+      "feature": "Gameplay",
+      "title": "Table invitation and game session host",
+      "objective": "Invite/ready/decline/timeout, owner seat checks and match-reconnect, spectator policy.",
+      "dependsOn": [
+        "VL-039",
+        "VL-041"
+      ],
+      "acceptance": [
+        "2 real clients join and play seated",
+        "forfeit/abort one receipt, no phantom continuation"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-043",
+      "feature": "Gameplay",
+      "title": "Pet Arena new ruleset content",
+      "objective": "Design 8 Pet/6 stage/boss first pass with fixed-point, seeds, status examples.",
+      "dependsOn": [
+        "VL-015"
+      ],
+      "acceptance": [
+        "unit fixture 100% reproducible, content id/version pinned",
+        "negative invalid swap+telegraph tests"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "qualificationDependencies": [
+        "VL-023"
+      ]
+    },
+    {
+      "id": "VL-044",
+      "feature": "Rust-Game-Core",
+      "title": "Pet Arena Rust combat and AI",
+      "objective": "Implement board generator/cascades/combo/skill/AI in Rust reducer, replay.",
+      "dependsOn": [
+        "VL-017",
+        "VL-043"
+      ],
+      "acceptance": [
+        "one full PvE match in Rust with restart/seed hash",
+        "no client damage calculation"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-045",
+      "feature": "Avatar-Art",
+      "title": "Pet District and training arena visuals",
+      "objective": "Small Pet lobby, arena summon pad, 3 hero Pet representations and attack FX.",
+      "dependsOn": [
+        "VL-024",
+        "VL-043"
+      ],
+      "acceptance": [
+        "original source art provenance and low/high fidelity exports",
+        "damage FX driven by canonical event IDs"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-046",
+      "feature": "Web-UX",
+      "title": "Unity native Pet District roam and battle HUD",
+      "objective": "Move into Pet Arena from city then overlay tactical match-3 + Pet animation/VFX in Unity; Rust computes results.",
+      "dependsOn": [
+        "VL-037",
+        "VL-044",
+        "VL-045",
+        "VL-091"
+      ],
+      "acceptance": [
+        "real browser completes match and resumes same authorized world",
+        "reduced motion and web-lite gameplay"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-047",
+      "feature": "Persistence-Security",
+      "title": "Real reward settlement with platform inbox",
+      "objective": "Reward proposal after accepted result, ledger pending/committed read API and account scoping.",
+      "dependsOn": [
+        "VL-018",
+        "VL-044"
+      ],
+      "acceptance": [
+        "server results only, retry settlement no duplicate platform grant",
+        "forged client rewards denied"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-048",
+      "feature": "QA-SRE",
+      "title": "Rust + compiled Windows client e2e city/café/card/Pet Arena",
+      "objective": "E2E native two-player seat/private game and Pet Arena transition with teleport, reconnect, ledger settlement, no duplicate rewards.",
+      "dependsOn": [
+        "VL-037",
+        "VL-040",
+        "VL-042",
+        "VL-046",
+        "VL-047",
+        "VL-090",
+        "VL-091",
+        "VL-109"
+      ],
+      "acceptance": [
+        "all user paths pass incl account block/revoke",
+        "teleport and game state one writer each"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-049",
+      "feature": "Coordinator",
+      "title": "G3 acceptance playable vertical slice",
+      "objective": "Sign complete world+game slice with ticket/actor/DB receipts and real web demo.",
+      "dependsOn": [
+        "VL-048"
+      ],
+      "acceptance": [
+        "G3 report references PA-017 evidence separately",
+        "no legacy plan status fabricated"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-050",
+      "feature": "Persistence-Security",
+      "title": "Revocation, report/block, age and consent integration",
+      "objective": "Runtime enforces current platform safety generation at command and recipient projection.",
+      "dependsOn": [
+        "VL-008",
+        "VL-013",
+        "VL-017",
+        "VL-019"
+      ],
+      "acceptance": [
+        "stale permissions mid-seat/teleport/settlement rejected",
+        "moderation UI same platform policy"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "qualificationDependencies": [
+        "VL-049"
+      ]
+    },
+    {
+      "id": "VL-051",
+      "feature": "QA-SRE",
+      "title": "Load/stress and memory leak profiling",
+      "objective": "Run defined city activities for 30 min across desktop and mobile web tier.",
+      "dependsOn": [
+        "VL-049",
+        "VL-014"
+      ],
+      "acceptance": [
+        "actual p95 frametime tick/queue/DB metrics",
+        "no OOM, sustainable degraded tier and resource report"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-052",
+      "feature": "Avatar-Art",
+      "title": "Polish final art and appearance clipping",
+      "objective": "Repair clothing/tail/ears/fur, lighting, VFX/readability in day/evening and café.",
+      "dependsOn": [
+        "VL-034",
+        "VL-048"
+      ],
+      "acceptance": [
+        "art director signoff with annotated approved comparisons",
+        "asset provenance verified before release"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-053",
+      "feature": "Web-UX",
+      "title": "Windows native HUD/input/accessibility/localization pass",
+      "objective": "Font/contrast/control focus/reduced motion, controller mapping and Vietnamese/English for map/chat/card/pet interfaces.",
+      "dependsOn": [
+        "VL-040",
+        "VL-046",
+        "VL-088"
+      ],
+      "acceptance": [
+        "keyboard/touch/gamepad paths tested",
+        "contrast/scale & 16:9, 19.5:9, portrait fallback report"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-054",
+      "feature": "QA-SRE",
+      "title": "Usability cohort and game fun audit",
+      "objective": "Observe player first-play, map discovery, café sitting and Pet Arena, track confusion.",
+      "dependsOn": [
+        "VL-049",
+        "VL-053"
+      ],
+      "acceptance": [
+        "real participant notes and anonymized metrics",
+        "backlog prioritized, no simulated playtest claims"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-055",
+      "feature": "Persistence-Security",
+      "title": "Durable backup, privacy and hidden data recovery",
+      "objective": "Restore game schema and legacy Lodge encrypted history under account privacy.",
+      "dependsOn": [
+        "VL-021",
+        "VL-020"
+      ],
+      "acceptance": [
+        "restore/hash tests pass, keyless abort truthful",
+        "delete/export retention risk reviewed"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "qualificationDependencies": [
+        "VL-041",
+        "VL-050"
+      ]
+    },
+    {
+      "id": "VL-056",
+      "feature": "Web-UX",
+      "title": "Unity native shader/animation/transition polish and GPU fallback",
+      "objective": "Profile and polish shaders, eyes/hair/fur, scene streaming hitches, indoor lighting, low/medium/ultra visual degradation.",
+      "dependsOn": [
+        "VL-051",
+        "VL-052",
+        "VL-053",
+        "VL-087"
+      ],
+      "acceptance": [
+        "browser device quality auto detected/overridable",
+        "no black screen on unsupported GPUs"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-057",
+      "feature": "QA-SRE",
+      "title": "Security penetration and game adversarial suite",
+      "objective": "Threat automation: counterfeit tickets, replay, colluding game clients, spam, content mismatch.",
+      "dependsOn": [
+        "VL-050",
+        "VL-055"
+      ],
+      "acceptance": [
+        "all critical negative tests execute with artifact hashes",
+        "finding register and zero unmitigated CRITICAL"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-058",
+      "feature": "Coordinator",
+      "title": "G4 Windows native closed-beta readiness decision",
+      "objective": "Sign off Rust authority correctness, Unity compiled performance/safety and signed Windows release flow with official site.",
+      "dependsOn": [
+        "VL-051",
+        "VL-052",
+        "VL-054",
+        "VL-056",
+        "VL-057",
+        "VL-095",
+        "VL-096",
+        "VL-097",
+        "VL-098",
+        "VL-103",
+        "VL-106"
+      ],
+      "acceptance": [
+        "Owner-reviewed Windows native profile, source hashes, legal/art and security QA gate recorded",
+        "Signed installer update/rollback and website download/account UX tested before closed beta"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "N06-09 web qualification verified",
+        "human art/UX review"
+      ]
+    },
+    {
+      "id": "VL-059",
+      "feature": "Native",
+      "title": "G5 optional macOS/mobile port approval and device/license audit",
+      "objective": "After Windows gate, review actual demand, Apple hardware/accounts, Android physical devices and native cross-platform scope.",
+      "dependsOn": [
+        "VL-099"
+      ],
+      "acceptance": [
+        "signed ADR with license/OS/team/toolchain assumptions",
+        "conditional native original plan not bypassed"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "owner activates native workstream"
+      ]
+    },
+    {
+      "id": "VL-060",
+      "feature": "Native",
+      "title": "Unity macOS/mobile conditional cross-platform proof",
+      "objective": "Use pinned existing Windows Unity project/rig/proto and renderer tiers for real macOS or mobile build pilots; do not duplicate engine.",
+      "dependsOn": [
+        "VL-059",
+        "VL-022",
+        "VL-025"
+      ],
+      "acceptance": [
+        "Android install/test with real server ACK",
+        "no native gameplay authority/damage duplication"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-061",
+      "feature": "Avatar-Art",
+      "title": "Cross-platform asset/rig/material parity proof after Windows",
+      "objective": "Verify subset of Windows-approved facial/rig, content bundles and quality tier on activated macOS/mobile platform.",
+      "dependsOn": [
+        "VL-060",
+        "VL-052"
+      ],
+      "acceptance": [
+        "annotated cross renderer screenshots and animation parity",
+        "per-platform LOD budgets exposed"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-062",
+      "feature": "Native",
+      "title": "Android physical device controls and 30min thermal pilot",
+      "objective": "Adapt gameplay input and URP quality for actual Android devices; only after G5 approval.",
+      "dependsOn": [
+        "VL-060",
+        "VL-061"
+      ],
+      "acceptance": [
+        "real Android physical device profiler with 30m traces",
+        "WSS reconnect and scene loading tests"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "physical Android device and owner authorization"
+      ]
+    },
+    {
+      "id": "VL-063",
+      "feature": "Native",
+      "title": "iOS pilot conditional on Mac/Xcode/Apple devices",
+      "objective": "Compile and profile real iPhone iOS Unity build with consent and entitlements; no claim based on emulator.",
+      "dependsOn": [
+        "VL-060",
+        "VL-061"
+      ],
+      "acceptance": [
+        "Mac/Xcode + physical iPhone evidence; if not, BLOCKED_EXTERNAL truthful"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Mac/Xcode/Apple team/iPhone resources"
+      ]
+    },
+    {
+      "id": "VL-064",
+      "feature": "Coordinator",
+      "title": "G5 platform port go/no-go independent of Windows release",
+      "objective": "Evaluate activated port quality and business need; Windows launch remains independent.",
+      "dependsOn": [
+        "VL-062"
+      ],
+      "acceptance": [
+        "explicit decision/rollback and device table",
+        "no store release without N11/N14 actual gates"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "N10/N11/N14 original release approval"
+      ]
+    },
+    {
+      "id": "VL-065",
+      "feature": "QA-SRE",
+      "title": "CI/CD, game runtime deployment and telemetry",
+      "objective": "Use existing Argo/GHCR tooling, readiness, WSS draining and safe migrations.",
+      "dependsOn": [
+        "VL-004",
+        "VL-012",
+        "VL-022"
+      ],
+      "acceptance": [
+        "staging deploy with versioned digest and trace correlation",
+        "one writer and legacy route unaffected"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "qualificationDependencies": [
+        "VL-023",
+        "VL-049"
+      ]
+    },
+    {
+      "id": "VL-066",
+      "feature": "Persistence-Security",
+      "title": "Production-grade operational security",
+      "objective": "Verify mTLS/internal identity, secrets, CSP/WSS ingress, abuse and data deletion path.",
+      "dependsOn": [
+        "VL-050",
+        "VL-055",
+        "VL-065"
+      ],
+      "acceptance": [
+        "security signoff, compliant retention and no exposed internal endpoints"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-067",
+      "feature": "QA-SRE",
+      "title": "Disaster rollback drill and game reconciliation",
+      "objective": "Kill workloads, force backup restore and rollback under versions/active games.",
+      "dependsOn": [
+        "VL-055",
+        "VL-065"
+      ],
+      "acceptance": [
+        "real staging report RTO/RPO measured",
+        "no double membership/currency/hidden info loss"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-068",
+      "feature": "Gameplay",
+      "title": "Live events and transparent progression",
+      "objective": "Implement small café festival + cosmetic achievement loop with anti-pay-to-win gating.",
+      "dependsOn": [
+        "VL-047",
+        "VL-058"
+      ],
+      "acceptance": [
+        "event config from signed catalog and ledger only",
+        "no score/currency client authority"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-069",
+      "feature": "Coordinator",
+      "title": "Public Windows official release legal/site/support security signoff",
+      "objective": "Confirm brand/trademark/rights, privacy/moderation/support, stable website/download funnel, signed release and legal obligations.",
+      "dependsOn": [
+        "VL-058",
+        "VL-066",
+        "VL-098"
+      ],
+      "acceptance": [
+        "owner-approved compliance/provenance checklist",
+        "unknowns listed no false approvals"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-070",
+      "feature": "QA-SRE",
+      "title": "Windows native + Rust official-release canary/monitoring",
+      "objective": "Canary users install signed Windows client from official site, play Rust game, safely rollback service/asset/client version.",
+      "dependsOn": [
+        "VL-067",
+        "VL-068",
+        "VL-069",
+        "VL-102"
+      ],
+      "acceptance": [
+        "dashboard SLO, alerts, rollback drill and player reporting proven",
+        "go/no-go recorded"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "staging/hosting credentials and human beta consent"
+      ]
+    },
+    {
+      "id": "VL-071",
+      "feature": "Rust-Game-Core",
+      "title": "Zone lease/epoch model for multiple owners",
+      "objective": "Implement fenced instance directory and takeover on observed scale need.",
+      "dependsOn": [
+        "VL-019",
+        "VL-017"
+      ],
+      "acceptance": [
+        "network partition cannot create two successful writers",
+        "epoch and membership replay tested"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "qualificationDependencies": [
+        "VL-070"
+      ]
+    },
+    {
+      "id": "VL-072",
+      "feature": "Persistence-Security",
+      "title": "Legacy RoomAuthority Rust cutover pilot",
+      "objective": "Migrate **one** legacy world with full travel/seat/safety and journal compatible adapter.",
+      "dependsOn": [
+        "VL-071",
+        "VL-055"
+      ],
+      "acceptance": [
+        "old N05/N15 fixtures pass real recovery and rollback",
+        "at most one authority and no privacy regressions"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "owner approves legacy cutover ADR"
+      ]
+    },
+    {
+      "id": "VL-073",
+      "feature": "QA-SRE",
+      "title": "Scale capacity tests and autoscaling decision",
+      "objective": "Benchmark 2+ owner workloads, AOI fanout, persistence and routing costs.",
+      "dependsOn": [
+        "VL-071",
+        "VL-072"
+      ],
+      "acceptance": [
+        "measured saturation and partition chaos pass",
+        "HPA decision based on data not assumption"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-074",
+      "feature": "Gameplay",
+      "title": "Expand city districts and activities",
+      "objective": "Ship one new district+1 venue+1 game through same content/contract pipeline.",
+      "dependsOn": [
+        "VL-070",
+        "VL-073"
+      ],
+      "acceptance": [
+        "no contract forks, safe map target and deterministic game acceptance"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-075",
+      "feature": "Avatar-Art",
+      "title": "Next species/outfit expansion on approved Unity avatar rig",
+      "objective": "Grow avatar variants without changing game collision stats; maintain approved Windows profile and future mobile parity.",
+      "dependsOn": [
+        "VL-061",
+        "VL-070"
+      ],
+      "acceptance": [
+        "new species fits chair/emotes/LOD, license manifest and device metrics pass"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-076",
+      "feature": "Coordinator",
+      "title": "Creator/community roadmap and tech debt re-evaluation",
+      "objective": "Review traction, moderation cost, runtime ops and native decision before opening UGC.",
+      "dependsOn": [
+        "VL-073",
+        "VL-074",
+        "VL-075"
+      ],
+      "acceptance": [
+        "prioritized ADRs backed by usage/perf data",
+        "no arbitrary untrusted scripts enabled"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-077",
+      "feature": "Coordinator",
+      "title": "Desktop-first roadmap and old-plan handoff decision",
+      "objective": "Owner approves Windows-native as release product, browser portal as public site; map N06/PA/Lodge effects.",
+      "dependsOn": [
+        "VL-001",
+        "VL-002"
+      ],
+      "acceptance": [
+        "Desktop ADR-003 signed with exceptions",
+        "Legacy plan N06 owner/handoff and file reservation documented"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "6f6d5f1831774eed4e6cedd0ab0755c308a88bac",
+        "commands": [
+          {
+            "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+            "exitCode": 0,
+            "result": "209 legacy/105 baseline/47 SQL and original source preserved; new Rust inventoried without gameplay qualification"
+          },
+          {
+            "command": "python3 docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/tools/validate_plan.py",
+            "exitCode": 0,
+            "result": "110task checksums/DAG PASS; expected runtime addition warning"
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "reviewMode": "HISTORICAL_INDEPENDENT",
+        "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-077.json"
+      }
+    },
+    {
+      "id": "VL-078",
+      "feature": "Native",
+      "title": "Unity Windows hardware/licenses/build capability audit",
+      "objective": "Enumerate supported test PCs GPU/driver, Unity seats/CI, build runner and legal signing needs.",
+      "dependsOn": [
+        "VL-001"
+      ],
+      "acceptance": [
+        "Named physical Win PC low/balanced/ultra list or recorded external blockers",
+        "Unity build/license/CI requirements written without inventing compliance"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Windows real GPU devices; Unity editor/license terms review"
+      ],
+      "qualificationDependencies": [
+        "VL-007"
+      ]
+    },
+    {
+      "id": "VL-079",
+      "feature": "Web-UX",
+      "title": "Official VirtualLife portal IA and hero media direction",
+      "objective": "Define website download/account/news/gallery/support structure without open world browser shader requirement.",
+      "dependsOn": [
+        "VL-010"
+      ],
+      "acceptance": [
+        "IA/content/design + reduced-motion and mobile poster strategy reviewed",
+        "Download page fields and media provenance requirements specified"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "qualificationDependencies": [
+        "VL-006"
+      ]
+    },
+    {
+      "id": "VL-080",
+      "feature": "Native",
+      "title": "Pinned Unity URP Windows project scaffolding and CI smoke",
+      "objective": "Create Unity LTS project, asmdefs, URP presets and standalone Windows build scripts.",
+      "dependsOn": [
+        "VL-077"
+      ],
+      "acceptance": [
+        "Pinned Unity exact editor and package lock + URP Windows player build CI artifact",
+        "Headless/runner limitations recorded, real player opens a simple scene"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Windows-capable build runner; Unity licensing if applicable"
+      ],
+      "qualificationDependencies": [
+        "VL-078"
+      ]
+    },
+    {
+      "id": "VL-081",
+      "feature": "Native",
+      "title": "Native Unity ↔ Rust generated C# protocol and login proof",
+      "objective": "Generate C# from proto and connect Unity client to Rust WSS scoped ticket, reconnect.",
+      "dependsOn": [
+        "VL-080",
+        "VL-012",
+        "VL-013"
+      ],
+      "acceptance": [
+        "Real native Unity login and scoped WSS roundtrip with traced server receipt",
+        "Schema mismatch, timeout, expired ticket and reconnect tested"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-082",
+      "feature": "Native",
+      "title": "URP anime shader/lighting GPU proof on Windows",
+      "objective": "Prototype face/hair/eye/toon outlines and one plaza/café lighting sample with profiles.",
+      "dependsOn": [
+        "VL-080",
+        "VL-105"
+      ],
+      "acceptance": [
+        "Golden scene screenshots/video from compiled Win build and shader variant log",
+        "CPU/GPU/VRAM p95/p99 baseline on named Windows GPU or external gate blocker"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Named Windows test GPU"
+      ]
+    },
+    {
+      "id": "VL-083",
+      "feature": "Web-UX",
+      "title": "Next.js official website shell with accessible hero/download routes",
+      "objective": "Build site routes, asset strategy, account integration placeholder and localized structure.",
+      "dependsOn": [
+        "VL-079",
+        "VL-002"
+      ],
+      "acceptance": [
+        "Landing/news/world/download/support routes render mobile and desktop",
+        "No full game WebGL bundle or fake working download; accessible keyboard and reduced-motion"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-084",
+      "feature": "Native",
+      "title": "Unity local movement prediction + Rust reconciliation",
+      "objective": "Client inputs immediate, smooth corrections and packet-loss/reconnect safety.",
+      "dependsOn": [
+        "VL-081",
+        "VL-028",
+        "VL-027"
+      ],
+      "acceptance": [
+        "Local control responsive under 40/80/150ms RTT injected tests",
+        "Rust rejects speedhack and client resync is stable, profiler output attached"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-085",
+      "feature": "Native",
+      "title": "Unity city scene streaming, camera framing and visual continuity",
+      "objective": "Addressables district cell/chunk prefetch, bake/probes, day-sunset scenario, transitions.",
+      "dependsOn": [
+        "VL-024",
+        "VL-027",
+        "VL-082"
+      ],
+      "acceptance": [
+        "Compiled native Aurora Plaza loads/evicts scenes without missing assets or authority loss",
+        "Golden noon/dusk scene profiles and stream hitch count captured"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-086",
+      "feature": "Avatar-Art",
+      "title": "Unity native facial animation, ear/tail and sit IK integration",
+      "objective": "Connect Blender rig morphs/emotes to native Blend Tree/Animation Rigging and close/mid/far LOD.",
+      "dependsOn": [
+        "VL-026",
+        "VL-027",
+        "VL-082"
+      ],
+      "acceptance": [
+        "12+ semantic expression channels and hair/ear/tail mood QA on actual model",
+        "Sitting/hand/drink no major clipping with quality tiers and reduced motion"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-087",
+      "feature": "Native",
+      "title": "Windows graphics profiles + shader prewarm + GPU telemetry",
+      "objective": "Dynamic resolution/LOD/shadows/postFX profiles and shader warmup, persisted safe defaults.",
+      "dependsOn": [
+        "VL-085",
+        "VL-086",
+        "VL-014"
+      ],
+      "acceptance": [
+        "Low/Balanced/Ultra profiles selectable and automatic safe tier discovery",
+        "GPU/p95/p99, variant count and frame hitch logs from compiled player"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Named Windows test PCs"
+      ]
+    },
+    {
+      "id": "VL-088",
+      "feature": "Native",
+      "title": "Unity HUD/M-map focus, UI and controls integration",
+      "objective": "Desktop gamepad/keyboard chat focus, M map, POI cards and UI render quality.",
+      "dependsOn": [
+        "VL-031",
+        "VL-081",
+        "VL-085"
+      ],
+      "acceptance": [
+        "M/map/escape/chat focus/rebind and controller flows tested",
+        "No map input steals chat text; meaningful preview and teleport permissions"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-089",
+      "feature": "Native",
+      "title": "Unity café enter/seat/stand animation and runtime session adapter",
+      "objective": "Café interior and IK/chair with Rust seat reservation and content hash gating.",
+      "dependsOn": [
+        "VL-038",
+        "VL-039",
+        "VL-085",
+        "VL-086"
+      ],
+      "acceptance": [
+        "Two players cannot own same seat; animation matches canonical seat anchor",
+        "Disconnect/blocked seat and return to walkable world tested"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-090",
+      "feature": "Native",
+      "title": "Unity in-world private card table UI with spectator mode",
+      "objective": "Render table mini-game in café and reliable projection-aware hidden hands.",
+      "dependsOn": [
+        "VL-041",
+        "VL-042",
+        "VL-089"
+      ],
+      "acceptance": [
+        "Owner sees private cards and spectator cannot via renderer or logs",
+        "Invite/start/forfeit/leave/reconnect works without world ghost avatar"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-091",
+      "feature": "Native",
+      "title": "Unity Pet Arena walk-in training PvE and match-3 board",
+      "objective": "Native world arena gate + tactical combat board and safe cinematic VFX, Rust rules.",
+      "dependsOn": [
+        "VL-044",
+        "VL-045",
+        "VL-085"
+      ],
+      "acceptance": [
+        "Arena stage from city gate playable in Win build with deterministic result",
+        "Hero VFX meets flash/readability constraints and returns to free roaming"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-092",
+      "feature": "Web-UX",
+      "title": "VirtualLife official promotional pages and character gallery",
+      "objective": "High-impact original preview media, clear Windows CTA and launch community funnels.",
+      "dependsOn": [
+        "VL-083",
+        "VL-079"
+      ],
+      "acceptance": [
+        "Website shows world/characters/activities/news/support/download states",
+        "Responsive image/video reduced-motion and correct concept-vs-gameplay labeling"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-093",
+      "feature": "QA-SRE",
+      "title": "Windows release manifest, immutable bundle and distribution design",
+      "objective": "Define executable manifest signing, content catalog hashing, CDN and release channels.",
+      "dependsOn": [
+        "VL-080",
+        "VL-083"
+      ],
+      "acceptance": [
+        "Example signed schema/CI restricts secrets and includes rollback design",
+        "Installer/game vs launcher update distinction and threat model reviewed"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Windows signing environment and official publisher verification"
+      ]
+    },
+    {
+      "id": "VL-094",
+      "feature": "Native",
+      "title": "Signed Windows install/clean machine and crash report pilot",
+      "objective": "Package Win player with verified publisher/signature, version metadata, safe crash telemetry.",
+      "dependsOn": [
+        "VL-093",
+        "VL-087"
+      ],
+      "acceptance": [
+        "Win10/11 clean install/uninstall, hash signature validation and crash restart proof",
+        "No private hands/auth tokens in diagnostics and non-admin scenario tested"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Windows code signing materials"
+      ]
+    },
+    {
+      "id": "VL-095",
+      "feature": "QA-SRE",
+      "title": "Native G4 GPU/art/performance certification",
+      "objective": "Capture 3 golden scene profiles on named GPUs after warm/cold runs and soak.",
+      "dependsOn": [
+        "VL-087",
+        "VL-089",
+        "VL-091",
+        "VL-104"
+      ],
+      "acceptance": [
+        "p50/p95/p99 CPU+GPU/VRAM/GC/hitches across 3 scenarios documented",
+        "Human art/perf signoff with hardware/driver/build source and profile hashes"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Physical Windows GPU tiers"
+      ]
+    },
+    {
+      "id": "VL-096",
+      "feature": "QA-SRE",
+      "title": "Rust+Unity E2E privacy/reconnect/ownership stress suite",
+      "objective": "Test native compiled game with lost/duplicate packets, failed transfer, private cards and ledger.",
+      "dependsOn": [
+        "VL-048",
+        "VL-090",
+        "VL-091",
+        "VL-081"
+      ],
+      "acceptance": [
+        "Native test user can city→cafe→card→Pet and back across reconnect",
+        "No double settlement, hidden card leak, ghost seat or unauthorized teleport"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-097",
+      "feature": "QA-SRE",
+      "title": "Windows binary/asset updater and rollback drills",
+      "objective": "Test launcher candidate if approved or signed installer-only upgrade; distinguish Unity Addressables.",
+      "dependsOn": [
+        "VL-093",
+        "VL-094"
+      ],
+      "acceptance": [
+        "Interrupted download/disk-full/invalid signature cannot compromise previous install",
+        "Executable/version and content catalog rollback tested with incompatible schema path"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Restricted signing pipeline"
+      ]
+    },
+    {
+      "id": "VL-098",
+      "feature": "Web-UX",
+      "title": "Official website security/Web Vitals/download funnel acceptance",
+      "objective": "Measure real responsive pages, safe auth/deeplink and signed Windows download.",
+      "dependsOn": [
+        "VL-092",
+        "VL-094",
+        "VL-110"
+      ],
+      "acceptance": [
+        "Core Web Vitals p75 and accessibility with device/network profile reported",
+        "Signed Windows asset link/version/hash verified; support/legal/version compatibility flows pass"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-099",
+      "feature": "Coordinator",
+      "title": "Desktop first Windows closed-beta reviewed G4 gate",
+      "objective": "Owner reviews all native client, Rust correctness, website, signing and visual evidence.",
+      "dependsOn": [
+        "VL-058",
+        "VL-095",
+        "VL-096",
+        "VL-097",
+        "VL-098"
+      ],
+      "acceptance": [
+        "Independent source-bound pass/no-go with open blockers and supported GPU list",
+        "Windows beta evidence bundle not based on key-art/mock UI"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-100",
+      "feature": "Native",
+      "title": "macOS Apple Silicon candidate build and Metal shader check",
+      "objective": "Prove macOS Unity app + networking/input + signature/notarization if funded.",
+      "dependsOn": [
+        "VL-059",
+        "VL-061"
+      ],
+      "acceptance": [
+        "Mac build/render/driver QA or clear BLOCKED_EXTERNAL if no Mac/license",
+        "Profile named Apple Silicon with account/login and avatar scene"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Mac hardware, Apple signing/notarization resources"
+      ]
+    },
+    {
+      "id": "VL-101",
+      "feature": "QA-SRE",
+      "title": "Android/iOS candidate economic performance decision",
+      "objective": "Compare app size/thermal/art adaptation and market need; Android/iOS separate release gates.",
+      "dependsOn": [
+        "VL-062",
+        "VL-064"
+      ],
+      "acceptance": [
+        "Real device metrics with cost/scope and quality downgrade matrix",
+        "Owner records go/no-go independent from Windows desktop release"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Physical mobile devices"
+      ]
+    },
+    {
+      "id": "VL-102",
+      "feature": "QA-SRE",
+      "title": "Production official portal + signed Windows client release certification",
+      "objective": "Prepare staged download, version compatibility, backend canary, status and rollback.",
+      "dependsOn": [
+        "VL-099",
+        "VL-094",
+        "VL-098",
+        "VL-067"
+      ],
+      "acceptance": [
+        "Public release site points to verified signed installer with live version/size/checksum",
+        "Canary and rollback with Rust/PG restore and support runbook approved"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Owner/legal/signing/CDN production gate"
+      ]
+    },
+    {
+      "id": "VL-103",
+      "feature": "Native",
+      "title": "Keyboard/controller accessibility and motion comfort pass",
+      "objective": "Remap keys, camera sensitivity, subtitle and no-shake controls in native HUD.",
+      "dependsOn": [
+        "VL-053",
+        "VL-087"
+      ],
+      "acceptance": [
+        "Reduced-motion removes optional camera shake/particles and fast flashes",
+        "Controller/keyboard/chat map focus tested with QA report"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-104",
+      "feature": "Avatar-Art",
+      "title": "Animate ambient city wind, signs, crowd and safe NPC life",
+      "objective": "Create local foliage/banner shader animation, instanced ambient crowds and interactive NPC server schedule split.",
+      "dependsOn": [
+        "VL-085",
+        "VL-087"
+      ],
+      "acceptance": [
+        "Ambient motion visible with near/far LOD and no server leaf/wind state",
+        "Client-only NPC effects never imply interactable authority; GPU budget measured"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-105",
+      "feature": "Avatar-Art",
+      "title": "Blender→Unity rig and per-scene shader/material/LOD budgets",
+      "objective": "Define texture, bone, draw, materials and shader keyword budget for first 3 golden scenes.",
+      "dependsOn": [
+        "VL-010"
+      ],
+      "acceptance": [
+        "Signed art/tech-art scale/rig/material/LOD authoring conventions",
+        "Shader variant and VRAM audit fields documented"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "qualificationDependencies": [
+        "VL-006",
+        "VL-078"
+      ]
+    },
+    {
+      "id": "VL-106",
+      "feature": "Web-UX",
+      "title": "Desktop accessibility and localized brand copy cross-check",
+      "objective": "Validate client and portal shared language tokens, safety UX, and card/map contrast.",
+      "dependsOn": [
+        "VL-053",
+        "VL-098",
+        "VL-103"
+      ],
+      "acceptance": [
+        "Reviewed vi/en strings and contrast/keyboard focus for game+site",
+        "No risky emotes/flash in reduced-motion setting"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-107",
+      "feature": "Gameplay",
+      "title": "Native photo mode and creator district expansion evaluation",
+      "objective": "Only after successful Windows release, test low-risk social/photo/UGC alternatives.",
+      "dependsOn": [
+        "VL-070",
+        "VL-075"
+      ],
+      "acceptance": [
+        "Value/cost hypothesis and game privacy/screenshot policy documented",
+        "No automatic UGC store publication without moderation controls"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-108",
+      "feature": "Gameplay",
+      "title": "Autonomous NPC behaviors and click-to-move navigation design",
+      "objective": "Specify what Rust must validate vs decorative city movement done by Unity.",
+      "dependsOn": [
+        "VL-010"
+      ],
+      "acceptance": [
+        "Click-to-move vs teleport, NPC interactive vs ambient state machines reviewed",
+        "Server navmesh/target privacy/attack surface and UX route IDs specified"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-109",
+      "feature": "Rust-Game-Core",
+      "title": "Rust auto-navigation target and interaction path validation",
+      "objective": "Server authorizes POI pathing, cancels on manual control and prevents moving into locked venues.",
+      "dependsOn": [
+        "VL-028",
+        "VL-039",
+        "VL-108"
+      ],
+      "acceptance": [
+        "Path intent reaches legal target and fails clearly on obstacle/closed POI",
+        "Speedhack/teleport spoof and seat transition policy negative tests"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-110",
+      "feature": "Avatar-Art",
+      "title": "Actual Windows gameplay capture and launch-media provenance",
+      "objective": "Capture launch-ready windows build screenshots and hero video from real app after graphics QA.",
+      "dependsOn": [
+        "VL-095",
+        "VL-052"
+      ],
+      "acceptance": [
+        "Source/build hash and signed art rights attached to actual capture",
+        "Website clearly labels approved gameplay vs remaining concept art"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    }
+  ]
+}

@@ -4,10 +4,10 @@ import { randomUUID } from 'node:crypto';
 import { io, type Socket } from 'socket.io-client';
 import { RoomAckSchema, RoomsListSchema, MeSchema, type Me, type RoomSnapshot, type RoomJoin } from '@virtual-city/contracts';
 import { createApp } from '../../apps/platform-api/src/app';
-import { readConfig } from '../../apps/platform-api/src/config';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 import { defineWorld, applyRoomDelta, sandboxScene, isWalkable } from '@virtual-city/world-sdk';
-import { DISCONNECT_GRACE_MS } from '../../apps/platform-api/src/rooms/service';
+import { DISCONNECT_GRACE_MS } from '../../apps/platform-api/src/features/rooms/modules/presence/application/service';
 
 let pool: Pool; let admin: Pool; let app: Awaited<ReturnType<typeof createApp>>; let url: string; let offset = 0; let serial = 1;
 const clients = new Set<Socket>(); const origin = 'http://127.0.0.1:3300';
@@ -380,5 +380,81 @@ describe('M07-04 authoritative scene movement', () => {
     if (!modernView.ok || modernView.result.type !== 'snapshot') throw new Error();
     expect(modernView.result.self.motion!.path.length).toBeGreaterThan(1);
     expect(modernView.result.self.motion?.path.at(-1)).toEqual({ x: 5, y: 3 });
+  });
+});
+
+describe('N05-01 optional ordered room command adapter', () => {
+  it('binds a request key to the authenticated actor, action and complete sequenced payload', async () => {
+    const client = await connect(await guest()), state = await join(client), input = ownInput(state, {seatId: 'seat-1', clientSeq: 1});
+    expect((await command(client, 'seat.claim', input)).ok).toBe(true);
+    expect(await command(client, 'seat.release', input)).toMatchObject({ok: false, error: {code: 'IDEMPOTENCY_CONFLICT'}});
+    expect(await command(client, 'seat.claim', {...input, clientSeq: 2})).toMatchObject({ok: false, error: {code: 'IDEMPOTENCY_CONFLICT'}});
+    const read = await command(client, 'room.snapshot', ownInput(state)); expect(read.ok && read.result.type === 'snapshot' && read.result.self.seatId).toBe('seat-1');
+  });
+
+  it('applies concurrent same-key effects once, rejects stale sequence/new payloads, and replays prior receipts without reapplying', async () => {
+    const user = await guest(), client = await connect(user), state = await join(client);
+    const claim = ownInput(state, {seatId: 'seat-1', clientSeq: 10});
+    const results = await Promise.all(Array.from({length: 3}, () => command(client, 'seat.claim', claim)));
+    expect(results.every(result => result.ok)).toBe(true);
+    const versions = results.map(result => result.ok && result.result.type === 'snapshot' ? result.result.roomVersion : -1); expect(new Set(versions).size).toBe(1);
+    const release = await command(client, 'seat.release', ownInput(state, {seatId: 'seat-1', clientSeq: 11})); expect(release.ok).toBe(true);
+    const replay = await command(client, 'seat.claim', claim); expect(replay.ok && replay.result.type === 'snapshot' && replay.result.self.seatId).toBeNull();
+    for (const input of [ownInput(state, {seatId: 'seat-2', clientSeq: 10}), ownInput(state, {seatId: 'seat-2', clientSeq: 11}), {...claim, seatId: 'seat-2', clientSeq: 12}]) {
+      const denied = await command(client, 'seat.claim', input); expect(denied).toMatchObject({ok: false, error: {code: 'IDEMPOTENCY_CONFLICT'}});
+    }
+    expect((await command(client, 'seat.claim', ownInput(state, {seatId: 'seat-2', clientSeq: 12}))).ok).toBe(true);
+    const other = await connect(await guest()), otherState = await join(other);
+    expect((await command(other, 'seat.claim', ownInput(otherState, {requestId: claim.requestId, seatId: 'seat-1', clientSeq: 0}))).ok).toBe(true);
+  });
+
+  it('keeps per-connection sequencing over repeated join, supports legacy tabs, and resets only the stream on reconnect', async () => {
+    const user = await guest(), first = await connect(user), state = await join(first), tab = await connect(user); await join(tab);
+    expect((await command(first, 'seat.claim', ownInput(state, {seatId: 'seat-1', clientSeq: 100}))).ok).toBe(true);
+    expect((await command(tab, 'seat.release', ownInput(state, {seatId: 'seat-1', clientSeq: 0}))).ok).toBe(true);
+    await join(first);
+    expect(await command(first, 'seat.claim', ownInput(state, {seatId: 'seat-1', clientSeq: 99}))).toMatchObject({ok: false, error: {code: 'IDEMPOTENCY_CONFLICT'}});
+    expect((await command(tab, 'seat.claim', ownInput(state, {seatId: 'seat-1'}))).ok).toBe(true);
+    expect((await command(first, 'seat.release', ownInput(state, {seatId: 'seat-1', clientSeq: 101}))).ok).toBe(true);
+    const id = first.id!; first.close(); await app.rooms.detach(id);
+    const resumed = await connect(user), recovered = await join(resumed); expect(recovered.membershipId).toBe(state.membershipId);
+    expect((await command(resumed, 'seat.claim', ownInput(recovered, {seatId: 'seat-1', clientSeq: 0}))).ok).toBe(true);
+    expect(await command(resumed, 'seat.release', ownInput(recovered, {seatId: 'seat-1', clientSeq: 1, epoch: randomUUID()}))).toMatchObject({ok: false, error: {code: 'NOT_IN_ROOM'}});
+    const leave = ownInput(recovered, {clientSeq: 1}); expect((await command(resumed, 'room.leave', leave)).ok).toBe(true); expect((await command(resumed, 'room.leave', leave)).ok).toBe(true);
+    const fresh = await join(resumed); expect(fresh.membershipId).not.toBe(state.membershipId);
+    expect((await command(resumed, 'seat.claim', ownInput(fresh, {seatId: 'seat-1', clientSeq: 0}))).ok).toBe(true);
+  });
+
+  it('consumes ordering only with accepted effects and lets snapshot resync bypass mutation ordering', async () => {
+    const owner = await connect(await guest()), own = await join(owner); await command(owner, 'seat.claim', ownInput(own, {seatId: 'seat-1'}));
+    const client = await connect(await guest()), state = await join(client);
+    expect(await command(client, 'seat.claim', ownInput(state, {seatId: 'seat-1', clientSeq: 10}))).toMatchObject({ok: false, error: {code: 'SEAT_TAKEN'}});
+    expect((await command(client, 'seat.claim', ownInput(state, {seatId: 'seat-2', clientSeq: 0}))).ok).toBe(true);
+    expect((await command(client, 'room.snapshot', ownInput(state, {clientSeq: 2147483647}))).ok).toBe(true);
+    expect((await command(client, 'seat.release', ownInput(state, {seatId: 'seat-2', clientSeq: 1}))).ok).toBe(true);
+  });
+
+  it('orders real server-path movement without applying a stale command or changing legacy projections', async () => {
+    const client = await connect(await guest()), state = await join(client, {motionVersion: 1});
+    const first = ownInput(state, {destination: {x: 2, y: 3}, clientSeq: 1}), moved = await command(client, 'room.move', first);
+    if (!moved.ok || moved.result.type !== 'snapshot') throw Error('Missing ordered movement');
+    offset += moved.result.self.motion!.path.length * 150;
+    try {
+      const next = await command(client, 'room.move', ownInput(state, {destination: {x: 6, y: 3}, clientSeq: 2})); expect(next.ok).toBe(true);
+      const stale = await command(client, 'room.move', ownInput(state, {destination: {x: 2, y: 3}, clientSeq: 1})); expect(stale).toMatchObject({ok: false, error: {code: 'IDEMPOTENCY_CONFLICT'}});
+      const replay = await command(client, 'room.move', first); expect(replay.ok && replay.result.type === 'snapshot' && replay.result.self.motion).toEqual(next.ok && next.result.type === 'snapshot' && next.result.self.motion);
+    } finally {offset = 0;}
+  });
+
+  it('retains an applied sequence and receipt after projection failure so a lost result cannot cause another effect', async () => {
+    const client = await connect(await guest()), state = await join(client), input = ownInput(state, {seatId: 'seat-1', clientSeq: 5});
+    const spy = vi.spyOn(app.identity, 'visibleRoomProfiles').mockRejectedValueOnce(Error('Synthetic ordered projection failure'));
+    try {
+      expect(await command(client, 'seat.claim', input)).toMatchObject({ok: false, error: {code: 'INTERNAL_ERROR'}});
+      expect(await command(client, 'seat.release', ownInput(state, {seatId: 'seat-1', clientSeq: 4}))).toMatchObject({ok: false, error: {code: 'IDEMPOTENCY_CONFLICT'}});
+      const retried = await command(client, 'seat.claim', input); expect(retried.ok && retried.result.type === 'snapshot' && retried.result.self.seatId).toBe('seat-1');
+      expect(app.rooms.diagnostics().occupiedSeats).toBe(1);
+      expect((await command(client, 'seat.release', ownInput(state, {seatId: 'seat-1', clientSeq: 6}))).ok).toBe(true);
+    } finally {spy.mockRestore();}
   });
 });

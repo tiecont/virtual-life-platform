@@ -1,23 +1,36 @@
-# AGENTS.md — virtual-life-platform instructions
+# Repository Instructions
 
-**MUST READ FIRST:** [`MASTER-AGENT-PLAN.md`](MASTER-AGENT-PLAN.md). Đây là file điều phối dự án. Mỗi module có plan riêng dưới `plans/`.
+Read README.md and config/development-plan.json before changing code. Run
+`pnpm plan:status` to see every task whose implementation dependencies are met.
 
-## Agent boot protocol
+One agent executes all features. No agent assignment, reservation, second-agent
+approval or phase-wide signoff is required before implementation. Work on any
+ready task; keep actual code/contract dependencies. Hardware, media rights,
+signing and release qualification apply to their own acceptance and deployment,
+and must not delay unrelated source work. Never claim a check ran when it did not.
 
-1. Xem `git status`, repo tree, runtime, README, scripts, migrations, tests, hai ứng dụng hiện hữu (nếu truy cập được).
-2. Đọc master rồi đọc `docs/agent/{PROGRESS,DECISIONS,BLOCKERS,HANDOFF}.md`; tiếp theo chỉ đọc plan cho task sắp thực hiện và dependencies trực tiếp.
-3. Không scaffold đè project đã tồn tại; không thay đổi stack/ORM chỉ vì plan dùng đề xuất mặc định. Audit trước; quyết định qua ADR.
-4. Implement **one vertical slice**, chạy verification thật, ghi evidence/commit/PR, tiếp tục task có dependency đã VERIFIED.
-5. Khi hết thời gian/context, lưu `Next exact action` và các blockers. Không giả vờ công việc sẽ tự chạy ở background.
-6. Không tự mua tài nguyên, công khai production, dùng thông tin nhạy cảm, force-push, chạy migration phá dữ liệu hoặc tự cấp bản quyền media. Các thao tác đó cần owner approval.
-7. Chat/report/block, privacy/consent và release gates là bắt buộc với world social; dating 18+ là gated, không mở public chỉ vì code đã pass.
+Use feature/module/layer folders for application source. Keep entrypoints and
+framework routes where the framework expects them. Domain code contains pure
+rules; application code coordinates use cases; infrastructure handles external
+systems; presentation handles HTTP, sockets and views. Do not create empty layers
+or duplicate services. Retain the existing stack, protocol and database journal.
 
-## Status values
+New Rust gameplay remains default-off. Nest RoomAuthority remains the only legacy
+room writer. Pet Arena PvE precedes new Lodge gameplay; mobile is conditional.
+Keep authentication, authorization, privacy, consent, moderation and release gates.
+Source implementation and green CI do not authorize production deployment,
+purchases, signing, media licensing, destructive migrations or public dating.
 
-`TODO | IN_PROGRESS | VERIFIED | BLOCKED_TECHNICAL | BLOCKED_EXTERNAL | DEFERRED_APPROVED`
+Keep the checkout focused on source, tests, assets, build/runtime configuration,
+and the maintained backlog. Do not add session diaries, review transcripts,
+generated evidence or archived plan packs. Put fresh logs under ignored artifacts/.
+Historical plans and evidence remain in Git at archive/pre-cleanup-2026-11-10.
+The historical-release fixtures are test inputs, not the active work plan.
 
-`VERIFIED` cần kết quả test/build hoặc bằng chứng tương đương (commands, exit codes, SHA, artifacts) chứ không phải checklist tự tích.
+Before merge, run relevant checks and actual CI against the committed source.
+Record verification in the task entry with source SHA and actual command outcomes;
+label self-review honestly. Merge through a green PR; never bypass failed checks.
+Preserve owner changes and untracked files. Do not commit secrets or local IDE data.
 
-## Final response format per execution session
-
-`Task IDs / Changed files / Test commands and actual outcomes / Commit SHA / Risks or blockers / Next exact action`.
+Session report: task IDs, changed areas, actual checks, commit/PR, remaining risks,
+and next exact action. Do not imply background progress after ending a session.

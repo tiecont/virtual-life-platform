@@ -1,0 +1,106 @@
+# Disposable artifact verification only; private admin TLS verification; not deployment configuration.
+services:
+  db:
+    image: postgres:17.7-alpine
+    environment:
+      POSTGRES_USER: city_image_test
+      POSTGRES_DB: virtual_city_test
+      POSTGRES_PASSWORD: ${IMAGE_DB_PASSWORD:?}
+    volumes: [image-db:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -h 127.0.0.1 -U city_image_test -d virtual_city_test]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks: [image]
+  migrate:
+    image: ${IMAGE_API:?}
+    environment: &api-env
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: '4300'
+      DATABASE_URL: postgresql://city_image_test:${IMAGE_DB_PASSWORD:?}@db:5432/virtual_city_test
+      SESSION_SECRET: ${IMAGE_SESSION_SECRET:?}
+      WEB_ORIGIN: https://player-image.invalid
+      ADMIN_ORIGIN: ${IMAGE_ORIGIN:?}
+      OPERATOR_AUTH_KEY: ${IMAGE_OPERATOR_KEY:?}
+      OPERATOR_TELEMETRY_TOKEN: ${IMAGE_METRICS_TOKEN:?}
+      TRUSTED_PROXY_IP: ${IMAGE_PROXY_IP:?}
+    entrypoint: [node]
+    command: [dist/shared/database/migrate.js]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    depends_on:
+      db: {condition: service_healthy}
+    networks: [image]
+  api:
+    tmpfs: ['/tmp:size=8m,uid=1000,gid=1000,mode=0700']
+    image: ${IMAGE_API:?}
+    environment: *api-env
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 15s
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:4300/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks:
+      image:
+        aliases: [operator-api]
+  admin:
+    image: ${IMAGE_ADMIN:?}
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: '3400'
+      NEXT_TELEMETRY_DISABLED: '1'
+      ADMIN_ORIGIN: ${IMAGE_ADMIN_ORIGIN:?}
+      ADMIN_API_ORIGIN: ${IMAGE_ADMIN_API_ORIGIN:?}
+      ADMIN_METRICS_READ_TOKEN: ${IMAGE_ADMIN_METRICS_TOKEN-}
+    read_only: true
+    tmpfs: ['/tmp:size=32m,uid=1000,gid=1000,mode=0700', '/app/apps/admin-web/.next/cache:size=64m,uid=1000,gid=1000,mode=0700']
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 15s
+    depends_on:
+      api: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3400').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    networks: [image]
+  edge:
+    image: caddy:2.11.7-alpine
+    environment:
+      CITY_SITE_ADDRESS: ${IMAGE_ORIGIN:?}
+      CITY_TLS_CERT: /run/image-tls/cert.pem
+      CITY_TLS_KEY: /run/image-tls/key.pem
+      XDG_DATA_HOME: /tmp/caddy-data
+      XDG_CONFIG_HOME: /tmp/caddy-config
+    volumes:
+      - ${IMAGE_CADDYFILE:?}:/etc/caddy/Caddyfile:ro
+      - ${IMAGE_TLS_CERT:?}:/run/image-tls/cert.pem:ro
+      - ${IMAGE_TLS_KEY:?}:/run/image-tls/key.pem:ro
+    ports: ['127.0.0.1:${IMAGE_TLS_PORT:?}:${IMAGE_TLS_PORT:?}']
+    read_only: true
+    tmpfs: [/tmp]
+    stop_grace_period: 10s
+    depends_on:
+      admin: {condition: service_healthy}
+    networks:
+      image:
+        ipv4_address: ${IMAGE_PROXY_IP:?}
+networks:
+  image:
+    ipam:
+      config:
+        - subnet: ${IMAGE_SUBNET:?}
+          ip_range: ${IMAGE_DYNAMIC_RANGE:?}
+volumes:
+  image-db:

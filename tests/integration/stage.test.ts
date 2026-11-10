@@ -6,8 +6,8 @@ import { MeSchema,RoomAckSchema,type Me,type TravelSource } from '@virtual-city/
 import { defineWorld } from '@virtual-city/world-sdk';
 import { loungeScene } from '@virtual-city/lounge-world';
 import { createApp } from '../../apps/platform-api/src/app';
-import { readConfig } from '../../apps/platform-api/src/config';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 const origin='http://127.0.0.1:3300';let admin:Pool,serial=0;
 const opened:{app:Awaited<ReturnType<typeof createApp>>;pool:Pool;schema:string}[]=[],sockets=new Set<Socket>();
 beforeAll(async()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});

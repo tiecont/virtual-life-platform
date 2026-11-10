@@ -2,7 +2,7 @@ name: Quality
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, 'codex/**']
 permissions:
   contents: read
 concurrency:
@@ -11,10 +11,28 @@ concurrency:
 env:
   NEXT_TELEMETRY_DISABLED: '1'
 jobs:
+  plan:
+    name: change-plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      images: ${{ steps.plan.outputs.images }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .node-version
+      - id: plan
+        run: node scripts/artifact-plan.mjs >> "$GITHUB_OUTPUT"
+
   core:
     name: core-checks
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # 770 integration cases took20minutes;leave bounded time for checks/builds.
+    timeout-minutes: 45
     outputs:
       groups: ${{ steps.browser-plan.outputs.groups }}
     services:
@@ -34,6 +52,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+          fetch-depth: 0 # Historical evidence objects must survive current-tree cleanup.
       - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
           version: 11.28.5
@@ -79,6 +98,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
           version: 11.28.5
@@ -105,9 +125,59 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
+  images:
+    name: runtime-images
+    needs: plan
+    if: ${{ needs.plan.outputs.images == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          version: 11.28.5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      # Image smoke drivers import compiled shared contracts on the host too.
+      - run: pnpm build:packages
+      - run: node scripts/release-bundle.mjs --output artifacts/release-bundle
+      - name: Verify local Compose from the tested web and API images
+        run: node scripts/local-compose-smoke.mjs --bundle artifacts/release-bundle/bundle.json
+      - name: Preserve image failure summaries
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: image-failure-summaries-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            artifacts/image-*/facts.json
+            artifacts/image-*/commands.json
+            artifacts/image-*/smoke/result.json
+            artifacts/image-*/smoke/commands.json
+          if-no-files-found: warn
+          retention-days: 7
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: verified-image-metadata-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/release-bundle/metadata/
+          if-no-files-found: error
+          retention-days: 90
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-images-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/release-bundle/
+          if-no-files-found: error
+          retention-days: 1
+
   quality:
     name: quality
-    needs: [core, browser]
+    needs: [plan, core, browser, images]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -120,4 +190,4 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version-file: .node-version
-      - run: node scripts/ci-gate.mjs
+      - run: node scripts/artifact-gate.mjs

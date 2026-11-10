@@ -10,7 +10,7 @@ import { Pool } from 'pg';
 import { io,type Socket } from 'socket.io-client';
 import { MeSchema,RoomAckSchema,type RoomSnapshot } from '@virtual-city/contracts';
 import { startRoomProcess } from '../support/room-process';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 
 const args=process.argv.slice(2);
 if(args.some(a=>!/^--(?:clients=(?:100|1000)|soak=(?:2|120))$/.test(a))||new Set(args.map(a=>a.split('=')[0])).size!==args.length){console.error('Only --clients=100|1000 and --soak=2|120 are supported');process.exit(1);}

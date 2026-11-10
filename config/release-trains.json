@@ -12,21 +12,158 @@
     "backupCustodian": null
   },
   "waves": {
-    "W2": { "worlds": ["deadline", "maid"], "modules": ["M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M14", "M15", "M16", "M21", "M22"], "priorWaves": [], "extraGates": [] },
-    "W3": { "worlds": ["library", "park"], "modules": ["M12", "M17", "M24"], "priorWaves": ["W2"], "extraGates": ["library-content-review"] },
-    "W4": { "worlds": ["restaurant"], "modules": ["M18"], "priorWaves": ["W2"], "extraGates": [] },
-    "W5": { "worlds": ["lounge"], "modules": ["M19"], "priorWaves": ["W2"], "extraGates": ["lounge-media-review", "lounge-live-operator"] },
-    "W6": { "worlds": ["dating"], "modules": ["M20"], "priorWaves": ["W2"], "extraGates": ["dating-reviewed-adult-provider", "dating-legal-privacy-operator-pilot"] }
+    "W2": {
+      "worlds": [
+        "deadline",
+        "maid"
+      ],
+      "modules": [
+        "M03",
+        "M04",
+        "M05",
+        "M06",
+        "M07",
+        "M08",
+        "M09",
+        "M10",
+        "M11",
+        "M14",
+        "M15",
+        "M16",
+        "M21",
+        "M22"
+      ],
+      "priorWaves": [],
+      "extraGates": []
+    },
+    "W3": {
+      "worlds": [
+        "library",
+        "park"
+      ],
+      "modules": [
+        "M12",
+        "M17",
+        "M24"
+      ],
+      "priorWaves": [
+        "W2"
+      ],
+      "extraGates": [
+        "library-content-review"
+      ]
+    },
+    "W4": {
+      "worlds": [
+        "restaurant"
+      ],
+      "modules": [
+        "M18"
+      ],
+      "priorWaves": [
+        "W2"
+      ],
+      "extraGates": []
+    },
+    "W5": {
+      "worlds": [
+        "lounge"
+      ],
+      "modules": [
+        "M19"
+      ],
+      "priorWaves": [
+        "W2"
+      ],
+      "extraGates": [
+        "lounge-media-review",
+        "lounge-live-operator"
+      ]
+    },
+    "W6": {
+      "worlds": [
+        "dating"
+      ],
+      "modules": [
+        "M20"
+      ],
+      "priorWaves": [
+        "W2"
+      ],
+      "extraGates": [
+        "dating-reviewed-adult-provider",
+        "dating-legal-privacy-operator-pilot"
+      ]
+    }
   },
   "controls": [
-    { "id": "world-release", "source": "config/rollout.json", "ownerRole": "releaseApprover", "default": "all-disabled", "runtime": "review record;not a deployment command" },
-    { "id": "world-admission", "source": "apps/platform-api/src/config.ts", "ownerRole": "implementation", "default": "LOCAL_* options 0", "runtime": "local installation plus WORLD_FLAGS_FILE;production rejects local installation" },
-    { "id": "incident-denials", "source": "docs/operations/MODERATION-RUNBOOK.md", "ownerRole": "safetyOnDuty", "default": "no incident override", "runtime": "registered scoped administrator;durable deny-only world/chat controls" },
-    { "id": "chat", "source": "config/safety-policy.json", "ownerRole": "safetyOnDuty", "default": "disabled", "runtime": "world capability and current moderation;local Maid canned-only exception" },
-    { "id": "dating", "source": "config/dating-policy.json", "ownerRole": "legalReviewer", "default": "all-eight-approvals-false", "runtime": "closed prototype;synthetic proof is never public eligibility" },
-    { "id": "lounge-media", "source": "config/lounge-media-clearance.json", "ownerRole": "legalReviewer", "default": "no licensed playback", "runtime": "original visual/text only;no third-party media" },
-    { "id": "telemetry", "source": "docs/operations/OBSERVABILITY.md", "ownerRole": "incidentCommander", "default": "disabled", "runtime": "private independent OPERATOR_TELEMETRY_TOKEN;public edge denies" },
-    { "id": "backups", "source": "docs/operations/POSTGRES-RECOVERY.md", "ownerRole": "backupCustodian", "default": "no installed schedule", "runtime": "encrypted local CLI;empty disposable restore only" }
+    {
+      "id": "world-release",
+      "source": "config/rollout.json",
+      "ownerRole": "releaseApprover",
+      "default": "all-disabled",
+      "runtime": "review record;not a deployment command"
+    },
+    {
+      "id": "world-admission",
+      "source": "apps/platform-api/src/shared/config/environment.ts",
+      "ownerRole": "implementation",
+      "default": "LOCAL_* options 0",
+      "runtime": "local installation plus WORLD_FLAGS_FILE;production rejects local installation"
+    },
+    {
+      "id": "incident-denials",
+      "source": "apps/platform-api/src/features/safety/modules/incidents/application/incidents.ts",
+      "ownerRole": "safetyOnDuty",
+      "default": "no incident override",
+      "runtime": "registered scoped administrator;durable deny-only world/chat controls"
+    },
+    {
+      "id": "chat",
+      "source": "config/safety-policy.json",
+      "ownerRole": "safetyOnDuty",
+      "default": "disabled",
+      "runtime": "world capability and current moderation;local Maid canned-only exception"
+    },
+    {
+      "id": "dating",
+      "source": "config/dating-policy.json",
+      "ownerRole": "legalReviewer",
+      "default": "all-eight-approvals-false",
+      "runtime": "closed prototype;synthetic proof is never public eligibility"
+    },
+    {
+      "id": "lounge-media",
+      "source": "config/lounge-media-clearance.json",
+      "ownerRole": "legalReviewer",
+      "default": "no licensed playback",
+      "runtime": "original visual/text only;no third-party media"
+    },
+    {
+      "id": "telemetry",
+      "source": "apps/platform-api/src/features/operations/modules/observability/infrastructure/telemetry.ts",
+      "ownerRole": "incidentCommander",
+      "default": "disabled",
+      "runtime": "private independent OPERATOR_TELEMETRY_TOKEN;public edge denies"
+    },
+    {
+      "id": "backups",
+      "source": "scripts/postgres-backup.mjs",
+      "ownerRole": "backupCustodian",
+      "default": "no installed schedule",
+      "runtime": "encrypted local CLI;empty disposable restore only"
+    }
   ],
-  "publicGates": ["explicit-wave-owner-approval", "reviewed-production-installation", "private-domain-tls-credentials", "safety-coverage-and-appeal-contact", "privacy-retention-and-keys", "content-rights-review", "current-release-rehearsal", "backup-custody-and-restore", "monitoring-and-incident-routing", "reviewed-resource-and-security-budget"]
+  "publicGates": [
+    "explicit-wave-owner-approval",
+    "reviewed-production-installation",
+    "private-domain-tls-credentials",
+    "safety-coverage-and-appeal-contact",
+    "privacy-retention-and-keys",
+    "content-rights-review",
+    "current-release-rehearsal",
+    "backup-custody-and-restore",
+    "monitoring-and-incident-routing",
+    "reviewed-resource-and-security-budget"
+  ]
 }

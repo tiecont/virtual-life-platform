@@ -1,7 +1,0 @@
-{
-  "urlDoesNotTravel": true,
-  "fullRoomPreservesExactSource": true,
-  "releasedCapacityAdmitsSpecificRoom": true,
-  "sameWorldDifferentRoom": true,
-  "sameIdentity": true
-}

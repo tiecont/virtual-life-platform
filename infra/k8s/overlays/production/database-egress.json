@@ -1,0 +1,45 @@
+{
+  "apiVersion": "networking.k8s.io/v1",
+  "kind": "NetworkPolicy",
+  "metadata": {
+    "name": "vlp-database",
+    "labels": {
+      "app.kubernetes.io/part-of": "virtual-life-platform"
+    }
+  },
+  "spec": {
+    "podSelector": {
+      "matchLabels": {
+        "app.kubernetes.io/part-of": "virtual-life-platform",
+        "app.kubernetes.io/name": "vlp-api"
+      }
+    },
+    "policyTypes": [
+      "Egress"
+    ],
+    "egress": [
+      {
+        "to": [
+          {
+            "namespaceSelector": {
+              "matchLabels": {
+                "kubernetes.io/metadata.name": "vlp-data-production"
+              }
+            },
+            "podSelector": {
+              "matchLabels": {
+                "app.kubernetes.io/name": "vlp-postgres"
+              }
+            }
+          }
+        ],
+        "ports": [
+          {
+            "protocol": "TCP",
+            "port": 5432
+          }
+        ]
+      }
+    ]
+  }
+}

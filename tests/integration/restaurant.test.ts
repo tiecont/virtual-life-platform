@@ -4,9 +4,9 @@ import { randomUUID } from 'node:crypto';
 import { io,type Socket } from 'socket.io-client';
 import { MeSchema,RoomAckSchema,type RoomSnapshot } from '@virtual-city/contracts';
 import { restaurantWorldVersion,restaurantTables,restaurantServicePolicy } from '@virtual-city/restaurant-world';
-import { readConfig } from '../../apps/platform-api/src/config';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { createApp } from '../../apps/platform-api/src/app';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 let admin:Pool,pool:Pool,app:Awaited<ReturnType<typeof createApp>>,url:string,config:ReturnType<typeof readConfig>;
 const clients:Socket[]=[],schema='restaurant_test_'+randomUUID().replaceAll('-',''),origin='http://127.0.0.1:3300',organizers=new Set<string>();let serial=0,offset=0,stepClock=0;
 async function open(){app=await createApp(config,pool,false,{now:()=>Date.now()+offset+(stepClock>0?stepClock++:0),events:{organizers:{permits:async(_db,actor,world)=>world==='restaurant'&&organizers.has(actor.accountId)}}});await app.app.listen(0,'127.0.0.1');url=await app.app.getUrl();}

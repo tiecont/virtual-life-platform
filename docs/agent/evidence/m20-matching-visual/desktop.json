@@ -1,9 +1,0 @@
-{
-  "independentContexts": true,
-  "explicitQueueAndTwoAccepts": true,
-  "noPeerAccountIds": true,
-  "noRoomOrCommunication": true,
-  "minimum44pxTargets": true,
-  "noOverflow": true,
-  "stopEndsBothAllocations": true
-}

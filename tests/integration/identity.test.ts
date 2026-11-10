@@ -1,9 +1,9 @@
 import { beforeAll, afterAll, describe, it, expect } from 'vitest';
 import { Pool } from 'pg';
 import { randomUUID } from 'node:crypto';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 import { createApp } from '../../apps/platform-api/src/app';
-import { readConfig } from '../../apps/platform-api/src/config';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { MeSchema, PrivacySchema, ApiErrorSchema, type Me } from '@virtual-city/contracts';
 let pool: Pool; let admin: Pool; let server: Awaited<ReturnType<typeof createApp>>;
 let now = Date.now(); let nextIP = 1;

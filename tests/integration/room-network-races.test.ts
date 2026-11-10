@@ -1,12 +1,13 @@
 import { beforeAll,afterAll,beforeEach,afterEach,it,expect } from 'vitest';
+import {evidenceOutput} from '../../scripts/evidence-output.mjs';
 import { randomUUID } from 'node:crypto';
 import { request } from 'node:http';
 import { performance } from 'node:perf_hooks';
-import { mkdir,writeFile } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 import { Pool } from 'pg';
 import { io,type Socket } from 'socket.io-client';
 import { MeSchema,RoomAckSchema,type Me,type RoomSnapshot } from '@virtual-city/contracts';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 import { startRoomProcess } from '../support/room-process';
 let admin:Pool,pool:Pool,schema:string,runtime:Awaited<ReturnType<typeof startRoomProcess>>|undefined,serial=0;
 const origin='http://127.0.0.1:3300',sockets=new Set<Socket>(),facts:Record<string,unknown>[]=[];
@@ -14,7 +15,7 @@ let cleanup=async()=>{};
 beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
 beforeEach(async()=>{cleanup=async()=>{};schema='room_race_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA "${schema}"`);const url=new URL(process.env.TEST_DATABASE_URL!);url.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:url.toString()});await migrate(pool);runtime=await startRoomProcess(url.toString(),'synthetic-network-race-session-secret-00001',0,'race');});
 afterEach(async()=>{try{await cleanup();}finally{for(const socket of sockets)socket.close();sockets.clear();if(runtime){await runtime.stop();expect(runtime.child.exitCode).toBe(0);runtime=undefined;}await pool.end();await admin.query(`DROP SCHEMA "${schema}" CASCADE`);}});
-afterAll(async()=>{await admin.end();await mkdir('artifacts',{recursive:true});await writeFile('artifacts/m22-room-network-races.json',JSON.stringify({scope:'Actual loopback HTTP+Socket.IO clients,separate API process,unchanged limits;not a capacity benchmark',facts},null,2)+'\n');});
+afterAll(async()=>{await admin.end();const output=evidenceOutput('docs/agent/evidence/m22-room-network-races.json');await writeFile(output,JSON.stringify({scope:'Actual loopback HTTP+Socket.IO clients,separate API process,unchanged limits;not a capacity benchmark',facts},null,2)+'\n');console.log('Room network race evidence: '+output);});
 type User={me:Me;cookie:string;address:string};
 async function guest():Promise<User>{
  const n=++serial,address=`127.102.${Math.floor(n/250)}.${n%250+1}`,body=JSON.stringify({requestId:randomUUID(),displayName:'Network test visitor',avatarKey:'mint'});

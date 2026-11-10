@@ -7,8 +7,8 @@ import { io,type Socket } from 'socket.io-client';
 import { MeSchema,RoomAckSchema,AvatarKeySchema,ChatAckSchema,ChatMessageSchema,type RoomSnapshot } from '@virtual-city/contracts';
 import { maidCatalog,maidMenu,maidSourceAvatarSuggestions,maidWorldVersion,maidServicePolicy } from '@virtual-city/maid-world';
 import { createApp } from '../../apps/platform-api/src/app';
-import { readConfig } from '../../apps/platform-api/src/config';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 const origin='http://127.0.0.1:3300',schema='maid_identity_'+randomUUID().replaceAll('-',''),sockets=new Set<Socket>();
 let admin:Pool,pool:Pool,app:Awaited<ReturnType<typeof createApp>>,config:ReturnType<typeof readConfig>,url:string,serial=0;
 async function open(){app=await createApp(config,pool);await app.app.listen(0,'127.0.0.1');url=await app.app.getUrl();}

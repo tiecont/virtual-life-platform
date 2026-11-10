@@ -1,2 +1,0 @@
-Scope: all 6 workspace projects
-[ERR_PNPM_INVALID_MINIMUM_RELEASE_AGE_EXCLUDE] Invalid value in minimumReleaseAgeExclude: Name patterns are not allowed with version unions. Found: "@next/*@16.4.4"

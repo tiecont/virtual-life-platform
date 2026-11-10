@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {spawn,execFileSync} from 'node:child_process';
+import {readFile,writeFile,mkdir,stat} from 'node:fs/promises';
+import {createHash,randomUUID} from 'node:crypto';
+import {validateBrowserBatches} from './ci-policy.mjs';
+assert.equal(process.argv.length,2,'No implicit mode/fixture overrides');
+const id=randomUUID().slice(0,8),directory='artifacts/vnext/n06-11/room-adapter-v1/run-'+id;await mkdir(directory,{recursive:true,mode:0o700});const hash=bytes=>createHash('sha256').update(bytes).digest('hex'),startedAt=new Date().toISOString();
+const files=execFileSync('git',['ls-files','--cached','--others','--exclude-standard','--','packages/scene3d/src','packages/world-sdk/src','packages/pixi-scene/src/entities.ts','packages/client-sdk/src/scene.ts','packages/game-client/src/WorldRoomPanel.tsx','apps/portal-web/app/worlds/sdk-sandbox/room3d','apps/portal-web/features/rooms/modules/rooms/presentation/WorldRoomPanel.tsx','tests/e2e/scene3d-room.spec.ts','scripts/run-scene3d-room.mjs'],{encoding:'utf8'}).trim().split('\n');
+const sourceFiles=await Promise.all(files.map(async ref=>({ref,sha256:hash(await readFile(ref))}))),sourceRevision=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),trackedDiffSha256=hash(execFileSync('git',['diff','--binary','HEAD'],{maxBuffer:32*1024*1024}));
+const child=spawn(process.execPath,['scripts/run-browser-tests.mjs','tests/e2e/scene3d-room.spec.ts'],{stdio:'inherit',env:{...process.env,UX_EVIDENCE_RUN:id,BROWSER_REPORT_SCOPE:'ci/study/scene3d-room-'+id}});
+const code=await new Promise((ok,no)=>{child.once('error',no);child.once('close',value=>ok(value??1));});let batches=[],reportValid=false;
+try{assert((await stat('artifacts/browser-batches.json')).mtimeMs>=Date.parse(startedAt));batches=JSON.parse(await readFile('artifacts/browser-batches.json','utf8'));validateBrowserBatches(batches,'scene3d-room.spec.ts',code);reportValid=true;}catch{/* A missing/stale/foreign report cannot qualify the run. */}
+const facts={scope:'Actual Next/HTTP/signed-session/PostgreSQL/single-owner Socket.IO and shared3D SDK sandbox; browser emulation not native/physical/final-art or20actor performance acceptance',sourceRevision,trackedDiffSha256,sourceFiles,startedAt,completedAt:new Date().toISOString(),processExitCode:code,exitCode:code||!reportValid?code||1:0,reportValid,batches,visualDirectory:'artifacts/vnext/n06-11/room-adapter-v1/browser-'+id};await writeFile(directory+'/facts.json',JSON.stringify(facts,null,2)+'\n');console.log(JSON.stringify({exitCode:facts.exitCode,reportValid,batches,artifactDirectory:directory,visualDirectory:facts.visualDirectory}));process.exitCode=facts.exitCode;

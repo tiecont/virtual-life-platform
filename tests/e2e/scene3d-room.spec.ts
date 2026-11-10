@@ -1,0 +1,107 @@
+import {test,expect,type BrowserContext,type Page,type WebSocketRoute} from '@playwright/test';
+import {request} from 'node:http';
+import {randomUUID} from 'node:crypto';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {MeSchema,RoomAckSchema} from '@virtual-city/contracts';
+const origin='http://127.0.0.1:3300',route='/worlds/sdk-sandbox/room3d',runId=process.env.UX_EVIDENCE_RUN??randomUUID().slice(0,8);if(!/^[a-f0-9]{8}$/.test(runId))throw Error('Invalid3D evidence run');let serial=0;
+async function guest(context:BrowserContext,name:string){const payload=JSON.stringify({requestId:randomUUID(),displayName:name,avatarKey:'mint'}),result=await new Promise<{cookie:string;body:unknown}>((ok,no)=>{const req=request('http://127.0.0.1:4300/v1/session/guest',{method:'POST',localAddress:'127.127.0.'+(++serial),headers:{origin,'content-type':'application/json','content-length':Buffer.byteLength(payload)}},res=>{let body='';res.on('data',chunk=>body+=chunk);res.on('end',()=>{try{expect(res.statusCode).toBe(201);ok({cookie:res.headers['set-cookie']![0].split(';')[0],body:JSON.parse(body)});}catch(error){no(error);}});});req.on('error',no);req.end(payload);});const at=result.cookie.indexOf('=');await context.addCookies([{name:result.cookie.slice(0,at),value:result.cookie.slice(at+1),url:origin,httpOnly:true,sameSite:'Lax'}]);return MeSchema.parse(result.body);}
+const canvas=(page:Page)=>page.locator('canvas[data-engine="three-webgl2"]');
+const runtimeErrors=new WeakMap<Page,string[]>();
+async function closeActions(page:Page){const dialog=page.getByRole('dialog',{name:'Room actions',exact:true});if(await dialog.isVisible())await page.getByRole('button',{name:'Close room actions',exact:true}).click();}
+async function enter(page:Page){await page.goto(route);await expect(canvas(page)).toBeVisible({timeout:20000});await page.getByRole('button',{name:'Enter cafe',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');await closeActions(page);await expect(canvas(page)).toHaveAttribute('data-entity-count','1');}
+async function current(context:BrowserContext){const response=await context.request.get('/v1/me/room');expect(response.status()).toBe(200);return(await response.json()).snapshot;}
+async function capture(page:Page,name:string){const directory='artifacts/vnext/n06-11/room-adapter-v1/browser-'+runId+'/'+test.info().project.name;await mkdir(directory,{recursive:true});await page.screenshot({path:directory+'/'+name+'.png',fullPage:true});await writeFile(directory+'/'+name+'.yml',await page.locator('body').ariaSnapshot());const data=await canvas(page).getAttribute('data-scene3d-diagnostics');if(data)await writeFile(directory+'/'+name+'-diagnostics.json',data+'\n');const gpu=await canvas(page).evaluate(element=>{const gl=(element as HTMLCanvasElement).getContext('webgl2')!;const extension=gl.getExtension('WEBGL_debug_renderer_info');return{version:gl.getParameter(gl.VERSION),renderer:extension?gl.getParameter(extension.UNMASKED_RENDERER_WEBGL):'Unknown'};});expect(gpu.version).toContain('WebGL 2');await writeFile(directory+'/'+name+'-gpu.json',JSON.stringify({gpu,runtimeErrors:runtimeErrors.get(page)},null,2)+'\n');}
+async function pointClick(page:Page,point:{x:number;y:number;seatId?:string}){
+ await canvas(page).scrollIntoViewIfNeeded();
+ // Scrolling can resize the responsive canvas; sample its box and current target together.
+ const {x,y}=await canvas(page).evaluate((element,target)=>{
+  const box=element.getBoundingClientRect(),local=target.seatId?(JSON.parse((element as HTMLElement).dataset.seatTargets!) as Array<{seatId:string;x:number;y:number}>).find(seat=>seat.seatId===target.seatId)!:target;
+  return{x:box.x+local.x,y:box.y+local.y};
+ },point);
+ const viewport=page.viewportSize()!;expect(x).toBeGreaterThanOrEqual(0);expect(y).toBeGreaterThanOrEqual(0);expect(x).toBeLessThan(viewport.width);expect(y).toBeLessThan(viewport.height);if(test.info().project.name==='mobile')await page.touchscreen.tap(x,y);else await page.mouse.click(x,y);
+}
+test.setTimeout(90000);
+test.beforeEach(async({page},info)=>{const errors:string[]=[];runtimeErrors.set(page,errors);page.on('pageerror',error=>errors.push(error.message));page.on('console',message=>{if(message.type()==='error'&&/THREE\.|WebGLProgram|GL_INVALID|shader error/i.test(message.text()))errors.push(message.text());});await page.setViewportSize(info.project.name==='mobile'?{width:844,height:390}:{width:1280,height:720});});
+test.afterEach(async({page})=>{if(await page.getByRole('status').textContent().catch(()=>'')==='Connected'){await closeActions(page);const leave=page.getByRole('button',{name:'Leave cafe',exact:true});if(await leave.isEnabled())await leave.click();}expect(runtimeErrors.get(page)).toEqual([]);});
+
+test('anonymous3D room shows no invented visitor or gameplay socket and retains DOM identity controls',async({page})=>{let sockets=0;page.on('websocket',()=>sockets++);await page.goto(route);await expect(canvas(page)).toBeVisible({timeout:20000});await expect(page.getByText('3D room study · original technical art',{exact:true})).toBeVisible();await expect(page.getByRole('link',{name:'Open identity',exact:true})).toBeVisible();await expect(canvas(page)).toHaveAttribute('data-entity-count','0');await expect(page.getByRole('button',{name:'Enter cafe',exact:true})).toHaveCount(0);expect(sockets).toBe(0);await capture(page,'anonymous-room');});
+
+test('actual3D seat raycast waits for the real outgoing command and authoritative response',async({page,context})=>{
+ let release:(()=>void)|undefined,observed!:()=>void;const held=new Promise<void>(ok=>observed=ok);await page.routeWebSocket('**/socket.io/**',client=>{const server=client.connectToServer();client.onMessage(message=>{if(typeof message==='string'&&message.includes('"seat.claim"')&&!release){let sent=false;release=()=>{if(!sent){sent=true;server.send(message);}};observed();}else server.send(message);});server.onMessage(message=>client.send(message));});
+ try{await guest(context,'3D Pointer Visitor');await enter(page);const before=await current(context),targets=JSON.parse((await canvas(page).getAttribute('data-seat-targets'))!);await pointClick(page,targets.find((value:{seatId:string})=>value.seatId==='seat-1'));await held;expect((await current(context)).self.seatId).toBeNull();await expect(canvas(page)).toHaveAttribute('data-sitting-count','0');release!();await expect(page.getByText('Your seat is confirmed.',{exact:true})).toHaveCount(1);await expect(canvas(page)).toHaveAttribute('data-sitting-count','1',{timeout:15000});const state=await current(context);expect(state.self.seatId).toBe('seat-1');expect(state.membershipId).toBe(before.membershipId);await expect(canvas(page)).toHaveAttribute('data-avatar-core','starter-v1');await capture(page,'committed-ray-seat');}finally{release?.();}
+});
+
+test('seat marker batches retain authoritative pointer targets after moving the highlight between distant tables',async({page,context})=>{
+ // Exercise marker rebatching without a scheduled sync suspending the pointer target mid-click.
+ await page.clock.install();await page.clock.pauseAt(new Date(Date.now()+1000));
+ await guest(context,'3D Batch Visitor');await enter(page);const before=await current(context);
+ for(const [index,seatId]of ['seat-1','seat-8','seat-1'].entries()){
+  if(index){await page.getByRole('button',{name:'Room actions',exact:true}).click();await page.getByRole('button',{name:'Stand up',exact:true}).click();await expect(page.getByText('You stood up.',{exact:true})).toBeVisible();await closeActions(page);await expect(canvas(page)).toHaveAttribute('data-sitting-count','0');}
+  const targets=JSON.parse((await canvas(page).getAttribute('data-seat-targets'))!);
+  if(index===2){await page.setViewportSize({width:740,height:360});await page.clock.runFor(100);}
+  await pointClick(page,targets.find((target:{seatId:string})=>target.seatId===seatId));
+  await expect(page.getByText('Your seat is confirmed.',{exact:true})).toBeVisible();await page.clock.fastForward(4000);
+  await expect(canvas(page)).toHaveAttribute('data-sitting-count','1',{timeout:15000});const state=await current(context);expect(state.self.seatId).toBe(seatId);expect(state.membershipId).toBe(before.membershipId);
+  if(index===1)await capture(page,'rebatch-distant-table');
+ }
+ await capture(page,'rebatch-returned-table');
+});
+
+test('actual floor raycast follows the committed server path without changing identity or floor geometry',async({page,context})=>{
+ let approvedDestination:unknown=null;
+ page.on('websocket',socket=>socket.on('framereceived',frame=>{const text=typeof frame.payload==='string'?frame.payload:'';if(!/^43\d+\[/.test(text))return;try{const parsed=RoomAckSchema.safeParse(JSON.parse(text.slice(text.indexOf('[')))[0]);if(parsed.success&&parsed.data.ok&&parsed.data.result.type==='snapshot'&&parsed.data.result.self.motion)approvedDestination=parsed.data.result.self.motion.path.at(-1);}catch{/* Only validated ACKs provide motion evidence. */}}));
+ const me=await guest(context,'3D Floor Visitor');await enter(page);await page.getByRole('button',{name:'Room actions',exact:true}).click();await page.getByRole('button',{name:'Window table 01',exact:true}).click();await expect(canvas(page)).toHaveAttribute('data-sitting-count','1',{timeout:15000});await page.getByRole('button',{name:'Stand up',exact:true}).click();await expect(page.getByText('You stood up.',{exact:true})).toBeVisible();await closeActions(page);approvedDestination=null;await pointClick(page,JSON.parse((await canvas(page).getAttribute('data-spawn-target'))!));await expect.poll(()=>approvedDestination).toEqual({x:10,y:11});await expect(canvas(page)).toHaveAttribute('data-self-position','10.00:11.00',{timeout:15000});expect((await(await context.request.get('/v1/me')).json()).profile).toEqual(me.profile);await capture(page,'committed-floor-path');
+});
+
+test('context loss exposes graphics fallback while real seat and leave controls remain usable',async({page,context})=>{await guest(context,'3D Context Visitor');await enter(page);await page.getByRole('button',{name:'Follow my character',exact:true}).click();await expect(canvas(page)).toHaveAttribute('data-camera-framing','self');await canvas(page).evaluate(element=>{const target=element as HTMLCanvasElement&{restoreOwnContext?:()=>void},ext=target.getContext('webgl2')!.getExtension('WEBGL_lose_context');if(!ext)throw Error('Context probe unavailable');target.restoreOwnContext=()=>ext.restoreContext();ext.loseContext();});await expect(page.getByText('Scene unavailable. Seat controls remain available.',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Follow my character',exact:true})).toBeDisabled();await page.getByRole('button',{name:'Room actions',exact:true}).click();await page.getByRole('button',{name:'Window table 02',exact:true}).click();await expect(page.getByText('Your seat is confirmed.',{exact:true})).toBeVisible();expect((await current(context)).self.seatId).toBe('seat-2');await closeActions(page);await canvas(page).evaluate(element=>(element as HTMLCanvasElement&{restoreOwnContext:()=>void}).restoreOwnContext());await expect(page.getByText('3D room study · original technical art',{exact:true})).toBeVisible({timeout:20000});await expect(canvas(page)).toHaveAttribute('data-entity-count','1');await page.getByRole('button',{name:'Leave cafe',exact:true}).click();await expect(canvas(page)).toHaveAttribute('data-entity-count','0');expect(await current(context)).toBeNull();await capture(page,'context-recovered-left');});
+
+test('real transport interruption hides stale actors and restores one current membership',async({page,context})=>{let client:WebSocketRoute|undefined,server:WebSocketRoute|undefined,connections=0,resume!:()=>void;const gate=new Promise<void>(ok=>resume=ok);await page.routeWebSocket('**/socket.io/**',async route=>{if(++connections>1)await gate;client=route;server=route.connectToServer();});try{await guest(context,'3D Recovery Visitor');await enter(page);const before=await current(context);await client!.close({code:1012,reason:'Synthetic3D transport interruption'});await server!.close();await expect(page.getByRole('status')).toHaveText('Connection lost. Your place is unconfirmed.');await expect(canvas(page)).toHaveAttribute('data-entity-count','0');await capture(page,'transport-lost');resume();await expect(page.getByRole('status')).toHaveText('Connected',{timeout:15000});await expect(canvas(page)).toHaveAttribute('data-entity-count','1');expect((await current(context)).membershipId).toBe(before.membershipId);await capture(page,'transport-resynced');}finally{resume();}});
+
+test('periodic refresh preserves action feedback, canvas position and a disabled Leave command',async({page,context})=>{
+ let release:(()=>void)|undefined,joins=0,leaves=0,claims=0,moves=0;
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.routeWebSocket('**/socket.io/**',client=>{
+  const server=client.connectToServer();
+  client.onMessage(message=>{
+   if(typeof message==='string'){
+    if(message.includes('"room.join"'))joins++;
+    if(message.includes('"room.leave"'))leaves++;
+    if(message.includes('"seat.claim"'))claims++;
+    if(message.includes('"room.move"'))moves++;
+    if(message.includes('"room.snapshot"')&&!release){let sent=false;release=()=>{if(!sent){sent=true;server.send(message);}};return;}
+   }
+   server.send(message);
+  });
+  server.onMessage(message=>client.send(message));
+ });
+ try{
+  await guest(context,'3D Refresh Visitor');await enter(page);const before=await current(context);
+  await page.getByRole('button',{name:'Room actions',exact:true}).click();
+  await page.getByRole('button',{name:'Window table 01',exact:true}).click();
+  await expect(page.getByText('Your seat is confirmed.',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Stand up',exact:true}).click();
+  await expect(page.getByText('You stood up.',{exact:true})).toBeVisible();await closeActions(page);
+  await canvas(page).scrollIntoViewIfNeeded();const bounds=await canvas(page).boundingBox();
+  await expect(page.getByRole('status')).toHaveText('Confirming your place...',{timeout:20000});
+  await expect(page.getByRole('button',{name:'Leave cafe',exact:true})).toBeDisabled();
+  await expect(page.getByRole('button',{name:'Rejoin cafe',exact:true})).toHaveCount(0);
+  expect((await current(context)).membershipId).toBe(before.membershipId);
+  const target=JSON.parse((await canvas(page).getAttribute('data-seat-targets'))!).find((seat:{seatId:string})=>seat.seatId==='seat-1');
+  await pointClick(page,target);expect(claims).toBe(1);expect(moves).toBe(0);expect((await current(context)).self.seatId).toBeNull();
+  release!();await expect(page.getByRole('status')).toHaveText('Connected');
+  await expect(page.getByText('You stood up.',{exact:true})).toBeVisible();
+  const refreshedBounds=await canvas(page).boundingBox();expect(refreshedBounds!.y).toBeCloseTo(bounds!.y,0);expect(refreshedBounds!.height).toBeCloseTo(bounds!.height,0);
+  await pointClick(page,target);await expect(canvas(page)).toHaveAttribute('data-sitting-count','1');expect(claims).toBe(2);expect(moves).toBe(0);expect((await current(context)).self.seatId).toBe('seat-1');
+  await page.getByRole('button',{name:'Leave cafe',exact:true}).click();
+  await expect(page.getByText('You left the cafe.',{exact:true})).toBeVisible();
+  expect(await current(context)).toBeNull();expect(joins).toBe(1);expect(leaves).toBe(1);
+ }finally{release?.();}
+});
+
+test('logout clears3D actors and cache leases before a new account enters the same document',async({page,context})=>{
+ const first=await guest(context,'3D Previous Account');await enter(page);await page.getByRole('button',{name:'Follow my character',exact:true}).click();await expect(canvas(page)).toHaveAttribute('data-camera-framing','self');expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':first.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);
+ await page.evaluate(()=>{const bus=new BroadcastChannel('virtual-city-identity');bus.postMessage({changed:true});bus.close();});await expect(page.getByRole('link',{name:'Open identity',exact:true})).toBeVisible();await expect(canvas(page)).toHaveAttribute('data-entity-count','0');await expect(canvas(page)).toHaveAttribute('data-camera-framing','room');await expect(page.getByRole('button',{name:'Follow my character',exact:true})).toBeDisabled();await expect.poll(async()=>JSON.parse((await canvas(page).getAttribute('data-scene3d-diagnostics'))!).resources.references).toBe(0);
+ const next=await guest(context,'3D Current Account');await page.evaluate(()=>{const bus=new BroadcastChannel('virtual-city-identity');bus.postMessage({changed:true});bus.close();});await expect(page.locator('.cafe-identity')).toHaveText('3D Current Account');await page.getByRole('button',{name:'Enter cafe',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');expect((await current(context)).self.accountId).toBe(next.profile.id);expect(next.profile.id).not.toBe(first.profile.id);await closeActions(page);await expect(canvas(page)).toHaveAttribute('data-entity-count','1');await expect(page.getByText('3D Previous Account',{exact:true})).toHaveCount(0);await capture(page,'new-account');
+});
+
+test('reduced motion and landscape resizing preserve the actual membership and clear resources on leave',async({page,context})=>{await guest(context,'3D Window Visitor');await enter(page);const before=await current(context);await page.getByRole('button',{name:'People, safety & options',exact:true}).click();await page.getByRole('checkbox',{name:'Reduce room motion',exact:true}).check();await page.getByRole('button',{name:'Close people and safety',exact:true}).click();const frames=await canvas(page).getAttribute('data-render-count');await page.waitForTimeout(400);expect(await canvas(page).getAttribute('data-render-count')).toBe(frames);for(const viewport of [{width:740,height:360},{width:360,height:740}]){await page.setViewportSize(viewport);await expect(canvas(page)).toHaveAttribute('data-entity-count','1');expect((await current(context)).membershipId).toBe(before.membershipId);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}await page.getByRole('button',{name:'Leave cafe',exact:true}).click();await expect(canvas(page)).toHaveAttribute('data-entity-count','0');await expect.poll(async()=>JSON.parse((await canvas(page).getAttribute('data-scene3d-diagnostics'))!).resources.references).toBe(0);await capture(page,'resized-left');});

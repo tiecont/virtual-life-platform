@@ -1,5 +1,0 @@
-$ node --import tsx scripts/build-avatar-assets.ts --check && node scripts/check-scene-provenance.mjs
-(node:289786) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-Original avatar atlas and provenance reproduce exactly.
-{"sceneManifests":6,"sourceReferences":15,"allReleaseApprovalsFalse":true,"mismatches":[],"scope":"Code-source fingerprints only;not a media license or public release approval"}

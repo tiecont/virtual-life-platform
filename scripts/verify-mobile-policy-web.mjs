@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import {spawn} from 'node:child_process';
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
+import {createWriteStream} from 'node:fs';
+import {createServer} from 'node:net';
+import {resolve} from 'node:path';
+import {randomUUID,createHash} from 'node:crypto';
+import {chromium,expect} from '@playwright/test';
+const directory='artifacts/vnext/n11-03/web-'+randomUUID().slice(0,8),origin='http://127.0.0.1:18330';await mkdir(directory,{mode:0o700});assert.equal(JSON.parse(await readFile('artifacts/vnext/n11-03/tls/ready.json')).ready,true);
+const fixture=JSON.parse(await readFile('artifacts/vnext/n11-03/tls/ready.json'));assert.equal((await readFile('/proc/'+fixture.pid+'/stat','utf8')).split(') ').at(-1).split(' ')[19],fixture.startTicks);assert((await readFile('/proc/'+fixture.pid+'/cmdline','utf8')).split('\0').includes('scripts/native-policy-fixture.ts'));
+const guard=createServer();await new Promise((ok,no)=>{guard.once('error',no);guard.listen(18330,'127.0.0.1',ok);});await new Promise(ok=>guard.close(ok));
+const log=createWriteStream(directory+'/next.log',{flags:'wx',mode:0o600}),child=spawn(process.execPath,[resolve('apps/portal-web/node_modules/next/dist/bin/next'),'start','-H','127.0.0.1','-p','18330'],{cwd:resolve('apps/portal-web'),env:{...process.env,API_INTERNAL_URL:'http://127.0.0.1:18430',NEXT_TELEMETRY_DISABLED:'1'},stdio:['ignore','pipe','pipe']});child.stdout.pipe(log,{end:false});child.stderr.pipe(log,{end:false});let closed=false;const exit=new Promise(ok=>child.once('close',code=>{closed=true;ok(code);}));
+let childReady=false;child.stdout.on('data',bytes=>{if(bytes.toString().includes('Ready in'))childReady=true;});
+const facts={scope:'Actual local production-mode Next resource and browser account deletion on owned isolated API; not public URL or store approval',scenarios:[],startedAt:new Date().toISOString()};let browser;
+try{
+ let ready=false;for(let i=0;i<100&&!closed;i++){if(childReady)try{const response=await fetch(origin+'/account-deletion');if(response.status===200){ready=true;break;}}catch{/* Wait only for this child. */}await new Promise(ok=>setTimeout(ok,200));}assert(ready&&!closed&&childReady,'Owned Next server unavailable');
+ browser=await chromium.launch();for(const profile of [{name:'desktop',viewport:{width:1280,height:720}},{name:'mobile',viewport:{width:390,height:844},isMobile:true,hasTouch:true}]){
+  const {name,...setup}=profile,context=await browser.newContext(setup),page=await context.newPage(),foreign=[];page.on('request',request=>{if(!request.url().startsWith(origin+'/')&&!/^(?:data:|blob:)/.test(request.url()))foreign.push(new URL(request.url()).origin);});
+  try{await page.goto(origin+'/account-deletion');await expect(page.getByRole('heading',{name:'Account deletion',exact:true})).toBeVisible();await expect(page.getByText(/not a promised review deadline/)).toBeVisible();await expect(page.getByRole('link',{name:'Open privacy access for a suspended account'})).toHaveAttribute('href','/private/privacy-access');await page.screenshot({path:directory+'/'+name+'-resource.png',fullPage:true});
+   await page.getByRole('link',{name:'Open signed-in account controls'}).click();await expect(page.locator('#display-name')).toBeVisible();await page.locator('#display-name').fill('Policy Web Visitor');await page.getByRole('button',{name:'Create guest identity',exact:true}).click();await expect(page.getByText('Guest identity created. It will return when you reload this browser.')).toBeVisible();
+   const confirmation=page.getByRole('checkbox',{name:'I want to permanently delete this city identity and its data',exact:true}),remove=page.getByRole('button',{name:'Delete my identity',exact:true});await expect(remove).toBeDisabled();await confirmation.check();await remove.click();await expect(page.getByText('City identity deleted.',{exact:true})).toBeVisible();await page.reload();await expect(page.getByRole('button',{name:'Create guest identity',exact:true})).toBeVisible();
+   await page.goto(origin+'/account-deletion');await page.getByRole('link',{name:'Open privacy access for a suspended account'}).click();await expect(page.getByRole('heading',{name:'Privacy access',exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Submit privacy request'})).toBeVisible();assert.deepEqual(foreign,[]);facts.scenarios.push({profile:name,publicResource:true,actualBrowserErasure:true,reloadSignedOut:true,suspendedEntry:true});
+  }finally{await context.close();}
+ }facts.result='PASS';
+}catch(error){facts.result='FAIL';facts.error=error.message;process.exitCode=1;}
+finally{await browser?.close();if(!closed)child.kill('SIGTERM');facts.nextExitCode=await Promise.race([exit,new Promise(ok=>setTimeout(()=>ok(null),10000))]);if(facts.nextExitCode===null){child.kill('SIGKILL');await exit;process.exitCode=1;}await new Promise(ok=>log.end(ok));facts.logSha256=createHash('sha256').update(await readFile(directory+'/next.log')).digest('hex');facts.completedAt=new Date().toISOString();await writeFile(directory+'/facts.json',JSON.stringify(facts,null,2)+'\n',{mode:0o600});console.log(JSON.stringify({result:facts.result,error:facts.error,artifactDirectory:directory}));}

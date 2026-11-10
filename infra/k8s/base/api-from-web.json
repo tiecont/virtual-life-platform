@@ -1,0 +1,41 @@
+{
+  "apiVersion": "networking.k8s.io/v1",
+  "kind": "NetworkPolicy",
+  "metadata": {
+    "name": "vlp-api-from-web",
+    "labels": {
+      "app.kubernetes.io/part-of": "virtual-life-platform"
+    }
+  },
+  "spec": {
+    "podSelector": {
+      "matchLabels": {
+        "app.kubernetes.io/part-of": "virtual-life-platform",
+        "app.kubernetes.io/name": "vlp-api"
+      }
+    },
+    "policyTypes": [
+      "Ingress"
+    ],
+    "ingress": [
+      {
+        "from": [
+          {
+            "podSelector": {
+              "matchLabels": {
+                "app.kubernetes.io/part-of": "virtual-life-platform",
+                "app.kubernetes.io/name": "vlp-web"
+              }
+            }
+          }
+        ],
+        "ports": [
+          {
+            "protocol": "TCP",
+            "port": 4300
+          }
+        ]
+      }
+    ]
+  }
+}

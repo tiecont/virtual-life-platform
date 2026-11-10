@@ -1,0 +1,116 @@
+import {evidenceOutput} from '../../scripts/evidence-output.mjs';
+import {test,expect,type BrowserContext,type Page} from '@playwright/test';
+import {request} from 'node:http';
+import {randomUUID} from 'node:crypto';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {MeSchema,AvatarOwnStateSchema,AvatarSaveResultSchema,AVATAR_CATALOG_VERSION,starterAvatarParts} from '@virtual-city/contracts';
+const origin='http://127.0.0.1:3300',runId=process.env.UX_EVIDENCE_RUN??randomUUID().slice(0,8);if(!/^[a-f0-9]{8}$/.test(runId))throw Error('Invalid creator evidence run');let serial=0;
+async function guest(context:BrowserContext,name='Animal Creator Visitor'){
+ const payload=JSON.stringify({requestId:randomUUID(),displayName:name,avatarKey:'mint'}),result=await new Promise<{cookie:string;body:unknown}>((ok,no)=>{const req=request('http://127.0.0.1:4300/v1/session/guest',{method:'POST',localAddress:'127.128.0.'+(++serial),headers:{origin,'content-type':'application/json','content-length':Buffer.byteLength(payload)}},res=>{let body='';res.on('data',chunk=>body+=chunk);res.on('end',()=>{try{expect(res.statusCode).toBe(201);ok({cookie:res.headers['set-cookie']![0].split(';')[0],body:JSON.parse(body)});}catch(error){no(error);}});});req.on('error',no);req.end(payload);});const at=result.cookie.indexOf('=');await context.addCookies([{name:result.cookie.slice(0,at),value:result.cookie.slice(at+1),url:origin,httpOnly:true,sameSite:'Lax'}]);return MeSchema.parse(result.body);
+}
+const own=async(context:BrowserContext)=>{const response=await context.request.get('/v1/me/avatar');expect(response.status()).toBe(200);return AvatarOwnStateSchema.parse(await response.json());};
+const canvas=(page:Page)=>page.locator('canvas[data-scene3d]');
+async function open(page:Page){await page.goto('/character');await expect(page.getByRole('button',{name:'Save character',exact:true})).toBeEnabled({timeout:20000});await expect(canvas(page)).toBeVisible({timeout:20000});await expect(page.getByText('Make yourself at home.',{exact:true})).toBeVisible();}
+async function choose(page:Page,category:string,value:string){await page.getByRole('navigation',{name:'Choose a part'}).getByRole('button',{name:category,exact:true}).click();await page.getByRole('group',{name:category,exact:true}).getByRole('button',{name:value,exact:true}).click();}
+async function capture(page:Page,name:string){const path='artifacts/vnext/n06-07/browser-'+runId+'/'+test.info().project.name;await mkdir(path,{recursive:true});await page.screenshot({path:path+'/'+name+'.png',fullPage:true});await writeFile(path+'/'+name+'.yml',await page.locator('body').ariaSnapshot());}
+async function closeActions(page:Page){if(await page.getByRole('dialog',{name:'Room actions',exact:true}).isVisible())await page.getByRole('button',{name:'Close room actions',exact:true}).click();}
+test.setTimeout(120000);
+test.beforeEach(async({page},info)=>{await page.setViewportSize(info.project.name==='mobile'?{width:844,height:390}:{width:1280,height:900});await page.emulateMedia({reducedMotion:'reduce'});});
+test('edits every part,keeps compatible species,preview/reset/cancel never persist',async({page,context})=>{
+ await guest(context);await open(page);const before=await own(context);
+ for(const [category,value]of [['Animal','Dog'],['Body','Slender'],['Cheeks','Full cheeks'],['Eyes','Calm'],['Muzzle','Petite'],['Ears','Upright'],['Tail','Curled'],['Coat','Warm cocoa'],['Markings','Face patch'],['Hair','Smooth'],['Outfit','Forest knit'],['Accessories','Glasses']]){await choose(page,category,value);await expect(canvas(page)).toHaveAttribute('data-appearance',/./);}
+ expect(JSON.parse((await canvas(page).getAttribute('data-appearance'))!)).toMatchObject({species:'dog',body:'slender',head:'wide',eyes:'calm',muzzle:'small',ears:'upright',tail:'curl',fur:'cocoa',marking:'patch',hair:'smooth',outfit:'knit',accessory:'glasses'});await capture(page,'dog-modular-preview');expect(await own(context)).toEqual(before);
+ await page.getByRole('button',{name:'Rabbit preset',exact:true}).click();await expect(canvas(page)).toHaveAttribute('data-appearance',/"species":"rabbit"/);await page.getByRole('button',{name:'View back',exact:true}).click();await capture(page,'rabbit-back');await page.getByRole('button',{name:'Reset look',exact:true}).click();await expect(canvas(page)).toHaveAttribute('data-appearance',/"species":"cat"/);await page.getByRole('button',{name:'Cancel',exact:true}).click();await page.waitForURL('/');expect(await own(context)).toEqual(before);
+});
+test('Save reaches real Deadline and Maid through confirmed travel and reconnect with the same parts and identity',async({page,context})=>{
+ const me=await guest(context);await open(page);await page.getByRole('button',{name:'Rabbit preset',exact:true}).click();await choose(page,'Coat','Heather');await choose(page,'Outfit','Overalls');await choose(page,'Accessories','Scarf');await page.getByRole('button',{name:'Save character',exact:true}).click();await expect(page.getByText('Your character is saved.',{exact:true})).toBeVisible();const saved=await own(context);expect(saved.revision).toBe(1);await capture(page,'saved-rabbit');
+ await page.getByRole('button',{name:'Close wardrobe',exact:true}).click();await page.goto('/travel');await expect(page.getByRole('status')).toHaveText('Lobby confirmed.');
+ for(const slug of ['deadline','maid']){
+  if(slug==='maid'){await page.getByRole('button',{name:'People, safety & options',exact:true}).click();await page.getByRole('link',{name:'Travel to another world',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Visit confirmed.');}
+  await page.getByLabel('Destination',{exact:true}).selectOption(slug);await page.getByRole('button',{name:'Confirm travel',exact:true}).click();await expect(page.locator('.travel-location')).toHaveAttribute('data-world',slug);await page.getByRole('link',{name:slug==='deadline'?'Open Deadline room':'Open Maid room',exact:true}).click();await page.goto('/worlds/'+slug+'/room3d');await page.getByRole('button',{name:'Enter cafe',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');await closeActions(page);const world=page.locator('canvas[data-engine="three-webgl2"]');await expect(world).toHaveAttribute('data-self-parts',JSON.stringify(saved.effective));await capture(page,slug+'-saved-parts');
+  await page.reload();await page.getByRole('button',{name:'Enter cafe',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');await closeActions(page);await expect(world).toHaveAttribute('data-self-parts',JSON.stringify(saved.effective));expect((await(await context.request.get('/v1/me')).json()).profile).toEqual(me.profile);expect((await(await context.request.get('/v1/staff/state')).json()).shift).toBeNull();
+ }
+ await page.getByRole('button',{name:'Leave cafe',exact:true}).click();expect((await(await context.request.get('/v1/me/room')).json()).snapshot).toBeNull();expect((await own(context)).selected).toEqual(saved.selected);
+});
+test('lost actual successful save response retries the exact receipt without a second mutation',async({page,context})=>{
+ await guest(context);await open(page);await choose(page,'Animal','Dog');const keys:string[]=[],bodies:string[]=[];let dropped=false;
+ await page.route('**/v1/me/avatar',async route=>{if(route.request().method()!=='POST'){await route.continue();return;}keys.push(route.request().headers()['idempotency-key']);bodies.push(route.request().postData()!);if(!dropped){dropped=true;const actual=await route.fetch();expect(actual.status()).toBe(200);await route.abort('failed');}else await route.continue();});
+ await page.getByRole('button',{name:'Save character',exact:true}).click();await expect(page.getByRole('button',{name:'Retry save',exact:true})).toBeEnabled();expect((await own(context)).revision).toBe(1);await page.getByRole('button',{name:'Retry save',exact:true}).click();await expect(page.getByText('Your character is saved.',{exact:true})).toBeVisible();expect(keys).toHaveLength(2);expect(keys[0]).toBe(keys[1]);expect(bodies[0]).toBe(bodies[1]);expect((await own(context)).revision).toBe(1);await capture(page,'lost-ack-reconciled');
+});
+test('concurrent authoritative save produces conflict and refresh rather than overwriting the newer look',async({page,context})=>{
+ const me=await guest(context);await open(page);await choose(page,'Animal','Dog');const response=await context.request.post('/v1/me/avatar',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{schemaVersion:2,catalogVersion:AVATAR_CATALOG_VERSION,expectedAccountId:me.profile.id,expectedRevision:0,parts:starterAvatarParts('rose','rabbit')}});expect(response.status()).toBe(200);AvatarSaveResultSchema.parse(await response.json());await page.getByRole('button',{name:'Save character',exact:true}).click();await expect(page.getByRole('button',{name:'Refresh wardrobe',exact:true})).toBeVisible();expect((await own(context)).selected.species).toBe('rabbit');await page.getByRole('button',{name:'Refresh wardrobe',exact:true}).click();await expect(canvas(page)).toHaveAttribute('data-appearance',/"species":"rabbit"/);await capture(page,'revision-conflict-refreshed');
+});
+test('late committed save cannot restore an old identity or change a newly signed-in account',async({page,context})=>{
+ const me=await guest(context);await open(page);let release!:()=>void,seen!:()=>void;const gate=new Promise<void>(ok=>release=ok),observed=new Promise<void>(ok=>seen=ok);
+ await page.route('**/v1/me/avatar',async route=>{if(route.request().method()!=='POST'){await route.continue();return;}const response=await route.fetch();expect(response.status()).toBe(200);seen();await gate;await route.fulfill({response}).catch(()=>{});});
+ try{await choose(page,'Animal','Dog');await page.getByRole('button',{name:'Save character',exact:true}).click();await observed;expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);const next=await guest(context,'New Animal Account');await page.evaluate(()=>{const bus=new BroadcastChannel('virtual-city-identity');bus.postMessage({changed:true});bus.close();});await expect(page.getByRole('heading',{name:'Wardrobe closed',exact:true})).toBeVisible();release();await page.unrouteAll({behavior:'wait'});await expect(page.getByRole('button',{name:'Save character',exact:true})).toHaveCount(0);await expect(canvas(page)).toHaveCount(0);await expect(page.getByText('Animal Creator Visitor',{exact:true})).toHaveCount(0);expect((await own(context)).accountId).toBe(next.profile.id);expect((await own(context)).revision).toBe(0);await capture(page,'late-account-save-discarded');}finally{release();}
+});
+test('actual WebGL failure retains DOM choices and authoritative Save',async({page,context})=>{
+ await guest(context);await page.addInitScript(()=>{const original=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(this:HTMLCanvasElement,kind:string,...args:unknown[]){if(kind==='webgl2'||kind==='webgl')return null;return original.apply(this,[kind,...args] as Parameters<typeof original>);} as typeof original;});await page.goto('/character');await expect(page.getByText('3D preview is unavailable. You can still choose and save your character below.',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Save character',exact:true})).toBeEnabled();await choose(page,'Animal','Rabbit');await page.getByRole('button',{name:'Save character',exact:true}).click();await expect(page.getByText('Your character is saved.',{exact:true})).toBeVisible();expect((await own(context)).selected.species).toBe('rabbit');await capture(page,'graphics-failure-dom-save');
+});
+test('landscape,portrait,200percent text and keyboard keep choices and save controls reachable',async({page,context})=>{
+ await guest(context);await open(page);for(const viewport of [{width:844,height:390},{width:390,height:844}]){await page.setViewportSize(viewport);await page.evaluate(()=>document.documentElement.style.fontSize='200%');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);const controls=page.locator('.avatar-creator button:visible');for(const box of await controls.evaluateAll(nodes=>nodes.map(node=>({h:node.getBoundingClientRect().height,w:node.getBoundingClientRect().width})))){expect(box.h).toBeGreaterThanOrEqual(44);expect(box.w).toBeGreaterThanOrEqual(44);}await page.getByRole('navigation',{name:'Choose a part'}).getByRole('button',{name:'Coat',exact:true}).focus();await page.keyboard.press('Enter');await page.getByRole('group',{name:'Coat',exact:true}).getByRole('button',{name:'Golden honey',exact:true}).focus();await page.keyboard.press('Enter');await page.getByRole('button',{name:'Save character',exact:true}).scrollIntoViewIfNeeded();await expect(page.getByRole('button',{name:'Save character',exact:true})).toBeVisible();await capture(page,'text200-'+viewport.width);await page.evaluate(()=>document.documentElement.style.fontSize='');}expect((await own(context)).revision).toBe(0);
+});
+test('inspects real face,outfit and tail details without saving or losing framing through parts,pose and resize',async({page,context})=>{
+ await guest(context);await open(page);const before=await own(context);
+ await choose(page,'Animal','Rabbit');await choose(page,'Ears','Bent');
+ const full=await canvas(page).screenshot();
+ await page.getByRole('button',{name:'Inspect selected part',exact:true}).click();await expect(canvas(page)).toHaveAttribute('data-framing','face');
+ const choicesRemainVisible=await page.getByRole('group',{name:'Ears',exact:true}).getByRole('button',{name:'Bent',exact:true}).evaluate(button=>{const pane=button.closest('.creator-options')!.getBoundingClientRect(),choice=button.getBoundingClientRect();return choice.top>=pane.top&&choice.bottom<=pane.bottom;});expect(choicesRemainVisible).toBe(true);
+ expect((await canvas(page).screenshot()).equals(full)).toBe(false);await capture(page,'inspect-rabbit-face');
+ await page.getByRole('navigation',{name:'Choose a part'}).getByRole('button',{name:'Outfit',exact:true}).click();await page.getByRole('button',{name:'Inspect selected part',exact:true}).click();await expect(canvas(page)).toHaveAttribute('data-framing','outfit');await choose(page,'Outfit','Overalls');await expect(canvas(page)).toHaveAttribute('data-framing','outfit');
+ await page.getByRole('navigation',{name:'Choose a part'}).getByRole('button',{name:'Tail',exact:true}).click();await page.getByRole('button',{name:'Inspect selected part',exact:true}).click();await expect(canvas(page)).toHaveAttribute('data-framing','tail');await expect(page.getByRole('button',{name:'View back',exact:true})).toHaveAttribute('aria-pressed','true');await capture(page,'inspect-rabbit-tail');
+ await page.getByText('Preview options',{exact:true}).click();await page.getByRole('button',{name:'Sit',exact:true}).click();await expect(canvas(page)).toHaveAttribute('data-framing','tail');
+ await page.setViewportSize({width:390,height:844});await expect(canvas(page)).toHaveAttribute('data-framing','tail');
+ await page.getByRole('button',{name:'Whole character',exact:true}).click();await expect(canvas(page)).toHaveAttribute('data-framing','character');await capture(page,'inspect-return-whole');
+ expect(await own(context)).toEqual(before);
+});
+test('the first preview starts with the saved account appearance and a failed wardrobe read creates no placeholder model',async({page,context})=>{
+ const me=await guest(context),parts=starterAvatarParts('plum','rabbit');
+ const saved=await context.request.post('/v1/me/avatar',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{schemaVersion:2,catalogVersion:AVATAR_CATALOG_VERSION,expectedAccountId:me.profile.id,expectedRevision:0,parts}});expect(saved.status()).toBe(200);
+ await page.route('**/v1/me/avatar',route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:{code:'UNAVAILABLE'}})}));
+ await page.goto('/character');await expect(page.getByRole('button',{name:'Refresh wardrobe',exact:true})).toBeVisible();await expect(canvas(page)).toHaveCount(0);await expect(page.getByRole('button',{name:'Save character',exact:true})).toBeDisabled();
+ await page.unroute('**/v1/me/avatar');await page.getByRole('button',{name:'Refresh wardrobe',exact:true}).click();await expect(canvas(page)).toBeVisible({timeout:20000});await expect(canvas(page)).toHaveAttribute('data-initial-appearance',JSON.stringify(parts));await expect(canvas(page)).toHaveAttribute('data-appearance',JSON.stringify(parts));expect((await own(context)).revision).toBe(1);await capture(page,'account-owned-first-preview');
+});
+
+for(const slug of ['deadline','maid'])test(`${slug} camera follows the saved animal through committed seating and walking without camera commands or persistence`,async({page,context},info)=>{
+ let cameraMutations=0;page.on('websocket',socket=>socket.on('framesent',frame=>{if(typeof frame.payload==='string'&&/"(?:room.move|seat.claim|seat.release|room.leave)"/.test(frame.payload))cameraMutations++;}));
+ const me=await guest(context,'Camera visitor'),parts=starterAvatarParts('plum','rabbit');
+ const saved=await context.request.post('/v1/me/avatar',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{schemaVersion:2,catalogVersion:AVATAR_CATALOG_VERSION,expectedAccountId:me.profile.id,expectedRevision:0,parts}});expect(saved.status()).toBe(200);
+ const beforeOwn=await own(context);await page.goto('/worlds/'+slug+'/room3d');
+ const room=page.locator('canvas[data-engine="three-webgl2"]'),cameraControls=page.getByRole('group',{name:'Room camera',exact:true});
+ await expect(room).toBeVisible({timeout:20000});await expect(cameraControls.getByRole('button',{name:'Follow my character',exact:true})).toBeDisabled();
+ await page.getByRole('button',{name:'Enter cafe',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');await closeActions(page);
+ await expect(room).toHaveAttribute('data-self-parts',JSON.stringify(parts));const snapshot=(await(await context.request.get('/v1/me/room')).json()).snapshot;
+ const roomArt=JSON.parse((await room.getAttribute('data-room-art'))!);expect(roomArt).toEqual({revision:'cafe-details-v2',theme:slug,windows:4,workstations:slug==='deadline'?18:0,teaSets:slug==='maid'?6:0});
+ const output=evidenceOutput(`docs/agent/evidence/n06-room-camera-${slug}-${info.project.name}`);await mkdir(output,{recursive:true});await page.screenshot({path:output+'/whole-room.png',fullPage:true});await room.screenshot({path:output+'/whole-room-canvas.png'});
+ const wholeHeight=Number(await room.getAttribute('data-self-height-px'));
+ // Existing socket is already connected;also compare the server state directly.
+ await cameraControls.getByRole('button',{name:'Follow my character',exact:true}).focus();await page.keyboard.press('Enter');
+ await expect(room).toHaveAttribute('data-camera-framing','self');expect(Number(await room.getAttribute('data-self-height-px'))).toBeGreaterThan(wholeHeight*1.5);
+ expect((await(await context.request.get('/v1/me/room')).json()).snapshot).toMatchObject({epoch:snapshot.epoch,membershipId:snapshot.membershipId,roomVersion:snapshot.roomVersion,self:snapshot.self});
+ for(const viewport of [{width:740,height:360},{width:360,height:740}]){
+  await page.setViewportSize(viewport);await expect.poll(()=>room.evaluate(canvas=>{const raw=canvas.dataset.selfScreen;if(!raw)return Infinity;const point=JSON.parse(raw),box=canvas.getBoundingClientRect();return Math.abs(point.x-box.width/2)+Math.abs(point.y-box.height/2);})).toBeLessThan(2);
+  await expect(room).toHaveAttribute('data-camera-framing','self');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ }
+ expect(cameraMutations).toBe(0);await page.setViewportSize(info.project.name==='mobile'?{width:844,height:390}:{width:1280,height:900});
+ const actions=page.getByRole('button',{name:'Room actions',exact:true});
+ if(info.project.name==='mobile')await expect.poll(async()=>{const cameraBox=(await cameraControls.boundingBox())!,actionsBox=(await actions.boundingBox())!;return cameraBox.y+cameraBox.height-actionsBox.y;}).toBeLessThanOrEqual(0);
+ await actions.click();
+ // Use the actual first authoritative seat label;no assumed shared world naming.
+ const firstSeat=page.locator('.cafe-seats .cafe-seat-grid button').first();await firstSeat.click();await expect(room).toHaveAttribute('data-sitting-count','1');
+ const seated=(await(await context.request.get('/v1/me/room')).json()).snapshot;expect(seated.self.seatId).not.toBeNull();
+ await closeActions(page);await expect(room).toHaveAttribute('data-camera-framing','self');
+ await page.screenshot({path:output+'/follow-seated.png',fullPage:true});await room.screenshot({path:output+'/follow-seated-canvas.png'});
+ await page.getByRole('button',{name:'Room actions',exact:true}).click();await page.getByRole('button',{name:'Stand up',exact:true}).click();await expect(page.getByText('You stood up.',{exact:true})).toBeVisible();
+ await page.emulateMedia({reducedMotion:'no-preference'});await expect(room).toHaveAttribute('data-reduced-motion','false');
+ await page.getByRole('button',{name:'Walk to central aisle',exact:true}).click();await closeActions(page);
+ await expect(room).toHaveAttribute('data-self-position',slug==='deadline'?'12.00:8.00':'12.00:10.00',{timeout:15000});await expect(room).toHaveAttribute('data-camera-framing','self');
+ await expect.poll(()=>room.evaluate(canvas=>{const raw=canvas.dataset.selfScreen;if(!raw)return Infinity;const center=JSON.parse(raw),box=canvas.getBoundingClientRect();return Math.max(Math.abs(center.x-box.width/2),Math.abs(center.y-box.height/2));})).toBeLessThan(2);
+ await page.screenshot({path:output+'/follow-walked.png',fullPage:true});
+ await room.screenshot({path:output+'/follow-walked-canvas.png'});
+ await cameraControls.getByRole('button',{name:'Whole room',exact:true}).click();await expect(room).toHaveAttribute('data-camera-framing','room');
+ expect(await own(context)).toEqual(beforeOwn);expect((await(await context.request.get('/v1/me')).json()).profile).toEqual(me.profile);
+ await page.getByRole('button',{name:'Leave cafe',exact:true}).click();await expect(page.getByText('You left the cafe.',{exact:true})).toBeVisible();expect((await(await context.request.get('/v1/me/room')).json()).snapshot).toBeNull();await expect(room).toHaveAttribute('data-entity-count','0');await expect(cameraControls.getByRole('button',{name:'Follow my character',exact:true})).toBeDisabled();
+ await writeFile(output+'/facts.json',JSON.stringify({world:slug,roomArt,actualOwnSavedRabbit:true,cameraOnlyMutations:0,allJourneyMutations:cameraMutations,identityPreserved:true,membershipPreserved:snapshot.membershipId===seated.membershipId,seatingAndWalkingServerConfirmed:true,aspectResizeCentered:true,savedAppearanceUnchanged:true,ownCameraResetOnLeave:true,wholeRoomRetained:true,limitations:'Functional room-art/camera slice;not final art or frame-budget qualification'},null,2));
+});

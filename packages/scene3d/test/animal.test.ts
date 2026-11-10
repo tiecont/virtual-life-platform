@@ -1,0 +1,31 @@
+import {afterEach,it,expect,vi} from 'vitest';
+import * as T from 'three';
+import {createAnimal,animalResourceSummary,type Quality} from '../src/animal';
+const models:Array<ReturnType<typeof createAnimal>>=[];
+afterEach(()=>{for(const model of models.splice(0))model.dispose();expect(animalResourceSummary()).toEqual({cachedQualityTiers:0,references:0});});
+function model(quality:Quality='balanced',outfit:'casual'|'cafe-apron'='casual'){const value=createAnimal(quality,'cocoa',outfit);models.push(value);return value;}
+it('shares immutable face buffers through LOD rebuilds but keeps palette materials,skeletons and blinks independent',()=>{
+ const a=createAnimal('balanced','fern'),b=createAnimal('balanced','amber');models.push(a,b);const faces=(animal:typeof a)=>{const result:T.SkinnedMesh[]=[];animal.group.traverse(object=>{if(object instanceof T.SkinnedMesh&&object.geometry.morphAttributes.position)result.push(object);});return result;};const af=faces(a),bf=faces(b);expect(af).toHaveLength(bf.length);for(let i=0;i<af.length;i++){expect(af[i].geometry).toBe(bf[i].geometry);expect(af[i].material).not.toBe(bf[i].material);expect(af[i].skeleton).not.toBe(bf[i].skeleton);}a.update(Math.PI/2/.9);b.update(0);expect(af[0].morphTargetInfluences![0]).toBe(1);expect(bf[0].morphTargetInfluences![0]).toBe(0);const disposed=vi.fn();af[0].geometry.addEventListener('dispose',disposed);a.dispose();expect(disposed).not.toHaveBeenCalled();b.dispose();expect(disposed).toHaveBeenCalledTimes(1);
+});
+it('retains separate baked Low palette colours in the shared face cache',()=>{const a=createAnimal('low','fern'),b=createAnimal('low','amber');models.push(a,b);const face=(animal:typeof a)=>{let geometry:T.BufferGeometry|undefined;animal.group.traverse(object=>{if(object instanceof T.SkinnedMesh&&object.geometry.morphAttributes.position)geometry=object.geometry;});return geometry!;};expect(face(a)).not.toBe(face(b));expect(Array.from(face(a).getAttribute('color').array)).not.toEqual(Array.from(face(b).getAttribute('color').array));});
+it('cached faces preserve each selected collar palette and independent blink state across all quality tiers',()=>{
+ const palettes={fern:'#536f50',amber:'#bb9659',indigo:'#626e8b',rose:'#ae7c83',cloud:'#91a5a4',cocoa:'#826754',mint:'#719488',plum:'#8d708d'};
+ for(const quality of ['low','balanced','high']as const)for(const [palette,hex]of Object.entries(palettes)){
+  const first=createAnimal(quality,palette as keyof typeof palettes),cached=createAnimal(quality,palette as keyof typeof palettes);models.push(first,cached);cached.update(Math.PI/2/.9);first.update(0);let collarVertices=0;
+  cached.group.traverse(object=>{if(!(object instanceof T.SkinnedMesh)||!object.geometry.morphAttributes.position)return;expect(object.morphTargetInfluences![0]).toBe(1);const skin=object.geometry.getAttribute('skinIndex'),colors=object.geometry.getAttribute('color'),expected=new T.Color(hex);for(let vertex=0;vertex<skin.count;vertex++)if(skin.getX(vertex)===4){collarVertices++;if(quality==='low'){expect(colors.getX(vertex)).toBeCloseTo(expected.r,6);expect(colors.getY(vertex)).toBeCloseTo(expected.g,6);expect(colors.getZ(vertex)).toBeCloseTo(expected.b,6);}else expect((object.material as T.MeshPhysicalMaterial).color.getHexString()).toBe(hex.slice(1));}});
+  expect(collarVertices).toBeGreaterThan(0);first.group.traverse(object=>{if(object instanceof T.SkinnedMesh&&object.geometry.morphAttributes.position)expect(object.morphTargetInfluences![0]).toBe(0);});
+ }
+});
+it('counts the entire visible character including face, ears, collar and apron against the locked base ceilings',()=>{
+ for(const [quality,baseMax]of [['low',3500],['balanced',10000],['high',28000]]as const)for(const outfit of ['casual','cafe-apron']as const){const animal=model(quality,outfit);let base=0;animal.group.traverseVisible(object=>{if(object instanceof T.Mesh&&object!==animal.fur)base+=(object.geometry.index?.count??object.geometry.getAttribute('position').count)/3;});expect(base).toBeLessThanOrEqual(baseMax);expect(animal.triangles).toBe(base+animal.fur.geometry.getAttribute('position').count/3);}
+});
+it('creates an original24bone mesh and groom with valid normalized skin weights under the locked LOD ceilings',()=>{
+ for(const [quality,furMax,baseMax]of [['low',1500,3500],['balanced',8000,10000],['high',24000,28000]]as const){const animal=model(quality);expect(animal.bones).toHaveLength(24);const body=animal.body.geometry,fur=animal.fur.geometry;expect((body.index?.count??body.getAttribute('position').count)/3).toBeLessThanOrEqual(baseMax);expect(fur.getAttribute('position').count/3).toBeLessThanOrEqual(furMax);
+  for(const geometry of [body,fur]){const weights=geometry.getAttribute('skinWeight'),indices=geometry.getAttribute('skinIndex');let maximumError=0,invalidIndices=0;for(let i=0;i<weights.count;i++){maximumError=Math.max(maximumError,Math.abs(weights.getX(i)+weights.getY(i)+weights.getZ(i)+weights.getW(i)-1));if(indices.getX(i)<0||indices.getX(i)>=24)invalidIndices++;}expect(maximumError).toBeLessThan(1e-6);expect(invalidIndices).toBe(0);}
+  for(const pose of ['idle','walk','sit','serve']as const){animal.update(1.75,pose);const vertex=new T.Vector3(),positions=body.getAttribute('position');for(let i=0;i<positions.count;i+=97){vertex.fromBufferAttribute(positions,i);animal.body.applyBoneTransform(i,vertex);expect(vertex.toArray().every(Number.isFinite)).toBe(true);expect(vertex.length()).toBeLessThan(3);}}
+ }
+});
+it('shares expensive geometry/groom across20avatars while keeping their skeletons and poses independent',()=>{
+ for(let i=0;i<20;i++)model();expect(animalResourceSummary()).toEqual({cachedQualityTiers:1,references:20});const [a,b]=models;expect(a.body.geometry).toBe(b.body.geometry);expect(a.fur.geometry).toBe(b.fur.geometry);expect(a.bones[14]).not.toBe(b.bones[14]);a.update(.3,'walk');b.update(.3,'idle');expect(a.bones[14].rotation.x).not.toBe(b.bones[14].rotation.x);
+ const disposed=vi.fn();a.body.geometry.addEventListener('dispose',disposed);for(let i=0;i<19;i++)models[i].dispose();expect(disposed).not.toHaveBeenCalled();models[19].dispose();expect(disposed).toHaveBeenCalledTimes(1);models[19].dispose();expect(disposed).toHaveBeenCalledTimes(1);
+});

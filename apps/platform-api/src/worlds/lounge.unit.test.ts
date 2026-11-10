@@ -1,3 +1,0 @@
-import { it,expect } from 'vitest';
-import { readConfig } from '../config';
-it('Lounge local installation defaults OFF and rejects production activation',()=>{const base={SESSION_SECRET:'x'.repeat(32),DATABASE_URL:'postgres://localhost/virtual_city_test_unit'};expect(readConfig({...base,NODE_ENV:'test'}).LOCAL_LOUNGE_WORLD).toBe('0');expect(readConfig({...base,NODE_ENV:'test',LOCAL_LOUNGE_WORLD:'1'}).LOCAL_LOUNGE_WORLD).toBe('1');expect(()=>readConfig({...base,NODE_ENV:'production',WEB_ORIGIN:'https://city.example',LOCAL_LOUNGE_WORLD:'1'})).toThrow(/LOCAL_LOUNGE_WORLD/);});

@@ -1,0 +1,5 @@
+import {defineConfig,devices} from '@playwright/test';
+export default defineConfig({testDir:'tests/e2e',testMatch:'admin.spec.ts',workers:1,retries:0,reporter:[['list'],['html',{open:'never'}]],use:{baseURL:'http://127.0.0.1:3400',trace:'retain-on-failure',screenshot:'only-on-failure'},projects:[{name:'desktop',use:{...devices['Desktop Chrome']}},{name:'mobile',use:{...devices['Pixel 5'],viewport:{width:360,height:800},defaultBrowserType:'chromium'}}],webServer:[
+ {command:'node --import tsx tests/support/admin-browser-runtime.ts',url:'http://127.0.0.1:4300/health/ready',reuseExistingServer:false,timeout:60000,gracefulShutdown:{signal:'SIGTERM',timeout:15000}},
+ {command:'pnpm --filter @virtual-city/admin-web dev',url:'http://127.0.0.1:3400',env:{NODE_ENV:'development',ADMIN_ORIGIN:'http://127.0.0.1:3400',ADMIN_API_ORIGIN:'http://127.0.0.1:4300',ADMIN_METRICS_READ_TOKEN:'e'.repeat(64)},reuseExistingServer:false,timeout:60000,gracefulShutdown:{signal:'SIGTERM',timeout:10000}},
+]});

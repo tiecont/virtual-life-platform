@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import TravelPanel from './TravelPanel';
-import './travel.css';
-import { destinationLink } from './destination-link';
+import TravelPanel from '../../features/travel/modules/travel/presentation/TravelPanel';
+import '../../features/travel/modules/travel/presentation/travel.css';
+import { destinationLink } from '../../features/travel/modules/travel/application/destination-link';
 export const dynamic = 'force-dynamic';
 export default async function TravelPage({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}) {
   const preferred=destinationLink(await searchParams);

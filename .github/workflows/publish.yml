@@ -1,0 +1,61 @@
+name: Publish verified artifacts
+on:
+  workflow_run:
+    workflows: [Quality]
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: publish-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: ${{ github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository && github.repository == 'tiecont/virtual-life-platform' && vars.VLP_PUBLISH_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+      packages: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .node-version
+      - id: authorize
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/release-publish.mjs authorize >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        if: ${{ steps.authorize.outputs.publish == 'true' }}
+        with:
+          name: runtime-images-${{ steps.authorize.outputs.source }}-${{ steps.authorize.outputs.attempt }}
+          path: artifacts/verified-bundle/
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Login to the repository package registry
+        if: ${{ steps.authorize.outputs.publish == 'true' }}
+        env:
+          REGISTRY_TOKEN: ${{ github.token }}
+          REGISTRY_ACTOR: ${{ github.actor }}
+        run: printf '%s' "$REGISTRY_TOKEN" | docker login ghcr.io --username "$REGISTRY_ACTOR" --password-stdin
+      - name: Push already tested images and verify registry digests
+        if: ${{ steps.authorize.outputs.publish == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/release-publish.mjs publish artifacts/verified-bundle artifacts/release-candidate ghcr.io/tiecont
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ steps.authorize.outputs.publish == 'true' && success() }}
+        with:
+          name: release-candidate-${{ steps.authorize.outputs.source }}-${{ steps.authorize.outputs.attempt }}
+          path: artifacts/release-candidate/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Remove registry credential
+        if: ${{ always() }}
+        run: docker logout ghcr.io

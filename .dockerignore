@@ -1,4 +1,5 @@
 .git
+.idea
 **/node_modules
 **/dist
 **/.next*
@@ -17,3 +18,13 @@ plans
 reference
 .github
 tests
+# Build-all typechecks these default-off mobile entrypoints. The independent
+# runtime images still contain only their inspected production closures.
+!tests/renderer-workload/main.ts
+!tests/renderer-workload/fixture.ts
+!tests/native-android/main.ts
+!tests/native-world/main.ts
+!tests/mobile-policy/native-probe.ts
+!tests/mobile-safety/native-probe.ts
+
+apps/mobile/android

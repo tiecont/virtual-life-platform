@@ -1,2 +1,0 @@
-$ node scripts/verify-ci.mjs
-{"groups":["city","social","study","hospitality","private"],"specs":19,"requiredCheck":"quality","scope":"Local workflow contract only;hosted run/required-check settings NOT_RUN"}

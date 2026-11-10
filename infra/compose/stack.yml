@@ -28,7 +28,7 @@ services:
   migrate:
     image: ${CITY_APP_IMAGE:?Build and select the local app image}
     environment: *app-env
-    command: [node, apps/platform-api/dist/db/migrate.js]
+    command: [node, apps/platform-api/dist/shared/database/migrate.js]
     depends_on:
       db: {condition: service_healthy}
     networks: [city]

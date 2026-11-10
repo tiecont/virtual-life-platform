@@ -1,0 +1,109 @@
+{
+  "taskId": "N06-10",
+  "revision": 1,
+  "status": "PROPOSED_LOCKED_BEFORE_3D_IMPLEMENTATION_AND_MEASUREMENT",
+  "lockedAt": "2026-11-06T16:09:39.894803+00:00",
+  "measurementResults": null,
+  "ownerArtApproval": false,
+  "supersedes": "New3D geometry/groom resource budget; original2D art budget file and its evidence remain unchanged, not a retrospective performance waiver",
+  "unchangedBaselines": [
+    {
+      "ref": "docs/mobile/android-spike.json",
+      "sha256": "a490322765b931ee190bc43416070568a79c37e2cdddb039adc14f24817f47ca"
+    },
+    {
+      "ref": "docs/design/vnext/animal-landscape/budgets.json",
+      "sha256": "0614968056b14553266d7596e92640a0cfd824e735e2dc550e48028616f08c92"
+    }
+  ],
+  "workload": {
+    "observedAvatars": 20,
+    "creatorCloseupCharacters": 1,
+    "scenes": [
+      "Deadline",
+      "Maid"
+    ],
+    "nativePhysicalRequired": true,
+    "emulatorIsPerformanceProof": false
+  },
+  "geometry": {
+    "rigBonesPerAvatarMax": 48,
+    "skinWeightsPerVertexMax": 4,
+    "morphTargetsActiveMax": 4,
+    "lod0CreatorBaseTrianglesMax": 28000,
+    "lod0CreatorFurTrianglesMax": 24000,
+    "lod1GameplayBaseTrianglesMax": 10000,
+    "lod1GameplayFurTrianglesMax": 8000,
+    "lod2GameplayBaseTrianglesMax": 3500,
+    "lod2GameplayFurTrianglesMax": 1500,
+    "mobileFrameVisibleTrianglesMax": 450000,
+    "desktopFrameVisibleTrianglesMax": 900000,
+    "mobileDrawCallsMax": 160,
+    "desktopDrawCallsMax": 300,
+    "residentGeometryBuffersMiBMax": 24,
+    "residentAnimationDataMiBMax": 16
+  },
+  "artTextures": {
+    "characterDecodedRGBA8WithMipsMiBMax": 64,
+    "environmentDecodedRGBA8WithMipsMiBMax": 16,
+    "otherShadowAndTransientTextureMiBMax": 16,
+    "totalMiBMax": 96,
+    "maxTextureDimensionPx": 2048,
+    "accounting": "Conservative decoded width*height*4 including mip chains and temporary overlap; compression savings reported separately, never double count shared textures. Framebuffers/native process memory separately included in original384MiB RSS gate.",
+    "firstActivityCompressedArtMiBMax": 8,
+    "allStarterCompressedArtMiBMax": 24,
+    "initialArtLoadWaitP75MsMax": 1500
+  },
+  "qualityTiers": {
+    "mobileLow": {
+      "dprCap": 1,
+      "nearAvatarLod1Max": 2,
+      "othersLod": 2,
+      "dynamicShadowLightsMax": 0,
+      "postprocessing": "OFF; baked/contact shading required",
+      "fur": "Reduced authored groom cards/normal detail; keep3D silhouette and saved parts"
+    },
+    "mobileBalanced": {
+      "dprCap": 1.25,
+      "nearAvatarLod1Max": 4,
+      "othersLod": 2,
+      "dynamicShadowLightsMax": 1,
+      "shadowMapDimensionMax": 1024,
+      "postprocessing": "No mandatory SSAO,SSR,bloom or full-resolution DOF",
+      "fur": "Authored groom cards with bounded overdraw; no strand simulation"
+    },
+    "desktopHigh": {
+      "dprCap": 2,
+      "nearAvatarLod1Max": 8,
+      "othersLod": 2,
+      "dynamicShadowLightsMax": 1,
+      "shadowMapDimensionMax": 2048,
+      "postprocessing": "Optional after measurement; gameplay no depth-of-field blur",
+      "fur": "Extra closeup/near cards within frame/texture caps"
+    }
+  },
+  "unchangedPhysicalGates": {
+    "interactiveColdP75Ms": 5000,
+    "interactiveWarmP75Ms": 5000,
+    "activeFrameP95Ms": 33.4,
+    "reportStallsOverMs": 250,
+    "nativeRssMiB": 384,
+    "nativeGrowthMiB": 32,
+    "jsGrowthAfter20Visits": {
+      "absoluteMiB": 16,
+      "relativePercent": 20,
+      "rule": "Original max(absolute,relative) over consistent warm baseline"
+    },
+    "physicalDurationMinutes": 30,
+    "enterLeaveCycles": 20,
+    "backgroundResumeCycles": 10,
+    "authorityInvariantViolationsAllowed": 0
+  },
+  "measurementProtocol": [
+    "Pin source/renderer/model/material/catalog/toolchain/quality tier and device/OS/WebView/GPU; record unsupported shader/extensions separately",
+    "Measure cold/warm load,decoded resources,drawcalls/triangles,framep95/stalls,memory growth/disposal and context recovery on exact build",
+    "Report physical Android thermal/battery/30minute workload under unchanged android-spike.json; browser/AVD values separate",
+    "Retain failed results and any quality reduction; no after-failure threshold increase or resetting old profile"
+  ],
+  "changePolicy": "Preserve revision1 and all measured failures; any future limit change needs a new revision/reason locked before separate measurement, never edits this file to PASS"
+}

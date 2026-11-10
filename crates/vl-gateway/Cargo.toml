@@ -1,0 +1,27 @@
+[package]
+name = "vl-gateway"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+axum = { workspace = true, features = ["ws"] }
+tokio.workspace = true
+vl-protocol = { path = "../vl-protocol" }
+prost = "=0.14.4"
+sha2 = "=0.10.9"
+vl-security = { path = "../vl-security" }
+vl-world = { path = "../vl-world" }
+tokio-postgres = "=0.7.18"
+jsonwebtoken = { version = "=11.1.0", default-features = false, features = ["rust_crypto"] }
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.154"
+
+[dev-dependencies]
+tower.workspace = true
+tokio-tungstenite = "=0.29.0"
+futures-util = { version = "=0.3.34", default-features = false, features = ["std", "sink"] }
+
+[lints]
+workspace = true

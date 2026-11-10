@@ -1,4 +1,4 @@
-import RoomPanel from '../../components/WorldRoomPanel';
+import RoomPanel from '../../../features/rooms/modules/rooms/presentation/WorldRoomPanel';
 export const dynamic = 'force-dynamic';
 export default function SandboxPage() {
   const value = process.env.PUBLIC_SOCKET_ORIGIN ?? 'http://127.0.0.1:4300'; const origin = new URL(value);

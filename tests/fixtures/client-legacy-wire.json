@@ -1,0 +1,37 @@
+{
+  "fixtureVersion": 1,
+  "sourceRevision": "50f10681febb15154d650a2bd13fe9f3d9c97e37",
+  "scope": "Pre-negotiation web wire fixture; not a released mobile binary",
+  "handshakeKeys": [
+    "csrfToken",
+    "schemaVersion"
+  ],
+  "joinKeys": [
+    "motionVersion",
+    "requestId",
+    "sceneVersion",
+    "schemaVersion",
+    "worldSlug",
+    "worldVersion"
+  ],
+  "snapshotKeys": [
+    "capacity",
+    "epoch",
+    "membershipId",
+    "occupancy",
+    "participants",
+    "roomId",
+    "roomVersion",
+    "schemaVersion",
+    "seats",
+    "self",
+    "serverTime",
+    "type",
+    "worldSlug"
+  ],
+  "sourceHashes": {
+    "apps/portal-web/app/components/WorldRoomPanel.tsx": "fb774de2cd21cf8b302571cd573de786fe3f1f543cbf5eee438c127d84656a66",
+    "packages/contracts/src/index.ts": "87cc7c7610c0011750d291a9950fa5b262796fdc4cfbc3f19d0a5534170bf5ed",
+    "packages/contracts/src/rooms.ts": "57c6c4baa81463bd613467f383019804f3e9bcf86419922f1189d9aab995597b"
+  }
+}

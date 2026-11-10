@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 
 // These scene manifests fingerprint code-authored geometry/art. Avatar atlas,
 // schematic-city metadata and legal/operator approval are separate checks.
-const scenes=['deadline','library','lounge','maid','park','restaurant'];
+const scenes=['deadline','library','lounge','maid','park','restaurant','lantern-lodge'];
 const mismatches=[];let sources=0,allReleaseApprovalsFalse=true;
 for(const scene of scenes){
  const manifest=`apps/portal-web/public/assets/${scene}/provenance.json`,value=JSON.parse(await readFile(manifest,'utf8'));

@@ -1,3 +1,5 @@
+import {browserReportDirectory} from './browser-report-directory.mjs';
+import {randomUUID} from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { readdir,mkdir,writeFile } from 'node:fs/promises';
 
@@ -5,7 +7,7 @@ import { readdir,mkdir,writeFile } from 'node:fs/promises';
 // unrelated loopback scenarios consume real guest/catalog/handshake IP budgets.
 // Explicit filtered invocations keep their requested batch together.
 const filters = process.argv.slice(2);
-const reportPrefix=process.env.BROWSER_REPORT_SCOPE;
+const reportPrefix=process.env.BROWSER_REPORT_SCOPE??'ci/local/browser-'+randomUUID().slice(0,8);
 if(reportPrefix&&!/^ci\/[a-z][a-z0-9-]{0,39}\/[a-z][a-z0-9-]{0,79}$/.test(reportPrefix))throw Error('Invalid browser report scope');
 const batches=filters.length?[filters]:(await readdir('tests/e2e')).filter(name=>name.endsWith('.spec.ts')).sort().map(name=>['tests/e2e/'+name]);
 const legacy=batches.some(batch=>batch.some(value=>value.endsWith('/deadline-identity.spec.ts')));
@@ -15,8 +17,9 @@ for (const project of ['desktop', 'mobile']) {
  for(const [index,batch] of batches.entries()){
   const baseScope=filters.length?project:`${project}/${batch[0].split('/').at(-1).replace('.spec.ts','')}`,scope=reportPrefix?reportPrefix+'/'+baseScope:baseScope;
   const code = await new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, ['scripts/with-test-db.mjs', 'pnpm', 'exec', 'playwright', 'test', '--project', project, '--output', `test-results/${scope}`, ...batch], {
-      stdio: 'inherit', env: { ...process.env, BROWSER_CITY_JOURNEY:batch.some(value=>value.endsWith('/travel.spec.ts'))?'1':'0',BROWSER_MAID_WORLD:batch.some(value=>value.endsWith('/maid.spec.ts')||value.endsWith('/maid-safety.spec.ts')||value.endsWith('/maid-travel.spec.ts')||value.endsWith('/maid-acceptance.spec.ts'))?'1':'0', BROWSER_DEADLINE_WORLD:batch.some(value=>(value.endsWith('/deadline.spec.ts')||value.endsWith('/deadline-safety.spec.ts')||value.endsWith('/deadline-acceptance.spec.ts')))?'1':'0', BROWSER_DEADLINE_IDENTITY:batch.some(value=>value.endsWith('/deadline-identity.spec.ts'))?'1':'0', BROWSER_PARK_WORLD:batch.some(value=>value.endsWith('/park.spec.ts')||value.endsWith('/park-safety.spec.ts'))?'1':'0', BROWSER_LIBRARY_WORLD:batch.some(value=>value.endsWith('/library.spec.ts'))?'1':'0', BROWSER_RESTAURANT_WORLD:batch.some(value=>value.endsWith('/restaurant.spec.ts'))?'1':'0', BROWSER_LOUNGE_WORLD:batch.some(value=>value.endsWith('/lounge.spec.ts'))?'1':'0',BROWSER_DATING_PROFILE:batch.some(value=>value.endsWith('/dating-profile.spec.ts')||value.endsWith('/dating-continuation.spec.ts'))?'1':'0', PLAYWRIGHT_HTML_OUTPUT_DIR: `playwright-report/${scope}` },
+    const adminConfig=batch.some(value=>value.endsWith('/lodge-lobby.spec.ts'))?['--config','playwright.lodge.config.ts']:batch.some(value=>value.endsWith('/queue-ux.spec.ts'))?['--config','playwright.queue.config.ts']:batch.some(value=>value.endsWith('/runtime.spec.ts'))?['--config','playwright.runtime.config.ts']:batch.some(value=>value.endsWith('/calendar.spec.ts'))?['--config','playwright.calendar.config.ts']:batch.some(value=>value.endsWith('/privacy.spec.ts'))?['--config','playwright.privacy.config.ts']:batch.some(value=>value.endsWith('/admin.spec.ts'))?['--config','playwright.admin.config.ts']:[];
+    const child = spawn(process.execPath, ['scripts/with-test-db.mjs', 'pnpm', 'exec', 'playwright', 'test', ...adminConfig, '--project', project, '--output', `test-results/${scope}`, ...batch], {
+      stdio: 'inherit', env: { ...process.env, BROWSER_CITY_JOURNEY:batch.some(value=>value.endsWith('/travel.spec.ts')||value.endsWith('/avatar-creator.spec.ts'))?'1':'0',BROWSER_MAID_WORLD:batch.some(value=>value.endsWith('/maid.spec.ts')||value.endsWith('/maid-safety.spec.ts')||value.endsWith('/maid-travel.spec.ts')||value.endsWith('/maid-acceptance.spec.ts')||value.endsWith('/ux-core.spec.ts'))?'1':'0', BROWSER_DEADLINE_WORLD:batch.some(value=>(value.endsWith('/deadline.spec.ts')||value.endsWith('/deadline-safety.spec.ts')||value.endsWith('/deadline-acceptance.spec.ts')||value.endsWith('/deadline-performance.spec.ts')))?'1':'0', BROWSER_DEADLINE_IDENTITY:batch.some(value=>value.endsWith('/deadline-identity.spec.ts'))?'1':'0', BROWSER_PARK_WORLD:batch.some(value=>value.endsWith('/park.spec.ts')||value.endsWith('/park-safety.spec.ts'))?'1':'0', BROWSER_LIBRARY_WORLD:batch.some(value=>value.endsWith('/library.spec.ts'))?'1':'0', BROWSER_RESTAURANT_WORLD:batch.some(value=>value.endsWith('/restaurant.spec.ts'))?'1':'0', BROWSER_LOUNGE_WORLD:batch.some(value=>value.endsWith('/lounge.spec.ts'))?'1':'0',BROWSER_DATING_PROFILE:batch.some(value=>value.endsWith('/dating-profile.spec.ts')||value.endsWith('/dating-continuation.spec.ts'))?'1':'0', PLAYWRIGHT_HTML_OUTPUT_DIR: browserReportDirectory(`playwright-report/${scope}`) },
     });
     child.once('error', reject);
     child.once('exit', code => resolve(code ?? 1));

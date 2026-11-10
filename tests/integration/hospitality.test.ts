@@ -5,10 +5,13 @@ import { io, type Socket } from 'socket.io-client';
 import { MeSchema, RoomAckSchema, OrderResultSchema, type Me, type TravelSource } from '@virtual-city/contracts';
 import { defineWorld } from '@virtual-city/world-sdk';
 import { createApp } from '../../apps/platform-api/src/app';
-import { readConfig } from '../../apps/platform-api/src/config';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
-import { HospitalityOutbox, type HospitalityCompletionSink } from '../../apps/platform-api/src/hospitality/outbox';
-import { DEFAULT_PROGRESSION_POLICY } from '../../apps/platform-api/src/progression/policy';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
+import { HospitalityOutbox, type HospitalityCompletionSink } from '../../apps/platform-api/src/features/hospitality/modules/service/infrastructure/outbox';
+import {HospitalityOutbox as DurableHospitalityOutbox} from '../../apps/platform-api/src/features/hospitality/modules/service/application/jobs';
+import { DEFAULT_PROGRESSION_POLICY } from '../../apps/platform-api/src/features/progression/modules/rewards/domain/policy';
+import {BoundedObservationRead} from '../../apps/platform-api/src/features/operations/modules/observability/application/system-observation';
+import {RuntimeLifecycle} from '../../apps/platform-api/src/features/operations/modules/lifecycle/application/runtime-lifecycle';
 const origin = 'http://127.0.0.1:3300'; let admin: Pool, serial = 0;
 const opened: { app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: string }[] = [], sockets = new Set<Socket>();
 beforeAll(async () => { const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database'); admin = new Pool({ connectionString: url.toString() }); });
@@ -25,7 +28,7 @@ async function open(allowStaff = true, maxQueue = 50, voluntary = false, maxStaf
 }
 type Runtime = Awaited<ReturnType<typeof open>>; type User = { me: Me; cookie: string };
 const headers = (u: User, key = randomUUID()) => ({ origin, cookie: u.cookie, 'x-csrf-token': u.me.csrfToken, 'idempotency-key': key });
-const post = (r: Runtime, u: User, path: string, payload: unknown, key = randomUUID()) => r.app.http.inject({ method: 'POST', url: '/v1/' + path, headers: headers(u, key), payload });
+const post = (r: Runtime, u: User, path: string, payload: object, key = randomUUID()) => r.app.http.inject({ method: 'POST', url: '/v1/' + path, headers: headers(u, key), payload });
 const get = (r: Runtime, u: User, path: string) => r.app.http.inject({ url: '/v1/' + path, headers: { cookie: u.cookie } });
 async function guest(r: Runtime, staff = false): Promise<User> { const n = serial++, response = await r.app.http.inject({ method: 'POST', url: '/v1/session/guest', remoteAddress: `127.71.${Math.floor(n / 250)}.${n % 250 + 1}`, headers: { origin }, payload: { requestId: randomUUID(), displayName: 'Service Visitor', avatarKey: 'mint' } }); expect(response.statusCode).toBe(201); const user = { me: MeSchema.parse(response.json()), cookie: String(response.headers['set-cookie']).split(';')[0] }; if (staff) r.staffIds.add(user.me.profile.id); return user; }
 async function join(r: Runtime, user: User, seatId?: string) {
@@ -326,6 +329,38 @@ it('only the customer acknowledges fully served workflow once under actual TCP c
 async function servedFixture() { const fixture = await serviceFixture(); const { r, staff, s, order } = fixture; await act(r, staff, order.id, 'prepare', s.source, 1); r.advance(2000); await act(r, staff, order.id, 'ready', s.source, 2); await act(r, staff, order.id, 'serve', s.source, 3); return fixture; }
 const acknowledge = (r: Runtime, customer: User, id: string, key = randomUUID()) => post(r, customer, `orders/${id}/complete`, { schemaVersion: 1, expectedVersion: 4 }, key);
 
+it('drain settles a real progression outbox COMMIT before owner release and restart never duplicates the reward', async () => {
+  const r = await open(false, 50, true, 32, 'coffee', true, Date.parse('2026-11-06T12:00:00Z'));
+  const customer = await guest(r), staff = await guest(r), c = await join(r, customer, 'seat-1'), s = await join(r, staff);
+  await shift(r, staff, s.source); const order = await place(r, customer, c.source);
+  await act(r, staff, order.id, 'claim', s.source, 0); await act(r, staff, order.id, 'prepare', s.source, 1); r.advance(2000);
+  await act(r, staff, order.id, 'ready', s.source, 2); await act(r, staff, order.id, 'serve', s.source, 3);
+  expect((await acknowledge(r, customer, order.id)).statusCode).toBe(200);
+  const lock = await r.pool.connect(), key = randomUUID();
+  // Test-only deferred trigger blocks the real effect+receipt COMMIT, not a fake ACK.
+  await lock.query('SELECT pg_advisory_lock(1447840563,hashtext($1))', [key]);
+  await r.pool.query(`CREATE FUNCTION pause_shutdown_delivery() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN PERFORM pg_advisory_xact_lock(1447840563,hashtext('${key}')); RETURN NEW; END $$`);
+  await r.pool.query('CREATE CONSTRAINT TRIGGER pause_shutdown_delivery AFTER INSERT ON engine_hospitality_deliveries DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION pause_shutdown_delivery()');
+  let failed = false, stopping: Promise<void> | undefined;
+  // The fixture retains its externally owned pool for the same-DB restart.
+  const lifecycle = new RuntimeLifecycle({beginDrain: r.app.beginDrain, closeApp: () => r.app.app.close(), closePool: async () => {}});
+  const work = lifecycle.run(() => r.app.hospitalityOutbox.drain(), () => {failed = true;});
+  try {
+    await expect.poll(async () => (await r.pool.query("SELECT count(*)::int AS n FROM pg_locks WHERE locktype='advisory' AND classid=1447840563::oid AND objid=(hashtext($1)::bigint & 4294967295)::oid AND NOT granted", [key])).rows[0].n).toBe(1);
+    stopping = lifecycle.stop(); expect(r.app.diagnostics().authority).toBe('held');
+    expect((await r.pool.query('SELECT 1 FROM engine_progression_ledger')).rowCount).toBe(0);
+    expect((await fetch(r.url + '/health/ready')).status).toBe(503); expect((await fetch(r.url + '/health/live')).status).toBe(200);
+  } finally {await lock.query('SELECT pg_advisory_unlock(1447840563,hashtext($1))', [key]); lock.release(); await work; await stopping;}
+  expect(failed).toBe(false); expect(lifecycle.state).toBe('closed'); expect(r.app.diagnostics().authority).toBe('closed');
+  const rewards = (await r.pool.query('SELECT account_id,xp FROM engine_progression_ledger ORDER BY account_id')).rows;
+  expect(rewards).toHaveLength(2); expect(rewards.every(row => row.xp === 2)).toBe(true);
+  expect((await r.pool.query('SELECT 1 FROM engine_hospitality_deliveries')).rowCount).toBe(1);
+  await restart(r); await r.app.hospitalityOutbox.drain();
+  expect((await r.pool.query('SELECT account_id,xp FROM engine_progression_ledger ORDER BY account_id')).rows).toEqual(rewards);
+  expect((await r.pool.query('SELECT 1 FROM engine_hospitality_completions')).rowCount).toBe(1);
+  expect((await r.pool.query('SELECT 1 FROM engine_hospitality_deliveries')).rowCount).toBe(1);
+});
+
 it('completion,outbox and order receipt commit atomically and failed outbox or receipt leaves the order served', async () => {
   const { r, customer, order } = await servedFixture(), key = randomUUID();
   await r.pool.query("CREATE FUNCTION fail_completion_outbox() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic outbox failure'; END $$"); await r.pool.query('CREATE TRIGGER fail_completion_outbox BEFORE INSERT ON engine_hospitality_outbox FOR EACH ROW EXECUTE FUNCTION fail_completion_outbox()');
@@ -345,9 +380,48 @@ it('independent concurrent outbox dispatchers apply a DB hook once and rollback 
   const { r, customer, order } = await servedFixture(); await acknowledge(r, customer, order.id); await r.pool.query('CREATE TABLE synthetic_once(event_id uuid PRIMARY KEY,amount integer NOT NULL)');
   const sinks: HospitalityCompletionSink[] = [{ key: 'once-progress', apply: async (db, event) => { await db.query('INSERT INTO synthetic_once VALUES($1,1)', [event.id]); } }];
   await r.pool.query("CREATE FUNCTION fail_delivery_receipt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic delivery receipt failure'; END $$"); await r.pool.query('CREATE TRIGGER fail_delivery_receipt BEFORE INSERT ON engine_hospitality_deliveries FOR EACH ROW EXECUTE FUNCTION fail_delivery_receipt()');
-  const one = new HospitalityOutbox(r.pool, r.app.identity, sinks, r.now); await expect(one.drain()).rejects.toThrow(); expect((await r.pool.query('SELECT 1 FROM synthetic_once')).rowCount).toBe(0); await r.pool.query('DROP TRIGGER fail_delivery_receipt ON engine_hospitality_deliveries'); r.advance(1000);
-  const two = new HospitalityOutbox(r.pool, r.app.identity, sinks, r.now); await Promise.all([one.drain(), two.drain()]); expect((await r.pool.query('SELECT amount FROM synthetic_once')).rows).toEqual([{ amount: 1 }]); expect((await r.pool.query('SELECT 1 FROM engine_hospitality_deliveries')).rowCount).toBe(1); await one.close(); await two.close();
+  const one = new HospitalityOutbox(r.pool, r.app.identity, sinks, r.now);const backlog=new BoundedObservationRead(r.pool,db=>one.operationalBacklog(db),r.now);expect(await backlog.read()).toMatchObject({status:'OBSERVED',value:{pendingDeliveries:1,oldestAgeMs:0,consumerCount:1}}); await expect(one.drain()).rejects.toThrow(); expect((await r.pool.query('SELECT 1 FROM synthetic_once')).rowCount).toBe(0); await r.pool.query('DROP TRIGGER fail_delivery_receipt ON engine_hospitality_deliveries'); r.advance(1000);
+  expect(DurableHospitalityOutbox).toBe(HospitalityOutbox);
+  const two = new DurableHospitalityOutbox(r.pool, {lockAccounts:(db,ids)=>r.app.identity.lockAccounts(db,ids)}, sinks, r.now); await Promise.all([one.drain(), two.drain()]); expect((await r.pool.query('SELECT amount FROM synthetic_once')).rows).toEqual([{ amount: 1 }]); expect((await r.pool.query('SELECT 1 FROM engine_hospitality_deliveries')).rowCount).toBe(1);expect(await backlog.read()).toMatchObject({status:'OBSERVED',value:{pendingDeliveries:0,oldestAgeMs:null,consumerCount:1}});backlog.close(); await one.close(); await two.close();
 });
+
+it('quarantines poison work at the retry limit and permits exactly one scoped explicit retry without clearing a committed receipt', async () => {
+  const {r, customer, order} = await servedFixture(); await acknowledge(r, customer, order.id);
+  await r.pool.query('CREATE TABLE synthetic_worker_effect(event_id uuid PRIMARY KEY,amount integer NOT NULL)'); let broken = true, attempts = 0;
+  const sink: HospitalityCompletionSink = {key: 'worker-poison', apply: async (db, event) => {attempts++; await db.query('INSERT INTO synthetic_worker_effect VALUES($1,1)', [event.id]); if (broken) throw Error('synthetic poison');}};
+  const dispatcher = new DurableHospitalityOutbox(r.pool, {lockAccounts: (db, ids) => r.app.identity.lockAccounts(db, ids)}, [sink], r.now, 2);
+  try {
+    await expect(dispatcher.drain()).rejects.toThrow(); r.advance(1000); await expect(dispatcher.drain()).rejects.toThrow(); r.advance(60000);
+    await dispatcher.drain(); expect(attempts).toBe(2); expect((await r.pool.query('SELECT 1 FROM synthetic_worker_effect')).rowCount).toBe(0);
+    const dead = await dispatcher.deadLetters(); expect(dead).toHaveLength(1); expect(dead[0]).toMatchObject({consumer_key: 'worker-poison', attempts: 2});
+    expect(Object.keys(dead[0]).sort()).toEqual(['attempts', 'consumer_key', 'event_id', 'next_at']);
+    await expect(dispatcher.retryDeadLetter(dead[0].event_id, 'foreign-consumer', 2, dead[0].next_at.toISOString())).rejects.toThrow();
+    await expect(dispatcher.retryDeadLetter(dead[0].event_id, 'worker-poison', 3, dead[0].next_at.toISOString())).rejects.toThrow('conflict');
+    const retried = await Promise.allSettled(Array.from({length: 8}, () => dispatcher.retryDeadLetter(dead[0].event_id, 'worker-poison', 2, dead[0].next_at.toISOString())));
+    expect(retried.filter(row => row.status === 'fulfilled')).toHaveLength(1); expect(retried.filter(row => row.status === 'rejected')).toHaveLength(7);
+    // A later poison cycle can have the same attempt count; the old observation
+    // must not reset that newer cycle. Compare its persisted due time as well.
+    await expect(dispatcher.drain()).rejects.toThrow(); r.advance(1000); await expect(dispatcher.drain()).rejects.toThrow();
+    await expect(dispatcher.retryDeadLetter(dead[0].event_id, 'worker-poison', 2, dead[0].next_at.toISOString())).rejects.toThrow('conflict');
+    const current = (await dispatcher.deadLetters())[0]; await dispatcher.retryDeadLetter(current.event_id, current.consumer_key, current.attempts, current.next_at.toISOString());
+    broken = false;
+    const concurrent = new DurableHospitalityOutbox(r.pool, {lockAccounts: (db, ids) => r.app.identity.lockAccounts(db, ids)}, [sink], r.now, 2);
+    try {await Promise.all([dispatcher.drain(), concurrent.drain()]);} finally {await concurrent.close();}
+    expect((await r.pool.query('SELECT amount FROM synthetic_worker_effect')).rows).toEqual([{amount: 1}]); expect((await dispatcher.deadLetters())).toEqual([]);
+    await expect(dispatcher.retryDeadLetter(dead[0].event_id, 'worker-poison', 2, dead[0].next_at.toISOString())).rejects.toThrow('conflict');
+    expect((await r.pool.query("SELECT 1 FROM engine_hospitality_deliveries WHERE consumer_key='worker-poison'")).rowCount).toBe(1);
+  } finally {await dispatcher.close();}
+});
+it('legacy API dispatcher retains its retry behavior until an explicit bounded-worker cutover', async () => {
+  const {r, customer, order} = await servedFixture(); await acknowledge(r, customer, order.id);
+  const eventId = (await r.pool.query('SELECT event_id FROM engine_hospitality_outbox')).rows[0].event_id;
+  await r.pool.query("INSERT INTO engine_hospitality_delivery_retries VALUES($1,'legacy-retry',30,$2)", [eventId, new Date(r.now() - 1)]);
+  let attempts = 0;
+  const dispatcher = new DurableHospitalityOutbox(r.pool, {lockAccounts: (db, ids) => r.app.identity.lockAccounts(db, ids)}, [{key: 'legacy-retry', apply: async () => {attempts++; throw Error('synthetic legacy failure');}}], r.now);
+  try {await expect(dispatcher.drain()).rejects.toThrow(); expect(attempts).toBe(1); await expect(dispatcher.deadLetters()).rejects.toThrow('Bounded retry policy required'); expect((await r.pool.query("SELECT attempts FROM engine_hospitality_delivery_retries WHERE consumer_key='legacy-retry'")).rows[0].attempts).toBe(30);}
+  finally {await dispatcher.close();}
+});
+
 
 it('a committed completion lost response is privately retryable after leave/restart,and no caller can post arbitrary events or rewards', async () => {
   const { r, customer, c, staff, order } = await servedFixture(), key = randomUUID(), stranger = await guest(r);

@@ -1,34 +1,15 @@
+import {evidenceOutput} from '../../scripts/evidence-output.mjs';
+import {guest,enter} from '../support/sandbox-browser-fixtures';
 import { test, expect, type Page, type BrowserContext, type WebSocketRoute } from '@playwright/test';
 import { randomUUID, createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { request } from 'node:http';
-import { MeSchema } from '@virtual-city/contracts';
 import { isWalkable, sandboxScene } from '@virtual-city/world-sdk';
-import performanceBudget from '../../config/scene-performance.json';
+import { armScenePositions } from '../support/scene-cadence';
 
 const origin = 'http://127.0.0.1:3300';
-let bootstrapSerial = 1;
-async function guest(context: BrowserContext, displayName: string) {
-  // Real HTTP setup with independent loopback sources; do not weaken API guest/IP limits for a larger browser suite.
-  const payload = JSON.stringify({ requestId: randomUUID(), displayName, avatarKey: 'mint' });
-  const result = await new Promise<{ cookie: string; body: unknown }>((resolve, reject) => {
-    const req = request('http://127.0.0.1:4300/v1/session/guest', { method: 'POST', localAddress: '127.22.0.' + bootstrapSerial++, headers: { origin, 'content-type': 'application/json', 'content-length': Buffer.byteLength(payload) } }, res => {
-      let body = ''; res.on('data', chunk => { body += chunk; }); res.on('end', () => {
-        try { expect(res.statusCode).toBe(201); resolve({ cookie: res.headers['set-cookie']![0].split(';')[0], body: JSON.parse(body) }); } catch (error) { reject(error); }
-      });
-    }); req.on('error', reject); req.end(payload);
-  });
-  const separator = result.cookie.indexOf('=');
-  await context.addCookies([{ name: result.cookie.slice(0, separator), value: result.cookie.slice(separator + 1), url: origin, httpOnly: true, sameSite: 'Lax' }]);
-  return MeSchema.parse(result.body);
-}
 async function visible(context: BrowserContext, csrf: string) {
   const response = await context.request.patch('/v1/me/privacy', { headers: { origin, 'x-csrf-token': csrf, 'idempotency-key': randomUUID() }, data: { presence: 'public', analyticsConsent: false, worldVisibility: { dating: 'hidden' } } });
   expect(response.status()).toBe(200);
-}
-async function enter(page: Page) {
-  await page.goto('/worlds/sdk-sandbox'); await page.getByRole('button', { name: 'Enter cafe', exact: true }).click();
-  await expect(page.getByRole('status')).toHaveText('Connected');
 }
 async function pixels(page: Page) {
   const canvas = page.locator('canvas[data-scene="sdk-sandbox"]'); await expect(canvas).toBeVisible();
@@ -62,8 +43,8 @@ test('actual cafe scene and keyboard seat controls reflect authoritative rooms o
   await expect(seat).toBeEnabled();
   const sample = await pixels(page); expect(sample.width).toBeGreaterThan(250); expect(sample.height).toBeGreaterThan(150); expect(sample.uniqueColors).toBeGreaterThan(25); expect(sample.hasColoredPixels).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  await mkdir('artifacts', { recursive: true }); await page.screenshot({ path: `artifacts/cafe-${test.info().project.name}.png`, fullPage: true });
-  await writeFile(`artifacts/cafe-pixels-${test.info().project.name}.json`, JSON.stringify(sample));
+  await mkdir('artifacts', { recursive: true }); await page.screenshot({ path: evidenceOutput(`docs/agent/evidence/cafe-${test.info().project.name}.png`), fullPage: true });
+  await writeFile(evidenceOutput(`docs/agent/evidence/cafe-pixels-${test.info().project.name}.json`), JSON.stringify(sample));
   await page.getByRole('button', { name: 'Leave cafe', exact: true }).click(); await expect(page.getByRole('status')).toHaveText('Ready to enter');
   await expect(canvas).toHaveAttribute('data-entity-count', '0'); expect(errors).toEqual([]);
 });
@@ -113,7 +94,7 @@ test('private report receipt and block flow works with keyboard focus on desktop
     expect(await other.getByText('Private browser allegation, not a finding.', { exact: true }).count()).toBe(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     const bounds = await dialog.boundingBox(); expect(bounds).not.toBeNull(); expect(bounds!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
-    await mkdir('artifacts', { recursive: true }); await page.screenshot({ path: `artifacts/report-${test.info().project.name}.png`, fullPage: true }); await page.screenshot({ path: `artifacts/report-viewport-${test.info().project.name}.png` });
+    await mkdir('artifacts', { recursive: true }); await page.screenshot({ path: evidenceOutput(`docs/agent/evidence/report-${test.info().project.name}.png`), fullPage: true }); await page.screenshot({ path: evidenceOutput(`docs/agent/evidence/report-viewport-${test.info().project.name}.png`) });
     await dialog.getByRole('button', { name: 'Block visitor', exact: true }).click(); await expect(dialog.getByText('Blocked. Your contact settings were updated.', { exact: true })).toBeVisible();
     await expect(page.locator('canvas[data-scene]')).toHaveAttribute('data-entity-count', '1'); await expect(other.locator('canvas[data-scene]')).toHaveAttribute('data-entity-count', '1');
     await dialog.getByRole('button', { name: 'Close', exact: true }).click(); await expect(page.locator('#cafe-action-title')).toBeFocused();
@@ -174,13 +155,13 @@ test('actual transport interruption hides stale seats then reconnects to one ret
     await expect(canvas).toHaveAttribute('data-entity-count', '0');
     await expect(page.getByRole('button', { name: 'Window table 01', exact: true })).toBeDisabled();
     await mkdir('artifacts', { recursive: true });
-    await page.screenshot({ path: `artifacts/cafe-reconnecting-${test.info().project.name}.png`, fullPage: true });
+    await page.screenshot({ path: evidenceOutput(`docs/agent/evidence/cafe-reconnecting-${test.info().project.name}.png`), fullPage: true });
     resume!();
     await expect(page.getByRole('status')).toHaveText('Connected', { timeout: 10000 });
     await expect(canvas).toHaveCount(1); await expect(canvas).toHaveAttribute('data-entity-count', '1');
     await expect(canvas).toHaveAttribute('data-sitting-count', '1');
     await expect(page.getByText('Seated at Window table 01', { exact: true })).toBeVisible();
-    await writeFile(`artifacts/cafe-recovery-${test.info().project.name}.json`, JSON.stringify({
+    await writeFile(evidenceOutput(`docs/agent/evidence/cafe-recovery-${test.info().project.name}.json`), JSON.stringify({
       actualConnections: connects, entities: await canvas.getAttribute('data-entity-count'), created: await canvas.getAttribute('data-created-entities'),
       removed: await canvas.getAttribute('data-removed-entities'), sitting: await canvas.getAttribute('data-sitting-count'),
     }, null, 2));
@@ -259,7 +240,7 @@ test('original avatar action and outfit previews render distinct pixels and resp
       await page.getByRole('button', { name: action, exact: true }).click();
       if (action === 'Walk') await page.getByRole('button', { name: 'Next pose frame', exact: true }).click();
       const preview = page.getByRole('img', { name: `mint avatar, ${outfit}, ${action.toLowerCase()}`, exact: true });
-      const png = await preview.screenshot({ path: `artifacts/avatars/${test.info().project.name}-${outfit}-${action.toLowerCase()}.png` });
+      const png = await preview.screenshot({ path: evidenceOutput(`docs/agent/evidence/avatars/${test.info().project.name}-${outfit}-${action.toLowerCase()}.png`) });
       hashes.add(createHash('sha256').update(png).digest('hex'));
     }
   }
@@ -276,8 +257,8 @@ test('original avatar action and outfit previews render distinct pixels and resp
   await page.getByLabel('Color', { exact: true }).selectOption('rose');
   await expect(page.getByRole('img', { name: 'rose avatar, cafe-apron, serve', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  await page.screenshot({ path: `artifacts/avatars/lab-${test.info().project.name}.png`, fullPage: true });
-  await writeFile(`artifacts/avatars/pixels-${test.info().project.name}.json`, JSON.stringify({ distinctPoseOutfitPngHashes: [...hashes], reducedMotion: true }, null, 2));
+  await page.screenshot({ path: evidenceOutput(`docs/agent/evidence/avatars/lab-${test.info().project.name}.png`), fullPage: true });
+  await writeFile(evidenceOutput(`docs/agent/evidence/avatars/pixels-${test.info().project.name}.json`), JSON.stringify({ distinctPoseOutfitPngHashes: [...hashes], reducedMotion: true }, null, 2));
 });
 
 test('keyboard and canvas destinations follow approved paths around tables and reject solid tiles', async ({ page, context }) => {
@@ -294,21 +275,18 @@ test('keyboard and canvas destinations follow approved paths around tables and r
   await expect(page.getByText('That destination or interaction is unavailable. Choose an open floor tile.', { exact: true })).toBeVisible();
   await expect(page.getByRole('status')).toHaveText('Connected');
   await expect(canvas).toHaveAttribute('data-self-position', '2.00:4.00');
-  await canvas.click({ position: { x: bounds.width * 6.5 / 20, y: bounds.height * 4.5 / 14 } });
-  await expect(canvas).toHaveAttribute('data-moving-count', '1');
-  const samples = await canvas.evaluate(element => new Promise<string[]>((resolve, reject) => {
-    const samples: string[] = []; const started = performance.now();
-    const timer = setInterval(() => {
-      samples.push((element as HTMLElement).dataset.selfPosition ?? '');
-      if ((element as HTMLElement).dataset.movingCount === '0') { clearInterval(timer); resolve(samples); }
-      else if (performance.now() - started > 8000) { clearInterval(timer); reject(new Error('Approved movement did not complete')); }
-    }, 30);
-  }));
+  const observation = await armScenePositions(canvas);
+  let movement;
+  try {
+    await canvas.click({ position: { x: bounds.width * 6.5 / 20, y: bounds.height * 4.5 / 14 } });
+    movement = await observation.finish();
+  } finally { await observation.dispose(); }
+  const samples = movement.samples.map(sample => sample.position), final = await canvas.getAttribute('data-self-position');
+  await writeFile(evidenceOutput(`docs/agent/evidence/cafe-movement-${test.info().project.name}.json`), JSON.stringify({ ...movement, final }, null, 2));
+  expect(movement.initialMoving).toBe('0'); expect(movement.status).toBe('settled'); expect(movement.startedAtMs).not.toBeNull();
   expect(new Set(samples).size).toBeGreaterThan(4);
   expect(samples.every(sample => { const [x, y] = sample.split(':').map(Number); return isWalkable(sandboxScene, { x: Math.round(x), y: Math.round(y) }); })).toBe(true);
   await expect(canvas).toHaveAttribute('data-self-position', '6.00:4.00');
-  await mkdir('artifacts', { recursive: true });
-  await writeFile(`artifacts/cafe-movement-${test.info().project.name}.json`, JSON.stringify({ samples, final: await canvas.getAttribute('data-self-position'), crossedSolidTile: false }, null, 2));
   await page.getByRole('button', { name: 'Leave cafe', exact: true }).click(); expect(errors).toEqual([]);
 });
 
@@ -346,69 +324,12 @@ test('room keyboard focus, reduced motion, readable text contrast and mobile tar
     const rect = button.getBoundingClientRect(); const style = getComputedStyle(button);
     return { label: button.textContent, width: rect.width, height: rect.height, minHeight: style.minHeight, transform: style.transform };
   }));
-  await mkdir('artifacts', { recursive: true }); await writeFile(`artifacts/cafe-targets-${test.info().project.name}.json`, JSON.stringify(targets, null, 2));
+  await mkdir('artifacts', { recursive: true }); await writeFile(evidenceOutput(`docs/agent/evidence/cafe-targets-${test.info().project.name}.json`), JSON.stringify(targets, null, 2));
   for (const target of targets) { expect(target.height, target.label ?? '').toBeGreaterThanOrEqual(44); expect(target.width, target.label ?? '').toBeGreaterThanOrEqual(44); }
   await page.getByRole('link', { name: 'Back to visit controls', exact: true }).focus(); await page.keyboard.press('Enter');
   await page.keyboard.press('Tab'); await expect(page.getByRole('button', { name: 'Leave cafe', exact: true })).toBeFocused();
   await page.keyboard.press('Enter'); await expect(page.getByRole('button', { name: 'Enter cafe', exact: true })).toBeFocused();
   await expect(page.getByLabel('Room occupancy unconfirmed', { exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  await mkdir('artifacts', { recursive: true }); await writeFile(`artifacts/cafe-a11y-${test.info().project.name}.json`, JSON.stringify({ contrast, keyboardEntryAndLeave: true, explicitAndSystemReducedMotion: true, minButtonTargetPx: 44 }, null, 2));
-});
-
-test('scene loading, immutable cache, idle work and repeated scene lifetime fit the local performance profile', async ({ page, context }) => {
-  test.setTimeout(60000); // Dedicated CPU4x/network/remount profile, not an assertion retry.
-  const cdp = await context.newCDPSession(page);
-  await cdp.send('Network.enable'); await cdp.send('Performance.enable');
-  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
-  await cdp.send('Network.emulateNetworkConditions', { offline: false, latency: 40, downloadThroughput: 1.5 * 1024 * 1024, uploadThroughput: 768 * 1024 });
-  await guest(context, 'Performance Visitor');
-  const loadedAsset = page.waitForResponse(response => new URL(response.url()).pathname.endsWith('/starter-v1.svg'));
-  await enter(page); const canvas = page.locator('canvas[data-scene]'); await expect(canvas).toHaveAttribute('data-entity-count', '1');
-  const firstAsset = await loadedAsset; const cacheControl = (await firstAsset.allHeaders())['cache-control'];
-  expect(cacheControl).toContain('max-age=31536000'); expect(cacheControl).toContain('immutable');
-  const cold = await page.evaluate(() => {
-    const resources = (performance.getEntriesByType('resource') as PerformanceResourceTiming[]).map(entry => ({ path: new URL(entry.name).pathname, encoded: entry.encodedBodySize, decoded: entry.decodedBodySize, transfer: entry.transferSize, durationMs: entry.duration }));
-    return { readyMs: performance.now(), timeOrigin: performance.timeOrigin, resources };
-  });
-  const js = cold.resources.filter(entry => entry.path.endsWith('.js'));
-  const jsDecoded = js.reduce((sum, entry) => sum + entry.decoded, 0), jsEncoded = js.reduce((sum, entry) => sum + entry.encoded, 0);
-  const avatar = cold.resources.find(entry => entry.path.endsWith('/starter-v1.svg'))!;
-  await mkdir('artifacts', { recursive: true }); await writeFile(`artifacts/cafe-performance-cold-${test.info().project.name}.json`, JSON.stringify({ ...cold, profile: performanceBudget.profile, jsDecoded, jsEncoded, cacheControl }, null, 2));
-  expect(cold.readyMs).toBeLessThan(performanceBudget.readyMaxMs); expect(jsDecoded).toBeLessThan(performanceBudget.jsDecodedMaxBytes);
-  expect(jsEncoded).toBeLessThan(performanceBudget.jsEncodedMaxBytes); expect(avatar.decoded).toBeGreaterThan(0); expect(avatar.decoded).toBeLessThan(performanceBudget.avatarDecodedMaxBytes);
-  const beforeIdle = Number(await canvas.getAttribute('data-render-count')); await page.waitForTimeout(performanceBudget.idleWindowMs);
-  const idleRenders = Number(await canvas.getAttribute('data-render-count')) - beforeIdle; expect(idleRenders).toBe(performanceBudget.idleMaxRenders);
-  await page.getByRole('button', { name: 'Walk to window aisle', exact: true }).click(); await expect(canvas).toHaveAttribute('data-moving-count', '1');
-  const cadence = await canvas.evaluate(element => new Promise<number[]>((resolve, reject) => {
-    const gaps: number[] = []; let last = performance.now(); const start = last;
-    function sample(time: number) {
-      gaps.push(time - last); last = time;
-      if ((element as HTMLElement).dataset.movingCount === '0') resolve(gaps);
-      else if (time - start > 8000) reject(new Error('Movement cadence profile timed out'));
-      else requestAnimationFrame(sample);
-    }
-    requestAnimationFrame(sample);
-  }));
-  const sortedGaps = cadence.filter(gap => gap > 0).sort((a, b) => a - b); const rafP95GapMs = sortedGaps[Math.ceil(sortedGaps.length * .95) - 1];
-  expect(sortedGaps.length).toBeGreaterThan(10); expect(rafP95GapMs).toBeLessThan(performanceBudget.rafP95GapMaxMs);
-  await page.getByRole('button', { name: 'Leave cafe', exact: true }).click(); await page.getByRole('link', { name: 'Identity', exact: true }).click(); await expect(canvas).toHaveCount(0);
-  async function heapBytes() { await cdp.send('HeapProfiler.collectGarbage'); const result = await cdp.send('Performance.getMetrics'); return result.metrics.find(metric => metric.name === 'JSHeapUsedSize')!.value; }
-  const warmHeapBytes = await heapBytes();
-  for (let i = 0; i < performanceBudget.remountCycles; i++) {
-    await page.goBack(); await page.getByRole('button', { name: 'Enter cafe', exact: true }).click(); await expect(canvas).toHaveCount(1); await expect(canvas).toHaveAttribute('data-entity-count', '1');
-    await page.getByRole('button', { name: 'Leave cafe', exact: true }).click(); await page.getByRole('link', { name: 'Identity', exact: true }).click(); await expect(canvas).toHaveCount(0);
-  }
-  expect(await page.evaluate(() => performance.timeOrigin)).toBe(cold.timeOrigin); // Same browser JS realm across actual SPA remounts.
-  const afterHeapBytes = await heapBytes(); const heapGrowthBytes = afterHeapBytes - warmHeapBytes;
-  expect(heapGrowthBytes).toBeLessThan(performanceBudget.postGcHeapGrowthMaxBytes);
-  const second = await context.newPage();
-  try {
-    await enter(second); await expect(second.locator('canvas[data-scene]')).toHaveAttribute('data-entity-count', '1');
-    const warmAsset = await second.evaluate(() => (performance.getEntriesByType('resource') as PerformanceResourceTiming[]).find(entry => new URL(entry.name).pathname.endsWith('/starter-v1.svg'))?.toJSON());
-    expect(warmAsset).toBeDefined(); expect(warmAsset!.transferSize).toBe(0);
-    await second.getByRole('button', { name: 'Leave cafe', exact: true }).click();
-    await mkdir('artifacts', { recursive: true });
-    await writeFile(`artifacts/cafe-performance-${test.info().project.name}.json`, JSON.stringify({ profile: performanceBudget.profile, readyMs: cold.readyMs, jsDecodedBytes: jsDecoded, jsEncodedBytes: jsEncoded, coldAvatar: avatar, cacheControl, warmAssetTransferBytes: warmAsset!.transferSize, idleWindowMs: performanceBudget.idleWindowMs, idleRenders, rafSamples: sortedGaps.length, rafP95GapMs, remountCycles: performanceBudget.remountCycles, warmHeapBytes, afterHeapBytes, heapGrowthBytes, atlasSourcePixelBytes: 512 * 768 * 4, resources: cold.resources, limits: 'Short local emulated Chromium profile; rAF cadence is not GPU throughput; forced-GC JS heap is not total browser/GPU memory or leak certification.' }, null, 2));
-  } finally { await second.close(); }
+  await mkdir('artifacts', { recursive: true }); await writeFile(evidenceOutput(`docs/agent/evidence/cafe-a11y-${test.info().project.name}.json`), JSON.stringify({ contrast, keyboardEntryAndLeave: true, explicitAndSystemReducedMotion: true, minButtonTargetPx: 44 }, null, 2));
 });

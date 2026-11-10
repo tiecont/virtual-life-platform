@@ -1,0 +1,33 @@
+{
+  "extends": "../packages/config/tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "lib": [
+      "ES2022",
+      "DOM"
+    ]
+  },
+  "include": [
+    "e2e/admin.spec.ts",
+    "e2e/privacy.spec.ts",
+    "integration/admin-proxy.test.ts",
+    "integration/operator-identity.test.ts",
+    "integration/operator-account-controls.test.ts",
+    "integration/privacy-requests.test.ts",
+    "support/admin-browser-runtime.ts",
+    "../playwright.admin.config.ts",
+    "../playwright.privacy.config.ts",
+    "integration/operator-events.test.ts",
+    "e2e/calendar.spec.ts",
+    "support/calendar-browser-runtime.ts",
+    "../playwright.calendar.config.ts",
+    "integration/operator-runtime.test.ts",
+    "e2e/runtime.spec.ts",
+    "support/runtime-browser-runtime.ts",
+    "../playwright.runtime.config.ts"
+  ]
+}

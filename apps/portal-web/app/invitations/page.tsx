@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import InvitationPanel from './InvitationPanel';
-import './invitations.css';
+import InvitationPanel from '../../features/invitations/modules/invitations/presentation/InvitationPanel';
+import '../../features/invitations/modules/invitations/presentation/invitations.css';
 export const dynamic = 'force-dynamic';
 export default function InvitationsPage() {
   const value = process.env.PUBLIC_SOCKET_ORIGIN ?? 'http://127.0.0.1:4300', origin = new URL(value);

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "asset": "Lantern Lodge original scene",
+  "origin": "Project-authored geometry, no external bitmap/audio/media; shared 3D renderer technical study, not final art",
+  "sources": [
+    {
+      "path": "packages/lantern-lodge-world/src/scene.ts",
+      "sha256": "9f4b8ca97626fc9c3610357d0037e173e7d8f665506eb8a88b7a6a6ed09c23bf"
+    }
+  ],
+  "avatar": "Existing shared modular animal catalog; separate qualification/provenance applies",
+  "releaseApproved": false
+}

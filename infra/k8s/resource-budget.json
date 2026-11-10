@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "scope": "Provisional application-only test ceiling; excludes cluster/OS/PostgreSQL/ingress/storage. Not server capacity, a quote or a purchase.",
+  "applicationCeiling": {
+    "cpuMillicores": 2000,
+    "memoryMiB": 4096
+  },
+  "migrationReserve": {
+    "cpuMillicores": 200,
+    "memoryMiB": 512
+  },
+  "webSurgeReplicas": 1,
+  "workerEnabled": false,
+  "automaticScaling": false
+}

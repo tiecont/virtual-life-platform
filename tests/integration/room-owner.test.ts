@@ -4,10 +4,10 @@ import { Pool } from 'pg';
 import { io, type Socket } from 'socket.io-client';
 import { MeSchema, RoomAckSchema, type RoomSnapshot } from '@virtual-city/contracts';
 import { RoomRecovery, defineWorld } from '@virtual-city/world-sdk';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
-import { ROOM_OWNER_LOCK_CLASS } from '../../apps/platform-api/src/rooms/authority';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
+import { ROOM_OWNER_LOCK_CLASS } from '../../apps/platform-api/src/features/rooms/modules/presence/application/authority';
 import { createApp } from '../../apps/platform-api/src/app';
-import { readConfig } from '../../apps/platform-api/src/config';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { startRoomProcess } from '../support/room-process';
 
 let admin: Pool; let pool: Pool; let schema: string; let databaseUrl: string;

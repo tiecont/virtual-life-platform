@@ -1,0 +1,24 @@
+{
+  "revision": 1,
+  "lockedBeforeFirstRun": true,
+  "scope": "Synthetic browser renderer with actual Deadline/Maid manifests and modular starter animals;not authenticated gameplay,server capacity,final-art or native qualification",
+  "scenes": ["deadline", "maid"],
+  "actors": 20,
+  "mixture": {"seated": 4, "walking": 10, "idle": 6, "reconnectingAmongIdle": 2, "species": ["cat", "dog", "rabbit"], "outfit": "cafe-apron"},
+  "profiles": [
+    {"name": "desktop", "viewport": {"width": 1280, "height": 720}, "deviceScaleFactor": 1},
+    {"name": "mobile", "viewport": {"width": 844, "height": 390}, "deviceScaleFactor": 2, "isMobile": true, "hasTouch": true}
+  ],
+  "tiers": ["low", "balanced", "high"],
+  "requiredTiers": {"desktop": ["low", "balanced", "high"], "mobile": ["low", "balanced"]},
+  "mobileHigh": "Additional desktop-only tier diagnostic;compare to mobile caps without claiming support",
+  "measureMilliseconds": 8000,
+  "warmupMilliseconds": 2000,
+  "cpuThrottling": "None;matches renderer-workload/PROFILE.json,not the separate Pixi CPU4x/100ms profile",
+  "heap": {"quality": "balanced", "warmRecreates": 2, "cycles": 20, "idleMilliseconds": 1000, "garbageCollectionsPerSample": 2},
+  "heapProtocol": "External CDP GC twice with1000ms idle before each active sample;final active20actor heap versus warm active baseline,max(16MiB,20% baseline). Record zero leases/canvases after each teardown. Not driver/native RSS or real travel.",
+  "budgets": "config/rendering/budgets-v1.json",
+  "framePolicy": "Existing evaluateWorkload;all sampled peaks,external RAF after2second warmup,unchanged33.4ms p95. No retries,trimming or omitted required tiers.",
+  "loading": "Controlled cold/warm NOT_RUN by this driver;initial navigation time diagnostic only. Preserve historical5000ms loading failures and1500ms final-art wait gate.",
+  "changePolicy": "Preserve v1 and failures;any different protocol needs a new version before measurement. Do not edit existing budgets."
+}

@@ -1,3 +1,4 @@
+import {evidenceOutput} from '../../scripts/evidence-output.mjs';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { request } from 'node:http';
@@ -8,7 +9,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { Pool } from 'pg';
 import { io, type Socket } from 'socket.io-client';
 import { MeSchema, RoomAckSchema, type RoomSnapshot } from '@virtual-city/contracts';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 import { startRoomProcess } from '../support/room-process';
 
 const socketCount = Number(process.env.ROOM_LOAD_SOCKETS ?? 24);
@@ -107,8 +108,8 @@ try {
     diagnostics: after.diagnostics,
     limits: ['Single short local baseline, no TLS/WAN/browser rendering, not production capacity or maximum CCU', 'tsx test server; bootstrap outside measured window; client/DB CPU excluded from server CPU but share host', 'RSS high-water is sampled, not an OS-enforced peak; small sample p95 must not be extrapolated', 'No rate limits raised; unique loopback source addresses used for HTTP guest bootstrap', 'No public/restricted worlds, travel, chat or production deployment'],
   };
-  await mkdir('docs/agent/evidence', { recursive: true });
-  await writeFile('docs/agent/evidence/m06-network-baseline.json', JSON.stringify(report, null, 2) + '\n');
+  await mkdir(evidenceOutput('docs/agent/evidence'), { recursive: true });
+  await writeFile(evidenceOutput('docs/agent/evidence/m06-network-baseline.json'), JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify(report, null, 2));
 } finally {
   for (const socket of clients) socket.close(); await runtime?.stop();

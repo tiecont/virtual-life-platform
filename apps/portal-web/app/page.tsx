@@ -1,5 +1,5 @@
 import { ReadinessSchema } from '@virtual-city/contracts';
-import CityMap from './components/CityMap';
+import CityMap from '../features/city/modules/city/presentation/CityMap';
 export const dynamic = 'force-dynamic';
 export default async function Home() {
   let ready = false;
@@ -13,5 +13,5 @@ export default async function Home() {
     <div className="status-card"><div className="status-heading"><span className={ready ? 'dot ready' : 'dot'} aria-hidden="true"/><h2>Platform status</h2></div>
       <p role="status">{ready ? 'Database connected · schema v1' : 'Platform unavailable · try again shortly'}</p>
       <p className="muted">This status comes from the platform API and PostgreSQL. It does not indicate that a world is open.</p><a href="/">Refresh status <span aria-hidden="true">↗</span></a></div><a href="/identity">Create or manage your city identity →</a>
-    </section><CityMap/><footer>Development preview · Real world rollout closed · No public release</footer></main>;
+    </section><p><a href="/character">Create your animal character →</a></p><CityMap/><footer>Development preview · Real world rollout closed · No public release</footer></main>;
 }
