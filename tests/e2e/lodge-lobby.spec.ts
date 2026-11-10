@@ -19,12 +19,26 @@ test.beforeEach(async({page},info)=>{await page.setViewportSize(info.project.nam
 test.afterEach(async({page})=>{for(const socket of peers.splice(0))socket.close();const actions=page.getByRole('dialog',{name:'Room actions',exact:true});if(await actions.isVisible())await page.getByRole('button',{name:'Close room actions',exact:true}).click();const people=page.getByRole('dialog',{name:'People and safety',exact:true});if(await people.isVisible())await page.getByRole('button',{name:'Close people and safety',exact:true}).click();const leave=page.getByRole('button',{name:'Leave lounge',exact:true});if(await leave.isVisible()&&await leave.isEnabled())await leave.click();});
 test('signed-out 3D Lodge retains identity controls without creating a game or socket',async({page})=>{let sockets=0;page.on('websocket',()=>sockets++);await page.goto(route);await expect(page.locator('canvas[data-engine="three-webgl2"]')).toBeVisible({timeout:20000});await expect(page.getByRole('link',{name:'Open identity',exact:true})).toBeVisible();expect(sockets).toBe(0);await capture(page,'signed-out');});
 test('keyboard consent, confirmed readiness, periodic sync and leave use real API',async({page,context})=>{
- let observedSync!:()=>void;const periodicSync=new Promise<void>(ok=>observedSync=ok);page.on('websocket',socket=>socket.on('framesent',event=>{if(typeof event.payload==='string'&&event.payload.includes('"room.snapshot"'))observedSync();}));
+ // Advance the periodic confirmation after readiness so it cannot disable a pointer mid-click.
+ await page.clock.install();await page.clock.pauseAt(new Date(Date.now()+1000));
+ let releaseSync:(()=>void)|undefined,syncs=0;
+ await page.routeWebSocket('**/socket.io/**',client=>{
+  const server=client.connectToServer();
+  client.onMessage(message=>{
+   if(typeof message==='string'&&message.includes('"room.snapshot"')){
+    syncs++;let sent=false;releaseSync=()=>{if(!sent){sent=true;server.send(message);}};return;
+   }
+   server.send(message);
+  });
+  server.onMessage(message=>client.send(message));
+ });
+ try{
  await guest(context);await enter(page);const lobby=panel(page);await lobby.getByRole('button',{name:'Refresh table',exact:true}).focus();await page.keyboard.press('Enter');await expect(lobby.getByRole('heading',{name:'No table is open',exact:true})).toBeVisible();await expect(lobby.getByRole('button',{name:'Open table',exact:true})).toBeDisabled();await capture(page,'empty');
  await lobby.getByRole('checkbox').focus();await page.keyboard.press('Space');await lobby.getByRole('button',{name:'Open table',exact:true}).focus();await page.keyboard.press('Enter');await expect(lobby.getByText('Your seat',{exact:true})).toBeVisible();await expect(lobby.getByRole('button',{name:'Spectate unavailable',exact:true})).toBeDisabled();
- let release!:()=>void,seen!:()=>void;const gate=new Promise<void>(ok=>release=ok),observed=new Promise<void>(ok=>seen=ok);await page.route('**/v1/games/lobby',async route=>{if(route.request().postDataJSON().op!=='ready'){await route.continue();return;}const actual=await route.fetch();seen();await gate;await route.fulfill({response:actual});});const ready=lobby.getByRole('button',{name:'Ready',exact:true});await ready.click();await observed;await expect(ready).toHaveText('Ready');await expect(ready).toBeDisabled();release();await expect(lobby.getByRole('button',{name:'Not ready',exact:true})).toBeEnabled();await page.unrouteAll({behavior:'wait'});await capture(page,'ready-confirmed');
- await periodicSync;await expect(lobby.getByRole('button',{name:'Not ready',exact:true})).toBeEnabled();await capture(page,'real-periodic-sync-retains-consent');
+ let release!:()=>void,readyObserved=false;const gate=new Promise<void>(ok=>release=ok);await page.route('**/v1/games/lobby',async route=>{if(route.request().postDataJSON().op!=='ready'){await route.continue();return;}const actual=await route.fetch();readyObserved=true;await gate;await route.fulfill({response:actual});});const ready=lobby.getByRole('button',{name:'Ready',exact:true});try{await ready.click();await expect.poll(()=>readyObserved).toBe(true);await expect(ready).toHaveText('Ready');await expect(ready).toBeDisabled();}finally{release();}await expect(lobby.getByRole('button',{name:'Not ready',exact:true})).toBeEnabled();await page.unrouteAll({behavior:'wait'});await capture(page,'ready-confirmed');
+ expect(syncs).toBe(0);await page.clock.fastForward(15000);await expect.poll(()=>syncs).toBe(1);await expect(lobby.getByRole('button',{name:'Not ready',exact:true})).toBeDisabled();releaseSync!();await expect(lobby.getByRole('button',{name:'Not ready',exact:true})).toBeEnabled();await capture(page,'real-periodic-sync-retains-consent');
  await lobby.getByRole('button',{name:'Leave table',exact:true}).click();await expect(lobby.getByRole('status')).toHaveText('You left the table.');
+ }finally{releaseSync?.();}
 });
 for(const [width,height]of [[844,390],[740,360],[1280,720],[360,740]]){
  test(`ready table controls fit ${width}x${height} with200percent text`,async({page,context})=>{
