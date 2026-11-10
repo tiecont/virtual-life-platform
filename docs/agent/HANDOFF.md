@@ -1,3 +1,38 @@
+# VL-016 correction continuation; VL-019 accepted - 2026-11-10
+
+Owner asks to continue all plans with high quality. Use the active Desktop First
+graph and hashed single-agent policy; no baseline/legacy ledger edits or invented
+independence. VL-019 is VERIFIED at ba3aad3 with Rust42799463304 SUCCESS. Commit
+ebdb71f preserves that handoff/review plus the actual VL-016 rejection/reservations.
+VL-016 is IN_PROGRESS, not IN_REVIEW:81dda85 Quality42796828923 failed core.
+ba3aad3 Quality42799463520 passes core/images/five browser groups but fails study
+movement observation and rendering/Maid cadence; retain all failures.
+
+Reserved correction already present in source: invitation-group timestamps share
+one clock instant (retained deterministic pre-fix503; new201 and exact120000ms
+lifetime), checked HTTP/schema diagnostics, pre-input position observation, and
+cached immutable Pixi background with seats/people/hit targets left live. Fresh
+full build/lint,25PG and30desktop/mobile browser cases PASS. Six unchanged-budget
+performance profiles pass; actual images for both sandbox viewports inspected.
+Fresh121governance,CI contract,architecture,preservation and plan checks PASS;
+both actual47/48->49 migration compatibility/rollback harnesses PASS with
+cleanupComplete:true. The source correction still needs hosted CI and acceptance.
+
+Completed verification logs/results are under
+artifacts/desktop-first/vl016/continuation-20261110/. Browser lifetimes/DBs have
+finished and cleaned up, as have both compatibility harnesses and static checks.
+Source/log hashes, six measured profiles and the raw artifact index hash are in
+docs/execution/desktop-first/persistence/CONTINUATION-CHECKS-2026-11-10.json.
+
+**Next exact action:** commit only reserved source/evidence/checkpoints, and push a separate codex CI
+branch so later work cannot cancel its run. Audit exact committed source in a
+separate pass, require successful aggregate Quality for VL-016, and use scheduler
+status/reservations to start READY VL-022 while CI runs. Leave owner IDE/CA files
+alone. VL-017 remains dependency-gated; no Unity/Windows/GPU/rights/signing/public
+release qualification is inferred from these local browser checks.
+
+## Previous checkpoints
+
 # VL-013 accepted; VL-019 prototype checkpoint - 2026-11-10
 
 VL-013 VERIFIED at81dda8571bc6a5577ca6950ac8c6b48ca3eb70fe under explicit

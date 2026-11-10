@@ -43,8 +43,9 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
   function label(text: string, x: number, y: number, color = '#354944', fontSize = 14) {
     const element = new Text({ text, style: { fontFamily: 'system-ui, sans-serif', fontSize, fill: color, fontWeight: '600' } }); element.anchor.set(.5); element.position.set(x, y); return element;
   }
-  if(park){world.addChild(parkLandscape(scene));}else if(options.theme==='deadline'){world.addChild(deadlineInterior(scene));}else if(options.theme==='maid'){world.addChild(maidInterior(scene));}else{
-  const floor = new Graphics(); world.addChild(floor);
+  const background = new Container(); world.addChild(background);
+  if(park){background.addChild(parkLandscape(scene));}else if(options.theme==='deadline'){background.addChild(deadlineInterior(scene));}else if(options.theme==='maid'){background.addChild(maidInterior(scene));}else{
+  const floor = new Graphics(); background.addChild(floor);
   for (let y = 0; y < scene.rows; y++) for (let x = 0; x < scene.columns; x++) floor.rect(x * size, y * size, size, size).fill((x + y) % 2 ? lounge?'#e2dfeb':dining?'#ded0bf':reading?'#e1ddce':'#dbe7df' : lounge?'#eeeaf1':dining?'#eee3d5':reading?'#e9e5d9':'#e5eee8');
   function rect(g: Graphics, x: number, y: number, w: number, h: number, color: string) { g.rect(x, y, w, h).fill(color); }
   for (const zone of scene.collisionZones) {
@@ -102,10 +103,12 @@ export async function createCafeScene(host: HTMLElement, input: SceneManifest, o
   }
   const rugX=(dining?8:6)*size,rugY=(lounge?12:dining?4:9)*size,rugHeight=(dining?4:3)*size;
   const rug = new Graphics().rect(rugX,rugY,7*size,rugHeight).fill(lounge?'#b3a1b6':dining?'#a77b79':reading?'#b8a8ab':'#a7c2c6');
-  rug.rect(rugX+8,rugY+8,7*size-16,rugHeight-16).stroke({ color: '#e6eee8', width: 2 }); world.addChild(rug);
-  world.addChild(label(lounge?'TEXT / VISUAL STAGE':dining?'GARDEN DINING':reading?'READING CORNER':'WINDOW TABLE', (lounge?12:dining?5:4.5) * size, (lounge?5.7:dining?8.8:8) * size), label(lounge?'VIRTUAL MOCKTAILS':dining?'WINDOW DINING':reading?'STUDY ALCOVE':'GARDEN TABLE', (lounge?19.5:dining?18:13.5) * size, (lounge?12.7:dining?8.8:reading?9:8) * size));
-  world.addChild(label(lounge?'MOONLIGHT LOUNGE':dining?'GRAND RESTAURANT':reading?'ETERNAL LIBRARY':'LOCAL TEST CAFE', (lounge||dining?12:9.5) * size, 1.8 * size, '#eff4ef', 14));
+  rug.rect(rugX+8,rugY+8,7*size-16,rugHeight-16).stroke({ color: '#e6eee8', width: 2 }); background.addChild(rug);
+  background.addChild(label(lounge?'TEXT / VISUAL STAGE':dining?'GARDEN DINING':reading?'READING CORNER':'WINDOW TABLE', (lounge?12:dining?5:4.5) * size, (lounge?5.7:dining?8.8:8) * size), label(lounge?'VIRTUAL MOCKTAILS':dining?'WINDOW DINING':reading?'STUDY ALCOVE':'GARDEN TABLE', (lounge?19.5:dining?18:13.5) * size, (lounge?12.7:dining?8.8:reading?9:8) * size));
+  background.addChild(label(lounge?'MOONLIGHT LOUNGE':dining?'GRAND RESTAURANT':reading?'ETERNAL LIBRARY':'LOCAL TEST CAFE', (lounge||dining?12:9.5) * size, 1.8 * size, '#eff4ef', 14));
   }
+  // Only immutable scenery is cached; seats, hit targets and people stay live.
+  background.cacheAsTexture({ resolution: app.renderer.resolution, antialias: false });
   const seats = new Container(); const people = new Container({ sortableChildren: true }); world.addChild(seats, people);
   let destroyed = false;
   let current: RoomSnapshot | null = null; let context = ''; let created = 0; let removed = 0; let frames = 0;

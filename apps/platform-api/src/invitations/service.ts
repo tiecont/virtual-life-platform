@@ -134,7 +134,8 @@ export class InvitationService {
       const old = (await db.query<GroupRow>('SELECT * FROM invitation_groups WHERE actor_id=$1 AND request_id=$2', [actor.accountId, key])).rows[0];
       if (old) { if (old.fingerprint !== fingerprint) throw conflict(); return old; }
       if ((await db.query('SELECT count(*)::int AS count FROM invitation_groups WHERE actor_id=$1 AND created_at>$2', [actor.accountId, new Date(this.now() - 60000)])).rows[0].count >= 3) throw new DomainError('RATE_LIMITED', 429, 'Please wait before sending more group invitations');
-      const group: GroupRow = { id: randomUUID(), actor_id: actor.accountId, request_id: key, fingerprint, recipient_count: input.recipientIds.length, created_at: new Date(this.now()), expires_at: new Date(this.now() + 120000) };
+      const createdAt = this.now();
+      const group: GroupRow = { id: randomUUID(), actor_id: actor.accountId, request_id: key, fingerprint, recipient_count: input.recipientIds.length, created_at: new Date(createdAt), expires_at: new Date(createdAt + 120000) };
       await db.query('INSERT INTO invitation_groups VALUES($1,$2,$3,$4,$5,$6,$7)', [group.id, group.actor_id, group.request_id, group.fingerprint, group.recipient_count, group.created_at, group.expires_at]);
       for (let position = 0; position < input.recipientIds.length; position++) await db.query('INSERT INTO invitation_group_items(group_id,position) VALUES($1,$2)', [group.id, position]); return group;
     });

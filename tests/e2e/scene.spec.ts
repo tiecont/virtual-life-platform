@@ -4,6 +4,7 @@ import { test, expect, type Page, type BrowserContext, type WebSocketRoute } fro
 import { randomUUID, createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { isWalkable, sandboxScene } from '@virtual-city/world-sdk';
+import { armScenePositions } from '../support/scene-cadence';
 
 const origin = 'http://127.0.0.1:3300';
 async function visible(context: BrowserContext, csrf: string) {
@@ -274,21 +275,18 @@ test('keyboard and canvas destinations follow approved paths around tables and r
   await expect(page.getByText('That destination or interaction is unavailable. Choose an open floor tile.', { exact: true })).toBeVisible();
   await expect(page.getByRole('status')).toHaveText('Connected');
   await expect(canvas).toHaveAttribute('data-self-position', '2.00:4.00');
-  await canvas.click({ position: { x: bounds.width * 6.5 / 20, y: bounds.height * 4.5 / 14 } });
-  await expect(canvas).toHaveAttribute('data-moving-count', '1');
-  const samples = await canvas.evaluate(element => new Promise<string[]>((resolve, reject) => {
-    const samples: string[] = []; const started = performance.now();
-    const timer = setInterval(() => {
-      samples.push((element as HTMLElement).dataset.selfPosition ?? '');
-      if ((element as HTMLElement).dataset.movingCount === '0') { clearInterval(timer); resolve(samples); }
-      else if (performance.now() - started > 8000) { clearInterval(timer); reject(new Error('Approved movement did not complete')); }
-    }, 30);
-  }));
+  const observation = await armScenePositions(canvas);
+  let movement;
+  try {
+    await canvas.click({ position: { x: bounds.width * 6.5 / 20, y: bounds.height * 4.5 / 14 } });
+    movement = await observation.finish();
+  } finally { await observation.dispose(); }
+  const samples = movement.samples.map(sample => sample.position), final = await canvas.getAttribute('data-self-position');
+  await writeFile(evidenceOutput(`docs/agent/evidence/cafe-movement-${test.info().project.name}.json`), JSON.stringify({ ...movement, final }, null, 2));
+  expect(movement.initialMoving).toBe('0'); expect(movement.status).toBe('settled'); expect(movement.startedAtMs).not.toBeNull();
   expect(new Set(samples).size).toBeGreaterThan(4);
   expect(samples.every(sample => { const [x, y] = sample.split(':').map(Number); return isWalkable(sandboxScene, { x: Math.round(x), y: Math.round(y) }); })).toBe(true);
   await expect(canvas).toHaveAttribute('data-self-position', '6.00:4.00');
-  await mkdir('artifacts', { recursive: true });
-  await writeFile(evidenceOutput(`docs/agent/evidence/cafe-movement-${test.info().project.name}.json`), JSON.stringify({ samples, final: await canvas.getAttribute('data-self-position'), crossedSolidTile: false }, null, 2));
   await page.getByRole('button', { name: 'Leave cafe', exact: true }).click(); expect(errors).toEqual([]);
 });
 

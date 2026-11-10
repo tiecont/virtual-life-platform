@@ -2,7 +2,7 @@ import { beforeAll, afterAll, afterEach, it, expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 import { io, type Socket } from 'socket.io-client';
-import { InvitationReceiptSchema, InvitationSettingsSchema, InvitationsPageSchema, MeSchema, type Me } from '@virtual-city/contracts';
+import { InvitationGroupSchema, InvitationReceiptSchema, InvitationSettingsSchema, InvitationsPageSchema, MeSchema, type Me } from '@virtual-city/contracts';
 import { defineWorld } from '@virtual-city/world-sdk';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/config';
@@ -12,12 +12,12 @@ const opened: { app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: 
 beforeAll(async () => { const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database'); admin = new Pool({ connectionString: url.toString() }); });
 afterEach(async () => { for (const socket of sockets) socket.close(); sockets.clear(); for (const r of opened.splice(0)) { await r.app.app.close(); await r.pool.end(); await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`); } });
 afterAll(async () => { await admin.end(); });
-async function open() {
+async function open(readClock = Date.now) {
   const schema = 'invite_test_' + randomUUID().replaceAll('-', ''); await admin.query(`CREATE SCHEMA "${schema}"`);
   const url = new URL(process.env.TEST_DATABASE_URL!); url.searchParams.set('options', '-c search_path=' + schema); const pool = new Pool({ connectionString: url.toString() }); await migrate(pool); let offset = 0;
   const config = readConfig({ NODE_ENV: 'test', DATABASE_URL: url.toString(), SESSION_SECRET: 'invitation-local-test-session-secret-000001' });
   const modules = ['dating', 'private-room'].map(slug => defineWorld({ schemaVersion: 1, apiVersion: 1, slug, version: '1.0.0', title: 'Hidden synthetic invitation fixture', kind: 'sandbox', sceneRef: { key: 'invite-fixture', version: '1.0.0' }, capacity: 2, capabilities: ['presence'], accessPolicy: slug === 'dating' ? { kind: 'restricted', policyKey: 'invite.adult', requiresAdult: true } : { kind: 'private', policyKey: 'invite.private' }, visibility: 'hidden', map: { region: 'sandbox', position: { x: .5, y: .5 }, icon: 'flask' } }, { bootstrap: async () => {}, shutdown: async () => {}, onJoin: async () => {}, onLeave: async () => {}, onCommand: async () => {} }));
-  const options = { now: () => Date.now() + offset, worlds: { modules, policy: { permits: async () => true }, adultProof: { hasReviewedProof: async () => true } } };
+  const options = { now: () => readClock() + offset, worlds: { modules, policy: { permits: async () => true }, adultProof: { hasReviewedProof: async () => true } } };
   const app = await createApp(config, pool, false, options); opened.push({ app, pool, schema }); await app.app.listen(0, '127.0.0.1'); for (const slug of app.worlds.registry.slugs()) await app.worlds.registry.setEnabled(slug, true);
   return { app, pool, config, options, url: await app.app.getUrl(), advance: (ms: number) => { offset += ms; } };
 }
@@ -181,15 +181,36 @@ it('resumes partial fan-out after a committed child loses its group linkage with
   const result = await write(r, a, 'invitation-groups', input, key); expect(result.statusCode).toBe(201); expect(result.json().items[0].invitationId).toBe(original); expect((await r.pool.query('SELECT 1 FROM invitations')).rowCount).toBe(2); expect((await r.pool.query('SELECT 1 FROM invitation_groups')).rowCount).toBe(1);
 });
 
+it('group creation uses one instant for its bounded lifetime when clock reads cross a millisecond', async () => {
+  const started = Date.now(); let reads = 0;
+  const r = await open(() => started + reads++), { a, b } = await pair(r), c = await guest(r); await friends(r, a, c); await settings(r, c, true);
+  const response = await write(r, a, 'invitation-groups', { schemaVersion: 1, recipientIds: [b.me.profile.id, c.me.profile.id], destination: dest() });
+  expect(response.statusCode).toBe(201);
+  const group = InvitationGroupSchema.parse(response.json()); expect(group.items.every(item => item.status === 'PENDING')).toBe(true);
+  const row = (await r.pool.query('SELECT created_at,expires_at FROM invitation_groups WHERE id=$1', [group.id])).rows[0];
+  expect(row.expires_at.getTime() - row.created_at.getTime()).toBe(120000);
+  const children = (await r.pool.query('SELECT created_at,expires_at FROM invitations')).rows; expect(children).toHaveLength(2);
+  expect(children.every(child => child.expires_at.getTime() <= row.expires_at.getTime() && child.expires_at > child.created_at)).toBe(true);
+});
+
 it('group retries recheck blocks/preferences, budgets count every child and expired roots cannot resend unfinished entries', async () => {
   const r = await open(), { a, b } = await pair(r), c = await guest(r); await friends(r, a, c); await settings(r, c, true);
-  const input = { schemaVersion: 1, recipientIds: [b.me.profile.id, c.me.profile.id], destination: dest() }, key = randomUUID(), first = (await write(r, a, 'invitation-groups', input, key)).json();
-  await write(r, b, 'blocks', { targetId: a.me.profile.id, blocked: true }); const current = (await write(r, a, 'invitation-groups', input, key)).json(); expect(current.items[0]).toMatchObject({ status: 'UNAVAILABLE', invitationId: null }); expect(current.items[1].status).toBe('PENDING');
-  await respond(r, c, first.items[1].invitationId, 'decline');
-  for (let i = 0; i < 2; i++) { const group = await write(r, a, 'invitation-groups', input); expect(group.statusCode).toBe(201); if (group.json().items[1].invitationId) await respond(r, c, group.json().items[1].invitationId, 'decline'); }
+  const input = { schemaVersion: 1, recipientIds: [b.me.profile.id, c.me.profile.id], destination: dest() }, key = randomUUID();
+  async function createGroup(requestKey = randomUUID()) {
+    const response = await write(r, a, 'invitation-groups', input, requestKey), body = response.json();
+    const code = typeof body?.error?.code === 'string' && /^[A-Z_]{1,64}$/.test(body.error.code) ? body.error.code : 'UNSPECIFIED';
+    expect(response.statusCode, `invitation-groups HTTP ${response.statusCode} code ${code}`).toBe(201);
+    return InvitationGroupSchema.parse(body);
+  }
+  const first = await createGroup(key);
+  expect((await write(r, b, 'blocks', { targetId: a.me.profile.id, blocked: true })).statusCode).toBe(200);
+  const current = await createGroup(key); expect(current.items[0]).toMatchObject({ status: 'UNAVAILABLE', invitationId: null }); expect(current.items[1].status).toBe('PENDING');
+  expect(first.items[1].invitationId).not.toBeNull();
+  expect((await respond(r, c, first.items[1].invitationId!, 'decline')).statusCode).toBe(200);
+  for (let i = 0; i < 2; i++) { const group = await createGroup(); if (group.items[1].invitationId) expect((await respond(r, c, group.items[1].invitationId!, 'decline')).statusCode).toBe(200); }
   expect((await write(r, a, 'invitation-groups', input)).statusCode).toBe(429);
   await r.pool.query('UPDATE invitation_group_items SET outcome=NULL,invitation_id=NULL WHERE group_id=$1 AND position=0', [first.id]);
-  r.advance(120001); expect((await write(r, a, 'invitation-groups', input, key)).json().items[0].status).toBe('EXPIRED');
+  r.advance(120001); expect((await createGroup(key)).items[0].status).toBe('EXPIRED');
   expect((await r.pool.query('SELECT 1 FROM invitations')).rowCount).toBe(4);
   r.advance(86400001); await r.app.invitations.maintain(); expect((await r.pool.query('SELECT 1 FROM invitation_groups')).rowCount).toBe(0); expect((await r.pool.query('SELECT 1 FROM invitation_group_items')).rowCount).toBe(0);
 });

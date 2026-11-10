@@ -1,3 +1,19 @@
+# Whole-plan continuation and bounded CI corrections - 2026-11-10
+
+Owner explicitly requests continuing all plans with high quality. Continue the
+active dependency graph one slice at a time with actual verification; this does
+not accept media/license terms, provide Windows/GPU resources or authorize public
+deployment. The hashed single-agent policy still governs separate audits and CI.
+
+The VL-016 follow-up corrects a reproducible clock/SQL lifetime bug without
+changing any SQL constraint. Static scene caching addresses recurring background
+drawing while retaining live participants/seats and all performance thresholds.
+Pre-input sampling retains raw observations before assertions. Neither observed
+local success nor VL-019's Rust success substitutes for VL-016 aggregate Quality.
+See ../execution/desktop-first/persistence/CONTINUATION-CORRECTION-2026-11-10.md.
+
+## Previous checkpoints
+
 # Owner single-agent execution policy - 2026-11-10
 
 The owner explicitly selected single-agent separate audit plus actual CI, labeled

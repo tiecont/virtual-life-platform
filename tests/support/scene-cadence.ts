@@ -1,5 +1,30 @@
 import type {Locator} from '@playwright/test';
 
+export async function armScenePositions(canvas:Locator){
+ const handle=await canvas.evaluateHandle(element=>{
+  const node=element as HTMLElement;
+  const result={status:'armed',armedAtMs:performance.now(),startedAtMs:null as number|null,finishedAtMs:null as number|null,
+   initialMoving:node.dataset.movingCount,samplePeriodMs:30,samples:[] as Array<{atMs:number;position:string;moving:string|undefined}>};
+  let complete!:(value:typeof result)=>void,closed=false;
+  const done=new Promise<typeof result>(resolve=>complete=resolve);
+  function finish(status:string){if(closed)return;closed=true;result.status=status;result.finishedAtMs=performance.now();clearInterval(interval);clearTimeout(deadline);observer.disconnect();complete(result);}
+  function observe(){if(result.startedAtMs===null&&node.dataset.movingCount==='1')result.startedAtMs=performance.now();}
+  const observer=new MutationObserver(observe);observer.observe(node,{attributes:true,attributeFilter:['data-moving-count']});
+  const interval=setInterval(()=>{
+   if(!node.isConnected){finish('detached');return;}
+   observe();if(result.startedAtMs===null)return;
+   result.samples.push({atMs:performance.now(),position:node.dataset.selfPosition??'',moving:node.dataset.movingCount});
+   if(node.dataset.movingCount==='0')finish('settled');
+  },30);
+  const deadline=setTimeout(()=>finish('timeout'),8000);
+  return{done,cancel:()=>finish('cancelled')};
+ });
+ return{
+  finish:()=>handle.evaluate(async value=>await value.done),
+  dispose:async()=>{try{await handle.evaluate(value=>value.cancel());}finally{await handle.dispose();}},
+ };
+}
+
 // Keep observation in the page before the command; remote assertion/locator
 // round trips must not consume the movement interval being measured.
 export async function armSceneCadence(canvas:Locator){

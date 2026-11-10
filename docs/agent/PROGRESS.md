@@ -1,3 +1,33 @@
+# VL-016 correction continuation; VL-019 accepted - 2026-11-10
+
+Owner requested continuation of the whole dependency-ordered plan with high
+quality. Single-agent sequential execution/audit policy remains active.
+VL-019 is VERIFIED at ba3aad3 with exact Rust CI42799463304 SUCCESS; its previously
+uncommitted handoff, review and coordinator checkpoint are committed in ebdb71f.
+VL-016 is reopened IN_PROGRESS after exact81dda85 Quality42796828923 failed.
+The failed ba3aad3 Quality42799463520 also remains recorded, despite core/images
+and five browser groups passing. No dependent VL-017 activation follows.
+
+The current correction derives invitation-group timestamps from one instant,
+asserts HTTP/schema before consuming group replies, arms movement sampling before
+input, and caches only immutable Pixi scenery. Fresh full build, full lint,
+25 real-PG invitation/storage tests and 30 browser cases PASS. Sandbox, Deadline
+and Maid retain their original limits; six desktop/mobile performance profiles
+pass including idle/remount checks. Raw results are in
+artifacts/desktop-first/vl016/continuation-20261110/.
+
+Fresh121governance,CI contract,architecture,preservation,plan checks and both
+actual47/48->49 migration compatibility/rollback harnesses PASS; all owned test
+DBs/networks are cleaned up. Source/log hashes and six performance observations
+are in persistence/CONTINUATION-CHECKS-2026-11-10.json.
+
+Next exact action: publish the committed correction for new exact-source CI,
+then audit the frozen source separately. Continue READY
+VL-022 while that CI runs. VL-016 still needs successful aggregate Quality;
+Windows/Unity/GPU/brand/signing gates remain. No production/public activation.
+
+## Previous checkpoints
+
 # VL-013 accepted; VL-019 prototype checkpoint - 2026-11-10
 
 VL-013 VERIFIED at81dda85 with source-locked same-agent audit explicitly marked

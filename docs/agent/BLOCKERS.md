@@ -1,3 +1,22 @@
+# Current aggregate CI and external gates - 2026-11-10
+
+VL-019 is VERIFIED; there is no peer-review wait under the owner-authorized
+single-agent policy. VL-016 remains IN_PROGRESS after actual81dda85 aggregate
+failure. ba3aad3 aggregate also fails three browser groups despite core/images
+passing. Its reserved clock, observer and static-rendering corrections now pass
+full build/lint,25PG and30browser cases locally; exact committed-source successful
+aggregate Quality and a separate audit still block VL-016 acceptance and VL-017.
+Fresh121governance,CI contract,architecture,preservation,plan and both migration
+compatibility harnesses also PASS with test cleanup. VL-022 is dependency-ready and can continue
+after coordinator reservation without waiving VL-016's gate.
+
+VL-006 brand/rights and VL-007 named physical Windows machines remain external.
+Unity license/editor/modules, actual Windows builds/GPU QA, signing and public
+release require their own evidence. Owner IDE files and infra/botkeep-ca.pem stay
+outside this continuation. No production/public operation is requested.
+
+## Previous checkpoints
+
 # Owner single-agent execution policy - 2026-11-10
 
 The owner explicitly selected single-agent separate audit plus actual CI, labeled
