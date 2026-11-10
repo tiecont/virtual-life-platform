@@ -3,7 +3,8 @@ use std::{collections::BTreeMap, fs, io::Write};
 
 use jsonwebtoken::DecodingKey;
 use serde::Deserialize;
-use tokio_postgres::{Client, NoTls};
+use tokio_postgres::Client;
+use vl_security::transport::connect_runtime_postgres;
 use vl_security::{RuntimeScope, TicketVerifier, TrustError, durable::DurableTrust};
 
 #[derive(Deserialize)]
@@ -17,6 +18,8 @@ struct Fixture {
     match_id: String,
     command_id: String,
     mode: String,
+    ca_file: String,
+    expected_role: String,
 }
 
 fn domain(f: &Fixture) -> DurableTrust {
@@ -57,7 +60,17 @@ async fn main() {
             .expect("Fixture unavailable"),
     )
     .expect("Malformed fixture");
-    assert!(["accept", "deny", "wait", "rollback", "foreign"].contains(&f.mode.as_str()));
+    assert!(
+        [
+            "accept",
+            "deny",
+            "wait",
+            "rollback",
+            "foreign",
+            "transport-deny"
+        ]
+        .contains(&f.mode.as_str())
+    );
     let cfg: tokio_postgres::Config = std::env::var("TEST_DATABASE_URL")
         .expect("Disposable DB required")
         .parse()
@@ -67,8 +80,18 @@ async fn main() {
             .is_some_and(|n| n.starts_with("virtual_city_test"))
     );
     assert!(cfg.get_hosts().iter().all(|h| matches!(h, tokio_postgres::config::Host::Tcp(n) if ["127.0.0.1", "localhost", "::1"].contains(&n.as_str()))));
-    let (mut db, connection) = cfg.connect(NoTls).await.expect("Test DB unavailable");
-    let task = tokio::spawn(connection);
+    let connected = connect_runtime_postgres(
+        &cfg,
+        &fs::read(&f.ca_file).expect("Test CA unavailable"),
+        &f.expected_role,
+    )
+    .await;
+    if f.mode == "transport-deny" {
+        assert!(connected.is_err(), "Transport must reject this fixture");
+        println!("PASS: rejected untrusted transport");
+        return;
+    }
+    let (mut db, task) = connected.expect("Authenticated test DB unavailable");
     let before = counts(&db, &f.match_id).await;
     assert_eq!(before, (0, 0));
     let trust = domain(&f);

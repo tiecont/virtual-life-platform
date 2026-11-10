@@ -1,3 +1,26 @@
+# TLS and restricted-role checkpoint - 2026-11-10
+
+Committed0848ff8 was pushed to PR1. Exact Ubuntu Rust42789189804 PASS, including
+17 durable probes, both archived47/48->49 rollback checks and OCI smoke;119/119
+postcommit governance PASS. Quality42789189885 remains IN_PROGRESS at observation
+with image success; do not claim aggregate/browser success.
+
+The next VL-013 slice proves actual TLS and a restricted authenticated PG role:
+17 command scenarios,12 denied privileges,6 transport negatives all PASS locally.
+Explicit CA/hostname verification,TLS>=1.2,SCRAM channel binding and bounded role
+validation reject plaintext/untrusted servers,wrong identities and privileged
+owners. Source/evidence: security/TLS-ROLE{,-CHECKS.json}. Rust workspace25tests+
+1compile-fail,Clippy and focused lint PASS. Fresh disposable test PKI only; no
+production CA/credential or composed endpoint. All local containers/roles cleaned.
+
+Next exact action: publish TLS slice for new exact-source CI; finish Quality
+results and resolve actual failures. Continue source-bound acceptance evidence
+without self-authored independent review. VL-013/016 remain IN_PROGRESS;VL-017
+is gated; owner single-agent direction means no peer waiting or invented approval.
+Do not alter immutable baseline/legacy ledgers,IDE files or infra/botkeep-ca.pem.
+
+## Previous checkpoints
+
 # Durable admission and browser CI checkpoint - 2026-11-10
 
 Owner directs a single agent to continue without waiting for peers. This session

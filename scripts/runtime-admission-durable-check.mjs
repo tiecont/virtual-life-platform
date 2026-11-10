@@ -1,11 +1,14 @@
 import assert from 'node:assert/strict';
-import {spawn} from 'node:child_process';
-import {generateKeyPairSync,randomUUID,randomBytes,sign} from 'node:crypto';
-import {mkdir,writeFile} from 'node:fs/promises';
+import {spawn,execFile} from 'node:child_process';
+import {promisify} from 'node:util';
+import {generateKeyPairSync,randomUUID,randomBytes,sign,createHash} from 'node:crypto';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {createRequire} from 'node:module';
 import {Pool} from 'pg';
 import {validateTestDatabaseURL} from './test-environment.mjs';
+import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
+const execute=promisify(execFile);
 const require=createRequire(import.meta.url);
 const {migrate}=require('../apps/platform-api/src/db/migrations.ts');
 const {IdentityService}=require('../apps/platform-api/src/identity/service.ts');
@@ -18,14 +21,70 @@ const schema='durable_trust_'+randomUUID().replaceAll('-','');
 const directory=resolve('artifacts/desktop-first/vl013/durable-'+randomUUID().slice(0,8));
 await mkdir(directory,{recursive:true,mode:0o700});
 const facts={taskId:'VL-013',scope:'Actual Node identity/native admission -> Rust signed trust -> disposable PG transaction; synthetic storage effects only, not domain rules or production transport',scenarios:[],result:'FAIL',startedAt:new Date().toISOString()};
-const admin=new Pool({connectionString:address.toString()});let pool,created=false;
+const admin=new Pool({connectionString:address.toString()});let pool,created=false,roleCreated=false;
+const role='runtime_probe_'+randomUUID().replaceAll('-',''),password=randomBytes(32).toString('hex');
 try{
  await admin.query(`CREATE SCHEMA "${schema}"`);created=true;
  address.searchParams.set('options','-csearch_path='+schema);pool=new Pool({connectionString:address.toString()});await migrate(pool);
+ const privilegeBytes=await readFile('config/native-runtime-db-privileges.json'),privileges=JSON.parse(privilegeBytes);
+ assert.equal(privileges.schemaVersion,1);assert.equal(privileges.activation,'DISABLED');
+ facts.privilegeProfile={ref:'config/native-runtime-db-privileges.json',sha256:createHash('sha256').update(privilegeBytes).digest('hex')};
+ // Only the disposable owner provisions this fresh non-inheriting role. There
+ // is no production DDL, migration grant or credential stored in the manifest.
+ await admin.query(`CREATE ROLE "${role}" LOGIN PASSWORD '${password}' NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 2`);roleCreated=true;
+ await pool.query(`GRANT USAGE ON SCHEMA "${schema}" TO "${role}"`);
+ function identifier(value){assert.match(value,/^[a-z][a-z0-9_]*$/);return '"'+value+'"';}
+ for(const operation of ['select','update'])for(const [table,columns]of Object.entries(privileges[operation])){
+  assert(Array.isArray(columns)&&columns.length>0);
+  await pool.query(`GRANT ${operation.toUpperCase()} (${columns.map(identifier).join(',')}) ON ${identifier(schema)}.${identifier(table)} TO ${identifier(role)}`);
+ }
+ for(const table of privileges.insert)await pool.query(`GRANT INSERT ON ${identifier(schema)}.${identifier(table)} TO ${identifier(role)}`);
+ const runtimeAddress=new URL(address);runtimeAddress.username=role;runtimeAddress.password=password;
+ const runtimePool=new Pool({connectionString:runtimeAddress.toString(),max:1});
+ try{
+  const capabilities=(await runtimePool.query('SELECT current_user AS name,rolsuper,rolcreatedb,rolcreaterole,rolinherit,rolreplication,rolbypassrls FROM pg_roles WHERE rolname=current_user')).rows[0];
+  assert.deepEqual(capabilities,{name:role,rolsuper:false,rolcreatedb:false,rolcreaterole:false,rolinherit:false,rolreplication:false,rolbypassrls:false});
+  assert.equal((await runtimePool.query('SELECT 1 FROM pg_auth_members WHERE member=(SELECT oid FROM pg_roles WHERE rolname=current_user)')).rowCount,0);
+  facts.deniedPrivileges=[];
+  for(const [name,sql]of [
+   ['identity-secret-read','SELECT token_hash FROM identity_sessions'],
+   ['identity-write',"UPDATE identity_accounts SET status='active' WHERE false"],
+   ['session-write',"UPDATE identity_sessions SET revoked_at=clock_timestamp() WHERE false"],
+   ['sanction-write','DELETE FROM safety_sanctions WHERE false'],
+   ['admission-write','UPDATE platform_native_admissions SET allowed=true WHERE false'],
+   ['world-write','UPDATE platform_native_worlds SET enabled=true WHERE false'],
+   ['nonce-delete','DELETE FROM platform_native_ticket_uses WHERE false'],
+   ['journal-read','SELECT name FROM city_schema_migrations'],
+   ['legacy-write','DELETE FROM engine_game_matches WHERE false'],
+   ['owner-takeover','UPDATE game_native_matches SET epoch=epoch+1 WHERE false'],
+   ['receipt-delete','DELETE FROM game_native_receipts WHERE false'],
+   ['schema-create',`CREATE TABLE "${schema}".forbidden_fixture(id int)`],
+  ]){await assert.rejects(runtimePool.query(sql),{code:'42501'});facts.deniedPrivileges.push(name);}
+ }finally{await runtimePool.end();}
+ const invalidAddress=new URL(runtimeAddress);invalidAddress.password=randomBytes(32).toString('hex');
+ const invalidPool=new Pool({connectionString:invalidAddress.toString(),max:1});
+ try{await assert.rejects(invalidPool.query('SELECT 1'),{code:'28P01'});facts.wrongPasswordRejected=true;}finally{await invalidPool.end();}
+ const binary=resolve('artifacts/rust/target/debug/durable-check'),tls=await prepareAdmissionTestTls(directory,pool);
+ facts.tls=tls.publicFacts;facts.transportNegatives=[];
+ async function rejectTransport(name,target,caFile=tls.caFile,expectedRole=role){
+  const path=directory+'/'+name+'.private.json';
+  await writeFile(path,JSON.stringify({publicKeys:{},ticket:'',world:'',boot:'',content:'',matchId:'',commandId:'',mode:'transport-deny',caFile,expectedRole}),{mode:0o600});
+  const result=await execute(binary,[path],{env:{PATH:process.env.PATH,TEST_DATABASE_URL:target.toString()},timeout:10000,maxBuffer:1024**2});
+  assert.match(result.stdout,/PASS: rejected untrusted transport/);facts.transportNegatives.push(name);
+ }
+ await rejectTransport('plaintext-server',runtimeAddress);
+ await tls.enable();
+ const securePool=new Pool({connectionString:runtimeAddress.toString(),ssl:{ca:await readFile(tls.caFile),rejectUnauthorized:true},max:1});
+ try{assert.equal((await securePool.query('SELECT ssl FROM pg_stat_ssl WHERE pid=pg_backend_pid()')).rows[0].ssl,true);}finally{await securePool.end();}
+ await rejectTransport('untrusted-ca',runtimeAddress,tls.wrongCaFile);
+ const wrongHost=new URL(runtimeAddress);wrongHost.hostname='localhost';wrongHost.searchParams.set('hostaddr','127.0.0.1');
+ await rejectTransport('wrong-hostname',wrongHost);
+ await rejectTransport('wrong-password',invalidAddress);
+ await rejectTransport('wrong-role',runtimeAddress,tls.caFile,'different_role');
+ await rejectTransport('database-owner',address,tls.caFile,decodeURIComponent(address.username));
  const identity=new IdentityService(pool,readConfig({NODE_ENV:'test',DATABASE_URL:address.toString(),SESSION_SECRET:randomBytes(48).toString('hex')}));
  const store=new RuntimeAdmissionStore(pool,identity),keys=generateKeyPairSync('ed25519');
  const issuer=new RuntimeTicketIssuer(identity,'fixture',keys.privateKey,store.admission);
- const binary=resolve('artifacts/rust/target/debug/durable-check');
  async function scenario(name,mode,alter,afterAdmission){
   const scope={worldId:'native:probe-'+randomUUID(),runtimeBootId:randomUUID(),contentHash:'ab'.repeat(32),protocolVersion:1};
   const user=await identity.guest({requestId:randomUUID(),displayName:'Durable fixture',avatarKey:'mint'});
@@ -41,8 +100,8 @@ try{
    else if(change){const input=issued.ticket.split('.')[0]+'.'+Buffer.from(JSON.stringify({...claims,...change})).toString('base64url');ticket=input+'.'+sign(null,Buffer.from(input),keys.privateKey).toString('base64url');}
   }
   const path=directory+'/'+name+'.private.json';
-  await writeFile(path,JSON.stringify({publicKeys:{fixture:keys.publicKey.export({format:'jwk'}).x},ticket,world:scope.worldId,boot:scope.runtimeBootId,content:scope.contentHash,matchId,commandId,mode}),{mode:0o600});
-  const child=spawn(binary,[path],{env:{PATH:process.env.PATH,TEST_DATABASE_URL:address.toString()},stdio:['pipe','pipe','pipe']});
+  await writeFile(path,JSON.stringify({publicKeys:{fixture:keys.publicKey.export({format:'jwk'}).x},ticket,world:scope.worldId,boot:scope.runtimeBootId,content:scope.contentHash,matchId,commandId,mode,caFile:tls.caFile,expectedRole:role}),{mode:0o600});
+  const child=spawn(binary,[path],{env:{PATH:process.env.PATH,TEST_DATABASE_URL:runtimeAddress.toString()},stdio:['pipe','pipe','pipe']});
   let output='',errors='',notified=false,action=Promise.resolve(),failed=false;
   const timer=setTimeout(()=>{failed=true;child.kill('SIGKILL');},10000);
   child.stdout.on('data',chunk=>{
@@ -79,6 +138,6 @@ try{
  facts.result='PASS';
 }catch(error){facts.errorKind=error.name;facts.failure=String(error.message).replace(/postgres(?:ql)?:\/\/\S+/g,'[redacted-test-address]');process.exitCode=1;}
 finally{
- await pool?.end();if(created)await admin.query(`DROP SCHEMA "${schema}" CASCADE`);await admin.end();facts.cleanupComplete=true;facts.completedAt=new Date().toISOString();
+ await pool?.end();if(created)await admin.query(`DROP SCHEMA "${schema}" CASCADE`);if(roleCreated)await admin.query(`DROP ROLE "${role}"`);await admin.end();facts.cleanupComplete=true;facts.completedAt=new Date().toISOString();
  await writeFile(directory+'/facts.json',JSON.stringify(facts,null,2)+'\n',{mode:0o600});console.log(JSON.stringify({result:facts.result,scenarios:facts.scenarios.length,artifactDirectory:directory}));
 }

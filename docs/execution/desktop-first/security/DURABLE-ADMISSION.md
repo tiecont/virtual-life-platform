@@ -1,5 +1,9 @@
 # VL-013 durable admission slice
 
+This records the initial durable slice at 0848ff8. The subsequent local
+[TLS/role continuation](TLS-ROLE.md) replaces the probe's NoTls/owner connection;
+the original observations and hashes below remain historical evidence.
+
 This internal, default-off slice adds migration 0049 through the existing Nest
 numbered checksum journal. It does not compose a public issuer, runtime command
 endpoint, production credentials or a second legacy room writer. SQL worlds
