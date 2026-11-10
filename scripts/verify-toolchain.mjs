@@ -5,6 +5,7 @@ import {readFile, readdir, writeFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 import {dirname, relative, resolve, sep} from 'node:path';
 import {pathToFileURL} from 'node:url';
+import {readNodeWorkspace} from './node-workspaces.mjs';
 
 const sections = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
 const sourceOnly = new Set(['@virtual-city/config', '@virtual-city/ui']);
@@ -87,7 +88,8 @@ export async function describeToolchain(root = process.cwd()) {
   for (const folder of ['apps', 'packages']) for (const entry of (await readdir(resolve(root, folder), {withFileTypes: true})).sort((a, b) => compare(a.name, b.name))) {
     if (!entry.isDirectory()) continue;
     const path = folder + '/' + entry.name;
-    projects.push({path, manifest: await readJson(resolve(root, path, 'package.json'))});
+    const projectManifest=await readNodeWorkspace(root,path);
+    if(projectManifest)projects.push({path, manifest:projectManifest});
   }
   for (const project of projects) {
     project.configurationDependencies = [];

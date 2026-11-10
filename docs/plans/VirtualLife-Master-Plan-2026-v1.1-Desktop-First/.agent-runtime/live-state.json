@@ -723,7 +723,13 @@
         "apps/game-runtime",
         ".github/workflows/rust-runtime.yml",
         "docs/execution/desktop-first/rust",
-        "docs/execution/desktop-first/verify-adoption.mjs"
+        "docs/execution/desktop-first/verify-adoption.mjs",
+        "scripts/check-boundaries.mjs",
+        "scripts/verify-toolchain.mjs",
+        "scripts/node-workspaces.mjs",
+        "tests/governance/node-workspaces.test.mjs",
+        "scripts/verify-artifact-workflows.mjs",
+        "tests/governance/rust-workflow.test.mjs"
       ],
       "branch": "codex/desktop-first-backend",
       "worktree": "/home/tiecont/Projects/virtual-city",
@@ -771,5 +777,5 @@
     }
   },
   "gateEvidence": {},
-  "updatedAt": "2026-11-10T01:31:21.350Z"
+  "updatedAt": "2026-11-10T01:40:41.643Z"
 }

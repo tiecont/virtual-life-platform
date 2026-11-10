@@ -3,6 +3,7 @@ import { resolve, relative, dirname, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {assertApiModuleImport,assertWorldPersistenceImport} from './api-module-policy.mjs';
 import {assertPureGameSource} from './boardgame-boundary.mjs';
+import {readNodeWorkspace} from './node-workspaces.mjs';
 export function assertImportAllowed(from, specifier, root) {
   const path = relative(root, from).split(sep).join('/');
   const target = specifier.startsWith('.') ? relative(root, resolve(dirname(from), specifier)).split(sep).join('/') : specifier;
@@ -51,8 +52,8 @@ export async function checkBoundaries(root) {
   const manifests = new Map();
   for (const folder of ['apps', 'packages']) {
     for (const entry of await readdir(resolve(root, folder))) {
-      const path = resolve(root, folder, entry, 'package.json');
-      const manifest = JSON.parse(await readFile(path, 'utf8'));
+      const manifest = await readNodeWorkspace(root,folder+'/'+entry);
+      if(!manifest)continue;
       manifests.set(manifest.name, Object.keys(manifest.dependencies ?? {}).filter(n => n.startsWith('@virtual-city/')));
     }
   }

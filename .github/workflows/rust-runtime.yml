@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      RUSTUP_HOME: ${{ runner.temp }}/vl-rustup
-      CARGO_HOME: ${{ runner.temp }}/vl-cargo
+      RUSTUP_HOME: /tmp/vl-rustup
+      CARGO_HOME: /tmp/vl-cargo
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:

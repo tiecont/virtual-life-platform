@@ -36,12 +36,21 @@ export function assertArtifactWorkflows(quality, publish, pins) {
   assert(publish.includes('docker logout ghcr.io'));
 }
 export async function verifyArtifactWorkflows() {
-  assert.deepEqual((await readdir('.github/workflows')).sort(), ['promote.yml', 'publish.yml', 'quality.yml'], 'Review new workflow trust boundary');
+  assert.deepEqual((await readdir('.github/workflows')).sort(), ['promote.yml', 'publish.yml', 'quality.yml', 'rust-runtime.yml'], 'Review new workflow trust boundary');
   await artifactPolicy();
   const pins = JSON.parse(await readFile('config/ci-actions.json', 'utf8'));
   assertArtifactWorkflows(await readFile('.github/workflows/quality.yml', 'utf8'), await readFile('.github/workflows/publish.yml', 'utf8'), pins);
   assertPromotionWorkflow(await readFile('.github/workflows/promote.yml', 'utf8'), pins);
+  assertRustWorkflow(await readFile('.github/workflows/rust-runtime.yml', 'utf8'),pins);
   validatePromotionPolicy(JSON.parse(await readFile('config/digest-promotion.json', 'utf8')));
+}
+export function assertRustWorkflow(workflow,pins) {
+  assert(!/pull_request_target|secrets\.|continue-on-error|\|\|\s*true|write-all|: write\b|persist-credentials: true|self-hosted|docker push|gh pr merge|kubectl|argocd/.test(workflow),'Rust CI is untrusted read-only build/test only');
+  assert(workflow.includes('permissions:\n  contents: read')&&workflow.includes('persist-credentials: false'),'Rust CI must not retain credentials');
+  assert.deepEqual([...workflow.matchAll(/^\s*runs-on:\s*(.+)$/gm)].map(row=>row[1]),['ubuntu-24.04'],'Rust foundation uses the declared Ubuntu runner');
+  assert.equal((workflow.split('\njobs:\n')[1]?.match(/^ {2}[a-z][a-z-]*:\s*$/gm)??[]).length,1,'Unexpected Rust CI job');
+  for(const match of workflow.matchAll(/uses:\s*([^\s#]+)/g)){const [name,revision]=match[1].split('@');assert(/^[a-f0-9]{40}$/.test(revision??'')&&revision===pins[name],'Unpinned Rust action');}
+  for(const gate of ['sha256sum --check','--default-toolchain 1.99.1','fmt --all -- --check','check --workspace --all-targets --locked','clippy --workspace --all-targets --locked -- -D warnings','test --workspace --locked','-f apps/game-runtime/Dockerfile','python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-ci'])assert(workflow.includes(gate),'Missing Rust gate '+gate);
 }
 export function assertPromotionWorkflow(workflow, pins) {
   assert(workflow.startsWith('name: Propose verified digest promotion\non:\n  workflow_dispatch:\n'));
