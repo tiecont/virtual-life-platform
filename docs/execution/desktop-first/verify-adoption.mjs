@@ -30,7 +30,13 @@ export async function inspectAdoption() {
   assert.equal(sql.length,47);
   const sourceRefs=['apps/platform-api/src/app.ts','apps/platform-api/src/worker.ts','apps/platform-api/src/db/migrations.ts','apps/platform-api/src/rooms/authority.ts','apps/platform-api/src/rooms/service.ts','apps/platform-api/src/identity/service.ts','apps/platform-api/src/identity/native-service.ts','apps/platform-api/src/identity/http.ts','apps/platform-api/src/identity/socket.ts','apps/platform-api/src/identity/native-http.ts','apps/platform-api/src/games/journal.ts','apps/platform-api/src/games/journal-crypto.ts','apps/platform-api/src/games/journal-host.ts','apps/platform-api/src/progression/ledger.ts','packages/contracts/src/compatibility.ts','packages/contracts/src/native-auth.ts','packages/scene3d/src/animal.ts','packages/scene3d/src/renderer.ts','packages/scene3d/test/animal-variants-cache.test.ts','pnpm-lock.yaml'];
   const sources=[];
-  for(const ref of sourceRefs){const bytes=await readFile(ref);assert(bytes.equals(execFileSync('git',['show',index.sourceRevision+':'+ref])),'Baseline source changed '+ref);sources.push({ref,sha256:sha256(bytes)});}
+  for(const ref of sourceRefs){
+    const bytes=await readFile(ref),baseline=execFileSync('git',['show',index.sourceRevision+':'+ref]);
+    const matchesBaseline=bytes.equals(baseline);
+    if(ref!=='pnpm-lock.yaml')assert(matchesBaseline,'Baseline source changed '+ref);
+    sources.push({ref,sha256:sha256(bytes),baselineSha256:sha256(baseline),matchesBaseline,
+      ...ref==='pnpm-lock.yaml'?{evolutionScope:'Current exact dependency graph may evolve under reviewed task reservations;historical baseline hash is retained,not overwritten'}:{}});
+  }
   const allSource=execFileSync('git',['ls-files','--','apps','packages'],{encoding:'utf8'}).trim().split('\n');
   const roomConstructors=[];
   for(const ref of allSource.filter(ref=>ref.endsWith('.ts')&&!ref.endsWith('.test.ts')&&ref.startsWith('apps/platform-api/src/')))if(/new RoomAuthority\(/.test(await readFile(ref,'utf8')))roomConstructors.push(ref);

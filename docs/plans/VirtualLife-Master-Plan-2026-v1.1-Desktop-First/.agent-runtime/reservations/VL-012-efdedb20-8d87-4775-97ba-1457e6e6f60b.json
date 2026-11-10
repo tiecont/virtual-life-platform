@@ -1,0 +1,26 @@
+{
+  "id": "VL-012-efdedb20-8d87-4775-97ba-1457e6e6f60b",
+  "ref": "reservations/VL-012-efdedb20-8d87-4775-97ba-1457e6e6f60b.json",
+  "taskId": "VL-012",
+  "owner": "agent1",
+  "paths": [
+    "proto/native",
+    "crates/vl-protocol",
+    "packages/native-protocol",
+    "contracts/generated/csharp",
+    "Cargo.toml",
+    "Cargo.lock",
+    "package.json",
+    "pnpm-lock.yaml",
+    "config/build-targets.json",
+    ".github/workflows/rust-runtime.yml",
+    "apps/game-runtime/Dockerfile",
+    "scripts/verify-artifact-workflows.mjs",
+    "docs/execution/desktop-first/verify-adoption.mjs",
+    "docs/execution/desktop-first/protocol"
+  ],
+  "branch": "codex/desktop-first-backend",
+  "worktree": "/home/tiecont/Projects/virtual-city",
+  "sourceRevision": "25b015957e53a5bc688eac0d530cef325616ac13",
+  "createdAt": "2026-11-10T01:59:30.014Z"
+}

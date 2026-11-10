@@ -1,0 +1,30 @@
+syntax = "proto3";
+package virtuallife.internal.v1;
+
+// Service-to-service data only. These claims are NOT proof of authentication.
+// VL-013 must authenticate service+signature and derive verified runtime context.
+message SignedActorContext {
+  bytes account_id = 1;
+  bytes session_id = 2;
+  string audience = 3;
+  uint64 policy_generation = 4;
+  int64 expires_at_unix_ms = 5;
+  bytes signed_grant = 6;
+}
+message ExecuteGameRequest {
+  uint32 rpc_version = 1;
+  SignedActorContext actor = 2;
+  bytes public_command = 3;
+  uint64 authority_epoch = 4;
+}
+message ReceiptRequest {
+  uint32 rpc_version = 1;
+  SignedActorContext actor = 2;
+  bytes game_session_id = 3;
+  bytes command_id = 4;
+}
+message GameResponse { bytes authorized_server_envelope = 1; }
+service ActivityRuntime {
+  rpc ExecuteGame(ExecuteGameRequest) returns (GameResponse);
+  rpc GetReceipt(ReceiptRequest) returns (GameResponse);
+}

@@ -50,7 +50,8 @@ export function assertRustWorkflow(workflow,pins) {
   assert.deepEqual([...workflow.matchAll(/^\s*runs-on:\s*(.+)$/gm)].map(row=>row[1]),['ubuntu-24.04'],'Rust foundation uses the declared Ubuntu runner');
   assert.equal((workflow.split('\njobs:\n')[1]?.match(/^ {2}[a-z][a-z-]*:\s*$/gm)??[]).length,1,'Unexpected Rust CI job');
   for(const match of workflow.matchAll(/uses:\s*([^\s#]+)/g)){const [name,revision]=match[1].split('@');assert(/^[a-f0-9]{40}$/.test(revision??'')&&revision===pins[name],'Unpinned Rust action');}
-  for(const gate of ['sha256sum --check','--default-toolchain 1.99.1','fmt --all -- --check','check --workspace --all-targets --locked','clippy --workspace --all-targets --locked -- -D warnings','test --workspace --locked','-f apps/game-runtime/Dockerfile','python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-ci'])assert(workflow.includes(gate),'Missing Rust gate '+gate);
+  for(const gate of ['sha256sum --check','--default-toolchain 1.99.1','fmt --all -- --check','check --workspace --all-targets --locked','clippy --workspace --all-targets --locked -- -D warnings','test --workspace --locked','-f apps/game-runtime/Dockerfile','python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-ci',
+    'pnpm install --frozen-lockfile','--package vl-protocol --bin native-codegen -- --check','pnpm --filter @virtual-city/native-protocol typecheck','packages/native-protocol/test/wire.test.ts'])assert(workflow.includes(gate),'Missing Rust gate '+gate);
 }
 export function assertPromotionWorkflow(workflow, pins) {
   assert(workflow.startsWith('name: Propose verified digest promotion\non:\n  workflow_dispatch:\n'));

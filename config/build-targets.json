@@ -5,11 +5,12 @@
   "packageManager": "pnpm@11.28.5",
   "rootBuild": "pnpm -r build",
   "packagesBuild": "pnpm --filter './packages/*' -r build",
-  "lockSha256": "17af3572e3c5a682ea2b74faa4ff8b644b883afd5c64a8d96e4a6a67ac7210bc",
+  "lockSha256": "32c63ff178ff23f28173cd5da086018b6988b87f7c07aa78252ea1b929c1e8b0",
   "workspaceConfigSha256": "0c79bdd36e2d8eac11365b4cba92045f1d494d8e191f41de14298de2263d0ec1",
   "rootDependencies": {
     "dependencies": {},
     "devDependencies": {
+      "@bufbuild/protoc-gen-es": "2.17.0",
       "@eslint/js": "9.39.1",
       "eslint": "9.39.1",
       "typescript-eslint": "8.57.1",
@@ -52,6 +53,7 @@
     "@virtual-city/maid-world",
     "@virtual-city/scene3d",
     "@virtual-city/mobile",
+    "@virtual-city/native-protocol",
     "@virtual-city/park-world",
     "@virtual-city/restaurant-world",
     "@virtual-city/platform-api",
@@ -514,6 +516,38 @@
           "@capacitor/cli": "8.6.0",
           "vite": "8.3.5"
         },
+        "peerDependencies": {},
+        "optionalDependencies": {}
+      },
+      "applicationConsumers": []
+    },
+    {
+      "name": "@virtual-city/native-protocol",
+      "path": "packages/native-protocol",
+      "kind": "compiled-package",
+      "build": "tsc -p tsconfig.json",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "dependencies": [
+        "@virtual-city/config"
+      ],
+      "configurationDependencies": [
+        "@virtual-city/config"
+      ],
+      "compilerInputs": [
+        {
+          "path": "packages/native-protocol/tsconfig.json",
+          "sha256": "d34f682edc2f60989ffe60bf530e0862e84ed27126b36a5798c4bbc54a620078"
+        },
+        {
+          "path": "packages/config/tsconfig.json",
+          "sha256": "59d7f6d19d9dea8134d5b9804652a4ec2c6ae44265e3d9cfd331262f59267b40"
+        }
+      ],
+      "externalPins": {
+        "dependencies": {
+          "@bufbuild/protobuf": "2.17.0"
+        },
+        "devDependencies": {},
         "peerDependencies": {},
         "optionalDependencies": {}
       },

@@ -76,10 +76,14 @@
       "reviewSha256": "f84204b02587087b56e19c921e340eadc512f8a93d9514237516611fdeeef957"
     },
     "VL-005": {
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "owner": "agent2",
       "evidenceRefs": [],
-      "reservationId": "VL-005-a315d35a-5566-41db-a46a-e71acf163845"
+      "reservationId": "VL-005-a315d35a-5566-41db-a46a-e71acf163845",
+      "handoffRef": "handoffs/VL-005.json",
+      "handoffSha256": "bc62550b97406d62ecabbf619f2b8ea825950393c28ed1a4f5da102881ee5b20",
+      "reviewRef": "reviews/VL-005-agent1.json",
+      "reviewSha256": "2888b43cd93bf61347bc90fda75cbbd5bfb03945ad2e0406559ae607f05ad255"
     },
     "VL-006": {
       "status": "BLOCKED_EXTERNAL",
@@ -138,9 +142,10 @@
       "evidenceRefs": []
     },
     "VL-012": {
-      "status": "TODO",
-      "owner": null,
-      "evidenceRefs": []
+      "status": "IN_PROGRESS",
+      "owner": "agent1",
+      "evidenceRefs": [],
+      "reservationId": "VL-012-efdedb20-8d87-4775-97ba-1457e6e6f60b"
     },
     "VL-013": {
       "status": "TODO",
@@ -804,6 +809,32 @@
       "worktree": "/home/tiecont/Projects/virtual-city",
       "sourceRevision": "3e24ff05100bde530ca9f652dab955441d5ad10c",
       "createdAt": "2026-11-10T01:48:33.205Z"
+    },
+    "VL-012-efdedb20-8d87-4775-97ba-1457e6e6f60b": {
+      "id": "VL-012-efdedb20-8d87-4775-97ba-1457e6e6f60b",
+      "ref": "reservations/VL-012-efdedb20-8d87-4775-97ba-1457e6e6f60b.json",
+      "taskId": "VL-012",
+      "owner": "agent1",
+      "paths": [
+        "proto/native",
+        "crates/vl-protocol",
+        "packages/native-protocol",
+        "contracts/generated/csharp",
+        "Cargo.toml",
+        "Cargo.lock",
+        "package.json",
+        "pnpm-lock.yaml",
+        "config/build-targets.json",
+        ".github/workflows/rust-runtime.yml",
+        "apps/game-runtime/Dockerfile",
+        "scripts/verify-artifact-workflows.mjs",
+        "docs/execution/desktop-first/verify-adoption.mjs",
+        "docs/execution/desktop-first/protocol"
+      ],
+      "branch": "codex/desktop-first-backend",
+      "worktree": "/home/tiecont/Projects/virtual-city",
+      "sourceRevision": "25b015957e53a5bc688eac0d530cef325616ac13",
+      "createdAt": "2026-11-10T01:59:30.014Z"
     }
   },
   "gateEvidence": {
@@ -819,5 +850,5 @@
       }
     ]
   },
-  "updatedAt": "2026-11-10T01:57:05.292Z"
+  "updatedAt": "2026-11-10T02:11:37.010Z"
 }

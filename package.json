@@ -101,6 +101,7 @@
     "mobile:emulator:workload": "node scripts/mobile-emulator.mjs workload"
   },
   "devDependencies": {
+    "@bufbuild/protoc-gen-es": "2.17.0",
     "@eslint/js": "9.39.1",
     "eslint": "9.39.1",
     "typescript-eslint": "8.57.1",

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-005",
+  "owner": "agent2",
+  "requestedReviewer": "agent1",
+  "sourceRevision": "16d866dd2b8b661ec7bcc227e99698950e9bcc3a",
+  "acceptanceMet": true,
+  "acceptanceScope": "Source and measurement preservation, plus existing browser fallback audit only; not N06 performance/final art or Windows qualification",
+  "commands": [
+    {
+      "command": "pnpm exec vitest run --project unit --maxWorkers=1 packages/pixi-scene/test/lifecycle.test.ts packages/pixi-scene/test/spec.test.ts packages/scene3d/test/projection.test.ts packages/scene3d/test/room.test.ts",
+      "exitCode": 0,
+      "tests": 17,
+      "files": 4
+    },
+    {
+      "command": "pnpm build:packages",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm --filter @virtual-city/platform-api build",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm --filter @virtual-city/portal-web build",
+      "exitCode": 1,
+      "result": "Initial child sandbox: Next could not parse TypeScript --showConfig subprocess output; failure retained",
+      "required": false,
+      "limitation": "Retained child-sandbox build failure;actual elevated rerun passes. Audit acceptance uses successful scoped rerun."
+    },
+    {
+      "command": "pnpm --filter @virtual-city/portal-web build",
+      "exitCode": 0,
+      "result": "Approved outside-sandbox rerun PASS"
+    },
+    {
+      "command": "env UX_EVIDENCE_RUN=ab05c005 BROWSER_REPORT_SCOPE=ci/local/vl005-context-ab05c005 node scripts/run-browser-tests.mjs tests/e2e/scene3d-room.spec.ts --grep 'context loss exposes'",
+      "exitCode": 0,
+      "tests": 2,
+      "desktop": 1,
+      "mobile": 1,
+      "result": "Real WebGL loss notice; camera action disabled; DOM seat-2 claim confirmed by HTTP; restoration; confirmed leave/null snapshot; owned DBs/networks removed"
+    }
+  ],
+  "artifacts": [
+    {
+      "ref": "docs/execution/desktop-first/web-compatibility/README.md",
+      "sha256": "096d73f4b0febfabfe82a7015303ad3ed07006f43b38d1193078dd7956b8e569"
+    },
+    {
+      "ref": "docs/execution/desktop-first/web-compatibility/SOURCES.json",
+      "sha256": "b53fd860475b1741e074e6a6393b77cafd4506cd0317c9f8aaf4f2fac2e1fb53"
+    },
+    {
+      "ref": "docs/execution/desktop-first/web-compatibility/BASELINE.json",
+      "sha256": "4a051d890416cd386202a19bcf546d4067fa55aca2bda068eb30745206012e75"
+    },
+    {
+      "ref": "docs/execution/desktop-first/web-compatibility/CHECKS.json",
+      "sha256": "577b6fe8b098f938a9d948f89c2b288377a6124f12b738a58fa3bd859864bc22"
+    }
+  ],
+  "environment": "CachyOS Linux; Node 26.9.0; pnpm 11.28.5; Chromium desktop/mobile emulation; disposable Docker PostgreSQL",
+  "limitations": [
+    "Graphics failure uses DOM controls; no automatic Three-to-Pixi renderer hot swap implemented",
+    "Preserved classic Pixi routes are the existing 2D compatibility path",
+    "Fresh two-case functional browser probe is not a full-world regression, performance, physical mobile or Windows acceptance",
+    "No renderer/frontend/source/legacy baseline/SQL/production flag edits; new audit files only"
+  ],
+  "nextExactAction": "Coordinator independently reviews exact audit/source/capture hashes and verifies bounded optional compatibility audit only"
+}
