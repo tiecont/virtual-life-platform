@@ -1,3 +1,19 @@
+# Ticket trust remaining acceptance - 2026-11-10
+
+VL-012 is VERIFIED. VL-013 corrected partial source684eeff has independent slice
+approval and exact-source Ubuntu CI PASS42752058413. It remains IN_PROGRESS:
+no real native-world admission/policy owner or authenticated policy transport;
+no game persistence with transaction-bound rejection proof. Partial review cannot
+unlock VL-017/019/022. Single-owner nonce memory and five-second policy snapshots
+are explicit limits, not durable revocation or multi-owner safety.
+
+VL-015 is dependency-ready; its shared Cargo/workflow edits require coordinator
+reservation narrowing/transfer from the completed VL-013 slice first. Keep the
+original graph/checksums immutable. VL-006/007, Windows/Unity/GPU/license/signing
+gates remain unchanged. Aggregate Quality is not qualified by Rust workflow PASS.
+
+## Previous checkpoints
+
 # Current native protocol review gate - 2026-11-10
 
 VL-004/005/012 have independent approval and are VERIFIED. VL-012 source

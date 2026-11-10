@@ -1,3 +1,25 @@
+# Ticket trust partial slice checkpoint - 2026-11-10
+
+Nine tasks remain VERIFIED, including independently approved VL-012. VL-013 is
+IN_PROGRESS at corrected source `684eeffb175ac6c79e005bd9431caf745ba91ac7`.
+Independent slice1 review found weak Ed25519 key acceptance and cross-domain
+session provenance gaps. Both were corrected and independently approved in
+`reviews/VL-013-slice2-agent2.json`; acceptanceMet remains false.
+
+Fresh local 13 Rust tests plus 1 compile-fail doctest, 3 actual PG issuer tests,
+Node -> Rust trust harness/18 signed negatives, clippy/typecheck pass. Prior
+117 governance, lint/CI contract and preservation checks passed for this slice.
+Exact-source Ubuntu run 42752058413 succeeded, including Node/PG -> Rust and OCI.
+Evidence: `docs/execution/desktop-first/security/VL-013-SLICE-CHECKS.json`.
+
+No issuer route or game activation. Durable policy owner/authenticated transport,
+native allocator and actual rejection-with-zero-game-writes remain unfinished.
+VL-015 is READY, but shared Cargo/workflow paths are still reserved by VL-013;
+coordinator must narrow/transfer completed path ownership before starting it.
+Windows/Unity/physical GPU gates remain. No baseline/SQL/frontend bytes changed.
+
+## Previous checkpoints
+
 # Desktop-first protocol checkpoint - 2026-11-10
 
 Nine tasks are VERIFIED: VL-001/002/003/004/005/008/009/012/077. VL-012 has an

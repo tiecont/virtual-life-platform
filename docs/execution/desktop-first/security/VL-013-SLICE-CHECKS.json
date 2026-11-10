@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-013",
+  "status": "IN_PROGRESS",
+  "acceptanceMet": false,
+  "sourceRevision": "684eeffb175ac6c79e005bd9431caf745ba91ac7",
+  "initialSourceRevision": "8e181a6889e7c5949ea46a4f1e142537547c4786",
+  "reviewRefs": [
+    "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/reviews/VL-013-slice1-agent2.json",
+    "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/reviews/VL-013-slice2-agent2.json"
+  ],
+  "reviewDecision": "Corrected partial slice APPROVED; full task acceptance remains false",
+  "environment": "CachyOS Linux x86_64; Node26.9.0; pnpm11.28.5; Rust1.99.1; isolated artifact Rust homes; wrapper-owned disposable PostgreSQL",
+  "commands": [
+    {"command": "cargo test --workspace --locked", "exitCode": 0, "tests": 13, "compileFailDoctests": 1},
+    {"command": "cargo clippy --workspace --all-targets --locked -- -D warnings", "exitCode": 0},
+    {"command": "cargo fmt --all -- --check", "exitCode": 0},
+    {"command": "node scripts/with-test-db.mjs pnpm exec tsx --test tests/unit/runtime-tickets.test.ts", "exitCode": 0, "tests": 3, "cleanup": "Owned schema, container and network removed"},
+    {"command": "cargo run --locked --package vl-security --bin ticket-check -- artifacts/desktop-first/vl013/tickets.json", "exitCode": 0, "signedNegativeVariants": 18},
+    {"command": "pnpm --filter @virtual-city/platform-api typecheck", "exitCode": 0},
+    {"command": "pnpm exec tsc --noEmit --target ES2022 --module commonjs --esModuleInterop --skipLibCheck tests/unit/runtime-tickets.test.ts", "exitCode": 0},
+    {"command": "pnpm lint", "exitCode": 0, "warning": "One existing unused eslint-disable directive in generated Buf TypeScript"},
+    {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "tests": 117},
+    {"command": "pnpm ci:check", "exitCode": 0},
+    {"command": "node docs/execution/desktop-first/verify-adoption.mjs", "exitCode": 0},
+    {"command": "python3 docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/tools/validate_plan.py", "exitCode": 0, "warning": "Added evidence count differs from immutable planning manifest"},
+    {"command": "cargo run --locked --package vl-protocol --bin native-codegen -- --check", "exitCode": 0}
+  ],
+  "ci": {
+    "runId": 42752058413,
+    "jobId": 129617721118,
+    "sourceRevision": "684eeffb175ac6c79e005bd9431caf745ba91ac7",
+    "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42752058413",
+    "conclusion": "success",
+    "runner": "ubuntu-24.04",
+    "actualSteps": "fmt/check/clippy/workspace tests; native binding generation and TS fixtures; real PG Node ticket issuance -> Rust; OCI build/smoke",
+    "logRef": "artifacts/desktop-first/vl013/hosted-42752058413.log",
+    "logSha256": "4c106db1ba84d791d2e668f06ff9e3eec209bdb54c6758f6f827d9576f0aea01"
+  },
+  "artifacts": [
+    {"ref": "Cargo.toml", "sha256": "ab3e91d9d92c433b81eb903677883a8e485ab5b89c70d88f0a5b6d067f08d1dd"},
+    {"ref": "Cargo.lock", "sha256": "4f6256f302f15f70c10279ab4a477d6fb46cf86d79c70b49b532fc62c8556f46"},
+    {"ref": "crates/vl-security/Cargo.toml", "sha256": "617b45e50b1126e65c8aa1de497fc4ec0c16c94f7488129247f40c2c89f57dbc"},
+    {"ref": "crates/vl-security/src/lib.rs", "sha256": "8d744c7290efa1f389754b157f3d2113076e7b430a5ce7b6f414717a866a20c8"},
+    {"ref": "crates/vl-security/src/bin/ticket-check.rs", "sha256": "c89e5f77e2ac2a870efcbbb8837f80d69dc7691fff2930b100844bc65d69a53f"},
+    {"ref": "apps/platform-api/src/identity/runtime-tickets.ts", "sha256": "51472cb340690bb0a0cd44912f0bd9a09be86cde309c0a49c44057fa0bea87a6"},
+    {"ref": "tests/unit/runtime-tickets.test.ts", "sha256": "bd804a238a5c8b0cc68f8d34484196fa199d55f97831d7759199e31fc8d489cc"},
+    {"ref": ".github/workflows/rust-runtime.yml", "sha256": "f631130f58df8d72a810277b6d5dde139fe0e8e90504d7ee082847d6717a3369"},
+    {"ref": "apps/game-runtime/Dockerfile", "sha256": "3a95d301cb7df5156a41d139cd78c1cb48e43dcbb7da60cf13c2a664d8842788"},
+    {"ref": "docs/execution/desktop-first/security/TICKET-TRUST.md", "sha256": "2935d3180540759f5850471e431c2b8b27633b00ff02fa5892ae191be2f089f2"}
+  ],
+  "retainedFailures": [
+    "First local Rust compile used nonexistent Result::is_err_or; corrected before initial committed slice",
+    "Independent first-slice review reproduced weak-key unsigned admission and found cross-domain session provenance gap; immutable CHANGES_REQUESTED review retained",
+    "First correction clippy rejected unit_arg; moved effect before Ok(()), strict rerun passed",
+    "Historical aggregate Quality42741549657 failed despite770integration passes due to unhandled PostgreSQL connection error; Rust success does not replace that failure"
+  ],
+  "limitations": [
+    "No public routes, live WSS/gRPC policy service, native allocator, production signing keys or gameplay activation",
+    "Policy admission port is explicit but has no real native-world implementation; authenticated transport and durable generation owner still required",
+    "One bounded in-memory runtime owner per unique boot; not durable nonce/idempotency/multi-owner fencing",
+    "Unit callback narrows returned Future misuse, but callbacks can still schedule work; it is not an async/SQL authorization boundary",
+    "No actual game store or unauthorized game command persistence test; VL-013 remains IN_PROGRESS and must not unlock dependents",
+    "Windows/Unity/physicalGPU/license/signing gates remain; aggregate Quality on684eeff still in progress at checkpoint"
+  ],
+  "nextExactAction": "Continue independent ready VL-015 after coordinating shared Cargo/workflow reservation scopes; then VL-016/017 provide actual game persistence gates. Keep VL-013 policy/transport and mutation acceptance explicit, never promote partial approval."
+}

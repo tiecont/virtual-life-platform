@@ -1,3 +1,34 @@
+# Ticket trust continuation handoff - 2026-11-10
+
+Live counts: 9 VERIFIED, 2 BLOCKED_EXTERNAL, 1 IN_PROGRESS, 98 TODO. VL-012 is
+VERIFIED; VL-013 partial source `684eeffb175ac6c79e005bd9431caf745ba91ac7`
+has independent slice approval, not acceptance. Preserve both slice reviews:
+first CHANGES_REQUESTED (weak keys/session provenance), correction APPROVED.
+No canonical VL-013 acceptance handoff exists; do not call scheduler verify.
+
+Issuer is internal/default-off and rechecks real identity under canonical PG
+account lock. Rust enforces strict Ed25519/weak-key rejection, scope/TTL/replay,
+bounded monotonic policy and per-domain session identity. Callback returns unit
+with a compile-fail async regression; it is not a durable/async mutation boundary.
+No new SQL or production route/keys/gameplay. Source/check/CI hashes are in
+`docs/execution/desktop-first/security/VL-013-SLICE-CHECKS.json`.
+
+Rust/PG cross-language Ubuntu CI 42752058413 passed at exact684eeff. Local13Rust
++1compile-fail,3PG issuer,18signed negatives and independent public-API domain/
+weak-key probes pass. Rust homes now live under ignored `artifacts/toolchains/`
+because old /tmp homes disappeared; no shell profile or CachyOS change.
+Current aggregate Quality remains separate/in progress; older42741549657 failed
+on unhandled PG connection despite770integration passes. No global green claim.
+
+**Next exact action:** Reconcile/narrow VL-013's shared Cargo/workflow/Dockerfile
+reservation after its committed slice so READY VL-015 can own those files; do not
+overlap active reservations or mark VL-013 complete. Implement pure game-core/RNG
+then verified VL-016/017 persistence gates. Complete real admission/policy transport
+and transaction-bound rejection tests before VL-013 acceptance. No source reviewer
+or local owned PG container remains running. Owner .idea/ and botkeep-ca.pem untouched.
+
+## Previous checkpoints
+
 # Desktop-first protocol handoff - 2026-11-10
 
 Use `node scripts/desktop-scheduler.mjs status agent1` as the live authority.
