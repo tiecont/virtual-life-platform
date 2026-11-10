@@ -1,3 +1,18 @@
+# Owner single-agent execution policy - 2026-11-10
+
+The owner explicitly selected single-agent separate audit plus actual CI, labeled
+not independent. The hashed runtime policy records the instruction. Coordinator
+adoption enrolls Agent1 in the explicit lanes; same-owner reviews require its
+hash,post-implementation audit times,passing commands and successful CI for the
+exact committed source. Historical independent review files remain unchanged.
+No dependency,hardware/license/safety/production/public gate is waived.
+
+This removes the requirement to wait for another agent. VL-013/016 still require
+completed acceptance evidence and current Quality results before verification.
+The immutable plan inputs and all legacy ledgers remain untouched.
+
+## Previous checkpoints
+
 # Native storage CI correction checkpoint - 2026-11-10
 
 VL-016 remains IN_PROGRESS. Exact source b22c738 passed Ubuntu Rust42762794027,

@@ -1,3 +1,22 @@
+# Owner single-agent audit checkpoint - 2026-11-10
+
+Owner explicitly authorizes one agent, a separate audit pass and actual CI,
+with every new self-review labeled non-independent. The hashed owner policy is
+`.agent-runtime/policies/single-agent-2026-11-10.json` in the active plan.
+Coordinator adopted it through schedulerStore; baseline plan inputs, prior
+independent reviews and hardware/license/release gates remain unchanged.
+Scheduler tests reject false independence, premature audit, mismatched source,
+failed acceptance CI and mismatched CI URL/run ID. Changes-requested audits may
+record actual failures without requiring green CI. Governance121/121 and focused
+lint pass. VL-013/016 still IN_PROGRESS; no dependent task is activated yet.
+
+Next exact action: finish exact55514e1 Quality runs42793186691/42793176241,
+preserve their actual outcomes, publish the policy source for exact-source CI,
+then perform a separate source-locked non-independent acceptance audit. Continue
+VL-017 and other READY tasks only after dependency verification. No peer waiting.
+
+## Previous checkpoints
+
 # Exact-source TLS CI checkpoint - 2026-11-10
 
 Source55514e15209c0818aedc0145136d0ebe988973bf is pushed to existing PR1.

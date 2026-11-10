@@ -31,6 +31,38 @@ function dependencies(task,state) {
 function gates(task,state) {
   return task.external_gates.filter(gate=>!state.gateEvidence?.[task.id]?.some(row=>row.gate===gate&&row.evidenceRefs?.length>0));
 }
+function validateReviewPolicy(policy) {
+  assert.equal(policy.schemaVersion,1);
+  assert.equal(policy.mode,'SINGLE_AGENT_SEQUENTIAL_AUDIT');
+  assert.equal(policy.authorizedBy,'owner');
+  assert.equal(policy.independent,false);
+  assert.equal(policy.requireSuccessfulCI,true);
+  assert(typeof policy.ownerInstruction==='string'&&policy.ownerInstruction.trim(),'Owner instruction required');
+  assert(Number.isFinite(Date.parse(policy.authorizedAt)),'Policy authorization time required');
+  assert(Array.isArray(policy.lanes)&&policy.lanes.length>0&&policy.lanes.every(lane=>typeof lane==='string'),'Explicit policy lanes required');
+}
+function reviewIdentity(current,handoff,review,policy) {
+  assert(review.reviewer,'Reviewer required');
+  if(review.reviewer!==current.owner) {
+    assert(!review.reviewMode||review.reviewMode==='INDEPENDENT','Different reviewer cannot claim single-agent mode');
+    assert(review.independent!==false,'Independent review mislabeled');return;
+  }
+  assert(policy,'Independent reviewer required without owner single-agent policy');
+  validateReviewPolicy(policy);
+  assert.equal(review.reviewMode,policy.mode,'Single-agent review must declare its mode');
+  assert.equal(review.independent,false,'Single-agent review must not claim independence');
+  assert.equal(review.policySha256,policy.sha256,'Review policy mismatch');
+  const finished=Date.parse(handoff.completedAt),started=Date.parse(review.audit?.startedAt),ended=Date.parse(review.reviewedAt);
+  assert(Number.isFinite(finished)&&Number.isFinite(started)&&started>=finished&&ended>started,'Separate post-implementation audit required');
+  assert(started>=Date.parse(policy.authorizedAt),'Audit predates owner policy');
+  assert.equal(review.audit.sourceUnchanged,true,'Audit must retain committed source');
+  assert(review.audit.checks?.length>0&&review.audit.checks.every(check=>check.command&&Number.isInteger(check.exitCode)),'Actual audit checks required');
+  assert(Array.isArray(review.ci)&&review.ci.every(run=>run.sourceRevision===handoff.sourceRevision&&typeof run.conclusion==='string'&&run.conclusion&&Number.isSafeInteger(run.runId)&&run.runId>0&&new RegExp('^https://github\\.com/[^/]+/[^/]+/actions/runs/'+run.runId+'$').test(run.url)),'Exact-source CI records required');
+  if(review.decision==='APPROVED') {
+    assert(review.audit.checks.every(check=>check.exitCode===0),'Actual passing audit checks required');
+    assert(review.ci.length>0&&review.ci.every(run=>run.conclusion==='success'),'Exact-source successful CI required');
+  }
+}
 export function validateState(taskdoc,state) {
   assert.equal(state.schemaVersion,1);
   assert.equal(state.coordinator,'agent1');
@@ -61,7 +93,7 @@ export function validateState(taskdoc,state) {
       if(claimed.has(current.status))active.push(reservation);
     }
     if(current.status==='IN_REVIEW'||current.status==='VERIFIED')assert(current.handoffRef&&current.handoffSha256,'Missing handoff '+task.id);
-    if(current.status==='VERIFIED')assert(current.reviewRef&&current.reviewSha256,'Missing independent review '+task.id);
+    if(current.status==='VERIFIED')assert(current.reviewRef&&current.reviewSha256,'Missing review '+task.id);
   }
   for(let i=0;i<active.length;i++)for(let j=i+1;j<active.length;j++) {
     assert(active[i].taskId!==active[j].taskId,'Duplicate reservation');
@@ -75,14 +107,14 @@ export function readyTasks(taskdoc,state,agent) {
   return taskdoc.tasks.filter(task=>state.tasks[task.id].status==='TODO'&&state.agents[agent].lanes.includes(task.lane)&&dependencies(task,state).length===0&&gates(task,state).length===0)
     .sort((a,b)=>a.priority-b.priority||a.id.localeCompare(b.id));
 }
-export function approveReview(current,handoff,review,handoffHash) {
+export function approveReview(current,handoff,review,handoffHash,policy) {
   assert.equal(current.status,'IN_REVIEW');
   assert.equal(handoff.acceptanceMet,true,'Handoff acceptance incomplete');
   assert.equal(review.taskId,handoff.taskId);
   assert.equal(review.sourceRevision,handoff.sourceRevision,'Review covers a different source');
   assert.equal(review.handoffSha256,handoffHash,'Review covers a different handoff');
   assert.equal(review.decision,'APPROVED');
-  assert(review.reviewer&&review.reviewer!==current.owner,'Independent reviewer required');
+  reviewIdentity(current,handoff,review,policy);
   assert(Number.isFinite(Date.parse(review.reviewedAt))&&review.findings?.length===0,'Review has unresolved findings');
   assert(handoff.commands?.length>0&&handoff.commands.every(command=>Number.isInteger(command.exitCode)),'Missing actual commands');
   assert(handoff.commands.every(command=>typeof command.command==='string'&&command.command.length>0),'Missing command names');
@@ -100,6 +132,12 @@ export function approveReview(current,handoff,review,handoffHash) {
 export function schedulerStore(root=runtimeRoot,tasksRef=planRoot+'/06-execution/TASKS.json',repositoryRoot=process.cwd()) {
   const stateRef=resolve(root,'live-state.json');
   const localRef=ref=>{scopePath(ref);const full=resolve(root,ref);assert(!relative(resolve(root),full).startsWith('..'),'Reference escapes runtime');return full;};
+  async function readReviewPolicy(state) {
+    if(!state.reviewPolicy)return undefined;
+    const {ref,sha256:hash}=state.reviewPolicy,bytes=await readFile(localRef(ref));
+    assert.equal(sha256(bytes),hash,'Owner review policy changed');
+    const policy=JSON.parse(bytes);validateReviewPolicy(policy);return {...policy,sha256:hash};
+  }
   async function verifySourceEvidence(handoff) {
     assert(/^[a-f0-9]{40}$/.test(handoff.sourceRevision),'Commit SHA required');
     const git=async args=>(await execute('git',args,{cwd:repositoryRoot,encoding:'buffer',maxBuffer:16*1024**2})).stdout;
@@ -119,6 +157,7 @@ export function schedulerStore(root=runtimeRoot,tasksRef=planRoot+'/06-execution
     const taskBytes=await readFile(tasksRef),taskdoc=JSON.parse(taskBytes),state=await json(stateRef);
     assert.equal(state.taskGraphSha256,sha256(taskBytes),'Plan graph changed without reconciliation');
     validateState(taskdoc,state);
+    const reviewPolicy=await readReviewPolicy(state);
     for(const current of Object.values(state.tasks))if(claimed.has(current.status)) {
       const reservation=state.reservations[current.reservationId];
       assert.deepEqual(await json(localRef(reservation.ref)),reservation,'Reservation mirror mismatch');
@@ -140,12 +179,13 @@ export function schedulerStore(root=runtimeRoot,tasksRef=planRoot+'/06-execution
       const handoff=JSON.parse(bytes),review=JSON.parse(reviewBytes);
       assert.equal(handoff.taskId,taskId);assert.equal(review.taskId,taskId);assert.equal(review.sourceRevision,handoff.sourceRevision);
       assert.equal(review.handoffSha256,attempt.handoffSha256);assert.equal(review.decision,'CHANGES_REQUESTED');
-      assert(state.agents[review.reviewer]&&review.reviewer!==current.owner,'Independent historical reviewer required');
+      assert(state.agents[review.reviewer],'Unknown historical reviewer');
+      reviewIdentity(current,handoff,review,reviewPolicy);
     }
     for(const current of Object.values(state.tasks))if(current.status==='VERIFIED') {
       const bytes=await readFile(localRef(current.reviewRef));assert.equal(sha256(bytes),current.reviewSha256,'Review changed after verification');
       const review=JSON.parse(bytes);assert(state.agents[review.reviewer],'Unknown reviewer');
-      approveReview({...current,status:'IN_REVIEW'},await json(localRef(current.handoffRef)),review,current.handoffSha256);
+      approveReview({...current,status:'IN_REVIEW'},await json(localRef(current.handoffRef)),review,current.handoffSha256,reviewPolicy);
       await verifySourceEvidence(await json(localRef(current.handoffRef)));
     }
     for(const [taskId,rows] of Object.entries(state.gateEvidence)) {
@@ -158,7 +198,7 @@ export function schedulerStore(root=runtimeRoot,tasksRef=planRoot+'/06-execution
         }
       }
     }
-    return {taskdoc,state};
+    return {taskdoc,state,reviewPolicy};
   }
   async function mutate(actor,work) {
     assert.equal(actor,'agent1','Only the coordinator mutates live state');
@@ -175,6 +215,15 @@ export function schedulerStore(root=runtimeRoot,tasksRef=planRoot+'/06-execution
   }
   return {
     load,
+    adoptSingleAgentPolicy: (ref,actor='agent1') => mutate(actor,async(taskdoc,state)=>{
+      assert(!state.reviewPolicy,'Owner review policy already adopted');
+      const bytes=await readFile(localRef(ref)),policy=JSON.parse(bytes);validateReviewPolicy(policy);
+      const lanes=new Set(taskdoc.tasks.map(task=>task.lane));
+      assert(policy.lanes.every(lane=>lanes.has(lane)),'Unknown policy lane');
+      state.reviewPolicy={ref,sha256:sha256(bytes)};
+      state.agents.agent1.lanes=[...new Set([...state.agents.agent1.lanes,...policy.lanes])];
+      return state.reviewPolicy;
+    }),
     reserve: (taskId,owner,paths,location,actor='agent1') => mutate(actor,async(taskdoc,state)=>{
       assert(readyTasks(taskdoc,state,owner).some(task=>task.id===taskId),'Task is not READY for this owner');
       assert(paths.length>0,'Explicit paths required');paths.forEach(scopePath);
@@ -238,17 +287,18 @@ export function schedulerStore(root=runtimeRoot,tasksRef=planRoot+'/06-execution
     verify: (taskId,reviewRef,actor='agent1') => mutate(actor,async(_taskdoc,state)=>{
       const current=state.tasks[taskId];assert(current,'Unknown task');
       const handoff=await json(localRef(current.handoffRef)),bytes=await readFile(localRef(reviewRef)),review=JSON.parse(bytes);
-      approveReview(current,handoff,review,current.handoffSha256);
-      assert(state.agents[review.reviewer]&&review.reviewer!==current.owner,'Unknown/own reviewer');
+      approveReview(current,handoff,review,current.handoffSha256,await readReviewPolicy(state));
+      assert(state.agents[review.reviewer],'Unknown reviewer');
       await verifySourceEvidence(handoff);
-      current.status='VERIFIED';current.reviewRef=reviewRef;current.reviewSha256=sha256(bytes);return current;
+      current.status='VERIFIED';current.reviewRef=reviewRef;current.reviewSha256=sha256(bytes);current.reviewMode=review.reviewMode??'INDEPENDENT';return current;
     }),
     requestChanges: (taskId,reviewRef,actor='agent1') => mutate(actor,async(_taskdoc,state)=>{
       const current=state.tasks[taskId];assert.equal(current?.status,'IN_REVIEW');
       const handoff=await json(localRef(current.handoffRef)),bytes=await readFile(localRef(reviewRef)),review=JSON.parse(bytes);
       assert.equal(review.taskId,taskId);assert.equal(review.sourceRevision,handoff.sourceRevision);
       assert.equal(review.handoffSha256,current.handoffSha256);assert.equal(review.decision,'CHANGES_REQUESTED');
-      assert(state.agents[review.reviewer]&&review.reviewer!==current.owner,'Independent reviewer required');
+      assert(state.agents[review.reviewer],'Unknown reviewer');
+      reviewIdentity(current,handoff,review,await readReviewPolicy(state));
       assert(Number.isFinite(Date.parse(review.reviewedAt))&&review.findings?.length>0,'Missing review findings');
       current.attempts=[...(current.attempts??[]),{handoffRef:current.handoffRef,handoffSha256:current.handoffSha256,reviewRef,reviewSha256:sha256(bytes),decision:review.decision}];
       delete current.handoffRef;delete current.handoffSha256;current.status='IN_PROGRESS';return current;

@@ -4,6 +4,14 @@
 
 ## Current Owner Instruction - Desktop First (2026-11-10)
 
+Owner update in the continuing 2026-11-10 session: only one agent executes all
+lanes. Owner explicitly authorizes separate same-agent audit plus actual CI,
+clearly labeled not independent. Use the hashed policy under active runtime
+`policies/single-agent-2026-11-10.json` and the scheduler coordinator API.
+This supersedes the two-agent assignment/review requirement below for new work;
+historical independent reviews, exact-source checks, dependency/external gates,
+immutable baseline and release restrictions remain unchanged.
+
 The active plan is [VirtualLife v1.1 Desktop First](docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/START-HERE.md).
 Read its AGENTS, task graph and architecture before work. Agent 1 owns A0/A1/A2
 and is the sole writer of `.agent-runtime/live-state.json` and reservations.

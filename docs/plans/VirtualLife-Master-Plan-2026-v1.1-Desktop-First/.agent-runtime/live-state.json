@@ -10,7 +10,12 @@
       "lanes": [
         "A0-Coordinator",
         "A1-Rust-Game-Core",
-        "A2-Persistence-Security"
+        "A2-Persistence-Security",
+        "A3-Web-UX",
+        "A4-Avatar-Art",
+        "A7-QA-SRE",
+        "A6-Gameplay",
+        "A5-Native"
       ],
       "additionalScope": "A7 backend/infra/tests only after explicit reservation"
     },
@@ -872,7 +877,7 @@
     },
     "VL-013-0c6147a1-e3b9-4ad7-a0f1-ab0cd5fc7824": {
       "id": "VL-013-0c6147a1-e3b9-4ad7-a0f1-ab0cd5fc7824",
-      "ref": "reservations/VL-013-e51e2dd4-315d-45d9-a8c2-06290c8628bb.json",
+      "ref": "reservations/VL-013-19d83903-6cc0-4205-bf2a-2f637357fb45.json",
       "taskId": "VL-013",
       "owner": "agent1",
       "paths": [
@@ -901,14 +906,20 @@
         "docs/agent/HANDOFF.md",
         "docs/agent/PROGRESS.md",
         "config/native-runtime-db-privileges.json",
-        "scripts/runtime-admission-test-tls.mjs"
+        "scripts/runtime-admission-test-tls.mjs",
+        "scripts/desktop-scheduler.mjs",
+        "tests/governance/desktop-scheduler.test.mjs",
+        "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/README.md",
+        "AGENTS.md",
+        "docs/agent/DECISIONS.md",
+        "docs/agent/BLOCKERS.md"
       ],
       "branch": "codex/desktop-first-backend",
       "worktree": "/home/tiecont/Projects/virtual-city",
       "sourceRevision": "01e194dd37215a15cdb4e1988717825d69b83c3c",
       "createdAt": "2026-11-10T03:01:13.190Z",
-      "amendedAt": "2026-11-10T09:19:50.608Z",
-      "reason": "Exercise verified PostgreSQL TLS and restricted runtime credentials without activating endpoints",
+      "amendedAt": "2026-11-10T10:01:13.572Z",
+      "reason": "Document explicit owner single-agent review policy at the session entrypoint and current decision/blocker indexes",
       "history": [
         {
           "ref": "reservations/VL-013-0c6147a1-e3b9-4ad7-a0f1-ab0cd5fc7824.json",
@@ -945,6 +956,14 @@
         {
           "ref": "reservations/VL-013-ce1c8e42-60f5-453e-a5c7-f5c6f3891360.json",
           "sha256": "a76a35cb709d79b9c179dea7e06f8e1d39df760529e54d1280f984ae96a0b15c"
+        },
+        {
+          "ref": "reservations/VL-013-e51e2dd4-315d-45d9-a8c2-06290c8628bb.json",
+          "sha256": "169cb61a5e78deb940e8236684df4f3c4b2a3c3e88d8f6044eb3478b02948c44"
+        },
+        {
+          "ref": "reservations/VL-013-441461ca-251d-488b-b16a-02ad2f260158.json",
+          "sha256": "52b2abced577d06bc045173f6702bfa315b9b1deb40f0e3a6298e793f6243fe5"
         }
       ]
     },
@@ -1034,5 +1053,9 @@
       }
     ]
   },
-  "updatedAt": "2026-11-10T09:19:50.612Z"
+  "updatedAt": "2026-11-10T10:01:13.576Z",
+  "reviewPolicy": {
+    "ref": "policies/single-agent-2026-11-10.json",
+    "sha256": "02c0285a2d6fe5cf19c57f10d91945f6d9a9ee60a1bf80f7c200e63ee6e7cda1"
+  }
 }

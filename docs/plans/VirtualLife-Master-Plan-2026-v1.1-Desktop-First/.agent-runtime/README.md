@@ -3,6 +3,16 @@
 The owner assigned Agent 1 as coordinator and Rust/backend architect on
 2026-11-10. The surrounding package remains an immutable planning baseline.
 
+Owner update 2026-11-10: one agent now executes all lanes sequentially. The owner
+explicitly chose separate same-agent audit plus actual CI, labeled not independent.
+`policies/single-agent-2026-11-10.json` records that direction. Coordinator API
+`adoptSingleAgentPolicy(ref)` binds its hash and explicit lane list. Same-owner
+reviews must declare `SINGLE_AGENT_SEQUENTIAL_AUDIT`, `independent:false`, the
+policy hash, post-implementation audit times, passing audit commands and successful
+CI at the exact source. Existing independent reviews stay immutable. All required
+checks, source/hash validation, dependency, external and release gates still apply.
+The independent-only paragraphs below describe the earlier execution profile.
+
 - `live-state.json`: runtime status for all 110 VL tasks; Agent 1 is sole writer.
 - `reservations/`: coordinator-issued task, branch/worktree and path ownership.
 - `handoffs/`: exact source SHA, actual checks and acceptance limitations.

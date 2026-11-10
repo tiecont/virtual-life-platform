@@ -1,0 +1,92 @@
+{
+  "id": "VL-013-0c6147a1-e3b9-4ad7-a0f1-ab0cd5fc7824",
+  "ref": "reservations/VL-013-19d83903-6cc0-4205-bf2a-2f637357fb45.json",
+  "taskId": "VL-013",
+  "owner": "agent1",
+  "paths": [
+    "crates/vl-security/**",
+    "apps/platform-api/src/identity/runtime-tickets.ts",
+    "tests/unit/runtime-tickets.test.ts",
+    "proto/native/fixtures/security/**",
+    "docs/execution/desktop-first/security/TICKET-TRUST.md",
+    "apps/platform-api/src/identity/runtime-admission.ts",
+    "tests/integration/runtime-admission.test.ts",
+    "apps/platform-api/src/db/migrations/0049_native_runtime_admission.sql",
+    "docs/execution/desktop-first/migration-reservations/0049.json",
+    "docs/execution/desktop-first/security/**",
+    "Cargo.lock",
+    "scripts/runtime-admission-durable-check.mjs",
+    "docs/execution/desktop-first/verify-adoption.mjs",
+    "docs/architecture/ownership.json",
+    "docs/architecture/api-modules.json",
+    "scripts/runtime-admission-migration-compat.mjs",
+    "config/schema-compatibility-0048-admission-expand.json",
+    ".github/workflows/rust-runtime.yml",
+    "scripts/native-game-migration-compat.mjs",
+    "tests/governance/rust-workflow.test.mjs",
+    "config/schema-compatibility-0047-admission-expand.json",
+    "scripts/verify-artifact-workflows.mjs",
+    "docs/agent/HANDOFF.md",
+    "docs/agent/PROGRESS.md",
+    "config/native-runtime-db-privileges.json",
+    "scripts/runtime-admission-test-tls.mjs",
+    "scripts/desktop-scheduler.mjs",
+    "tests/governance/desktop-scheduler.test.mjs",
+    "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/README.md",
+    "AGENTS.md",
+    "docs/agent/DECISIONS.md",
+    "docs/agent/BLOCKERS.md"
+  ],
+  "branch": "codex/desktop-first-backend",
+  "worktree": "/home/tiecont/Projects/virtual-city",
+  "sourceRevision": "01e194dd37215a15cdb4e1988717825d69b83c3c",
+  "createdAt": "2026-11-10T03:01:13.190Z",
+  "amendedAt": "2026-11-10T10:01:13.572Z",
+  "reason": "Document explicit owner single-agent review policy at the session entrypoint and current decision/blocker indexes",
+  "history": [
+    {
+      "ref": "reservations/VL-013-0c6147a1-e3b9-4ad7-a0f1-ab0cd5fc7824.json",
+      "sha256": "40f7845727fc0de8f8e6c4623459bbf002dd39ce74e916f4b18729462df708e5"
+    },
+    {
+      "ref": "reservations/VL-013-ac81455a-50c6-4a48-9316-655ab7d6459b.json",
+      "sha256": "8aa606d142dc88b92c7ada889247c6dc7ac5128c4b4272a9ea17c6be66d6ace0"
+    },
+    {
+      "ref": "reservations/VL-013-c3cafdde-f53d-44b5-a4d0-88254709a6eb.json",
+      "sha256": "22f0644ecd4b6dd1fab86ec57993677616932bfb96ff94fb000732cc18032196"
+    },
+    {
+      "ref": "reservations/VL-013-5c59903e-80d6-4e6a-ae1a-bc5a7b79af58.json",
+      "sha256": "4d82d8d42b253f971f5724f6710d6f739fc711b1cb3af78c64427e2c7f5dbd22"
+    },
+    {
+      "ref": "reservations/VL-013-e9bb5de6-c620-4838-86e1-5733b9207464.json",
+      "sha256": "1d53045ab740c4f711da82e73373f06efe224cdee84ed3676b4852ec135572c9"
+    },
+    {
+      "ref": "reservations/VL-013-4a6c60fc-c8e4-41f5-b1d4-8f8d57546cd7.json",
+      "sha256": "879363ed7cbfa7161eeed70444cd7f148d10e545b35d35110148c4c15e0c3426"
+    },
+    {
+      "ref": "reservations/VL-013-8c12325a-bc59-4133-a656-2cc3d904809b.json",
+      "sha256": "8bce560004e78f657fa4e4c77d0a67642c2cf997cd7ebdd501fdf6e5db9a89a8"
+    },
+    {
+      "ref": "reservations/VL-013-258b1fd8-5bfa-46f9-b528-ba51da6ec70f.json",
+      "sha256": "3c3e05efe8515a84760aa147abc447224086d52f8660ed02c68be4c12e17b4ae"
+    },
+    {
+      "ref": "reservations/VL-013-ce1c8e42-60f5-453e-a5c7-f5c6f3891360.json",
+      "sha256": "a76a35cb709d79b9c179dea7e06f8e1d39df760529e54d1280f984ae96a0b15c"
+    },
+    {
+      "ref": "reservations/VL-013-e51e2dd4-315d-45d9-a8c2-06290c8628bb.json",
+      "sha256": "169cb61a5e78deb940e8236684df4f3c4b2a3c3e88d8f6044eb3478b02948c44"
+    },
+    {
+      "ref": "reservations/VL-013-441461ca-251d-488b-b16a-02ad2f260158.json",
+      "sha256": "52b2abced577d06bc045173f6702bfa315b9b1deb40f0e3a6298e793f6243fe5"
+    }
+  ]
+}

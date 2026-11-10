@@ -1,3 +1,18 @@
+# Owner single-agent audit checkpoint - 2026-11-10
+
+Explicit owner direction enables SINGLE_AGENT_SEQUENTIAL_AUDIT, independent:false,
+with hashed policy, separate post-implementation audit and exact-source successful
+CI. Agent1 may work all eight lanes sequentially; coordinator remains the sole
+live-state writer. Existing independent reviews and immutable plan/legacy inputs
+are preserved. Scheduler19/19 and governance121/121 pass; focused lint passes.
+Failure audits can retain CHANGES_REQUESTED without passing CI; approval cannot.
+VL-013/016 remain IN_PROGRESS pending source-bound acceptance and aggregate CI.
+
+Next exact action: finish55514e1 Quality, publish policy for CI, audit frozen source,
+record honest non-independent reviews, verify acceptance, continue ready tasks.
+
+## Previous checkpoints
+
 # Exact-source TLS CI checkpoint - 2026-11-10
 
 Source55514e15209c0818aedc0145136d0ebe988973bf is pushed to existing PR1.

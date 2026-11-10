@@ -187,3 +187,53 @@ test('changes requested preserves immutable review history and supports a new ha
   await writeFile(join(f.root,reviewRef),serialize({...review,findings:[]}));
   await assert.rejects(f.store.load(),/Historical review changed/);
 });
+
+test('owner single-agent policy requires a separate honest audit and exact successful CI before unlocking dependencies',async t=>{
+  const f=await fixture(t),policyRef='policies/single-agent.json';await mkdir(join(f.root,'policies'));
+  const policy={schemaVersion:1,mode:'SINGLE_AGENT_SEQUENTIAL_AUDIT',authorizedBy:'owner',independent:false,requireSuccessfulCI:true,
+    ownerInstruction:'Use one agent with a separate audit and actual CI; label review as not independent',authorizedAt:'2026-11-10T00:00:00Z',lanes:['A0-Coordinator','A3-Web-UX']};
+  await writeFile(join(f.root,policyRef),serialize(policy));
+  await assert.rejects(f.store.adoptSingleAgentPolicy(policyRef,'agent2'),/coordinator/);
+  await f.store.adoptSingleAgentPolicy(policyRef);
+  await assert.rejects(f.store.adoptSingleAgentPolicy(policyRef),/already adopted/);
+  let loaded=await f.store.load();
+  assert(readyTasks(f.taskdoc,loaded.state,'agent1').some(task=>task.id==='VL-003'));
+  await assert.rejects(f.store.reserve('VL-004','agent1',['hardware'],f.location),/not READY/);
+  await f.store.reserve('VL-001','agent1',['crates'],f.location);await f.store.start('VL-001');
+  const handoff={taskId:'VL-001',owner:'agent1',sourceRevision:f.source,completedAt:'2026-11-10T01:00:00Z',acceptanceMet:true,commands:[{command:'test',exitCode:0}],artifacts:f.artifacts};
+  const handoffRef='handoffs/single.json',reviewRef='reviews/single.json';
+  await writeFile(join(f.root,handoffRef),serialize(handoff));await f.store.submit('VL-001',handoffRef);
+  const review={taskId:'VL-001',reviewer:'agent1',reviewMode:policy.mode,independent:false,policySha256:sha256(serialize(policy)),sourceRevision:f.source,
+    handoffSha256:sha256(serialize(handoff)),decision:'APPROVED',reviewedAt:'2026-11-10T01:20:00Z',findings:[],
+    audit:{startedAt:'2026-11-10T01:10:00Z',sourceUnchanged:true,checks:[{command:'actual audit check',exitCode:0}]},
+    ci:[{runId:123,url:'https://github.com/example/fixture/actions/runs/123',sourceRevision:f.source,conclusion:'success'}]};
+  for(const mutate of [r=>{delete r.reviewMode;},r=>{r.independent=true;},r=>{r.policySha256='a'.repeat(64);},
+    r=>{r.audit.startedAt='2026-11-10T00:50:00Z';},r=>{r.audit.sourceUnchanged=false;},r=>{r.audit.checks[0].exitCode=1;},
+    r=>{r.ci=[];},r=>{r.ci[0].sourceRevision='a'.repeat(40);},r=>{r.ci[0].conclusion='cancelled';},r=>{r.ci[0].url='file:///tmp/123';},r=>{r.ci[0].url='https://github.com/example/fixture/actions/runs/456';}]){
+    const invalid=JSON.parse(serialize(review));mutate(invalid);
+    await writeFile(join(f.root,reviewRef),serialize(invalid));await assert.rejects(f.store.verify('VL-001',reviewRef));
+  }
+  const rejection={...review,decision:'CHANGES_REQUESTED',findings:['Actual audit check failed'],audit:{...review.audit,checks:[{command:'failing audit',exitCode:1}]},ci:[]};
+  await writeFile(join(f.root,reviewRef),serialize(rejection));await f.store.requestChanges('VL-001',reviewRef);
+  assert.equal((await f.store.load()).state.tasks['VL-001'].status,'IN_PROGRESS');
+  await f.store.submit('VL-001',handoffRef);
+  const approvedRef='reviews/single-approved.json';
+  await writeFile(join(f.root,approvedRef),serialize(review));await f.store.verify('VL-001',approvedRef);
+  loaded=await f.store.load();assert.equal(loaded.state.tasks['VL-001'].reviewMode,policy.mode);
+  assert(readyTasks(f.taskdoc,loaded.state,'agent1').some(task=>task.id==='VL-002'));
+  const failed={...handoff,commands:[{command:'required test',exitCode:1}]};
+  assert.throws(()=>approveReview({status:'IN_REVIEW',owner:'agent1'},failed,review,review.handoffSha256,loaded.reviewPolicy),/acceptance check failed/);
+  await writeFile(join(f.root,policyRef),serialize({...policy,independent:true}));
+  await assert.rejects(f.store.load(),/policy changed/);
+});
+
+test('single-agent policy cannot invent lanes or imply independent review',async t=>{
+  const f=await fixture(t);await mkdir(join(f.root,'policies'));
+  const policy={schemaVersion:1,mode:'SINGLE_AGENT_SEQUENTIAL_AUDIT',authorizedBy:'owner',independent:false,requireSuccessfulCI:true,
+    ownerInstruction:'Explicit test owner instruction',authorizedAt:'2026-11-10T00:00:00Z',lanes:['unknown-lane']};
+  await writeFile(join(f.root,'policies/bad.json'),serialize(policy));
+  await assert.rejects(f.store.adoptSingleAgentPolicy('policies/bad.json'),/Unknown policy lane/);
+  await writeFile(join(f.root,'policies/bad.json'),serialize({...policy,lanes:['A0-Coordinator'],requireSuccessfulCI:false}));
+  await assert.rejects(f.store.adoptSingleAgentPolicy('policies/bad.json'));
+  assert.equal((await f.store.load()).state.reviewPolicy,undefined);
+});
