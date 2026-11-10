@@ -1,0 +1,31 @@
+{
+  "id": "VL-022-3f9fde65-2fb9-4191-a006-a7a39a5938bf",
+  "ref": "reservations/VL-022-3f9fde65-2fb9-4191-a006-a7a39a5938bf.json",
+  "taskId": "VL-022",
+  "owner": "agent1",
+  "paths": [
+    "apps/game-runtime/src/**",
+    "apps/game-runtime/examples/**",
+    "apps/game-runtime/Cargo.toml",
+    "apps/game-runtime/Dockerfile",
+    "crates/vl-gateway/**",
+    "crates/vl-security/src/**",
+    "crates/vl-protocol/**",
+    "Cargo.toml",
+    "Cargo.lock",
+    "proto/native/**",
+    "contracts/generated/csharp/**",
+    "packages/native-protocol/**",
+    "apps/platform-api/src/runtime-gateway/**",
+    "tests/native-wss/**",
+    "scripts/native-wss-interop.mjs",
+    ".github/workflows/rust-runtime.yml",
+    "scripts/verify-artifact-workflows.mjs",
+    "tests/governance/rust-workflow.test.mjs",
+    "docs/execution/desktop-first/gateway/**"
+  ],
+  "branch": "codex/desktop-first-backend",
+  "worktree": "/home/tiecont/Projects/virtual-city",
+  "sourceRevision": "619e70c653c37e18aa550eee5b7af9127ea01e8b",
+  "createdAt": "2026-11-10T12:31:41.447Z"
+}

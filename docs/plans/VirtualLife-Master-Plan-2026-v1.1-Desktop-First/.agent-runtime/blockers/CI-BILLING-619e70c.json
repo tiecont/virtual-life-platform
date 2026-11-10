@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "kind": "BLOCKED_EXTERNAL",
+  "taskIds": ["VL-016"],
+  "sourceRevision": "619e70c653c37e18aa550eee5b7af9127ea01e8b",
+  "runIds": [42816216097, 42816216290],
+  "reason": "GitHub reports that jobs were not started because recent account payments failed or the spending limit needs increasing.",
+  "evidenceRef": "docs/execution/desktop-first/persistence/CI-619e70c.json",
+  "ownerAction": "Resolve GitHub Billing & plans/payment/spending limit; then rerun the same-source workflows.",
+  "policy": "No purchase, spending-limit change, CI bypass, fabricated success or successor activation is authorized by this blocker.",
+  "nextExactAction": "Continue already-ready VL-022 locally under coordinator reservation; keep VL-016 unverified until actual successful exact-source aggregate CI."
+}

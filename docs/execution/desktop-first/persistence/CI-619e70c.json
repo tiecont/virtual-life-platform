@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-016",
+  "sourceRevision": "619e70c653c37e18aa550eee5b7af9127ea01e8b",
+  "observedAt": "2026-11-10T12:33:57.293887+00:00",
+  "acceptanceMet": false,
+  "result": "HOSTED_RUNNERS_NOT_STARTED_BILLING_OR_SPENDING_LIMIT",
+  "runs": [
+    {
+      "runId": 42816216097,
+      "conclusion": "failure",
+      "event": "push",
+      "headSha": "619e70c653c37e18aa550eee5b7af9127ea01e8b",
+      "jobs": [
+        {
+          "completedAt": "2026-11-10T12:29:44Z",
+          "conclusion": "failure",
+          "databaseId": 129829870041,
+          "name": "linux-foundation",
+          "startedAt": "2026-11-10T12:29:41Z",
+          "status": "completed",
+          "steps": [],
+          "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42816216097/job/129829870041"
+        }
+      ],
+      "status": "completed",
+      "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42816216097"
+    },
+    {
+      "runId": 42816216290,
+      "conclusion": "failure",
+      "event": "push",
+      "headSha": "619e70c653c37e18aa550eee5b7af9127ea01e8b",
+      "jobs": [
+        {
+          "completedAt": "2026-11-10T12:29:44Z",
+          "conclusion": "failure",
+          "databaseId": 129829870454,
+          "name": "change-plan",
+          "startedAt": "2026-11-10T12:29:41Z",
+          "status": "completed",
+          "steps": [],
+          "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42816216290/job/129829870454"
+        },
+        {
+          "completedAt": "2026-11-10T12:29:44Z",
+          "conclusion": "failure",
+          "databaseId": 129829870935,
+          "name": "core-checks",
+          "startedAt": "2026-11-10T12:29:41Z",
+          "status": "completed",
+          "steps": [],
+          "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42816216290/job/129829870935"
+        },
+        {
+          "completedAt": "2026-11-10T12:29:44Z",
+          "conclusion": "skipped",
+          "databaseId": 129829896220,
+          "name": "browser (${{ matrix.group }})",
+          "startedAt": "2026-11-10T12:29:44Z",
+          "status": "completed",
+          "steps": [],
+          "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42816216290/job/129829896220"
+        },
+        {
+          "completedAt": "2026-11-10T12:29:47Z",
+          "conclusion": "failure",
+          "databaseId": 129829897033,
+          "name": "quality",
+          "startedAt": "2026-11-10T12:29:44Z",
+          "status": "completed",
+          "steps": [],
+          "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42816216290/job/129829897033"
+        },
+        {
+          "completedAt": "2026-11-10T12:29:44Z",
+          "conclusion": "skipped",
+          "databaseId": 129829899518,
+          "name": "runtime-images",
+          "startedAt": "2026-11-10T12:29:45Z",
+          "status": "completed",
+          "steps": [],
+          "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42816216290/job/129829899518"
+        }
+      ],
+      "status": "completed",
+      "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42816216290"
+    }
+  ],
+  "annotations": [
+    {
+      "jobId": 129829870041,
+      "ref": "artifacts/desktop-first/vl016/continuation-20261110/ci-job-129829870041-annotations.json",
+      "sha256": "bfd166ed9e427aee6bf217d72c2e7e9c384109ab09fff30bbc102ef02470e2cc",
+      "annotations": [
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/tiecont/virtual-life-platform/blob/619e70c653c37e18aa550eee5b7af9127ea01e8b/.github",
+          "start_line": 1,
+          "start_column": null,
+          "end_line": 1,
+          "end_column": null,
+          "annotation_level": "failure",
+          "title": "",
+          "message": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
+          "raw_details": ""
+        }
+      ]
+    },
+    {
+      "jobId": 129829870454,
+      "ref": "artifacts/desktop-first/vl016/continuation-20261110/ci-job-129829870454-annotations.json",
+      "sha256": "e4f1226698f622ec6a68ba4557d0dab21f14961e91fa896524e1c0a15ac72b19",
+      "annotations": [
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/tiecont/virtual-life-platform/blob/619e70c653c37e18aa550eee5b7af9127ea01e8b/.github",
+          "start_line": 1,
+          "start_column": null,
+          "end_line": 1,
+          "end_column": null,
+          "annotation_level": "failure",
+          "title": "",
+          "message": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
+          "raw_details": ""
+        },
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/tiecont/virtual-life-platform/blob/619e70c653c37e18aa550eee5b7af9127ea01e8b/.github",
+          "start_line": 1,
+          "start_column": null,
+          "end_line": 1,
+          "end_column": null,
+          "annotation_level": "notice",
+          "title": "",
+          "message": "\"The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748\"",
+          "raw_details": ""
+        }
+      ]
+    }
+  ],
+  "audit": {
+    "mode": "SINGLE_AGENT_SEQUENTIAL_AUDIT",
+    "independent": false,
+    "startedAt": "2026-11-10T12:30:49.186494+00:00",
+    "completedAt": "2026-11-10T12:33:57.293918+00:00",
+    "sourceUnchanged": true,
+    "findings": [],
+    "checks": [
+      {
+        "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/invitations.test.ts tests/integration/native-game-schema.test.ts",
+        "exitCode": 0,
+        "ref": "artifacts/desktop-first/vl016/continuation-20261110/postcommit-pg.log",
+        "sha256": "8dcffe820485b9d7dbe03f3789b6dc749b9d2007095ef11c0a033ab2c90025b8"
+      },
+      {
+        "command": "node --test tests/governance/desktop-scheduler.test.mjs",
+        "exitCode": 0,
+        "ref": "artifacts/desktop-first/vl016/continuation-20261110/postcommit-scheduler.log",
+        "sha256": "002a75c9c89478659e504f6713d9021350efe0d2cbad50338daebe5cd13c3de8"
+      }
+    ],
+    "scope": "Five committed correction source files plus existing storage invariants;25 real-PG tests and19 scheduler tests rechecked after commit. Not independent and no acceptance issued without successful CI."
+  },
+  "action": "Repository/account owner must resolve GitHub Billing & plans/payment/spending limit before rerunning these exact-source jobs. Do not infer test failure or success from jobs that did not start. No account or billing mutation was made.",
+  "nextExactAction": "Keep VL-016 unverified. After account recovery rerun the two exact619e70c runs, inspect every job and aggregate, then complete the source-bound audit/review. Continue dependency-ready VL-022 under its reservation meanwhile."
+}

@@ -1,3 +1,19 @@
+# GitHub runner allocation blocked by account billing - 2026-11-10
+
+Exact619e70c Rust42816216097 and Quality42816216290 were not started: GitHub
+annotations say recent account payments failed or spending limit needs increasing.
+No actual hosted test result exists for this correction. Owner must resolve
+GitHub Billing & plans before rerunning those same-source jobs. No payment/limit
+change or bypass was made. See persistence/CI-619e70c.json and runtime blocker
+CI-BILLING-619e70c.json. VL-016 stays unverified; its local25PG/30browser/121governance
+and separate postcommit25PG/19scheduler successes do not waive required CI.
+
+VL-022 is independently dependency-ready and now reserved/started; continue its
+local work. VL-017 remains gated by VL-016. Physical Windows/Unity/GPU, brand,
+rights/signing and production/public gates remain unchanged.
+
+## Previous checkpoints
+
 # Current aggregate CI and external gates - 2026-11-10
 
 VL-019 is VERIFIED; there is no peer-review wait under the owner-authorized

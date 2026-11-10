@@ -250,9 +250,10 @@
       "evidenceRefs": []
     },
     "VL-022": {
-      "status": "TODO",
-      "owner": null,
-      "evidenceRefs": []
+      "status": "IN_PROGRESS",
+      "owner": "agent1",
+      "evidenceRefs": [],
+      "reservationId": "VL-022-3f9fde65-2fb9-4191-a006-a7a39a5938bf"
     },
     "VL-023": {
       "status": "TODO",
@@ -1094,6 +1095,37 @@
       "worktree": "/home/tiecont/Projects/virtual-city",
       "sourceRevision": "81dda8571bc6a5577ca6950ac8c6b48ca3eb70fe",
       "createdAt": "2026-11-10T10:19:04.606Z"
+    },
+    "VL-022-3f9fde65-2fb9-4191-a006-a7a39a5938bf": {
+      "id": "VL-022-3f9fde65-2fb9-4191-a006-a7a39a5938bf",
+      "ref": "reservations/VL-022-3f9fde65-2fb9-4191-a006-a7a39a5938bf.json",
+      "taskId": "VL-022",
+      "owner": "agent1",
+      "paths": [
+        "apps/game-runtime/src/**",
+        "apps/game-runtime/examples/**",
+        "apps/game-runtime/Cargo.toml",
+        "apps/game-runtime/Dockerfile",
+        "crates/vl-gateway/**",
+        "crates/vl-security/src/**",
+        "crates/vl-protocol/**",
+        "Cargo.toml",
+        "Cargo.lock",
+        "proto/native/**",
+        "contracts/generated/csharp/**",
+        "packages/native-protocol/**",
+        "apps/platform-api/src/runtime-gateway/**",
+        "tests/native-wss/**",
+        "scripts/native-wss-interop.mjs",
+        ".github/workflows/rust-runtime.yml",
+        "scripts/verify-artifact-workflows.mjs",
+        "tests/governance/rust-workflow.test.mjs",
+        "docs/execution/desktop-first/gateway/**"
+      ],
+      "branch": "codex/desktop-first-backend",
+      "worktree": "/home/tiecont/Projects/virtual-city",
+      "sourceRevision": "619e70c653c37e18aa550eee5b7af9127ea01e8b",
+      "createdAt": "2026-11-10T12:31:41.447Z"
     }
   },
   "gateEvidence": {
@@ -1109,7 +1141,7 @@
       }
     ]
   },
-  "updatedAt": "2026-11-10T12:04:48.187Z",
+  "updatedAt": "2026-11-10T12:31:42.724Z",
   "reviewPolicy": {
     "ref": "policies/single-agent-2026-11-10.json",
     "sha256": "02c0285a2d6fe5cf19c57f10d91945f6d9a9ee60a1bf80f7c200e63ee6e7cda1"

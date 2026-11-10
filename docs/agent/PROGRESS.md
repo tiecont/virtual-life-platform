@@ -1,3 +1,19 @@
+# Exact619e70c CI runner allocation blocked; VL-022 started - 2026-11-10
+
+Correction619e70c is committed/pushed on its own CI branch. Local full build/lint,
+121governance,25PG,30browser,architecture/preservation/plan and both47/48->49
+compatibility harnesses PASS. Separate postcommit audit25PG/19scheduler PASS.
+Actual Rust42816216097 and Quality42816216290 have no executed steps: GitHub
+annotations report account payment/spending-limit failure. No CI acceptance or
+billing mutation. VL-016 remains unverified; VL-017 remains gated.
+
+VL-022 reserved/started through coordinator API. Counts12VERIFIED/2BLOCKED_EXTERNAL/
+94TODO/2IN_PROGRESS. Next: implement a bounded default-off WSS transport/actual
+browser and Rust interop slice. Owner needs to resolve GitHub Billing & plans
+before same619e70c runs can provide actual CI. Evidence persistence/CI-619e70c.json.
+
+## Previous checkpoints
+
 # VL-016 correction continuation; VL-019 accepted - 2026-11-10
 
 Owner requested continuation of the whole dependency-ordered plan with high

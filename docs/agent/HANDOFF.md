@@ -1,3 +1,28 @@
+# Exact619e70c CI blocked before runner start; VL-022 reserved - 2026-11-10
+
+Correction619e70c653c37e18aa550eee5b7af9127ea01e8b is committed and pushed to
+codex/desktop-ci-corrections-20261110. Actual Rust42816216097 and Quality42816216290
+both fail before any step: GitHub annotations name failed account payments or
+spending limit. No test result can be inferred and no billing change was made.
+Evidence: docs/execution/desktop-first/persistence/CI-619e70c.json and the runtime
+blocker CI-BILLING-619e70c.json. VL-016 stays IN_PROGRESS/unverified. Separate
+postcommit same-agent audit reruns25PG/19scheduler PASS with unchanged correction
+source; no approval is issued without actual CI. All owned local test DBs cleaned.
+
+VL-022 is now RESERVED/started through schedulerStore, reservation
+reservations/VL-022-3f9fde65-2fb9-4191-a006-a7a39a5938bf.json. Source scope includes
+Rust gateway/protocol/security, explicit new control adapter, browser interop and
+its workflow/evidence. No gateway implementation exists yet. Continue actual
+network contract/security design and a bounded default-off WSS slice, preserving
+the legacy writer and owner IDE/CA files. No agent was spawned.
+
+**Next exact action:** implement/test VL-022 under that reservation. After owner
+resolves GitHub account billing, rerun both619e70c workflows and inspect every
+actual result before VL-016 review/verification or VL-017 activation. Active plan
+continues; hosted CI and Windows/Unity/GPU/rights/signing remain honest gates.
+
+## Previous checkpoints
+
 # VL-016 correction continuation; VL-019 accepted - 2026-11-10
 
 Owner asks to continue all plans with high quality. Use the active Desktop First
