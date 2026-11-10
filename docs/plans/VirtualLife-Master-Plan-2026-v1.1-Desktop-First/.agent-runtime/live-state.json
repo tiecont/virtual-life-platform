@@ -66,10 +66,12 @@
       "reviewSha256": "8e35cfad660cc5730b605882638a9855224fe45d8f67d53f69d33338bafa0121"
     },
     "VL-004": {
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "owner": "agent1",
       "evidenceRefs": [],
-      "reservationId": "VL-004-8f63ab58-3e70-450b-be21-83d4c3eec470"
+      "reservationId": "VL-004-8f63ab58-3e70-450b-be21-83d4c3eec470",
+      "handoffRef": "handoffs/VL-004.json",
+      "handoffSha256": "772f114f860c79075355b0e7965692c2aaba5bf951e7aabf8282ae944a4b250d"
     },
     "VL-005": {
       "status": "TODO",
@@ -789,5 +791,5 @@
     }
   },
   "gateEvidence": {},
-  "updatedAt": "2026-11-10T01:45:39.198Z"
+  "updatedAt": "2026-11-10T01:47:33.449Z"
 }
