@@ -482,12 +482,12 @@
       "next_action": "C_sustainable/C_recommended/C_hard report; admin capacity history/approval view"
     },
     "N09-01": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
+      "status": "IN_PROGRESS",
+      "owner": "Codex Runtime lane",
+      "branch": "codex/vnext-n09-01-contract",
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Queue/offer/slot schema, state machine, policy versions"
+      "next_action": "Implement additive own-ticket/offer/lease policy contracts and deterministic reference state machine; prove disjoint capacity, duplicate tabs, expiry/reconnect/travel and pending hard decrease before durable queue activation."
     },
     "N09-02": {
       "status": "TODO",
