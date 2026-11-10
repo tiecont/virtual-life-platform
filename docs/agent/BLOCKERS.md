@@ -1,3 +1,22 @@
+# Current desktop-first external and review gates - 2026-11-10
+
+VL-004 independent source review pending;actual Ubuntu Rust CI passes. VL-005 audit
+in progress under Agent2 reservation. VL-006 lacks approved style/rights/trademark/
+font evidence. VL-007 lacks three agreed named physical Windows test PCs; owner
+confirms no Windows currently. Neither is VERIFIED despite useful Linux audit code.
+Unity editor/license/build modules,Windows runner access,GPU self-hosted machine,
+signing and human art/UX remain unqualified. Continue independent Linux tasks.
+
+The old Rust toolchain absence was resolved for VL004 in isolated temporary paths:
+RUSTUP_HOME=/tmp/virtual-life-rustup,CARGO_HOME=/tmp/virtual-life-cargo,Rust1.99.1.
+No profile/dev-OS change. Actual hostedUbuntu24.04 foundation CI passes. Aggregate
+Quality remains a separate running check;no global hosted green is claimed.
+
+Known imported browser hard-gate mismatches for VL027/033/058 need a reviewed
+execution overlay before those tasks;immutable baseline is not changed.
+
+## Previous checkpoints
+
 # VL-001 revised source awaiting review - 2026-11-10
 
 Independent review exposed VL001-R1 (unbound commit/artifact evidence). Source fix

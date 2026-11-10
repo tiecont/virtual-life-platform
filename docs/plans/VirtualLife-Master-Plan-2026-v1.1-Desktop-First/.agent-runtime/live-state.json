@@ -74,9 +74,10 @@
       "handoffSha256": "772f114f860c79075355b0e7965692c2aaba5bf951e7aabf8282ae944a4b250d"
     },
     "VL-005": {
-      "status": "TODO",
-      "owner": null,
-      "evidenceRefs": []
+      "status": "IN_PROGRESS",
+      "owner": "agent2",
+      "evidenceRefs": [],
+      "reservationId": "VL-005-a315d35a-5566-41db-a46a-e71acf163845"
     },
     "VL-006": {
       "status": "BLOCKED_EXTERNAL",
@@ -788,8 +789,33 @@
       "worktree": "/home/tiecont/Projects/virtual-city",
       "sourceRevision": "fc8466fb75458696288c627865e9a8513189574d",
       "createdAt": "2026-11-10T01:31:21.249Z"
+    },
+    "VL-005-a315d35a-5566-41db-a46a-e71acf163845": {
+      "id": "VL-005-a315d35a-5566-41db-a46a-e71acf163845",
+      "ref": "reservations/VL-005-a315d35a-5566-41db-a46a-e71acf163845.json",
+      "taskId": "VL-005",
+      "owner": "agent2",
+      "paths": [
+        "docs/execution/desktop-first/web-compatibility"
+      ],
+      "branch": "codex/desktop-first-backend",
+      "worktree": "/home/tiecont/Projects/virtual-city",
+      "sourceRevision": "3e24ff05100bde530ca9f652dab955441d5ad10c",
+      "createdAt": "2026-11-10T01:48:33.205Z"
     }
   },
-  "gateEvidence": {},
-  "updatedAt": "2026-11-10T01:47:33.449Z"
+  "gateEvidence": {
+    "VL-005": [
+      {
+        "gate": "N06-04 active lane source handoff",
+        "evidenceRefs": [
+          {
+            "ref": "gates/N06-04-source-handoff.json",
+            "sha256": "26a0a47d02ecfa0d3fedd42033b538a5c51c75fc0cb52525f40271590c647205"
+          }
+        ]
+      }
+    ]
+  },
+  "updatedAt": "2026-11-10T01:48:33.334Z"
 }

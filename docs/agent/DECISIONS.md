@@ -1,3 +1,21 @@
+# Owner development/CI runner split and verified foundations - 2026-11-10
+
+Record the owner's explicit instruction: retain CachyOS primary development;use
+Ubuntu runners where Unity Linux CI needs supported environments;use Windows
+runners for Windows build/functional tests;reserve FPS,shader,DirectX12 and real
+graphics evidence for physical-GPU Windows self-hosted runners. A normal hosted
+Windows runner cannot qualify gaming GPU performance. See independently reviewed
+DESKTOP-EXECUTION-DECISION.md (VL077). No machine/license was provisioned.
+
+New Rust foundation has no DB/gameplay authority or activation path,only liveness
+and truthful not-ready health. Pin Rust/dependencies/base images and run exact-source
+Ubuntu CI. Node workspace discovery skips only the explicitly registered Rust app;
+missing or malformed Node manifests continue failing. New workflow has read-only
+trust checks and no publish/deploy permissions. Preserve prior failed runs and the
+separate optional web compatibility ledger. No baseline source or SQL was rewritten.
+
+## Previous decisions
+
 # Bind acceptance evidence to committed bytes - 2026-11-10
 
 Follow independent VL001-R1: validate the source Git commit and every artifact blob

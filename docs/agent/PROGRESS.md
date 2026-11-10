@@ -1,3 +1,27 @@
+# Desktop-first Linux foundation checkpoint - 2026-11-10
+
+VL-001/002/003/008/009/077 are VERIFIED through exact-source independent reviews.
+VL-004 is IN_REVIEW with actual Ubuntu24.04 Rust CI PASS at6f6d5f1,117 governance,
+3Rust tests,fmt/check/clippy,lint/localCI and local nonroot read-only OCI smoke PASS.
+VL-005 is reserved/in progress for Agent2 optional web audit. VL-006/007 are
+BLOCKED_EXTERNAL: brand approval/rights and named physical Windows test tiers.
+No other VL status is promoted; legacy/checksum baseline remains unchanged.
+
+Owner explicitly keeps CachyOS primary development, Ubuntu runners for supported
+Unity Linux CI, Windows runners for Windows build/function tests, and physical-GPU
+Windows self-hosted runners for FPS/shaders/DirectX12/actual graphics. Ordinary
+Windows runners are not gaming GPU qualification. No Windows is currently available.
+
+Rust foundation is health-only;ready503 and gameplay activation denied. No new
+SQL/Unity/frontend/gameplay or production change. 0048 is a coordinated reservation,
+not executed DDL. Draft PR1 is private review,not merged or deployed.
+
+**Next exact action:** Ingest VL-004 independent review if approved;then reserve
+VL-012. Collect Agent2's VL-005 audit and review it independently. Hostedaggregate
+Quality is still separate/in progress,not claimed green.
+
+## Previous checkpoints
+
 # VL-001 independent review correction - 2026-11-10
 
 Independent Agent 2 requested changes (VL001-R1): missing artifacts/nonexistent

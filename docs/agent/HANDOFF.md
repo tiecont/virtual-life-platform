@@ -1,3 +1,30 @@
+# Desktop-first execution handoff - 2026-11-10
+
+Read live scheduler status first. Six tasks VERIFIED:VL-001/002/003/008/009/077.
+VL-004 handoff source6f6d5f1831774eed4e6cedd0ab0755c308a88bac is IN_REVIEW;
+actual Ubuntu24.04 CI42737799637 PASS,including Rust fmt/check/clippy/3tests and
+OCI smoke. Local117governance,lint/CIcontract,23priorPGintegration and separate
+47checksum/2concurrent-migrator inventory pass at their recorded scopes.
+Source/evidence reviews and rejected VL001 attempt are immutable.
+
+CachyOS remains primary dev; Ubuntu is supported Unity Linux CI lane; Windows
+functional CI and physical-GPU Windows self-hosted graphics are separate. No
+current Windows machine; no GPU benchmark is inferred from hosted runners.
+Rust is health-only and default-off;no new migration/production/Unity/frontend
+edit. Legacy N06 optional browser failures and all old ledger bytes remain.
+
+Draft https://github.com/tiecont/virtual-life-platform/pull/1 contains the broader
+unmerged source history;bounded VL reviews do not certify all191historical commits.
+Hostedaggregate Quality is not yet green. No hidden local background server is
+promised;owned PG schemas/containers and runtime smoke containers were cleaned.
+
+**Next exact action:** Check reviews/VL-004-agent2.json and use schedulerStore.verify
+only on exact approval;reserve/start VL-012 only then. Agent2 has VL-005 source
+reservation for docs/execution/desktop-first/web-compatibility only;collect its
+source-bound audit and independently review. Keep VL006/007 blocked until facts.
+
+## Previous checkpoints
+
 # VL-001 review correction handoff - 2026-11-10
 
 Agent 2 review `reviews/VL-001-agent2.json` requests changes for VL001-R1.
