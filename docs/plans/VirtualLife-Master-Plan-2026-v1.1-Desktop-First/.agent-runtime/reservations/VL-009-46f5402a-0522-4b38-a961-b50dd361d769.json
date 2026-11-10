@@ -1,0 +1,13 @@
+{
+  "id": "VL-009-46f5402a-0522-4b38-a961-b50dd361d769",
+  "ref": "reservations/VL-009-46f5402a-0522-4b38-a961-b50dd361d769.json",
+  "taskId": "VL-009",
+  "owner": "agent1",
+  "paths": [
+    "docs/execution/desktop-first/PLAN-CROSSWALK.md"
+  ],
+  "branch": "codex/desktop-first-backend",
+  "worktree": "/home/tiecont/Projects/virtual-city",
+  "sourceRevision": "fc8466fb75458696288c627865e9a8513189574d",
+  "createdAt": "2026-11-10T01:31:21.057Z"
+}
