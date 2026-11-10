@@ -11,7 +11,15 @@ async function closeActions(page:Page){const dialog=page.getByRole('dialog',{nam
 async function enter(page:Page){await page.goto(route);await expect(canvas(page)).toBeVisible({timeout:20000});await page.getByRole('button',{name:'Enter cafe',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');await closeActions(page);await expect(canvas(page)).toHaveAttribute('data-entity-count','1');}
 async function current(context:BrowserContext){const response=await context.request.get('/v1/me/room');expect(response.status()).toBe(200);return(await response.json()).snapshot;}
 async function capture(page:Page,name:string){const directory='artifacts/vnext/n06-11/room-adapter-v1/browser-'+runId+'/'+test.info().project.name;await mkdir(directory,{recursive:true});await page.screenshot({path:directory+'/'+name+'.png',fullPage:true});await writeFile(directory+'/'+name+'.yml',await page.locator('body').ariaSnapshot());const data=await canvas(page).getAttribute('data-scene3d-diagnostics');if(data)await writeFile(directory+'/'+name+'-diagnostics.json',data+'\n');const gpu=await canvas(page).evaluate(element=>{const gl=(element as HTMLCanvasElement).getContext('webgl2')!;const extension=gl.getExtension('WEBGL_debug_renderer_info');return{version:gl.getParameter(gl.VERSION),renderer:extension?gl.getParameter(extension.UNMASKED_RENDERER_WEBGL):'Unknown'};});expect(gpu.version).toContain('WebGL 2');await writeFile(directory+'/'+name+'-gpu.json',JSON.stringify({gpu,runtimeErrors:runtimeErrors.get(page)},null,2)+'\n');}
-async function pointClick(page:Page,point:{x:number;y:number}){await canvas(page).scrollIntoViewIfNeeded();const box=await canvas(page).boundingBox();expect(box).not.toBeNull();const x=box!.x+point.x,y=box!.y+point.y,viewport=page.viewportSize()!;expect(x).toBeGreaterThanOrEqual(0);expect(y).toBeGreaterThanOrEqual(0);expect(x).toBeLessThan(viewport.width);expect(y).toBeLessThan(viewport.height);if(test.info().project.name==='mobile')await page.touchscreen.tap(x,y);else await page.mouse.click(x,y);}
+async function pointClick(page:Page,point:{x:number;y:number;seatId?:string}){
+ await canvas(page).scrollIntoViewIfNeeded();
+ // Scrolling can resize the responsive canvas; sample its box and current target together.
+ const {x,y}=await canvas(page).evaluate((element,target)=>{
+  const box=element.getBoundingClientRect(),local=target.seatId?(JSON.parse((element as HTMLElement).dataset.seatTargets!) as Array<{seatId:string;x:number;y:number}>).find(seat=>seat.seatId===target.seatId)!:target;
+  return{x:box.x+local.x,y:box.y+local.y};
+ },point);
+ const viewport=page.viewportSize()!;expect(x).toBeGreaterThanOrEqual(0);expect(y).toBeGreaterThanOrEqual(0);expect(x).toBeLessThan(viewport.width);expect(y).toBeLessThan(viewport.height);if(test.info().project.name==='mobile')await page.touchscreen.tap(x,y);else await page.mouse.click(x,y);
+}
 test.setTimeout(90000);
 test.beforeEach(async({page},info)=>{const errors:string[]=[];runtimeErrors.set(page,errors);page.on('pageerror',error=>errors.push(error.message));page.on('console',message=>{if(message.type()==='error'&&/THREE\.|WebGLProgram|GL_INVALID|shader error/i.test(message.text()))errors.push(message.text());});await page.setViewportSize(info.project.name==='mobile'?{width:844,height:390}:{width:1280,height:720});});
 test.afterEach(async({page})=>{if(await page.getByRole('status').textContent().catch(()=>'')==='Connected'){await closeActions(page);const leave=page.getByRole('button',{name:'Leave cafe',exact:true});if(await leave.isEnabled())await leave.click();}expect(runtimeErrors.get(page)).toEqual([]);});
@@ -29,7 +37,9 @@ test('seat marker batches retain authoritative pointer targets after moving the 
  await guest(context,'3D Batch Visitor');await enter(page);const before=await current(context);
  for(const [index,seatId]of ['seat-1','seat-8','seat-1'].entries()){
   if(index){await page.getByRole('button',{name:'Room actions',exact:true}).click();await page.getByRole('button',{name:'Stand up',exact:true}).click();await expect(page.getByText('You stood up.',{exact:true})).toBeVisible();await closeActions(page);await expect(canvas(page)).toHaveAttribute('data-sitting-count','0');}
-  const targets=JSON.parse((await canvas(page).getAttribute('data-seat-targets'))!);await pointClick(page,targets.find((target:{seatId:string})=>target.seatId===seatId));
+  const targets=JSON.parse((await canvas(page).getAttribute('data-seat-targets'))!);
+  if(index===2){await page.setViewportSize({width:740,height:360});await page.clock.runFor(100);}
+  await pointClick(page,targets.find((target:{seatId:string})=>target.seatId===seatId));
   await expect(page.getByText('Your seat is confirmed.',{exact:true})).toBeVisible();await page.clock.fastForward(4000);
   await expect(canvas(page)).toHaveAttribute('data-sitting-count','1',{timeout:15000});const state=await current(context);expect(state.self.seatId).toBe(seatId);expect(state.membershipId).toBe(before.membershipId);
   if(index===1)await capture(page,'rebatch-distant-table');
