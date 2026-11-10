@@ -1,3 +1,31 @@
+# Desktop-first protocol handoff - 2026-11-10
+
+Use `node scripts/desktop-scheduler.mjs status agent1` as the live authority.
+Nine tasks are VERIFIED: VL-001/002/003/004/005/008/009/012/077; VL-006/007 are
+BLOCKED_EXTERNAL. VL-012 independent review is APPROVED, source
+`9cfd8ea4c7f758119ed874e983ae1fa6728e2151`, handoff commit `2a134e7`,
+handoff SHA256 `b1e943ad9d7e44a76b30c56888141d0cb358b100be31a4255b3383270ec7c8df`.
+
+Actual source-bound Ubuntu CI 42741549539 passes, including 8 Rust tests,
+regeneration and 4 TypeScript fixtures plus OCI smoke. Public WSS and internal
+RPC are separate untrusted schemas; neither is an authenticated live endpoint.
+Generated C# still needs compilation and native Unity verification at VL-081.
+No new SQL, frontend, Unity, production or release change. The original 47 SQL,
+105 planning inputs and 209 archived legacy files retain their recorded bytes.
+Aggregate Quality run 42741549657 failed after 770 integration passes plus an
+unhandled PostgreSQL connection error; image job passed and browsers were skipped.
+
+The previous reviewer CLI was interrupted. A fresh independent Agent 2 CLI wrote
+the canonical approval and coordinator ingested its exact hashes. Current reviewer
+reran 5 Rust protocol tests, codegen, TypeScript typecheck/4 tests and hosted-log
+hash verification. See `artifacts/desktop-first/vl012/agent2-complete.log`.
+
+**Next exact action:** Reserve/start dependency-ready VL-013 or VL-015. Preserve CachyOS dev,
+Ubuntu Unity Linux CI, Windows functional runners and physical-GPU Windows QA.
+Owner `.idea/` and `infra/botkeep-ca.pem` remain unread and unstaged.
+
+## Previous checkpoints
+
 # Desktop-first execution handoff - 2026-11-10
 
 Read live scheduler status first. Six tasks VERIFIED:VL-001/002/003/008/009/077.

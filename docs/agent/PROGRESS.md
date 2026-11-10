@@ -1,3 +1,27 @@
+# Desktop-first protocol checkpoint - 2026-11-10
+
+Nine tasks are VERIFIED: VL-001/002/003/004/005/008/009/012/077. VL-012 has an
+independent APPROVED review at source `9cfd8ea4c7f758119ed874e983ae1fa6728e2151`, published by
+`2a134e7`. Its exact-source Ubuntu run 42741549539 passed Rust workspace checks,
+binding regeneration, Rust/TypeScript wire fixtures and OCI smoke. The handoff
+records 8 Rust tests, 4 TypeScript tests, 117 governance tests, lint (one generated
+code warning), CI contracts and preservation passing at their stated scopes.
+C# output is generated, not compiled or Unity qualified. Runtime remains health-only.
+
+VL-006/007 remain BLOCKED_EXTERNAL for brand approval/rights and named physical
+Windows test tiers. No successor is READY before independent VL-012 approval.
+CachyOS remains primary development; supported Unity Linux CI uses Ubuntu;
+Windows functional builds and physical-GPU Windows graphics qualification are
+separate lanes. Neither Windows capacity nor Unity licensing is established.
+Aggregate Quality run 42741549657 failed: 770 integration tests passed but an
+unhandled PostgreSQL connection error in deadline-identity caused exit 1; its
+image job passed. Rust workflow success is not global CI qualification.
+
+**Next exact action:** Reserve/start VL-013, then VL-015 according to live readiness;
+retain the exact-source VL-012 review and separate aggregate CI failure.
+
+## Previous checkpoints
+
 # Desktop-first Linux foundation checkpoint - 2026-11-10
 
 VL-001/002/003/008/009/077 are VERIFIED through exact-source independent reviews.

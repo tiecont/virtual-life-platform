@@ -1,3 +1,20 @@
+# Current native protocol review gate - 2026-11-10
+
+VL-004/005/012 have independent approval and are VERIFIED. VL-012 source
+`9cfd8ea` has passing Ubuntu Rust CI run 42741549539. Live scheduler now opens
+VL-013/VL-015. No authentication, game persistence or live WSS is implemented.
+Generated C# is not compiled or Unity qualified. Aggregate Quality 42741549657
+failed with 770 passing integration tests plus an unhandled PostgreSQL connection
+error; image job passed, browsers skipped. Rust PASS is not global qualification.
+
+VL-006 brand rights/approval and VL-007 physical Windows tiers remain external
+gates. CachyOS development and Ubuntu CI can continue once dependencies verify;
+they do not replace Windows builds or physical-GPU FPS/shader/DirectX12 checks.
+Unity license/editor/modules, Windows runner access, GPU machines, signing and
+human visual acceptance still require actual evidence. No baseline gate is waived.
+
+## Previous checkpoints
+
 # Current desktop-first external and review gates - 2026-11-10
 
 VL-004 independent source review pending;actual Ubuntu Rust CI passes. VL-005 audit

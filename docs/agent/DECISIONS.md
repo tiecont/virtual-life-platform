@@ -1,3 +1,20 @@
+# Native protocol generation boundary - 2026-11-10
+
+VL-012 keeps public WSS messages separate from internal service claims. Successful
+decoding is structural validation, never identity or policy authority. Public
+TypeScript/C# bindings exclude internal claims; pinned Prost/tonic/protoc/Buf
+generation is checked byte-for-byte on actual Ubuntu CI. Frozen initial native-v1
+fixtures test additive fields and uint64 precision; they do not certify existing
+Android/Socket.IO compatibility or a deployed native-v0. Unity/C# compilation
+remains VL-081. Live runtime and gameplay activation remain disabled.
+
+Dependency evolution is reviewed through committed source and lockfile hashes.
+Preservation records the original and current dependency lock hashes separately;
+it still enforces immutable planning inputs, legacy archives, SQL and retained
+renderer/authority sources. No historical checksum baseline was rewritten.
+
+## Previous decisions
+
 # Owner development/CI runner split and verified foundations - 2026-11-10
 
 Record the owner's explicit instruction: retain CachyOS primary development;use
