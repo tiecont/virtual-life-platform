@@ -6,8 +6,8 @@ import {io,type Socket} from 'socket.io-client';
 import {defineWorld} from '@virtual-city/world-sdk';
 import {RoomAckSchema,ChatAckSchema,type RoomSnapshot} from '@virtual-city/contracts';
 import {createApp} from '../apps/platform-api/src/app';
-import {readConfig} from '../apps/platform-api/src/config';
-import {migrate} from '../apps/platform-api/src/db/migrations';
+import {readConfig} from '../apps/platform-api/src/shared/config/environment';
+import {migrate} from '../apps/platform-api/src/shared/database/migrations';
 async function main(){
  const root='artifacts/vnext/n11-03/safety-v1/tls',url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable DB required');
  const admin=new Pool({connectionString:url.toString()}),schema='native_safety_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA "${schema}"`);url.searchParams.set('options','-c search_path='+schema);const pool=new Pool({connectionString:url.toString()});

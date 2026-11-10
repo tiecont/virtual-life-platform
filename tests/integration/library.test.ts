@@ -7,9 +7,9 @@ import { MeSchema,RoomAckSchema,ChatAckSchema,TravelAckSchema,type RoomSnapshot 
 import { libraryWorldVersion } from '@virtual-city/library-world';
 import { deadlineWorldVersion } from '@virtual-city/deadline-world';
 import {mkdir,writeFile} from 'node:fs/promises';
-import { readConfig } from '../../apps/platform-api/src/config';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { createApp } from '../../apps/platform-api/src/app';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 let admin:Pool,pool:Pool,app:Awaited<ReturnType<typeof createApp>>,url:string,runtimeConfig:ReturnType<typeof readConfig>;const clients:Socket[]=[],organizers=new Set<string>(),schema='library_test_'+randomUUID().replaceAll('-',''),origin='http://127.0.0.1:3300';let serial=0,offset=0;
 async function open(){app=await createApp(runtimeConfig,pool,false,{now:()=>Date.now()+offset,safety:{enabled:true},events:{organizers:{permits:async(_db,actor,world)=>world==='library'&&organizers.has(actor.accountId)}}});await app.app.listen(0,'127.0.0.1');url=await app.app.getUrl();}
 beforeAll(async()=>{

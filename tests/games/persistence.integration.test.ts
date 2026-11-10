@@ -2,7 +2,7 @@ import {it,expect} from 'vitest';
 import {randomUUID} from 'node:crypto';
 import {RoomAckSchema,GameLobbyViewSchema} from '@virtual-city/contracts';
 import {journalFixture,draw,source,gameKey,keyId} from './journal-fixture';
-import {GameJournalCrypto} from '../../apps/platform-api/src/games/journal-crypto';
+import {GameJournalCrypto} from '../../apps/platform-api/src/features/games/modules/persistence/infrastructure/journal-crypto';
 const f=journalFixture();
 it('persists encrypted state/seed and only own-card projections; no secret reaches receipts/results/outbox/export',async()=>{
  const g=await f.started(),row=(await f.pool.query('SELECT * FROM engine_game_matches WHERE id=$1',[g.matchId])).rows[0];expect(row.sealed_state).toMatch(/^gj1\./);expect(row.sealed_state).not.toContain('SYNTHETIC_PRIVATE_DECK_ONLY');expect(row.seed_commitment).toMatch(/^[a-f0-9]{64}$/);

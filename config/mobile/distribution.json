@@ -1,0 +1,10 @@
+{
+  "runtime_context": {
+    "mobile_clients_distributed": false,
+    "android_clients_distributed": false,
+    "ios_clients_distributed": false,
+    "development_priority": "WEB_SERVER_FIRST",
+    "mobile_development_deferred": true
+  },
+  "release_status": "NOT_REQUESTED"
+}

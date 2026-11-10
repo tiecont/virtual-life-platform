@@ -2,8 +2,8 @@ import {constants} from 'node:fs';
 import {open} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {Pool} from 'pg';
-import {readConfig} from './config';
-import {OperatorService} from './identity/operator-service';
+import {readConfig} from './shared/config/environment';
+import {OperatorService} from './features/identity/modules/operators/application/operator-service';
 // Out-of-band only. No HTTP bootstrap, env password, command-line secret or printout.
 async function main(){
  const [input,output,...extra]=process.argv.slice(2);if(!input||!output||extra.length||resolve(input)===resolve(output))throw Error('Explicit separate private input/output paths required');

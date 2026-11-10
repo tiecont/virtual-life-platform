@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { assertImportAllowed } from '../../scripts/check-boundaries.mjs';
+import {relative,dirname} from 'node:path';
 const root = '/repo';
 test('admin consumes only public UI CSS and cannot import another app or private UI implementation',()=>{
  const admin='/repo/apps/admin-web/app/layout.tsx';
@@ -9,14 +10,17 @@ test('admin consumes only public UI CSS and cannot import another app or private
  assert.throws(()=>assertImportAllowed('/repo/packages/deadline-world/src/index.ts','@virtual-city/ui/tokens.css',root));
 });
 test('API areas use declared public entry files and isolate composition and migration internals',()=>{
- const social='/repo/apps/platform-api/src/social/service.ts';
- for(const target of ['../identity/passwords','../db/schema','../db/migrations','../app'])assert.throws(()=>assertImportAllowed(social,target,root));
- assert.doesNotThrow(()=>assertImportAllowed(social,'../identity/service',root));
- assert.doesNotThrow(()=>assertImportAllowed('/repo/apps/platform-api/src/app.ts','./db/migrations',root));
+ const social='/repo/apps/platform-api/src/features/social/modules/relationships/application/service.ts';
+ const base='/repo/apps/platform-api/src/';
+ const dependency=(from,target)=>{const value=relative(dirname(from),base+target);return value.startsWith('.')?value:'./'+value;};
+ for(const target of ['features/identity/modules/accounts/infrastructure/passwords','shared/database/schema','shared/database/migrations','app'])assert.throws(()=>assertImportAllowed(social,dependency(social,target),root));
+ assert.doesNotThrow(()=>assertImportAllowed(social,dependency(social,'features/identity/modules/accounts/application/service'),root));
+ assert.doesNotThrow(()=>assertImportAllowed('/repo/apps/platform-api/src/app.ts','./shared/database/migrations',root));
  assert.doesNotThrow(()=>assertImportAllowed('/repo/apps/platform-api/src/main.ts','./app',root));
- assert.throws(()=>assertImportAllowed(social,'../worker',root));
- assert.doesNotThrow(()=>assertImportAllowed('/repo/apps/platform-api/src/worker.ts','./db/migrations',root));
- assert.throws(()=>assertImportAllowed('/repo/apps/platform-api/src/common/errors.ts','../identity/service',root));
+ assert.throws(()=>assertImportAllowed(social,dependency(social,'worker'),root));
+ assert.doesNotThrow(()=>assertImportAllowed('/repo/apps/platform-api/src/worker.ts','./shared/database/migrations',root));
+ assert.throws(()=>assertImportAllowed(base+'features/admission/modules/allocation/domain/model.ts','../infrastructure/store',root),/outer layer/);
+ assert.throws(()=>assertImportAllowed(base+'shared/common/errors.ts',dependency(base+'shared/common/errors.ts','features/identity/modules/accounts/application/service'),root));
  for(const area of ['unowned','constructor','__proto__'])assert.throws(()=>assertImportAllowed('/repo/apps/platform-api/src/'+area+'/service.ts','../identity/service',root));
 });
 test('world implementations reject SQL drivers and schema imports while public SDK access remains valid',()=>{
@@ -32,15 +36,15 @@ test('worlds cannot import another world repository, platform internals or appli
   assert.doesNotThrow(() => assertImportAllowed('/repo/worlds/deadline/adapter.ts', '@virtual-city/world-sdk', root));
   assert.throws(()=>assertImportAllowed('/repo/packages/pixi-scene/src/renderer.ts','@virtual-city/library-world',root),/Shared package imports/);
   assert.throws(()=>assertImportAllowed('/repo/packages/pixi-scene/src/renderer.ts','../../library-world/src/index',root),/Shared package imports/);
-  assert.doesNotThrow(()=>assertImportAllowed('/repo/apps/platform-api/src/worlds/service.ts','@virtual-city/library-world',root));
+  assert.doesNotThrow(()=>assertImportAllowed('/repo/apps/platform-api/src/features/worlds/modules/registry/application/service.ts','@virtual-city/library-world',root));
   assert.throws(()=>assertImportAllowed('/repo/packages/library-world/src/index.ts','@virtual-city/restaurant-world',root),/Shared package imports/);
   assert.throws(()=>assertImportAllowed('/repo/packages/restaurant-world/src/index.ts','@virtual-city/library-world',root),/Shared package imports/);
   assert.throws(()=>assertImportAllowed('/repo/packages/pixi-scene/src/renderer.ts','@virtual-city/lounge-world',root),/Shared package imports/);
   assert.throws(()=>assertImportAllowed('/repo/packages/lounge-world/src/index.ts','@virtual-city/restaurant-world',root),/Shared package imports/);
   assert.throws(()=>assertImportAllowed('/repo/packages/pixi-scene/src/renderer.ts','@virtual-city/deadline-world',root),/Shared package imports/);
   assert.throws(()=>assertImportAllowed('/repo/packages/deadline-world/src/index.ts','@virtual-city/library-world',root),/Shared package imports/);
-  assert.throws(()=>assertImportAllowed('/repo/packages/deadline-world/src/index.ts','../../../apps/platform-api/src/focus/service',root),/Cross-app|higher layer/);
-  assert.doesNotThrow(()=>assertImportAllowed('/repo/apps/platform-api/src/worlds/service.ts','@virtual-city/deadline-world',root));
+  assert.throws(()=>assertImportAllowed('/repo/packages/deadline-world/src/index.ts','../../../apps/platform-api/src/features/focus/modules/timers/application/service',root),/Cross-app|higher layer/);
+  assert.doesNotThrow(()=>assertImportAllowed('/repo/apps/platform-api/src/features/worlds/modules/registry/application/service.ts','@virtual-city/deadline-world',root));
 });
 test('contracts cannot import SDK and apps cannot import another application internals', () => {
   assert.throws(() => assertImportAllowed('/repo/packages/contracts/src/index.ts', '@virtual-city/world-sdk', root));
@@ -69,14 +73,14 @@ test('the scanner rejects actual source imports and manifest cycles', async () =
     await assert.rejects(checkBoundaries(dir), /World imports/);
     await writeFile(file, "import { publicPort } from '@virtual-city/world-sdk';");
     await assert.doesNotReject(checkBoundaries(dir));
-    await mkdir(join(dir,'apps/platform-api/src/social'),{recursive:true});
-    await mkdir(join(dir,'apps/platform-api/src/identity'),{recursive:true});
+    await mkdir(join(dir,'apps/platform-api/src/features/social/modules/relationships/application'),{recursive:true});
+    await mkdir(join(dir,'apps/platform-api/src/features/identity/modules/accounts/application'),{recursive:true});
     await writeFile(join(dir,'apps/platform-api/package.json'),JSON.stringify({name:'@virtual-city/platform-api'}));
-    await writeFile(join(dir,'apps/platform-api/src/identity/service.ts'),'export class IdentityService {}');
-    const apiFile=join(dir,'apps/platform-api/src/social/service.ts');
-    await writeFile(apiFile,"import { privateHelper } from '../identity/passwords';");
+    await writeFile(join(dir,'apps/platform-api/src/features/identity/modules/accounts/application/service.ts'),'export class IdentityService {}');
+    const apiFile=join(dir,'apps/platform-api/src/features/social/modules/relationships/application/service.ts');
+    await writeFile(apiFile,"import { privateHelper } from '../../../../identity/modules/accounts/infrastructure/passwords';");
     await assert.rejects(checkBoundaries(dir),/API module private import/);
-    await writeFile(apiFile,"import { IdentityService } from '../identity/service';");
+    await writeFile(apiFile,"import { IdentityService } from '../../../../identity/modules/accounts/application/service';");
     await assert.doesNotReject(checkBoundaries(dir));
     await writeFile(join(dir, 'packages/contracts/package.json'), JSON.stringify({ name: '@virtual-city/contracts', dependencies: { '@virtual-city/world-sdk': 'workspace:*' } }));
     await writeFile(join(dir, 'packages/world-sdk/package.json'), JSON.stringify({ name: '@virtual-city/world-sdk', dependencies: { '@virtual-city/contracts': 'workspace:*' } }));

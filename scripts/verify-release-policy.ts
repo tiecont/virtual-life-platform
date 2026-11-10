@@ -1,5 +1,5 @@
 import {readFile} from 'node:fs/promises';
-import {ReleaseEnvironmentSchema,evaluateReleasePolicy,assertReleaseSafety} from '../apps/platform-api/src/config/release-policy';
+import {ReleaseEnvironmentSchema,evaluateReleasePolicy,assertReleaseSafety} from '../apps/platform-api/src/shared/config/release-policy';
 
 async function main(){
  const args=process.argv.slice(2),flags=new Map<string,string>();

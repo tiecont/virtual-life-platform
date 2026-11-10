@@ -10,11 +10,11 @@ import {validateTestDatabaseURL} from './test-environment.mjs';
 import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
 const execute=promisify(execFile);
 const require=createRequire(import.meta.url);
-const {migrate}=require('../apps/platform-api/src/db/migrations.ts');
-const {IdentityService}=require('../apps/platform-api/src/identity/service.ts');
-const {readConfig}=require('../apps/platform-api/src/config.ts');
-const {RuntimeAdmissionStore}=require('../apps/platform-api/src/identity/runtime-admission.ts');
-const {RuntimeTicketIssuer}=require('../apps/platform-api/src/identity/runtime-tickets.ts');
+const {migrate}=require('../apps/platform-api/src/shared/database/migrations.ts');
+const {IdentityService}=require('../apps/platform-api/src/features/identity/modules/accounts/application/service.ts');
+const {readConfig}=require('../apps/platform-api/src/shared/config/environment.ts');
+const {RuntimeAdmissionStore}=require('../apps/platform-api/src/features/identity/modules/runtime-access/application/runtime-admission.ts');
+const {RuntimeTicketIssuer}=require('../apps/platform-api/src/features/identity/modules/runtime-access/application/runtime-tickets.ts');
 
 const address=new URL(validateTestDatabaseURL(process.env.TEST_DATABASE_URL));
 const schema='durable_trust_'+randomUUID().replaceAll('-','');

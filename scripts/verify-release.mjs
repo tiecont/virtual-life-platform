@@ -55,7 +55,7 @@ export function validateRelease(train, rollout, safety, dating, manifest, checkp
 }
 
 export async function checkRelease() {
-  const paths = ['config/release-trains.json', 'config/rollout.json', 'config/safety-policy.json', 'config/dating-policy.json', 'PLAN-MANIFEST.json', 'docs/agent/task-state.json'];
+  const paths = ['config/release-trains.json', 'config/rollout.json', 'config/safety-policy.json', 'config/dating-policy.json', 'tests/fixtures/historical-release/manifest.json', 'tests/fixtures/historical-release/task-state.json'];
   const values = await Promise.all(paths.map(async path => JSON.parse(await readFile(path, 'utf8'))));
   const result = validateRelease(...values);
   assert.equal(values[0].controls.length, 8);

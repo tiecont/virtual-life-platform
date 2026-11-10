@@ -95,6 +95,6 @@ export async function readEvidenceBytes(relative,options){
  const key=await privateKey(options);try{return await decrypt(entry,key,options);}finally{key.fill(0);}
 }
 export async function readIndex(relative,root=process.cwd()){
- assert(relative.startsWith('docs/evidence/')||relative.startsWith('artifacts/'),'Invalid evidence index location');
+ assert(relative.startsWith('config/evidence/')||relative.startsWith('docs/evidence/')||relative.startsWith('artifacts/'),'Invalid evidence index location');
  const bytes=await readRegular(root,relative,16*1024*1024);let value;try{value=JSON.parse(bytes.toString('utf8'));}catch{throw Error('Invalid evidence index JSON');}return validateIndex(value);
 }

@@ -4,13 +4,13 @@ import {execFileSync} from 'node:child_process';
 import {readIndex,readRegular,readEvidenceBytes} from './evidence-store.mjs';
 
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
-const defaults={root:process.cwd(),indexFile:'docs/evidence/index.json',gitFile:'docs/evidence/git-snapshot.json',store:process.env.EVIDENCE_STORE_DIR??'artifacts/evidence-store/n01-02',key:process.env.EVIDENCE_KEY_FILE??'artifacts/evidence-keys/n01-02.key'};
+const defaults={root:process.cwd(),indexFile:'config/evidence/index.json',gitFile:'config/evidence/git-snapshot.json',store:process.env.EVIDENCE_STORE_DIR??'artifacts/evidence-store/n01-02',key:process.env.EVIDENCE_KEY_FILE??'artifacts/evidence-keys/n01-02.key'};
 
 // These are historical byte checks. A successful read never reruns an old test.
 export async function createEvidenceReader(settings={}) {
  const options={...defaults,...settings},index=await readIndex(options.indexFile,options.root);
  const indexBytes=await readRegular(options.root,options.indexFile,16*1024*1024);
- assert(options.gitFile.startsWith('docs/evidence/')||options.gitFile.startsWith('artifacts/'),'Invalid Git evidence index location');
+ assert(options.gitFile.startsWith('config/evidence/')||options.gitFile.startsWith('docs/evidence/')||options.gitFile.startsWith('artifacts/'),'Invalid Git evidence index location');
  let snapshot;try{snapshot=JSON.parse((await readRegular(options.root,options.gitFile,16*1024*1024)).toString('utf8'));}catch(error){if(error instanceof SyntaxError)throw Error('Invalid Git evidence index JSON');throw error;}
  assert(snapshot.schemaVersion===1&&/^[a-f0-9]{40}$/.test(snapshot.sourceRevision),'Unsupported Git evidence snapshot');
  assert(snapshot.indexSha256===digest(indexBytes),'Git snapshot index hash mismatch');

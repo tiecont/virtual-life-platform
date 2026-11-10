@@ -5,7 +5,7 @@ import {resolve,relative} from 'node:path';
 import {createHash,randomUUID} from 'node:crypto';
 import {avatarSourceFacts,assertAvatarSourceUnchanged} from './native-avatar-source.mjs';
 
-const root=process.cwd(),config=JSON.parse(await readFile('docs/mobile/ANDROID-EMULATOR.json')),instance=JSON.parse(await readFile('artifacts/vnext/n10-05/runtime/instance.json'));
+const root=process.cwd(),config=JSON.parse(await readFile('config/mobile/android-emulator.json')),instance=JSON.parse(await readFile('artifacts/vnext/n10-05/runtime/instance.json'));
 const mode=process.argv[2]??'auth';assert(['auth','default-off'].includes(mode));
 const paths=JSON.parse(await readFile('artifacts/vnext/n10-02/android-native/local-env.json')),adb=paths.sdkRoot+'/platform-tools/adb',serial='emulator-'+config.port,app='life.virtualcity.spike';
 assert(process.argv.length===2||process.argv.length===3);assert.equal(instance.serial,serial);assert.equal(instance.avdName,config.avdName);assert.equal(instance.sdk,paths.sdkRoot);

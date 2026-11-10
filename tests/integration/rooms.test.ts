@@ -4,10 +4,10 @@ import { randomUUID } from 'node:crypto';
 import { io, type Socket } from 'socket.io-client';
 import { RoomAckSchema, RoomsListSchema, MeSchema, type Me, type RoomSnapshot, type RoomJoin } from '@virtual-city/contracts';
 import { createApp } from '../../apps/platform-api/src/app';
-import { readConfig } from '../../apps/platform-api/src/config';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 import { defineWorld, applyRoomDelta, sandboxScene, isWalkable } from '@virtual-city/world-sdk';
-import { DISCONNECT_GRACE_MS } from '../../apps/platform-api/src/rooms/service';
+import { DISCONNECT_GRACE_MS } from '../../apps/platform-api/src/features/rooms/modules/presence/application/service';
 
 let pool: Pool; let admin: Pool; let app: Awaited<ReturnType<typeof createApp>>; let url: string; let offset = 0; let serial = 1;
 const clients = new Set<Socket>(); const origin = 'http://127.0.0.1:3300';

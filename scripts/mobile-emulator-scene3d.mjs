@@ -7,7 +7,7 @@ import {createHash,randomUUID} from 'node:crypto';
 
 // Own debug app on the task-owned AVD only. No USB fallback, browser profile,
 // personal app, key material or production backend is inspected.
-const config=JSON.parse(await readFile('docs/mobile/ANDROID-EMULATOR.json','utf8')),instance=JSON.parse(await readFile('artifacts/vnext/n10-05/runtime/instance.json','utf8'));
+const config=JSON.parse(await readFile('config/mobile/android-emulator.json','utf8')),instance=JSON.parse(await readFile('artifacts/vnext/n10-05/runtime/instance.json','utf8'));
 const adb=process.env.ADB_PATH,serial=process.env.VLP_EMULATOR_SERIAL,apk=resolve(process.env.VLP_EMULATOR_APK??''),root=process.cwd(),app='life.virtualcity.spike',component=app+'/.MainActivity';
 assert(adb&&serial==='emulator-'+config.port&&instance.serial===serial&&instance.avdName===config.avdName);
 const ticks=readFileSync('/proc/'+instance.pid+'/stat','utf8').split(') ').at(-1).split(' ')[19],argv=readFileSync('/proc/'+instance.pid+'/cmdline','utf8').split('\0');assert.equal(ticks,instance.startTicks);assert(argv.includes(config.avdName)&&argv.includes(String(config.port)));

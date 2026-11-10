@@ -26,7 +26,7 @@ export async function inspectApiModules(root=process.cwd()){
   }
   visit(source);
  }
- const ownership=JSON.parse(await readFile(resolve(root,'docs/architecture/ownership.json'),'utf8'));
+ const ownership=JSON.parse(await readFile(resolve(root,'config/architecture/ownership.json'),'utf8'));
  assert.equal(ownership.journalTable,apiModulePolicy.database.journal);assert.equal(ownership.apiReplicas,apiModulePolicy.database.apiReplicas);
  for(const owner of Object.values(ownership.tables))assert(Object.hasOwn(apiModulePolicy.tableOwnerModules,owner)&&Object.hasOwn(apiModulePolicy.modules,apiModulePolicy.tableOwnerModules[owner]),'SQL owner without API module: '+owner);
  const edges=new Map();for(const row of imports){const to=row.target.startsWith('apps/platform-api/src/')?apiModuleOwner(row.target):null;if(!to||to===row.owner)continue;const key=row.owner+' → '+to;edges.set(key,(edges.get(key)??0)+1);}

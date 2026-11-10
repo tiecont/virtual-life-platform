@@ -31,7 +31,7 @@ test('checkpoint cannot assert verification without evidence or through an unmet
 
 test('the supplied plan pack is accepted without changing its manifest shape', async () => {
   const { readFile } = await import('node:fs/promises');
-  const manifest = JSON.parse(await readFile(new URL('../../PLAN-MANIFEST.json', import.meta.url), 'utf8'));
+  const manifest = JSON.parse(await readFile(new URL('../fixtures/historical-release/manifest.json', import.meta.url), 'utf8'));
   const summary = summarize(manifest, { tasks: {} });
   assert.equal(Object.keys(summary.modules).length, 25);
   assert.deepEqual(summary.ready, []);

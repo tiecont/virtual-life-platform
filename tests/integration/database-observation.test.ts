@@ -2,9 +2,9 @@ import {it, expect} from 'vitest';
 import {Pool, Query} from 'pg';
 import {performance} from 'node:perf_hooks';
 import {once} from 'node:events';
-import {observePool} from '../../apps/platform-api/src/db/observe-pool';
-import {withDatabaseObservation} from '../../apps/platform-api/src/common/database-observation';
-import {RoomMetrics} from '../../apps/platform-api/src/rooms/metrics';
+import {observePool} from '../../apps/platform-api/src/shared/database/observe-pool';
+import {withDatabaseObservation} from '../../apps/platform-api/src/shared/common/database-observation';
+import {RoomMetrics} from '../../apps/platform-api/src/features/rooms/modules/presence/application/metrics';
 
 function pool() {
   const url = new URL(process.env.TEST_DATABASE_URL ?? '');

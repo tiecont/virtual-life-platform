@@ -2,9 +2,9 @@ import {Pool} from 'pg';
 import {randomUUID} from 'node:crypto';
 import {io} from 'socket.io-client';
 import {RoomAckSchema,MeSchema,GameLobbyViewSchema} from '@virtual-city/contracts';
-import {readConfig} from '../../apps/platform-api/src/config';
+import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
 import {createApp} from '../../apps/platform-api/src/app';
-import {migrate} from '../../apps/platform-api/src/db/migrations';
+import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 import {engine,factory} from './journal-rules-fixture';
 async function main(){
  const url=new URL(process.env.TEST_DATABASE_URL??''),options=url.searchParams.get('options');if(process.env.NODE_ENV!=='test'||!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))||!options||!/^-c search_path=game_crash_[a-f0-9]{32}$/.test(options))throw Error('Owned crash fixture required');

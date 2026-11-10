@@ -1,11 +1,11 @@
 import { beforeAll, beforeEach, afterEach, afterAll, it, expect } from 'vitest';
 import { Pool, type PoolClient } from 'pg';
 import { randomUUID } from 'node:crypto';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
-import { readConfig } from '../../apps/platform-api/src/config';
-import { IdentityService } from '../../apps/platform-api/src/identity/service';
-import { RoomAuthority, ROOM_OWNER_LOCK_CLASS } from '../../apps/platform-api/src/rooms/authority';
-import { AdmissionStore } from '../../apps/platform-api/src/admission/store';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
+import { IdentityService } from '../../apps/platform-api/src/features/identity/modules/accounts/application/service';
+import { RoomAuthority, ROOM_OWNER_LOCK_CLASS } from '../../apps/platform-api/src/features/rooms/modules/presence/application/authority';
+import { AdmissionStore } from '../../apps/platform-api/src/features/admission/modules/allocation/infrastructure/store';
 let admin: Pool, pool: Pool, schema: string, identity: IdentityService, authority: RoomAuthority, store: AdmissionStore, epoch: string;
 beforeAll(() => { const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['localhost', '127.0.0.1'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))
     throw Error('Disposable local test DB required'); admin = new Pool({ connectionString: url.toString() }); });

@@ -61,7 +61,7 @@ export async function inspectApiImage() {
   }
   const names = new Set([...components.values()].map(component => component.name));
   for (const name of ['typescript', 'vitest', 'tsx', 'eslint', '@playwright/test', 'next', 'react', 'pixi.js']) assert(!names.has(name), 'Development/web dependency leaked: ' + name);
-  const migrationDirectory = resolve(root, 'dist/db/migrations'), migrations = {};
+  const migrationDirectory = resolve(root, 'dist/shared/database/migrations'), migrations = {};
   for (const name of (await readdir(migrationDirectory)).filter(name => name.endsWith('.sql')).sort()) migrations[name] = sha(await readFile(resolve(migrationDirectory, name)));
   assert(own.some(pkg => pkg.name === '@virtual-city/platform-api'));
   const sbom = {bomFormat: 'CycloneDX', specVersion: '1.6', version: 1, serialNumber: 'urn:uuid:' + randomUUID(),

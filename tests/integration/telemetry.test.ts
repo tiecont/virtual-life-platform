@@ -5,9 +5,9 @@ import { io,type Socket } from 'socket.io-client';
 import { MeSchema,RoomAckSchema,type Me } from '@virtual-city/contracts';
 import { defineWorld } from '@virtual-city/world-sdk';
 import { createApp } from '../../apps/platform-api/src/app';
-import { readConfig } from '../../apps/platform-api/src/config';
-import {BoundedObservationRead,SystemObservations} from '../../apps/platform-api/src/operations/system-observation';
-import { migrate,migrationManifest } from '../../apps/platform-api/src/db/migrations';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
+import {BoundedObservationRead,SystemObservations} from '../../apps/platform-api/src/features/operations/modules/observability/application/system-observation';
+import { migrate,migrationManifest } from '../../apps/platform-api/src/shared/database/migrations';
 
 const origin='http://127.0.0.1:3300',operatorToken='79'.repeat(32);
 let admin:Pool;const opened:Awaited<ReturnType<typeof open>>[]=[],sockets=new Set<Socket>();

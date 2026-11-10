@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 import {randomUUID} from 'node:crypto';
 import {io} from 'socket.io-client';
 import {RoomAckSchema} from '@virtual-city/contracts';
-import {totp} from '../../apps/platform-api/src/identity/operator-crypto';
+import {totp} from '../../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto';
 test('operator maintenance ejects an actual visit, keeps unentitled worlds closed and recovery requires a new visit',async({page,request})=>{
  const api='http://127.0.0.1:4300',origin='http://127.0.0.1:3300',guest=await request.post(api+'/v1/session/guest',{headers:{origin},data:{requestId:randomUUID(),displayName:'Runtime browser visitor',avatarKey:'mint'}});expect(guest.status()).toBe(201);const me=await guest.json(),cookie=guest.headers()['set-cookie'].split(';')[0];
  const socket=io(api,{autoConnect:false,forceNew:true,reconnection:false,timeout:3000,transports:['websocket'],extraHeaders:{origin,cookie},auth:{schemaVersion:1,csrfToken:me.csrfToken}}),join=async()=>RoomAckSchema.parse(await socket.timeout(3000).emitWithAck('room.join',{schemaVersion:1,requestId:randomUUID(),worldSlug:'maid',worldVersion:'1.2.0',sceneVersion:'1.0.0'}));

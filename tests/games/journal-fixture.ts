@@ -3,12 +3,12 @@ import {Pool,type PoolClient} from 'pg';
 import {randomUUID} from 'node:crypto';
 import {io,type Socket} from 'socket.io-client';
 import {GameLobbyViewSchema,MeSchema,RoomAckSchema,type GameCommand,type GameOwnView,type RoomSnapshot} from '@virtual-city/contracts';
-import {readConfig} from '../../apps/platform-api/src/config';
+import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
 import {createApp} from '../../apps/platform-api/src/app';
-import {migrate} from '../../apps/platform-api/src/db/migrations';
-import {GameJournalCrypto} from '../../apps/platform-api/src/games/journal-crypto';
-import {GameJournal} from '../../apps/platform-api/src/games/journal';
-import {createGameJournalHost} from '../../apps/platform-api/src/games/room-host';
+import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
+import {GameJournalCrypto} from '../../apps/platform-api/src/features/games/modules/persistence/infrastructure/journal-crypto';
+import {GameJournal} from '../../apps/platform-api/src/features/games/modules/persistence/infrastructure/journal';
+import {createGameJournalHost} from '../../apps/platform-api/src/features/games/modules/sessions/application/room-host';
 import {engine,factory} from './journal-rules-fixture';
 export const gameKey='47'.repeat(32),keyId='game-test-v1',origin='http://127.0.0.1:3300';
 export function journalFixture(){

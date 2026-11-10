@@ -10,7 +10,7 @@ import { Pool } from 'pg';
 import { io,type Socket } from 'socket.io-client';
 import { MeSchema,RoomAckSchema,type RoomSnapshot } from '@virtual-city/contracts';
 import { deadlineWorldVersion } from '@virtual-city/deadline-world';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 import { startRoomProcess } from '../support/room-process';
 const origin='http://127.0.0.1:3300',actors=40,soakSeconds=30,schema='deadline_load_'+randomUUID().replaceAll('-',''),url=new URL(process.env.TEST_DATABASE_URL??'');
 assert(url.hostname==='127.0.0.1'&&/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))&&!url.search&&!url.hash,'Disposable local test database only');

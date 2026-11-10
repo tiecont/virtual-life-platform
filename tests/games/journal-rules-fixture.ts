@@ -1,6 +1,6 @@
 import type {GameModeRules} from '@virtual-city/boardgame-core';
 import {GameRulesEngine} from '@virtual-city/boardgame-core';
-import type {GameInitialFactory} from '../../apps/platform-api/src/games/journal-host';
+import type {GameInitialFactory} from '../../apps/platform-api/src/features/games/modules/persistence/infrastructure/journal-host';
 import {gameState,fixtureRules,transition} from './fixtures';
 // Synthetic two-player persistence adapter only. No actual game/deal/score or
 // card conservation/balance acceptance. Shared with the owned restore drill.

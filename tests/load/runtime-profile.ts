@@ -9,7 +9,7 @@ import {setTimeout as delay} from 'node:timers/promises';
 import {Pool} from 'pg';
 import {io, type Socket} from 'socket.io-client';
 import {MeSchema, RoomAckSchema, type RoomSnapshot} from '@virtual-city/contracts';
-import {migrate} from '../../apps/platform-api/src/db/migrations';
+import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 import {startRoomProcess} from '../support/room-process';
 import type {createApp} from '../../apps/platform-api/src/app';
 import {evidenceOutput} from '../../scripts/evidence-output.mjs';

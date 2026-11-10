@@ -12,7 +12,7 @@ assert(args.length === 8 && args[0] === '--admin' && args[2] === '--api' && args
 const admin = args[1], api = args[3], contextRoot = resolve(args[5]), directory = resolve(args[7]);
 assert([admin, api].every(value => /^sha256:[a-f0-9]{64}$/.test(value)));
 assert(directory.startsWith(resolve('artifacts') + sep + 'image-admin-') && directory.endsWith('/smoke'));
-const expectedMigrations = (await readdir(resolve(contextRoot, 'apps/platform-api/src/db/migrations'))).filter(name => name.endsWith('.sql')).length;
+const expectedMigrations = (await readdir(resolve(contextRoot, 'apps/platform-api/src/shared/database/migrations'))).filter(name => name.endsWith('.sql')).length;
 const {run: execute, save, commands, signal, dispose} = await imageTestTools(directory);
 const project = 'virtual-city-admin-image-' + randomUUID().slice(0, 8), sockets = new Set();
 let stage = 'prepare', browser, started = false, cert, probe;

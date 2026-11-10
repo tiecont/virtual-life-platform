@@ -41,8 +41,8 @@ export async function checkOpsWatch() {
   return watchReport(...values);
 }
 export async function handoffReport() {
-  const manifest = JSON.parse(await readFile('PLAN-MANIFEST.json', 'utf8'));
-  const checkpoint = JSON.parse(await readFile('docs/agent/task-state.json', 'utf8'));
+  const manifest = JSON.parse(await readFile('tests/fixtures/historical-release/manifest.json', 'utf8'));
+  const checkpoint = JSON.parse(await readFile('tests/fixtures/historical-release/task-state.json', 'utf8'));
   const summary = summarize(manifest, checkpoint);
   const ids = [...Array.from({ length: 8 }, (_, n) => 'AUD-' + String(n + 1).padStart(2, '0')), ...manifest.plans.flatMap(module => module.tasks)];
   const counts = {};

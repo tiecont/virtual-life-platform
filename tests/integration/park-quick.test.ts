@@ -6,8 +6,8 @@ import { MeSchema,RoomAckSchema,ChatAckSchema,ChatMessageSchema,type ChatMessage
 import { defineWorld } from '@virtual-city/world-sdk';
 import { parkWorldVersion } from '@virtual-city/park-world';
 import { createApp } from '../../apps/platform-api/src/app';
-import { readConfig } from '../../apps/platform-api/src/config';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 const origin='http://127.0.0.1:3300',schema='park_quick_'+randomUUID().replaceAll('-',''),sockets=new Set<Socket>();let admin:Pool,pool:Pool,app:Awaited<ReturnType<typeof createApp>>,url:string,serial=0,inspections=0;
 beforeAll(async()=>{const address=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(address.hostname)||!/^virtual_city_test(?:_|$)/.test(address.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:address.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);address.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:address.toString()});await migrate(pool);
  // Synthetic scope control,not actual Maid integration. Its policy would permit chat if globally enabled.

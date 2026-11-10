@@ -1,4 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="VirtualLife app icon concept: animal ears, a portal, and a golden star">
-<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F8FBFF"/><stop offset=".55" stop-color="#E6F2FF"/><stop offset="1" stop-color="#FDECF5"/></linearGradient><linearGradient id="ring" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4BC1EA"/><stop offset=".55" stop-color="#4B91FF"/><stop offset="1" stop-color="#8168E9"/></linearGradient></defs>
-<rect width="512" height="512" rx="118" fill="url(#bg)"/><path d="M120 196L113 105Q112 85 130 101L191 150Q251 121 315 151L375 101Q393 85 392 107L384 196" fill="url(#ring)" stroke="#5077D2" stroke-width="7"/>
-<circle cx="254" cy="268" r="148" fill="#ffffffaa" stroke="url(#ring)" stroke-width="38"/><path d="M256 165L276 235L348 257L276 277L256 351L234 277L160 257L234 235Z" fill="#F5CB74"/><circle cx="367" cy="172" r="16" fill="#F6A2C1"/></svg>

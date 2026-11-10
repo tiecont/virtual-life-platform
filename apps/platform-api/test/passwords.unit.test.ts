@@ -1,5 +1,5 @@
 import { it, expect } from 'vitest';
-import { PasswordHasher } from '../src/identity/passwords';
+import { PasswordHasher } from '../src/features/identity/modules/accounts/infrastructure/passwords';
 it('salts the same password independently and verifies only the correct input', async () => {
   const hasher = new PasswordHasher(); const password = 'synthetic-test-only-password';
   const a = await hasher.hash(password); const b = await hasher.hash(password);

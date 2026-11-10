@@ -1,11 +1,11 @@
 import {beforeAll,beforeEach,afterAll,afterEach,it,expect} from 'vitest';
 import {Pool} from 'pg';
 import {randomBytes,randomUUID} from 'node:crypto';
-import {migrate,migrationManifest} from '../../apps/platform-api/src/db/migrations';
+import {migrate,migrationManifest} from '../../apps/platform-api/src/shared/database/migrations';
 import {createApp} from '../../apps/platform-api/src/app';
-import {readConfig} from '../../apps/platform-api/src/config';
-import {OperatorService} from '../../apps/platform-api/src/identity/operator-service';
-import {totp} from '../../apps/platform-api/src/identity/operator-crypto';
+import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
+import {OperatorService} from '../../apps/platform-api/src/features/identity/modules/operators/application/operator-service';
+import {totp} from '../../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto';
 import {adminConfig,createAdminHandler} from '../../apps/admin-web/server/proxy';
 let admin:Pool,pool:Pool,app:Awaited<ReturnType<typeof createApp>>,schema:string,now:number,key:string,readToken:string,recoveryCode:string,api:string,handler:ReturnType<typeof createAdminHandler>;
 const origin='http://127.0.0.1:3400',secret='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',password='synthetic-admin-proxy-password-only';

@@ -7,7 +7,7 @@ import {sourceSchemaPolicy} from '../../scripts/source-schema-policy.mjs';
 
 test('release schema follows immutable source SQL instead of stale compatibility snapshots', async () => {
   const revision = execFileSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8'}).trim();
-  const policy = sourceSchemaPolicy(revision), directory = 'apps/platform-api/src/db/migrations/';
+  const policy = sourceSchemaPolicy(revision), directory = 'apps/platform-api/src/shared/database/migrations/';
   const names = (await readdir(directory)).filter(name => name.endsWith('.sql')).sort();
   assert.deepEqual(policy.migrations.map(row => row.name), names);
   for (const row of policy.migrations) assert.equal(row.checksum, createHash('sha256').update(await readFile(directory + row.name)).digest('hex'));

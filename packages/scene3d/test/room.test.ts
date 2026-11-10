@@ -3,7 +3,7 @@ import * as T from 'three';
 import {sandboxScene} from '@virtual-city/world-sdk';
 import {createRoomArt} from '../src/room';
 import {sceneResourceInventory} from '../src/resources';
-import budgets from '../../../docs/design/vnext/animals-3d/budgets-v1.json';
+import budgets from '../../../config/rendering/budgets-v1.json';
 
 for(const theme of ['deadline','maid'] as const){
  const manifest=sandboxScene;

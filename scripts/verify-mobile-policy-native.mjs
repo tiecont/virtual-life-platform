@@ -3,7 +3,7 @@ import {execFileSync} from 'node:child_process';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {resolve,relative} from 'node:path';
 import {createHash,randomUUID} from 'node:crypto';
-const config=JSON.parse(await readFile('docs/mobile/ANDROID-EMULATOR.json')),instance=JSON.parse(await readFile('artifacts/vnext/n10-05/runtime/instance.json')),paths=JSON.parse(await readFile('artifacts/vnext/n10-02/android-native/local-env.json'));
+const config=JSON.parse(await readFile('config/mobile/android-emulator.json')),instance=JSON.parse(await readFile('artifacts/vnext/n10-05/runtime/instance.json')),paths=JSON.parse(await readFile('artifacts/vnext/n10-02/android-native/local-env.json'));
 const mode=process.argv[2]??'policy';assert(['policy','default-off'].includes(mode));assert(process.argv.length===2||process.argv.length===3);
 const adb=paths.sdkRoot+'/platform-tools/adb',serial='emulator-'+config.port,app='life.virtualcity.spike',root='artifacts/vnext/n11-03/tls';assert.equal(instance.serial,serial);assert.equal(instance.avdName,config.avdName);assert.equal(instance.sdk,paths.sdkRoot);
 assert.equal((await readFile('/proc/'+instance.pid+'/stat','utf8')).split(') ').at(-1).split(' ')[19],instance.startTicks);const argv=(await readFile('/proc/'+instance.pid+'/cmdline','utf8')).split('\0');assert(argv.includes(config.avdName)&&argv.includes(String(config.port)));

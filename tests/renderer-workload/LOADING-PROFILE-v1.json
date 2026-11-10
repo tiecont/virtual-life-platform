@@ -25,6 +25,6 @@
     "protocol": "Separate unthrottled same-profile context. Active 20-actor warm baseline and each active recreate sample use external HeapProfiler.collectGarbage twice with 1000ms idle between, then Runtime.getHeapUsage. Final active usedSize minus warm active usedSize compared to max(16MiB,20% baseline). Missing GC/heap evidence fails; stopped zero-lease/canvas plus post-stop heap reported separately. Not driver/native RSS or authenticated travel."
   },
   "navigationDeadlineMilliseconds": 60000,
-  "budgets": "docs/design/vnext/animals-3d/budgets-v1.json",
+  "budgets": "config/rendering/budgets-v1.json",
   "changePolicy": "Keep v1 and all failures; never edit original thresholds or this profile after measurement. A different protocol needs a separately versioned profile."
 }

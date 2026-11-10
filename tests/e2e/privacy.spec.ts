@@ -1,6 +1,6 @@
 import {test,expect,type APIRequestContext,type Page,type Browser} from '@playwright/test';
 import {randomUUID} from 'node:crypto';import {readFile} from 'node:fs/promises';import {Pool} from 'pg';
-import {totp} from '../../apps/platform-api/src/identity/operator-crypto';
+import {totp} from '../../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto';
 const password='synthetic-private-browser-password',operatorPassword='synthetic-admin-browser-password-only',factor='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ';
 let pool:Pool;
 test.beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))||url.search)throw Error('Disposable test DB required');pool=new Pool({connectionString:url.toString()});});

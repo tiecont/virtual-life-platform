@@ -1,5 +1,5 @@
 import {notFound} from 'next/navigation';
-import LodgeRoom from './LodgeRoom';
+import LodgeRoom from '../../../features/lantern-lodge/modules/room/presentation/LodgeRoom';
 export const dynamic='force-dynamic';
 export default function LodgePage(){
  if(process.env.LOCAL_LANTERN_LODGE_WORLD!=='1'||process.env.LOCAL_GAME_LOBBY!=='1')notFound();

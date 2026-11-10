@@ -1,6 +1,6 @@
 import {readFileSync} from 'node:fs';
 import {EnvironmentSafetyPolicySchema} from '@virtual-city/contracts';
-import {RuntimeWorldPolicySchema,safetyPolicyDigest,type ReleasePolicy,type ReleaseEnvironment} from '../../apps/platform-api/src/config/release-policy';
+import {RuntimeWorldPolicySchema,safetyPolicyDigest,type ReleasePolicy,type ReleaseEnvironment} from '../../apps/platform-api/src/shared/config/release-policy';
 
 // Synthetic policy references only; never real owner/operator/public approval.
 export function releasePolicyFixture(environment:ReleaseEnvironment='production'){

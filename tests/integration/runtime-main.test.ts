@@ -4,8 +4,8 @@ import {once} from 'node:events';
 import {randomUUID} from 'node:crypto';
 import {createServer} from 'node:net';
 import {Pool} from 'pg';
-import {migrate} from '../../apps/platform-api/src/db/migrations';
-import {ROOM_OWNER_LOCK_CLASS} from '../../apps/platform-api/src/rooms/authority';
+import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
+import {ROOM_OWNER_LOCK_CLASS} from '../../apps/platform-api/src/features/rooms/modules/presence/application/authority';
 
 let admin: Pool, db: Pool, schema: string, databaseUrl: string;
 const children = new Set<ChildProcess>();

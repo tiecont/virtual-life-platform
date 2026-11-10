@@ -4,10 +4,10 @@ import {generateKeyPairSync,randomUUID,verify,sign} from 'node:crypto';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {dirname} from 'node:path';
 import {Pool} from 'pg';
-import {migrate} from '../../apps/platform-api/src/db/migrations';
-import {IdentityService} from '../../apps/platform-api/src/identity/service';
-import {readConfig} from '../../apps/platform-api/src/config';
-import {RuntimeTicketIssuer,type RuntimeAdmissionPort,type RuntimeScope} from '../../apps/platform-api/src/identity/runtime-tickets';
+import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
+import {IdentityService} from '../../apps/platform-api/src/features/identity/modules/accounts/application/service';
+import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
+import {RuntimeTicketIssuer,type RuntimeAdmissionPort,type RuntimeScope} from '../../apps/platform-api/src/features/identity/modules/runtime-access/application/runtime-tickets';
 
 const keys=generateKeyPairSync('ed25519'),key2=generateKeyPairSync('ed25519');
 const schema='runtime_ticket_'+randomUUID().replaceAll('-','');

@@ -1,5 +1,5 @@
 import { it, expect } from 'vitest';
-import { readConfig } from '../src/config';
+import { readConfig } from '../src/shared/config/environment';
 const local = { SESSION_SECRET: 'test-only-session-secret-not-production-0001', DATABASE_URL: 'postgresql://localhost/virtual_city_dev' };
 it('validates explicit local defaults and rejects insecure or path-bearing production origins', () => {
   expect(readConfig(local).PORT).toBe(4300);

@@ -4,7 +4,7 @@ import { request } from 'node:http';
 import { Pool } from 'pg';
 import { io,type Socket } from 'socket.io-client';
 import { MeSchema,RoomAckSchema,SessionCheckAckSchema,type Me,type RoomSnapshot } from '@virtual-city/contracts';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 import { startRoomProcess } from '../support/room-process';
 
 const origin='http://127.0.0.1:3300',secret='synthetic-network-security-session-secret-0001',clients=new Set<Socket>();

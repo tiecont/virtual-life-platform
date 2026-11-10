@@ -3,8 +3,8 @@ import {readFile,writeFile,stat,rm} from 'node:fs/promises';
 import {randomBytes,randomUUID} from 'node:crypto';
 import {Pool} from 'pg';
 import {createApp} from '../apps/platform-api/src/app';
-import {readConfig} from '../apps/platform-api/src/config';
-import {migrate} from '../apps/platform-api/src/db/migrations';
+import {readConfig} from '../apps/platform-api/src/shared/config/environment';
+import {migrate} from '../apps/platform-api/src/shared/database/migrations';
 
 async function main(){
  const root='artifacts/vnext/n10-03/tls',url=new URL(process.env.TEST_DATABASE_URL??'');

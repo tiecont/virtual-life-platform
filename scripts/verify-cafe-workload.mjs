@@ -13,7 +13,7 @@ import {evaluateWorkload} from './scene3d-workload-policy.mjs';
 import {evaluateHeap} from './scene3d-loading-policy.mjs';
 import {workloadBundleFiles} from './scene3d-workload-evidence.mjs';
 
-const profileRef='tests/cafe-workload/PROFILE-v1.json',budgetRef='docs/design/vnext/animals-3d/budgets-v1.json';
+const profileRef='tests/cafe-workload/PROFILE-v1.json',budgetRef='config/rendering/budgets-v1.json';
 const json=async ref=>JSON.parse(await readFile(ref)),hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const profile=await json(profileRef),budget=await json(budgetRef),output='artifacts/vnext/n06-04/cafe-workload-v1/browser-'+randomUUID().slice(0,8),bundle=resolve(output+'/bundle');
 await mkdir(output,{recursive:true,mode:0o700});

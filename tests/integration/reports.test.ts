@@ -5,8 +5,8 @@ import { io, type Socket } from 'socket.io-client';
 import { MeSchema, RoomAckSchema, ChatAckSchema, ReportReceiptSchema, CaseDetailSchema, CasePageSchema, type Me, type RoomSnapshot } from '@virtual-city/contracts';
 import { defineWorld } from '@virtual-city/world-sdk';
 import { createApp } from '../../apps/platform-api/src/app';
-import { readConfig } from '../../apps/platform-api/src/config';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 
 const origin = 'http://127.0.0.1:3300'; let serial = 1; let admin: Pool;
 const opened: { app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: string }[] = []; const clients = new Set<Socket>();

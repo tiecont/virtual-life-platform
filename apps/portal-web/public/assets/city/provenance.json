@@ -1,4 +1,4 @@
 {
  "schemaVersion":1,
- "assets":[{"path":"inline-svg:pixel-city-v1","sourcePath":"apps/portal-web/app/components/PixelCityArt.tsx","dimensions":[48,30],"source":"Original code-authored SVG pixel town created in this workspace for M14-01","externalSource":false,"purpose":"Schematic catalog navigation; not authoritative room geometry or real-world location","releaseApproved":false,"rights":"No third-party artwork imported; distribution/license decision remains with project owner"}]
+ "assets":[{"path":"inline-svg:pixel-city-v1","sourcePath":"apps/portal-web/features/city/modules/city/presentation/PixelCityArt.tsx","dimensions":[48,30],"source":"Original code-authored SVG pixel town created in this workspace for M14-01","externalSource":false,"purpose":"Schematic catalog navigation; not authoritative room geometry or real-world location","releaseApproved":false,"rights":"No third-party artwork imported; distribution/license decision remains with project owner"}]
 }

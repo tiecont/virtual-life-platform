@@ -8,7 +8,7 @@ export async function checkWorkerBoundary(root = process.cwd()) {
   const base = resolve(root, 'apps/platform-api/src'), files = new Set(), externals = new Set();
   async function visit(file) {
     const name = relative(base, file).replaceAll('\\', '/');
-    assert(!name.startsWith('..') && !/^(?:app|main)\.ts$|^rooms\/|^identity\/(?:service|socket|http)\.ts$/.test(name), 'Worker imports API/room/session runtime');
+    assert(!name.startsWith('..') && !/^(?:app|main)\.ts$|^features\/rooms\/|^features\/identity\/modules\/accounts\/(?:application\/service|presentation\/(?:socket|http))\.ts$/.test(name), 'Worker imports API/room/session runtime');
     if (files.has(file)) return; files.add(file);
     const source = ts.createSourceFile(file, await readFile(file, 'utf8'), ts.ScriptTarget.Latest, true), dependencies = [];
     assert.equal(source.parseDiagnostics.length, 0);

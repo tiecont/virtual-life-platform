@@ -41,7 +41,7 @@ try{
  await run(process.execPath,[root+'/node_modules/typescript/bin/tsc','-p','tsconfig.json'],source+'/apps/platform-api');
  await run(process.execPath,[source+'/scripts/copy-migrations.mjs'],source+'/apps/platform-api');
  const old={...require(source+'/apps/platform-api/dist/app.js'),...require(source+'/apps/platform-api/dist/config.js'),...require(source+'/apps/platform-api/dist/db/migrations.js')};
- const current={...require(root+'/apps/platform-api/dist/app.js'),...require(root+'/apps/platform-api/dist/config.js'),...require(root+'/apps/platform-api/dist/db/migrations.js')};
+ const current={...require(root+'/apps/platform-api/dist/app.js'),...require(root+'/apps/platform-api/dist/shared/config/environment.js'),...require(root+'/apps/platform-api/dist/shared/database/migrations.js')};
  const before=await old.migrationManifest(source+'/apps/platform-api/dist/db/migrations'),after=await current.migrationManifest();
  assert.equal(Object.keys(before).length,48);assert.equal(Object.keys(after).length,49);
  for(const [name,checksum]of Object.entries(before))assert.equal(after[name],checksum);

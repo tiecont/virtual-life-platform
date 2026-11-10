@@ -1,2 +1,0 @@
-# Rust World Runtime Agent
-Own Rust crates for world actor movement, AOI, collision, bounded mailboxes, seat FSM, map teleport, WSS protocol and replay (VL-004/012/019/022/028/036/039). Keep one writer per actor; do not write platform ledger or execute Node gameplay. Deterministic input ordering, max queue and anti-cheat. Test crash, network jitter, duplicate command and stale epoch. Implementation must not replace old RoomAuthority without G7 cutover.

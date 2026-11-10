@@ -6,7 +6,7 @@ import {resolve,relative} from 'node:path';
 import {createHash,randomUUID} from 'node:crypto';
 const [action,...args]=process.argv.slice(2);assert(['start','stop','status','smoke','scene3d','workload'].includes(action),'Expected start,stop,status,smoke,scene3d,workload');
 assert(args.length===0||['smoke','scene3d','workload'].includes(action)&&args.length===2&&args[0]==='--apk','Only smoke/scene3d/workload --apk accepts a file');
-const root=resolve('.'),config=JSON.parse(await readFile('docs/mobile/ANDROID-EMULATOR.json','utf8')),base=resolve('artifacts/vnext/n10-05/runtime');await mkdir(base,{recursive:true,mode:0o700});
+const root=resolve('.'),config=JSON.parse(await readFile('config/mobile/android-emulator.json','utf8')),base=resolve('artifacts/vnext/n10-05/runtime');await mkdir(base,{recursive:true,mode:0o700});
 const runtimeFile=base+'/instance.json',serial='emulator-'+config.port,local='artifacts/vnext/n10-02/android-native/local-env.json',paths=existsSync(local)?JSON.parse(await readFile(local,'utf8')):{};
 const sdk=process.env.ANDROID_SDK_ROOT??process.env.ANDROID_HOME??paths.sdkRoot,jdk=process.env.JAVA_HOME??paths.javaHome;
 assert(sdk&&jdk,'Prepare reviewed SDK/JDK or set ANDROID_SDK_ROOT and JAVA_HOME');
@@ -42,4 +42,4 @@ try{
   assert(owned(instance),'Refusing to stop an unknown/reused emulator PID');await run('stop-own-emulator',adb,['-s',serial,'emu','kill']);for(let i=0;i<30&&owned(instance);i++)await new Promise(ok=>setTimeout(ok,500));if(owned(instance)){process.kill(instance.pid,'SIGTERM');for(let i=0;i<10&&owned(instance);i++)await new Promise(ok=>setTimeout(ok,500));}assert(!owned(instance),'Owned emulator did not exit');result='PASS';
  }
 }catch(e){error=e.message;if(action==='start'&&owned(instance))process.kill(instance.pid,'SIGTERM');process.exitCode=1;}
-finally{const facts={scope:config.scope,action,result,error,observedAt:new Date().toISOString(),sourceRevision:spawnSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).stdout.trim(),configSHA256:createHash('sha256').update(await readFile('docs/mobile/ANDROID-EMULATOR.json')).digest('hex'),serial,avdName:config.avdName,commands,artifactDirectory:relative(root,output)};await writeFile(output+'/facts.json',JSON.stringify(facts,null,2)+'\n',{mode:0o600});console.log(JSON.stringify({action,result,error,artifactDirectory:facts.artifactDirectory}));}
+finally{const facts={scope:config.scope,action,result,error,observedAt:new Date().toISOString(),sourceRevision:spawnSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).stdout.trim(),configSHA256:createHash('sha256').update(await readFile('config/mobile/android-emulator.json')).digest('hex'),serial,avdName:config.avdName,commands,artifactDirectory:relative(root,output)};await writeFile(output+'/facts.json',JSON.stringify(facts,null,2)+'\n',{mode:0o600});console.log(JSON.stringify({action,result,error,artifactDirectory:facts.artifactDirectory}));}

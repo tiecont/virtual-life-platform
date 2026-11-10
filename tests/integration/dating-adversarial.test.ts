@@ -5,10 +5,10 @@ import { io,type Socket } from 'socket.io-client';
 import { MeSchema,type Me } from '@virtual-city/contracts';
 import { defineWorld } from '@virtual-city/world-sdk';
 import { createApp } from '../../apps/platform-api/src/app';
-import { readConfig } from '../../apps/platform-api/src/config';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
-import { testDatingEligibility } from '../../apps/platform-api/src/dating/profiles';
-import { requestLog } from '../../apps/platform-api/src/common/request-log';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
+import { testDatingEligibility } from '../../apps/platform-api/src/features/dating/modules/profiles/application/profiles';
+import { requestLog } from '../../apps/platform-api/src/shared/common/request-log';
 
 const origin='http://127.0.0.1:3300',password='synthetic-adversarial-password-123!';
 let admin:Pool,serial=0;

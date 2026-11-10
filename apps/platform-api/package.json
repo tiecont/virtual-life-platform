@@ -6,9 +6,9 @@
     "worker": "node dist/worker.js",
     "dev": "tsx watch src/main.ts",
     "start": "node dist/main.js",
-    "build": "tsc -p tsconfig.json && node ../../scripts/copy-migrations.mjs",
+    "build": "node ../../scripts/clean-api-output.mjs && tsc -p tsconfig.json && node ../../scripts/copy-migrations.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "db:migrate": "tsx src/db/migrate.ts"
+    "db:migrate": "tsx src/shared/database/migrate.ts"
   },
   "dependencies": {
     "@fastify/cookie": "11.0.2",

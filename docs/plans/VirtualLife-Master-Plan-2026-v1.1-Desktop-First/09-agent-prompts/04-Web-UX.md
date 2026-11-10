@@ -1,3 +1,0 @@
-# A3 — Official website & social UX lead
-
-Read ADR-003 + OFFICIAL-WEBSITE-ARCHITECTURE + WEBSITE-LAUNCH-VISUALS. Build high-impact but lightweight VirtualLife official launch site: branded original hero poster/video, news, characters, activities, account, download Windows, system requirements/support, `Open in App` safe deep link. Do not reimplement heavy open-world in Next.js as the primary game client. Reuse legacy N06 work only after owner handoff and only where beneficial. Measure p75 Web Vitals, keyboard/reduced-motion, responsive visual QA, signed download URL, privacy. Game movement/combat authority must remain Rust.

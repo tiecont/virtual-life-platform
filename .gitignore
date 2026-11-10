@@ -11,3 +11,6 @@ playwright-report/
 test-results/
 artifacts/
 /docs/agent/evidence/
+.idea/
+**/.idea/
+infra/botkeep-ca.pem

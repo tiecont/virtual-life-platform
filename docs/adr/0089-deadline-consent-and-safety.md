@@ -1,9 +1,0 @@
-# ADR0089 — Deadline invitations and shared safety
-
-Status: accepted and locally verified for M15-05,from861f67c. See [actual evidence](https://github.com/tiecont/virtual-life-platform/blob/cef7dc17172f7c6cda930c99648a5e3ad609cc55/docs/agent/evidence/m15-safety-checks.json);public/operator approvals remain separate.
-
-Reuse the M09 RoomInvitation/M08 RoomSafety UI and existing authenticated Room/Focus/Social/Invitation/Report owners. Deadline remains silent by its current safety policy;do not invent a legacy chat/task-notes feature. Source has no private task text field to migrate,and strict shared focus commands reject such client input. Public presence may show permitted profile/seat only,not timer/history.
-
-Enable explicit current-room friend offers in Deadline's shared shell;Library's existing study presentation remains the default. Recipient opt-in,acceptance and travel confirmation are separate choices;neither accepting nor receiving reserves/adopts a seat. Actual verification uses installed Deadline and Library,not a synthetic Maid target before M16. Failed friend reads clear choices/disable sends;canonical unknown-outcome keys stay in the current source lifetime and late replies cannot restore an ended panel. Keep that lifetime through transient Room synchronization/seat changes,with positive invitation controls paused until active again;actual departure clears it. Use existing retained room context rather than opening another socket or inventing membership authority.
-
-Native reports are private allegations with own receipts and no automatic sanction. Blocks must filter both actual rooms and prevent future invitations;unblock never restores friendship/old offers. No new social/chat/private database or real staff grant is needed. Real rollout/public/operator gates remain unchanged.

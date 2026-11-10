@@ -1,7 +1,7 @@
 import {beforeAll,afterAll,it,expect} from 'vitest';
 import {Pool,type PoolClient} from 'pg';
 import {randomUUID,randomBytes} from 'node:crypto';
-import {migrate,migrationManifest} from '../../apps/platform-api/src/db/migrations';
+import {migrate,migrationManifest} from '../../apps/platform-api/src/shared/database/migrations';
 
 const schema='native_game_'+randomUUID().replaceAll('-','');
 let admin:Pool,pool:Pool;

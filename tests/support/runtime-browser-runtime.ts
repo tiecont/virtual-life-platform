@@ -3,10 +3,10 @@ import {tmpdir} from 'node:os';import {join} from 'node:path';
 import {randomBytes} from 'node:crypto';
 import {Pool} from 'pg';
 import {createApp} from '../../apps/platform-api/src/app';
-import {readConfig} from '../../apps/platform-api/src/config';
-import {migrate} from '../../apps/platform-api/src/db/migrations';
-import {OperatorService} from '../../apps/platform-api/src/identity/operator-service';
-import {totp} from '../../apps/platform-api/src/identity/operator-crypto';
+import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
+import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
+import {OperatorService} from '../../apps/platform-api/src/features/identity/modules/operators/application/operator-service';
+import {totp} from '../../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto';
 async function main(){
  const target=new URL(process.env.TEST_DATABASE_URL??'');if(!['postgres:','postgresql:'].includes(target.protocol)||!['localhost','127.0.0.1','[::1]'].includes(target.hostname)||!/^virtual_city_test(?:_[a-z0-9]+)*$/.test(target.pathname.slice(1))||target.search||target.hash)throw Error('Disposable local test DB required');
  const address=target.toString(),pool=new Pool({connectionString:address}),key=randomBytes(32).toString('hex'),bootstrapTime=Date.now()-60000;

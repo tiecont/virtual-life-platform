@@ -1,2 +1,0 @@
-# Persistence and security agent
-Own trust ticket validation, policy generation, PG game schema, per-match receipts/unique settlement/outbox-inbox, zero dual writes (VL-003/008/013/016/018/020/050/055). Need migration ID from old journal coordinator. Run real PostgreSQL transactions and concurrency tests. No hidden hands in logs. Reject revoked authorization at commit. Test cross-platform ledger with unknown ack and worker retries. Document rollback and private data retention.

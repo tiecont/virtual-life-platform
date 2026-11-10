@@ -6,7 +6,7 @@ import {createHash,randomUUID} from 'node:crypto';
 import {avatarSourceFacts,assertAvatarSourceUnchanged} from './native-avatar-source.mjs';
 
 const [mode]=process.argv.slice(2);assert(['storage','https','avatar','world'].includes(mode)&&process.argv.length===3);
-const config=JSON.parse(await readFile('docs/mobile/ANDROID-EMULATOR.json')),instance=JSON.parse(await readFile('artifacts/vnext/n10-05/runtime/instance.json'));
+const config=JSON.parse(await readFile('config/mobile/android-emulator.json')),instance=JSON.parse(await readFile('artifacts/vnext/n10-05/runtime/instance.json'));
 const paths=JSON.parse(await readFile('artifacts/vnext/n10-02/android-native/local-env.json')),adb=paths.sdkRoot+'/platform-tools/adb',serial='emulator-'+config.port;
 assert.equal(instance.serial,serial);assert.equal(instance.avdName,config.avdName);assert.equal(instance.sdk,paths.sdkRoot);
 const ticks=(await readFile('/proc/'+instance.pid+'/stat','utf8')).split(') ').at(-1).split(' ')[19];assert.equal(ticks,instance.startTicks);

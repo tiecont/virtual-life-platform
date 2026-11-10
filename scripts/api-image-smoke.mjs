@@ -11,7 +11,7 @@ import {imageTestTools} from './image-test-tools.mjs';
 const args = process.argv.slice(2);
 assert(args.length === 4 && args[0] === '--image' && /^sha256:[a-f0-9]{64}$/.test(args[1]) && args[2] === '--output');
 const image = args[1], directory = resolve(args[3]);
-const expectedMigrations = JSON.parse((await import('node:child_process')).execFileSync('docker', ['run', '--rm', '--network', 'none', '--read-only', '--entrypoint', 'node', image, '-e', "console.log(require('node:fs').readdirSync('dist/db/migrations').filter(n=>n.endsWith('.sql')).length)"], {encoding: 'utf8'}));
+const expectedMigrations = JSON.parse((await import('node:child_process')).execFileSync('docker', ['run', '--rm', '--network', 'none', '--read-only', '--entrypoint', 'node', image, '-e', "console.log(require('node:fs').readdirSync('dist/shared/database/migrations').filter(n=>n.endsWith('.sql')).length)"], {encoding: 'utf8'}));
 assert(Number.isSafeInteger(expectedMigrations) && expectedMigrations > 0);
 assert(directory.startsWith(resolve('artifacts') + sep + 'image-api-') && directory.endsWith(sep + 'smoke'));
 const {run: execute, save, commands, signal, dispose} = await imageTestTools(directory);
@@ -55,7 +55,7 @@ async function start() {
 }
 async function migrate(allowFailure = false) {
   const name = 'vlp-api-check-' + id + '-migration-' + randomUUID().slice(0, 8); owned.add(name);
-  const value = await run('docker', ['run', '--rm', '--name', name, ...flags, ...environment(common), '--entrypoint', 'node', image, 'dist/db/migrate.js'], {env: common, allowFailure});
+  const value = await run('docker', ['run', '--rm', '--name', name, ...flags, ...environment(common), '--entrypoint', 'node', image, 'dist/shared/database/migrate.js'], {env: common, allowFailure});
   if (!signal.aborted) owned.delete(name); return value;
 }
 async function connect(runtime, cookie, identity) {

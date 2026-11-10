@@ -1,6 +1,6 @@
 import { it, expect } from 'vitest';
-import { AdmissionPolicy, canViewPresence } from '../src/identity/policy';
-import { WindowLimiter } from '../src/identity/limits';
+import { AdmissionPolicy, canViewPresence } from '../src/features/identity/modules/accounts/domain/policy';
+import { WindowLimiter } from '../src/features/identity/modules/accounts/domain/limits';
 it('unknown-age/self-attested/forged-role accounts cannot bypass default restricted admission', async () => {
   const policy = new AdmissionPolicy();
   const context = { accountId: 'server-issued', sessionId: 'server-session', expiresAt: Date.now() + 10000, kind: 'guest' as const, age: 99, role: 'moderator' };

@@ -1,9 +1,9 @@
 import {beforeAll,afterAll,afterEach,it,expect} from 'vitest';
 import {Pool} from 'pg';
 import {randomUUID} from 'node:crypto';
-import {migrate} from '../../apps/platform-api/src/db/migrations';
+import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 import {createApp} from '../../apps/platform-api/src/app';
-import {readConfig} from '../../apps/platform-api/src/config';
+import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
 import {NativeSessionResultSchema,NativeTicketResultSchema,NativeDevicesSchema} from '@virtual-city/contracts';
 let admin:Pool,pool:Pool,server:Awaited<ReturnType<typeof createApp>>;
 const schema='native_auth_'+randomUUID().replaceAll('-',''),origin='http://127.0.0.1:3300';

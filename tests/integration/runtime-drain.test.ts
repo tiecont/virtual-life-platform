@@ -4,9 +4,9 @@ import {Pool} from 'pg';
 import {io, type Socket} from 'socket.io-client';
 import {MeSchema, RoomAckSchema, type RoomSnapshot} from '@virtual-city/contracts';
 import {createApp} from '../../apps/platform-api/src/app';
-import {readConfig} from '../../apps/platform-api/src/config';
-import {migrate} from '../../apps/platform-api/src/db/migrations';
-import {RuntimeLifecycle} from '../../apps/platform-api/src/operations/runtime-lifecycle';
+import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
+import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
+import {RuntimeLifecycle} from '../../apps/platform-api/src/features/operations/modules/lifecycle/application/runtime-lifecycle';
 
 let admin: Pool;
 type Runtime = {schema: string; role?: string; pool: Pool; poolClosed: boolean; app: Awaited<ReturnType<typeof createApp>>; config: ReturnType<typeof readConfig>; url: string};

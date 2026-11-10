@@ -3,9 +3,9 @@ import {Pool} from 'pg';
 import {randomUUID} from 'node:crypto';
 import {io,type Socket} from 'socket.io-client';
 import {MeSchema,RoomAckSchema,GameLobbyViewSchema,TravelAckSchema,type RoomSnapshot,type GameMode} from '@virtual-city/contracts';
-import {readConfig} from '../../apps/platform-api/src/config';
+import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
 import {createApp} from '../../apps/platform-api/src/app';
-import {migrate} from '../../apps/platform-api/src/db/migrations';
+import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 let admin:Pool,pool:Pool,app:Awaited<ReturnType<typeof createApp>>,url:string,database:string,serial=0;const clients:Socket[]=[],origin='http://127.0.0.1:3300',schema='lodge_'+randomUUID().replaceAll('-','');
 const config=(enabled=true)=>readConfig({NODE_ENV:'test',DATABASE_URL:database,SESSION_SECRET:'local-lodge-integration-secret-'.repeat(2),...(enabled?{LOCAL_LANTERN_LODGE_WORLD:'1',LOCAL_GAME_LOBBY:'1'}:{})});
 async function open(enabled=true){app=await createApp(config(enabled),pool,false,{safety:{enabled:true}});await app.app.listen(0,'127.0.0.1');url=await app.app.getUrl();}

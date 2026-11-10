@@ -22,7 +22,7 @@ try {
   facts.image = {id: image.Id, tag, sourceRevision: revision, user: image.Config.User, workdir: image.Config.WorkingDir, sizeBytes: image.Size, identityScope: 'Local Docker image ID, not a published registry digest'};
   const inspector = await readFile('scripts/inspect-api-image.mjs', 'utf8');
   const inspected = JSON.parse((await run('inspection', 'docker', ['run', '--rm', '--read-only', '--network', 'none', '--cap-drop=ALL', '--security-opt', 'no-new-privileges', '--entrypoint', 'node', image.Id, '--input-type=module', '-e', inspector + '\nconsole.log(JSON.stringify(await inspectApiImage()));'])).stdout);
-  const expected = {}, sqlDirectory = resolve(context, 'apps/platform-api/src/db/migrations');
+  const expected = {}, sqlDirectory = resolve(context, 'apps/platform-api/src/shared/database/migrations');
   for (const name of (await readdir(sqlDirectory)).filter(name => name.endsWith('.sql')).sort()) expected[name] = sha256(await readFile(resolve(sqlDirectory, name)));
   assert.deepEqual(inspected.migrations, expected, 'Image SQL does not match source');
   assert.equal(inspected.node, (await readFile(resolve(context, '.node-version'), 'utf8')).trim());

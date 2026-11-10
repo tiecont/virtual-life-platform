@@ -11,11 +11,11 @@ import { io,type Socket } from 'socket.io-client';
 import { MeSchema,RoomAckSchema,OrderResultSchema,type RoomSnapshot } from '@virtual-city/contracts';
 import { maidWorldVersion,maidServicePolicy,maidRecipes } from '@virtual-city/maid-world';
 import { createApp } from '../../apps/platform-api/src/app';
-import { readConfig } from '../../apps/platform-api/src/config';
-import { migrate,migrationManifest } from '../../apps/platform-api/src/db/migrations';
-import { ReadinessProbe } from '../../apps/platform-api/src/operations/readiness';
-import { RoomAuthority } from '../../apps/platform-api/src/rooms/authority';
-import { DEFAULT_PROGRESSION_POLICY } from '../../apps/platform-api/src/progression/policy';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
+import { migrate,migrationManifest } from '../../apps/platform-api/src/shared/database/migrations';
+import { ReadinessProbe } from '../../apps/platform-api/src/features/operations/modules/health/application/readiness';
+import { RoomAuthority } from '../../apps/platform-api/src/features/rooms/modules/presence/application/authority';
+import { DEFAULT_PROGRESSION_POLICY } from '../../apps/platform-api/src/features/progression/modules/rewards/domain/policy';
 const origin='http://127.0.0.1:3300',schema='maid_service_'+randomUUID().replaceAll('-',''),sockets=new Set<Socket>();
 let admin:Pool,pool:Pool,app:Awaited<ReturnType<typeof createApp>>,config:ReturnType<typeof readConfig>,url:string,serial=0,at=Date.parse('2026-11-05T12:00:00Z');
 async function open(){app=await createApp(config,pool,false,{now:()=>at,progression:{policy:{...DEFAULT_PROGRESSION_POLICY,enabled:true}}});await app.app.listen(0,'127.0.0.1');url=await app.app.getUrl();await app.worlds.registry.setEnabled('maid',true);}

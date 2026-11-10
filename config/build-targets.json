@@ -629,7 +629,7 @@
       "name": "@virtual-city/platform-api",
       "path": "apps/platform-api",
       "kind": "application",
-      "build": "tsc -p tsconfig.json && node ../../scripts/copy-migrations.mjs",
+      "build": "node ../../scripts/clean-api-output.mjs && tsc -p tsconfig.json && node ../../scripts/copy-migrations.mjs",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
         "@virtual-city/boardgame-core",

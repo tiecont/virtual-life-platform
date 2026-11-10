@@ -1,13 +1,13 @@
 import {beforeAll,beforeEach,afterEach,afterAll,it,expect} from 'vitest';
 import {Pool} from 'pg';
 import {randomBytes,randomUUID} from 'node:crypto';
-import {migrate} from '../../apps/platform-api/src/db/migrations';
+import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 import {createApp} from '../../apps/platform-api/src/app';
-import {readConfig} from '../../apps/platform-api/src/config';
-import {OperatorService} from '../../apps/platform-api/src/identity/operator-service';
-import {totp} from '../../apps/platform-api/src/identity/operator-crypto';
+import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
+import {OperatorService} from '../../apps/platform-api/src/features/identity/modules/operators/application/operator-service';
+import {totp} from '../../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto';
 import {defineWorld} from '@virtual-city/world-sdk';
-import {OperatorEventCalendar} from '../../apps/platform-api/src/events/operator-calendar';
+import {OperatorEventCalendar} from '../../apps/platform-api/src/features/events/modules/calendar/application/operator-calendar';
 let admin:Pool,pool:Pool,server:Awaited<ReturnType<typeof createApp>>,schema:string,now:number,authKey:string;
 const origin='http://127.0.0.1:3400',factor='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',password='synthetic-calendar-operator-password';
 beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable DB required');admin=new Pool({connectionString:url.toString()});});

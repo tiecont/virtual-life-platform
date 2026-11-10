@@ -4,10 +4,10 @@ import {randomUUID,createHash} from 'node:crypto';
 import {mkdtemp,writeFile,readFile,cp,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {migrate,migrationManifest} from '../../apps/platform-api/src/db/migrations';
-import {migrationSetDigest,resolveSchemaCompatibility} from '../../apps/platform-api/src/config/schema-compatibility';
+import {migrate,migrationManifest} from '../../apps/platform-api/src/shared/database/migrations';
+import {migrationSetDigest,resolveSchemaCompatibility} from '../../apps/platform-api/src/shared/config/schema-compatibility';
 import {createApp} from '../../apps/platform-api/src/app';
-import {readConfig} from '../../apps/platform-api/src/config';
+import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
 let admin:Pool;const opened:{pool:Pool;schema:string;directory:string;apps:Awaited<ReturnType<typeof createApp>>[]}[]=[];
 beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))||url.search||url.hash)throw Error('Disposable local DB required');admin=new Pool({connectionString:url.toString()});});
 afterEach(async()=>{for(const r of opened.splice(0)){for(const app of r.apps)await app.app.close();await r.pool.end();await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`);await rm(r.directory,{recursive:true,force:true});}});
@@ -16,7 +16,7 @@ async function fixture(){
  const schema='schema_compat_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA "${schema}"`);const address=new URL(process.env.TEST_DATABASE_URL!);address.searchParams.set('options','-c search_path='+schema);const pool=new Pool({connectionString:address.toString()}),directory=await mkdtemp(join(tmpdir(),'city-schema-compat-')),apps:Awaited<ReturnType<typeof createApp>>[]=[];opened.push({pool,schema,directory,apps});await migrate(pool);
  const own=await migrationManifest(),expansionName=String(Object.keys(own).length+1).padStart(4,'0')+'_expand_probe.sql',expansion=await readFile('tests/fixtures/schema-compat/0039_expand_probe.sql'),checksum=createHash('sha256').update(expansion).digest('hex');
  const policy={schemaVersion:1,policyVersion:1,mode:'expand-compatible',journal:'city_schema_migrations',metadataVersion:1,runtimeManifestSha256:migrationSetDigest(own),minimumDatabaseMigrations:Object.keys(own).length,maximumDatabaseMigrations:Object.keys(own).length+1,reviewRef:'evidence:synthetic-expand-only',migrations:[...Object.entries(own).map(([name,checksum])=>({name,checksum})),{name:expansionName,checksum}]};
- const file=join(directory,'compatibility.json');await writeFile(file,JSON.stringify(policy));const expanded=join(directory,'migrations');await cp('apps/platform-api/src/db/migrations',expanded,{recursive:true});await writeFile(join(expanded,expansionName),expansion);
+ const file=join(directory,'compatibility.json');await writeFile(file,JSON.stringify(policy));const expanded=join(directory,'migrations');await cp('apps/platform-api/src/shared/database/migrations',expanded,{recursive:true});await writeFile(join(expanded,expansionName),expansion);
  const start=async(compatible=true)=>{const app=await createApp(readConfig({NODE_ENV:'test',DATABASE_URL:address.toString(),SESSION_SECRET:'synthetic-schema-compat-secret-'.repeat(2),...compatible?{SCHEMA_COMPATIBILITY_FILE:file}:{}}),pool);apps.push(app);return app;};
  return {pool,start,expanded,own,policy,file,expansionName};
 }

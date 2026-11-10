@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {readFile} from 'node:fs/promises';
 import {nearestRank, evaluateLoading, evaluateHeap} from '../../scripts/scene3d-loading-policy.mjs';
-const budget = JSON.parse(await readFile(new URL('../../docs/design/vnext/animals-3d/budgets-v1.json', import.meta.url)));
+const budget = JSON.parse(await readFile(new URL('../../config/rendering/budgets-v1.json', import.meta.url)));
 const samples = mode => Array.from({length: 10}, (_, index) => ({mode, actors: 20, quality: 'balanced', requestedQuality: 'balanced', canvasCount: 1, navigationToReadyMs: 1000 + index * 100, cachedAssets: mode === 'warm' ? 2 : 0, networkAssetBytes: mode === 'cold' ? 1024 : 0}));
 test('loading retains slow samples, rejects incomplete data and computes nearest rank', () => {
   assert.equal(nearestRank([10, 1, 9, 2, 8, 3, 7, 4, 6, 5], .75), 8);

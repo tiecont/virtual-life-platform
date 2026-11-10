@@ -1,8 +1,0 @@
-// Design catalog only. Server IDs/entitlements are reserved for N06-07.
-export const choices={
- species:{cat:'Cat',dog:'Dog',rabbit:'Rabbit'},body:{round:'Round',slender:'Slender'},head:{soft:'Soft cheeks',wide:'Wide cheeks'},fur:{honey:'Honey',cocoa:'Cocoa',cloud:'Cloud',sage:'Sage'},marking:{plain:'Plain',patch:'Face patch',freckles:'Freckles'},eyes:{bright:'Bright',calm:'Calm'},muzzle:{small:'Small',soft:'Soft'},ears:{pointed:'Pointed',tufted:'Tufted',floppy:'Floppy',upright:'Upright',long:'Long',bent:'Bent'},tail:{curved:'Curved',plume:'Plume',wag:'Wag',curl:'Curl',puff:'Puff',bob:'Bob'},hair:{smooth:'Smooth',tuft:'Tuft'},outfit:{knit:'Forest knit',overalls:'Clay overalls',apron:'Cafe apron'},accessory:{none:'None',scarf:'Scarf',cap:'Cap',glasses:'Glasses'},facing:{front:'Front',right:'Right',back:'Back',left:'Left'},pose:{idle:'Idle',walk:'Walk',sit:'Sit',serve:'Serve'}
-};
-export const compatible={cat:{ears:['pointed','tufted'],tail:['curved','plume']},dog:{ears:['floppy','upright'],tail:['wag','curl']},rabbit:{ears:['long','bent'],tail:['puff','bob']}};
-export const preset={species:'cat',body:'round',head:'soft',fur:'honey',marking:'plain',eyes:'bright',muzzle:'soft',ears:'pointed',tail:'curved',hair:'tuft',outfit:'knit',accessory:'scarf',facing:'front',pose:'idle'};
-export const furColors={honey:['#d8a36a','#f5dfbd'],cocoa:['#9e7662','#e8cbb6'],cloud:['#d9dcd1','#fff4df'],sage:['#8fa894','#e4ebd6']};
-export function normalize(input){const out={...preset,...input};for(const [key,values]of Object.entries(choices))if(!Object.hasOwn(values,out[key]))out[key]=preset[key];for(const key of ['ears','tail'])if(!compatible[out.species][key].includes(out[key]))out[key]=compatible[out.species][key][0];return out;}

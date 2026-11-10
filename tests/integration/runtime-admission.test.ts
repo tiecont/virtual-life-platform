@@ -1,11 +1,11 @@
 import {beforeAll,afterAll,it,expect} from 'vitest';
 import {Pool} from 'pg';
 import {generateKeyPairSync,randomUUID} from 'node:crypto';
-import {migrate} from '../../apps/platform-api/src/db/migrations';
-import {IdentityService} from '../../apps/platform-api/src/identity/service';
-import {readConfig} from '../../apps/platform-api/src/config';
-import {RuntimeAdmissionStore} from '../../apps/platform-api/src/identity/runtime-admission';
-import {RuntimeTicketIssuer,type RuntimeScope} from '../../apps/platform-api/src/identity/runtime-tickets';
+import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
+import {IdentityService} from '../../apps/platform-api/src/features/identity/modules/accounts/application/service';
+import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
+import {RuntimeAdmissionStore} from '../../apps/platform-api/src/features/identity/modules/runtime-access/application/runtime-admission';
+import {RuntimeTicketIssuer,type RuntimeScope} from '../../apps/platform-api/src/features/identity/modules/runtime-access/application/runtime-tickets';
 
 const schema='runtime_admission_'+randomUUID().replaceAll('-','');
 let admin:Pool,pool:Pool,identity:IdentityService,store:RuntimeAdmissionStore;

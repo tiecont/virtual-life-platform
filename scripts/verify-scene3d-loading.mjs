@@ -11,7 +11,7 @@ import {workloadSourceFiles, workloadBundleFiles} from './scene3d-workload-evide
 import {evaluateLoading, evaluateHeap} from './scene3d-loading-policy.mjs';
 
 const profileRef = 'tests/renderer-workload/LOADING-PROFILE-v1.json';
-const budgetRef = 'docs/design/vnext/animals-3d/budgets-v1.json';
+const budgetRef = 'config/rendering/budgets-v1.json';
 const json = async ref => JSON.parse(await readFile(ref));
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const profile = await json(profileRef), budget = await json(budgetRef);

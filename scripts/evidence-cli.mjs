@@ -12,18 +12,18 @@ async function main(){
  if(action==='archive'){
   const index=await createArchive(options);console.log(JSON.stringify({result:'PASS',scope:'Private local additional archive; originals retained',files:index.entries.length,objects:index.archive.objectCount,sourceBytes:index.archive.totalSourceBytes,index:options.store+'/index.json',cleanupAuthorized:false,offHostConfigured:false}));return;
  }
- assert(['check','restore-smoke'].includes(action),'Unknown evidence action');const index=await readIndex(flags.get('--index')??'docs/evidence/index.json');
+ assert(['check','restore-smoke'].includes(action),'Unknown evidence action');const index=await readIndex(flags.get('--index')??'config/evidence/index.json');
  if(action==='restore-smoke'){
   assert(flags.has('--target'),'New private --target under artifacts required');const report=await restoreArchive(index,{...options,target:flags.get('--target')});console.log(JSON.stringify({result:'PASS',scope:'Complete authenticated restore and file hash readback',...report,cleanupAuthorized:false}));return;
  }
  assert(!(flags.has('--archive')&&flags.has('--git-only')),'Choose one retrieval mode');
  if(flags.has('--archive')){console.log(JSON.stringify({result:'PASS',scope:'Full encrypted archive verification',...await checkArchive(index,options)}));return;}
  // Standalone archives retain their original check API without requiring a Git mapping.
- if(flags.has('--index')&&flags.get('--index')!=='docs/evidence/index.json'&&!flags.has('--git-index')&&!flags.has('--git-only')){
+ if(flags.has('--index')&&flags.get('--index')!=='config/evidence/index.json'&&!flags.has('--git-index')&&!flags.has('--git-only')){
   for(const entry of index.entries)await readEvidenceBytes(entry.path,{...options,index});
   console.log(JSON.stringify({result:'PASS',scope:'Custom-index original-or-authenticated archive bytes; no Git fallback',verifiedFiles:index.entries.length,sourceBytes:index.archive.totalSourceBytes,cleanupAuthorized:false}));return;
  }
- const reader=await createEvidenceReader({...options,indexFile:flags.get('--index')??'docs/evidence/index.json',gitFile:flags.get('--git-index')??'docs/evidence/git-snapshot.json'});
+ const reader=await createEvidenceReader({...options,indexFile:flags.get('--index')??'config/evidence/index.json',gitFile:flags.get('--git-index')??'config/evidence/git-snapshot.json'});
  console.log(JSON.stringify({result:'PASS',...await reader.verifyAll({gitOnly:flags.has('--git-only')}),cleanupAuthorized:false}));
 }
 void main().catch(error=>{console.error('Evidence operation failed: '+String(error.message));process.exitCode=1;});

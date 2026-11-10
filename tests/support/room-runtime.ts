@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
 import { createApp } from '../../apps/platform-api/src/app';
-import { readConfig } from '../../apps/platform-api/src/config';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { defineWorld } from '@virtual-city/world-sdk';
 import type { Socket as TcpSocket } from 'node:net';
 

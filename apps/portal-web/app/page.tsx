@@ -1,5 +1,5 @@
 import { ReadinessSchema } from '@virtual-city/contracts';
-import CityMap from './components/CityMap';
+import CityMap from '../features/city/modules/city/presentation/CityMap';
 export const dynamic = 'force-dynamic';
 export default async function Home() {
   let ready = false;

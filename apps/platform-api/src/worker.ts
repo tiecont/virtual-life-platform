@@ -1,15 +1,15 @@
 import {createHash} from 'node:crypto';
 import {Pool} from 'pg';
-import {readWorkerAction, readWorkerConfig} from './config/worker';
-import {loadProgressionPolicy} from './config/progression';
-import {loadSchemaCompatibility, isSchemaCompatible} from './config/schema-compatibility';
-import {migrationManifest} from './db/migrations';
-import {HospitalityOutbox} from './hospitality/jobs';
-import {lockAccounts} from './identity/account-locks';
-import {ProgressionLedger} from './progression/ledger';
-import {IncidentPolicy} from './safety/incidents';
-import {SanctionPolicy} from './safety/sanctions';
-import {RuntimeLifecycle} from './operations/runtime-lifecycle';
+import {readWorkerAction, readWorkerConfig} from './shared/config/worker';
+import {loadProgressionPolicy} from './shared/config/progression';
+import {loadSchemaCompatibility, isSchemaCompatible} from './shared/config/schema-compatibility';
+import {migrationManifest} from './shared/database/migrations';
+import {HospitalityOutbox} from './features/hospitality/modules/service/application/jobs';
+import {lockAccounts} from './features/identity/modules/accounts/application/account-locks';
+import {ProgressionLedger} from './features/progression/modules/rewards/application/ledger';
+import {IncidentPolicy} from './features/safety/modules/incidents/application/incidents';
+import {SanctionPolicy} from './features/safety/modules/sanctions/application/sanctions';
+import {RuntimeLifecycle} from './features/operations/modules/lifecycle/application/runtime-lifecycle';
 
 // Independent composition root. No HTTP/socket, session secret or RoomAuthority.
 export async function runDurableWorker(env = process.env, args = process.argv.slice(2)) {

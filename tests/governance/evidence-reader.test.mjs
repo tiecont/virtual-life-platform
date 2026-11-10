@@ -13,10 +13,10 @@ async function fixture(work){
  const root=await mkdtemp(join(tmpdir(),'vlp-index-reader-')),options={root,store:'artifacts/store',key:'artifacts/keys/archive.key'};
  const git=args=>execFileSync('git',args,{cwd:root}).toString().trim();
  try{
-  git(['init','-q']);await mkdir(join(root,'docs/agent/evidence'),{recursive:true});await mkdir(join(root,'docs/evidence'));
+  git(['init','-q']);await mkdir(join(root,'docs/agent/evidence'),{recursive:true});await mkdir(join(root,'config/evidence'),{recursive:true});
   await writeFile(join(root,'.gitignore'),'artifacts/\n');await writeFile(join(root,name),'{"result":"PASS","source":"synthetic"}\n');git(['add','.']);git(['-c','user.name=Fixture','-c','user.email=fixture@example.invalid','-c','commit.gpgsign=false','commit','-qm','fixture']);
   const index=await createArchive(options),serialized=JSON.stringify(index),snapshot={schemaVersion:1,sourceRevision:git(['rev-parse','HEAD']),indexSha256:createHash('sha256').update(serialized).digest('hex'),entries:index.entries.map(row=>({...row,gitBlob:git(['rev-parse',`HEAD:${row.path}`])}))};
-  await writeFile(join(root,'docs/evidence/index.json'),serialized);const save=()=>writeFile(join(root,'docs/evidence/git-snapshot.json'),JSON.stringify(snapshot));await save();await work({root,options,index,snapshot,save});
+  await writeFile(join(root,'config/evidence/index.json'),serialized);const save=()=>writeFile(join(root,'config/evidence/git-snapshot.json'),JSON.stringify(snapshot));await save();await work({root,options,index,snapshot,save});
  }finally{await rm(root,{recursive:true,force:true});}
 }
 test('indexed readers retrieve private Git history with originals, archive and key absent',async()=>fixture(async({root,options})=>{
@@ -30,7 +30,7 @@ test('snapshot coverage, object mapping, source revision and index digest fail c
  for(const mutate of [s=>s.indexSha256='0'.repeat(64),s=>s.entries=[],s=>s.entries[0].gitBlob='0'.repeat(40),s=>s.sourceRevision='0'.repeat(40)]){
   const copy=globalThis.structuredClone(snapshot);mutate(snapshot);await save();await assert.rejects(async()=>{const reader=await createEvidenceReader(options);await reader.verifyAll({gitOnly:true});});Object.assign(snapshot,copy);
  }
- await save();await rm(join(root,'docs/evidence/index.json'));await assert.rejects(()=>createEvidenceReader(options),/ENOENT/);
+ await save();await rm(join(root,'config/evidence/index.json'));await assert.rejects(()=>createEvidenceReader(options),/ENOENT/);
 }));
 test('authenticated archive works; corrupt ciphertext never silently uses Git fallback',async()=>fixture(async({root,options,index})=>{
  await rm(join(root,name));const reader=await createEvidenceReader(options);assert.equal((await reader.json(name)).source,'synthetic');
@@ -45,7 +45,7 @@ test('missing historical object cannot be reported as a successful retrieval',as
  await assert.rejects(()=>reader.bytes(name,{gitOnly:true}),/object unavailable/);
 }));
 test('standalone custom-index CLI still verifies an archive without Git snapshot metadata',async()=>fixture(async({root,options})=>{
- await rm(join(root,name));await rm(join(root,'docs/evidence/git-snapshot.json'));
+ await rm(join(root,name));await rm(join(root,'config/evidence/git-snapshot.json'));
  const output=execFileSync(process.execPath,[fileURLToPath(new URL('../../scripts/evidence-cli.mjs',import.meta.url)),'check','--index','artifacts/store/index.json','--store',options.store,'--key-file',options.key],{cwd:root});
  assert.equal(JSON.parse(output).verifiedFiles,1);
 }));

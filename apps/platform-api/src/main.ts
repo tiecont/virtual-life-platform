@@ -1,7 +1,7 @@
 import { Pool } from 'pg';
-import { readConfig } from './config';
+import { readConfig } from './shared/config/environment';
 import { createApp } from './app';
-import { RuntimeLifecycle } from './operations/runtime-lifecycle';
+import { RuntimeLifecycle } from './features/operations/modules/lifecycle/application/runtime-lifecycle';
 async function main() {
   const config = readConfig();
   const pool = new Pool({ connectionString: config.DATABASE_URL, max: 10, connectionTimeoutMillis: 2000 });

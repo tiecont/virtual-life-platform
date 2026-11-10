@@ -2,13 +2,13 @@ import { readdir, readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { checkBoundaries } from './check-boundaries.mjs';
 import {inspectApiModules} from './api-module-graph.mjs';
-const ownership = JSON.parse(await readFile('docs/architecture/ownership.json', 'utf8'));
+const ownership = JSON.parse(await readFile('config/architecture/ownership.json', 'utf8'));
 assert.equal(ownership.apiReplicas, 1, 'Multi-instance ownership is not implemented');
 assert.equal(ownership.redisRequired, false);
 const tables = new Set();
-for (const file of await readdir('apps/platform-api/src/db/migrations')) {
+for (const file of await readdir('apps/platform-api/src/shared/database/migrations')) {
   if (!file.endsWith('.sql')) continue;
-  const sql = await readFile('apps/platform-api/src/db/migrations/' + file, 'utf8');
+  const sql = await readFile('apps/platform-api/src/shared/database/migrations/' + file, 'utf8');
   for (const match of sql.matchAll(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?([a-z_]+)/gi)) {
     const table = match[1];
     assert(!tables.has(table), `Table created twice: ${table}`);
@@ -18,9 +18,6 @@ for (const file of await readdir('apps/platform-api/src/db/migrations')) {
 }
 for (const table of Object.keys(ownership.tables)) {
   assert(tables.has(table) || table === ownership.journalTable, `Owner declared for missing table: ${table}`);
-}
-for (const file of ['ARCHITECTURE.md', 'PERSISTENCE.md', 'FUTURE-OWNERSHIP.md', 'INVARIANTS.md', 'legacy-compatibility.md']) {
-  assert((await readFile('docs/architecture/' + file, 'utf8')).length > 300);
 }
 console.log(`Architecture consistency passed: ${tables.size} SQL tables + journal; ${await checkBoundaries(process.cwd())} source files checked. Future gameplay invariants remain runtime gates.`);
 const graph=await inspectApiModules();

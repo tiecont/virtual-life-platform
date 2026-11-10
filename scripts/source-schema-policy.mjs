@@ -4,9 +4,16 @@ import {createHash} from 'node:crypto';
 
 // Default runtime policy is strict and derived from bundled SQL, not an old
 // qualification snapshot in config/. Keep historical compatibility files intact.
-export function sourceSchemaPolicy(revision) {
+export function sourceMigrationDirectory(revision) {
   assert(/^[a-f0-9]{40}$/.test(revision));
-  const directory = 'apps/platform-api/src/db/migrations/';
+  for(const directory of ['apps/platform-api/src/shared/database/migrations/','apps/platform-api/src/db/migrations/']){
+    const files=execFileSync('git',['ls-tree','-r','--name-only',revision,'--',directory],{encoding:'utf8'});
+    if(files.trim())return directory;
+  }
+  throw Error('Source revision has no migration directory');
+}
+export function sourceSchemaPolicy(revision) {
+  const directory=sourceMigrationDirectory(revision);
   const paths = execFileSync('git', ['ls-tree', '-r', '--name-only', revision, '--', directory], {encoding: 'utf8'}).trim().split('\n').filter(path => path.endsWith('.sql')).sort();
   assert(paths.length > 0);
   const hash = bytes => createHash('sha256').update(bytes).digest('hex');

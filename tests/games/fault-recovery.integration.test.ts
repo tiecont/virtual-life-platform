@@ -1,7 +1,7 @@
 import {it,expect} from 'vitest';
 import {randomUUID} from 'node:crypto';
 import {RoomAckSchema} from '@virtual-city/contracts';
-import {ROOM_OWNER_LOCK_CLASS} from '../../apps/platform-api/src/rooms/authority';
+import {ROOM_OWNER_LOCK_CLASS} from '../../apps/platform-api/src/features/rooms/modules/presence/application/authority';
 import {journalFixture,draw,source} from './journal-fixture';
 const f=journalFixture();
 it('a real COMMIT with lost acknowledgement has one canonical receipt and exact retry returns the committed own view',async()=>{

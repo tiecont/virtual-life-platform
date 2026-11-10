@@ -4,9 +4,9 @@ import { randomUUID } from 'node:crypto';
 import { mkdtemp, writeFile, rm, copyFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { migrate, migrationNames } from '../../apps/platform-api/src/db/migrations';
+import { migrate, migrationNames } from '../../apps/platform-api/src/shared/database/migrations';
 import { createApp } from '../../apps/platform-api/src/app';
-import { readConfig } from '../../apps/platform-api/src/config';
+import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { ReadinessSchema } from '@virtual-city/contracts';
 let pool: Pool; let admin: Pool;
 const schema = 'city_test_' + randomUUID().replaceAll('-', '');
@@ -29,7 +29,7 @@ describe('real PostgreSQL and HTTP vertical slice', () => {
       expect((await http.inject('/health/ready')).statusCode).toBe(503);
       const partial = await mkdtemp(join(tmpdir(), 'city-partial-schema-'));
       try {
-        await copyFile('apps/platform-api/src/db/migrations/0001_foundation.sql', join(partial, '0001_foundation.sql'));
+        await copyFile('apps/platform-api/src/shared/database/migrations/0001_foundation.sql', join(partial, '0001_foundation.sql'));
         await migrate(pool, partial);
         expect((await http.inject('/health/ready')).statusCode).toBe(503);
       } finally { await rm(partial, { recursive: true, force: true }); }
@@ -53,9 +53,9 @@ describe('real PostgreSQL and HTTP vertical slice', () => {
     try {
       await writeFile(join(directory, '0001_foundation.sql'), 'SELECT 1;');
       await expect(migrate(pool, directory)).rejects.toThrow('checksum mismatch');
-      const original = await import('node:fs/promises').then(fs => fs.readFile('apps/platform-api/src/db/migrations/0001_foundation.sql', 'utf8'));
+      const original = await import('node:fs/promises').then(fs => fs.readFile('apps/platform-api/src/shared/database/migrations/0001_foundation.sql', 'utf8'));
       await writeFile(join(directory, '0001_foundation.sql'), original);
-      for(const name of await migrationNames())await copyFile('apps/platform-api/src/db/migrations/'+name,join(directory,name));
+      for(const name of await migrationNames())await copyFile('apps/platform-api/src/shared/database/migrations/'+name,join(directory,name));
       await writeFile(join(directory, '0039_broken.sql'), 'CREATE TABLE must_rollback(id integer); SELECT definitely_missing_column;');
       await expect(migrate(pool, directory)).rejects.toBeDefined();
       expect((await pool.query("SELECT to_regclass('must_rollback') AS table_name")).rows[0].table_name).toBe(null);

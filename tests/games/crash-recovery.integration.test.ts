@@ -5,7 +5,7 @@ import {once} from 'node:events';
 import {fileURLToPath} from 'node:url';
 import {randomBytes,randomUUID} from 'node:crypto';
 import {createApp} from '../../apps/platform-api/src/app';
-import {readConfig} from '../../apps/platform-api/src/config';
+import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
 it('actual SIGKILL during a blocked receipt write rolls back that turn; a new owner aborts the retained match and preserves its prior receipt',async()=>{
  const target=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(target.hostname)||!/^virtual_city_test(?:_|$)/.test(target.pathname.slice(1)))throw Error('Disposable local test database required');const admin=new Pool({connectionString:target.toString()}),schema='game_crash_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA "${schema}"`);target.searchParams.set('options','-c search_path='+schema);const pool=new Pool({connectionString:target.toString(),max:10}),session=randomBytes(48).toString('hex'),key=randomBytes(32).toString('hex'),requestId=randomUUID();let child:ChildProcess|undefined,app:Awaited<ReturnType<typeof createApp>>|undefined,lock:PoolClient|undefined;
  try{

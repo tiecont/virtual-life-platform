@@ -9,7 +9,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { Pool } from 'pg';
 import { MeSchema,ReservationResultSchema } from '@virtual-city/contracts';
 import { restaurantWorldVersion } from '@virtual-city/restaurant-world';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 import { startRoomProcess } from '../support/room-process';
 const actors=16,waves=4,origin='http://127.0.0.1:3300',schema='restaurant_load_'+randomUUID().replaceAll('-',''),connection=new URL(process.env.TEST_DATABASE_URL??'');
 assert(['localhost','127.0.0.1','[::1]'].includes(connection.hostname)&&/^virtual_city_test(?:_|$)/.test(connection.pathname.slice(1)),'Disposable local test DB only');

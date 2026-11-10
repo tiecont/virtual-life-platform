@@ -9,6 +9,6 @@
  "tiers":["low","balanced","high"],
  "requiredTiers":{"desktop":["low","balanced","high"],"mobile":["low","balanced"],"androidAVD":["low","balanced"]},
  "mobileHigh":"Additional diagnostic of desktop-only High tier; report comparison to mobile caps without promoting it as a supported tier",
- "budgets":"docs/design/vnext/animals-3d/budgets-v1.json",
+ "budgets":"config/rendering/budgets-v1.json",
  "scope":"Synthetic renderer workload,not20real sessions/server CCU/physical30minute acceptance. Existing immutable thresholds remain authoritative."
 }

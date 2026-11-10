@@ -7,7 +7,7 @@ import { writeFile } from 'node:fs/promises';
 import { Pool } from 'pg';
 import { io,type Socket } from 'socket.io-client';
 import { MeSchema,RoomAckSchema,type Me,type RoomSnapshot } from '@virtual-city/contracts';
-import { migrate } from '../../apps/platform-api/src/db/migrations';
+import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 import { startRoomProcess } from '../support/room-process';
 let admin:Pool,pool:Pool,schema:string,runtime:Awaited<ReturnType<typeof startRoomProcess>>|undefined,serial=0;
 const origin='http://127.0.0.1:3300',sockets=new Set<Socket>(),facts:Record<string,unknown>[]=[];

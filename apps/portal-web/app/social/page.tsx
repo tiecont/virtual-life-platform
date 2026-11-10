@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import SocialPanel from './SocialPanel';
+import SocialPanel from '../../features/social/modules/social/presentation/SocialPanel';
 export const dynamic = 'force-dynamic';
 export default function SocialPage() {
   const value = process.env.PUBLIC_SOCKET_ORIGIN ?? 'http://127.0.0.1:4300'; const origin = new URL(value);
