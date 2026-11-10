@@ -122,6 +122,13 @@ export function schedulerStore(root=runtimeRoot,tasksRef=planRoot+'/06-execution
     for(const current of Object.values(state.tasks))if(claimed.has(current.status)) {
       const reservation=state.reservations[current.reservationId];
       assert.deepEqual(await json(localRef(reservation.ref)),reservation,'Reservation mirror mismatch');
+      for(const previous of reservation.history??[]) {
+        const bytes=await readFile(localRef(previous.ref));
+        assert.equal(sha256(bytes),previous.sha256,'Historical reservation changed');
+        const snapshot=JSON.parse(bytes);
+        assert.equal(snapshot.id,reservation.id);assert.equal(snapshot.taskId,reservation.taskId);
+        assert.equal(snapshot.owner,reservation.owner);
+      }
     }
     for(const current of Object.values(state.tasks))if(current.handoffRef)assert.equal(sha256(await readFile(localRef(current.handoffRef))),current.handoffSha256,'Handoff changed after publication');
     for(const [taskId,current] of Object.entries(state.tasks))for(const attempt of current.attempts??[]) {
@@ -183,6 +190,22 @@ export function schedulerStore(root=runtimeRoot,tasksRef=planRoot+'/06-execution
     }),
     start: (taskId,actor='agent1') => mutate(actor,async(_taskdoc,state)=>{
       assert.equal(state.tasks[taskId]?.status,'RESERVED');state.tasks[taskId].status='IN_PROGRESS';return state.tasks[taskId];
+    }),
+    narrowReservation: (taskId,paths,reason,actor='agent1') => mutate(actor,async(_taskdoc,state)=>{
+      const current=state.tasks[taskId];
+      assert(['RESERVED','IN_PROGRESS'].includes(current?.status),'Reservation must be editable');
+      const previous=state.reservations[current.reservationId];
+      assert(Array.isArray(paths)&&paths.length>0&&new Set(paths).size===paths.length,'Unique nonempty paths required');
+      paths.forEach(scopePath);
+      assert(paths.every(path=>previous.paths.some(old=>scopePath(path)===scopePath(old)||scopePath(path).startsWith(scopePath(old)+'/'))),'Reservation cannot expand');
+      assert(previous.paths.some(old=>!paths.some(path=>scopePath(path)===scopePath(old))),'Reservation must narrow');
+      assert(typeof reason==='string'&&reason.trim().length>0,'Narrowing reason required');
+      // Write a new mirror first; a failed state replacement leaves the old one valid.
+      const ref='reservations/'+taskId+'-'+randomUUID()+'.json';
+      const reservation={...previous,ref,paths,amendedAt:new Date().toISOString(),reason,
+        history:[...(previous.history??[]),{ref:previous.ref,sha256:sha256(await readFile(localRef(previous.ref)))}]};
+      await writeFile(localRef(ref),serialize(reservation),{flag:'wx'});
+      state.reservations[previous.id]=reservation;return reservation;
     }),
     submit: (taskId,handoffRef,actor='agent1') => mutate(actor,async(_taskdoc,state)=>{
       const current=state.tasks[taskId];assert.equal(current?.status,'IN_PROGRESS');

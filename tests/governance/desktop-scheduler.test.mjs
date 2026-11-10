@@ -87,6 +87,26 @@ test('reservation paths reject traversal and compare directory boundaries',()=>{
   assert(overlaps('proto/**','proto/world.proto'));
   assert(!overlaps('proto','protocol'));
 });
+test('coordinator narrows reservations without losing immutable mirrors or enabling expansion',async t=>{
+  const f=await fixture(t),original=await f.store.reserve('VL-001','agent1',['crates/**','Cargo.toml'],f.location);
+  await f.store.start('VL-001');
+  await assert.rejects(f.store.narrowReservation('VL-001',['crates/vl-security'],'handoff','agent2'),/coordinator/);
+  await assert.rejects(f.store.narrowReservation('VL-001',[],'handoff'),/nonempty/);
+  await assert.rejects(f.store.narrowReservation('VL-001',['crates/vl-security','crates/vl-security'],'handoff'),/Unique/);
+  await assert.rejects(f.store.narrowReservation('VL-001',['crate'],'handoff'),/cannot expand/);
+  await assert.rejects(f.store.narrowReservation('VL-001',['crates/**','Cargo.toml'],'handoff'),/must narrow/);
+  await assert.rejects(f.store.narrowReservation('VL-001',['crates/vl-security'],''),/reason/);
+  const narrowed=await f.store.narrowReservation('VL-001',['crates/vl-security/**'],'Committed shared files released');
+  assert.equal(narrowed.id,original.id);assert.notEqual(narrowed.ref,original.ref);
+  assert.deepEqual(JSON.parse(await readFile(join(f.root,original.ref))),original);
+  assert.equal((await f.store.load()).state.tasks['VL-001'].status,'IN_PROGRESS');
+  await f.store.reserve('VL-003','agent2',['Cargo.toml','crates/vl-game-core/**'],f.location);
+  await assert.rejects(f.store.narrowReservation('VL-001',['Cargo.toml'],'reclaim'),/cannot expand/);
+  const twice=await f.store.narrowReservation('VL-001',['crates/vl-security/src/**'],'Smaller scope');
+  assert.equal(twice.history.length,2);await f.store.load();
+  await writeFile(join(f.root,original.ref),serialize({...original,paths:['elsewhere']}));
+  await assert.rejects(f.store.load(),/Historical reservation changed/);
+});
 test('submit, verify and persisted verification reject unbound source evidence',async t=>{
   for(const variant of ['missing-commit','missing-artifact','wrong-hash','directory','traversal'])await t.test(variant,async t=>{
     const f=await fixture(t);

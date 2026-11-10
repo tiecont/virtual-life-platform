@@ -35,3 +35,10 @@ For CHANGES_REQUESTED, the coordinator uses `requestChanges(taskId, reviewRef)`.
 It preserves hashes of the rejected handoff/review in `attempts`, reopens the
 existing reservation, and requires a new immutable handoff path for resubmission.
 Do not overwrite any published handoff or independent review.
+
+After a committed partial slice, the coordinator may call
+`narrowReservation(taskId, paths, reason)` on RESERVED/IN_PROGRESS work. Paths
+can only shrink inside the previous scope. The task stays open; a new mirror
+records the reason and hashes every prior mirror, which load checks unchanged.
+Released shared paths can then be reserved by another READY task. Scope expansion
+and changes during review are rejected; this does not waive acceptance or review.
