@@ -24,7 +24,7 @@ services:
       WEB_ORIGIN: ${IMAGE_ORIGIN:?}
       TRUSTED_PROXY_IP: ${IMAGE_PROXY_IP:?}
     entrypoint: [node]
-    command: [dist/db/migrate.js]
+    command: [dist/shared/database/migrate.js]
     read_only: true
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]

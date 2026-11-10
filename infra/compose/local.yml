@@ -36,7 +36,7 @@ services:
     image: ${VC_API_IMAGE:?Select tested API image ID}
     container_name: ${VC_NAME:-vc}-migrate
     environment: *api-env
-    command: [node, dist/db/migrate.js]
+    command: [node, dist/shared/database/migrate.js]
     depends_on:
       db: {condition: service_healthy}
   api:
