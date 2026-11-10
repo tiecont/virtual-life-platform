@@ -1,0 +1,14 @@
+{
+  "id": "VL-007-fb2127b0-5d59-43c1-804b-3d738ab3dbaa",
+  "ref": "reservations/VL-007-fb2127b0-5d59-43c1-804b-3d738ab3dbaa.json",
+  "taskId": "VL-007",
+  "owner": "agent2",
+  "paths": [
+    "docs/execution/desktop-first/windows-qa",
+    "scripts/desktop-hardware-audit.mjs"
+  ],
+  "branch": "codex/desktop-first-backend",
+  "worktree": "/home/tiecont/Projects/virtual-city",
+  "sourceRevision": "100d64f2c5b8ca51a53640cb7b5f44cc61b64dc8",
+  "createdAt": "2026-11-10T01:24:34.648Z"
+}

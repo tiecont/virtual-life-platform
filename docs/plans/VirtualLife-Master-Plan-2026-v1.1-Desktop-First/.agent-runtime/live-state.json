@@ -68,14 +68,16 @@
       "evidenceRefs": []
     },
     "VL-006": {
-      "status": "TODO",
-      "owner": null,
-      "evidenceRefs": []
+      "status": "IN_PROGRESS",
+      "owner": "agent2",
+      "evidenceRefs": [],
+      "reservationId": "VL-006-4230e85a-90ba-4b62-b117-b0caa8edc469"
     },
     "VL-007": {
-      "status": "TODO",
-      "owner": null,
-      "evidenceRefs": []
+      "status": "IN_PROGRESS",
+      "owner": "agent2",
+      "evidenceRefs": [],
+      "reservationId": "VL-007-fb2127b0-5d59-43c1-804b-3d738ab3dbaa"
     },
     "VL-008": {
       "status": "TODO",
@@ -654,8 +656,35 @@
       "worktree": "/home/tiecont/Projects/virtual-city",
       "sourceRevision": "659eb732e0460ad2ca3bd8ee577399ae69071563",
       "createdAt": "2026-11-10T01:24:15.176Z"
+    },
+    "VL-006-4230e85a-90ba-4b62-b117-b0caa8edc469": {
+      "id": "VL-006-4230e85a-90ba-4b62-b117-b0caa8edc469",
+      "ref": "reservations/VL-006-4230e85a-90ba-4b62-b117-b0caa8edc469.json",
+      "taskId": "VL-006",
+      "owner": "agent2",
+      "paths": [
+        "docs/execution/desktop-first/brand"
+      ],
+      "branch": "codex/desktop-first-backend",
+      "worktree": "/home/tiecont/Projects/virtual-city",
+      "sourceRevision": "100d64f2c5b8ca51a53640cb7b5f44cc61b64dc8",
+      "createdAt": "2026-11-10T01:24:34.563Z"
+    },
+    "VL-007-fb2127b0-5d59-43c1-804b-3d738ab3dbaa": {
+      "id": "VL-007-fb2127b0-5d59-43c1-804b-3d738ab3dbaa",
+      "ref": "reservations/VL-007-fb2127b0-5d59-43c1-804b-3d738ab3dbaa.json",
+      "taskId": "VL-007",
+      "owner": "agent2",
+      "paths": [
+        "docs/execution/desktop-first/windows-qa",
+        "scripts/desktop-hardware-audit.mjs"
+      ],
+      "branch": "codex/desktop-first-backend",
+      "worktree": "/home/tiecont/Projects/virtual-city",
+      "sourceRevision": "100d64f2c5b8ca51a53640cb7b5f44cc61b64dc8",
+      "createdAt": "2026-11-10T01:24:34.648Z"
     }
   },
   "gateEvidence": {},
-  "updatedAt": "2026-11-10T01:24:15.217Z"
+  "updatedAt": "2026-11-10T01:24:34.696Z"
 }
