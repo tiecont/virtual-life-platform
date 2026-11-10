@@ -1,0 +1,222 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-001",
+  "recordType": "SUPPLEMENTAL_RECHECK_NOT_ACCEPTANCE",
+  "reviewMode": "SINGLE_AGENT_SEQUENTIAL_AUDIT",
+  "independent": false,
+  "reviewer": "agent1",
+  "reviewerProvenance": {
+    "agentTask": "/root",
+    "scope": "One agent in a separate source-audit pass. Historical independent approvals remain the canonical acceptance; this supplemental report is not a second independent review.",
+    "writeScope": "One new report only; no source, live-state, reservations, historical reviews or imported baseline edits."
+  },
+  "policyRef": "policies/single-agent-2026-11-10.json",
+  "policySha256": "02c0285a2d6fe5cf19c57f10d91945f6d9a9ee60a1bf80f7c200e63ee6e7cda1",
+  "sourceRevision": "e942fdcaad056ceb4967f0818ded9196aab3742c",
+  "observedHead": "ba3aad32b63c820aeeb0a93457f7be234beb3805",
+  "startedAt": "2026-11-10T12:09:54.951232+00:00",
+  "reviewedAt": "2026-11-10T12:12:14.280422+00:00",
+  "result": "NO_NEW_FINDINGS",
+  "findings": [],
+  "assessment": "No new material finding within VL-001 revision2. The original VL001-R1 correction rejects missing commits/artifacts, wrong hashes, unsafe paths and failing required checks. Exact-source and current governance/preservation checks pass. Existing VERIFIED status and canonical independent review are unchanged.",
+  "canonicalAcceptance": {
+    "result": "PASS",
+    "sourceRevision": "e942fdcaad056ceb4967f0818ded9196aab3742c",
+    "taskStatus": "VERIFIED",
+    "handoffRef": "handoffs/VL-001-revision2.json",
+    "handoffSha256": "55b879622d0df0fbac1fa326365b94d65d5b3095a95f6153a928cd787bcac418",
+    "reviewRef": "reviews/VL-001-revision2-agent2.json",
+    "reviewSha256": "6058498853ca2100f837a05377b4b143d7a6881ec13f859c346a83b7f822d7d2",
+    "artifacts": [
+      {
+        "ref": "docs/execution/desktop-first/VL-001-CHECKS.json",
+        "sha256": "26cd9aa30c18e1bff4c694f06a4e55cc7b4e47dfeac851183e50d45daaf85242"
+      },
+      {
+        "ref": "docs/execution/desktop-first/VL-001-DIRECT-CHECKS.json",
+        "sha256": "f2e50fd7e1d286e9289d5171c8ce991745d87b6eaec711bddc3d020ce8cfab1d"
+      },
+      {
+        "ref": "docs/execution/desktop-first/LEGACY-INDEX.json",
+        "sha256": "bd72f1c23aeea59bb05ef4e3cc3f66a0298b92b84fc4bbea5fbad13b3c236f38"
+      },
+      {
+        "ref": "docs/execution/desktop-first/INPUT-MANIFEST.json",
+        "sha256": "9135018c59444bd7bf040380ceb588088e85a2f73f32913864de3896d5caa0d3"
+      },
+      {
+        "ref": "scripts/desktop-scheduler.mjs",
+        "sha256": "4821dbd21404ccae2246fcc711013877b69a34f70ed734f2cc9b00eb279258dd"
+      },
+      {
+        "ref": "docs/execution/desktop-first/VL-001-REVIEW-FIX-CHECKS.json",
+        "sha256": "c9a9de488f031bccdce05e75c9493e90f52f78490aceb795e208da8f45e04ec4"
+      }
+    ],
+    "rejectedAttempts": 1,
+    "historicalReviewFilesUnchanged": true,
+    "sourceIsAncestorOfHead": true
+  },
+  "commands": [
+    {
+      "name": "governance",
+      "command": "node --test tests/governance/*.test.mjs",
+      "exitCode": 0,
+      "log": "/tmp/vl001-audit-8d54kms6/governance-exact.log",
+      "sha256": "34c5dd613994f00365b2432635b2a682636ced54e7df4352e8786490d4bd12b3",
+      "scope": "Exact committed e942fdc in detached worktree",
+      "result": "PASS",
+      "counts": {
+        "tests": 115,
+        "passed": 115,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "adoption",
+      "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+      "exitCode": 0,
+      "log": "/tmp/vl001-audit-8d54kms6/adoption-exact.log",
+      "sha256": "d7c7eda5e91761450eecc1ab02f65781eb8aad714ee5b3b1733d60030b05001d",
+      "scope": "Exact committed e942fdc in detached worktree",
+      "result": "PASS"
+    },
+    {
+      "name": "plan",
+      "command": "python3 docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/tools/validate_plan.py",
+      "exitCode": 0,
+      "log": "/tmp/vl001-audit-8d54kms6/plan-exact.log",
+      "sha256": "37af3ca57e299433fe6c562d632d8f35405233887a7ee824538b2b503429f84f",
+      "scope": "Exact committed e942fdc in detached worktree",
+      "result": "PASS"
+    },
+    {
+      "name": "ci-contract",
+      "command": "node scripts/verify-ci.mjs",
+      "exitCode": 1,
+      "log": "/tmp/vl001-audit-8d54kms6/ci-contract-exact.log",
+      "sha256": "6537ed75ab44a31089b2772a832bbb76744f411e30e9daedff4b2497d09bfe8e",
+      "scope": "Exact committed e942fdc in detached worktree",
+      "result": "RETAINED_SETUP_FAILURE"
+    },
+    {
+      "name": "governance",
+      "command": "node --test tests/governance/*.test.mjs",
+      "exitCode": 0,
+      "log": "/tmp/vl001-audit-8d54kms6/governance-current.log",
+      "sha256": "97646d81a0f2c687f752ef2f134e27ccf20025bbe68df197b2950876b2ae3f8f",
+      "scope": "Current dirty workspace at ba3aad3",
+      "result": "PASS",
+      "counts": {
+        "tests": 121,
+        "passed": 121,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "adoption",
+      "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+      "exitCode": 0,
+      "log": "/tmp/vl001-audit-8d54kms6/adoption-current.log",
+      "sha256": "3c49ca1a31303e067a6f3ad2fad9a9d621fe9867d413be8c7048948f7d40d606",
+      "scope": "Current dirty workspace at ba3aad3",
+      "result": "PASS"
+    },
+    {
+      "name": "plan",
+      "command": "python3 docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/tools/validate_plan.py",
+      "exitCode": 0,
+      "log": "/tmp/vl001-audit-8d54kms6/plan-current.log",
+      "sha256": "37af3ca57e299433fe6c562d632d8f35405233887a7ee824538b2b503429f84f",
+      "scope": "Current dirty workspace at ba3aad3",
+      "result": "PASS"
+    },
+    {
+      "name": "scheduler-status",
+      "command": "node scripts/desktop-scheduler.mjs status agent1",
+      "exitCode": 0,
+      "log": "/tmp/vl001-audit-8d54kms6/scheduler-status-current.log",
+      "sha256": "078c1e8a3efc3b7f7a53fc4c1d3f8e77e871060e9151c096ea2d0461e81251ac",
+      "scope": "Current dirty workspace at ba3aad3",
+      "result": "PASS"
+    },
+    {
+      "name": "diff-check",
+      "command": "git diff --check",
+      "exitCode": 0,
+      "log": "/tmp/vl001-audit-8d54kms6/diff-check-current.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scope": "Current dirty workspace at ba3aad3",
+      "result": "PASS"
+    },
+    {
+      "command": "node scripts/verify-ci.mjs",
+      "scope": "Exact source e942fdc, root and workspace node_modules linked to existing installed dependencies",
+      "exitCode": 0,
+      "log": "/tmp/vl001-audit-8d54kms6/ci-contract-exact-with-workspace-deps.log",
+      "sha256": "05c67c88c3ec449b4fa3a8398ff694d32e9ebb38be3ddb18707b95a498dae6d7",
+      "linkedProjectDependencies": 19,
+      "result": "PASS"
+    }
+  ],
+  "preservation": {
+    "trackedInputsCompared": 1990,
+    "trackedInputDrift": [],
+    "historicalSourceCheckoutUnchanged": true,
+    "temporaryWorktreeRemoved": true,
+    "dependencySymlinksRemoved": true,
+    "headUnchanged": true
+  },
+  "retainedSetupFailure": {
+    "command": "node scripts/verify-ci.mjs",
+    "exitCode": 1,
+    "diagnosisCommand": "node scripts/verify-toolchain.mjs",
+    "diagnosisExitCode": 1,
+    "diagnosis": "Cannot find module next from apps/admin-web/package.json: only root node_modules was linked in the clean worktree. Linked 19 existing workspace node_modules without installing or editing source, then the unchanged CI contract passed.",
+    "diagnosisObservedInToolOutput": true
+  },
+  "sourceAndLedgerResults": {
+    "exactSource": {
+      "governance": "115/115 PASS",
+      "legacyFiles": 209,
+      "ownerInputFiles": 105,
+      "originalSqlFiles": 47,
+      "legacyEvidenceRecords": 75,
+      "privateRawIndexAvailable": false
+    },
+    "currentWorkspace": {
+      "governance": "121/121 PASS",
+      "originalSqlFilesUnchanged": 47,
+      "separatelyRegisteredSqlAdditions": 2,
+      "migration0049PreservationObservation": "Previously reported missing registration is resolved by the current VL-013 reservation and verifier; fresh current adoption check exits 0.",
+      "privateRawIndexAvailable": true
+    },
+    "historicalCounts": {
+      "vnextVerified": 44,
+      "lodgeVerified": 4,
+      "arenaVerified": 0
+    },
+    "singleRoomAuthorityConstructor": "apps/platform-api/src/app.ts"
+  },
+  "limitations": [
+    "This is a supplemental same-agent audit, not new independent acceptance and not a scheduler verification request.",
+    "The local CI workflow contract passed; hosted CI was not run or requalified in this review. No successful hosted CI is inferred.",
+    "No runtime/backend/SQL behavior changed here; historical unit/PG results were read as evidence and were not rerun.",
+    "No downstream Rust/Unity/Windows/GPU/hardware/license/signing/public release acceptance follows from this audit.",
+    "Raw audit logs are local temporary files with SHA256 below, not an off-host archive.",
+    "The supplied plan validator reports its existing additional-runtime-file count warning and exits 0."
+  ],
+  "localEvidence": [
+    {
+      "ref": "/tmp/vl001-audit-8d54kms6/binding.json",
+      "sha256": "0f515cb9194448af93b22534ba943dbcd72c55a24becfa58a50e443268e9fd9b"
+    },
+    {
+      "ref": "/tmp/vl001-audit-8d54kms6/preservation.json",
+      "sha256": "d92486714a70bce98c1d78ce9fa077204b0ac5b6adbc74db82386205a1a06d28"
+    }
+  ],
+  "nextExactAction": "No VL-001 reopening or live-state transition is needed. Coordinator may continue the active VL-016 correction using its existing reservation and exact-source Quality checks; obtain a fresh scheduler status before choosing dependent work."
+}
