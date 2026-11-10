@@ -72,16 +72,30 @@
       "evidenceRefs": []
     },
     "VL-006": {
-      "status": "IN_PROGRESS",
+      "status": "BLOCKED_EXTERNAL",
       "owner": "agent2",
-      "evidenceRefs": [],
-      "reservationId": "VL-006-4230e85a-90ba-4b62-b117-b0caa8edc469"
+      "evidenceRefs": [
+        {
+          "ref": "docs/execution/desktop-first/brand/README.md",
+          "sourceRevision": "d5966a6",
+          "sha256": "8cbc47cd7a84ec01d5f2fd1c8423ff44dd015ac116cfc68397e235e414149fb5"
+        }
+      ],
+      "reservationId": "VL-006-4230e85a-90ba-4b62-b117-b0caa8edc469",
+      "blockerRef": "blockers/VL-006.json"
     },
     "VL-007": {
-      "status": "IN_PROGRESS",
+      "status": "BLOCKED_EXTERNAL",
       "owner": "agent2",
-      "evidenceRefs": [],
-      "reservationId": "VL-007-fb2127b0-5d59-43c1-804b-3d738ab3dbaa"
+      "evidenceRefs": [
+        {
+          "ref": "docs/execution/desktop-first/windows-qa/README.md",
+          "sourceRevision": "d5966a6",
+          "sha256": "05f6601dc63da31d0769555b874dea6f08ea602e25e2fe4c5f9e5b66a1ae5f2e"
+        }
+      ],
+      "reservationId": "VL-007-fb2127b0-5d59-43c1-804b-3d738ab3dbaa",
+      "blockerRef": "blockers/VL-007.json"
     },
     "VL-008": {
       "status": "TODO",
@@ -690,5 +704,5 @@
     }
   },
   "gateEvidence": {},
-  "updatedAt": "2026-11-10T01:27:52.221Z"
+  "updatedAt": "2026-11-10T01:30:26.115Z"
 }
