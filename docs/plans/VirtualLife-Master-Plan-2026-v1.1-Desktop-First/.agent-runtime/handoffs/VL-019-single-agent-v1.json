@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-019",
+  "owner": "agent1",
+  "sourceRevision": "ba3aad32b63c820aeeb0a93457f7be234beb3805",
+  "completedAt": "2026-11-10T10:28:33Z",
+  "acceptanceMet": true,
+  "environment": "CachyOS Linux7.2.9-2-cachyos x86_64; Ryzen7 4800HS/16 logical CPUs; Rust1.99.1 task-local toolchain",
+  "commands": [
+    {"command": "cargo fmt --all -- --check", "exitCode": 0},
+    {"command": "cargo clippy --workspace --all-targets --locked -- -D warnings", "exitCode": 0},
+    {"command": "cargo test --workspace --locked", "exitCode": 0, "tests": 30, "compileFailDoctests": 1},
+    {"command": "cargo run --locked --package vl-world --example zone-probe", "exitCode": 0, "outcome": "20 actors,2000 inputs,102ticks; initial p95=73us and separate audit p95=50us; compute overruns0,late wakes0,mailbox peak20/32"},
+    {"command": "cargo test --locked --package vl-world (postcommit audit)", "exitCode": 0, "tests": 5},
+    {"command": "cargo run --offline --manifest-path artifacts/desktop-first/vl019/audit-probe/Cargo.toml", "exitCode": 0, "outcome": "Cancelled join cleanup,full mailbox,cross-zone isolation,200live replies,tick progress,u64 exhaustion and joined shutdown PASS"},
+    {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "tests": 121},
+    {"command": "node --test tests/governance/rust-workflow.test.mjs tests/governance/desktop-scheduler.test.mjs (postcommit audit)", "exitCode": 0, "tests": 20},
+    {"command": "pnpm exec eslint scripts/verify-artifact-workflows.mjs tests/governance/rust-workflow.test.mjs", "exitCode": 0},
+    {"command": "pnpm ci:check", "exitCode": 0},
+    {"command": "node docs/execution/desktop-first/verify-adoption.mjs", "exitCode": 0},
+    {"command": "git diff --exit-code HEAD -- crates Cargo.toml Cargo.lock apps/game-runtime/Dockerfile .github/workflows/rust-runtime.yml scripts/verify-artifact-workflows.mjs tests/governance/rust-workflow.test.mjs", "exitCode": 0}
+  ],
+  "artifacts": [
+    {"ref": "crates/vl-world/Cargo.toml", "sha256": "1fb5465568c4aac1f9a8be57036b8f82fe897133ca3772084a03501aecada199"},
+    {"ref": "crates/vl-world/src/lib.rs", "sha256": "fd7141a6d3ba41ed26b46f7337178b0e4ffd13655d584c2e354922789f0a611e"},
+    {"ref": "crates/vl-world/src/tests.rs", "sha256": "c1af33dec54d218622a831cbdbda1c4660c7f1d2faedcda5318dc1dd4d6a3bfa"},
+    {"ref": "crates/vl-world/examples/zone-probe.rs", "sha256": "81b997540dcf16fadcc2ecf0d05eb7ddf5c276bc0c48eb4fc4ca300bfc0f2f46"},
+    {"ref": "docs/execution/desktop-first/world-actor/README.md", "sha256": "6b7e5e7c58220a4b9790db8b49dab15d910c52c9546b671b7ba658e199c46f0f"},
+    {"ref": "docs/execution/desktop-first/world-actor/LOCAL-CHECKS.json", "sha256": "9bc6d891dba9c69710eca21850c762db3c382e2db71fa7c669be82a15962319d"},
+    {"ref": ".github/workflows/rust-runtime.yml", "sha256": "e61ea1a217e0f43d4b46936db7cb2f3ad8d72741cc53e2f24b9bedfa5acfc7ee"}
+  ],
+  "auditEvidence": [
+    {"ref": "artifacts/desktop-first/vl019/audit-probe-live.json", "sha256": "2432c9c04264ea4587044fbad052cd72277cc4e4146b66faaa2b79a6bf5e36de"},
+    {"ref": "artifacts/desktop-first/vl019/audit-probe/src/main.rs", "sha256": "d9a85fa298f0168b966a41a96a92741746d1ebd4a99679bbc02bb56728d7557d"},
+    {"ref": "artifacts/desktop-first/vl019/audit-probe/Cargo.lock", "sha256": "12f1a183f911c07b002c240d8fdba01d3c8b25d8dbe829a116c1d8b54cc5050a"}
+  ],
+  "acceptanceEvidence": [
+    "20 scripted actors run in one zone task with bounded32-slot mailbox and20 single-value movement buffers",
+    "Per-zone integer movement and grid AOI with bounded actor/sample counts; exact geometric equivalence checked against brute force",
+    "Normal dependency is Tokio only; no SQL/I/O effect adapter and no per-frame DB writes",
+    "Raw tick samples,p95,compute overruns and scheduler lateness measured; both local runs retain all samples"
+  ],
+  "ciStatus": {"runId": 42799463304, "statusAtPublication": "in_progress", "acceptanceGate": "Exact-source Rust workflow including live20actor probe must succeed before verification"},
+  "limitations": [
+    "Separate same-agent audit under explicit owner policy; NOT independent review",
+    "Prototype is default-off and absent from production runtime composition",
+    "Trusted host handles,not authenticated network authority; geometric AOI,not authorized public recipient projection",
+    "Rectangular bounds and conservative L1 movement only; no navmesh/obstacles/acceleration claim",
+    "Short local debug-profile sample,not long soak,production capacity,Windows,Unity or GPU qualification",
+    "No migration,production/public activation or change to existing Nest RoomAuthority",
+    "Aggregate Quality for ba3aad3 remains separate and pending; VL-016 exact81dda85 aggregate gate unchanged"
+  ]
+}

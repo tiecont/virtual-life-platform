@@ -183,7 +183,7 @@
       "reviewSha256": "ce69f4290b922db029f4d1804a5181bc5965940e83f8a6e0ab315749c11ce285"
     },
     "VL-016": {
-      "status": "IN_REVIEW",
+      "status": "IN_PROGRESS",
       "owner": "agent1",
       "evidenceRefs": [],
       "reservationId": "VL-016-77484595-e11c-4f0b-a167-d5e4c81a2642",
@@ -208,10 +208,15 @@
           "reviewRef": "reviews/VL-016-v3-ci-final-agent2.json",
           "reviewSha256": "1aeb97c34ad0d1fb3a3a4cb999354378c15d4ebe0142e7c550a21a41dac4e561",
           "decision": "CHANGES_REQUESTED"
+        },
+        {
+          "handoffRef": "handoffs/VL-016-single-agent-v4.json",
+          "handoffSha256": "045bd0bbd81d65ab2e98a2e1aec9533f62d7f96e1738639ba2ac2e715d9aaf12",
+          "reviewRef": "reviews/VL-016-single-agent-v4-changes.json",
+          "reviewSha256": "3cdb03240baeb0b6fd099ea83a5cb58c426800cab862f5b45805c2f3ec0decd0",
+          "decision": "CHANGES_REQUESTED"
         }
-      ],
-      "handoffRef": "handoffs/VL-016-single-agent-v4.json",
-      "handoffSha256": "045bd0bbd81d65ab2e98a2e1aec9533f62d7f96e1738639ba2ac2e715d9aaf12"
+      ]
     },
     "VL-017": {
       "status": "TODO",
@@ -224,10 +229,15 @@
       "evidenceRefs": []
     },
     "VL-019": {
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "owner": "agent1",
       "evidenceRefs": [],
-      "reservationId": "VL-019-c9bf511e-54c3-4ba9-8e1c-a9a81fc4d339"
+      "reservationId": "VL-019-c9bf511e-54c3-4ba9-8e1c-a9a81fc4d339",
+      "handoffRef": "handoffs/VL-019-single-agent-v1.json",
+      "handoffSha256": "960496c2c437dfc6ac9201cd5aec15d39d22b46aa527c12fd2d0576d47bdf57a",
+      "reviewRef": "reviews/VL-019-single-agent-v1.json",
+      "reviewSha256": "41b59ab2be7a7db8e27bc2d79d5b5d135357a3dff518f6be0f025e7e23bf6452",
+      "reviewMode": "SINGLE_AGENT_SEQUENTIAL_AUDIT"
     },
     "VL-020": {
       "status": "TODO",
@@ -995,7 +1005,7 @@
     },
     "VL-016-77484595-e11c-4f0b-a167-d5e4c81a2642": {
       "id": "VL-016-77484595-e11c-4f0b-a167-d5e4c81a2642",
-      "ref": "reservations/VL-016-0126cce6-5635-4f18-884d-c8e686c577cf.json",
+      "ref": "reservations/VL-016-e4b7d6c3-8556-4043-b4e3-20cf03b45476.json",
       "taskId": "VL-016",
       "owner": "agent1",
       "paths": [
@@ -1012,14 +1022,18 @@
         "tests/e2e/deadline-performance.spec.ts",
         "tests/support/scene-cadence.ts",
         "tests/support/scene-profile.ts",
-        "docs/execution/desktop-first/web-compatibility/**"
+        "docs/execution/desktop-first/web-compatibility/**",
+        "tests/integration/invitations.test.ts",
+        "tests/e2e/scene.spec.ts",
+        "packages/pixi-scene/src/renderer.ts",
+        "apps/platform-api/src/invitations/service.ts"
       ],
       "branch": "codex/desktop-first-backend",
       "worktree": "/home/tiecont/Projects/virtual-city",
       "sourceRevision": "64f7cb34654130a02393e7181a848e5d737ac7a2",
       "createdAt": "2026-11-10T04:55:49.458Z",
-      "amendedAt": "2026-11-10T08:55:59.591Z",
-      "reason": "Transfer current49 CI composition and compatibility evolution to active VL-013; legacy48 source retained",
+      "amendedAt": "2026-11-10T12:04:48.184Z",
+      "reason": "Deterministic real-PG regression reproduces503: two clock reads can exceed immutable two-minute group lifetime constraint; derive both timestamps from one instant",
       "history": [
         {
           "ref": "reservations/VL-016-77484595-e11c-4f0b-a167-d5e4c81a2642.json",
@@ -1044,6 +1058,18 @@
         {
           "ref": "reservations/VL-016-c249b4d1-9be2-4a3e-970d-e554b17662a9.json",
           "sha256": "f202a2307528d9b0c22e2c1d864ab1b0807ed41a01956c65fe65731f7880f285"
+        },
+        {
+          "ref": "reservations/VL-016-0126cce6-5635-4f18-884d-c8e686c577cf.json",
+          "sha256": "dbd9f430ed3d06888daa7e3a66d105758e2e2fbac0442596ae3f5215d2484180"
+        },
+        {
+          "ref": "reservations/VL-016-13169e89-800c-4cfe-83f3-76734c48b0ad.json",
+          "sha256": "6a167f7dfda87c6bbff491f86e1d8791f9690d842e21004b4f626240fd80c41c"
+        },
+        {
+          "ref": "reservations/VL-016-59449503-8512-4b2d-bc6f-24e8da606a00.json",
+          "sha256": "92c625d1868fe3c2ce791b8068829dcbc13f06fd770c54997476dea9e9f0de26"
         }
       ]
     },
@@ -1083,7 +1109,7 @@
       }
     ]
   },
-  "updatedAt": "2026-11-10T10:19:05.655Z",
+  "updatedAt": "2026-11-10T12:04:48.187Z",
   "reviewPolicy": {
     "ref": "policies/single-agent-2026-11-10.json",
     "sha256": "02c0285a2d6fe5cf19c57f10d91945f6d9a9ee60a1bf80f7c200e63ee6e7cda1"
