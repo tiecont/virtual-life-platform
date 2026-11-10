@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-016",
+  "reviewer": "agent2",
+  "sourceRevision": "aca14de0c50fe5d80c7563846a07b6bd55fc7321",
+  "handoffRef": "handoffs/VL-016-v3.json",
+  "handoffSha256": "37bf9edc592484b25513f42276d169705d1d0d72fd8fec5a88a420e355adca71",
+  "reviewedAt": "2026-11-10T06:29:45Z",
+  "decision": "APPROVED",
+  "findings": [],
+  "scope": "Independent approval of the v3 source correction and publication erratum, with explicit reuse of the comprehensive v2 storage approval for identical implementation. This approval does not establish completed aggregate CI or authorize coordinator verification before its CI gate.",
+  "environment": {
+    "platform": "CachyOS Linux x86_64",
+    "node": "26.9.0",
+    "verificationRoot": "artifacts/desktop-first/vl016/agent2-v3-independent/source",
+    "isolation": "Fresh full-history --no-local clone detached at the requested commit. Ten dependency packages compiled inside ignored artifacts; external installed dependencies reused through symlinks. TEST_DATABASE_URL removed for the test runner so the wrapper created its own disposable PostgreSQL container. No source, state, handoff, reservation, prior review, owner private file, commit or push was changed. Concurrent coordinator VL-013 additions observed in the main worktree were excluded by the detached exact-source checkout."
+  },
+  "sourceEvidence": {
+    "handoffArtifactsChecked": 18,
+    "allArtifactSha256MatchExactGitBlobsAndWorktree": true,
+    "actualMigrationManifestCount": 48,
+    "all48ManifestChecksumsMatchExactSourceSqlBlobs": true,
+    "factsRef": "artifacts/desktop-first/vl016/agent2-v3-independent/facts.json",
+    "factsSha256": "5dfeeee6f2d352311922b7ff05f1b34a3638fa2556d6b4f1bff952054ce68b00",
+    "additionalAuditRef": "artifacts/desktop-first/vl016/agent2-v3-independent/additional-audit.json",
+    "inspection": [
+      "Read repository AGENTS/master, active START-HERE/README/AGENTS/runtime and review contracts, ADR-003, migration overlay, native architecture, DATA-CONSISTENCY, SYSTEM-TOPOLOGY, task graph and agent checkpoints. VL-016 depends on VL-003/VL-012/VL-015; live scheduler source and historical evidence validation passed.",
+      "Read both the comprehensive v2 APPROVED review and separate CI CHANGES_REQUESTED review. Inspected complete changes since b22c738, including the current admin/telemetry assertions, coordinator attempt/reservation records, CI evidence summary and aca14de publication correction.",
+      "admin-proxy.test.ts:74 and telemetry.test.ts:82 now compute the expected current count from migrationManifest(). The production observations derive the same value from requiredMigrations in app.ts:119/318. Auth, read-policy expiry, bounded observation shape, privacy and query rejection assertions remain present and passed. Historical47 compatibility policies and fixtures are unchanged.",
+      "Independently hashed the v3 handoff and all18 declared Git blobs/worktree artifacts, private referenced compatibility/CI/correction logs, and both historical rejection attempts. No handoff field was trusted as a substitute for a computed hash."
+    ]
+  },
+  "correctionResolution": [
+    {
+      "id": "VL016-CI-R1",
+      "status": "SOURCE_CORRECTION_APPROVED_CI_GATE_REMAINS",
+      "evidence": "The real manifest has48 entries, all matching exact committed SQL checksums. Both formerly stale47 current observation assertions now use the manifest count, and all24 focused real-PG tests pass independently. Required aggregate Quality remains in progress, so this resolves the code defect without representing the original passing-CI requirement as complete."
+    },
+    {
+      "id": "review-publication-erratum",
+      "status": "RESOLVED",
+      "evidence": "Published CI review hashes to5cea8af1daf47fe08d9fb84939f4a5d282330199eb2eba9119ec2caf0a3f5349, matching the rejection attempt. Replacing only its summary reference1767-1771 with1763-1764 reconstructs exactly eb42129628b99f47eb3288e6d7689607e2bc50dd8359c6ffbc79a578d5c36e52, the documented final reviewer hash. Actual preserved failure log lines1763-1764 contain the2failed/61passed files and2failed/774passed tests summary. Findings and CHANGES_REQUESTED decision are identical. The separate publication note is truthful and preservation passes."
+    }
+  ],
+  "reusedVerification": {
+    "sourceRevision": "b22c73842fa34fbfc6008ade5e3a7870aa40ddc6",
+    "reviewRef": "reviews/VL-016-v2-agent2.json",
+    "reviewSha256": "6a13ed3eab73d1e2e6214e1197eb655eb9a6ee4e3096ce03accad618f43b5cba",
+    "priorFactsRef": "artifacts/desktop-first/vl016/agent2-v2-independent/facts.json",
+    "priorFactsSha256": "d1613e2f37fe7126a57efefa39d7d3474e17dfa5e0814f2f837b8264a99e2e52",
+    "compatibilityRef": "artifacts/desktop-first/vl016/agent2-v2-independent/source/artifacts/desktop-first/vl016/compat-89e2193b/facts.json",
+    "compatibilitySha256": "420bacce2ad36c47e12e37098ef92c837f000eb18d62713c7adca8185f0cf366",
+    "compatibilityResult": "PASS",
+    "cleanupComplete": true,
+    "rationale": "git diff --exit-code b22c738 aca14de is empty for all apps/platform-api implementation, packages, config, compatibility harness, DB wrapper/environment/backup helper, migration copy script, test compose, native/schema/RoomAuthority tests, Rust workflow, scheduler/governance tests, architecture metadata, package.json, lockfile and Vitest config. Prior facts and every logged command checksum were independently rechecked; all recorded commands exited0. SQL/harness/API and archived47 commit are identical. Therefore the previously independent12PG cases, actual archived47 expansion/strict-old denial/compatible-old rollback/current48 roll-forward, checksum negatives and four additional probe groups remain valid. The unchanged full compatibility suite was deliberately not rerun."
+  },
+  "commands": [
+    {
+      "command": "node artifacts/desktop-first/vl016/agent2-v3-runner.mjs",
+      "exitCode": 0,
+      "outcome": "PASS: independent hashes, reuse identity/evidence audit, fresh clone, ten dependency builds, focused integration, scheduler/workflow governance, live preservation/scheduler, plan validation and CI metadata. Individual actual commands, exit codes and log hashes retained in facts.json."
+    },
+    {
+      "command": "node scripts/with-test-db.mjs node node_modules/vitest/vitest.mjs run --project integration tests/integration/admin-proxy.test.ts tests/integration/telemetry.test.ts --reporter=json --outputFile=<artifact-root>/vitest.json",
+      "cwd": "artifacts/desktop-first/vl016/agent2-v3-independent/source",
+      "exitCode": 0,
+      "outcome": "24/24 PASS,0failed,0pending. Wrapper-owned project virtual-city-test-7e9b589c DB container and network were removed.",
+      "report": "artifacts/desktop-first/vl016/agent2-v3-independent/vitest.json",
+      "logSha256": "94252b217173af6bc8b22baa8d30f51bd5d0345a55531ed8d026e0164dd2a49e"
+    },
+    {
+      "command": "node --test tests/governance/desktop-scheduler.test.mjs tests/governance/rust-workflow.test.mjs",
+      "cwd": "artifacts/desktop-first/vl016/agent2-v3-independent/source",
+      "exitCode": 0,
+      "outcome": "18/18 PASS,0skipped, including immutable review/history hashes, conflicts, source binding and required-check failures."
+    },
+    {
+      "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+      "exitCode": 0,
+      "outcome": "PASS in both main worktree and exact-source clone. Main worktree also checked private preservation index and current IN_REVIEW runtime. Original47SQL/105owner inputs/209archive files retained; additive48 is not qualified by preservation alone."
+    },
+    {
+      "command": "node scripts/desktop-scheduler.mjs status agent2",
+      "exitCode": 0,
+      "outcome": "PASS; VL-016 IN_REVIEW at handoffs/VL-016-v3.json,10VERIFIED/2BLOCKED_EXTERNAL/96TODO/1IN_PROGRESS/1IN_REVIEW, no ready successor. Read only."
+    },
+    {
+      "command": "python3 tools/validate_plan.py",
+      "cwd": "artifacts/desktop-first/vl016/agent2-v3-independent/source/docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First",
+      "exitCode": 0,
+      "outcome": "110tasks/110visited PASS schema/dependencies/assets/state/checksums. Existing evidence-file-count warning retained."
+    },
+    {
+      "command": "node --import tsx artifacts/desktop-first/vl016/agent2-v3-audit.mjs",
+      "exitCode": 0,
+      "outcome": "PASS: actual48manifest hashes versus exact Git SQL and independently reconstructed final-review hash; erratum matches actual log summary."
+    },
+    {
+      "command": "node artifacts/desktop-first/vl016/agent2-v3-ci-audit.mjs",
+      "exitCode": 0,
+      "outcome": "Downloaded Rust CI log, fetched actual PR merge checkout into artifact-only clone, proved full-tree identity with aca14de, and inspected fresh exact-head Rust/Quality metadata. Full commands/log hashes in ci-audit.json."
+    },
+    {
+      "command": "git diff --check; git diff --exit-code in artifact-only clone (separate invocations)",
+      "exitCode": 0,
+      "outcome": "No whitespace errors and no tracked changes in exact-source clone."
+    },
+    {
+      "command": "docker ps -a --filter name=virtual-city-test-; docker network ls --filter name=virtual-city-test- (separate read-only invocations)",
+      "exitCode": 0,
+      "outcome": "No disposable test containers or networks remain; wrapper/runner/CI audit processes completed."
+    }
+  ],
+  "ci": {
+    "observedAt": "2026-11-10T06:29:45.611Z",
+    "headSha": "aca14de0c50fe5d80c7563846a07b6bd55fc7321",
+    "rust": {
+      "runId": 42767086774,
+      "jobId": 129666093944,
+      "status": "completed",
+      "conclusion": "success",
+      "actualCheckoutRevision": "d40093d8d175777dc415ea153111772e5a97d472",
+      "exactSourceTree": "665d0e371cb4b98c06a9ad094d1ca7e146178140",
+      "fullTreeEqualsRequestedSource": true
+    },
+    "quality": {
+      "runId": 42767086757,
+      "status": "in_progress",
+      "conclusion": null,
+      "coreChecks": "in_progress",
+      "runtimeImages": "success",
+      "aggregateSuccessEstablished": false
+    },
+    "report": "artifacts/desktop-first/vl016/agent2-v3-independent/ci-audit.json"
+  },
+  "diagnostics": [
+    "Initial supplemental manifest probe exited1 because the TS CommonJS module does not expose a named ESM export. Default import correction in the ignored probe passed; no repository source change.",
+    "Initial optional CI parser extracted the checkout action SHA from the log prefix; the resulting artifact-only fetch exited128. Parser was corrected to read the trailing commit hash. Fetch of actual d40093d succeeded and tree equality passed. These reviewer diagnostic failures do not represent source/test failures."
+  ],
+  "limitations": [
+    "APPROVED covers the source correction and documented evidence reuse only. Coordinator must independently confirm completed successful required Rust and aggregate Quality CI for this exact committed source, including any required downstream jobs, before marking VL-016 VERIFIED. Pending Quality is not green and this approval cannot waive that gate.",
+    "No fresh full compatibility/global suite/lint/build acceptance is claimed by this review. Only focused tests and listed validation were rerun; byte-identical storage acceptance is reused explicitly from v2.",
+    "Existing storage limits remain: configured shared search path, no provisioned runtime roles/privilege isolation, AEAD shape only, single owner, no implemented Rust host/admission/policy/reward consumer, no Windows/Unity/GPU or public release qualification.",
+    "Only this new review and ignored artifacts/desktop-first/vl016 outputs were authored. No prior review edit, coordinator state/reservation/handoff edit, source edit, commit, push or subagent. Owner .idea and infra/botkeep-ca.pem were not read. Review publication is final when this reviewer turn returns; coordinator must wait for completion before hashing/ingestion."
+  ],
+  "nextExactAction": "Coordinator waits for reviewer completion, hashes this final review, confirms successful exact-source Rust and complete aggregate Quality CI, then may ingest the source-bound approval and verify VL-016. If Quality fails, preserve this review and record a new failure/rejection handoff; do not treat source approval as CI success."
+}

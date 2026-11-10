@@ -73,7 +73,9 @@
         "identity/privacy-requests",
       "identity/privacy-http",
       "identity/native-service",
-      "identity/native-http"
+      "identity/native-http",
+      "identity/runtime-tickets",
+      "identity/runtime-admission"
       ],
       "targetBoundary": "Public account/auth/locking/export/deletion ports; never client-supplied authority"
     },

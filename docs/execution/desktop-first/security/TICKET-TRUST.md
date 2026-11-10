@@ -1,5 +1,9 @@
 # VL-013 runtime ticket trust slice
 
+Historical first-slice scope below. The current default-off durable admission
+continuation is [DURABLE-ADMISSION.md](DURABLE-ADMISSION.md); it adds registered
+migration 0049 and a real SQL authorization boundary without completing VL-013.
+
 This is a default-off internal implementation slice, not complete VL-013
 acceptance or a live Windows login service. `RuntimeTicketIssuer` is not composed
 by `app.ts`, and `vl-security` is not linked into the health-only game executable.

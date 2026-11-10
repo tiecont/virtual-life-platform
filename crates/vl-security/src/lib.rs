@@ -7,6 +7,8 @@ use ed25519_dalek::{Signature, VerifyingKey};
 use jsonwebtoken::{Algorithm, DecodingKey, Validation, decode, decode_header};
 use serde::Deserialize;
 
+pub mod durable;
+
 pub const ISSUER: &str = "vl-platform-v1";
 pub const AUDIENCE: &str = "vl-native-runtime-v1";
 pub const MAX_TICKET_BYTES: usize = 4096;

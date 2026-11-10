@@ -1,6 +1,9 @@
 {
   "schemaVersion": 1,
   "tables": {
+    "platform_native_worlds":"platform.identity",
+    "platform_native_admissions":"platform.identity",
+    "platform_native_ticket_uses":"platform.identity",
     "game_native_matches":"native.game-storage",
     "game_native_receipts":"native.game-storage",
     "game_native_events":"native.game-storage",

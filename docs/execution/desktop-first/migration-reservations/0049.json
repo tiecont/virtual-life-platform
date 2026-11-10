@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-013",
+  "number": "0049",
+  "sourceRef": "apps/platform-api/src/db/migrations/0049_native_runtime_admission.sql",
+  "sourceSha256": "e8f43942d13e190918f17df9eb25617a15b733a702483ce94c504a688e43df67",
+  "previousMigration": "0048_native_game_storage.sql",
+  "migrationOwner": "Existing Nest numbered checksum journal and advisory lock86732401",
+  "target": "Wrapper-owned disposable PostgreSQL only",
+  "productionInspectedOrModified": false,
+  "rustAutoMigrateAllowed": false,
+  "activation": "DISABLED",
+  "compatibilityPolicyRef": "config/schema-compatibility-0048-admission-expand.json",
+  "compatibilityCheck": "scripts/runtime-admission-migration-compat.mjs",
+  "qualification": "Additive DDL registration only; actual test evidence and independent source review remain required",
+  "note": "Native control-plane admission only; no legacy RoomAuthority or game simulation writer."
+}

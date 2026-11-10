@@ -1,0 +1,52 @@
+{
+  "id": "VL-016-77484595-e11c-4f0b-a167-d5e4c81a2642",
+  "ref": "reservations/VL-016-c249b4d1-9be2-4a3e-970d-e554b17662a9.json",
+  "taskId": "VL-016",
+  "owner": "agent1",
+  "paths": [
+    "apps/platform-api/src/db/migrations/0048_native_game_storage.sql",
+    "tests/integration/native-game-schema.test.ts",
+    "config/schema-compatibility-0047-native-expand.json",
+    "scripts/native-game-migration-compat.mjs",
+    "docs/execution/desktop-first/persistence/**",
+    "docs/execution/desktop-first/migration-reservations/0048-implementation.json",
+    ".github/workflows/rust-runtime.yml",
+    "tests/integration/admin-proxy.test.ts",
+    "tests/integration/telemetry.test.ts",
+    "tests/e2e/lodge-lobby.spec.ts",
+    "tests/e2e/maid-acceptance.spec.ts",
+    "tests/e2e/scene-performance.spec.ts",
+    "tests/e2e/deadline-performance.spec.ts",
+    "tests/support/scene-cadence.ts",
+    "tests/support/scene-profile.ts",
+    "docs/execution/desktop-first/web-compatibility/**"
+  ],
+  "branch": "codex/desktop-first-backend",
+  "worktree": "/home/tiecont/Projects/virtual-city",
+  "sourceRevision": "64f7cb34654130a02393e7181a848e5d737ac7a2",
+  "createdAt": "2026-11-10T04:55:49.458Z",
+  "amendedAt": "2026-11-10T08:44:56.384Z",
+  "reason": "Completed storage source retained; transfer preservation/architecture integration to active VL-013 migration49 in single-agent execution",
+  "history": [
+    {
+      "ref": "reservations/VL-016-77484595-e11c-4f0b-a167-d5e4c81a2642.json",
+      "sha256": "41bdfaceee4e9c4547beed83c80ae1a5e67df295a31e663bd261320ed012806a"
+    },
+    {
+      "ref": "reservations/VL-016-75f21485-f94b-4623-a5ac-8ea86bc50f4f.json",
+      "sha256": "f296bdaca5f0e183ff04055d8040149a14865660a2a5f3b534d011eaebd71208"
+    },
+    {
+      "ref": "reservations/VL-016-1a147618-3a0b-444e-a65a-e6ba12fb4a82.json",
+      "sha256": "2fe197fcf50abfc3976980514ca4f638e43b65c5bb3e79818ef844d44ba429b0"
+    },
+    {
+      "ref": "reservations/VL-016-52599797-33fa-473c-9b0e-c1f9881ec7ee.json",
+      "sha256": "e8217c418f9c68ce78daf49d082204c74316f205859a2843386c81a205645acf"
+    },
+    {
+      "ref": "reservations/VL-016-9202eba5-c70b-4805-9ea1-0e92ef718211.json",
+      "sha256": "069fcc72914b7b0abec3130676ce85f8a56371f9102bd20d5f1874dccb1727cc"
+    }
+  ]
+}

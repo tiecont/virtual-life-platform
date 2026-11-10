@@ -28,10 +28,10 @@ async function receipt(db:Pick<PoolClient,'query'>,id:string,version:number,epoc
 async function transaction<T>(work:(db:PoolClient)=>Promise<T>){const db=await pool.connect();try{await db.query('BEGIN');const result=await work(db);await db.query('COMMIT');return result;}catch(e){await db.query('ROLLBACK');throw e;}finally{db.release();}}
 async function counts(id:string){return Promise.all(['game_native_receipts','game_native_events','game_native_settlements','game_native_outbox'].map(async table=>Number((await pool.query(`SELECT count(*) AS n FROM ${table} WHERE match_id=$1`,[id])).rows[0].n)));}
 
-it('two real concurrent migrators preserve all48 checksums in one journal',async()=>{
+it('two real concurrent migrators preserve the current manifest and native storage checksum in one journal',async()=>{
  const manifest=await migrationManifest(),rows=(await pool.query('SELECT name,checksum FROM city_schema_migrations ORDER BY name')).rows;
- expect(rows).toHaveLength(48);expect(Object.fromEntries(rows.map(r=>[r.name,r.checksum]))).toEqual(manifest);
- expect(Object.keys(manifest).at(-1)).toBe('0048_native_game_storage.sql');
+ expect(rows).toHaveLength(Object.keys(manifest).length);expect(Object.fromEntries(rows.map(r=>[r.name,r.checksum]))).toEqual(manifest);
+ expect(manifest['0048_native_game_storage.sql']).toBe('8c54c14ba85ed9278b0f5239d9fa0c2a20b2e5ea029913047c78b3dafc8d964a');
  expect((await pool.query("SELECT count(*) AS n FROM information_schema.tables WHERE table_schema=$1 AND table_name LIKE 'game_native_%'",[schema])).rows[0].n).toBe('5');
 });
 

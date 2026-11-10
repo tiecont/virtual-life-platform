@@ -51,7 +51,10 @@ export function assertRustWorkflow(workflow,pins) {
   assert.equal((workflow.split('\njobs:\n')[1]?.match(/^ {2}[a-z][a-z-]*:\s*$/gm)??[]).length,1,'Unexpected Rust CI job');
   for(const match of workflow.matchAll(/uses:\s*([^\s#]+)/g)){const [name,revision]=match[1].split('@');assert(/^[a-f0-9]{40}$/.test(revision??'')&&revision===pins[name],'Unpinned Rust action');}
   for(const gate of ['sha256sum --check','--default-toolchain 1.99.1','fmt --all -- --check','check --workspace --all-targets --locked','clippy --workspace --all-targets --locked -- -D warnings','test --workspace --locked','-f apps/game-runtime/Dockerfile','python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-ci',
-    'pnpm install --frozen-lockfile','--package vl-protocol --bin native-codegen -- --check','pnpm --filter @virtual-city/native-protocol typecheck','packages/native-protocol/test/wire.test.ts'])assert(workflow.includes(gate),'Missing Rust gate '+gate);
+    'pnpm install --frozen-lockfile','--package vl-protocol --bin native-codegen -- --check','pnpm --filter @virtual-city/native-protocol typecheck','packages/native-protocol/test/wire.test.ts',
+    'CARGO_TARGET_DIR: artifacts/rust/target','build --locked --package vl-security --bin durable-check','scripts/runtime-admission-durable-check.mjs',
+    'tests/integration/runtime-admission.test.ts','tests/integration/native-game-schema.test.ts','tests/integration/schema-compatibility.test.ts',
+    'scripts/native-game-migration-compat.mjs','scripts/runtime-admission-migration-compat.mjs'])assert(workflow.includes(gate),'Missing Rust gate '+gate);
 }
 export function assertPromotionWorkflow(workflow, pins) {
   assert(workflow.startsWith('name: Propose verified digest promotion\non:\n  workflow_dispatch:\n'));

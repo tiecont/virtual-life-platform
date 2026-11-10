@@ -31,10 +31,16 @@ export async function inspectAdoption() {
     sql.push({ref,sha256:sha256(bytes)});
   }
   assert.equal(sql.length,47);
+  const additions={
+    '0048_native_game_storage.sql':{record:'0048-implementation.json',taskId:'VL-016'},
+    '0049_native_runtime_admission.sql':{record:'0049.json',taskId:'VL-013'},
+  };
   for(const name of currentNames.filter(name=>!baselineNames.includes(name))) {
-    assert.equal(name,'0048_native_game_storage.sql','Unregistered additive migration');
-    const record=await json('docs/execution/desktop-first/migration-reservations/0048-implementation.json');
-    const ref=sqlRoot+'/'+name;assert.equal(record.sourceRef,ref);assert.equal(record.taskId,'VL-016');
+    const addition=additions[name];assert(addition,'Unregistered additive migration');
+    const record=await json('docs/execution/desktop-first/migration-reservations/'+addition.record);
+    const ref=sqlRoot+'/'+name;assert.equal(record.sourceRef,ref);assert.equal(record.taskId,addition.taskId);
+    assert.equal(record.activation,'DISABLED');assert.equal(record.rustAutoMigrateAllowed,false);
+    if(name==='0049_native_runtime_admission.sql')assert.equal(record.sourceSha256,sha256(await readFile(ref)),'Admission migration differs from reserved bytes');
     sql.push({ref,sha256:sha256(await readFile(ref)),qualification:'NEW_MIGRATION_NOT_QUALIFIED_BY_PRESERVATION'});
   }
   const sourceRefs=['apps/platform-api/src/app.ts','apps/platform-api/src/worker.ts','apps/platform-api/src/db/migrations.ts','apps/platform-api/src/rooms/authority.ts','apps/platform-api/src/rooms/service.ts','apps/platform-api/src/identity/service.ts','apps/platform-api/src/identity/native-service.ts','apps/platform-api/src/identity/http.ts','apps/platform-api/src/identity/socket.ts','apps/platform-api/src/identity/native-http.ts','apps/platform-api/src/games/journal.ts','apps/platform-api/src/games/journal-crypto.ts','apps/platform-api/src/games/journal-host.ts','apps/platform-api/src/progression/ledger.ts','packages/contracts/src/compatibility.ts','packages/contracts/src/native-auth.ts','packages/scene3d/src/animal.ts','packages/scene3d/src/renderer.ts','packages/scene3d/test/animal-variants-cache.test.ts','pnpm-lock.yaml'];

@@ -3,6 +3,8 @@ import {test,expect,type Page} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {guest} from '../support/deadline-safety-fixtures';
 import performanceBudget from '../../config/scene-performance.json';
+import {armSceneCadence} from '../support/scene-cadence';
+test.use({trace:{mode:'retain-on-failure',screenshots:false,snapshots:true,sources:true}});
 async function enterMaid(page:Page){await page.goto('/worlds/maid');await page.getByRole('button',{name:'Enter cafe',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');}
 test('Maid keyboard service withdrawal,reduced motion and readable controls work without canvas input',async({page,context},info)=>{
  await page.emulateMedia({reducedMotion:'reduce'});await guest(context,'Maid keyboard');await page.goto('/worlds/maid');await page.getByRole('link',{name:'Skip to room controls',exact:true}).focus();await page.keyboard.press('Enter');await expect(page.getByRole('complementary',{name:'Your room',exact:true})).toBeFocused();await page.keyboard.press('Tab');const entry=page.getByRole('button',{name:'Enter cafe',exact:true});await expect(entry).toBeFocused();await expect(page.getByRole('button',{name:'Enter cafe',exact:true})).toBeEnabled();await page.keyboard.press('Enter');await expect(page.getByRole('heading',{name:'Walk around',exact:true})).toBeFocused();const canvas=page.locator('canvas[data-scene="maid"]');await expect(canvas).toHaveAttribute('data-reduced-motion','true');await expect(page.getByLabel('Reduce room motion',{exact:true})).toBeChecked();await page.getByRole('button',{name:'Sakura chair 24',exact:true}).focus();await page.keyboard.press('Enter');await expect(page.getByRole('button',{name:'Sakura chair 24, your seat',exact:true})).toBeVisible();await page.getByRole('button',{name:'Order Coffee',exact:true}).focus();await page.keyboard.press('Enter');await expect(page.getByText('Order state: PENDING',{exact:true})).toBeVisible();await page.getByRole('button',{name:'Withdraw unfinished service',exact:true}).focus();await page.keyboard.press('Enter');await expect(page.getByText('Order state: CANCELLED',{exact:true})).toBeVisible();await expect(canvas).toHaveAttribute('data-active-animations','0');const frames=await canvas.getAttribute('data-render-count');await page.waitForTimeout(350);await expect(canvas).toHaveAttribute('data-render-count',frames!);
@@ -35,18 +37,13 @@ test('Maid scene loading,cache,idle work and SPA lifetimes fit the unchanged loc
   expect(jsEncoded).toBeLessThan(performanceBudget.jsEncodedMaxBytes); expect(avatar.decoded).toBeGreaterThan(0); expect(avatar.decoded).toBeLessThan(performanceBudget.avatarDecodedMaxBytes);
   const beforeIdle = Number(await canvas.getAttribute('data-render-count')); await page.waitForTimeout(performanceBudget.idleWindowMs);
   const idleRenders = Number(await canvas.getAttribute('data-render-count')) - beforeIdle; expect(idleRenders).toBe(performanceBudget.idleMaxRenders);
-  await page.getByRole('button', { name: 'Walk to window aisle', exact: true }).click(); await expect(canvas).toHaveAttribute('data-moving-count', '1');
-  const cadence = await canvas.evaluate(element => new Promise<number[]>((resolve, reject) => {
-    const gaps: number[] = []; let last = performance.now(); const start = last;
-    function sample(time: number) {
-      gaps.push(time - last); last = time;
-      if ((element as HTMLElement).dataset.movingCount === '0') resolve(gaps);
-      else if (time - start > 8000) reject(new Error('Movement cadence profile timed out'));
-      else requestAnimationFrame(sample);
-    }
-    requestAnimationFrame(sample);
-  }));
-  const sortedGaps = cadence.filter(gap => gap > 0).sort((a, b) => a - b); const rafP95GapMs = sortedGaps[Math.ceil(sortedGaps.length * .95) - 1];
+  const observation=await armSceneCadence(canvas);
+  let cadence;
+  try{await page.getByRole('button', { name: 'Walk to window aisle', exact: true }).click();cadence=await observation.finish();}
+  finally{await observation.dispose();}
+  const sortedGaps = cadence.rawGapsMs.filter(gap => gap > 0).sort((a, b) => a - b); const rafP95GapMs = sortedGaps[Math.ceil(sortedGaps.length * .95) - 1];
+  await writeFile(evidenceOutput(`docs/agent/evidence/m16-movement-cadence-${test.info().project.name}.json`),JSON.stringify({profile:performanceBudget.profile,recordingProfile:'playwright-trace-no-screencast-v1',...cadence,samples:sortedGaps.length,rafP95GapMs,minimumSamplesExclusive:10,rafP95GapMaxMs:performanceBudget.rafP95GapMaxMs,observedBeforeAcceptance:true},null,2));
+  expect(cadence.initialMoving).toBe('0');expect(cadence.status).toBe('settled');expect(cadence.connectedThroughout).toBe(true);
   expect(sortedGaps.length).toBeGreaterThan(10); expect(rafP95GapMs).toBeLessThan(performanceBudget.rafP95GapMaxMs);
   await page.getByRole('button', { name: 'Leave cafe', exact: true }).click(); await page.getByRole('link', { name: 'Identity', exact: true }).click(); await expect(canvas).toHaveCount(0);
   async function heapBytes() { await cdp.send('HeapProfiler.collectGarbage'); const result = await cdp.send('Performance.getMetrics'); return result.metrics.find(metric => metric.name === 'JSHeapUsedSize')!.value; }

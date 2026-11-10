@@ -15,6 +15,7 @@ jobs:
     env:
       RUSTUP_HOME: /tmp/vl-rustup
       CARGO_HOME: /tmp/vl-cargo
+      CARGO_TARGET_DIR: artifacts/rust/target
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -61,13 +62,16 @@ jobs:
           pnpm build:packages
           node scripts/with-test-db.mjs pnpm exec tsx --test tests/unit/runtime-tickets.test.ts
           "$CARGO_HOME/bin/cargo" run --locked --package vl-security --bin ticket-check -- artifacts/desktop-first/vl013/tickets.json
+          "$CARGO_HOME/bin/cargo" build --locked --package vl-security --bin durable-check
+          node scripts/with-test-db.mjs node --import tsx scripts/runtime-admission-durable-check.mjs
       - name: Check native game schema races and archived runtime expansion compatibility
         shell: bash
         run: |
           set -euo pipefail
           pnpm --filter @virtual-city/platform-api build
-          node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/native-game-schema.test.ts
+          node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/native-game-schema.test.ts tests/integration/runtime-admission.test.ts tests/integration/schema-compatibility.test.ts
           node scripts/with-test-db.mjs node --import tsx scripts/native-game-migration-compat.mjs
+          node scripts/with-test-db.mjs node --import tsx scripts/runtime-admission-migration-compat.mjs
       - name: Build and smoke OCI foundation
         shell: bash
         run: |

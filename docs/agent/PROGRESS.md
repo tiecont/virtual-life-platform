@@ -1,3 +1,35 @@
+# Durable admission and browser CI checkpoint - 2026-11-10
+
+Owner directs a single agent to continue without waiting for peers. This session
+acts as coordinator and implementer sequentially. It does not issue independent
+approval for its own source or bypass the existing VERIFIED/dependency gates.
+VL-013 and VL-016 remain IN_PROGRESS; 10 tasks VERIFIED, 2 BLOCKED_EXTERNAL,
+96 TODO, no READY successor. Original planning/legacy ledger bytes are preserved.
+
+VL-013 adds default-off durable admission0049, Rust transaction-bound policy/
+nonce authorization, 17 real Node->Rust->PG probes and archived47/48->49 runtime
+rollback checks. Local Rust25+1doctest, PG14, both compatibility harnesses, API
+build, lint/types/architecture/CI contract pass. TLS/restricted DB role and
+production composition remain unfinished; synthetic probes are not game rules.
+See docs/execution/desktop-first/security/DURABLE-ADMISSION{,-CHECKS.json}.
+
+VL-016's exact aca14de Quality42767086757 failed despite Rust/core/images PASS.
+The task was reopened through requestChanges with immutable history. Browser
+corrections arm cadence before input, use rAF timestamps, retain raw diagnostics,
+explicitly disable trace screencast only and split Lodge viewport captures.
+Local base+patch22 browser cases pass, including a corrected Maid configuration
+rerun; hosted exact committed-source validation remains required.
+See docs/execution/desktop-first/web-compatibility/BROWSER-CI-CORRECTION.md.
+
+Next exact action: commit this bounded source/evidence slice, rerun source-policy
+and governance at that SHA, publish existing branch for exact-source Rust/Quality
+CI, investigate any failures, then continue VL-013 authenticated TLS/restricted
+role composition. Do not mark VL-017 READY or wait for a nonexistent peer.
+Windows/Unity/GPU/rights/signing/public release gates remain. Owner IDE files and
+infra/botkeep-ca.pem remain unread and unstaged.
+
+## Previous checkpoints
+
 # Native storage CI correction checkpoint - 2026-11-10
 
 VL-016 remains IN_PROGRESS. Exact source b22c738 passed Ubuntu Rust42762794027,

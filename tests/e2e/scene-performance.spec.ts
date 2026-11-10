@@ -2,12 +2,13 @@ import {test,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {evidenceOutput} from '../../scripts/evidence-output.mjs';
 import {profileSceneMovement} from '../support/scene-profile';
+import {armSceneCadence} from '../support/scene-cadence';
 import {sceneRenderingProfile,assertSceneRenderingProfile} from '../support/scene-rendering-profile';
 import performanceBudget from '../../config/scene-performance.json';
 import {guest,enter} from '../support/sandbox-browser-fixtures';
 
 // Worker-scoped launch settings belong to this measurement-only spec.
-test.use({launchOptions:{args:[...sceneRenderingProfile.launchArguments]}});
+test.use({launchOptions:{args:[...sceneRenderingProfile.launchArguments]},trace:{mode:'retain-on-failure',screenshots:false,snapshots:true,sources:true}});
 
 test('scene loading, immutable cache, idle work and repeated scene lifetime fit the local performance profile', async ({ page, context }) => {
   test.setTimeout(60000); // Dedicated CPU4x/network/remount profile, not an assertion retry.
@@ -35,20 +36,13 @@ test('scene loading, immutable cache, idle work and repeated scene lifetime fit 
   const idleRenders = Number(await canvas.getAttribute('data-render-count')) - beforeIdle; expect(idleRenders).toBe(performanceBudget.idleMaxRenders);
   const profileCpu = process.env.SCENE_CPU_PROFILE === '1';
   const stopProfile = profileCpu ? await profileSceneMovement(cdp, 'm07', test.info().project.name) : null;
-  await page.getByRole('button', { name: 'Walk to window aisle', exact: true }).click(); await expect(canvas).toHaveAttribute('data-moving-count', '1');
-  const cadence = await canvas.evaluate(element => new Promise<number[]>((resolve, reject) => {
-    const gaps: number[] = []; let last = performance.now(); const start = last;
-    function sample(time: number) {
-      gaps.push(time - last); last = time;
-      if ((element as HTMLElement).dataset.movingCount === '0') resolve(gaps);
-      else if (time - start > 8000) reject(new Error('Movement cadence profile timed out'));
-      else requestAnimationFrame(sample);
-    }
-    requestAnimationFrame(sample);
-  }));
-  await stopProfile?.();
-  const sortedGaps = cadence.filter(gap => gap > 0).sort((a, b) => a - b); const rafP95GapMs = sortedGaps[Math.ceil(sortedGaps.length * .95) - 1];
-  await writeFile(evidenceOutput(`docs/agent/evidence/m07-movement-cadence-${test.info().project.name}.json`), JSON.stringify({ profile: performanceBudget.profile, renderingProfile, rawGapsMs: cadence, samples: sortedGaps.length, rafP95GapMs, minimumSamplesExclusive: 10, rafP95GapMaxMs: performanceBudget.rafP95GapMaxMs, observedBeforeAcceptance: true, cpuProfilerEnabled: profileCpu }, null, 2));
+  const observation=await armSceneCadence(canvas);
+  let cadence;
+  try{await page.getByRole('button', { name: 'Walk to window aisle', exact: true }).click();cadence=await observation.finish();}
+  finally{await observation.dispose();await stopProfile?.();}
+  const sortedGaps = cadence.rawGapsMs.filter(gap => gap > 0).sort((a, b) => a - b); const rafP95GapMs = sortedGaps[Math.ceil(sortedGaps.length * .95) - 1];
+  await writeFile(evidenceOutput(`docs/agent/evidence/m07-movement-cadence-${test.info().project.name}.json`), JSON.stringify({ profile: performanceBudget.profile, renderingProfile, recordingProfile:'playwright-trace-no-screencast-v1',...cadence, samples: sortedGaps.length, rafP95GapMs, minimumSamplesExclusive: 10, rafP95GapMaxMs: performanceBudget.rafP95GapMaxMs, observedBeforeAcceptance: true, cpuProfilerEnabled: profileCpu }, null, 2));
+  expect(cadence.initialMoving).toBe('0');expect(cadence.status).toBe('settled');expect(cadence.connectedThroughout).toBe(true);
   expect(sortedGaps.length).toBeGreaterThan(10); expect(rafP95GapMs).toBeLessThan(performanceBudget.rafP95GapMaxMs);
   await page.getByRole('button', { name: 'Leave cafe', exact: true }).click(); await page.getByRole('link', { name: 'Identity', exact: true }).click(); await expect(canvas).toHaveCount(0);
   async function heapBytes() { await cdp.send('HeapProfiler.collectGarbage'); const result = await cdp.send('Performance.getMetrics'); return result.metrics.find(metric => metric.name === 'JSHeapUsedSize')!.value; }

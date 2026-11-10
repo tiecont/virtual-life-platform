@@ -18,15 +18,37 @@ test.setTimeout(60000);
 test.beforeEach(async({page},info)=>{await page.setViewportSize(info.project.name==='mobile'?{width:844,height:390}:{width:1280,height:720});});
 test.afterEach(async({page})=>{for(const socket of peers.splice(0))socket.close();const actions=page.getByRole('dialog',{name:'Room actions',exact:true});if(await actions.isVisible())await page.getByRole('button',{name:'Close room actions',exact:true}).click();const people=page.getByRole('dialog',{name:'People and safety',exact:true});if(await people.isVisible())await page.getByRole('button',{name:'Close people and safety',exact:true}).click();const leave=page.getByRole('button',{name:'Leave lounge',exact:true});if(await leave.isVisible()&&await leave.isEnabled())await leave.click();});
 test('signed-out 3D Lodge retains identity controls without creating a game or socket',async({page})=>{let sockets=0;page.on('websocket',()=>sockets++);await page.goto(route);await expect(page.locator('canvas[data-engine="three-webgl2"]')).toBeVisible({timeout:20000});await expect(page.getByRole('link',{name:'Open identity',exact:true})).toBeVisible();expect(sockets).toBe(0);await capture(page,'signed-out');});
-test('keyboard consent, confirmed readiness and leave use real API; touch controls fit landscape and200percent text',async({page,context})=>{
+test('keyboard consent, confirmed readiness, periodic sync and leave use real API',async({page,context})=>{
  let observedSync!:()=>void;const periodicSync=new Promise<void>(ok=>observedSync=ok);page.on('websocket',socket=>socket.on('framesent',event=>{if(typeof event.payload==='string'&&event.payload.includes('"room.snapshot"'))observedSync();}));
  await guest(context);await enter(page);const lobby=panel(page);await lobby.getByRole('button',{name:'Refresh table',exact:true}).focus();await page.keyboard.press('Enter');await expect(lobby.getByRole('heading',{name:'No table is open',exact:true})).toBeVisible();await expect(lobby.getByRole('button',{name:'Open table',exact:true})).toBeDisabled();await capture(page,'empty');
  await lobby.getByRole('checkbox').focus();await page.keyboard.press('Space');await lobby.getByRole('button',{name:'Open table',exact:true}).focus();await page.keyboard.press('Enter');await expect(lobby.getByText('Your seat',{exact:true})).toBeVisible();await expect(lobby.getByRole('button',{name:'Spectate unavailable',exact:true})).toBeDisabled();
  let release!:()=>void,seen!:()=>void;const gate=new Promise<void>(ok=>release=ok),observed=new Promise<void>(ok=>seen=ok);await page.route('**/v1/games/lobby',async route=>{if(route.request().postDataJSON().op!=='ready'){await route.continue();return;}const actual=await route.fetch();seen();await gate;await route.fulfill({response:actual});});const ready=lobby.getByRole('button',{name:'Ready',exact:true});await ready.click();await observed;await expect(ready).toHaveText('Ready');await expect(ready).toBeDisabled();release();await expect(lobby.getByRole('button',{name:'Not ready',exact:true})).toBeEnabled();await page.unrouteAll({behavior:'wait'});await capture(page,'ready-confirmed');
  await periodicSync;await expect(lobby.getByRole('button',{name:'Not ready',exact:true})).toBeEnabled();await capture(page,'real-periodic-sync-retains-consent');
- for(const [width,height]of [[844,390],[740,360],[1280,720],[360,740]]){await page.setViewportSize({width,height});await page.evaluate(()=>document.documentElement.style.fontSize='200%');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);const leave=lobby.getByRole('button',{name:'Leave table',exact:true});await leave.scrollIntoViewIfNeeded();const box=await leave.boundingBox();expect(box!.height).toBeGreaterThanOrEqual(44);await capture(page,'ready-'+width+'-'+height+'-text200');await page.evaluate(()=>document.documentElement.style.removeProperty('font-size'));}
  await lobby.getByRole('button',{name:'Leave table',exact:true}).click();await expect(lobby.getByRole('status')).toHaveText('You left the table.');
 });
+for(const [width,height]of [[844,390],[740,360],[1280,720],[360,740]]){
+ test(`ready table controls fit ${width}x${height} with200percent text`,async({page,context})=>{
+  await guest(context);await enter(page);const lobby=panel(page);
+  await lobby.getByRole('button',{name:'Refresh table',exact:true}).click();
+  await expect(lobby.getByRole('heading',{name:'No table is open',exact:true})).toBeVisible();
+  await lobby.getByRole('checkbox').check();
+  await lobby.getByRole('button',{name:'Open table',exact:true}).click();
+  await expect(lobby.getByText('Your seat',{exact:true})).toBeVisible();
+  await lobby.getByRole('button',{name:'Ready',exact:true}).click();
+  await expect(lobby.getByRole('button',{name:'Not ready',exact:true})).toBeEnabled();
+  await page.setViewportSize({width,height});
+  await page.evaluate(()=>document.documentElement.style.fontSize='200%');
+  try{
+   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+   const leave=lobby.getByRole('button',{name:'Leave table',exact:true});
+   await leave.scrollIntoViewIfNeeded();const box=await leave.boundingBox();
+   expect(box).not.toBeNull();expect(box!.height).toBeGreaterThanOrEqual(44);
+   await capture(page,'ready-'+width+'-'+height+'-text200');
+  }finally{await page.evaluate(()=>document.documentElement.style.removeProperty('font-size'));}
+  await lobby.getByRole('button',{name:'Leave table',exact:true}).click();
+  await expect(lobby.getByRole('status')).toHaveText('You left the table.');
+ });
+}
 test('full and blocked table states reveal no peer identity and offer no implicit join',async({page,context})=>{
  const own=await guest(context);await enter(page);const room=(await(await context.request.get('/v1/me/room')).json()).snapshot as RoomSnapshot,first=await peer(room.roomId);let table=GameLobbyViewSchema.parse(await post(first,'games/lobby',{schemaVersion:1,op:'open',source:source(first.room),mode:'lantern-colors',consent:true})).table!;
  for(let n=0;n<5;n++){const next=await peer(room.roomId);table=GameLobbyViewSchema.parse(await post(next,'games/lobby',{schemaVersion:1,op:'join',source:source(next.room),tableId:table.tableId,generation:table.generation,consent:true})).table!;}
