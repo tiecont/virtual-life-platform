@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-11-10T01:27:09.298Z",
+  "taskId": "VL-007",
+  "result": "HOST_INVENTORY_NOT_WINDOWS_QUALIFICATION",
+  "acceptanceMet": false,
+  "host": {
+    "os": "linux",
+    "osRelease": "7.2.9-2-cachyos",
+    "architecture": "x64",
+    "cpu": "AMD Ryzen 7 4800HS with Radeon Graphics",
+    "logicalCpuCount": 16,
+    "ramBytes": 24573247488,
+    "gpu": [
+      {
+        "adapter": "card1",
+        "pciVendor": "0x10de",
+        "pciDevice": "0x1f12",
+        "driverVersion": "615.78.08"
+      },
+      {
+        "adapter": "card2",
+        "pciVendor": "0x1002",
+        "pciDevice": "0x1636",
+        "driverVersion": null
+      }
+    ]
+  },
+  "tools": {
+    "cargo": {
+      "path": null,
+      "executed": false
+    },
+    "rustc": {
+      "path": null,
+      "executed": false
+    },
+    "dotnet": {
+      "path": null,
+      "executed": false
+    },
+    "unity": {
+      "path": null,
+      "executed": false
+    }
+  },
+  "physicalWindowsDevices": [],
+  "ownerAgreedDeviceMatrix": false,
+  "missingEvidence": [
+    "Three named physical Windows CPU/GPU/VRAM/RAM/SSD/driver profiles and owner agreement",
+    "Windows runner and Unity editor/license qualification",
+    "Compiled Windows player/build/content/protocol hashes and actual profiler captures"
+  ],
+  "routes": [
+    {
+      "routeId": "aurora-plaza-noon",
+      "durationMinutes": 10,
+      "passesAfterWarmup": 3,
+      "status": "NOT_RUN"
+    },
+    {
+      "routeId": "cafe-seat-card",
+      "durationMinutes": 10,
+      "passesAfterWarmup": 3,
+      "status": "NOT_RUN"
+    },
+    {
+      "routeId": "pet-arena-dusk",
+      "durationMinutes": 10,
+      "passesAfterWarmup": 3,
+      "status": "NOT_RUN"
+    }
+  ],
+  "limitations": [
+    "Read-only local inventory; no tool executed, installed or licensed.",
+    "PATH absence does not prove software is absent from all machines.",
+    "No hardware tier or performance measurement is inferred from this host."
+  ]
+}

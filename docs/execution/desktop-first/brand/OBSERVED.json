@@ -1,0 +1,234 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-006",
+  "result": "CONCEPT_AUDIT_PENDING_OWNER_AND_RIGHTS_REVIEW",
+  "acceptanceMet": false,
+  "wordmark": {
+    "exactText": "VirtualLife",
+    "svgTextChecked": true,
+    "visualOwnerReview": "PENDING"
+  },
+  "palette": {
+    "mistWhite": "#F8FBFF",
+    "cloudBlue": "#EAF4FF",
+    "auroraBlue": "#4B91FF",
+    "irisPurple": "#8168E9",
+    "sakuraPink": "#F6A2C1",
+    "mintSprout": "#69D7BA",
+    "sunshineGold": "#F5CB74",
+    "inkNavy": "#1E3153",
+    "softSlate": "#50627C",
+    "coralAlert": "#C64B55"
+  },
+  "pairs": [
+    {
+      "foreground": "mistWhite",
+      "background": "mistWhite",
+      "ratio": 1,
+      "normalTextAA": false,
+      "largeTextAA": false,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "cloudBlue",
+      "background": "mistWhite",
+      "ratio": 1.0716,
+      "normalTextAA": false,
+      "largeTextAA": false,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "auroraBlue",
+      "background": "mistWhite",
+      "ratio": 2.9785,
+      "normalTextAA": false,
+      "largeTextAA": false,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "irisPurple",
+      "background": "mistWhite",
+      "ratio": 3.9751,
+      "normalTextAA": false,
+      "largeTextAA": true,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "sakuraPink",
+      "background": "mistWhite",
+      "ratio": 1.8637,
+      "normalTextAA": false,
+      "largeTextAA": false,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "mintSprout",
+      "background": "mistWhite",
+      "ratio": 1.682,
+      "normalTextAA": false,
+      "largeTextAA": false,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "sunshineGold",
+      "background": "mistWhite",
+      "ratio": 1.4794,
+      "normalTextAA": false,
+      "largeTextAA": false,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "inkNavy",
+      "background": "mistWhite",
+      "ratio": 12.4946,
+      "normalTextAA": true,
+      "largeTextAA": true,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "softSlate",
+      "background": "mistWhite",
+      "ratio": 5.9878,
+      "normalTextAA": true,
+      "largeTextAA": true,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "coralAlert",
+      "background": "mistWhite",
+      "ratio": 4.4581,
+      "normalTextAA": false,
+      "largeTextAA": true,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "mistWhite",
+      "background": "cloudBlue",
+      "ratio": 1.0716,
+      "normalTextAA": false,
+      "largeTextAA": false,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "cloudBlue",
+      "background": "cloudBlue",
+      "ratio": 1,
+      "normalTextAA": false,
+      "largeTextAA": false,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "auroraBlue",
+      "background": "cloudBlue",
+      "ratio": 2.7796,
+      "normalTextAA": false,
+      "largeTextAA": false,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "irisPurple",
+      "background": "cloudBlue",
+      "ratio": 3.7096,
+      "normalTextAA": false,
+      "largeTextAA": true,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "sakuraPink",
+      "background": "cloudBlue",
+      "ratio": 1.7393,
+      "normalTextAA": false,
+      "largeTextAA": false,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "mintSprout",
+      "background": "cloudBlue",
+      "ratio": 1.5697,
+      "normalTextAA": false,
+      "largeTextAA": false,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "sunshineGold",
+      "background": "cloudBlue",
+      "ratio": 1.3806,
+      "normalTextAA": false,
+      "largeTextAA": false,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "inkNavy",
+      "background": "cloudBlue",
+      "ratio": 11.6601,
+      "normalTextAA": true,
+      "largeTextAA": true,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "softSlate",
+      "background": "cloudBlue",
+      "ratio": 5.5879,
+      "normalTextAA": true,
+      "largeTextAA": true,
+      "opaqueOnly": true
+    },
+    {
+      "foreground": "coralAlert",
+      "background": "cloudBlue",
+      "ratio": 4.1603,
+      "normalTextAA": false,
+      "largeTextAA": true,
+      "opaqueOnly": true
+    }
+  ],
+  "assets": [
+    {
+      "ref": "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/03-design/BRAND-AND-UI.md",
+      "sha256": "44af92e503b6ce300e9be775f0827cfe61c45d025966360f27237ac5caa71d8e",
+      "status": "SUPPLIED_CONCEPT_NOT_PRODUCTION_APPROVED"
+    },
+    {
+      "ref": "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/08-references/PROVENANCE.md",
+      "sha256": "3aaa6e8e0440203eb9be4f2c3def935a1419bfa0d28cbbe86ab56bfa6d67e609",
+      "status": "SUPPLIED_CONCEPT_NOT_PRODUCTION_APPROVED"
+    },
+    {
+      "ref": "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/07-visuals/VirtualLife-logo.svg",
+      "sha256": "fb919748cb9f9ab5b7ae86fc03ea635391d411cad765bae6fb37fe75b7558428",
+      "status": "SUPPLIED_CONCEPT_NOT_PRODUCTION_APPROVED"
+    },
+    {
+      "ref": "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/07-visuals/VirtualLife-logo-preview.png",
+      "sha256": "53c43842146ab3c6374b2d61004abd02d8f38d9febb36f87d59a79ccc52db7f0",
+      "status": "SUPPLIED_CONCEPT_NOT_PRODUCTION_APPROVED"
+    },
+    {
+      "ref": "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/07-visuals/VirtualLife-app-icon.svg",
+      "sha256": "2e3c3fcc5ba1afb16628ce866af1e859f87fe3a5d1697e9811e48e9c52bbdc74",
+      "status": "SUPPLIED_CONCEPT_NOT_PRODUCTION_APPROVED"
+    },
+    {
+      "ref": "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/07-visuals/VirtualLife-app-icon-512.png",
+      "sha256": "cca4d71d25dd7139811ae951c14449b2b47aab3ccd9b33a131f696d3cc11bb29",
+      "status": "SUPPLIED_CONCEPT_NOT_PRODUCTION_APPROVED"
+    },
+    {
+      "ref": "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/07-visuals/VirtualLife-key-art-concept.webp",
+      "sha256": "75e9c84184bb609ce1ae3d788a97d30e74ca3f8734e7672a7f33d66eac796566",
+      "status": "SUPPLIED_CONCEPT_NOT_PRODUCTION_APPROVED"
+    }
+  ],
+  "ownerStyleApproval": false,
+  "commercialRightsApproval": false,
+  "trademarkClearance": false,
+  "missingEvidence": [
+    "Owner approval of style sheet/logo/icon and light/dark small-size review",
+    "Rights/provenance review for commercial logo/key-art/fonts and trademark/domain checks"
+  ],
+  "limitations": [
+    "Opaque sRGB palette calculations only; actual alpha/glass/backdrop/focus/disabled states need rendered checks.",
+    "Logo/text exemption does not make an accent suitable for body copy or controls.",
+    "AI key art and supplied mockups are concepts, not Unity runtime screenshots or licensed production assets."
+  ]
+}
