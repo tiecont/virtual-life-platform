@@ -36,13 +36,16 @@ export async function inspectAdoption() {
   for(const ref of allSource.filter(ref=>ref.endsWith('.ts')&&!ref.endsWith('.test.ts')&&ref.startsWith('apps/platform-api/src/')))if(/new RoomAuthority\(/.test(await readFile(ref,'utf8')))roomConstructors.push(ref);
   assert.deepEqual(roomConstructors,['apps/platform-api/src/app.ts']);
   const nativeSources=allSource.filter(ref=>/\.rs$|Cargo\.toml$|\.cs$|ProjectVersion\.txt$/.test(ref));
-  assert.deepEqual(nativeSources,[],'New Rust/Unity source requires a refreshed audit');
+  // New native source is expected after VL-001. Preserve its inventory separately;
+  // this historical audit cannot qualify it as gameplay or Windows evidence.
+  const nativeAdditions=[];
+  for(const ref of nativeSources)nativeAdditions.push({ref,sha256:sha256(await readFile(ref)),qualification:'NOT_PROVIDED_BY_PRESERVATION_AUDIT'});
   const addendum=await json('docs/execution/desktop-first/LEGACY-EVIDENCE-ADDENDUM.json');assert.equal(addendum.legacyLedgerRecordsUnchanged,75);assert.equal(addendum.record.acceptance_met,false);
   const audit=await json('docs/execution/desktop-first/N06-04-LOD-LEASE-CHECKPOINT.json');
   assert.equal(audit.sourceRevision,index.sourceRevision);assert.equal(audit.actualOutcomes.workload.result,'OBSERVED_SYNTHETIC_LIMITS_EXCEEDED');
   let privateIndexAvailable=true;
   try {assert.equal(sha256(await readFile(audit.rawIndex.ref)),audit.rawIndex.sha256);}catch(error){if(error.code!=='ENOENT')throw error;privateIndexAvailable=false;}
   const {state}=await schedulerStore().load();
-  return {result:'PASS',scope:'SOURCE_LEDGER_HANDOFF_NOT_GAMEPLAY_OR_RELEASE_ACCEPTANCE',sourceRevision:index.sourceRevision,observedHead:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),branch:execFileSync('git',['branch','--show-current'],{encoding:'utf8'}).trim(),legacy:{files:index.files.length,vnext:counts(vnext),lodge:counts(lodge),arena:counts(arena),vnextRecords:75,newN06Addendum:1,unchangedLedgerBytes:true},ownerInputFiles:input.files.length,sql,sources,roomConstructors,nativeSources,privateIndexAvailable,planRoot,liveCounts:counts(state),limitations:['Historical statuses are preserved claims, not recertified source behavior.','Current source authority/config regressions are separate commands in the VL-001 handoff.','No Rust/Unity implementation, Windows GPU/runner/license/signing qualification or public deployment.','Two known historical auxiliary Lounge HTML losses remain recorded;private local artifacts are not an off-host archive.']};
+  return {result:'PASS',scope:'SOURCE_LEDGER_HANDOFF_NOT_GAMEPLAY_OR_RELEASE_ACCEPTANCE',sourceRevision:index.sourceRevision,observedHead:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),branch:execFileSync('git',['branch','--show-current'],{encoding:'utf8'}).trim(),legacy:{files:index.files.length,vnext:counts(vnext),lodge:counts(lodge),arena:counts(arena),vnextRecords:75,newN06Addendum:1,unchangedLedgerBytes:true},ownerInputFiles:input.files.length,sql,sources,roomConstructors,nativeSources,nativeAdditions,privateIndexAvailable,planRoot,liveCounts:counts(state),limitations:['Historical statuses are preserved claims, not recertified source behavior.','Current source authority/config regressions are separate commands in the VL-001 handoff.','Preservation does not qualify new Rust/Unity behavior, Windows GPU/runner/license/signing or public deployment.','Two known historical auxiliary Lounge HTML losses remain recorded;private local artifacts are not an off-host archive.']};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)console.log(JSON.stringify(await inspectAdoption(),null,2));

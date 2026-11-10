@@ -1,0 +1,44 @@
+name: Rust runtime
+on:
+  pull_request:
+  push:
+    branches: [main, 'codex/**']
+permissions:
+  contents: read
+concurrency:
+  group: rust-runtime-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  linux-foundation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      RUSTUP_HOME: ${{ runner.temp }}/vl-rustup
+      CARGO_HOME: ${{ runner.temp }}/vl-cargo
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install checksum-pinned bootstrap and exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/vl-rust-installer"
+          curl -fsSL https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init -o "$RUNNER_TEMP/vl-rust-installer/rustup-init"
+          printf 'b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55  %s\n' "$RUNNER_TEMP/vl-rust-installer/rustup-init" | sha256sum --check
+          chmod +x "$RUNNER_TEMP/vl-rust-installer/rustup-init"
+          "$RUNNER_TEMP/vl-rust-installer/rustup-init" -y --no-modify-path --profile minimal --default-toolchain 1.99.1 --component rustfmt,clippy
+      - name: Format, check, clippy and tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$CARGO_HOME/bin/cargo" fmt --all -- --check
+          "$CARGO_HOME/bin/cargo" check --workspace --all-targets --locked
+          "$CARGO_HOME/bin/cargo" clippy --workspace --all-targets --locked -- -D warnings
+          "$CARGO_HOME/bin/cargo" test --workspace --locked
+      - name: Build and smoke OCI foundation
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build --build-arg SOURCE_REVISION="$GITHUB_SHA" -f apps/game-runtime/Dockerfile -t vl-runtime-ci .
+          python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-ci
