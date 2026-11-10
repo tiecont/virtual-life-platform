@@ -6,6 +6,7 @@ import {assertRustWorkflow} from '../../scripts/verify-artifact-workflows.mjs';
 test('Rust foundation CI retains read-only Ubuntu checks without privileged/GPU claims',async()=>{
   const workflow=await readFile('.github/workflows/rust-runtime.yml','utf8'),pins=JSON.parse(await readFile('config/ci-actions.json','utf8'));
   assert.doesNotThrow(()=>assertRustWorkflow(workflow,pins));
+  assert.match(workflow,/fetch-depth: 0/,'Pinned archived API compatibility needs Git history');
   for(const extra of ['\n  packages: write','\n  token: $'+'{{ secrets.PRIVATE_TOKEN }}','\n  run: docker push image','\n  runs-on: self-hosted'])assert.throws(()=>assertRustWorkflow(workflow+extra,pins));
   for(const text of ['cargo" test --workspace --locked','sha256sum --check','python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-ci'])assert.throws(()=>assertRustWorkflow(workflow.replace(text,'removed required gate'),pins));
 });

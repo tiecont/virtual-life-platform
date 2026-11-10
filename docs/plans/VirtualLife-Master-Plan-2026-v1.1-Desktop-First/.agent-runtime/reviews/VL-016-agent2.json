@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-016",
+  "reviewer": "agent2",
+  "sourceRevision": "a1bd5b116125a1d2675568ae0c5a02cc4d62d9dc",
+  "handoffSha256": "82a7905cf233af2e2e8467935053837eed0696345b5bd0542d8c81e675e272f9",
+  "reviewedAt": "2026-11-10T05:24:03Z",
+  "decision": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "id": "VL016-R1",
+      "severity": "P1",
+      "file": ".github/workflows/rust-runtime.yml",
+      "line": 69,
+      "title": "Fetch the archived baseline before running the new compatibility gate",
+      "description": "The added required CI command invokes scripts/native-game-migration-compat.mjs, whose line 30 unconditionally archives commit 5386a8cd3cf3e4360fd55f8f06bc84d159ff540b. The checkout at lines 19-21 leaves actions/checkout's default fetch-depth of 1, and no subsequent step fetches that baseline. A fresh checkout of the reviewed source therefore lacks the required Git object: the compatibility script fails at stage archive and exits 1, making linux-foundation fail even though the PostgreSQL scenarios pass when both commits are present. This prevents the advertised exact-source Ubuntu verification from being reproducible.",
+      "relatedLocations": [
+        {"file": ".github/workflows/rust-runtime.yml", "line": 19},
+        {"file": "scripts/native-game-migration-compat.mjs", "line": 30}
+      ],
+      "reproduction": [
+        "git clone --no-local --depth 1 --single-branch --no-checkout /home/tiecont/Projects/virtual-city artifacts/desktop-first/vl016/agent2-shallow",
+        "git -C artifacts/desktop-first/vl016/agent2-shallow archive --format=tar --output /home/tiecont/Projects/virtual-city/artifacts/desktop-first/vl016/agent2-shallow-previous.tar 5386a8cd3cf3e4360fd55f8f06bc84d159ff540b packages apps/platform-api scripts/copy-migrations.mjs config",
+        "The archive exits 128: fatal: not a tree object: 5386a8cd3cf3e4360fd55f8f06bc84d159ff540b.",
+        "After checking out a1bd5b116125a1d2675568ae0c5a02cc4d62d9dc inside that clone and linking installed external dependencies, run node scripts/with-test-db.mjs node --import tsx scripts/native-game-migration-compat.mjs. The unchanged script exits 1 at archive; its recorded git archive exits 128. Its owned test database and network are cleaned up."
+      ],
+      "evidence": [
+        "artifacts/desktop-first/vl016/agent2-followup-1.log",
+        "artifacts/desktop-first/vl016/agent2-shallow/artifacts/desktop-first/vl016/compat-3351d272/facts.json",
+        "artifacts/desktop-first/vl016/agent2-shallow/artifacts/desktop-first/vl016/compat-3351d272/build-0.log"
+      ],
+      "requestedChange": "Make the exact historical commit available in the workflow before the compatibility step, using fetch-depth: 0 or an explicit fetch of the pinned baseline. Retain the actual historical-source archive/build and exact-prefix checksum policy. Verify the corrected workflow from a fresh checkout and obtain successful exact-source Ubuntu evidence before coordinator acceptance."
+    }
+  ],
+  "scope": "Independent review of the default-off VL-016 native storage migration, concurrency/fencing/atomicity, cascade/privacy and privilege boundaries, exact-prefix 47-to-48 expansion/old-API rollback, preservation changes and CI reproducibility. No source or coordinator mutation is authorized by this review.",
+  "environment": {
+    "platform": "CachyOS Linux x86_64",
+    "node": "26.9.0",
+    "postgresql": "17.7, wrapper-owned postgres:17.7-alpine disposable containers",
+    "typescript": "5.9.3, existing pinned installed dependency graph",
+    "verificationRoot": "artifacts/desktop-first/vl016/agent2-source",
+    "isolation": "Exact committed source archived into the allowed ignored artifact directory; external installed dependencies linked read-only for compilation. Build output, test reports and private logs remain under artifacts/desktop-first/vl016/. Both exact source and pinned historical commit were fetched into that artifact-only repository for the successful compatibility rerun. All database access used node scripts/with-test-db.mjs."
+  },
+  "sourceEvidence": {
+    "handoffRef": "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-016.json",
+    "headEqualsSourceRevision": true,
+    "handoffArtifactsChecked": 8,
+    "allArtifactSha256MatchExactGitBlobsAndWorktree": true,
+    "hashReport": "artifacts/desktop-first/vl016/agent2-facts.json",
+    "exactSourceArchiveSha256": "5db3eb3219265e0f592242d316a384c52398fcf8c06e7069b48ee8c335a25c9f",
+    "migrationSha256": "8c54c14ba85ed9278b0f5239d9fa0c2a20b2e5ea029913047c78b3dafc8d964a",
+    "policySha256": "7e890859817b8ed59c2c95aa62a36c19286418aaa5f713e0d74ed460d8cdd51b",
+    "sourceInspection": [
+      "Read repository AGENTS/master, current agent checkpoints, active plan entrypoint/AGENTS/runtime contract, ADR-003, migration overlay, task graph VL-016 and direct dependencies, DATA-CONSISTENCY, topology and relevant security/privacy instructions.",
+      "Inspected exact committed DDL, six schema tests, actual archived47 compatibility script, exact-prefix policy, migration reservation addendum, persistence contract, preservation implementation and workflow; inspected existing Nest migrator/schema-compatibility policy and legacy room-owner tests.",
+      "Read-only scheduler reports VL-016 IN_REVIEW. Existing Nest numbered journal/advisory lock remains the sole DDL owner; no Rust migrator or runtime activation was introduced.",
+      "Preservation audit passed for 47 original SQL files, the registered additive 0048, 105 owner inputs, 209 archived files and 75 vNext records. The new migration is explicitly not qualified by preservation alone."
+    ]
+  },
+  "commands": [
+    {
+      "command": "node scripts/desktop-scheduler.mjs status agent2",
+      "exitCode": 0,
+      "outcome": "VL-016 IN_REVIEW; no scheduler write."
+    },
+    {
+      "command": "node artifacts/desktop-first/vl016/agent2-runner.mjs",
+      "exitCode": 1,
+      "required": false,
+      "limitation": "Reviewer setup error after successful exact-blob hash checks, isolated builds and the first focused integration run: the archive-only verification directory initially inherited the parent repository's Git prefix, so historical archive pathspec packages did not resolve. Artifact-only Git metadata was added and both exact commits fetched; the unchanged compatibility script then passed. This is distinct from VL016-R1's independently reproduced missing-object failure in a real shallow clone.",
+      "log": "artifacts/desktop-first/vl016/agent2-facts.json"
+    },
+    {
+      "command": "/home/tiecont/.hermes/node/bin/node /home/tiecont/Projects/virtual-city/artifacts/desktop-first/vl016/agent2-source/node_modules/typescript/bin/tsc -p tsconfig.json",
+      "cwd": "artifacts/desktop-first/vl016/agent2-source/apps/platform-api",
+      "exitCode": 0,
+      "outcome": "Exact-source API compilation passed after ten exact-source dependency package builds, also exit 0; package build commands and logs are recorded in agent2-facts.json.",
+      "log": "artifacts/desktop-first/vl016/agent2-command-12.log"
+    },
+    {
+      "command": "/home/tiecont/.hermes/node/bin/node /home/tiecont/Projects/virtual-city/artifacts/desktop-first/vl016/agent2-source/scripts/copy-migrations.mjs",
+      "cwd": "artifacts/desktop-first/vl016/agent2-source/apps/platform-api",
+      "exitCode": 0,
+      "log": "artifacts/desktop-first/vl016/agent2-command-13.log"
+    },
+    {
+      "command": "/home/tiecont/.hermes/node/bin/node scripts/with-test-db.mjs /home/tiecont/.hermes/node/bin/node node_modules/vitest/vitest.mjs run --project integration tests/integration/native-game-schema.test.ts tests/integration/schema-compatibility.test.ts tests/integration/room-owner.test.ts --reporter=json --outputFile=/home/tiecont/Projects/virtual-city/artifacts/desktop-first/vl016/agent2-vitest.json",
+      "cwd": "artifacts/desktop-first/vl016/agent2-source",
+      "exitCode": 0,
+      "outcome": "12/12 tests passed, no skipped tests: six native schema tests, two compatibility tests and four actual legacy room-owner restart/takeover tests. An earlier run of the same files also exited 0; the explicit JSON rerun confirms individual outcomes.",
+      "report": "artifacts/desktop-first/vl016/agent2-vitest.json",
+      "log": "artifacts/desktop-first/vl016/agent2-followup-3.log"
+    },
+    {
+      "command": "/home/tiecont/.hermes/node/bin/node scripts/with-test-db.mjs /home/tiecont/.hermes/node/bin/node --import tsx scripts/native-game-migration-compat.mjs",
+      "cwd": "artifacts/desktop-first/vl016/agent2-source",
+      "exitCode": 0,
+      "outcome": "Actual archived47 source compiled and ran on PostgreSQL; two current migrators expanded to48; identity, legacy fixture and native AEAD ciphertext/roundtrip survived compatible-old rollback and current roll-forward. Strict-old rejected48; prefix/tail corruption and unknown suffix failed closed. Cleanup complete.",
+      "report": "artifacts/desktop-first/vl016/agent2-source/artifacts/desktop-first/vl016/compat-911ce848/facts.json",
+      "log": "artifacts/desktop-first/vl016/agent2-followup-2.log"
+    },
+    {
+      "command": "git clone --no-local --depth 1 --single-branch --no-checkout /home/tiecont/Projects/virtual-city artifacts/desktop-first/vl016/agent2-shallow",
+      "exitCode": 0,
+      "outcome": "Created independent depth-1 reproduction at the reviewed commit inside the allowed artifacts directory."
+    },
+    {
+      "command": "git -C artifacts/desktop-first/vl016/agent2-shallow archive --format=tar --output /home/tiecont/Projects/virtual-city/artifacts/desktop-first/vl016/agent2-shallow-previous.tar 5386a8cd3cf3e4360fd55f8f06bc84d159ff540b packages apps/platform-api scripts/copy-migrations.mjs config",
+      "exitCode": 128,
+      "outcome": "VL016-R1 reproduced: fatal: not a tree object: 5386a8cd3cf3e4360fd55f8f06bc84d159ff540b."
+    },
+    {
+      "command": "/home/tiecont/.hermes/node/bin/node scripts/with-test-db.mjs /home/tiecont/.hermes/node/bin/node --import tsx scripts/native-game-migration-compat.mjs",
+      "cwd": "artifacts/desktop-first/vl016/agent2-shallow",
+      "exitCode": 1,
+      "outcome": "Unchanged exact-source compatibility script reproduced VL016-R1 at archive; inner git command exited128; owned disposable database/network cleaned up.",
+      "log": "artifacts/desktop-first/vl016/agent2-followup-1.log"
+    },
+    {
+      "command": "/home/tiecont/.hermes/node/bin/node scripts/with-test-db.mjs /home/tiecont/.hermes/node/bin/node /home/tiecont/Projects/virtual-city/artifacts/desktop-first/vl016/agent2-pg-probes.mjs",
+      "cwd": "artifacts/desktop-first/vl016/agent2-source",
+      "exitCode": 1,
+      "required": false,
+      "limitation": "Initial reviewer probe expected cross-match FK error23503 but its fixture also collided with an already-present unique settlement/effect key, correctly producing23505 first. The fixture was corrected to remove that competing constraint; production source was unchanged.",
+      "report": "artifacts/desktop-first/vl016/agent2-pg-probes-initial.json",
+      "log": "artifacts/desktop-first/vl016/agent2-followup-4.log"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs node /home/tiecont/Projects/virtual-city/artifacts/desktop-first/vl016/agent2-pg-probes.mjs > /home/tiecont/Projects/virtual-city/artifacts/desktop-first/vl016/agent2-pg-probes-corrected.log 2>&1",
+      "cwd": "artifacts/desktop-first/vl016/agent2-source",
+      "exitCode": 0,
+      "outcome": "Six independent probe groups passed: receipt collisions/version uniqueness; contending stale-epoch insert and boot CAS; cross-match/wrong-epoch effects and deletion cascades; late-outbox-error atomic rollback; envelope/numeric bounds and exact maximum precision; catalog privileges and native-only foreign keys. PostgreSQL17.7; cleanup complete.",
+      "report": "artifacts/desktop-first/vl016/agent2-pg-probes.json",
+      "log": "artifacts/desktop-first/vl016/agent2-pg-probes-corrected.log"
+    },
+    {
+      "command": "node artifacts/desktop-first/vl016/agent2-followup.mjs",
+      "exitCode": 1,
+      "required": false,
+      "limitation": "Orchestrator recorded the expected shallow failure and successful full-history compatibility/12-test rerun, then exited on the reviewer fixture expectation described above. The corrected independent probe was subsequently run directly through the test DB wrapper and passed.",
+      "log": "artifacts/desktop-first/vl016/agent2-followup-facts.json"
+    },
+    {
+      "command": "node docs/execution/desktop-first/verify-adoption.mjs > artifacts/desktop-first/vl016/agent2-preservation.json",
+      "exitCode": 0,
+      "outcome": "Preservation passed with original47 immutable and additive0048 separately registered.",
+      "report": "artifacts/desktop-first/vl016/agent2-preservation.json"
+    },
+    {
+      "command": "node --test tests/governance/rust-workflow.test.mjs",
+      "exitCode": 0,
+      "outcome": "One workflow governance test passed; it does not detect or resolve the archived-history defect."
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0
+    }
+  ],
+  "assessment": [
+    "The two stated VL-016 acceptance scenarios pass locally with the necessary Git history: actual PG concurrency admits one settlement and the actual archived47 runtime passes declared exact-prefix expansion/rollback. CI reproducibility remains blocked by VL016-R1.",
+    "The parent-row lock plus insert triggers reject stale receipt/settlement epoch or version; unique match/version and actor/command keys protect distinct transition and replay collisions. Events and outbox reference real matching parent records. Atomicity is demonstrated for caller-owned SQL transactions, not supplied by independent statements or a Rust command host.",
+    "Cascade probes remove child receipt/event/settlement/outbox data within the native graph without platform foreign keys. They do not establish account deletion/export, security retention or reliable delivery of pending effects across deletion; those remain explicit future owner/consumer contracts before activation.",
+    "Private snapshots, receipts and canonical events have bounded envelope columns. Actual AEAD fixture roundtrip survives old-runtime rollback. SQL cannot prove encryption, associated-data binding, fresh nonce/key handling, or prevent low-entropy metadata disclosure; no public projection or native route is added here.",
+    "Catalog probes confirm a table namespace in the existing search path, default table ACLs, no RLS and invoker-rights trigger functions. This migration grants no platform rights and is not a provisioned schema/role isolation boundary. Restricting runtime DML, using a different migration identity and defining deletion/retention privileges remain required before a real host is activated.",
+    "Checkpoint identity and monotonic clocks are guarded, but exact +1 transitions, immutable receipt/settlement DML policy, authenticated owner acquisition, expected lifecycle CAS, participant/session/policy authorization and economy inbox effects remain host responsibilities as documented. This review does not broaden the task into full Rust runtime authentication."
+  ],
+  "limitations": [
+    "Verification was local Linux with existing pinned installed dependencies. No hosted Ubuntu run or fresh network dependency install was initiated. Full workspace lint/typecheck/governance/OCI/Rust suites were not independently rerun; focused TypeScript builds, PG tests, compatibility, workflow governance and preservation are the actual scopes recorded above.",
+    "No Unity, Windows, physical-GPU, production schema/backup/rollback, public deployment, native admission, real Rust host, economy consumer or complete privacy/retention qualification is claimed. Runtime remains default-off and the legacy Nest RoomAuthority remains sole legacy writer.",
+    "All authored files are this new review and ignored artifacts under artifacts/desktop-first/vl016/. No source, handoff, scheduler state, reservation, checksum baseline, checkpoint document or commit was edited. The existing modified live-state and untracked handoff were left as found. .idea and infra/botkeep-ca.pem were not read or staged. No agent was spawned.",
+    "Reviewer setup/probe failures and their corrected successful runs are retained rather than treated as application defects. VL016-R1 is independently reproduced both with direct Git and the unchanged wrapper-driven compatibility script in a genuine shallow clone."
+  ],
+  "nextExactAction": "Agent1 should address VL016-R1 under coordinator ownership, obtain successful corrected exact-source Ubuntu CI, and submit a new immutable handoff/review attempt. Do not mark this source VERIFIED or activate native storage callers from this review."
+}

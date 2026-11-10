@@ -107,6 +107,24 @@ test('coordinator narrows reservations without losing immutable mirrors or enabl
   await writeFile(join(f.root,original.ref),serialize({...original,paths:['elsewhere']}));
   await assert.rejects(f.store.load(),/Historical reservation changed/);
 });
+test('explicit scope extension is coordinator-only, conflict checked and retains immutable history',async t=>{
+  const f=await fixture(t),original=await f.store.reserve('VL-001','agent1',['crates/vl-game-core/**'],f.location);
+  await f.store.reserve('VL-003','agent2',['apps/unity/**'],f.location);
+  await assert.rejects(f.store.extendReservation('VL-001',['Cargo.toml'],'fix','agent2'),/coordinator/);
+  await assert.rejects(f.store.extendReservation('VL-001',['apps/**'],'fix'),/ownership conflict/);
+  await assert.rejects(f.store.extendReservation('VL-001',['Cargo.toml'],''),/reason/);
+  await assert.rejects(f.store.extendReservation('VL-001',['../secret'],'fix'));
+  await assert.rejects(f.store.extendReservation('VL-001',['crates/vl-game-core/**'],'fix'),/new paths/);
+  const extended=await f.store.extendReservation('VL-001',['Cargo.toml'],'Required build graph ownership');
+  assert.deepEqual(extended.paths,['crates/vl-game-core/**','Cargo.toml']);
+  assert.equal(extended.owner,original.owner);assert.equal(extended.history[0].sha256,sha256(serialize(original)));
+  await f.store.start('VL-001');
+  const ref='handoffs/scope.json';await writeFile(join(f.root,ref),serialize({taskId:'VL-001',owner:'agent1',sourceRevision:f.source,commands:[{command:'test',exitCode:0}],artifacts:f.artifacts}));
+  await f.store.submit('VL-001',ref);
+  await assert.rejects(f.store.extendReservation('VL-001',['docs/architecture'],'after submit'),/editable/);
+  await writeFile(join(f.root,original.ref),'{}');
+  await assert.rejects(f.store.load(),/Historical reservation changed/);
+});
 test('submit, verify and persisted verification reject unbound source evidence',async t=>{
   for(const variant of ['missing-commit','missing-artifact','wrong-hash','directory','traversal'])await t.test(variant,async t=>{
     const f=await fixture(t);

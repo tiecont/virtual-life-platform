@@ -42,3 +42,9 @@ can only shrink inside the previous scope. The task stays open; a new mirror
 records the reason and hashes every prior mirror, which load checks unchanged.
 Released shared paths can then be reserved by another READY task. Scope expansion
 and changes during review are rejected; this does not waive acceptance or review.
+
+For a discovered implementation dependency, `extendReservation(taskId, newPaths,
+reason)` is an explicit coordinator-only operation on RESERVED/IN_PROGRESS work.
+It rejects overlap with every other active task, preserves the same owner/task
+and all prior hashed mirrors, and cannot change scope during review. Narrowing
+still cannot silently expand. A requested-changes task must reopen before extension.

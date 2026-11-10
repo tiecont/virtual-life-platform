@@ -1,0 +1,34 @@
+{
+  "id": "VL-016-77484595-e11c-4f0b-a167-d5e4c81a2642",
+  "ref": "reservations/VL-016-1a147618-3a0b-444e-a65a-e6ba12fb4a82.json",
+  "taskId": "VL-016",
+  "owner": "agent1",
+  "paths": [
+    "apps/platform-api/src/db/migrations/0048_native_game_storage.sql",
+    "tests/integration/native-game-schema.test.ts",
+    "config/schema-compatibility-0047-native-expand.json",
+    "scripts/native-game-migration-compat.mjs",
+    "docs/execution/desktop-first/persistence/**",
+    "docs/execution/desktop-first/migration-reservations/0048-implementation.json",
+    "docs/execution/desktop-first/verify-adoption.mjs",
+    ".github/workflows/rust-runtime.yml",
+    "docs/architecture/ownership.json",
+    "docs/architecture/api-modules.json"
+  ],
+  "branch": "codex/desktop-first-backend",
+  "worktree": "/home/tiecont/Projects/virtual-city",
+  "sourceRevision": "64f7cb34654130a02393e7181a848e5d737ac7a2",
+  "createdAt": "2026-11-10T04:55:49.458Z",
+  "amendedAt": "2026-11-10T05:30:25.198Z",
+  "reason": "Existing architecture policy requires SQL owners map to the sole Nest DDL module; register native storage DDL without granting Nest gameplay ownership",
+  "history": [
+    {
+      "ref": "reservations/VL-016-77484595-e11c-4f0b-a167-d5e4c81a2642.json",
+      "sha256": "41bdfaceee4e9c4547beed83c80ae1a5e67df295a31e663bd261320ed012806a"
+    },
+    {
+      "ref": "reservations/VL-016-75f21485-f94b-4623-a5ac-8ea86bc50f4f.json",
+      "sha256": "f296bdaca5f0e183ff04055d8040149a14865660a2a5f3b534d011eaebd71208"
+    }
+  ]
+}

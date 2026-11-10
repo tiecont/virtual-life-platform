@@ -266,6 +266,7 @@
     "Existing room/operations type and metrics coupling is retained, not declared acyclic"
   ],
   "tableOwnerModules": {
+    "native.game-storage": "db",
     "platform.operations": "operations",
     "platform.foundation": "db",
     "platform.identity": "identity",
@@ -282,5 +283,8 @@
     "restricted.dating-test-fixtures": "dating",
     "platform.admission": "admission",
     "engine.games":"games"
+  },
+  "tableOwnerNotes": {
+    "native.game-storage": "db owns numbered DDL only. New game_native_* data belongs to the default-off Rust native plane, not Nest game simulation; runtime writer/roles/privacy gates are unfinished."
   }
 }

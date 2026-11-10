@@ -209,6 +209,24 @@ export function schedulerStore(root=runtimeRoot,tasksRef=planRoot+'/06-execution
       await writeFile(localRef(ref),serialize(reservation),{flag:'wx'});
       state.reservations[previous.id]=reservation;return reservation;
     }),
+    extendReservation: (taskId,paths,reason,actor='agent1') => mutate(actor,async(_taskdoc,state)=>{
+      const current=state.tasks[taskId];
+      assert(['RESERVED','IN_PROGRESS'].includes(current?.status),'Reservation must be editable');
+      const previous=state.reservations[current.reservationId];
+      assert(Array.isArray(paths)&&paths.length>0&&new Set(paths).size===paths.length,'Unique nonempty paths required');
+      paths.forEach(scopePath);
+      assert(paths.every(path=>!previous.paths.some(old=>scopePath(path)===scopePath(old))),'Only new paths may be added');
+      assert(typeof reason==='string'&&reason.trim().length>0,'Extension reason required');
+      for(const other of Object.values(state.tasks))if(claimed.has(other.status)&&other!==current) {
+        const reservation=state.reservations[other.reservationId];
+        assert(!paths.some(a=>reservation.paths.some(b=>overlaps(a,b))),'File ownership conflict');
+      }
+      const ref='reservations/'+taskId+'-'+randomUUID()+'.json';
+      const reservation={...previous,ref,paths:[...previous.paths,...paths],amendedAt:new Date().toISOString(),reason,
+        history:[...(previous.history??[]),{ref:previous.ref,sha256:sha256(await readFile(localRef(previous.ref)))}]};
+      await writeFile(localRef(ref),serialize(reservation),{flag:'wx'});
+      state.reservations[previous.id]=reservation;return reservation;
+    }),
     submit: (taskId,handoffRef,actor='agent1') => mutate(actor,async(_taskdoc,state)=>{
       const current=state.tasks[taskId];assert.equal(current?.status,'IN_PROGRESS');
       const bytes=await readFile(localRef(handoffRef)),handoff=JSON.parse(bytes);
