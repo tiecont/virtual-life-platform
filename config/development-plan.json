@@ -405,9 +405,7 @@
         "One-page decision shows native URP suitability and web teaser not on game critical path"
       ],
       "status": "TODO",
-      "qualificationRequirements": [
-        "N06-04 worktree checkout handoff"
-      ]
+      "qualificationRequirements": []
     },
     {
       "id": "VL-012",
@@ -1341,9 +1339,7 @@
         "2-player complete round+restart, hidden hand test, old journal fixture unchanged"
       ],
       "status": "TODO",
-      "qualificationRequirements": [
-        "N15-05/N16 product scheduling and ownership handoff"
-      ]
+      "qualificationRequirements": []
     },
     {
       "id": "VL-042",

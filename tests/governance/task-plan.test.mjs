@@ -18,5 +18,6 @@ test('real implementation dependencies, invalid states, cycles and invented veri
 test('the active backlog preserves historical work and exposes independent work immediately',async()=>{
  const p=await readTaskPlan(),s=taskStatus(p);
  assert.equal(s.total,110);assert.equal(s.counts.VERIFIED,15);
+ for(const t of p.tasks.filter(t=>t.status!=='VERIFIED'))assert.doesNotMatch(t.qualificationRequirements.join(' '),/handoff|agent|reservation/i);
  for(const id of ['VL-010','VL-018','VL-020','VL-035','VL-043','VL-050','VL-065','VL-080'])assert(s.ready.some(t=>t.id===id));
 });
