@@ -12,6 +12,7 @@ message ClientEnvelope {
     Hello hello = 10;
     GameIntent game_intent = 11;
     MoveIntent move_intent = 12;
+    Resync resync = 13;
   }
 }
 message Hello {
@@ -31,6 +32,8 @@ message MoveIntent {
   sint32 direction_x = 2; // Quantized -1000..1000; not a client position.
   sint32 direction_z = 3;
 }
+// A fresh authorized own snapshot, never an instruction to trust client state.
+message Resync { uint64 last_seen_epoch = 1; uint64 last_seen_tick = 2; }
 message ServerEnvelope {
   uint32 protocol_version = 1;
   bytes command_id = 2;
@@ -40,9 +43,27 @@ message ServerEnvelope {
     HelloAccepted hello = 10;
     Receipt receipt = 11;
     Rejection rejection = 12;
+    WorldSnapshot snapshot = 13;
   }
 }
-message HelloAccepted { bytes content_hash = 1; uint32 state_schema_version = 2; }
+message HelloAccepted {
+  bytes content_hash = 1;
+  uint32 state_schema_version = 2;
+  WorldSnapshot snapshot = 3;
+  bytes runtime_boot_id = 4;
+}
+// VL-022 exports only the caller's own state. AOI candidates are not recipients.
+// Authorized peer projections remain a separate VL-020/028 contract.
+message WorldSnapshot {
+  uint64 authority_epoch = 1;
+  uint64 tick = 2;
+  OwnActor own_actor = 3;
+}
+message OwnActor {
+  sint32 x_mm = 1;
+  sint32 z_mm = 2;
+  uint64 last_input_sequence = 3;
+}
 message Receipt {
   bool committed = 1;
   bytes authorized_projection = 2; // Per recipient only; VL-020 owns filtering.

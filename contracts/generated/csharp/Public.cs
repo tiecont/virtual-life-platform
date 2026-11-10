@@ -24,49 +24,61 @@ namespace VirtualLife.Native.Public.V1 {
     static PublicReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "CgxwdWJsaWMucHJvdG8SFXZpcnR1YWxsaWZlLnB1YmxpYy52MSKBAgoOQ2xp",
+            "CgxwdWJsaWMucHJvdG8SFXZpcnR1YWxsaWZlLnB1YmxpYy52MSKyAgoOQ2xp",
             "ZW50RW52ZWxvcGUSGAoQcHJvdG9jb2xfdmVyc2lvbhgBIAEoDRISCgpjb21t",
             "YW5kX2lkGAIgASgMEhAKCHNlcXVlbmNlGAMgASgEEi0KBWhlbGxvGAogASgL",
             "MhwudmlydHVhbGxpZmUucHVibGljLnYxLkhlbGxvSAASOAoLZ2FtZV9pbnRl",
             "bnQYCyABKAsyIS52aXJ0dWFsbGlmZS5wdWJsaWMudjEuR2FtZUludGVudEgA",
             "EjgKC21vdmVfaW50ZW50GAwgASgLMiEudmlydHVhbGxpZmUucHVibGljLnYx",
-            "Lk1vdmVJbnRlbnRIAEIGCgRib2R5SgQIBBAKInMKBUhlbGxvEg4KBnRpY2tl",
-            "dBgBIAEoCRIUCgxjbGllbnRfYnVpbGQYAiABKAkSFAoMY29udGVudF9oYXNo",
-            "GAMgASgMEhsKDnBsYXRmb3JtX2xhYmVsGAQgASgJSACIAQFCEQoPX3BsYXRm",
-            "b3JtX2xhYmVsImsKCkdhbWVJbnRlbnQSFwoPZ2FtZV9zZXNzaW9uX2lkGAEg",
-            "ASgMEh4KFmV4cGVjdGVkX3N0YXRlX3ZlcnNpb24YAiABKAQSDAoEa2luZBgD",
-            "IAEoCRIWCg5hY3Rpb25fcGF5bG9hZBgEIAEoDCJOCgpNb3ZlSW50ZW50EhYK",
-            "DmlucHV0X3NlcXVlbmNlGAEgASgEEhMKC2RpcmVjdGlvbl94GAIgASgREhMK",
-            "C2RpcmVjdGlvbl96GAMgASgRIogCCg5TZXJ2ZXJFbnZlbG9wZRIYChBwcm90",
-            "b2NvbF92ZXJzaW9uGAEgASgNEhIKCmNvbW1hbmRfaWQYAiABKAwSGQoRY2Fu",
-            "b25pY2FsX3ZlcnNpb24YAyABKAQSNQoFaGVsbG8YCiABKAsyJC52aXJ0dWFs",
-            "bGlmZS5wdWJsaWMudjEuSGVsbG9BY2NlcHRlZEgAEjEKB3JlY2VpcHQYCyAB",
-            "KAsyHi52aXJ0dWFsbGlmZS5wdWJsaWMudjEuUmVjZWlwdEgAEjUKCXJlamVj",
-            "dGlvbhgMIAEoCzIgLnZpcnR1YWxsaWZlLnB1YmxpYy52MS5SZWplY3Rpb25I",
-            "AEIGCgRib2R5SgQIBBAKIkMKDUhlbGxvQWNjZXB0ZWQSFAoMY29udGVudF9o",
-            "YXNoGAEgASgMEhwKFHN0YXRlX3NjaGVtYV92ZXJzaW9uGAIgASgNIjsKB1Jl",
-            "Y2VpcHQSEQoJY29tbWl0dGVkGAEgASgIEh0KFWF1dGhvcml6ZWRfcHJvamVj",
-            "dGlvbhgCIAEoDCJgCglSZWplY3Rpb24SLgoEY29kZRgBIAEoDjIgLnZpcnR1",
-            "YWxsaWZlLnB1YmxpYy52MS5FcnJvckNvZGUSEQoJcmV0cnlhYmxlGAIgASgI",
-            "EhAKCHRyYWNlX2lkGAMgASgMKugCCglFcnJvckNvZGUSFQoRRVJST1JfVU5T",
-            "UEVDSUZJRUQQABITCg9VTkFVVEhFTlRJQ0FURUQQARISCg5QT0xJQ1lfUkVW",
-            "T0tFRBACEhQKEENPTlRFTlRfTUlTTUFUQ0gQAxIRCg1TVEFMRV9WRVJTSU9O",
-            "EAQSDwoLU1RBTEVfRVBPQ0gQBRIUChBOT1RfSU5fUFJPWElNSVRZEAYSDgoK",
-            "U0VBVF9UQUtFThAHEhcKE0dBTUVfQUxSRUFEWV9BQ1RJVkUQCBITCg9URUxF",
-            "UE9SVF9ERU5JRUQQCRIYChRUQVJHRVRfQ0FQQUNJVFlfRlVMTBAKEhgKFENP",
-            "TU1BTkRfSURfQ09MTElTSU9OEAsSEAoMQkFDS1BSRVNTVVJFEAwSGwoXVEVN",
-            "UE9SQVJJTFlfVU5BVkFJTEFCTEUQDRISCg5SRVdBUkRfUEVORElORxAOEhYK",
-            "ElVOU1VQUE9SVEVEX0NMSUVOVBAPQh+qAhxWaXJ0dWFsTGlmZS5OYXRpdmUu",
-            "UHVibGljLlYxYgZwcm90bzM="));
+            "Lk1vdmVJbnRlbnRIABIvCgZyZXN5bmMYDSABKAsyHS52aXJ0dWFsbGlmZS5w",
+            "dWJsaWMudjEuUmVzeW5jSABCBgoEYm9keUoECAQQCiJzCgVIZWxsbxIOCgZ0",
+            "aWNrZXQYASABKAkSFAoMY2xpZW50X2J1aWxkGAIgASgJEhQKDGNvbnRlbnRf",
+            "aGFzaBgDIAEoDBIbCg5wbGF0Zm9ybV9sYWJlbBgEIAEoCUgAiAEBQhEKD19w",
+            "bGF0Zm9ybV9sYWJlbCJrCgpHYW1lSW50ZW50EhcKD2dhbWVfc2Vzc2lvbl9p",
+            "ZBgBIAEoDBIeChZleHBlY3RlZF9zdGF0ZV92ZXJzaW9uGAIgASgEEgwKBGtp",
+            "bmQYAyABKAkSFgoOYWN0aW9uX3BheWxvYWQYBCABKAwiTgoKTW92ZUludGVu",
+            "dBIWCg5pbnB1dF9zZXF1ZW5jZRgBIAEoBBITCgtkaXJlY3Rpb25feBgCIAEo",
+            "ERITCgtkaXJlY3Rpb25fehgDIAEoESI5CgZSZXN5bmMSFwoPbGFzdF9zZWVu",
+            "X2Vwb2NoGAEgASgEEhYKDmxhc3Rfc2Vlbl90aWNrGAIgASgEIsICCg5TZXJ2",
+            "ZXJFbnZlbG9wZRIYChBwcm90b2NvbF92ZXJzaW9uGAEgASgNEhIKCmNvbW1h",
+            "bmRfaWQYAiABKAwSGQoRY2Fub25pY2FsX3ZlcnNpb24YAyABKAQSNQoFaGVs",
+            "bG8YCiABKAsyJC52aXJ0dWFsbGlmZS5wdWJsaWMudjEuSGVsbG9BY2NlcHRl",
+            "ZEgAEjEKB3JlY2VpcHQYCyABKAsyHi52aXJ0dWFsbGlmZS5wdWJsaWMudjEu",
+            "UmVjZWlwdEgAEjUKCXJlamVjdGlvbhgMIAEoCzIgLnZpcnR1YWxsaWZlLnB1",
+            "YmxpYy52MS5SZWplY3Rpb25IABI4CghzbmFwc2hvdBgNIAEoCzIkLnZpcnR1",
+            "YWxsaWZlLnB1YmxpYy52MS5Xb3JsZFNuYXBzaG90SABCBgoEYm9keUoECAQQ",
+            "CiKUAQoNSGVsbG9BY2NlcHRlZBIUCgxjb250ZW50X2hhc2gYASABKAwSHAoU",
+            "c3RhdGVfc2NoZW1hX3ZlcnNpb24YAiABKA0SNgoIc25hcHNob3QYAyABKAsy",
+            "JC52aXJ0dWFsbGlmZS5wdWJsaWMudjEuV29ybGRTbmFwc2hvdBIXCg9ydW50",
+            "aW1lX2Jvb3RfaWQYBCABKAwiagoNV29ybGRTbmFwc2hvdBIXCg9hdXRob3Jp",
+            "dHlfZXBvY2gYASABKAQSDAoEdGljaxgCIAEoBBIyCglvd25fYWN0b3IYAyAB",
+            "KAsyHy52aXJ0dWFsbGlmZS5wdWJsaWMudjEuT3duQWN0b3IiQwoIT3duQWN0",
+            "b3ISDAoEeF9tbRgBIAEoERIMCgR6X21tGAIgASgREhsKE2xhc3RfaW5wdXRf",
+            "c2VxdWVuY2UYAyABKAQiOwoHUmVjZWlwdBIRCgljb21taXR0ZWQYASABKAgS",
+            "HQoVYXV0aG9yaXplZF9wcm9qZWN0aW9uGAIgASgMImAKCVJlamVjdGlvbhIu",
+            "CgRjb2RlGAEgASgOMiAudmlydHVhbGxpZmUucHVibGljLnYxLkVycm9yQ29k",
+            "ZRIRCglyZXRyeWFibGUYAiABKAgSEAoIdHJhY2VfaWQYAyABKAwq6AIKCUVy",
+            "cm9yQ29kZRIVChFFUlJPUl9VTlNQRUNJRklFRBAAEhMKD1VOQVVUSEVOVElD",
+            "QVRFRBABEhIKDlBPTElDWV9SRVZPS0VEEAISFAoQQ09OVEVOVF9NSVNNQVRD",
+            "SBADEhEKDVNUQUxFX1ZFUlNJT04QBBIPCgtTVEFMRV9FUE9DSBAFEhQKEE5P",
+            "VF9JTl9QUk9YSU1JVFkQBhIOCgpTRUFUX1RBS0VOEAcSFwoTR0FNRV9BTFJF",
+            "QURZX0FDVElWRRAIEhMKD1RFTEVQT1JUX0RFTklFRBAJEhgKFFRBUkdFVF9D",
+            "QVBBQ0lUWV9GVUxMEAoSGAoUQ09NTUFORF9JRF9DT0xMSVNJT04QCxIQCgxC",
+            "QUNLUFJFU1NVUkUQDBIbChdURU1QT1JBUklMWV9VTkFWQUlMQUJMRRANEhIK",
+            "DlJFV0FSRF9QRU5ESU5HEA4SFgoSVU5TVVBQT1JURURfQ0xJRU5UEA9CH6oC",
+            "HFZpcnR1YWxMaWZlLk5hdGl2ZS5QdWJsaWMuVjFiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::VirtualLife.Native.Public.V1.ErrorCode), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.ClientEnvelope), global::VirtualLife.Native.Public.V1.ClientEnvelope.Parser, new[]{ "ProtocolVersion", "CommandId", "Sequence", "Hello", "GameIntent", "MoveIntent" }, new[]{ "Body" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.ClientEnvelope), global::VirtualLife.Native.Public.V1.ClientEnvelope.Parser, new[]{ "ProtocolVersion", "CommandId", "Sequence", "Hello", "GameIntent", "MoveIntent", "Resync" }, new[]{ "Body" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.Hello), global::VirtualLife.Native.Public.V1.Hello.Parser, new[]{ "Ticket", "ClientBuild", "ContentHash", "PlatformLabel" }, new[]{ "PlatformLabel" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.GameIntent), global::VirtualLife.Native.Public.V1.GameIntent.Parser, new[]{ "GameSessionId", "ExpectedStateVersion", "Kind", "ActionPayload" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.MoveIntent), global::VirtualLife.Native.Public.V1.MoveIntent.Parser, new[]{ "InputSequence", "DirectionX", "DirectionZ" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.ServerEnvelope), global::VirtualLife.Native.Public.V1.ServerEnvelope.Parser, new[]{ "ProtocolVersion", "CommandId", "CanonicalVersion", "Hello", "Receipt", "Rejection" }, new[]{ "Body" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.HelloAccepted), global::VirtualLife.Native.Public.V1.HelloAccepted.Parser, new[]{ "ContentHash", "StateSchemaVersion" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.Resync), global::VirtualLife.Native.Public.V1.Resync.Parser, new[]{ "LastSeenEpoch", "LastSeenTick" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.ServerEnvelope), global::VirtualLife.Native.Public.V1.ServerEnvelope.Parser, new[]{ "ProtocolVersion", "CommandId", "CanonicalVersion", "Hello", "Receipt", "Rejection", "Snapshot" }, new[]{ "Body" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.HelloAccepted), global::VirtualLife.Native.Public.V1.HelloAccepted.Parser, new[]{ "ContentHash", "StateSchemaVersion", "Snapshot", "RuntimeBootId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.WorldSnapshot), global::VirtualLife.Native.Public.V1.WorldSnapshot.Parser, new[]{ "AuthorityEpoch", "Tick", "OwnActor" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.OwnActor), global::VirtualLife.Native.Public.V1.OwnActor.Parser, new[]{ "XMm", "ZMm", "LastInputSequence" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.Receipt), global::VirtualLife.Native.Public.V1.Receipt.Parser, new[]{ "Committed", "AuthorizedProjection" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.Rejection), global::VirtualLife.Native.Public.V1.Rejection.Parser, new[]{ "Code", "Retryable", "TraceId" }, null, null, null, null)
           }));
@@ -147,6 +159,9 @@ namespace VirtualLife.Native.Public.V1 {
           break;
         case BodyOneofCase.MoveIntent:
           MoveIntent = other.MoveIntent.Clone();
+          break;
+        case BodyOneofCase.Resync:
+          Resync = other.Resync.Clone();
           break;
       }
 
@@ -234,6 +249,18 @@ namespace VirtualLife.Native.Public.V1 {
       }
     }
 
+    /// <summary>Field number for the "resync" field.</summary>
+    public const int ResyncFieldNumber = 13;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::VirtualLife.Native.Public.V1.Resync Resync {
+      get { return bodyCase_ == BodyOneofCase.Resync ? (global::VirtualLife.Native.Public.V1.Resync) body_ : null; }
+      set {
+        body_ = value;
+        bodyCase_ = value == null ? BodyOneofCase.None : BodyOneofCase.Resync;
+      }
+    }
+
     private object body_;
     /// <summary>Enum of possible cases for the "body" oneof.</summary>
     public enum BodyOneofCase {
@@ -241,6 +268,7 @@ namespace VirtualLife.Native.Public.V1 {
       Hello = 10,
       GameIntent = 11,
       MoveIntent = 12,
+      Resync = 13,
     }
     private BodyOneofCase bodyCase_ = BodyOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -277,6 +305,7 @@ namespace VirtualLife.Native.Public.V1 {
       if (!object.Equals(Hello, other.Hello)) return false;
       if (!object.Equals(GameIntent, other.GameIntent)) return false;
       if (!object.Equals(MoveIntent, other.MoveIntent)) return false;
+      if (!object.Equals(Resync, other.Resync)) return false;
       if (BodyCase != other.BodyCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -291,6 +320,7 @@ namespace VirtualLife.Native.Public.V1 {
       if (bodyCase_ == BodyOneofCase.Hello) hash ^= Hello.GetHashCode();
       if (bodyCase_ == BodyOneofCase.GameIntent) hash ^= GameIntent.GetHashCode();
       if (bodyCase_ == BodyOneofCase.MoveIntent) hash ^= MoveIntent.GetHashCode();
+      if (bodyCase_ == BodyOneofCase.Resync) hash ^= Resync.GetHashCode();
       hash ^= (int) bodyCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -334,6 +364,10 @@ namespace VirtualLife.Native.Public.V1 {
         output.WriteRawTag(98);
         output.WriteMessage(MoveIntent);
       }
+      if (bodyCase_ == BodyOneofCase.Resync) {
+        output.WriteRawTag(106);
+        output.WriteMessage(Resync);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -368,6 +402,10 @@ namespace VirtualLife.Native.Public.V1 {
         output.WriteRawTag(98);
         output.WriteMessage(MoveIntent);
       }
+      if (bodyCase_ == BodyOneofCase.Resync) {
+        output.WriteRawTag(106);
+        output.WriteMessage(Resync);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -395,6 +433,9 @@ namespace VirtualLife.Native.Public.V1 {
       }
       if (bodyCase_ == BodyOneofCase.MoveIntent) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(MoveIntent);
+      }
+      if (bodyCase_ == BodyOneofCase.Resync) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Resync);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -435,6 +476,12 @@ namespace VirtualLife.Native.Public.V1 {
             MoveIntent = new global::VirtualLife.Native.Public.V1.MoveIntent();
           }
           MoveIntent.MergeFrom(other.MoveIntent);
+          break;
+        case BodyOneofCase.Resync:
+          if (Resync == null) {
+            Resync = new global::VirtualLife.Native.Public.V1.Resync();
+          }
+          Resync.MergeFrom(other.Resync);
           break;
       }
 
@@ -496,6 +543,15 @@ namespace VirtualLife.Native.Public.V1 {
             MoveIntent = subBuilder;
             break;
           }
+          case 106: {
+            global::VirtualLife.Native.Public.V1.Resync subBuilder = new global::VirtualLife.Native.Public.V1.Resync();
+            if (bodyCase_ == BodyOneofCase.Resync) {
+              subBuilder.MergeFrom(Resync);
+            }
+            input.ReadMessage(subBuilder);
+            Resync = subBuilder;
+            break;
+          }
         }
       }
     #endif
@@ -552,6 +608,15 @@ namespace VirtualLife.Native.Public.V1 {
             }
             input.ReadMessage(subBuilder);
             MoveIntent = subBuilder;
+            break;
+          }
+          case 106: {
+            global::VirtualLife.Native.Public.V1.Resync subBuilder = new global::VirtualLife.Native.Public.V1.Resync();
+            if (bodyCase_ == BodyOneofCase.Resync) {
+              subBuilder.MergeFrom(Resync);
+            }
+            input.ReadMessage(subBuilder);
+            Resync = subBuilder;
             break;
           }
         }
@@ -1480,6 +1545,244 @@ namespace VirtualLife.Native.Public.V1 {
 
   }
 
+  /// <summary>
+  /// A fresh authorized own snapshot, never an instruction to trust client state.
+  /// </summary>
+  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
+  public sealed partial class Resync : pb::IMessage<Resync>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<Resync> _parser = new pb::MessageParser<Resync>(() => new Resync());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<Resync> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[4]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public Resync() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public Resync(Resync other) : this() {
+      lastSeenEpoch_ = other.lastSeenEpoch_;
+      lastSeenTick_ = other.lastSeenTick_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public Resync Clone() {
+      return new Resync(this);
+    }
+
+    /// <summary>Field number for the "last_seen_epoch" field.</summary>
+    public const int LastSeenEpochFieldNumber = 1;
+    private ulong lastSeenEpoch_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ulong LastSeenEpoch {
+      get { return lastSeenEpoch_; }
+      set {
+        lastSeenEpoch_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "last_seen_tick" field.</summary>
+    public const int LastSeenTickFieldNumber = 2;
+    private ulong lastSeenTick_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ulong LastSeenTick {
+      get { return lastSeenTick_; }
+      set {
+        lastSeenTick_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as Resync);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(Resync other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (LastSeenEpoch != other.LastSeenEpoch) return false;
+      if (LastSeenTick != other.LastSeenTick) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (LastSeenEpoch != 0UL) hash ^= LastSeenEpoch.GetHashCode();
+      if (LastSeenTick != 0UL) hash ^= LastSeenTick.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (LastSeenEpoch != 0UL) {
+        output.WriteRawTag(8);
+        output.WriteUInt64(LastSeenEpoch);
+      }
+      if (LastSeenTick != 0UL) {
+        output.WriteRawTag(16);
+        output.WriteUInt64(LastSeenTick);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (LastSeenEpoch != 0UL) {
+        output.WriteRawTag(8);
+        output.WriteUInt64(LastSeenEpoch);
+      }
+      if (LastSeenTick != 0UL) {
+        output.WriteRawTag(16);
+        output.WriteUInt64(LastSeenTick);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (LastSeenEpoch != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(LastSeenEpoch);
+      }
+      if (LastSeenTick != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(LastSeenTick);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(Resync other) {
+      if (other == null) {
+        return;
+      }
+      if (other.LastSeenEpoch != 0UL) {
+        LastSeenEpoch = other.LastSeenEpoch;
+      }
+      if (other.LastSeenTick != 0UL) {
+        LastSeenTick = other.LastSeenTick;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            LastSeenEpoch = input.ReadUInt64();
+            break;
+          }
+          case 16: {
+            LastSeenTick = input.ReadUInt64();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            LastSeenEpoch = input.ReadUInt64();
+            break;
+          }
+          case 16: {
+            LastSeenTick = input.ReadUInt64();
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   public sealed partial class ServerEnvelope : pb::IMessage<ServerEnvelope>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -1495,7 +1798,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[4]; }
+      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[5]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1527,6 +1830,9 @@ namespace VirtualLife.Native.Public.V1 {
           break;
         case BodyOneofCase.Rejection:
           Rejection = other.Rejection.Clone();
+          break;
+        case BodyOneofCase.Snapshot:
+          Snapshot = other.Snapshot.Clone();
           break;
       }
 
@@ -1611,6 +1917,18 @@ namespace VirtualLife.Native.Public.V1 {
       }
     }
 
+    /// <summary>Field number for the "snapshot" field.</summary>
+    public const int SnapshotFieldNumber = 13;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::VirtualLife.Native.Public.V1.WorldSnapshot Snapshot {
+      get { return bodyCase_ == BodyOneofCase.Snapshot ? (global::VirtualLife.Native.Public.V1.WorldSnapshot) body_ : null; }
+      set {
+        body_ = value;
+        bodyCase_ = value == null ? BodyOneofCase.None : BodyOneofCase.Snapshot;
+      }
+    }
+
     private object body_;
     /// <summary>Enum of possible cases for the "body" oneof.</summary>
     public enum BodyOneofCase {
@@ -1618,6 +1936,7 @@ namespace VirtualLife.Native.Public.V1 {
       Hello = 10,
       Receipt = 11,
       Rejection = 12,
+      Snapshot = 13,
     }
     private BodyOneofCase bodyCase_ = BodyOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1654,6 +1973,7 @@ namespace VirtualLife.Native.Public.V1 {
       if (!object.Equals(Hello, other.Hello)) return false;
       if (!object.Equals(Receipt, other.Receipt)) return false;
       if (!object.Equals(Rejection, other.Rejection)) return false;
+      if (!object.Equals(Snapshot, other.Snapshot)) return false;
       if (BodyCase != other.BodyCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -1668,6 +1988,7 @@ namespace VirtualLife.Native.Public.V1 {
       if (bodyCase_ == BodyOneofCase.Hello) hash ^= Hello.GetHashCode();
       if (bodyCase_ == BodyOneofCase.Receipt) hash ^= Receipt.GetHashCode();
       if (bodyCase_ == BodyOneofCase.Rejection) hash ^= Rejection.GetHashCode();
+      if (bodyCase_ == BodyOneofCase.Snapshot) hash ^= Snapshot.GetHashCode();
       hash ^= (int) bodyCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -1711,6 +2032,10 @@ namespace VirtualLife.Native.Public.V1 {
         output.WriteRawTag(98);
         output.WriteMessage(Rejection);
       }
+      if (bodyCase_ == BodyOneofCase.Snapshot) {
+        output.WriteRawTag(106);
+        output.WriteMessage(Snapshot);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -1745,6 +2070,10 @@ namespace VirtualLife.Native.Public.V1 {
         output.WriteRawTag(98);
         output.WriteMessage(Rejection);
       }
+      if (bodyCase_ == BodyOneofCase.Snapshot) {
+        output.WriteRawTag(106);
+        output.WriteMessage(Snapshot);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -1772,6 +2101,9 @@ namespace VirtualLife.Native.Public.V1 {
       }
       if (bodyCase_ == BodyOneofCase.Rejection) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Rejection);
+      }
+      if (bodyCase_ == BodyOneofCase.Snapshot) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Snapshot);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1813,6 +2145,12 @@ namespace VirtualLife.Native.Public.V1 {
           }
           Rejection.MergeFrom(other.Rejection);
           break;
+        case BodyOneofCase.Snapshot:
+          if (Snapshot == null) {
+            Snapshot = new global::VirtualLife.Native.Public.V1.WorldSnapshot();
+          }
+          Snapshot.MergeFrom(other.Snapshot);
+          break;
       }
 
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -1873,6 +2211,15 @@ namespace VirtualLife.Native.Public.V1 {
             Rejection = subBuilder;
             break;
           }
+          case 106: {
+            global::VirtualLife.Native.Public.V1.WorldSnapshot subBuilder = new global::VirtualLife.Native.Public.V1.WorldSnapshot();
+            if (bodyCase_ == BodyOneofCase.Snapshot) {
+              subBuilder.MergeFrom(Snapshot);
+            }
+            input.ReadMessage(subBuilder);
+            Snapshot = subBuilder;
+            break;
+          }
         }
       }
     #endif
@@ -1931,6 +2278,15 @@ namespace VirtualLife.Native.Public.V1 {
             Rejection = subBuilder;
             break;
           }
+          case 106: {
+            global::VirtualLife.Native.Public.V1.WorldSnapshot subBuilder = new global::VirtualLife.Native.Public.V1.WorldSnapshot();
+            if (bodyCase_ == BodyOneofCase.Snapshot) {
+              subBuilder.MergeFrom(Snapshot);
+            }
+            input.ReadMessage(subBuilder);
+            Snapshot = subBuilder;
+            break;
+          }
         }
       }
     }
@@ -1953,7 +2309,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[5]; }
+      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[6]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1975,6 +2331,8 @@ namespace VirtualLife.Native.Public.V1 {
     public HelloAccepted(HelloAccepted other) : this() {
       contentHash_ = other.contentHash_;
       stateSchemaVersion_ = other.stateSchemaVersion_;
+      snapshot_ = other.snapshot_ != null ? other.snapshot_.Clone() : null;
+      runtimeBootId_ = other.runtimeBootId_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -2008,6 +2366,30 @@ namespace VirtualLife.Native.Public.V1 {
       }
     }
 
+    /// <summary>Field number for the "snapshot" field.</summary>
+    public const int SnapshotFieldNumber = 3;
+    private global::VirtualLife.Native.Public.V1.WorldSnapshot snapshot_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::VirtualLife.Native.Public.V1.WorldSnapshot Snapshot {
+      get { return snapshot_; }
+      set {
+        snapshot_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "runtime_boot_id" field.</summary>
+    public const int RuntimeBootIdFieldNumber = 4;
+    private pb::ByteString runtimeBootId_ = pb::ByteString.Empty;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public pb::ByteString RuntimeBootId {
+      get { return runtimeBootId_; }
+      set {
+        runtimeBootId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -2025,6 +2407,8 @@ namespace VirtualLife.Native.Public.V1 {
       }
       if (ContentHash != other.ContentHash) return false;
       if (StateSchemaVersion != other.StateSchemaVersion) return false;
+      if (!object.Equals(Snapshot, other.Snapshot)) return false;
+      if (RuntimeBootId != other.RuntimeBootId) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -2034,6 +2418,8 @@ namespace VirtualLife.Native.Public.V1 {
       int hash = 1;
       if (ContentHash.Length != 0) hash ^= ContentHash.GetHashCode();
       if (StateSchemaVersion != 0) hash ^= StateSchemaVersion.GetHashCode();
+      if (snapshot_ != null) hash ^= Snapshot.GetHashCode();
+      if (RuntimeBootId.Length != 0) hash ^= RuntimeBootId.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -2060,6 +2446,14 @@ namespace VirtualLife.Native.Public.V1 {
         output.WriteRawTag(16);
         output.WriteUInt32(StateSchemaVersion);
       }
+      if (snapshot_ != null) {
+        output.WriteRawTag(26);
+        output.WriteMessage(Snapshot);
+      }
+      if (RuntimeBootId.Length != 0) {
+        output.WriteRawTag(34);
+        output.WriteBytes(RuntimeBootId);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -2078,6 +2472,14 @@ namespace VirtualLife.Native.Public.V1 {
         output.WriteRawTag(16);
         output.WriteUInt32(StateSchemaVersion);
       }
+      if (snapshot_ != null) {
+        output.WriteRawTag(26);
+        output.WriteMessage(Snapshot);
+      }
+      if (RuntimeBootId.Length != 0) {
+        output.WriteRawTag(34);
+        output.WriteBytes(RuntimeBootId);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -2093,6 +2495,12 @@ namespace VirtualLife.Native.Public.V1 {
       }
       if (StateSchemaVersion != 0) {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(StateSchemaVersion);
+      }
+      if (snapshot_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Snapshot);
+      }
+      if (RuntimeBootId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(RuntimeBootId);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -2111,6 +2519,15 @@ namespace VirtualLife.Native.Public.V1 {
       }
       if (other.StateSchemaVersion != 0) {
         StateSchemaVersion = other.StateSchemaVersion;
+      }
+      if (other.snapshot_ != null) {
+        if (snapshot_ == null) {
+          Snapshot = new global::VirtualLife.Native.Public.V1.WorldSnapshot();
+        }
+        Snapshot.MergeFrom(other.Snapshot);
+      }
+      if (other.RuntimeBootId.Length != 0) {
+        RuntimeBootId = other.RuntimeBootId;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -2137,6 +2554,17 @@ namespace VirtualLife.Native.Public.V1 {
           }
           case 16: {
             StateSchemaVersion = input.ReadUInt32();
+            break;
+          }
+          case 26: {
+            if (snapshot_ == null) {
+              Snapshot = new global::VirtualLife.Native.Public.V1.WorldSnapshot();
+            }
+            input.ReadMessage(Snapshot);
+            break;
+          }
+          case 34: {
+            RuntimeBootId = input.ReadBytes();
             break;
           }
         }
@@ -2166,6 +2594,574 @@ namespace VirtualLife.Native.Public.V1 {
             StateSchemaVersion = input.ReadUInt32();
             break;
           }
+          case 26: {
+            if (snapshot_ == null) {
+              Snapshot = new global::VirtualLife.Native.Public.V1.WorldSnapshot();
+            }
+            input.ReadMessage(Snapshot);
+            break;
+          }
+          case 34: {
+            RuntimeBootId = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  /// <summary>
+  /// VL-022 exports only the caller's own state. AOI candidates are not recipients.
+  /// Authorized peer projections remain a separate VL-020/028 contract.
+  /// </summary>
+  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
+  public sealed partial class WorldSnapshot : pb::IMessage<WorldSnapshot>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<WorldSnapshot> _parser = new pb::MessageParser<WorldSnapshot>(() => new WorldSnapshot());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<WorldSnapshot> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[7]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public WorldSnapshot() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public WorldSnapshot(WorldSnapshot other) : this() {
+      authorityEpoch_ = other.authorityEpoch_;
+      tick_ = other.tick_;
+      ownActor_ = other.ownActor_ != null ? other.ownActor_.Clone() : null;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public WorldSnapshot Clone() {
+      return new WorldSnapshot(this);
+    }
+
+    /// <summary>Field number for the "authority_epoch" field.</summary>
+    public const int AuthorityEpochFieldNumber = 1;
+    private ulong authorityEpoch_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ulong AuthorityEpoch {
+      get { return authorityEpoch_; }
+      set {
+        authorityEpoch_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "tick" field.</summary>
+    public const int TickFieldNumber = 2;
+    private ulong tick_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ulong Tick {
+      get { return tick_; }
+      set {
+        tick_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "own_actor" field.</summary>
+    public const int OwnActorFieldNumber = 3;
+    private global::VirtualLife.Native.Public.V1.OwnActor ownActor_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::VirtualLife.Native.Public.V1.OwnActor OwnActor {
+      get { return ownActor_; }
+      set {
+        ownActor_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as WorldSnapshot);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(WorldSnapshot other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (AuthorityEpoch != other.AuthorityEpoch) return false;
+      if (Tick != other.Tick) return false;
+      if (!object.Equals(OwnActor, other.OwnActor)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (AuthorityEpoch != 0UL) hash ^= AuthorityEpoch.GetHashCode();
+      if (Tick != 0UL) hash ^= Tick.GetHashCode();
+      if (ownActor_ != null) hash ^= OwnActor.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (AuthorityEpoch != 0UL) {
+        output.WriteRawTag(8);
+        output.WriteUInt64(AuthorityEpoch);
+      }
+      if (Tick != 0UL) {
+        output.WriteRawTag(16);
+        output.WriteUInt64(Tick);
+      }
+      if (ownActor_ != null) {
+        output.WriteRawTag(26);
+        output.WriteMessage(OwnActor);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (AuthorityEpoch != 0UL) {
+        output.WriteRawTag(8);
+        output.WriteUInt64(AuthorityEpoch);
+      }
+      if (Tick != 0UL) {
+        output.WriteRawTag(16);
+        output.WriteUInt64(Tick);
+      }
+      if (ownActor_ != null) {
+        output.WriteRawTag(26);
+        output.WriteMessage(OwnActor);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (AuthorityEpoch != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(AuthorityEpoch);
+      }
+      if (Tick != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Tick);
+      }
+      if (ownActor_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(OwnActor);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(WorldSnapshot other) {
+      if (other == null) {
+        return;
+      }
+      if (other.AuthorityEpoch != 0UL) {
+        AuthorityEpoch = other.AuthorityEpoch;
+      }
+      if (other.Tick != 0UL) {
+        Tick = other.Tick;
+      }
+      if (other.ownActor_ != null) {
+        if (ownActor_ == null) {
+          OwnActor = new global::VirtualLife.Native.Public.V1.OwnActor();
+        }
+        OwnActor.MergeFrom(other.OwnActor);
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            AuthorityEpoch = input.ReadUInt64();
+            break;
+          }
+          case 16: {
+            Tick = input.ReadUInt64();
+            break;
+          }
+          case 26: {
+            if (ownActor_ == null) {
+              OwnActor = new global::VirtualLife.Native.Public.V1.OwnActor();
+            }
+            input.ReadMessage(OwnActor);
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            AuthorityEpoch = input.ReadUInt64();
+            break;
+          }
+          case 16: {
+            Tick = input.ReadUInt64();
+            break;
+          }
+          case 26: {
+            if (ownActor_ == null) {
+              OwnActor = new global::VirtualLife.Native.Public.V1.OwnActor();
+            }
+            input.ReadMessage(OwnActor);
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
+  public sealed partial class OwnActor : pb::IMessage<OwnActor>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<OwnActor> _parser = new pb::MessageParser<OwnActor>(() => new OwnActor());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<OwnActor> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[8]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public OwnActor() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public OwnActor(OwnActor other) : this() {
+      xMm_ = other.xMm_;
+      zMm_ = other.zMm_;
+      lastInputSequence_ = other.lastInputSequence_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public OwnActor Clone() {
+      return new OwnActor(this);
+    }
+
+    /// <summary>Field number for the "x_mm" field.</summary>
+    public const int XMmFieldNumber = 1;
+    private int xMm_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int XMm {
+      get { return xMm_; }
+      set {
+        xMm_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "z_mm" field.</summary>
+    public const int ZMmFieldNumber = 2;
+    private int zMm_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int ZMm {
+      get { return zMm_; }
+      set {
+        zMm_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "last_input_sequence" field.</summary>
+    public const int LastInputSequenceFieldNumber = 3;
+    private ulong lastInputSequence_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ulong LastInputSequence {
+      get { return lastInputSequence_; }
+      set {
+        lastInputSequence_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as OwnActor);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(OwnActor other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (XMm != other.XMm) return false;
+      if (ZMm != other.ZMm) return false;
+      if (LastInputSequence != other.LastInputSequence) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (XMm != 0) hash ^= XMm.GetHashCode();
+      if (ZMm != 0) hash ^= ZMm.GetHashCode();
+      if (LastInputSequence != 0UL) hash ^= LastInputSequence.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (XMm != 0) {
+        output.WriteRawTag(8);
+        output.WriteSInt32(XMm);
+      }
+      if (ZMm != 0) {
+        output.WriteRawTag(16);
+        output.WriteSInt32(ZMm);
+      }
+      if (LastInputSequence != 0UL) {
+        output.WriteRawTag(24);
+        output.WriteUInt64(LastInputSequence);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (XMm != 0) {
+        output.WriteRawTag(8);
+        output.WriteSInt32(XMm);
+      }
+      if (ZMm != 0) {
+        output.WriteRawTag(16);
+        output.WriteSInt32(ZMm);
+      }
+      if (LastInputSequence != 0UL) {
+        output.WriteRawTag(24);
+        output.WriteUInt64(LastInputSequence);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (XMm != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeSInt32Size(XMm);
+      }
+      if (ZMm != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeSInt32Size(ZMm);
+      }
+      if (LastInputSequence != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(LastInputSequence);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(OwnActor other) {
+      if (other == null) {
+        return;
+      }
+      if (other.XMm != 0) {
+        XMm = other.XMm;
+      }
+      if (other.ZMm != 0) {
+        ZMm = other.ZMm;
+      }
+      if (other.LastInputSequence != 0UL) {
+        LastInputSequence = other.LastInputSequence;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            XMm = input.ReadSInt32();
+            break;
+          }
+          case 16: {
+            ZMm = input.ReadSInt32();
+            break;
+          }
+          case 24: {
+            LastInputSequence = input.ReadUInt64();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            XMm = input.ReadSInt32();
+            break;
+          }
+          case 16: {
+            ZMm = input.ReadSInt32();
+            break;
+          }
+          case 24: {
+            LastInputSequence = input.ReadUInt64();
+            break;
+          }
         }
       }
     }
@@ -2188,7 +3184,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[6]; }
+      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[9]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2426,7 +3422,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[7]; }
+      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[10]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

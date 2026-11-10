@@ -113,6 +113,7 @@ pub fn decode_client(bytes: &[u8]) -> Result<public::ClientEnvelope, DecodeError
                 && (-1000..=1000).contains(&value.direction_x)
                 && (-1000..=1000).contains(&value.direction_z)
         }
+        Some(Body::Resync(_)) => true,
         None => false,
     };
     if !valid {
@@ -209,6 +210,7 @@ mod tests {
                 public::HelloAccepted {
                     content_hash: vec![0x22; 32],
                     state_schema_version: 1,
+                    ..Default::default()
                 },
             )),
         };

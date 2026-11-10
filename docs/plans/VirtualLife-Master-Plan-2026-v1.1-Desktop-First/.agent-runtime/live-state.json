@@ -1107,7 +1107,7 @@
     },
     "VL-022-3f9fde65-2fb9-4191-a006-a7a39a5938bf": {
       "id": "VL-022-3f9fde65-2fb9-4191-a006-a7a39a5938bf",
-      "ref": "reservations/VL-022-3f9fde65-2fb9-4191-a006-a7a39a5938bf.json",
+      "ref": "reservations/VL-022-be687085-30a4-4b18-86d1-144a82f885f8.json",
       "taskId": "VL-022",
       "owner": "agent1",
       "paths": [
@@ -1129,12 +1129,29 @@
         ".github/workflows/rust-runtime.yml",
         "scripts/verify-artifact-workflows.mjs",
         "tests/governance/rust-workflow.test.mjs",
-        "docs/execution/desktop-first/gateway/**"
+        "docs/execution/desktop-first/gateway/**",
+        "docs/architecture/api-modules.json"
       ],
       "branch": "codex/desktop-first-backend",
       "worktree": "/home/tiecont/Projects/virtual-city",
       "sourceRevision": "619e70c653c37e18aa550eee5b7af9127ea01e8b",
-      "createdAt": "2026-11-10T12:31:41.447Z"
+      "createdAt": "2026-11-10T12:31:41.447Z",
+      "amendedAt": "2026-11-10T14:04:26.253Z",
+      "reason": "Declare runtime-gateway transport ownership and allowed identity entry files in the actual API module policy.",
+      "history": [
+        {
+          "ref": "reservations/VL-022-3f9fde65-2fb9-4191-a006-a7a39a5938bf.json",
+          "sha256": "9bff3274a9f6691975b0097025786133158a0dc7f4245fb081d772a6b7ab6387"
+        },
+        {
+          "ref": "reservations/VL-022-7e9675dd-fa83-4b4c-b22a-f6dacbab3e72.json",
+          "sha256": "632c2e93e4479f6d6385f864dcf41ebfe414cf71fa935a5a384ec8f2e2419c74"
+        },
+        {
+          "ref": "reservations/VL-022-0097f8dc-731d-4a33-86e2-4aefb8ed1102.json",
+          "sha256": "fd55d30e27cb010dda6503b5bc2c166e61f18fc066cb8451f26676f5331f6eac"
+        }
+      ]
     }
   },
   "gateEvidence": {
@@ -1150,7 +1167,7 @@
       }
     ]
   },
-  "updatedAt": "2026-11-10T13:28:03.429Z",
+  "updatedAt": "2026-11-10T14:04:26.254Z",
   "reviewPolicy": {
     "ref": "policies/single-agent-2026-11-10.json",
     "sha256": "02c0285a2d6fe5cf19c57f10d91945f6d9a9ee60a1bf80f7c200e63ee6e7cda1"

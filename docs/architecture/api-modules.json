@@ -8,6 +8,12 @@
     "apiReplicas": 1
   },
   "modules": {
+    "runtime-gateway": {
+      "owner": "platform.identity",
+      "responsibility": "Explicit opt-in fixed-scope ticket HTTP adapter; no membership allocator or game authority",
+      "currentPublicEntryFiles": ["runtime-gateway/http"],
+      "targetBoundary": "Consumes existing identity CSRF/session/ticket issuer ports; absent from production composition until separately enabled"
+    },
     "games": {
       "owner":"engine.games",
       "responsibility":"Default-off visit-scoped consent lobby and encrypted durable match journal; concrete modes remain gated",

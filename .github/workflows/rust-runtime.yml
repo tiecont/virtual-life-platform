@@ -55,6 +55,14 @@ jobs:
           pnpm exec vitest run --project unit packages/native-protocol/test/wire.test.ts
       - name: Check frozen pure reducer replay in independent processes
         run: node crates/vl-game-core/tools/check-replay.mjs
+      - name: Check direct WSS with real Chromium and restricted PostgreSQL
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm exec playwright install --with-deps chromium
+          pnpm build:packages
+          "$CARGO_HOME/bin/cargo" build --locked --package vl-gateway --example interop
+          node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs
       - name: Measure bounded twenty-actor zone prototype
         run: '"$CARGO_HOME/bin/cargo" run --locked --package vl-world --example zone-probe'
       - name: Check identity-issued runtime ticket trust across Node and Rust

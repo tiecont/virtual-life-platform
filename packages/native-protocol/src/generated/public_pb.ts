@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file public.proto.
  */
 export const file_public: GenFile = /*@__PURE__*/
-  fileDesc("CgxwdWJsaWMucHJvdG8SFXZpcnR1YWxsaWZlLnB1YmxpYy52MSKBAgoOQ2xpZW50RW52ZWxvcGUSGAoQcHJvdG9jb2xfdmVyc2lvbhgBIAEoDRISCgpjb21tYW5kX2lkGAIgASgMEhAKCHNlcXVlbmNlGAMgASgEEi0KBWhlbGxvGAogASgLMhwudmlydHVhbGxpZmUucHVibGljLnYxLkhlbGxvSAASOAoLZ2FtZV9pbnRlbnQYCyABKAsyIS52aXJ0dWFsbGlmZS5wdWJsaWMudjEuR2FtZUludGVudEgAEjgKC21vdmVfaW50ZW50GAwgASgLMiEudmlydHVhbGxpZmUucHVibGljLnYxLk1vdmVJbnRlbnRIAEIGCgRib2R5SgQIBBAKInMKBUhlbGxvEg4KBnRpY2tldBgBIAEoCRIUCgxjbGllbnRfYnVpbGQYAiABKAkSFAoMY29udGVudF9oYXNoGAMgASgMEhsKDnBsYXRmb3JtX2xhYmVsGAQgASgJSACIAQFCEQoPX3BsYXRmb3JtX2xhYmVsImsKCkdhbWVJbnRlbnQSFwoPZ2FtZV9zZXNzaW9uX2lkGAEgASgMEh4KFmV4cGVjdGVkX3N0YXRlX3ZlcnNpb24YAiABKAQSDAoEa2luZBgDIAEoCRIWCg5hY3Rpb25fcGF5bG9hZBgEIAEoDCJOCgpNb3ZlSW50ZW50EhYKDmlucHV0X3NlcXVlbmNlGAEgASgEEhMKC2RpcmVjdGlvbl94GAIgASgREhMKC2RpcmVjdGlvbl96GAMgASgRIogCCg5TZXJ2ZXJFbnZlbG9wZRIYChBwcm90b2NvbF92ZXJzaW9uGAEgASgNEhIKCmNvbW1hbmRfaWQYAiABKAwSGQoRY2Fub25pY2FsX3ZlcnNpb24YAyABKAQSNQoFaGVsbG8YCiABKAsyJC52aXJ0dWFsbGlmZS5wdWJsaWMudjEuSGVsbG9BY2NlcHRlZEgAEjEKB3JlY2VpcHQYCyABKAsyHi52aXJ0dWFsbGlmZS5wdWJsaWMudjEuUmVjZWlwdEgAEjUKCXJlamVjdGlvbhgMIAEoCzIgLnZpcnR1YWxsaWZlLnB1YmxpYy52MS5SZWplY3Rpb25IAEIGCgRib2R5SgQIBBAKIkMKDUhlbGxvQWNjZXB0ZWQSFAoMY29udGVudF9oYXNoGAEgASgMEhwKFHN0YXRlX3NjaGVtYV92ZXJzaW9uGAIgASgNIjsKB1JlY2VpcHQSEQoJY29tbWl0dGVkGAEgASgIEh0KFWF1dGhvcml6ZWRfcHJvamVjdGlvbhgCIAEoDCJgCglSZWplY3Rpb24SLgoEY29kZRgBIAEoDjIgLnZpcnR1YWxsaWZlLnB1YmxpYy52MS5FcnJvckNvZGUSEQoJcmV0cnlhYmxlGAIgASgIEhAKCHRyYWNlX2lkGAMgASgMKugCCglFcnJvckNvZGUSFQoRRVJST1JfVU5TUEVDSUZJRUQQABITCg9VTkFVVEhFTlRJQ0FURUQQARISCg5QT0xJQ1lfUkVWT0tFRBACEhQKEENPTlRFTlRfTUlTTUFUQ0gQAxIRCg1TVEFMRV9WRVJTSU9OEAQSDwoLU1RBTEVfRVBPQ0gQBRIUChBOT1RfSU5fUFJPWElNSVRZEAYSDgoKU0VBVF9UQUtFThAHEhcKE0dBTUVfQUxSRUFEWV9BQ1RJVkUQCBITCg9URUxFUE9SVF9ERU5JRUQQCRIYChRUQVJHRVRfQ0FQQUNJVFlfRlVMTBAKEhgKFENPTU1BTkRfSURfQ09MTElTSU9OEAsSEAoMQkFDS1BSRVNTVVJFEAwSGwoXVEVNUE9SQVJJTFlfVU5BVkFJTEFCTEUQDRISCg5SRVdBUkRfUEVORElORxAOEhYKElVOU1VQUE9SVEVEX0NMSUVOVBAPQh+qAhxWaXJ0dWFsTGlmZS5OYXRpdmUuUHVibGljLlYxYgZwcm90bzM");
+  fileDesc("CgxwdWJsaWMucHJvdG8SFXZpcnR1YWxsaWZlLnB1YmxpYy52MSKyAgoOQ2xpZW50RW52ZWxvcGUSGAoQcHJvdG9jb2xfdmVyc2lvbhgBIAEoDRISCgpjb21tYW5kX2lkGAIgASgMEhAKCHNlcXVlbmNlGAMgASgEEi0KBWhlbGxvGAogASgLMhwudmlydHVhbGxpZmUucHVibGljLnYxLkhlbGxvSAASOAoLZ2FtZV9pbnRlbnQYCyABKAsyIS52aXJ0dWFsbGlmZS5wdWJsaWMudjEuR2FtZUludGVudEgAEjgKC21vdmVfaW50ZW50GAwgASgLMiEudmlydHVhbGxpZmUucHVibGljLnYxLk1vdmVJbnRlbnRIABIvCgZyZXN5bmMYDSABKAsyHS52aXJ0dWFsbGlmZS5wdWJsaWMudjEuUmVzeW5jSABCBgoEYm9keUoECAQQCiJzCgVIZWxsbxIOCgZ0aWNrZXQYASABKAkSFAoMY2xpZW50X2J1aWxkGAIgASgJEhQKDGNvbnRlbnRfaGFzaBgDIAEoDBIbCg5wbGF0Zm9ybV9sYWJlbBgEIAEoCUgAiAEBQhEKD19wbGF0Zm9ybV9sYWJlbCJrCgpHYW1lSW50ZW50EhcKD2dhbWVfc2Vzc2lvbl9pZBgBIAEoDBIeChZleHBlY3RlZF9zdGF0ZV92ZXJzaW9uGAIgASgEEgwKBGtpbmQYAyABKAkSFgoOYWN0aW9uX3BheWxvYWQYBCABKAwiTgoKTW92ZUludGVudBIWCg5pbnB1dF9zZXF1ZW5jZRgBIAEoBBITCgtkaXJlY3Rpb25feBgCIAEoERITCgtkaXJlY3Rpb25fehgDIAEoESI5CgZSZXN5bmMSFwoPbGFzdF9zZWVuX2Vwb2NoGAEgASgEEhYKDmxhc3Rfc2Vlbl90aWNrGAIgASgEIsICCg5TZXJ2ZXJFbnZlbG9wZRIYChBwcm90b2NvbF92ZXJzaW9uGAEgASgNEhIKCmNvbW1hbmRfaWQYAiABKAwSGQoRY2Fub25pY2FsX3ZlcnNpb24YAyABKAQSNQoFaGVsbG8YCiABKAsyJC52aXJ0dWFsbGlmZS5wdWJsaWMudjEuSGVsbG9BY2NlcHRlZEgAEjEKB3JlY2VpcHQYCyABKAsyHi52aXJ0dWFsbGlmZS5wdWJsaWMudjEuUmVjZWlwdEgAEjUKCXJlamVjdGlvbhgMIAEoCzIgLnZpcnR1YWxsaWZlLnB1YmxpYy52MS5SZWplY3Rpb25IABI4CghzbmFwc2hvdBgNIAEoCzIkLnZpcnR1YWxsaWZlLnB1YmxpYy52MS5Xb3JsZFNuYXBzaG90SABCBgoEYm9keUoECAQQCiKUAQoNSGVsbG9BY2NlcHRlZBIUCgxjb250ZW50X2hhc2gYASABKAwSHAoUc3RhdGVfc2NoZW1hX3ZlcnNpb24YAiABKA0SNgoIc25hcHNob3QYAyABKAsyJC52aXJ0dWFsbGlmZS5wdWJsaWMudjEuV29ybGRTbmFwc2hvdBIXCg9ydW50aW1lX2Jvb3RfaWQYBCABKAwiagoNV29ybGRTbmFwc2hvdBIXCg9hdXRob3JpdHlfZXBvY2gYASABKAQSDAoEdGljaxgCIAEoBBIyCglvd25fYWN0b3IYAyABKAsyHy52aXJ0dWFsbGlmZS5wdWJsaWMudjEuT3duQWN0b3IiQwoIT3duQWN0b3ISDAoEeF9tbRgBIAEoERIMCgR6X21tGAIgASgREhsKE2xhc3RfaW5wdXRfc2VxdWVuY2UYAyABKAQiOwoHUmVjZWlwdBIRCgljb21taXR0ZWQYASABKAgSHQoVYXV0aG9yaXplZF9wcm9qZWN0aW9uGAIgASgMImAKCVJlamVjdGlvbhIuCgRjb2RlGAEgASgOMiAudmlydHVhbGxpZmUucHVibGljLnYxLkVycm9yQ29kZRIRCglyZXRyeWFibGUYAiABKAgSEAoIdHJhY2VfaWQYAyABKAwq6AIKCUVycm9yQ29kZRIVChFFUlJPUl9VTlNQRUNJRklFRBAAEhMKD1VOQVVUSEVOVElDQVRFRBABEhIKDlBPTElDWV9SRVZPS0VEEAISFAoQQ09OVEVOVF9NSVNNQVRDSBADEhEKDVNUQUxFX1ZFUlNJT04QBBIPCgtTVEFMRV9FUE9DSBAFEhQKEE5PVF9JTl9QUk9YSU1JVFkQBhIOCgpTRUFUX1RBS0VOEAcSFwoTR0FNRV9BTFJFQURZX0FDVElWRRAIEhMKD1RFTEVQT1JUX0RFTklFRBAJEhgKFFRBUkdFVF9DQVBBQ0lUWV9GVUxMEAoSGAoUQ09NTUFORF9JRF9DT0xMSVNJT04QCxIQCgxCQUNLUFJFU1NVUkUQDBIbChdURU1QT1JBUklMWV9VTkFWQUlMQUJMRRANEhIKDlJFV0FSRF9QRU5ESU5HEA4SFgoSVU5TVVBQT1JURURfQ0xJRU5UEA9CH6oCHFZpcnR1YWxMaWZlLk5hdGl2ZS5QdWJsaWMuVjFiBnByb3RvMw");
 
 /**
  * Client input only. Identity, authority, damage and rewards have no public fields.
@@ -56,6 +56,12 @@ export type ClientEnvelope = Message<"virtuallife.public.v1.ClientEnvelope"> & {
      */
     value: MoveIntent;
     case: "moveIntent";
+  } | {
+    /**
+     * @generated from field: virtuallife.public.v1.Resync resync = 13;
+     */
+    value: Resync;
+    case: "resync";
   } | { case: undefined; value?: undefined };
 };
 
@@ -168,6 +174,30 @@ export const MoveIntentSchema: GenMessage<MoveIntent> = /*@__PURE__*/
   messageDesc(file_public, 3);
 
 /**
+ * A fresh authorized own snapshot, never an instruction to trust client state.
+ *
+ * @generated from message virtuallife.public.v1.Resync
+ */
+export type Resync = Message<"virtuallife.public.v1.Resync"> & {
+  /**
+   * @generated from field: uint64 last_seen_epoch = 1;
+   */
+  lastSeenEpoch: bigint;
+
+  /**
+   * @generated from field: uint64 last_seen_tick = 2;
+   */
+  lastSeenTick: bigint;
+};
+
+/**
+ * Describes the message virtuallife.public.v1.Resync.
+ * Use `create(ResyncSchema)` to create a new message.
+ */
+export const ResyncSchema: GenMessage<Resync> = /*@__PURE__*/
+  messageDesc(file_public, 4);
+
+/**
  * @generated from message virtuallife.public.v1.ServerEnvelope
  */
 export type ServerEnvelope = Message<"virtuallife.public.v1.ServerEnvelope"> & {
@@ -207,6 +237,12 @@ export type ServerEnvelope = Message<"virtuallife.public.v1.ServerEnvelope"> & {
      */
     value: Rejection;
     case: "rejection";
+  } | {
+    /**
+     * @generated from field: virtuallife.public.v1.WorldSnapshot snapshot = 13;
+     */
+    value: WorldSnapshot;
+    case: "snapshot";
   } | { case: undefined; value?: undefined };
 };
 
@@ -215,7 +251,7 @@ export type ServerEnvelope = Message<"virtuallife.public.v1.ServerEnvelope"> & {
  * Use `create(ServerEnvelopeSchema)` to create a new message.
  */
 export const ServerEnvelopeSchema: GenMessage<ServerEnvelope> = /*@__PURE__*/
-  messageDesc(file_public, 4);
+  messageDesc(file_public, 5);
 
 /**
  * @generated from message virtuallife.public.v1.HelloAccepted
@@ -230,6 +266,16 @@ export type HelloAccepted = Message<"virtuallife.public.v1.HelloAccepted"> & {
    * @generated from field: uint32 state_schema_version = 2;
    */
   stateSchemaVersion: number;
+
+  /**
+   * @generated from field: virtuallife.public.v1.WorldSnapshot snapshot = 3;
+   */
+  snapshot?: WorldSnapshot | undefined;
+
+  /**
+   * @generated from field: bytes runtime_boot_id = 4;
+   */
+  runtimeBootId: Uint8Array;
 };
 
 /**
@@ -237,7 +283,64 @@ export type HelloAccepted = Message<"virtuallife.public.v1.HelloAccepted"> & {
  * Use `create(HelloAcceptedSchema)` to create a new message.
  */
 export const HelloAcceptedSchema: GenMessage<HelloAccepted> = /*@__PURE__*/
-  messageDesc(file_public, 5);
+  messageDesc(file_public, 6);
+
+/**
+ * VL-022 exports only the caller's own state. AOI candidates are not recipients.
+ * Authorized peer projections remain a separate VL-020/028 contract.
+ *
+ * @generated from message virtuallife.public.v1.WorldSnapshot
+ */
+export type WorldSnapshot = Message<"virtuallife.public.v1.WorldSnapshot"> & {
+  /**
+   * @generated from field: uint64 authority_epoch = 1;
+   */
+  authorityEpoch: bigint;
+
+  /**
+   * @generated from field: uint64 tick = 2;
+   */
+  tick: bigint;
+
+  /**
+   * @generated from field: virtuallife.public.v1.OwnActor own_actor = 3;
+   */
+  ownActor?: OwnActor | undefined;
+};
+
+/**
+ * Describes the message virtuallife.public.v1.WorldSnapshot.
+ * Use `create(WorldSnapshotSchema)` to create a new message.
+ */
+export const WorldSnapshotSchema: GenMessage<WorldSnapshot> = /*@__PURE__*/
+  messageDesc(file_public, 7);
+
+/**
+ * @generated from message virtuallife.public.v1.OwnActor
+ */
+export type OwnActor = Message<"virtuallife.public.v1.OwnActor"> & {
+  /**
+   * @generated from field: sint32 x_mm = 1;
+   */
+  xMm: number;
+
+  /**
+   * @generated from field: sint32 z_mm = 2;
+   */
+  zMm: number;
+
+  /**
+   * @generated from field: uint64 last_input_sequence = 3;
+   */
+  lastInputSequence: bigint;
+};
+
+/**
+ * Describes the message virtuallife.public.v1.OwnActor.
+ * Use `create(OwnActorSchema)` to create a new message.
+ */
+export const OwnActorSchema: GenMessage<OwnActor> = /*@__PURE__*/
+  messageDesc(file_public, 8);
 
 /**
  * @generated from message virtuallife.public.v1.Receipt
@@ -261,7 +364,7 @@ export type Receipt = Message<"virtuallife.public.v1.Receipt"> & {
  * Use `create(ReceiptSchema)` to create a new message.
  */
 export const ReceiptSchema: GenMessage<Receipt> = /*@__PURE__*/
-  messageDesc(file_public, 6);
+  messageDesc(file_public, 9);
 
 /**
  * @generated from message virtuallife.public.v1.Rejection
@@ -288,7 +391,7 @@ export type Rejection = Message<"virtuallife.public.v1.Rejection"> & {
  * Use `create(RejectionSchema)` to create a new message.
  */
 export const RejectionSchema: GenMessage<Rejection> = /*@__PURE__*/
-  messageDesc(file_public, 7);
+  messageDesc(file_public, 10);
 
 /**
  * @generated from enum virtuallife.public.v1.ErrorCode
