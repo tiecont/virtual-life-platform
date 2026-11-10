@@ -60,6 +60,13 @@ jobs:
           pnpm build:packages
           node scripts/with-test-db.mjs pnpm exec tsx --test tests/unit/runtime-tickets.test.ts
           "$CARGO_HOME/bin/cargo" run --locked --package vl-security --bin ticket-check -- artifacts/desktop-first/vl013/tickets.json
+      - name: Check native game schema races and archived runtime expansion compatibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm --filter @virtual-city/platform-api build
+          node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/native-game-schema.test.ts
+          node scripts/with-test-db.mjs node --import tsx scripts/native-game-migration-compat.mjs
       - name: Build and smoke OCI foundation
         shell: bash
         run: |

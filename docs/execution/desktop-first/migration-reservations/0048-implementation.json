@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-016",
+  "number": "0048",
+  "sourceRef": "apps/platform-api/src/db/migrations/0048_native_game_storage.sql",
+  "reservationRef": "docs/execution/desktop-first/migration-reservations/0048.json",
+  "previousMigration": "0047_game_journal.sql",
+  "migrationOwner": "Existing Nest migration entrypoint, advisory lock86732401 and checksum-prefix journal",
+  "target": "Wrapper-owned disposable local PostgreSQL only",
+  "productionInspectedOrModified": false,
+  "rustAutoMigrateAllowed": false,
+  "activation": "DISABLED",
+  "note": "Historical VL-003 reservation stays immutable; later implementation evidence is separate."
+}

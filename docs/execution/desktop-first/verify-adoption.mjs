@@ -22,12 +22,21 @@ export async function inspectAdoption() {
   assert.deepEqual(counts(arena),{TODO:20});
   const evidence=await json(root+'/platform-vnext/state/evidence-index.json');assert.equal(evidence.records.length,75);
   const sqlRoot='apps/platform-api/src/db/migrations',sql=[];
-  for(const name of(await readdir(sqlRoot)).filter(name=>name.endsWith('.sql')).sort()) {
+  const baselineNames=execFileSync('git',['ls-tree','--name-only',index.sourceRevision+':'+sqlRoot],{encoding:'utf8'}).trim().split('\n').filter(name=>name.endsWith('.sql'));
+  assert.equal(baselineNames.length,47);
+  const currentNames=(await readdir(sqlRoot)).filter(name=>name.endsWith('.sql')).sort();
+  for(const name of baselineNames) {
     const ref=sqlRoot+'/'+name,bytes=await readFile(ref);
     assert(bytes.equals(execFileSync('git',['show',index.sourceRevision+':'+ref])),'Migration changed '+ref);
     sql.push({ref,sha256:sha256(bytes)});
   }
   assert.equal(sql.length,47);
+  for(const name of currentNames.filter(name=>!baselineNames.includes(name))) {
+    assert.equal(name,'0048_native_game_storage.sql','Unregistered additive migration');
+    const record=await json('docs/execution/desktop-first/migration-reservations/0048-implementation.json');
+    const ref=sqlRoot+'/'+name;assert.equal(record.sourceRef,ref);assert.equal(record.taskId,'VL-016');
+    sql.push({ref,sha256:sha256(await readFile(ref)),qualification:'NEW_MIGRATION_NOT_QUALIFIED_BY_PRESERVATION'});
+  }
   const sourceRefs=['apps/platform-api/src/app.ts','apps/platform-api/src/worker.ts','apps/platform-api/src/db/migrations.ts','apps/platform-api/src/rooms/authority.ts','apps/platform-api/src/rooms/service.ts','apps/platform-api/src/identity/service.ts','apps/platform-api/src/identity/native-service.ts','apps/platform-api/src/identity/http.ts','apps/platform-api/src/identity/socket.ts','apps/platform-api/src/identity/native-http.ts','apps/platform-api/src/games/journal.ts','apps/platform-api/src/games/journal-crypto.ts','apps/platform-api/src/games/journal-host.ts','apps/platform-api/src/progression/ledger.ts','packages/contracts/src/compatibility.ts','packages/contracts/src/native-auth.ts','packages/scene3d/src/animal.ts','packages/scene3d/src/renderer.ts','packages/scene3d/test/animal-variants-cache.test.ts','pnpm-lock.yaml'];
   const sources=[];
   for(const ref of sourceRefs){

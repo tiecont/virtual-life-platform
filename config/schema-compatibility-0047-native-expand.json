@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "policyVersion": 1,
+  "mode": "expand-compatible",
+  "journal": "city_schema_migrations",
+  "metadataVersion": 1,
+  "runtimeManifestSha256": "175475c551f951e63b75f91dccddfe07bd478d67cce54e398217f63e8c3f9ee4",
+  "minimumDatabaseMigrations": 47,
+  "maximumDatabaseMigrations": 48,
+  "reviewRef": "evidence:desktop-first/vl016-native-expand",
+  "migrations": [
+    {
+      "name": "0001_foundation.sql",
+      "checksum": "099761978bacbdd89080e42a9a2689be6477c381d949f5198f4c0349586048ac"
+    },
+    {
+      "name": "0002_identity.sql",
+      "checksum": "b4095a6baaba47da6bd93f5ca344c90c8264ffda517818fb972be49321d0c4fc"
+    },
+    {
+      "name": "0003_registered_identity.sql",
+      "checksum": "88e6dbf8df76bf23cc64193e9d56ca411b5f2b45b9ba98d023a2077e25942aa8"
+    },
+    {
+      "name": "0004_social.sql",
+      "checksum": "087a2c4c3cb230046691328034b7437ce1c103632184dda82fe832882e394eb8"
+    },
+    {
+      "name": "0005_reports.sql",
+      "checksum": "d34cec7bc6aa5b251c19ced1696521b21fd21b009d6a9290ed06bb24f805fb8d"
+    },
+    {
+      "name": "0006_sanctions.sql",
+      "checksum": "953c321a25c3ad91d93639ccd077a3a32c4ab9c62730a4089e7e307d0eada568"
+    },
+    {
+      "name": "0007_moderation_operations.sql",
+      "checksum": "9067ca731bb3ebafda08607fe4b324f5c462c7f8033cdb73daaecccc32760064"
+    },
+    {
+      "name": "0008_travel_intents.sql",
+      "checksum": "d98bc86645c87983328c04340e10e5c6ebfe24e047d7ce1a2beba1bcc066db38"
+    },
+    {
+      "name": "0009_invitations.sql",
+      "checksum": "4ce947a4a9374d390307c616f2a38ab5daf442c8ee35e3d0ffcd8e411cb0672f"
+    },
+    {
+      "name": "0010_travel_handoff.sql",
+      "checksum": "747c93b0cb69751c97f3cd98d7c9ebe13c3e00d9eccd368ca619e37258c5128e"
+    },
+    {
+      "name": "0011_invitation_groups.sql",
+      "checksum": "613c28338978865882945a616fe964161901d625790c7acd57b9fc3c3749082d"
+    },
+    {
+      "name": "0012_focus_engine.sql",
+      "checksum": "f484a146fd55e66d4faaaaf81c66f413ddd40a42c5277911bd84ccb08d178dce"
+    },
+    {
+      "name": "0013_focus_daily_index.sql",
+      "checksum": "1926843c9332404b13d9ac738fd43d0149d6026195847110df5e5337a6fdc7e5"
+    },
+    {
+      "name": "0014_hospitality_core.sql",
+      "checksum": "d4f7a058a7035059614c1d85be6e4f575136a744bfbb218d3262d704e68eef0d"
+    },
+    {
+      "name": "0015_hospitality_shifts.sql",
+      "checksum": "9061476891acee4f01deb648d7d30d24ea4b112075c56be089c2dde3bde750e3"
+    },
+    {
+      "name": "0016_hospitality_workflows.sql",
+      "checksum": "673f3c172e6a9f033f082bbb1e2ec047706d9258aafe99a9d82b86881330a5d8"
+    },
+    {
+      "name": "0017_hospitality_completion_outbox.sql",
+      "checksum": "1d52e16ce1c4cc68ff97fd625e74e3c218cda04da438da4507f8436b95622fbc"
+    },
+    {
+      "name": "0018_hospitality_service_consent.sql",
+      "checksum": "7e107ef384c0e05ea3707aa5cc8366921d511d2c02205c5ef6fd503b9bffd3de"
+    },
+    {
+      "name": "0019_events_and_rsvps.sql",
+      "checksum": "753d0fa0b74815737bb076088607487d4f8a282d2fa2003a4d9a89308f0fad37"
+    },
+    {
+      "name": "0020_reservation_slots_and_waitlist.sql",
+      "checksum": "d7641c192a2f04489b85b5dc8ca734021a76cdd68192864bb86fc1a2a0deaf62"
+    },
+    {
+      "name": "0021_event_governance_and_notices.sql",
+      "checksum": "ca11e518595ff05adde05c767443950a6d55cb55bfdda0ad6921143d98095f12"
+    },
+    {
+      "name": "0022_private_event_invitations.sql",
+      "checksum": "46b7fc51a943232cc5f224979bd8ea18ed46488e5880d0908eef4ef97119b20b"
+    },
+    {
+      "name": "0023_progression_ledger.sql",
+      "checksum": "e348d75170e25224d0ab4f66e921b7547a547a708c58779ee665e71af53486c7"
+    },
+    {
+      "name": "0024_selected_cosmetic.sql",
+      "checksum": "f30f30944c86ac45d1bb4ca14d1836bd51cfc0031f968885b438fc5f42adc6e6"
+    },
+    {
+      "name": "0025_progression_corrections.sql",
+      "checksum": "7bef90a912eb23fceaf1cf838c97f610162476892af5dbda4e8f72db03c66c38"
+    },
+    {
+      "name": "0026_reservation_parties.sql",
+      "checksum": "8f2b667316b5c6a03338e127f43d4cb60f5a3b0ee899f22f48a9dcca4505687b"
+    },
+    {
+      "name": "0027_hospitality_roles.sql",
+      "checksum": "943fa478826fcd6932eb47398f011368e0be05a5472a784ff3d34095e3ad5641"
+    },
+    {
+      "name": "0028_hospitality_kitchen_pass.sql",
+      "checksum": "cd81d8b177ef478571539079466e53c830b833977522d8a1addb98178f2aabe6"
+    },
+    {
+      "name": "0029_private_dinner_offers.sql",
+      "checksum": "792e1c61fc5e2ec42080773adaa6de0a83bc5c6b38af219fc7f1c4f7699c4f8c"
+    },
+    {
+      "name": "0030_event_stage_slots.sql",
+      "checksum": "edf8e9be2c16a9594ad27f859b12600a5f563a78e18274ad44157249b4f278d2"
+    },
+    {
+      "name": "0031_event_audience.sql",
+      "checksum": "93ee7f540b65f08869594fec5653f24c7a6dc3164e3d9189e0e72c19b1bcb691"
+    },
+    {
+      "name": "0032_audience_window_budget.sql",
+      "checksum": "bdaae7ec0a82c1fe043b0adfdc2c8cc3b7cab1b47ad99b4c2a4268abdc108e6f"
+    },
+    {
+      "name": "0033_private_dating_profiles.sql",
+      "checksum": "e99094b1a3200abf711c0fd7088c8282c3cba895bc8e10f6f8d5eef1a87caee9"
+    },
+    {
+      "name": "0034_private_dating_matching.sql",
+      "checksum": "b6fb30d23122a3476d11314b4ee3c8b7c00c342a009eb66a1e5f2fef2cc4c2a3"
+    },
+    {
+      "name": "0035_private_date_rooms.sql",
+      "checksum": "718e174cd9516b0ad812f4ff334078715df59b041a7e3921c29fdc9f0b9cf6a0"
+    },
+    {
+      "name": "0036_private_mutual_continuations.sql",
+      "checksum": "f44b5ecfed12f0011dd4174acad01132d61390caabfd95d9350b92cfdf17cd8d"
+    },
+    {
+      "name": "0037_legacy_identity_links.sql",
+      "checksum": "c602c7b25bb0d7ba0b3f297249e573ce662e99400b62cd444e59214a89d3b233"
+    },
+    {
+      "name": "0038_hospitality_recipe_compatibility.sql",
+      "checksum": "7989943f85f33ec6b3691126597a8a00ef44a80707919a94ea9f791378e40dec"
+    },
+    {
+      "name": "0039_operator_identity.sql",
+      "checksum": "e8ce7330b27cace5910fef0cc71ccea33ad8f90a1ea90a87ac4ee869af826f15"
+    },
+    {
+      "name": "0040_operator_account_controls.sql",
+      "checksum": "01a19d1e1cf0b4b72f6fe1320278b431996a4fa7b24cd5ca91103cbd399417bd"
+    },
+    {
+      "name": "0041_privacy_requests.sql",
+      "checksum": "043fbca317f42c37d9418d291ad114e785166f47c909aec4e0996b5b24f87dbc"
+    },
+    {
+      "name": "0042_operator_event_calendar.sql",
+      "checksum": "6154a817f60e6e17065698dee7938b2714bbff2b227c7d2f540c6ffe64ebaf48"
+    },
+    {
+      "name": "0043_operator_runtime_controls.sql",
+      "checksum": "6c51c5e21e333195ac48fd551c5d27f022f835420eddf0235dfc45f28c274db8"
+    },
+    {
+      "name": "0044_platform_admission.sql",
+      "checksum": "147d3ee5814a1ef152c2394441e2768e2a1f02bd565c65ef5dbb356fb28247b1"
+    },
+    {
+      "name": "0045_native_device_auth.sql",
+      "checksum": "43227ea7169bb175bc1f363afe4536c17a0d89a17f09802d8bd43f0e8b56d931"
+    },
+    {
+      "name": "0046_avatar_parts.sql",
+      "checksum": "1d491c083eca3c79e9459f78d3f67cf23d22662ba4bf37cc8df558a65d755042"
+    },
+    {
+      "name": "0047_game_journal.sql",
+      "checksum": "ec1a6a4f2282479818426734cbe2253c76cff1adcfc9247283c384a6fd770b8e"
+    },
+    {
+      "name": "0048_native_game_storage.sql",
+      "checksum": "8c54c14ba85ed9278b0f5239d9fa0c2a20b2e5ea029913047c78b3dafc8d964a"
+    }
+  ]
+}
