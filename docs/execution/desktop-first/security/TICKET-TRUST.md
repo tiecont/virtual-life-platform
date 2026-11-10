@@ -28,7 +28,9 @@ It rejects oversized input before decoding, unknown key IDs, caller key URLs,
 embedded JWKs, critical extensions, wrong type/version/audience/issuer, malformed
 IDs/nonces/generations, extra claims, future/expired grants and wrong boot/world/
 content/protocol/scope. Trusted configuration validates raw public-key length
-before calling the crypto library. Clock movement backwards fails closed.
+before calling the crypto library. Configuration also parses the actual curve
+point and rejects weak/small-order keys; strict Ed25519 signature verification
+runs before JWT claim decoding. Clock movement backwards fails closed.
 
 `TrustDomain` is one synchronous runtime owner's bounded admission model. It
 consumes each nonce once until expiry; a new unpredictable boot ID must be
@@ -36,7 +38,10 @@ provisioned on every restart. It requires a trusted account/session/world policy
 snapshot no more than five seconds old, rejects generation rollback and changing
 allow/deny within the same generation, and checks again immediately before the
 synchronous in-memory effect. An admitted session is private and cannot be
-constructed from public claims. Signing alone does not authorize a command.
+constructed from public claims. Sessions carry an unforgeable in-process identity
+for the exact issuing TrustDomain, so equal nonce/expiry on another domain cannot
+transfer authority. The callback must return unit; an async callback fails to
+compile and has a compile-fail regression. Signing alone does not authorize a command.
 
 ## Actual Verification
 
@@ -60,6 +65,10 @@ tokens. Private keys are neither serialized nor committed. Rust consumes that
 fixture and tests forgery, key retirement/rotation, replay, expiration and policy
 revocation/rollback; rejected effects do not invoke the in-memory sink. Four Rust
 unit tests separately exercise malformed configuration and stale/bounded policy.
+An independent review reproduced acceptance of unsigned grants under a configured
+weak key and an async-callback escape on the first committed slice. The correction
+rejects weak keys, performs strict verification, binds domain identity and narrows
+the callback result; five Rust unit tests plus a compile-fail regression cover it.
 The disposable DB wrapper drops containers/volumes on completion.
 
 ## Remaining Acceptance

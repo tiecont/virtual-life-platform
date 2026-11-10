@@ -1,6 +1,9 @@
 //! Default-off trust primitives. No network service or durable mutation adapter.
 use std::collections::BTreeMap;
+use std::sync::Arc;
 
+use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
+use ed25519_dalek::{Signature, VerifyingKey};
 use jsonwebtoken::{Algorithm, DecodingKey, Validation, decode, decode_header};
 use serde::Deserialize;
 
@@ -48,8 +51,13 @@ pub struct RuntimeScope {
 }
 
 pub struct TicketVerifier {
-    keys: BTreeMap<String, DecodingKey>,
+    keys: BTreeMap<String, TrustedKey>,
     scope: RuntimeScope,
+}
+
+struct TrustedKey {
+    jwt: DecodingKey,
+    strict: VerifyingKey,
 }
 
 fn hex(value: &str, length: usize) -> bool {
@@ -73,6 +81,18 @@ fn generation(value: &str) -> Option<u64> {
     (parsed > 0 && parsed.to_string() == value).then_some(parsed)
 }
 
+fn world(value: &str) -> bool {
+    let Some(id) = value.strip_prefix("native:") else {
+        return false;
+    };
+    !id.is_empty()
+        && id.len() <= 64
+        && (id.as_bytes()[0].is_ascii_lowercase() || id.as_bytes()[0].is_ascii_digit())
+        && id
+            .bytes()
+            .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b"._-".contains(&b))
+}
+
 impl TicketVerifier {
     /// Keys come from trusted configuration; token-supplied URLs/JWKs are ignored.
     pub fn new(
@@ -81,17 +101,31 @@ impl TicketVerifier {
     ) -> Result<Self, TrustError> {
         if keys.is_empty()
             || keys.len() > 8
-            || keys.values().any(|key| {
-                key.family() != jsonwebtoken::AlgorithmFamily::Ed
-                    || !key.try_get_as_bytes().is_ok_and(|bytes| bytes.len() == 32)
-            })
             || !uuid(&scope.boot)
             || !hex(&scope.content, 64)
-            || !scope.world.starts_with("native:")
-            || scope.world.len() > 71
+            || !world(&scope.world)
         {
             return Err(TrustError::ScopeMismatch);
         }
+        let keys = keys
+            .into_iter()
+            .map(|(id, jwt)| {
+                if jwt.family() != jsonwebtoken::AlgorithmFamily::Ed {
+                    return Err(TrustError::InvalidTicket);
+                }
+                let bytes: &[u8; 32] = jwt
+                    .try_get_as_bytes()
+                    .map_err(|_| TrustError::InvalidTicket)?
+                    .try_into()
+                    .map_err(|_| TrustError::ScopeMismatch)?;
+                let strict =
+                    VerifyingKey::from_bytes(bytes).map_err(|_| TrustError::InvalidTicket)?;
+                if strict.is_weak() {
+                    return Err(TrustError::InvalidTicket);
+                }
+                Ok((id, TrustedKey { jwt, strict }))
+            })
+            .collect::<Result<BTreeMap<_, _>, TrustError>>()?;
         Ok(Self { keys, scope })
     }
 
@@ -116,6 +150,14 @@ impl TicketVerifier {
             .keys
             .get(header.kid.as_deref().ok_or(TrustError::InvalidTicket)?)
             .ok_or(TrustError::InvalidTicket)?;
+        let (signed, signature) = ticket.rsplit_once('.').ok_or(TrustError::InvalidTicket)?;
+        let signature = URL_SAFE_NO_PAD
+            .decode(signature)
+            .map_err(|_| TrustError::InvalidTicket)?;
+        let signature = Signature::from_slice(&signature).map_err(|_| TrustError::InvalidTicket)?;
+        key.strict
+            .verify_strict(signed.as_bytes(), &signature)
+            .map_err(|_| TrustError::InvalidTicket)?;
         let mut validation = Validation::new(Algorithm::EdDSA);
         validation.set_issuer(&[ISSUER]);
         validation.set_audience(&[AUDIENCE]);
@@ -124,7 +166,7 @@ impl TicketVerifier {
         validation.validate_exp = false;
         validation.validate_nbf = false;
         validation.leeway = 0;
-        let claims = decode::<Claims>(ticket, key, &validation)
+        let claims = decode::<Claims>(ticket, &key.jwt, &validation)
             .map_err(|_| TrustError::InvalidTicket)?
             .claims;
         if claims.v != 1
@@ -169,6 +211,7 @@ pub struct PolicySnapshot {
 /// Single-owner bounded model only. New boot IDs prevent replay across restart.
 /// Persistence/cross-process fencing and authenticated policy delivery are later gates.
 pub struct TrustDomain {
+    identity: Arc<()>,
     verifier: TicketVerifier,
     policies: BTreeMap<(String, String), PolicySnapshot>,
     nonces: BTreeMap<String, u64>,
@@ -177,6 +220,7 @@ pub struct TrustDomain {
 }
 
 pub struct VerifiedSession {
+    domain: Arc<()>,
     claims: Claims,
 }
 
@@ -186,6 +230,7 @@ impl TrustDomain {
             return Err(TrustError::Capacity);
         }
         Ok(Self {
+            identity: Arc::new(()),
             verifier,
             policies: BTreeMap::new(),
             nonces: BTreeMap::new(),
@@ -255,18 +300,31 @@ impl TrustDomain {
             return Err(TrustError::Capacity);
         }
         self.nonces.insert(claims.jti.clone(), claims.exp);
-        Ok(VerifiedSession { claims })
+        Ok(VerifiedSession {
+            claims,
+            domain: Arc::clone(&self.identity),
+        })
     }
 
     /// Run a synchronous in-memory effect only after a fresh check. Durable SQL
     /// must later recheck policy under its own transaction lock, not use this callback.
-    pub fn with_authorized<T>(
+    ///
+    /// ```compile_fail
+    /// use vl_security::{TrustDomain, VerifiedSession};
+    /// fn deferred(trust: &mut TrustDomain, session: &VerifiedSession) {
+    ///     let _ = trust.with_authorized(session, 100, |_, _| async {});
+    /// }
+    /// ```
+    pub fn with_authorized(
         &mut self,
         session: &VerifiedSession,
         now: u64,
-        effect: impl FnOnce(&str, &str) -> T,
-    ) -> Result<T, TrustError> {
+        effect: impl FnOnce(&str, &str),
+    ) -> Result<(), TrustError> {
         self.clock(now)?;
+        if !Arc::ptr_eq(&session.domain, &self.identity) {
+            return Err(TrustError::Replay);
+        }
         let claims = &session.claims;
         if claims.boot != self.verifier.scope.boot
             || claims.world != self.verifier.scope.world
@@ -280,7 +338,8 @@ impl TrustDomain {
             return Err(TrustError::Replay);
         }
         self.policy(claims, now)?;
-        Ok(effect(&claims.sub, &claims.sid))
+        effect(&claims.sub, &claims.sid);
+        Ok(())
     }
 }
 
@@ -295,7 +354,10 @@ mod tests {
         }
     }
     fn trust() -> TrustDomain {
-        let keys = BTreeMap::from([("key-a".into(), DecodingKey::from_ed_der(&[1; 32]))]);
+        let public = ed25519_dalek::SigningKey::from_bytes(&[7; 32])
+            .verifying_key()
+            .to_bytes();
+        let keys = BTreeMap::from([("key-a".into(), DecodingKey::from_ed_der(&public))]);
         TrustDomain::new(TicketVerifier::new(keys, scope()).unwrap(), 2).unwrap()
     }
     fn policy(generation: u64, allowed: bool) -> PolicySnapshot {
@@ -309,8 +371,9 @@ mod tests {
             allowed,
         }
     }
-    fn session() -> VerifiedSession {
+    fn session(trust: &TrustDomain) -> VerifiedSession {
         VerifiedSession {
+            domain: Arc::clone(&trust.identity),
             claims: Claims {
                 v: 1,
                 iss: ISSUER.into(),
@@ -385,7 +448,7 @@ mod tests {
     #[test]
     fn effects_recheck_revocation_and_expiry_at_boundary() {
         let mut trust = trust();
-        let session = session();
+        let session = session(&trust);
         let mut writes = 0;
         trust
             .nonces
@@ -422,7 +485,31 @@ mod tests {
         trust.install_policy(policy(1, true), 100).unwrap();
         let mut writes = 0;
         assert_eq!(
-            trust.with_authorized(&session(), 100, |_, _| writes += 1),
+            trust.with_authorized(&session(&trust), 100, |_, _| writes += 1),
+            Err(TrustError::Replay)
+        );
+        assert_eq!(writes, 0);
+    }
+    #[test]
+    fn rejects_weak_public_keys_and_cross_domain_sessions() {
+        for weak in [[0; 32], {
+            let mut identity = [0; 32];
+            identity[0] = 1;
+            identity
+        }] {
+            let keys = BTreeMap::from([("a".into(), DecodingKey::from_ed_der(&weak))]);
+            assert!(TicketVerifier::new(keys, scope()).is_err());
+        }
+        let first = trust();
+        let foreign = session(&first);
+        let mut second = trust();
+        second.install_policy(policy(1, true), 100).unwrap();
+        second
+            .nonces
+            .insert(foreign.claims.jti.clone(), foreign.claims.exp);
+        let mut writes = 0;
+        assert_eq!(
+            second.with_authorized(&foreign, 100, |_, _| writes += 1),
             Err(TrustError::Replay)
         );
         assert_eq!(writes, 0);

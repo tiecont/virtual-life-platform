@@ -1586,6 +1586,8 @@ dependencies = [
 name = "vl-security"
 version = "0.1.0"
 dependencies = [
+ "base64",
+ "ed25519-dalek",
  "jsonwebtoken",
  "serde",
  "serde_json",

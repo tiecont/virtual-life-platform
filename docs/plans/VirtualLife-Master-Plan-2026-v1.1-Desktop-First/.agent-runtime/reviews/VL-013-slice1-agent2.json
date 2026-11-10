@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-013",
+  "reviewer": "agent2",
+  "sourceRevision": "8e181a6889e7c5949ea46a4f1e142537547c4786",
+  "sourceTree": "485f7912de1f240294e994f2d927728980e2d020",
+  "reviewedAt": "2026-11-10T03:45:28.324Z",
+  "reviewType": "PARTIAL_SLICE_SOURCE_REVIEW",
+  "handoffRef": null,
+  "handoffSha256": null,
+  "handoffLimitation": "No VL-013 acceptance handoff exists. This owner-requested partial review must not be ingested as task acceptance.",
+  "decision": "CHANGES_REQUESTED",
+  "sliceApproved": false,
+  "acceptanceMet": false,
+  "taskStatus": "IN_PROGRESS",
+  "reviewerProvenance": {
+    "role": "Independent Agent 2; no delegation; not the source author",
+    "authorizedWrite": "This new review JSON only, plus permitted public fixture regeneration and test/compiler artifacts. No source, live-state, reservation, immutable baseline or commit changes by reviewer.",
+    "excludedContent": [".idea", "infra/botkeep-ca.pem"],
+    "sourceBinding": "HEAD was the exact requested revision. All 12 commit-changed files matched committed bytes before focused checks. Concurrent external edits to crates/vl-security/Cargo.toml and src/lib.rs appeared later; they were left untouched. Findings reference git show of 8e181a6, not those later edits."
+  },
+  "findings": [
+    {
+      "id": "VL013-S1-R1",
+      "severity": "HIGH",
+      "priority": "P1",
+      "file": "crates/vl-security/src/lib.rs",
+      "line": 84,
+      "endLine": 87,
+      "title": "Reject weak Ed25519 public keys before accepting signing configuration",
+      "description": "TicketVerifier::new checks only AlgorithmFamily::Ed and 32-byte length. It accepts the small-order identity public key (01 followed by 31 zero bytes). The pinned jsonwebtoken RustCrypto backend calls ed25519-dalek VerifyingKey::verify, which accepts the identity-R, zero-S signature for arbitrary messages under that key. Thus a mistakenly configured weak key turns signature verification into unconditional acceptance for otherwise valid scoped claims, including arbitrary subject/session/nonces when a corresponding policy is available. This is conditional on trusted signing configuration containing a weak key; it is not token-controlled key injection.",
+      "evidence": "A memory-only fixture replaced both configured public keys with the identity point and replaced the signatures with R=identity,S=0, without using any private key. The existing ticket-check binary passed admission, authorized identity/effect, rotation, replay, expiry and revocation stages, then panicked at ticket-check.rs:123 because the fresh unsigned negative unsignedArbitraryNonce was accepted. Probe wrapper exit 0 asserted that precise failure; child exit 101. The generated on-disk public fixture was unchanged by the probe.",
+      "requestedChange": "Parse every configured public key at construction, reject invalid encodings and weak/small-order points, and use appropriately strict Ed25519 signature validation. Add an unsigned identity-key regression alongside malformed-length configuration tests. Review the exact committed fix independently.",
+      "verification": "DYNAMIC_REPRODUCTION"
+    },
+    {
+      "id": "VL013-S1-R2",
+      "severity": "MEDIUM",
+      "priority": "P2",
+      "file": "crates/vl-security/src/lib.rs",
+      "line": 279,
+      "endLine": 283,
+      "title": "Bind VerifiedSession to its admitting TrustDomain and full admitted identity",
+      "description": "VerifiedSession contains only claims, and with_authorized accepts it from any TrustDomain. The receiving domain checks boot/world/content and only jti->exp membership; it never checks that this exact session/identity was admitted by this domain. Two domains with identical scope but different signing-key trust sets can each admit distinct valid tickets with equal jti/exp. A session from domain A can then authorize in domain B even when B does not trust A's signing key, provided B has a matching current policy for the foreign subject/session/generation. Using the same token in two domains also allows their session handles to be interchanged. A random nonce makes accidental collisions unlikely, but an adversarial or separate trusted issuer can choose that public nonce; nonce equality is not domain provenance.",
+      "evidence": "Exact-source data flow: VerifiedSession at lines 179-181 has no domain identifier; admit at 257-258 records only nonce/expiry and returns claims; with_authorized at 270-283 checks scope, expiry, nonce/expiry and local policy but never originating domain, admitted subject/session or key trust. Static finding; an attempted standalone executable probe failed to link and is not claimed as dynamic evidence.",
+      "requestedChange": "Give each TrustDomain an unforgeable instance identity and bind admitted sessions to it, or retain an opaque local admission handle with the complete identity/generation binding. Reject handles from another domain before invoking effects. Test different trusted key sets with equal nonce/expiry and a receiving-domain policy for the foreign identity.",
+      "verification": "EXACT_SOURCE_STATIC_ANALYSIS"
+    }
+  ],
+  "positiveAssessment": [
+    "Issuer authenticates before connecting, takes the canonical account transaction lock, reauthenticates after waiting, checks account/session consistency, obtains explicit admission using that transaction, signs while locked and returns only after COMMIT. The actual PostgreSQL lock-wait revocation test passed and admission was never invoked for the revoked session.",
+    "Issuer rejects non-private/non-Ed25519 keys and invalid kid, copies scope before awaits, uses cryptographic nonces and bounds expiry by session, admission and 30 seconds. Identity comes from the credential owner, not scope input.",
+    "Rust restricts EdDSA/type/issuer/audience and configured kid, rejects token key URLs/JWKs/critical extensions, validates scoped claims and canonical generations, rejects rollback clocks, consumes admission nonces and fails closed when policy is missing, expired, denied or on another generation.",
+    "Policy snapshots are account/session scoped, limited to a five-second observation interval, monotonic in generation/observation and unable to change allow/deny within one generation. The authorized callback receives the checked claim subject/session rather than caller-selected identity.",
+    "CI explicitly runs disposable PostgreSQL issuance before Rust consumption under set -euo pipefail. Ephemeral private keys are not serialized. The runtime remains health-only and does not link vl-security; the issuer has no application route. No live activation was observed."
+  ],
+  "environment": {
+    "host": "CachyOS Linux x86_64",
+    "node": "v26.9.0",
+    "rustToolchain": "Repository pin 1.99.1",
+    "RUSTUP_HOME": "/home/tiecont/Projects/virtual-city/artifacts/toolchains/rustup",
+    "CARGO_HOME": "/home/tiecont/Projects/virtual-city/artifacts/toolchains/cargo",
+    "cargoExecutable": "/home/tiecont/Projects/virtual-city/artifacts/toolchains/cargo/bin/cargo",
+    "database": "Wrapper-owned disposable loopback PostgreSQL container and isolated schema; wrapper cleanup completed"
+  },
+  "commands": [
+    {
+      "command": "node scripts/desktop-scheduler.mjs status agent2",
+      "exitCode": 0,
+      "outcome": "9 VERIFIED, 2 BLOCKED_EXTERNAL, 98 TODO, 1 IN_PROGRESS; no ready or in-review task. No scheduler mutation."
+    },
+    {
+      "command": "git rev-parse HEAD HEAD^{tree}; inline Git-blob equality checks for all 12 changed files",
+      "exitCode": 0,
+      "outcome": "Exact requested source and tree confirmed; all changed working files matched at check time. Later external source edits are excluded from this assessment."
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec tsx --test tests/unit/runtime-tickets.test.ts",
+      "exitCode": 0,
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "outcome": "Real issuer fixtures, lock-wait revocation, policy negatives and TTL bounds pass. Fresh artifacts/desktop-first/vl013/tickets.json generated; owned DB container/network removed. Node module.register deprecation warning only."
+    },
+    {
+      "command": "env RUSTUP_HOME=/home/tiecont/Projects/virtual-city/artifacts/toolchains/rustup CARGO_HOME=/home/tiecont/Projects/virtual-city/artifacts/toolchains/cargo /home/tiecont/Projects/virtual-city/artifacts/toolchains/cargo/bin/cargo test --package vl-security --locked",
+      "exitCode": 0,
+      "tests": 4,
+      "passed": 4,
+      "failed": 0,
+      "outcome": "Focused library tests pass; binary/doc targets have zero tests."
+    },
+    {
+      "command": "env RUSTUP_HOME=/home/tiecont/Projects/virtual-city/artifacts/toolchains/rustup CARGO_HOME=/home/tiecont/Projects/virtual-city/artifacts/toolchains/cargo /home/tiecont/Projects/virtual-city/artifacts/toolchains/cargo/bin/cargo run --locked --package vl-security --bin ticket-check -- artifacts/desktop-first/vl013/tickets.json",
+      "exitCode": 0,
+      "outcome": "Fresh Node-to-Rust signature/scope/replay/expiry/revocation/rollback/key-retirement harness PASS, including all 18 signed negatives."
+    },
+    {
+      "command": "env RUSTUP_HOME=/home/tiecont/Projects/virtual-city/artifacts/toolchains/rustup CARGO_HOME=/home/tiecont/Projects/virtual-city/artifacts/toolchains/cargo /home/tiecont/Projects/virtual-city/artifacts/toolchains/cargo/bin/cargo clippy --package vl-security --all-targets --locked -- -D warnings",
+      "exitCode": 0,
+      "outcome": "Focused security crate and binary clippy PASS."
+    },
+    {
+      "command": "env RUSTUP_HOME=/home/tiecont/Projects/virtual-city/artifacts/toolchains/rustup CARGO_HOME=/home/tiecont/Projects/virtual-city/artifacts/toolchains/cargo /home/tiecont/Projects/virtual-city/artifacts/toolchains/cargo/bin/cargo fmt --all -- --check",
+      "exitCode": 0,
+      "outcome": "Workspace format check PASS at execution time."
+    },
+    {
+      "command": "pnpm --filter @virtual-city/platform-api typecheck",
+      "exitCode": 0,
+      "outcome": "tsc -p tsconfig.json --noEmit PASS."
+    },
+    {
+      "command": "python3 memory-only identity-key fixture probe using os.memfd_create and existing artifacts/rust/target/debug/ticket-check",
+      "exitCode": 0,
+      "childExitCode": 101,
+      "outcome": "Confirmed VL013-S1-R1: unsigned identity-key tickets reach authorized effects; fresh unsignedArbitraryNonce negative is admitted and triggers harness assertion. No fixture/source file edited."
+    },
+    {
+      "command": "Inline async-callback compile-only probe via corresponding bin/rustc --crate-type lib --emit=llvm-ir=-, linked against existing vl_security rlib",
+      "exitCode": 0,
+      "outcome": "API accepts FnOnce returning a Future with copied authorized identity. The future can outlive the mutable domain borrow. Compilation only, not proof of a durable write or a new independent finding; see async-use limitation. Output captured in memory."
+    },
+    {
+      "command": "Ad hoc memory-only probe setup attempts",
+      "outcomes": [
+        "Node /dev/stdin fixture attempt: wrapper exit 0, ticket-check child exit 101 opening /dev/stdin (ENXIO); no security conclusion. Corrected memfd fixture probe subsequently reproduced R1.",
+        "First standalone rustc executable probe: exit 1, temporary directory could not be created under /proc/<pid>/fd.",
+        "Second standalone executable probe: exit 1, linker could not open memfd output. No cross-domain runtime result claimed. Its three generated object files were removed."
+      ]
+    }
+  ],
+  "limitations": [
+    "This is a partial default-off primitive review, not VL-013 acceptance, deployment approval or evidence that unauthorized game commands cannot persist. Task remains IN_PROGRESS with acceptanceMet false.",
+    "A synchronous Rust callback is a caller contract, not a type-enforced effect boundary: generic T can be a Future, and callbacks can copy identity, schedule work or mutate captured unrelated state. The existing docs expressly prohibit async/SQL use. Keep that restriction explicit; require the actual mutation owner to bind target actor and recheck session/policy under its own transaction lock. Do not treat Ok(Future) as authorized completion.",
+    "Five-second policy snapshots intentionally permit bounded stale authorization. Session expiry remains capped by ticket expiry; session revocation requires current authenticated policy delivery/generation ownership, which is not implemented. Immediate SQL-bound revocation, persisted receipt/state atomicity and rejection-with-zero-writes remain unproven.",
+    "Replay protection is one in-memory owner per boot, not command idempotency, multi-replica fencing or durable replay protection. Boot unpredictability and uniqueness are deployment responsibilities. Policy entries remain capacity bounded without eviction, so a long-lived owner can eventually fail closed at capacity.",
+    "No production signing configuration, allocator, authenticated policy transport, Windows/Unity/WSS login or Rust gameplay persistence exists in the reviewed slice. No endpoint or legacy authority cutover is enabled.",
+    "Workflow source was inspected; no new hosted CI status, global Quality qualification, OCI run, full Rust workspace suite or broad platform test rerun is claimed in this bounded review.",
+    "Concurrent external source edits appeared after the initial exact-source checks. Existing compiled binaries/rlibs used for probes were built before those edits. No follow-up fix is approved here; review its exact committed revision separately."
+  ],
+  "protectedHashes": {
+    "live-state.json": "49c8e094abb89bedfd33f7612cfab92570db53f4cfd8cb2cac99585780886272",
+    "06-execution/STATE.json": "4aaa77d3f337978dab6030a1d48f2f58ed3fe377b2ae6fb1dc27f12649353912",
+    "FILE-MANIFEST.json": "a4a4b30d9a5a45264c6cc0339ff9567c9cd7d51dea8257e1e2c21fd7fcdf852d"
+  },
+  "nextExactAction": "Agent 1 resolves R1/R2 in a new committed source revision and requests independent review of focused regressions. Keep VL-013 IN_PROGRESS; coordinate the remaining allocator, policy transport/generation and durable mutation DAG without treating this file as acceptance."
+}
