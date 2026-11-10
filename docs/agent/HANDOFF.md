@@ -1,3 +1,32 @@
+# VL-013 accepted; VL-019 prototype checkpoint - 2026-11-10
+
+VL-013 VERIFIED at81dda8571bc6a5577ca6950ac8c6b48ca3eb70fe under explicit
+owner-authorized SINGLE_AGENT_SEQUENTIAL_AUDIT, independent:false. Separate audit
+rechecked12PG/3issuer/25Rust+1doctest/19post-write scenarios and frozen source;
+exact Ubuntu Rust42796828969 SUCCESS. Raw hosted log SHA256
+b11efe87877663301167c7e09e30670b02406cd2ea8bad4805d68c6253b5a634.
+Canonical handoff/review are VL-013-single-agent-v1.json. Not independent review.
+
+VL-016 new handoff VL-016-single-agent-v4.json is IN_REVIEW at81dda85; both
+archived47/48->49 compatibility harnesses PASS locally. Exact Rust is green but
+Quality42796828923 still running; its aggregate remains a required gate.
+Older55514e1 Quality42793186691/42793176241 have core/images and some browser
+groups green, not aggregate acceptance. Preserve earlier failed/cancelled runs.
+
+Dependency-ready VL-019 reserved/started. Default-off vl-world owns bounded per-zone
+mailbox, single-slot movement buffers, generation-bound handles, integer20Hz
+movement and5m grid AOI. Five new tests and workspace30+1doctest,Clippy,121governance,
+CI contract/preservation pass.20actors/2000inputs/102ticks measured p95=73us,
+compute overruns0,late wakes0,mailbox peak20/32. Evidence world-actor/LOCAL-CHECKS.json.
+No live auth/network/privacy/DB or gameplay activation is claimed by this prototype.
+
+Next exact action: commit/publish VL-019 to a separate CI branch without cancelling
+the81dda85/55514e1 runs, audit its frozen source in a separate pass, obtain exact
+Rust/probe success and verify VL-019. Continue actual VL-016 aggregate outcomes;
+only then start VL-017. Windows/Unity/GPU/rights gates remain; owner IDE/CA untouched.
+
+## Previous checkpoints
+
 # Owner single-agent audit checkpoint - 2026-11-10
 
 Owner explicitly authorizes one agent, a separate audit pass and actual CI,

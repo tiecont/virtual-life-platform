@@ -157,10 +157,15 @@
       "reviewSha256": "5fe2d573b623876fd5f9ea8d5cbafe9aa0158c0038703db1f878db7e219fece7"
     },
     "VL-013": {
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "owner": "agent1",
       "evidenceRefs": [],
-      "reservationId": "VL-013-0c6147a1-e3b9-4ad7-a0f1-ab0cd5fc7824"
+      "reservationId": "VL-013-0c6147a1-e3b9-4ad7-a0f1-ab0cd5fc7824",
+      "handoffRef": "handoffs/VL-013-single-agent-v1.json",
+      "handoffSha256": "e23a4ddacf4bf3168fc358e8e9ba162b7c684529431d93af9433e3d524fc1eb3",
+      "reviewRef": "reviews/VL-013-single-agent-v1.json",
+      "reviewSha256": "cc67ade47a2f9d1ae1b50d74a03803321c298acc64c5288f4a6499c2d0209efd",
+      "reviewMode": "SINGLE_AGENT_SEQUENTIAL_AUDIT"
     },
     "VL-014": {
       "status": "TODO",
@@ -178,7 +183,7 @@
       "reviewSha256": "ce69f4290b922db029f4d1804a5181bc5965940e83f8a6e0ab315749c11ce285"
     },
     "VL-016": {
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "owner": "agent1",
       "evidenceRefs": [],
       "reservationId": "VL-016-77484595-e11c-4f0b-a167-d5e4c81a2642",
@@ -204,7 +209,9 @@
           "reviewSha256": "1aeb97c34ad0d1fb3a3a4cb999354378c15d4ebe0142e7c550a21a41dac4e561",
           "decision": "CHANGES_REQUESTED"
         }
-      ]
+      ],
+      "handoffRef": "handoffs/VL-016-single-agent-v4.json",
+      "handoffSha256": "045bd0bbd81d65ab2e98a2e1aec9533f62d7f96e1738639ba2ac2e715d9aaf12"
     },
     "VL-017": {
       "status": "TODO",
@@ -217,9 +224,10 @@
       "evidenceRefs": []
     },
     "VL-019": {
-      "status": "TODO",
-      "owner": null,
-      "evidenceRefs": []
+      "status": "IN_PROGRESS",
+      "owner": "agent1",
+      "evidenceRefs": [],
+      "reservationId": "VL-019-c9bf511e-54c3-4ba9-8e1c-a9a81fc4d339"
     },
     "VL-020": {
       "status": "TODO",
@@ -1038,6 +1046,28 @@
           "sha256": "f202a2307528d9b0c22e2c1d864ab1b0807ed41a01956c65fe65731f7880f285"
         }
       ]
+    },
+    "VL-019-c9bf511e-54c3-4ba9-8e1c-a9a81fc4d339": {
+      "id": "VL-019-c9bf511e-54c3-4ba9-8e1c-a9a81fc4d339",
+      "ref": "reservations/VL-019-c9bf511e-54c3-4ba9-8e1c-a9a81fc4d339.json",
+      "taskId": "VL-019",
+      "owner": "agent1",
+      "paths": [
+        "crates/vl-world/**",
+        "Cargo.toml",
+        "Cargo.lock",
+        "apps/game-runtime/Dockerfile",
+        ".github/workflows/rust-runtime.yml",
+        "scripts/verify-artifact-workflows.mjs",
+        "tests/governance/rust-workflow.test.mjs",
+        "docs/execution/desktop-first/world-actor/**",
+        "docs/agent/HANDOFF.md",
+        "docs/agent/PROGRESS.md"
+      ],
+      "branch": "codex/desktop-first-backend",
+      "worktree": "/home/tiecont/Projects/virtual-city",
+      "sourceRevision": "81dda8571bc6a5577ca6950ac8c6b48ca3eb70fe",
+      "createdAt": "2026-11-10T10:19:04.606Z"
     }
   },
   "gateEvidence": {
@@ -1053,7 +1083,7 @@
       }
     ]
   },
-  "updatedAt": "2026-11-10T10:01:13.576Z",
+  "updatedAt": "2026-11-10T10:19:05.655Z",
   "reviewPolicy": {
     "ref": "policies/single-agent-2026-11-10.json",
     "sha256": "02c0285a2d6fe5cf19c57f10d91945f6d9a9ee60a1bf80f7c200e63ee6e7cda1"

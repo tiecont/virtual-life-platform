@@ -54,7 +54,8 @@ export function assertRustWorkflow(workflow,pins) {
     'pnpm install --frozen-lockfile','--package vl-protocol --bin native-codegen -- --check','pnpm --filter @virtual-city/native-protocol typecheck','packages/native-protocol/test/wire.test.ts',
     'CARGO_TARGET_DIR: artifacts/rust/target','build --locked --package vl-security --bin durable-check','scripts/runtime-admission-durable-check.mjs',
     'tests/integration/runtime-admission.test.ts','tests/integration/native-game-schema.test.ts','tests/integration/schema-compatibility.test.ts',
-    'scripts/native-game-migration-compat.mjs','scripts/runtime-admission-migration-compat.mjs'])assert(workflow.includes(gate),'Missing Rust gate '+gate);
+    'scripts/native-game-migration-compat.mjs','scripts/runtime-admission-migration-compat.mjs',
+    '--package vl-world --example zone-probe'])assert(workflow.includes(gate),'Missing Rust gate '+gate);
 }
 export function assertPromotionWorkflow(workflow, pins) {
   assert(workflow.startsWith('name: Propose verified digest promotion\non:\n  workflow_dispatch:\n'));

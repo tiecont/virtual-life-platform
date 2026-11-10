@@ -1,3 +1,22 @@
+# VL-013 accepted; VL-019 prototype checkpoint - 2026-11-10
+
+VL-013 VERIFIED at81dda85 with source-locked same-agent audit explicitly marked
+non-independent and exact Ubuntu Rust42796828969 SUCCESS. No peer waiting.
+VL-016 remains IN_REVIEW; aggregate81dda85 Quality42796828923 still required.
+55514e1 core CI passes493unit/782integration/builds; browser aggregate still pending.
+
+VL-019 is IN_PROGRESS: default-off trusted-host zone/AOI prototype; bounded mpsc
+mailbox,watch coalescing,generation-bound handles,integer20Hz movement,5m grid.
+Five new tests; workspace30Rust+1doctest,Clippy,121governance,focused lint and CI/
+preservation PASS. Local20actors/2000inputs over102ticks: p95 compute73us,
+overruns0,late wakes0,mailbox peak20/32. No DB,network/auth/privacy composition,
+Windows/Unity/GPU or production readiness claim. Exact-source CI/audit still needed.
+
+Counts11VERIFIED/2BLOCKED_EXTERNAL/95TODO/1IN_REVIEW/1IN_PROGRESS. Next: publish
+VL-019 separately for CI,audit frozen source,finish VL-016 Quality,then unlock017.
+
+## Previous checkpoints
+
 # Owner single-agent audit checkpoint - 2026-11-10
 
 Explicit owner direction enables SINGLE_AGENT_SEQUENTIAL_AUDIT, independent:false,

@@ -6,6 +6,7 @@ COPY apps/game-runtime/src apps/game-runtime/src
 COPY crates/vl-protocol crates/vl-protocol
 COPY crates/vl-security crates/vl-security
 COPY crates/vl-game-core crates/vl-game-core
+COPY crates/vl-world crates/vl-world
 COPY proto/native proto/native
 RUN cargo build --release --locked --package vl-game-runtime
 
