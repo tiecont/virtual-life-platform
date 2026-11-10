@@ -1,3 +1,28 @@
+# Public CI restored; VL-016 and VL-022 verified - 2026-11-10
+
+Owner made the repository public for CI. Attempt 2 at 619e70c actually ran:
+Rust succeeded; Quality found five stale renderer code fingerprints. Correction
+0033fcd updates those hashes with release flags still false. Exact Rust run
+42825269546 and aggregate Quality 42825269524 succeeded, including core, images,
+Compose and all eight browser groups. A separate postcommit audit passed 25 real
+PG tests and confirmed 24 source artifacts. The coordinator verified VL-016.
+
+VL-022 adds an opt-in Rust WSS gateway, a fixed-scope Nest ticket adapter and
+own-only authoritative snapshot/resync. Real Chromium connects through WSS to
+Rust and restricted TLS PostgreSQL. Local checks pass: 38 Rust tests plus one
+doctest, eight gateway tests, 14 browser scenarios, 121 governance tests, lint,
+build, types, Clippy and preservation. Exact Rust CI 42832214306 at edf45c7 passes,
+including browser, durable trust, migration compatibility and OCI checks. The
+separate same-agent audit passes; it is explicitly not independent. The
+coordinator verified VL-022. Production composition remains unchanged.
+
+Counts: 14 VERIFIED, 2 BLOCKED_EXTERNAL, 94 TODO. VL-017 is READY. Separate
+Quality run 42832214573 at edf45c7 is still queued/running at observation.
+All owned local processes and test databases are cleaned up. Next: inspect that
+aggregate, then reserve and implement VL-017. External product gates remain.
+
+## Previous checkpoints
+
 # Exact619e70c CI runner allocation blocked; VL-022 started - 2026-11-10
 
 Correction619e70c is committed/pushed on its own CI branch. Local full build/lint,

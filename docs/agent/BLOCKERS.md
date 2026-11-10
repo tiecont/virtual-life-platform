@@ -1,3 +1,18 @@
+# CI runner blocker resolved; external product gates remain - 2026-11-10
+
+Owner made the repository PUBLIC for CI. Actual runs resumed; Rust and aggregate
+Quality at 0033fcd succeeded. Historical billing failures remain immutable; no
+payment or limit was changed. VL-016 and VL-022 are VERIFIED with explicitly
+non-independent same-agent audits. VL-017 is READY. Separate Quality 42832214573
+at edf45c7 remains queued/running; its aggregate result is not yet observed.
+
+VL-006 brand/rights and VL-007 named physical Windows tiers remain BLOCKED_EXTERNAL.
+Unity licensing/editor, Windows/GPU QA, signing and public game deployment still
+need their own evidence. No production routes, migrations or gameplay were
+activated. Owned test processes/databases are cleaned; owner IDE/CA are untouched.
+
+## Previous checkpoints
+
 # GitHub runner allocation blocked by account billing - 2026-11-10
 
 Exact619e70c Rust42816216097 and Quality42816216290 were not started: GitHub

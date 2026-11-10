@@ -1,3 +1,41 @@
+# Public CI restored; exact-source storage and WSS accepted - 2026-11-10
+
+Owner made the repository PUBLIC for CI. Attempt 2 at 619e70c ran: Rust
+42816216097 succeeded; Quality 42816216290 failed five stale renderer hashes.
+Correction 0033fcd updates only those fingerprints, preserving releaseApproved:
+false. Exact Rust 42825269546 and aggregate Quality 42825269524 succeeded,
+including core, images/Compose and all eight browser groups. The separate audit
+passed 25 real PG tests and compared all 24 acceptance artifacts. VL-016 is
+VERIFIED through the coordinator; canonical handoff/review: VL-016-single-agent-v5.json.
+
+Gateway source edf45c734ebb6bf6f37ee028059437c064df5ba2 is committed and pushed
+to codex/native-wss-20261110. It adds an opt-in Rust gateway, fixed-scope Nest
+ticket adapter and actual Chromium/WSS/restricted TLS PG harness. Every reply,
+including cached retries, requires current authorization. Snapshots expose only
+the caller; capacity, traffic, cache and deadlines are bounded. Gameplay effects
+remain unavailable; no production route is mounted. Local checks pass: 38 Rust
+tests plus one doctest, eight gateway tests, 14 browser scenarios, 121 governance
+tests, lint, API build, protocol types/bindings, Clippy and preservation. Exact
+Rust CI 42832214306 succeeds. A separate postcommit audit passes. VL-022 is
+VERIFIED; canonical handoff/review: VL-022-single-agent-v1.json. Both new reviews
+declare SINGLE_AGENT_SEQUENTIAL_AUDIT and independent:false under owner policy.
+
+Evidence: persistence/CI-0033fcd.json and gateway/CI-edf45c7.json. Counts:
+14 VERIFIED, 2 BLOCKED_EXTERNAL, 94 TODO. VL-017 is READY; no task is IN_PROGRESS.
+Separate Quality 42832214573 at edf45c7 remains queued/running at observation;
+core, images and several browser groups pass. Do not infer aggregate success.
+All owned local children, tunnels, test schemas, roles and containers finished
+and are cleaned up. Remote CI is not promised automatic follow-up after this turn.
+
+**Next exact action:** inspect 42832214573 and preserve its final result. Read
+VL-017 and its direct dependencies/persistence plan; reserve explicit source
+paths through schedulerStore before implementing Rust orchestration, encryption
+and postcommit ACK. Do not add a Rust migrator or activate legacy namespaces.
+Keep owner IDE/CA, baseline and legacy ledgers untouched. Windows, Unity, GPU,
+rights, signing and public deployment remain separate gates. No agents spawned.
+
+## Previous checkpoints
+
 # Exact619e70c CI blocked before runner start; VL-022 reserved - 2026-11-10
 
 Correction619e70c653c37e18aa550eee5b7af9127ea01e8b is committed and pushed to

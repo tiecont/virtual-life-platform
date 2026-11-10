@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "supersedesObservationOnly": "CI-BILLING-619e70c.json",
+  "ownerDirection": "Owner made repository public for CI and requested continuation",
+  "repository": "https://github.com/tiecont/virtual-life-platform",
+  "observedVisibility": "PUBLIC",
+  "result": "RUNNERS_EXECUTED_AFTER_RERUN",
+  "proof": ["619e70c Rust42816216097 attempt2 success;Quality42816216290 attempt2 executed and failed stale code provenance","Corrected0033fcd Rust42825269546 andQuality42825269524 success","Gatewayedf45c7 Rust42832214306 success including actualChromiumWSSPG"],
+  "action": "No billing/payment/limits mutation; historical failure evidence unchanged. Repository visibility is owner-selected and does not authorize a game deployment.",
+  "remainingExternalGates": ["VL006 brand/rights","VL007 named physicalWindows tiers","Unity/license/GPU/signing/public release gates"]
+}

@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-016",
+  "owner": "agent1",
+  "revision": 5,
+  "supersedes": "handoffs/VL-016-single-agent-v4.json",
+  "sourceRevision": "0033fcd1330cce1fb6dbb81bd3b14d12fba01c2a",
+  "completedAt": "2026-11-10T13:31:15Z",
+  "acceptanceMet": true,
+  "acceptanceScope": "Additive native game schema48,actual racing transactions/rollback and archived47/48->49 runtime compatibility; preserves every rejected attempt and requires actual aggregate Quality after correction",
+  "commands": [
+    {
+      "command": "gh run view 42825269524 --json status,conclusion,jobs",
+      "exitCode": 0,
+      "outcome": "Exact0033fcd aggregate Quality success:core,runtime images/Compose,all8browser groups and aggregate"
+    },
+    {
+      "command": "gh run view 42825269546 --json status,conclusion,jobs",
+      "exitCode": 0,
+      "outcome": "Exact0033fcd Rust success:actual PG schema/admission,archived migration expansion/rollback,bindings and OCI"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/invitations.test.ts tests/integration/native-game-schema.test.ts",
+      "exitCode": 0,
+      "tests": 25,
+      "scope": "Postcommit same-agent audit;all named VL016 source blobs equal0033fcd"
+    },
+    {
+      "command": "Independent Git blob comparison of all24 acceptance artifacts between0033fcd and current committed HEAD",
+      "exitCode": 0,
+      "outcome": "Source unchanged;all24hashes match committed source"
+    },
+    {
+      "command": "node scripts/check-scene-provenance.mjs",
+      "exitCode": 0,
+      "outcome": "7manifests/16source references;all release approvals false"
+    },
+    {
+      "command": "node --test tests/governance/*.test.mjs",
+      "exitCode": 0,
+      "tests": 121,
+      "scope": "Current source postcommit;not an additional historical independent review"
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0
+    }
+  ],
+  "artifacts": [
+    {
+      "ref": "apps/platform-api/src/db/migrations/0048_native_game_storage.sql",
+      "sha256": "8c54c14ba85ed9278b0f5239d9fa0c2a20b2e5ea029913047c78b3dafc8d964a"
+    },
+    {
+      "ref": "tests/integration/native-game-schema.test.ts",
+      "sha256": "3c2f9894e622ad511e32889d0b9472d5b848874aca6e1f9e41863c8a49c5615d"
+    },
+    {
+      "ref": "scripts/native-game-migration-compat.mjs",
+      "sha256": "e161cc014d09485d7b27953b17c27528288d223de9c24cb55b130ab93e3c7273"
+    },
+    {
+      "ref": "config/schema-compatibility-0047-native-expand.json",
+      "sha256": "7e890859817b8ed59c2c95aa62a36c19286418aaa5f713e0d74ed460d8cdd51b"
+    },
+    {
+      "ref": "docs/execution/desktop-first/persistence/README.md",
+      "sha256": "ae8ab59777b69a39f7ca44be6100fd2eef77a4ecb0225ca89b9b5fa7bf4db0a0"
+    },
+    {
+      "ref": "tests/integration/admin-proxy.test.ts",
+      "sha256": "fc204b09eef1abe2217664829e963322589f874596b1c88721fdcd6d2f88c64a"
+    },
+    {
+      "ref": "tests/integration/telemetry.test.ts",
+      "sha256": "8765af2a0b353dd5549225b297fddea77cb85c1525b2446683d9028d1b43daf1"
+    },
+    {
+      "ref": "tests/e2e/lodge-lobby.spec.ts",
+      "sha256": "912e36dbefce8eff33728e8a29ac296bcdbac03fa0cd550c4727739144556bf2"
+    },
+    {
+      "ref": "tests/e2e/maid-acceptance.spec.ts",
+      "sha256": "c570f486aadb12aa7c7138497f09abbf1dbc08d2d96c19a0dd113f600d32e346"
+    },
+    {
+      "ref": "tests/e2e/scene-performance.spec.ts",
+      "sha256": "f3dfe12b742397f29de9df14a222762fdb25e37901995024577f9f06a30008b0"
+    },
+    {
+      "ref": "tests/support/scene-cadence.ts",
+      "sha256": "fc541adb66f3977e89ba3aea69b40baeb19c0b95c93ef5b350f0952d58e1d3c8"
+    },
+    {
+      "ref": "tests/support/scene-profile.ts",
+      "sha256": "bf449a4334bab823f9b6f5df1b00374ef7696e0c9407daec33b00a8fd4a9cca1"
+    },
+    {
+      "ref": "docs/execution/desktop-first/web-compatibility/BROWSER-CI-CORRECTION.md",
+      "sha256": "499eddb77516ba051f22c08d46b8d41cbe80e29a6160d7c9fdb91a3064e7ea0b"
+    },
+    {
+      "ref": "docs/execution/desktop-first/persistence/CONTINUATION-CHECKS-2026-11-10.json",
+      "sha256": "84ee84cf925f8a3460a3fbfe76af9deb3c7ed88efea8c2f70429cc51d111c8db"
+    },
+    {
+      "ref": "docs/execution/desktop-first/persistence/CI-619e70c-ATTEMPT2.json",
+      "sha256": "1f7cb07ec48fc1219eee76ddc2b9569eaddca283acadb98ca8eb3ffea6bb3247"
+    },
+    {
+      "ref": "apps/platform-api/src/invitations/service.ts",
+      "sha256": "7fdb7c0a3db167fb6568a0a9c6824a700b62c62aa28ffd1a2781a39285eda98a"
+    },
+    {
+      "ref": "tests/integration/invitations.test.ts",
+      "sha256": "07605746a6b8d21752d67494872cbbba10f74e560cfb4e8e30de82566d10ef81"
+    },
+    {
+      "ref": "tests/e2e/scene.spec.ts",
+      "sha256": "8d745fcc172bacf12ba3b0e290d3d4dacaa7d9b5d3dd8345483e96e1144e3f36"
+    },
+    {
+      "ref": "packages/pixi-scene/src/renderer.ts",
+      "sha256": "d421ed940624a1eee01f3c60fb2edd44c655252001fb6c15636f272a494ff2c0"
+    },
+    {
+      "ref": "apps/portal-web/public/assets/library/provenance.json",
+      "sha256": "c7dd6bbf307f0433599ec191564fd8b113f447caedf1f6d131610649d6865968"
+    },
+    {
+      "ref": "apps/portal-web/public/assets/lounge/provenance.json",
+      "sha256": "85af254a277a3a33c63fc54124a156e80760f38ab73e5faffaf08d6b35d5ea7f"
+    },
+    {
+      "ref": "apps/portal-web/public/assets/maid/provenance.json",
+      "sha256": "8ee8c5a10a373c56bb2dde31161e2ba5d3a35ff6796e9a00e9611c53f1eaf17f"
+    },
+    {
+      "ref": "apps/portal-web/public/assets/park/provenance.json",
+      "sha256": "f3e62610efabe50954ec94582bfb68965c92c555e9b9d813666afeba86cfb694"
+    },
+    {
+      "ref": "apps/portal-web/public/assets/restaurant/provenance.json",
+      "sha256": "158c04de4d4b62b9c000d29b71637f8c8afd12ffe06b979b82923c6d18b80662"
+    }
+  ],
+  "acceptanceEvidence": [
+    "Eight racing real PG transactions commit one checkpoint/receipt/event/settlement/outbox;stale owner/epoch/version and failed effects leave no partial commit",
+    "Both actual archived47/48 API compatibility harnesses pass in exact0033fcd Rust CI,with rollback and journal/ciphertext preservation",
+    "Invitation lifetime derives from one clock instant;pre-input observation and immutable scene caching corrections pass unchanged browser budgets",
+    "Five stale renderer code fingerprints corrected under coordinator reservation;no media/license/release values changed"
+  ],
+  "ciRequired": [
+    {
+      "runId": 42825269546,
+      "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42825269546",
+      "sourceRevision": "0033fcd1330cce1fb6dbb81bd3b14d12fba01c2a",
+      "conclusion": "success"
+    },
+    {
+      "runId": 42825269524,
+      "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42825269524",
+      "sourceRevision": "0033fcd1330cce1fb6dbb81bd3b14d12fba01c2a",
+      "conclusion": "success"
+    }
+  ],
+  "limitations": [
+    "Same-agent audit is explicitly not independent;historical independent reviews and rejected attempts remain immutable",
+    "Native storage schema/encrypted envelope only;Rust command orchestration/encryption/postcommit ACK belongs toVL017",
+    "Owner changed repository to public forCI;this does not authorize game deployment,production data migration or registry/store release",
+    "Windows,Unity,GPU,licensing/signing gates remain"
+  ]
+}

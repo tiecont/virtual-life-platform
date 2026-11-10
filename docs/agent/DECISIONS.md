@@ -1,3 +1,20 @@
+# Owner-public repository CI and bounded WSS acceptance - 2026-11-10
+
+Owner changed repository visibility to PUBLIC for CI. This authorizes source
+visibility and CI, not game deployment or billing changes. Actual runs resumed;
+prior failures remain recorded. VL-016 requires exact Rust and aggregate Quality,
+both now successful at 0033fcd. Five renderer provenance hashes were reconciled
+without changing media origins, budgets or release approvals.
+
+VL-022 accepts a bounded opt-in transport: fixed-scope Nest ticket issuance,
+real Chromium WSS, Rust durable SQL admission and own-only snapshots. The exact
+Rust workflow runs the browser/PG negative suite. Production routes and game
+effects remain disabled; peer fanout and VL-017 orchestration are separate.
+Source edf45c7 has a separate pending Quality aggregate; no global green claim
+follows. Reviews are sequential same-agent audits with independent:false.
+
+## Previous checkpoints
+
 # Whole-plan continuation and bounded CI corrections - 2026-11-10
 
 Owner explicitly requests continuing all plans with high quality. Continue the

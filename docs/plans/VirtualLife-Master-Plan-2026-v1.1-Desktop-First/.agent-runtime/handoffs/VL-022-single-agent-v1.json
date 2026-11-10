@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-022",
+  "owner": "agent1",
+  "sourceRevision": "edf45c734ebb6bf6f37ee028059437c064df5ba2",
+  "completedAt": "2026-11-10T14:15:11Z",
+  "acceptanceMet": true,
+  "acceptanceScope": "Bounded default-off WSS transport and own-only authoritative snapshot/resync, actual Nest identity issuance, browser/Rust/TLS PG interop and negative/overload gates; no production or game effect activation",
+  "commands": [
+    {
+      "command": "cargo test --workspace --locked",
+      "exitCode": 0,
+      "tests": 38,
+      "compileFailDoctests": 1
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+      "exitCode": 0
+    },
+    {
+      "command": "cargo run --locked --package vl-protocol --bin native-codegen -- --check",
+      "exitCode": 0
+    },
+    {
+      "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs",
+      "exitCode": 0,
+      "scenarios": 14
+    },
+    {
+      "command": "pnpm --filter @virtual-city/platform-api build",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm --filter @virtual-city/native-protocol typecheck",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/native-protocol/test/wire.test.ts",
+      "exitCode": 0,
+      "tests": 4
+    },
+    {
+      "command": "node --test tests/governance/*.test.mjs",
+      "exitCode": 0,
+      "tests": 121,
+      "scope": "Separate postcommit audit"
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "warning": "Existing generated unused eslint-disable warning"
+    },
+    {
+      "command": "pnpm architecture:check",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm ci:check",
+      "exitCode": 0
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0
+    }
+  ],
+  "artifacts": [
+    {
+      "ref": "docs/execution/desktop-first/gateway/README.md",
+      "sha256": "fbca0d418930f49cee2c447ce088ae9b8ff320c7e40111aba9c82a61c83b9a59"
+    },
+    {
+      "ref": "docs/execution/desktop-first/gateway/LOCAL-CHECKS.json",
+      "sha256": "ee937eb4f4dab01973de7bd4949b852c8e168e49fe4d688af8f4e5b2390c4d40"
+    },
+    {
+      "ref": "crates/vl-gateway/src/lib.rs",
+      "sha256": "a470fc129ba47caeb6efe3a60f516569a1737a4e6e69ff7428bb4e1f0021accf"
+    },
+    {
+      "ref": "crates/vl-gateway/src/durable.rs",
+      "sha256": "d8c3c5ba928630a55e30097a33b6e560e8f8b175d13a86669c925d383d580b99"
+    },
+    {
+      "ref": "crates/vl-gateway/src/tests.rs",
+      "sha256": "299e1180e8e0c4b3cfafd73c005b1fcad1614dea59009f7eff3c6a6429ef2439"
+    },
+    {
+      "ref": "crates/vl-gateway/examples/interop.rs",
+      "sha256": "d92e5a464ed4333efe2d2a49d31e26c8cde41f02cada66ae9b9483f645f59c25"
+    },
+    {
+      "ref": "apps/platform-api/src/runtime-gateway/http.ts",
+      "sha256": "0d4daa5ac04b4f27c74bc9511b35d2775e077e763f0ad700d1e87744962df11b"
+    },
+    {
+      "ref": "scripts/native-wss-interop.mjs",
+      "sha256": "a4ad82f9e8956f58d397ee776de949e64b02b8f2548c623991e9372fc6d4356e"
+    },
+    {
+      "ref": "tests/native-wss/browser.ts",
+      "sha256": "5104b3fc508d725c27d731f93496f7e802b7ebbd5ee1999dcb1cf8426093d43a"
+    },
+    {
+      "ref": "proto/native/public.proto",
+      "sha256": "f0bd382af2f4b9f0e57c0498fc71df49883085b6c0ea56ca1c7f4433af2c32ba"
+    },
+    {
+      "ref": "contracts/generated/csharp/GENERATION.json",
+      "sha256": "7e6d8bab5ea20ab159e1d702097944a9ac8ca00d2099f3e1efce089c709c37d5"
+    },
+    {
+      "ref": ".github/workflows/rust-runtime.yml",
+      "sha256": "e3033368764ea6a7568f6910c9b39a88de29a62ab800e25168cfa8b0f7a881a1"
+    }
+  ],
+  "acceptanceEvidence": [
+    "Actual Chromium14scenarios: issued ticket,CSRF/scope injection,replay,expired/forged ticket,revocation of cached data,content mismatch,reconnect,oversize/text rejection and zero game DML",
+    "Eight gateway TCP/rate/cache/identity/deadline tests,including bounded connection capacity and32reply cache",
+    "Exact Ubuntu Rust42832214306 SUCCESS,including browser14,38Rust+1doctest,generated bindings,17durable scenarios,actualPG/archived migration compatibility and OCI"
+  ],
+  "ciRequired": [
+    {
+      "runId": 42832214306,
+      "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42832214306",
+      "conclusion": "success",
+      "sourceRevision": "edf45c734ebb6bf6f37ee028059437c064df5ba2"
+    }
+  ],
+  "limitations": [
+    "Same-agent sequential audit under owner policy; not independent",
+    "No production Nest/runtime route is mounted; only opt-in host libraries and a loopback example",
+    "Movement/game effects return unavailable; no durable gameplay ACK,reward or legacy writer cutover",
+    "Own-only projection; privacy-filtered peer fanout remains separately gated",
+    "Ephemeral browser PKI bypass is fixture-only; production TLS/Windows/Unity/GPU/signing not qualified",
+    "Aggregate Quality on edf45c7 is a separate run; no aggregate success inferred from Rust"
+  ]
+}
