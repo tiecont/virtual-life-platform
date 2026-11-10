@@ -27,7 +27,7 @@
   },
   "tasks": {
     "VL-001": {
-      "status": "IN_REVIEW",
+      "status": "VERIFIED",
       "owner": "agent1",
       "evidenceRefs": [],
       "reservationId": "VL-001-3e20cfc5-23a4-4bd9-8996-43cd4d2049e5",
@@ -41,17 +41,21 @@
         }
       ],
       "handoffRef": "handoffs/VL-001-revision2.json",
-      "handoffSha256": "55b879622d0df0fbac1fa326365b94d65d5b3095a95f6153a928cd787bcac418"
+      "handoffSha256": "55b879622d0df0fbac1fa326365b94d65d5b3095a95f6153a928cd787bcac418",
+      "reviewRef": "reviews/VL-001-revision2-agent2.json",
+      "reviewSha256": "6058498853ca2100f837a05377b4b143d7a6881ec13f859c346a83b7f822d7d2"
     },
     "VL-002": {
-      "status": "TODO",
-      "owner": null,
-      "evidenceRefs": []
+      "status": "IN_PROGRESS",
+      "owner": "agent1",
+      "evidenceRefs": [],
+      "reservationId": "VL-002-2401cafe-b2eb-4735-9209-25d6a0224421"
     },
     "VL-003": {
-      "status": "TODO",
-      "owner": null,
-      "evidenceRefs": []
+      "status": "IN_PROGRESS",
+      "owner": "agent1",
+      "evidenceRefs": [],
+      "reservationId": "VL-003-8dfcccec-e96d-48b1-b208-6d68d1113e15"
     },
     "VL-004": {
       "status": "TODO",
@@ -619,8 +623,39 @@
       "worktree": "/home/tiecont/Projects/virtual-city",
       "sourceRevision": "071bcbbdc63ea28ba43dc7e11b68869793019da0",
       "createdAt": "2026-11-09T17:24:25.921Z"
+    },
+    "VL-002-2401cafe-b2eb-4735-9209-25d6a0224421": {
+      "id": "VL-002-2401cafe-b2eb-4735-9209-25d6a0224421",
+      "ref": "reservations/VL-002-2401cafe-b2eb-4735-9209-25d6a0224421.json",
+      "taskId": "VL-002",
+      "owner": "agent1",
+      "paths": [
+        "docs/execution/desktop-first/DECISION-ADR-003-APPROVAL.md",
+        "docs/execution/desktop-first/VL-002-CHECKS.json"
+      ],
+      "branch": "codex/desktop-first-backend",
+      "worktree": "/home/tiecont/Projects/virtual-city",
+      "sourceRevision": "659eb732e0460ad2ca3bd8ee577399ae69071563",
+      "createdAt": "2026-11-10T01:24:15.090Z"
+    },
+    "VL-003-8dfcccec-e96d-48b1-b208-6d68d1113e15": {
+      "id": "VL-003-8dfcccec-e96d-48b1-b208-6d68d1113e15",
+      "ref": "reservations/VL-003-8dfcccec-e96d-48b1-b208-6d68d1113e15.json",
+      "taskId": "VL-003",
+      "owner": "agent1",
+      "paths": [
+        "docs/execution/desktop-first/DB-IDENTITY-CONTRACTS.md",
+        "docs/execution/desktop-first/VL-003-DB-INVENTORY.json",
+        "docs/execution/desktop-first/VL-003-CHECKS.json",
+        "docs/execution/desktop-first/migration-reservations",
+        "scripts/desktop-db-inventory.mjs"
+      ],
+      "branch": "codex/desktop-first-backend",
+      "worktree": "/home/tiecont/Projects/virtual-city",
+      "sourceRevision": "659eb732e0460ad2ca3bd8ee577399ae69071563",
+      "createdAt": "2026-11-10T01:24:15.176Z"
     }
   },
   "gateEvidence": {},
-  "updatedAt": "2026-11-10T01:19:30.242Z"
+  "updatedAt": "2026-11-10T01:24:15.217Z"
 }

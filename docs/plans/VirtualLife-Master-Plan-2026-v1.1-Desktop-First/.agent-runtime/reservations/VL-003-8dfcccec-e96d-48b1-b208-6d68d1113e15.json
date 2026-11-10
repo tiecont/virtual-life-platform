@@ -1,0 +1,17 @@
+{
+  "id": "VL-003-8dfcccec-e96d-48b1-b208-6d68d1113e15",
+  "ref": "reservations/VL-003-8dfcccec-e96d-48b1-b208-6d68d1113e15.json",
+  "taskId": "VL-003",
+  "owner": "agent1",
+  "paths": [
+    "docs/execution/desktop-first/DB-IDENTITY-CONTRACTS.md",
+    "docs/execution/desktop-first/VL-003-DB-INVENTORY.json",
+    "docs/execution/desktop-first/VL-003-CHECKS.json",
+    "docs/execution/desktop-first/migration-reservations",
+    "scripts/desktop-db-inventory.mjs"
+  ],
+  "branch": "codex/desktop-first-backend",
+  "worktree": "/home/tiecont/Projects/virtual-city",
+  "sourceRevision": "659eb732e0460ad2ca3bd8ee577399ae69071563",
+  "createdAt": "2026-11-10T01:24:15.176Z"
+}
