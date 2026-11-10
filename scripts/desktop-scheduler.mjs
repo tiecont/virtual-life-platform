@@ -122,6 +122,8 @@ export function schedulerStore(root=runtimeRoot,tasksRef=planRoot+'/06-execution
     for(const current of Object.values(state.tasks))if(claimed.has(current.status)) {
       const reservation=state.reservations[current.reservationId];
       assert.deepEqual(await json(localRef(reservation.ref)),reservation,'Reservation mirror mismatch');
+    }
+    for(const reservation of Object.values(state.reservations)) {
       for(const previous of reservation.history??[]) {
         const bytes=await readFile(localRef(previous.ref));
         assert.equal(sha256(bytes),previous.sha256,'Historical reservation changed');

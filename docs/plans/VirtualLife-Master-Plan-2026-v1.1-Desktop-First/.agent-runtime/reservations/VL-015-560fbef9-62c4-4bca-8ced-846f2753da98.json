@@ -1,0 +1,18 @@
+{
+  "id": "VL-015-560fbef9-62c4-4bca-8ced-846f2753da98",
+  "ref": "reservations/VL-015-560fbef9-62c4-4bca-8ced-846f2753da98.json",
+  "taskId": "VL-015",
+  "owner": "agent1",
+  "paths": [
+    "crates/vl-game-core/**",
+    "Cargo.toml",
+    "Cargo.lock",
+    "apps/game-runtime/Dockerfile",
+    ".github/workflows/rust-runtime.yml",
+    "docs/execution/desktop-first/game-core/**"
+  ],
+  "branch": "codex/desktop-first-backend",
+  "worktree": "/home/tiecont/Projects/virtual-city",
+  "sourceRevision": "a097c00cd565ac1534c63a546cffd7e9e78fc823",
+  "createdAt": "2026-11-10T04:25:55.771Z"
+}

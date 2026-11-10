@@ -163,9 +163,10 @@
       "evidenceRefs": []
     },
     "VL-015": {
-      "status": "TODO",
-      "owner": null,
-      "evidenceRefs": []
+      "status": "IN_PROGRESS",
+      "owner": "agent1",
+      "evidenceRefs": [],
+      "reservationId": "VL-015-560fbef9-62c4-4bca-8ced-846f2753da98"
     },
     "VL-016": {
       "status": "TODO",
@@ -843,7 +844,7 @@
     },
     "VL-013-0c6147a1-e3b9-4ad7-a0f1-ab0cd5fc7824": {
       "id": "VL-013-0c6147a1-e3b9-4ad7-a0f1-ab0cd5fc7824",
-      "ref": "reservations/VL-013-0c6147a1-e3b9-4ad7-a0f1-ab0cd5fc7824.json",
+      "ref": "reservations/VL-013-ac81455a-50c6-4a48-9316-655ab7d6459b.json",
       "taskId": "VL-013",
       "owner": "agent1",
       "paths": [
@@ -851,16 +852,38 @@
         "apps/platform-api/src/identity/runtime-tickets.ts",
         "tests/unit/runtime-tickets.test.ts",
         "proto/native/fixtures/security/**",
-        "docs/execution/desktop-first/security/TICKET-TRUST.md",
-        "Cargo.toml",
-        "Cargo.lock",
-        "apps/game-runtime/Dockerfile",
-        ".github/workflows/rust-runtime.yml"
+        "docs/execution/desktop-first/security/TICKET-TRUST.md"
       ],
       "branch": "codex/desktop-first-backend",
       "worktree": "/home/tiecont/Projects/virtual-city",
       "sourceRevision": "01e194dd37215a15cdb4e1988717825d69b83c3c",
-      "createdAt": "2026-11-10T03:01:13.190Z"
+      "createdAt": "2026-11-10T03:01:13.190Z",
+      "amendedAt": "2026-11-10T04:25:54.992Z",
+      "reason": "Committed VL-013 slice source 684eeff independently approved; release shared workspace/CI files for READY VL-015 while ticket acceptance remains open",
+      "history": [
+        {
+          "ref": "reservations/VL-013-0c6147a1-e3b9-4ad7-a0f1-ab0cd5fc7824.json",
+          "sha256": "40f7845727fc0de8f8e6c4623459bbf002dd39ce74e916f4b18729462df708e5"
+        }
+      ]
+    },
+    "VL-015-560fbef9-62c4-4bca-8ced-846f2753da98": {
+      "id": "VL-015-560fbef9-62c4-4bca-8ced-846f2753da98",
+      "ref": "reservations/VL-015-560fbef9-62c4-4bca-8ced-846f2753da98.json",
+      "taskId": "VL-015",
+      "owner": "agent1",
+      "paths": [
+        "crates/vl-game-core/**",
+        "Cargo.toml",
+        "Cargo.lock",
+        "apps/game-runtime/Dockerfile",
+        ".github/workflows/rust-runtime.yml",
+        "docs/execution/desktop-first/game-core/**"
+      ],
+      "branch": "codex/desktop-first-backend",
+      "worktree": "/home/tiecont/Projects/virtual-city",
+      "sourceRevision": "a097c00cd565ac1534c63a546cffd7e9e78fc823",
+      "createdAt": "2026-11-10T04:25:55.771Z"
     }
   },
   "gateEvidence": {
@@ -876,5 +899,5 @@
       }
     ]
   },
-  "updatedAt": "2026-11-10T03:01:15.026Z"
+  "updatedAt": "2026-11-10T04:25:56.507Z"
 }
