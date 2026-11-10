@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-016",
+  "sourceRevision": "b22c73842fa34fbfc6008ade5e3a7870aa40ddc6",
+  "runId": 42762794027,
+  "jobId": 129652212819,
+  "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42762794027",
+  "runner": "ubuntu-24.04",
+  "conclusion": "success",
+  "steps": [
+    "Rust fmt/check/clippy/workspace tests",
+    "Generated public bindings and cross-language fixtures",
+    "Frozen pure reducer replay across independent processes",
+    "Actual PostgreSQL identity-issued Node tickets -> Rust trust checker",
+    "Six PostgreSQL native schema tests and archived47 expansion/compatible-old rollback/current48 roll-forward",
+    "OCI build and default-off smoke"
+  ],
+  "logRef": "artifacts/desktop-first/vl016/hosted-42762794027.log",
+  "logSha256": "4ac113d3ae79aa2e71cec45d0de58effa0ca0af018c7b81cd098cd1343e7d730",
+  "logBytes": 201587,
+  "localCompatibility": {
+    "ref": "artifacts/desktop-first/vl016/compat-5e5d4dc5/facts.json",
+    "sha256": "ae77505d94f26b0fc6ea19a6eb3f8e2d4738c86f897cc044ec95ef8c80933998",
+    "result": "PASS",
+    "cleanupComplete": true
+  },
+  "aggregateQuality": {
+    "runId": 42762785071,
+    "conclusion": "failure",
+    "unitTestsPassed": 493,
+    "integrationTestsPassed": 774,
+    "integrationTestsFailed": 2,
+    "reason": "Telemetry/admin expectations retain47 although actual additive schema has48; correction required before task acceptance",
+    "logRef": "artifacts/desktop-first/vl016/quality-core129652184785.log",
+    "logSha256": "678145acc8b62ac86182f79a9665a6c62ae2e6611260de150f1ecd11c6d91294"
+  },
+  "limitations": [
+    "Rust workflow success does not qualify aggregate Quality, host/auth/orchestration, Unity/Windows, physical GPU or release",
+    "Initial rejected handoff and both reviews remain immutable; followup source requires fresh review"
+  ]
+}

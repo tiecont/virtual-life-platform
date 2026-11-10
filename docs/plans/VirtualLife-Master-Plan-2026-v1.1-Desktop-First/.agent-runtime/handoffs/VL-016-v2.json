@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-016",
+  "owner": "agent1",
+  "sourceRevision": "b22c73842fa34fbfc6008ade5e3a7870aa40ddc6",
+  "acceptanceMet": true,
+  "environment": "CachyOS Linux x86_64; Node26.9.0; pnpm11.28.5; wrapper-owned disposable PostgreSQL",
+  "commands": [
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/native-game-schema.test.ts",
+      "exitCode": 0,
+      "tests": 6
+    },
+    {
+      "command": "pnpm --filter @virtual-city/platform-api build",
+      "exitCode": 0
+    },
+    {
+      "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-migration-compat.mjs",
+      "exitCode": 0,
+      "scope": "Exact b22c738 source; actual archived47 API on disposable PostgreSQL; compat-5e5d4dc5/facts.json PASS and cleanupComplete true"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/schema-compatibility.test.ts tests/integration/room-owner.test.ts",
+      "exitCode": 0,
+      "tests": 6
+    },
+    {
+      "command": "pnpm --filter @virtual-city/platform-api typecheck",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm exec tsc --noEmit --target ES2022 --module commonjs --esModuleInterop --skipLibCheck tests/integration/native-game-schema.test.ts",
+      "exitCode": 0
+    },
+    {
+      "command": "node --test tests/governance/*.test.mjs",
+      "exitCode": 0,
+      "tests": 119
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "warning": "Existing generated Buf unused eslint-disable"
+    },
+    {
+      "command": "pnpm ci:check",
+      "exitCode": 0
+    },
+    {
+      "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+      "exitCode": 0
+    },
+    {
+      "command": "python3 tools/validate_plan.py (cwd active plan)",
+      "exitCode": 0,
+      "warning": "Evidence file count differs from immutable manifest"
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm architecture:check",
+      "exitCode": 0,
+      "outcome": "123 tables,132 API files,21 areas,98 edges; worker boundary PASS"
+    },
+    {
+      "command": "gh run view 42762794027 --json status,conclusion,headSha,jobs",
+      "exitCode": 0,
+      "outcome": "Exact b22c738 Ubuntu linux-foundation SUCCESS, including Rust, generated bindings, frozen replay, real PG trust/schema/archived API compatibility and OCI"
+    }
+  ],
+  "artifacts": [
+    {
+      "ref": ".github/workflows/rust-runtime.yml",
+      "sha256": "e19a601bdb49842751a126688817f5979a0ae0673ce473207c41292c82cae067"
+    },
+    {
+      "ref": "apps/platform-api/src/db/migrations/0048_native_game_storage.sql",
+      "sha256": "8c54c14ba85ed9278b0f5239d9fa0c2a20b2e5ea029913047c78b3dafc8d964a"
+    },
+    {
+      "ref": "config/schema-compatibility-0047-native-expand.json",
+      "sha256": "7e890859817b8ed59c2c95aa62a36c19286418aaa5f713e0d74ed460d8cdd51b"
+    },
+    {
+      "ref": "docs/execution/desktop-first/migration-reservations/0048-implementation.json",
+      "sha256": "c66ca3037aa7963304fdbbe238ca19a77f61c812e77697a69b99e3597c0ba2ca"
+    },
+    {
+      "ref": "docs/execution/desktop-first/persistence/README.md",
+      "sha256": "ae8ab59777b69a39f7ca44be6100fd2eef77a4ecb0225ca89b9b5fa7bf4db0a0"
+    },
+    {
+      "ref": "docs/execution/desktop-first/verify-adoption.mjs",
+      "sha256": "6d2fc7a182682762c397142c13cdb26e858b5e4f41f455d9d91b49b32528a200"
+    },
+    {
+      "ref": "scripts/native-game-migration-compat.mjs",
+      "sha256": "e408183ea632a539644413f1559f5ce82c4404b0344b0fe1faed5aa9d6ca4a6c"
+    },
+    {
+      "ref": "tests/integration/native-game-schema.test.ts",
+      "sha256": "b4f81c80edc653023f5a9914433e829b06e939ef6290d26e517395fd02c56bcd"
+    },
+    {
+      "ref": "scripts/desktop-scheduler.mjs",
+      "sha256": "3aeb99ef8fe81726d2053ff73c6704e794b498bcd142f3fa52f13815a8b9f147"
+    },
+    {
+      "ref": "tests/governance/desktop-scheduler.test.mjs",
+      "sha256": "b2faf87c943a8562d0ec0d1d8c2c1f3866ad661efd6899ac4151220e6d2529b8"
+    },
+    {
+      "ref": "tests/governance/rust-workflow.test.mjs",
+      "sha256": "fa18264e179ecbfeb600c709e03e06bdffdb08460b6bcca02bb8c164e0a17378"
+    },
+    {
+      "ref": "docs/architecture/ownership.json",
+      "sha256": "26bd0deaa7c80ffb75513e47d71a7561040bef62d0e50b07bd9c2ffca9b2e286"
+    },
+    {
+      "ref": "docs/architecture/api-modules.json",
+      "sha256": "a3266fd726bf01e71979f313ce55d106e58f0cb7a8a57e0f5b04f8135fc232c9"
+    },
+    {
+      "ref": "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/README.md",
+      "sha256": "8bca9929e6b013bb8fc26bfb4cfd5eec283511696d4a8f7a96ae05f21520d077"
+    }
+  ],
+  "acceptanceEvidence": [
+    "Real PG eight competing finalizations commit one receipt/event/settlement/outbox with checkpoint CAS",
+    "Actual archived47 API/migrator expands to48 and rolls back with exact checksum policy preserving identity/legacy/native ciphertext; strict old refuses48 and checksums fail closed"
+  ],
+  "limitations": [
+    "Table namespace in existing search path, not provisioned role/schema isolation; no roles/keys/privileges granted",
+    "Storage contract with actual SQL transaction fixtures, no implemented Rust host, native admission, policy/auth or reward consumer",
+    "AEAD column shape only; host encrypts/binds private payload and owns nonce/key lifecycle",
+    "Default one runtime owner; epoch checks are not distributed lease authority",
+    "Original47SQL and historical0048 reservation unchanged; new implementation addendum only",
+    "No production migration, public release, Unity/Windows or GPU qualification",
+    "Independent corrected review still required; aggregate Quality42762794098 in progress and not qualified by Rust workflow success",
+    "Initial Ubuntu42760629846 failed at missing archived Git object; aggregate Quality42760629715 failed at missing native table ownership. Rejected handoff/review preserved unchanged."
+  ],
+  "revision": 2,
+  "supersedes": "handoffs/VL-016.json",
+  "ci": {
+    "runId": 42762794027,
+    "jobId": 129652212819,
+    "headSha": "b22c73842fa34fbfc6008ade5e3a7870aa40ddc6",
+    "conclusion": "success",
+    "rawLog": "artifacts/desktop-first/vl016/hosted-42762794027.log",
+    "sha256": "4ac113d3ae79aa2e71cec45d0de58effa0ca0af018c7b81cd098cd1343e7d730",
+    "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42762794027"
+  },
+  "compatibility": {
+    "ref": "artifacts/desktop-first/vl016/compat-5e5d4dc5/facts.json",
+    "sha256": "ae77505d94f26b0fc6ea19a6eb3f8e2d4738c86f897cc044ec95ef8c80933998",
+    "result": "PASS",
+    "cleanupComplete": true
+  },
+  "corrections": [
+    "VL016-R1: full history checkout provides pinned archived47 Git commit; workflow regression test; fresh full-history clone archive passed",
+    "Architecture CI: native.game-storage explicitly owns five game_native_* tables; db owns DDL only, no Nest gameplay authority",
+    "Coordinator extendReservation explicitly checks conflicts and retains immutable mirror history; narrowing cannot expand; independent governance regressions pass"
+  ]
+}

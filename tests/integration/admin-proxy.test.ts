@@ -1,7 +1,7 @@
 import {beforeAll,beforeEach,afterAll,afterEach,it,expect} from 'vitest';
 import {Pool} from 'pg';
 import {randomBytes,randomUUID} from 'node:crypto';
-import {migrate} from '../../apps/platform-api/src/db/migrations';
+import {migrate,migrationManifest} from '../../apps/platform-api/src/db/migrations';
 import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/config';
 import {OperatorService} from '../../apps/platform-api/src/identity/operator-service';
@@ -71,5 +71,6 @@ it('system observations enforce exact queries, authenticated fresh reads and cac
 
 it('system owner-port proxy exposes independent sources under the existing read policy and denies idle-expired authority',async()=>{
  const user=await login(),path='system-state?view=system&range=current';expect((await handler(request(path))).status).toBe(401);for(const invalid of [path+'&query=arbitrary',path.replace('current','1h'),path+'&view=system'])expect((await handler(request(invalid,undefined,user.cookie))).status).toBe(400);
- const response=await handler(request(path,undefined,user.cookie));expect(response.status).toBe(200);const value=await response.json();expect(value).toMatchObject({status:'FRESH',system:{database:{status:'OBSERVED',value:{responding:true}},pool:{status:'OBSERVED'},backlog:{status:'NOT_CONFIGURED'},workerLiveness:'UNKNOWN',versions:{expectedSchemaVersion:1,expectedMigrationCount:47}}});expect(JSON.stringify(value)).not.toContain(readToken);now+=300001;expect((await handler(request(path,undefined,user.cookie))).status).toBe(200);now+=15*60000+1;expect((await handler(request(path,undefined,user.cookie))).status).toBe(401);
+ const expectedMigrationCount=Object.keys(await migrationManifest()).length;
+ const response=await handler(request(path,undefined,user.cookie));expect(response.status).toBe(200);const value=await response.json();expect(value).toMatchObject({status:'FRESH',system:{database:{status:'OBSERVED',value:{responding:true}},pool:{status:'OBSERVED'},backlog:{status:'NOT_CONFIGURED'},workerLiveness:'UNKNOWN',versions:{expectedSchemaVersion:1,expectedMigrationCount}}});expect(JSON.stringify(value)).not.toContain(readToken);now+=300001;expect((await handler(request(path,undefined,user.cookie))).status).toBe(200);now+=15*60000+1;expect((await handler(request(path,undefined,user.cookie))).status).toBe(401);
 });

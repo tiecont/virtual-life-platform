@@ -1,3 +1,24 @@
+# Native storage CI correction checkpoint - 2026-11-10
+
+VL-016 remains IN_PROGRESS. Exact source b22c738 passed Ubuntu Rust42762794027,
+12 independent PG integration cases, archived47 rollback and comprehensive Agent2
+storage review. A separate exact-source Quality42762785071 failed two telemetry/
+admin migration-count assertions (47 expected,48 actual);493unit/774integration
+passed. Independent CI review requests correction; both reviews/handoffs remain.
+Coordinator reopened with immutable attempt history and reserved the two tests.
+Manifest-derived observation expectations now pass24focused real-PG tests.
+Evidence: docs/execution/desktop-first/persistence/CI-b22c738.json. No SQL/runtime
+behavior changed in this correction; new committed-source CI/review still required.
+Live counts10VERIFIED/2BLOCKED_EXTERNAL/2IN_PROGRESS/96TODO; no READY successor.
+
+Next exact action: publish correction, obtain exact-source CI and independent
+review before VL-016 verification. Continue VL-013 durable admission/policy and
+transaction-bound zero-unauthorized-write proof; VL-017 remains dependency-gated.
+CachyOS development/Ubuntu Linux CI/Windows functional/physical-GPU Windows QA
+split remains. Owner .idea directories and infra/botkeep-ca.pem are untouched.
+
+## Previous checkpoints
+
 # Pure reducer/RNG verified checkpoint - 2026-11-10
 
 VL-015 is VERIFIED at source `5386a8cd3cf3e4360fd55f8f06bc84d159ff540b`.

@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-016",
+  "reviewer": "agent2",
+  "sourceRevision": "b22c73842fa34fbfc6008ade5e3a7870aa40ddc6",
+  "handoffSha256": "eb767f196f04851ab29e10799df0579627dd42e6363860329c19f870717a6cfd",
+  "reviewedAt": "2026-11-10T06:01:22Z",
+  "decision": "APPROVED",
+  "findings": [],
+  "scope": "Independent corrected review of VL-016 storage acceptance only: additive DDL, actual PostgreSQL uniqueness/fencing/atomic transaction races, archived47 expansion and binary rollback compatibility, full-history CI correction, table ownership metadata, coordinator extendReservation/conflict/history behavior. This review does not qualify future host/auth/Windows work or global CI.",
+  "environment": {
+    "platform": "CachyOS Linux x86_64",
+    "node": "26.9.0",
+    "typescript": "5.9.3",
+    "postgresql": "17.7, wrapper-owned disposable containers",
+    "verificationRoot": "artifacts/desktop-first/vl016/agent2-v2-independent/source",
+    "isolation": "Fresh full-history --no-local clone detached at the exact source commit. API and ten dependency packages compiled from that clone. Existing installed external dependencies reused through symlinks; generated output stays inside ignored artifacts. Scheduler fixtures use independent state and reservations inside artifacts. No source, published handoff, coordinator runtime or owner private files were edited."
+  },
+  "sourceEvidence": {
+    "handoffRef": "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-016-v2.json",
+    "headEqualsSourceRevision": true,
+    "handoffArtifactsChecked": 14,
+    "allArtifactSha256MatchExactGitBlobsAndWorktree": true,
+    "privateCiAndCompatibilityEvidenceHashesMatch": true,
+    "hashAndCommandReport": "artifacts/desktop-first/vl016/agent2-v2-independent/facts.json",
+    "archived47SourceSha256": "dfc85fd186711f64c1b6287556bcf3e21864d1ab8e85fa345dfefd2bf6bed9bc",
+    "inspection": [
+      "Read mandatory repository master/AGENTS, active plan START-HERE/README/AGENTS/runtime, ADR-003, DATA-CONSISTENCY, SYSTEM-TOPOLOGY, migration overlay, task graph and current agent checkpoints; scheduler load validates source-bound VERIFIED dependencies VL-003/VL-012/VL-015.",
+      "Read the original CHANGES_REQUESTED review and independently inspected the initial DDL, migration/checksum policy, archived API harness, schema race tests, persistence contract, migration reservation and preservation implementation.",
+      "Inspected the complete correction diff: checkout fetch-depth:0, five native.game-storage table owners with db DDL-only mapping, coordinator-only extendReservation with active conflict checks and immutable mirror history, and corresponding governance tests.",
+      "Single Nest numbered/checksum/advisory-lock migration journal retained. No Rust migrator, platform ledger writer, privilege grant or native activation introduced. Preservation command independently passed; it is separate from migration acceptance."
+    ]
+  },
+  "correctionResolution": [
+    {
+      "id": "VL016-R1",
+      "status": "RESOLVED",
+      "evidence": "Fresh nonshallow clone contains pinned archived47 commit and successfully archives/builds/runs it. Corrected workflow explicitly fetches full history; regression test passes. Successful Ubuntu job includes the formerly failing archived compatibility command. Original rejection and failure artifacts retained unchanged."
+    },
+    {
+      "id": "native-table-ownership",
+      "status": "RESOLVED",
+      "evidence": "Five native tables explicitly map to native.game-storage; Nest db mapping states DDL ownership only. Architecture checker passes 123 tables plus journal, 132 API files, 21 areas, 98 edges and worker boundaries."
+    },
+    {
+      "id": "coordinator-reservation-extension",
+      "status": "VERIFIED_IN_SCOPE",
+      "evidence": "18 focused governance tests pass. Additional independent fixture covers IN_PROGRESS path conflicts, agent2 rejection, repeated extend/narrow hashed history, released-path reacquisition conflict, IN_REVIEW freeze, CHANGES_REQUESTED reopen, final approval and history tamper rejection after VERIFIED. All fixture state is artifact-only."
+    }
+  ],
+  "commands": [
+    {
+      "command": "node scripts/desktop-scheduler.mjs status agent2",
+      "exitCode": 0,
+      "outcome": "VL-016 IN_REVIEW at handoffs/VL-016-v2.json; no coordinator write."
+    },
+    {
+      "command": "node artifacts/desktop-first/vl016/agent2-v2-runner.mjs",
+      "exitCode": 0,
+      "outcome": "Fresh exact-source verification PASS, including independent 14 Git blob/worktree hash comparisons, handoff hash, private CI/compatibility hashes, clone/archive, dependency/API builds, focused integration, archived API rollback, governance, architecture, preservation and downloaded CI log. All individual actual commands, exit codes and log hashes are in facts.json.",
+      "report": "artifacts/desktop-first/vl016/agent2-v2-independent/facts.json"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs node node_modules/vitest/vitest.mjs run --project integration tests/integration/native-game-schema.test.ts tests/integration/schema-compatibility.test.ts tests/integration/room-owner.test.ts --reporter=json --outputFile=<artifact-root>/vitest.json",
+      "cwd": "artifacts/desktop-first/vl016/agent2-v2-independent/source",
+      "exitCode": 0,
+      "outcome": "12/12 tests passed, zero skipped: six native storage tests including eight finalization competitors with one receipt/event/settlement/outbox, rollback/fencing/checksum negatives, two schema compatibility tests and four legacy RoomAuthority tests.",
+      "report": "artifacts/desktop-first/vl016/agent2-v2-independent/vitest.json"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-migration-compat.mjs",
+      "cwd": "artifacts/desktop-first/vl016/agent2-v2-independent/source",
+      "exitCode": 0,
+      "outcome": "Actual archived47 API/migrator compiled and ran on PG; two current migrators expanded to48. Strict old refused48; exact-prefix compatible old restarted ready; identity, legacy row and native AEAD bytes/decryption survived old rollback and current roll-forward. Prefix/tail checksum corruption and unknown suffix failed closed. cleanupComplete true.",
+      "report": "artifacts/desktop-first/vl016/agent2-v2-independent/source/artifacts/desktop-first/vl016/compat-89e2193b/facts.json"
+    },
+    {
+      "command": "node --test tests/governance/desktop-scheduler.test.mjs tests/governance/rust-workflow.test.mjs",
+      "cwd": "artifacts/desktop-first/vl016/agent2-v2-independent/source",
+      "exitCode": 0,
+      "outcome": "18/18 tests passed, zero skipped.",
+      "log": "artifacts/desktop-first/vl016/agent2-v2-independent/governance.log"
+    },
+    {
+      "command": "node scripts/with-test-db.mjs node /home/tiecont/Projects/virtual-city/artifacts/desktop-first/vl016/agent2-v2-independent/probes.mjs",
+      "cwd": "artifacts/desktop-first/vl016/agent2-v2-independent/source",
+      "exitCode": 0,
+      "outcome": "Four independent probe groups PASS: stale epoch/prior boot after takeover; cross-match outbox FK and match-local cascade; invoker-rights/no-grant catalog observations; extended coordinator lifecycle/history/conflicts. Schema and wrapper DB/network cleaned.",
+      "report": "artifacts/desktop-first/vl016/agent2-v2-independent/probes.json"
+    },
+    {
+      "command": "pnpm architecture:check",
+      "cwd": "artifacts/desktop-first/vl016/agent2-v2-independent/source",
+      "exitCode": 0,
+      "outcome": "Architecture, table ownership, API ownership and worker boundary passed.",
+      "log": "artifacts/desktop-first/vl016/agent2-v2-independent/architecture.log"
+    },
+    {
+      "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+      "cwd": "artifacts/desktop-first/vl016/agent2-v2-independent/source",
+      "exitCode": 0,
+      "outcome": "Preservation passed: original47 SQL, registered additive48 and archived immutable evidence retained.",
+      "log": "artifacts/desktop-first/vl016/agent2-v2-independent/preservation.log"
+    },
+    {
+      "command": "gh run view 42762794027 --json status,conclusion,headSha,jobs",
+      "exitCode": 0,
+      "outcome": "Completed SUCCESS; headSha b22c73842fa34fbfc6008ade5e3a7870aa40ddc6; linux-foundation job129652212819 and all substantive steps successful.",
+      "log": "artifacts/desktop-first/vl016/agent2-v2-independent/hosted-metadata.log"
+    },
+    {
+      "command": "gh run view 42762794027 --log",
+      "exitCode": 0,
+      "outcome": "Independently downloaded and inspected actual Ubuntu24.04 log. SHA256 exactly matches handoff: 4ac113d3ae79aa2e71cec45d0de58effa0ca0af018c7b81cd098cd1343e7d730. Log shows fetch-depth0, six PG schema tests, actual archived compatibility PASS and DB/network cleanup.",
+      "log": "artifacts/desktop-first/vl016/agent2-v2-independent/hosted-42762794027.log"
+    },
+    {
+      "command": "git rev-parse b22c73842fa34fbfc6008ade5e3a7870aa40ddc6^{tree} 821f4f1faa3e073d1d306b57c28fec8026f1e4b5^{tree}; git diff --stat b22c73842fa34fbfc6008ade5e3a7870aa40ddc6 821f4f1faa3e073d1d306b57c28fec8026f1e4b5 (two separate initial diagnostic invocations in original repository)",
+      "exitCode": 128,
+      "required": false,
+      "limitation": "The PR merge object was absent locally. Both diagnostics returned128; this was resolved by fetching it into the artifact-only clone and independently comparing trees. No source failure or modification.",
+      "outcome": "Retained diagnostic: unknown merge object821f4f1; requested source tree resolved to f0736444cc9e4d399260240899b95207821ee31b."
+    },
+    {
+      "command": "git fetch https://github.com/tiecont/virtual-life-platform.git 821f4f1faa3e073d1d306b57c28fec8026f1e4b5",
+      "cwd": "artifacts/desktop-first/vl016/agent2-v2-independent/source",
+      "exitCode": 0,
+      "outcome": "Fetched actual successful CI PR merge commit into artifact-only Git metadata."
+    },
+    {
+      "command": "git rev-parse b22c73842fa34fbfc6008ade5e3a7870aa40ddc6^{tree} 821f4f1faa3e073d1d306b57c28fec8026f1e4b5^{tree}",
+      "cwd": "artifacts/desktop-first/vl016/agent2-v2-independent/source",
+      "exitCode": 0,
+      "outcome": "Both exact tree IDs equal f0736444cc9e4d399260240899b95207821ee31b. CI checkout821f4f1 is byte-identical committed source to requested b22c738, despite different commit metadata."
+    },
+    {
+      "command": "git diff --exit-code b22c73842fa34fbfc6008ade5e3a7870aa40ddc6 821f4f1faa3e073d1d306b57c28fec8026f1e4b5",
+      "cwd": "artifacts/desktop-first/vl016/agent2-v2-independent/source",
+      "exitCode": 0,
+      "outcome": "Empty full-tree diff independently confirms exact-source CI equivalence."
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0,
+      "outcome": "No whitespace errors. Original source working tree retained; artifact-only clone has no tracked changes."
+    },
+    {
+      "command": "docker ps -a (owned project filters); docker network ls (owned project filters)",
+      "exitCode": 0,
+      "outcome": "No remaining owned containers/networks for reviewer integration fe463610, compatibility b9f0551a or probes d5877fef; all command processes finished."
+    }
+  ],
+  "ci": {
+    "runId": 42762794027,
+    "jobId": 129652212819,
+    "headSha": "b22c73842fa34fbfc6008ade5e3a7870aa40ddc6",
+    "actualCheckoutRevision": "821f4f1faa3e073d1d306b57c28fec8026f1e4b5",
+    "exactSourceTree": "f0736444cc9e4d399260240899b95207821ee31b",
+    "conclusion": "success",
+    "rawLogSha256": "4ac113d3ae79aa2e71cec45d0de58effa0ca0af018c7b81cd098cd1343e7d730",
+    "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42762794027"
+  },
+  "limitations": [
+    "Approval is storage acceptance only. SQL transaction fixtures do not qualify an implemented Rust host, admission/auth/policy mutation boundary, reward consumer or gameplay recovery.",
+    "Native tables share the configured search path. No dedicated roles/schema grants/RLS, key lifecycle, production privilege isolation or retention qualification. AEAD SQL constraints validate shape, not cryptographic authenticity.",
+    "One runtime owner remains the default. Epoch/boot checks require trusted host CAS and serialization; they are not distributed lease authority. No exactly-once transport or wallet credit claimed.",
+    "CI actually checked out a PR merge revision; reviewer fetched it and proved complete Git tree equality to the requested commit. OCI labels therefore name the merge revision. This review does not promote that image as a deployment artifact.",
+    "Focused checks were rerun independently; full lint, global governance, global CI and unrelated suites were not repeated. Ubuntu workflow success does not qualify aggregate Quality, Windows/Unity/GPU or future tasks.",
+    "Only the new review and ignored artifacts were written. No source repair, live-state/reservation/handoff edit, commit or push. Original independent failure evidence remains intact."
+  ],
+  "nextExactAction": "Coordinator may consume this exact handoff-hash/source-bound review for VL-016 storage verification; retain all future host/auth/Windows and aggregate CI gates separately."
+}

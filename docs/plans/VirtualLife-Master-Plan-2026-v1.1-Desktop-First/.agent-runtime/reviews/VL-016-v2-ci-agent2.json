@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-016",
+  "reviewer": "agent2",
+  "sourceRevision": "b22c73842fa34fbfc6008ade5e3a7870aa40ddc6",
+  "handoffSha256": "eb767f196f04851ab29e10799df0579627dd42e6363860329c19f870717a6cfd",
+  "handoffRef": "handoffs/VL-016-v2.json",
+  "reviewedAt": "2026-11-10T06:03:53Z",
+  "decision": "CHANGES_REQUESTED",
+  "scope": "Independent focused CI followup only: exact-source Quality metadata, supplied failed core-checks log, both current integration assertions and actual migration manifest. This does not replace the separate comprehensive review.",
+  "findings": [
+    {
+      "id": "VL016-CI-R1",
+      "severity": "HIGH",
+      "path": "tests/integration/admin-proxy.test.ts",
+      "line": 74,
+      "relatedLocations": [
+        {
+          "path": "tests/integration/telemetry.test.ts",
+          "line": 82
+        },
+        {
+          "path": "apps/platform-api/src/app.ts",
+          "line": 318
+        }
+      ],
+      "title": "Update both current integration expectations for additive migration 0048",
+      "description": "Both current integration tests still assert expectedMigrationCount:47 at the reviewed commit. The actual migrationManifest() contains 48 entries, including 0048_native_game_storage.sql; all 48 manifest checksums match SQL blobs at the exact sourceRevision. createApp derives the reported count from Object.keys(requiredMigrations).length, so both exercised API responses correctly report 48 and both assertions fail. Exact-source Quality run 42762785071/job129652184785 already demonstrates this regression: 2 integration tests failed, 774 passed, and pnpm check exited 1. This is a required CI regression caused by adding 0048 without updating these two current expectations, not evidence of a migration execution failure.",
+      "reproduction": {
+        "observedCommand": "pnpm check 2>&1 | tee artifacts/ci/core/check.log",
+        "runId": 42762785071,
+        "jobId": 129652184785,
+        "sourceRevision": "b22c73842fa34fbfc6008ade5e3a7870aa40ddc6",
+        "rawLog": "artifacts/desktop-first/vl016/quality-core129652184785.log",
+        "rawLogSha256": "678145acc8b62ac86182f79a9665a6c62ae2e6611260de150f1ecd11c6d91294",
+        "logLines": "1709-1766; summary 1763-1764; exit 1816-1818",
+        "expected": "Both assertions currently require expectedMigrationCount 47",
+        "actual": "Both responses contain expectedMigrationCount 48; admin-proxy.test.ts:74:150 and telemetry.test.ts:82:176 fail",
+        "exitCode": 1,
+        "focusedCommandForCorrection": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/admin-proxy.test.ts tests/integration/telemetry.test.ts",
+        "focusedCommandExecutedByReviewer": false
+      },
+      "requestedChange": "Update both current integration expectations to the current 48-entry manifest, or assert the count against the real current manifest while retaining meaningful response validation. Preserve explicitly historical 47-migration compatibility fixtures. Run the two focused integration files and obtain passing required Quality CI for the corrected committed source before approval."
+    }
+  ],
+  "checks": [
+    {
+      "command": "git rev-parse HEAD",
+      "exitCode": 0,
+      "actual": "b22c73842fa34fbfc6008ade5e3a7870aa40ddc6"
+    },
+    {
+      "command": "sha256sum docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-016-v2.json artifacts/desktop-first/vl016/quality-core129652184785.log",
+      "exitCode": 0,
+      "actual": "Independently computed handoff SHA256 eb767f196f04851ab29e10799df0579627dd42e6363860329c19f870717a6cfd and log SHA256 678145acc8b62ac86182f79a9665a6c62ae2e6611260de150f1ecd11c6d91294. Handoff sourceRevision equals reviewed commit."
+    },
+    {
+      "command": "gh run view 42762785071 --json databaseId,name,headSha,status,conclusion,url,jobs",
+      "exitCode": 0,
+      "actual": "Quality is completed/failure at exact b22c73842fa34fbfc6008ade5e3a7870aa40ddc6. core-checks job129652184785 failed at step 11, Lint,types,unit,integration and builds. runtime-images succeeded; aggregate quality failed; browser job skipped.",
+      "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42762785071/job/129652184785"
+    },
+    {
+      "command": "sed -n '1700,1775p' artifacts/desktop-first/vl016/quality-core129652184785.log; targeted rg for checkout SHA, pnpm check and exit status",
+      "exitCode": 0,
+      "actual": "Log checkout names exact b22c738. Lines1709-1766 show precisely the two 47-versus-48 assertion failures. Integration summary: 2 failed/61 passed files, 2 failed/774 passed tests. pnpm check and CI process exit 1 at lines1816-1818."
+    },
+    {
+      "command": "git show b22c73842fa34fbfc6008ade5e3a7870aa40ddc6:tests/integration/admin-proxy.test.ts; git show b22c73842fa34fbfc6008ade5e3a7870aa40ddc6:tests/integration/telemetry.test.ts; git show b22c73842fa34fbfc6008ade5e3a7870aa40ddc6:apps/platform-api/src/db/migrations.ts",
+      "exitCode": 0,
+      "actual": "Exact committed tests retain expectedMigrationCount:47 at lines74 and82. migrationManifest enumerates numbered SQL files and hashes their contents. app.ts:119 loads this manifest and app.ts:318 reports its entry count."
+    },
+    {
+      "command": "node --import tsx -e '<read-only probe: call actual migrationManifest(); enumerate exact-source SQL via git ls-tree; compare every manifest checksum to git show blobs; compare both test files byte-for-byte to exact source and report assertion lines>'",
+      "exitCode": 0,
+      "actual": {
+        "actualMigrationManifestCount": 48,
+        "exactCommittedSqlCount": 48,
+        "allManifestChecksumsMatchExactSource": true,
+        "bothTestsMatchExactCommittedSource": true,
+        "staleExpectations": [
+          "tests/integration/admin-proxy.test.ts:74 = 47",
+          "tests/integration/telemetry.test.ts:82 = 47"
+        ],
+        "lastMigration": "apps/platform-api/src/db/migrations/0048_native_game_storage.sql",
+        "lastMigrationSha256": "8c54c14ba85ed9278b0f5239d9fa0c2a20b2e5ea029913047c78b3dafc8d964a"
+      }
+    },
+    {
+      "command": "node scripts/desktop-scheduler.mjs status agent2",
+      "exitCode": 0,
+      "actual": "VL-016 is IN_REVIEW with handoffs/VL-016-v2.json. Read-only status only; no scheduler mutation."
+    }
+  ],
+  "limitations": [
+    "No integration suite or whole-suite rerun; failed execution evidence is the actual exact-source hosted Quality job, independently checked against current source and actual manifest.",
+    "Only this new review is authored. No source, state, reservation, handoff, other reviewer files, commits or subagents; owner .idea and infra/botkeep-ca.pem were not read.",
+    "This focused CI finding does not assess the broader persistence/security acceptance or supersede the comprehensive reviewer."
+  ],
+  "nextExactAction": "Coordinator addresses VL016-CI-R1 through its authorized workflow, then requests review of a new immutable handoff bound to corrected committed source and actual passing checks."
+}
