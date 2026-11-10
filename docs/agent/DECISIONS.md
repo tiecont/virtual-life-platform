@@ -1,3 +1,21 @@
+# Pure Rust determinism and reservation transfer - 2026-11-10
+
+VL-015 uses pinned rand_chacha0.10.0 ChaCha20 and HMAC-SHA256 match/content binding,
+bounded unbiased draws and checked cursor; fresh OS entropy/encrypted seed lifecycle
+remain host responsibilities. Canonical v1 is explicit binary framing with exact
+UTF-8/sorted keys, signed/unsigned tags and private chained SHA256 audit records.
+Fixed arithmetic uses signed milli-units/i128 intermediates and truncation toward
+zero. Full private checkpoint/action/audit data is never an automatic public event.
+Synthetic fixture proves primitive behavior, not Pet Arena/Lodge rules or auth.
+Later versions must retain fixtures/adapters instead of rewriting frozen hashes.
+
+Coordinator can only narrow editable reservations, with reason/new mirror and
+hashed prior mirrors checked even after task verification. This releases completed
+shared-file slices without falsely completing the task or overlapping ownership.
+Independent VL-015 review covers scheduler changes and deterministic primitives.
+
+## Previous decisions
+
 # Native protocol generation boundary - 2026-11-10
 
 VL-012 keeps public WSS messages separate from internal service claims. Successful

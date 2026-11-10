@@ -163,10 +163,14 @@
       "evidenceRefs": []
     },
     "VL-015": {
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "owner": "agent1",
       "evidenceRefs": [],
-      "reservationId": "VL-015-560fbef9-62c4-4bca-8ced-846f2753da98"
+      "reservationId": "VL-015-560fbef9-62c4-4bca-8ced-846f2753da98",
+      "handoffRef": "handoffs/VL-015.json",
+      "handoffSha256": "bb8d651010d9e6d1fedfeb0c952bdb32d5894a08f4e7083e00b3dc47b21183cb",
+      "reviewRef": "reviews/VL-015-agent2.json",
+      "reviewSha256": "ce69f4290b922db029f4d1804a5181bc5965940e83f8a6e0ab315749c11ce285"
     },
     "VL-016": {
       "status": "TODO",
@@ -899,5 +903,5 @@
       }
     ]
   },
-  "updatedAt": "2026-11-10T04:25:56.507Z"
+  "updatedAt": "2026-11-10T04:54:34.279Z"
 }

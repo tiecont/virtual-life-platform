@@ -1,3 +1,30 @@
+# Pure reducer verified handoff - 2026-11-10
+
+VL-015 VERIFIED at source5386a8cd3cf3e4360fd55f8f06bc84d159ff540b. Independent
+review `reviews/VL-015-agent2.json` APPROVED, hash
+ce69f4290b922db029f4d1804a5181bc5965940e83f8a6e0ab315749c11ce285;
+handoff hash bb8d651010d9e6d1fedfeb0c952bdb32d5894a08f4e7083e00b3dc47b21183cb.
+Exact Ubuntu42757150679/job129634050953 PASS includes Rust/replay/codegen/PG/OCI.
+Evidence `docs/execution/desktop-first/game-core/CI-5386a8c.json` binds raw log hash.
+Local25Rust+1doctest,118governance,lint/CI/preservation/110task validator PASS;
+Agent2 independently passed4Rust probes and reservation terminal-history tampering.
+Pure fixture only: no auth/PG persistence or domain gameplay acceptance claimed.
+
+Counts10VERIFIED/2BLOCKED_EXTERNAL/1IN_PROGRESS/97TODO;VL-016 READY.
+VL-013 shared Cargo/workflow/Dockerfile paths were safely released through new
+coordinator narrowReservation with hashed history; security task remains open.
+Aggregate Quality5386a8c is still running, not qualified by Rust success.
+
+**Next exact action:** Reserve VL-016, recheck0048 reservation and47source migration
+checksums, implement separate native game storage/receipts/events/outbox under
+existing Nest numbered journal; real PG races must prove one settlement and stale
+epoch/version rejection, plus expand/old-runtime rollback compatibility. Keep
+old47SQL, legacy tables/ledgers and immutable plan inputs intact. Complete VL-013
+real admission/policy/authenticated transport and zero-unauthorized-write proof
+before allowing VL-017. Windows/Unity/physicalGPU/brand/license gates remain.
+
+## Previous checkpoints
+
 # Ticket trust continuation handoff - 2026-11-10
 
 Live counts: 9 VERIFIED, 2 BLOCKED_EXTERNAL, 1 IN_PROGRESS, 98 TODO. VL-012 is

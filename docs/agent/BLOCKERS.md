@@ -1,3 +1,18 @@
+# Remaining gates after reducer verification - 2026-11-10
+
+VL-015 is independently reviewed and VERIFIED with actual exact-source UbuntuCI
+42757150679. VL-016 is READY;shared reservation conflict has been resolved by
+coordinator narrowing with immutable history. No reason to stop Linux DB work.
+
+VL-013 remains IN_PROGRESS: real admission/allocator, durable policy generation
+owner/authenticated transport and transaction-bound zero-unauthorized-write proof
+are unfinished. Pure reducer approval does not qualify those gates or unlock VL-017.
+Aggregate Quality5386a8c remains running separately;runtime-images has passed.
+VL-006 brand approval,VL-007 named Windows tiers,Unity/licenses/Windows builds,
+physicalGPU FPS/shader/DirectX12 and signing/public release gates remain unchanged.
+
+## Previous checkpoints
+
 # Ticket trust remaining acceptance - 2026-11-10
 
 VL-012 is VERIFIED. VL-013 corrected partial source684eeff has independent slice

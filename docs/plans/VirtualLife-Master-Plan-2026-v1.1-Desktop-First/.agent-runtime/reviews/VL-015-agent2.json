@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-015",
+  "reviewer": "agent2",
+  "sourceRevision": "5386a8cd3cf3e4360fd55f8f06bc84d159ff540b",
+  "handoffSha256": "bb8d651010d9e6d1fedfeb0c952bdb32d5894a08f4e7083e00b3dc47b21183cb",
+  "reviewedAt": "2026-11-10T04:51:28Z",
+  "decision": "APPROVED",
+  "findings": [],
+  "scope": "Pure deterministic reducer, fixed-point arithmetic, canonical encoding/replay and bounded versioned RNG; includes reservation narrowing a097c00cd565ac1534c63a546cffd7e9e78fc823 and terminal-history validation followup in the exact source revision.",
+  "environment": {
+    "platform": "CachyOS Linux x86_64",
+    "node": "26.9.0",
+    "cargo": "1.99.1 (5f94df478 2026-08-27)",
+    "RUSTUP_HOME": "/home/tiecont/Projects/virtual-city/artifacts/toolchains/rustup",
+    "CARGO_HOME": "/home/tiecont/Projects/virtual-city/artifacts/toolchains/cargo",
+    "CARGO_TARGET_DIR": "/home/tiecont/Projects/virtual-city/artifacts/desktop-first/vl015/target",
+    "CARGO_NET_OFFLINE": "true",
+    "TMPDIR": "/home/tiecont/Projects/virtual-city/artifacts/desktop-first/vl015/tmp"
+  },
+  "sourceEvidence": {
+    "handoffRef": "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-015.json",
+    "headEqualsSourceRevision": true,
+    "handoffArtifactsChecked": 16,
+    "allArtifactSha256MatchExactGitBlobsAndWorktree": true,
+    "hashReport": "artifacts/desktop-first/vl015/source-hashes.json",
+    "reservationReport": "artifacts/desktop-first/vl015/reservation-hashes.json",
+    "reservationMirrorsMatchExactGitBlobs": 3,
+    "sourceInspection": [
+      "Read repository/master/active AGENTS, runtime contract, current agent checkpoints, VL-015 and direct dependency task definitions, ADR-003, migration and Rust/security architecture.",
+      "Inspected exact committed reducer/canonical/entropy/fixed implementations, tests, synthetic fixture, replay runner, Cargo graph, Dockerfile and workflow changes.",
+      "Inspected a097c00 narrowing implementation and tests, and the 5386a8c followup checking historical reservation hashes for every reservation, including terminal tasks."
+    ]
+  },
+  "commands": [
+    {
+      "command": "node scripts/desktop-scheduler.mjs status agent2",
+      "exitCode": 0,
+      "outcome": "VL-015 IN_REVIEW; nine VERIFIED tasks; no live-state mutation."
+    },
+    {
+      "command": "node artifacts/desktop-first/vl015/agent2-run.mjs",
+      "exitCode": 1,
+      "required": false,
+      "limitation": "Reviewer orchestration completed the successful Rust/replay/governance/public-API checks below, then failed on an incorrect relative import in the ignored scheduler probe. This harness error is retained in scheduler-probes.log; the corrected focused invocation passed."
+    },
+    {
+      "command": "/home/tiecont/Projects/virtual-city/artifacts/toolchains/cargo/bin/cargo test --workspace --locked",
+      "exitCode": 0,
+      "outcome": "25 tests and one compile-fail doctest passed; includes 12 game-core tests and three 256-case properties.",
+      "log": "artifacts/desktop-first/vl015/workspace-test.log"
+    },
+    {
+      "command": "/home/tiecont/Projects/virtual-city/artifacts/toolchains/cargo/bin/cargo clippy --workspace --all-targets --locked -- -D warnings",
+      "exitCode": 0,
+      "log": "artifacts/desktop-first/vl015/clippy.log"
+    },
+    {
+      "command": "/home/tiecont/Projects/virtual-city/artifacts/toolchains/cargo/bin/cargo fmt --all -- --check",
+      "exitCode": 0,
+      "log": "artifacts/desktop-first/vl015/fmt.log"
+    },
+    {
+      "command": "node crates/vl-game-core/tools/check-replay.mjs",
+      "exitCode": 0,
+      "outcome": "Two independent processes matched all five frozen turn hashes; fixture SHA256 05455f0beb0b1dab227b6b03dae48506e79058c6feb2d35bd46d8e581bab14d2.",
+      "log": "artifacts/desktop-first/vl015/replay.log"
+    },
+    {
+      "command": "node --test tests/governance/desktop-scheduler.test.mjs tests/governance/rust-workflow.test.mjs",
+      "exitCode": 0,
+      "outcome": "17 tests passed, including 16 scheduler cases counting nested cases.",
+      "log": "artifacts/desktop-first/vl015/governance.log"
+    },
+    {
+      "command": "/home/tiecont/Projects/virtual-city/artifacts/toolchains/cargo/bin/rustc --edition=2024 --test /home/tiecont/Projects/virtual-city/artifacts/desktop-first/vl015/agent2-probes.rs --extern vl_game_core=/home/tiecont/Projects/virtual-city/artifacts/desktop-first/vl015/target/debug/deps/libvl_game_core-e4f603a5627905af.rlib -L dependency=/home/tiecont/Projects/virtual-city/artifacts/desktop-first/vl015/target/debug/deps -o /home/tiecont/Projects/virtual-city/artifacts/desktop-first/vl015/agent2-probes",
+      "exitCode": 0,
+      "outcome": "Independent public-API probes compiled; one unused-import warning in the reviewer harness only.",
+      "log": "artifacts/desktop-first/vl015/compile-probes.log"
+    },
+    {
+      "command": "/home/tiecont/Projects/virtual-city/artifacts/desktop-first/vl015/agent2-probes --nocapture",
+      "exitCode": 0,
+      "outcome": "Four independent tests passed: exact encoding bounds/type framing; extreme integer arithmetic; stream resume across 13 word/block boundaries, actual rejection sampling and shuffle preservation; rejected candidate rollback, output/event/entropy capacity and u64 cursor exhaustion.",
+      "log": "artifacts/desktop-first/vl015/public-api-probes.log"
+    },
+    {
+      "command": "node artifacts/desktop-first/vl015/agent2-scheduler-probes.mjs",
+      "exitCode": 1,
+      "required": false,
+      "limitation": "Initial reviewer-only import path escaped one directory too far; repeated once before correction. No repository defect or live-state write. Failure log retained at artifacts/desktop-first/vl015/scheduler-probes.log."
+    },
+    {
+      "command": "node artifacts/desktop-first/vl015/agent2-followup.mjs",
+      "exitCode": 0,
+      "outcome": "Corrected scheduler probe, preservation, diff check and exact committed reservation-mirror hash checks passed."
+    },
+    {
+      "command": "node artifacts/desktop-first/vl015/agent2-scheduler-probes.mjs",
+      "exitCode": 0,
+      "outcome": "Isolated artifact fixture rejected equivalent scope, expansion, traversal and narrowing during review. After synthetic verification, tampering either of two historical mirrors caused load to fail closed; originals remained valid after restoration.",
+      "log": "artifacts/desktop-first/vl015/scheduler-probes-corrected.log"
+    },
+    {
+      "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+      "exitCode": 0,
+      "outcome": "Preservation audit passed for 209 legacy files, 75 vNext records, 105 owner inputs and 47 SQL files; no historical status promoted.",
+      "log": "artifacts/desktop-first/vl015/adoption.log"
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0,
+      "log": "artifacts/desktop-first/vl015/diff-check.log"
+    }
+  ],
+  "assessment": [
+    "Canonical tags, length framing, ordered UTF-8 map keys and domain framing are unambiguous. Independent probes passed exact 1 MiB byte, 30000-node and depth-32 boundaries and rejection immediately beyond them. Hash framing may impose a stricter effective payload limit, consistently returning Capacity.",
+    "Fixed arithmetic matches checked i64 add/sub and i128 multiply/divide references across an extreme-value Cartesian product, including zero division and negative truncation toward zero.",
+    "Pinned ChaCha20/HMAC binding and word cursor replay are deterministic. Rejected words consume cursor positions; rejection loops and draws are bounded per turn. Candidate rejection after RNG consumption or invalid output leaves the prior checkpoint unchanged under the documented trusted reducer contract.",
+    "Private state, action/audit bytes, hashes and settlement remain explicitly server-only. SecretSeed has no public Debug/Serialize/export implementation. Projection intents grant no authorization; no runtime route or automatic checkpoint broadcast was added.",
+    "Trusted host responsibilities are stated accurately: authentication, participant/turn policy, deduplication, restore integrity, seed provisioning/persistence, fencing and commit-before-emit are not implemented or certified by this pure crate.",
+    "Reservation narrowing keeps prior mirrors and hashes, cannot expand scope or run during review, and the exact-source followup validates history even after verification. The actual VL-013 original/narrowed mirrors and VL-015 mirror match committed bytes."
+  ],
+  "limitations": [
+    "Approval covers VL-015 deterministic primitives and the included scheduler change only. Fixtures and reviewer scheduler acceptance records are deliberately synthetic, not Pet Arena, Lodge or operational acceptance.",
+    "No authentication/admission, PostgreSQL integration, durable receipt/restore integrity, network WSS, wallet mutation, Unity/C# compilation, Windows build or physical-GPU qualification is claimed. Existing workspace security tests passing does not establish those gates.",
+    "Reducer implementations and Canonical conversions are trusted code. Deep copies, absence of I/O/interior mutation and privacy-safe domain events cannot be enforced by this trait; future domain reducers require independent review. In-memory trees are already allocated before canonical bounds apply, so transport decoders need separate preallocation limits.",
+    "OS CSPRNG provisioning, encrypted seed storage/retention and complete stack/compiler/upstream RNG zeroization remain host responsibilities; this review does not certify a complete secret-management system.",
+    "Actual verification here is local CachyOS/Linux using the supplied artifact toolchain. Hosted exact-source Ubuntu CI, OCI build/smoke, full pnpm lint/CI and unrelated governance were not independently rerun; coordinator must confirm the handoff's exact-source Ubuntu requirement before acceptance.",
+    "The pre-existing modified live-state.json was read for readiness and preservation and left untouched. No source, handoff, reservation, baseline, checkpoint or commit was edited. Owner-untracked .idea and infra/botkeep-ca.pem were not read or staged. No sub-agent was spawned."
+  ],
+  "nextExactAction": "Agent 1 should confirm successful exact-source Ubuntu CI for 5386a8cd3cf3e4360fd55f8f06bc84d159ff540b, then ingest this independent review through the coordinator scheduler. Keep VL-013 and all auth/persistence/Unity/Windows gates separate."
+}

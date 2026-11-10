@@ -1,3 +1,25 @@
+# Pure reducer/RNG verified checkpoint - 2026-11-10
+
+VL-015 is VERIFIED at source `5386a8cd3cf3e4360fd55f8f06bc84d159ff540b`.
+Independent Agent2 review APPROVED with no findings, exact handoff/source hashes;
+coordinator confirmed Ubuntu CI42757150679 PASS before scheduler verification.
+Live counts:10 VERIFIED,2 BLOCKED_EXTERNAL,1 IN_PROGRESS,97 TODO. VL-016 is READY.
+
+New pure Rust game-core pins canonical binary/hash domains, rules/content versions,
+checked milli-unit arithmetic and HMAC-bound ChaCha20/cursor/rejection sampling.
+No runtime activation. Actual25Rust tests+1compile-fail,3properties x256cases,
+two-process frozen replay,118governance,lint/CI/preservation/110task validator PASS.
+Agent2 independently passed4public-API probes and terminal reservation-history
+tamper probes. Ubuntu also passed generated bindings, actual PG Node->Rust and OCI.
+One existing generated-eslint warning remains. Aggregate Quality is separate and
+still running; do not infer global green. Original47SQL/105inputs/209archive unchanged.
+
+Reservation narrowing now preserves hashed immutable mirrors and leaves VL-013
+IN_PROGRESS. VL-016 will author only centrally reserved0048 through existing Nest
+journal; no independent Rust migrator. No Windows/Unity/GPU/brand gate promotion.
+
+## Previous checkpoints
+
 # Ticket trust partial slice checkpoint - 2026-11-10
 
 Nine tasks remain VERIFIED, including independently approved VL-012. VL-013 is

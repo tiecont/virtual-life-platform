@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-015",
+  "sourceRevision": "5386a8cd3cf3e4360fd55f8f06bc84d159ff540b",
+  "runId": 42757150679,
+  "jobId": 129634050953,
+  "url": "https://github.com/tiecont/virtual-life-platform/actions/runs/42757150679",
+  "runner": "ubuntu-24.04",
+  "conclusion": "success",
+  "completedAt": "2026-11-10T04:42:29Z",
+  "steps": [
+    "Checksum-pinned Rust1.99.1 bootstrap",
+    "fmt/check/clippy/workspace tests including12 game-core and13 existing Rust cases plus1 compile-fail doctest",
+    "Generated public bindings and cross-language fixtures",
+    "Frozen pure reducer replay across two independent processes",
+    "Actual disposable PostgreSQL identity-issued Node tickets -> Rust trust checker",
+    "OCI image build and health/readiness/default-off smoke"
+  ],
+  "logRef": "artifacts/desktop-first/vl015/hosted-42757150679.log",
+  "logSha256": "ff03db63ea25d7f369e69a3bfe50b4bade90ab29875620d189219da36e3b1dfb",
+  "logBytes": 188944,
+  "limitations": [
+    "This is the Rust workflow, not aggregate Quality qualification",
+    "No Unity compilation, Windows functional build or physical GPU benchmark",
+    "No source activation, production data mutation or public deployment"
+  ]
+}
