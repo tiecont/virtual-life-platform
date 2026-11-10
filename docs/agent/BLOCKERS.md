@@ -1,3 +1,13 @@
+# VL-001 revised source awaiting review - 2026-11-10
+
+Independent review exposed VL001-R1 (unbound commit/artifact evidence). Source fix
+and 115 passing governance cases are ready for re-review, not approval. No task
+dependency has been bypassed. Rust/Unity/Windows/license/signing gates remain.
+Old thread discovery now returns real IDs; both old peers are stopped with runtime
+errors. A separate independent review agent has produced the canonical rejection.
+
+## Previous checkpoints
+
 # Desktop First Gates - 2026-11-10
 
 VL-001 independent Agent 2 review is pending;all successor tasks remain unready.

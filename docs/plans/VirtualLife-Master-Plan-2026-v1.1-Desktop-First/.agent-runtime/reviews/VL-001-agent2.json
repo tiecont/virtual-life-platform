@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-001",
+  "reviewer": "agent2",
+  "reviewerProvenance": {
+    "agentTask": "/root/agent2_review",
+    "role": "Independent reviewer; did not author ec80cec or the submitted handoff",
+    "writeScope": "This review only; no live-state, reservation, source or baseline edits"
+  },
+  "sourceRevision": "ec80cec2e5c008f0b468f3730adc178355a04ca9",
+  "observedHead": "2119eadedbb0f7cbf277fad4b7e0c3cbab6490f7",
+  "handoffSha256": "076e6110324225cbceaba39cfc559ca50c4ee57ea9a048067b24b4f7afbd9477",
+  "decision": "CHANGES_REQUESTED",
+  "reviewedAt": "2026-11-10T01:15:58Z",
+  "findings": [
+    {
+      "id": "VL001-R1",
+      "severity": "P1",
+      "path": "scripts/desktop-scheduler.mjs",
+      "line": 162,
+      "title": "Verification accepts missing artifacts and nonexistent source commits",
+      "detail": "approveReview checks only the shape of artifact SHA256 values and sourceRevision. Neither verify nor load reads handoff artifact bytes or resolves the source commit. A matching review can therefore mark a task VERIFIED and unlock successors even when its evidence file does not exist or its source commit is nonexistent. This violates the promised committed-source/evidence gate and leaves subsequent artifact drift undetected.",
+      "reproduction": [
+        "Create an isolated schedulerStore fixture with VL-001 and a dependent VL-002, plus real agent1/agent2 ownership and runtime directories, as in tests/governance/desktop-scheduler.test.mjs.",
+        "Reserve/start VL-001 with actual ec80cec source. Submit acceptanceMet:true, command exitCode:0, and artifacts:[{ref:'does-not-exist.json',sha256:'a'.repeat(64)}]. Write an APPROVED agent2 review bound to the exact handoff hash and ec80cec source. store.verify and store.load both succeed; VL-001 becomes VERIFIED and VL-002 READY.",
+        "In the isolated fixture, use sourceRevision:'f'.repeat(40), a real package.json artifact with its actual hash, and a review matching the new handoff/source. git cat-file confirms that source is not a commit, yet store.verify and store.load succeed."
+      ],
+      "actualResults": [
+        {"proof": "MISSING_ARTIFACT_ACCEPTED", "status": "VERIFIED", "successorReady": ["VL-002"]},
+        {"proof": "NONEXISTENT_COMMIT_ACCEPTED", "sourceExists": false, "status": "VERIFIED"}
+      ],
+      "requestedChange": "Before VERIFIED, resolve the exact committed source and validate safe artifact references and actual SHA256 bytes, including binding tracked source/evidence artifacts to the submitted commit. Fail closed on missing, mismatched or escaping evidence and on later drift during load. Add isolated negative regressions. Preserve the old source/handoff/review when resubmitting."
+    }
+  ],
+  "commands": [
+    {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "tests": 106, "pass": 106, "fail": 0},
+    {"command": "node docs/execution/desktop-first/verify-adoption.mjs", "exitCode": 0, "result": "PASS; 209 legacy files, 105 owner input files and 47 SQL preserved"},
+    {"command": "python3 docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/tools/validate_plan.py", "exitCode": 0, "result": "110 tasks; checksums PASS; expected additional-runtime-file warning"},
+    {"command": "pnpm ci:check", "exitCode": 1, "result": "Initial sandbox invocation failed without detailed cause; retained, then rerun outside sandbox"},
+    {"command": "pnpm ci:check", "exitCode": 0, "result": "Local CI contract PASS outside sandbox; not a hosted CI run"},
+    {"command": "pnpm exec vitest run --project unit --maxWorkers=1 apps/platform-api/src/rooms/authority.unit.test.ts apps/platform-api/src/config/schema-compatibility.unit.test.ts apps/platform-api/src/games/journal-config.unit.test.ts apps/platform-api/src/games/journal-crypto.unit.test.ts", "exitCode": 0, "tests": 11, "pass": 11},
+    {"command": "Independent readFile/sha256 and git show checks against canonical VL-001 handoff", "exitCode": 0, "result": "All 5 current handoff artifacts match their declared hashes; all 6 implementation source files match ec80cec"},
+    {"command": "Isolated schedulerStore missing-artifact reproduction in /tmp/vl-agent2-proof-TocRt0", "exitCode": 0, "result": "BUG REPRODUCED: missing artifact accepted and successor unlocked"},
+    {"command": "Isolated schedulerStore nonexistent-commit reproduction in /tmp/vl-agent2-proof-TocRt0", "exitCode": 0, "result": "BUG REPRODUCED: nonexistent commit accepted"}
+  ],
+  "assessment": "The actual VL-001 audit/source hashes and legacy preservation checks pass. Approval is withheld for the executable coordinator gate defect, not because current VL-001 artifacts are missing or because Windows/Unity are unavailable.",
+  "limitations": [
+    "Did not rerun real-PostgreSQL integration or full lint; author evidence remains separate from the fresh checks listed here.",
+    "No Rust, Unity, physical Windows, signing, public deployment or gameplay acceptance is implied.",
+    "The isolated fixture used a synthetic matching reviewer record to test validation behavior; it is not an approval of VL-001.",
+    "Nonzero command results may be legitimate expected diagnostics; this review does not demand rejecting every nonzero result without an explicit required-check policy."
+  ],
+  "nextExactAction": "Coordinator fixes VL001-R1 under the existing VL-001 reservation, commits exact corrected source and publishes a new immutable handoff; independent Agent 2 reviews that new source/handoff before any successor task starts."
+}

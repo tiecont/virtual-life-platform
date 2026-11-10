@@ -27,12 +27,19 @@
   },
   "tasks": {
     "VL-001": {
-      "status": "IN_REVIEW",
+      "status": "IN_PROGRESS",
       "owner": "agent1",
       "evidenceRefs": [],
       "reservationId": "VL-001-3e20cfc5-23a4-4bd9-8996-43cd4d2049e5",
-      "handoffRef": "handoffs/VL-001.json",
-      "handoffSha256": "076e6110324225cbceaba39cfc559ca50c4ee57ea9a048067b24b4f7afbd9477"
+      "attempts": [
+        {
+          "handoffRef": "handoffs/VL-001.json",
+          "handoffSha256": "076e6110324225cbceaba39cfc559ca50c4ee57ea9a048067b24b4f7afbd9477",
+          "reviewRef": "reviews/VL-001-agent2.json",
+          "reviewSha256": "c8dfb65f27ea30bd99e1decd689b2b02db9f538d91fef15ae94b8f4ca584944e",
+          "decision": "CHANGES_REQUESTED"
+        }
+      ]
     },
     "VL-002": {
       "status": "TODO",
@@ -613,5 +620,5 @@
     }
   },
   "gateEvidence": {},
-  "updatedAt": "2026-11-09T17:51:08.685Z"
+  "updatedAt": "2026-11-10T01:17:49.123Z"
 }

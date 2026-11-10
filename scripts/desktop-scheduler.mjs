@@ -3,6 +3,8 @@ import {readFile,writeFile,mkdir,rename,rm} from 'node:fs/promises';
 import {resolve,relative,isAbsolute} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {createHash,randomUUID} from 'node:crypto';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
 
 export const planRoot = 'docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First';
 export const runtimeRoot = planRoot + '/.agent-runtime';
@@ -11,6 +13,7 @@ const claimed = new Set(['RESERVED','IN_PROGRESS','IN_REVIEW']);
 export const sha256 = value => createHash('sha256').update(value).digest('hex');
 const json = async ref => JSON.parse(await readFile(ref,'utf8'));
 const serialize = value => JSON.stringify(value,null,2)+'\n';
+const execute = promisify(execFile);
 
 export function scopePath(value) {
   assert(typeof value==='string' && value.length>0 && !isAbsolute(value) && !value.includes('\\'), 'Expected repository-relative scope');
@@ -83,14 +86,35 @@ export function approveReview(current,handoff,review,handoffHash) {
   assert(Number.isFinite(Date.parse(review.reviewedAt))&&review.findings?.length===0,'Review has unresolved findings');
   assert(handoff.commands?.length>0&&handoff.commands.every(command=>Number.isInteger(command.exitCode)),'Missing actual commands');
   assert(handoff.commands.every(command=>typeof command.command==='string'&&command.command.length>0),'Missing command names');
+  assert(handoff.commands.some(command=>command.required!==false),'No required acceptance checks');
+  for(const command of handoff.commands) {
+    assert(command.required===undefined||typeof command.required==='boolean','Invalid check requirement');
+    if(command.required===false)assert(typeof command.limitation==='string'&&command.limitation.trim(),'Diagnostic check needs an explicit limitation');
+    else assert.equal(command.exitCode,0,'Required acceptance check failed');
+  }
   assert(handoff.artifacts?.length>0&&handoff.artifacts.every(artifact=>artifact.ref&&/^[a-f0-9]{64}$/.test(artifact.sha256)),'Missing artifact hashes');
   assert(/^[a-f0-9]{40}$/.test(handoff.sourceRevision),'Commit SHA required');
   return true;
 }
 
-export function schedulerStore(root=runtimeRoot,tasksRef=planRoot+'/06-execution/TASKS.json') {
+export function schedulerStore(root=runtimeRoot,tasksRef=planRoot+'/06-execution/TASKS.json',repositoryRoot=process.cwd()) {
   const stateRef=resolve(root,'live-state.json');
   const localRef=ref=>{scopePath(ref);const full=resolve(root,ref);assert(!relative(resolve(root),full).startsWith('..'),'Reference escapes runtime');return full;};
+  async function verifySourceEvidence(handoff) {
+    assert(/^[a-f0-9]{40}$/.test(handoff.sourceRevision),'Commit SHA required');
+    const git=async args=>(await execute('git',args,{cwd:repositoryRoot,encoding:'buffer',maxBuffer:16*1024**2})).stdout;
+    assert.equal((await git(['cat-file','-t',handoff.sourceRevision])).toString().trim(),'commit','Source must be an existing commit');
+    assert(handoff.artifacts?.length>0,'Missing artifacts');
+    for(const artifact of handoff.artifacts) {
+      scopePath(artifact.ref);assert(!artifact.ref.endsWith('/**'),'Artifact must name a file');
+      assert(/^[a-f0-9]{64}$/.test(artifact.sha256),'Missing artifact hash');
+      // Evidence is immutable at its source commit. Later legitimate source edits
+      // must not invalidate an earlier task; untracked raw logs need a committed summary.
+      const object=handoff.sourceRevision+':'+artifact.ref;
+      assert.equal((await git(['cat-file','-t',object])).toString().trim(),'blob','Artifact must be a committed file');
+      assert.equal(sha256(await git(['show',object])),artifact.sha256,'Committed artifact hash mismatch: '+artifact.ref);
+    }
+  }
   async function load() {
     const taskBytes=await readFile(tasksRef),taskdoc=JSON.parse(taskBytes),state=await json(stateRef);
     assert.equal(state.taskGraphSha256,sha256(taskBytes),'Plan graph changed without reconciliation');
@@ -100,10 +124,20 @@ export function schedulerStore(root=runtimeRoot,tasksRef=planRoot+'/06-execution
       assert.deepEqual(await json(localRef(reservation.ref)),reservation,'Reservation mirror mismatch');
     }
     for(const current of Object.values(state.tasks))if(current.handoffRef)assert.equal(sha256(await readFile(localRef(current.handoffRef))),current.handoffSha256,'Handoff changed after publication');
+    for(const [taskId,current] of Object.entries(state.tasks))for(const attempt of current.attempts??[]) {
+      const bytes=await readFile(localRef(attempt.handoffRef)),reviewBytes=await readFile(localRef(attempt.reviewRef));
+      assert.equal(sha256(bytes),attempt.handoffSha256,'Historical handoff changed');
+      assert.equal(sha256(reviewBytes),attempt.reviewSha256,'Historical review changed');
+      const handoff=JSON.parse(bytes),review=JSON.parse(reviewBytes);
+      assert.equal(handoff.taskId,taskId);assert.equal(review.taskId,taskId);assert.equal(review.sourceRevision,handoff.sourceRevision);
+      assert.equal(review.handoffSha256,attempt.handoffSha256);assert.equal(review.decision,'CHANGES_REQUESTED');
+      assert(state.agents[review.reviewer]&&review.reviewer!==current.owner,'Independent historical reviewer required');
+    }
     for(const current of Object.values(state.tasks))if(current.status==='VERIFIED') {
       const bytes=await readFile(localRef(current.reviewRef));assert.equal(sha256(bytes),current.reviewSha256,'Review changed after verification');
       const review=JSON.parse(bytes);assert(state.agents[review.reviewer],'Unknown reviewer');
       approveReview({...current,status:'IN_REVIEW'},await json(localRef(current.handoffRef)),review,current.handoffSha256);
+      await verifySourceEvidence(await json(localRef(current.handoffRef)));
     }
     for(const [taskId,rows] of Object.entries(state.gateEvidence)) {
       const task=taskdoc.tasks.find(task=>task.id===taskId);assert(task,'Gate for unknown task');
@@ -155,6 +189,7 @@ export function schedulerStore(root=runtimeRoot,tasksRef=planRoot+'/06-execution
       const bytes=await readFile(localRef(handoffRef)),handoff=JSON.parse(bytes);
       assert.equal(handoff.taskId,taskId);assert.equal(handoff.owner,current.owner);
       assert(/^[a-f0-9]{40}$/.test(handoff.sourceRevision)&&handoff.commands?.length>0,'Actual source/commands required');
+      await verifySourceEvidence(handoff);
       current.status='IN_REVIEW';current.handoffRef=handoffRef;current.handoffSha256=sha256(bytes);return current;
     }),
     verify: (taskId,reviewRef,actor='agent1') => mutate(actor,async(_taskdoc,state)=>{
@@ -162,7 +197,18 @@ export function schedulerStore(root=runtimeRoot,tasksRef=planRoot+'/06-execution
       const handoff=await json(localRef(current.handoffRef)),bytes=await readFile(localRef(reviewRef)),review=JSON.parse(bytes);
       approveReview(current,handoff,review,current.handoffSha256);
       assert(state.agents[review.reviewer]&&review.reviewer!==current.owner,'Unknown/own reviewer');
+      await verifySourceEvidence(handoff);
       current.status='VERIFIED';current.reviewRef=reviewRef;current.reviewSha256=sha256(bytes);return current;
+    }),
+    requestChanges: (taskId,reviewRef,actor='agent1') => mutate(actor,async(_taskdoc,state)=>{
+      const current=state.tasks[taskId];assert.equal(current?.status,'IN_REVIEW');
+      const handoff=await json(localRef(current.handoffRef)),bytes=await readFile(localRef(reviewRef)),review=JSON.parse(bytes);
+      assert.equal(review.taskId,taskId);assert.equal(review.sourceRevision,handoff.sourceRevision);
+      assert.equal(review.handoffSha256,current.handoffSha256);assert.equal(review.decision,'CHANGES_REQUESTED');
+      assert(state.agents[review.reviewer]&&review.reviewer!==current.owner,'Independent reviewer required');
+      assert(Number.isFinite(Date.parse(review.reviewedAt))&&review.findings?.length>0,'Missing review findings');
+      current.attempts=[...(current.attempts??[]),{handoffRef:current.handoffRef,handoffSha256:current.handoffSha256,reviewRef,reviewSha256:sha256(bytes),decision:review.decision}];
+      delete current.handoffRef;delete current.handoffSha256;current.status='IN_PROGRESS';return current;
     })
   };
 }

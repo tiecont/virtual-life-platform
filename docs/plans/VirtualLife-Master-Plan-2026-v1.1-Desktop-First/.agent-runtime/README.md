@@ -24,3 +24,14 @@ are reserved by Agent 1 during VL-001.
 
 See `docs/execution/desktop-first/README.md` for legacy evidence mapping and the
 N06-04 handoff. Existing mobile deferrals do not constitute Windows qualification.
+
+Source evidence must name committed repository files: submit/verify resolve the
+exact Git commit and check each artifact's SHA256 against that commit. Load repeats
+the gate for VERIFIED tasks. Later source edits do not change historical evidence;
+private raw logs are linked through committed summaries. Required commands must
+exit 0; optional diagnostics use `required: false` and an explicit `limitation`.
+
+For CHANGES_REQUESTED, the coordinator uses `requestChanges(taskId, reviewRef)`.
+It preserves hashes of the rejected handoff/review in `attempts`, reopens the
+existing reservation, and requires a new immutable handoff path for resubmission.
+Do not overwrite any published handoff or independent review.

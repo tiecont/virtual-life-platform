@@ -1,3 +1,13 @@
+# Bind acceptance evidence to committed bytes - 2026-11-10
+
+Follow independent VL001-R1: validate the source Git commit and every artifact blob
+hash, rather than trusting declared hash syntax. Preserve evidence at its original
+commit so legitimate later source edits do not invalidate old tasks. Raw private logs
+need a committed summary. Required checks exit0; optional failed diagnostics carry
+explicit limits. Preserve rejected handoffs/reviews and resubmit a new path.
+
+## Previous decisions
+
 # Desktop First Adoption And Coordination - 2026-11-10
 
 Owner explicitly selected the new master and assigned Agent 1 Rust/backend

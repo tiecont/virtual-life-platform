@@ -1,3 +1,21 @@
+# VL-001 review correction handoff - 2026-11-10
+
+Agent 2 review `reviews/VL-001-agent2.json` requests changes for VL001-R1.
+The scheduler now validates actual Git commit/artifact blob hashes at submit,
+verification and verified-state load. Required acceptance commands must pass;
+optional diagnostic failures need explicit limits. `requestChanges` keeps the old
+handoff/review hashes and reopens the reservation. 115 governance, lint, CI contract,
+110-task validator and preservation PASS; no runtime or migration edits.
+
+Old Codex peer threads were inspected: both stopped on encrypted-content runtime
+errors. Independent reviewer `/root/agent2_review` is the actual review peer now.
+No background execution by the old threads is assumed.
+
+**Next exact action:** Publish revision2 handoff from corrected commit; have Agent 2
+review it independently, then coordinator verifies and reserves VL-002/VL-003.
+
+## Previous checkpoints
+
 # Desktop First Handoff - 2026-11-10
 
 Use [live coordination](../plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/README.md)

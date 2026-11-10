@@ -3,7 +3,8 @@ import {test} from 'node:test';
 import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {schedulerStore,readyTasks,sha256,overlaps,scopePath} from '../../scripts/desktop-scheduler.mjs';
+import {execFileSync} from 'node:child_process';
+import {schedulerStore,readyTasks,sha256,overlaps,scopePath,approveReview} from '../../scripts/desktop-scheduler.mjs';
 
 const source='1'.repeat(40),serialize=value=>JSON.stringify(value,null,2)+'\n';
 async function fixture(t) {
@@ -18,7 +19,11 @@ async function fixture(t) {
   ]},bytes=serialize(taskdoc),tasksRef=join(root,'tasks.json');
   const state={schemaVersion:1,coordinator:'agent1',releaseStatus:'NOT_REQUESTED',taskGraphSha256:sha256(bytes),agents:{agent1:{lanes:['A0-Coordinator','A1-Rust-Game-Core']},agent2:{lanes:['A3-Web-UX']}},tasks:Object.fromEntries(taskdoc.tasks.map(task=>[task.id,{status:'TODO',owner:null}])),reservations:{},gateEvidence:{}};
   await writeFile(tasksRef,bytes);await writeFile(join(root,'live-state.json'),serialize(state));
-  return {root,taskdoc,state,store:schedulerStore(root,tasksRef),location:{sourceRevision:source,branch:'codex/test',worktree:root}};
+  const git=args=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
+  git(['init','-q']);await writeFile(join(root,'facts.json'),'verified fixture\n');
+  git(['add','facts.json']);git(['-c','user.name=Scheduler Test','-c','user.email=scheduler@example.invalid','-c','commit.gpgsign=false','commit','-qm','fixture evidence']);
+  const revision=git(['rev-parse','HEAD']),artifacts=[{ref:'facts.json',sha256:sha256('verified fixture\n')}];
+  return {root,taskdoc,state,source:revision,artifacts,git,store:schedulerStore(root,tasksRef,root),location:{sourceRevision:revision,branch:'codex/test',worktree:root}};
 }
 test('ready tasks respect dependency, lane and external gates',async t=>{
   const f=await fixture(t);
@@ -44,17 +49,17 @@ test('atomic reservations prevent concurrent writers, duplicate task and path ov
 test('independent review pins exact handoff and source before unlocking successors',async t=>{
   const f=await fixture(t);
   await f.store.reserve('VL-001','agent1',['crates'],f.location);await f.store.start('VL-001');
-  const handoff={taskId:'VL-001',owner:'agent1',sourceRevision:source,acceptanceMet:true,commands:[{command:'node --test',exitCode:0}],artifacts:[{ref:'facts.json',sha256:'a'.repeat(64)}]};
+  const handoff={taskId:'VL-001',owner:'agent1',sourceRevision:f.source,acceptanceMet:true,commands:[{command:'node --test',exitCode:0}],artifacts:f.artifacts};
   const handoffRef='handoffs/VL-001.json',reviewRef='reviews/VL-001.json';
   await writeFile(join(f.root,handoffRef),serialize(handoff));await f.store.submit('VL-001',handoffRef);
   assert(!readyTasks(f.taskdoc,(await f.store.load()).state,'agent1').some(task=>task.id==='VL-002'));
-  const review={taskId:'VL-001',reviewer:'agent1',sourceRevision:source,handoffSha256:sha256(serialize(handoff)),decision:'APPROVED',reviewedAt:new Date().toISOString(),findings:[]};
+  const review={taskId:'VL-001',reviewer:'agent1',sourceRevision:f.source,handoffSha256:sha256(serialize(handoff)),decision:'APPROVED',reviewedAt:new Date().toISOString(),findings:[]};
   await writeFile(join(f.root,reviewRef),serialize(review));await assert.rejects(f.store.verify('VL-001',reviewRef),/Independent reviewer/);
   review.reviewer='agent2';review.handoffSha256='b'.repeat(64);
   await writeFile(join(f.root,reviewRef),serialize(review));await assert.rejects(f.store.verify('VL-001',reviewRef),/different handoff/);
   review.handoffSha256=sha256(serialize(handoff));review.sourceRevision='2'.repeat(40);
   await writeFile(join(f.root,reviewRef),serialize(review));await assert.rejects(f.store.verify('VL-001',reviewRef),/different source/);
-  review.sourceRevision=source;
+  review.sourceRevision=f.source;
   await writeFile(join(f.root,reviewRef),serialize(review));await f.store.verify('VL-001',reviewRef);
   assert(readyTasks(f.taskdoc,(await f.store.load()).state,'agent1').some(task=>task.id==='VL-002'));
   review.decision='REJECTED';await writeFile(join(f.root,reviewRef),serialize(review));
@@ -65,7 +70,7 @@ test('changed task graph, handoff or reservation mirror fails closed',async t=>{
   const reservationRef=join(f.root,reservation.ref),original=await readFile(reservationRef);
   await writeFile(reservationRef,serialize({...reservation,owner:'agent2'}));await assert.rejects(f.store.load(),/mirror mismatch/);
   await writeFile(reservationRef,original);await f.store.start('VL-001');
-  const ref='handoffs/VL-001.json';await writeFile(join(f.root,ref),serialize({taskId:'VL-001',owner:'agent1',sourceRevision:source,commands:[{command:'test',exitCode:0}]}));
+  const ref='handoffs/VL-001.json';await writeFile(join(f.root,ref),serialize({taskId:'VL-001',owner:'agent1',sourceRevision:f.source,commands:[{command:'test',exitCode:0}],artifacts:f.artifacts}));
   await f.store.submit('VL-001',ref);await writeFile(join(f.root,ref),'{}');await assert.rejects(f.store.load(),/Handoff changed/);
 });
 test('task graph drift and unbound external gate evidence cannot enable work',async t=>{
@@ -81,4 +86,66 @@ test('reservation paths reject traversal and compare directory boundaries',()=>{
   for(const path of ['../secrets','/tmp/a','a/../b','a//b','a\\b','a/*'])assert.throws(()=>scopePath(path));
   assert(overlaps('proto/**','proto/world.proto'));
   assert(!overlaps('proto','protocol'));
+});
+test('submit, verify and persisted verification reject unbound source evidence',async t=>{
+  for(const variant of ['missing-commit','missing-artifact','wrong-hash','directory','traversal'])await t.test(variant,async t=>{
+    const f=await fixture(t);
+    await f.store.reserve('VL-001','agent1',['crates'],f.location);await f.store.start('VL-001');
+    const handoff={taskId:'VL-001',owner:'agent1',sourceRevision:f.source,acceptanceMet:true,commands:[{command:'test',exitCode:0}],artifacts:f.artifacts.map(row=>({...row}))};
+    if(variant==='missing-commit')handoff.sourceRevision=source;
+    if(variant==='missing-artifact')handoff.artifacts[0].ref='does-not-exist.json';
+    if(variant==='wrong-hash')handoff.artifacts[0].sha256='a'.repeat(64);
+    if(variant==='directory')handoff.artifacts[0].ref='.';
+    if(variant==='traversal')handoff.artifacts[0].ref='../facts.json';
+    const handoffRef='handoffs/proof.json',reviewRef='reviews/proof.json';
+    await writeFile(join(f.root,handoffRef),serialize(handoff));
+    await assert.rejects(f.store.submit('VL-001',handoffRef));
+    // Exercise records published by the earlier scheduler, which had no source gate.
+    const stateRef=join(f.root,'live-state.json'),state=JSON.parse(await readFile(stateRef));
+    Object.assign(state.tasks['VL-001'],{status:'IN_REVIEW',handoffRef,handoffSha256:sha256(serialize(handoff))});
+    await writeFile(stateRef,serialize(state));
+    const review={taskId:'VL-001',reviewer:'agent2',sourceRevision:handoff.sourceRevision,handoffSha256:state.tasks['VL-001'].handoffSha256,decision:'APPROVED',reviewedAt:new Date().toISOString(),findings:[]};
+    await writeFile(join(f.root,reviewRef),serialize(review));
+    await assert.rejects(f.store.verify('VL-001',reviewRef));
+    assert.equal((await f.store.load()).state.tasks['VL-001'].status,'IN_REVIEW');
+    Object.assign(state.tasks['VL-001'],{status:'VERIFIED',reviewRef,reviewSha256:sha256(serialize(review))});
+    await writeFile(stateRef,serialize(state));await assert.rejects(f.store.load());
+  });
+});
+test('source-bound artifacts survive later legitimate working tree changes',async t=>{
+  const f=await fixture(t);
+  await f.store.reserve('VL-001','agent1',['crates'],f.location);await f.store.start('VL-001');
+  const handoff={taskId:'VL-001',owner:'agent1',sourceRevision:f.source,acceptanceMet:true,commands:[{command:'test',exitCode:0}],artifacts:f.artifacts};
+  const ref='handoffs/first.json',reviewRef='reviews/first.json';
+  await writeFile(join(f.root,ref),serialize(handoff));await f.store.submit('VL-001',ref);
+  await writeFile(join(f.root,reviewRef),serialize({taskId:'VL-001',reviewer:'agent2',sourceRevision:f.source,handoffSha256:sha256(serialize(handoff)),decision:'APPROVED',reviewedAt:new Date().toISOString(),findings:[]}));
+  await writeFile(join(f.root,'facts.json'),'later task evidence\n');
+  await f.store.verify('VL-001',reviewRef);await f.store.load();
+});
+test('failed required checks cannot be approved; diagnostic failures retain explicit limits',()=>{
+  const handoff={taskId:'VL-001',sourceRevision:source,acceptanceMet:true,commands:[{command:'test',exitCode:1}],artifacts:[{ref:'facts.json',sha256:'a'.repeat(64)}]};
+  const review={taskId:'VL-001',reviewer:'agent2',sourceRevision:source,handoffSha256:'b'.repeat(64),decision:'APPROVED',reviewedAt:new Date().toISOString(),findings:[]},current={status:'IN_REVIEW',owner:'agent1'};
+  assert.throws(()=>approveReview(current,handoff,review,review.handoffSha256),/acceptance check failed/);
+  handoff.commands[0].required=false;
+  assert.throws(()=>approveReview(current,handoff,review,review.handoffSha256),/No required/);
+  handoff.commands.push({command:'required test',exitCode:0});
+  assert.throws(()=>approveReview(current,handoff,review,review.handoffSha256),/explicit limitation/);
+  handoff.commands[0].limitation='Known optional browser performance failure; not Windows acceptance';
+  assert(approveReview(current,handoff,review,review.handoffSha256));
+});
+test('changes requested preserves immutable review history and supports a new handoff',async t=>{
+  const f=await fixture(t);
+  await f.store.reserve('VL-001','agent1',['crates'],f.location);await f.store.start('VL-001');
+  const handoff={taskId:'VL-001',owner:'agent1',sourceRevision:f.source,acceptanceMet:true,commands:[{command:'test',exitCode:0}],artifacts:f.artifacts};
+  const oldRef='handoffs/first.json',reviewRef='reviews/first.json';
+  await writeFile(join(f.root,oldRef),serialize(handoff));await f.store.submit('VL-001',oldRef);
+  const review={taskId:'VL-001',reviewer:'agent2',sourceRevision:f.source,handoffSha256:sha256(serialize(handoff)),decision:'CHANGES_REQUESTED',reviewedAt:new Date().toISOString(),findings:[{id:'R1',message:'Fix evidence gate'}]};
+  await writeFile(join(f.root,reviewRef),serialize(review));
+  await f.store.requestChanges('VL-001',reviewRef);
+  assert.equal((await f.store.load()).state.tasks['VL-001'].status,'IN_PROGRESS');
+  const nextRef='handoffs/second.json';await writeFile(join(f.root,nextRef),serialize({...handoff,revision:2}));
+  await f.store.submit('VL-001',nextRef);
+  await assert.rejects(f.store.verify('VL-001',reviewRef),/different handoff/);
+  await writeFile(join(f.root,reviewRef),serialize({...review,findings:[]}));
+  await assert.rejects(f.store.load(),/Historical review changed/);
 });

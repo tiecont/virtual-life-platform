@@ -1,3 +1,17 @@
+# VL-001 independent review correction - 2026-11-10
+
+Independent Agent 2 requested changes (VL001-R1): missing artifacts/nonexistent
+source commits could satisfy the scheduler gate. The coordinator corrected source
+commit/blob validation, required-check outcomes and immutable rejection history.
+Fresh 115 governance cases (15 scheduler), full lint, CI contract, baseline validator
+and adoption preservation PASS. Original review/handoff remain immutable.
+No successor starts until the revised committed source receives independent approval.
+
+**Next exact action:** Publish a new source-bound VL-001 handoff and request Agent 2
+re-review; then ingest approval and reserve VL-002/VL-003.
+
+## Previous checkpoints
+
 # Desktop First Coordination - 2026-11-10
 
 Owner adopted VirtualLife v1.1 and assigned Agent 1 A0/A1/A2; Agent 2 owns
