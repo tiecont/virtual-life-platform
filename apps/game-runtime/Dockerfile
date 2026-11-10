@@ -8,6 +8,7 @@ COPY crates/vl-security crates/vl-security
 COPY crates/vl-game-core crates/vl-game-core
 COPY crates/vl-world crates/vl-world
 COPY crates/vl-gateway crates/vl-gateway
+COPY crates/vl-persistence crates/vl-persistence
 COPY proto/native proto/native
 RUN cargo build --release --locked --package vl-game-runtime
 

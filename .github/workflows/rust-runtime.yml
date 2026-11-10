@@ -55,6 +55,13 @@ jobs:
           pnpm exec vitest run --project unit packages/native-protocol/test/wire.test.ts
       - name: Check frozen pure reducer replay in independent processes
         run: node crates/vl-game-core/tools/check-replay.mjs
+      - name: Check native transactional turn orchestration and process recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm build:packages
+          "$CARGO_HOME/bin/cargo" build --locked --package vl-persistence --example orchestration
+          node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs
       - name: Check direct WSS with real Chromium and restricted PostgreSQL
         shell: bash
         run: |

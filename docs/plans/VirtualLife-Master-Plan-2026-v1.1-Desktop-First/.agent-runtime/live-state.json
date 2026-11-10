@@ -224,9 +224,10 @@
       "reviewMode": "SINGLE_AGENT_SEQUENTIAL_AUDIT"
     },
     "VL-017": {
-      "status": "TODO",
-      "owner": null,
-      "evidenceRefs": []
+      "status": "IN_PROGRESS",
+      "owner": "agent1",
+      "evidenceRefs": [],
+      "reservationId": "VL-017-7ea2aa16-b721-4bf1-8ed7-6bd7e6c7eaaa"
     },
     "VL-018": {
       "status": "TODO",
@@ -1162,6 +1163,36 @@
           "sha256": "fd55d30e27cb010dda6503b5bc2c166e61f18fc066cb8451f26676f5331f6eac"
         }
       ]
+    },
+    "VL-017-7ea2aa16-b721-4bf1-8ed7-6bd7e6c7eaaa": {
+      "id": "VL-017-7ea2aa16-b721-4bf1-8ed7-6bd7e6c7eaaa",
+      "ref": "reservations/VL-017-a05d3451-dd10-445a-9769-082fbcb58650.json",
+      "taskId": "VL-017",
+      "owner": "agent1",
+      "paths": [
+        "crates/vl-persistence/**",
+        "Cargo.toml",
+        "Cargo.lock",
+        "apps/game-runtime/Dockerfile",
+        "scripts/native-game-orchestration.mjs",
+        ".github/workflows/rust-runtime.yml",
+        "scripts/verify-artifact-workflows.mjs",
+        "tests/governance/rust-workflow.test.mjs",
+        "docs/execution/desktop-first/orchestration/**",
+        "config/native-game-db-privileges.json"
+      ],
+      "branch": "codex/desktop-first-backend",
+      "worktree": "/home/tiecont/Projects/virtual-city",
+      "sourceRevision": "e0e9358d0f48e480d6ef37b7a79124b8fe8e8667",
+      "createdAt": "2026-11-10T15:16:00.570Z",
+      "amendedAt": "2026-11-10T15:19:01.027Z",
+      "reason": "Define a separate default-off restricted runtime privilege profile for the actual native command transaction and advisory owner lock; do not widen the existing VL013 profile.",
+      "history": [
+        {
+          "ref": "reservations/VL-017-7ea2aa16-b721-4bf1-8ed7-6bd7e6c7eaaa.json",
+          "sha256": "c0bd4838aa96e93f211aab822790381e0b91fb0a6212fd85b335352a29ade4d7"
+        }
+      ]
     }
   },
   "gateEvidence": {
@@ -1177,7 +1208,7 @@
       }
     ]
   },
-  "updatedAt": "2026-11-10T14:51:41.568Z",
+  "updatedAt": "2026-11-10T15:19:01.028Z",
   "reviewPolicy": {
     "ref": "policies/single-agent-2026-11-10.json",
     "sha256": "02c0285a2d6fe5cf19c57f10d91945f6d9a9ee60a1bf80f7c200e63ee6e7cda1"

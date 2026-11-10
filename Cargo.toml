@@ -1,5 +1,5 @@
 [workspace]
-members = ["apps/game-runtime", "crates/vl-protocol", "crates/vl-security", "crates/vl-game-core", "crates/vl-world", "crates/vl-gateway"]
+members = ["apps/game-runtime", "crates/vl-protocol", "crates/vl-security", "crates/vl-game-core", "crates/vl-world", "crates/vl-gateway", "crates/vl-persistence"]
 resolver = "3"
 
 [workspace.package]
