@@ -33,7 +33,7 @@
         "sourceRevision": "b22c73842fa34fbfc6008ade5e3a7870aa40ddc6",
         "rawLog": "artifacts/desktop-first/vl016/quality-core129652184785.log",
         "rawLogSha256": "678145acc8b62ac86182f79a9665a6c62ae2e6611260de150f1ecd11c6d91294",
-        "logLines": "1709-1766; summary 1763-1764; exit 1816-1818",
+        "logLines": "1709-1766; summary 1767-1771; exit 1816-1818",
         "expected": "Both assertions currently require expectedMigrationCount 47",
         "actual": "Both responses contain expectedMigrationCount 48; admin-proxy.test.ts:74:150 and telemetry.test.ts:82:176 fail",
         "exitCode": 1,
