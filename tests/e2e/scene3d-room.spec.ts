@@ -24,10 +24,13 @@ test('actual3D seat raycast waits for the real outgoing command and authoritativ
 });
 
 test('seat marker batches retain authoritative pointer targets after moving the highlight between distant tables',async({page,context})=>{
+ // Exercise marker rebatching without a scheduled sync suspending the pointer target mid-click.
+ await page.clock.install();await page.clock.pauseAt(new Date(Date.now()+1000));
  await guest(context,'3D Batch Visitor');await enter(page);const before=await current(context);
  for(const [index,seatId]of ['seat-1','seat-8','seat-1'].entries()){
   if(index){await page.getByRole('button',{name:'Room actions',exact:true}).click();await page.getByRole('button',{name:'Stand up',exact:true}).click();await expect(page.getByText('You stood up.',{exact:true})).toBeVisible();await closeActions(page);await expect(canvas(page)).toHaveAttribute('data-sitting-count','0');}
   const targets=JSON.parse((await canvas(page).getAttribute('data-seat-targets'))!);await pointClick(page,targets.find((target:{seatId:string})=>target.seatId===seatId));
+  await expect(page.getByText('Your seat is confirmed.',{exact:true})).toBeVisible();await page.clock.fastForward(4000);
   await expect(canvas(page)).toHaveAttribute('data-sitting-count','1',{timeout:15000});const state=await current(context);expect(state.self.seatId).toBe(seatId);expect(state.membershipId).toBe(before.membershipId);
   if(index===1)await capture(page,'rebatch-distant-table');
  }
@@ -45,7 +48,7 @@ test('context loss exposes graphics fallback while real seat and leave controls 
 test('real transport interruption hides stale actors and restores one current membership',async({page,context})=>{let client:WebSocketRoute|undefined,server:WebSocketRoute|undefined,connections=0,resume!:()=>void;const gate=new Promise<void>(ok=>resume=ok);await page.routeWebSocket('**/socket.io/**',async route=>{if(++connections>1)await gate;client=route;server=route.connectToServer();});try{await guest(context,'3D Recovery Visitor');await enter(page);const before=await current(context);await client!.close({code:1012,reason:'Synthetic3D transport interruption'});await server!.close();await expect(page.getByRole('status')).toHaveText('Connection lost. Your place is unconfirmed.');await expect(canvas(page)).toHaveAttribute('data-entity-count','0');await capture(page,'transport-lost');resume();await expect(page.getByRole('status')).toHaveText('Connected',{timeout:15000});await expect(canvas(page)).toHaveAttribute('data-entity-count','1');expect((await current(context)).membershipId).toBe(before.membershipId);await capture(page,'transport-resynced');}finally{resume();}});
 
 test('periodic refresh preserves action feedback, canvas position and a disabled Leave command',async({page,context})=>{
- let release:(()=>void)|undefined,joins=0,leaves=0;
+ let release:(()=>void)|undefined,joins=0,leaves=0,claims=0,moves=0;
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.routeWebSocket('**/socket.io/**',client=>{
   const server=client.connectToServer();
@@ -53,6 +56,8 @@ test('periodic refresh preserves action feedback, canvas position and a disabled
    if(typeof message==='string'){
     if(message.includes('"room.join"'))joins++;
     if(message.includes('"room.leave"'))leaves++;
+    if(message.includes('"seat.claim"'))claims++;
+    if(message.includes('"room.move"'))moves++;
     if(message.includes('"room.snapshot"')&&!release){let sent=false;release=()=>{if(!sent){sent=true;server.send(message);}};return;}
    }
    server.send(message);
@@ -71,9 +76,12 @@ test('periodic refresh preserves action feedback, canvas position and a disabled
   await expect(page.getByRole('button',{name:'Leave cafe',exact:true})).toBeDisabled();
   await expect(page.getByRole('button',{name:'Rejoin cafe',exact:true})).toHaveCount(0);
   expect((await current(context)).membershipId).toBe(before.membershipId);
+  const target=JSON.parse((await canvas(page).getAttribute('data-seat-targets'))!).find((seat:{seatId:string})=>seat.seatId==='seat-1');
+  await pointClick(page,target);expect(claims).toBe(1);expect(moves).toBe(0);expect((await current(context)).self.seatId).toBeNull();
   release!();await expect(page.getByRole('status')).toHaveText('Connected');
   await expect(page.getByText('You stood up.',{exact:true})).toBeVisible();
   const refreshedBounds=await canvas(page).boundingBox();expect(refreshedBounds!.y).toBeCloseTo(bounds!.y,0);expect(refreshedBounds!.height).toBeCloseTo(bounds!.height,0);
+  await pointClick(page,target);await expect(canvas(page)).toHaveAttribute('data-sitting-count','1');expect(claims).toBe(2);expect(moves).toBe(0);expect((await current(context)).self.seatId).toBe('seat-1');
   await page.getByRole('button',{name:'Leave cafe',exact:true}).click();
   await expect(page.getByText('You left the cafe.',{exact:true})).toBeVisible();
   expect(await current(context)).toBeNull();expect(joins).toBe(1);expect(leaves).toBe(1);
