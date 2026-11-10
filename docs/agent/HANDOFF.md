@@ -1,3 +1,28 @@
+# Exact-source TLS CI checkpoint - 2026-11-10
+
+Source55514e15209c0818aedc0145136d0ebe988973bf is pushed to existing PR1.
+Ubuntu Rust42793186850 PASS includes actual TLS/restricted-role admission17,
+12privilege denials,6transport negatives,PG14,archived47/48->49 and OCI smoke.
+Postcommit governance119/119,fmt and preservation PASS. Supplemental exact-source
+library probe19/19 also proves lease expiry and timeout AFTER SQL writes roll
+state and receipt back to zero. All owned local DBs/roles are cleaned up.
+Evidence: docs/execution/desktop-first/security/CI-55514e1.json.
+
+Quality42793186691 and push-run42793176241 remain IN_PROGRESS at observation;
+no aggregate/browser verdict is inferred. Prior0848ff8 Quality was cancelled by
+TLS push after core/images passed. Keep the documentation-only evidence commit
+local until these runs finish, avoiding another concurrency cancellation.
+
+Next exact action: inspect both55514e1 Quality runs, preserve final logs/results,
+fix actual failures, then publish evidence and source-bound acceptance handoffs.
+VL-013/016 remain IN_PROGRESS;10VERIFIED/2BLOCKED_EXTERNAL/96TODO/noREADY.
+Single-agent owner direction is honored through sequential work; no fabricated
+independent review or dependent task activation. Production/Windows/Unity/GPU
+and rights gates remain. No owned local subprocess or DB is left running;remote
+CI is managed by GitHub and is not promised to be automatically followed here.
+
+## Previous checkpoints
+
 # TLS and restricted-role checkpoint - 2026-11-10
 
 Committed0848ff8 was pushed to PR1. Exact Ubuntu Rust42789189804 PASS, including
