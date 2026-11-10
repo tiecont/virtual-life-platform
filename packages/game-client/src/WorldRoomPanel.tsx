@@ -152,7 +152,8 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,modularApp
       if (socket.current !== client || !client.connected || !desired.current || sequence.current !== operation) return;
       if (!ack.ok) throw new Error(messages[ack.error.code] ?? 'Your room could not be confirmed. Rejoin to continue.');
       if (ack.result.type !== 'snapshot') throw new Error('Your room could not be confirmed.');
-      recovery.current.acceptSnapshot(ticket, ack.result); publish(); if (alive.current) setMessage('');
+      // Background confirmation must not remove feedback and shift the canvas under a pointer.
+      recovery.current.acceptSnapshot(ticket, ack.result); publish(); if (alive.current && joining) setMessage('');
     } catch (error) {
       if (alive.current && socket.current === client && sequence.current === operation) { recovery.current.disconnect(); publish(); setMessage(error instanceof Error ? error.message : 'Connection interrupted. Rejoin to continue.'); }
     } finally { if (sequence.current === operation) { inFlight.current = false; if (alive.current) setBusy(false); } }

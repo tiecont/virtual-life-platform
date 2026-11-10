@@ -44,7 +44,7 @@ test('context loss exposes graphics fallback while real seat and leave controls 
 
 test('real transport interruption hides stale actors and restores one current membership',async({page,context})=>{let client:WebSocketRoute|undefined,server:WebSocketRoute|undefined,connections=0,resume!:()=>void;const gate=new Promise<void>(ok=>resume=ok);await page.routeWebSocket('**/socket.io/**',async route=>{if(++connections>1)await gate;client=route;server=route.connectToServer();});try{await guest(context,'3D Recovery Visitor');await enter(page);const before=await current(context);await client!.close({code:1012,reason:'Synthetic3D transport interruption'});await server!.close();await expect(page.getByRole('status')).toHaveText('Connection lost. Your place is unconfirmed.');await expect(canvas(page)).toHaveAttribute('data-entity-count','0');await capture(page,'transport-lost');resume();await expect(page.getByRole('status')).toHaveText('Connected',{timeout:15000});await expect(canvas(page)).toHaveAttribute('data-entity-count','1');expect((await current(context)).membershipId).toBe(before.membershipId);await capture(page,'transport-resynced');}finally{resume();}});
 
-test('periodic refresh retains a disabled Leave command and never replaces it with Rejoin',async({page,context})=>{
+test('periodic refresh preserves action feedback, canvas position and a disabled Leave command',async({page,context})=>{
  let release:(()=>void)|undefined,joins=0,leaves=0;
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.routeWebSocket('**/socket.io/**',client=>{
@@ -61,11 +61,19 @@ test('periodic refresh retains a disabled Leave command and never replaces it wi
  });
  try{
   await guest(context,'3D Refresh Visitor');await enter(page);const before=await current(context);
+  await page.getByRole('button',{name:'Room actions',exact:true}).click();
+  await page.getByRole('button',{name:'Window table 01',exact:true}).click();
+  await expect(page.getByText('Your seat is confirmed.',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Stand up',exact:true}).click();
+  await expect(page.getByText('You stood up.',{exact:true})).toBeVisible();await closeActions(page);
+  await canvas(page).scrollIntoViewIfNeeded();const bounds=await canvas(page).boundingBox();
   await expect(page.getByRole('status')).toHaveText('Confirming your place...',{timeout:20000});
   await expect(page.getByRole('button',{name:'Leave cafe',exact:true})).toBeDisabled();
   await expect(page.getByRole('button',{name:'Rejoin cafe',exact:true})).toHaveCount(0);
   expect((await current(context)).membershipId).toBe(before.membershipId);
   release!();await expect(page.getByRole('status')).toHaveText('Connected');
+  await expect(page.getByText('You stood up.',{exact:true})).toBeVisible();
+  const refreshedBounds=await canvas(page).boundingBox();expect(refreshedBounds!.y).toBeCloseTo(bounds!.y,0);expect(refreshedBounds!.height).toBeCloseTo(bounds!.height,0);
   await page.getByRole('button',{name:'Leave cafe',exact:true}).click();
   await expect(page.getByText('You left the cafe.',{exact:true})).toBeVisible();
   expect(await current(context)).toBeNull();expect(joins).toBe(1);expect(leaves).toBe(1);
