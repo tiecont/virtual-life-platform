@@ -103,16 +103,20 @@
       "blockerRef": "blockers/VL-007.json"
     },
     "VL-008": {
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "owner": "agent1",
       "evidenceRefs": [],
-      "reservationId": "VL-008-f73fd931-047f-4b38-ba0e-35f39d6f3c16"
+      "reservationId": "VL-008-f73fd931-047f-4b38-ba0e-35f39d6f3c16",
+      "handoffRef": "handoffs/VL-008.json",
+      "handoffSha256": "2ecfac90cb4130554d77a46bb7741e683060cf5658659b0a5fe364881fc890eb"
     },
     "VL-009": {
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "owner": "agent1",
       "evidenceRefs": [],
-      "reservationId": "VL-009-46f5402a-0522-4b38-a961-b50dd361d769"
+      "reservationId": "VL-009-46f5402a-0522-4b38-a961-b50dd361d769",
+      "handoffRef": "handoffs/VL-009.json",
+      "handoffSha256": "4c9076c2e49198d543ebafde5b34c761ef700d104335abfdd7bacdcaae4000ab"
     },
     "VL-010": {
       "status": "TODO",
@@ -450,10 +454,12 @@
       "evidenceRefs": []
     },
     "VL-077": {
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "owner": "agent1",
       "evidenceRefs": [],
-      "reservationId": "VL-077-4f6694f2-fea3-4c38-a968-45eac0fffa53"
+      "reservationId": "VL-077-4f6694f2-fea3-4c38-a968-45eac0fffa53",
+      "handoffRef": "handoffs/VL-077.json",
+      "handoffSha256": "8ec31cd24094cea6f58e2e463a6e358976fdfd2b50e8021d4a453a4af15e19a5"
     },
     "VL-078": {
       "status": "TODO",
@@ -777,5 +783,5 @@
     }
   },
   "gateEvidence": {},
-  "updatedAt": "2026-11-10T01:40:41.643Z"
+  "updatedAt": "2026-11-10T01:43:46.763Z"
 }

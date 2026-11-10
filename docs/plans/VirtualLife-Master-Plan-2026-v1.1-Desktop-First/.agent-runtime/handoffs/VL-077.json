@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-077",
+  "owner": "agent1",
+  "requestedReviewer": "agent2",
+  "sourceRevision": "6f6d5f1831774eed4e6cedd0ab0755c308a88bac",
+  "acceptanceMet": true,
+  "acceptance": [
+    "ADR owner acceptance and legacy source handoff mapped with explicit exceptions",
+    "Owner CachyOS/Ubuntu/Windows/physical-GPU runner allocation recorded without hardware claims"
+  ],
+  "commands": [
+    {
+      "command": "node docs/execution/desktop-first/verify-adoption.mjs",
+      "exitCode": 0,
+      "result": "209 legacy/105 baseline/47 SQL and original source preserved; new Rust inventoried without gameplay qualification"
+    },
+    {
+      "command": "python3 docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/tools/validate_plan.py",
+      "exitCode": 0,
+      "result": "110task checksums/DAG PASS; expected runtime addition warning"
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0
+    }
+  ],
+  "artifacts": [
+    {
+      "ref": "docs/execution/desktop-first/DESKTOP-EXECUTION-DECISION.md",
+      "sha256": "83e553d4513d18dedb699178091d7a94add42e9d1e486b12107d66bfc4b2c3a9"
+    },
+    {
+      "ref": "docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/checks/VL-077.json",
+      "sha256": "744eeeb15d43bfb5a4dec8001e230e523556394bedb8896156dc7d00d2b6cceb"
+    }
+  ],
+  "environment": "CachyOS Linux;Node26.9.0;source/plan preservation checks",
+  "limitations": [
+    "Architecture/threat-model/decision only;new protocol/security tests remain required",
+    "No Unity/Windows/GPU/license/signing/public release acceptance"
+  ],
+  "nextExactAction": "Independent reviewer approves exact source/handoff;coordinator ingests review before successors"
+}
