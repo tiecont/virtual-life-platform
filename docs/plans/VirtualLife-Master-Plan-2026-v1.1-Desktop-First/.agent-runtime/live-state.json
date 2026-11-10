@@ -224,10 +224,15 @@
       "reviewMode": "SINGLE_AGENT_SEQUENTIAL_AUDIT"
     },
     "VL-017": {
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "owner": "agent1",
       "evidenceRefs": [],
-      "reservationId": "VL-017-7ea2aa16-b721-4bf1-8ed7-6bd7e6c7eaaa"
+      "reservationId": "VL-017-7ea2aa16-b721-4bf1-8ed7-6bd7e6c7eaaa",
+      "handoffRef": "handoffs/VL-017-single-agent-v1.json",
+      "handoffSha256": "69e5509e704f92d451507187c600ccda3e963c7469493aafdd5b0feea0a1b794",
+      "reviewRef": "reviews/VL-017-single-agent-v1.json",
+      "reviewSha256": "6cf4e1077bd85a1217d48e387ce72c08a29d5c6a341a41bab390ac4a481d56be",
+      "reviewMode": "SINGLE_AGENT_SEQUENTIAL_AUDIT"
     },
     "VL-018": {
       "status": "TODO",
@@ -1208,7 +1213,7 @@
       }
     ]
   },
-  "updatedAt": "2026-11-10T15:19:01.028Z",
+  "updatedAt": "2026-11-10T16:03:17.402Z",
   "reviewPolicy": {
     "ref": "policies/single-agent-2026-11-10.json",
     "sha256": "02c0285a2d6fe5cf19c57f10d91945f6d9a9ee60a1bf80f7c200e63ee6e7cda1"

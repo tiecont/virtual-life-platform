@@ -1,3 +1,22 @@
+# Native persistence accepted; product gates unchanged - 2026-11-10
+
+VL-017 VERIFIED at2801a3c with actual Rust CI42848450211 and separate same-agent
+audit,explicitly not independent. No peer/billing blocker. Quality42832214573
+atedf45c7 completed SUCCESS. Current Quality42848450457 remains IN_PROGRESS with
+images passing; do not report aggregate success. VL-018 and VL-020 are READY.
+
+Default-off host supports same-logical-boot restart only. Boot takeover/epoch
+reconciliation is VL-020; platform reward worker/inbox/ledger is VL-018. Global
+admission-lock contention,short grant/lease lifetime and trusted domain reducer/
+projection contracts remain operational limits. No live game route or grants.
+
+VL-006 rights/brand and VL-007 named physical Windows tiers remain BLOCKED_EXTERNAL.
+Unity/editor licensing,Windows/GPU evidence,signing and public deployment retain
+their gates. Owned children,roles,schemas and containers were cleaned; owner
+IDE/CA files and immutable baseline/legacy evidence were untouched.
+
+## Previous checkpoints
+
 # CI runner blocker resolved; external product gates remain - 2026-11-10
 
 Owner made the repository PUBLIC for CI. Actual runs resumed; Rust and aggregate

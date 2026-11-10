@@ -1,3 +1,42 @@
+# VL-017 accepted with actual crash/retry persistence proof - 2026-11-10
+
+Source2801a3c7f205e09695d487da9d03d57c08b5f0b1 is committed and pushed to
+codex/native-turns-20261110. Default-off vl-persistence executes authorized turns,
+encrypts checkpoint/receipt/events and atomically writes completion settlement/
+outbox; returns recipient ACK after commit. Identical retries return stored bytes.
+Actual process kills precommit/postcommit and restart prove zero partial effects,
+unknown-ACK retrieval and authoritative snapshot/RNG/turn restoration.
+
+Local40Rust+1doctest,24realPGscenarios/12privilege denials,121governance,lint,
+Clippy,CI/architecture,preservation and plan checks pass. Separate source-frozen
+audit reruns24PG/12,2crypto,121governance and preservation PASS. Exact Ubuntu Rust
+42848450211 SUCCESS includes24PG/12,WSS14,durableTrust17,bindings,archived migration
+compatibility and OCI smoke. Coordinator submit/verify madeVL-017 VERIFIED.
+Canonical handoff/review:VL-017-single-agent-v1.json; SINGLE_AGENT_SEQUENTIAL_AUDIT,
+independent:false under hashed owner policy. No agents spawned.
+
+Previous Quality42832214573 atedf45c7 completed SUCCESS in all12jobs; recorded
+without rewriting prior handoff. Current2801a3c Quality42848450457 is IN_PROGRESS:
+images/change-plan success,core running at16:04Z; no aggregate verdict. Summary:
+docs/execution/desktop-first/orchestration/CI-2801a3c.json. Counts15VERIFIED,
+2BLOCKED_EXTERNAL,93TODO;no task IN_PROGRESS. VL-018 and VL-020 are READY.
+
+All owned local DBs,roles,schemas,children and containers are cleaned up. Hosted
+CI continues on GitHub; no automatic local follow-up is promised. Production
+runtime remains health-only with gameplay rejected. Same-logical-boot restart
+does not certify boot takeover; VL-020 owns reconciliation. Reward effects and
+platform ledger remain VL-018. Global admission lock/short lease/trusted domain
+code limits and Windows/Unity/GPU/rights/signing/public release gates remain.
+
+**Next exact action:** inspect Quality42848450457 and preserve its actual result.
+Read VL-018/direct storage dependencies and existing progression/worker inbox/
+ledger contracts; reserve explicit source/SQL paths via schedulerStore before
+implementing one default-off native settlement worker slice. Require one grant
+on repeated event and REWARD_PENDING-to-reconciled evidence on actual PG. Keep
+baseline,legacy ledgers,owner IDE/CA and production routes untouched.
+
+## Previous checkpoints
+
 # Public CI restored; exact-source storage and WSS accepted - 2026-11-10
 
 Owner made the repository PUBLIC for CI. Attempt 2 at 619e70c ran: Rust

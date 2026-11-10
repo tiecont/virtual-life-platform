@@ -1,3 +1,28 @@
+# VL-017 transactional command host verified - 2026-11-10
+
+Source2801a3c adds default-off vl-persistence: current authorization and membership,
+turn/version/epoch checks, encrypted checkpoint/receipt/events and atomic completion
+settlement/outbox; ACK is returned after the trust transaction commits. Same-command
+retry returns original recipient bytes. Actual SIGKILL before/after commit and
+process restart prove rollback, unknown-ACK retrieval and authoritative turn restore.
+
+Local Rust40+1doctest,PG24scenarios/12privilege denials,governance121,lint,Clippy,
+CI/architecture/preservation/plan checks pass. Separate source-frozen postcommit
+audit reruns PG24/12,crypto2,governance121 and preservation successfully. Exact
+Ubuntu Rust42848450211 SUCCESS includes those PG cases,WSS14,durableTrust17,
+archived migration compatibility and OCI smoke. Coordinator VERIFIED VL-017;
+review SINGLE_AGENT_SEQUENTIAL_AUDIT,independent:false. No agents spawned.
+
+Earlier Quality42832214573 atedf45c7 is now confirmed SUCCESS in all12jobs.
+Current Quality42848450457 at2801a3c remains IN_PROGRESS: images/change-plan pass,
+core running at observation; no aggregate verdict. Evidence orchestration/CI-2801a3c.json.
+Counts15VERIFIED/2BLOCKED_EXTERNAL/93TODO,no active task;VL-018/VL-020 READY.
+Owned local DBs/roles/children cleaned. Next: inspect current Quality and implement
+dependency-ready VL-018 after explicit reservation. Runtime remains disabled;
+logical-boot takeover,Windows/Unity/GPU/rights/signing/release gates remain.
+
+## Previous checkpoints
+
 # Public CI restored; VL-016 and VL-022 verified - 2026-11-10
 
 Owner made the repository public for CI. Attempt 2 at 619e70c actually ran:

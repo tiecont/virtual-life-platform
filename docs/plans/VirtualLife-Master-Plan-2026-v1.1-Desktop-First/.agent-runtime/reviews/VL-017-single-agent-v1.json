@@ -1,0 +1,37 @@
+{
+  "schemaVersion":1,
+  "taskId":"VL-017",
+  "reviewer":"agent1",
+  "reviewMode":"SINGLE_AGENT_SEQUENTIAL_AUDIT",
+  "independent":false,
+  "policySha256":"02c0285a2d6fe5cf19c57f10d91945f6d9a9ee60a1bf80f7c200e63ee6e7cda1",
+  "sourceRevision":"2801a3c7f205e09695d487da9d03d57c08b5f0b1",
+  "handoffSha256":"69e5509e704f92d451507187c600ccda3e963c7469493aafdd5b0feea0a1b794",
+  "decision":"APPROVED",
+  "reviewedAt":"2026-11-10T16:02:02Z",
+  "findings":[],
+  "audit":{
+    "startedAt":"2026-11-10T15:52:42.414Z",
+    "sourceUnchanged":true,
+    "rawFacts":{"ref":"artifacts/desktop-first/vl017/postcommit-2801a3c/facts.json","sha256":"c8c27deb93798c56ec74ffa9eddcbfc1ddb71048515cf765e587bee51c76c013"},
+    "checks":[
+      {"command":"cargo test --locked --package vl-persistence","exitCode":0,"tests":2,"ref":"artifacts/desktop-first/vl017/postcommit-2801a3c/rust.log","sha256":"7f79a0eddea193918ebb2f257519967690fd286e73dbe503859347f6a783ad30"},
+      {"command":"node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs","exitCode":0,"scenarios":24,"deniedPrivileges":12,"ref":"artifacts/desktop-first/vl017/postcommit-2801a3c/postgres.log","sha256":"a97e11561c62b72feab7fe51013255747bd553397474de97b7d91cc511d69c3b"},
+      {"command":"node --test tests/governance/*.test.mjs","exitCode":0,"tests":121,"ref":"artifacts/desktop-first/vl017/postcommit-2801a3c/governance.log","sha256":"4a90baec38ecdc2ca77b4dc365a278f4237491f044f6dac2f6f092c5e305a7bf"},
+      {"command":"pnpm ci:check","exitCode":0,"ref":"artifacts/desktop-first/vl017/postcommit-2801a3c/ci.log","sha256":"d8af99d39ef919908768ce02e569e319538e1aad335f7fe0efc06fb6d1e58852"},
+      {"command":"node docs/execution/desktop-first/verify-adoption.mjs","exitCode":0,"ref":"artifacts/desktop-first/vl017/postcommit-2801a3c/preservation.log","sha256":"52e92ab7bb9aea983a2f932b4c8f921f28c7cf3183b259814365f1073c4c8e4b"},
+      {"command":"git diff --exit-code HEAD -- crates Cargo.toml Cargo.lock apps/game-runtime .github/workflows/rust-runtime.yml scripts/native-game-orchestration.mjs scripts/verify-artifact-workflows.mjs tests/governance/rust-workflow.test.mjs config/native-game-db-privileges.json","exitCode":0,"ref":"artifacts/desktop-first/vl017/postcommit-2801a3c/source.log","sha256":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+    ],
+    "postgresFacts":{"ref":"artifacts/desktop-first/vl017/orchestration-924224d6/facts.json","sha256":"277c2083535cdd083dd0a5f80aa9cafa09f0cd9676bde1f5f0f8b392e4d45465","cleanupComplete":true},
+    "inspection":[
+      "Exact committed source: current trust/nonce plus membership before reads/retries; turn authorization before new reducer effects; fingerprint includes actor,IDs,epoch,expectedVersion and canonical action",
+      "Match lock and conditional owner/version update serialize commits; checkpoint/receipt/events/settlement/outbox share one borrowed SQL transaction; no external publish; outer trust rechecks and commits before returning",
+      "AES256GCM envelopes bind purpose/world/match/content/rules/engine/epoch/version; receipts bind actor/command and events bind index; snapshot validates SQL clocks/RNG/seed commitment; missing keys/tampering fail closed",
+      "Actual SIGKILL precommit/postcommit,retry races,lease expiry after writes,SQL failures/timeout and owner backend termination; restricted role denies takeover,policy,legacy,ledger and migration ownership",
+      "Health executable keeps game route absent and activation rejected; default-off library has no independent migrator; baseline and historical ledger hashes remain intact",
+      "Same logical boot scope only,synthetic domain,completion proposal only,global admission contention and trusted synchronous reducer limitations are explicit"
+    ]
+  },
+  "ci":[{"runId":42848450211,"url":"https://github.com/tiecont/virtual-life-platform/actions/runs/42848450211","sourceRevision":"2801a3c7f205e09695d487da9d03d57c08b5f0b1","conclusion":"success","rawLogSha256":"657f01230be1f1e5530bc6ceda77ab4016fb70396d37018a5b17b7728137b0a2","scope":"Ubuntu Rust40+1doctest,actual orchestration24/denials12,WSS14,durable trust17,bindings,schema races,archived migrations and OCI smoke"}],
+  "limitations":["Same implementer; separate audit explicitly not independent","No production,game route,ledger reward worker or boot-takeover qualification","Quality42848450457 is a separate still-running aggregate at observation","No Windows,Unity,GPU,rights,signing or public release qualification"]
+}

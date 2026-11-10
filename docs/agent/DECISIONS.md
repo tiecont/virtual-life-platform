@@ -1,3 +1,27 @@
+# Native command host boundary and acceptance - 2026-11-10
+
+VL-017 is an opt-in library with a separate disabled SQL privilege profile. It
+reuses the shared Nest migration journal and VL-013 admission transaction. A
+session advisory lock guards the single world host; match row locks and owner/
+version CAS serialize turns. Injected transaction clients are trusted explicit-CA
+connections. Current policy/membership guards protect retries and fresh projections.
+Checkpoint,receipt and events are AES256GCM encrypted with contextual bindings;
+postcommit ACK/retry is the only success path. The host has no publisher or route.
+
+Restart proof reacquires the lock within the allocator's valid logical boot and
+requests fresh player admissions. Boot replacement/epoch reconciliation remains
+VL-020. Only a null completion sentinel becomes a fixed nonprivate settlement
+proposal; arbitrary reward payloads and platform ledger effects remain VL-018.
+Inherited allocator-lock contention,short leases and trusted synchronous reducer
+execution are explicit limitations,not qualified production throughput.
+
+Exact Rust42848450211 plus separate same-agent audit accepts source2801a3c under
+the hashed owner policy; independent:false. Full Quality42848450457 remains a
+separate observation. Prior edf45c7 aggregate completed SUCCESS. No production
+activation,baseline mutation or Windows/license/release approval follows.
+
+## Previous checkpoints
+
 # Owner-public repository CI and bounded WSS acceptance - 2026-11-10
 
 Owner changed repository visibility to PUBLIC for CI. This authorizes source
