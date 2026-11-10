@@ -441,12 +441,12 @@
       "next_action": "Private admin deployment, audit evidence và release/backup status view"
     },
     "N08-01": {
-      "status": "TODO",
-      "owner": null,
-      "branch": null,
+      "status": "IN_PROGRESS",
+      "owner": "Codex Operations lane",
+      "branch": "codex/vnext-n08-01-observations",
       "evidence_refs": [],
       "blocker": null,
-      "next_action": "Histogram/counter metrics, bounded labels, safe tracing, health/traffic schemas"
+      "next_action": "Implement explicit process-lifetime approximation and versioned safe observation contract; execute actual cardinality/redaction/missing-source verification."
     },
     "N08-02": {
       "status": "TODO",
