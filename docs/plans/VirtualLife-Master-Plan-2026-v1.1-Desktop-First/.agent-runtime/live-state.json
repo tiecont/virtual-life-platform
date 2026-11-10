@@ -152,9 +152,10 @@
       "reviewSha256": "5fe2d573b623876fd5f9ea8d5cbafe9aa0158c0038703db1f878db7e219fece7"
     },
     "VL-013": {
-      "status": "TODO",
-      "owner": null,
-      "evidenceRefs": []
+      "status": "IN_PROGRESS",
+      "owner": "agent1",
+      "evidenceRefs": [],
+      "reservationId": "VL-013-0c6147a1-e3b9-4ad7-a0f1-ab0cd5fc7824"
     },
     "VL-014": {
       "status": "TODO",
@@ -839,6 +840,27 @@
       "worktree": "/home/tiecont/Projects/virtual-city",
       "sourceRevision": "25b015957e53a5bc688eac0d530cef325616ac13",
       "createdAt": "2026-11-10T01:59:30.014Z"
+    },
+    "VL-013-0c6147a1-e3b9-4ad7-a0f1-ab0cd5fc7824": {
+      "id": "VL-013-0c6147a1-e3b9-4ad7-a0f1-ab0cd5fc7824",
+      "ref": "reservations/VL-013-0c6147a1-e3b9-4ad7-a0f1-ab0cd5fc7824.json",
+      "taskId": "VL-013",
+      "owner": "agent1",
+      "paths": [
+        "crates/vl-security/**",
+        "apps/platform-api/src/identity/runtime-tickets.ts",
+        "tests/unit/runtime-tickets.test.ts",
+        "proto/native/fixtures/security/**",
+        "docs/execution/desktop-first/security/TICKET-TRUST.md",
+        "Cargo.toml",
+        "Cargo.lock",
+        "apps/game-runtime/Dockerfile",
+        ".github/workflows/rust-runtime.yml"
+      ],
+      "branch": "codex/desktop-first-backend",
+      "worktree": "/home/tiecont/Projects/virtual-city",
+      "sourceRevision": "01e194dd37215a15cdb4e1988717825d69b83c3c",
+      "createdAt": "2026-11-10T03:01:13.190Z"
     }
   },
   "gateEvidence": {
@@ -854,5 +876,5 @@
       }
     ]
   },
-  "updatedAt": "2026-11-10T02:58:41.577Z"
+  "updatedAt": "2026-11-10T03:01:15.026Z"
 }

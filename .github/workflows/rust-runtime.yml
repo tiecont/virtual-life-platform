@@ -51,6 +51,13 @@ jobs:
           "$CARGO_HOME/bin/cargo" run --locked --package vl-protocol --bin native-codegen -- --check
           pnpm --filter @virtual-city/native-protocol typecheck
           pnpm exec vitest run --project unit packages/native-protocol/test/wire.test.ts
+      - name: Check identity-issued runtime ticket trust across Node and Rust
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm build:packages
+          node scripts/with-test-db.mjs pnpm exec tsx --test tests/unit/runtime-tickets.test.ts
+          "$CARGO_HOME/bin/cargo" run --locked --package vl-security --bin ticket-check -- artifacts/desktop-first/vl013/tickets.json
       - name: Build and smoke OCI foundation
         shell: bash
         run: |

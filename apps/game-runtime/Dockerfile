@@ -4,6 +4,7 @@ COPY Cargo.toml Cargo.lock rust-toolchain.toml ./
 COPY apps/game-runtime/Cargo.toml apps/game-runtime/Cargo.toml
 COPY apps/game-runtime/src apps/game-runtime/src
 COPY crates/vl-protocol crates/vl-protocol
+COPY crates/vl-security crates/vl-security
 COPY proto/native proto/native
 RUN cargo build --release --locked --package vl-game-runtime
 
