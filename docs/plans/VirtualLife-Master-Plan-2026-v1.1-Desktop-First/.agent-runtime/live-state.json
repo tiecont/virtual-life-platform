@@ -103,20 +103,24 @@
       "blockerRef": "blockers/VL-007.json"
     },
     "VL-008": {
-      "status": "IN_REVIEW",
+      "status": "VERIFIED",
       "owner": "agent1",
       "evidenceRefs": [],
       "reservationId": "VL-008-f73fd931-047f-4b38-ba0e-35f39d6f3c16",
       "handoffRef": "handoffs/VL-008.json",
-      "handoffSha256": "2ecfac90cb4130554d77a46bb7741e683060cf5658659b0a5fe364881fc890eb"
+      "handoffSha256": "2ecfac90cb4130554d77a46bb7741e683060cf5658659b0a5fe364881fc890eb",
+      "reviewRef": "reviews/VL-008-agent2.json",
+      "reviewSha256": "0738925aacaf0a9158cd3a28c8b4102ea80b24f281877d84237f322decec911c"
     },
     "VL-009": {
-      "status": "IN_REVIEW",
+      "status": "VERIFIED",
       "owner": "agent1",
       "evidenceRefs": [],
       "reservationId": "VL-009-46f5402a-0522-4b38-a961-b50dd361d769",
       "handoffRef": "handoffs/VL-009.json",
-      "handoffSha256": "4c9076c2e49198d543ebafde5b34c761ef700d104335abfdd7bacdcaae4000ab"
+      "handoffSha256": "4c9076c2e49198d543ebafde5b34c761ef700d104335abfdd7bacdcaae4000ab",
+      "reviewRef": "reviews/VL-009-agent2.json",
+      "reviewSha256": "4a5b4694a00db0c8fcf288baaf54cc619f3153690504c0e9c2c5a33a25975db9"
     },
     "VL-010": {
       "status": "TODO",
@@ -454,12 +458,14 @@
       "evidenceRefs": []
     },
     "VL-077": {
-      "status": "IN_REVIEW",
+      "status": "VERIFIED",
       "owner": "agent1",
       "evidenceRefs": [],
       "reservationId": "VL-077-4f6694f2-fea3-4c38-a968-45eac0fffa53",
       "handoffRef": "handoffs/VL-077.json",
-      "handoffSha256": "8ec31cd24094cea6f58e2e463a6e358976fdfd2b50e8021d4a453a4af15e19a5"
+      "handoffSha256": "8ec31cd24094cea6f58e2e463a6e358976fdfd2b50e8021d4a453a4af15e19a5",
+      "reviewRef": "reviews/VL-077-agent2.json",
+      "reviewSha256": "e8fefd74a7712fef11b764c84ffc2628759f9d5704fa2feee814777f7c7e60e7"
     },
     "VL-078": {
       "status": "TODO",
@@ -783,5 +789,5 @@
     }
   },
   "gateEvidence": {},
-  "updatedAt": "2026-11-10T01:43:46.763Z"
+  "updatedAt": "2026-11-10T01:45:39.198Z"
 }
