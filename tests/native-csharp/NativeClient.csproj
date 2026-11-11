@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <OutputPath>../../artifacts/csharp/bin/$(Configuration)/</OutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.36.2" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <Compile Include="../../contracts/generated/csharp/Public.cs" />
+    <Compile Include="../../apps/unity-client/Assets/VirtualLife/Features/Native/Infrastructure/*.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+</Project>

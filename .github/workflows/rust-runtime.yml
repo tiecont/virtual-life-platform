@@ -77,6 +77,20 @@ jobs:
           set -euo pipefail
           "$CARGO_HOME/bin/cargo" build --locked --package vl-game-runtime
           node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay
+      - name: Check standalone Unity protocol adapter and real C# to Rust interoperability
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/vl-dotnet"
+          curl -fsSL https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.428/dotnet-sdk-8.0.428-linux-x64.tar.gz -o "$RUNNER_TEMP/vl-dotnet-sdk.tar.gz"
+          printf '33212bb99a2bf003973d41106c7e8fe94208a12958ff601d4a476be379403c85a7dc9183a6ec64dfb44ded7102965be09f35add1758e68e9251bae7891d7b7bf  %s\n' "$RUNNER_TEMP/vl-dotnet-sdk.tar.gz" | sha512sum --check
+          tar -xzf "$RUNNER_TEMP/vl-dotnet-sdk.tar.gz" -C "$RUNNER_TEMP/vl-dotnet"
+          export DOTNET="$RUNNER_TEMP/vl-dotnet/dotnet"
+          export PATH="$RUNNER_TEMP/vl-dotnet:$PATH"
+          export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+          node scripts/native-csharp.mjs
+          node scripts/unity-native-prepare.mjs
+          node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client
       - name: Measure bounded twenty-actor zone prototype
         run: '"$CARGO_HOME/bin/cargo" run --locked --package vl-world --example zone-probe'
       - name: Check identity-issued runtime ticket trust across Node and Rust

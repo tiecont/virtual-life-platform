@@ -1,6 +1,6 @@
 {
   "name": "VirtualLife.EditMode",
-  "references": ["VirtualLife.Blockout"],
+  "references": ["VirtualLife.Blockout", "VirtualLife.Native"],
   "includePlatforms": ["Editor"],
   "optionalUnityReferences": ["TestAssemblies"]
 }

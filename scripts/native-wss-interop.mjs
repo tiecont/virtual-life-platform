@@ -10,8 +10,9 @@ import {chromium} from '@playwright/test';
 import {validateTestDatabaseURL} from './test-environment.mjs';
 import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
 
-const playable=process.argv.slice(2).join(' ')==='--runtime-gameplay';
-if(process.argv.length>2&&!playable)throw Error('Unknown native interoperability mode');
+const options=process.argv.slice(2);
+const playable=options.includes('--runtime-gameplay'),csharp=options.includes('--csharp-client');
+if(options.some(value=>!['--runtime-gameplay','--csharp-client'].includes(value))||new Set(options).size!==options.length||csharp&&!playable)throw Error('Unknown native interoperability mode');
 const require=createRequire(import.meta.url),apiRequire=createRequire(resolve('apps/platform-api/package.json'));
 apiRequire('reflect-metadata');
 const {NestFactory}=apiRequire('@nestjs/core'),{Module}=apiRequire('@nestjs/common'),{FastifyAdapter}=apiRequire('@nestjs/platform-fastify');
@@ -20,6 +21,7 @@ const {migrate}=require('../apps/platform-api/src/shared/database/migrations.ts'
 const {readConfig}=require('../apps/platform-api/src/shared/config/environment.ts');
 const {IdentityService}=require('../apps/platform-api/src/features/identity/modules/accounts/application/service.ts');
 const {registerIdentity}=require('../apps/platform-api/src/features/identity/modules/accounts/presentation/http.ts');
+const {readSessionToken}=require('../apps/platform-api/src/features/identity/modules/accounts/presentation/http.ts');
 const {RuntimeAdmissionStore}=require('../apps/platform-api/src/features/identity/modules/runtime-access/application/runtime-admission.ts');
 const {RuntimeTicketIssuer}=require('../apps/platform-api/src/features/identity/modules/runtime-access/application/runtime-tickets.ts');
 const {registerRuntimeGateway}=require('../apps/platform-api/src/features/runtime-gateway/modules/tickets/presentation/http.ts');
@@ -59,6 +61,15 @@ try{
  class FixtureModule{} Module({})(FixtureModule);
  app=await NestFactory.create(FixtureModule,new FastifyAdapter({https:{cert,key},logger:false}),{logger:false});
  const http=app.getHttpAdapter().getInstance();registerIdentity(http,config,identity);
+ let allocateForCsharp=false;
+ // The isolated client fixture allocates only authenticated, CSRF-checked sessions
+ // to the harness-owned scope. This hook is never part of the production API.
+ http.addHook('preHandler',async req=>{
+  if(allocateForCsharp&&req.url==='/v1/runtime-ticket'){
+   const token=readSessionToken(req,config);identity.verifyCsrf(token,req.headers['x-csrf-token']);
+   await store.allocate(token,scope);
+  }
+ });
  const bundle=await build({entryPoints:['tests/native-wss/browser.ts'],nodePaths:[resolve('packages/native-protocol/node_modules')],bundle:true,write:false,format:'iife',platform:'browser',target:'es2022'});
  http.get('/',(_req,reply)=>reply.type('text/html').send('<!doctype html><title>Native transport fixture</title><script src="/fixture.js"></script>'));
  http.get('/fixture.js',(_req,reply)=>reply.type('application/javascript').send(bundle.outputFiles[0].text));
@@ -83,6 +94,14 @@ try{
  browser=await chromium.launch({headless:true});const context=await browser.newContext({ignoreHTTPSErrors:true});facts.browser=browser.version();facts.browserTls='Ephemeral CA; browser ignoreHTTPSErrors for isolated fixture only. PostgreSQL verifies explicit CA/hostname/channel binding.';
  const page=await context.newPage();await page.goto(origin);await page.waitForFunction(()=>!!window.transport);
  const guest=await page.evaluate(async()=>{const r=await fetch('/v1/session/guest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestId:crypto.randomUUID(),displayName:'WSS fixture',avatarKey:'mint'})});return {status:r.status,me:await r.json()};});assert.equal(guest.status,201);
+ const loginName='fixture_'+randomBytes(8).toString('hex'),loginPassword=randomBytes(24).toString('hex');
+ if(csharp){
+  const upgrade=await page.evaluate(async({csrf,loginName,password})=>{
+   const r=await fetch('/v1/session/upgrade',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':csrf,'Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({loginName,password})});
+   return {status:r.status,me:await r.json()};
+  },{csrf:guest.me.csrfToken,loginName,password:loginPassword});
+  assert.equal(upgrade.status,200);guest.me=upgrade.me;
+ }
  const cookie=(await context.cookies()).find(c=>c.name==='city_session');assert(cookie?.httpOnly);const credential=http.unsignCookie(decodeURIComponent(cookie.value)).value;assert(credential);
 
  const matchId=randomUUID(),privateFile=directory+'/host.private.json';
@@ -157,16 +176,36 @@ try{
   await call('send',fresh,6,5,'gameIntent',intent(0,'fixture.view.v1'));const view=await call('next',fresh);
   assert.equal(view.receipt.committed,false);assert.deepEqual(view.receipt.projection,second.receipt.projection);
   record('actual-runtime-durable-command-receipt-duplicate-version-fence-and-private-view');
+  async function csharpProbe(){
+   allocateForCsharp=true;
+   try{
+    const probe=spawn(process.env.DOTNET??'dotnet',[resolve('artifacts/csharp/bin/Release/net8.0/NativeClient.dll'),'--probe'],{stdio:['pipe','pipe','pipe']});
+    let log='';probe.stdout.on('data',b=>{log+=b;});probe.stderr.on('data',b=>{log+=b;});
+    const timer=setTimeout(()=>probe.kill('SIGKILL'),30000);
+    const finished=new Promise((ok,no)=>{probe.once('error',no);probe.once('close',ok);});
+    probe.stdin.end(JSON.stringify({origin,certificate:resolve(directory,'tls/server.pem'),boot:scope.runtimeBootId,match:matchId,loginName,password:loginPassword}));
+    let code;try{code=await finished;}finally{clearTimeout(timer);}
+    assert.equal(code,0,'C# real-process probe failed: '+log);assert.deepEqual(JSON.parse(log),{result:'PASS',checks:5});
+    assert(!log.includes(loginPassword));
+   }finally{allocateForCsharp=false;}
+  }
+  if(csharp){await csharpProbe();record('csharp-https-login-ticket-wss-receipt-duplicate-and-reconnect');}
   const checkpoint=(await pool.query('SELECT state_version,rng_cursor,audit_hash,sealed_snapshot FROM game_native_matches WHERE id=$1',[matchId])).rows[0];
   child.kill('SIGKILL');await childClosed;child=undefined;
   await startHost();
   assert.deepEqual((await pool.query('SELECT state_version,rng_cursor,audit_hash,sealed_snapshot FROM game_native_matches WHERE id=$1',[matchId])).rows[0],checkpoint);
+  if(csharp){
+   await csharpProbe();record('csharp-after-sigkill-replays-durable-receipt-without-extra-effects');
+   // Admission is session-scoped: return the harness allocation to the browser
+   // only after the independent C# session has completed its restart proof.
+   await store.allocate(credential,scope);
+  }
   ticket=await call('ticket',guest.me.csrfToken);assert.equal(ticket.status,200);
   const restarted=await call('open',origin.replace('https:','wss:')+'/rt/v1');
   await call('send',restarted,1,1,'hello',hello(ticket.body.ticket));assert.equal((await call('next',restarted)).kind,'hello');
   await call('send',restarted,3,2,'gameIntent',intent(0));assert.equal((await call('next',restarted)).hex,first.hex);
   await call('send',restarted,7,3,'gameIntent',intent(2));const final=await call('next',restarted);
-  assert.equal(final.version,'3');assert.equal(final.receipt.projection.reward,'REWARD_PENDING');
+  assert.equal(final.version,'3',JSON.stringify({kind:final.kind,code:final.code,closed:final.closed}));assert.equal(final.receipt.projection.reward,'REWARD_PENDING');
   assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_outbox')).rows[0].n,1);
   record('actual-runtime-sigkill-restart-restores-checkpoint-replays-receipt-and-settles-once');
 
@@ -210,7 +249,7 @@ try{
  const text=await call('open',origin.replace('https:','wss:')+'/rt/v1');await call('text',text);assert(await call('closed',text));record('text-frame-denied');
  await call('close',fresh);await context.close();await browser.close();browser=undefined;
  const effects=(await pool.query('SELECT (SELECT count(*)::int FROM game_native_matches) AS matches,(SELECT count(*)::int FROM game_native_receipts) AS receipts,(SELECT count(*)::int FROM platform_native_ticket_uses) AS nonces')).rows[0];
- assert.equal(effects.matches,playable?1:0);assert.equal(effects.receipts,playable?3:0);assert.equal(effects.nonces,playable?3:2);facts.effects=effects;record(playable?'three-game-commits-one-native-match':'zero-game-writes');
+ assert.equal(effects.matches,playable?1:0);assert.equal(effects.receipts,playable?3:0);assert.equal(effects.nonces,playable?(csharp?7:3):2);facts.effects=effects;record(playable?'three-game-commits-one-native-match':'zero-game-writes');
  assert.equal(heartbeatError,undefined);facts.result='PASS';
  assert(!/ownRoll|storageKeys/.test(output+errors));
  await writeFile(directory+'/rust-host.log',output+errors,{mode:0o600});

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <NuGetLockFilePath>unity-packages.lock.json</NuGetLockFilePath>
+    <OutputPath>../../artifacts/csharp/compatible/$(Configuration)/</OutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.36.2" />
+    <Compile Include="../../contracts/generated/csharp/Public.cs" />
+    <Compile Include="../../apps/unity-client/Assets/VirtualLife/Features/Native/Infrastructure/*.cs" />
+  </ItemGroup>
+</Project>
