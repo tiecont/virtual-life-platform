@@ -1532,13 +1532,26 @@
         "unit fixture 100% reproducible, content id/version pinned",
         "negative invalid swap+telegraph tests"
       ],
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "implementation": {
         "source": "crates/vl-pet-arena",
         "contentId": "pet-arena-training",
         "contentVersion": 1,
         "scope": "Eight authored pets, six PvE stages including a boss, fixed-point status examples, adjacent swap validation and seeded turn-bound telegraphs; no live route or combat reducer",
-        "remainingAcceptance": "Committed-source validation and hosted CI; full board generation, cascade/combo/skills/AI and match recovery remain VL-044"
+        "contentHash": "df54caf234f947b678a5e924dc57fa9ec0357c3eb00ef45adc0c69e4e4fa308a",
+        "validation": "cargo test --locked -p vl-pet-arena",
+        "remainingImplementation": "Full board generation, cascade/combo/skills/AI and match recovery remain VL-044; this task qualifies only the first-pass rules/content contracts"
+      },
+      "verification": {
+        "sourceRevision": "019942aadbfc81cb66a719356c004a8cd7bc0c30",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "49 tests including 6 Pet Arena cases and compile-fail boundaries; zero ignored"},
+          {"command": "cargo clippy --workspace --all-targets --locked -- -D warnings", "exitCode": 0},
+          {"command": "cargo fmt --all -- --check", "exitCode": 0},
+          {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "105 tests passed"}
+        ],
+        "reviewNotes": "Frozen content and seeded six-turn fixture hashes; 2160 telegraph combinations plus stale/forged negatives; all board cell pairs checked for accepted swap invariants; fixed-point status/expiry/shield examples. No live combat, native route activation, player build or final balance qualification claimed. Hosted CI remains required before merge."
       },
       "qualificationRequirements": [],
       "qualificationDependencies": [
