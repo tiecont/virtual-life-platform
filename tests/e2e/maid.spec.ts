@@ -3,9 +3,39 @@ import { test,expect,devices,type Page,type BrowserContext } from '@playwright/t
 import { mkdir,writeFile } from 'node:fs/promises';
 import { guest,headers,testDb,origin } from '../support/deadline-safety-fixtures';
 test('Stop fences a held staff queue reply and a fresh voluntary start is required before tickets return',async({page,context,browser},info)=>{
- test.setTimeout(45000);const peer=await browser.newContext({...devices[info.project.name==='mobile'?'iPhone 13':'Desktop Chrome'],baseURL:origin});let release:()=>void=()=>{};
- try{const customer=await guest(peer,'Queue customer');await guest(context,'Queue volunteer');await visible(peer,customer);const other=await peer.newPage();await enter(other);await other.getByRole('button',{name:'Sakura chair 01',exact:true}).click();await other.getByRole('button',{name:'Order Coffee',exact:true}).click();await expect(other.getByText('Order state: PENDING',{exact:true})).toBeVisible();await enter(page);const work=page.getByRole('region',{name:'Voluntary cafe work'}),service=page.getByRole('region',{name:'Virtual cafe service'});await work.getByRole('button',{name:'Start voluntary shift',exact:true}).click();await expect(work).toContainText('maid · maid · active');let observed:()=>void=()=>{};const held=new Promise<void>(ok=>observed=ok),gate=new Promise<void>(ok=>release=ok);await page.route('**/v1/orders/queue',async route=>{const response=await route.fetch();expect(response.status()).toBe(200);observed();await gate;await route.fulfill({response}).catch(()=>{});});await service.getByRole('button',{name:'Refresh cafe service',exact:true}).click();await held;await work.getByRole('button',{name:'Stop voluntary work',exact:true}).click();await expect(work).toContainText('No active voluntary shift');release();await page.unrouteAll({behavior:'wait'});await expect(service.getByRole('button',{name:'Order Coffee',exact:true})).toBeVisible();await expect(service.getByRole('button',{name:'Take service ticket',exact:true})).toHaveCount(0);await expect(service).toContainText('Current voluntary work is unconfirmed');await work.getByRole('button',{name:'Start voluntary shift',exact:true}).click();await expect(work).toContainText('maid · maid · active');await service.getByRole('button',{name:'Refresh cafe service',exact:true}).click();await expect(service.getByRole('button',{name:'Take service ticket',exact:true})).toBeEnabled();await service.getByRole('button',{name:'Take service ticket',exact:true}).click();await service.getByRole('button',{name:'Refuse this service',exact:true}).click();await expect(service.getByText('Your service refusal was recorded.',{exact:true})).toBeVisible();await expect(service.getByRole('button',{name:'Take service ticket',exact:true})).toHaveCount(0);await other.getByRole('button',{name:'Refresh cafe service',exact:true}).click();await expect(other.getByText('Order state: PENDING',{exact:true})).toBeVisible();await work.getByRole('button',{name:'Stop voluntary work',exact:true}).click();await other.getByRole('button',{name:'Withdraw unfinished service',exact:true}).click();for(const p of[page,other]){await p.getByRole('button',{name:'Leave and return to city',exact:true}).click();await p.waitForURL('/');}
- }finally{release();await peer.close();}
+ test.setTimeout(45000);const peer=await browser.newContext({...devices[info.project.name==='mobile'?'iPhone 13':'Desktop Chrome'],baseURL:origin});let release:()=>void=()=>{};const sessions:Array<{context:BrowserContext;me:Awaited<ReturnType<typeof guest>>}>=[];
+ try{
+  const customer=await guest(peer,'Queue customer');sessions.push({context:peer,me:customer});
+  const volunteer=await guest(context,'Queue volunteer');sessions.push({context,me:volunteer});
+  await visible(peer,customer);const other=await peer.newPage();await enter(other);
+  await other.getByRole('button',{name:'Sakura chair 01',exact:true}).click();
+  await other.getByRole('button',{name:'Order Coffee',exact:true}).click();
+  await expect(other.getByText('Order state: PENDING',{exact:true})).toBeVisible();await enter(page);
+  const work=page.getByRole('region',{name:'Voluntary cafe work'}),service=page.getByRole('region',{name:'Virtual cafe service'});
+  await work.getByRole('button',{name:'Start voluntary shift',exact:true}).click();await expect(work).toContainText('maid · maid · active');
+  // Finish the automatic refresh before holding exactly one explicit refresh.
+  await expect(service.getByRole('button',{name:'Take service ticket',exact:true})).toBeEnabled();
+  let observed:()=>void=()=>{};const held=new Promise<void>(ok=>observed=ok),gate=new Promise<void>(ok=>release=ok);
+  await page.route('**/v1/orders/queue',async route=>{
+   const response=await route.fetch();expect(response.status()).toBe(200);observed();await gate;await route.fulfill({response}).catch(()=>{});
+  },{times:1});
+  await service.getByRole('button',{name:'Refresh cafe service',exact:true}).click();await held;
+  await work.getByRole('button',{name:'Stop voluntary work',exact:true}).click();await expect(work).toContainText('No active voluntary shift');
+  release();await page.unrouteAll({behavior:'wait'});
+  await expect(service.getByRole('button',{name:'Order Coffee',exact:true})).toBeVisible();
+  await expect(service.getByRole('button',{name:'Take service ticket',exact:true})).toHaveCount(0);await expect(service).toContainText('Current voluntary work is unconfirmed');
+  await work.getByRole('button',{name:'Start voluntary shift',exact:true}).click();await expect(work).toContainText('maid · maid · active');
+  await service.getByRole('button',{name:'Refresh cafe service',exact:true}).click();await expect(service.getByRole('button',{name:'Take service ticket',exact:true})).toBeEnabled();
+  await service.getByRole('button',{name:'Take service ticket',exact:true}).click();await service.getByRole('button',{name:'Refuse this service',exact:true}).click();
+  await expect(service.getByText('Your service refusal was recorded.',{exact:true})).toBeVisible();await expect(service.getByRole('button',{name:'Take service ticket',exact:true})).toHaveCount(0);
+  await other.getByRole('button',{name:'Refresh cafe service',exact:true}).click();await expect(other.getByText('Order state: PENDING',{exact:true})).toBeVisible();
+  await work.getByRole('button',{name:'Stop voluntary work',exact:true}).click();await other.getByRole('button',{name:'Withdraw unfinished service',exact:true}).click();
+  for(const p of[page,other]){await p.getByRole('button',{name:'Leave and return to city',exact:true}).click();await p.waitForURL('/');}
+ }finally{
+  release();
+  try{await page.unrouteAll({behavior:'wait'});const results=await Promise.all(sessions.map(async session=>(await session.context.request.post('/v1/session/logout',{headers:headers(session.me),data:{}})).status()));for(const status of results)expect(status).toBe(200);}
+  finally{await peer.close();}
+ }
 });
 async function visible(context:BrowserContext,me:Awaited<ReturnType<typeof guest>>){expect((await context.request.patch('/v1/me/privacy',{headers:headers(me),data:{presence:'hidden',analyticsConsent:false,worldVisibility:{dating:'hidden',maid:'public',deadline:'public'}}})).status()).toBe(200);}
 async function enter(page:Page){await page.goto('/worlds/maid');await page.getByRole('button',{name:'Enter cafe',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');}
