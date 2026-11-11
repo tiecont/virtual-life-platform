@@ -8,11 +8,16 @@ export async function navigateImagePage(page, path, attempts) {
     try {
       const response = await page.goto(path, {timeout: 10000});
       attempts.push({path, attempt, result: 'LOADED'});
-      return response;
+      return {page, response};
     } catch (error) {
       if (!/^page\.goto: net::ERR_NETWORK_CHANGED(?: at |\n|$)/.test(error.message ?? '')) throw error;
       attempts.push({path, attempt, result: 'ERR_NETWORK_CHANGED'});
+      // Chromium may still commit its internal error document after goto rejects.
+      // Retire that page before retrying; the context retains cookies and TLS policy.
+      const context = page.context();
+      await page.close();
       if (attempt === 3) throw error;
+      page = await context.newPage();
     }
   }
 }
