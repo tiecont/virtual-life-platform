@@ -2073,12 +2073,39 @@
         "staging deploy with versioned digest and trace correlation",
         "one writer and legacy route unaffected"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-023",
         "VL-049"
-      ]
+      ],
+      "implementation": {
+        "scope": "Partial CI reliability: Stage waits for actual PostgreSQL blockers; Quality pinned to Ubuntu 24.04 after repeated ubuntu-latest Resolute apt DNS failures; all application assertions and merge gates retained",
+        "remainingAcceptance": "Versioned staging artifact and trace correlation, runtime readiness/drain and legacy compatibility still require verification; no deployment activated",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "verification": {
+          "sourceRevision": "87a16e46d049666a88a9c5aa786d34bdfb99d0ea",
+          "commands": [
+            {"command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/stage.test.ts", "exitCode": 0, "result": "23 actual PostgreSQL integration cases passed"},
+            {"command": "pnpm exec eslint tests/integration/stage.test.ts", "exitCode": 0},
+            {"command": "pnpm exec tsc -p tests/legacy-tsconfig.json --noEmit", "exitCode": 0},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "scope": "Local Stage regression only; hosted Quality and Rust CI required before merge"
+        },
+        "runnerVerification": {
+          "sourceRevision": "7272ec96cda8c949800033fc61873ddee288776e",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {"command": "pnpm ci:check", "exitCode": 0},
+            {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "110 passed"},
+            {"command": "pnpm exec eslint scripts/verify-ci.mjs", "exitCode": 0},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "regression": {"sourceRevision": "a1092dd15a9114bd6cf2dc754e80232c8ed0e99b", "command": "pnpm check", "exitCode": 0, "result": "110 governance, 497 unit, 783 integration cases and all builds passed; prior prerequisite failures retained in ignored artifacts"},
+          "remaining": "Hosted checks on the final source required; runner pin does not itself prove upstream DNS recovery or staging deployment"
+        }
+      }
     },
     {
       "id": "VL-066",
