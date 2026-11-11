@@ -191,11 +191,11 @@ try{
     const finished=new Promise((ok,no)=>{probe.once('error',no);probe.once('close',ok);});
     probe.stdin.end(JSON.stringify({origin,certificate:resolve(directory,'tls/server.pem'),boot:scope.runtimeBootId,match:matchId,loginName,password:loginPassword}));
     let code;try{code=await finished;}finally{clearTimeout(timer);}
-    assert.equal(code,0,'C# real-process probe failed: '+log);assert.deepEqual(JSON.parse(log),{result:'PASS',checks:5});
+    assert.equal(code,0,'C# real-process probe failed: '+log);assert.deepEqual(JSON.parse(log),{result:'PASS',checks:8});
     assert(!log.includes(loginPassword));
    }finally{allocateForCsharp=false;}
   }
-  if(csharp){await csharpProbe();record('csharp-https-login-ticket-wss-receipt-duplicate-and-reconnect');}
+  if(csharp){await csharpProbe();record('csharp-scene-use-case-login-ticket-wss-receipt-duplicate-and-reconnect');}
   const checkpoint=(await pool.query('SELECT state_version,rng_cursor,audit_hash,sealed_snapshot FROM game_native_matches WHERE id=$1',[matchId])).rows[0];
   child.kill('SIGKILL');await childClosed;child=undefined;
   await startHost();
@@ -255,7 +255,7 @@ try{
  const text=await call('open',origin.replace('https:','wss:')+'/rt/v1');await call('text',text);assert(await call('closed',text));record('text-frame-denied');
  await call('close',fresh);await context.close();await browser.close();browser=undefined;
  const effects=(await pool.query('SELECT (SELECT count(*)::int FROM game_native_matches) AS matches,(SELECT count(*)::int FROM game_native_receipts) AS receipts,(SELECT count(*)::int FROM platform_native_ticket_uses) AS nonces')).rows[0];
- assert.equal(effects.matches,playable?1:0);assert.equal(effects.receipts,pet?petEffects.receipts:playable?3:0);assert.equal(effects.nonces,pet?petEffects.nonces:playable?(csharp?7:3):2);facts.effects=effects;record(pet?'full-pet-match-commits-one-native-match':playable?'three-game-commits-one-native-match':'zero-game-writes');
+ assert.equal(effects.matches,playable?1:0);assert.equal(effects.receipts,pet?petEffects.receipts:playable?3:0);assert.equal(effects.nonces,pet?petEffects.nonces:playable?(csharp?11:3):2);facts.effects=effects;record(pet?'full-pet-match-commits-one-native-match':playable?'three-game-commits-one-native-match':'zero-game-writes');
  assert.equal(heartbeatError,undefined);facts.result='PASS';
  assert(!/ownRoll|storageKeys/.test(output+errors));
  await writeFile(directory+'/rust-host.log',output+errors,{mode:0o600});

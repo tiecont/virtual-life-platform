@@ -23,6 +23,12 @@ namespace VirtualLife.Blockout.Tests
             district.Player.enabled = true;
             Assert.That(district.TryInteract(), Is.True);
             Assert.That(district.RehearsalTurns, Is.EqualTo(1));
+            var nativeRequests = 0;
+            district.NativeInteraction = () => nativeRequests++;
+            Assert.That(district.TryInteract(), Is.True);
+            Assert.That(nativeRequests, Is.EqualTo(1));
+            Assert.That(district.RehearsalTurns, Is.EqualTo(1), "Native mode must not fabricate a local turn");
+            district.NativeInteraction = null;
         }
     }
 }

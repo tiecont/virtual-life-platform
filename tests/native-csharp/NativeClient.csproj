@@ -12,6 +12,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Compile Include="../../contracts/generated/csharp/Public.cs" />
     <Compile Include="../../apps/unity-client/Assets/VirtualLife/Features/Native/Infrastructure/*.cs" />
+    <Compile Include="../../apps/unity-client/Assets/VirtualLife/Features/Native/Application/*.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
 </Project>

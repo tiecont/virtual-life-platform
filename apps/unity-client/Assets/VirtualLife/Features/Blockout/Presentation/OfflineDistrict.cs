@@ -6,6 +6,8 @@ namespace VirtualLife.Blockout
     {
         public CharacterController Player { get; private set; }
         public Transform Activity { get; private set; }
+        public System.Action NativeInteraction { get; set; }
+        public bool InputCaptured { get; set; }
         public int RehearsalTurns { get; private set; }
         private string feedback = "WASD to walk. Approach the blue terminal and press E.";
 
@@ -13,6 +15,7 @@ namespace VirtualLife.Blockout
         {
             CreateBox("District floor", Vector3.zero, new Vector3(32f, 0.2f, 32f), new Color(0.45f, 0.5f, 0.46f));
             CreateBox("Café placeholder", new Vector3(-9f, 1.5f, 8f), new Vector3(6f, 3f, 5f), new Color(0.65f, 0.55f, 0.4f));
+            CreateBox("Arena entrance placeholder", new Vector3(9f, 0.8f, 8f), new Vector3(3f, 1.6f, 2f), new Color(0.6f, 0.3f, 0.65f));
             Activity = CreateBox("Activity terminal", new Vector3(0f, 0.8f, 3f), new Vector3(1f, 1.6f, 1f), new Color(0.2f, 0.5f, 0.85f)).transform;
             var avatar = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             avatar.name = "Developer capsule";
@@ -47,6 +50,7 @@ namespace VirtualLife.Blockout
 
         private void Update()
         {
+            if (InputCaptured) return;
             var direction = Vector3.zero;
             if (Input.GetKey(KeyCode.W)) direction.z += 1;
             if (Input.GetKey(KeyCode.S)) direction.z -= 1;
@@ -74,6 +78,9 @@ namespace VirtualLife.Blockout
                 feedback = "Move closer to the terminal.";
                 return false;
             }
+            if (NativeInteraction != null) {
+                NativeInteraction(); feedback = "Native terminal selected. See the connection panel."; return true;
+            }
             RehearsalTurns = (RehearsalTurns + 1) % 4;
             feedback = RehearsalTurns == 3 ? "Offline rehearsal complete." : "Offline rehearsal turn " + RehearsalTurns + "/3";
             return true;
@@ -81,7 +88,7 @@ namespace VirtualLife.Blockout
 
         private void OnGUI()
         {
-            GUI.Box(new Rect(16, 16, 470, 70), "Aurora Plaza — offline developer blockout");
+            GUI.Box(new Rect(16, 16, 470, 70), NativeInteraction == null ? "Aurora Plaza — offline developer blockout" : "Aurora Plaza — native developer blockout");
             GUI.Label(new Rect(28, 45, 450, 35), feedback);
         }
 

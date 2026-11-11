@@ -10,8 +10,8 @@ remain pending until that import succeeds.
 Open Assets/VirtualLife/Scenes/AuroraBlockout.unity and enter Play mode.
 WASD moves the capsule. Approach the blue terminal and press E for the local
 three-turn input rehearsal. The scene uses temporary developer primitives.
-The client displays its offline mode. Native commands require the Rust
-protocol integration tracked by VL-081.
+The client displays its offline mode. The explicitly configured development connection panel routes terminal input
+to the native synthetic match. Actual Editor/player execution remains VL-081.
 
 ## Native protocol adapter
 
@@ -36,8 +36,7 @@ reconnect. Reconnect resynchronizes own state. Keep a command's immutable ID
 when retrying after an ambiguous result. Mutation retries are explicit; the
 server remains authoritative for committed receipts and private projections.
 Dispose connections and sessions when leaving a scene. Marshal results back
-to the Unity main thread before updating presentation. The placeholder scene
-continues to use the local input rehearsal until its native presentation is wired.
+to the Unity main thread before updating presentation. The scene uses its local rehearsal when no development connection is configured.
 
 Standalone validation uses SDK 8.0.428 (`DOTNET=/absolute/path/to/dotnet`):
 
@@ -94,3 +93,46 @@ Windows IL2CPP requires the Windows build environment, C++ tools and Windows
 SDK. Record signing, install/update, input, graphics and crash acceptance
 with build hashes on the related Windows tasks.
 [Windows build requirements](https://docs.unity.com/en-us/engine/6000.3/manual/platform-specific/windows/requirements-and-compatibility)
+
+## Native developer scene controller
+
+The `NativeSceneController` source wires the scene to the existing adapters via
+`SyntheticPlaySession`. It is enabled only in the Editor or a development build
+of `AuroraBlockout`, and only when `VL_NATIVE_DEV_CONFIG` names an external JSON
+file. No login happens automatically. The file must remain outside `Assets/` and
+the packaged player's data directory; it contains scope only:
+
+```json
+{
+  "httpsOrigin": "https://localhost:4443",
+  "wssOrigin": "wss://localhost:4443/rt/v1",
+  "contentHash": "5353535353535353535353535353535353535353535353535353535353535353",
+  "bootId": "11111111-1111-4111-8111-111111111111",
+  "matchId": "22222222-2222-4222-8222-222222222222"
+}
+```
+
+Replace the sample UUIDs with the server allocator's actual leased scope and
+match. Use an already configured isolated Nest login/admission service and Rust
+synthetic runtime behind system-trusted HTTPS/WSS. The client cannot allocate its
+own world or choose ticket scope. The JSON file has no credential fields. Enter
+account/password in the panel at runtime; neither is serialized or logged.
+
+Login performs HTTPS authentication, ticket admission, WSS connection, resync and
+an authorized game-state view. Walk within terminal range and press E to request
+one server turn. Keyboard movement pauses while typing or awaiting a request.
+The panel shows connection/failure categories, committed version, turns and
+pending/granted/declined reward status. Unity presentation updates drain through
+`Update` on the main thread.
+
+Reconnect obtains a fresh ticket and reads the authoritative state. If a command
+was sent but its result is ambiguous, new turns stay blocked; choose **Retry same
+command ID**. That intent remains immutable even when a view already shows the
+server committed it. Cancellation aborts the exchange; leaving the scene cancels
+and disposes both adapters. Credentials, tickets and projections are never logged.
+
+Standalone tests build the scene use cases against .NET Standard 2.1 and prove
+lost-ACK retry, cancellation and malformed-state rejection. The same use cases run
+against actual Nest/Rust processes in the C# interop suite. UnityEngine source,
+EditMode/PlayMode tests, rendered player interaction and package resolution still
+require the pinned licensed Editor. This source increment does not verify VL-081.

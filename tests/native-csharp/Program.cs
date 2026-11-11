@@ -66,7 +66,7 @@ static class Program
         var builder = WebApplication.CreateBuilder(); builder.Logging.ClearProviders();
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0, endpoint => endpoint.UseHttps(certificate)));
         await using var app = builder.Build(); app.UseWebSockets();
-        string mode = "valid"; int hellos = 0; int logins = 0; int tickets = 0;
+        string mode = "valid"; int playTurns = 0; var playReceipts = new Dictionary<string, int>(); int hellos = 0; int logins = 0; int tickets = 0;
         app.MapPost("/v1/session/login", async context => {
             var body = await JsonDocument.ParseAsync(context.Request.Body);
             Check(body.RootElement.GetProperty("loginName").GetString() == "fixture");
@@ -114,8 +114,23 @@ static class Program
                         } else if (frame.Resync != null) response.Snapshot = snapshot;
                         else {
                             Check(frame.GameIntent.GameSessionId.ToByteArray().SequenceEqual(Uuid(Match)));
-                            response.CanonicalVersion = 1;
-                            response.Receipt = new Receipt { Committed = true, AuthorizedProjection = ByteString.CopyFromUtf8("{\"turn\":1}") };
+                            if (mode.StartsWith("play")) {
+                                var view = frame.GameIntent.Kind == "fixture.view.v1";
+                                if (!view && !playReceipts.ContainsKey(id)) {
+                                    Check(frame.GameIntent.ExpectedStateVersion == (ulong)playTurns);
+                                    Check(frame.GameIntent.Kind == "fixture.advance.v1");
+                                    playReceipts[id] = ++playTurns;
+                                    if (mode == "play-drop") { socket.Abort(); return; }
+                                }
+                                var turns = view ? playTurns : playReceipts[id];
+                                response.CanonicalVersion = (ulong)turns;
+                                response.Receipt = new Receipt { Committed = !view, AuthorizedProjection = ByteString.CopyFromUtf8(
+                                    JsonSerializer.Serialize(new {state = new {turns, ownRoll = 42}, epoch = 1, reward = turns == 3 ? "REWARD_PENDING" : null})) };
+                                if (mode == "play-invalid") response.Receipt.AuthorizedProjection = ByteString.CopyFromUtf8("{}");
+                            } else {
+                                response.CanonicalVersion = 1;
+                                response.Receipt = new Receipt { Committed = true, AuthorizedProjection = ByteString.CopyFromUtf8("{\"turn\":1}") };
+                            }
                         }
                         output = response.ToByteArray(); cache.Add(id, (input, output));
                     }
@@ -175,6 +190,27 @@ static class Program
             await session.LoginAsync("fixture", "secret-password-123", Guid.NewGuid()); mode = failure.Item1;
             await Denied(() => session.TicketAsync(), failure.Item2);
         }
+        mode = "play"; stage = "scene-use-cases";
+        using (var platform = new PlatformSession(origin, Handler()))
+        using (var play = new SyntheticPlaySession(platform, Client(platform.TicketAsync), Match)) {
+            var first = await play.LoginAsync("fixture", "secret-password-123"); Check(first.Turns == 0 && first.Version == 0); passed++;
+            var advanced = await play.AdvanceAsync(); Check(advanced.Turns == 1 && advanced.Version == 1 && playTurns == 1); passed++;
+            mode = "play-drop";
+            await Denied(() => play.AdvanceAsync(), Failure.Transport); Check(play.HasPendingCommand && play.State.Turns == 1 && playTurns == 2); passed++;
+            mode = "play";
+            var seen = await play.ReconnectAsync(); Check(seen.Turns == 2 && play.HasPendingCommand); passed++;
+            await Denied(() => play.AdvanceAsync(), Failure.Busy);
+            var recovered = await play.RetryAsync(); Check(recovered.Turns == 2 && !play.HasPendingCommand && playTurns == 2); passed++;
+            var completed = await play.AdvanceAsync(); Check(completed.Turns == 3 && completed.Reward == "REWARD_PENDING" && playReceipts.Count == 3); passed++;
+            await Denied(() => play.AdvanceAsync(), Failure.Rejected);
+            mode = "play-invalid";
+            await Denied(() => play.ReconnectAsync(), Failure.Protocol); Check(play.State.Turns == 3); passed++;
+            mode = "play"; Check((await play.ReconnectAsync()).Turns == 3); passed++;
+            using var cancelled = new CancellationTokenSource(); cancelled.Cancel();
+            try { await play.ReconnectAsync(cancelled.Token); throw new Exception("Scene cancellation ignored"); }
+            catch (OperationCanceledException) { passed++; }
+            Check(!play.ToString().Contains("secret"));
+        }
         await app.StopAsync();
     }
 
@@ -203,6 +239,13 @@ static class Program
         stage = "probe-view";
         var view = await client.SubmitAsync(new GameCommand(Guid.NewGuid(), Guid.Parse(data.GetProperty("match").GetString()), 0, "fixture.view.v1", Array.Empty<byte>()));
         Check(!view.Receipt.Committed && view.CanonicalVersion >= 2);
-        Console.WriteLine("{\"result\":\"PASS\",\"checks\":5}");
+        stage = "probe-scene-use-cases";
+        using (var play = new SyntheticPlaySession(session, client, Guid.Parse(data.GetProperty("match").GetString()))) {
+            var entered = await play.LoginAsync(data.GetProperty("loginName").GetString(), data.GetProperty("password").GetString());
+            Check(entered.Version == view.CanonicalVersion && entered.Turns == (int)view.CanonicalVersion);
+            Check((await play.ReconnectAsync()).Version == entered.Version);
+            Check(!play.HasPendingCommand);
+        }
+        Console.WriteLine("{\"result\":\"PASS\",\"checks\":8}");
     }
 }
