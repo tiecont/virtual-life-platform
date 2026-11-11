@@ -55,7 +55,7 @@ export function assertRustWorkflow(workflow,pins) {
     'CARGO_TARGET_DIR: artifacts/rust/target','build --locked --package vl-security --bin durable-check','scripts/runtime-admission-durable-check.mjs',
     'tests/integration/runtime-admission.test.ts','tests/integration/native-game-schema.test.ts','tests/integration/schema-compatibility.test.ts',
     'scripts/native-game-migration-compat.mjs','scripts/runtime-admission-migration-compat.mjs',
-    '--package vl-world --example zone-probe','playwright install --with-deps chromium',
+    '--package vl-world --example zone-probe','node scripts/prepare-ci-browser.mjs',
     'build --locked --package vl-gateway --example interop',
     'node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs\n',
     'node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay\n',

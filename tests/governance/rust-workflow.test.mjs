@@ -11,7 +11,7 @@ test('Rust foundation CI retains read-only Ubuntu checks without privileged/GPU 
   for(const text of ['cargo" test --workspace --locked','sha256sum --check','python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-ci',
     'CARGO_TARGET_DIR: artifacts/rust/target','build --locked --package vl-security --bin durable-check','scripts/runtime-admission-durable-check.mjs',
     'tests/integration/runtime-admission.test.ts','scripts/native-game-migration-compat.mjs','scripts/runtime-admission-migration-compat.mjs',
-    '--package vl-world --example zone-probe','playwright install --with-deps chromium',
+    '--package vl-world --example zone-probe','node scripts/prepare-ci-browser.mjs',
     'build --locked --package vl-gateway --example interop','scripts/native-wss-interop.mjs',
     'build --locked --package vl-game-runtime','scripts/native-wss-interop.mjs --runtime-gameplay',
     'build --locked --package vl-persistence --example orchestration','scripts/native-game-orchestration.mjs'])assert.throws(()=>assertRustWorkflow(workflow.replaceAll(text,'removed required gate'),pins));
