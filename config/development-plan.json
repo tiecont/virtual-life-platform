@@ -1573,7 +1573,14 @@
         "one full PvE match in Rust with restart/seed hash",
         "no client damage calculation"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
+      "implementation": {
+        "source": "crates/vl-pet-arena/src/combat.rs",
+        "rulesHash": "457e9ddd981a25b1014314b17bc4e014950d8e19eabf3ec3ec386e2b12aabbfb",
+        "scope": "Pure authoritative PvE reducer using existing Fixed, TurnRng and canonical checkpoint; generated board/refill, bounded cascades/combo, eight skills, deterministic enemy patterns and terminal outcomes",
+        "validation": "cargo test --locked -p vl-pet-arena",
+        "remainingAcceptance": "Committed-source final workspace checks and hosted CI; runtime route, real Pet Arena database journal adapter, Unity presentation and balance review are follow-on application integration, not claimed here"
+      },
       "qualificationRequirements": []
     },
     {
