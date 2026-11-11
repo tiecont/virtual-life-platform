@@ -1643,7 +1643,7 @@
         "server results only, retry settlement no duplicate platform grant",
         "forged client rewards denied"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": []
     },
     {
@@ -2879,6 +2879,25 @@
         ],
         "reviewNotes": "Self-audit of actor scope, authenticated receipt envelopes, transaction/replay boundaries, default-off runtime composition and restricted platform settlement. Linux synthetic ruleset acceptance only."
       }
+    },
+    {
+      "id": "VL-112",
+      "feature": "Rust-Runtime",
+      "title": "Pet Arena PvE native runtime adapter",
+      "objective": "Connect the verified Pet Arena reducer to the existing single-writer native WSS host, durable checkpoint/journal and platform settlement boundary.",
+      "dependsOn": [
+        "VL-044",
+        "VL-111",
+        "VL-018"
+      ],
+      "acceptance": [
+        "An actual Rust runtime process under restricted PostgreSQL executes a full Pet Arena PvE match through scoped native WSS admission",
+        "Invalid swap, stale version, wrong actor/session, duplicate intent and unauthorized projection cannot change state or expose private data",
+        "Mid-match process restart restores the exact checkpoint and replay; terminal result reconciles through the restricted platform worker exactly once",
+        "Pet Arena remains default-off and shares the existing authoritative host; legacy RoomAuthority is unaffected"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": []
     }
   ]
 }

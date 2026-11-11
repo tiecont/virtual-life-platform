@@ -1,6 +1,7 @@
-use crate::features::synthetic::{
-    application::Commands,
-    domain::{CONTENT, Rules, State},
+use super::application::{Commands, NativeGame};
+use crate::features::{
+    pet_arena::domain as pet,
+    synthetic::domain::{Rules, State},
 };
 use axum::{Router, extract::State as AxumState, http::StatusCode, routing::get};
 use jsonwebtoken::DecodingKey;
@@ -28,6 +29,8 @@ use vl_world::ZoneHandle;
 struct Settings {
     schema_version: u32,
     ruleset: String,
+    pet: Option<u8>,
+    stage: Option<u8>,
     world: String,
     boot: Uuid,
     match_id: Uuid,
@@ -46,8 +49,9 @@ impl Drop for Driver {
         self.0.abort();
     }
 }
-struct Health {
-    commands: Arc<Commands>,
+struct Health<G: NativeGame> {
+    commands: Arc<Commands<G>>,
+    ruleset: String,
     db: Mutex<Client>,
     zone_alive: Arc<AtomicBool>,
     _driver: Driver,
@@ -66,14 +70,49 @@ impl NativeRuntime {
         let settings: Settings =
             serde_json::from_slice(&bytes).map_err(|_| "Invalid native configuration")?;
         if settings.schema_version != 1
-            || settings.ruleset != "headless-counter"
             || settings.player.is_nil()
             || settings.match_id.is_nil()
             || settings.public_keys.is_empty()
             || settings.public_keys.len() > 8
         {
-            return Err("Explicit synthetic ruleset and scope required");
+            return Err("Explicit native ruleset and scope required");
         }
+        match settings.ruleset.as_str() {
+            "headless-counter" if settings.pet.is_none() && settings.stage.is_none() => {
+                let game = Rules {
+                    player: settings.player.to_string(),
+                };
+                let initial = State {
+                    player: settings.player.to_string(),
+                    turns: 0,
+                    private_roll: 0,
+                };
+                Self::compose(settings, database, game, initial).await
+            }
+            "pet-arena-pve" => {
+                let game = pet::Rules {
+                    player: settings.player.to_string(),
+                    pet: settings.pet.ok_or("Server-selected pet required")?,
+                    stage: settings.stage.ok_or("Server-selected stage required")?,
+                };
+                let initial = game.initial().map_err(|_| "Invalid Pet Arena allocation")?;
+                Self::compose(settings, database, game, initial).await
+            }
+            _ => Err("Unknown or incomplete native ruleset"),
+        }
+    }
+    async fn compose<G: NativeGame>(
+        settings: Settings,
+        database: &str,
+        game: G,
+        initial: G::State,
+    ) -> Result<Self, &'static str>
+    where
+        G::State: Send + Sync,
+        G::Action: Send + Sync + 'static,
+    {
+        let content = game.ruleset().content_hash;
+        let ruleset = settings.ruleset.clone();
         let config: Config = database
             .parse()
             .map_err(|_| "Invalid native database configuration")?;
@@ -91,9 +130,7 @@ impl NativeRuntime {
         .await
         .map_err(|_| "Native ownership unavailable")?;
         let host = Host::new(
-            Rules {
-                player: settings.player.to_string(),
-            },
+            game,
             Keys::new(settings.active_storage_key, settings.storage_keys)
                 .map_err(|_| "Native storage keys unavailable")?,
             owner,
@@ -122,7 +159,7 @@ impl NativeRuntime {
                 RuntimeScope {
                     world: settings.world,
                     boot: settings.boot.to_string(),
-                    content: "53".repeat(32),
+                    content: content.iter().map(|byte| format!("{byte:02x}")).collect(),
                 },
             )
             .map_err(|_| "Native ticket scope unavailable")?,
@@ -135,7 +172,7 @@ impl NativeRuntime {
             Options {
                 enabled: true,
                 origins: vec![settings.origin],
-                content_hash: CONTENT,
+                content_hash: content,
                 runtime_boot_id: *settings.boot.as_bytes(),
                 connections: 32,
             },
@@ -158,15 +195,7 @@ impl NativeRuntime {
         } else {
             commands
                 .host
-                .create(
-                    &mut db,
-                    settings.match_id,
-                    State {
-                        player: settings.player.to_string(),
-                        turns: 0,
-                        private_roll: 0,
-                    },
-                )
+                .create(&mut db, settings.match_id, initial)
                 .await
                 .map_err(|_| "Native match allocation unavailable")?;
         }
@@ -178,15 +207,16 @@ impl NativeRuntime {
         });
         let health = Arc::new(Health {
             commands,
+            ruleset: ruleset.clone(),
             db: Mutex::new(db),
             zone_alive: alive,
             _driver: driver,
         });
         let router = Router::new()
-            .route("/health/ready", get(ready))
-            .route("/metrics", get(metrics))
+            .route("/health/ready", get(ready::<G>))
+            .route("/metrics", get(metrics::<G>))
             .with_state(health)
-            .route("/health/live", get(|| async {([( "content-type", "application/json")], r#"{"status":"live","service":"vl-game-runtime","gameplayEnabled":true,"ruleset":"headless-counter"}"#)}))
+            .route("/health/live", get(move || { let ruleset = ruleset.clone(); async move { ([("content-type", "application/json")], serde_json::json!({"status":"live","service":"vl-game-runtime","gameplayEnabled":true,"ruleset":ruleset}).to_string()) } }))
             .merge(gateway);
         Ok(Self { router, zone, task })
     }
@@ -202,7 +232,13 @@ impl Drop for NativeRuntime {
         self.task.abort();
     }
 }
-async fn ready(AxumState(health): AxumState<Arc<Health>>) -> (StatusCode, &'static str) {
+async fn ready<G: NativeGame>(
+    AxumState(health): AxumState<Arc<Health<G>>>,
+) -> (StatusCode, [(&'static str, &'static str); 1], String)
+where
+    G::State: Send + Sync,
+    G::Action: Send + Sync + 'static,
+{
     let check = async {
         if !health.zone_alive.load(Ordering::Acquire) {
             return false;
@@ -218,16 +254,19 @@ async fn ready(AxumState(health): AxumState<Arc<Health>>) -> (StatusCode, &'stat
     match tokio::time::timeout(std::time::Duration::from_millis(750), check).await {
         Ok(true) => (
             StatusCode::OK,
-            r#"{"status":"ready","gameplayEnabled":true,"ruleset":"headless-counter"}"#,
+            [("content-type", "application/json")],
+            serde_json::json!({"status":"ready","gameplayEnabled":true,"ruleset":health.ruleset})
+                .to_string(),
         ),
         _ => (
             StatusCode::SERVICE_UNAVAILABLE,
-            r#"{"status":"not_ready","gameplayEnabled":true}"#,
+            [("content-type", "application/json")],
+            serde_json::json!({"status":"not_ready","gameplayEnabled":true}).to_string(),
         ),
     }
 }
-async fn metrics(
-    AxumState(health): AxumState<Arc<Health>>,
+async fn metrics<G: NativeGame>(
+    AxumState(health): AxumState<Arc<Health<G>>>,
 ) -> ([(&'static str, &'static str); 1], String) {
     let committed = health.commands.committed.load(Ordering::Relaxed);
     let rejected = health.commands.rejected.load(Ordering::Relaxed);

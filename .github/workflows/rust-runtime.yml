@@ -77,6 +77,12 @@ jobs:
           set -euo pipefail
           "$CARGO_HOME/bin/cargo" build --locked --package vl-game-runtime
           node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay
+      - name: Check Pet Arena PvE matches, recovery and platform settlement
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena
+          node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena-loss
       - name: Check standalone Unity protocol adapter and real C# to Rust interoperability
         shell: bash
         run: |
