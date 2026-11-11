@@ -1,0 +1,12 @@
+[package]
+name = "vl-pet-arena"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+vl-game-core = { path = "../vl-game-core" }
+
+[lints]
+workspace = true

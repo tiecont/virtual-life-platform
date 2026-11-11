@@ -2448,6 +2448,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "vl-pet-arena"
+version = "0.1.0"
+dependencies = [
+ "vl-game-core",
+]
+
+[[package]]
 name = "vl-protocol"
 version = "0.1.0"
 dependencies = [

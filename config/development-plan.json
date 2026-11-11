@@ -1532,7 +1532,14 @@
         "unit fixture 100% reproducible, content id/version pinned",
         "negative invalid swap+telegraph tests"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
+      "implementation": {
+        "source": "crates/vl-pet-arena",
+        "contentId": "pet-arena-training",
+        "contentVersion": 1,
+        "scope": "Eight authored pets, six PvE stages including a boss, fixed-point status examples, adjacent swap validation and seeded turn-bound telegraphs; no live route or combat reducer",
+        "remainingAcceptance": "Committed-source validation and hosted CI; full board generation, cascade/combo/skills/AI and match recovery remain VL-044"
+      },
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-023"
