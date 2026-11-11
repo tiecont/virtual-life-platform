@@ -817,8 +817,50 @@
         "same event retry results one grant",
         "late worker shows REWARD_PENDING then reconciles"
       ],
-      "status": "IN_PROGRESS",
-      "qualificationRequirements": []
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "6ab35aca2cd6480617b84fc9efc49173048a19fe",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "node --test tests/governance/rust-workflow.test.mjs tests/governance/task-plan.test.mjs tests/governance/node-workspaces.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          }
+        ],
+        "evidence": [
+          "artifacts/native-verification/verification.json",
+          "artifacts/native-verification/orchestration-facts.json",
+          "artifacts/native-verification/runtime-facts.json"
+        ],
+        "reviewNotes": "Self-audit of actor scope, authenticated receipt envelopes, transaction/replay boundaries, default-off runtime composition and restricted platform settlement. Linux synthetic ruleset acceptance only."
+      },
+      "implementation": {
+        "policy": "Explicit world/ruleset/version/content-hash policy file",
+        "reward": "Nonmonetary completion marker for the terminal command actor; Pet Arena eligibility remains VL-047",
+        "worker": "Native-only consumer supported through NATIVE_REWARD_POLICY_FILE",
+        "platformLedger": "platform_native_reward_inbox and platform_native_reward_ledger"
+      }
     },
     {
       "id": "VL-019",
@@ -912,8 +954,44 @@
         "negative multiuser scope test passes",
         "seeds/cards not leaked to other recipients"
       ],
-      "status": "IN_PROGRESS",
-      "qualificationRequirements": []
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "6ab35aca2cd6480617b84fc9efc49173048a19fe",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "node --test tests/governance/rust-workflow.test.mjs tests/governance/task-plan.test.mjs tests/governance/node-workspaces.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          }
+        ],
+        "evidence": [
+          "artifacts/native-verification/verification.json",
+          "artifacts/native-verification/orchestration-facts.json",
+          "artifacts/native-verification/runtime-facts.json"
+        ],
+        "reviewNotes": "Self-audit of actor scope, authenticated receipt envelopes, transaction/replay boundaries, default-off runtime composition and restricted platform settlement. Linux synthetic ruleset acceptance only."
+      }
     },
     {
       "id": "VL-021",
@@ -929,8 +1007,44 @@
         "zero duplicate effects, deterministic hash restored",
         "restart journal/incompatibility outcomes documented"
       ],
-      "status": "IN_PROGRESS",
-      "qualificationRequirements": []
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "6ab35aca2cd6480617b84fc9efc49173048a19fe",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "node --test tests/governance/rust-workflow.test.mjs tests/governance/task-plan.test.mjs tests/governance/node-workspaces.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          }
+        ],
+        "evidence": [
+          "artifacts/native-verification/verification.json",
+          "artifacts/native-verification/orchestration-facts.json",
+          "artifacts/native-verification/runtime-facts.json"
+        ],
+        "reviewNotes": "Self-audit of actor scope, authenticated receipt envelopes, transaction/replay boundaries, default-off runtime composition and restricted platform settlement. Linux synthetic ruleset acceptance only."
+      }
     },
     {
       "id": "VL-022",
@@ -1028,8 +1142,46 @@
         "G1 decision record with attached test artifacts",
         "no release status changed without reviewer"
       ],
-      "status": "TODO",
-      "qualificationRequirements": []
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "6ab35aca2cd6480617b84fc9efc49173048a19fe",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "node --test tests/governance/rust-workflow.test.mjs tests/governance/task-plan.test.mjs tests/governance/node-workspaces.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          }
+        ],
+        "evidence": [
+          "artifacts/native-verification/verification.json",
+          "artifacts/native-verification/orchestration-facts.json",
+          "artifacts/native-verification/runtime-facts.json"
+        ],
+        "reviewNotes": "Self-audit of actor scope, authenticated receipt envelopes, transaction/replay boundaries, default-off runtime composition and restricted platform settlement. Linux synthetic ruleset acceptance only.",
+        "decision": "PASS_LINUX_SYNTHETIC_HEADLESS",
+        "remainingQualification": "Unity client execution and all physical Windows, rights, signing and release gates remain on their own tasks."
+      }
     },
     {
       "id": "VL-024",
@@ -2614,7 +2766,7 @@
         "Bounded session lifecycle, reconnect, metrics and dependency readiness are exercised",
         "Synthetic ruleset is identified in configuration and tests; Pet Arena content remains tracked by VL-043 and VL-044"
       ],
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "qualificationRequirements": [],
       "implementation": {
         "ruleset": "headless-counter v1; synthetic three-turn counter",
@@ -2622,6 +2774,42 @@
         "runtime": "apps/game-runtime",
         "validation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay",
         "bootLifecycle": "Restart retains the explicitly allocator-leased logical boot. A different boot fails closed until an authorized epoch recovery procedure exists."
+      },
+      "verification": {
+        "sourceRevision": "6ab35aca2cd6480617b84fc9efc49173048a19fe",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "node --test tests/governance/rust-workflow.test.mjs tests/governance/task-plan.test.mjs tests/governance/node-workspaces.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          }
+        ],
+        "evidence": [
+          "artifacts/native-verification/verification.json",
+          "artifacts/native-verification/orchestration-facts.json",
+          "artifacts/native-verification/runtime-facts.json"
+        ],
+        "reviewNotes": "Self-audit of actor scope, authenticated receipt envelopes, transaction/replay boundaries, default-off runtime composition and restricted platform settlement. Linux synthetic ruleset acceptance only."
       }
     }
   ]
