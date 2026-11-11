@@ -13,6 +13,48 @@ three-turn input rehearsal. The scene uses temporary developer primitives.
 The client displays its offline mode. Native commands require the Rust
 protocol integration tracked by VL-081.
 
+## Native protocol adapter
+
+Run `node scripts/unity-native-prepare.mjs` before opening the project. This
+stages the existing generated `contracts/generated/csharp/Public.cs` and
+checksum-pinned Google.Protobuf 3.36.2 / Unsafe 4.5.2 libraries into ignored
+Unity folders. .NET Standard 2.1 supplies Memory/Span APIs. `unzip` and access
+to NuGet are required on the first preparation; subsequent runs use the
+verified cache under artifacts/unity-packages. Do not edit staged bindings.
+
+`VirtualLife.Native` has no UnityEngine dependency. `PlatformSession` logs in
+over HTTPS with an in-memory cookie container, then posts the CSRF-protected
+empty runtime-ticket request. The server chooses world/boot/session scope.
+Pass `session.TicketAsync` to `NativeConnection` together with the configured
+WSS origin, content hash and boot ID. Default TLS uses system certificate
+validation; the test executable pins only its disposable fixture certificate.
+There are no stored credentials or automatic native activation.
+
+The connection permits one outstanding exchange, bounds frames and request
+time, validates version/scope/correlation, and obtains a fresh ticket on each
+reconnect. Reconnect resynchronizes own state. Keep a command's immutable ID
+when retrying after an ambiguous result. Mutation retries are explicit; the
+server remains authoritative for committed receipts and private projections.
+Dispose connections and sessions when leaving a scene. Marshal results back
+to the Unity main thread before updating presentation. The placeholder scene
+continues to use the local input rehearsal until its native presentation is wired.
+
+Standalone validation uses SDK 8.0.428 (`DOTNET=/absolute/path/to/dotnet`):
+
+```sh
+node scripts/native-csharp.mjs
+export PATH="$(dirname "$DOTNET"):$PATH"
+pnpm build:packages
+pnpm --filter @virtual-city/platform-api build
+cargo build --locked --package vl-game-runtime
+node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client
+```
+
+These compile the actual adapter against .NET Standard 2.1, exercise mock
+HTTPS/WSS failure cases, and prove HTTPS login -> ticket -> real Rust command
+receipt -> reconnect -> PostgreSQL-backed process restart. They do not prove
+Unity import, Mono player execution, rendering or Windows qualification.
+
 ## Linux validation
 
 Set UNITY_EDITOR to the absolute executable path of the pinned, already

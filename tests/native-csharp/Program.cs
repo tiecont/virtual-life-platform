@@ -1,0 +1,208 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.WebSockets;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using Google.Protobuf;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using VirtualLife.Native.Public.V1;
+using VirtualLife.Networking;
+
+static class Program
+{
+    static readonly Guid Boot = Guid.Parse("6c9d1651-2b58-4e46-873e-7e182910f621");
+    static readonly Guid Match = Guid.Parse("287f1cb8-95c0-410e-870f-32dd9d609e30");
+    static readonly Guid Principal = Guid.Parse("0296a73c-0c2b-4d7f-9e6b-3b145b00b014");
+    static readonly byte[] Hash = Enumerable.Repeat((byte)0x53, 32).ToArray();
+    static int passed;
+    static string stage = "mock";
+    static void Check(bool condition) { if (!condition) throw new Exception("Native client assertion failed"); }
+    static async Task Denied(Func<Task> action, Failure failure)
+    {
+        try { await action(); throw new Exception("Expected native rejection"); }
+        catch (NativeFailure e) { Check(e.Reason == failure); Check(!e.ToString().Contains("secret")); passed++; }
+    }
+    static byte[] Uuid(Guid id) => Convert.FromHexString(id.ToString("N"));
+    static AdmissionTicket Ticket() => new AdmissionTicket("secret-ticket", Principal.ToString(), DateTimeOffset.UtcNow.AddSeconds(20));
+    static ClientWebSocket Socket(string fingerprint)
+    {
+        var socket = new ClientWebSocket();
+        socket.Options.RemoteCertificateValidationCallback = (_, cert, _, _) => cert != null && cert.GetCertHashString() == fingerprint;
+        return socket;
+    }
+    static async Task Main(string[] args)
+    {
+        try {
+            if (args.SequenceEqual(new[] { "--probe" })) { await Probe(); return; }
+            Check(args.Length == 0);
+            await MockTests(); Console.WriteLine(JsonSerializer.Serialize(new { result = "PASS", assertions = passed, scope = "standalone C#; not Unity execution" }));
+        } catch (Exception e) {
+            // Never print exception bodies, input credentials or authorized projections.
+            Console.Error.WriteLine("Native client tests failed at " + stage + ": " + e.GetType().Name +
+                (e is NativeFailure native ? "/" + native.Reason + "/" + native.Code : "")); Environment.ExitCode = 1;
+        }
+    }
+
+    static async Task MockTests()
+    {
+        using var rsa = RSA.Create(2048);
+        var request = new CertificateRequest("CN=127.0.0.1", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        var san = new SubjectAlternativeNameBuilder(); san.AddIpAddress(IPAddress.Loopback); request.CertificateExtensions.Add(san.Build());
+        using var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddHours(1));
+        var builder = WebApplication.CreateBuilder(); builder.Logging.ClearProviders();
+        builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0, endpoint => endpoint.UseHttps(certificate)));
+        await using var app = builder.Build(); app.UseWebSockets();
+        string mode = "valid"; int hellos = 0; int logins = 0; int tickets = 0;
+        app.MapPost("/v1/session/login", async context => {
+            var body = await JsonDocument.ParseAsync(context.Request.Body);
+            Check(body.RootElement.GetProperty("loginName").GetString() == "fixture");
+            Check(body.RootElement.GetProperty("password").GetString() == "secret-password-123"); logins++;
+            context.Response.Cookies.Append("city_session", "secret-cookie", new CookieOptions { HttpOnly = true, Secure = true });
+            await context.Response.WriteAsJsonAsync(new { profile = new { id = Principal }, csrfToken = new string('a', 64), expiresAt = DateTimeOffset.UtcNow.AddMinutes(5) });
+        });
+        app.MapPost("/v1/runtime-ticket", async context => {
+            Check(context.Request.Headers.Origin.ToString().StartsWith("https://127.0.0.1:"));
+            Check(context.Request.Headers["X-CSRF-Token"] == new string('a', 64));
+            Check(context.Request.Cookies["city_session"] == "secret-cookie"); tickets++;
+            if (mode == "unauthorized") { context.Response.StatusCode = 401; return; }
+            if (mode == "redirect") { context.Response.Redirect("/v1/session/login"); return; }
+            if (mode == "http-oversize") { await context.Response.WriteAsJsonAsync(new { ticket = new string('x', 17000) }); return; }
+            await context.Response.WriteAsJsonAsync(new { ticket = "secret-ticket", expiresAt = DateTimeOffset.UtcNow.AddSeconds(mode == "expired-http" ? -1 : 20) });
+        });
+        app.Map("/rt/v1", async context => {
+            Check(context.WebSockets.WebSocketRequestedProtocols.Contains("vl.native.v1"));
+            using var socket = await context.WebSockets.AcceptWebSocketAsync("vl.native.v1");
+            var cache = new Dictionary<string, (byte[] input, byte[] output)>(); ulong sequence = 0;
+            try {
+                while (socket.State == WebSocketState.Open) {
+                    var buffer = new byte[65536]; var count = 0; WebSocketReceiveResult part;
+                    do { part = await socket.ReceiveAsync(new ArraySegment<byte>(buffer, count, buffer.Length - count), context.RequestAborted); count += part.Count; }
+                    while (!part.EndOfMessage);
+                    if (part.MessageType != WebSocketMessageType.Binary) return;
+                    var input = buffer.Take(count).ToArray(); var frame = ClientEnvelope.Parser.ParseFrom(input);
+                    var id = frame.CommandId.ToBase64(); byte[] output;
+                    if (cache.TryGetValue(id, out var previous)) { Check(input.SequenceEqual(previous.input)); output = previous.output; }
+                    else {
+                        Check(frame.ProtocolVersion == 1 && frame.Sequence == ++sequence);
+                        var response = new ServerEnvelope { ProtocolVersion = 1, CommandId = frame.CommandId };
+                        var snapshot = new WorldSnapshot { AuthorityEpoch = 1, OwnActor = new OwnActor() };
+                        if (frame.Hello != null) {
+                            hellos++; Check(frame.Hello.Ticket == "secret-ticket"); Check(frame.Hello.ContentHash.ToByteArray().SequenceEqual(Hash));
+                            response.Hello = new HelloAccepted { ContentHash = ByteString.CopyFrom(Hash), StateSchemaVersion = 1,
+                                RuntimeBootId = ByteString.CopyFrom(Uuid(Boot)), Snapshot = snapshot };
+                            if (mode == "mismatch") response.ProtocolVersion = 2;
+                            if (mode == "boot") response.Hello.RuntimeBootId = ByteString.CopyFrom(Uuid(Guid.NewGuid()));
+                            if (mode == "content") response.Hello.ContentHash = ByteString.CopyFrom(new byte[32]);
+                            if (mode == "correlation") response.CommandId = ByteString.CopyFrom(new byte[16]);
+                            if (mode == "no-own") response.Hello.Snapshot.OwnActor = null;
+                            if (mode == "reject") response.Rejection = new Rejection { Code = ErrorCode.Unauthenticated };
+                            if (mode == "delay") await Task.Delay(700);
+                        } else if (frame.Resync != null) response.Snapshot = snapshot;
+                        else {
+                            Check(frame.GameIntent.GameSessionId.ToByteArray().SequenceEqual(Uuid(Match)));
+                            response.CanonicalVersion = 1;
+                            response.Receipt = new Receipt { Committed = true, AuthorizedProjection = ByteString.CopyFromUtf8("{\"turn\":1}") };
+                        }
+                        output = response.ToByteArray(); cache.Add(id, (input, output));
+                    }
+                    if (mode == "oversize") output = new byte[65537];
+                    if (mode == "malformed") output = new byte[] { 0xff };
+                    var type = mode == "text" ? WebSocketMessageType.Text : WebSocketMessageType.Binary;
+                    await socket.SendAsync(new ArraySegment<byte>(output, 0, output.Length / 2), type, false, context.RequestAborted);
+                    await socket.SendAsync(new ArraySegment<byte>(output, output.Length / 2, output.Length - output.Length / 2), type, true, context.RequestAborted);
+                }
+            } catch (WebSocketException) { } catch (OperationCanceledException) { }
+        });
+        await app.StartAsync();
+        var origin = new Uri(app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses.Single());
+        var endpoint = new Uri(origin.ToString().Replace("https:", "wss:") + "rt/v1");
+        NativeConnection Client(Func<CancellationToken, Task<AdmissionTicket>> provider = null, TimeSpan? timeout = null) =>
+            new NativeConnection(endpoint, origin, Hash, Boot, provider ?? (_ => Task.FromResult(Ticket())), () => Socket(certificate.Thumbprint), timeout);
+        HttpClientHandler Handler() => new HttpClientHandler { AllowAutoRedirect = false, CookieContainer = new CookieContainer(),
+            ServerCertificateCustomValidationCallback = (_, cert, _, _) => cert?.Thumbprint == certificate.Thumbprint };
+
+        using (var session = new PlatformSession(origin, Handler())) {
+            await Denied(() => session.TicketAsync(), Failure.Authentication);
+            await session.LoginAsync("fixture", "secret-password-123", Guid.NewGuid());
+            using var client = Client(session.TicketAsync);
+            await client.ConnectAsync(); Check(client.State == ConnectionState.Ready);
+            var command = new GameCommand(Guid.NewGuid(), Match, 0, "fixture.advance.v1", Encoding.UTF8.GetBytes("{\"epoch\":1}"));
+            var receipt = await client.SubmitAsync(command); Check(receipt.Receipt.Committed && receipt.CanonicalVersion == 1);
+            Check((await client.SubmitAsync(command)).Equals(receipt));
+            await client.ReconnectAsync(); Check((await client.SubmitAsync(command)).Equals(receipt));
+            Check(logins == 1 && tickets == 2 && hellos == 2); passed += 5;
+        }
+        foreach (var test in new[] { ("mismatch", Failure.Protocol), ("boot", Failure.Scope), ("content", Failure.Scope),
+            ("correlation", Failure.Protocol), ("no-own", Failure.Scope), ("reject", Failure.Rejected),
+            ("oversize", Failure.Protocol), ("malformed", Failure.Protocol), ("text", Failure.Transport), ("delay", Failure.Timeout) }) {
+            mode = test.Item1; using var client = Client(timeout: TimeSpan.FromMilliseconds(300));
+            await Denied(() => client.ConnectAsync(), test.Item2); Check(client.State == ConnectionState.Faulted && client.Snapshot == null);
+        }
+        mode = "valid";
+        var never = new TaskCompletionSource<AdmissionTicket>();
+        using (var hung = Client(_ => never.Task, TimeSpan.FromMilliseconds(100)))
+            await Denied(() => hung.ConnectAsync(), Failure.Timeout);
+        using (var untrusted = new NativeConnection(endpoint, origin, Hash, Boot, _ => Task.FromResult(Ticket())))
+            await Denied(() => untrusted.ConnectAsync(), Failure.Transport);
+        using (var expired = Client(_ => Task.FromResult(new AdmissionTicket("secret-expired", Principal.ToString(), DateTimeOffset.UtcNow.AddSeconds(-1)))))
+            await Denied(() => expired.ConnectAsync(), Failure.Authentication);
+        var pending = new TaskCompletionSource<AdmissionTicket>();
+        using (var busy = Client(async token => { pending.TrySetResult(Ticket()); await Task.Delay(5000, token); return Ticket(); })) {
+            using var cancellation = new CancellationTokenSource(); var connect = busy.ConnectAsync(cancellation.Token); await pending.Task;
+            await Denied(() => busy.ConnectAsync(), Failure.Busy); cancellation.Cancel();
+            try { await connect; throw new Exception("Cancellation ignored"); } catch (OperationCanceledException) { passed++; }
+        }
+        var changed = false;
+        using (var client = Client(_ => Task.FromResult(new AdmissionTicket("secret-ticket", changed ? Guid.NewGuid().ToString() : Principal.ToString(), DateTimeOffset.UtcNow.AddSeconds(20))))) {
+            await client.ConnectAsync(); changed = true; await Denied(() => client.ReconnectAsync(), Failure.Scope);
+        }
+        foreach (var failure in new[] { ("unauthorized", Failure.Authentication), ("redirect", Failure.Authentication), ("http-oversize", Failure.Protocol), ("expired-http", Failure.Authentication) }) {
+            mode = "valid"; using var session = new PlatformSession(origin, Handler());
+            await session.LoginAsync("fixture", "secret-password-123", Guid.NewGuid()); mode = failure.Item1;
+            await Denied(() => session.TicketAsync(), failure.Item2);
+        }
+        await app.StopAsync();
+    }
+
+    static async Task Probe()
+    {
+        stage = "probe-input";
+        // The disposable harness supplies private input via stdin, never process arguments or logs.
+        using var input = JsonDocument.Parse(await Console.In.ReadToEndAsync()); var data = input.RootElement;
+        var origin = new Uri(data.GetProperty("origin").GetString());
+        using var certificate = X509Certificate2.CreateFromPem(await File.ReadAllTextAsync(data.GetProperty("certificate").GetString()));
+        var handler = new HttpClientHandler { AllowAutoRedirect = false, CookieContainer = new CookieContainer(),
+            ServerCertificateCustomValidationCallback = (_, cert, _, _) => cert?.Thumbprint == certificate.Thumbprint };
+        using var session = new PlatformSession(origin, handler);
+        stage = "probe-login";
+        await session.LoginAsync(data.GetProperty("loginName").GetString(), data.GetProperty("password").GetString(), Guid.NewGuid());
+        using var client = new NativeConnection(new Uri(origin.ToString().Replace("https:", "wss:") + "rt/v1"), origin, Hash,
+            Guid.Parse(data.GetProperty("boot").GetString()), session.TicketAsync, () => Socket(certificate.Thumbprint));
+        stage = "probe-connect"; await client.ConnectAsync();
+        var command = new GameCommand(Guid.Parse("03030303-0303-0303-0303-030303030303"), Guid.Parse(data.GetProperty("match").GetString()),
+            0, "fixture.advance.v1", Encoding.UTF8.GetBytes("{\"epoch\":1}"));
+        stage = "probe-command";
+        var first = await client.SubmitAsync(command); Check(first.Receipt.Committed && first.CanonicalVersion == 1);
+        Check((await client.SubmitAsync(command)).Equals(first));
+        stage = "probe-reconnect";
+        await client.ReconnectAsync(); Check((await client.SubmitAsync(command)).Equals(first));
+        stage = "probe-view";
+        var view = await client.SubmitAsync(new GameCommand(Guid.NewGuid(), Guid.Parse(data.GetProperty("match").GetString()), 0, "fixture.view.v1", Array.Empty<byte>()));
+        Check(!view.Receipt.Committed && view.CanonicalVersion >= 2);
+        Console.WriteLine("{\"result\":\"PASS\",\"checks\":5}");
+    }
+}

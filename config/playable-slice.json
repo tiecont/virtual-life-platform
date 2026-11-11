@@ -34,7 +34,7 @@
   "acceptance": [
     {"procedure": "node scripts/unity-validate.mjs tests", "expected": "EditMode bounds/proximity and PlayMode spawn/movement/interaction pass", "status": "PENDING_EDITOR"},
     {"procedure": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs", "expected": "Synthetic ruleset commits once, projects per viewer, settles once and survives restart", "status": "SOURCE_TEST"},
-    {"procedure": "VL-111 real-process gateway test", "expected": "ticket -> command -> receipt -> projection -> persistence -> restart", "status": "PENDING_IMPLEMENTATION"}
+    {"procedure": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay", "expected": "ticket -> command -> receipt -> projection -> persistence -> restart; synthetic fixture only", "status": "SOURCE_TEST"}
   ],
   "scopeCeiling": ["One compact district", "One placeholder avatar", "One activity", "Offline developer prototype"]
 }

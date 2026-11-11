@@ -379,12 +379,12 @@
       "id": "VL-010",
       "feature": "Gameplay",
       "title": "Desktop-first vertical slice and playable floorplan",
-      "objective": "Define one district, two avatar variants, walk-in cafe/card/Pet flow, M map/teleport and point-click navigation; site is separate publishing portal.",
+      "objective": "Lock one compact Aurora Plaza district, a placeholder avatar, WASD movement, proximity interaction and one activity; Pet Arena PvE content follows the synthetic transport fixture.",
       "dependsOn": [
         "VL-002"
       ],
       "acceptance": [
-        "clickable user flow accepted",
+        "32m district spawn/WASD/proximity/E flow accepted in an actual Unity player",
         "scope ceiling excludes infinite city/AAA release claims"
       ],
       "status": "IN_PROGRESS",
@@ -395,7 +395,7 @@
       "implementation": {
         "scope": "config/playable-slice.json",
         "scene": "apps/unity-client/Assets/VirtualLife/Scenes/AuroraBlockout.unity",
-        "remainingAcceptance": "Actual licensed Editor import and clickable flow test"
+        "remainingAcceptance": "Actual licensed Editor import and clickable flow test; production art, city expansion and release certification are outside this prototype"
       }
     },
     {
@@ -2238,8 +2238,16 @@
         "Real native Unity login and scoped WSS roundtrip with traced server receipt",
         "Schema mismatch, timeout, expired ticket and reconnect tested"
       ],
-      "status": "TODO",
-      "qualificationRequirements": []
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "source": "apps/unity-client/Assets/VirtualLife/Features/Native",
+        "adapterValidation": "node scripts/native-csharp.mjs",
+        "realProcessValidation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
+        "scope": "Partial independent protocol adapter work authorized while VL-080 Editor acceptance is pending; dependency retained",
+        "remainingAcceptance": "Real Unity import/compilation, EditMode/PlayMode execution, scene presentation wiring and native Unity login/WSS player E2E",
+        "reviewMode": "SINGLE_AGENT_AUDIT"
+      }
     },
     {
       "id": "VL-082",

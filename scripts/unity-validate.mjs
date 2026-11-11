@@ -1,13 +1,14 @@
-import {spawn} from 'node:child_process';
+import {spawn, spawnSync} from 'node:child_process';
+import {randomUUID} from 'node:crypto';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 
 const action = process.argv[2] ?? 'tests';
 if (!['prepare', 'tests', 'linux', 'windows-mono'].includes(action) || process.argv.length > 3) throw Error('Unknown Unity validation action');
 const project = resolve('apps/unity-client');
-const directory = resolve('artifacts/unity', new Date().toISOString().replaceAll(/[:.]/g, '-'));
+const directory = resolve('artifacts/unity', new Date().toISOString().replaceAll(/[:.]/g, '-') + '-' + randomUUID().slice(0, 8));
 await mkdir(directory, {recursive: true});
-const report = {action, editorVersion: '6000.3.14f1', commands: [], classification: 'MISSING_OPTIONAL_LOCAL_TOOLING'};
+const report = {action, sourceRevision: spawnSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8'}).stdout.trim(), platform: process.platform, editorVersion: '6000.3.14f1', commands: [], classification: 'MISSING_OPTIONAL_LOCAL_TOOLING'};
 const file = resolve(directory, 'result.json');
 async function save() {
   await writeFile(file, JSON.stringify(report, null, 2) + '\n');
@@ -28,6 +29,9 @@ try {
     report.reason = 'Set UNITY_EDITOR to an installed, licensed Linux Editor executable.';
     process.exitCode = 2;
   } else {
+    const prepared = spawnSync(process.execPath, ['scripts/unity-native-prepare.mjs'], {stdio: 'inherit'});
+    report.commands.push({command: ['node', 'scripts/unity-native-prepare.mjs'], exitCode: prepared.status ?? 1});
+    if (prepared.status !== 0) throw Error('Native binding preparation failed');
     report.classification = 'UNVERIFIED';
     await run(['-executeMethod', 'VirtualLife.Editor.ProjectBuild.Prepare', '-quit'], 'prepare');
     if (action === 'tests') {
