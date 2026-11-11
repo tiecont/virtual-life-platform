@@ -13,7 +13,7 @@ env:
 jobs:
   plan:
     name: change-plan
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     outputs:
       images: ${{ steps.plan.outputs.images }}
@@ -30,7 +30,7 @@ jobs:
 
   core:
     name: core-checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # 770 integration cases took20minutes;leave bounded time for checks/builds.
     timeout-minutes: 45
     outputs:
@@ -85,7 +85,7 @@ jobs:
   browser:
     name: browser (${{ matrix.group }})
     needs: core
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -129,7 +129,7 @@ jobs:
     name: runtime-images
     needs: plan
     if: ${{ needs.plan.outputs.images == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -179,7 +179,7 @@ jobs:
     name: quality
     needs: [plan, core, browser, images]
     if: ${{ always() }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     env:
       CI_NEEDS_JSON: ${{ toJSON(needs) }}
