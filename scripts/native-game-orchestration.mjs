@@ -213,6 +213,8 @@ try {
  assert.equal((await send(finalRequest)).reward,'GRANTED');record('two-restricted-workers-one-grant-and-reconciled-receipt-after-game-restart');
  await pool.query('UPDATE game_native_outbox SET delivered_at=NULL,delivery_outcome=NULL WHERE match_id=$1',[id]);
  await runWorker();await runWorker();assert.equal(await grantCount(id),1);record('redelivery-and-worker-restart-deduplicate-through-platform-inbox');
+ // Obtain fresh admission credentials after the worker subprocess phases.
+ await stop();await start('new');
  const rewardCrashId=await create();
  for(const [label,version]of [['0',0],['1',1],['0',2]])assert.equal((await send(command(rewardCrashId,label,version))).ok,true);
  await pool.query("CREATE FUNCTION pause_reward_commit() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN PERFORM pg_sleep(1.5); RETURN NEW; END $$; CREATE CONSTRAINT TRIGGER pause_reward_commit AFTER INSERT ON platform_native_reward_inbox DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION pause_reward_commit()");
@@ -222,6 +224,7 @@ try {
  crashing.proc.kill('SIGKILL');assert.equal((await crashing.result).signal,'SIGKILL');
  await pool.query('DROP TRIGGER pause_reward_commit ON platform_native_reward_inbox; DROP FUNCTION pause_reward_commit()');
  await runWorker();await runWorker();assert.equal(await grantCount(rewardCrashId),1);record('worker-process-kill-at-deferred-commit-rolls-back-and-restart-grants-once');
+ await stop();await start('new');
  const badRewardId=await create();
  for(const [label,version]of [['0',0],['1',1],['0',2]])assert.equal((await send(command(badRewardId,label,version))).ok,true);
  await pool.query("UPDATE game_native_settlements SET proposal='{}' WHERE match_id=$1",[badRewardId]);
