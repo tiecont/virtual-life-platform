@@ -2221,7 +2221,17 @@
         "editor": "6000.3.14f1",
         "urp": "17.3.0",
         "validation": "node scripts/unity-validate.mjs tests",
-        "remainingAcceptance": "Editor-resolved package lock, C# compilation, Linux tests/player and separate physical Windows build qualification"
+        "remainingAcceptance": "Editor-resolved package lock, Unity C# compilation, Linux tests/player and separate physical Windows build qualification",
+        "lastEditorAttempt": {
+          "sourceRevision": "5e683d931ce76d6652bafde260cf77982e9f9841",
+          "commands": [
+            {"command": "node scripts/unity-validate.mjs prepare", "exitCode": 2},
+            {"command": "node scripts/unity-validate.mjs tests", "exitCode": 2},
+            {"command": "node scripts/unity-validate.mjs linux", "exitCode": 2}
+          ],
+          "classification": "MISSING_OPTIONAL_LOCAL_TOOLING",
+          "reason": "No installed Unity Editor; license entitlement and separate Windows qualification remain external gates"
+        }
       }
     },
     {
@@ -2246,7 +2256,15 @@
         "realProcessValidation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
         "scope": "Partial independent protocol adapter work authorized while VL-080 Editor acceptance is pending; dependency retained",
         "remainingAcceptance": "Real Unity import/compilation, EditMode/PlayMode execution, scene presentation wiring and native Unity login/WSS player E2E",
-        "reviewMode": "SINGLE_AGENT_AUDIT"
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "adapterEvidence": {
+          "sourceRevision": "5e683d931ce76d6652bafde260cf77982e9f9841",
+          "commands": [
+            {"command": "node scripts/native-csharp.mjs", "exitCode": 0, "result": "netstandard2.1 and net8.0 compile; 26 standalone HTTPS/WSS assertions passed"},
+            {"command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client", "exitCode": 0, "result": "22 real-process scenarios passed; same C# adapter before and after Rust SIGKILL"}
+          ],
+          "scope": "Linux standalone C# adapter proof, not Unity Editor/player E2E or Windows certification"
+        }
       }
     },
     {
