@@ -20,3 +20,17 @@ test('mixed Rust/Node discovery accepts only the registered native exception and
   await writeFile(join(root,'apps/game-runtime/Cargo.toml'),'[package]\nname = "unexpected"\n');
   await assert.rejects(readNodeWorkspace(root,'apps/game-runtime'),/Unknown/);
 });
+
+test('Unity has an explicit pinned native project boundary',async()=>{
+  const root=await mkdtemp(join(tmpdir(),'unity-workspace-'));
+  try{
+    const project=join(root,'apps/unity-client');
+    await mkdir(join(project,'ProjectSettings'),{recursive:true});
+    await mkdir(join(project,'Packages'),{recursive:true});
+    await writeFile(join(project,'ProjectSettings/ProjectVersion.txt'),'m_EditorVersion: 6000.3.14f1\n');
+    await writeFile(join(project,'Packages/manifest.json'),JSON.stringify({dependencies:{'com.unity.render-pipelines.universal':'17.3.0'}}));
+    assert.equal(await readNodeWorkspace(root,'apps/unity-client'),null);
+    await writeFile(join(project,'Packages/manifest.json'),JSON.stringify({dependencies:{test:'latest'}}));
+    await assert.rejects(readNodeWorkspace(root,'apps/unity-client'),/exact pins/);
+  }finally{await rm(root,{recursive:true,force:true});}
+});

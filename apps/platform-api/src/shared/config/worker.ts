@@ -3,6 +3,7 @@ const WorkerEnv = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   DATABASE_URL: z.string().url().refine(value => ['postgres:', 'postgresql:'].includes(new URL(value).protocol)),
   DURABLE_JOB_ROLE: z.literal('worker'),
+  NATIVE_REWARD_POLICY_FILE: z.string().min(1).max(4096).optional(),
   PROGRESSION_POLICY_FILE: z.string().min(1).max(4096),
   SCHEMA_COMPATIBILITY_FILE: z.string().min(1).max(4096).optional(),
   WORKER_INTERVAL_MS: z.coerce.number().int().min(100).max(60000).default(3000),

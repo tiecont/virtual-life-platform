@@ -13,6 +13,7 @@ import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
 const require=createRequire(import.meta.url);
 const {migrate}=require('../apps/platform-api/src/shared/database/migrations.ts');
 const {IdentityService}=require('../apps/platform-api/src/features/identity/modules/accounts/application/service.ts');
+const {DEFAULT_PROGRESSION_POLICY}=require('../apps/platform-api/src/features/progression/modules/rewards/domain/policy.ts');
 const {readConfig}=require('../apps/platform-api/src/shared/config/environment.ts');
 const {RuntimeAdmissionStore}=require('../apps/platform-api/src/features/identity/modules/runtime-access/application/runtime-admission.ts');
 const {RuntimeTicketIssuer}=require('../apps/platform-api/src/features/identity/modules/runtime-access/application/runtime-tickets.ts');
@@ -21,7 +22,9 @@ const directory=resolve('artifacts/desktop-first/vl017/orchestration-'+randomUUI
 await mkdir(directory,{recursive:true,mode:0o700});
 const schema='turns_'+randomUUID().replaceAll('-',''),role='turns_'+randomUUID().replaceAll('-',''),password=randomBytes(32).toString('hex');
 const admin=new Pool({connectionString:address.toString()});
-const facts={taskId:'VL-017',result:'FAIL',startedAt:new Date().toISOString(),scenarios:[],deniedPrivileges:[],scope:'Synthetic three-turn domain, actual Rust process restart and TLS restricted PG; opt-in library only. Logical boot retained under allocator lease; boot takeover/epoch recovery belongs to VL-020.'};
+const facts={taskIds:['VL-017','VL-018','VL-020','VL-021'],result:'FAIL',startedAt:new Date().toISOString(),scenarios:[],deniedPrivileges:[],scope:'Synthetic three-turn domain, actor/spectator privacy, restricted reward worker, real Rust/worker crashes and TLS PostgreSQL. Library orchestration retains the logical boot under allocator lease. apps/game-runtime composition and boot lifecycle remain VL-111.'};
+const workerRole='rewards_'+randomUUID().replaceAll('-',''),workerPassword=randomBytes(32).toString('hex');
+let workerRoleCreated=false;const workers=new Set();
 let pool,created=false,roleCreated=false,child,closed,lines,heartbeat,heartbeatWork=Promise.resolve(),heartbeatError,slowSql=false,leaseFault=false,output='';
 const record=name=>facts.scenarios.push({name,result:'PASS'});
 const identifier=v=>{assert.match(v,/^[a-z][a-z0-9_]*$/);return '"'+v+'"';};
@@ -41,7 +44,7 @@ try {
  assert.equal(profile.activation,'DISABLED');assert.equal(profile.schemaVersion,1);
  facts.profile={ref:'config/native-game-db-privileges.json',sha256:createHash('sha256').update(profileBytes).digest('hex')};
  const admission=JSON.parse(await readFile(profile.admissionSelectProfile));
- for(const [table,columns]of Object.entries(admission.select).filter(([name])=>!name.startsWith('game_')))await pool.query(`GRANT SELECT (${columns.map(identifier).join(',')}) ON ${identifier(table)} TO ${identifier(role)}`);
+ for(const [table,columns]of [...Object.entries(admission.select).filter(([name])=>!name.startsWith('game_')),...Object.entries(profile.rewardStatusSelect)])await pool.query(`GRANT SELECT (${columns.map(identifier).join(',')}) ON ${identifier(table)} TO ${identifier(role)}`);
  for(const op of ['select','insert'])for(const table of profile[op])await pool.query(`GRANT ${op.toUpperCase()} ON ${identifier(table)} TO ${identifier(role)}`);
  for(const [table,columns]of Object.entries(profile.update))await pool.query(`GRANT UPDATE (${columns.map(identifier).join(',')}) ON ${identifier(table)} TO ${identifier(role)}`);
  const runtime=new URL(address);runtime.username=role;runtime.password=password;
@@ -52,6 +55,7 @@ try {
    ['policy-write','UPDATE platform_native_admissions SET allowed=true WHERE false'],['world-write','UPDATE platform_native_worlds SET enabled=true WHERE false'],
    ['nonce-delete','DELETE FROM platform_native_ticket_uses WHERE false'],['owner-takeover','UPDATE game_native_matches SET epoch=epoch+1 WHERE false'],
    ['receipt-delete','DELETE FROM game_native_receipts WHERE false'],['event-read','SELECT * FROM game_native_events'],
+   ['ledger-write','INSERT INTO platform_native_reward_ledger SELECT * FROM platform_native_reward_ledger WHERE false'],['inbox-write','DELETE FROM platform_native_reward_inbox WHERE false'],
    ['outbox-delivered','UPDATE game_native_outbox SET delivered_at=clock_timestamp() WHERE false'],['legacy-write','DELETE FROM engine_game_matches WHERE false'],
    ['migration-read','SELECT name FROM city_schema_migrations'],['schema-create',`CREATE TABLE ${identifier(schema)}.forbidden_fixture(id int)`],
   ]){await assert.rejects(restricted.query(sql),{code:'42501'});facts.deniedPrivileges.push(name);}
@@ -88,12 +92,22 @@ try {
  const id=await create();const first=command(id);
  assert.equal((await projection(id)).projection.ownCard,411001);
  assert.equal((await projection(id,'1')).projection.ownCard,822002);record('recipient-only-private-projections');
- await deny(command(id,'1'),'Unauthorized');await deny(command(id,'2'),'Unauthorized');await deny({op:'projection',id,label:'2'},'Unauthorized');
- assert.deepEqual(await counts(id),empty);record('wrong-turn-and-nonmember-read-write-denied');
+ await deny(command(id,'1'),'Unauthorized');await deny(command(id,'2'),'Unauthorized');assert.deepEqual((await projection(id,'2')).projection,{turn:players[0],turns:0,total:0});
+ record('admitted-spectator-public-projection');
+ assert.deepEqual(await counts(id),empty);record('wrong-turn-and-spectator-writes-denied');
  await deny({...first,action:0},'Invalid');await deny({...first,version:1},'Conflict');await deny({...first,epoch:2},'Conflict');assert.deepEqual(await counts(id),empty);record('invalid-action-version-epoch-zero-effects');
  const committed=await send(first);assert.equal(committed.ok,true);assert.equal(committed.version,1);assert.deepEqual(await counts(id),{version:1,receipts:1,events:1,settlements:0,outbox:0});record('success-ack-observed-after-committed-checkpoint-receipt-event');
- assert.deepEqual(await send(first),committed);await deny({...first,action:2},'Collision');record('identical-retry-and-command-id-collision');
- await stop();await start();assert.deepEqual(await send(first),committed);const restored=await projection(id);assert.deepEqual(restored,committed);
+ assert.deepEqual(await send(first),committed);
+ await deny({...first,label:'2'},'Unauthorized');
+ await deny({...first,label:'1'},'Conflict');
+ assert.equal((await projection(id,'1')).projection.ownCard,822002);
+ assert.deepEqual((await projection(id,'2')).projection,{turn:players[1],turns:1,total:1});
+ record('cross-actor-and-spectator-replay-exposes-no-private-receipt');
+ await deny({...first,action:2},'Collision');record('identical-retry-and-command-id-collision');
+ const frozenCheckpoint=(await pool.query('SELECT state_version,server_tick,logical_time_ms,rng_cursor,audit_hash,seed_commitment,sealed_snapshot FROM game_native_matches WHERE id=$1',[id])).rows[0];
+ await stop();await start();
+ assert.deepEqual((await pool.query('SELECT state_version,server_tick,logical_time_ms,rng_cursor,audit_hash,seed_commitment,sealed_snapshot FROM game_native_matches WHERE id=$1',[id])).rows[0],frozenCheckpoint);
+ assert.deepEqual(await send(first),committed);const restored=await projection(id);assert.deepEqual(restored,committed);
  await deny(command(id,'0',1),'Unauthorized');assert.equal((await send(command(id,'1',1))).ok,true);record('actual-process-kill-restart-restores-snapshot-rng-turn-and-receipt');
  const finalRace=await send({op:'race',id,label:'0',version:2,duplicate:false});assert.equal(finalRace.results.filter(r=>r.ok).length,1);
  assert.deepEqual(await counts(id),{version:3,receipts:3,events:3,settlements:1,outbox:1});await deny(command(id,'1',3),'Conflict');record('concurrent-final-turn-has-one-settlement-outbox');
@@ -120,14 +134,101 @@ try {
  const otherId=await create(),other=(await pool.query('SELECT snapshot_key_id,snapshot_nonce,snapshot_tag,sealed_snapshot FROM game_native_matches WHERE id=$1',[otherId])).rows[0];
  await pool.query('UPDATE game_native_matches SET snapshot_key_id=$2,snapshot_nonce=$3,snapshot_tag=$4,sealed_snapshot=$5 WHERE id=$1',[otherId,envelope.snapshot_key_id,envelope.snapshot_nonce,envelope.snapshot_tag,envelope.sealed_snapshot]);await deny({op:'projection',id:otherId,label:'0'},'Integrity');
  await pool.query('UPDATE game_native_matches SET snapshot_key_id=$2,snapshot_nonce=$3,snapshot_tag=$4,sealed_snapshot=$5 WHERE id=$1',[otherId,other.snapshot_key_id,other.snapshot_nonce,other.snapshot_tag,other.sealed_snapshot]);record('cross-match-envelope-swap-denied');
+
+ const incompatibleId=randomUUID();
+ await pool.query(
+  "INSERT INTO game_native_matches SELECT $1,world_id,ruleset_id,ruleset_version+1,content_hash,engine_hash,protocol_version,canonical_version,rng_version,owner_boot_id,epoch,state_version,server_tick,logical_time_ms,rng_cursor,status,seed_commitment,audit_hash,snapshot_key_id,snapshot_nonce,snapshot_tag,sealed_snapshot,created_at,updated_at FROM game_native_matches WHERE id=$2",
+  [incompatibleId,otherId],
+ );
+ await deny({op:'projection',id:incompatibleId,label:'0'},'Integrity');
+ record('incompatible-ruleset-journal-is-rejected-before-projection');
  const receipt=(await pool.query('SELECT sealed_receipt FROM game_native_receipts WHERE match_id=$1',[ackId])).rows[0].sealed_receipt,damaged=Buffer.from(receipt);damaged[0]^=1;
  await pool.query('UPDATE game_native_receipts SET sealed_receipt=$2 WHERE match_id=$1',[ackId,damaged]);await deny(unknown,'Integrity');await pool.query('UPDATE game_native_receipts SET sealed_receipt=$2 WHERE match_id=$1',[ackId,receipt]);record('authenticated-receipt-tampering-denied');
+
+ const privateReceipts=(await pool.query(
+  'SELECT actor_id,command_id,key_id,nonce,tag,sealed_receipt,receipt_hash FROM game_native_receipts WHERE match_id=$1 ORDER BY committed_version',
+  [id],
+ )).rows;
+ const firstPrivate=privateReceipts[0],secondPrivate=privateReceipts[1];
+ await pool.query(
+  'UPDATE game_native_receipts SET key_id=$4,nonce=$5,tag=$6,sealed_receipt=$7,receipt_hash=$8 WHERE match_id=$1 AND actor_id=$2 AND command_id=$3',
+  [id,secondPrivate.actor_id,secondPrivate.command_id,firstPrivate.key_id,firstPrivate.nonce,firstPrivate.tag,firstPrivate.sealed_receipt,firstPrivate.receipt_hash],
+ );
+ await deny({...command(id,'1',1),command:secondPrivate.command_id},'Integrity');
+ await pool.query(
+  'UPDATE game_native_receipts SET key_id=$4,nonce=$5,tag=$6,sealed_receipt=$7,receipt_hash=$8 WHERE match_id=$1 AND actor_id=$2 AND command_id=$3',
+  [id,secondPrivate.actor_id,secondPrivate.command_id,secondPrivate.key_id,secondPrivate.nonce,secondPrivate.tag,secondPrivate.sealed_receipt,secondPrivate.receipt_hash],
+ );
+ record('cross-viewer-valid-receipt-envelope-transplant-fails-authentication');
  const ownerKey=createHash('sha256').update('vl.native.owner.v1:'+scope.worldId).digest().readBigInt64BE(0)&0x7fffffffffffffffn;
  const owner=(await pool.query("SELECT pid FROM pg_locks WHERE locktype='advisory' AND classid=($1::bigint>>32)::oid AND objid=($1::bigint&4294967295)::oid AND objsubid=1 AND database=(SELECT oid FROM pg_database WHERE datname=current_database())",[ownerKey.toString()])).rows;
  assert.equal(owner.length,1);await pool.query('SELECT pg_terminate_backend($1)',[owner[0].pid]);await deny(command(otherId),'Unavailable');assert.deepEqual(await counts(otherId),empty);await stop();await start('new');record('lost-owner-lock-connection-cannot-commit');
  const leaseId=await create();leaseFault=true;await heartbeatWork;await trigger('game_native_events','PERFORM pg_sleep(0.75)');
  await pool.query("UPDATE platform_native_worlds SET lease_until=clock_timestamp()+interval '0.35 seconds' WHERE world_id=$1",[scope.worldId]);await deny(command(leaseId),'Unauthorized');await untrigger('game_native_events');assert.deepEqual(await counts(leaseId),empty);
  await pool.query("UPDATE platform_native_worlds SET lease_until=clock_timestamp()+interval '5 seconds' WHERE world_id=$1",[scope.worldId]);leaseFault=false;record('owner-lease-expiry-after-native-write-rolls-back-before-ack');
+
+ const nativePolicy=directory+'/native-policy.private.json',progressionPolicy=directory+'/progression-policy.private.json';
+ await writeFile(nativePolicy,JSON.stringify({schemaVersion:1,world:scope.worldId,ruleset:'storage-fixture',rulesetVersion:1,contentHash:scope.contentHash,rewardKey:'fixture-completion'}),{mode:0o600});
+ await writeFile(progressionPolicy,JSON.stringify({...DEFAULT_PROGRESSION_POLICY,enabled:true}),{mode:0o600});
+ await admin.query(`CREATE ROLE ${identifier(workerRole)} LOGIN PASSWORD '${workerPassword}' NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 8`);workerRoleCreated=true;
+ await pool.query(`GRANT USAGE ON SCHEMA ${identifier(schema)} TO ${identifier(workerRole)}`);
+ const workerProfile=JSON.parse(await readFile('config/native-reward-worker-db-privileges.json'));
+ assert.equal(workerProfile.activation,'DISABLED');
+ for(const op of ['select','insert'])for(const table of workerProfile[op])await pool.query(`GRANT ${op.toUpperCase()} ON ${identifier(table)} TO ${identifier(workerRole)}`);
+ for(const [table,columns]of Object.entries(workerProfile.update))await pool.query(`GRANT UPDATE (${columns.map(identifier).join(',')}) ON ${identifier(table)} TO ${identifier(workerRole)}`);
+ const workerAddress=new URL(address);workerAddress.username=workerRole;workerAddress.password=workerPassword;
+ const workerProbe=new Pool({connectionString:workerAddress.toString()});
+ try {
+  for(const sql of ['DELETE FROM platform_native_reward_inbox WHERE false',"UPDATE game_native_matches SET status='FINISHED' WHERE false","UPDATE platform_native_reward_ledger SET reward_key='forged' WHERE false",'INSERT INTO game_native_settlements SELECT * FROM game_native_settlements WHERE false']){
+   await assert.rejects(workerProbe.query(sql),{code:'42501'});
+  }
+ } finally {await workerProbe.end();}
+ const worker=(configured=true)=>{
+  const proc=spawn(process.execPath,['apps/platform-api/dist/worker.js','--once'],{env:{PATH:process.env.PATH,NODE_ENV:'test',DATABASE_URL:workerAddress.toString(),DURABLE_JOB_ROLE:'worker',PROGRESSION_POLICY_FILE:progressionPolicy,...configured?{NATIVE_REWARD_POLICY_FILE:nativePolicy}:{}},stdio:['ignore','pipe','pipe']});
+  workers.add(proc);let logs='';
+  proc.stdout.on('data',b=>{logs+=b;});proc.stderr.on('data',b=>{logs+=b;});
+  const result=new Promise((ok,no)=>{proc.once('error',no);proc.once('close',(code,signal)=>{workers.delete(proc);assert(!logs.includes(workerPassword));assert(!/ownCard|411001|822002|sealed_snapshot/.test(logs));ok({code,signal,logs});});});
+  return {proc,result};
+ };
+ const runWorker=async()=>{const result=await worker().result;assert.equal(result.code,0,result.logs);};
+ const grantCount=async match=>(await pool.query('SELECT count(*)::int AS n FROM platform_native_reward_ledger l JOIN game_native_settlements s USING(settlement_id) WHERE s.match_id=$1',[match])).rows[0].n;
+ assert.equal((await projection(id)).reward,'REWARD_PENDING');
+ assert.equal((await projection(id,'1')).reward,null);
+ assert.equal((await projection(id,'2')).reward,null);
+ const finalCommand=(await pool.query('SELECT command_id FROM game_native_receipts WHERE match_id=$1 AND committed_version=3',[id])).rows[0].command_id;
+ const finalRequest={...command(id,'0',2),command:finalCommand};
+ assert.equal((await send(finalRequest)).reward,'REWARD_PENDING');
+ assert.equal(await grantCount(id),0);
+ const unconfigured=await worker(false).result;
+ assert.equal(unconfigured.code,0,unconfigured.logs);
+ assert.equal(await grantCount(id),0);
+ record('unconfigured-worker-leaves-native-rewards-pending');
+ record('delayed-worker-returns-reward-pending-on-reconnect-and-replay');
+ const simultaneous=await Promise.all([worker().result,worker().result]);
+ for(const result of simultaneous)assert.equal(result.code,0,result.logs);
+ assert.equal(await grantCount(id),1);
+ assert.equal((await projection(id)).reward,'GRANTED');
+ assert.equal((await send(finalRequest)).reward,'GRANTED');
+ await stop();await start('new');
+ assert.equal((await send(finalRequest)).reward,'GRANTED');record('two-restricted-workers-one-grant-and-reconciled-receipt-after-game-restart');
+ await pool.query('UPDATE game_native_outbox SET delivered_at=NULL,delivery_outcome=NULL WHERE match_id=$1',[id]);
+ await runWorker();await runWorker();assert.equal(await grantCount(id),1);record('redelivery-and-worker-restart-deduplicate-through-platform-inbox');
+ // Obtain fresh admission credentials after the worker subprocess phases.
+ await stop();await start('new');
+ const rewardCrashId=await create();
+ for(const [label,version]of [['0',0],['1',1],['0',2]])assert.equal((await send(command(rewardCrashId,label,version))).ok,true);
+ await pool.query("CREATE FUNCTION pause_reward_commit() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN PERFORM pg_sleep(1.5); RETURN NEW; END $$; CREATE CONSTRAINT TRIGGER pause_reward_commit AFTER INSERT ON platform_native_reward_inbox DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION pause_reward_commit()");
+ const crashing=worker();
+ for(let n=0;;n++){const waiting=await pool.query("SELECT 1 FROM pg_stat_activity WHERE usename=$1 AND wait_event='PgSleep'",[workerRole]);if(waiting.rowCount)break;assert(n<150,'Worker did not reach blocked COMMIT');await new Promise(ok=>setTimeout(ok,10));}
+ assert.equal(await grantCount(rewardCrashId),0);
+ crashing.proc.kill('SIGKILL');assert.equal((await crashing.result).signal,'SIGKILL');
+ await pool.query('DROP TRIGGER pause_reward_commit ON platform_native_reward_inbox; DROP FUNCTION pause_reward_commit()');
+ await runWorker();await runWorker();assert.equal(await grantCount(rewardCrashId),1);record('worker-process-kill-at-deferred-commit-rolls-back-and-restart-grants-once');
+ await stop();await start('new');
+ const badRewardId=await create();
+ for(const [label,version]of [['0',0],['1',1],['0',2]])assert.equal((await send(command(badRewardId,label,version))).ok,true);
+ await pool.query("UPDATE game_native_settlements SET proposal='{}' WHERE match_id=$1",[badRewardId]);
+ await runWorker();assert.equal(await grantCount(badRewardId),0);assert.equal((await projection(badRewardId)).reward,'DECLINED');record('invalid-settlement-proposal-is-declined-without-ledger-effect');
  await store.release(users[0].token);await deny(unknown,'Unauthorized');await deny({op:'projection',id:ackId,label:'0'},'Unauthorized');record('revoked-admission-denies-stored-receipt-and-private-snapshot');
  const stored=await pool.query('SELECT sealed_snapshot FROM game_native_matches');for(const row of stored.rows)for(const player of players)assert(!row.sealed_snapshot.includes(Buffer.from(player)));record('snapshot-storage-does-not-contain-plaintext-player-state');
  const economy=(await pool.query("SELECT proposal FROM game_native_settlements WHERE match_id=$1",[id])).rows[0].proposal;
@@ -135,9 +236,10 @@ try {
  assert.equal(heartbeatError,undefined);facts.result='PASS';
 }catch(error){facts.failure={name:error.name,message:String(error.message).replace(/postgres(?:ql)?:\/\/\S+/g,'[redacted-test-address]')};process.exitCode=1;}
 finally {
+ for(const proc of workers){proc.kill('SIGKILL');await new Promise(ok=>proc.once('close',ok));}
  if(heartbeat)clearInterval(heartbeat);await heartbeatWork;await stop();
  await writeFile(directory+'/rust.private.log',output,{mode:0o600});await pool?.end();
- if(created)await admin.query(`DROP SCHEMA ${identifier(schema)} CASCADE`);if(roleCreated)await admin.query(`DROP ROLE ${identifier(role)}`);await admin.end();
+ if(created)await admin.query(`DROP SCHEMA ${identifier(schema)} CASCADE`);if(workerRoleCreated)await admin.query(`DROP ROLE ${identifier(workerRole)}`);if(roleCreated)await admin.query(`DROP ROLE ${identifier(role)}`);await admin.end();
  facts.cleanupComplete=true;facts.completedAt=new Date().toISOString();await writeFile(directory+'/facts.json',JSON.stringify(facts,null,2)+'\n',{mode:0o600});
  console.log(JSON.stringify({result:facts.result,scenarios:facts.scenarios.length,deniedPrivileges:facts.deniedPrivileges.length,artifactDirectory:directory,failure:facts.failure}));
 }

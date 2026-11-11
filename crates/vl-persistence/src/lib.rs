@@ -4,7 +4,7 @@ pub use crypto::Keys;
 use crypto::Sealed;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use std::sync::Arc;
+use std::{fmt, sync::Arc};
 use tokio::task::JoinHandle;
 use tokio_postgres::{Client, Config, Row, Transaction};
 use uuid::Uuid;
@@ -50,6 +50,12 @@ pub trait Game: Reducer + Send + Sync + 'static {
     fn member(&self, state: &Self::State, account: &str) -> bool;
     fn authorize(&self, state: &Self::State, account: &str, action: &Self::Action) -> bool;
     fn project(&self, state: &Self::State, account: &str) -> Result<Vec<u8>>;
+    fn can_spectate(&self, _state: &Self::State, _account: &str) -> bool {
+        false
+    }
+    fn project_public(&self, _state: &Self::State) -> Result<Vec<u8>> {
+        Err(Error::Unauthorized)
+    }
 }
 
 pub struct Scope {
@@ -64,11 +70,28 @@ pub struct Request<A> {
     pub expected_version: i64,
     pub action: A,
 }
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum RewardStatus {
+    Pending,
+    Granted,
+    Declined,
+}
+
+#[derive(PartialEq, Eq)]
 pub struct Receipt {
     pub epoch: i64,
     pub version: i64,
     pub projection: Vec<u8>,
+    pub reward: Option<RewardStatus>,
+}
+
+impl fmt::Debug for Receipt {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Receipt")
+            .field("epoch", &self.epoch)
+            .field("version", &self.version)
+            .finish_non_exhaustive()
+    }
 }
 
 // The SQL driver is cancelled even if acquisition is cancelled before publication.
@@ -316,6 +339,29 @@ where
     async fn row(&self, tx: &Transaction<'_>, id: Uuid) -> Result<Row> {
         tx.query_opt("SELECT *,owner_boot_id::text AS boot_text,server_tick::text AS tick_text,logical_time_ms::text AS time_text,rng_cursor::text AS cursor_text FROM game_native_matches WHERE id=$1::text::uuid FOR UPDATE",&[&id.to_string()]).await?.ok_or(Error::Unauthorized)
     }
+    async fn reward_status(
+        tx: &Transaction<'_>,
+        match_id: Uuid,
+        final_version: i64,
+        account: &str,
+    ) -> Result<Option<RewardStatus>> {
+        let row = tx
+            .query_opt(
+                "SELECT o.delivery_outcome FROM game_native_outbox o
+             JOIN game_native_receipts r USING (match_id)
+             WHERE o.match_id=$1::text::uuid AND r.committed_version=$2
+               AND r.actor_id=$3::text::uuid",
+                &[&match_id.to_string(), &final_version, &account],
+            )
+            .await?;
+        match row.as_ref().map(|r| r.get::<_, Option<&str>>(0)) {
+            None => Ok(None),
+            Some(None) => Ok(Some(RewardStatus::Pending)),
+            Some(Some("granted")) => Ok(Some(RewardStatus::Granted)),
+            Some(Some("declined")) => Ok(Some(RewardStatus::Declined)),
+            Some(Some(_)) => Err(Error::Integrity),
+        }
+    }
     /// Trusted allocator entrypoint, not a player command or a migration.
     pub async fn create(&self, db: &mut Client, id: Uuid, state: G::State) -> Result<()> {
         if id.is_nil() {
@@ -413,19 +459,29 @@ where
                             return Err(Error::Conflict);
                         }
                         let stored = host.restore(id, &row)?;
-                        if !host.game.member(&stored.checkpoint.state, actor.account) {
+                        let state = &stored.checkpoint.state;
+                        let version = stored.checkpoint.version as i64;
+                        let (projection, reward) = if host.game.member(state, actor.account) {
+                            let reward = if stored.status == "SETTLING" {
+                                Self::reward_status(tx, id, version, actor.account).await?
+                            } else {
+                                None
+                            };
+                            (host.game.project(state, actor.account)?, reward)
+                        } else if host.game.can_spectate(state, actor.account) {
+                            (host.game.project_public(state)?, None)
+                        } else {
                             return Err(Error::Unauthorized);
-                        }
-                        let projection =
-                            host.game.project(&stored.checkpoint.state, actor.account)?;
+                        };
                         if projection.is_empty() || projection.len() > MAX_PROJECTION {
                             return Err(Error::Invalid);
                         }
                         host.owner.check(tx).await?;
                         Ok(Receipt {
                             epoch: stored.epoch,
-                            version: stored.checkpoint.version as i64,
+                            version,
                             projection,
+                            reward,
                         })
                     }
                     .await;
@@ -471,7 +527,13 @@ where
             let sealed=Sealed {key:receipt.get("key_id"),nonce:receipt.get("nonce"),tag:receipt.get("tag"),bytes:receipt.get("sealed_receipt")};
             let bytes=self.keys.open(&sealed,&self.aad(r.match_id,epoch,version,"receipt",&scope)?)?;
             if bytes.len()>MAX_PROJECTION || receipt.get::<_,Vec<u8>>("receipt_hash")!=Sha256::digest(&bytes).as_slice(){return Err(Error::Integrity);}
-            self.owner.check(tx).await?;return Ok(Receipt {epoch,version,projection:bytes.to_vec()});
+            let reward = if stored.status == "SETTLING" && version as u64 == stored.checkpoint.version {
+                Self::reward_status(tx, r.match_id, version, actor.account).await?
+            } else {
+                None
+            };
+            self.owner.check(tx).await?;
+            return Ok(Receipt {epoch,version,projection:bytes.to_vec(),reward});
         }
         if stored.epoch != r.epoch
             || stored.checkpoint.version != r.expected_version as u64
@@ -574,9 +636,32 @@ where
             epoch: stored.epoch,
             version,
             projection,
+            reward: transition
+                .settlement
+                .as_ref()
+                .map(|_| RewardStatus::Pending),
         })
     }
 }
 fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn receipt_debug_redacts_private_projection() {
+        let receipt = Receipt {
+            epoch: 1,
+            version: 2,
+            projection: b"PRIVATE_CARD_SENTINEL".to_vec(),
+            reward: Some(RewardStatus::Pending),
+        };
+        assert_eq!(
+            format!("{receipt:?}"),
+            "Receipt { epoch: 1, version: 2, .. }"
+        );
+    }
 }

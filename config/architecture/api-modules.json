@@ -41,6 +41,7 @@
       "currentPublicEntryFiles": [
         "shared/config/environment",
         "shared/config/progression",
+        "shared/config/native-rewards",
         "shared/config/worker",
         "shared/config/release-policy",
         "shared/config/schema-compatibility"
@@ -195,6 +196,7 @@
         "features/progression/modules/rewards/application/appearance",
         "features/progression/modules/rewards/application/avatar-parts",
         "features/progression/modules/rewards/application/ledger",
+        "features/progression/modules/rewards/infrastructure/native-settlements",
         "features/progression/modules/rewards/presentation/http",
         "features/progression/modules/rewards/application/service"
       ],

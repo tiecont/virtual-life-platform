@@ -5,6 +5,7 @@
   "qualification": "Disposable restricted TLS PostgreSQL host proof; no production provisioning, takeover, legacy or ledger privileges",
   "admissionSelectProfile": "config/native-runtime-db-privileges.json",
   "select": ["game_native_matches", "game_native_receipts"],
+  "rewardStatusSelect": {"game_native_outbox": ["match_id", "delivery_outcome"]},
   "insert": ["platform_native_ticket_uses", "game_native_matches", "game_native_receipts", "game_native_events", "game_native_settlements", "game_native_outbox"],
   "update": {
     "game_native_matches": ["state_version", "server_tick", "logical_time_ms", "rng_cursor", "status", "audit_hash", "snapshot_key_id", "snapshot_nonce", "snapshot_tag", "sealed_snapshot", "updated_at"]

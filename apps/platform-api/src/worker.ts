@@ -1,11 +1,14 @@
 import {createHash} from 'node:crypto';
 import {Pool} from 'pg';
 import {readWorkerAction, readWorkerConfig} from './shared/config/worker';
+import type {PoolClient} from 'pg';
+import {loadNativeRewardPolicy} from './shared/config/native-rewards';
 import {loadProgressionPolicy} from './shared/config/progression';
 import {loadSchemaCompatibility, isSchemaCompatible} from './shared/config/schema-compatibility';
 import {migrationManifest} from './shared/database/migrations';
 import {HospitalityOutbox} from './features/hospitality/modules/service/application/jobs';
 import {lockAccounts} from './features/identity/modules/accounts/application/account-locks';
+import {NativeSettlements} from './features/progression/modules/rewards/infrastructure/native-settlements';
 import {ProgressionLedger} from './features/progression/modules/rewards/application/ledger';
 import {IncidentPolicy} from './features/safety/modules/incidents/application/incidents';
 import {SanctionPolicy} from './features/safety/modules/sanctions/application/sanctions';
@@ -16,10 +19,14 @@ export async function runDurableWorker(env = process.env, args = process.argv.sl
   const action = readWorkerAction(args), config = readWorkerConfig(env);
   const policy = await loadProgressionPolicy(config.PROGRESSION_POLICY_FILE);
   if (!policy?.enabled) throw Error('Worker requires an explicit enabled progression policy');
+  const nativeRewardPolicy = await loadNativeRewardPolicy(config.NATIVE_REWARD_POLICY_FILE);
   const compatibility = await loadSchemaCompatibility(config.SCHEMA_COMPATIBILITY_FILE, await migrationManifest());
   const pool = new Pool({connectionString: config.DATABASE_URL, max: 4, connectionTimeoutMillis: 2000, application_name: 'virtual-life-platform-durable-worker'});
   pool.on('error', () => console.error('Durable worker database unavailable'));
-  const ledger = new ProgressionLedger(async (db, account, world) => await new IncidentPolicy(db).permits(account, world) && await new SanctionPolicy(db).permits(account, world), policy);
+  const eligible = async (db: Pick<PoolClient, 'query'>, account: string, world: string) =>
+    await new IncidentPolicy(db).permits(account, world) && await new SanctionPolicy(db).permits(account, world);
+  const ledger = new ProgressionLedger(eligible, policy);
+  const native = nativeRewardPolicy ? new NativeSettlements(pool, nativeRewardPolicy, eligible) : undefined;
   const outbox = new HospitalityOutbox(pool, {lockAccounts}, [ledger.hospitalitySink()], Date.now, config.WORKER_RETRY_LIMIT);
   const lifecycle = new RuntimeLifecycle({beginDrain: () => {}, closeApp: () => outbox.close(), closePool: () => pool.end()});
   let failed = false, signalled = false, resolveStop!: () => void;
@@ -39,7 +46,7 @@ export async function runDurableWorker(env = process.env, args = process.argv.sl
   };
   const unavailable = () => {failed = true; console.error('Durable worker batch unavailable');};
   const batch = async () => {
-    await assertSchema(); await outbox.drain();
+    await assertSchema(); await outbox.drain(); await native?.drain();
     console.log(JSON.stringify({event: 'durable-worker.batch-complete', sampledAt: new Date().toISOString()}));
   };
   try {

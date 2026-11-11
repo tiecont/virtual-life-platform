@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "activation": "DISABLED",
+  "select": [
+    "platform_metadata", "city_schema_migrations",
+    "engine_hospitality_outbox", "engine_hospitality_completions", "engine_hospitality_orders",
+    "engine_hospitality_deliveries", "engine_hospitality_delivery_retries",
+    "game_native_outbox", "game_native_settlements", "game_native_receipts", "game_native_matches",
+    "platform_native_reward_inbox", "platform_native_reward_ledger",
+    "identity_accounts", "safety_incident_controls", "safety_sanctions"
+  ],
+  "insert": ["platform_native_reward_inbox", "platform_native_reward_ledger"],
+  "update": {"game_native_outbox": ["delivered_at", "delivery_outcome"]}
+}

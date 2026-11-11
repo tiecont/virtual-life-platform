@@ -8,7 +8,7 @@ use std::{
 };
 use uuid::Uuid;
 use vl_game_core::{Canonical, Decision, LogicalClock, Reducer, Ruleset, TurnRng, Value};
-use vl_persistence::{Error, Game, Host, Keys, Owner, Request, Scope};
+use vl_persistence::{Error, Game, Host, Keys, Owner, Request, RewardStatus, Scope};
 use vl_security::{
     RuntimeScope, TicketVerifier,
     durable::{DurableSession, DurableTrust},
@@ -125,6 +125,15 @@ impl Game for FixtureGame {
             .ok_or(Error::Unauthorized)?;
         serde_json::to_vec(&serde_json::json!({"turn":s.players[s.turn],"turns":s.turns,"total":s.total,"ownCard":s.hidden[index]})).map_err(|_|Error::Invalid)
     }
+    fn can_spectate(&self, _state: &State, _account: &str) -> bool {
+        true // The fixture world admission is the only spectator access list.
+    }
+    fn project_public(&self, s: &State) -> vl_persistence::Result<Vec<u8>> {
+        serde_json::to_vec(
+            &serde_json::json!({"turn":s.players[s.turn],"turns":s.turns,"total":s.total}),
+        )
+        .map_err(|_| Error::Invalid)
+    }
 }
 #[derive(Deserialize)]
 #[serde(tag = "op", rename_all = "camelCase", deny_unknown_fields)]
@@ -160,7 +169,12 @@ enum Input {
 fn answer(result: vl_persistence::Result<vl_persistence::Receipt>) -> serde_json::Value {
     match result {
         Ok(r) => {
-            serde_json::json!({"ok":true,"epoch":r.epoch,"version":r.version,"projection":serde_json::from_slice::<serde_json::Value>(&r.projection).unwrap(),"bytes":r.projection})
+            let reward = r.reward.map(|status| match status {
+                RewardStatus::Pending => "REWARD_PENDING",
+                RewardStatus::Granted => "GRANTED",
+                RewardStatus::Declined => "DECLINED",
+            });
+            serde_json::json!({"ok":true,"epoch":r.epoch,"version":r.version,"projection":serde_json::from_slice::<serde_json::Value>(&r.projection).unwrap(),"bytes":r.projection,"reward":reward})
         }
         Err(error) => serde_json::json!({"ok":false,"error":format!("{error:?}")}),
     }
