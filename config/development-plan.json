@@ -1573,7 +1573,27 @@
         "one full PvE match in Rust with restart/seed hash",
         "no client damage calculation"
       ],
-      "status": "TODO",
+      "status": "VERIFIED",
+      "implementation": {
+        "source": "crates/vl-pet-arena/src/combat.rs",
+        "rulesHash": "457e9ddd981a25b1014314b17bc4e014950d8e19eabf3ec3ec386e2b12aabbfb",
+        "scope": "Pure authoritative PvE reducer using existing Fixed, TurnRng and canonical checkpoint; generated board/refill, bounded cascades/combo, eight skills, deterministic enemy patterns and terminal outcomes",
+        "validation": "cargo test --locked -p vl-pet-arena",
+        "remainingIntegration": "Runtime route, real Pet Arena database journal adapter, Unity presentation and balance review are follow-on application work; this task qualifies the pure Rust reducer/full-match restart acceptance only"
+      },
+      "verification": {
+        "sourceRevision": "ad26b57d1793e5e09135a485b12fa12721143164",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "57 tests passed including 14 Pet Arena cases and compile-fail boundaries; zero ignored"},
+          {"command": "cargo clippy --workspace --all-targets --locked -- -D warnings", "exitCode": 0},
+          {"command": "cargo fmt --all -- --check", "exitCode": 0},
+          {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "105 tests passed"},
+          {"command": "docker build --build-arg SOURCE_REVISION=ad26b57d1793e5e09135a485b12fa12721143164 -f apps/game-runtime/Dockerfile -t vl-runtime-pet-combat .", "exitCode": 0},
+          {"command": "python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-pet-combat", "exitCode": 0, "result": "Nonroot/read-only, disabled route, unconfigured activation rejection, graceful shutdown and owned cleanup passed"}
+        ],
+        "reviewNotes": "192 pet/stage/seed full matches replay identically with both win/loss outcomes; eight skills, committed AI patterns, cooldown/status order and 60-turn loss cap covered. New-process checkpoint restart matches frozen state/audit hashes and entropy cursor. Invalid actions, stale version, wrong seed, malformed/incompatible snapshots and dead boards fail safely. No Pet Arena route, database adapter, reward, Unity E2E or balance certification claimed. Hosted exact-head CI is required before merge."
+      },
       "qualificationRequirements": []
     },
     {

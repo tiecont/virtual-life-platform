@@ -1,6 +1,7 @@
-//! Authored Pet Arena PvE content and input contracts. No I/O, authority, rewards,
-//! board generation, cascade loop or combat AI; those are integrated by VL-044.
+//! Deterministic Pet Arena PvE domain. No I/O, authentication, rewards or routes.
 pub mod board;
+pub mod combat;
+mod combat_codec;
 pub mod content;
 pub mod status;
 pub mod telegraph;
