@@ -2614,8 +2614,15 @@
         "Bounded session lifecycle, reconnect, metrics and dependency readiness are exercised",
         "Synthetic ruleset is identified in configuration and tests; Pet Arena content remains tracked by VL-043 and VL-044"
       ],
-      "status": "TODO",
-      "qualificationRequirements": []
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "ruleset": "headless-counter v1; synthetic three-turn counter",
+        "contentHash": "5353535353535353535353535353535353535353535353535353535353535353",
+        "runtime": "apps/game-runtime",
+        "validation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay",
+        "bootLifecycle": "Restart retains the explicitly allocator-leased logical boot. A different boot fails closed until an authorized epoch recovery procedure exists."
+      }
     }
   ]
 }

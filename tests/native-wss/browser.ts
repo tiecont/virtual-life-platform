@@ -15,7 +15,7 @@ const transport={
   return links.length-1;
  },
  send(index:number,id:number,sequence:number,kind:string,value:Record<string,unknown>){
-  const body=kind==='resync'?{lastSeenEpoch:999n,lastSeenTick:18_446_744_073_709_551_615n}:kind==='hello'?{...value,contentHash:new Uint8Array(value.contentHash as number[])}:value;
+  const body=kind==='resync'?{lastSeenEpoch:999n,lastSeenTick:18_446_744_073_709_551_615n}:kind==='hello'?{...value,contentHash:new Uint8Array(value.contentHash as number[])}:kind==='gameIntent'?{...value,gameSessionId:new Uint8Array(value.gameSessionId as number[]),expectedStateVersion:BigInt(value.expectedStateVersion as string),actionPayload:new Uint8Array(value.actionPayload as number[])}:value;
   const frame=create(ClientEnvelopeSchema,{protocolVersion:1,commandId:new Uint8Array(16).fill(id),sequence:BigInt(sequence),body:{case:kind,value:body} as ClientEnvelope['body']});
   links[index].socket.send(toBinary(ClientEnvelopeSchema,frame));
  },
@@ -25,6 +25,7 @@ const transport={
   const bytes=link.messages.shift()!,frame=decodeServer(bytes);
   const snapshot=frame.body.case==='hello'?frame.body.value.snapshot:frame.body.case==='snapshot'?frame.body.value:undefined;
   return {closed:false,hex:Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join(''),kind:frame.body.case,version:frame.canonicalVersion.toString(),
+   receipt:frame.body.case==='receipt'?{committed:frame.body.value.committed,projection:JSON.parse(new TextDecoder().decode(frame.body.value.authorizedProjection))}:undefined,
    code:frame.body.case==='rejection'?frame.body.value.code:undefined,
    snapshot:snapshot?{epoch:snapshot.authorityEpoch.toString(),tick:snapshot.tick.toString(),own:snapshot.ownActor,keys:Object.keys(snapshot)}:undefined};
  },
