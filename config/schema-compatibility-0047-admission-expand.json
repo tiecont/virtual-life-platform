@@ -6,7 +6,7 @@
   "metadataVersion": 1,
   "runtimeManifestSha256": "175475c551f951e63b75f91dccddfe07bd478d67cce54e398217f63e8c3f9ee4",
   "minimumDatabaseMigrations": 47,
-  "maximumDatabaseMigrations": 49,
+  "maximumDatabaseMigrations": 50,
   "reviewRef": "evidence:desktop-first/vl013-admission-expand",
   "migrations": [
     {
@@ -204,6 +204,10 @@
     {
       "name": "0049_native_runtime_admission.sql",
       "checksum": "e8f43942d13e190918f17df9eb25617a15b733a702483ce94c504a688e43df67"
+    },
+    {
+      "name": "0050_native_reward_settlement.sql",
+      "checksum": "d539a909c961432bb85b79a73815a1b535074a6a9fb87ddf3431e24e50645b55"
     }
   ]
 }

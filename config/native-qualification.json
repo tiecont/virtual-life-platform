@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "mode": "offline-development",
+  "nativeGameplayDefault": false,
+  "baselineCommand": "node scripts/linux-baseline.mjs",
+  "localCapabilities": {
+    "linux": "CachyOS x86_64 compatibility trial",
+    "supportedLinuxEditorInfrastructure": "Ubuntu 22.04 or Ubuntu 24.04 workstation with supported graphics drivers and reviewed Unity entitlement",
+    "editor": "6000.3.14f1",
+    "urp": "17.3.0",
+    "unitySourceStatus": "IN_PROGRESS",
+    "remainingUnityImplementation": [
+      "Licensed Editor import, package resolution and reviewed packages-lock.json",
+      "C# compilation and actual EditMode/PlayMode runs",
+      "Linux player build and interactive graphics smoke"
+    ],
+    "windowsMonoCrossBuild": "Conditional on installed Windows Build Support module and successful batch build",
+    "references": [
+      "https://docs.unity3d.com/6000.3/Documentation/Manual/system-requirements.html",
+      "https://unity.com/releases/editor/whats-new/6000.3.14f1",
+      "https://docs.unity.com/en-us/engine/6000.3/manual/platform-specific/windows/requirements-and-compatibility"
+    ]
+  },
+  "externalGates": [
+    {
+      "id": "windows-gpu",
+      "classification": "EXTERNAL_QUALIFICATION_BLOCKER",
+      "taskIds": ["VL-007", "VL-014", "VL-078", "VL-087", "VL-095"],
+      "requiredResource": "Named physical Windows low, balanced and ultra tier PCs with recorded CPU, GPU, VRAM, RAM, SSD, OS and driver versions",
+      "procedure": [
+        "Record device inventory and source/build hashes on each physical Windows PC",
+        "Run spawn-to-terminal, plaza traversal and activity routes with fixed quality, resolution and warm-up",
+        "Capture frame p95/p99, GPU time, VRAM, memory, thermal state and crashes against task budgets"
+      ],
+      "expectedEvidence": "Device inventory, profiler captures, route timings and actual Windows gameplay recording tied to binary hash",
+      "implementationCanContinue": true
+    },
+    {
+      "id": "unity-entitlement",
+      "classification": "EXTERNAL_QUALIFICATION_BLOCKER",
+      "taskIds": ["VL-078", "VL-080"],
+      "requiredResource": "Installed pinned Linux Editor, reviewed developer/runner license entitlement and required build modules",
+      "procedure": [
+        "Owner reviews applicable Unity terms and records entitlement for each person and runner",
+        "Authorized operator installs and activates the pinned Editor",
+        "Run node scripts/unity-validate.mjs tests and linux on supported Linux infrastructure"
+      ],
+      "expectedEvidence": "Entitlement review reference, Editor/module inventory, resolved package lock, batch logs, NUnit XML and Linux player hash",
+      "implementationCanContinue": true
+    },
+    {
+      "id": "windows-il2cpp",
+      "classification": "EXTERNAL_QUALIFICATION_BLOCKER",
+      "taskIds": ["VL-080", "VL-093", "VL-094"],
+      "requiredResource": "Reviewed Unity entitlement and Windows runner with C++ tools, Windows SDK and IL2CPP module",
+      "procedure": [
+        "Build the exact reviewed source using the pinned Editor and Windows IL2CPP backend",
+        "Record toolchain/module versions and hash all player outputs",
+        "Launch the resulting build on a physical Windows qualification PC"
+      ],
+      "expectedEvidence": "Build log, binary manifest, source revision and physical Windows runtime results",
+      "implementationCanContinue": true
+    },
+    {
+      "id": "publisher-signing",
+      "classification": "EXTERNAL_QUALIFICATION_BLOCKER",
+      "taskIds": ["VL-093", "VL-094", "VL-102"],
+      "requiredResource": "Approved publisher identity, signing credentials and authorized signing operator",
+      "procedure": [
+        "Sign the reviewed installer through the authorized signing process",
+        "Verify signature and publisher on a clean physical Windows PC",
+        "Install, launch and uninstall under a standard user account"
+      ],
+      "expectedEvidence": "Signature verification output, publisher identity, installer hash and clean-machine installation record",
+      "implementationCanContinue": true
+    },
+    {
+      "id": "windows-runtime-update",
+      "classification": "EXTERNAL_QUALIFICATION_BLOCKER",
+      "taskIds": ["VL-094", "VL-096", "VL-097", "VL-103"],
+      "requiredResource": "Physical Windows PCs, keyboard/controller hardware, signed test builds and safe update infrastructure",
+      "procedure": [
+        "Exercise launch, focus loss, keyboard/controller input, graphics quality and crash recovery",
+        "Exercise disconnect, reconnect and policy revocation against the test backend",
+        "Interrupt an update, verify rollback and relaunch the previous known build"
+      ],
+      "expectedEvidence": "Test cases, crash dumps, input/graphics recordings, update manifests and rollback hashes",
+      "implementationCanContinue": true
+    },
+    {
+      "id": "content-rights",
+      "classification": "EXTERNAL_QUALIFICATION_BLOCKER",
+      "taskIds": ["VL-006", "VL-025", "VL-052", "VL-105", "VL-110"],
+      "requiredResource": "Original or licensed production artwork and responsible human art/rights reviewers",
+      "procedure": [
+        "Review provenance, license scope and authoring/rig/material budgets for each production asset",
+        "Replace developer primitives through the asset review process",
+        "Capture approved media from the qualified physical Windows player with source/build hashes"
+      ],
+      "expectedEvidence": "Asset rights manifest, human review references, art budget audit and approved gameplay capture provenance",
+      "implementationCanContinue": true
+    },
+    {
+      "id": "public-rollout",
+      "classification": "EXTERNAL_QUALIFICATION_BLOCKER",
+      "taskIds": ["VL-058", "VL-069", "VL-070", "VL-099", "VL-102"],
+      "requiredResource": "Explicit operational, security, legal and product approvals plus authorized production credentials",
+      "procedure": [
+        "Review qualified build, privacy/safety, operational readiness and rollback evidence",
+        "Record explicit public rollout authorization",
+        "Execute the separately authorized release procedure"
+      ],
+      "expectedEvidence": "Named approval references and authorized release/rollback record",
+      "implementationCanContinue": true
+    }
+  ]
+}

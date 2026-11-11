@@ -291,10 +291,15 @@
         "Named Windows CPU/GPU/VRAM/SSD/driver matrix and 3 routes agreed",
         "Distinct profiler p95/p99 frame and site LCP/INP/CLS metrics specified"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [
         "Named physical Windows GPU tiers for native certification"
-      ]
+      ],
+      "implementation": {
+        "capabilityMatrix": "config/native-qualification.json",
+        "baselineCommand": "node scripts/linux-baseline.mjs",
+        "remainingQualification": "EXTERNAL_QUALIFICATION_BLOCKER; see per-gate resource, procedure and evidence fields"
+      }
     },
     {
       "id": "VL-008",
@@ -337,7 +342,7 @@
       "id": "VL-009",
       "feature": "Coordinator",
       "title": "Existing plan crosswalk decision",
-      "objective": "Obtain formal scheduling checkpoint N06→PA→Lodge; route VL tasks without changing other ledgers.",
+      "objective": "Obtain formal scheduling checkpoint N06\u2192PA\u2192Lodge; route VL tasks without changing other ledgers.",
       "dependsOn": [
         "VL-001",
         "VL-002"
@@ -382,11 +387,16 @@
         "clickable user flow accepted",
         "scope ceiling excludes infinite city/AAA release claims"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-006"
-      ]
+      ],
+      "implementation": {
+        "scope": "config/playable-slice.json",
+        "scene": "apps/unity-client/Assets/VirtualLife/Scenes/AuroraBlockout.unity",
+        "remainingAcceptance": "Actual licensed Editor import and clickable flow test"
+      }
     },
     {
       "id": "VL-011",
@@ -807,7 +817,7 @@
         "same event retry results one grant",
         "late worker shows REWARD_PENDING then reconciles"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": []
     },
     {
@@ -902,7 +912,7 @@
         "negative multiuser scope test passes",
         "seeds/cards not leaked to other recipients"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": []
     },
     {
@@ -919,7 +929,7 @@
         "zero duplicate effects, deterministic hash restored",
         "restart journal/incompatibility outcomes documented"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": []
     },
     {
@@ -1011,7 +1021,8 @@
         "VL-018",
         "VL-020",
         "VL-021",
-        "VL-022"
+        "VL-022",
+        "VL-111"
       ],
       "acceptance": [
         "G1 decision record with attached test artifacts",
@@ -1024,13 +1035,13 @@
       "id": "VL-024",
       "feature": "Avatar-Art",
       "title": "Native Aurora Plaza blockout, scale & navmesh authoring",
-      "objective": "Blender/Unity scale/navmesh anchors and walkable blockout for a single compact district plus portals/café sit anchors.",
+      "objective": "Blender/Unity scale/navmesh anchors and walkable blockout for a single compact district plus portals/caf\u00e9 sit anchors.",
       "dependsOn": [
         "VL-010"
       ],
       "acceptance": [
         "geometry GUID manifest and server simplified collision exported",
-        "walk path from spawn to café and Arena reachable"
+        "walk path from spawn to caf\u00e9 and Arena reachable"
       ],
       "status": "TODO",
       "qualificationRequirements": [],
@@ -1060,7 +1071,7 @@
       "id": "VL-026",
       "feature": "Avatar-Art",
       "title": "Facial morph, emote, sit and IK authoring",
-      "objective": "Produce 12+ facial expressions and 8–12 emotes on approved pilot character.",
+      "objective": "Produce 12+ facial expressions and 8\u201312 emotes on approved pilot character.",
       "dependsOn": [
         "VL-025"
       ],
@@ -1275,8 +1286,8 @@
     {
       "id": "VL-038",
       "feature": "Avatar-Art",
-      "title": "Café interior, doors, tables and seat anchors",
-      "objective": "Produce Café Lumi interior with 4 seat anchors, appropriate camera/sit alignment.",
+      "title": "Caf\u00e9 interior, doors, tables and seat anchors",
+      "objective": "Produce Caf\u00e9 Lumi interior with 4 seat anchors, appropriate camera/sit alignment.",
       "dependsOn": [
         "VL-024"
       ],
@@ -1310,8 +1321,8 @@
     {
       "id": "VL-040",
       "feature": "Web-UX",
-      "title": "Unity native café walk-in/seat/standing scene and UI",
-      "objective": "Café scene transition, camera, hand/seat IK with Rust hold/commit and optional game overlay; handle failure gracefully.",
+      "title": "Unity native caf\u00e9 walk-in/seat/standing scene and UI",
+      "objective": "Caf\u00e9 scene transition, camera, hand/seat IK with Rust hold/commit and optional game overlay; handle failure gracefully.",
       "dependsOn": [
         "VL-037",
         "VL-038",
@@ -1444,7 +1455,7 @@
     {
       "id": "VL-048",
       "feature": "QA-SRE",
-      "title": "Rust + compiled Windows client e2e city/café/card/Pet Arena",
+      "title": "Rust + compiled Windows client e2e city/caf\u00e9/card/Pet Arena",
       "objective": "E2E native two-player seat/private game and Pet Arena transition with teleport, reconnect, ledger settlement, no duplicate rewards.",
       "dependsOn": [
         "VL-037",
@@ -1519,7 +1530,7 @@
       "id": "VL-052",
       "feature": "Avatar-Art",
       "title": "Polish final art and appearance clipping",
-      "objective": "Repair clothing/tail/ears/fur, lighting, VFX/readability in day/evening and café.",
+      "objective": "Repair clothing/tail/ears/fur, lighting, VFX/readability in day/evening and caf\u00e9.",
       "dependsOn": [
         "VL-034",
         "VL-048"
@@ -1552,7 +1563,7 @@
       "id": "VL-054",
       "feature": "QA-SRE",
       "title": "Usability cohort and game fun audit",
-      "objective": "Observe player first-play, map discovery, café sitting and Pet Arena, track confusion.",
+      "objective": "Observe player first-play, map discovery, caf\u00e9 sitting and Pet Arena, track confusion.",
       "dependsOn": [
         "VL-049",
         "VL-053"
@@ -1805,7 +1816,7 @@
       "id": "VL-068",
       "feature": "Gameplay",
       "title": "Live events and transparent progression",
-      "objective": "Implement small café festival + cosmetic achievement loop with anti-pay-to-win gating.",
+      "objective": "Implement small caf\u00e9 festival + cosmetic achievement loop with anti-pay-to-win gating.",
       "dependsOn": [
         "VL-047",
         "VL-058"
@@ -2003,13 +2014,18 @@
         "Named physical Win PC low/balanced/ultra list or recorded external blockers",
         "Unity build/license/CI requirements written without inventing compliance"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [
         "Windows real GPU devices; Unity editor/license terms review"
       ],
       "qualificationDependencies": [
         "VL-007"
-      ]
+      ],
+      "implementation": {
+        "capabilityMatrix": "config/native-qualification.json",
+        "baselineCommand": "node scripts/linux-baseline.mjs",
+        "remainingQualification": "EXTERNAL_QUALIFICATION_BLOCKER; see per-gate resource, procedure and evidence fields"
+      }
     },
     {
       "id": "VL-079",
@@ -2041,18 +2057,25 @@
         "Pinned Unity exact editor and package lock + URP Windows player build CI artifact",
         "Headless/runner limitations recorded, real player opens a simple scene"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [
         "Windows-capable build runner; Unity licensing if applicable"
       ],
       "qualificationDependencies": [
         "VL-078"
-      ]
+      ],
+      "implementation": {
+        "project": "apps/unity-client",
+        "editor": "6000.3.14f1",
+        "urp": "17.3.0",
+        "validation": "node scripts/unity-validate.mjs tests",
+        "remainingAcceptance": "Editor-resolved package lock, C# compilation, Linux tests/player and separate physical Windows build qualification"
+      }
     },
     {
       "id": "VL-081",
       "feature": "Native",
-      "title": "Native Unity ↔ Rust generated C# protocol and login proof",
+      "title": "Native Unity \u2194 Rust generated C# protocol and login proof",
       "objective": "Generate C# from proto and connect Unity client to Rust WSS scoped ticket, reconnect.",
       "dependsOn": [
         "VL-080",
@@ -2070,7 +2093,7 @@
       "id": "VL-082",
       "feature": "Native",
       "title": "URP anime shader/lighting GPU proof on Windows",
-      "objective": "Prototype face/hair/eye/toon outlines and one plaza/café lighting sample with profiles.",
+      "objective": "Prototype face/hair/eye/toon outlines and one plaza/caf\u00e9 lighting sample with profiles.",
       "dependsOn": [
         "VL-080",
         "VL-105"
@@ -2190,8 +2213,8 @@
     {
       "id": "VL-089",
       "feature": "Native",
-      "title": "Unity café enter/seat/stand animation and runtime session adapter",
-      "objective": "Café interior and IK/chair with Rust seat reservation and content hash gating.",
+      "title": "Unity caf\u00e9 enter/seat/stand animation and runtime session adapter",
+      "objective": "Caf\u00e9 interior and IK/chair with Rust seat reservation and content hash gating.",
       "dependsOn": [
         "VL-038",
         "VL-039",
@@ -2209,7 +2232,7 @@
       "id": "VL-090",
       "feature": "Native",
       "title": "Unity in-world private card table UI with spectator mode",
-      "objective": "Render table mini-game in café and reliable projection-aware hidden hands.",
+      "objective": "Render table mini-game in caf\u00e9 and reliable projection-aware hidden hands.",
       "dependsOn": [
         "VL-041",
         "VL-042",
@@ -2323,7 +2346,7 @@
         "VL-081"
       ],
       "acceptance": [
-        "Native test user can city→cafe→card→Pet and back across reconnect",
+        "Native test user can city\u2192cafe\u2192card\u2192Pet and back across reconnect",
         "No double settlement, hidden card leak, ghost seat or unauthorized teleport"
       ],
       "status": "TODO",
@@ -2474,7 +2497,7 @@
     {
       "id": "VL-105",
       "feature": "Avatar-Art",
-      "title": "Blender→Unity rig and per-scene shader/material/LOD budgets",
+      "title": "Blender\u2192Unity rig and per-scene shader/material/LOD budgets",
       "objective": "Define texture, bone, draw, materials and shader keyword budget for first 3 golden scenes.",
       "dependsOn": [
         "VL-010"
@@ -2567,6 +2590,29 @@
       "acceptance": [
         "Source/build hash and signed art rights attached to actual capture",
         "Website clearly labels approved gameplay vs remaining concept art"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-111",
+      "feature": "Rust-Runtime",
+      "title": "Default-off native runtime gameplay composition",
+      "objective": "Compose vl-gateway, vl-security, vl-game-core, vl-persistence and vl-world in apps/game-runtime using a small synthetic ruleset.",
+      "dependsOn": [
+        "VL-013",
+        "VL-017",
+        "VL-018",
+        "VL-019",
+        "VL-020",
+        "VL-021",
+        "VL-022"
+      ],
+      "acceptance": [
+        "Actual Linux runtime process passes scoped ticket, command, committed receipt, viewer projection, durable journal and restart recovery",
+        "Disabled or incomplete runtime configuration fails closed; admission and policy are rechecked on every effect and replay",
+        "Bounded session lifecycle, reconnect, metrics and dependency readiness are exercised",
+        "Synthetic ruleset is identified in configuration and tests; Pet Arena content remains tracked by VL-043 and VL-044"
       ],
       "status": "TODO",
       "qualificationRequirements": []

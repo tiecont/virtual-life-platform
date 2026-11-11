@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "taskId": "VL-010",
+  "district": {
+    "id": "aurora-plaza",
+    "widthMeters": 32,
+    "depthMeters": 32,
+    "spawnMeters": [0, 1.1, -4],
+    "walkMetersPerSecond": 4,
+    "interactionMeters": 2.5,
+    "geometry": "Developer ground, cafe block and activity terminal",
+    "avatar": "Developer capsule"
+  },
+  "flow": [
+    {"input": "Launch offline scene", "result": "Spawn capsule in Aurora Plaza"},
+    {"input": "WASD", "result": "Move within blockout bounds and local collision"},
+    {"input": "Approach activity terminal", "result": "Enter interaction radius"},
+    {"input": "E", "result": "Advance local three-turn input rehearsal"},
+    {"input": "Connect in future VL-081 build", "result": "Acquire scoped ticket and route intents to default-off Rust runtime"}
+  ],
+  "authoritativeBoundaries": {
+    "unity": ["Input capture", "Camera", "Offline rehearsal", "Rendering"],
+    "rust": ["Native match state", "Turn validity", "RNG", "Private projections", "Journal and receipts"],
+    "nest": ["Identity", "Admission", "Consent and moderation", "Reward settlement ledger", "Legacy RoomAuthority"],
+    "movement": "Current offline movement is local. Network movement/collision acceptance belongs to VL-028 after geometry qualification."
+  },
+  "protocolDependencies": ["VL-012", "VL-013", "VL-018", "VL-020", "VL-022", "VL-081", "VL-111"],
+  "activity": {
+    "prototype": "Three-turn input rehearsal and synthetic headless ruleset",
+    "firstProductGameplay": "Pet Arena PvE",
+    "productDependencies": ["VL-043", "VL-044", "VL-047"],
+    "status": "Product content pending"
+  },
+  "acceptance": [
+    {"procedure": "node scripts/unity-validate.mjs tests", "expected": "EditMode bounds/proximity and PlayMode spawn/movement/interaction pass", "status": "PENDING_EDITOR"},
+    {"procedure": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs", "expected": "Synthetic ruleset commits once, projects per viewer, settles once and survives restart", "status": "SOURCE_TEST"},
+    {"procedure": "VL-111 real-process gateway test", "expected": "ticket -> command -> receipt -> projection -> persistence -> restart", "status": "PENDING_IMPLEMENTATION"}
+  ],
+  "scopeCeiling": ["One compact district", "One placeholder avatar", "One activity", "Offline developer prototype"]
+}
