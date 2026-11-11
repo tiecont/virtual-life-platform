@@ -94,6 +94,12 @@ impl State {
             telegraph: None,
         })
     }
+    pub fn pet(&self) -> u8 {
+        self.pet
+    }
+    pub fn stage(&self) -> u8 {
+        self.stage
+    }
     pub fn phase(&self) -> Phase {
         self.phase
     }

@@ -1643,8 +1643,98 @@
         "server results only, retry settlement no duplicate platform grant",
         "forged client rewards denied"
       ],
-      "status": "TODO",
-      "qualificationRequirements": []
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "implementation": {
+        "runtime": "apps/game-runtime/src/features/pet_arena",
+        "settlement": "Existing game_native_outbox -> restricted Nest worker -> platform_native_reward_inbox/ledger; nonmonetary winning completion marker only",
+        "validation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena (and --pet-arena-loss)",
+        "remainingQualification": "Unity presentation/player, final balancing and production activation are separate; runtime remains default-off"
+      },
+      "verification": {
+        "sourceRevision": "b7fcae8ef5b1358e70875938c08700408d04fbd3",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo check --workspace --all-targets --locked",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo build --locked -p vl-game-runtime",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo build --locked -p vl-persistence --example orchestration",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm ci:check",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm architecture:check",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm lint",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm typecheck",
+            "exitCode": 0
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm exec vitest run --project unit",
+            "exitCode": 0
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/native-csharp.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena-loss",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs",
+            "exitCode": 0
+          }
+        ],
+        "evidence": [
+          "artifacts/pet-verification/rust.json",
+          "artifacts/pet-verification/node.json",
+          "artifacts/pet-verification/native.json"
+        ],
+        "reviewNotes": "Actual Rust process with restricted TLS PostgreSQL and Nest HTTPS/WSS admission; 26 scenarios each for a winning and losing PvE match. Invalid swap/action/reward payload, stale version/epoch, wrong actor and private view rejected; exact mid-match and terminal SIGKILL recovery; current account/incident eligibility; forged/mismatched/stale outcome rejection; deferred worker commit crash, concurrent delivery, inbox dedupe and reconciled own receipt. Shared Host and legacy RoomAuthority preserved. Full standalone adapter and synthetic orchestration regressions pass. Hosted exact-head Quality/Rust CI remains required before merge."
+      }
     },
     {
       "id": "VL-048",
@@ -2280,7 +2370,7 @@
         "validation": "node scripts/unity-validate.mjs tests",
         "remainingAcceptance": "Editor-resolved package lock, Unity C# compilation, Linux tests/player and separate physical Windows build qualification",
         "lastEditorAttempt": {
-          "sourceRevision": "5e683d931ce76d6652bafde260cf77982e9f9841",
+          "sourceRevision": "eb269f11941966ca8facaf1b30655d69cda65243",
           "commands": [
             {"command": "node scripts/unity-validate.mjs prepare", "exitCode": 2},
             {"command": "node scripts/unity-validate.mjs tests", "exitCode": 2},
@@ -2893,6 +2983,115 @@
           "artifacts/native-verification/runtime-facts.json"
         ],
         "reviewNotes": "Self-audit of actor scope, authenticated receipt envelopes, transaction/replay boundaries, default-off runtime composition and restricted platform settlement. Linux synthetic ruleset acceptance only."
+      }
+    },
+    {
+      "id": "VL-112",
+      "feature": "Rust-Runtime",
+      "title": "Pet Arena PvE native runtime adapter",
+      "objective": "Connect the verified Pet Arena reducer to the existing single-writer native WSS host, durable checkpoint/journal and platform settlement boundary.",
+      "dependsOn": [
+        "VL-044",
+        "VL-111",
+        "VL-018"
+      ],
+      "acceptance": [
+        "An actual Rust runtime process under restricted PostgreSQL executes a full Pet Arena PvE match through scoped native WSS admission",
+        "Invalid swap, stale version, wrong actor/session, duplicate intent and unauthorized projection cannot change state or expose private data",
+        "Mid-match process restart restores the exact checkpoint and replay; terminal result reconciles through the restricted platform worker exactly once",
+        "Pet Arena remains default-off and shares the existing authoritative host; legacy RoomAuthority is unaffected"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "implementation": {
+        "runtime": "apps/game-runtime/src/features/pet_arena",
+        "settlement": "Existing game_native_outbox -> restricted Nest worker -> platform_native_reward_inbox/ledger; nonmonetary winning completion marker only",
+        "validation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena (and --pet-arena-loss)",
+        "remainingQualification": "Unity presentation/player, final balancing and production activation are separate; runtime remains default-off"
+      },
+      "verification": {
+        "sourceRevision": "b7fcae8ef5b1358e70875938c08700408d04fbd3",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo check --workspace --all-targets --locked",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo build --locked -p vl-game-runtime",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo build --locked -p vl-persistence --example orchestration",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm ci:check",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm architecture:check",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm lint",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm typecheck",
+            "exitCode": 0
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm exec vitest run --project unit",
+            "exitCode": 0
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/native-csharp.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena-loss",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs",
+            "exitCode": 0
+          }
+        ],
+        "evidence": [
+          "artifacts/pet-verification/rust.json",
+          "artifacts/pet-verification/node.json",
+          "artifacts/pet-verification/native.json"
+        ],
+        "reviewNotes": "Actual Rust process with restricted TLS PostgreSQL and Nest HTTPS/WSS admission; 26 scenarios each for a winning and losing PvE match. Invalid swap/action/reward payload, stale version/epoch, wrong actor and private view rejected; exact mid-match and terminal SIGKILL recovery; current account/incident eligibility; forged/mismatched/stale outcome rejection; deferred worker commit crash, concurrent delivery, inbox dedupe and reconciled own receipt. Shared Host and legacy RoomAuthority preserved. Full standalone adapter and synthetic orchestration regressions pass. Hosted exact-head Quality/Rust CI remains required before merge."
       }
     }
   ]

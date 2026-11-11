@@ -21,6 +21,11 @@ builds. `pnpm ci:browser` runs the CI browser groups. PostgreSQL tests use owned
 disposable databases through scripts/with-test-db.mjs. Git history must be
 available for frozen migration and legacy compatibility checks.
 
+Linux playable prototype work uses the existing Unity project and the same native
+backend. See [native runtime development](apps/game-runtime/README.md) for actual
+Pet Arena process tests and [Unity validation](apps/unity-client/README.md) for
+the separately required licensed Editor/player checks.
+
 ## Source Layout
 
 ```text

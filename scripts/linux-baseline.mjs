@@ -65,6 +65,7 @@ for (const [name, command, args] of [
   ['pnpm', 'pnpm', ['--version']],
   ['rust', 'rustc', ['--version']],
   ['cargo', 'cargo', ['--version']],
+  ['dotnet', process.env.DOTNET ?? 'dotnet', ['--version']],
   ['postgres', 'psql', ['--version']],
   ['postgresReady', 'pg_isready', []],
   ['docker', 'docker', ['info', '--format', '{{.ServerVersion}}']],

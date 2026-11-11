@@ -11,8 +11,10 @@ import {validateTestDatabaseURL} from './test-environment.mjs';
 import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
 
 const options=process.argv.slice(2);
-const playable=options.includes('--runtime-gameplay'),csharp=options.includes('--csharp-client');
-if(options.some(value=>!['--runtime-gameplay','--csharp-client'].includes(value))||new Set(options).size!==options.length||csharp&&!playable)throw Error('Unknown native interoperability mode');
+const loss=options.includes('--pet-arena-loss'),pet=options.includes('--pet-arena')||loss,playable=options.includes('--runtime-gameplay')||pet,csharp=options.includes('--csharp-client');
+const petContent=pet?spawnSync(resolve('artifacts/rust/target/debug/vl-game-runtime'),['--ruleset-content-hash','pet-arena-pve'],{encoding:'utf8'}).stdout.trim():undefined;
+if(pet)assert.match(petContent,/^[a-f0-9]{64}$/);
+if(options.some(value=>!['--runtime-gameplay','--csharp-client','--pet-arena','--pet-arena-loss'].includes(value))||new Set(options).size!==options.length||csharp&&(!playable||pet))throw Error('Unknown native interoperability mode');
 const require=createRequire(import.meta.url),apiRequire=createRequire(resolve('apps/platform-api/package.json'));
 apiRequire('reflect-metadata');
 const {NestFactory}=apiRequire('@nestjs/core'),{Module}=apiRequire('@nestjs/common'),{FastifyAdapter}=apiRequire('@nestjs/platform-fastify');
@@ -28,12 +30,12 @@ const {registerRuntimeGateway}=require('../apps/platform-api/src/features/runtim
 const address=new URL(validateTestDatabaseURL(process.env.TEST_DATABASE_URL));
 const directory=resolve('artifacts/desktop-first/vl022/interop-'+randomUUID().slice(0,8));
 await mkdir(directory,{recursive:true,mode:0o700});
-const facts={taskId:playable?'VL-111':'VL-022',result:'FAIL',startedAt:new Date().toISOString(),scenarios:[],scope:playable?'Actual default-off runtime binary with synthetic ruleset, trusted WSS admission, private receipts, PostgreSQL persistence and process restart':'Loopback Nest identity -> HTTPS ticket -> Chromium WSS -> Rust -> explicit-CA restricted PostgreSQL -> own-only zone snapshot; not production composition or game effects'};
+const facts={taskId:pet?'VL-112':playable?'VL-111':'VL-022',result:'FAIL',startedAt:new Date().toISOString(),scenarios:[],scope:pet?'Actual Pet Arena PvE reducer through native runtime WSS, restricted PostgreSQL, restart and platform worker settlement':playable?'Actual default-off runtime binary with synthetic ruleset, trusted WSS admission, private receipts, PostgreSQL persistence and process restart':'Loopback Nest identity -> HTTPS ticket -> Chromium WSS -> Rust -> explicit-CA restricted PostgreSQL -> own-only zone snapshot; not production composition or game effects'};
 const schema='gateway_'+randomUUID().replaceAll('-',''),role='gateway_'+randomUUID().replaceAll('-',''),password=randomBytes(32).toString('hex');
 const rewardRole='runtime_rewards_'+randomUUID().replaceAll('-',''),rewardPassword=randomBytes(32).toString('hex');
 let rewardRoleCreated=false,settlementWorker;
 const admin=new Pool({connectionString:address.toString()});let pool,app,browser,child,heartbeat,heartbeatWork=Promise.resolve(),heartbeatError,created=false,roleCreated=false;
-let childClosed=Promise.resolve(),upstream=0,origin;
+let childClosed=Promise.resolve(),upstream=0,origin,output='',errors='';
 const tunnels=new Set();
 try{
  await admin.query(`CREATE SCHEMA "${schema}"`);created=true;
@@ -55,7 +57,7 @@ try{
  const tls=await prepareAdmissionTestTls(directory,pool);await tls.enable();facts.postgresTls=tls.publicFacts;
  const config=readConfig({NODE_ENV:'test',DATABASE_URL:address.toString(),SESSION_SECRET:randomBytes(48).toString('hex')});
  const identity=new IdentityService(pool,config),store=new RuntimeAdmissionStore(pool,identity),keys=generateKeyPairSync('ed25519');
- const scope={worldId:'native:wss-'+randomUUID(),runtimeBootId:randomUUID(),contentHash:(playable?'53':'22').repeat(32),protocolVersion:1};
+ const scope={worldId:'native:wss-'+randomUUID(),runtimeBootId:randomUUID(),contentHash:pet?petContent:(playable?'53':'22').repeat(32),protocolVersion:1};
  const issuer=new RuntimeTicketIssuer(identity,'fixture',keys.privateKey,store.admission);
  const cert=await readFile(resolve(directory,'tls/server.pem')),key=await readFile(resolve(directory,'tls/server.key'));
  class FixtureModule{} Module({})(FixtureModule);
@@ -106,11 +108,10 @@ try{
 
  const matchId=randomUUID(),privateFile=directory+'/host.private.json';
  const storageKeys={current:Array.from(randomBytes(32))};
- let output='',errors='';
  async function startHost(){
   const common={publicKeys:{fixture:keys.publicKey.export({format:'jwk'}).x},world:scope.worldId,boot:scope.runtimeBootId,caFile:tls.caFile,origin};
   await writeFile(privateFile,JSON.stringify(playable?{
-   ...common,schemaVersion:1,ruleset:'headless-counter',matchId,player:guest.me.profile.id,
+   ...common,schemaVersion:1,ruleset:pet?'pet-arena-pve':'headless-counter',...(pet?{pet:0,stage:0}:{}),matchId,player:guest.me.profile.id,
    role,activeStorageKey:'current',storageKeys,engineHash:Array(32).fill(0x64),
   }:{...common,content:scope.contentHash,expectedRole:role}),{mode:0o600});
   const binary=resolve(playable?'artifacts/rust/target/debug/vl-game-runtime':'artifacts/rust/target/debug/examples/interop');
@@ -143,7 +144,7 @@ try{
  const injected=await page.evaluate(async csrf=>{const r=await fetch('/v1/runtime-ticket',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':csrf},body:JSON.stringify({worldId:'native:attacker'})});return r.status;},guest.me.csrfToken);
  assert.equal(injected,422);record('client-selected-world-denied');
  let ticket=await call('ticket',guest.me.csrfToken);assert.equal(ticket.status,200);assert.equal(ticket.cache,'no-store');
- const hello=ticket=>({ticket,clientBuild:'browser-fixture-v1',contentHash:Array(32).fill(playable?0x53:0x22)});
+ const hello=ticket=>({ticket,clientBuild:'browser-fixture-v1',contentHash:Array.from(Buffer.from(scope.contentHash,'hex'))});
  const link=await call('open',origin.replace('https:','wss:')+'/rt/v1');await call('send',link,1,1,'hello',hello(ticket.body.ticket));
  const welcome=await call('next',link);assert.equal(welcome.kind,'hello');assert.equal(welcome.snapshot.epoch,'1');assert.deepEqual(welcome.snapshot.keys.sort(),['$typeName','authorityEpoch','ownActor','tick']);record('identity-issued-ticket-browser-wss-own-snapshot');
  await call('send',link,2,2,'resync',{});const answer=await call('next',link);assert.equal(answer.kind,'snapshot');assert.equal(answer.snapshot.own.xMm,0);
@@ -161,7 +162,12 @@ try{
  const contentLink=await call('open',origin.replace('https:','wss:')+'/rt/v1');await call('send',contentLink,1,1,'hello',{...hello(ticket.body.ticket),contentHash:Array(32).fill(0x55)});assert(await call('closed',contentLink));record('wrong-content-denied-before-nonce-consumption');
  const fresh=await call('open',origin.replace('https:','wss:')+'/rt/v1');await call('send',fresh,1,1,'hello',hello(ticket.body.ticket));assert.equal((await call('next',fresh)).kind,'hello');record('fresh-ticket-reconnect-gets-authoritative-snapshot');
 
- if(playable){
+ let petEffects;
+ if(pet){
+  const {petArenaScenarios}=await import('./pet-arena-runtime-scenarios.mjs');
+  petEffects=await petArenaScenarios({loss,pool,admin,schema,role,rewardRole,rewardPassword,markRewardRoleCreated:()=>{rewardRoleCreated=true;},address,directory,scope,identity,store,issuer,credential,csrf:guest.me.csrfToken,call,fresh,origin,hello,startHost,stopHost:async()=>{child.kill('SIGKILL');await childClosed;child=undefined;},upstream:()=>upstream,matchId,player:guest.me.profile.id,record});
+ }
+ if(playable&&!pet){
   assert.equal((await fetch('http://127.0.0.1:'+upstream+'/health/ready')).status,200);
   const intent=(version,kind='fixture.advance.v1')=>({
    gameSessionId:Array.from(Buffer.from(matchId.replaceAll('-',''),'hex')),
@@ -249,11 +255,11 @@ try{
  const text=await call('open',origin.replace('https:','wss:')+'/rt/v1');await call('text',text);assert(await call('closed',text));record('text-frame-denied');
  await call('close',fresh);await context.close();await browser.close();browser=undefined;
  const effects=(await pool.query('SELECT (SELECT count(*)::int FROM game_native_matches) AS matches,(SELECT count(*)::int FROM game_native_receipts) AS receipts,(SELECT count(*)::int FROM platform_native_ticket_uses) AS nonces')).rows[0];
- assert.equal(effects.matches,playable?1:0);assert.equal(effects.receipts,playable?3:0);assert.equal(effects.nonces,playable?(csharp?7:3):2);facts.effects=effects;record(playable?'three-game-commits-one-native-match':'zero-game-writes');
+ assert.equal(effects.matches,playable?1:0);assert.equal(effects.receipts,pet?petEffects.receipts:playable?3:0);assert.equal(effects.nonces,pet?petEffects.nonces:playable?(csharp?7:3):2);facts.effects=effects;record(pet?'full-pet-match-commits-one-native-match':playable?'three-game-commits-one-native-match':'zero-game-writes');
  assert.equal(heartbeatError,undefined);facts.result='PASS';
  assert(!/ownRoll|storageKeys/.test(output+errors));
  await writeFile(directory+'/rust-host.log',output+errors,{mode:0o600});
-}catch(error){facts.failure={name:error.name,message:String(error.message).replace(/postgres(?:ql)?:\/\/\S+/g,'[redacted-test-address]')};process.exitCode=1;}
+}catch(error){await writeFile(directory+'/rust-host.log',output+errors,{mode:0o600});await writeFile(directory+'/failure-stack.log',String(error.stack),{mode:0o600});facts.failure={name:error.name,message:String(error.message).replace(/postgres(?:ql)?:\/\/\S+/g,'[redacted-test-address]')};process.exitCode=1;}
 finally{
  if(settlementWorker&&settlementWorker.exitCode===null){settlementWorker.kill('SIGKILL');await new Promise(ok=>settlementWorker.once('close',ok));}
  if(heartbeat)clearInterval(heartbeat);await heartbeatWork;

@@ -1,58 +1,73 @@
-# Native runtime
+# Native gameplay runtime
 
-The default process serves foundation liveness and returns 503 for readiness.
-The native route is enabled only with explicit local configuration.
+The runtime is default-off. NestJS keeps identity, admission, safety and the
+platform ledger; legacy rooms continue through Nest RoomAuthority. This binary
+uses the existing single-writer `vl-persistence::Host` for both native rulesets.
+It never migrates the database or grants platform rewards.
 
-Run the Linux real-process proof from the repository root.
+The isolated Linux process suites are reproducible without Unity:
 
 ```sh
+pnpm install --frozen-lockfile
 pnpm build:packages
+pnpm --filter @virtual-city/platform-api build
 cargo build --locked --package vl-game-runtime
 node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay
+node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena
+node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena-loss
 ```
 
-The harness provisions its own disposable PostgreSQL schema, restricted TLS role,
-Nest-issued admission tickets and loopback HTTPS/WSS proxy. It executes the
-synthetic headless-counter ruleset, checks committed receipts and private views,
-kills the actual runtime, restarts it and replays the original command.
-It also checks readiness revocation and redacted aggregate metrics.
+Each suite owns disposable PostgreSQL, restricted roles, ephemeral TLS material,
+a loopback Nest HTTPS/WSS gateway and an actual Rust process. Facts and private
+fixture material stay under ignored `artifacts/`. These are developer tests,
+not a production activation or Unity player qualification.
 
-## Explicit local configuration
+For a reviewed local allocator, the existing explicit `VL_GAMEPLAY_ENABLED=1`,
+`VL_GAMEPLAY_CONFIG` and `VL_GAME_DATABASE_URL` configuration is required. The
+upstream bind must be loopback behind trusted TLS. The configuration file is
+private: it includes the exact world, leased logical boot, match UUID, player
+UUID, ticket public keys, PostgreSQL CA and role, HTTPS origin, engine digest,
+and storage key ring. Do not place credentials or key material in source or
+Unity assets. A missing/incompatible key, scope, checkpoint or ruleset fails
+closed. A new logical boot requires the existing authorized recovery procedure.
 
-The process reads VL_GAMEPLAY_ENABLED=1, VL_GAMEPLAY_CONFIG pointing to a private
-JSON file, VL_GAME_DATABASE_URL with the restricted game role and VL_RUNTIME_BIND
-with a loopback socket address. The trusted TLS terminator supplies WSS.
+The `headless-counter` ruleset remains a synthetic three-turn transport fixture.
+The `pet-arena-pve` ruleset runs the pinned `vl-pet-arena::combat::Combat` reducer.
+It additionally requires server-selected `pet` (0–7) and `stage` (0–5). The client
+cannot select those fields or supply entropy, damage, outcomes or reward values.
+Obtain its adapter content hash with:
 
-The configuration contains schemaVersion=1, ruleset=headless-counter, world,
-boot, matchId, player, publicKeys, caFile, role, origin, activeStorageKey,
-storageKeys and engineHash. The integration harness creates a complete isolated
-example under ignored artifacts/desktop-first/vl022/. Those generated credentials
-are disposable test inputs.
+```sh
+artifacts/rust/target/debug/vl-game-runtime --ruleset-content-hash pet-arena-pve
+```
 
-The Nest allocator owns world enablement, the logical boot and its short lease.
-The runtime checks that lease at admission, each command, replay and readiness.
-Restart with the same allocated boot and storage keys restores the committed
-checkpoint. A different boot or incompatible engine/ruleset/key fails closed.
-Allocator-authorized epoch handover remains a separate ownership procedure.
+Use that exact hash for the allocator and scoped ticket configuration. The
+adapter hash binds the combat hash and native membership/terminal contract;
+it is intentionally different from the pure combat content hash.
 
-## Synthetic ruleset
+Send `GameIntent.kind = pet.intent.v1` with UTF-8 JSON
+`{"epoch":1,"action":{"kind":"start"}}`. Actions are `start`, `skill`, `pass`,
+or `{"kind":"swap","first":0,"second":1}`. All reject unknown fields. The
+protobuf envelope supplies the immutable command UUID, match UUID and expected
+state version. Reuse the same UUID and payload for ambiguous-result retries.
+`pet.view.v1` with an empty action payload reads the caller's current projection.
+Only the configured participant may command, read or replay this match. The
+projection contains board, combat health in fixed-point raw units, cooldown,
+phase and committed telegraph; it excludes checkpoint secrets and RNG state.
 
-The sole configured player advances three turns. Each turn draws a private
-integer from the canonical RNG. The public action carries an expected epoch,
-and the envelope carries the match and expected state version. The final turn
-appends one completion settlement. An explicitly configured platform worker
-can reconcile the completion marker through VL-018.
+Both wins and losses commit a terminal checkpoint, authenticated receipt,
+nonprivate completion proposal and outbox atomically. The Nest worker requires
+an explicit `NATIVE_REWARD_POLICY_FILE` with `completionKind` set to
+`pet-arena.completed.v1`, matching world/ruleset/version/content hash and an
+approved `rewardKey`. Only a winning outcome and a currently eligible active
+receipt actor receive that nonmonetary completion marker. Losses reconcile as
+`DECLINED`. No currency amounts or wallet writes are accepted. Before the worker
+commits, caller projections return `REWARD_PENDING`; repeated delivery, receipt
+replay and reconnect expose the reconciled result without a second grant.
 
-The test ruleset proves orchestration. Pet Arena content, combat and reward
-eligibility continue through VL-043, VL-044 and VL-047.
+Unity scene integration and actual Editor/player execution remain VL-081.
 
-## Local observability
-
-GET /health/live reports process liveness. GET /health/ready validates the live
-zone, owner lease and authenticated stored checkpoint. GET /metrics exposes
-aggregate command receipt and rejection counters. Receipt counters include
-successful replays.
-
-The checked-in OCI configuration keeps native gameplay disabled. Public release,
-production configuration, legacy room ownership and platform qualification follow
-their maintained task gates.
+Liveness remains distinct from readiness: `/health/live` reports the process;
+`/health/ready` checks the zone, owner lease and authenticated checkpoint.
+`/metrics` contains aggregate receipt/rejection counters only; successful receipt
+replays count as receipts. The checked-in OCI image keeps gameplay disabled.
