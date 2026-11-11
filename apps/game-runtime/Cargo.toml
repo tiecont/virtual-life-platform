@@ -12,6 +12,7 @@ vl-gateway = { path = "../../crates/vl-gateway" }
 vl-security = { path = "../../crates/vl-security" }
 vl-game-core = { path = "../../crates/vl-game-core" }
 vl-persistence = { path = "../../crates/vl-persistence" }
+vl-pet-arena = { path = "../../crates/vl-pet-arena" }
 vl-world = { path = "../../crates/vl-world" }
 vl-protocol = { path = "../../crates/vl-protocol" }
 tokio-postgres = "=0.7.18"

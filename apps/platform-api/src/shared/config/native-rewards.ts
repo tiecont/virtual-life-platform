@@ -9,6 +9,9 @@ const policy = z.strictObject({
   rulesetVersion: z.number().int().min(1).max(2147483647),
   contentHash: z.string().regex(/^[a-f0-9]{64}$/),
   rewardKey: key,
+  completionKind: z.enum(['game.completed.v1', 'pet-arena.completed.v1']).optional(),
+}).refine(value => (value.ruleset === 'pet-arena-pve') === (value.completionKind === 'pet-arena.completed.v1'), {
+  message: 'Pet Arena requires its explicit terminal outcome policy',
 });
 export type NativeRewardPolicy = z.infer<typeof policy>;
 

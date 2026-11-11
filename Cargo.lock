@@ -2404,6 +2404,7 @@ dependencies = [
  "vl-game-core",
  "vl-gateway",
  "vl-persistence",
+ "vl-pet-arena",
  "vl-protocol",
  "vl-security",
  "vl-world",

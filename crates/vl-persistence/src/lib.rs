@@ -44,7 +44,17 @@ const MAX_PROJECTION: usize = 16_384;
 
 /// A reviewed domain must implement codecs, membership and recipient projection.
 /// Turn authorization is separate from membership so old receipts remain readable.
+pub enum Completion {
+    Game,
+    PetArena { won: bool },
+}
+
 pub trait Game: Reducer + Send + Sync + 'static {
+    // The host calls this only when a reducer signals a terminal transition.
+    // No amount, recipient or arbitrary payload can cross this boundary.
+    fn completion(&self, _state: &Self::State) -> Result<Completion> {
+        Ok(Completion::Game)
+    }
     fn encode(&self, state: &Self::State) -> Result<Vec<u8>>;
     fn decode(&self, bytes: &[u8]) -> Result<Self::State>;
     fn member(&self, state: &Self::State, account: &str) -> bool;
@@ -198,6 +208,9 @@ where
     G::State: Send + Sync,
     G::Action: Send + Sync + 'static,
 {
+    pub fn game(&self) -> &G {
+        &self.game
+    }
     pub fn new(game: G, keys: Keys, owner: Owner) -> Result<Self> {
         let rules = game.ruleset();
         if rules.version > i32::MAX as u32 || rules.rng_version != 1 {
@@ -653,7 +666,15 @@ where
         }
         if transition.settlement.is_some() {
             let id = Uuid::new_v4().to_string();
-            let proposal = serde_json::json!({"kind":"game.completed.v1","ruleset":self.game.ruleset().id,"rulesetVersion":self.game.ruleset().version});
+            let rules = self.game.ruleset();
+            let proposal = match self.game.completion(&transition.next.state)? {
+                Completion::Game => {
+                    serde_json::json!({"kind":"game.completed.v1","ruleset":rules.id,"rulesetVersion":rules.version})
+                }
+                Completion::PetArena { won } => {
+                    serde_json::json!({"kind":"pet-arena.completed.v1","outcome":if won { "won" } else { "lost" },"ruleset":rules.id,"rulesetVersion":rules.version})
+                }
+            };
             let proposal = serde_json::to_string(&proposal).map_err(|_| Error::Invalid)?;
             tx.execute("INSERT INTO game_native_settlements(match_id,state_version,epoch,settlement_id,proposal_hash,proposal) VALUES($1::text::uuid,$2,$3,$4::text::uuid,$5,$6::text::jsonb)",&[&r.match_id.to_string(),&version,&stored.epoch,&id,&&Sha256::digest(proposal.as_bytes())[..],&proposal]).await?;
             tx.execute("INSERT INTO game_native_outbox(event_id,match_id,settlement_id,effect_type) VALUES($1::text::uuid,$2::text::uuid,$3::text::uuid,'game.settlement.v1')",&[&Uuid::new_v4().to_string(),&r.match_id.to_string(),&id]).await?;

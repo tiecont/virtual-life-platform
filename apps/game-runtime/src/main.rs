@@ -13,6 +13,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
     )?;
     let args: Vec<_> = std::env::args().skip(1).collect();
+    if args == ["--ruleset-content-hash", "pet-arena-pve"] {
+        let hash = vl_game_runtime::features::pet_arena::domain::content_hash();
+        println!(
+            "{}",
+            hash.iter()
+                .map(|byte| format!("{byte:02x}"))
+                .collect::<String>()
+        );
+        return Ok(());
+    }
     if args == ["--healthcheck"] {
         probe(config.bind).await?;
         return Ok(());
@@ -34,7 +44,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
         let listener = tokio::net::TcpListener::bind(config.bind).await?;
         println!("LISTEN {}", listener.local_addr()?.port());
-        println!("vl-game-runtime synthetic gameplay listening");
+        println!("vl-game-runtime native gameplay listening");
         axum::serve(listener, runtime.router.clone())
             .with_graceful_shutdown(shutdown())
             .await?;

@@ -1,4 +1,4 @@
-import {createHash, timingSafeEqual} from 'node:crypto';
+import {validNativeCompletion} from '../domain/native-completion';
 import type {Pool, PoolClient} from 'pg';
 import {lockAccounts} from '../../../../identity/modules/accounts/application/account-locks';
 import type {NativeRewardPolicy} from '../../../../../shared/config/native-rewards';
@@ -40,7 +40,7 @@ export class NativeSettlements {
         WHERE o.delivered_at IS NULL AND o.available_at<=clock_timestamp()
           AND o.effect_type='game.settlement.v1'
           AND m.world_id=$1 AND m.ruleset_id=$2 AND m.ruleset_version=$3 AND m.content_hash=decode($4,'hex')
-          AND m.status='SETTLING' AND m.state_version=s.state_version
+          AND m.status='SETTLING' AND m.state_version=s.state_version AND m.epoch=s.epoch
         ORDER BY o.available_at,o.event_id LIMIT 1 FOR UPDATE OF o SKIP LOCKED
       `, [world, ruleset, rulesetVersion, contentHash]);
 
@@ -65,12 +65,8 @@ export class NativeSettlements {
   }
 
   private async record(db: PoolClient, event: Settlement): Promise<Outcome> {
-    const {world, ruleset, rulesetVersion, rewardKey} = this.policy;
-    const proposal = {kind: 'game.completed.v1', ruleset, rulesetVersion};
-    const actual = event.proposal;
-    const valid = typeof actual === 'object' && actual !== null &&
-      Object.keys(actual).length === 3 && Object.entries(proposal).every(([key, value]) => Reflect.get(actual, key) === value) &&
-      timingSafeEqual(event.proposal_hash, createHash('sha256').update(JSON.stringify(proposal)).digest());
+    const {world, rewardKey} = this.policy;
+    const valid = validNativeCompletion(this.policy, event.proposal, event.proposal_hash);
     let outcome: Outcome = 'declined';
     if (valid) {
       await lockAccounts(db, [event.actor_id]);

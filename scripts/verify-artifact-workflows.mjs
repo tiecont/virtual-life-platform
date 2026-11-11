@@ -59,6 +59,8 @@ export function assertRustWorkflow(workflow,pins) {
     'build --locked --package vl-gateway --example interop',
     'node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs\n',
     'node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay\n',
+    'node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena\n',
+    'node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena-loss\n',
     'build --locked --package vl-game-runtime',
     'build --locked --package vl-persistence --example orchestration','scripts/native-game-orchestration.mjs'])assert(workflow.includes(gate),'Missing Rust gate '+gate);
 }
