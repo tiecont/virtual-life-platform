@@ -5,8 +5,8 @@ use crate::{Error, telegraph::Pattern};
 pub const CONTENT_ID: &str = "pet-arena-training";
 pub const CONTENT_VERSION: u32 = 1;
 pub const CONTENT_HASH: [u8; 32] = [
-    223, 84, 202, 242, 52, 249, 71, 182, 120, 165, 233, 36, 220, 87, 250, 158, 192, 53, 124, 62,
-    176, 14, 244, 90, 220, 12, 105, 228, 228, 250, 48, 138,
+    144, 148, 83, 103, 199, 97, 218, 235, 204, 74, 21, 80, 110, 71, 243, 73, 130, 31, 71, 153, 69,
+    204, 71, 251, 248, 80, 114, 247, 205, 6, 81, 172,
 ];
 pub const BOARD_SIDE: usize = 6;
 pub const MAX_TURNS: u16 = 60;
@@ -167,6 +167,7 @@ pub fn canonical_content() -> Value {
         Value::Uint(BOARD_SIDE as u64),
         Value::Uint(MAX_TURNS.into()),
         Value::Uint(MAX_CASCADES.into()),
+        Value::Bytes(crate::board::training_board().0.iter().map(|element| *element as u8).collect()),
         // Frozen rules: adjacent match-3, poison3/slow2/empower2, shield before HP.
         Value::Text("adjacent-match3;status-refresh-max;poison3;slow2;empower2;shield-first;no-paid-effects".into()),
         list(PETS.iter().map(|pet| list([

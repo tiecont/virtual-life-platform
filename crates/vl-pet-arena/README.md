@@ -6,7 +6,7 @@ six sequential PvE stages and the Prism Guardian boss. It uses the existing
 No production route, asset, reward, wallet or legacy room writer is added.
 
 The canonical content digest is
-`df54caf234f947b678a5e924dc57fa9ec0357c3eb00ef45adc0c69e4e4fa308a`.
+`90945367c761daebcc4a15506e47f349821f479945cc47fbf85072f7cd0651ac`.
 Content drift fails closed. Publish a new content version and reviewed digest
 when changing these definitions; a match retains its original content binding.
 
