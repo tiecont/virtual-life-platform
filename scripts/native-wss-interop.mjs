@@ -28,6 +28,8 @@ const directory=resolve('artifacts/desktop-first/vl022/interop-'+randomUUID().sl
 await mkdir(directory,{recursive:true,mode:0o700});
 const facts={taskId:playable?'VL-111':'VL-022',result:'FAIL',startedAt:new Date().toISOString(),scenarios:[],scope:playable?'Actual default-off runtime binary with synthetic ruleset, trusted WSS admission, private receipts, PostgreSQL persistence and process restart':'Loopback Nest identity -> HTTPS ticket -> Chromium WSS -> Rust -> explicit-CA restricted PostgreSQL -> own-only zone snapshot; not production composition or game effects'};
 const schema='gateway_'+randomUUID().replaceAll('-',''),role='gateway_'+randomUUID().replaceAll('-',''),password=randomBytes(32).toString('hex');
+const rewardRole='runtime_rewards_'+randomUUID().replaceAll('-',''),rewardPassword=randomBytes(32).toString('hex');
+let rewardRoleCreated=false,settlementWorker;
 const admin=new Pool({connectionString:address.toString()});let pool,app,browser,child,heartbeat,heartbeatWork=Promise.resolve(),heartbeatError,created=false,roleCreated=false;
 let childClosed=Promise.resolve(),upstream=0,origin;
 const tunnels=new Set();
@@ -167,6 +169,31 @@ try{
   assert.equal(final.version,'3');assert.equal(final.receipt.projection.reward,'REWARD_PENDING');
   assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_outbox')).rows[0].n,1);
   record('actual-runtime-sigkill-restart-restores-checkpoint-replays-receipt-and-settles-once');
+
+  await admin.query(`CREATE ROLE "${rewardRole}" LOGIN PASSWORD '${rewardPassword}' NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 4`);
+  rewardRoleCreated=true;
+  await pool.query(`GRANT USAGE ON SCHEMA "${schema}" TO "${rewardRole}"`);
+  const workerProfile=JSON.parse(await readFile('config/native-reward-worker-db-privileges.json'));
+  const identifier=value=>{assert.match(value,/^[a-z][a-z0-9_]*$/);return '"'+value+'"';};
+  for(const op of ['select','insert'])for(const table of workerProfile[op])await pool.query(`GRANT ${op.toUpperCase()} ON ${identifier(table)} TO ${identifier(rewardRole)}`);
+  for(const [table,columns]of Object.entries(workerProfile.update))await pool.query(`GRANT UPDATE (${columns.map(identifier).join(',')}) ON ${identifier(table)} TO ${identifier(rewardRole)}`);
+  const rewardPolicy=directory+'/native-reward-policy.private.json';
+  await writeFile(rewardPolicy,JSON.stringify({schemaVersion:1,world:scope.worldId,ruleset:'headless-counter',rulesetVersion:1,contentHash:scope.contentHash,rewardKey:'fixture-completion'}),{mode:0o600});
+  const workerAddress=new URL(address);workerAddress.username=rewardRole;workerAddress.password=rewardPassword;
+  settlementWorker=spawn(process.execPath,['apps/platform-api/dist/worker.js','--once'],{env:{PATH:process.env.PATH,NODE_ENV:'test',DATABASE_URL:workerAddress.toString(),DURABLE_JOB_ROLE:'worker',NATIVE_REWARD_POLICY_FILE:rewardPolicy},stdio:['ignore','pipe','pipe']});
+  let workerLog='';
+  settlementWorker.stdout.on('data',b=>{workerLog+=b;});settlementWorker.stderr.on('data',b=>{workerLog+=b;});
+  const workerCode=await new Promise((ok,no)=>{settlementWorker.once('error',no);settlementWorker.once('close',ok);});
+  assert.equal(workerCode,0,workerLog);
+  assert(workerLog.includes('native-completion-v1'));
+  assert(!workerLog.includes(rewardPassword));
+  assert.equal((await pool.query('SELECT count(*)::int AS n FROM platform_native_reward_ledger')).rows[0].n,1);
+  await call('send',restarted,7,3,'gameIntent',intent(2));
+  assert.equal((await call('next',restarted)).receipt.projection.reward,'GRANTED');
+  await call('send',restarted,7,3,'gameIntent',intent(2));
+  assert.equal((await call('next',restarted)).receipt.projection.reward,'GRANTED');
+  assert.equal((await pool.query('SELECT count(*)::int AS n FROM platform_native_reward_ledger')).rows[0].n,1);
+  record('actual-native-only-platform-worker-grants-once-and-wss-replay-reconciles');
   const metrics=await (await fetch('http://127.0.0.1:'+upstream+'/metrics')).text();
   assert(metrics.includes('vl_native_command_receipts_total'));
   assert(!metrics.includes(guest.me.profile.id));assert(!metrics.includes('ownRoll'));record('runtime-metrics-contain-aggregate-counters');
@@ -189,11 +216,12 @@ try{
  await writeFile(directory+'/rust-host.log',output+errors,{mode:0o600});
 }catch(error){facts.failure={name:error.name,message:String(error.message).replace(/postgres(?:ql)?:\/\/\S+/g,'[redacted-test-address]')};process.exitCode=1;}
 finally{
+ if(settlementWorker&&settlementWorker.exitCode===null){settlementWorker.kill('SIGKILL');await new Promise(ok=>settlementWorker.once('close',ok));}
  if(heartbeat)clearInterval(heartbeat);await heartbeatWork;
  await browser?.close();for(const socket of tunnels)socket.destroy();
  if(child){child.kill('SIGINT');const timer=setTimeout(()=>child.kill('SIGKILL'),3000);await childClosed;clearTimeout(timer);}
  await app?.close();await pool?.end();
- if(created)await admin.query(`DROP SCHEMA "${schema}" CASCADE`);if(roleCreated)await admin.query(`DROP ROLE "${role}"`);await admin.end();
+ if(created)await admin.query(`DROP SCHEMA "${schema}" CASCADE`);if(rewardRoleCreated)await admin.query(`DROP ROLE "${rewardRole}"`);if(roleCreated)await admin.query(`DROP ROLE "${role}"`);await admin.end();
  facts.cleanupComplete=true;facts.completedAt=new Date().toISOString();
  await writeFile(directory+'/facts.json',JSON.stringify(facts,null,2)+'\n',{mode:0o600});
  console.log(JSON.stringify({result:facts.result,scenarios:facts.scenarios.length,artifactDirectory:directory,failure:facts.failure}));
