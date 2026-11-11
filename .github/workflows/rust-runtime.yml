@@ -63,6 +63,8 @@ jobs:
           "$CARGO_HOME/bin/cargo" build --locked --package vl-persistence --example orchestration
           pnpm --filter @virtual-city/platform-api build
           node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs
+      - name: Check encrypted journal backup and restored migration integrity
+        run: node --import tsx scripts/game-journal-restore-smoke.mjs
       - name: Check direct WSS with real Chromium and restricted PostgreSQL
         shell: bash
         run: |
