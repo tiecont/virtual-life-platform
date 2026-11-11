@@ -74,10 +74,11 @@ try {
   for (const profile of [{name: 'desktop', viewport: {width: 1280, height: 800}}, {name: 'mobile', viewport: {width: 390, height: 844}, isMobile: true}]) {
     const context = await browser.newContext({baseURL: origin, viewport: profile.viewport, isMobile: profile.isMobile ?? false});
     context.setDefaultTimeout(10000); if (cookies) await context.addCookies(cookies);
-    const page = await context.newPage(), errors = []; page.on('pageerror', error => errors.push(error.name));
-    await navigateImagePage(page, '/', facts.browserNavigations); await expect(page.getByRole('heading', {level: 1})).toHaveText('A city beginswith a connection.'); await expect(page.getByRole('status')).toHaveText('Database connected · schema v1');
+    const errors = []; context.on('page', page => page.on('pageerror', error => errors.push(error.name)));
+    let page = await context.newPage();
+    ({page} = await navigateImagePage(page, '/', facts.browserNavigations)); await expect(page.getByRole('heading', {level: 1})).toHaveText('A city beginswith a connection.'); await expect(page.getByRole('status')).toHaveText('Database connected · schema v1');
     const styles = await page.locator('link[rel=stylesheet]').count(); assert(styles > 0);
-    await navigateImagePage(page, '/identity', facts.browserNavigations);
+    ({page} = await navigateImagePage(page, '/identity', facts.browserNavigations));
     if (!cookies) {
       await page.getByLabel('Display name').fill('Web image visitor');
       const created = page.waitForResponse(response => response.url().endsWith('/v1/session/guest') && response.request().method() === 'POST');
