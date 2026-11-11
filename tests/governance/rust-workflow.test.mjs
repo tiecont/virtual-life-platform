@@ -13,5 +13,9 @@ test('Rust foundation CI retains read-only Ubuntu checks without privileged/GPU 
     'tests/integration/runtime-admission.test.ts','scripts/native-game-migration-compat.mjs','scripts/runtime-admission-migration-compat.mjs',
     '--package vl-world --example zone-probe','playwright install --with-deps chromium',
     'build --locked --package vl-gateway --example interop','scripts/native-wss-interop.mjs',
-    'build --locked --package vl-persistence --example orchestration','scripts/native-game-orchestration.mjs'])assert.throws(()=>assertRustWorkflow(workflow.replace(text,'removed required gate'),pins));
+    'build --locked --package vl-game-runtime','scripts/native-wss-interop.mjs --runtime-gameplay',
+    'build --locked --package vl-persistence --example orchestration','scripts/native-game-orchestration.mjs'])assert.throws(()=>assertRustWorkflow(workflow.replaceAll(text,'removed required gate'),pins));
+  const foundation='node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs\n';
+  const runtime='node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay\n';
+  for(const command of [foundation,runtime])assert.throws(()=>assertRustWorkflow(workflow.replace(command,'removed interop mode\n'),pins));
 });
