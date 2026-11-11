@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 const TOOL_KEYS=['PATH','HOME','USER','LOGNAME','SHELL','TMPDIR','TMP','TEMP','LANG','LC_ALL','TERM','COLORTERM','FORCE_COLOR','NO_COLOR','CI','GITHUB_ACTIONS','GITHUB_WORKSPACE','PNPM_HOME','XDG_CACHE_HOME','XDG_CONFIG_HOME','XDG_RUNTIME_DIR','DOCKER_CONFIG','DOCKER_CONTEXT','DOCKER_HOST','PLAYWRIGHT_BROWSERS_PATH','PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD','PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH','npm_execpath','npm_node_execpath','npm_config_user_agent','INIT_CWD'];
-export function toolEnvironment(parent){return Object.fromEntries(TOOL_KEYS.filter(key=>typeof parent[key]==='string').map(key=>[key,parent[key]]));}
+export function toolEnvironment(parent){return Object.fromEntries([...TOOL_KEYS,'FONTCONFIG_FILE'].filter(key=>typeof parent[key]==='string').map(key=>[key,parent[key]]));}
 export function validateTestDatabaseURL(raw){
  let url;try{url=new URL(raw);}catch{throw Error('Refusing invalid test database target');}
  if(!['postgres:','postgresql:'].includes(url.protocol)||!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_[a-z0-9]+)*$/.test(url.pathname.slice(1))||url.pathname.length>64||url.search||url.hash)throw Error('Refusing nonlocal or non-test database target');

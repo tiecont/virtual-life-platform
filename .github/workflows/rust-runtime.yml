@@ -65,11 +65,12 @@ jobs:
           node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs
       - name: Check encrypted journal backup and restored migration integrity
         run: node --import tsx scripts/game-journal-restore-smoke.mjs
+      - name: Prepare pinned Chromium and fonts
+        run: node scripts/prepare-ci-browser.mjs
       - name: Check direct WSS with real Chromium and restricted PostgreSQL
         shell: bash
         run: |
           set -euo pipefail
-          pnpm exec playwright install --with-deps chromium
           pnpm build:packages
           "$CARGO_HOME/bin/cargo" build --locked --package vl-gateway --example interop
           node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs

@@ -111,7 +111,7 @@ jobs:
         if: ${{ matrix.group == 'legacy' }}
         run: node scripts/prepare-deadline-baseline.mjs --allow-network
       - run: pnpm build
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: node scripts/prepare-ci-browser.mjs
       # Each spec/device still gets a disposable DB/API;never combine IP budgets.
       - run: pnpm ci:browser "$CI_BROWSER_GROUP"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -144,7 +144,7 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: node scripts/prepare-ci-browser.mjs
       # Image smoke drivers import compiled shared contracts on the host too.
       - run: pnpm build:packages
       - run: node scripts/release-bundle.mjs --output artifacts/release-bundle
