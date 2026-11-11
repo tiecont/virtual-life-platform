@@ -7,6 +7,7 @@ import net from 'node:net';
 import {chromium, expect} from '@playwright/test';
 import {io} from 'socket.io-client';
 import {imageTestTools, sha256} from './image-test-tools.mjs';
+import {navigateImagePage} from './image-browser-navigation.mjs';
 
 const args = process.argv.slice(2);
 assert(args.length === 8 && args[0] === '--web' && args[2] === '--api' && args[4] === '--context' && args[6] === '--output');
@@ -16,7 +17,7 @@ assert(directory.startsWith(resolve('artifacts') + sep + 'image-web-') && direct
 const {run: execute, save, commands, signal, dispose} = await imageTestTools(directory);
 const project = 'virtual-city-web-image-' + randomUUID().slice(0, 8), sockets = new Set();
 let stage = 'prepare', browser, started = false, cert, probe;
-const facts = {taskId: 'N03-03', apiImage: api, webImage: web, publicRelease: false, scenarios: []};
+const facts = {taskId: 'N03-03', apiImage: api, webImage: web, publicRelease: false, scenarios: [], browserNavigations: []};
 const run = (command, values, options = {}) => execute(stage, command, values, options);
 const cancelled = () => {for (const socket of sockets) socket.close(); void browser?.close().catch(() => {});};
 signal.addEventListener('abort', cancelled, {once: true});
@@ -74,9 +75,9 @@ try {
     const context = await browser.newContext({baseURL: origin, viewport: profile.viewport, isMobile: profile.isMobile ?? false});
     context.setDefaultTimeout(10000); if (cookies) await context.addCookies(cookies);
     const page = await context.newPage(), errors = []; page.on('pageerror', error => errors.push(error.name));
-    await page.goto('/'); await expect(page.getByRole('heading', {level: 1})).toHaveText('A city beginswith a connection.'); await expect(page.getByRole('status')).toHaveText('Database connected · schema v1');
+    await navigateImagePage(page, '/', facts.browserNavigations); await expect(page.getByRole('heading', {level: 1})).toHaveText('A city beginswith a connection.'); await expect(page.getByRole('status')).toHaveText('Database connected · schema v1');
     const styles = await page.locator('link[rel=stylesheet]').count(); assert(styles > 0);
-    await page.goto('/identity');
+    await navigateImagePage(page, '/identity', facts.browserNavigations);
     if (!cookies) {
       await page.getByLabel('Display name').fill('Web image visitor');
       const created = page.waitForResponse(response => response.url().endsWith('/v1/session/guest') && response.request().method() === 'POST');
