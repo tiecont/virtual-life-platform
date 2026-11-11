@@ -2387,7 +2387,7 @@
         "adapterValidation": "node scripts/native-csharp.mjs",
         "realProcessValidation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
         "scope": "Partial independent protocol adapter work authorized while VL-080 Editor acceptance is pending; dependency retained",
-        "remainingAcceptance": "Real Unity import/compilation, EditMode/PlayMode execution, scene presentation wiring and native Unity login/WSS player E2E",
+      "remainingAcceptance": "Real Unity import/compilation, EditMode/PlayMode execution and native Unity login/WSS player E2E; scene controller source now wired but not Editor-qualified",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "adapterEvidence": {
           "sourceRevision": "5e683d931ce76d6652bafde260cf77982e9f9841",
@@ -2396,6 +2396,18 @@
             {"command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client", "exitCode": 0, "result": "22 real-process scenarios passed; same C# adapter before and after Rust SIGKILL"}
           ],
           "scope": "Linux standalone C# adapter proof, not Unity Editor/player E2E or Windows certification"
+      },
+      "sceneEvidence": {
+        "sourceRevision": "6e63f852a52eca7bef38471797c0db8db6993684",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {"command": "DOTNET=/tmp/vl-dotnet/dotnet node scripts/native-csharp.mjs", "exitCode": 0, "result": "39 standalone assertions; netstandard2.1/net8 builds; 10 authored Unity files parse as C# 9; Editor compilation NOT_RUN"},
+          {"command": "PATH=/tmp/vl-dotnet:$PATH node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client", "exitCode": 0, "result": "22 actual Nest HTTPS / Rust WSS / restricted PostgreSQL scenarios, scene use case login and reconnect before/after runtime SIGKILL"},
+          {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "110 passed"},
+          {"command": "git diff --check", "exitCode": 0}
+        ],
+        "scope": "Partial development-only source: external scope configuration, runtime credential input, main-thread presentation queue, same-ID ambiguous retry and cancellation. Unity Editor 6000.3.14f1 absent; actual Editor/player acceptance remains unverified. Hosted Quality/Rust CI required before merge.",
+        "evidence": ["artifacts/scene-csharp-committed.log", "artifacts/scene-interop-committed.log", "artifacts/scene-governance-committed.log"]
         }
       }
     },
