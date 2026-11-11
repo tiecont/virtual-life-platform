@@ -1872,12 +1872,28 @@
         "restore/hash tests pass, keyless abort truthful",
         "delete/export retention risk reviewed"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-041",
         "VL-050"
-      ]
+      ],
+      "implementation": {
+        "scope": "Existing encrypted PostgreSQL backup/restore smoke now compares every restored migration name and checksum against the source manifest; exercised in Rust CI",
+        "remainingAcceptance": "Native Rust checkpoint/journal backup restore and hash recovery, incompatible state and keyless startup negatives, private projection/export/deletion review; retention/deletion approvals unresolved",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "verification": {
+          "sourceRevision": "13086304ec599d4a4da98b8861cf89f4afece080",
+          "commands": [
+            {"command": "node --import tsx scripts/game-journal-restore-smoke.mjs", "exitCode": 0, "result": "Actual disposable pg_dump, encrypted archive and pg_restore; exact ciphertext/seed commitment, 50 migration names/checksums, accepted receipt, private claims, wrong archive/game key denial, authenticated identity and keyless owner abort passed"},
+            {"command": "pnpm ci:check", "exitCode": 0},
+            {"command": "pnpm exec eslint scripts/game-journal-restore-smoke.mjs", "exitCode": 0},
+            {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "110 passed"},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "scope": "Legacy synthetic journal restore only; not native Pet Arena restore, offsite/PITR or production recovery qualification. Hosted Quality/Rust required before merge."
+        }
+      }
     },
     {
       "id": "VL-056",
