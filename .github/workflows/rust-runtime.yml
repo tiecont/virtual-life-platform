@@ -71,6 +71,12 @@ jobs:
           pnpm build:packages
           "$CARGO_HOME/bin/cargo" build --locked --package vl-gateway --example interop
           node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs
+      - name: Check actual runtime gameplay and crash recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$CARGO_HOME/bin/cargo" build --locked --package vl-game-runtime
+          node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay
       - name: Measure bounded twenty-actor zone prototype
         run: '"$CARGO_HOME/bin/cargo" run --locked --package vl-world --example zone-probe'
       - name: Check identity-issued runtime ticket trust across Node and Rust

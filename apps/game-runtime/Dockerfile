@@ -16,6 +16,8 @@ FROM debian:bookworm-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d
 ARG SOURCE_REVISION
 LABEL org.opencontainers.image.title="VirtualLife game runtime foundation"
 LABEL org.opencontainers.image.revision="${SOURCE_REVISION}"
+COPY --from=build /usr/lib/x86_64-linux-gnu/libssl.so.3 /usr/lib/x86_64-linux-gnu/libssl.so.3
+COPY --from=build /usr/lib/x86_64-linux-gnu/libcrypto.so.3 /usr/lib/x86_64-linux-gnu/libcrypto.so.3
 COPY --from=build /build/target/release/vl-game-runtime /usr/local/bin/vl-game-runtime
 USER 65532:65532
 ENV VL_RUNTIME_BIND=0.0.0.0:4400 VL_GAMEPLAY_ENABLED=0

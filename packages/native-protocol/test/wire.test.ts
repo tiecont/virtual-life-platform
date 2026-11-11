@@ -31,3 +31,11 @@ it('rejects out-of-bounds movement, excessive action data and forged schema acce
   const server=create(ServerEnvelopeSchema,{protocolVersion:2,commandId:new Uint8Array(16)});
   expect(()=>decodeServer(toBinary(ServerEnvelopeSchema,server))).toThrow('UNSUPPORTED_VERSION');
 });
+
+it('accepts a genesis game command at version zero',()=>{
+ const envelope=create(ClientEnvelopeSchema,{
+  protocolVersion:1,commandId:new Uint8Array(16).fill(1),sequence:1n,
+  body:{case:'gameIntent',value:{gameSessionId:new Uint8Array(16).fill(2),expectedStateVersion:0n,kind:'fixture.advance.v1',actionPayload:new Uint8Array()}},
+ });
+ expect(decodeClient(toBinary(ClientEnvelopeSchema,envelope))).toEqual(envelope);
+});

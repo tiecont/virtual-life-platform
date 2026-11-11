@@ -1,5 +1,5 @@
 //! Bounded, opt-in binary transport. A trusted host supplies current admission.
-//! No game reducer, wallet effect, AOI peer projection or production activation.
+//! Trusted adapters own command effects and viewer-scoped projections.
 pub mod durable;
 use std::{
     collections::{BTreeSet, VecDeque},
@@ -40,6 +40,13 @@ pub enum Fault {
     Unauthenticated,
     Revoked,
     Unavailable,
+    Rejected(public::ErrorCode),
+}
+
+pub struct GameReply {
+    pub version: u64,
+    pub committed: bool,
+    pub projection: Vec<u8>,
 }
 
 /// Implemented by trusted server code, never constructed from decoded claims.
@@ -54,6 +61,13 @@ pub trait Session: Send {
     fn principal(&self) -> &str;
     fn authorize(&mut self) -> Task<'_, ()>;
     fn snapshot(&mut self) -> Task<'_, public::WorldSnapshot>;
+    fn game<'a>(
+        &'a mut self,
+        _command_id: &'a [u8],
+        _intent: &'a public::GameIntent,
+    ) -> Task<'a, GameReply> {
+        Box::pin(async { Err(Fault::Unavailable) })
+    }
 }
 
 pub struct Options {
@@ -284,6 +298,35 @@ async fn snapshot(session: &mut Box<dyn Session>) -> Option<public::WorldSnapsho
     (valid_snapshot(&snapshot) && authorize(session).await).then_some(snapshot)
 }
 
+async fn game(
+    session: &mut Box<dyn Session>,
+    command_id: &[u8],
+    intent: &public::GameIntent,
+    version: u64,
+) -> Vec<u8> {
+    let reply = tokio::time::timeout(IO_TIMEOUT, session.game(command_id, intent)).await;
+    match reply {
+        Ok(Ok(reply)) if reply.projection.len() <= 16_384 && authorize(session).await => {
+            public::ServerEnvelope {
+                protocol_version: PUBLIC_VERSION,
+                command_id: command_id.to_vec(),
+                canonical_version: reply.version,
+                body: Some(server_envelope::Body::Receipt(public::Receipt {
+                    committed: reply.committed,
+                    authorized_projection: reply.projection,
+                })),
+            }
+            .encode_to_vec()
+        }
+        Ok(Err(Fault::Rejected(code))) => rejection(command_id, version, code),
+        _ => rejection(
+            command_id,
+            version,
+            public::ErrorCode::TemporarilyUnavailable,
+        ),
+    }
+}
+
 async fn connection(mut socket: WebSocket, state: Arc<Gateway>, _permit: OwnedSemaphorePermit) {
     let mut session: Option<Box<dyn Session>> = None;
     let mut replies = Replies::default();
@@ -323,8 +366,10 @@ async fn connection(mut socket: WebSocket, state: Arc<Gateway>, _permit: OwnedSe
         if !fresh_hello && (session.is_none() || !authorize(session.as_mut().unwrap()).await) {
             break;
         }
+        let is_game = matches!(frame.body, Some(client_envelope::Body::GameIntent(_)));
+        let repeated = matches!(lookup, Lookup::Repeat(_));
         let response = match lookup {
-            Lookup::Repeat(response) => {
+            Lookup::Repeat(response) if !is_game => {
                 if !send(&mut socket, response).await {
                     break;
                 }
@@ -336,7 +381,7 @@ async fn connection(mut socket: WebSocket, state: Arc<Gateway>, _permit: OwnedSe
                 }
                 continue;
             }
-            Lookup::Fresh => match &frame.body {
+            Lookup::Fresh | Lookup::Repeat(_) => match &frame.body {
                 Some(client_envelope::Body::Hello(hello)) => {
                     if hello.content_hash.as_slice() != state.options.content_hash {
                         break;
@@ -387,6 +432,15 @@ async fn connection(mut socket: WebSocket, state: Arc<Gateway>, _permit: OwnedSe
                     }
                     .encode_to_vec()
                 }
+                Some(client_envelope::Body::GameIntent(intent)) => {
+                    game(
+                        session.as_mut().unwrap(),
+                        &frame.command_id,
+                        intent,
+                        version,
+                    )
+                    .await
+                }
                 // These effects require their own verified command adapters.
                 // A transport connection is never a committed movement/game ACK.
                 _ => rejection(
@@ -399,7 +453,15 @@ async fn connection(mut socket: WebSocket, state: Arc<Gateway>, _permit: OwnedSe
         if !send(&mut socket, response.clone()).await {
             break;
         }
-        replies.remember(&frame, fingerprint, response);
+        if !repeated {
+            // Durable game adapters recheck membership and reconstruct their own
+            // receipts on every replay. Keep only the transport fingerprint.
+            replies.remember(
+                &frame,
+                fingerprint,
+                if is_game { Vec::new() } else { response },
+            );
+        }
     }
     let _ = tokio::time::timeout(
         IO_TIMEOUT,

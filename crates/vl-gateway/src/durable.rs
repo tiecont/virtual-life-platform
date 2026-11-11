@@ -1,5 +1,5 @@
 //! Explicit-CA, restricted-role admission and own-only live reads. No game DML.
-use crate::{Admission, Fault, Session, Task, public};
+use crate::{Admission, Fault, GameReply, Session, Task, public};
 use std::{
     collections::BTreeMap,
     sync::{
@@ -16,6 +16,18 @@ use vl_security::{
 };
 use vl_world::{ActorHandle, Position, ZoneHandle};
 
+/// Trusted runtime adapter. Player input cannot construct this capability.
+pub trait GameCommands: Send + Sync {
+    fn execute<'a>(
+        &'a self,
+        client: &'a mut Client,
+        trust: &'a DurableTrust,
+        session: &'a DurableSession,
+        command_id: &'a [u8],
+        intent: &'a public::GameIntent,
+    ) -> Task<'a, GameReply>;
+}
+
 struct OwnActor {
     id: u64,
     handle: ActorHandle,
@@ -31,6 +43,7 @@ pub struct PgAdmission {
     zone: ZoneHandle,
     next_actor: AtomicU64,
     actors: Mutex<BTreeMap<String, Weak<OwnActor>>>,
+    games: Option<Arc<dyn GameCommands>>,
 }
 
 impl PgAdmission {
@@ -61,7 +74,13 @@ impl PgAdmission {
             zone,
             next_actor: AtomicU64::new(1),
             actors: Mutex::new(BTreeMap::new()),
+            games: None,
         })
+    }
+
+    pub fn with_games(mut self, games: Arc<dyn GameCommands>) -> Self {
+        self.games = Some(games);
+        self
     }
 
     async fn own_actor(&self, account: &str) -> Result<Arc<OwnActor>, Fault> {
@@ -102,6 +121,7 @@ struct PgSession {
     account: String,
     zone: ZoneHandle,
     actor: Arc<OwnActor>,
+    games: Option<Arc<dyn GameCommands>>,
 }
 impl Drop for PgSession {
     fn drop(&mut self) {
@@ -149,12 +169,31 @@ impl Admission for PgAdmission {
                 account,
                 zone: self.zone.clone(),
                 actor,
+                games: self.games.clone(),
             };
             Ok(Box::new(result) as Box<dyn Session>)
         })
     }
 }
 impl Session for PgSession {
+    fn game<'a>(
+        &'a mut self,
+        command_id: &'a [u8],
+        intent: &'a public::GameIntent,
+    ) -> Task<'a, GameReply> {
+        Box::pin(async move {
+            let games = self.games.as_ref().ok_or(Fault::Unavailable)?;
+            games
+                .execute(
+                    &mut self.client,
+                    &self.trust,
+                    &self.session,
+                    command_id,
+                    intent,
+                )
+                .await
+        })
+    }
     fn principal(&self) -> &str {
         &self.account
     }

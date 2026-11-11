@@ -8,6 +8,17 @@ publish.workspace = true
 [dependencies]
 axum.workspace = true
 tokio.workspace = true
+vl-gateway = { path = "../../crates/vl-gateway" }
+vl-security = { path = "../../crates/vl-security" }
+vl-game-core = { path = "../../crates/vl-game-core" }
+vl-persistence = { path = "../../crates/vl-persistence" }
+vl-world = { path = "../../crates/vl-world" }
+vl-protocol = { path = "../../crates/vl-protocol" }
+tokio-postgres = "=0.7.18"
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.154"
+uuid = { version = "=1.23.0", features = ["v4", "serde"] }
+jsonwebtoken = { version = "=11.1.0", default-features = false, features = ["rust_crypto"] }
 
 [dev-dependencies]
 tower.workspace = true

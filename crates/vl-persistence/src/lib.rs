@@ -362,6 +362,33 @@ where
             Some(Some(_)) => Err(Error::Integrity),
         }
     }
+    /// Validate an existing checkpoint under the currently leased logical boot.
+    /// A different boot requires an explicit allocator recovery procedure.
+    pub async fn resume(&self, db: &mut Client, id: Uuid) -> Result<()> {
+        let tx = db.transaction().await?;
+        tx.batch_execute("SET LOCAL statement_timeout='2000ms';SET LOCAL lock_timeout='1000ms';SELECT pg_advisory_xact_lock(hashtextextended('native-admission-v1',0))").await?;
+        self.owner.check(&tx).await?;
+        let world = tx
+            .query_opt(
+                "SELECT 1 FROM platform_native_worlds WHERE world_id=$1 AND content_hash=$2",
+                &[
+                    &self.owner.scope.world,
+                    &hex(&self.game.ruleset().content_hash),
+                ],
+            )
+            .await?;
+        if world.is_none() {
+            return Err(Error::Unauthorized);
+        }
+        let row = self.row(&tx, id).await?;
+        if row.get::<_, String>("boot_text") != self.owner.scope.boot.to_string() {
+            return Err(Error::Conflict);
+        }
+        self.restore(id, &row)?;
+        self.owner.check(&tx).await?;
+        tx.commit().await?;
+        Ok(())
+    }
     /// Trusted allocator entrypoint, not a player command or a migration.
     pub async fn create(&self, db: &mut Client, id: Uuid, state: G::State) -> Result<()> {
         if id.is_nil() {

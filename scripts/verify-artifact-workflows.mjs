@@ -56,7 +56,10 @@ export function assertRustWorkflow(workflow,pins) {
     'tests/integration/runtime-admission.test.ts','tests/integration/native-game-schema.test.ts','tests/integration/schema-compatibility.test.ts',
     'scripts/native-game-migration-compat.mjs','scripts/runtime-admission-migration-compat.mjs',
     '--package vl-world --example zone-probe','playwright install --with-deps chromium',
-    'build --locked --package vl-gateway --example interop','scripts/native-wss-interop.mjs',
+    'build --locked --package vl-gateway --example interop',
+    'node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs\n',
+    'node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay\n',
+    'build --locked --package vl-game-runtime',
     'build --locked --package vl-persistence --example orchestration','scripts/native-game-orchestration.mjs'])assert(workflow.includes(gate),'Missing Rust gate '+gate);
 }
 export function assertPromotionWorkflow(workflow, pins) {

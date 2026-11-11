@@ -184,7 +184,7 @@ try {
   }
  } finally {await workerProbe.end();}
  const worker=(configured=true)=>{
-  const proc=spawn(process.execPath,['apps/platform-api/dist/worker.js','--once'],{env:{PATH:process.env.PATH,NODE_ENV:'test',DATABASE_URL:workerAddress.toString(),DURABLE_JOB_ROLE:'worker',PROGRESSION_POLICY_FILE:progressionPolicy,...configured?{NATIVE_REWARD_POLICY_FILE:nativePolicy}:{}},stdio:['ignore','pipe','pipe']});
+  const proc=spawn(process.execPath,['apps/platform-api/dist/worker.js','--once'],{env:{PATH:process.env.PATH,NODE_ENV:'test',DATABASE_URL:workerAddress.toString(),DURABLE_JOB_ROLE:'worker',...configured?{NATIVE_REWARD_POLICY_FILE:nativePolicy}:{PROGRESSION_POLICY_FILE:progressionPolicy}},stdio:['ignore','pipe','pipe']});
   workers.add(proc);let logs='';
   proc.stdout.on('data',b=>{logs+=b;});proc.stderr.on('data',b=>{logs+=b;});
   const result=new Promise((ok,no)=>{proc.once('error',no);proc.once('close',(code,signal)=>{workers.delete(proc);assert(!logs.includes(workerPassword));assert(!/ownCard|411001|822002|sealed_snapshot/.test(logs));ok({code,signal,logs});});});

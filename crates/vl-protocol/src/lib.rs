@@ -95,7 +95,6 @@ pub fn decode_client(bytes: &[u8]) -> Result<public::ClientEnvelope, DecodeError
         }
         Some(Body::GameIntent(value)) => {
             value.game_session_id.len() == 16
-                && value.expected_state_version > 0
                 && value
                     .kind
                     .bytes()
@@ -199,6 +198,19 @@ mod tests {
             decode_client(&value.encode_to_vec()),
             Err(DecodeError::InvalidEnvelope)
         );
+    }
+    #[test]
+    fn genesis_game_command_accepts_version_zero() {
+        let mut frame = hello();
+        frame.body = Some(public::client_envelope::Body::GameIntent(
+            public::GameIntent {
+                game_session_id: vec![1; 16],
+                expected_state_version: 0,
+                kind: "fixture.advance.v1".into(),
+                action_payload: b"{}".to_vec(),
+            },
+        ));
+        assert_eq!(decode_client(&frame.encode_to_vec()).unwrap(), frame);
     }
     #[test]
     fn server_fixture_preserves_u64_above_javascript_safe_integer() {

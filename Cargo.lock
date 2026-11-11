@@ -2394,8 +2394,19 @@ name = "vl-game-runtime"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "jsonwebtoken",
+ "serde",
+ "serde_json",
  "tokio",
+ "tokio-postgres",
  "tower",
+ "uuid",
+ "vl-game-core",
+ "vl-gateway",
+ "vl-persistence",
+ "vl-protocol",
+ "vl-security",
+ "vl-world",
 ]
 
 [[package]]

@@ -19,7 +19,7 @@ export function decodeClient(bytes:Uint8Array):ClientEnvelope {
       &&x.contentHash.length===32&&(x.platformLabel===undefined||/^[A-Za-z0-9][A-Za-z0-9-]{0,31}$/.test(x.platformLabel));
   } else if(body.case==='gameIntent') {
     const x=body.value;
-    valid=x.gameSessionId.length===16&&x.expectedStateVersion>0n&&/^[a-z][a-z0-9._-]{0,63}$/.test(x.kind)&&x.actionPayload.length<=MAX_ACTION_BYTES;
+    valid=x.gameSessionId.length===16&&x.expectedStateVersion>=0n&&/^[a-z][a-z0-9._-]{0,63}$/.test(x.kind)&&x.actionPayload.length<=MAX_ACTION_BYTES;
   } else if(body.case==='moveIntent') {
     const x=body.value;valid=x.inputSequence>0n&&Math.abs(x.directionX)<=1000&&Math.abs(x.directionZ)<=1000;
   } else if(body.case==='resync') {
