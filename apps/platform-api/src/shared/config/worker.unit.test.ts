@@ -14,7 +14,7 @@ it('worker CLI accepts only bounded explicit actions and never interprets arbitr
 });
 
 it('supports an explicitly configured native-only worker and rejects an unconfigured worker', () => {
-  const native = {...env, PROGRESSION_POLICY_FILE: undefined, NATIVE_REWARD_POLICY_FILE: 'native-policy.json'};
+  const native = {DATABASE_URL: 'postgres://127.0.0.1/virtual_city_test', DURABLE_JOB_ROLE: 'worker', NATIVE_REWARD_POLICY_FILE: 'native-policy.json'};
   expect(readWorkerConfig(native)).toMatchObject({NATIVE_REWARD_POLICY_FILE: 'native-policy.json'});
   expect(() => readWorkerConfig({...native, NATIVE_REWARD_POLICY_FILE: undefined})).toThrow('Invalid durable worker configuration');
 });
