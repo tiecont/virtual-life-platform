@@ -129,6 +129,27 @@ try{
   });
  }
 
+ // Probe recovery with the same restricted role and real runtime executable.
+ // Diagnostics are checked for the fixed redacted error, never archived raw.
+ async function rejectHost(overrides={}){
+  const original=await readFile(privateFile);
+  let probe;
+  try{
+   await writeFile(privateFile,JSON.stringify({...JSON.parse(original),...overrides}),{mode:0o600});
+   probe=spawn(resolve('artifacts/rust/target/debug/vl-game-runtime'),[],{env:{PATH:process.env.PATH,VL_RUNTIME_BIND:'127.0.0.1:0',VL_GAMEPLAY_ENABLED:'1',VL_GAMEPLAY_CONFIG:privateFile,VL_GAME_DATABASE_URL:runtime.toString()},stdio:['ignore','pipe','pipe']});
+   let stdout='',stderr='';probe.stdout.on('data',b=>{stdout+=b;});probe.stderr.on('data',b=>{stderr+=b;});
+   const timer=setTimeout(()=>probe.kill('SIGKILL'),10000);
+   let code;
+   try{code=await new Promise((ok,no)=>{probe.once('error',no);probe.once('close',ok);});}finally{clearTimeout(timer);}
+   assert.equal(code,1,'Invalid recovery must exit with failure');
+   assert.equal(stdout.length,0,'Invalid recovery must not open a listener or publish state');
+   assert.equal(stderr.trim(),'Error: "Native checkpoint unavailable or incompatible"','Recovery diagnostics must be redacted');
+  }finally{
+   if(probe&&probe.exitCode===null&&probe.signalCode===null){probe.kill('SIGKILL');await new Promise(ok=>probe.once('close',ok));}
+   await writeFile(privateFile,original,{mode:0o600});
+  }
+ }
+
  if(playable){
   const missing=spawnSync(resolve('artifacts/rust/target/debug/vl-game-runtime'),[],{env:{PATH:process.env.PATH,VL_RUNTIME_BIND:'127.0.0.1:0',VL_GAMEPLAY_ENABLED:'1'},encoding:'utf8',timeout:5000});
   assert.equal(missing.status,1);
@@ -165,7 +186,7 @@ try{
  let petEffects;
  if(pet){
   const {petArenaScenarios}=await import('./pet-arena-runtime-scenarios.mjs');
-  petEffects=await petArenaScenarios({loss,pool,admin,schema,role,rewardRole,rewardPassword,markRewardRoleCreated:()=>{rewardRoleCreated=true;},address,directory,scope,identity,store,issuer,credential,csrf:guest.me.csrfToken,call,fresh,origin,hello,startHost,stopHost:async()=>{child.kill('SIGKILL');await childClosed;child=undefined;},upstream:()=>upstream,matchId,player:guest.me.profile.id,record});
+  petEffects=await petArenaScenarios({loss,pool,admin,schema,role,rewardRole,rewardPassword,markRewardRoleCreated:()=>{rewardRoleCreated=true;},address,directory,scope,identity,store,issuer,credential,csrf:guest.me.csrfToken,call,fresh,origin,hello,startHost,rejectHost,stopHost:async()=>{child.kill('SIGKILL');await childClosed;child=undefined;},upstream:()=>upstream,matchId,player:guest.me.profile.id,record});
  }
  if(playable&&!pet){
   assert.equal((await fetch('http://127.0.0.1:'+upstream+'/health/ready')).status,200);
