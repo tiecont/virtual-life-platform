@@ -35,6 +35,14 @@ async function setup(){const customer=await actor(undefined,true),worker=await a
 it('actual Maid flag closure and re-enable preserve independent source rows and served history without reviving old work consent',async()=>{
  const original=config,directory=await mkdtemp(resolve(tmpdir(),'city-maid-rollback-')),flags=resolve(directory,'flags.json'),sourceName='maid_cafe_test_'+randomUUID().replaceAll('-','');let sourceDb:Pool|undefined,created=false;
  const setFlag=(enabled:boolean)=>writeFile(flags,JSON.stringify({schemaVersion:1,environments:{development:{},test:{maid:enabled},production:{}}}));
+ const dropSource=async()=>{
+  const deadline=performance.now()+5000;
+  while((await admin.query('SELECT 1 FROM pg_stat_activity WHERE datname=$1',[sourceName])).rowCount){
+   if(performance.now()>=deadline)throw Error('Owned Maid source connections did not drain');
+   await new Promise(resolve=>setTimeout(resolve,10));
+  }
+  await admin.query(`DROP DATABASE "${sourceName}"`);
+ };
  try{
   await setFlag(true);config=readConfig({NODE_ENV:'test',DATABASE_URL:original.DATABASE_URL,SESSION_SECRET:original.SESSION_SECRET,LOCAL_MAID_WORLD:'1',WORLD_FLAGS_FILE:flags});await app.app.close();await open();
   await admin.query(`CREATE DATABASE "${sourceName}"`);created=true;const address=new URL(process.env.TEST_DATABASE_URL!);address.pathname='/'+sourceName;sourceDb=new Pool({connectionString:address.toString()});await sourceDb.query(await readFile(resolve('artifacts/legacy-runtime/maid/apps/api/src/db/migrations/0001_foundation.sql'),'utf8'));const sourceId=randomUUID();await sourceDb.query("INSERT INTO users(id,kind) VALUES($1,'guest')",[sourceId]);await sourceDb.query("INSERT INTO profiles(user_id,display_name,avatar_key,preferences_json) VALUES($1,'Prior source visitor','sakura',$2)",[sourceId,{localFoundationMarker:'preserved'}]);const prior=(await sourceDb.query('SELECT u.*,p.display_name,p.avatar_key,p.preferences_json,p.updated_at FROM users u JOIN profiles p ON p.user_id=u.id WHERE u.id=$1',[sourceId])).rows;
@@ -44,7 +52,17 @@ it('actual Maid flag closure and re-enable preserve independent source rows and 
   expect((await pool.query('SELECT phase FROM engine_hospitality_orders WHERE id=$1',[unfinished.id])).rows[0].phase).toBe('CANCELLED');expect((await pool.query('SELECT count(*)::int AS n FROM engine_hospitality_shifts WHERE account_id IN ($1,$2) AND ended_at IS NULL',[worker.me.profile.id,served.worker.me.profile.id])).rows[0].n).toBe(0);expect((await act(worker,unfinished,'ready',{preparation:{nonce:unfinished.service.preparation.nonce,ingredients:['coffee','water']}})).statusCode).toBe(409);
   await setFlag(true);await app.worlds.reloadFlags();const fresh=RoomAckSchema.parse(await worker.socket.timeout(5000).emitWithAck('room.join',{schemaVersion:1,requestId:randomUUID(),worldSlug:'maid',worldVersion:maidWorldVersion,sceneVersion:'1.0.0'}));if(!fresh.ok||fresh.result.type!=='snapshot')throw Error('Maid re-enable admission failed');expect(fresh.result.membershipId===worker.room.membershipId).toBe(false);expect(fresh.result.self.seatId).toBeNull();const replay=await post(worker,'staff/shifts',shiftBody,shiftKey);expect(replay.statusCode).toBe(201);expect(replay.json().shift.phase).toBe('ended');expect((await post(worker,'staff/shifts',{...shiftBody,source:source(fresh.result)})).statusCode).toBe(409);const state=(await app.http.inject({url:'/v1/staff/state',headers:{cookie:worker.cookie}})).json();expect(state.shift.phase).toBe('ended');expect((await post(served.customer,'orders/'+history.id+'/complete',{schemaVersion:1,expectedVersion:history.version},completionKey)).statusCode).toBe(200);expect((await pool.query('SELECT count(*)::int AS n FROM engine_hospitality_completions WHERE order_id=$1',[history.id])).rows[0].n).toBe(1);expect((await pool.query('SELECT count(*)::int AS n FROM engine_hospitality_completions WHERE order_id=$1',[unfinished.id])).rows[0].n).toBe(0);expect((await sourceDb.query('SELECT u.*,p.display_name,p.avatar_key,p.preferences_json,p.updated_at FROM users u JOIN profiles p ON p.user_id=u.id WHERE u.id=$1',[sourceId])).rows).toEqual(prior);
   await mkdir(evidenceOutput('docs/agent/evidence'),{recursive:true});await writeFile(evidenceOutput('docs/agent/evidence/m16-maid-rollback.json'),JSON.stringify({actualFlagsManagerReload:true,separateSelectedSourceFoundationDatabase:true,sourceUsersProfilesUnchanged:true,closedWorldRemovedAllFourVisits:true,independentStopAndWithdrawalWhileClosed:true,servedAcknowledgmentWhileClosed:true,oneCompletionAfterRetry:true,unfinishedCancelledWithoutCompletion:true,freshVisitNoAutoSeatOrShift:true,oldMembershipNonceDeniedAndPositiveRetryCannotReactivate:true,staleConsentRevisionDenied:true,compatible0038CodeRetained:true,limits:'Owned disposable DB/actual HTTP-Socket-SQL;not original data,old-image deployment,public release or a source-auth proof'},null,2));
- }finally{config=original;await sourceDb?.end();if(created)await admin.query(`DROP DATABASE "${sourceName}" WITH (FORCE)`);await rm(directory,{recursive:true,force:true});}
+ }finally{
+  config=original;
+  try{
+   await sourceDb?.end();
+   if(created){
+    // Pool.end can finish before PostgreSQL observes the socket close. Forcing
+    // the drop in that interval sends an unhandled FATAL to the retiring client.
+    await dropSource();
+   }
+  }finally{await rm(directory,{recursive:true,force:true});}
+ }
 });
 it('actual selected six recipes and menu IDs are trusted adapter data rather than client recipe policy',async()=>{
  const requireSource=createRequire(resolve('artifacts/legacy-runtime/maid/package.json')),catalog=requireSource(resolve('artifacts/legacy-runtime/maid/apps/api/dist/db/catalog.js')) as {menu:{id:string;recipe:string[]}[]};expect(maidRecipes).toEqual(Object.fromEntries(catalog.menu.map(item=>[item.id,item.recipe])));const a=await actor(),menu=await post(a,'orders/menu',{schemaVersion:1,source:source(a.room)});expect(menu.statusCode).toBe(200);expect(menu.json().items.map((item:{key:string})=>item.key)).toEqual(catalog.menu.map(item=>item.id));
