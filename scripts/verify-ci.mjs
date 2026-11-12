@@ -10,6 +10,8 @@ async function main(){
  const plan=await browserPlan(),workflow=await readFile('.github/workflows/quality.yml','utf8'),pins=JSON.parse(await readFile('config/ci-actions.json','utf8'));
  assert(!/pull_request_target|secrets\.|continue-on-error|\|\|\s*true/.test(workflow));
  assert(/permissions:\s*\n\s+contents: read/.test(workflow));assert(workflow.includes('persist-credentials: false'));
+ assert.deepEqual([...workflow.matchAll(/^\s*runs-on:\s*(.+)$/gm)].map(row=>row[1]),Array(5).fill('ubuntu-24.04'),'Quality uses the declared Ubuntu LTS runner');
+ assert.equal((workflow.match(/run: node scripts\/prepare-ci-browser\.mjs/g)??[]).length,2,'Browser and image jobs require the pinned browser preflight');
  assert.equal((workflow.match(/fetch-depth: 0/g)??[]).length,4,'Plan/core/browser/images readers need full historical evidence objects');
  for(const match of workflow.matchAll(/uses:\s*([^\s#]+)/g)){const [repo,ref]=match[1].split('@');assert(/^[a-f0-9]{40}$/.test(ref??''),'Action must use an immutable commit');assert.equal(ref,pins[repo],'Action must match reviewed immutable pin');}
  assert(workflow.includes('fromJSON(needs.core.outputs.groups'));

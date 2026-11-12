@@ -13,7 +13,7 @@ env:
 jobs:
   plan:
     name: change-plan
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     outputs:
       images: ${{ steps.plan.outputs.images }}
@@ -30,7 +30,7 @@ jobs:
 
   core:
     name: core-checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # 770 integration cases took20minutes;leave bounded time for checks/builds.
     timeout-minutes: 45
     outputs:
@@ -85,7 +85,7 @@ jobs:
   browser:
     name: browser (${{ matrix.group }})
     needs: core
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -111,7 +111,7 @@ jobs:
         if: ${{ matrix.group == 'legacy' }}
         run: node scripts/prepare-deadline-baseline.mjs --allow-network
       - run: pnpm build
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: node scripts/prepare-ci-browser.mjs
       # Each spec/device still gets a disposable DB/API;never combine IP budgets.
       - run: pnpm ci:browser "$CI_BROWSER_GROUP"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -129,7 +129,7 @@ jobs:
     name: runtime-images
     needs: plan
     if: ${{ needs.plan.outputs.images == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -144,7 +144,7 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: node scripts/prepare-ci-browser.mjs
       # Image smoke drivers import compiled shared contracts on the host too.
       - run: pnpm build:packages
       - run: node scripts/release-bundle.mjs --output artifacts/release-bundle
@@ -179,7 +179,7 @@ jobs:
     name: quality
     needs: [plan, core, browser, images]
     if: ${{ always() }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     env:
       CI_NEEDS_JSON: ${{ toJSON(needs) }}

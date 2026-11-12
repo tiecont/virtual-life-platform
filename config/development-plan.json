@@ -2057,12 +2057,53 @@
         "staging deploy with versioned digest and trace correlation",
         "one writer and legacy route unaffected"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-023",
         "VL-049"
-      ]
+      ],
+      "implementation": {
+        "scope": "Partial CI reliability: actual Stage PostgreSQL blocker synchronization; explicit Ubuntu 24.04; checksum-addressed official Playwright 1.64.1 browser/fonts with host render preflight avoids repeated upstream apt DNS failures on both Resolute and Noble; all application assertions and merge gates retained",
+        "remainingAcceptance": "Versioned staging artifact and trace correlation, runtime readiness/drain and legacy compatibility still require verification; no deployment activated",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "verification": {
+          "sourceRevision": "87a16e46d049666a88a9c5aa786d34bdfb99d0ea",
+          "commands": [
+            {"command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/stage.test.ts", "exitCode": 0, "result": "23 actual PostgreSQL integration cases passed"},
+            {"command": "pnpm exec eslint tests/integration/stage.test.ts", "exitCode": 0},
+            {"command": "pnpm exec tsc -p tests/legacy-tsconfig.json --noEmit", "exitCode": 0},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "scope": "Local Stage regression only; hosted Quality and Rust CI required before merge"
+        },
+        "runnerVerification": {
+          "sourceRevision": "7272ec96cda8c949800033fc61873ddee288776e",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {"command": "pnpm ci:check", "exitCode": 0},
+            {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "110 passed"},
+            {"command": "pnpm exec eslint scripts/verify-ci.mjs", "exitCode": 0},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "regression": {"sourceRevision": "a1092dd15a9114bd6cf2dc754e80232c8ed0e99b", "command": "pnpm check", "exitCode": 0, "result": "110 governance, 497 unit, 783 integration cases and all builds passed; prior prerequisite failures retained in ignored artifacts"},
+          "remaining": "Hosted checks on the final source required; runner pin does not itself prove upstream DNS recovery or staging deployment"
+        },
+        "browserPreparationVerification": {
+          "sourceRevision": "c434d25d19aa0c60be4f75733c1c74a676018446",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {"command": "node scripts/prepare-ci-browser.mjs", "exitCode": 0, "result": "Official amd64 image manifest digest, extracted Chromium/fonts, host library check, actual launch and rendered screenshot passed"},
+            {"command": "pnpm ci:check", "exitCode": 0},
+            {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "110 passed"},
+            {"command": "pnpm exec eslint scripts/prepare-ci-browser.mjs scripts/verify-ci.mjs scripts/test-environment.mjs scripts/verify-artifact-workflows.mjs tests/governance/rust-workflow.test.mjs", "exitCode": 0},
+            {"command": "PLAYWRIGHT_BROWSERS_PATH=artifacts/ci-browser/browsers FONTCONFIG_FILE=artifacts/ci-browser/fonts.conf pnpm ci:browser admin", "exitCode": 0, "result": "Actual admin and runtime browser groups, desktop/mobile profiles passed with pinned assets; paths resolved absolute in execution"},
+            {"command": "PLAYWRIGHT_BROWSERS_PATH=artifacts/ci-browser/browsers FONTCONFIG_FILE=artifacts/ci-browser/fonts.conf node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena", "exitCode": 0, "result": "26 real Nest/Rust/PostgreSQL scenarios passed with pinned Chromium; paths resolved absolute in execution"},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "remaining": "Hosted Quality/Rust on final head must pass; preflight never substitutes application checks"
+        }
+      }
     },
     {
       "id": "VL-066",
