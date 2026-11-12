@@ -17,7 +17,7 @@ namespace VirtualLife.Blockout.Tests
             district.InputCaptured = true;
             Assert.That(Camera.main, Is.Not.Null);
             if (!Application.isEditor) {
-                Assert.That(Application.platform, Is.EqualTo(RuntimePlatform.LinuxPlayer));
+                Assert.That(Application.platform, Is.AnyOf(RuntimePlatform.LinuxPlayer, RuntimePlatform.WindowsPlayer));
                 Assert.That(SystemInfo.graphicsDeviceType, Is.Not.EqualTo(UnityEngine.Rendering.GraphicsDeviceType.Null));
             }
             var spawn = BlockoutGeometry.Anchors[0];
