@@ -8,7 +8,8 @@
     "spawnMeters": [0, 1.1, -4],
     "walkMetersPerSecond": 4,
     "interactionMeters": 2.5,
-    "geometry": "Developer ground, cafe block and activity terminal",
+    "geometry": "Developer ground, cafe block, Arena entrance and activity terminal",
+    "collisionExport": "config/aurora-blockout-collision.json",
     "avatar": "Developer capsule"
   },
   "flow": [
@@ -16,7 +17,7 @@
     {"input": "WASD", "result": "Move within blockout bounds and local collision"},
     {"input": "Approach activity terminal", "result": "Enter interaction radius"},
     {"input": "E", "result": "Advance local three-turn input rehearsal"},
-    {"input": "Connect in future VL-081 build", "result": "Acquire scoped ticket and route intents to default-off Rust runtime"}
+    {"input": "Opt-in external local-development configuration and runtime login", "result": "Acquire scoped ticket and route synthetic intents to Rust; default-off outside isolated development"}
   ],
   "authoritativeBoundaries": {
     "unity": ["Input capture", "Camera", "Offline rehearsal", "Rendering"],
@@ -28,13 +29,17 @@
   "activity": {
     "prototype": "Three-turn input rehearsal and synthetic headless ruleset",
     "firstProductGameplay": "Pet Arena PvE",
-    "productDependencies": ["VL-043", "VL-044", "VL-047"],
-    "status": "Product content pending"
+    "productDependencies": ["VL-043", "VL-044", "VL-047", "VL-112"],
+    "status": "Pet Arena Rust network PvE and platform settlement verified; Unity Pet Arena presentation pending"
   },
   "acceptance": [
-    {"procedure": "node scripts/unity-validate.mjs tests", "expected": "EditMode bounds/proximity and PlayMode spawn/movement/interaction pass", "status": "PENDING_EDITOR"},
+    {"procedure": "node scripts/unity-validate.mjs tests", "expected": "4 EditMode and 2 PlayMode tests pass", "status": "PASSED_LINUX_EDITOR", "sourceRevision": "7cff49a09eeb2bd212b0f36812627a02d7baee1f"},
+    {"procedure": "node scripts/unity-validate.mjs linux-player-tests", "expected": "2 rendered Linux player tests: spawn, interaction, cafe/Arena routes, collision and bounds", "status": "PASSED_LINUX_PLAYER", "sourceRevision": "7cff49a09eeb2bd212b0f36812627a02d7baee1f"},
+    {"procedure": "Owner WASD, approach terminal, E and window interaction in actual Linux development player", "expected": "Offline playable interaction accepted", "status": "OWNER_ACCEPTED", "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073"},
+    {"procedure": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-player", "expected": "22 real Nest/Rust/PostgreSQL scenarios with two rendered Unity players before/after Rust restart", "status": "PASSED_LINUX_PLAYER", "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073"},
     {"procedure": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs", "expected": "Synthetic ruleset commits once, projects per viewer, settles once and survives restart", "status": "SOURCE_TEST"},
     {"procedure": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay", "expected": "ticket -> command -> receipt -> projection -> persistence -> restart; synthetic fixture only", "status": "SOURCE_TEST"}
   ],
-  "scopeCeiling": ["One compact district", "One placeholder avatar", "One activity", "Offline developer prototype"]
+  "scopeCeiling": ["One compact district", "One placeholder avatar", "One activity", "Isolated developer prototype"],
+  "remainingQualification": ["Connected developer-panel keyboard interaction", "Pet Arena Unity presentation", "Windows build and physical player qualification", "Authoritative district movement under VL-028"]
 }
