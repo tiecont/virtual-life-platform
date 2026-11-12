@@ -10,10 +10,18 @@
     "urp": "17.3.0",
     "unitySourceStatus": "IN_PROGRESS",
     "remainingUnityImplementation": [
-      "Licensed Editor import, package resolution and reviewed packages-lock.json",
-      "C# compilation and actual EditMode/PlayMode runs",
-      "Linux player build and interactive graphics smoke"
+      "Interactive native connected panel/terminal acceptance",
+      "Separate Windows player build and physical Windows qualification"
     ],
+    "linuxVerification": {
+      "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073",
+      "editor": "6000.3.14f1 (d68c3f99a318), installed and owner-activated",
+      "tests": "4 EditMode, 1 PlayMode, Linux development build and 22 native process scenarios passed; rendered Linux Unity player commits and recovers across Rust restart",
+      "graphics": "AMD Renoir OpenGLCore, CachyOS 7.2.9-2; local compatibility trial",
+      "ownerAcceptance": "Owner reported successful WASD/terminal E/window interaction on the offline blockout",
+      "reviewMode": "SINGLE_AGENT_AUDIT",
+      "limitations": "No licensed hosted Unity runner, physical Windows, IL2CPP, installer, signing or production qualification inferred"
+    },
     "windowsMonoCrossBuild": "Conditional on installed Windows Build Support module and successful batch build",
     "references": [
       "https://docs.unity3d.com/6000.3/Documentation/Manual/system-requirements.html",

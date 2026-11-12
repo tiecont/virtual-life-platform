@@ -387,7 +387,15 @@
         "32m district spawn/WASD/proximity/E flow accepted in an actual Unity player",
         "scope ceiling excludes infinite city/AAA release claims"
       ],
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
+      "verification": {
+        "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "4 EditMode and 1 PlayMode tests passed"},
+          {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux", "exitCode": 0, "result": "Actual rendered Linux development player; owner accepted WASD, terminal E and window interaction"}
+        ]
+      },
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-006"
@@ -395,7 +403,19 @@
       "implementation": {
         "scope": "config/playable-slice.json",
         "scene": "apps/unity-client/Assets/VirtualLife/Scenes/AuroraBlockout.unity",
-        "remainingAcceptance": "Actual licensed Editor import and clickable flow test; production art, city expansion and release certification are outside this prototype"
+        "remainingAcceptance": "Production art, city expansion and release certification are outside this prototype",
+        "linuxPlayerVerification": {
+          "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "4 EditMode and 1 PlayMode tests passed; spawn, movement, proximity and native-interaction delegation"},
+            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux", "exitCode": 0, "result": "Actual Linux development player built with URP 17.3.0"}
+          ],
+          "ownerAcceptance": "Owner reported thao tac ok after being asked to test WASD, approach the blue terminal, E interaction and window close in the actual Linux player",
+          "graphics": "AMD Renoir, OpenGLCore, CachyOS 7.2.9-2; rendered screenshot inspected, capsule material corrected to URP Lit",
+          "buildManifest": "artifacts/linux-player/5e918b86004d/build-manifest.json",
+          "scope": "One 32m developer blockout with capsule, cafe placeholder, Arena entrance and local activity; no production or Windows qualification"
+        }
       }
     },
     {
@@ -2534,7 +2554,7 @@
         "baselineCommand": "node scripts/linux-baseline.mjs",
         "remainingQualification": "EXTERNAL_QUALIFICATION_BLOCKER; see per-gate resource, procedure and evidence fields",
         "localAudit": {
-          "sourceRevision": "3af963fbbd4bc5fa517cf8669f87617409a3ea22",
+          "sourceRevision": "4f86df285ad76e441f8278502a26bd784ddd3301",
           "command": "DOTNET=artifacts/dotnet/dotnet node scripts/linux-baseline.mjs --probes-only",
           "exitCode": 0,
           "os": "CachyOS Linux 7.2.9-2-cachyos x86_64",
@@ -2547,7 +2567,8 @@
             "docker": "29.9.0"
           },
           "graphics": "RADV RENOIR Mesa 26.2.4 and NVIDIA RTX 2060 Max-Q driver 615.78.08; Vulkan instance 1.4.363",
-          "limitations": "System PostgreSQL socket inactive; tests use disposable Docker PostgreSQL. No installed Unity Editor found; CachyOS Editor compatibility and physical Windows qualification unverified."
+          "limitations": "System PostgreSQL socket inactive; tests use disposable Docker PostgreSQL. Pinned Unity 6000.3.14f1 is installed and owner-activated; actual import/tests/Linux player run passed. CachyOS/AMD OpenGLCore measured locally; Windows qualification remains external.",
+          "editor": {"version": "6000.3.14f1", "revision": "d68c3f99a318", "archiveSha256": "da4f7690af316ec926acbfbb9b3347d0cb6b5ab7e7d75adfc3719a3d1b8fdbd9", "activation": "Owner performed activation; no credentials or license material recorded", "linuxPlayer": "AMD Renoir OpenGLCore; URP 17.3.0", "otherEditor": "Owner-installed 6000.6.9f1 preserved"}
         }
       }
     },
@@ -2593,7 +2614,17 @@
         "editor": "6000.3.14f1",
         "urp": "17.3.0",
         "validation": "node scripts/unity-validate.mjs tests",
-        "remainingAcceptance": "Editor-resolved package lock, Unity C# compilation, Linux tests/player and separate physical Windows build qualification",
+        "remainingAcceptance": "Windows player build CI artifact and physical Windows acceptance; Linux Editor/player proof does not verify this Windows task",
+        "linuxEditorVerification": {
+          "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "Pinned Editor compiles project; 4 EditMode and 1 PlayMode tests pass, no fixture skips counted"},
+            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux", "exitCode": 0, "result": "Real Linux development player builds and renders AuroraBlockout"}
+          ],
+          "resolved": "Reviewed Editor-generated package lock and project/URP settings committed; invalid 33-character GUIDs corrected, Mono serialization configuration supplied, default capsule material uses URP Lit",
+          "scope": "CachyOS compatibility trial with AMD Renoir OpenGLCore; Windows qualification remains IN_PROGRESS"
+        },
         "lastEditorAttempt": {
           "sourceRevision": "3af963fbbd4bc5fa517cf8669f87617409a3ea22",
           "commands": [
@@ -2635,8 +2666,19 @@
         "source": "apps/unity-client/Assets/VirtualLife/Features/Native",
         "adapterValidation": "node scripts/native-csharp.mjs",
         "realProcessValidation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
-        "scope": "Partial independent protocol adapter work authorized while VL-080 Editor acceptance is pending; dependency retained",
-        "remainingAcceptance": "Real Unity import/compilation, EditMode/PlayMode execution and native Unity login/WSS player E2E; scene controller source now wired but not Editor-qualified",
+        "scope": "Pinned Linux Unity player now proves actual login/ticket/WSS/command/receipt/reconnect and runtime restart. VL-080 Windows acceptance remains an explicit incomplete dependency",
+        "remainingAcceptance": "Interactive connected developer-panel/terminal acceptance and inherited VL-080 Windows qualification; actual Linux player network E2E passed, synthetic ruleset only",
+        "linuxPlayerEvidence": {
+          "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-player", "exitCode": 0, "result": "22 real Nest HTTPS / Rust WSS / restricted PostgreSQL scenarios; two rendered Linux Unity test players before/after Rust SIGKILL; first player commits version 1, second recovers durable receipt at version 2; wrong CA rejected, normal chain/hostname validation, login/ticket 200, same-ID replay, reconnect and no duplicate effects"}
+          ],
+          "evidence": "artifacts/desktop-first/vl022/interop-fd36c9b2/facts.json and unity-{1,2}.xml/.json/.png; private input deleted on completion",
+          "rendering": "6000.3.14f1 LinuxPlayer, AMD Renoir OpenGLCore; screenshot inspected and URP capsule shader assertion passed",
+          "tls": "Isolated test-only Mono TrustAnchors with disposable CA and wrong-CA negative; no owner trust-store or production TLS changes",
+          "limitations": "Test player invokes existing adapters and scene use case directly; it does not prove connected panel keyboard input, Windows execution or Pet Arena Unity UI"
+        },
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "adapterEvidence": {
           "sourceRevision": "5e683d931ce76d6652bafde260cf77982e9f9841",
