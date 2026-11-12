@@ -25,6 +25,7 @@ namespace VirtualLife.Blockout.Tests
         private string stage = "input";
 
         [UnityTest]
+        [Category("NativePlayerFixture")]
         public IEnumerator LinuxPlayerLoginCommandAndReconnect()
         {
             var file = Environment.GetEnvironmentVariable("VL_UNITY_NATIVE_FIXTURE");

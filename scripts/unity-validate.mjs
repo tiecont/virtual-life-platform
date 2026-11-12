@@ -37,7 +37,9 @@ try {
     if (action === 'tests') {
       for (const mode of ['EditMode', 'PlayMode']) {
         const results = resolve(directory, mode + '.xml');
-        await run(['-runTests', '-testPlatform', mode, '-testResults', results], mode);
+        // The external-process fixture has its own licensed Linux player runner.
+        // Ordinary Editor tests must all pass without counting an ignored fixture.
+        await run(['-runTests', '-testPlatform', mode, '-testCategory', '!NativePlayerFixture', '-testResults', results], mode);
         const xml = await readFile(results, 'utf8');
         if (!/<test-run\b[^>]*result="Passed"/.test(xml) || !/\bpassed="[1-9]\d*"/.test(xml))
           throw Error('Unity test results contain no passing test run');
