@@ -31,6 +31,17 @@ and storage key ring. Do not place credentials or key material in source or
 Unity assets. A missing/incompatible key, scope, checkpoint or ruleset fails
 closed. A new logical boot requires the existing authorized recovery procedure.
 
+Recovery also authenticates historical receipt and event ciphertext and hashes
+in pages of sixteen records. Every checkpoint version must have its receipt;
+event indices must be contiguous within each recorded turn. The runtime role
+can read the encrypted event journal for this check and cannot update/delete it.
+Missing historical keys, damaged snapshots/journals and an incompatible engine
+stop startup before a listener opens, preserving state and pending settlement.
+The Pet Arena process suites exercise these failures and then resume the intact
+match through a terminal outcome. These checks do not prove a complete reducer
+replay from genesis, detect deletion of every event for a turn, or qualify native
+backup/restore, retention or deletion policy. Those remain part of VL-055.
+
 The `headless-counter` ruleset remains a synthetic three-turn transport fixture.
 The `pet-arena-pve` ruleset runs the pinned `vl-pet-arena::combat::Combat` reducer.
 It additionally requires server-selected `pet` (0–7) and `stage` (0–5). The client
@@ -68,6 +79,6 @@ replay and reconnect expose the reconciled result without a second grant.
 Unity scene integration and actual Editor/player execution remain VL-081.
 
 Liveness remains distinct from readiness: `/health/live` reports the process;
-`/health/ready` checks the zone, owner lease and authenticated checkpoint.
+`/health/ready` checks the zone, owner lease, checkpoint and stored journal integrity.
 `/metrics` contains aggregate receipt/rejection counters only; successful receipt
 replays count as receipts. The checked-in OCI image keeps gameplay disabled.

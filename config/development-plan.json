@@ -1885,13 +1885,99 @@
         "verification": {
           "sourceRevision": "13086304ec599d4a4da98b8861cf89f4afece080",
           "commands": [
-            {"command": "node --import tsx scripts/game-journal-restore-smoke.mjs", "exitCode": 0, "result": "Actual disposable pg_dump, encrypted archive and pg_restore; exact ciphertext/seed commitment, 50 migration names/checksums, accepted receipt, private claims, wrong archive/game key denial, authenticated identity and keyless owner abort passed"},
-            {"command": "pnpm ci:check", "exitCode": 0},
-            {"command": "pnpm exec eslint scripts/game-journal-restore-smoke.mjs", "exitCode": 0},
-            {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "110 passed"},
-            {"command": "git diff --check", "exitCode": 0}
+            {
+              "command": "node --import tsx scripts/game-journal-restore-smoke.mjs",
+              "exitCode": 0,
+              "result": "Actual disposable pg_dump, encrypted archive and pg_restore; exact ciphertext/seed commitment, 50 migration names/checksums, accepted receipt, private claims, wrong archive/game key denial, authenticated identity and keyless owner abort passed"
+            },
+            {
+              "command": "pnpm ci:check",
+              "exitCode": 0
+            },
+            {
+              "command": "pnpm exec eslint scripts/game-journal-restore-smoke.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "node --test tests/governance/*.test.mjs",
+              "exitCode": 0,
+              "result": "110 passed"
+            },
+            {
+              "command": "git diff --check",
+              "exitCode": 0
+            }
           ],
           "scope": "Legacy synthetic journal restore only; not native Pet Arena restore, offsite/PITR or production recovery qualification. Hosted Quality/Rust required before merge."
+        },
+        "nativeJournalVerification": {
+          "sourceRevision": "442b8c1ab25f5dba773e0ff072564c41d8b84235",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "scope": "Recovery authenticates stored receipt/event ciphertext and SHA-256 hashes in pages of sixteen, requires one receipt per checkpoint version and contiguous recorded event indices. Restricted role gains encrypted event SELECT only; UPDATE/DELETE, platform ledger and legacy authority remain denied. Actual process startup negatives preserve all game/settlement records and expose only a fixed redacted error.",
+          "commands": [
+            {
+              "command": "cargo fmt --all -- --check",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo check --workspace --all-targets --locked",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo test --workspace --locked",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo build --locked -p vl-game-runtime",
+              "exitCode": 0
+            },
+            {
+              "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena",
+              "exitCode": 0,
+              "result": "30 actual Nest HTTPS / Rust WSS / restricted TLS PostgreSQL scenarios, winning PvE and exactly-once settlement"
+            },
+            {
+              "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena-loss",
+              "exitCode": 0,
+              "result": "30 scenarios, losing PvE with 18 receipts crosses pagination; missing/wrong keys, incompatible engine, damaged checkpoint/receipt/event hashes and ciphertext, incomplete receipt history all fail before listener; intact recovery resumes match"
+            },
+            {
+              "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay",
+              "exitCode": 0,
+              "result": "20 synthetic runtime scenarios passed"
+            },
+            {
+              "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs",
+              "exitCode": 0,
+              "result": "Transactional ownership, private authenticated receipts, races, replay, settlement, crash and restricted-role negatives passed"
+            },
+            {
+              "command": "pnpm architecture:check",
+              "exitCode": 0
+            },
+            {
+              "command": "pnpm ci:check",
+              "exitCode": 0
+            },
+            {
+              "command": "pnpm exec eslint scripts/native-recovery-scenarios.mjs scripts/native-wss-interop.mjs scripts/pet-arena-runtime-scenarios.mjs scripts/native-game-orchestration.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "node --test tests/governance/*.test.mjs",
+              "exitCode": 0,
+              "result": "110 passed"
+            },
+            {
+              "command": "git diff --check",
+              "exitCode": 0
+            }
+          ],
+          "remaining": "Native backup/restore, full reducer replay from genesis and deletion of all events for a turn are not proven by envelope verification. Export/deletion/retention approvals remain unresolved. Task stays IN_PROGRESS. Hosted Quality and Rust on final head required before merge."
         }
       }
     },
