@@ -54,7 +54,7 @@ try {
    ['identity-secret','SELECT token_hash FROM identity_sessions'],['identity-write',"UPDATE identity_accounts SET status='active' WHERE false"],
    ['policy-write','UPDATE platform_native_admissions SET allowed=true WHERE false'],['world-write','UPDATE platform_native_worlds SET enabled=true WHERE false'],
    ['nonce-delete','DELETE FROM platform_native_ticket_uses WHERE false'],['owner-takeover','UPDATE game_native_matches SET epoch=epoch+1 WHERE false'],
-   ['receipt-delete','DELETE FROM game_native_receipts WHERE false'],['event-read','SELECT * FROM game_native_events'],
+   ['receipt-delete','DELETE FROM game_native_receipts WHERE false'],['event-update','UPDATE game_native_events SET event_hash=event_hash WHERE false'],['event-delete','DELETE FROM game_native_events WHERE false'],
    ['ledger-write','INSERT INTO platform_native_reward_ledger SELECT * FROM platform_native_reward_ledger WHERE false'],['inbox-write','DELETE FROM platform_native_reward_inbox WHERE false'],
    ['outbox-delivered','UPDATE game_native_outbox SET delivered_at=clock_timestamp() WHERE false'],['legacy-write','DELETE FROM engine_game_matches WHERE false'],
    ['migration-read','SELECT name FROM city_schema_migrations'],['schema-create',`CREATE TABLE ${identifier(schema)}.forbidden_fixture(id int)`],

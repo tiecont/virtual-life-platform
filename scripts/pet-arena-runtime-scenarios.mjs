@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {createHash,randomUUID} from 'node:crypto';
 import {readFile,writeFile} from 'node:fs/promises';
+import {nativeRecoveryScenarios} from './native-recovery-scenarios.mjs';
 
 // Extends the shared real Nest/Chromium/WSS/Rust/TLS-PostgreSQL harness. The
 // driver chooses intents from public board data; Rust computes every effect.
@@ -51,7 +52,9 @@ export async function petArenaScenarios(c){
   }
   assert.deepEqual(await checkpoint(),active);record('admitted-wrong-actor-cannot-command-or-read-private-pet-projection');
   const mid=await exchange(intent(1,{kind:'skill'}));assert.equal(mid.kind,'receipt');assert.equal(mid.version,'2');
-  const saved=await checkpoint();await stopHost();await startHost();assert.deepEqual(await checkpoint(),saved);
+  const saved=await checkpoint();await stopHost();
+  await nativeRecoveryScenarios(c);
+  await startHost();assert.deepEqual(await checkpoint(),saved);
   await reconnect();const restored=await view();assert.equal(restored.version,'2');assert.deepEqual(restored.receipt.projection,mid.receipt.projection);
   const replay=await exchange(startIntent,startId);assert.equal(replay.receipt.committed,true);assert.equal(replay.version,'1');assert.deepEqual(replay.receipt.projection,start.receipt.projection);
   assert.equal(await receiptCount(),2);record('sigkill-mid-match-restores-exact-checkpoint-and-authenticated-receipt-replay');

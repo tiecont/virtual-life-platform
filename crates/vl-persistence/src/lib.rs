@@ -1,5 +1,6 @@
 //! Opt-in single-owner command host. No routes, migrator, public broadcast or wallet.
 mod crypto;
+mod recovery;
 pub use crypto::Keys;
 use crypto::Sealed;
 use serde::{Deserialize, Serialize};
@@ -397,7 +398,9 @@ where
         if row.get::<_, String>("boot_text") != self.owner.scope.boot.to_string() {
             return Err(Error::Conflict);
         }
-        self.restore(id, &row)?;
+        let stored = self.restore(id, &row)?;
+        self.verify_journal(&tx, id, stored.epoch, stored.checkpoint.version)
+            .await?;
         self.owner.check(&tx).await?;
         tx.commit().await?;
         Ok(())
