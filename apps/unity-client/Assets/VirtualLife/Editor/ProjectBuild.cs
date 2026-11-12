@@ -23,6 +23,12 @@ namespace VirtualLife.Editor
         public static void Prepare()
         {
             if (Application.unityVersion != "6000.3.14f1") throw new InvalidOperationException("Pinned Editor 6000.3.14f1 required");
+            PlayerSettings.companyName = "VirtualLife";
+            PlayerSettings.productName = "VirtualLife";
+            PlayerSettings.defaultScreenWidth = 1024;
+            PlayerSettings.defaultScreenHeight = 768;
+            PlayerSettings.fullScreenMode = FullScreenMode.Windowed;
+            PlayerSettings.runInBackground = true;
             if (!AssetDatabase.IsValidFolder(Settings)) AssetDatabase.CreateFolder("Assets/VirtualLife", "Settings");
             var pipeline = AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(Settings + "/BlockoutURP.asset");
             if (pipeline == null)

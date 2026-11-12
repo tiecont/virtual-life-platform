@@ -19,5 +19,8 @@ apps/unity-client/Temp/
 apps/unity-client/Logs/
 apps/unity-client/obj/
 apps/unity-client/UserSettings/
+apps/unity-client/Builds/
+apps/unity-client/mono_crash.*
+apps/unity-client/Assets/InitTestScene*.unity*
 apps/unity-client/Assets/VirtualLife/Features/Native/Generated/
 apps/unity-client/Assets/VirtualLife/Features/Native/Plugins/

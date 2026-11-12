@@ -20,6 +20,7 @@ namespace VirtualLife.Blockout
             var avatar = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             avatar.name = "Developer capsule";
             avatar.transform.position = new Vector3(0f, 1.1f, -4f);
+            ApplyDeveloperMaterial(avatar, new Color(0.8f, 0.85f, 0.9f));
             Destroy(avatar.GetComponent<CapsuleCollider>());
             Player = avatar.AddComponent<CharacterController>();
             Player.height = 2f;
@@ -40,12 +41,17 @@ namespace VirtualLife.Blockout
             box.name = label;
             box.transform.position = position;
             box.transform.localScale = scale;
-            var renderer = box.GetComponent<Renderer>();
+            ApplyDeveloperMaterial(box, color);
+            return box;
+        }
+
+        private static void ApplyDeveloperMaterial(GameObject primitive, Color color)
+        {
+            var renderer = primitive.GetComponent<Renderer>();
             renderer.sharedMaterial = Resources.Load<Material>("BlockoutLit");
             var properties = new MaterialPropertyBlock();
             properties.SetColor("_BaseColor", color);
             renderer.SetPropertyBlock(properties);
-            return box;
         }
 
         private void Update()

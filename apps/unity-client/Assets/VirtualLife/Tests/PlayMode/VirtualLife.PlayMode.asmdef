@@ -1,5 +1,5 @@
 {
   "name": "VirtualLife.PlayMode",
-  "references": ["VirtualLife.Blockout"],
+  "references": ["VirtualLife.Blockout", "VirtualLife.Native"],
   "optionalUnityReferences": ["TestAssemblies"]
 }

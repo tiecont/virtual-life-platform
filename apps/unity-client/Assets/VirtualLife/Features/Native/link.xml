@@ -1,3 +1,10 @@
 <linker>
   <assembly fullname="VirtualLife.Native" preserve="all" />
+  <!-- DataContractJsonSerializer loads its configuration and writers through
+       reflection. Preserve the framework implementation in stripped players. -->
+  <assembly fullname="System.Runtime.Serialization" preserve="all" />
+  <assembly fullname="System.Configuration" preserve="all" />
+  <assembly fullname="System">
+    <type fullname="System.Net.Configuration.*" preserve="all" />
+  </assembly>
 </linker>
