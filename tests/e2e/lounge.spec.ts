@@ -4,7 +4,7 @@ import { request as httpRequest } from 'node:http';
 import { randomUUID } from 'node:crypto';
 import { mkdir,writeFile } from 'node:fs/promises';
 import { Pool } from 'pg';
-import { AudienceViewSchema,AudienceResultSchema,MeSchema } from '@virtual-city/contracts';
+import { AudienceViewSchema,AudienceResultSchema,MeSchema,RoomAckSchema } from '@virtual-city/contracts';
 import { loungeWorldVersion } from '@virtual-city/lounge-world';
 const origin='http://127.0.0.1:3300';let serial=0;
 async function guest(context:BrowserContext){const payload=JSON.stringify({requestId:randomUUID(),displayName:'Lounge visitor',avatarKey:'mint'}),response=await new Promise<{body:unknown;cookie:string}>((resolve,reject)=>{const req=httpRequest('http://127.0.0.1:4300/v1/session/guest',{method:'POST',localAddress:'127.75.0.'+(++serial),headers:{origin,'content-type':'application/json','content-length':Buffer.byteLength(payload)}},res=>{let raw='';res.on('data',chunk=>raw+=chunk);res.on('end',()=>{try{expect(res.statusCode).toBe(201);resolve({body:JSON.parse(raw),cookie:res.headers['set-cookie']![0].split(';')[0]});}catch(error){reject(error);}});});req.on('error',reject);req.end(payload);}),split=response.cookie.indexOf('=');await context.addCookies([{name:response.cookie.slice(0,split),value:response.cookie.slice(split+1),url:origin,httpOnly:true,sameSite:'Lax'}]);return MeSchema.parse(response.body);}
@@ -94,10 +94,21 @@ test('staff disable outside the room defeats a held committed audience-open resp
 
 for(const action of ['view','send','control'] as const)test(`successful Lounge ${action} reply arriving after observation expiry stays truthful without stale counts or a retry`,async({page,context},info)=>{
  test.setTimeout(60000);const host=await registered(context),fixture=await stageFixture(context,host,host,9000);let mutations=0;
+ let snapshots=0;
+ page.on('websocket',socket=>socket.on('framereceived',frame=>{
+  const text=typeof frame.payload==='string'?frame.payload:'';
+  if(!/^43\d+\[/.test(text))return;
+  try{const ack=RoomAckSchema.safeParse(JSON.parse(text.slice(text.indexOf('[')))[0]);if(ack.success&&ack.data.ok&&ack.data.result.type==='snapshot')snapshots++;}catch{/* Count only validated authoritative snapshots. */}
+ }));
  try{
   await fixture.db.query("INSERT INTO safety_staff_grants VALUES($1,'lounge','moderator',$2)",[host.profile.id,new Date(Date.now()+600000)]);
   expect((await context.request.post('/v1/events/'+fixture.eventId+'/rsvp',{headers:{origin,'x-csrf-token':host.csrfToken,'idempotency-key':randomUUID()},data:{schemaVersion:1}})).status()).toBe(201);
   await enterLounge(page);await expect.poll(async()=>(await(await context.request.get('/v1/events/'+fixture.eventId)).json()).event.phase,{timeout:15000}).toBe('LIVE');
+  // The real 15-second room refresh temporarily withdraws source authority and
+  // correctly aborts pending audience work. Start this TTL-only scenario after
+  // that refresh, so it does not accidentally test a different cancellation.
+  await expect.poll(()=>snapshots,{timeout:20000}).toBeGreaterThanOrEqual(2);
+  await expect(page.getByRole('status')).toHaveText('Connected');
   const audience=await refreshLiveAudience(page);
   if(action==='send'){await audience.getByRole('button',{name:'Open moderated reactions',exact:true}).click();await expect(audience).toContainText('Audience control recorded.');await freshReactionWindow(page);}
   let windowMs=-1;
