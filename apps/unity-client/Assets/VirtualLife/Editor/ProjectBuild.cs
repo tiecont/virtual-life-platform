@@ -49,6 +49,7 @@ namespace VirtualLife.Editor
             QualitySettings.renderPipeline = pipeline;
             EditorBuildSettings.scenes = new[] {new EditorBuildSettingsScene(Scene, true)};
             AssetDatabase.SaveAssets();
+            BlockoutCollisionExport.Write();
         }
 
         public static void Linux()

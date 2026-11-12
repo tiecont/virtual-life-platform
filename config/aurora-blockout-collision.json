@@ -1,0 +1,119 @@
+{
+    "schemaVersion": 1,
+    "districtId": "aurora-plaza",
+    "units": "millimeters",
+    "coordinateSystem": "Unity left-handed Y-up; X/Z ground plane",
+    "sceneAssetGuid": "80cd271255f53f6b6b78d60e9d1ca883",
+    "geometrySourceGuid": "f83ad680fc7f432f87d730f70cc10005",
+    "geometrySourceSha256": "117aa44f0312be028fc5aa751d1a5668ff2ce537fe2c68a26f242d4794a000b2",
+    "materialAssetGuid": "9b2e8504b5756d47b8be850e069004f3",
+    "developerOnly": true,
+    "nativeMovementEnabled": false,
+    "capsuleRadiusMm": 400,
+    "capsuleHeightMm": 2000,
+    "capsuleSkinMm": 80,
+    "allowedCenterMinXZ": [
+        -15500,
+        -15500
+    ],
+    "allowedCenterMaxXZ": [
+        15500,
+        15500
+    ],
+    "boxes": [
+        {
+            "geometryGuid": "f83ad680fc7f432f87d730f70cc10001",
+            "name": "District floor",
+            "minMm": [
+                -16000,
+                -100,
+                -16000
+            ],
+            "maxMm": [
+                16000,
+                100,
+                16000
+            ],
+            "walkableSurface": true
+        },
+        {
+            "geometryGuid": "f83ad680fc7f432f87d730f70cc10002",
+            "name": "Cafe placeholder",
+            "minMm": [
+                -12000,
+                0,
+                5500
+            ],
+            "maxMm": [
+                -6000,
+                3000,
+                10500
+            ],
+            "walkableSurface": false
+        },
+        {
+            "geometryGuid": "f83ad680fc7f432f87d730f70cc10003",
+            "name": "Arena entrance placeholder",
+            "minMm": [
+                7500,
+                0,
+                7000
+            ],
+            "maxMm": [
+                10500,
+                1600,
+                9000
+            ],
+            "walkableSurface": false
+        },
+        {
+            "geometryGuid": "f83ad680fc7f432f87d730f70cc10004",
+            "name": "Activity terminal",
+            "minMm": [
+                -500,
+                0,
+                2500
+            ],
+            "maxMm": [
+                500,
+                1600,
+                3500
+            ],
+            "walkableSurface": false
+        }
+    ],
+    "anchors": [
+        {
+            "id": "spawn",
+            "positionMm": [
+                0,
+                1100,
+                -4000
+            ]
+        },
+        {
+            "id": "cafe-approach",
+            "positionMm": [
+                -9000,
+                1100,
+                4000
+            ]
+        },
+        {
+            "id": "arena-approach",
+            "positionMm": [
+                9000,
+                1100,
+                6000
+            ]
+        },
+        {
+            "id": "terminal-approach",
+            "positionMm": [
+                0,
+                1100,
+                1000
+            ]
+        }
+    ]
+}

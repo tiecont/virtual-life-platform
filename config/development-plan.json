@@ -1267,8 +1267,8 @@
         "VL-105"
       ],
       "acceptance": [
-        "desktop browser usable on real machine",
-        "web-lite fallback and measured size/GPU budget"
+        "Compiled Unity Windows native player usable on a physical qualification machine",
+        "Native district asset streaming/LOD and measured size/GPU budget; optional portal web-lite fallback remains separately qualified"
       ],
       "status": "TODO",
       "qualificationRequirements": []

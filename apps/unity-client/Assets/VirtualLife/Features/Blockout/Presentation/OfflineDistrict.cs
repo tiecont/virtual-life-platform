@@ -13,13 +13,16 @@ namespace VirtualLife.Blockout
 
         private void Awake()
         {
-            CreateBox("District floor", Vector3.zero, new Vector3(32f, 0.2f, 32f), new Color(0.45f, 0.5f, 0.46f));
-            CreateBox("Café placeholder", new Vector3(-9f, 1.5f, 8f), new Vector3(6f, 3f, 5f), new Color(0.65f, 0.55f, 0.4f));
-            CreateBox("Arena entrance placeholder", new Vector3(9f, 0.8f, 8f), new Vector3(3f, 1.6f, 2f), new Color(0.6f, 0.3f, 0.65f));
-            Activity = CreateBox("Activity terminal", new Vector3(0f, 0.8f, 3f), new Vector3(1f, 1.6f, 1f), new Color(0.2f, 0.5f, 0.85f)).transform;
+            var colors = new[] {new Color(0.45f, 0.5f, 0.46f), new Color(0.65f, 0.55f, 0.4f), new Color(0.6f, 0.3f, 0.65f), new Color(0.2f, 0.5f, 0.85f)};
+            for (var index = 0; index < BlockoutGeometry.Boxes.Count; index++) {
+                var box = BlockoutGeometry.Boxes[index];
+                var created = CreateBox(box.Name, new Vector3(box.X, box.Y, box.Z), new Vector3(box.Width, box.Height, box.Depth), colors[index]);
+                if (box.Name == "Activity terminal") Activity = created.transform;
+            }
             var avatar = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             avatar.name = "Developer capsule";
-            avatar.transform.position = new Vector3(0f, 1.1f, -4f);
+            var spawn = BlockoutGeometry.Anchors[0];
+            avatar.transform.position = new Vector3(spawn.X, 1.1f, spawn.Z);
             ApplyDeveloperMaterial(avatar, new Color(0.8f, 0.85f, 0.9f));
             Destroy(avatar.GetComponent<CapsuleCollider>());
             Player = avatar.AddComponent<CharacterController>();
