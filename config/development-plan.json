@@ -2679,6 +2679,16 @@
           "tls": "Isolated test-only Mono TrustAnchors with disposable CA and wrong-CA negative; no owner trust-store or production TLS changes",
           "limitations": "Test player invokes existing adapters and scene use case directly; it does not prove connected panel keyboard input, Windows execution or Pet Arena Unity UI"
         },
+        "finalLinuxRegression": {
+          "sourceRevision": "1ad2985ed77ec63b8137e947b34f9cf468959224",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {"command": "pnpm check", "exitCode": 0, "result": "111 governance, 497 unit, 783 integration tests and all workspace builds passed; earlier missing Kubernetes cache download timeout and missing offline legacy packages resolved by verified local cache and explicit network preparation"},
+            {"command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs", "exitCode": 0, "result": "39 standalone assertions; netstandard2.1/net8 builds and 12 authored Unity files parse as C# 9"},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "scope": "Full local regression after merging verified journal recovery; hosted Quality/Rust on final PR source must pass before merge"
+        },
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "adapterEvidence": {
           "sourceRevision": "5e683d931ce76d6652bafde260cf77982e9f9841",
