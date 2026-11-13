@@ -60,11 +60,12 @@ namespace VirtualLife.Blockout.Tests
                         panel = UnityEngine.Object.FindFirstObjectByType<NativeSceneController>();
                         yield return input.Click(160, 188); yield return input.Type(config.loginName);
                         yield return input.Click(440, 188); yield return input.Type(config.password);
-                        yield return input.Click(90, 225);
+                        yield return LoginClick(input, config.loginPace);
                         yield return Until(() => !panel.Busy && panel.Status.StartsWith("Native "), () => negative + ": " + panel.Status);
                         Assert.That(panel.Ready, Is.False, negative);
                         Assert.That(panel.PresentedState, Is.Null, negative);
                         Assert.That(panel.HasPendingCommand, Is.False, negative);
+                        Assert.That(panel.Status, Does.StartWith(negative == "wrong-boot" ? "Native failure: Scope" : "Native failure: Transport"), "Each negative must reach its intended failure boundary: " + negative);
                         Assert.That(Entered(panel, "password", ""), Is.True, negative);
                         yield return new WaitForEndOfFrame();
                         ScreenCapture.CaptureScreenshot(config.screenshot + "." + negative + ".png");
@@ -84,12 +85,12 @@ namespace VirtualLife.Blockout.Tests
             yield return input.Type(config.loginName);
             Assert.That(Entered(panel, "loginName", config.loginName), Is.True, "OS keyboard account entry must match disposable input; " + InputDiagnostic(panel, config.loginName));
             yield return input.Click(440, 188); yield return input.Type(new string('a', 48));
-            yield return input.Click(90, 225);
+            yield return LoginClick(input, config.loginPace);
             yield return Until(() => !panel.Busy && panel.Status.Contains("Authentication"), () => "wrong-login: " + panel.Status);
             Assert.That(panel.Ready, Is.False);
             yield return input.Click(440, 188); yield return input.Type(config.password);
             Assert.That(Entered(panel, "password", config.password), Is.True, "OS keyboard password entry must match disposable input");
-            yield return input.Click(90, 225);
+            yield return LoginClick(input, config.loginPace);
             yield return Until(() => panel.Ready, () => "login: " + panel.Status);
             var initial = panel.PresentedState.Version;
             File.Delete(config.sceneObserved); File.Delete(config.sceneReleased);
@@ -121,7 +122,7 @@ namespace VirtualLife.Blockout.Tests
             } finally { File.Delete(config.sceneGate); File.Delete(config.sceneObserved); File.Delete(config.sceneReleased); }
             yield return input.Click(160, 188); yield return input.Type(config.loginName);
             yield return input.Click(440, 188); yield return input.Type(config.password);
-            yield return input.Click(90, 225);
+            yield return LoginClick(input, config.loginPace);
             yield return Until(() => panel.Ready, () => "new-scene login: " + panel.Status);
             Assert.That(panel.PresentedState.Version, Is.EqualTo(initial));
             Assert.That(district.NetworkAuthority, Is.EqualTo(config.movement));
@@ -213,6 +214,12 @@ namespace VirtualLife.Blockout.Tests
             (SyntheticPlaySession)typeof(NativeSceneController).GetField("session", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel);
         private static GameCommand PendingCommand(NativeSceneController panel) =>
             (GameCommand)typeof(SyntheticPlaySession).GetField("pending", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(Session(panel));
+        private static IEnumerator LoginClick(LinuxInput input, string pacingFile)
+        {
+            var after = File.Exists(pacingFile) ? long.Parse(File.ReadAllText(pacingFile), System.Globalization.CultureInfo.InvariantCulture) : 0;
+            yield return Until(() => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >= after, () => "Waiting for the real identity rate window", 65);
+            yield return input.Click(90, 225);
+        }
         private static bool Entered(NativeSceneController panel, string field, string expected) =>
             string.Equals((string)typeof(NativeSceneController).GetField(field, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel), expected, StringComparison.Ordinal);
         private static string InputDiagnostic(NativeSceneController panel, string expected)
@@ -335,7 +342,7 @@ namespace VirtualLife.Blockout.Tests
             public bool movement;
             public string origin = "", caCertificate = "", wrongCaCertificate = "", boot = "", match = "", loginName = "", password = "", screenshot = "", result = "", logoutGate = "", logoutObserved = "", ackGate = "", ackObserved = "";
             public string sceneGate = "", sceneObserved = "", sceneReleased = "";
-            public string ticketFault = "";
+            public string ticketFault = "", loginPace = "";
         }
         [Serializable] private sealed class PanelScope {
             public string httpsOrigin, wssOrigin, contentHash, bootId, matchId;

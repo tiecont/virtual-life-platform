@@ -84,6 +84,8 @@ try{
  const ackGate=resolve(directory,'ack-gate'),ackObserved=resolve(directory,'ack-observed');
  const sceneGate=resolve(directory,'scene-gate'),sceneObserved=resolve(directory,'scene-observed'),sceneReleased=resolve(directory,'scene-released');
  const ticketFault=resolve(directory,'ticket-fault');
+ const loginPace=resolve(directory,'login-pace');
+ let loginWindow={count:0,until:0};
  async function exists(file){try{await access(file);return true;}catch(error){if(error.code==='ENOENT')return false;throw error;}}
  if(interactive)http.addHook('onSend',async(request,reply,payload)=>{
   if(request.url!=='/v1/runtime-ticket'||reply.statusCode!==200||!await exists(ticketFault))return payload;
@@ -111,6 +113,12 @@ try{
  // to the harness-owned scope. This hook is never part of the production API.
  http.addHook('preHandler',async req=>{
   if(interactive&&req.url==='/v1/session/login'){
+   const now=Date.now();
+   if(loginWindow.until<=now)loginWindow={count:0,until:now+60250};
+   loginWindow.count++;
+   // Pace the OS fixture around the real five/minute identity limit. Never
+   // replace its clock or relax the API limiter to run the negative matrix.
+   await writeFile(loginPace,String(loginWindow.count>=5?loginWindow.until:now),{mode:0o600});
    (facts.panelLoginInput??=[]).push({accountMatches:req.body?.loginName===loginName,passwordMatches:req.body?.password===loginPassword});
   }
   if(allocateForCsharp&&req.url==='/v1/runtime-ticket'){
