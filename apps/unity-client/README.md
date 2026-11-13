@@ -189,13 +189,21 @@ node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs -
 
 This isolated test player types disposable credentials into the IMGUI panel,
 checks a failed login, connects, holds W to approach the terminal, presses E,
-asserts the presented committed version, resynchronizes and ends the local
-session. A second player repeats the flow after a Rust SIGKILL. XTest events
+asserts the presented committed version, resynchronizes, interrupts a held ticket
+request with Logout and ends the local session. The fixture checks actual session
+revocation and rejects an unused ticket before it expires. A second player
+repeats the flow after a Rust SIGKILL. XTest events
 target only the test process's own window. This is automated OS input evidence;
 physical owner keyboard acceptance and Windows qualification remain separate.
 Ending a local session destroys its in-memory cookies and adapters, cancels
 pending operations and clears its presentation. It does not revoke the server
-identity session; platform logout/revocation acceptance remains outstanding.
+identity session. The separate Logout button cancels the current gameplay
+exchange, closes WSS and sends an Origin/CSRF-protected platform logout with a
+fresh idempotency key. It clears local state and credentials in either case;
+only a typed `loggedOut: true` response displays confirmed server revocation.
+Timeout, cancellation and failed responses display that server logout was not
+confirmed. Leaving the scene cancels this bounded operation and cannot restore
+an old presentation result. A committed turn survives logout for the next login.
 
 ## Isolated Authoritative Movement
 
