@@ -34,6 +34,9 @@ time, validates version/scope/correlation, and obtains a fresh ticket on each
 reconnect. Reconnect resynchronizes own state. Keep a command's immutable ID
 when retrying after an ambiguous result. Mutation retries are explicit; the
 server remains authoritative for committed receipts and private projections.
+The synthetic scene validates the complete JSON projection, its exact field
+allowlist, scalar types and duplicate keys before changing presentation. Invalid
+committed projections retain the pending command for an explicit same-ID retry.
 Dispose connections and sessions when leaving a scene. Marshal results back
 to the Unity main thread before updating presentation. The scene uses its local rehearsal when no development connection is configured.
 

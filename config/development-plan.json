@@ -2822,6 +2822,42 @@
         "realProcessValidation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
         "scope": "Pinned Linux Unity player now proves actual login/ticket/WSS/command/receipt/reconnect and runtime restart. VL-080 Windows acceptance remains an explicit incomplete dependency",
       "remainingAcceptance": "Owner physical connected-panel acceptance, rendered schema/timeout/malformed-receipt/private-projection negatives, and inherited VL-080 Windows qualification remain. Automated Linux OS-input panel/terminal, six scoped admission/TLS negatives, durable ambiguous-ACK retry, scene unload and platform logout during held ticket requests passed; synthetic ruleset only.",
+      "strictProjectionVerification": {
+        "sourceRevision": "5b62334540a980676725cabc3e77887bff9f9b62",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "scope": "Synthetic viewer field allowlist, scalar types, duplicate keys, complete-document syntax and bounded depth; uses pinned Protobuf and standard JSON infoset APIs without new dependencies",
+        "commands": [
+          {
+            "command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs",
+            "exitCode": 0,
+            "result": "94 standalone assertions; netstandard2.1/net8 builds and 15 authored syntax files passed. Twenty-five invalid projections fail closed without replacing the prior state; a malformed committed projection retains the immutable pending intent and same-ID retry causes one effect"
+          },
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests",
+            "exitCode": 0,
+            "result": "16 actual EditMode and 2 PlayMode tests passed; includes 11 malformed/private projection cases and canonical projection parsing on Unity Mono"
+          },
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement",
+            "exitCode": 0,
+            "result": "7 scenarios passed with two actual rendered Linux players: panel admission/TLS negatives, correct/wrong login, Rust movement, terminal E, committed receipt versions 1/2, lost-ACK same-ID retry, scene teardown, logout and Rust SIGKILL recovery; screenshot inspected"
+          },
+          {
+            "command": "PATH=<local SDK>:$PATH node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
+            "exitCode": 0,
+            "result": "22 real Nest HTTPS/Rust WSS/restricted PostgreSQL scenarios passed"
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs; node scripts/verify-architecture.mjs; git diff --check",
+            "exitCode": 0,
+            "result": "112 governance tests, architecture/worker boundaries and whitespace passed"
+          }
+        ],
+        "localArtifacts": "artifacts/g2-session-lifecycle/artifacts/g2-strict-{csharp,editor,player,interop,governance}.log; artifacts/unity/2026-11-13T19-21-39-192Z-0d183318/{EditMode,PlayMode}.xml; artifacts/desktop-first/vl022/interop-b3d01ec1/{facts.json,unity-1.xml,unity-2.xml,unity-2.png}; C# interop-1533ed2f",
+        "nativeManagedSha256": "d2cd174926613324a9ecda5d33c5361e078b9eb75d31efcc2d572a3c5513b64e",
+        "testManagedSha256": "fa13a16e3031d2cf3c85b0f245d8c4aed1809aef688c551c90a03856e1bce12c",
+        "limitations": "Malformed/private projection negatives are standalone and actual Editor tests, not rendered panel fault injection. Rendered player run is a full valid-reader regression with automated Linux OS input, not owner physical or Windows qualification. Initial JSON-infoset-only implementation accepted trailing documents and failed the negative matrix; the committed implementation adds complete-document validation. VL-081 stays IN_PROGRESS; green exact-head hosted CI required before merge."
+      },
       "renderedAdmissionVerification": {
         "sourceRevision": "74e576b2a8445545cec96a44af2c7545046f7079",
         "reviewMode": "SINGLE_AGENT_AUDIT",
