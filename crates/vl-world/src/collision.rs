@@ -18,10 +18,12 @@ pub struct Collision {
     allowed_center_max_xz: [i32; 2],
     boxes: Vec<BoxShape>,
     anchors: Vec<Anchor>,
+    interactions: Vec<Interaction>,
 }
 #[derive(Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct BoxShape {
+    geometry_guid: String,
     min_mm: [i32; 3],
     max_mm: [i32; 3],
     walkable_surface: bool,
@@ -31,6 +33,13 @@ struct BoxShape {
 struct Anchor {
     id: String,
     position_mm: [i32; 3],
+}
+#[derive(Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct Interaction {
+    id: String,
+    geometry_guid: String,
+    radius_mm: i32,
 }
 impl Collision {
     pub fn aurora() -> Result<Self, Error> {
@@ -54,6 +63,8 @@ impl Collision {
             || value.boxes.len() > 64
             || value.anchors.is_empty()
             || value.anchors.len() > 64
+            || value.interactions.is_empty()
+            || value.interactions.len() > 64
         {
             return Err(Error::InvalidInput);
         }
@@ -66,6 +77,17 @@ impl Collision {
             }
         }
         for shape in &value.boxes {
+            if shape.geometry_guid.len() != 32
+                || !shape.geometry_guid.bytes().all(|c| c.is_ascii_hexdigit())
+                || value
+                    .boxes
+                    .iter()
+                    .filter(|other| other.geometry_guid == shape.geometry_guid)
+                    .count()
+                    != 1
+            {
+                return Err(Error::InvalidInput);
+            }
             for axis in 0..3 {
                 if shape.min_mm[axis] >= shape.max_mm[axis]
                     || shape.min_mm[axis] < -crate::BOUND_MM
@@ -73,6 +95,27 @@ impl Collision {
                 {
                     return Err(Error::InvalidInput);
                 }
+            }
+        }
+        for interaction in &value.interactions {
+            if interaction.id.is_empty()
+                || interaction.id.len() > 64
+                || !interaction
+                    .id
+                    .bytes()
+                    .all(|c| c.is_ascii_lowercase() || c == b'-')
+                || !(1..=10000).contains(&interaction.radius_mm)
+                || value
+                    .interactions
+                    .iter()
+                    .filter(|other| other.id == interaction.id)
+                    .count()
+                    != 1
+                || !value.boxes.iter().any(|shape| {
+                    shape.geometry_guid == interaction.geometry_guid && !shape.walkable_surface
+                })
+            {
+                return Err(Error::InvalidInput);
             }
         }
         for anchor in &value.anchors {
@@ -96,6 +139,26 @@ impl Collision {
             x: anchor.position_mm[0],
             z: anchor.position_mm[2],
         })
+    }
+    pub fn can_interact(&self, id: &str, point: Position) -> bool {
+        if !self.clear(point) {
+            return false;
+        }
+        let Some(interaction) = self.interactions.iter().find(|entry| entry.id == id) else {
+            return false;
+        };
+        let Some(shape) = self
+            .boxes
+            .iter()
+            .find(|shape| shape.geometry_guid == interaction.geometry_guid)
+        else {
+            return false;
+        };
+        // Twice the distance preserves half-millimeter collider centers.
+        let dx = 2 * i64::from(point.x) - i64::from(shape.min_mm[0]) - i64::from(shape.max_mm[0]);
+        let dz = 2 * i64::from(point.z) - i64::from(shape.min_mm[2]) - i64::from(shape.max_mm[2]);
+        let radius = 2 * i64::from(interaction.radius_mm);
+        dx * dx + dz * dz <= radius * radius
     }
     pub fn clear(&self, point: Position) -> bool {
         if point.x < self.allowed_center_min_xz[0]
@@ -144,6 +207,42 @@ impl Collision {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn interaction_uses_exported_center_radius_and_rejects_invalid_exports() {
+        let collision = Collision::aurora().unwrap();
+        assert!(!collision.can_interact("activity-terminal", collision.spawn().unwrap()));
+        assert!(!collision.can_interact("activity-terminal", Position { x: 0, z: 499 }));
+        assert!(collision.can_interact("activity-terminal", Position { x: 0, z: 500 }));
+        assert!(collision.can_interact("activity-terminal", Position { x: 0, z: 1000 }));
+        assert!(!collision.can_interact("activity-terminal", Position { x: 0, z: 3000 }));
+        assert!(!collision.can_interact("unknown", Position { x: 0, z: 1000 }));
+        assert!(!collision.can_interact(
+            "activity-terminal",
+            Position {
+                x: i32::MAX,
+                z: i32::MIN
+            }
+        ));
+        let original: serde_json::Value = serde_json::from_slice(include_bytes!(
+            "../../../config/aurora-blockout-collision.json"
+        ))
+        .unwrap();
+        for invalid in [
+            serde_json::json!([]),
+            serde_json::json!([{"id":"activity-terminal","geometryGuid":"missing","radiusMm":2500}]),
+            serde_json::json!([{"id":"activity-terminal","geometryGuid":"f83ad680fc7f432f87d730f70cc10004","radiusMm":0}]),
+        ] {
+            let mut manifest = original.clone();
+            manifest["interactions"] = invalid;
+            assert!(Collision::parse(&serde_json::to_vec(&manifest).unwrap()).is_err());
+        }
+        let mut manifest = original.clone();
+        manifest["interactions"]
+            .as_array_mut()
+            .unwrap()
+            .push(original["interactions"][0].clone());
+        assert!(Collision::parse(&serde_json::to_vec(&manifest).unwrap()).is_err());
+    }
     #[test]
     fn exported_capsule_bounds_and_sweeps_stop_walls_and_teleports() {
         let collision = Collision::aurora().unwrap();

@@ -20,6 +20,9 @@ namespace VirtualLife.Editor
                 geometrySourceGuid = AssetDatabase.AssetPathToGUID(geometrySource),
                 geometrySourceSha256 = BitConverter.ToString(hash.ComputeHash(File.ReadAllBytes(geometrySource))).Replace("-", "").ToLowerInvariant(),
                 materialAssetGuid = AssetDatabase.AssetPathToGUID("Assets/VirtualLife/Resources/BlockoutLit.mat"),
+                interactions = BlockoutGeometry.Boxes.Where(box => box.Name == "Activity terminal").Select(box => new Interaction {
+                    id = "activity-terminal", geometryGuid = box.Id, radiusMm = Mm(District.InteractionRadius)
+                }).ToArray(),
                 boxes = BlockoutGeometry.Boxes.Select(box => new CollisionBox {
                     geometryGuid = box.Id, name = box.Name,
                     minMm = new[] {Mm(box.X - box.Width / 2), Mm(box.Y - box.Height / 2), Mm(box.Z - box.Depth / 2)},
@@ -46,6 +49,7 @@ namespace VirtualLife.Editor
             public int[] allowedCenterMinXZ = {-15500, -15500}, allowedCenterMaxXZ = {15500, 15500};
             public CollisionBox[] boxes;
             public Anchor[] anchors;
+            public Interaction[] interactions;
         }
         [Serializable] private sealed class CollisionBox {
             public string geometryGuid, name;
@@ -53,5 +57,6 @@ namespace VirtualLife.Editor
             public bool walkableSurface;
         }
         [Serializable] private sealed class Anchor { public string id; public int[] positionMm; }
+        [Serializable] private sealed class Interaction { public string id, geometryGuid; public int radiusMm; }
     }
 }

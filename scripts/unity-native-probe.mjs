@@ -23,6 +23,7 @@ export async function unityNativeProbe({directory,index,origin,boot,match,loginN
   const timer=setTimeout(cleanup,300000);
   let code;try{code=await new Promise((ok,no)=>{child.once('error',no);child.once('close',ok);});}finally{clearTimeout(timer);cleanup();}
   assert.equal(code,0,'Unity Linux test player failed; inspect private fixture logs');
+  assert(!/^Unable to parse file (?:ProjectSettings|Assets)\//m.test(await readFile(prefix+'.log','utf8')),'Unity project asset parsing must succeed');
   const xml=await readFile(results,'utf8');
   assert(/<test-run\b[^>]*result="Passed"/.test(xml)&&/\bpassed="1"/.test(xml),'Actual Unity player test must pass, not skip');
   const facts=JSON.parse(await readFile(prefix+'.json','utf8'));

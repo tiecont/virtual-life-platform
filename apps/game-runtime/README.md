@@ -78,6 +78,17 @@ replay and reconnect expose the reconciled result without a second grant.
 
 Unity scene integration and actual Editor/player execution remain VL-081.
 
+With explicit Aurora movement enabled, `fixture.advance.v1` also requires the
+account's canonical zone position within the exported activity-terminal radius.
+The manifest references the terminal collider GUID; its center and Unity's
+interaction radius are exported together. All sockets for one account serialize
+movement and game execution until the durable effect finishes. Host policy,
+membership and receipt authentication still apply. New remote commands return
+`NOT_IN_PROXIMITY`; an immutable committed retry remains readable after walking
+away or restarting. Views and Pet Arena battle actions have their own admission
+and do not inherit the synthetic terminal requirement. Movement remains opt-in;
+nonmovement headless fixtures retain their existing command contract.
+
 Liveness remains distinct from readiness: `/health/live` reports the process;
 `/health/ready` checks the zone, owner lease, checkpoint and stored journal integrity.
 `/metrics` contains aggregate receipt/rejection counters only; successful receipt

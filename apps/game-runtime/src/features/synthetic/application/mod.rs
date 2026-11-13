@@ -10,6 +10,9 @@ struct Advance {
     epoch: i64,
 }
 impl NativeGame for Rules {
+    fn interaction(&self, kind: &str) -> Option<&'static str> {
+        (kind == "fixture.advance.v1").then_some("activity-terminal")
+    }
     fn view_kind(&self) -> &'static str {
         "fixture.view.v1"
     }
