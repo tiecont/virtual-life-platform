@@ -18,7 +18,7 @@ namespace VirtualLife.Networking
         private readonly Uri origin;
         private readonly SemaphoreSlim operation = new SemaphoreSlim(1, 1);
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
-        private string principal, csrf;
+        private string principal, csrf, logoutCsrf;
         private bool disposed;
 
         public PlatformSession(Uri origin) : this(origin, new HttpClientHandler {
@@ -41,14 +41,14 @@ namespace VirtualLife.Networking
                 password == null || password.Length < 12 || password.Length > 128 || requestId == Guid.Empty)
                 throw new ArgumentException("Invalid login input");
             return Exclusive(async token => {
-                principal = null; csrf = null;
+                principal = null; csrf = null; logoutCsrf = null;
                 var me = await Send<Login, Me>("/v1/session/login", new Login {
                     Name = loginName, Password = password, RequestId = requestId.ToString()
                 }, token).ConfigureAwait(false);
                 if (me?.Profile == null || !Guid.TryParse(me.Profile.Id, out var id) || id == Guid.Empty ||
                     me.Csrf == null || !Regex.IsMatch(me.Csrf, "^[a-f0-9]{64}$") || ParseDate(me.Expires) <= DateTimeOffset.UtcNow)
                     throw new NativeFailure(Failure.Authentication);
-                principal = id.ToString(); csrf = me.Csrf; return true;
+                principal = id.ToString(); csrf = me.Csrf; logoutCsrf = me.Csrf; return true;
             }, cancellation);
         }
 
@@ -64,7 +64,20 @@ namespace VirtualLife.Networking
             }, cancellation);
         }
 
-        private async Task<TResponse> Send<TRequest, TResponse>(string path, TRequest body, CancellationToken token)
+        public Task LogoutAsync(Guid requestId, CancellationToken cancellation = default)
+        {
+            if (requestId == Guid.Empty) throw new ArgumentException("Logout request ID required");
+            return Exclusive(async token => {
+                // Cancellation invalidates ticket authority, but must retain the
+                // last authenticated CSRF solely for attempting server revocation.
+                if (logoutCsrf == null) throw new NativeFailure(Failure.Authentication);
+                var result = await Send<Empty, LoggedOut>("/v1/session/logout", new Empty(), token, requestId).ConfigureAwait(false);
+                if (result == null || !result.Value) throw new NativeFailure(Failure.Protocol);
+                principal = null; csrf = null; logoutCsrf = null; return true;
+            }, cancellation, waitForOperation: true);
+        }
+
+        private async Task<TResponse> Send<TRequest, TResponse>(string path, TRequest body, CancellationToken token, Guid? requestId = null)
         {
             using (var data = new MemoryStream())
             using (var request = new HttpRequestMessage(HttpMethod.Post, new Uri(origin, path)))
@@ -74,6 +87,8 @@ namespace VirtualLife.Networking
                 request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
                 request.Headers.Add("Origin", origin.GetLeftPart(UriPartial.Authority));
                 if (path == "/v1/runtime-ticket") request.Headers.Add("X-CSRF-Token", csrf);
+                if (path == "/v1/session/logout") request.Headers.Add("X-CSRF-Token", logoutCsrf);
+                if (requestId.HasValue) request.Headers.Add("Idempotency-Key", requestId.Value.ToString());
                 using (var response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token).ConfigureAwait(false))
                 {
                     if (!response.IsSuccessStatusCode) throw new NativeFailure(Failure.Authentication);
@@ -95,10 +110,13 @@ namespace VirtualLife.Networking
             }
         }
 
-        private async Task<T> Exclusive<T>(Func<CancellationToken, Task<T>> action, CancellationToken cancellation)
+        private async Task<T> Exclusive<T>(Func<CancellationToken, Task<T>> action, CancellationToken cancellation, bool waitForOperation = false)
         {
             if (disposed) throw new ObjectDisposedException(nameof(PlatformSession));
-            if (!await operation.WaitAsync(0, cancellation).ConfigureAwait(false)) throw new NativeFailure(Failure.Busy);
+            // BoundedTicket can finish cancellation before its HTTP provider has
+            // unwound. Logout must drain that provider before revoking the cookie.
+            if (waitForOperation) await operation.WaitAsync(cancellation).ConfigureAwait(false);
+            else if (!await operation.WaitAsync(0, cancellation).ConfigureAwait(false)) throw new NativeFailure(Failure.Busy);
             using (var bounded = CancellationTokenSource.CreateLinkedTokenSource(cancellation, lifetime.Token))
             {
                 bounded.CancelAfter(TimeSpan.FromSeconds(5));
@@ -120,10 +138,11 @@ namespace VirtualLife.Networking
                 throw new NativeFailure(Failure.Protocol);
             return date;
         }
-        public void Dispose() { if (disposed) return; disposed = true; lifetime.Cancel(); http.Dispose(); principal = null; csrf = null; }
+        public void Dispose() { if (disposed) return; disposed = true; lifetime.Cancel(); http.Dispose(); principal = null; csrf = null; logoutCsrf = null; }
         public override string ToString() { return "PlatformSession[redacted]"; }
 
         [DataContract] private sealed class Empty { }
+        [DataContract] private sealed class LoggedOut { [DataMember(Name = "loggedOut", IsRequired = true)] public bool Value { get; set; } }
         [DataContract] private sealed class Login {
             [DataMember(Name = "loginName")] public string Name { get; set; }
             [DataMember(Name = "password")] public string Password { get; set; }

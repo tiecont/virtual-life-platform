@@ -2939,7 +2939,46 @@
         "adapterValidation": "node scripts/native-csharp.mjs",
         "realProcessValidation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
         "scope": "Pinned Linux Unity player now proves actual login/ticket/WSS/command/receipt/reconnect and runtime restart. VL-080 Windows acceptance remains an explicit incomplete dependency",
-        "remainingAcceptance": "Owner physical connected-panel acceptance, platform logout and in-flight scene-exit acceptance, rendered ambiguous-ACK/error matrix, and inherited VL-080 Windows qualification remain. Automated Linux OS-input panel/terminal roundtrip passed; synthetic ruleset only.",
+        "remainingAcceptance": "Owner physical connected-panel acceptance, in-flight scene-exit acceptance, rendered ambiguous-ACK/error matrix, and inherited VL-080 Windows qualification remain. Automated Linux OS-input panel/terminal roundtrip and platform logout during a held ticket request passed; synthetic ruleset only.",
+        "linuxPlatformLogoutEvidence": {
+          "sourceRevision": "5bf1e84709649a505239948aeba68eee672dd5d1",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {
+              "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests",
+              "exitCode": 0,
+              "result": "4 EditMode and 2 PlayMode tests passed, no skipped fixtures counted"
+            },
+            {
+              "command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs",
+              "sourceRevision": "b665a121038f4730f9f459132faccd46c64831e3",
+              "exitCode": 0,
+              "result": "61 assertions, both target builds and 15 C# syntax checks; CSRF/Origin/cookie/idempotency, malformed/false/rejected logout, cancelled ticket drain, committed-but-unacknowledged cancellation, no late state restore, next-login recovery"
+            },
+            {
+              "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement",
+              "exitCode": 0,
+              "result": "4 scenarios; two rendered Linux players, actual XTest login/W/terminal E/receipt/resync/Logout while HTTP ticket is held, cleared credentials/state and scene re-entry. PostgreSQL records two logouts; Rust denies two unused tickets before expiry. SIGKILL between players; committed versions 1/2 and exactly two receipts"
+            },
+            {
+              "command": "PATH=<local .NET SDK>:$PATH node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
+              "sourceRevision": "5bf1e84709649a505239948aeba68eee672dd5d1",
+              "exitCode": 0,
+              "result": "22 real NestJS/Rust WSS scenarios passed with restricted PostgreSQL, duplicate receipts, SIGKILL recovery and platform settlement"
+            },
+            {
+              "command": "node scripts/verify-architecture.mjs",
+              "sourceRevision": "b665a121038f4730f9f459132faccd46c64831e3",
+              "exitCode": 0,
+              "result": "128 SQL tables, 478 source files, API ownership and worker boundaries passed"
+            }
+          ],
+          "localArtifacts": "artifacts/g2-session-lifecycle/artifacts/desktop-first/vl022/interop-6612fec8/{facts.json,unity-1.xml,unity-2.xml,unity-1.png.logout.png,unity-2.png.logout.png}; C# process evidence interop-05061334; Editor artifacts/unity/2026-11-13T17-20-21-368Z-f29fe689/result.json",
+          "playerExecutableSha256": "26901901cc6dd63212d741b339897f072d34cb7b3f08419fe451fc8e77c79a1f",
+          "nativeAssemblySha256": "0a365831bd78a8285a3f8e0093d488959e8d3bf7318c23bae753123d2bee847d",
+          "sceneAssemblySha256": "5522d439136db4901bef92b3d466d008f46b9fcd7966731828cd8c230e63f92d",
+          "limitations": "Automated OS input on CachyOS/AMD Renoir OpenGLCore, not physical owner acceptance or Windows. Fixture-only CA trust, ephemeral local services, synthetic game. Failed or cancelled logout never claims confirmed server revocation. Rendered ambiguous-ACK and in-flight scene exit remain unqualified. VL-081 remains IN_PROGRESS."
+        },
         "interactiveLinuxEvidence": {
           "sourceRevision": "50673f6be95ea51b4507d5f96305a6332557584a",
           "reviewMode": "SINGLE_AGENT_AUDIT",

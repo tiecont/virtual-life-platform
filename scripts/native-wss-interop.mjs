@@ -3,7 +3,7 @@ import {createRequire} from 'node:module';
 import {generateKeyPairSync,randomBytes,randomUUID,sign} from 'node:crypto';
 import {spawn,spawnSync} from 'node:child_process';
 import {connect} from 'node:net';
-import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import {access,mkdir,readFile,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {Pool} from 'pg';
 import {chromium} from '@playwright/test';
@@ -65,11 +65,20 @@ try{
  class FixtureModule{} Module({})(FixtureModule);
  app=await NestFactory.create(FixtureModule,new FastifyAdapter({https:{cert,key},logger:false}),{logger:false});
  const http=app.getHttpAdapter().getInstance();registerIdentity(http,config,identity);
- if(unity)http.addHook('onResponse',(request,reply,done)=>{
-  if(['/v1/session/login','/v1/runtime-ticket'].includes(request.url))(facts.unityHttp??=[]).push({path:request.url,status:reply.statusCode});
-  done();
+ const logoutProofs=[];
+ let verifyLogout;
+ if(unity)http.addHook('onResponse',async(request,reply)=>{
+  if(['/v1/session/login','/v1/runtime-ticket','/v1/session/logout'].includes(request.url))(facts.unityHttp??=[]).push({path:request.url,status:reply.statusCode});
+  if(interactive&&request.url==='/v1/session/logout'&&reply.statusCode===200){
+   const proof=verifyLogout(logoutProofs.length);logoutProofs.push(proof);
+   // Observe failure now and rethrow from the main fixture after the player exits.
+   await proof.catch(()=>{});
+  }
  });
  let allocateForCsharp=false;
+ const logoutTickets=[];
+ const logoutGate=resolve(directory,'logout-gate'),logoutObserved=resolve(directory,'logout-observed');
+ async function exists(file){try{await access(file);return true;}catch(error){if(error.code==='ENOENT')return false;throw error;}}
  // The isolated client fixture allocates only authenticated, CSRF-checked sessions
  // to the harness-owned scope. This hook is never part of the production API.
  http.addHook('preHandler',async req=>{
@@ -79,6 +88,21 @@ try{
   if(allocateForCsharp&&req.url==='/v1/runtime-ticket'){
    const token=readSessionToken(req,config);identity.verifyCsrf(token,req.headers['x-csrf-token']);
    await store.allocate(token,scope);
+   if(interactive&&await exists(logoutGate)){
+    await writeFile(logoutObserved,'Ticket request is blocked before issuance',{mode:0o600});
+    const deadline=Date.now()+10000;
+    while(await exists(logoutGate)){
+     if(req.raw.aborted)break;
+     assert(Date.now()<deadline,'Rendered logout fixture did not release its ticket barrier');
+     await new Promise(ok=>setTimeout(ok,10));
+    }
+   }
+  }
+  if(interactive&&req.url==='/v1/session/logout'){
+   const token=readSessionToken(req,config);identity.verifyCsrf(token,req.headers['x-csrf-token']);
+   // Retain an unused, valid ticket only in fixture memory to prove logout,
+   // rather than expiry or nonce replay, rejects the subsequent Rust admission.
+   logoutTickets.push(await issuer.issue(token,scope));
   }
  });
  const bundle=await build({entryPoints:['tests/native-wss/browser.ts'],nodePaths:[resolve('packages/native-protocol/node_modules')],bundle:true,write:false,format:'iife',platform:'browser',target:'es2022'});
@@ -189,15 +213,32 @@ try{
   }finally{allocateForCsharp=false;}
  }
  if(interactive){
+  const revokedCount=async()=>Number((await pool.query("SELECT count(*) AS n FROM identity_sessions WHERE account_id=$1 AND revoked_reason='logout'",[guest.me.profile.id])).rows[0].n);
+  verifyLogout=async index=>{
+   assert.equal(logoutTickets.length,index+1);
+   const ticket=logoutTickets[index];
+   assert(Date.parse(ticket.expiresAt)>Date.now(),'Logout rejection must use an unexpired ticket');
+   const link=await call('open',origin.replace('https:','wss:')+'/rt/v1');
+   await call('send',link,1,1,'hello',{ticket:ticket.ticket,clientBuild:'logout-fixture-v1',contentHash:Array.from(Buffer.from(scope.contentHash,'hex'))});
+   assert(await call('closed',link));
+   assert(Date.parse(ticket.expiresAt)>Date.now(),'Rust rejection must precede ticket expiry');
+  };
+  const beforeLogout=await revokedCount();
   await probeUnity();
   assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'1');
-  record('rendered-panel-os-input-wrong-login-correct-login-walk-terminal-e-committed-receipt-resync-session-exit');
+  assert.equal(await revokedCount(),beforeLogout+1);
+  assert.equal(logoutProofs.length,1);await logoutProofs[0];
+  record('rendered-panel-os-input-wrong-login-correct-login-walk-terminal-e-committed-receipt-resync-platform-logout-session-exit');
   child.kill('SIGKILL');await childClosed;child=undefined;await startHost();
   await probeUnity();
   assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'2');
   assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,2);
+  assert.equal(await revokedCount(),beforeLogout+2);
+  assert.equal(logoutProofs.length,2);await logoutProofs[1];
+  assert.equal(facts.unityHttp.filter(value=>value.path==='/v1/session/logout'&&value.status===200).length,2);
   assert(facts.unityHttp.some(value=>value.path==='/v1/session/login'&&value.status===401));
   record('rendered-panel-after-sigkill-recovers-and-commits-next-turn');
+  record('rendered-logout-revokes-identity-and-rejects-unexpired-unused-runtime-ticket');
  }else{
  if(unity){
   assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'0');
