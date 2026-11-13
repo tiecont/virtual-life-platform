@@ -1,10 +1,12 @@
 using System;
-using System.IO;
-using System.Runtime.Serialization;
+using System.Globalization;
+using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace VirtualLife.Networking
 {
@@ -121,14 +123,58 @@ namespace VirtualLife.Networking
         }
         private static PlayState Decode(ulong version, byte[] bytes)
         {
-            Result result;
-            try { using (var stream = new MemoryStream(bytes)) result = (Result)new DataContractJsonSerializer(typeof(Result)).ReadObject(stream); }
-            catch (Exception e) when (e is SerializationException || e is System.Xml.XmlException) { throw new NativeFailure(Failure.Protocol); }
-            if (result?.State == null || result.Epoch < 1 || result.State.Turns < 0 || result.State.Turns > 3 ||
-                (ulong)result.State.Turns != version || result.State.Roll < 0 || result.State.Roll >= 100 ||
-                (result.Reward != null && result.Reward != "REWARD_PENDING" && result.Reward != "GRANTED" && result.Reward != "DECLINED"))
+            XElement result;
+            // Protobuf's existing JSON parser checks the complete document; the
+            // XML infoset preserves duplicate keys that Struct's map would overwrite.
+            try {
+                new Google.Protobuf.JsonParser(new Google.Protobuf.JsonParser.Settings(8))
+                    .Parse<Google.Protobuf.WellKnownTypes.Struct>(new UTF8Encoding(false, true).GetString(bytes));
+                var quotas = new XmlDictionaryReaderQuotas { MaxDepth = 8, MaxStringContentLength = 4096, MaxArrayLength = 32 };
+                using (var reader = JsonReaderWriterFactory.CreateJsonReader(bytes, quotas)) result = XDocument.Load(reader).Root;
+            } catch (Exception error) when (error is XmlException || error is DecoderFallbackException ||
+                error is Google.Protobuf.InvalidJsonException || error is Google.Protobuf.InvalidProtocolBufferException) {
                 throw new NativeFailure(Failure.Protocol);
-            return new PlayState(version, result.Epoch, result.State.Turns, result.State.Roll, result.Reward);
+            }
+            ObjectFields(result, "state", "epoch", "reward");
+            var counter = result.Element("state");
+            ObjectFields(counter, "turns", "ownRoll");
+            var epoch = Integer(result.Element("epoch"));
+            var turns = Integer(counter.Element("turns"));
+            var roll = Integer(counter.Element("ownRoll"));
+            var rewardField = result.Element("reward");
+            var reward = rewardField == null ? null : Scalar(rewardField, Type(rewardField) == "null" ? "null" : "string");
+            if (rewardField != null && Type(rewardField) == "null") {
+                if (reward.Length != 0) throw new NativeFailure(Failure.Protocol);
+                reward = null;
+            }
+            if (epoch < 1 || turns < 0 || turns > 3 || (ulong)turns != version || roll < 0 || roll >= 100 ||
+                (reward != null && reward != "REWARD_PENDING" && reward != "GRANTED" && reward != "DECLINED"))
+                throw new NativeFailure(Failure.Protocol);
+            return new PlayState(version, epoch, (int)turns, (int)roll, reward);
+        }
+        private static string Type(XElement field)
+        {
+            if (field == null || field.Attributes().Count() != 1 || field.Attribute("type") == null)
+                throw new NativeFailure(Failure.Protocol);
+            return field.Attribute("type").Value;
+        }
+        private static void ObjectFields(XElement field, params string[] names)
+        {
+            if (Type(field) != "object" || field.Nodes().Any(node => !(node is XElement)) ||
+                field.Elements().Any(child => child.Name.NamespaceName.Length != 0 || !names.Contains(child.Name.LocalName)) ||
+                field.Elements().Select(child => child.Name).Distinct().Count() != field.Elements().Count())
+                throw new NativeFailure(Failure.Protocol);
+        }
+        private static string Scalar(XElement field, string type)
+        {
+            if (Type(field) != type || field.HasElements) throw new NativeFailure(Failure.Protocol);
+            return field.Value;
+        }
+        private static long Integer(XElement field)
+        {
+            if (!long.TryParse(Scalar(field, "number"), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var value))
+                throw new NativeFailure(Failure.Protocol);
+            return value;
         }
         private async Task<PlayState> Exclusive(Func<CancellationToken, Task<PlayState>> work, CancellationToken cancellation)
         {
@@ -143,14 +189,5 @@ namespace VirtualLife.Networking
         }
         public void Dispose() { if (disposed) return; disposed = true; lifetime.Cancel(); connection.Dispose(); platform.Dispose(); state = null; pending = null; }
         public override string ToString() => "SyntheticPlaySession[redacted]";
-        [DataContract] private sealed class Result {
-            [DataMember(Name = "state", IsRequired = true)] public Counter State { get; set; }
-            [DataMember(Name = "epoch", IsRequired = true)] public long Epoch { get; set; }
-            [DataMember(Name = "reward")] public string Reward { get; set; }
-        }
-        [DataContract] private sealed class Counter {
-            [DataMember(Name = "turns", IsRequired = true)] public int Turns { get; set; }
-            [DataMember(Name = "ownRoll", IsRequired = true)] public int Roll { get; set; }
-        }
     }
 }
