@@ -23,6 +23,9 @@ async function run(args, name) {
   report.commands.push({command, exitCode: code});
   await save();
   if (code !== 0) throw Error('Unity batch command failed. See artifact log.');
+  const log = await readFile(resolve(directory, name + '.log'), 'utf8');
+  if (/^Unable to parse file (?:ProjectSettings|Assets)\//m.test(log))
+    throw Error('Unity project asset parsing failed. See artifact log.');
 }
 try {
   if (!process.env.UNITY_EDITOR) {
