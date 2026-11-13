@@ -24,15 +24,28 @@ namespace VirtualLife.NativeScene
         private volatile bool alive = true;
         private bool movementEnabled, moving;
         private float nextMove;
+        private int generation;
+        public PlayState PresentedState => state;
+        public string Status => status;
+        public bool Busy => busy;
+        public bool Ready => ready;
+        public bool HasPendingCommand => pending;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
         {
-            if (Application.isBatchMode || (!Application.isEditor && !Debug.isDebugBuild) || SceneManager.GetActiveScene().name != "AuroraBlockout" ||
-                string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VL_NATIVE_DEV_CONFIG"))) return;
+            SceneManager.sceneLoaded -= SceneLoaded;
+            SceneManager.sceneLoaded += SceneLoaded;
+            SceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
+        }
+        private static void SceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (Application.isBatchMode || (!Application.isEditor && !Debug.isDebugBuild) || scene.name != "AuroraBlockout" ||
+                string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VL_NATIVE_DEV_CONFIG")) || FindFirstObjectByType<NativeSceneController>() != null) return;
             new GameObject("Native developer connection").AddComponent<NativeSceneController>();
         }
-        private void Awake()
+        private void Awake() { Initialize(); }
+        private void Initialize()
         {
             district = FindFirstObjectByType<OfflineDistrict>();
             try {
@@ -94,17 +107,19 @@ namespace VirtualLife.NativeScene
             if (busy || moving || session == null) return;
             request = CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);
             var current = request;
+            var owner = session;
+            var startedGeneration = generation;
             busy = true; status = "Connecting / awaiting authoritative receipt...";
             try {
                 var result = await work(current.Token).ConfigureAwait(false);
-                if (alive) updates.Enqueue(() => { current.Dispose(); request = null; state = result; ready = true; pending = session.HasPendingCommand; busy = false; if (movementEnabled && session.MovementState != null) district.Reconcile(session.MovementState.OwnActor.XMm, session.MovementState.OwnActor.ZMm); status = "Authorized server state received."; });
+                if (alive) updates.Enqueue(() => { current.Dispose(); if (generation != startedGeneration) return; request = null; state = result; ready = true; pending = owner.HasPendingCommand; busy = false; if (movementEnabled && owner.MovementState != null) district.Reconcile(owner.MovementState.OwnActor.XMm, owner.MovementState.OwnActor.ZMm); status = "Authorized server state received."; });
             } catch (OperationCanceledException) {
-                if (alive) updates.Enqueue(() => { current.Dispose(); request = null; ready = false; busy = false; pending = session.HasPendingCommand; status = "Cancelled. Reconnect before continuing."; });
+                if (alive) updates.Enqueue(() => { current.Dispose(); if (generation != startedGeneration) return; request = null; ready = false; busy = false; pending = owner.HasPendingCommand; status = "Cancelled. Reconnect before continuing."; });
             } catch (NativeFailure failure) {
                 var reason = failure.Reason.ToString(); var code = failure.Code.ToString();
-                if (alive) updates.Enqueue(() => { current.Dispose(); request = null; ready = false; busy = false; pending = session.HasPendingCommand; status = "Native failure: " + reason + " / " + code + ". Reconnect or retry the pending command."; });
+                if (alive) updates.Enqueue(() => { current.Dispose(); if (generation != startedGeneration) return; request = null; ready = false; busy = false; pending = owner.HasPendingCommand; status = "Native failure: " + reason + " / " + code + ". Reconnect or retry the pending command."; });
             } catch {
-                if (alive) updates.Enqueue(() => { current.Dispose(); request = null; ready = false; busy = false; pending = session.HasPendingCommand; status = "Native request unavailable. Check local services and scope."; });
+                if (alive) updates.Enqueue(() => { current.Dispose(); if (generation != startedGeneration) return; request = null; ready = false; busy = false; pending = owner.HasPendingCommand; status = "Native request unavailable. Check local services and scope."; });
             } finally { if (!alive) current.Dispose(); }
         }
         private void OnGUI()
@@ -136,13 +151,19 @@ namespace VirtualLife.NativeScene
                 // Cancellation aborts the current exchange; ambiguous mutations keep their ID.
                 request?.Cancel(); ready = false;
             }
+            if (GUI.Button(new Rect(188, 248, 170, 26), "End local session")) {
+                generation++; request?.Cancel(); request = null; session?.Dispose(); session = null;
+                state = null; ready = false; busy = false; pending = false; password = ""; loginName = "";
+                GUIUtility.keyboardControl = 0;
+                Initialize();
+            }
             if (state != null) GUI.Label(new Rect(28, 282, 580, 24), "Committed version " + state.Version + " | turn " + state.Turns + "/3 | reward " + (state.Reward ?? "none"));
             GUI.Label(new Rect(28, 314, 580, 44), "Walk to the blue terminal and press E for one authoritative turn.", wrapped);
             GUI.matrix = matrix; GUI.enabled = enabled;
         }
         private void OnDestroy()
         {
-            alive = false; lifetime.Cancel(); session?.Dispose(); request?.Dispose(); lifetime.Dispose(); password = "";
+            alive = false; generation++; lifetime.Cancel(); session?.Dispose(); lifetime.Dispose(); password = "";
             if (district != null) { district.NativeInteraction = null; district.NativeMovement = null; district.InputCaptured = false; district.NetworkAuthority = false; }
             while (updates.TryDequeue(out _)) { }
         }

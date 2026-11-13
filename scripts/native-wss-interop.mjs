@@ -12,10 +12,11 @@ import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
 
 const options=process.argv.slice(2);
 const movement=options.includes('--movement');
-const loss=options.includes('--pet-arena-loss'),pet=options.includes('--pet-arena')||loss,playable=options.includes('--runtime-gameplay')||pet,csharp=options.includes('--csharp-client'),unity=options.includes('--unity-player');
+const interactive=options.includes('--unity-interactive');
+const loss=options.includes('--pet-arena-loss'),pet=options.includes('--pet-arena')||loss,playable=options.includes('--runtime-gameplay')||pet,csharp=options.includes('--csharp-client'),unity=options.includes('--unity-player')||interactive;
 const petContent=pet?spawnSync(resolve('artifacts/rust/target/debug/vl-game-runtime'),['--ruleset-content-hash','pet-arena-pve'],{encoding:'utf8'}).stdout.trim():undefined;
 if(pet)assert.match(petContent,/^[a-f0-9]{64}$/);
-if(options.some(value=>!['--runtime-gameplay','--csharp-client','--pet-arena','--pet-arena-loss','--unity-player','--movement'].includes(value))||new Set(options).size!==options.length||(csharp||unity)&&(!playable||pet)||csharp&&unity||movement&&(!playable||pet||csharp||unity))throw Error('Unknown native interoperability mode');
+if(options.some(value=>!['--runtime-gameplay','--csharp-client','--pet-arena','--pet-arena-loss','--unity-player','--unity-interactive','--movement'].includes(value))||new Set(options).size!==options.length||(csharp||unity)&&(!playable||pet)||csharp&&unity||interactive&&options.includes('--unity-player')||movement&&(!playable||pet||csharp||unity&&!interactive))throw Error('Unknown native interoperability mode');
 const require=createRequire(import.meta.url),apiRequire=createRequire(resolve('apps/platform-api/package.json'));
 apiRequire('reflect-metadata');
 const {NestFactory}=apiRequire('@nestjs/core'),{Module}=apiRequire('@nestjs/common'),{FastifyAdapter}=apiRequire('@nestjs/platform-fastify');
@@ -72,6 +73,9 @@ try{
  // The isolated client fixture allocates only authenticated, CSRF-checked sessions
  // to the harness-owned scope. This hook is never part of the production API.
  http.addHook('preHandler',async req=>{
+  if(interactive&&req.url==='/v1/session/login'){
+   (facts.panelLoginInput??=[]).push({accountMatches:req.body?.loginName===loginName,passwordMatches:req.body?.password===loginPassword});
+  }
   if(allocateForCsharp&&req.url==='/v1/runtime-ticket'){
    const token=readSessionToken(req,config);identity.verifyCsrf(token,req.headers['x-csrf-token']);
    await store.allocate(token,scope);
@@ -180,10 +184,21 @@ try{
   allocateForCsharp=true;
   try{
    const {unityNativeProbe}=await import('./unity-native-probe.mjs');
-   const result=await unityNativeProbe({directory,index:++unityProbeIndex,origin,boot:scope.runtimeBootId,match:matchId,loginName,password:loginPassword});
+   const result=await unityNativeProbe({directory,index:++unityProbeIndex,origin,boot:scope.runtimeBootId,match:matchId,loginName,password:loginPassword,interactive});
    (facts.unityPlayers??=[]).push(result);
   }finally{allocateForCsharp=false;}
  }
+ if(interactive){
+  await probeUnity();
+  assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'1');
+  record('rendered-panel-os-input-wrong-login-correct-login-walk-terminal-e-committed-receipt-resync-session-exit');
+  child.kill('SIGKILL');await childClosed;child=undefined;await startHost();
+  await probeUnity();
+  assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'2');
+  assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,2);
+  assert(facts.unityHttp.some(value=>value.path==='/v1/session/login'&&value.status===401));
+  record('rendered-panel-after-sigkill-recovers-and-commits-next-turn');
+ }else{
  if(unity){
   assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'0');
   await probeUnity();

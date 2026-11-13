@@ -180,3 +180,19 @@ against actual Nest/Rust processes in the C# interop suite. The explicit Unity
 player fixture exercises the same adapters and use cases in a rendered Linux
 player. Physical keyboard, developer-panel interaction and Windows acceptance
 still require their own checks; a standalone C# pass cannot replace them.
+
+The rendered panel regression uses the actual X11/XWayland input path on Linux:
+
+```sh
+node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive
+```
+
+This isolated test player types disposable credentials into the IMGUI panel,
+checks a failed login, connects, holds W to approach the terminal, presses E,
+asserts the presented committed version, resynchronizes and ends the local
+session. A second player repeats the flow after a Rust SIGKILL. XTest events
+target only the test process's own window. This is automated OS input evidence;
+physical owner keyboard acceptance and Windows qualification remain separate.
+Ending a local session destroys its in-memory cookies and adapters, cancels
+pending operations and clears its presentation. It does not revoke the server
+identity session; platform logout/revocation acceptance remains outstanding.
