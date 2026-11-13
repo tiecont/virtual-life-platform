@@ -69,6 +69,7 @@ static class Program
         string mode = "valid"; int playTurns = 0; var playReceipts = new Dictionary<string, int>(); int hellos = 0; int logins = 0; int tickets = 0; int resyncs = 0;
         var logoutId = Guid.NewGuid(); int logouts = 0;
         TaskCompletionSource<bool> committed = null, releaseAck = null;
+        TaskCompletionSource<bool> ticketRequested = null, releaseTicket = null;
         app.MapPost("/v1/session/login", async context => {
             var body = await JsonDocument.ParseAsync(context.Request.Body);
             Check(body.RootElement.GetProperty("loginName").GetString() == "fixture");
@@ -80,6 +81,10 @@ static class Program
             Check(context.Request.Headers.Origin.ToString().StartsWith("https://127.0.0.1:"));
             Check(context.Request.Headers["X-CSRF-Token"] == new string('a', 64));
             Check(context.Request.Cookies["city_session"] == "secret-cookie"); tickets++;
+            if (mode == "ticket-hold") {
+                ticketRequested.TrySetResult(true);
+                await releaseTicket.Task.WaitAsync(context.RequestAborted);
+            }
             if (mode == "unauthorized") { context.Response.StatusCode = 401; return; }
             if (mode == "redirect") { context.Response.Redirect("/v1/session/login"); return; }
             if (mode == "http-oversize") { await context.Response.WriteAsJsonAsync(new { ticket = new string('x', 17000) }); return; }
@@ -284,6 +289,22 @@ static class Program
         using (var play = new SyntheticPlaySession(platform, Client(platform.TicketAsync), Match)) {
             Check((await play.LoginAsync("fixture", "secret-password-123")).Turns == 1);
             Check(playReceipts.Count == 1); passed++;
+        }
+        stage = "logout-during-ticket";
+        ticketRequested = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        releaseTicket = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        using (var platform = new PlatformSession(origin, Handler()))
+        using (var play = new SyntheticPlaySession(platform, Client(platform.TicketAsync), Match)) {
+            await play.LoginAsync("fixture", "secret-password-123"); mode = "ticket-hold";
+            var reconnect = play.ReconnectAsync();
+            try {
+                await ticketRequested.Task.WaitAsync(TimeSpan.FromSeconds(3));
+                var before = logouts;
+                await play.LogoutAsync(logoutId).WaitAsync(TimeSpan.FromSeconds(3));
+                Check(logouts == before + 1 && play.State == null && play.MovementState == null); passed++;
+                try { await reconnect; throw new Exception("Logout ignored ticket request"); }
+                catch (OperationCanceledException) { passed++; }
+            } finally { releaseTicket.TrySetResult(true); }
         }
         await app.StopAsync();
     }

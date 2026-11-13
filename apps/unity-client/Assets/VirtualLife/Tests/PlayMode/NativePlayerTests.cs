@@ -85,8 +85,15 @@ namespace VirtualLife.Blockout.Tests
             yield return new WaitForEndOfFrame();
             ScreenCapture.CaptureScreenshot(config.screenshot);
             yield return Until(() => File.Exists(config.screenshot));
-            yield return input.Click(470, 262);
-            yield return Until(() => !panel.LoggingOut && panel.Status == "Signed out. Platform session revoked.", () => "logout: " + panel.Status);
+            File.Delete(config.logoutObserved);
+            File.WriteAllText(config.logoutGate, "Hold the next ticket response");
+            try {
+                yield return input.Click(260, 225);
+                yield return Until(() => File.Exists(config.logoutObserved), () => "ticket barrier: " + panel.Status);
+                Assert.That(panel.Busy, Is.True, "Logout must interrupt an actual in-flight ticket request");
+                yield return input.Click(470, 262);
+                yield return Until(() => !panel.LoggingOut && panel.Status == "Signed out. Platform session revoked.", () => "logout: " + panel.Status);
+            } finally { File.Delete(config.logoutGate); File.Delete(config.logoutObserved); }
             Assert.That(panel.Ready, Is.False); Assert.That(panel.PresentedState, Is.Null);
             Assert.That(Entered(panel, "password", ""), Is.True);
             Assert.That(Entered(panel, "loginName", ""), Is.True);
@@ -229,7 +236,7 @@ namespace VirtualLife.Blockout.Tests
         private static void Require(bool condition) { if (!condition) throw new InvalidOperationException("Native player invariant failed"); }
         [Serializable] private sealed class Fixture {
             public bool movement;
-            public string origin = "", caCertificate = "", wrongCaCertificate = "", boot = "", match = "", loginName = "", password = "", screenshot = "", result = "";
+            public string origin = "", caCertificate = "", wrongCaCertificate = "", boot = "", match = "", loginName = "", password = "", screenshot = "", result = "", logoutGate = "", logoutObserved = "";
         }
         [Serializable] private sealed class Facts {
             public string editor, platform, graphics, graphicsApi;

@@ -3,7 +3,7 @@ import {createRequire} from 'node:module';
 import {generateKeyPairSync,randomBytes,randomUUID,sign} from 'node:crypto';
 import {spawn,spawnSync} from 'node:child_process';
 import {connect} from 'node:net';
-import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import {access,mkdir,readFile,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {Pool} from 'pg';
 import {chromium} from '@playwright/test';
@@ -71,6 +71,8 @@ try{
  });
  let allocateForCsharp=false;
  const logoutTickets=[];
+ const logoutGate=resolve(directory,'logout-gate'),logoutObserved=resolve(directory,'logout-observed');
+ async function exists(file){try{await access(file);return true;}catch(error){if(error.code==='ENOENT')return false;throw error;}}
  // The isolated client fixture allocates only authenticated, CSRF-checked sessions
  // to the harness-owned scope. This hook is never part of the production API.
  http.addHook('preHandler',async req=>{
@@ -80,6 +82,15 @@ try{
   if(allocateForCsharp&&req.url==='/v1/runtime-ticket'){
    const token=readSessionToken(req,config);identity.verifyCsrf(token,req.headers['x-csrf-token']);
    await store.allocate(token,scope);
+   if(interactive&&await exists(logoutGate)){
+    await writeFile(logoutObserved,'Ticket request is blocked before issuance',{mode:0o600});
+    const deadline=Date.now()+10000;
+    while(await exists(logoutGate)){
+     if(req.raw.aborted)break;
+     assert(Date.now()<deadline,'Rendered logout fixture did not release its ticket barrier');
+     await new Promise(ok=>setTimeout(ok,10));
+    }
+   }
   }
   if(interactive&&req.url==='/v1/session/logout'){
    const token=readSessionToken(req,config);identity.verifyCsrf(token,req.headers['x-csrf-token']);
