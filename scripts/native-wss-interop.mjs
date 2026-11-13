@@ -66,7 +66,7 @@ try{
  app=await NestFactory.create(FixtureModule,new FastifyAdapter({https:{cert,key},logger:false}),{logger:false});
  const http=app.getHttpAdapter().getInstance();registerIdentity(http,config,identity);
  if(unity)http.addHook('onResponse',(request,reply,done)=>{
-  if(['/v1/session/login','/v1/runtime-ticket'].includes(request.url))(facts.unityHttp??=[]).push({path:request.url,status:reply.statusCode});
+  if(['/v1/session/login','/v1/runtime-ticket','/v1/session/logout'].includes(request.url))(facts.unityHttp??=[]).push({path:request.url,status:reply.statusCode});
   done();
  });
  let allocateForCsharp=false;
@@ -189,13 +189,18 @@ try{
   }finally{allocateForCsharp=false;}
  }
  if(interactive){
+  const revokedCount=async()=>Number((await pool.query("SELECT count(*) AS n FROM identity_sessions WHERE account_id=$1 AND revoked_reason='logout'",[guest.me.profile.id])).rows[0].n);
+  const beforeLogout=await revokedCount();
   await probeUnity();
   assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'1');
-  record('rendered-panel-os-input-wrong-login-correct-login-walk-terminal-e-committed-receipt-resync-session-exit');
+  assert.equal(await revokedCount(),beforeLogout+1);
+  record('rendered-panel-os-input-wrong-login-correct-login-walk-terminal-e-committed-receipt-resync-platform-logout-session-exit');
   child.kill('SIGKILL');await childClosed;child=undefined;await startHost();
   await probeUnity();
   assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'2');
   assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,2);
+  assert.equal(await revokedCount(),beforeLogout+2);
+  assert.equal(facts.unityHttp.filter(value=>value.path==='/v1/session/logout'&&value.status===200).length,2);
   assert(facts.unityHttp.some(value=>value.path==='/v1/session/login'&&value.status===401));
   record('rendered-panel-after-sigkill-recovers-and-commits-next-turn');
  }else{

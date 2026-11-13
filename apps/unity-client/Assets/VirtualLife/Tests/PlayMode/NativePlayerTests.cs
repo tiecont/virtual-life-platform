@@ -85,6 +85,14 @@ namespace VirtualLife.Blockout.Tests
             yield return new WaitForEndOfFrame();
             ScreenCapture.CaptureScreenshot(config.screenshot);
             yield return Until(() => File.Exists(config.screenshot));
+            yield return input.Click(470, 262);
+            yield return Until(() => !panel.LoggingOut && panel.Status == "Signed out. Platform session revoked.", () => "logout: " + panel.Status);
+            Assert.That(panel.Ready, Is.False); Assert.That(panel.PresentedState, Is.Null);
+            Assert.That(Entered(panel, "password", ""), Is.True);
+            Assert.That(Entered(panel, "loginName", ""), Is.True);
+            yield return new WaitForEndOfFrame();
+            ScreenCapture.CaptureScreenshot(config.screenshot + ".logout.png");
+            yield return Until(() => File.Exists(config.screenshot + ".logout.png"));
             yield return input.Click(260, 262);
             yield return null;
             Assert.That(panel.Ready, Is.False); Assert.That(panel.PresentedState, Is.Null);

@@ -64,7 +64,18 @@ namespace VirtualLife.Networking
             }, cancellation);
         }
 
-        private async Task<TResponse> Send<TRequest, TResponse>(string path, TRequest body, CancellationToken token)
+        public Task LogoutAsync(Guid requestId, CancellationToken cancellation = default)
+        {
+            if (requestId == Guid.Empty) throw new ArgumentException("Logout request ID required");
+            return Exclusive(async token => {
+                if (principal == null || csrf == null) throw new NativeFailure(Failure.Authentication);
+                var result = await Send<Empty, LoggedOut>("/v1/session/logout", new Empty(), token, requestId).ConfigureAwait(false);
+                if (result == null || !result.Value) throw new NativeFailure(Failure.Protocol);
+                principal = null; csrf = null; return true;
+            }, cancellation);
+        }
+
+        private async Task<TResponse> Send<TRequest, TResponse>(string path, TRequest body, CancellationToken token, Guid? requestId = null)
         {
             using (var data = new MemoryStream())
             using (var request = new HttpRequestMessage(HttpMethod.Post, new Uri(origin, path)))
@@ -73,7 +84,8 @@ namespace VirtualLife.Networking
                 request.Content = new ByteArrayContent(data.ToArray());
                 request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
                 request.Headers.Add("Origin", origin.GetLeftPart(UriPartial.Authority));
-                if (path == "/v1/runtime-ticket") request.Headers.Add("X-CSRF-Token", csrf);
+                if (path == "/v1/runtime-ticket" || path == "/v1/session/logout") request.Headers.Add("X-CSRF-Token", csrf);
+                if (requestId.HasValue) request.Headers.Add("Idempotency-Key", requestId.Value.ToString());
                 using (var response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token).ConfigureAwait(false))
                 {
                     if (!response.IsSuccessStatusCode) throw new NativeFailure(Failure.Authentication);
@@ -124,6 +136,7 @@ namespace VirtualLife.Networking
         public override string ToString() { return "PlatformSession[redacted]"; }
 
         [DataContract] private sealed class Empty { }
+        [DataContract] private sealed class LoggedOut { [DataMember(Name = "loggedOut", IsRequired = true)] public bool Value { get; set; } }
         [DataContract] private sealed class Login {
             [DataMember(Name = "loginName")] public string Name { get; set; }
             [DataMember(Name = "password")] public string Password { get; set; }

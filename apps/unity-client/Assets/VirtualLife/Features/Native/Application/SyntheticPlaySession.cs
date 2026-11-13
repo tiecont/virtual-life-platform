@@ -63,6 +63,24 @@ namespace VirtualLife.Networking
                 return await Read(token).ConfigureAwait(false);
             }, cancellation);
 
+        public async Task LogoutAsync(Guid requestId, CancellationToken cancellation = default)
+        {
+            if (requestId == Guid.Empty) throw new ArgumentException("Logout request ID required");
+            if (disposed) throw new ObjectDisposedException(nameof(SyntheticPlaySession));
+            disposed = true;
+            lifetime.Cancel(); connection.Dispose();
+            var entered = false;
+            try {
+                // Abort any ambiguous game exchange before revoking this identity
+                // session. Durable server effects remain available at next login.
+                await operation.WaitAsync(cancellation).ConfigureAwait(false); entered = true;
+                await platform.LogoutAsync(requestId, cancellation).ConfigureAwait(false);
+            } finally {
+                platform.Dispose(); state = null; pending = null;
+                if (entered) operation.Release();
+            }
+        }
+
         public Task<PlayState> AdvanceAsync(CancellationToken cancellation = default) =>
             Exclusive(async token => {
                 if (pending != null) throw new NativeFailure(Failure.Busy);

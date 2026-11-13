@@ -19,7 +19,7 @@ namespace VirtualLife.NativeScene
         private OfflineDistrict district;
         private PlayState state;
         private string loginName = "", password = "", status = "Native configuration unavailable.";
-        private bool busy, ready, pending;
+        private bool busy, ready, pending, loggingOut;
         private CancellationTokenSource request;
         private volatile bool alive = true;
         private bool movementEnabled, moving;
@@ -31,6 +31,7 @@ namespace VirtualLife.NativeScene
         public bool Ready => ready;
         public bool HasPendingCommand => pending;
         public bool Moving => moving;
+        public bool LoggingOut => loggingOut;
         public VirtualLife.Native.Public.V1.WorldSnapshot MovementState => session?.MovementState;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -90,7 +91,7 @@ namespace VirtualLife.NativeScene
             // All Unity presentation changes run here on the Unity main thread.
             while (updates.TryDequeue(out var update)) update();
             if (movementEnabled && ready && !busy && !moving && session != null && session.NeedsRefresh) Run(session.ReconnectAsync);
-            if (district != null && session != null) district.InputCaptured = busy || GUIUtility.keyboardControl != 0;
+            if (district != null) district.InputCaptured = busy || loggingOut || GUIUtility.keyboardControl != 0;
         }
         private void Interact()
         {
@@ -131,6 +132,29 @@ namespace VirtualLife.NativeScene
                 if (alive) updates.Enqueue(() => { current.Dispose(); if (generation != startedGeneration) return; request = null; ready = false; busy = false; pending = owner.HasPendingCommand; status = "Native request unavailable. Check local services and scope."; });
             } finally { if (!alive) current.Dispose(); }
         }
+        private async void Logout()
+        {
+            if (session == null || loggingOut) return;
+            var owner = session; session = null;
+            var startedGeneration = ++generation;
+            request?.Cancel(); request = null;
+            ready = false; busy = false; moving = false; pending = false; state = null;
+            password = ""; loginName = ""; loggingOut = true;
+            GUIUtility.keyboardControl = 0;
+            status = "Signing out through the platform...";
+            var confirmed = false;
+            using (var timeout = CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token)) {
+                timeout.CancelAfter(TimeSpan.FromSeconds(6));
+                try { await owner.LogoutAsync(Guid.NewGuid(), timeout.Token).ConfigureAwait(false); confirmed = true; }
+                catch { /* Local cleanup does not prove server revocation. */ }
+                finally { owner.Dispose(); }
+            }
+            if (alive) updates.Enqueue(() => {
+                if (generation != startedGeneration) return;
+                loggingOut = false; Initialize();
+                status = confirmed ? "Signed out. Platform session revoked." : "Local session cleared. Server logout was not confirmed.";
+            });
+        }
         private void OnGUI()
         {
             var matrix = GUI.matrix;
@@ -160,12 +184,16 @@ namespace VirtualLife.NativeScene
                 // Cancellation aborts the current exchange; ambiguous mutations keep their ID.
                 request?.Cancel(); ready = false;
             }
+            GUI.enabled = !loggingOut;
             if (GUI.Button(new Rect(188, 248, 170, 26), "End local session")) {
                 generation++; request?.Cancel(); request = null; session?.Dispose(); session = null;
                 state = null; ready = false; busy = false; moving = false; pending = false; password = ""; loginName = "";
                 GUIUtility.keyboardControl = 0;
                 Initialize();
             }
+            GUI.enabled = session != null && !loggingOut;
+            if (GUI.Button(new Rect(368, 248, 220, 26), "Logout")) Logout();
+            GUI.enabled = true;
             if (state != null) GUI.Label(new Rect(28, 282, 580, 24), "Committed version " + state.Version + " | turn " + state.Turns + "/3 | reward " + (state.Reward ?? "none"));
             var movement = movementEnabled ? session?.MovementState : null;
             GUI.Label(new Rect(28, 314, 580, 44), movement == null ? "Walk to the blue terminal and press E for one authoritative turn." :

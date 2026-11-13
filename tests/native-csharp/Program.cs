@@ -67,6 +67,8 @@ static class Program
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0, endpoint => endpoint.UseHttps(certificate)));
         await using var app = builder.Build(); app.UseWebSockets();
         string mode = "valid"; int playTurns = 0; var playReceipts = new Dictionary<string, int>(); int hellos = 0; int logins = 0; int tickets = 0; int resyncs = 0;
+        var logoutId = Guid.NewGuid(); int logouts = 0;
+        TaskCompletionSource<bool> committed = null, releaseAck = null;
         app.MapPost("/v1/session/login", async context => {
             var body = await JsonDocument.ParseAsync(context.Request.Body);
             Check(body.RootElement.GetProperty("loginName").GetString() == "fixture");
@@ -82,6 +84,18 @@ static class Program
             if (mode == "redirect") { context.Response.Redirect("/v1/session/login"); return; }
             if (mode == "http-oversize") { await context.Response.WriteAsJsonAsync(new { ticket = new string('x', 17000) }); return; }
             await context.Response.WriteAsJsonAsync(new { ticket = "secret-ticket", expiresAt = DateTimeOffset.UtcNow.AddSeconds(mode == "expired-http" ? -1 : 20) });
+        });
+        app.MapPost("/v1/session/logout", async context => {
+            Check(context.Request.Headers.Origin.ToString().StartsWith("https://127.0.0.1:"));
+            Check(context.Request.Headers["X-CSRF-Token"] == new string('a', 64));
+            Check(context.Request.Headers["Idempotency-Key"] == logoutId.ToString());
+            Check(context.Request.Cookies["city_session"] == "secret-cookie");
+            using var body = await JsonDocument.ParseAsync(context.Request.Body);
+            Check(!body.RootElement.EnumerateObject().Any()); logouts++;
+            if (mode == "logout-rejected") { context.Response.StatusCode = 403; return; }
+            if (mode == "logout-missing") { await context.Response.WriteAsJsonAsync(new { }); return; }
+            if (mode == "logout-malformed") { context.Response.ContentType = "application/json"; await context.Response.WriteAsync("{"); return; }
+            await context.Response.WriteAsJsonAsync(new { loggedOut = mode != "logout-false" });
         });
         app.Map("/rt/v1", async context => {
             Check(context.WebSockets.WebSocketRequestedProtocols.Contains("vl.native.v1"));
@@ -129,6 +143,10 @@ static class Program
                                     Check(frame.GameIntent.Kind == "fixture.advance.v1");
                                     playReceipts[id] = ++playTurns;
                                     if (mode == "play-drop") { socket.Abort(); return; }
+                                    if (mode == "play-hold") {
+                                        committed.TrySetResult(true);
+                                        await releaseAck.Task.WaitAsync(context.RequestAborted);
+                                    }
                                 }
                                 var turns = view ? playTurns : playReceipts[id];
                                 response.CanonicalVersion = (ulong)turns;
@@ -168,6 +186,15 @@ static class Program
             Check((await client.SubmitAsync(command)).Equals(receipt));
             await client.ReconnectAsync(); Check((await client.SubmitAsync(command)).Equals(receipt));
             Check(logins == 1 && tickets == 2 && hellos == 2); passed += 5;
+            await session.LogoutAsync(logoutId);
+            Check(logouts == 1); passed++;
+            await Denied(() => session.TicketAsync(), Failure.Authentication);
+        }
+        foreach (var logoutMode in new[] { "logout-rejected", "logout-missing", "logout-malformed", "logout-false" }) {
+            mode = "valid"; using var session = new PlatformSession(origin, Handler());
+            await session.LoginAsync("fixture", "secret-password-123", Guid.NewGuid()); mode = logoutMode;
+            await Denied(() => session.LogoutAsync(logoutId), mode == "logout-rejected" ? Failure.Authentication : Failure.Protocol);
+            await Denied(() => session.TicketAsync(), Failure.Authentication);
         }
         foreach (var test in new[] { ("mismatch", Failure.Protocol), ("boot", Failure.Scope), ("content", Failure.Scope),
             ("correlation", Failure.Protocol), ("no-own", Failure.Scope), ("reject", Failure.Rejected),
@@ -232,6 +259,31 @@ static class Program
             try { await play.ReconnectAsync(cancelled.Token); throw new Exception("Scene cancellation ignored"); }
             catch (OperationCanceledException) { passed++; }
             Check(!play.ToString().Contains("secret"));
+        }
+        stage = "logout-in-flight"; mode = "play"; playTurns = 0; playReceipts.Clear();
+        committed = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        releaseAck = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        using (var platform = new PlatformSession(origin, Handler()))
+        using (var play = new SyntheticPlaySession(platform, Client(platform.TicketAsync), Match)) {
+            await play.LoginAsync("fixture", "secret-password-123"); mode = "play-hold";
+            var advance = play.AdvanceAsync();
+            try {
+                await committed.Task.WaitAsync(TimeSpan.FromSeconds(3));
+                var before = logouts;
+                await play.LogoutAsync(logoutId).WaitAsync(TimeSpan.FromSeconds(3));
+                Check(logouts == before + 1 && play.State == null && !play.HasPendingCommand && play.MovementState == null); passed++;
+                try { await advance; throw new Exception("Logout ignored in-flight exchange"); }
+                catch (OperationCanceledException) { passed++; }
+                try { await play.ReconnectAsync(); throw new Exception("Logged-out use case reused"); }
+                catch (ObjectDisposedException) { passed++; }
+            } finally { releaseAck.TrySetResult(true); }
+            Check(playTurns == 1 && playReceipts.Count == 1 && play.State == null); passed++;
+        }
+        mode = "play";
+        using (var platform = new PlatformSession(origin, Handler()))
+        using (var play = new SyntheticPlaySession(platform, Client(platform.TicketAsync), Match)) {
+            Check((await play.LoginAsync("fixture", "secret-password-123")).Turns == 1);
+            Check(playReceipts.Count == 1); passed++;
         }
         await app.StopAsync();
     }
