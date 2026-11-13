@@ -62,7 +62,9 @@ namespace VirtualLife.Blockout.Tests
             Assert.That(district.NetworkAuthority, Is.EqualTo(config.movement));
             Assert.That(initial, Is.LessThan(3));
             input.Key("w", true);
-            yield return Until(() => district.Player.transform.position.z >= 1.0f, () => "walk: " + district.Player.transform.position.z + "/captured=" + district.InputCaptured);
+            // Every step awaits authorization and a server tick; silence stops motion.
+            // Allow the 5m route to complete under a loaded Linux test workstation.
+            yield return Until(() => district.Player.transform.position.z >= 1.0f, () => "walk: " + district.Player.transform.position.z + "/captured=" + district.InputCaptured + "/ready=" + panel.Ready + "/" + panel.Status, 60);
             input.Key("w", false); yield return null;
             yield return Until(() => !panel.Moving);
             if (config.movement) {
@@ -109,9 +111,9 @@ namespace VirtualLife.Blockout.Tests
                 if (value[at] != expected[at]) { mismatch = at; break; }
             return "length=" + value.Length + ", expectedLength=" + expected.Length + ", firstMismatch=" + mismatch + ", caseOnly=" + string.Equals(value, expected, StringComparison.OrdinalIgnoreCase);
         }
-        private static IEnumerator Until(Func<bool> condition, Func<string> diagnostic = null)
+        private static IEnumerator Until(Func<bool> condition, Func<string> diagnostic = null, float seconds = 15)
         {
-            var end = Time.realtimeSinceStartup + 15;
+            var end = Time.realtimeSinceStartup + seconds;
             while (!condition() && Time.realtimeSinceStartup < end) yield return null;
             Assert.That(condition(), Is.True, "Timed out waiting for the rendered player interaction: " + diagnostic?.Invoke());
         }
