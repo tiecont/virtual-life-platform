@@ -2228,7 +2228,29 @@
         "VL-049"
       ],
       "implementation": {
-        "scope": "Partial CI reliability: actual Stage PostgreSQL blocker synchronization; explicit Ubuntu 24.04; checksum-addressed official Playwright 1.64.1 browser/fonts with host render preflight avoids repeated upstream apt DNS failures on both Resolute and Noble; all application assertions and merge gates retained",
+    "scope": "Partial CI reliability: actual Stage PostgreSQL blocker synchronization; explicit Ubuntu 24.04; checksum-addressed official Playwright 1.64.1 browser/fonts with host render preflight; bounded image-navigation diagnostics retain all application assertions and merge gates",
+    "imageNavigationDiagnosticsVerification": {
+      "sourceRevision": "deb5c2866aede77c4ee428b9dd54dded0806cd6c",
+      "reviewMode": "SINGLE_AGENT_AUDIT",
+      "commands": [
+        {
+          "command": "node --test tests/governance/*.test.mjs",
+          "exitCode": 0,
+          "result": "114 passed, including two new diagnostic regressions: resolved internal-error documents fail without retry; main-frame error codes bounded/redacted and listeners removed"
+        },
+        {
+          "command": "node scripts/web-image-smoke.mjs --web <local sha256:9a1d8d53aa09...> --api <local sha256:7e43d57481c6...> --context <source checkout> --output artifacts/image-web-navigation-probe/smoke",
+          "exitCode": 0,
+          "result": "Six actual local Compose/TLS/browser/WSS scenarios passed on existing c434d25d images; one ERR_NETWORK_CHANGED observed and existing bounded retry succeeded. Four application documents recorded status 200, no internal-error document and no failed main-frame request"
+        },
+        {
+          "command": "pnpm exec eslint scripts/image-browser-navigation.mjs tests/governance/image-browser-navigation.test.mjs; git diff --check",
+          "exitCode": 0
+        }
+      ],
+      "localArtifacts": "artifacts/g2-ci-navigation/artifacts/image-web-navigation-probe/smoke/{result.json,commands.json}",
+      "limitations": "Diagnostics only; does not prove the root cause of PR19 run 43485915105 image smoke failure. That run returned Chromium internal error text after goto resolved. Its failure remains a merge blocker until a genuine successful rerun. Existing local images are not a rebuilt current-source release. No TLS/network retry relaxation, deployment or publication. VL-065 stays IN_PROGRESS."
+    },
         "remainingAcceptance": "Versioned staging artifact and trace correlation, runtime readiness/drain and legacy compatibility still require verification; no deployment activated",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "verification": {
