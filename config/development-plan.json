@@ -1306,8 +1306,14 @@
         "client cannot teleport via position spoof",
         "network jitter test movement reconciles"
       ],
-      "status": "TODO",
-      "qualificationRequirements": []
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "source": "crates/vl-world/src/collision.rs; crates/vl-world/src/movement.rs; crates/vl-gateway/src/durable.rs; apps/unity-client/Assets/VirtualLife/Features/NativeScene",
+        "scope": "Default-off Aurora movement through the existing single Rust zone writer, exported collision manifest, current Nest policy locks, own-only snapshots and main-thread Unity reconciliation",
+        "remainingAcceptance": "Authoritative interaction proximity and policy-filtered AOI remain. Reconnect retains a bounded actor registry within one runtime; durable movement checkpoints, registry eviction and client prediction are not implemented. Runtime restart rejects old epochs and returns to safe manifest spawn. Injected application delay evidence is not physical network latency or Windows qualification.",
+        "reviewMode": "SINGLE_AGENT_AUDIT"
+      }
     },
     {
       "id": "VL-029",

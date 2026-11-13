@@ -66,7 +66,7 @@ static class Program
         var builder = WebApplication.CreateBuilder(); builder.Logging.ClearProviders();
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0, endpoint => endpoint.UseHttps(certificate)));
         await using var app = builder.Build(); app.UseWebSockets();
-        string mode = "valid"; int playTurns = 0; var playReceipts = new Dictionary<string, int>(); int hellos = 0; int logins = 0; int tickets = 0;
+        string mode = "valid"; int playTurns = 0; var playReceipts = new Dictionary<string, int>(); int hellos = 0; int logins = 0; int tickets = 0; int resyncs = 0;
         app.MapPost("/v1/session/login", async context => {
             var body = await JsonDocument.ParseAsync(context.Request.Body);
             Check(body.RootElement.GetProperty("loginName").GetString() == "fixture");
@@ -111,7 +111,7 @@ static class Program
                             if (mode == "no-own") response.Hello.Snapshot.OwnActor = null;
                             if (mode == "reject") response.Rejection = new Rejection { Code = ErrorCode.Unauthenticated };
                             if (mode == "delay") await Task.Delay(700);
-                        } else if (frame.Resync != null) response.Snapshot = snapshot;
+                        } else if (frame.Resync != null) { resyncs++; response.Snapshot = snapshot; }
                         else if (frame.MoveIntent != null) {
                             Check(frame.MoveIntent.AuthorityEpoch == 1 && frame.MoveIntent.InputSequence == 1);
                             Check(frame.MoveIntent.DirectionX == 1000 && frame.MoveIntent.SentAtUnixMs > 0);
@@ -178,11 +178,19 @@ static class Program
         mode = "valid";
         foreach (var movementMode in new[] {"valid", "move-wrong-epoch", "move-wrong-sequence"}) {
             mode = movementMode; using var client = Client(); await client.ConnectAsync();
-            if (mode == "valid") { var moved = await client.MoveAsync(1000, 0); Check(moved.OwnActor.XMm == 20 && moved.OwnActor.LastInputSequence == 1); passed++; }
+            if (mode == "valid") {
+                var before = resyncs; await Task.Delay(1100);
+                var moved = await client.MoveAsync(1000, 0);
+                Check(moved.OwnActor.XMm == 20 && moved.OwnActor.LastInputSequence == 1);
+                Check(resyncs == before + 1); passed += 2;
+            }
             else await Denied(() => client.MoveAsync(1000, 0), Failure.Protocol);
         }
         mode = "valid";
         var never = new TaskCompletionSource<AdmissionTicket>();
+        using (var expiring = Client(_ => Task.FromResult(new AdmissionTicket("secret-ticket", Principal.ToString(), DateTimeOffset.UtcNow.AddSeconds(1))))) {
+            await expiring.ConnectAsync(); await Task.Delay(600); Check(expiring.NeedsRefresh); passed++;
+        }
         using (var hung = Client(_ => never.Task, TimeSpan.FromMilliseconds(100)))
             await Denied(() => hung.ConnectAsync(), Failure.Timeout);
         using (var untrusted = new NativeConnection(endpoint, origin, Hash, Boot, _ => Task.FromResult(Ticket())))

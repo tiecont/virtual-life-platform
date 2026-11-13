@@ -33,6 +33,7 @@ namespace VirtualLife.Networking
         public PlayState State => state;
         public bool HasPendingCommand => pending != null;
         public VirtualLife.Native.Public.V1.WorldSnapshot MovementState => connection.Snapshot?.Clone();
+        public bool NeedsRefresh => connection.NeedsRefresh;
         public async Task<VirtualLife.Native.Public.V1.WorldSnapshot> MoveAsync(int x, int z, CancellationToken cancellation = default)
         {
             if (disposed) throw new ObjectDisposedException(nameof(SyntheticPlaySession));

@@ -30,6 +30,8 @@ namespace VirtualLife.NativeScene
         public bool Busy => busy;
         public bool Ready => ready;
         public bool HasPendingCommand => pending;
+        public bool Moving => moving;
+        public VirtualLife.Native.Public.V1.WorldSnapshot MovementState => session?.MovementState;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
@@ -48,11 +50,13 @@ namespace VirtualLife.NativeScene
         private void Initialize()
         {
             district = FindFirstObjectByType<OfflineDistrict>();
+            var step = "scope-file";
             try {
                 var path = Path.GetFullPath(Environment.GetEnvironmentVariable("VL_NATIVE_DEV_CONFIG"));
                 // Keep local scope configuration outside packaged client assets.
                 var assets = Path.GetFullPath(Application.dataPath).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
                 if (path.StartsWith(assets, StringComparison.Ordinal) || new FileInfo(path).Length > 4096) throw new ArgumentException();
+                step = "scope-json";
                 var config = JsonUtility.FromJson<DevelopmentConfig>(File.ReadAllText(path));
                 if (config == null || config.contentHash.Length != 64) throw new ArgumentException();
                 var hash = new byte[32];
@@ -60,11 +64,15 @@ namespace VirtualLife.NativeScene
                 var origin = new Uri(config.httpsOrigin);
                 var boot = Guid.Parse(config.bootId); var match = Guid.Parse(config.matchId);
                 if (match == Guid.Empty) throw new ArgumentException();
+                step = "platform";
                 var platform = new PlatformSession(origin);
                 try {
+                    step = "connection";
                     var connection = new NativeConnection(new Uri(config.wssOrigin), origin, hash, boot, platform.TicketAsync);
+                    step = "session";
                     session = new SyntheticPlaySession(platform, connection, match);
                 } catch { platform.Dispose(); throw; }
+                step = "district";
                 if (district == null) throw new ArgumentException();
                 district.NativeInteraction = Interact;
                 movementEnabled = config.movement;
@@ -73,7 +81,7 @@ namespace VirtualLife.NativeScene
                 status = "Disconnected. Log in to the isolated native synthetic match.";
             } catch {
                 session?.Dispose(); session = null;
-                status = "Invalid local native configuration. Check the external scope file and system TLS trust.";
+                status = "Invalid local native configuration (" + step + "). Check the external scope file and system TLS trust.";
             }
         }
         private void Update()
@@ -81,6 +89,7 @@ namespace VirtualLife.NativeScene
             // Network continuations enqueue at most one update per UI operation.
             // All Unity presentation changes run here on the Unity main thread.
             while (updates.TryDequeue(out var update)) update();
+            if (movementEnabled && ready && !busy && !moving && session != null && session.NeedsRefresh) Run(session.ReconnectAsync);
             if (district != null && session != null) district.InputCaptured = busy || GUIUtility.keyboardControl != 0;
         }
         private void Interact()
@@ -97,9 +106,9 @@ namespace VirtualLife.NativeScene
             var current = session;
             try {
                 var snapshot = await current.MoveAsync((int)(direction.x * 1000), (int)(direction.z * 1000), lifetime.Token).ConfigureAwait(false);
-                if (alive) updates.Enqueue(() => { moving = false; if (session == current && ready) district.Reconcile(snapshot.OwnActor.XMm, snapshot.OwnActor.ZMm); });
+                if (alive) updates.Enqueue(() => { if (session != current) return; moving = false; if (ready) district.Reconcile(snapshot.OwnActor.XMm, snapshot.OwnActor.ZMm); });
             } catch {
-                if (alive) updates.Enqueue(() => { moving = false; if (session == current) { ready = false; status = "Movement unavailable. Reconnect to reconcile."; } });
+                if (alive) updates.Enqueue(() => { if (session != current) return; moving = false; ready = false; status = "Movement unavailable. Reconnect to reconcile."; });
             }
         }
         private async void Run(Func<CancellationToken, Task<PlayState>> work)
@@ -153,12 +162,14 @@ namespace VirtualLife.NativeScene
             }
             if (GUI.Button(new Rect(188, 248, 170, 26), "End local session")) {
                 generation++; request?.Cancel(); request = null; session?.Dispose(); session = null;
-                state = null; ready = false; busy = false; pending = false; password = ""; loginName = "";
+                state = null; ready = false; busy = false; moving = false; pending = false; password = ""; loginName = "";
                 GUIUtility.keyboardControl = 0;
                 Initialize();
             }
             if (state != null) GUI.Label(new Rect(28, 282, 580, 24), "Committed version " + state.Version + " | turn " + state.Turns + "/3 | reward " + (state.Reward ?? "none"));
-            GUI.Label(new Rect(28, 314, 580, 44), "Walk to the blue terminal and press E for one authoritative turn.", wrapped);
+            var movement = movementEnabled ? session?.MovementState : null;
+            GUI.Label(new Rect(28, 314, 580, 44), movement == null ? "Walk to the blue terminal and press E for one authoritative turn." :
+                "Rust position (mm): " + movement.OwnActor.XMm + ", " + movement.OwnActor.ZMm + " | tick " + movement.Tick + " | input " + movement.OwnActor.LastInputSequence, wrapped);
             GUI.matrix = matrix; GUI.enabled = enabled;
         }
         private void OnDestroy()

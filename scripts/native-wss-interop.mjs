@@ -173,7 +173,7 @@ try{
  await startHost();
  const call=(method,...args)=>page.evaluate(({method,args})=>window.transport[method](...args),{method,args});
  const record=name=>facts.scenarios.push({name,result:'PASS'});
- if(movement){
+ if(movement&&!interactive){
   await store.allocate(credential,scope);
   const {movementScenarios}=await import('./native-movement-scenarios.mjs');
   await movementScenarios({call,store,credential,scope,csrf:guest.me.csrfToken,origin,record,facts,restart:async()=>{child.kill('SIGKILL');await childClosed;child=undefined;await startHost();}});
@@ -184,7 +184,7 @@ try{
   allocateForCsharp=true;
   try{
    const {unityNativeProbe}=await import('./unity-native-probe.mjs');
-   const result=await unityNativeProbe({directory,index:++unityProbeIndex,origin,boot:scope.runtimeBootId,match:matchId,loginName,password:loginPassword,interactive});
+   const result=await unityNativeProbe({directory,index:++unityProbeIndex,origin,boot:scope.runtimeBootId,match:matchId,loginName,password:loginPassword,interactive,movement});
    (facts.unityPlayers??=[]).push(result);
   }finally{allocateForCsharp=false;}
  }
@@ -323,6 +323,7 @@ try{
  await call('close',fresh);await context.close();await browser.close();browser=undefined;
  const effects=(await pool.query('SELECT (SELECT count(*)::int FROM game_native_matches) AS matches,(SELECT count(*)::int FROM game_native_receipts) AS receipts,(SELECT count(*)::int FROM platform_native_ticket_uses) AS nonces')).rows[0];
  assert.equal(effects.matches,playable?1:0);assert.equal(effects.receipts,pet?petEffects.receipts:playable?3:0);assert.equal(effects.nonces,pet?petEffects.nonces:playable?(csharp||unity?11:3):2);facts.effects=effects;record(pet?'full-pet-match-commits-one-native-match':playable?'three-game-commits-one-native-match':'zero-game-writes');
+ }
  }
  assert.equal(heartbeatError,undefined);facts.result='PASS';
  assert(!/ownRoll|storageKeys/.test(output+errors));

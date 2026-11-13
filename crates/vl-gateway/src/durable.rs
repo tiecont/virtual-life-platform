@@ -46,7 +46,8 @@ impl ActorReference {
 }
 
 /// One instance per trusted native zone. Credentials/keys stay in the host.
-/// The registry contains weak references only and is bounded by MAX_ACTORS.
+/// The registry is bounded by MAX_ACTORS. Movement retains actors for reconnect;
+/// legacy admission keeps weak references and removes disconnected actors.
 pub struct PgAdmission {
     trust: Arc<DurableTrust>,
     config: Config,
@@ -152,8 +153,8 @@ struct PgSession {
 impl Drop for PgSession {
     fn drop(&mut self) {
         self.connection.abort();
-        // Dropping the final ActorHandle closes its movement sender. The zone
-        // removes the actor at its next tick, including cancellation paths.
+        // Legacy admission drops the final ActorHandle here. Movement admission
+        // retains its bounded registry handle until the runtime stops.
     }
 }
 

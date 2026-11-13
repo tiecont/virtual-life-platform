@@ -196,3 +196,37 @@ physical owner keyboard acceptance and Windows qualification remain separate.
 Ending a local session destroys its in-memory cookies and adapters, cancels
 pending operations and clears its presentation. It does not revoke the server
 identity session; platform logout/revocation acceptance remains outstanding.
+
+## Isolated Authoritative Movement
+
+The runtime private configuration and the external developer scope each require
+an explicit `movement: true` opt-in. Both default to false. The Rust zone uses
+the reviewed collision export, a 50ms tick, a 100mm maximum step, a conservative
+diagonal cap and a 20mm per-tick acceleration bound. Inputs contain direction,
+sequence, server epoch/tick and freshness time; no client actor or position is
+accepted. Nest policy locks cover each queued effect, and cancellation invalidates
+the queue entry before those locks release. The writer checks the earliest
+admission, world lease, identity-session and ticket expiry at its tick.
+
+When enabled, Unity disables its offline movement path and reconciles the capsule
+only from own Rust snapshots. It refreshes the scoped connection before ticket
+expiry, without retrying mutations automatically. The isolated fixture renews
+admission through its private control-plane hook; ordinary clients cannot select
+or renew world allocations themselves. This prototype deliberately has no local
+prediction and may pause under latency. It is not production navigation.
+
+The same bounded actor is retained across socket reconnects for the lifetime of
+this development runtime. Runtime restart creates a new movement incarnation and
+returns to the manifest spawn; durable position restoration is not implemented.
+The registry is capped at the zone actor limit and does not admit more accounts
+once full. Production lease eviction and persistent movement remain separate.
+
+```sh
+node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --movement
+node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement
+```
+
+The WSS regression records actual exchanges with 40/80/150ms application-level
+outbound delays and +/-10ms jitter. These are injected delays, not physical
+network measurements. The rendered variant must prove OS input, authoritative
+capsule reconciliation and a committed synthetic turn before and after restart.

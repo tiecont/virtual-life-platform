@@ -40,11 +40,16 @@ namespace VirtualLife.Blockout.Tests
             var panel = UnityEngine.Object.FindFirstObjectByType<NativeSceneController>();
             var district = UnityEngine.Object.FindFirstObjectByType<OfflineDistrict>();
             Assert.That(panel, Is.Not.Null, "External development scope must activate the real scene controller");
+            Assert.That(panel.Status, Does.StartWith("Disconnected."), "The panel must accept input: " + panel.Status);
             Assert.That(Screen.width, Is.GreaterThanOrEqualTo(650));
             Assert.That(Screen.height, Is.GreaterThanOrEqualTo(390));
             using var input = new LinuxInput();
-            yield return input.Click(160, 188); yield return input.Type(config.loginName);
-            Assert.That(Entered(panel, "loginName", config.loginName), Is.True, "OS keyboard account entry must match disposable input");
+            yield return new WaitForEndOfFrame();
+            ScreenCapture.CaptureScreenshot(config.screenshot + ".initial.png");
+            yield return input.Click(160, 188);
+            Assert.That(Application.isFocused, Is.True, "The OS input must target the test player");
+            yield return input.Type(config.loginName);
+            Assert.That(Entered(panel, "loginName", config.loginName), Is.True, "OS keyboard account entry must match disposable input; " + InputDiagnostic(panel, config.loginName));
             yield return input.Click(440, 188); yield return input.Type(new string('a', 48));
             yield return input.Click(90, 225);
             yield return Until(() => !panel.Busy && panel.Status.Contains("Authentication"), () => "wrong-login: " + panel.Status);
@@ -54,10 +59,19 @@ namespace VirtualLife.Blockout.Tests
             yield return input.Click(90, 225);
             yield return Until(() => panel.Ready, () => "login: " + panel.Status);
             var initial = panel.PresentedState.Version;
+            Assert.That(district.NetworkAuthority, Is.EqualTo(config.movement));
             Assert.That(initial, Is.LessThan(3));
             input.Key("w", true);
             yield return Until(() => district.Player.transform.position.z >= 1.0f, () => "walk: " + district.Player.transform.position.z + "/captured=" + district.InputCaptured);
             input.Key("w", false); yield return null;
+            yield return Until(() => !panel.Moving);
+            if (config.movement) {
+                Assert.That(panel.MovementState.OwnActor.LastInputSequence, Is.GreaterThan(0));
+                Assert.That(district.Player.transform.position.x, Is.EqualTo(panel.MovementState.OwnActor.XMm / 1000f).Within(0.001f));
+                Assert.That(district.Player.transform.position.z, Is.EqualTo(panel.MovementState.OwnActor.ZMm / 1000f).Within(0.001f));
+                var before = district.Player.transform.position; district.Move(Vector3.right, 0.1f);
+                Assert.That(district.Player.transform.position, Is.EqualTo(before), "Offline movement cannot override connected authority");
+            }
             Assert.That(district.RehearsalTurns, Is.Zero);
             input.Key("e", true); yield return new WaitForSecondsRealtime(0.08f); input.Key("e", false);
             yield return Until(() => panel.Ready && panel.PresentedState.Version == initial + 1, () => "terminal: " + panel.Status);
@@ -82,11 +96,19 @@ namespace VirtualLife.Blockout.Tests
                 editor = Application.unityVersion, platform = Application.platform.ToString(),
                 graphics = SystemInfo.graphicsDeviceName, graphicsApi = SystemInfo.graphicsDeviceType.ToString(),
                 committedReceipt = true, reconnectReplay = false, wrongCaRejected = false,
-                panelKeyboardTerminal = true, version = initial + 1
+                panelKeyboardTerminal = true, authoritativeMovement = config.movement, version = initial + 1
             }));
         }
         private static bool Entered(NativeSceneController panel, string field, string expected) =>
             string.Equals((string)typeof(NativeSceneController).GetField(field, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel), expected, StringComparison.Ordinal);
+        private static string InputDiagnostic(NativeSceneController panel, string expected)
+        {
+            var value = (string)typeof(NativeSceneController).GetField("loginName", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel);
+            var mismatch = -1;
+            for (var at = 0; at < Math.Min(value.Length, expected.Length); at++)
+                if (value[at] != expected[at]) { mismatch = at; break; }
+            return "length=" + value.Length + ", expectedLength=" + expected.Length + ", firstMismatch=" + mismatch + ", caseOnly=" + string.Equals(value, expected, StringComparison.OrdinalIgnoreCase);
+        }
         private static IEnumerator Until(Func<bool> condition, Func<string> diagnostic = null)
         {
             var end = Time.realtimeSinceStartup + 15;
@@ -196,11 +218,12 @@ namespace VirtualLife.Blockout.Tests
         }
         private static void Require(bool condition) { if (!condition) throw new InvalidOperationException("Native player invariant failed"); }
         [Serializable] private sealed class Fixture {
+            public bool movement;
             public string origin = "", caCertificate = "", wrongCaCertificate = "", boot = "", match = "", loginName = "", password = "", screenshot = "", result = "";
         }
         [Serializable] private sealed class Facts {
             public string editor, platform, graphics, graphicsApi;
-            public bool committedReceipt, reconnectReplay, wrongCaRejected, panelKeyboardTerminal;
+            public bool committedReceipt, reconnectReplay, wrongCaRejected, panelKeyboardTerminal, authoritativeMovement;
             public ulong version;
         }
     }
