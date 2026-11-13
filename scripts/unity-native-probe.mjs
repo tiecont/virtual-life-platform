@@ -11,7 +11,7 @@ export async function unityNativeProbe({directory,index,origin,boot,match,loginN
  assert(editor,'UNITY_EDITOR must identify the installed licensed pinned Editor');
  assert.equal(spawnSync(editor,['-version'],{encoding:'utf8'}).stdout.trim(),'6000.3.14f1');
  const prefix=resolve(directory,'unity-'+index),config=prefix+'.private.json',scope=prefix+'.scope.private.json',results=prefix+'.xml';
- await writeFile(config,JSON.stringify({origin,caCertificate:resolve(directory,'tls/ca.pem'),wrongCaCertificate:resolve(directory,'tls/wrong-ca.pem'),boot,match,loginName,password,movement,logoutGate:resolve(directory,'logout-gate'),logoutObserved:resolve(directory,'logout-observed'),screenshot:prefix+'.png',result:prefix+'.json'}),{mode:0o600});
+ await writeFile(config,JSON.stringify({origin,caCertificate:resolve(directory,'tls/ca.pem'),wrongCaCertificate:resolve(directory,'tls/wrong-ca.pem'),boot,match,loginName,password,movement,loginPace:resolve(directory,'login-pace'),ticketFault:resolve(directory,'ticket-fault'),ackGate:resolve(directory,'ack-gate'),ackObserved:resolve(directory,'ack-observed'),sceneGate:resolve(directory,'scene-gate'),sceneObserved:resolve(directory,'scene-observed'),sceneReleased:resolve(directory,'scene-released'),logoutGate:resolve(directory,'logout-gate'),logoutObserved:resolve(directory,'logout-observed'),screenshot:prefix+'.png',result:prefix+'.json'}),{mode:0o600});
  if(interactive)await writeFile(scope,JSON.stringify({httpsOrigin:origin,wssOrigin:origin.replace('https:','wss:')+'/rt/v1',contentHash:'53'.repeat(32),bootId:boot,matchId:match,movement}),{mode:0o600});
  try{
   await rm(resolve('artifacts/unity-native-player'),{recursive:true,force:true});
@@ -29,6 +29,7 @@ export async function unityNativeProbe({directory,index,origin,boot,match,loginN
   const facts=JSON.parse(await readFile(prefix+'.json','utf8'));
   assert.equal(facts.editor,'6000.3.14f1');assert.equal(facts.platform,'LinuxPlayer');assert.notEqual(facts.graphicsApi,'Null');
   assert(facts.committedReceipt&&(interactive?facts.panelKeyboardTerminal:facts.reconnectReplay&&facts.wrongCaRejected));
+  if(interactive)assert(facts.ambiguousAckRetry&&facts.inflightSceneExit&&facts.panelAdmissionErrors===6&&/^[a-f0-9-]{36}$/.test(facts.retriedCommandId));
   if(movement)assert(facts.authoritativeMovement);
   const binary=resolve('artifacts/unity-native-player/PlayerWithTests/PlayerWithTests.x86_64');
   facts.playerSha256=createHash('sha256').update(await readFile(binary)).digest('hex');

@@ -2821,7 +2821,128 @@
         "adapterValidation": "node scripts/native-csharp.mjs",
         "realProcessValidation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
         "scope": "Pinned Linux Unity player now proves actual login/ticket/WSS/command/receipt/reconnect and runtime restart. VL-080 Windows acceptance remains an explicit incomplete dependency",
-        "remainingAcceptance": "Owner physical connected-panel acceptance, in-flight scene-exit acceptance, rendered ambiguous-ACK/error matrix, and inherited VL-080 Windows qualification remain. Automated Linux OS-input panel/terminal roundtrip and platform logout during a held ticket request passed; synthetic ruleset only.",
+      "remainingAcceptance": "Owner physical connected-panel acceptance, rendered schema/timeout/malformed-receipt/private-projection negatives, and inherited VL-080 Windows qualification remain. Automated Linux OS-input panel/terminal, six scoped admission/TLS negatives, durable ambiguous-ACK retry, scene unload and platform logout during held ticket requests passed; synthetic ruleset only.",
+      "strictProjectionVerification": {
+        "sourceRevision": "5b62334540a980676725cabc3e77887bff9f9b62",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "scope": "Synthetic viewer field allowlist, scalar types, duplicate keys, complete-document syntax and bounded depth; uses pinned Protobuf and standard JSON infoset APIs without new dependencies",
+        "commands": [
+          {
+            "command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs",
+            "exitCode": 0,
+            "result": "94 standalone assertions; netstandard2.1/net8 builds and 15 authored syntax files passed. Twenty-five invalid projections fail closed without replacing the prior state; a malformed committed projection retains the immutable pending intent and same-ID retry causes one effect"
+          },
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests",
+            "exitCode": 0,
+            "result": "16 actual EditMode and 2 PlayMode tests passed; includes 11 malformed/private projection cases and canonical projection parsing on Unity Mono"
+          },
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement",
+            "exitCode": 0,
+            "result": "7 scenarios passed with two actual rendered Linux players: panel admission/TLS negatives, correct/wrong login, Rust movement, terminal E, committed receipt versions 1/2, lost-ACK same-ID retry, scene teardown, logout and Rust SIGKILL recovery; screenshot inspected"
+          },
+          {
+            "command": "PATH=<local SDK>:$PATH node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
+            "exitCode": 0,
+            "result": "22 real Nest HTTPS/Rust WSS/restricted PostgreSQL scenarios passed"
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs; node scripts/verify-architecture.mjs; git diff --check",
+            "exitCode": 0,
+            "result": "112 governance tests, architecture/worker boundaries and whitespace passed"
+          }
+        ],
+        "localArtifacts": "artifacts/g2-session-lifecycle/artifacts/g2-strict-{csharp,editor,player,interop,governance}.log; artifacts/unity/2026-11-13T19-21-39-192Z-0d183318/{EditMode,PlayMode}.xml; artifacts/desktop-first/vl022/interop-b3d01ec1/{facts.json,unity-1.xml,unity-2.xml,unity-2.png}; C# interop-1533ed2f",
+        "nativeManagedSha256": "d2cd174926613324a9ecda5d33c5361e078b9eb75d31efcc2d572a3c5513b64e",
+        "testManagedSha256": "fa13a16e3031d2cf3c85b0f245d8c4aed1809aef688c551c90a03856e1bce12c",
+        "limitations": "Malformed/private projection negatives are standalone and actual Editor tests, not rendered panel fault injection. Rendered player run is a full valid-reader regression with automated Linux OS input, not owner physical or Windows qualification. Initial JSON-infoset-only implementation accepted trailing documents and failed the negative matrix; the committed implementation adds complete-document validation. VL-081 stays IN_PROGRESS; green exact-head hosted CI required before merge."
+      },
+      "renderedAdmissionVerification": {
+        "sourceRevision": "74e576b2a8445545cec96a44af2c7545046f7079",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement",
+            "exitCode": 0,
+            "result": "7 actual-process scenarios; each of two rendered Linux players uses OS input to reject wrong CA, wrong boot, wrong content, invalid ticket signature, signed expired ticket and signed protocol-2 ticket. Visible failures retain no state/pending command/password; expected Transport or Scope reason is asserted. Ticket envelope remains fresh for expired-claim proof at Rust. Both players then pass valid login, movement/E, immutable retry, scene teardown, logout and SIGKILL recovery; exactly two receipts. All HTTP responses are 200 or intentional wrong-password 401; no 429"
+          },
+          {
+            "command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs; node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "61 standalone assertions, both C# targets, 15 syntax files and 112 governance tests passed"
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay",
+            "sourceRevision": "4a8bbd8b9517ee403cf0f15821119d86ed529b7f",
+            "exitCode": 0,
+            "result": "20 real-process default runtime scenarios passed; normal noninteractive flow unaffected"
+          },
+          {
+            "command": "pnpm exec eslint scripts/native-wss-interop.mjs scripts/unity-native-probe.mjs; git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "localArtifacts": "artifacts/g2-session-lifecycle/artifacts/desktop-first/vl022/interop-9ebcbe98/{facts.json,unity-1.xml,unity-2.xml,unity-2.png.expired.png}; default runtime interop-8be25902",
+        "testAssemblySha256": "0e8326baa9d942d1f4433bdc93eedd6c336c427ce95e9f44cb2277b474ad241e",
+        "limitations": "Test-only signed response faults, disposable CA and scope; no production changes. Initial 4a8bbd8 matrix hit the real five-login/minute identity limit and failed valid login; not counted as PASS. The corrected fixture paces OS login using wall time without changing Nest clocks or rate limits. Wrong CA/boot and expired-ticket screenshots inspected. Automated Linux input is not owner or Windows qualification. VL-081 stays IN_PROGRESS."
+      },
+      "inflightSceneExitVerification": {
+        "sourceRevision": "2dc913dc367eb7e2bf8d2d19f018fa92a2dde599",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement",
+            "exitCode": 0,
+            "result": "6 real-process scenarios; two rendered Linux players unload AuroraBlockout while an actual HTTPS ticket request is held. Controller destruction disposes session, operation drains after cancellation and server barrier release, old state stays null, and the new scene has empty credentials/no presented state. Fresh OS-input login restores the committed version. Movement, lost-ACK same-ID retry, held-ticket logout, two exact receipts and Rust SIGKILL recovery still pass"
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "112 passed"
+          },
+          {
+            "command": "node scripts/verify-ci.mjs; node scripts/verify-architecture.mjs; pnpm exec eslint scripts/native-wss-interop.mjs scripts/unity-native-probe.mjs; git diff --check",
+            "exitCode": 0,
+            "result": "Local CI coverage contract, architecture/worker boundaries, script lint and whitespace passed"
+          }
+        ],
+        "localArtifacts": "artifacts/g2-session-lifecycle/artifacts/desktop-first/vl022/interop-6aa991c6/{facts.json,unity-1.xml,unity-2.xml,unity-1.png.scene-exit.png,unity-2.png.scene-exit.png}",
+        "testAssemblySha256": "860b9ae39f93a9fe8bffafcad8e4dcd908b32de70655ec0f9e084aeb5cba6266",
+        "limitations": "Scene transition is driven by the test runner during the actual OS-input connection; not an owner-driven scene exit or Windows qualification. Screenshot inspected. Session disposal clears the local session but does not claim platform logout; explicit logout remains separately verified. No production authority change. VL-081 stays IN_PROGRESS and hosted exact-head CI remains required before merge."
+      },
+      "renderedAckRetryVerification": {
+        "sourceRevision": "5de8e80273d22bedeb74c885ddcad0b8fa39909b",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement",
+            "exitCode": 0,
+            "result": "5 scenarios; two actual rendered Linux players use XTest login/W/E and panel Reconnect/Retry. Fixture discards downstream bytes, confirms the durable SQL receipt, then closes transport. Presentation retains old version and immutable pending command; reconnect reads committed state without clearing pending; same-ID Retry acknowledges the original receipt. Exactly two receipts and versions 1/2 across Rust SIGKILL; held-ticket logout and pre-expiry rejection still pass"
+          },
+          {
+            "command": "PATH=<local .NET SDK>:$PATH node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
+            "exitCode": 0,
+            "result": "22 real Nest HTTPS / Rust WSS / restricted PostgreSQL scenarios passed with the shared tunnel"
+          },
+          {
+            "command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs",
+            "sourceRevision": "1c8535c9383a95919f223b7d679644441ec258fe",
+            "exitCode": 0,
+            "result": "61 standalone assertions, both targets and 15 authored C# syntax files; Unity test files require actual Editor compilation"
+          },
+          {
+            "command": "cargo build --locked --package vl-game-runtime; node --test tests/governance/*.test.mjs; pnpm exec eslint scripts/native-wss-interop.mjs scripts/unity-native-probe.mjs; git diff --check",
+            "exitCode": 0,
+            "result": "Runtime build, 112 governance tests, changed-script lint and whitespace check passed"
+          }
+        ],
+        "localArtifacts": "artifacts/g2-session-lifecycle/artifacts/desktop-first/vl022/interop-a9dc56f9/{facts.json,unity-1.xml,unity-2.xml,unity-1.png.pending.png,unity-1.png,unity-2.png}; standalone real-process interop-7c3bf8b7",
+        "rendering": "Unity 6000.3.14f1 LinuxPlayer, AMD Renoir OpenGLCore on CachyOS; pending and recovered screenshots inspected",
+        "playerExecutableSha256": "26901901cc6dd63212d741b339897f072d34cb7b3f08419fe451fc8e77c79a1f",
+        "testAssemblySha256": "4a8a879c0c9cd594aaba241d341abd9ef524acf5fc72ac3383f44e6f0c8f94b6",
+        "limitations": "Automated OS input, not physical owner or Windows qualification. Engine executable hash alone does not identify managed gameplay source. Initial 1c8535c Unity build failed CS0246 due to a test-only Google type reference; 5de8e8 uses the shared byte interface and actual player compilation passed. No production fault hook or authority change. VL-081 remains IN_PROGRESS; final committed source requires green hosted Quality/Rust before merge."
+      },
         "linuxPlatformLogoutEvidence": {
           "sourceRevision": "5bf1e84709649a505239948aeba68eee672dd5d1",
           "reviewMode": "SINGLE_AGENT_AUDIT",
