@@ -8,6 +8,9 @@ use vl_protocol::public;
 use vl_security::durable::{DurableSession, DurableTrust};
 
 pub trait NativeGame: Game {
+    fn interaction(&self, _kind: &str) -> Option<&'static str> {
+        None
+    }
     fn view_kind(&self) -> &'static str;
     fn parse(&self, kind: &str, payload: &[u8]) -> Result<(i64, Self::Action), Error>;
 }
@@ -27,6 +30,7 @@ impl<G: NativeGame> Commands<G> {
             Error::Collision => Fault::Rejected(public::ErrorCode::CommandIdCollision),
             Error::Conflict => Fault::Rejected(public::ErrorCode::StaleVersion),
             Error::Invalid => Fault::Rejected(public::ErrorCode::UnsupportedClient),
+            Error::EffectDenied => Fault::Rejected(public::ErrorCode::NotInProximity),
             Error::Unauthorized => Fault::Revoked,
             Error::Integrity | Error::Unavailable => Fault::Unavailable,
         }
@@ -37,6 +41,9 @@ where
     G::State: Send + Sync,
     G::Action: Send + Sync + 'static,
 {
+    fn interaction(&self, intent: &public::GameIntent) -> Option<&'static str> {
+        self.host.game().interaction(&intent.kind)
+    }
     fn execute<'a>(
         &'a self,
         db: &'a mut Client,
@@ -44,6 +51,7 @@ where
         session: &'a DurableSession,
         command_id: &'a [u8],
         intent: &'a public::GameIntent,
+        effect_allowed: bool,
     ) -> Task<'a, GameReply> {
         Box::pin(async move {
             if intent.game_session_id.as_slice() != self.match_id.as_bytes()
@@ -80,7 +88,7 @@ where
                     };
                     let receipt = self
                         .host
-                        .execute(db, trust, session, request)
+                        .execute_when(db, trust, session, request, effect_allowed)
                         .await
                         .map_err(|e| self.fault(e))?;
                     self.committed.fetch_add(1, Ordering::Relaxed);

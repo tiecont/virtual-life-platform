@@ -79,7 +79,9 @@ bounds, and require a real graphics device outside the Editor.
 The developer primitives and approach anchors are defined once in
 `BlockoutGeometry.cs`. `ProjectBuild.Prepare` exports their stable shape GUIDs,
 resolved Unity source/material GUIDs, source hash and integer millimeter AABBs
-to `config/aurora-blockout-collision.json`. Commit this maintained configuration
+and interaction radius/target GUID to `config/aurora-blockout-collision.json`.
+Rust derives the terminal center from that collider and checks canonical proximity
+before new synthetic effects when Aurora movement is enabled. Commit this maintained configuration
 after geometry edits. The export reserves capsule radius/skin and the allowed
 center bounds for VL-028; it does not enable native movement or add an authority.
 These approach anchors are temporary walk targets, not a baked production

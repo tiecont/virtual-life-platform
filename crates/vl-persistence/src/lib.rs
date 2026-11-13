@@ -26,6 +26,7 @@ pub enum Error {
     Unauthorized,
     Conflict,
     Collision,
+    EffectDenied,
     Integrity,
     Unavailable,
 }
@@ -448,6 +449,18 @@ where
         session: &DurableSession,
         request: Request<G::Action>,
     ) -> Result<Receipt> {
+        self.execute_when(db, trust, session, request, true).await
+    }
+    /// A trusted adapter holds its external effect gate until this completes.
+    /// A denied new effect must still allow an authenticated committed retry.
+    pub async fn execute_when(
+        &self,
+        db: &mut Client,
+        trust: &DurableTrust,
+        session: &DurableSession,
+        request: Request<G::Action>,
+        effect_allowed: bool,
+    ) -> Result<Receipt> {
         if request.match_id.is_nil()
             || request.command_id.is_nil()
             || request.expected_version < 0
@@ -462,7 +475,7 @@ where
                     tx.batch_execute("SAVEPOINT native_command")
                         .await
                         .map_err(|_| TrustError::PolicyUnavailable)?;
-                    let result = host.turn(tx, &actor, request).await;
+                    let result = host.turn(tx, &actor, request, effect_allowed).await;
                     if result.is_err() {
                         tx.batch_execute("ROLLBACK TO SAVEPOINT native_command")
                             .await
@@ -539,6 +552,7 @@ where
         tx: &Transaction<'_>,
         actor: &vl_security::durable::AuthorizedActor<'_>,
         r: Request<G::Action>,
+        effect_allowed: bool,
     ) -> Result<Receipt> {
         self.owner.check(tx).await?;
         if actor.world != self.owner.scope.world || actor.boot != self.owner.scope.boot.to_string()
@@ -589,6 +603,9 @@ where
             .authorize(&stored.checkpoint.state, actor.account, &r.action)
         {
             return Err(Error::Unauthorized);
+        }
+        if !effect_allowed {
+            return Err(Error::EffectDenied);
         }
         let clock = LogicalClock {
             server_tick: stored
