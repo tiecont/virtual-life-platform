@@ -122,7 +122,10 @@ discards downstream data after E and closes only after PostgreSQL confirms the
 committed receipt. The panel must retain its old presented version and pending
 command, read the committed view on reconnect, then acknowledge the original ID
 through Retry without another effect. Two rendered players repeat this across
-a Rust restart. This also retains the held-ticket logout/revocation checks;
+a Rust restart. Before walking, the fixture also unloads the scene while its
+HTTPS ticket request is held. It requires the old operation to drain with no
+late state restoration and empty credentials/state in the new scene, then
+uses OS input to log in again. This retains the held-ticket logout/revocation checks;
 automated OS input does not replace physical owner or Windows qualification.
 
 CachyOS is a local compatibility trial. Unity lists Ubuntu 22.04 and 24.04

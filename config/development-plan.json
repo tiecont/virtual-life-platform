@@ -2821,7 +2821,31 @@
         "adapterValidation": "node scripts/native-csharp.mjs",
         "realProcessValidation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
         "scope": "Pinned Linux Unity player now proves actual login/ticket/WSS/command/receipt/reconnect and runtime restart. VL-080 Windows acceptance remains an explicit incomplete dependency",
-      "remainingAcceptance": "Owner physical connected-panel acceptance, in-flight scene-exit acceptance, remaining rendered admission/protocol/TLS error matrix, and inherited VL-080 Windows qualification remain. Automated Linux OS-input panel/terminal, durable ambiguous-ACK retry and platform logout during a held ticket request passed; synthetic ruleset only.",
+      "remainingAcceptance": "Owner physical connected-panel acceptance, remaining rendered admission/protocol/TLS error matrix, and inherited VL-080 Windows qualification remain. Automated Linux OS-input panel/terminal, durable ambiguous-ACK retry, scene unload during a held ticket request and platform logout during a held ticket request passed; synthetic ruleset only.",
+      "inflightSceneExitVerification": {
+        "sourceRevision": "2dc913dc367eb7e2bf8d2d19f018fa92a2dde599",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement",
+            "exitCode": 0,
+            "result": "6 real-process scenarios; two rendered Linux players unload AuroraBlockout while an actual HTTPS ticket request is held. Controller destruction disposes session, operation drains after cancellation and server barrier release, old state stays null, and the new scene has empty credentials/no presented state. Fresh OS-input login restores the committed version. Movement, lost-ACK same-ID retry, held-ticket logout, two exact receipts and Rust SIGKILL recovery still pass"
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "112 passed"
+          },
+          {
+            "command": "node scripts/verify-ci.mjs; node scripts/verify-architecture.mjs; pnpm exec eslint scripts/native-wss-interop.mjs scripts/unity-native-probe.mjs; git diff --check",
+            "exitCode": 0,
+            "result": "Local CI coverage contract, architecture/worker boundaries, script lint and whitespace passed"
+          }
+        ],
+        "localArtifacts": "artifacts/g2-session-lifecycle/artifacts/desktop-first/vl022/interop-6aa991c6/{facts.json,unity-1.xml,unity-2.xml,unity-1.png.scene-exit.png,unity-2.png.scene-exit.png}",
+        "testAssemblySha256": "860b9ae39f93a9fe8bffafcad8e4dcd908b32de70655ec0f9e084aeb5cba6266",
+        "limitations": "Scene transition is driven by the test runner during the actual OS-input connection; not an owner-driven scene exit or Windows qualification. Screenshot inspected. Session disposal clears the local session but does not claim platform logout; explicit logout remains separately verified. No production authority change. VL-081 stays IN_PROGRESS and hosted exact-head CI remains required before merge."
+      },
       "renderedAckRetryVerification": {
         "sourceRevision": "5de8e80273d22bedeb74c885ddcad0b8fa39909b",
         "reviewMode": "SINGLE_AGENT_AUDIT",
