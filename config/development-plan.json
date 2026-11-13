@@ -342,7 +342,7 @@
       "id": "VL-009",
       "feature": "Coordinator",
       "title": "Existing plan crosswalk decision",
-      "objective": "Obtain formal scheduling checkpoint N06\u2192PA\u2192Lodge; route VL tasks without changing other ledgers.",
+      "objective": "Obtain formal scheduling checkpoint N06→PA→Lodge; route VL tasks without changing other ledgers.",
       "dependsOn": [
         "VL-001",
         "VL-002"
@@ -392,8 +392,16 @@
         "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "commands": [
-          {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "4 EditMode and 1 PlayMode tests passed"},
-          {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux", "exitCode": 0, "result": "Actual rendered Linux development player; owner accepted WASD, terminal E and window interaction"}
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests",
+            "exitCode": 0,
+            "result": "4 EditMode and 1 PlayMode tests passed"
+          },
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux",
+            "exitCode": 0,
+            "result": "Actual rendered Linux development player; owner accepted WASD, terminal E and window interaction"
+          }
         ]
       },
       "qualificationRequirements": [],
@@ -408,8 +416,16 @@
           "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073",
           "reviewMode": "SINGLE_AGENT_AUDIT",
           "commands": [
-            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "4 EditMode and 1 PlayMode tests passed; spawn, movement, proximity and native-interaction delegation"},
-            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux", "exitCode": 0, "result": "Actual Linux development player built with URP 17.3.0"}
+            {
+              "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests",
+              "exitCode": 0,
+              "result": "4 EditMode and 1 PlayMode tests passed; spawn, movement, proximity and native-interaction delegation"
+            },
+            {
+              "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux",
+              "exitCode": 0,
+              "result": "Actual Linux development player built with URP 17.3.0"
+            }
           ],
           "ownerAcceptance": "Owner reported thao tac ok after being asked to test WASD, approach the blue terminal, E interaction and window close in the actual Linux player",
           "graphics": "AMD Renoir, OpenGLCore, CachyOS 7.2.9-2; rendered screenshot inspected, capsule material corrected to URP Lit",
@@ -1207,25 +1223,47 @@
       "id": "VL-024",
       "feature": "Avatar-Art",
       "title": "Native Aurora Plaza blockout, scale & navmesh authoring",
-      "objective": "Blender/Unity scale/navmesh anchors and walkable blockout for a single compact district plus portals/caf\u00e9 sit anchors.",
+      "objective": "Blender/Unity scale/navmesh anchors and walkable blockout for a single compact district plus portals/café sit anchors.",
       "dependsOn": [
         "VL-010"
       ],
       "acceptance": [
         "geometry GUID manifest and server simplified collision exported",
-        "walk path from spawn to caf\u00e9 and Arena reachable"
+        "walk path from spawn to café and Arena reachable"
       ],
       "status": "VERIFIED",
       "verification": {
         "sourceRevision": "7cff49a09eeb2bd212b0f36812627a02d7baee1f",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "commands": [
-          {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "4 EditMode and 2 PlayMode tests passed in Editor 6000.3.14f1"},
-          {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux-player-tests", "exitCode": 0, "result": "2 actual rendered Linux player tests passed, none skipped: spawn, interaction, cafe/Arena approach routes, solid cafe collision, district bounds, camera and URP material"},
-          {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux", "exitCode": 0, "result": "Linux development build passed; all 252 build files hashed in artifacts/linux-player/7cff49a09eeb/build-manifest.json"},
-          {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "112 passed, including collision source hash, asset GUIDs, integer AABBs and capsule anchor clearance"},
-          {"command": "node node_modules/eslint/bin/eslint.js scripts/unity-validate.mjs tests/governance/aurora-collision.test.mjs", "exitCode": 0},
-          {"command": "git diff --check", "exitCode": 0}
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests",
+            "exitCode": 0,
+            "result": "4 EditMode and 2 PlayMode tests passed in Editor 6000.3.14f1"
+          },
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux-player-tests",
+            "exitCode": 0,
+            "result": "2 actual rendered Linux player tests passed, none skipped: spawn, interaction, cafe/Arena approach routes, solid cafe collision, district bounds, camera and URP material"
+          },
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux",
+            "exitCode": 0,
+            "result": "Linux development build passed; all 252 build files hashed in artifacts/linux-player/7cff49a09eeb/build-manifest.json"
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "112 passed, including collision source hash, asset GUIDs, integer AABBs and capsule anchor clearance"
+          },
+          {
+            "command": "node node_modules/eslint/bin/eslint.js scripts/unity-validate.mjs tests/governance/aurora-collision.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
         ]
       },
       "implementation": {
@@ -1262,7 +1300,7 @@
       "id": "VL-026",
       "feature": "Avatar-Art",
       "title": "Facial morph, emote, sit and IK authoring",
-      "objective": "Produce 12+ facial expressions and 8\u201312 emotes on approved pilot character.",
+      "objective": "Produce 12+ facial expressions and 8–12 emotes on approved pilot character.",
       "dependsOn": [
         "VL-025"
       ],
@@ -1310,24 +1348,134 @@
       "qualificationRequirements": [],
       "implementation": {
         "source": "crates/vl-world/src/collision.rs; crates/vl-world/src/movement.rs; crates/vl-gateway/src/durable.rs; apps/unity-client/Assets/VirtualLife/Features/NativeScene",
-        "scope": "Default-off Aurora movement through the existing single Rust zone writer, exported collision manifest, current Nest policy locks, own-only snapshots and main-thread Unity reconciliation",
-        "remainingAcceptance": "Authoritative interaction proximity and policy-filtered AOI remain. Reconnect retains a bounded actor registry within one runtime; durable movement checkpoints, registry eviction and client prediction are not implemented. Runtime restart rejects old epochs and returns to safe manifest spawn. Injected application delay evidence is not physical network latency or Windows qualification.",
+        "scope": "Default-off Aurora movement through the existing single Rust zone writer, exported collision/interaction manifest, current Nest policy locks, own-only snapshots, authoritative synthetic terminal proximity and main-thread Unity reconciliation",
+        "remainingAcceptance": "Policy-filtered AOI remains. Reconnect retains a bounded actor registry within one runtime; durable movement checkpoints, registry eviction and client prediction are not implemented. Runtime restart rejects old epochs and returns to safe manifest spawn. Injected application delay evidence is not physical network latency or Windows qualification.",
         "reviewMode": "SINGLE_AGENT_AUDIT",
+        "proximityVerification": {
+          "sourceRevision": "c02e9f9fa7d3ab343ff37e11fbfb81fb0dbe1ebd",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "scope": "Canonical exported terminal collider center and Unity interaction radius; same-account movement/game gate held through durable execution; current policy and membership checked before authenticated dedupe; proximity applies only to new synthetic effects, not views or Pet Arena combat",
+          "commands": [
+            {
+              "command": "cargo fmt --all -- --check",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo test --workspace --locked",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+              "exitCode": 0
+            },
+            {
+              "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --movement",
+              "exitCode": 0,
+              "result": "13 real-process WSS/restricted TLS PostgreSQL scenarios PASS; remote denial creates no receipt, DB-blocked command gates second same-account socket, far reconnect replays original receipt without new effect, restart safe spawn denies new effects while restoring own view and immutable receipt"
+            },
+            {
+              "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena",
+              "exitCode": 0,
+              "result": "30 PASS; full winning match, restart/recovery negatives and exactly-once platform reward reconciliation"
+            },
+            {
+              "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena-loss",
+              "exitCode": 0,
+              "result": "30 PASS; losing match and recovery/settlement regressions"
+            },
+            {
+              "command": "PATH=<local SDK 8.0.428>:$PATH node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
+              "exitCode": 0,
+              "result": "22 real C#/Nest/Rust process scenarios PASS"
+            },
+            {
+              "command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs",
+              "exitCode": 0,
+              "result": "44 assertions, both targets and 15 authored syntax files PASS"
+            },
+            {
+              "command": "node --test tests/governance/*.test.mjs",
+              "exitCode": 0,
+              "result": "112 PASS"
+            },
+            {
+              "command": "node scripts/verify-ci.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "node scripts/verify-architecture.mjs",
+              "exitCode": 0
+            }
+          ],
+          "evidence": "artifacts/g2-movement/artifacts/desktop-first/vl022/interop-521a7b3c/facts.json; interop-d4a57bfc; interop-16298492; interop-4cfc4f02; artifacts/g2-proximity-*.log",
+          "playerVerification": {
+            "sourceRevision": "71f9229f3fcaf34e9e050b93161c37a856b6b107",
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement",
+            "exitCode": 0,
+            "result": "Two actual rendered Linux players PASS with XTest wrong/correct login, Rust-owned W movement, terminal E, committed versions 1/2, resync and scene re-entry; Rust SIGKILL between players, exactly two receipts; project parse-error guard passed and screenshots inspected",
+            "evidence": "artifacts/g2-movement/artifacts/desktop-first/vl022/interop-26cce774/{facts.json,unity-1.xml,unity-2.xml,unity-1.png,unity-2.png}",
+            "graphics": "6000.3.14f1 LinuxPlayer; AMD Renoir OpenGLCore; CachyOS",
+            "hashes": {
+              "playerEngine": "26901901cc6dd63212d741b339897f072d34cb7b3f08419fe451fc8e77c79a1f",
+              "nativeManaged": "9d761aa41e10381e6e16c4356cd51142aedd3755fac0a5672786d5654f9ab186",
+              "nativeSceneManaged": "06561486fe167c64d770bff2903f8f288ac32bc25dd03599dbd0da44ddb011aa",
+              "blockoutManaged": "efda7a9b3fc59534ce8123aeeaf88421ddbf1e0821cebc7c37e47e90714c3d9e"
+            }
+          },
+          "limitations": "Automated OS input, not physical owner or Windows qualification. Earlier two-socket attempts failed because fixture allocation correctly revoked the old generation; the passing test reuses the same live admission. Source c02e9f9 rendered runs passed NUnit but retained a pre-existing TagManager parse error; 71f9229 fixes it and rejects parse-error logs. No protocol/schema change or production activation. Hosted exact-final-head CI required before merge."
+        },
         "linuxVerification": {
           "sourceRevision": "0e058f5ed71db06e4d5dacdb94a09cc5fd5c17f4",
           "commands": [
-            {"command": "cargo fmt --all -- --check; cargo clippy --workspace --all-targets --locked -- -D warnings; cargo test --workspace --locked", "exitCode": 0, "result": "Format, Clippy and all Rust workspace tests passed, including movement expiry, cancellation, foreign-zone ownership, acceleration, collision and sequence fences"},
-            {"command": "cargo run --locked --package vl-protocol --bin native-codegen -- --check", "exitCode": 0, "result": "Pinned generated bindings match additive protocol fields"},
-            {"command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs", "exitCode": 0, "result": "44 assertions, both target builds and 15 authored C# syntax files passed; includes idle resync and malformed movement ACK negatives"},
-            {"command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --movement", "exitCode": 0, "result": "9 scenarios passed against an actual Rust process and restricted TLS PostgreSQL; replay, epoch/sequence/time rejection, wall margin, reconnect position, restart safe spawn, revoked admission and speedhack direction"},
-            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement", "exitCode": 0, "result": "Two rendered Linux players passed OS input login, W walk, Rust-only capsule reconciliation, terminal E, committed versions 1/2, reconnect and scene cleanup, with Rust SIGKILL between players; exactly two durable game receipts"},
-            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "4 EditMode and 2 PlayMode tests passed; isolated worktree Library import"},
-            {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "112 passed"},
-            {"command": "node scripts/verify-ci.mjs; node scripts/verify-architecture.mjs", "exitCode": 0, "result": "CI coverage contract and architecture boundaries passed"}
+            {
+              "command": "cargo fmt --all -- --check; cargo clippy --workspace --all-targets --locked -- -D warnings; cargo test --workspace --locked",
+              "exitCode": 0,
+              "result": "Format, Clippy and all Rust workspace tests passed, including movement expiry, cancellation, foreign-zone ownership, acceleration, collision and sequence fences"
+            },
+            {
+              "command": "cargo run --locked --package vl-protocol --bin native-codegen -- --check",
+              "exitCode": 0,
+              "result": "Pinned generated bindings match additive protocol fields"
+            },
+            {
+              "command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs",
+              "exitCode": 0,
+              "result": "44 assertions, both target builds and 15 authored C# syntax files passed; includes idle resync and malformed movement ACK negatives"
+            },
+            {
+              "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --movement",
+              "exitCode": 0,
+              "result": "9 scenarios passed against an actual Rust process and restricted TLS PostgreSQL; replay, epoch/sequence/time rejection, wall margin, reconnect position, restart safe spawn, revoked admission and speedhack direction"
+            },
+            {
+              "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement",
+              "exitCode": 0,
+              "result": "Two rendered Linux players passed OS input login, W walk, Rust-only capsule reconciliation, terminal E, committed versions 1/2, reconnect and scene cleanup, with Rust SIGKILL between players; exactly two durable game receipts"
+            },
+            {
+              "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests",
+              "exitCode": 0,
+              "result": "4 EditMode and 2 PlayMode tests passed; isolated worktree Library import"
+            },
+            {
+              "command": "node --test tests/governance/*.test.mjs",
+              "exitCode": 0,
+              "result": "112 passed"
+            },
+            {
+              "command": "node scripts/verify-ci.mjs; node scripts/verify-architecture.mjs",
+              "exitCode": 0,
+              "result": "CI coverage contract and architecture boundaries passed"
+            }
           ],
           "evidence": "artifacts/desktop-first/vl022/interop-aefdd6da/facts.json; interop-0178e8f1/{facts.json,unity-1.xml,unity-2.xml,unity-1.png,unity-2.png}; artifacts/unity/2026-11-13T16-18-43-399Z-590d3f8e/result.json",
           "rendering": "Unity 6000.3.14f1 LinuxPlayer, AMD Renoir OpenGLCore on CachyOS; screenshot inspected; player executable SHA256 26901901cc6dd63212d741b339897f072d34cb7b3f08419fe451fc8e77c79a1f",
-          "ociVerification": {"sourceRevision": "60d201d385b177eabf5603589d119b82df9fdf4f", "command": "docker build -f apps/game-runtime/Dockerfile -t vl-runtime-g2-local .; python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-g2-local", "exitCode": 0, "result": "Canonical collision manifest included; nonroot/read-only; liveness 200, default-off readiness 503, native route 404, activation denied and graceful exit 0"},
+          "ociVerification": {
+            "sourceRevision": "60d201d385b177eabf5603589d119b82df9fdf4f",
+            "command": "docker build -f apps/game-runtime/Dockerfile -t vl-runtime-g2-local .; python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-g2-local",
+            "exitCode": 0,
+            "result": "Canonical collision manifest included; nonroot/read-only; liveness 200, default-off readiness 503, native route 404, activation denied and graceful exit 0"
+          },
           "limitations": "Automated OS input, not physical owner or Windows qualification. A reboot interrupted the first source-bound Unity attempt and left no completed NUnit result; no pass was inferred. A later 15s route timeout was corrected to a bounded 60s acknowledged walk without changing position/receipt assertions. Hosted Quality/Rust at final PR HEAD remain required before merge."
         }
       }
@@ -1500,8 +1648,8 @@
     {
       "id": "VL-038",
       "feature": "Avatar-Art",
-      "title": "Caf\u00e9 interior, doors, tables and seat anchors",
-      "objective": "Produce Caf\u00e9 Lumi interior with 4 seat anchors, appropriate camera/sit alignment.",
+      "title": "Café interior, doors, tables and seat anchors",
+      "objective": "Produce Café Lumi interior with 4 seat anchors, appropriate camera/sit alignment.",
       "dependsOn": [
         "VL-024"
       ],
@@ -1535,8 +1683,8 @@
     {
       "id": "VL-040",
       "feature": "Web-UX",
-      "title": "Unity native caf\u00e9 walk-in/seat/standing scene and UI",
-      "objective": "Caf\u00e9 scene transition, camera, hand/seat IK with Rust hold/commit and optional game overlay; handle failure gracefully.",
+      "title": "Unity native café walk-in/seat/standing scene and UI",
+      "objective": "Café scene transition, camera, hand/seat IK with Rust hold/commit and optional game overlay; handle failure gracefully.",
       "dependsOn": [
         "VL-037",
         "VL-038",
@@ -1608,12 +1756,33 @@
         "sourceRevision": "2e4c0409aa091da8ed45ee1c8b5264d57352ee72",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "commands": [
-          {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "49 tests including 6 Pet Arena cases and compile-fail boundaries; zero ignored"},
-          {"command": "cargo clippy --workspace --all-targets --locked -- -D warnings", "exitCode": 0},
-          {"command": "cargo fmt --all -- --check", "exitCode": 0},
-          {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "105 tests passed"},
-          {"command": "docker build --build-arg SOURCE_REVISION=2e4c0409aa091da8ed45ee1c8b5264d57352ee72 -f apps/game-runtime/Dockerfile -t vl-runtime-pet-oci .", "exitCode": 0},
-          {"command": "python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-pet-oci", "exitCode": 0, "result": "Nonroot/read-only OCI smoke passed; disabled route and unconfigured activation fail closed; owned container removed"}
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0,
+            "result": "49 tests including 6 Pet Arena cases and compile-fail boundaries; zero ignored"
+          },
+          {
+            "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "105 tests passed"
+          },
+          {
+            "command": "docker build --build-arg SOURCE_REVISION=2e4c0409aa091da8ed45ee1c8b5264d57352ee72 -f apps/game-runtime/Dockerfile -t vl-runtime-pet-oci .",
+            "exitCode": 0
+          },
+          {
+            "command": "python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-pet-oci",
+            "exitCode": 0,
+            "result": "Nonroot/read-only OCI smoke passed; disabled route and unconfigured activation fail closed; owned container removed"
+          }
         ],
         "reviewNotes": "Frozen catalog, authored board and seeded six-turn fixture hashes; 2160 telegraph combinations plus stale/forged negatives; all board cell pairs checked for accepted swap invariants; fixed-point status/expiry/shield examples. Hosted OCI failure exposed a missing workspace member COPY; corrected and locally rebuilt/smoked at this source revision. No live combat, native route activation, player build or final balance qualification claimed. Hosted CI remains required before merge."
       },
@@ -1647,12 +1816,33 @@
         "sourceRevision": "ad26b57d1793e5e09135a485b12fa12721143164",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "commands": [
-          {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "57 tests passed including 14 Pet Arena cases and compile-fail boundaries; zero ignored"},
-          {"command": "cargo clippy --workspace --all-targets --locked -- -D warnings", "exitCode": 0},
-          {"command": "cargo fmt --all -- --check", "exitCode": 0},
-          {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "105 tests passed"},
-          {"command": "docker build --build-arg SOURCE_REVISION=ad26b57d1793e5e09135a485b12fa12721143164 -f apps/game-runtime/Dockerfile -t vl-runtime-pet-combat .", "exitCode": 0},
-          {"command": "python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-pet-combat", "exitCode": 0, "result": "Nonroot/read-only, disabled route, unconfigured activation rejection, graceful shutdown and owned cleanup passed"}
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0,
+            "result": "57 tests passed including 14 Pet Arena cases and compile-fail boundaries; zero ignored"
+          },
+          {
+            "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "105 tests passed"
+          },
+          {
+            "command": "docker build --build-arg SOURCE_REVISION=ad26b57d1793e5e09135a485b12fa12721143164 -f apps/game-runtime/Dockerfile -t vl-runtime-pet-combat .",
+            "exitCode": 0
+          },
+          {
+            "command": "python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-pet-combat",
+            "exitCode": 0,
+            "result": "Nonroot/read-only, disabled route, unconfigured activation rejection, graceful shutdown and owned cleanup passed"
+          }
         ],
         "reviewNotes": "192 pet/stage/seed full matches replay identically with both win/loss outcomes; eight skills, committed AI patterns, cooldown/status order and 60-turn loss cap covered. New-process checkpoint restart matches frozen state/audit hashes and entropy cursor. Invalid actions, stale version, wrong seed, malformed/incompatible snapshots and dead boards fail safely. No Pet Arena route, database adapter, reward, Unity E2E or balance certification claimed. Hosted exact-head CI is required before merge."
       },
@@ -1801,7 +1991,7 @@
     {
       "id": "VL-048",
       "feature": "QA-SRE",
-      "title": "Rust + compiled Windows client e2e city/caf\u00e9/card/Pet Arena",
+      "title": "Rust + compiled Windows client e2e city/café/card/Pet Arena",
       "objective": "E2E native two-player seat/private game and Pet Arena transition with teleport, reconnect, ledger settlement, no duplicate rewards.",
       "dependsOn": [
         "VL-037",
@@ -1876,7 +2066,7 @@
       "id": "VL-052",
       "feature": "Avatar-Art",
       "title": "Polish final art and appearance clipping",
-      "objective": "Repair clothing/tail/ears/fur, lighting, VFX/readability in day/evening and caf\u00e9.",
+      "objective": "Repair clothing/tail/ears/fur, lighting, VFX/readability in day/evening and café.",
       "dependsOn": [
         "VL-034",
         "VL-048"
@@ -1909,7 +2099,7 @@
       "id": "VL-054",
       "feature": "QA-SRE",
       "title": "Usability cohort and game fun audit",
-      "objective": "Observe player first-play, map discovery, caf\u00e9 sitting and Pet Arena, track confusion.",
+      "objective": "Observe player first-play, map discovery, café sitting and Pet Arena, track confusion.",
       "dependsOn": [
         "VL-049",
         "VL-053"
@@ -2352,8 +2542,15 @@
           "sourceRevision": "1a7d7e5b6ab7a58d12aa319b8e207da9278130d6",
           "reviewMode": "SINGLE_AGENT_AUDIT",
           "commands": [
-            {"command": "node scripts/run-browser-tests.mjs tests/e2e/calendar.spec.ts", "exitCode": 0, "result": "Desktop and mobile Chromium passed, including deterministic zero-second input, exact persisted UTC timestamps, publish/cancel/RSVP and private audit assertions"},
-            {"command": "node node_modules/eslint/bin/eslint.js tests/e2e/calendar.spec.ts", "exitCode": 0}
+            {
+              "command": "node scripts/run-browser-tests.mjs tests/e2e/calendar.spec.ts",
+              "exitCode": 0,
+              "result": "Desktop and mobile Chromium passed, including deterministic zero-second input, exact persisted UTC timestamps, publish/cancel/RSVP and private audit assertions"
+            },
+            {
+              "command": "node node_modules/eslint/bin/eslint.js tests/e2e/calendar.spec.ts",
+              "exitCode": 0
+            }
           ],
           "scope": "Actual Chromium reproduction rejects HH:mm:00 because datetime-local normalizes to HH:mm. Fixture now uses canonical minute values and checks every stored schedule timestamp. No product behavior or assertion removed. Hosted final-head Quality/Rust required before merge."
         }
@@ -2395,7 +2592,7 @@
       "id": "VL-068",
       "feature": "Gameplay",
       "title": "Live events and transparent progression",
-      "objective": "Implement small caf\u00e9 festival + cosmetic achievement loop with anti-pay-to-win gating.",
+      "objective": "Implement small café festival + cosmetic achievement loop with anti-pay-to-win gating.",
       "dependsOn": [
         "VL-047",
         "VL-058"
@@ -2619,7 +2816,14 @@
           },
           "graphics": "RADV RENOIR Mesa 26.2.4 and NVIDIA RTX 2060 Max-Q driver 615.78.08; Vulkan instance 1.4.363",
           "limitations": "System PostgreSQL socket inactive; tests use disposable Docker PostgreSQL. Pinned Unity 6000.3.14f1 is installed and owner-activated; actual import/tests/Linux player run passed. CachyOS/AMD OpenGLCore measured locally; Windows qualification remains external.",
-          "editor": {"version": "6000.3.14f1", "revision": "d68c3f99a318", "archiveSha256": "da4f7690af316ec926acbfbb9b3347d0cb6b5ab7e7d75adfc3719a3d1b8fdbd9", "activation": "Owner performed activation; no credentials or license material recorded", "linuxPlayer": "AMD Renoir OpenGLCore; URP 17.3.0", "otherEditor": "Owner-installed 6000.6.9f1 preserved"}
+          "editor": {
+            "version": "6000.3.14f1",
+            "revision": "d68c3f99a318",
+            "archiveSha256": "da4f7690af316ec926acbfbb9b3347d0cb6b5ab7e7d75adfc3719a3d1b8fdbd9",
+            "activation": "Owner performed activation; no credentials or license material recorded",
+            "linuxPlayer": "AMD Renoir OpenGLCore; URP 17.3.0",
+            "otherEditor": "Owner-installed 6000.6.9f1 preserved"
+          }
         }
       }
     },
@@ -2666,12 +2870,29 @@
         "urp": "17.3.0",
         "validation": "node scripts/unity-validate.mjs tests",
         "remainingAcceptance": "Windows player build CI artifact and physical Windows acceptance; Linux Editor/player proof does not verify this Windows task",
+        "importSerializationVerification": {
+          "sourceRevision": "71f9229f3fcaf34e9e050b93161c37a856b6b107",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests",
+          "exitCode": 0,
+          "result": "4 EditMode and 2 PlayMode tests PASS; Prepare/EditMode/PlayMode logs contain no project asset parse failure. Explicit empty layer strings fix TagManager serialization; both batch and rendered-player runners now reject project parse errors even with Editor exit code 0.",
+          "evidence": "artifacts/g2-movement/artifacts/unity/2026-11-13T18-08-00-227Z-9799be19/result.json; rendered interop-26cce774",
+          "qualification": "Linux only. Windows build artifact and physical hardware acceptance remain IN_PROGRESS."
+        },
         "linuxEditorVerification": {
           "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073",
           "reviewMode": "SINGLE_AGENT_AUDIT",
           "commands": [
-            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "Pinned Editor compiles project; 4 EditMode and 1 PlayMode tests pass, no fixture skips counted"},
-            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux", "exitCode": 0, "result": "Real Linux development player builds and renders AuroraBlockout"}
+            {
+              "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests",
+              "exitCode": 0,
+              "result": "Pinned Editor compiles project; 4 EditMode and 1 PlayMode tests pass, no fixture skips counted"
+            },
+            {
+              "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux",
+              "exitCode": 0,
+              "result": "Real Linux development player builds and renders AuroraBlockout"
+            }
           ],
           "resolved": "Reviewed Editor-generated package lock and project/URP settings committed; invalid 33-character GUIDs corrected, Mono serialization configuration supplied, default capsule material uses URP Lit",
           "scope": "CachyOS compatibility trial with AMD Renoir OpenGLCore; Windows qualification remains IN_PROGRESS"
@@ -2751,7 +2972,11 @@
           "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073",
           "reviewMode": "SINGLE_AGENT_AUDIT",
           "commands": [
-            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-player", "exitCode": 0, "result": "22 real Nest HTTPS / Rust WSS / restricted PostgreSQL scenarios; two rendered Linux Unity test players before/after Rust SIGKILL; first player commits version 1, second recovers durable receipt at version 2; wrong CA rejected, normal chain/hostname validation, login/ticket 200, same-ID replay, reconnect and no duplicate effects"}
+            {
+              "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-player",
+              "exitCode": 0,
+              "result": "22 real Nest HTTPS / Rust WSS / restricted PostgreSQL scenarios; two rendered Linux Unity test players before/after Rust SIGKILL; first player commits version 1, second recovers durable receipt at version 2; wrong CA rejected, normal chain/hostname validation, login/ticket 200, same-ID replay, reconnect and no duplicate effects"
+            }
           ],
           "evidence": "artifacts/desktop-first/vl022/interop-fd36c9b2/facts.json and unity-{1,2}.xml/.json/.png; private input deleted on completion",
           "rendering": "6000.3.14f1 LinuxPlayer, AMD Renoir OpenGLCore; screenshot inspected and URP capsule shader assertion passed",
@@ -2762,9 +2987,20 @@
           "sourceRevision": "1ad2985ed77ec63b8137e947b34f9cf468959224",
           "reviewMode": "SINGLE_AGENT_AUDIT",
           "commands": [
-            {"command": "pnpm check", "exitCode": 0, "result": "111 governance, 497 unit, 783 integration tests and all workspace builds passed; earlier missing Kubernetes cache download timeout and missing offline legacy packages resolved by verified local cache and explicit network preparation"},
-            {"command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs", "exitCode": 0, "result": "39 standalone assertions; netstandard2.1/net8 builds and 12 authored Unity files parse as C# 9"},
-            {"command": "git diff --check", "exitCode": 0}
+            {
+              "command": "pnpm check",
+              "exitCode": 0,
+              "result": "111 governance, 497 unit, 783 integration tests and all workspace builds passed; earlier missing Kubernetes cache download timeout and missing offline legacy packages resolved by verified local cache and explicit network preparation"
+            },
+            {
+              "command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs",
+              "exitCode": 0,
+              "result": "39 standalone assertions; netstandard2.1/net8 builds and 12 authored Unity files parse as C# 9"
+            },
+            {
+              "command": "git diff --check",
+              "exitCode": 0
+            }
           ],
           "scope": "Full local regression after merging verified journal recovery; hosted Quality/Rust on final PR source must pass before merge"
         },
@@ -2829,7 +3065,7 @@
       "id": "VL-082",
       "feature": "Native",
       "title": "URP anime shader/lighting GPU proof on Windows",
-      "objective": "Prototype face/hair/eye/toon outlines and one plaza/caf\u00e9 lighting sample with profiles.",
+      "objective": "Prototype face/hair/eye/toon outlines and one plaza/café lighting sample with profiles.",
       "dependsOn": [
         "VL-080",
         "VL-105"
@@ -2949,8 +3185,8 @@
     {
       "id": "VL-089",
       "feature": "Native",
-      "title": "Unity caf\u00e9 enter/seat/stand animation and runtime session adapter",
-      "objective": "Caf\u00e9 interior and IK/chair with Rust seat reservation and content hash gating.",
+      "title": "Unity café enter/seat/stand animation and runtime session adapter",
+      "objective": "Café interior and IK/chair with Rust seat reservation and content hash gating.",
       "dependsOn": [
         "VL-038",
         "VL-039",
@@ -2968,7 +3204,7 @@
       "id": "VL-090",
       "feature": "Native",
       "title": "Unity in-world private card table UI with spectator mode",
-      "objective": "Render table mini-game in caf\u00e9 and reliable projection-aware hidden hands.",
+      "objective": "Render table mini-game in café and reliable projection-aware hidden hands.",
       "dependsOn": [
         "VL-041",
         "VL-042",
@@ -3082,7 +3318,7 @@
         "VL-081"
       ],
       "acceptance": [
-        "Native test user can city\u2192cafe\u2192card\u2192Pet and back across reconnect",
+        "Native test user can city→cafe→card→Pet and back across reconnect",
         "No double settlement, hidden card leak, ghost seat or unauthorized teleport"
       ],
       "status": "TODO",
@@ -3233,7 +3469,7 @@
     {
       "id": "VL-105",
       "feature": "Avatar-Art",
-      "title": "Blender\u2192Unity rig and per-scene shader/material/LOD budgets",
+      "title": "Blender→Unity rig and per-scene shader/material/LOD budgets",
       "objective": "Define texture, bone, draw, materials and shader keyword budget for first 3 golden scenes.",
       "dependsOn": [
         "VL-010"
