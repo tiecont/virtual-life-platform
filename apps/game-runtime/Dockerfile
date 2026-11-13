@@ -11,6 +11,7 @@ COPY crates/vl-gateway crates/vl-gateway
 COPY crates/vl-persistence crates/vl-persistence
 COPY crates/vl-pet-arena crates/vl-pet-arena
 COPY proto/native proto/native
+COPY config/aurora-blockout-collision.json config/aurora-blockout-collision.json
 RUN cargo build --release --locked --package vl-game-runtime
 
 FROM debian:bookworm-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc
