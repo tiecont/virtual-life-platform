@@ -112,6 +112,14 @@ static class Program
                             if (mode == "reject") response.Rejection = new Rejection { Code = ErrorCode.Unauthenticated };
                             if (mode == "delay") await Task.Delay(700);
                         } else if (frame.Resync != null) response.Snapshot = snapshot;
+                        else if (frame.MoveIntent != null) {
+                            Check(frame.MoveIntent.AuthorityEpoch == 1 && frame.MoveIntent.InputSequence == 1);
+                            Check(frame.MoveIntent.DirectionX == 1000 && frame.MoveIntent.SentAtUnixMs > 0);
+                            snapshot.Tick = 1; snapshot.OwnActor.XMm = 20; snapshot.OwnActor.LastInputSequence = 1;
+                            response.Snapshot = snapshot;
+                            if (mode == "move-wrong-epoch") snapshot.AuthorityEpoch = 2;
+                            if (mode == "move-wrong-sequence") snapshot.OwnActor.LastInputSequence = 2;
+                        }
                         else {
                             Check(frame.GameIntent.GameSessionId.ToByteArray().SequenceEqual(Uuid(Match)));
                             if (mode.StartsWith("play")) {
@@ -166,6 +174,12 @@ static class Program
             ("oversize", Failure.Protocol), ("malformed", Failure.Protocol), ("text", Failure.Transport), ("delay", Failure.Timeout) }) {
             mode = test.Item1; using var client = Client(timeout: TimeSpan.FromMilliseconds(300));
             await Denied(() => client.ConnectAsync(), test.Item2); Check(client.State == ConnectionState.Faulted && client.Snapshot == null);
+        }
+        mode = "valid";
+        foreach (var movementMode in new[] {"valid", "move-wrong-epoch", "move-wrong-sequence"}) {
+            mode = movementMode; using var client = Client(); await client.ConnectAsync();
+            if (mode == "valid") { var moved = await client.MoveAsync(1000, 0); Check(moved.OwnActor.XMm == 20 && moved.OwnActor.LastInputSequence == 1); passed++; }
+            else await Denied(() => client.MoveAsync(1000, 0), Failure.Protocol);
         }
         mode = "valid";
         var never = new TaskCompletionSource<AdmissionTicket>();

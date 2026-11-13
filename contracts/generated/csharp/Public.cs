@@ -36,44 +36,46 @@ namespace VirtualLife.Native.Public.V1 {
             "aGFzaBgDIAEoDBIbCg5wbGF0Zm9ybV9sYWJlbBgEIAEoCUgAiAEBQhEKD19w",
             "bGF0Zm9ybV9sYWJlbCJrCgpHYW1lSW50ZW50EhcKD2dhbWVfc2Vzc2lvbl9p",
             "ZBgBIAEoDBIeChZleHBlY3RlZF9zdGF0ZV92ZXJzaW9uGAIgASgEEgwKBGtp",
-            "bmQYAyABKAkSFgoOYWN0aW9uX3BheWxvYWQYBCABKAwiTgoKTW92ZUludGVu",
-            "dBIWCg5pbnB1dF9zZXF1ZW5jZRgBIAEoBBITCgtkaXJlY3Rpb25feBgCIAEo",
-            "ERITCgtkaXJlY3Rpb25fehgDIAEoESI5CgZSZXN5bmMSFwoPbGFzdF9zZWVu",
-            "X2Vwb2NoGAEgASgEEhYKDmxhc3Rfc2Vlbl90aWNrGAIgASgEIsICCg5TZXJ2",
-            "ZXJFbnZlbG9wZRIYChBwcm90b2NvbF92ZXJzaW9uGAEgASgNEhIKCmNvbW1h",
-            "bmRfaWQYAiABKAwSGQoRY2Fub25pY2FsX3ZlcnNpb24YAyABKAQSNQoFaGVs",
-            "bG8YCiABKAsyJC52aXJ0dWFsbGlmZS5wdWJsaWMudjEuSGVsbG9BY2NlcHRl",
-            "ZEgAEjEKB3JlY2VpcHQYCyABKAsyHi52aXJ0dWFsbGlmZS5wdWJsaWMudjEu",
-            "UmVjZWlwdEgAEjUKCXJlamVjdGlvbhgMIAEoCzIgLnZpcnR1YWxsaWZlLnB1",
-            "YmxpYy52MS5SZWplY3Rpb25IABI4CghzbmFwc2hvdBgNIAEoCzIkLnZpcnR1",
-            "YWxsaWZlLnB1YmxpYy52MS5Xb3JsZFNuYXBzaG90SABCBgoEYm9keUoECAQQ",
-            "CiKUAQoNSGVsbG9BY2NlcHRlZBIUCgxjb250ZW50X2hhc2gYASABKAwSHAoU",
-            "c3RhdGVfc2NoZW1hX3ZlcnNpb24YAiABKA0SNgoIc25hcHNob3QYAyABKAsy",
-            "JC52aXJ0dWFsbGlmZS5wdWJsaWMudjEuV29ybGRTbmFwc2hvdBIXCg9ydW50",
-            "aW1lX2Jvb3RfaWQYBCABKAwiagoNV29ybGRTbmFwc2hvdBIXCg9hdXRob3Jp",
-            "dHlfZXBvY2gYASABKAQSDAoEdGljaxgCIAEoBBIyCglvd25fYWN0b3IYAyAB",
-            "KAsyHy52aXJ0dWFsbGlmZS5wdWJsaWMudjEuT3duQWN0b3IiQwoIT3duQWN0",
-            "b3ISDAoEeF9tbRgBIAEoERIMCgR6X21tGAIgASgREhsKE2xhc3RfaW5wdXRf",
-            "c2VxdWVuY2UYAyABKAQiOwoHUmVjZWlwdBIRCgljb21taXR0ZWQYASABKAgS",
-            "HQoVYXV0aG9yaXplZF9wcm9qZWN0aW9uGAIgASgMImAKCVJlamVjdGlvbhIu",
-            "CgRjb2RlGAEgASgOMiAudmlydHVhbGxpZmUucHVibGljLnYxLkVycm9yQ29k",
-            "ZRIRCglyZXRyeWFibGUYAiABKAgSEAoIdHJhY2VfaWQYAyABKAwq6AIKCUVy",
-            "cm9yQ29kZRIVChFFUlJPUl9VTlNQRUNJRklFRBAAEhMKD1VOQVVUSEVOVElD",
-            "QVRFRBABEhIKDlBPTElDWV9SRVZPS0VEEAISFAoQQ09OVEVOVF9NSVNNQVRD",
-            "SBADEhEKDVNUQUxFX1ZFUlNJT04QBBIPCgtTVEFMRV9FUE9DSBAFEhQKEE5P",
-            "VF9JTl9QUk9YSU1JVFkQBhIOCgpTRUFUX1RBS0VOEAcSFwoTR0FNRV9BTFJF",
-            "QURZX0FDVElWRRAIEhMKD1RFTEVQT1JUX0RFTklFRBAJEhgKFFRBUkdFVF9D",
-            "QVBBQ0lUWV9GVUxMEAoSGAoUQ09NTUFORF9JRF9DT0xMSVNJT04QCxIQCgxC",
-            "QUNLUFJFU1NVUkUQDBIbChdURU1QT1JBUklMWV9VTkFWQUlMQUJMRRANEhIK",
-            "DlJFV0FSRF9QRU5ESU5HEA4SFgoSVU5TVVBQT1JURURfQ0xJRU5UEA9CH6oC",
-            "HFZpcnR1YWxMaWZlLk5hdGl2ZS5QdWJsaWMuVjFiBnByb3RvMw=="));
+            "bmQYAyABKAkSFgoOYWN0aW9uX3BheWxvYWQYBCABKAwilwEKCk1vdmVJbnRl",
+            "bnQSFgoOaW5wdXRfc2VxdWVuY2UYASABKAQSEwoLZGlyZWN0aW9uX3gYAiAB",
+            "KBESEwoLZGlyZWN0aW9uX3oYAyABKBESFwoPYXV0aG9yaXR5X2Vwb2NoGAQg",
+            "ASgEEhUKDWV4cGVjdGVkX3RpY2sYBSABKAQSFwoPc2VudF9hdF91bml4X21z",
+            "GAYgASgEIjkKBlJlc3luYxIXCg9sYXN0X3NlZW5fZXBvY2gYASABKAQSFgoO",
+            "bGFzdF9zZWVuX3RpY2sYAiABKAQiwgIKDlNlcnZlckVudmVsb3BlEhgKEHBy",
+            "b3RvY29sX3ZlcnNpb24YASABKA0SEgoKY29tbWFuZF9pZBgCIAEoDBIZChFj",
+            "YW5vbmljYWxfdmVyc2lvbhgDIAEoBBI1CgVoZWxsbxgKIAEoCzIkLnZpcnR1",
+            "YWxsaWZlLnB1YmxpYy52MS5IZWxsb0FjY2VwdGVkSAASMQoHcmVjZWlwdBgL",
+            "IAEoCzIeLnZpcnR1YWxsaWZlLnB1YmxpYy52MS5SZWNlaXB0SAASNQoJcmVq",
+            "ZWN0aW9uGAwgASgLMiAudmlydHVhbGxpZmUucHVibGljLnYxLlJlamVjdGlv",
+            "bkgAEjgKCHNuYXBzaG90GA0gASgLMiQudmlydHVhbGxpZmUucHVibGljLnYx",
+            "LldvcmxkU25hcHNob3RIAEIGCgRib2R5SgQIBBAKIpQBCg1IZWxsb0FjY2Vw",
+            "dGVkEhQKDGNvbnRlbnRfaGFzaBgBIAEoDBIcChRzdGF0ZV9zY2hlbWFfdmVy",
+            "c2lvbhgCIAEoDRI2CghzbmFwc2hvdBgDIAEoCzIkLnZpcnR1YWxsaWZlLnB1",
+            "YmxpYy52MS5Xb3JsZFNuYXBzaG90EhcKD3J1bnRpbWVfYm9vdF9pZBgEIAEo",
+            "DCJqCg1Xb3JsZFNuYXBzaG90EhcKD2F1dGhvcml0eV9lcG9jaBgBIAEoBBIM",
+            "CgR0aWNrGAIgASgEEjIKCW93bl9hY3RvchgDIAEoCzIfLnZpcnR1YWxsaWZl",
+            "LnB1YmxpYy52MS5Pd25BY3RvciJDCghPd25BY3RvchIMCgR4X21tGAEgASgR",
+            "EgwKBHpfbW0YAiABKBESGwoTbGFzdF9pbnB1dF9zZXF1ZW5jZRgDIAEoBCI7",
+            "CgdSZWNlaXB0EhEKCWNvbW1pdHRlZBgBIAEoCBIdChVhdXRob3JpemVkX3By",
+            "b2plY3Rpb24YAiABKAwiYAoJUmVqZWN0aW9uEi4KBGNvZGUYASABKA4yIC52",
+            "aXJ0dWFsbGlmZS5wdWJsaWMudjEuRXJyb3JDb2RlEhEKCXJldHJ5YWJsZRgC",
+            "IAEoCBIQCgh0cmFjZV9pZBgDIAEoDCroAgoJRXJyb3JDb2RlEhUKEUVSUk9S",
+            "X1VOU1BFQ0lGSUVEEAASEwoPVU5BVVRIRU5USUNBVEVEEAESEgoOUE9MSUNZ",
+            "X1JFVk9LRUQQAhIUChBDT05URU5UX01JU01BVENIEAMSEQoNU1RBTEVfVkVS",
+            "U0lPThAEEg8KC1NUQUxFX0VQT0NIEAUSFAoQTk9UX0lOX1BST1hJTUlUWRAG",
+            "Eg4KClNFQVRfVEFLRU4QBxIXChNHQU1FX0FMUkVBRFlfQUNUSVZFEAgSEwoP",
+            "VEVMRVBPUlRfREVOSUVEEAkSGAoUVEFSR0VUX0NBUEFDSVRZX0ZVTEwQChIY",
+            "ChRDT01NQU5EX0lEX0NPTExJU0lPThALEhAKDEJBQ0tQUkVTU1VSRRAMEhsK",
+            "F1RFTVBPUkFSSUxZX1VOQVZBSUxBQkxFEA0SEgoOUkVXQVJEX1BFTkRJTkcQ",
+            "DhIWChJVTlNVUFBPUlRFRF9DTElFTlQQD0IfqgIcVmlydHVhbExpZmUuTmF0",
+            "aXZlLlB1YmxpYy5WMWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::VirtualLife.Native.Public.V1.ErrorCode), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.ClientEnvelope), global::VirtualLife.Native.Public.V1.ClientEnvelope.Parser, new[]{ "ProtocolVersion", "CommandId", "Sequence", "Hello", "GameIntent", "MoveIntent", "Resync" }, new[]{ "Body" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.Hello), global::VirtualLife.Native.Public.V1.Hello.Parser, new[]{ "Ticket", "ClientBuild", "ContentHash", "PlatformLabel" }, new[]{ "PlatformLabel" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.GameIntent), global::VirtualLife.Native.Public.V1.GameIntent.Parser, new[]{ "GameSessionId", "ExpectedStateVersion", "Kind", "ActionPayload" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.MoveIntent), global::VirtualLife.Native.Public.V1.MoveIntent.Parser, new[]{ "InputSequence", "DirectionX", "DirectionZ" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.MoveIntent), global::VirtualLife.Native.Public.V1.MoveIntent.Parser, new[]{ "InputSequence", "DirectionX", "DirectionZ", "AuthorityEpoch", "ExpectedTick", "SentAtUnixMs" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.Resync), global::VirtualLife.Native.Public.V1.Resync.Parser, new[]{ "LastSeenEpoch", "LastSeenTick" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.ServerEnvelope), global::VirtualLife.Native.Public.V1.ServerEnvelope.Parser, new[]{ "ProtocolVersion", "CommandId", "CanonicalVersion", "Hello", "Receipt", "Rejection", "Snapshot" }, new[]{ "Body" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.HelloAccepted), global::VirtualLife.Native.Public.V1.HelloAccepted.Parser, new[]{ "ContentHash", "StateSchemaVersion", "Snapshot", "RuntimeBootId" }, null, null, null, null),
@@ -1308,6 +1310,9 @@ namespace VirtualLife.Native.Public.V1 {
       inputSequence_ = other.inputSequence_;
       directionX_ = other.directionX_;
       directionZ_ = other.directionZ_;
+      authorityEpoch_ = other.authorityEpoch_;
+      expectedTick_ = other.expectedTick_;
+      sentAtUnixMs_ = other.sentAtUnixMs_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -1356,6 +1361,51 @@ namespace VirtualLife.Native.Public.V1 {
       }
     }
 
+    /// <summary>Field number for the "authority_epoch" field.</summary>
+    public const int AuthorityEpochFieldNumber = 4;
+    private ulong authorityEpoch_;
+    /// <summary>
+    /// Server-issued incarnation, mandatory for native movement.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ulong AuthorityEpoch {
+      get { return authorityEpoch_; }
+      set {
+        authorityEpoch_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "expected_tick" field.</summary>
+    public const int ExpectedTickFieldNumber = 5;
+    private ulong expectedTick_;
+    /// <summary>
+    /// Last own snapshot; bounded lag, never client time advancement.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ulong ExpectedTick {
+      get { return expectedTick_; }
+      set {
+        expectedTick_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "sent_at_unix_ms" field.</summary>
+    public const int SentAtUnixMsFieldNumber = 6;
+    private ulong sentAtUnixMs_;
+    /// <summary>
+    /// Freshness only; never determines simulation delta.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ulong SentAtUnixMs {
+      get { return sentAtUnixMs_; }
+      set {
+        sentAtUnixMs_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -1374,6 +1424,9 @@ namespace VirtualLife.Native.Public.V1 {
       if (InputSequence != other.InputSequence) return false;
       if (DirectionX != other.DirectionX) return false;
       if (DirectionZ != other.DirectionZ) return false;
+      if (AuthorityEpoch != other.AuthorityEpoch) return false;
+      if (ExpectedTick != other.ExpectedTick) return false;
+      if (SentAtUnixMs != other.SentAtUnixMs) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -1384,6 +1437,9 @@ namespace VirtualLife.Native.Public.V1 {
       if (InputSequence != 0UL) hash ^= InputSequence.GetHashCode();
       if (DirectionX != 0) hash ^= DirectionX.GetHashCode();
       if (DirectionZ != 0) hash ^= DirectionZ.GetHashCode();
+      if (AuthorityEpoch != 0UL) hash ^= AuthorityEpoch.GetHashCode();
+      if (ExpectedTick != 0UL) hash ^= ExpectedTick.GetHashCode();
+      if (SentAtUnixMs != 0UL) hash ^= SentAtUnixMs.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -1414,6 +1470,18 @@ namespace VirtualLife.Native.Public.V1 {
         output.WriteRawTag(24);
         output.WriteSInt32(DirectionZ);
       }
+      if (AuthorityEpoch != 0UL) {
+        output.WriteRawTag(32);
+        output.WriteUInt64(AuthorityEpoch);
+      }
+      if (ExpectedTick != 0UL) {
+        output.WriteRawTag(40);
+        output.WriteUInt64(ExpectedTick);
+      }
+      if (SentAtUnixMs != 0UL) {
+        output.WriteRawTag(48);
+        output.WriteUInt64(SentAtUnixMs);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -1436,6 +1504,18 @@ namespace VirtualLife.Native.Public.V1 {
         output.WriteRawTag(24);
         output.WriteSInt32(DirectionZ);
       }
+      if (AuthorityEpoch != 0UL) {
+        output.WriteRawTag(32);
+        output.WriteUInt64(AuthorityEpoch);
+      }
+      if (ExpectedTick != 0UL) {
+        output.WriteRawTag(40);
+        output.WriteUInt64(ExpectedTick);
+      }
+      if (SentAtUnixMs != 0UL) {
+        output.WriteRawTag(48);
+        output.WriteUInt64(SentAtUnixMs);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -1454,6 +1534,15 @@ namespace VirtualLife.Native.Public.V1 {
       }
       if (DirectionZ != 0) {
         size += 1 + pb::CodedOutputStream.ComputeSInt32Size(DirectionZ);
+      }
+      if (AuthorityEpoch != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(AuthorityEpoch);
+      }
+      if (ExpectedTick != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(ExpectedTick);
+      }
+      if (SentAtUnixMs != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(SentAtUnixMs);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1475,6 +1564,15 @@ namespace VirtualLife.Native.Public.V1 {
       }
       if (other.DirectionZ != 0) {
         DirectionZ = other.DirectionZ;
+      }
+      if (other.AuthorityEpoch != 0UL) {
+        AuthorityEpoch = other.AuthorityEpoch;
+      }
+      if (other.ExpectedTick != 0UL) {
+        ExpectedTick = other.ExpectedTick;
+      }
+      if (other.SentAtUnixMs != 0UL) {
+        SentAtUnixMs = other.SentAtUnixMs;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -1507,6 +1605,18 @@ namespace VirtualLife.Native.Public.V1 {
             DirectionZ = input.ReadSInt32();
             break;
           }
+          case 32: {
+            AuthorityEpoch = input.ReadUInt64();
+            break;
+          }
+          case 40: {
+            ExpectedTick = input.ReadUInt64();
+            break;
+          }
+          case 48: {
+            SentAtUnixMs = input.ReadUInt64();
+            break;
+          }
         }
       }
     #endif
@@ -1536,6 +1646,18 @@ namespace VirtualLife.Native.Public.V1 {
           }
           case 24: {
             DirectionZ = input.ReadSInt32();
+            break;
+          }
+          case 32: {
+            AuthorityEpoch = input.ReadUInt64();
+            break;
+          }
+          case 40: {
+            ExpectedTick = input.ReadUInt64();
+            break;
+          }
+          case 48: {
+            SentAtUnixMs = input.ReadUInt64();
             break;
           }
         }

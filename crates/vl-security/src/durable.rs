@@ -32,6 +32,37 @@ fn unavailable(_: tokio_postgres::Error) -> TrustError {
 }
 
 impl DurableTrust {
+    /// A bounded volatile writer effect while current platform policy locks are
+    /// held. The caller must invalidate queued work before cancellation releases
+    /// this future, and the writer must check the supplied expiry at application.
+    /// This is not a durable receipt or permission to perform external I/O.
+    pub async fn current_effect<'a, T: Send>(
+        &'a self,
+        client: &'a mut Client,
+        session: &'a DurableSession,
+        effect: impl FnOnce(u64) -> Effect<'a, T>,
+    ) -> Result<T, TrustError> {
+        if !Arc::ptr_eq(&self.identity, &session.domain) {
+            return Err(TrustError::Replay);
+        }
+        let tx = Self::begin(client).await?;
+        Self::lock(&tx, &session.claims).await?;
+        Self::policy(&tx, &session.claims).await?;
+        let deadline: i64 = tx.query_one(
+            "SELECT floor(extract(epoch FROM LEAST(a.valid_until,w.lease_until,s.expires_at,
+             to_timestamp($4::text::bigint::double precision),clock_timestamp()+interval '250 milliseconds'))*1000)::bigint
+             FROM platform_native_admissions a JOIN platform_native_worlds w ON w.world_id=a.world_id
+             JOIN identity_sessions s ON s.id=a.session_id WHERE a.account_id=$1::text::uuid
+             AND a.session_id=$2::text::uuid AND a.world_id=$3",
+            &[&session.claims.sub,&session.claims.sid,&session.claims.world,&session.claims.exp.to_string()],
+        ).await.map_err(unavailable)?.get(0);
+        let result =
+            effect(u64::try_from(deadline).map_err(|_| TrustError::PolicyUnavailable)?).await;
+        // No SQL effects occur here; drop releases the policy locks after the
+        // bounded volatile operation (or its cancellation guard) has completed.
+        drop(tx);
+        result
+    }
     pub fn new(verifier: TicketVerifier) -> Self {
         Self {
             identity: Arc::new(()),

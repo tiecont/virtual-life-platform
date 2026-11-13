@@ -31,6 +31,9 @@ message MoveIntent {
   uint64 input_sequence = 1;
   sint32 direction_x = 2; // Quantized -1000..1000; not a client position.
   sint32 direction_z = 3;
+  uint64 authority_epoch = 4; // Server-issued incarnation, mandatory for native movement.
+  uint64 expected_tick = 5; // Last own snapshot; bounded lag, never client time advancement.
+  uint64 sent_at_unix_ms = 6; // Freshness only; never determines simulation delta.
 }
 // A fresh authorized own snapshot, never an instruction to trust client state.
 message Resync { uint64 last_seen_epoch = 1; uint64 last_seen_tick = 2; }

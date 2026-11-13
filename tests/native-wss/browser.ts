@@ -15,7 +15,7 @@ const transport={
   return links.length-1;
  },
  send(index:number,id:number,sequence:number,kind:string,value:Record<string,unknown>){
-  const body=kind==='resync'?{lastSeenEpoch:999n,lastSeenTick:18_446_744_073_709_551_615n}:kind==='hello'?{...value,contentHash:new Uint8Array(value.contentHash as number[])}:kind==='gameIntent'?{...value,gameSessionId:new Uint8Array(value.gameSessionId as number[]),expectedStateVersion:BigInt(value.expectedStateVersion as string),actionPayload:new Uint8Array(value.actionPayload as number[])}:value;
+  const body=kind==='resync'?{lastSeenEpoch:999n,lastSeenTick:18_446_744_073_709_551_615n}:kind==='hello'?{...value,contentHash:new Uint8Array(value.contentHash as number[])}:kind==='moveIntent'?{...value,inputSequence:BigInt(value.inputSequence as string),authorityEpoch:BigInt(value.authorityEpoch as string),expectedTick:BigInt(value.expectedTick as string),sentAtUnixMs:BigInt(value.sentAtUnixMs as string)}:kind==='gameIntent'?{...value,gameSessionId:new Uint8Array(value.gameSessionId as number[]),expectedStateVersion:BigInt(value.expectedStateVersion as string),actionPayload:new Uint8Array(value.actionPayload as number[])}:value;
   const frame=create(ClientEnvelopeSchema,{protocolVersion:1,commandId:new Uint8Array(16).fill(id),sequence:BigInt(sequence),body:{case:kind,value:body} as ClientEnvelope['body']});
   links[index].socket.send(toBinary(ClientEnvelopeSchema,frame));
  },

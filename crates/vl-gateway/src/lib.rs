@@ -58,6 +58,12 @@ pub trait Admission: Send + Sync {
 /// The implementation owns its connection/authority capability. Every read,
 /// including a cached reply, is guarded again. No public identity serialization.
 pub trait Session: Send {
+    fn movement<'a>(
+        &'a mut self,
+        _intent: &'a public::MoveIntent,
+    ) -> Task<'a, public::WorldSnapshot> {
+        Box::pin(async { Err(Fault::Unavailable) })
+    }
     fn principal(&self) -> &str;
     fn authorize(&mut self) -> Task<'_, ()>;
     fn snapshot(&mut self) -> Task<'_, public::WorldSnapshot>;
@@ -440,6 +446,36 @@ async fn connection(mut socket: WebSocket, state: Arc<Gateway>, _permit: OwnedSe
                         version,
                     )
                     .await
+                }
+                Some(client_envelope::Body::MoveIntent(intent)) => {
+                    let result = tokio::time::timeout(
+                        IO_TIMEOUT,
+                        session.as_mut().unwrap().movement(intent),
+                    )
+                    .await;
+                    match result {
+                        Ok(Ok(snapshot))
+                            if valid_snapshot(&snapshot)
+                                && authorize(session.as_mut().unwrap()).await =>
+                        {
+                            public::ServerEnvelope {
+                                protocol_version: PUBLIC_VERSION,
+                                command_id: frame.command_id.clone(),
+                                canonical_version: snapshot.tick,
+                                body: Some(server_envelope::Body::Snapshot(snapshot)),
+                            }
+                            .encode_to_vec()
+                        }
+                        Ok(Err(Fault::Rejected(code))) => {
+                            rejection(&frame.command_id, version, code)
+                        }
+                        Ok(Err(Fault::Revoked | Fault::Unauthenticated)) => break,
+                        _ => rejection(
+                            &frame.command_id,
+                            version,
+                            public::ErrorCode::TemporarilyUnavailable,
+                        ),
+                    }
                 }
                 // These effects require their own verified command adapters.
                 // A transport connection is never a committed movement/game ACK.

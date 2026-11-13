@@ -155,6 +155,24 @@ namespace VirtualLife.Networking
             }, cancellation);
         }
 
+        public Task<WorldSnapshot> MoveAsync(int x, int z, CancellationToken cancellation = default)
+        {
+            if (x < -1000 || x > 1000 || z < -1000 || z > 1000) throw new ArgumentException("Invalid movement direction");
+            return Exclusive(async token => {
+                RequireReady();
+                var epoch = Snapshot.AuthorityEpoch;
+                var next = checked(Snapshot.OwnActor.LastInputSequence + 1);
+                var result = await Exchange(new ClientEnvelope { MoveIntent = new MoveIntent {
+                    InputSequence = next, DirectionX = x, DirectionZ = z, AuthorityEpoch = epoch,
+                    ExpectedTick = Snapshot.Tick, SentAtUnixMs = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                } }, GameCommand.WireUuid(Guid.NewGuid()), token).ConfigureAwait(false);
+                if (result.BodyCase != ServerEnvelope.BodyOneofCase.Snapshot || !ValidSnapshot(result.Snapshot) ||
+                    result.Snapshot.AuthorityEpoch != epoch || result.Snapshot.Tick < Snapshot.Tick ||
+                    result.Snapshot.OwnActor.LastInputSequence != next) throw new NativeFailure(Failure.Protocol);
+                Snapshot = result.Snapshot.Clone(); return Snapshot.Clone();
+            }, cancellation);
+        }
+
         private static bool ValidSnapshot(WorldSnapshot snapshot)
         { return snapshot != null && snapshot.AuthorityEpoch > 0 && snapshot.OwnActor != null; }
 

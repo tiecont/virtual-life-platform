@@ -32,6 +32,14 @@ namespace VirtualLife.Networking
         private volatile bool disposed;
         public PlayState State => state;
         public bool HasPendingCommand => pending != null;
+        public VirtualLife.Native.Public.V1.WorldSnapshot MovementState => connection.Snapshot?.Clone();
+        public async Task<VirtualLife.Native.Public.V1.WorldSnapshot> MoveAsync(int x, int z, CancellationToken cancellation = default)
+        {
+            if (disposed) throw new ObjectDisposedException(nameof(SyntheticPlaySession));
+            if (!await operation.WaitAsync(0, cancellation).ConfigureAwait(false)) throw new NativeFailure(Failure.Busy);
+            try { return await connection.MoveAsync(x, z, cancellation).ConfigureAwait(false); }
+            finally { operation.Release(); }
+        }
 
         // The caller owns no credentials; both adapters are disposed with this use case.
         public SyntheticPlaySession(PlatformSession platform, NativeConnection connection, Guid match)
