@@ -70,6 +70,7 @@ try{
   done();
  });
  let allocateForCsharp=false;
+ const logoutTickets=[];
  // The isolated client fixture allocates only authenticated, CSRF-checked sessions
  // to the harness-owned scope. This hook is never part of the production API.
  http.addHook('preHandler',async req=>{
@@ -79,6 +80,12 @@ try{
   if(allocateForCsharp&&req.url==='/v1/runtime-ticket'){
    const token=readSessionToken(req,config);identity.verifyCsrf(token,req.headers['x-csrf-token']);
    await store.allocate(token,scope);
+  }
+  if(interactive&&req.url==='/v1/session/logout'){
+   const token=readSessionToken(req,config);identity.verifyCsrf(token,req.headers['x-csrf-token']);
+   // Retain an unused, valid ticket only in fixture memory to prove logout,
+   // rather than expiry or nonce replay, rejects the subsequent Rust admission.
+   logoutTickets.push(await issuer.issue(token,scope));
   }
  });
  const bundle=await build({entryPoints:['tests/native-wss/browser.ts'],nodePaths:[resolve('packages/native-protocol/node_modules')],bundle:true,write:false,format:'iife',platform:'browser',target:'es2022'});
@@ -190,19 +197,30 @@ try{
  }
  if(interactive){
   const revokedCount=async()=>Number((await pool.query("SELECT count(*) AS n FROM identity_sessions WHERE account_id=$1 AND revoked_reason='logout'",[guest.me.profile.id])).rows[0].n);
+  async function rejectLoggedOutTicket(index){
+   assert.equal(logoutTickets.length,index+1);
+   const ticket=logoutTickets[index];
+   assert(Date.parse(ticket.expiresAt)>Date.now(),'Logout rejection must use an unexpired ticket');
+   const link=await call('open',origin.replace('https:','wss:')+'/rt/v1');
+   await call('send',link,1,1,'hello',{ticket:ticket.ticket,clientBuild:'logout-fixture-v1',contentHash:Array.from(Buffer.from(scope.contentHash,'hex'))});
+   assert(await call('closed',link));
+  }
   const beforeLogout=await revokedCount();
   await probeUnity();
   assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'1');
   assert.equal(await revokedCount(),beforeLogout+1);
+  await rejectLoggedOutTicket(0);
   record('rendered-panel-os-input-wrong-login-correct-login-walk-terminal-e-committed-receipt-resync-platform-logout-session-exit');
   child.kill('SIGKILL');await childClosed;child=undefined;await startHost();
   await probeUnity();
   assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'2');
   assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,2);
   assert.equal(await revokedCount(),beforeLogout+2);
+  await rejectLoggedOutTicket(1);
   assert.equal(facts.unityHttp.filter(value=>value.path==='/v1/session/logout'&&value.status===200).length,2);
   assert(facts.unityHttp.some(value=>value.path==='/v1/session/login'&&value.status===401));
   record('rendered-panel-after-sigkill-recovers-and-commits-next-turn');
+  record('rendered-logout-revokes-identity-and-rejects-unexpired-unused-runtime-ticket');
  }else{
  if(unity){
   assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'0');
