@@ -2821,7 +2821,39 @@
         "adapterValidation": "node scripts/native-csharp.mjs",
         "realProcessValidation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
         "scope": "Pinned Linux Unity player now proves actual login/ticket/WSS/command/receipt/reconnect and runtime restart. VL-080 Windows acceptance remains an explicit incomplete dependency",
-        "remainingAcceptance": "Owner physical connected-panel acceptance, in-flight scene-exit acceptance, rendered ambiguous-ACK/error matrix, and inherited VL-080 Windows qualification remain. Automated Linux OS-input panel/terminal roundtrip and platform logout during a held ticket request passed; synthetic ruleset only.",
+      "remainingAcceptance": "Owner physical connected-panel acceptance, in-flight scene-exit acceptance, remaining rendered admission/protocol/TLS error matrix, and inherited VL-080 Windows qualification remain. Automated Linux OS-input panel/terminal, durable ambiguous-ACK retry and platform logout during a held ticket request passed; synthetic ruleset only.",
+      "renderedAckRetryVerification": {
+        "sourceRevision": "5de8e80273d22bedeb74c885ddcad0b8fa39909b",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement",
+            "exitCode": 0,
+            "result": "5 scenarios; two actual rendered Linux players use XTest login/W/E and panel Reconnect/Retry. Fixture discards downstream bytes, confirms the durable SQL receipt, then closes transport. Presentation retains old version and immutable pending command; reconnect reads committed state without clearing pending; same-ID Retry acknowledges the original receipt. Exactly two receipts and versions 1/2 across Rust SIGKILL; held-ticket logout and pre-expiry rejection still pass"
+          },
+          {
+            "command": "PATH=<local .NET SDK>:$PATH node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
+            "exitCode": 0,
+            "result": "22 real Nest HTTPS / Rust WSS / restricted PostgreSQL scenarios passed with the shared tunnel"
+          },
+          {
+            "command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs",
+            "sourceRevision": "1c8535c9383a95919f223b7d679644441ec258fe",
+            "exitCode": 0,
+            "result": "61 standalone assertions, both targets and 15 authored C# syntax files; Unity test files require actual Editor compilation"
+          },
+          {
+            "command": "cargo build --locked --package vl-game-runtime; node --test tests/governance/*.test.mjs; pnpm exec eslint scripts/native-wss-interop.mjs scripts/unity-native-probe.mjs; git diff --check",
+            "exitCode": 0,
+            "result": "Runtime build, 112 governance tests, changed-script lint and whitespace check passed"
+          }
+        ],
+        "localArtifacts": "artifacts/g2-session-lifecycle/artifacts/desktop-first/vl022/interop-a9dc56f9/{facts.json,unity-1.xml,unity-2.xml,unity-1.png.pending.png,unity-1.png,unity-2.png}; standalone real-process interop-7c3bf8b7",
+        "rendering": "Unity 6000.3.14f1 LinuxPlayer, AMD Renoir OpenGLCore on CachyOS; pending and recovered screenshots inspected",
+        "playerExecutableSha256": "26901901cc6dd63212d741b339897f072d34cb7b3f08419fe451fc8e77c79a1f",
+        "testAssemblySha256": "4a8a879c0c9cd594aaba241d341abd9ef524acf5fc72ac3383f44e6f0c8f94b6",
+        "limitations": "Automated OS input, not physical owner or Windows qualification. Engine executable hash alone does not identify managed gameplay source. Initial 1c8535c Unity build failed CS0246 due to a test-only Google type reference; 5de8e8 uses the shared byte interface and actual player compilation passed. No production fault hook or authority change. VL-081 remains IN_PROGRESS; final committed source requires green hosted Quality/Rust before merge."
+      },
         "linuxPlatformLogoutEvidence": {
           "sourceRevision": "5bf1e84709649a505239948aeba68eee672dd5d1",
           "reviewMode": "SINGLE_AGENT_AUDIT",
