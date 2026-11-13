@@ -9,6 +9,8 @@ use std::{
     time::{Duration, Instant},
 };
 use tokio::sync::{mpsc, oneshot, watch};
+pub mod collision;
+pub mod movement;
 
 pub const TICK_PERIOD: Duration = Duration::from_millis(50);
 pub const MAX_ACTORS: usize = 256;
@@ -25,6 +27,7 @@ pub enum Error {
     DuplicateActor,
     StaleInput,
     StaleActor,
+    StaleEpoch,
     WrongZone,
     Backpressure,
     Closed,
@@ -89,6 +92,7 @@ pub struct Entity {
 }
 #[derive(Clone, Debug)]
 pub struct Snapshot {
+    pub authority_epoch: u64,
     pub tick: u64,
     pub visible: Vec<Entity>,
     pub actor_count: usize,
@@ -100,6 +104,7 @@ pub struct Snapshot {
 }
 
 enum Command {
+    Move(u64, u64, movement::Pending),
     Join(u64, Position, oneshot::Sender<Result<ActorHandle, Error>>),
     Leave(u64, u64, oneshot::Sender<Result<(), Error>>),
     Snapshot(u64, u64, oneshot::Sender<Result<Snapshot, Error>>),
@@ -113,6 +118,28 @@ pub struct ZoneHandle {
     queue_high_water: Arc<AtomicUsize>,
 }
 impl ZoneHandle {
+    pub fn move_actor(
+        &self,
+        actor: &ActorHandle,
+        input: movement::MoveInput,
+    ) -> Result<movement::MovementRequest, Error> {
+        self.owns(actor)?;
+        let (reply, receive) = oneshot::channel();
+        let gate = Arc::new(std::sync::Mutex::new(true));
+        self.send(Command::Move(
+            actor.id,
+            actor.generation,
+            movement::Pending {
+                input,
+                gate: gate.clone(),
+                reply,
+            },
+        ))?;
+        Ok(movement::MovementRequest {
+            reply: receive,
+            gate,
+        })
+    }
     fn send(&self, command: Command) -> Result<(), Error> {
         let permit = self.commands.try_reserve().map_err(|error| match error {
             mpsc::error::TrySendError::Full(_) => Error::Backpressure,
@@ -159,13 +186,17 @@ impl ZoneHandle {
 }
 
 struct Actor {
+    pending: Option<movement::Pending>,
     generation: u64,
     position: Position,
     last_input: u64,
     movement: watch::Receiver<Input>,
+    velocity: Position,
 }
 
 pub struct Zone {
+    epoch: u64,
+    collision: Option<collision::Collision>,
     receiver: mpsc::Receiver<Command>,
     domain: Arc<()>,
     actors: BTreeMap<u64, Actor>,
@@ -193,6 +224,8 @@ pub fn zone(capacity: usize, mailbox: usize) -> Result<(ZoneHandle, Zone), Error
             queue_high_water: Arc::clone(&queue_high_water),
         },
         Zone {
+            epoch: 1,
+            collision: None,
             receiver,
             domain,
             actors: BTreeMap::new(),
@@ -209,7 +242,25 @@ pub fn zone(capacity: usize, mailbox: usize) -> Result<(ZoneHandle, Zone), Error
 }
 
 impl Zone {
+    pub fn with_epoch(mut self, epoch: u64) -> Result<Self, Error> {
+        if epoch == 0 || epoch > u64::MAX - MAX_ACTORS as u64 {
+            return Err(Error::InvalidInput);
+        }
+        self.epoch = epoch;
+        Ok(self)
+    }
+    pub fn with_collision(mut self, collision: collision::Collision) -> Self {
+        self.collision = Some(collision);
+        self
+    }
     fn join(&mut self, id: u64, position: Position) -> Result<ActorHandle, Error> {
+        if self
+            .collision
+            .as_ref()
+            .is_some_and(|collision| !collision.clear(position))
+        {
+            return Err(Error::InvalidInput);
+        }
         if self.actors.contains_key(&id) {
             return Err(Error::DuplicateActor);
         }
@@ -222,10 +273,12 @@ impl Zone {
         self.actors.insert(
             id,
             Actor {
+                pending: None,
                 generation,
                 position,
                 last_input: 0,
                 movement,
+                velocity: Position::default(),
             },
         );
         self.cells.entry(position.cell()).or_default().insert(id);
@@ -286,6 +339,7 @@ impl Zone {
             ordered[(ordered.len() * 95).div_ceil(100) - 1]
         };
         Ok(Snapshot {
+            authority_epoch: self.epoch.checked_add(generation).ok_or(Error::Capacity)?,
             tick: self.tick,
             visible,
             actor_count: self.actors.len(),
@@ -306,8 +360,58 @@ impl Zone {
                 disconnected.push((*id, actor.generation));
                 continue;
             }
-            let input = *actor.movement.borrow_and_update();
+            let pending = actor.pending.take();
+            let gate_arc = pending.as_ref().map(|pending| pending.gate.clone());
+            let gate = gate_arc.as_ref().map(|gate| gate.lock());
+            let input = if let Some(queued) = &pending {
+                let now = std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .map_err(|_| Error::Closed)?
+                    .as_millis() as u64;
+                let input = &queued.input;
+                let error = if !gate
+                    .as_ref()
+                    .is_some_and(|gate| gate.as_ref().is_ok_and(|active| **active))
+                    || queued.reply.is_closed()
+                    || now >= input.expires_at_ms
+                {
+                    Some(Error::Closed)
+                } else if input.epoch
+                    != self
+                        .epoch
+                        .checked_add(actor.generation)
+                        .ok_or(Error::Capacity)?
+                {
+                    Some(Error::StaleEpoch)
+                } else if input.expected_tick > self.tick
+                    || self.tick - input.expected_tick > 40
+                    || now.abs_diff(input.sent_at_ms) > 2000
+                    || input.sequence != actor.last_input.checked_add(1).ok_or(Error::Capacity)?
+                {
+                    Some(Error::StaleInput)
+                } else if !(-1000..=1000).contains(&input.x) || !(-1000..=1000).contains(&input.z) {
+                    Some(Error::InvalidInput)
+                } else {
+                    None
+                };
+                if let Some(error) = error {
+                    actor.velocity = Position::default();
+                    drop(gate);
+                    if let Some(pending) = pending {
+                        let _ = pending.reply.send(Err(error));
+                    }
+                    continue;
+                }
+                Input {
+                    sequence: input.sequence,
+                    x: input.x,
+                    z: input.z,
+                }
+            } else {
+                *actor.movement.borrow_and_update()
+            };
             if input.sequence <= actor.last_input {
+                actor.velocity = Position::default();
                 continue;
             }
             actor.last_input = input.sequence;
@@ -315,10 +419,46 @@ impl Zone {
             // Each input acts once; silence stops movement at the next tick.
             let divisor = 1000.max(input.x.abs() + input.z.abs());
             let old = actor.position;
-            actor.position.x = (old.x + input.x * STEP_MM / divisor).clamp(-BOUND_MM, BOUND_MM);
-            actor.position.z = (old.z + input.z * STEP_MM / divisor).clamp(-BOUND_MM, BOUND_MM);
+            let mut step = Position {
+                x: input.x * STEP_MM / divisor,
+                z: input.z * STEP_MM / divisor,
+            };
+            if self.collision.is_some() {
+                // 20mm/tick velocity change: 8m/s² maximum on a cardinal axis.
+                // Stopping is immediate; clients cannot accumulate silent time.
+                step.x = if input.x == 0 {
+                    0
+                } else {
+                    step.x.clamp(actor.velocity.x - 20, actor.velocity.x + 20)
+                };
+                step.z = if input.z == 0 {
+                    0
+                } else {
+                    step.z.clamp(actor.velocity.z - 20, actor.velocity.z + 20)
+                };
+                let length = STEP_MM.max(step.x.abs() + step.z.abs());
+                step.x = step.x * STEP_MM / length;
+                step.z = step.z * STEP_MM / length;
+            }
+            actor.position.x = (old.x + step.x).clamp(-BOUND_MM, BOUND_MM);
+            actor.position.z = (old.z + step.z).clamp(-BOUND_MM, BOUND_MM);
+            if let Some(collision) = &self.collision {
+                actor.position = collision.step(old, actor.position);
+            }
+            actor.velocity = Position {
+                x: actor.position.x - old.x,
+                z: actor.position.z - old.z,
+            };
             if old.cell() != actor.position.cell() {
                 changes.push((*id, old, actor.position));
+            }
+            drop(gate);
+            if let Some(pending) = pending {
+                let _ = pending.reply.send(Ok(Entity {
+                    id: *id,
+                    position: actor.position,
+                    last_input: actor.last_input,
+                }));
             }
         }
         for (id, old, new) in changes {
@@ -356,6 +496,13 @@ impl Zone {
                         Some(Command::Join(id, position, reply)) => { let _ = reply.send(self.join(id, position)); }
                         Some(Command::Leave(id, generation, reply)) => { let _ = reply.send(self.leave(id, generation)); }
                         Some(Command::Snapshot(id, generation, reply)) => { let _ = reply.send(self.snapshot(id, generation)); }
+                        Some(Command::Move(id, generation, pending)) => {
+                            if self.collision.is_none() { let _ = pending.reply.send(Err(Error::InvalidInput)); }
+                            else if let Some(actor) = self.actors.get_mut(&id).filter(|actor| actor.generation == generation) {
+                                if actor.pending.is_some() { let _ = pending.reply.send(Err(Error::Backpressure)); }
+                                else { actor.pending = Some(pending); }
+                            } else { let _ = pending.reply.send(Err(Error::StaleActor)); }
+                        }
                         Some(Command::Stop(reply)) => { let _ = reply.send(Ok(())); return Ok(()); }
                         None => return Ok(()),
                     }

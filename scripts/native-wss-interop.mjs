@@ -11,11 +11,12 @@ import {validateTestDatabaseURL} from './test-environment.mjs';
 import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
 
 const options=process.argv.slice(2);
+const movement=options.includes('--movement');
 const interactive=options.includes('--unity-interactive');
 const loss=options.includes('--pet-arena-loss'),pet=options.includes('--pet-arena')||loss,playable=options.includes('--runtime-gameplay')||pet,csharp=options.includes('--csharp-client'),unity=options.includes('--unity-player')||interactive;
 const petContent=pet?spawnSync(resolve('artifacts/rust/target/debug/vl-game-runtime'),['--ruleset-content-hash','pet-arena-pve'],{encoding:'utf8'}).stdout.trim():undefined;
 if(pet)assert.match(petContent,/^[a-f0-9]{64}$/);
-if(options.some(value=>!['--runtime-gameplay','--csharp-client','--pet-arena','--pet-arena-loss','--unity-player','--unity-interactive'].includes(value))||new Set(options).size!==options.length||(csharp||unity)&&(!playable||pet)||csharp&&unity||interactive&&options.includes('--unity-player'))throw Error('Unknown native interoperability mode');
+if(options.some(value=>!['--runtime-gameplay','--csharp-client','--pet-arena','--pet-arena-loss','--unity-player','--unity-interactive','--movement'].includes(value))||new Set(options).size!==options.length||(csharp||unity)&&(!playable||pet)||csharp&&unity||interactive&&options.includes('--unity-player')||movement&&(!playable||pet||csharp||unity&&!interactive))throw Error('Unknown native interoperability mode');
 const require=createRequire(import.meta.url),apiRequire=createRequire(resolve('apps/platform-api/package.json'));
 apiRequire('reflect-metadata');
 const {NestFactory}=apiRequire('@nestjs/core'),{Module}=apiRequire('@nestjs/common'),{FastifyAdapter}=apiRequire('@nestjs/platform-fastify');
@@ -123,7 +124,7 @@ try{
  async function startHost(){
   const common={publicKeys:{fixture:keys.publicKey.export({format:'jwk'}).x},world:scope.worldId,boot:scope.runtimeBootId,caFile:tls.caFile,origin};
   await writeFile(privateFile,JSON.stringify(playable?{
-   ...common,schemaVersion:1,ruleset:pet?'pet-arena-pve':'headless-counter',...(pet?{pet:0,stage:0}:{}),matchId,player:guest.me.profile.id,
+   ...common,schemaVersion:1,ruleset:pet?'pet-arena-pve':'headless-counter',...(pet?{pet:0,stage:0}:{}),...(movement?{movement:true}:{}),matchId,player:guest.me.profile.id,
    role,activeStorageKey:'current',storageKeys,engineHash:Array(32).fill(0x64),
   }:{...common,content:scope.contentHash,expectedRole:role}),{mode:0o600});
   const binary=resolve(playable?'artifacts/rust/target/debug/vl-game-runtime':'artifacts/rust/target/debug/examples/interop');
@@ -172,12 +173,18 @@ try{
  await startHost();
  const call=(method,...args)=>page.evaluate(({method,args})=>window.transport[method](...args),{method,args});
  const record=name=>facts.scenarios.push({name,result:'PASS'});
+ if(movement&&!interactive){
+  await store.allocate(credential,scope);
+  const {movementScenarios}=await import('./native-movement-scenarios.mjs');
+  await movementScenarios({call,store,credential,scope,csrf:guest.me.csrfToken,origin,record,facts,restart:async()=>{child.kill('SIGKILL');await childClosed;child=undefined;await startHost();}});
+  assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,0);
+ }else{
  let unityProbeIndex=0;
  async function probeUnity(){
   allocateForCsharp=true;
   try{
    const {unityNativeProbe}=await import('./unity-native-probe.mjs');
-   const result=await unityNativeProbe({directory,index:++unityProbeIndex,origin,boot:scope.runtimeBootId,match:matchId,loginName,password:loginPassword,interactive});
+   const result=await unityNativeProbe({directory,index:++unityProbeIndex,origin,boot:scope.runtimeBootId,match:matchId,loginName,password:loginPassword,interactive,movement});
    (facts.unityPlayers??=[]).push(result);
   }finally{allocateForCsharp=false;}
  }
@@ -316,6 +323,7 @@ try{
  await call('close',fresh);await context.close();await browser.close();browser=undefined;
  const effects=(await pool.query('SELECT (SELECT count(*)::int FROM game_native_matches) AS matches,(SELECT count(*)::int FROM game_native_receipts) AS receipts,(SELECT count(*)::int FROM platform_native_ticket_uses) AS nonces')).rows[0];
  assert.equal(effects.matches,playable?1:0);assert.equal(effects.receipts,pet?petEffects.receipts:playable?3:0);assert.equal(effects.nonces,pet?petEffects.nonces:playable?(csharp||unity?11:3):2);facts.effects=effects;record(pet?'full-pet-match-commits-one-native-match':playable?'three-game-commits-one-native-match':'zero-game-writes');
+ }
  }
  assert.equal(heartbeatError,undefined);facts.result='PASS';
  assert(!/ownRoll|storageKeys/.test(output+errors));

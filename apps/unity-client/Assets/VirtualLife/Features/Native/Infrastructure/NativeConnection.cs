@@ -67,11 +67,14 @@ namespace VirtualLife.Networking
         private ClientWebSocket socket;
         private string principal;
         private ulong sequence;
+        private DateTimeOffset refreshAfter;
+        private DateTimeOffset snapshotReceivedAt;
         private readonly Dictionary<ByteString, ClientEnvelope> sent = new Dictionary<ByteString, ClientEnvelope>();
         private readonly Queue<ByteString> order = new Queue<ByteString>();
         private volatile bool disposed;
         public ConnectionState State { get; private set; } = ConnectionState.Disconnected;
         public WorldSnapshot Snapshot { get; private set; }
+        public bool NeedsRefresh => State == ConnectionState.Ready && DateTimeOffset.UtcNow >= refreshAfter;
 
         public NativeConnection(Uri endpoint, Uri origin, byte[] contentHash, Guid bootId,
             Func<CancellationToken, Task<AdmissionTicket>> ticketProvider,
@@ -113,6 +116,9 @@ namespace VirtualLife.Networking
                     !response.Hello.ContentHash.Equals(content) || !response.Hello.RuntimeBootId.Equals(boot) ||
                     !ValidSnapshot(response.Hello.Snapshot)) throw new NativeFailure(Failure.Scope);
                 Snapshot = response.Hello.Snapshot.Clone(); State = ConnectionState.Ready;
+                snapshotReceivedAt = DateTimeOffset.UtcNow;
+                var lifetimeLimit = DateTimeOffset.UtcNow.AddSeconds(25);
+                refreshAfter = ticket.Expires.AddMilliseconds(-500) < lifetimeLimit ? ticket.Expires.AddMilliseconds(-500) : lifetimeLimit;
                 return true;
             }, cancellation);
         }
@@ -151,7 +157,34 @@ namespace VirtualLife.Networking
                 } }, GameCommand.WireUuid(Guid.NewGuid()), token).ConfigureAwait(false);
                 if (result.BodyCase != ServerEnvelope.BodyOneofCase.Snapshot || !ValidSnapshot(result.Snapshot))
                     throw new NativeFailure(Failure.Protocol);
-                Snapshot = result.Snapshot.Clone(); return Snapshot.Clone();
+                Snapshot = result.Snapshot.Clone(); snapshotReceivedAt = DateTimeOffset.UtcNow; return Snapshot.Clone();
+            }, cancellation);
+        }
+
+        public Task<WorldSnapshot> MoveAsync(int x, int z, CancellationToken cancellation = default)
+        {
+            if (x < -1000 || x > 1000 || z < -1000 || z > 1000) throw new ArgumentException("Invalid movement direction");
+            return Exclusive(async token => {
+                RequireReady();
+                // An idle client must obtain the current tick before a new intent.
+                if (DateTimeOffset.UtcNow - snapshotReceivedAt > TimeSpan.FromSeconds(1)) {
+                    var fresh = await Exchange(new ClientEnvelope { Resync = new Resync {
+                        LastSeenEpoch = Snapshot.AuthorityEpoch, LastSeenTick = Snapshot.Tick
+                    } }, GameCommand.WireUuid(Guid.NewGuid()), token).ConfigureAwait(false);
+                    if (fresh.BodyCase != ServerEnvelope.BodyOneofCase.Snapshot || !ValidSnapshot(fresh.Snapshot))
+                        throw new NativeFailure(Failure.Protocol);
+                    Snapshot = fresh.Snapshot.Clone(); snapshotReceivedAt = DateTimeOffset.UtcNow;
+                }
+                var epoch = Snapshot.AuthorityEpoch;
+                var next = checked(Snapshot.OwnActor.LastInputSequence + 1);
+                var result = await Exchange(new ClientEnvelope { MoveIntent = new MoveIntent {
+                    InputSequence = next, DirectionX = x, DirectionZ = z, AuthorityEpoch = epoch,
+                    ExpectedTick = Snapshot.Tick, SentAtUnixMs = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                } }, GameCommand.WireUuid(Guid.NewGuid()), token).ConfigureAwait(false);
+                if (result.BodyCase != ServerEnvelope.BodyOneofCase.Snapshot || !ValidSnapshot(result.Snapshot) ||
+                    result.Snapshot.AuthorityEpoch != epoch || result.Snapshot.Tick < Snapshot.Tick ||
+                    result.Snapshot.OwnActor.LastInputSequence != next) throw new NativeFailure(Failure.Protocol);
+                Snapshot = result.Snapshot.Clone(); snapshotReceivedAt = DateTimeOffset.UtcNow; return Snapshot.Clone();
             }, cancellation);
         }
 

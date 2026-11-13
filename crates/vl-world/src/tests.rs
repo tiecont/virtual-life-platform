@@ -1,5 +1,115 @@
 use super::*;
 
+#[tokio::test]
+async fn scoped_movement_validates_incarnation_sequence_clock_and_cancellation_at_tick() {
+    let (handle, zone) = zone(2, 8).unwrap();
+    let zone = zone
+        .with_collision(collision::Collision::aurora().unwrap())
+        .with_epoch(500)
+        .unwrap();
+    let task = tokio::spawn(zone.run());
+    let actor = handle
+        .join(1, Position { x: 0, z: -4000 })
+        .unwrap()
+        .await
+        .unwrap()
+        .unwrap();
+    let initial = handle.snapshot(&actor).unwrap().await.unwrap().unwrap();
+    let input = |sequence, epoch, tick| {
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as u64;
+        movement::MoveInput {
+            sequence,
+            epoch,
+            expected_tick: tick,
+            x: 1000,
+            z: 0,
+            sent_at_ms: now,
+            expires_at_ms: now + 5000,
+        }
+    };
+    let mut request = handle
+        .move_actor(&actor, input(1, initial.authority_epoch + 1, initial.tick))
+        .unwrap();
+    assert_eq!((&mut request.reply).await.unwrap(), Err(Error::StaleEpoch));
+    drop(request);
+    let mut request = handle
+        .move_actor(&actor, input(2, initial.authority_epoch, initial.tick))
+        .unwrap();
+    assert_eq!((&mut request.reply).await.unwrap(), Err(Error::StaleInput));
+    drop(request);
+    let mut expired = input(1, initial.authority_epoch, initial.tick);
+    expired.expires_at_ms = 1;
+    let mut request = handle.move_actor(&actor, expired).unwrap();
+    assert_eq!((&mut request.reply).await.unwrap(), Err(Error::Closed));
+    drop(request);
+    let request = handle
+        .move_actor(&actor, input(1, initial.authority_epoch, initial.tick))
+        .unwrap();
+    drop(request);
+    tokio::time::sleep(TICK_PERIOD * 2).await;
+    assert_eq!(
+        handle
+            .snapshot(&actor)
+            .unwrap()
+            .await
+            .unwrap()
+            .unwrap()
+            .visible[0]
+            .position
+            .x,
+        0
+    );
+    let mut request = handle
+        .move_actor(&actor, input(1, initial.authority_epoch, initial.tick))
+        .unwrap();
+    assert_eq!((&mut request.reply).await.unwrap().unwrap().position.x, 20);
+    drop(request);
+    let (other, _) = super::zone(1, 1).unwrap();
+    assert!(matches!(
+        other.move_actor(&actor, input(2, initial.authority_epoch, initial.tick)),
+        Err(Error::WrongZone)
+    ));
+    handle.stop().unwrap().await.unwrap().unwrap();
+    task.await.unwrap().unwrap();
+}
+
+#[test]
+fn aurora_writer_caps_acceleration_floods_and_collisions_without_position_input() {
+    let (_, zone) = zone(2, 8).unwrap();
+    let mut zone = zone.with_collision(collision::Collision::aurora().unwrap());
+    assert!(matches!(
+        zone.join(1, Position { x: -9000, z: 6000 }),
+        Err(Error::InvalidInput)
+    ));
+    let actor = zone.join(1, Position { x: -9000, z: 4600 }).unwrap();
+    actor.input(1, 0, 1000).unwrap();
+    zone.advance().unwrap();
+    assert_eq!(zone.actors[&1].position.z, 4620);
+    for sequence in 2..=10000 {
+        actor.input(sequence, 0, 1000).unwrap();
+    }
+    zone.advance().unwrap();
+    assert_eq!(zone.actors[&1].position.z, 4660);
+    for sequence in 10001..=10100 {
+        actor.input(sequence, 0, 1000).unwrap();
+        zone.advance().unwrap();
+    }
+    assert_eq!(zone.actors[&1].position.z, 5020);
+    assert_eq!(zone.actors[&1].velocity.z, 0);
+    assert_eq!(actor.input(10100, 0, -1000), Err(Error::StaleInput));
+    actor.input(10101, 0, -1000).unwrap();
+    zone.advance().unwrap();
+    assert_eq!(zone.actors[&1].position.z, 5000);
+    zone.advance().unwrap();
+    assert_eq!(zone.actors[&1].velocity, Position::default());
+    drop(actor);
+    zone.advance().unwrap();
+    assert!(zone.actors.is_empty());
+}
+
 #[test]
 fn queue_capacity_and_zone_identity_fail_closed() {
     assert!(zone(0, 1).is_err());

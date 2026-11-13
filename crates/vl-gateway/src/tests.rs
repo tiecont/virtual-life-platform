@@ -269,6 +269,7 @@ async fn real_tcp_resync_retries_collisions_and_sequence_cannot_commit_game_effe
             input_sequence: 1,
             direction_x: 1000,
             direction_z: 0,
+            ..Default::default()
         }),
     );
     rejected(

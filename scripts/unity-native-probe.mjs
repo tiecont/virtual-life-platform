@@ -5,14 +5,14 @@ import {readFile,writeFile,rm} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {toolEnvironment} from './test-environment.mjs';
 
-export async function unityNativeProbe({directory,index,origin,boot,match,loginName,password,interactive=false}){
+export async function unityNativeProbe({directory,index,origin,boot,match,loginName,password,interactive=false,movement=false}){
  assert.equal(process.platform,'linux','This probe requires an actual Linux player');
  const editor=process.env.UNITY_EDITOR;
  assert(editor,'UNITY_EDITOR must identify the installed licensed pinned Editor');
  assert.equal(spawnSync(editor,['-version'],{encoding:'utf8'}).stdout.trim(),'6000.3.14f1');
  const prefix=resolve(directory,'unity-'+index),config=prefix+'.private.json',scope=prefix+'.scope.private.json',results=prefix+'.xml';
- await writeFile(config,JSON.stringify({origin,caCertificate:resolve(directory,'tls/ca.pem'),wrongCaCertificate:resolve(directory,'tls/wrong-ca.pem'),boot,match,loginName,password,screenshot:prefix+'.png',result:prefix+'.json'}),{mode:0o600});
- if(interactive)await writeFile(scope,JSON.stringify({httpsOrigin:origin,wssOrigin:origin.replace('https:','wss:')+'/rt/v1',contentHash:'53'.repeat(32),bootId:boot,matchId:match}),{mode:0o600});
+ await writeFile(config,JSON.stringify({origin,caCertificate:resolve(directory,'tls/ca.pem'),wrongCaCertificate:resolve(directory,'tls/wrong-ca.pem'),boot,match,loginName,password,movement,screenshot:prefix+'.png',result:prefix+'.json'}),{mode:0o600});
+ if(interactive)await writeFile(scope,JSON.stringify({httpsOrigin:origin,wssOrigin:origin.replace('https:','wss:')+'/rt/v1',contentHash:'53'.repeat(32),bootId:boot,matchId:match,movement}),{mode:0o600});
  try{
   await rm(resolve('artifacts/unity-native-player'),{recursive:true,force:true});
   const child=spawn(editor,['-batchmode','-nographics','-projectPath',resolve('apps/unity-client'),'-logFile',prefix+'.log',
@@ -28,6 +28,7 @@ export async function unityNativeProbe({directory,index,origin,boot,match,loginN
   const facts=JSON.parse(await readFile(prefix+'.json','utf8'));
   assert.equal(facts.editor,'6000.3.14f1');assert.equal(facts.platform,'LinuxPlayer');assert.notEqual(facts.graphicsApi,'Null');
   assert(facts.committedReceipt&&(interactive?facts.panelKeyboardTerminal:facts.reconnectReplay&&facts.wrongCaRejected));
+  if(movement)assert(facts.authoritativeMovement);
   const binary=resolve('artifacts/unity-native-player/PlayerWithTests/PlayerWithTests.x86_64');
   facts.playerSha256=createHash('sha256').update(await readFile(binary)).digest('hex');
   facts.tlsTrust='Test-only Mono TrustAnchors validates the disposable CA and hostname; system trust stores unchanged';

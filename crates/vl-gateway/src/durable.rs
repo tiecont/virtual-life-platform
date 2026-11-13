@@ -32,9 +32,22 @@ struct OwnActor {
     id: u64,
     handle: ActorHandle,
 }
+enum ActorReference {
+    Retained(Arc<OwnActor>),
+    Transient(Weak<OwnActor>),
+}
+impl ActorReference {
+    fn upgrade(&self) -> Option<Arc<OwnActor>> {
+        match self {
+            Self::Retained(actor) => Some(actor.clone()),
+            Self::Transient(actor) => actor.upgrade(),
+        }
+    }
+}
 
 /// One instance per trusted native zone. Credentials/keys stay in the host.
-/// The registry contains weak references only and is bounded by MAX_ACTORS.
+/// The registry is bounded by MAX_ACTORS. Movement retains actors for reconnect;
+/// legacy admission keeps weak references and removes disconnected actors.
 pub struct PgAdmission {
     trust: Arc<DurableTrust>,
     config: Config,
@@ -42,8 +55,9 @@ pub struct PgAdmission {
     role: String,
     zone: ZoneHandle,
     next_actor: AtomicU64,
-    actors: Mutex<BTreeMap<String, Weak<OwnActor>>>,
+    actors: Mutex<BTreeMap<String, ActorReference>>,
     games: Option<Arc<dyn GameCommands>>,
+    movement_spawn: Option<Position>,
 }
 
 impl PgAdmission {
@@ -75,6 +89,7 @@ impl PgAdmission {
             next_actor: AtomicU64::new(1),
             actors: Mutex::new(BTreeMap::new()),
             games: None,
+            movement_spawn: None,
         })
     }
 
@@ -82,13 +97,17 @@ impl PgAdmission {
         self.games = Some(games);
         self
     }
+    pub fn with_movement(mut self, spawn: Position) -> Self {
+        self.movement_spawn = Some(spawn);
+        self
+    }
 
     async fn own_actor(&self, account: &str) -> Result<Arc<OwnActor>, Fault> {
         // Only bounded per-zone membership work, never SQL or a game reducer,
         // occurs under this registry lock. State remains owned by the zone task.
         let mut actors = self.actors.lock().await;
-        actors.retain(|_, actor| actor.strong_count() > 0);
-        if let Some(actor) = actors.get(account).and_then(Weak::upgrade) {
+        actors.retain(|_, actor| actor.upgrade().is_some());
+        if let Some(actor) = actors.get(account).and_then(ActorReference::upgrade) {
             return Ok(actor);
         }
         if actors.len() >= vl_world::MAX_ACTORS {
@@ -100,7 +119,7 @@ impl PgAdmission {
             .map_err(|_| Fault::Unavailable)?;
         let reply = self
             .zone
-            .join(id, Position::default())
+            .join(id, self.movement_spawn.unwrap_or_default())
             .map_err(|_| Fault::Unavailable)?;
         let handle = tokio::time::timeout(Duration::from_millis(250), reply)
             .await
@@ -108,12 +127,20 @@ impl PgAdmission {
             .map_err(|_| Fault::Unavailable)?
             .map_err(|_| Fault::Unavailable)?;
         let actor = Arc::new(OwnActor { id, handle });
-        actors.insert(account.into(), Arc::downgrade(&actor));
+        actors.insert(
+            account.into(),
+            if self.movement_spawn.is_some() {
+                ActorReference::Retained(actor.clone())
+            } else {
+                ActorReference::Transient(Arc::downgrade(&actor))
+            },
+        );
         Ok(actor)
     }
 }
 
 struct PgSession {
+    movement_enabled: bool,
     trust: Arc<DurableTrust>,
     client: Client,
     connection: JoinHandle<Result<(), tokio_postgres::Error>>,
@@ -126,8 +153,8 @@ struct PgSession {
 impl Drop for PgSession {
     fn drop(&mut self) {
         self.connection.abort();
-        // Dropping the final ActorHandle closes its movement sender. The zone
-        // removes the actor at its next tick, including cancellation paths.
+        // Legacy admission drops the final ActorHandle here. Movement admission
+        // retains its bounded registry handle until the runtime stops.
     }
 }
 
@@ -162,6 +189,7 @@ impl Admission for PgAdmission {
                 .map_err(|_| Fault::Revoked)?;
             let actor = self.own_actor(&account).await?;
             let result = PgSession {
+                movement_enabled: self.movement_spawn.is_some(),
                 trust: Arc::clone(&self.trust),
                 client,
                 connection: driver.0.take().unwrap(),
@@ -176,6 +204,54 @@ impl Admission for PgAdmission {
     }
 }
 impl Session for PgSession {
+    fn movement<'a>(
+        &'a mut self,
+        intent: &'a public::MoveIntent,
+    ) -> Task<'a, public::WorldSnapshot> {
+        Box::pin(async move {
+            if !self.movement_enabled {
+                return Err(Fault::Unavailable);
+            }
+            let zone = &self.zone;
+            let actor = &self.actor;
+            let outcome = self
+                .trust
+                .current_effect(&mut self.client, &self.session, |expires_at_ms| {
+                    Box::pin(async move {
+                        let mut request = zone
+                            .move_actor(
+                                &actor.handle,
+                                vl_world::movement::MoveInput {
+                                    sequence: intent.input_sequence,
+                                    x: intent.direction_x,
+                                    z: intent.direction_z,
+                                    epoch: intent.authority_epoch,
+                                    expected_tick: intent.expected_tick,
+                                    sent_at_ms: intent.sent_at_unix_ms,
+                                    expires_at_ms,
+                                },
+                            )
+                            .map_err(|_| vl_security::TrustError::Capacity)?;
+                        // On cancellation MovementRequest invalidates its gate before
+                        // current_effect releases the shared Nest policy locks.
+                        (&mut request.reply)
+                            .await
+                            .map_err(|_| vl_security::TrustError::PolicyUnavailable)
+                    })
+                })
+                .await
+                .map_err(|_| Fault::Revoked)?;
+            outcome.map_err(|error| {
+                Fault::Rejected(match error {
+                    vl_world::Error::StaleEpoch => public::ErrorCode::StaleEpoch,
+                    vl_world::Error::StaleInput => public::ErrorCode::StaleVersion,
+                    vl_world::Error::Backpressure => public::ErrorCode::Backpressure,
+                    _ => public::ErrorCode::TemporarilyUnavailable,
+                })
+            })?;
+            self.snapshot().await
+        })
+    }
     fn game<'a>(
         &'a mut self,
         command_id: &'a [u8],
@@ -225,7 +301,11 @@ impl Session for PgSession {
                 .find(|entity| entity.id == self.actor.id)
                 .ok_or(Fault::Unavailable)?;
             Ok(public::WorldSnapshot {
-                authority_epoch: 1,
+                authority_epoch: if self.movement_enabled {
+                    snapshot.authority_epoch
+                } else {
+                    1
+                },
                 tick: snapshot.tick,
                 own_actor: Some(public::OwnActor {
                     x_mm: own.position.x,

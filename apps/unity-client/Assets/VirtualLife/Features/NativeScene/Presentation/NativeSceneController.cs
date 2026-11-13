@@ -22,12 +22,16 @@ namespace VirtualLife.NativeScene
         private bool busy, ready, pending;
         private CancellationTokenSource request;
         private volatile bool alive = true;
+        private bool movementEnabled, moving;
+        private float nextMove;
         private int generation;
         public PlayState PresentedState => state;
         public string Status => status;
         public bool Busy => busy;
         public bool Ready => ready;
         public bool HasPendingCommand => pending;
+        public bool Moving => moving;
+        public VirtualLife.Native.Public.V1.WorldSnapshot MovementState => session?.MovementState;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
@@ -46,11 +50,13 @@ namespace VirtualLife.NativeScene
         private void Initialize()
         {
             district = FindFirstObjectByType<OfflineDistrict>();
+            var step = "scope-file";
             try {
                 var path = Path.GetFullPath(Environment.GetEnvironmentVariable("VL_NATIVE_DEV_CONFIG"));
                 // Keep local scope configuration outside packaged client assets.
                 var assets = Path.GetFullPath(Application.dataPath).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
                 if (path.StartsWith(assets, StringComparison.Ordinal) || new FileInfo(path).Length > 4096) throw new ArgumentException();
+                step = "scope-json";
                 var config = JsonUtility.FromJson<DevelopmentConfig>(File.ReadAllText(path));
                 if (config == null || config.contentHash.Length != 64) throw new ArgumentException();
                 var hash = new byte[32];
@@ -58,17 +64,24 @@ namespace VirtualLife.NativeScene
                 var origin = new Uri(config.httpsOrigin);
                 var boot = Guid.Parse(config.bootId); var match = Guid.Parse(config.matchId);
                 if (match == Guid.Empty) throw new ArgumentException();
+                step = "platform";
                 var platform = new PlatformSession(origin);
                 try {
+                    step = "connection";
                     var connection = new NativeConnection(new Uri(config.wssOrigin), origin, hash, boot, platform.TicketAsync);
+                    step = "session";
                     session = new SyntheticPlaySession(platform, connection, match);
                 } catch { platform.Dispose(); throw; }
+                step = "district";
                 if (district == null) throw new ArgumentException();
                 district.NativeInteraction = Interact;
+                movementEnabled = config.movement;
+                district.NetworkAuthority = movementEnabled;
+                district.NativeMovement = Move;
                 status = "Disconnected. Log in to the isolated native synthetic match.";
             } catch {
                 session?.Dispose(); session = null;
-                status = "Invalid local native configuration. Check the external scope file and system TLS trust.";
+                status = "Invalid local native configuration (" + step + "). Check the external scope file and system TLS trust.";
             }
         }
         private void Update()
@@ -76,18 +89,31 @@ namespace VirtualLife.NativeScene
             // Network continuations enqueue at most one update per UI operation.
             // All Unity presentation changes run here on the Unity main thread.
             while (updates.TryDequeue(out var update)) update();
+            if (movementEnabled && ready && !busy && !moving && session != null && session.NeedsRefresh) Run(session.ReconnectAsync);
             if (district != null && session != null) district.InputCaptured = busy || GUIUtility.keyboardControl != 0;
         }
         private void Interact()
         {
-            if (session == null || busy || !ready) return;
+            if (session == null || busy || moving || !ready) return;
             if (pending) { status = "Reconnect and retry the pending command before another turn."; return; }
             if (state == null || state.Turns >= 3) { status = "Synthetic match complete. Reconnect to refresh settlement."; return; }
             Run(session.AdvanceAsync);
         }
+        private async void Move(Vector3 direction)
+        {
+            if (!ready || busy || moving || session == null || Time.realtimeSinceStartup < nextMove || direction == Vector3.zero) return;
+            moving = true; nextMove = Time.realtimeSinceStartup + 0.05f;
+            var current = session;
+            try {
+                var snapshot = await current.MoveAsync((int)(direction.x * 1000), (int)(direction.z * 1000), lifetime.Token).ConfigureAwait(false);
+                if (alive) updates.Enqueue(() => { if (session != current) return; moving = false; if (ready) district.Reconcile(snapshot.OwnActor.XMm, snapshot.OwnActor.ZMm); });
+            } catch {
+                if (alive) updates.Enqueue(() => { if (session != current) return; moving = false; ready = false; status = "Movement unavailable. Reconnect to reconcile."; });
+            }
+        }
         private async void Run(Func<CancellationToken, Task<PlayState>> work)
         {
-            if (busy || session == null) return;
+            if (busy || moving || session == null) return;
             request = CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);
             var current = request;
             var owner = session;
@@ -95,7 +121,7 @@ namespace VirtualLife.NativeScene
             busy = true; status = "Connecting / awaiting authoritative receipt...";
             try {
                 var result = await work(current.Token).ConfigureAwait(false);
-                if (alive) updates.Enqueue(() => { current.Dispose(); if (generation != startedGeneration) return; request = null; state = result; ready = true; pending = owner.HasPendingCommand; busy = false; status = "Authorized server state received."; });
+                if (alive) updates.Enqueue(() => { current.Dispose(); if (generation != startedGeneration) return; request = null; state = result; ready = true; pending = owner.HasPendingCommand; busy = false; if (movementEnabled && owner.MovementState != null) district.Reconcile(owner.MovementState.OwnActor.XMm, owner.MovementState.OwnActor.ZMm); status = "Authorized server state received."; });
             } catch (OperationCanceledException) {
                 if (alive) updates.Enqueue(() => { current.Dispose(); if (generation != startedGeneration) return; request = null; ready = false; busy = false; pending = owner.HasPendingCommand; status = "Cancelled. Reconnect before continuing."; });
             } catch (NativeFailure failure) {
@@ -114,20 +140,20 @@ namespace VirtualLife.NativeScene
             var wrapped = new GUIStyle(GUI.skin.label) { wordWrap = true };
             GUI.Box(new Rect(16, 100, 610, 270), "Native developer connection - synthetic ruleset");
             GUI.Label(new Rect(28, 128, 580, 44), status, wrapped);
-            GUI.enabled = session != null && !busy;
+            GUI.enabled = session != null && !busy && !moving;
             GUI.Label(new Rect(28, 177, 72, 24), "Account");
             loginName = GUI.TextField(new Rect(104, 176, 180, 24), loginName, 32);
             GUI.Label(new Rect(294, 177, 72, 24), "Password");
             password = GUI.PasswordField(new Rect(368, 176, 220, 24), password, '*', 128);
-            GUI.enabled = session != null && !busy && !pending;
+            GUI.enabled = session != null && !busy && !moving && !pending;
             if (GUI.Button(new Rect(28, 212, 150, 28), "Login + connect")) {
                 GUIUtility.keyboardControl = 0;
                 var secret = password; password = ""; var name = loginName;
                 Run(token => session.LoginAsync(name, secret, token));
             }
-            GUI.enabled = session != null && !busy;
+            GUI.enabled = session != null && !busy && !moving;
             if (GUI.Button(new Rect(188, 212, 170, 28), "Reconnect + resync")) { GUIUtility.keyboardControl = 0; Run(session.ReconnectAsync); }
-            GUI.enabled = session != null && !busy && pending;
+            GUI.enabled = session != null && !busy && !moving && pending;
             if (GUI.Button(new Rect(368, 212, 220, 28), "Retry same command ID")) { GUIUtility.keyboardControl = 0; Run(session.RetryAsync); }
             GUI.enabled = true;
             if (busy && GUI.Button(new Rect(28, 248, 150, 26), "Cancel / disconnect")) {
@@ -136,22 +162,25 @@ namespace VirtualLife.NativeScene
             }
             if (GUI.Button(new Rect(188, 248, 170, 26), "End local session")) {
                 generation++; request?.Cancel(); request = null; session?.Dispose(); session = null;
-                state = null; ready = false; busy = false; pending = false; password = ""; loginName = "";
+                state = null; ready = false; busy = false; moving = false; pending = false; password = ""; loginName = "";
                 GUIUtility.keyboardControl = 0;
                 Initialize();
             }
             if (state != null) GUI.Label(new Rect(28, 282, 580, 24), "Committed version " + state.Version + " | turn " + state.Turns + "/3 | reward " + (state.Reward ?? "none"));
-            GUI.Label(new Rect(28, 314, 580, 44), "Walk to the blue terminal and press E for one authoritative turn.", wrapped);
+            var movement = movementEnabled ? session?.MovementState : null;
+            GUI.Label(new Rect(28, 314, 580, 44), movement == null ? "Walk to the blue terminal and press E for one authoritative turn." :
+                "Rust position (mm): " + movement.OwnActor.XMm + ", " + movement.OwnActor.ZMm + " | tick " + movement.Tick + " | input " + movement.OwnActor.LastInputSequence, wrapped);
             GUI.matrix = matrix; GUI.enabled = enabled;
         }
         private void OnDestroy()
         {
             alive = false; generation++; lifetime.Cancel(); session?.Dispose(); lifetime.Dispose(); password = "";
-            if (district != null) { district.NativeInteraction = null; district.InputCaptured = false; }
+            if (district != null) { district.NativeInteraction = null; district.NativeMovement = null; district.InputCaptured = false; district.NetworkAuthority = false; }
             while (updates.TryDequeue(out _)) { }
         }
         [Serializable] private sealed class DevelopmentConfig {
             public string httpsOrigin = "", wssOrigin = "", contentHash = "", bootId = "", matchId = "";
+            public bool movement = false;
         }
     }
 }

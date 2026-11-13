@@ -27,6 +27,8 @@ use vl_world::ZoneHandle;
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct Settings {
+    #[serde(default)]
+    movement: bool,
     schema_version: u32,
     ruleset: String,
     pet: Option<u8>,
@@ -165,9 +167,27 @@ impl NativeRuntime {
             .map_err(|_| "Native ticket scope unavailable")?,
         );
         let (zone, actor) = vl_world::zone(32, 64).map_err(|_| "Native zone unavailable")?;
-        let admission = PgAdmission::new(trust, config, ca, settings.role, zone.clone())
+        let (actor, spawn) = if settings.movement {
+            let collision = vl_world::collision::Collision::aurora()
+                .map_err(|_| "Native collision unavailable")?;
+            let spawn = collision.spawn().map_err(|_| "Native spawn unavailable")?;
+            let epoch = u64::from_le_bytes(Uuid::new_v4().as_bytes()[..8].try_into().unwrap()) >> 1;
+            (
+                actor
+                    .with_collision(collision)
+                    .with_epoch(epoch.max(1))
+                    .map_err(|_| "Native epoch unavailable")?,
+                Some(spawn),
+            )
+        } else {
+            (actor, None)
+        };
+        let mut admission = PgAdmission::new(trust, config, ca, settings.role, zone.clone())
             .map_err(|_| "Native admission unavailable")?
             .with_games(commands.clone());
+        if let Some(spawn) = spawn {
+            admission = admission.with_movement(spawn);
+        }
         let gateway = vl_gateway::router(
             Options {
                 enabled: true,

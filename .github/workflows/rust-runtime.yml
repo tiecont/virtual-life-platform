@@ -80,6 +80,7 @@ jobs:
           set -euo pipefail
           "$CARGO_HOME/bin/cargo" build --locked --package vl-game-runtime
           node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay
+          node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --movement
       - name: Check Pet Arena PvE matches, recovery and platform settlement
         shell: bash
         run: |

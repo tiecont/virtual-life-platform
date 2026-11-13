@@ -180,6 +180,7 @@ mod tests {
                 input_sequence: 1,
                 direction_x: 1001,
                 direction_z: 0,
+                ..Default::default()
             },
         ));
         assert_eq!(
