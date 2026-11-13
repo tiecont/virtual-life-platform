@@ -14,4 +14,7 @@ for (const project of ['UnityCompatible', 'NativeClient']) {
   run(['restore', path, '--locked-mode']);
   run(['build', path, '--no-restore', '--configuration', 'Release']);
 }
+run(['restore', 'tests/native-csharp/UnitySyntax.csproj', '--locked-mode']);
+run(['build', 'tests/native-csharp/UnitySyntax.csproj', '--no-restore', '--configuration', 'Release']);
+run(['artifacts/csharp/syntax/Release/net8.0/UnitySyntax.dll']);
 run(['artifacts/csharp/bin/Release/net8.0/NativeClient.dll']);

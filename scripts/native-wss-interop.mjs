@@ -11,10 +11,10 @@ import {validateTestDatabaseURL} from './test-environment.mjs';
 import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
 
 const options=process.argv.slice(2);
-const loss=options.includes('--pet-arena-loss'),pet=options.includes('--pet-arena')||loss,playable=options.includes('--runtime-gameplay')||pet,csharp=options.includes('--csharp-client');
+const loss=options.includes('--pet-arena-loss'),pet=options.includes('--pet-arena')||loss,playable=options.includes('--runtime-gameplay')||pet,csharp=options.includes('--csharp-client'),unity=options.includes('--unity-player');
 const petContent=pet?spawnSync(resolve('artifacts/rust/target/debug/vl-game-runtime'),['--ruleset-content-hash','pet-arena-pve'],{encoding:'utf8'}).stdout.trim():undefined;
 if(pet)assert.match(petContent,/^[a-f0-9]{64}$/);
-if(options.some(value=>!['--runtime-gameplay','--csharp-client','--pet-arena','--pet-arena-loss'].includes(value))||new Set(options).size!==options.length||csharp&&(!playable||pet))throw Error('Unknown native interoperability mode');
+if(options.some(value=>!['--runtime-gameplay','--csharp-client','--pet-arena','--pet-arena-loss','--unity-player'].includes(value))||new Set(options).size!==options.length||(csharp||unity)&&(!playable||pet)||csharp&&unity)throw Error('Unknown native interoperability mode');
 const require=createRequire(import.meta.url),apiRequire=createRequire(resolve('apps/platform-api/package.json'));
 apiRequire('reflect-metadata');
 const {NestFactory}=apiRequire('@nestjs/core'),{Module}=apiRequire('@nestjs/common'),{FastifyAdapter}=apiRequire('@nestjs/platform-fastify');
@@ -59,10 +59,14 @@ try{
  const identity=new IdentityService(pool,config),store=new RuntimeAdmissionStore(pool,identity),keys=generateKeyPairSync('ed25519');
  const scope={worldId:'native:wss-'+randomUUID(),runtimeBootId:randomUUID(),contentHash:pet?petContent:(playable?'53':'22').repeat(32),protocolVersion:1};
  const issuer=new RuntimeTicketIssuer(identity,'fixture',keys.privateKey,store.admission);
- const cert=await readFile(resolve(directory,'tls/server.pem')),key=await readFile(resolve(directory,'tls/server.key'));
+ const cert=Buffer.concat([await readFile(resolve(directory,'tls/server.pem')),await readFile(resolve(directory,'tls/ca.pem'))]),key=await readFile(resolve(directory,'tls/server.key'));
  class FixtureModule{} Module({})(FixtureModule);
  app=await NestFactory.create(FixtureModule,new FastifyAdapter({https:{cert,key},logger:false}),{logger:false});
  const http=app.getHttpAdapter().getInstance();registerIdentity(http,config,identity);
+ if(unity)http.addHook('onResponse',(request,reply,done)=>{
+  if(['/v1/session/login','/v1/runtime-ticket'].includes(request.url))(facts.unityHttp??=[]).push({path:request.url,status:reply.statusCode});
+  done();
+ });
  let allocateForCsharp=false;
  // The isolated client fixture allocates only authenticated, CSRF-checked sessions
  // to the harness-owned scope. This hook is never part of the production API.
@@ -82,6 +86,10 @@ try{
  const {createServer}=await import('node:net');const reservation=createServer();await new Promise(ok=>reservation.listen(0,'127.0.0.1',ok));
  const port=reservation.address().port;await new Promise(ok=>reservation.close(ok));origin='https://127.0.0.1:'+port;routeOptions.origin=origin;
  registerRuntimeGateway(http,config,identity,issuer,routeOptions);
+ if(unity){
+  http.server.on('secureConnection',socket=>(facts.unityTls??=[]).push(socket.getProtocol()));
+  http.server.on('tlsClientError',error=>(facts.unityTlsErrors??=[]).push(error.code??error.name));
+ }
  http.server.on('upgrade',(req,socket,head)=>{
   if(!upstream||req.url!=='/rt/v1'){socket.destroy();return;}
   const target=connect(upstream,'127.0.0.1');tunnels.add(socket);tunnels.add(target);
@@ -97,7 +105,7 @@ try{
  const page=await context.newPage();await page.goto(origin);await page.waitForFunction(()=>!!window.transport);
  const guest=await page.evaluate(async()=>{const r=await fetch('/v1/session/guest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestId:crypto.randomUUID(),displayName:'WSS fixture',avatarKey:'mint'})});return {status:r.status,me:await r.json()};});assert.equal(guest.status,201);
  const loginName='fixture_'+randomBytes(8).toString('hex'),loginPassword=randomBytes(24).toString('hex');
- if(csharp){
+ if(csharp||unity){
   const upgrade=await page.evaluate(async({csrf,loginName,password})=>{
    const r=await fetch('/v1/session/upgrade',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':csrf,'Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({loginName,password})});
    return {status:r.status,me:await r.json()};
@@ -160,6 +168,21 @@ try{
  await startHost();
  const call=(method,...args)=>page.evaluate(({method,args})=>window.transport[method](...args),{method,args});
  const record=name=>facts.scenarios.push({name,result:'PASS'});
+ let unityProbeIndex=0;
+ async function probeUnity(){
+  allocateForCsharp=true;
+  try{
+   const {unityNativeProbe}=await import('./unity-native-probe.mjs');
+   const result=await unityNativeProbe({directory,index:++unityProbeIndex,origin,boot:scope.runtimeBootId,match:matchId,loginName,password:loginPassword});
+   (facts.unityPlayers??=[]).push(result);
+  }finally{allocateForCsharp=false;}
+ }
+ if(unity){
+  assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'0');
+  await probeUnity();
+  assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'1');
+  record('actual-unity-linux-player-login-ticket-commits-first-turn-and-reconnects');
+ }
  await store.allocate(credential,scope);
  assert.equal((await call('ticket','incorrect')).status,403);record('csrf-denied');
  const injected=await page.evaluate(async csrf=>{const r=await fetch('/v1/runtime-ticket',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':csrf},body:JSON.stringify({worldId:'native:attacker'})});return r.status;},guest.me.csrfToken);
@@ -212,17 +235,18 @@ try{
     const finished=new Promise((ok,no)=>{probe.once('error',no);probe.once('close',ok);});
     probe.stdin.end(JSON.stringify({origin,certificate:resolve(directory,'tls/server.pem'),boot:scope.runtimeBootId,match:matchId,loginName,password:loginPassword}));
     let code;try{code=await finished;}finally{clearTimeout(timer);}
-    assert.equal(code,0,'C# real-process probe failed: '+log);assert.deepEqual(JSON.parse(log),{result:'PASS',checks:5});
+    assert.equal(code,0,'C# real-process probe failed: '+log);assert.deepEqual(JSON.parse(log),{result:'PASS',checks:8});
     assert(!log.includes(loginPassword));
    }finally{allocateForCsharp=false;}
   }
-  if(csharp){await csharpProbe();record('csharp-https-login-ticket-wss-receipt-duplicate-and-reconnect');}
+  if(csharp){await csharpProbe();record('csharp-scene-use-case-login-ticket-wss-receipt-duplicate-and-reconnect');}
   const checkpoint=(await pool.query('SELECT state_version,rng_cursor,audit_hash,sealed_snapshot FROM game_native_matches WHERE id=$1',[matchId])).rows[0];
   child.kill('SIGKILL');await childClosed;child=undefined;
   await startHost();
   assert.deepEqual((await pool.query('SELECT state_version,rng_cursor,audit_hash,sealed_snapshot FROM game_native_matches WHERE id=$1',[matchId])).rows[0],checkpoint);
-  if(csharp){
-   await csharpProbe();record('csharp-after-sigkill-replays-durable-receipt-without-extra-effects');
+  if(csharp||unity){
+   if(csharp){await csharpProbe();record('csharp-after-sigkill-replays-durable-receipt-without-extra-effects');}
+   else{await probeUnity();record('actual-unity-linux-player-after-sigkill-replays-durable-receipt-without-extra-effects');}
    // Admission is session-scoped: return the harness allocation to the browser
    // only after the independent C# session has completed its restart proof.
    await store.allocate(credential,scope);
@@ -276,7 +300,7 @@ try{
  const text=await call('open',origin.replace('https:','wss:')+'/rt/v1');await call('text',text);assert(await call('closed',text));record('text-frame-denied');
  await call('close',fresh);await context.close();await browser.close();browser=undefined;
  const effects=(await pool.query('SELECT (SELECT count(*)::int FROM game_native_matches) AS matches,(SELECT count(*)::int FROM game_native_receipts) AS receipts,(SELECT count(*)::int FROM platform_native_ticket_uses) AS nonces')).rows[0];
- assert.equal(effects.matches,playable?1:0);assert.equal(effects.receipts,pet?petEffects.receipts:playable?3:0);assert.equal(effects.nonces,pet?petEffects.nonces:playable?(csharp?7:3):2);facts.effects=effects;record(pet?'full-pet-match-commits-one-native-match':playable?'three-game-commits-one-native-match':'zero-game-writes');
+ assert.equal(effects.matches,playable?1:0);assert.equal(effects.receipts,pet?petEffects.receipts:playable?3:0);assert.equal(effects.nonces,pet?petEffects.nonces:playable?(csharp||unity?11:3):2);facts.effects=effects;record(pet?'full-pet-match-commits-one-native-match':playable?'three-game-commits-one-native-match':'zero-game-writes');
  assert.equal(heartbeatError,undefined);facts.result='PASS';
  assert(!/ownRoll|storageKeys/.test(output+errors));
  await writeFile(directory+'/rust-host.log',output+errors,{mode:0o600});

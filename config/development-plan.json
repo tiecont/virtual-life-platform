@@ -387,7 +387,15 @@
         "32m district spawn/WASD/proximity/E flow accepted in an actual Unity player",
         "scope ceiling excludes infinite city/AAA release claims"
       ],
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
+      "verification": {
+        "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "4 EditMode and 1 PlayMode tests passed"},
+          {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux", "exitCode": 0, "result": "Actual rendered Linux development player; owner accepted WASD, terminal E and window interaction"}
+        ]
+      },
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-006"
@@ -395,7 +403,19 @@
       "implementation": {
         "scope": "config/playable-slice.json",
         "scene": "apps/unity-client/Assets/VirtualLife/Scenes/AuroraBlockout.unity",
-        "remainingAcceptance": "Actual licensed Editor import and clickable flow test; production art, city expansion and release certification are outside this prototype"
+        "remainingAcceptance": "Production art, city expansion and release certification are outside this prototype",
+        "linuxPlayerVerification": {
+          "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "4 EditMode and 1 PlayMode tests passed; spawn, movement, proximity and native-interaction delegation"},
+            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux", "exitCode": 0, "result": "Actual Linux development player built with URP 17.3.0"}
+          ],
+          "ownerAcceptance": "Owner reported thao tac ok after being asked to test WASD, approach the blue terminal, E interaction and window close in the actual Linux player",
+          "graphics": "AMD Renoir, OpenGLCore, CachyOS 7.2.9-2; rendered screenshot inspected, capsule material corrected to URP Lit",
+          "buildManifest": "artifacts/linux-player/5e918b86004d/build-manifest.json",
+          "scope": "One 32m developer blockout with capsule, cafe placeholder, Arena entrance and local activity; no production or Windows qualification"
+        }
       }
     },
     {
@@ -2172,10 +2192,23 @@
         "verification": {
           "sourceRevision": "87a16e46d049666a88a9c5aa786d34bdfb99d0ea",
           "commands": [
-            {"command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/stage.test.ts", "exitCode": 0, "result": "23 actual PostgreSQL integration cases passed"},
-            {"command": "pnpm exec eslint tests/integration/stage.test.ts", "exitCode": 0},
-            {"command": "pnpm exec tsc -p tests/legacy-tsconfig.json --noEmit", "exitCode": 0},
-            {"command": "git diff --check", "exitCode": 0}
+            {
+              "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/stage.test.ts",
+              "exitCode": 0,
+              "result": "23 actual PostgreSQL integration cases passed"
+            },
+            {
+              "command": "pnpm exec eslint tests/integration/stage.test.ts",
+              "exitCode": 0
+            },
+            {
+              "command": "pnpm exec tsc -p tests/legacy-tsconfig.json --noEmit",
+              "exitCode": 0
+            },
+            {
+              "command": "git diff --check",
+              "exitCode": 0
+            }
           ],
           "scope": "Local Stage regression only; hosted Quality and Rust CI required before merge"
         },
@@ -2183,27 +2216,104 @@
           "sourceRevision": "7272ec96cda8c949800033fc61873ddee288776e",
           "reviewMode": "SINGLE_AGENT_AUDIT",
           "commands": [
-            {"command": "pnpm ci:check", "exitCode": 0},
-            {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "110 passed"},
-            {"command": "pnpm exec eslint scripts/verify-ci.mjs", "exitCode": 0},
-            {"command": "git diff --check", "exitCode": 0}
+            {
+              "command": "pnpm ci:check",
+              "exitCode": 0
+            },
+            {
+              "command": "node --test tests/governance/*.test.mjs",
+              "exitCode": 0,
+              "result": "110 passed"
+            },
+            {
+              "command": "pnpm exec eslint scripts/verify-ci.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "git diff --check",
+              "exitCode": 0
+            }
           ],
-          "regression": {"sourceRevision": "a1092dd15a9114bd6cf2dc754e80232c8ed0e99b", "command": "pnpm check", "exitCode": 0, "result": "110 governance, 497 unit, 783 integration cases and all builds passed; prior prerequisite failures retained in ignored artifacts"},
+          "regression": {
+            "sourceRevision": "a1092dd15a9114bd6cf2dc754e80232c8ed0e99b",
+            "command": "pnpm check",
+            "exitCode": 0,
+            "result": "110 governance, 497 unit, 783 integration cases and all builds passed; prior prerequisite failures retained in ignored artifacts"
+          },
           "remaining": "Hosted checks on the final source required; runner pin does not itself prove upstream DNS recovery or staging deployment"
         },
         "browserPreparationVerification": {
           "sourceRevision": "c434d25d19aa0c60be4f75733c1c74a676018446",
           "reviewMode": "SINGLE_AGENT_AUDIT",
           "commands": [
-            {"command": "node scripts/prepare-ci-browser.mjs", "exitCode": 0, "result": "Official amd64 image manifest digest, extracted Chromium/fonts, host library check, actual launch and rendered screenshot passed"},
-            {"command": "pnpm ci:check", "exitCode": 0},
-            {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "110 passed"},
-            {"command": "pnpm exec eslint scripts/prepare-ci-browser.mjs scripts/verify-ci.mjs scripts/test-environment.mjs scripts/verify-artifact-workflows.mjs tests/governance/rust-workflow.test.mjs", "exitCode": 0},
-            {"command": "PLAYWRIGHT_BROWSERS_PATH=artifacts/ci-browser/browsers FONTCONFIG_FILE=artifacts/ci-browser/fonts.conf pnpm ci:browser admin", "exitCode": 0, "result": "Actual admin and runtime browser groups, desktop/mobile profiles passed with pinned assets; paths resolved absolute in execution"},
-            {"command": "PLAYWRIGHT_BROWSERS_PATH=artifacts/ci-browser/browsers FONTCONFIG_FILE=artifacts/ci-browser/fonts.conf node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena", "exitCode": 0, "result": "26 real Nest/Rust/PostgreSQL scenarios passed with pinned Chromium; paths resolved absolute in execution"},
-            {"command": "git diff --check", "exitCode": 0}
+            {
+              "command": "node scripts/prepare-ci-browser.mjs",
+              "exitCode": 0,
+              "result": "Official amd64 image manifest digest, extracted Chromium/fonts, host library check, actual launch and rendered screenshot passed"
+            },
+            {
+              "command": "pnpm ci:check",
+              "exitCode": 0
+            },
+            {
+              "command": "node --test tests/governance/*.test.mjs",
+              "exitCode": 0,
+              "result": "110 passed"
+            },
+            {
+              "command": "pnpm exec eslint scripts/prepare-ci-browser.mjs scripts/verify-ci.mjs scripts/test-environment.mjs scripts/verify-artifact-workflows.mjs tests/governance/rust-workflow.test.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "PLAYWRIGHT_BROWSERS_PATH=artifacts/ci-browser/browsers FONTCONFIG_FILE=artifacts/ci-browser/fonts.conf pnpm ci:browser admin",
+              "exitCode": 0,
+              "result": "Actual admin and runtime browser groups, desktop/mobile profiles passed with pinned assets; paths resolved absolute in execution"
+            },
+            {
+              "command": "PLAYWRIGHT_BROWSERS_PATH=artifacts/ci-browser/browsers FONTCONFIG_FILE=artifacts/ci-browser/fonts.conf node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena",
+              "exitCode": 0,
+              "result": "26 real Nest/Rust/PostgreSQL scenarios passed with pinned Chromium; paths resolved absolute in execution"
+            },
+            {
+              "command": "git diff --check",
+              "exitCode": 0
+            }
           ],
           "remaining": "Hosted Quality/Rust on final head must pass; preflight never substitutes application checks"
+        },
+        "loungeVerification": {
+          "sourceRevision": "3af963fbbd4bc5fa517cf8669f87617409a3ea22",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {
+              "command": "node scripts/run-browser-tests.mjs tests/e2e/lounge.spec.ts",
+              "exitCode": 0,
+              "result": "16 desktop and 16 mobile-profile Chromium cases passed with prepared pinned browser/fonts; expiry checks begin after a validated real periodic room snapshot"
+            },
+            {
+              "command": "pnpm exec eslint tests/e2e/lounge.spec.ts",
+              "exitCode": 0
+            },
+            {
+              "command": "node --test tests/governance/*.test.mjs",
+              "exitCode": 0,
+              "result": "110 passed"
+            },
+            {
+              "command": "git diff --check",
+              "exitCode": 0
+            }
+          ],
+          "scope": "CI defect was test interference: the real 15-second room resync withdrew source authority while the TTL-only response was held. Retains all expired-view, no-retry and staff-suppression assertions. First local browser attempt lacked assets; prepared official pinned assets before successful run. Hosted exact-head Quality/Rust still required before merge."
+        },
+        "calendarVerification": {
+          "sourceRevision": "1a7d7e5b6ab7a58d12aa319b8e207da9278130d6",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {"command": "node scripts/run-browser-tests.mjs tests/e2e/calendar.spec.ts", "exitCode": 0, "result": "Desktop and mobile Chromium passed, including deterministic zero-second input, exact persisted UTC timestamps, publish/cancel/RSVP and private audit assertions"},
+            {"command": "node node_modules/eslint/bin/eslint.js tests/e2e/calendar.spec.ts", "exitCode": 0}
+          ],
+          "scope": "Actual Chromium reproduction rejects HH:mm:00 because datetime-local normalizes to HH:mm. Fixture now uses canonical minute values and checks every stored schedule timestamp. No product behavior or assertion removed. Hosted final-head Quality/Rust required before merge."
         }
       }
     },
@@ -2451,7 +2561,24 @@
       "implementation": {
         "capabilityMatrix": "config/native-qualification.json",
         "baselineCommand": "node scripts/linux-baseline.mjs",
-        "remainingQualification": "EXTERNAL_QUALIFICATION_BLOCKER; see per-gate resource, procedure and evidence fields"
+        "remainingQualification": "EXTERNAL_QUALIFICATION_BLOCKER; see per-gate resource, procedure and evidence fields",
+        "localAudit": {
+          "sourceRevision": "4f86df285ad76e441f8278502a26bd784ddd3301",
+          "command": "DOTNET=artifacts/dotnet/dotnet node scripts/linux-baseline.mjs --probes-only",
+          "exitCode": 0,
+          "os": "CachyOS Linux 7.2.9-2-cachyos x86_64",
+          "tools": {
+            "node": "26.9.0",
+            "pnpm": "11.28.5",
+            "rust": "1.99.1",
+            "dotnet": "8.0.428 (local ignored SDK, absent from default PATH)",
+            "postgresClient": "18.6",
+            "docker": "29.9.0"
+          },
+          "graphics": "RADV RENOIR Mesa 26.2.4 and NVIDIA RTX 2060 Max-Q driver 615.78.08; Vulkan instance 1.4.363",
+          "limitations": "System PostgreSQL socket inactive; tests use disposable Docker PostgreSQL. Pinned Unity 6000.3.14f1 is installed and owner-activated; actual import/tests/Linux player run passed. CachyOS/AMD OpenGLCore measured locally; Windows qualification remains external.",
+          "editor": {"version": "6000.3.14f1", "revision": "d68c3f99a318", "archiveSha256": "da4f7690af316ec926acbfbb9b3347d0cb6b5ab7e7d75adfc3719a3d1b8fdbd9", "activation": "Owner performed activation; no credentials or license material recorded", "linuxPlayer": "AMD Renoir OpenGLCore; URP 17.3.0", "otherEditor": "Owner-installed 6000.6.9f1 preserved"}
+        }
       }
     },
     {
@@ -2496,23 +2623,42 @@
         "editor": "6000.3.14f1",
         "urp": "17.3.0",
         "validation": "node scripts/unity-validate.mjs tests",
-        "remainingAcceptance": "Editor-resolved package lock, Unity C# compilation, Linux tests/player and separate physical Windows build qualification",
-        "lastEditorAttempt": {
-          "sourceRevision": "eb269f11941966ca8facaf1b30655d69cda65243",
+        "remainingAcceptance": "Windows player build CI artifact and physical Windows acceptance; Linux Editor/player proof does not verify this Windows task",
+        "linuxEditorVerification": {
+          "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
           "commands": [
-            {"command": "node scripts/unity-validate.mjs prepare", "exitCode": 2},
-            {"command": "node scripts/unity-validate.mjs tests", "exitCode": 2},
-            {"command": "node scripts/unity-validate.mjs linux", "exitCode": 2}
+            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "Pinned Editor compiles project; 4 EditMode and 1 PlayMode tests pass, no fixture skips counted"},
+            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux", "exitCode": 0, "result": "Real Linux development player builds and renders AuroraBlockout"}
+          ],
+          "resolved": "Reviewed Editor-generated package lock and project/URP settings committed; invalid 33-character GUIDs corrected, Mono serialization configuration supplied, default capsule material uses URP Lit",
+          "scope": "CachyOS compatibility trial with AMD Renoir OpenGLCore; Windows qualification remains IN_PROGRESS"
+        },
+        "lastEditorAttempt": {
+          "sourceRevision": "3af963fbbd4bc5fa517cf8669f87617409a3ea22",
+          "commands": [
+            {
+              "command": "node scripts/unity-validate.mjs prepare",
+              "exitCode": 2
+            },
+            {
+              "command": "node scripts/unity-validate.mjs tests",
+              "exitCode": 2
+            },
+            {
+              "command": "node scripts/unity-validate.mjs linux",
+              "exitCode": 2
+            }
           ],
           "classification": "MISSING_OPTIONAL_LOCAL_TOOLING",
-          "reason": "No installed Unity Editor; license entitlement and separate Windows qualification remain external gates"
+          "reason": "Pinned Editor executable not found in PATH or standard local installation locations. No entitlement/module, import, resolved lock or actual player qualification claimed."
         }
       }
     },
     {
       "id": "VL-081",
       "feature": "Native",
-      "title": "Native Unity \u2194 Rust generated C# protocol and login proof",
+      "title": "Native Unity ↔ Rust generated C# protocol and login proof",
       "objective": "Generate C# from proto and connect Unity client to Rust WSS scoped ticket, reconnect.",
       "dependsOn": [
         "VL-080",
@@ -2529,16 +2675,83 @@
         "source": "apps/unity-client/Assets/VirtualLife/Features/Native",
         "adapterValidation": "node scripts/native-csharp.mjs",
         "realProcessValidation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
-        "scope": "Partial independent protocol adapter work authorized while VL-080 Editor acceptance is pending; dependency retained",
-        "remainingAcceptance": "Real Unity import/compilation, EditMode/PlayMode execution, scene presentation wiring and native Unity login/WSS player E2E",
+        "scope": "Pinned Linux Unity player now proves actual login/ticket/WSS/command/receipt/reconnect and runtime restart. VL-080 Windows acceptance remains an explicit incomplete dependency",
+        "remainingAcceptance": "Interactive connected developer-panel/terminal acceptance and inherited VL-080 Windows qualification; actual Linux player network E2E passed, synthetic ruleset only",
+        "linuxPlayerEvidence": {
+          "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-player", "exitCode": 0, "result": "22 real Nest HTTPS / Rust WSS / restricted PostgreSQL scenarios; two rendered Linux Unity test players before/after Rust SIGKILL; first player commits version 1, second recovers durable receipt at version 2; wrong CA rejected, normal chain/hostname validation, login/ticket 200, same-ID replay, reconnect and no duplicate effects"}
+          ],
+          "evidence": "artifacts/desktop-first/vl022/interop-fd36c9b2/facts.json and unity-{1,2}.xml/.json/.png; private input deleted on completion",
+          "rendering": "6000.3.14f1 LinuxPlayer, AMD Renoir OpenGLCore; screenshot inspected and URP capsule shader assertion passed",
+          "tls": "Isolated test-only Mono TrustAnchors with disposable CA and wrong-CA negative; no owner trust-store or production TLS changes",
+          "limitations": "Test player invokes existing adapters and scene use case directly; it does not prove connected panel keyboard input, Windows execution or Pet Arena Unity UI"
+        },
+        "finalLinuxRegression": {
+          "sourceRevision": "1ad2985ed77ec63b8137e947b34f9cf468959224",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {"command": "pnpm check", "exitCode": 0, "result": "111 governance, 497 unit, 783 integration tests and all workspace builds passed; earlier missing Kubernetes cache download timeout and missing offline legacy packages resolved by verified local cache and explicit network preparation"},
+            {"command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs", "exitCode": 0, "result": "39 standalone assertions; netstandard2.1/net8 builds and 12 authored Unity files parse as C# 9"},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "scope": "Full local regression after merging verified journal recovery; hosted Quality/Rust on final PR source must pass before merge"
+        },
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "adapterEvidence": {
           "sourceRevision": "5e683d931ce76d6652bafde260cf77982e9f9841",
           "commands": [
-            {"command": "node scripts/native-csharp.mjs", "exitCode": 0, "result": "netstandard2.1 and net8.0 compile; 26 standalone HTTPS/WSS assertions passed"},
-            {"command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client", "exitCode": 0, "result": "22 real-process scenarios passed; same C# adapter before and after Rust SIGKILL"}
+            {
+              "command": "node scripts/native-csharp.mjs",
+              "exitCode": 0,
+              "result": "netstandard2.1 and net8.0 compile; 26 standalone HTTPS/WSS assertions passed"
+            },
+            {
+              "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
+              "exitCode": 0,
+              "result": "22 real-process scenarios passed; same C# adapter before and after Rust SIGKILL"
+            }
           ],
           "scope": "Linux standalone C# adapter proof, not Unity Editor/player E2E or Windows certification"
+        },
+        "sceneEvidence": {
+          "sourceRevision": "6e63f852a52eca7bef38471797c0db8db6993684",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {
+              "command": "DOTNET=/tmp/vl-dotnet/dotnet node scripts/native-csharp.mjs",
+              "exitCode": 0,
+              "result": "39 standalone assertions; netstandard2.1/net8 builds; 10 authored Unity files parse as C# 9; Editor compilation NOT_RUN"
+            },
+            {
+              "command": "PATH=/tmp/vl-dotnet:$PATH node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
+              "exitCode": 0,
+              "result": "22 actual Nest HTTPS / Rust WSS / restricted PostgreSQL scenarios, scene use case login and reconnect before/after runtime SIGKILL"
+            },
+            {
+              "command": "node --test tests/governance/*.test.mjs",
+              "exitCode": 0,
+              "result": "110 passed"
+            },
+            {
+              "command": "git diff --check",
+              "exitCode": 0
+            }
+          ],
+          "scope": "Partial development-only source: external scope configuration, runtime credential input, main-thread presentation queue, same-ID ambiguous retry and cancellation. Unity Editor 6000.3.14f1 absent; actual Editor/player acceptance remains unverified. Hosted Quality/Rust CI required before merge.",
+          "evidence": [
+            "artifacts/scene-csharp-committed.log",
+            "artifacts/scene-interop-committed.log",
+            "artifacts/scene-governance-committed.log"
+          ]
+        },
+        "localRegression": {
+          "sourceRevision": "3af963fbbd4bc5fa517cf8669f87617409a3ea22",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "command": "DOTNET=artifacts/dotnet/dotnet node scripts/native-csharp.mjs",
+          "exitCode": 0,
+          "result": "39 standalone assertions, netstandard2.1/net8 builds and 10 authored Unity files parsed as C# 9. Editor/player NOT_RUN."
         }
       }
     },

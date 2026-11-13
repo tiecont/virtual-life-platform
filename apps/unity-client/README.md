@@ -1,17 +1,16 @@
 # Unity developer blockout
 
 Open this project with Unity 6000.3.14f1 and URP 17.3.0. The pinned
-manifest uses Unity Test Framework 1.4.6. The Editor prepares URP settings,
-a resource material and the scene build list on import. Review and commit
-the Editor-resolved Packages/packages-lock.json and generated settings after
-the first licensed Editor import. Package resolution and C# compilation
-remain pending until that import succeeds.
+manifest uses Unity Test Framework 1.6.0. The Editor prepares URP settings,
+a resource material and the scene build list on import. The package lock,
+project settings and generated developer materials are resolved by the pinned
+Editor and maintained in source. Temporary art stays under VirtualLife.
 
 Open Assets/VirtualLife/Scenes/AuroraBlockout.unity and enter Play mode.
 WASD moves the capsule. Approach the blue terminal and press E for the local
 three-turn input rehearsal. The scene uses temporary developer primitives.
-The client displays its offline mode. Native commands require the Rust
-protocol integration tracked by VL-081.
+The client displays its offline mode. The explicitly configured development connection panel routes terminal input
+to the native synthetic match. Windows player qualification remains separate.
 
 ## Native protocol adapter
 
@@ -27,7 +26,7 @@ over HTTPS with an in-memory cookie container, then posts the CSRF-protected
 empty runtime-ticket request. The server chooses world/boot/session scope.
 Pass `session.TicketAsync` to `NativeConnection` together with the configured
 WSS origin, content hash and boot ID. Default TLS uses system certificate
-validation; the test executable pins only its disposable fixture certificate.
+validation. The standalone test executable pins its disposable fixture certificate.
 There are no stored credentials or automatic native activation.
 
 The connection permits one outstanding exchange, bounds frames and request
@@ -36,8 +35,7 @@ reconnect. Reconnect resynchronizes own state. Keep a command's immutable ID
 when retrying after an ambiguous result. Mutation retries are explicit; the
 server remains authoritative for committed receipts and private projections.
 Dispose connections and sessions when leaving a scene. Marshal results back
-to the Unity main thread before updating presentation. The placeholder scene
-continues to use the local input rehearsal until its native presentation is wired.
+to the Unity main thread before updating presentation. The scene uses its local rehearsal when no development connection is configured.
 
 Standalone validation uses SDK 8.0.428 (`DOTNET=/absolute/path/to/dotnet`):
 
@@ -72,6 +70,35 @@ Batch tests exercise rules, spawning, collision-controller movement and
 interaction. Rendering and physical GPU performance require a separate
 interactive player run.
 
+The Linux Mono player also needs the serializer section supplied by
+`Editor/MonoConfiguration.cs`; Unity does not ship the usual machine.config
+section for `DataContractJsonSerializer`. The corresponding linker entries
+preserve configuration types. This changes neither the wire format nor the
+shared adapter's authentication behavior.
+
+To run the real rendered Unity test player against disposable Nest HTTPS,
+Rust WSS and restricted PostgreSQL processes, first build the backend and
+prepare the pinned CI browser assets as for the standalone interop suite, then:
+
+```sh
+node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-player
+```
+
+The explicit test mode checks login, ticket, resync, a committed command,
+same-ID replay, reconnect and another player after a Rust process restart.
+It requires LinuxPlayer with a real graphics device, writes NUnit XML,
+screenshots, public runtime facts and executable hashes under ignored artifacts,
+and never counts an ignored Editor test as a player pass.
+
+Unity Mono's WSS implementation does not use the per-socket certificate
+callback used by the .NET test. This fixture therefore provisions its disposable
+CA with Mono's explicit `TrustAnchors` API inside the isolated test player.
+The test first requires a wrong CA to fail, then uses normal certificate chain,
+expiry and hostname verification with the correct CA, and restores the previous
+process settings. No certificate validation callback accepts arbitrary servers.
+The fixture removes private inputs afterward.
+It does not install a CA into the owner's account or change production TLS.
+
 CachyOS is a local compatibility trial. Unity lists Ubuntu 22.04 and 24.04
 for supported Linux Editor workstations. A supported Ubuntu workstation
 can run the same project and commands. Review license entitlement for the
@@ -94,3 +121,47 @@ Windows IL2CPP requires the Windows build environment, C++ tools and Windows
 SDK. Record signing, install/update, input, graphics and crash acceptance
 with build hashes on the related Windows tasks.
 [Windows build requirements](https://docs.unity.com/en-us/engine/6000.3/manual/platform-specific/windows/requirements-and-compatibility)
+
+## Native developer scene controller
+
+The `NativeSceneController` source wires the scene to the existing adapters via
+`SyntheticPlaySession`. It is enabled only in the Editor or a development build
+of `AuroraBlockout`, and only when `VL_NATIVE_DEV_CONFIG` names an external JSON
+file. No login happens automatically. The file must remain outside `Assets/` and
+the packaged player's data directory; it contains scope only:
+
+```json
+{
+  "httpsOrigin": "https://localhost:4443",
+  "wssOrigin": "wss://localhost:4443/rt/v1",
+  "contentHash": "5353535353535353535353535353535353535353535353535353535353535353",
+  "bootId": "11111111-1111-4111-8111-111111111111",
+  "matchId": "22222222-2222-4222-8222-222222222222"
+}
+```
+
+Replace the sample UUIDs with the server allocator's actual leased scope and
+match. Use an already configured isolated Nest login/admission service and Rust
+synthetic runtime behind system-trusted HTTPS/WSS. The client cannot allocate its
+own world or choose ticket scope. The JSON file has no credential fields. Enter
+account/password in the panel at runtime; neither is serialized or logged.
+
+Login performs HTTPS authentication, ticket admission, WSS connection, resync and
+an authorized game-state view. Walk within terminal range and press E to request
+one server turn. Keyboard movement pauses while typing or awaiting a request.
+The panel shows connection/failure categories, committed version, turns and
+pending/granted/declined reward status. Unity presentation updates drain through
+`Update` on the main thread.
+
+Reconnect obtains a fresh ticket and reads the authoritative state. If a command
+was sent but its result is ambiguous, new turns stay blocked; choose **Retry same
+command ID**. That intent remains immutable even when a view already shows the
+server committed it. Cancellation aborts the exchange; leaving the scene cancels
+and disposes both adapters. Credentials, tickets and projections are never logged.
+
+Standalone tests build the scene use cases against .NET Standard 2.1 and prove
+lost-ACK retry, cancellation and malformed-state rejection. The same use cases run
+against actual Nest/Rust processes in the C# interop suite. The explicit Unity
+player fixture exercises the same adapters and use cases in a rendered Linux
+player. Physical keyboard, developer-panel interaction and Windows acceptance
+still require their own checks; a standalone C# pass cannot replace them.
