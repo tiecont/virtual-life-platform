@@ -82,6 +82,7 @@ try{
  const logoutTickets=[];
  const logoutGate=resolve(directory,'logout-gate'),logoutObserved=resolve(directory,'logout-observed');
  const ackGate=resolve(directory,'ack-gate'),ackObserved=resolve(directory,'ack-observed');
+ const sceneGate=resolve(directory,'scene-gate'),sceneObserved=resolve(directory,'scene-observed'),sceneReleased=resolve(directory,'scene-released');
  async function exists(file){try{await access(file);return true;}catch(error){if(error.code==='ENOENT')return false;throw error;}}
  // The isolated client fixture allocates only authenticated, CSRF-checked sessions
  // to the harness-owned scope. This hook is never part of the production API.
@@ -92,6 +93,16 @@ try{
   if(allocateForCsharp&&req.url==='/v1/runtime-ticket'){
    const token=readSessionToken(req,config);identity.verifyCsrf(token,req.headers['x-csrf-token']);
    await store.allocate(token,scope);
+   if(interactive&&await exists(sceneGate)){
+    await writeFile(sceneObserved,'Scene request is blocked before ticket issuance',{mode:0o600});
+    const deadline=Date.now()+10000;
+    while(await exists(sceneGate)){
+     assert(Date.now()<deadline,'Rendered scene fixture did not release its ticket barrier');
+     await new Promise(ok=>setTimeout(ok,10));
+    }
+    facts.sceneExitRequests=(facts.sceneExitRequests??0)+1;
+    await writeFile(sceneReleased,'Old scene request resumed after scene teardown',{mode:0o600});
+   }
    if(interactive&&await exists(logoutGate)){
     await writeFile(logoutObserved,'Ticket request is blocked before issuance',{mode:0o600});
     const deadline=Date.now()+10000;
@@ -271,9 +282,11 @@ try{
   assert.equal(await revokedCount(),beforeLogout+2);
   assert.equal(logoutProofs.length,2);await logoutProofs[1];
   assert.equal(facts.unityHttp.filter(value=>value.path==='/v1/session/logout'&&value.status===200).length,2);
+  assert.equal(facts.sceneExitRequests,2);
   assert(facts.unityHttp.some(value=>value.path==='/v1/session/login'&&value.status===401));
   record('rendered-panel-after-sigkill-recovers-and-commits-next-turn');
   record('rendered-panel-durable-ack-loss-retains-command-reconnect-retry-without-duplicate-effect');
+  record('rendered-scene-teardown-during-held-ticket-drains-session-without-late-state-restore');
   record('rendered-logout-revokes-identity-and-rejects-unexpired-unused-runtime-ticket');
  }else{
  if(unity){

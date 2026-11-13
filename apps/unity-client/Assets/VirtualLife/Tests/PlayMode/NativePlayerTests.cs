@@ -59,6 +59,38 @@ namespace VirtualLife.Blockout.Tests
             yield return input.Click(90, 225);
             yield return Until(() => panel.Ready, () => "login: " + panel.Status);
             var initial = panel.PresentedState.Version;
+            File.Delete(config.sceneObserved); File.Delete(config.sceneReleased);
+            File.WriteAllText(config.sceneGate, "Hold the old scene ticket request");
+            var exitedSession = Session(panel);
+            try {
+                yield return input.Click(260, 225);
+                yield return Until(() => File.Exists(config.sceneObserved), () => "scene ticket barrier: " + panel.Status);
+                Assert.That(panel.Busy, Is.True);
+                yield return SceneManager.LoadSceneAsync("AuroraBlockout");
+                yield return null;
+                Assert.That(panel == null, Is.True, "Scene unload must destroy the connected controller");
+                panel = UnityEngine.Object.FindFirstObjectByType<NativeSceneController>();
+                district = UnityEngine.Object.FindFirstObjectByType<OfflineDistrict>();
+                Assert.That(panel, Is.Not.Null);
+                Assert.That(panel.Ready, Is.False); Assert.That(panel.Busy, Is.False);
+                Assert.That(panel.PresentedState, Is.Null);
+                Assert.That(Entered(panel, "loginName", ""), Is.True);
+                Assert.That(Entered(panel, "password", ""), Is.True);
+                File.Delete(config.sceneGate);
+                yield return Until(() => File.Exists(config.sceneReleased));
+                var operation = (SemaphoreSlim)typeof(SyntheticPlaySession).GetField("operation", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(exitedSession);
+                yield return Until(() => operation.CurrentCount == 1, () => "Old scene operation did not drain");
+                Assert.That(exitedSession.State, Is.Null, "A late response cannot restore a disposed scene session");
+                Assert.That(panel.Ready, Is.False); Assert.That(panel.PresentedState, Is.Null);
+                yield return new WaitForEndOfFrame();
+                ScreenCapture.CaptureScreenshot(config.screenshot + ".scene-exit.png");
+                yield return Until(() => File.Exists(config.screenshot + ".scene-exit.png"));
+            } finally { File.Delete(config.sceneGate); File.Delete(config.sceneObserved); File.Delete(config.sceneReleased); }
+            yield return input.Click(160, 188); yield return input.Type(config.loginName);
+            yield return input.Click(440, 188); yield return input.Type(config.password);
+            yield return input.Click(90, 225);
+            yield return Until(() => panel.Ready, () => "new-scene login: " + panel.Status);
+            Assert.That(panel.PresentedState.Version, Is.EqualTo(initial));
             Assert.That(district.NetworkAuthority, Is.EqualTo(config.movement));
             Assert.That(initial, Is.LessThan(3));
             input.Key("w", true);
@@ -140,15 +172,14 @@ namespace VirtualLife.Blockout.Tests
                 editor = Application.unityVersion, platform = Application.platform.ToString(),
                 graphics = SystemInfo.graphicsDeviceName, graphicsApi = SystemInfo.graphicsDeviceType.ToString(),
                 committedReceipt = true, reconnectReplay = false, wrongCaRejected = false,
-                panelKeyboardTerminal = true, ambiguousAckRetry = true, retriedCommandId = retriedCommandId,
+                panelKeyboardTerminal = true, ambiguousAckRetry = true, inflightSceneExit = true, retriedCommandId = retriedCommandId,
                 authoritativeMovement = config.movement, version = initial + 1
             }));
         }
-        private static GameCommand PendingCommand(NativeSceneController panel)
-        {
-            var session = (SyntheticPlaySession)typeof(NativeSceneController).GetField("session", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel);
-            return (GameCommand)typeof(SyntheticPlaySession).GetField("pending", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(session);
-        }
+        private static SyntheticPlaySession Session(NativeSceneController panel) =>
+            (SyntheticPlaySession)typeof(NativeSceneController).GetField("session", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel);
+        private static GameCommand PendingCommand(NativeSceneController panel) =>
+            (GameCommand)typeof(SyntheticPlaySession).GetField("pending", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(Session(panel));
         private static bool Entered(NativeSceneController panel, string field, string expected) =>
             string.Equals((string)typeof(NativeSceneController).GetField(field, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel), expected, StringComparison.Ordinal);
         private static string InputDiagnostic(NativeSceneController panel, string expected)
@@ -270,10 +301,11 @@ namespace VirtualLife.Blockout.Tests
         [Serializable] private sealed class Fixture {
             public bool movement;
             public string origin = "", caCertificate = "", wrongCaCertificate = "", boot = "", match = "", loginName = "", password = "", screenshot = "", result = "", logoutGate = "", logoutObserved = "", ackGate = "", ackObserved = "";
+            public string sceneGate = "", sceneObserved = "", sceneReleased = "";
         }
         [Serializable] private sealed class Facts {
             public string editor, platform, graphics, graphicsApi, retriedCommandId;
-            public bool committedReceipt, reconnectReplay, wrongCaRejected, panelKeyboardTerminal, authoritativeMovement, ambiguousAckRetry;
+            public bool committedReceipt, reconnectReplay, wrongCaRejected, panelKeyboardTerminal, authoritativeMovement, ambiguousAckRetry, inflightSceneExit;
             public ulong version;
         }
     }
