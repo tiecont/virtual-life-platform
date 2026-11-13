@@ -2695,7 +2695,35 @@
         "adapterValidation": "node scripts/native-csharp.mjs",
         "realProcessValidation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
         "scope": "Pinned Linux Unity player now proves actual login/ticket/WSS/command/receipt/reconnect and runtime restart. VL-080 Windows acceptance remains an explicit incomplete dependency",
-        "remainingAcceptance": "Interactive connected developer-panel/terminal acceptance and inherited VL-080 Windows qualification; actual Linux player network E2E passed, synthetic ruleset only",
+      "remainingAcceptance": "Owner physical connected-panel acceptance, platform logout and in-flight scene-exit acceptance, rendered ambiguous-ACK/error matrix, and inherited VL-080 Windows qualification remain. Automated Linux OS-input panel/terminal roundtrip passed; synthetic ruleset only.",
+      "interactiveLinuxEvidence": {
+        "sourceRevision": "50673f6be95ea51b4507d5f96305a6332557584a",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests",
+            "exitCode": 0,
+            "result": "4 EditMode and 2 PlayMode tests passed; no ignored fixture counted as a pass"
+          },
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive",
+            "exitCode": 0,
+            "result": "Two rendered Linux players with actual XTest keyboard/mouse events: wrong/correct credentials, W approach, terminal E, visible committed versions 1/2, reconnect/resync, local session disposal and scene re-entry; Rust SIGKILL between players; exactly two durable receipts"
+          },
+          {
+            "command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs",
+            "exitCode": 0,
+            "result": "39 standalone assertions, both target builds and 15 authored C# 9 syntax checks"
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "112 passed"
+          }
+        ],
+        "evidence": "artifacts/desktop-first/vl022/interop-4b9ee6c3/{facts.json,unity-1.xml,unity-2.xml,unity-1.png,unity-2.png}",
+        "limitations": "OS input is automated, not physical owner keyboard acceptance. Correct CA normal validation inside the test process only. Local session disposal does not revoke the server identity session. Adapter error/retry evidence remains separate from rendered UI acceptance. VL-081 remains IN_PROGRESS."
+      },
         "linuxPlayerEvidence": {
           "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073",
           "reviewMode": "SINGLE_AGENT_AUDIT",
