@@ -84,14 +84,22 @@ try {
   let counter=JSON.parse((await compose(['exec','-T','api','node','--input-type=module','-e',bootstrap])).stdout).counter;
   async function nextCode(){while(Math.floor(Date.now()/30000)<=counter){if(signal.aborted)throw Error('Cancelled');await new Promise(ok=>setTimeout(ok,250));}counter=Math.floor(Date.now()/30000);const bytes=Buffer.alloc(8);bytes.writeBigUInt64BE(BigInt(counter));const hmac=createHmac('sha1',Buffer.from('12345678901234567890')).update(bytes).digest(),offset=hmac[hmac.length-1]&15;return String((hmac.readUInt32BE(offset)&0x7fffffff)%1000000).padStart(6,'0');}
   assert.equal(factor,'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ');
-  const code=await nextCode(),spki=createHash('sha256').update(new X509Certificate(cert).publicKey.export({type:'spki',format:'der'})).digest('base64');
+  const spki=createHash('sha256').update(new X509Certificate(cert).publicKey.export({type:'spki',format:'der'})).digest('base64');
   browser=await chromium.launch({args:['--ignore-certificate-errors-spki-list='+spki]});
   let cookies,session;
   const outcomes=[];
   for(const profile of [{name:'desktop',viewport:{width:1280,height:800}},{name:'mobile',viewport:{width:360,height:800},isMobile:true}]){
     const context=await browser.newContext({baseURL:origin,viewport:profile.viewport,isMobile:profile.isMobile??false});context.setDefaultTimeout(15000);if(cookies)await context.addCookies(cookies);
     const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.name));await page.goto('/');
-    if(!cookies){await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Authenticator code').fill(code);await page.getByRole('button',{name:'Sign in',exact:true}).click();}
+    if(!cookies){
+      stage='operator-login';
+      await page.getByLabel('Password',{exact:true}).fill(password);
+      await page.getByLabel('Authenticator code').fill(await nextCode());
+      const response=page.waitForResponse(value=>new URL(value.url()).pathname==='/api/admin/login'&&value.request().method()==='POST');
+      await page.getByRole('button',{name:'Sign in',exact:true}).click();
+      const status=(await response).status();facts.loginStatus=status;
+      assert.equal(status,200,'Actual browser operator login must succeed');
+    }
     await expect(page.getByRole('heading',{name:'City at a glance'})).toBeVisible();
     await page.getByRole('button',{name:'Refresh snapshot'}).click();await expect(page.getByText('Fresh observation',{exact:true})).toBeVisible();
     await page.getByRole('button',{name:'System & traffic',exact:true}).click();await page.getByRole('button',{name:'Refresh system snapshot',exact:true}).click();await expect(page.getByText('Fresh observation',{exact:true})).toBeVisible();await expect(page.getByRole('heading',{name:'Configured system map'})).toBeVisible();const system=await page.evaluate(async()=>(await fetch('/api/admin/observations?view=system&range=current')).json());assert.equal(system.status,'FRESH');assert.equal(system.observation.schemaVersion,2);assert.equal(system.observation.source,'platform-api');const ownerSources=await page.evaluate(async()=>(await fetch('/api/admin/system-state?view=system&range=current')).json());assert.equal(ownerSources.status,'FRESH');assert.equal(ownerSources.system.database.status,'OBSERVED');assert.equal(ownerSources.system.pool.status,'OBSERVED');assert.equal(ownerSources.system.versions.expectedSchemaVersion,1);assert.equal(ownerSources.system.versions.expectedMigrationCount,expectedMigrations);assert(!/traceId|spanId|roomKey/.test(JSON.stringify(system)));assert(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth));await page.screenshot({path:resolve(directory,'system-'+profile.name+'.png'),fullPage:true});
