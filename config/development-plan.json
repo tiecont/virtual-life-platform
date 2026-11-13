@@ -2345,6 +2345,29 @@
       "localArtifacts": "artifacts/g2-ci-navigation/artifacts/image-web-navigation-probe/smoke/{result.json,commands.json}",
       "limitations": "Diagnostics only; does not prove the root cause of PR19 run 43485915105 image smoke failure. That run returned Chromium internal error text after goto resolved. Its failure remains a merge blocker until a genuine successful rerun. Existing local images are not a rebuilt current-source release. No TLS/network retry relaxation, deployment or publication. VL-065 stays IN_PROGRESS."
     },
+      "mediaWindowVerification": {
+        "sourceRevision": "06cfe01aab03d64e57a6a92b5e7039d4a74df190",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "cause": "PR18 push run 43484491123 job 132100872256 trace shows media HTTP 200 with serverTime equal to expiresAt at the real ten-second audience rollover. UI correctly rejected the expired observation. The test now uses the existing bounded freshReactionWindow read before its fresh-media assertion; no mutation retry or TTL change",
+        "commands": [
+          {
+            "command": "pnpm build",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/run-browser-tests.mjs tests/e2e/lounge.spec.ts --grep 'Lounge media remains silent' --repeat-each=3",
+            "exitCode": 0,
+            "result": "3 actual desktop and 3 mobile-profile Chromium cases passed: unreviewed source remains silent, no player/URL input, real observation expiry removes playback status, forged playable response rejected and actual media/frame CSP violations enforced"
+          },
+          {
+            "command": "pnpm exec eslint tests/e2e/lounge.spec.ts scripts/image-browser-navigation.mjs tests/governance/image-browser-navigation.test.mjs; pnpm exec tsc -p tests/legacy-tsconfig.json --noEmit; node --test tests/governance/*.test.mjs; git diff --check",
+            "exitCode": 0,
+            "result": "Lint, browser TypeScript, 114 governance tests and whitespace passed"
+          }
+        ],
+        "localArtifacts": "artifacts/g2-ci-navigation/artifacts/g2-{ci-build,media-window-local,ci-governance-final}.log; original hosted trace under artifacts/ci18-hospitality-failure",
+        "limitations": "First local browser invocation selected an absent artifacts/ci-browser path and failed to launch; passing run used existing Playwright 1.64.1 host cache. Does not prove Windows hardware, media rights or deployment. Final exact-head hosted Quality/Rust remain required. VL-065 stays IN_PROGRESS."
+      },
         "remainingAcceptance": "Versioned staging artifact and trace correlation, runtime readiness/drain and legacy compatibility still require verification; no deployment activated",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "verification": {
