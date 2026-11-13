@@ -127,6 +127,10 @@ HTTPS ticket request is held. It requires the old operation to drain with no
 late state restoration and empty credentials/state in the new scene, then
 uses OS input to log in again. This retains the held-ticket logout/revocation checks;
 automated OS input does not replace physical owner or Windows qualification.
+Each player also checks wrong CA, boot and content, invalid signature, signed
+expired ticket and wrong protocol admission through the panel before valid login.
+Only the disposable fixture mutates ticket responses. OS logins respect the real
+five/minute identity limiter using wall-clock pacing; allow several minutes.
 
 CachyOS is a local compatibility trial. Unity lists Ubuntu 22.04 and 24.04
 for supported Linux Editor workstations. A supported Ubuntu workstation

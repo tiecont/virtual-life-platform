@@ -2821,7 +2821,36 @@
         "adapterValidation": "node scripts/native-csharp.mjs",
         "realProcessValidation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
         "scope": "Pinned Linux Unity player now proves actual login/ticket/WSS/command/receipt/reconnect and runtime restart. VL-080 Windows acceptance remains an explicit incomplete dependency",
-      "remainingAcceptance": "Owner physical connected-panel acceptance, remaining rendered admission/protocol/TLS error matrix, and inherited VL-080 Windows qualification remain. Automated Linux OS-input panel/terminal, durable ambiguous-ACK retry, scene unload during a held ticket request and platform logout during a held ticket request passed; synthetic ruleset only.",
+      "remainingAcceptance": "Owner physical connected-panel acceptance, rendered schema/timeout/malformed-receipt/private-projection negatives, and inherited VL-080 Windows qualification remain. Automated Linux OS-input panel/terminal, six scoped admission/TLS negatives, durable ambiguous-ACK retry, scene unload and platform logout during held ticket requests passed; synthetic ruleset only.",
+      "renderedAdmissionVerification": {
+        "sourceRevision": "74e576b2a8445545cec96a44af2c7545046f7079",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement",
+            "exitCode": 0,
+            "result": "7 actual-process scenarios; each of two rendered Linux players uses OS input to reject wrong CA, wrong boot, wrong content, invalid ticket signature, signed expired ticket and signed protocol-2 ticket. Visible failures retain no state/pending command/password; expected Transport or Scope reason is asserted. Ticket envelope remains fresh for expired-claim proof at Rust. Both players then pass valid login, movement/E, immutable retry, scene teardown, logout and SIGKILL recovery; exactly two receipts. All HTTP responses are 200 or intentional wrong-password 401; no 429"
+          },
+          {
+            "command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs; node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "61 standalone assertions, both C# targets, 15 syntax files and 112 governance tests passed"
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay",
+            "sourceRevision": "4a8bbd8b9517ee403cf0f15821119d86ed529b7f",
+            "exitCode": 0,
+            "result": "20 real-process default runtime scenarios passed; normal noninteractive flow unaffected"
+          },
+          {
+            "command": "pnpm exec eslint scripts/native-wss-interop.mjs scripts/unity-native-probe.mjs; git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "localArtifacts": "artifacts/g2-session-lifecycle/artifacts/desktop-first/vl022/interop-9ebcbe98/{facts.json,unity-1.xml,unity-2.xml,unity-2.png.expired.png}; default runtime interop-8be25902",
+        "testAssemblySha256": "0e8326baa9d942d1f4433bdc93eedd6c336c427ce95e9f44cb2277b474ad241e",
+        "limitations": "Test-only signed response faults, disposable CA and scope; no production changes. Initial 4a8bbd8 matrix hit the real five-login/minute identity limit and failed valid login; not counted as PASS. The corrected fixture paces OS login using wall time without changing Nest clocks or rate limits. Wrong CA/boot and expired-ticket screenshots inspected. Automated Linux input is not owner or Windows qualification. VL-081 stays IN_PROGRESS."
+      },
       "inflightSceneExitVerification": {
         "sourceRevision": "2dc913dc367eb7e2bf8d2d19f018fa92a2dde599",
         "reviewMode": "SINGLE_AGENT_AUDIT",
