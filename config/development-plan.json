@@ -1312,7 +1312,24 @@
         "source": "crates/vl-world/src/collision.rs; crates/vl-world/src/movement.rs; crates/vl-gateway/src/durable.rs; apps/unity-client/Assets/VirtualLife/Features/NativeScene",
         "scope": "Default-off Aurora movement through the existing single Rust zone writer, exported collision manifest, current Nest policy locks, own-only snapshots and main-thread Unity reconciliation",
         "remainingAcceptance": "Authoritative interaction proximity and policy-filtered AOI remain. Reconnect retains a bounded actor registry within one runtime; durable movement checkpoints, registry eviction and client prediction are not implemented. Runtime restart rejects old epochs and returns to safe manifest spawn. Injected application delay evidence is not physical network latency or Windows qualification.",
-        "reviewMode": "SINGLE_AGENT_AUDIT"
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "linuxVerification": {
+          "sourceRevision": "0e058f5ed71db06e4d5dacdb94a09cc5fd5c17f4",
+          "commands": [
+            {"command": "cargo fmt --all -- --check; cargo clippy --workspace --all-targets --locked -- -D warnings; cargo test --workspace --locked", "exitCode": 0, "result": "Format, Clippy and all Rust workspace tests passed, including movement expiry, cancellation, foreign-zone ownership, acceleration, collision and sequence fences"},
+            {"command": "cargo run --locked --package vl-protocol --bin native-codegen -- --check", "exitCode": 0, "result": "Pinned generated bindings match additive protocol fields"},
+            {"command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs", "exitCode": 0, "result": "44 assertions, both target builds and 15 authored C# syntax files passed; includes idle resync and malformed movement ACK negatives"},
+            {"command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --movement", "exitCode": 0, "result": "9 scenarios passed against an actual Rust process and restricted TLS PostgreSQL; replay, epoch/sequence/time rejection, wall margin, reconnect position, restart safe spawn, revoked admission and speedhack direction"},
+            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement", "exitCode": 0, "result": "Two rendered Linux players passed OS input login, W walk, Rust-only capsule reconciliation, terminal E, committed versions 1/2, reconnect and scene cleanup, with Rust SIGKILL between players; exactly two durable game receipts"},
+            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "4 EditMode and 2 PlayMode tests passed; isolated worktree Library import"},
+            {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "112 passed"},
+            {"command": "node scripts/verify-ci.mjs; node scripts/verify-architecture.mjs", "exitCode": 0, "result": "CI coverage contract and architecture boundaries passed"}
+          ],
+          "evidence": "artifacts/desktop-first/vl022/interop-aefdd6da/facts.json; interop-0178e8f1/{facts.json,unity-1.xml,unity-2.xml,unity-1.png,unity-2.png}; artifacts/unity/2026-11-13T16-18-43-399Z-590d3f8e/result.json",
+          "rendering": "Unity 6000.3.14f1 LinuxPlayer, AMD Renoir OpenGLCore on CachyOS; screenshot inspected; player executable SHA256 26901901cc6dd63212d741b339897f072d34cb7b3f08419fe451fc8e77c79a1f",
+          "ociVerification": {"sourceRevision": "60d201d385b177eabf5603589d119b82df9fdf4f", "command": "docker build -f apps/game-runtime/Dockerfile -t vl-runtime-g2-local .; python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-g2-local", "exitCode": 0, "result": "Canonical collision manifest included; nonroot/read-only; liveness 200, default-off readiness 503, native route 404, activation denied and graceful exit 0"},
+          "limitations": "Automated OS input, not physical owner or Windows qualification. A reboot interrupted the first source-bound Unity attempt and left no completed NUnit result; no pass was inferred. A later 15s route timeout was corrected to a bounded 60s acknowledged walk without changing position/receipt assertions. Hosted Quality/Rust at final PR HEAD remain required before merge."
+        }
       }
     },
     {
