@@ -1310,9 +1310,103 @@
       "qualificationRequirements": [],
       "implementation": {
         "source": "crates/vl-world/src/collision.rs; crates/vl-world/src/movement.rs; crates/vl-gateway/src/durable.rs; apps/unity-client/Assets/VirtualLife/Features/NativeScene",
-        "scope": "Default-off Aurora movement through the existing single Rust zone writer, exported collision manifest, current Nest policy locks, own-only snapshots and main-thread Unity reconciliation",
-        "remainingAcceptance": "Authoritative interaction proximity and policy-filtered AOI remain. Reconnect retains a bounded actor registry within one runtime; durable movement checkpoints, registry eviction and client prediction are not implemented. Runtime restart rejects old epochs and returns to safe manifest spawn. Injected application delay evidence is not physical network latency or Windows qualification.",
+        "scope": "Default-off Aurora movement through the existing single Rust zone writer, exported collision/interaction manifest, current Nest policy locks, own-only snapshots, authoritative synthetic terminal proximity and main-thread Unity reconciliation",
+        "remainingAcceptance": "Policy-filtered AOI remains. Reconnect retains a bounded actor registry within one runtime; durable movement checkpoints, registry eviction and client prediction are not implemented. Runtime restart rejects old epochs and returns to safe manifest spawn. Injected application delay evidence is not physical network latency or Windows qualification.",
         "reviewMode": "SINGLE_AGENT_AUDIT",
+        "proximityVerification": {
+          "sourceRevision": "c02e9f9fa7d3ab343ff37e11fbfb81fb0dbe1ebd",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "scope": "Canonical exported terminal collider center and Unity interaction radius; same-account movement/game gate held through durable execution; current policy and membership checked before authenticated dedupe; proximity applies only to new synthetic effects, not views or Pet Arena combat",
+          "commands": [
+            {
+              "command": "cargo fmt --all -- --check",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo test --workspace --locked",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+              "exitCode": 0
+            },
+            {
+              "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --movement",
+              "exitCode": 0,
+              "result": "13 real-process WSS/restricted TLS PostgreSQL scenarios PASS; remote denial creates no receipt, DB-blocked command gates second same-account socket, far reconnect replays original receipt without new effect, restart safe spawn denies new effects while restoring own view and immutable receipt"
+            },
+            {
+              "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena",
+              "exitCode": 0,
+              "result": "30 PASS; full winning match, restart/recovery negatives and exactly-once platform reward reconciliation"
+            },
+            {
+              "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena-loss",
+              "exitCode": 0,
+              "result": "30 PASS; losing match and recovery/settlement regressions"
+            },
+            {
+              "command": "PATH=<local SDK 8.0.428>:$PATH node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
+              "exitCode": 0,
+              "result": "22 real C#/Nest/Rust process scenarios PASS"
+            },
+            {
+              "command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs",
+              "exitCode": 0,
+              "result": "44 assertions, both targets and 15 authored syntax files PASS"
+            },
+            {
+              "command": "node --test tests/governance/*.test.mjs",
+              "exitCode": 0,
+              "result": "112 PASS"
+            },
+            {
+              "command": "node scripts/verify-ci.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "node scripts/verify-architecture.mjs",
+              "exitCode": 0
+            }
+          ],
+          "evidence": "artifacts/g2-movement/artifacts/desktop-first/vl022/interop-521a7b3c/facts.json; interop-d4a57bfc; interop-16298492; interop-4cfc4f02; artifacts/g2-proximity-*.log",
+          "playerVerification": {
+            "sourceRevision": "71f9229f3fcaf34e9e050b93161c37a856b6b107",
+            "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement",
+            "exitCode": 0,
+            "result": "Two actual rendered Linux players PASS with XTest wrong/correct login, Rust-owned W movement, terminal E, committed versions 1/2, resync and scene re-entry; Rust SIGKILL between players, exactly two receipts; project parse-error guard passed and screenshots inspected",
+            "evidence": "artifacts/g2-movement/artifacts/desktop-first/vl022/interop-26cce774/{facts.json,unity-1.xml,unity-2.xml,unity-1.png,unity-2.png}",
+            "graphics": "6000.3.14f1 LinuxPlayer; AMD Renoir OpenGLCore; CachyOS",
+            "hashes": {
+              "playerEngine": "26901901cc6dd63212d741b339897f072d34cb7b3f08419fe451fc8e77c79a1f",
+              "nativeManaged": "9d761aa41e10381e6e16c4356cd51142aedd3755fac0a5672786d5654f9ab186",
+              "nativeSceneManaged": "06561486fe167c64d770bff2903f8f288ac32bc25dd03599dbd0da44ddb011aa",
+              "blockoutManaged": "efda7a9b3fc59534ce8123aeeaf88421ddbf1e0821cebc7c37e47e90714c3d9e"
+            }
+          },
+          "combinedSessionVerification": {
+            "sourceRevision": "d5dd9c3a661ac3521fd6c4f3496b4aa2236cda7b",
+            "reviewMode": "SINGLE_AGENT_AUDIT",
+            "commands": [
+              {"command": "DOTNET=<local SDK 8.0.428> node scripts/native-csharp.mjs", "exitCode": 0, "result": "61 assertions, both target builds and 15 syntax files PASS"},
+              {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement", "exitCode": 0, "result": "Two rendered Linux players PASS: Rust movement, authoritative terminal E, committed versions 1/2, resync, logout during held HTTP ticket, credential/state clearing and scene re-entry. Rust SIGKILL between players; exactly two durable receipts, two platform logouts and two unused tickets rejected by Rust before expiry. Both project parse guards passed."}
+            ],
+            "evidence": "artifacts/g2-movement/artifacts/desktop-first/vl022/interop-d925da02/{facts.json,unity-1.xml,unity-2.xml,unity-1.png,unity-2.png,unity-2.png.logout.png}; logout screenshot inspected",
+            "nativeManagedSha256": "796d60ea22ba6b9995177a804ab5d537d7ce015ffd4fbc0dd72758813f29d02b",
+            "nativeSceneManagedSha256": "77c1bc8096e0cd3ea41991e6066ca145b0065af8f05d97fc9538ec0a0df96cd6"
+          },
+          "localRegression": {
+            "sourceRevision": "c02e9f9fa7d3ab343ff37e11fbfb81fb0dbe1ebd",
+            "completedRevision": "d5dd9c3a661ac3521fd6c4f3496b4aa2236cda7b",
+            "sourceStable": false,
+            "command": "pnpm check",
+            "exitCode": 0,
+            "result": "112 governance, 497 unit, 783 integration tests and all workspace builds PASS",
+            "limitations": "Run overlapped the Unity-only serialization fix, backlog formatting and integration of the separately tested logout source. This is a local regression result, not exact-final-head proof; hosted Quality/Rust on the committed PR head remain required.",
+            "evidence": "artifacts/g2-movement/artifacts/g2-proximity-full-check.log"
+          },
+          "limitations": "Automated OS input, not physical owner or Windows qualification. Earlier two-socket attempts failed because fixture allocation correctly revoked the old generation; the passing test reuses the same live admission. Source c02e9f9 rendered runs passed NUnit but retained a pre-existing TagManager parse error; 71f9229 fixes it and rejects parse-error logs. No protocol/schema change or production activation. Hosted exact-final-head CI required before merge."
+        },
         "linuxVerification": {
           "sourceRevision": "0e058f5ed71db06e4d5dacdb94a09cc5fd5c17f4",
           "commands": [
@@ -2688,6 +2782,15 @@
         "urp": "17.3.0",
         "validation": "node scripts/unity-validate.mjs tests",
         "remainingAcceptance": "Windows player build CI artifact and physical Windows acceptance; Linux Editor/player proof does not verify this Windows task",
+        "importSerializationVerification": {
+          "sourceRevision": "71f9229f3fcaf34e9e050b93161c37a856b6b107",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests",
+          "exitCode": 0,
+          "result": "4 EditMode and 2 PlayMode tests PASS; Prepare/EditMode/PlayMode logs contain no project asset parse failure. Explicit empty layer strings fix TagManager serialization; both batch and rendered-player runners now reject project parse errors even with Editor exit code 0.",
+          "evidence": "artifacts/g2-movement/artifacts/unity/2026-11-13T18-08-00-227Z-9799be19/result.json; rendered interop-26cce774",
+          "qualification": "Linux only. Windows build artifact and physical hardware acceptance remain IN_PROGRESS."
+        },
         "linuxEditorVerification": {
           "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073",
           "reviewMode": "SINGLE_AGENT_AUDIT",

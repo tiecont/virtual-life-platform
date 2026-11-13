@@ -30,6 +30,7 @@ const transport={
    snapshot:snapshot?{epoch:snapshot.authorityEpoch.toString(),tick:snapshot.tick.toString(),own:snapshot.ownActor,keys:Object.keys(snapshot)}:undefined};
  },
  async closed(index:number){await until(()=>links[index].closed);return links[index].messages.length===0;},
+ pending(index:number){return {messages:links[index].messages.length,closed:links[index].closed};},
  oversize(index:number){links[index].socket.send(new Uint8Array(65537));},
  text(index:number){links[index].socket.send('untrusted text');},
  close(index:number){links[index].socket.close();},

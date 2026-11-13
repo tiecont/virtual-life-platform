@@ -200,8 +200,8 @@ try{
  if(movement&&!interactive){
   await store.allocate(credential,scope);
   const {movementScenarios}=await import('./native-movement-scenarios.mjs');
-  await movementScenarios({call,store,credential,scope,csrf:guest.me.csrfToken,origin,record,facts,restart:async()=>{child.kill('SIGKILL');await childClosed;child=undefined;await startHost();}});
-  assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,0);
+  await movementScenarios({call,store,credential,scope,csrf:guest.me.csrfToken,origin,record,facts,matchId,pool,admin,role,restart:async()=>{child.kill('SIGKILL');await childClosed;child=undefined;await startHost();}});
+  assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,2);
  }else{
  let unityProbeIndex=0;
  async function probeUnity(){

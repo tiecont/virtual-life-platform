@@ -2,10 +2,10 @@ import assert from 'node:assert/strict';
 import {setTimeout as delay} from 'node:timers/promises';
 import {performance} from 'node:perf_hooks';
 
-export async function movementScenarios({call,store,credential,scope,csrf,origin,record,facts,restart}){
+export async function movementScenarios({call,store,credential,scope,csrf,origin,record,facts,restart,matchId,pool,admin,role}){
  let link,transportSequence,nextId,snapshot;
- async function connect(){
-  await store.allocate(credential,scope);
+ async function connect(allocate=true){
+  if(allocate)await store.allocate(credential,scope);
   const ticket=await call('ticket',csrf);assert.equal(ticket.status,200);
   link=await call('open',origin.replace('https:','wss:')+'/rt/v1');transportSequence=1;nextId=1;
   await call('send',link,nextId,transportSequence,'hello',{ticket:ticket.body.ticket,clientBuild:'movement-fixture-v1',contentHash:Array.from(Buffer.from(scope.contentHash,'hex'))});
@@ -20,7 +20,16 @@ export async function movementScenarios({call,store,credential,scope,csrf,origin
   if(result.kind==='snapshot')snapshot=result.snapshot;
   return {result,id,seq,value,elapsedMs:performance.now()-started};
  }
+ const intent=(version,kind='fixture.advance.v1')=>({gameSessionId:Array.from(Buffer.from(matchId.replaceAll('-',''),'hex')),expectedStateVersion:String(version),kind,actionPayload:kind==='fixture.view.v1'?[]:Array.from(Buffer.from(JSON.stringify({epoch:1})))});
+ async function game(version,kind='fixture.advance.v1',id=++nextId){
+  await call('send',link,id,++transportSequence,'gameIntent',intent(version,kind));
+  return call('next',link);
+ }
  await connect();assert.equal(snapshot.own.xMm,0);assert.equal(snapshot.own.zMm,-4000);
+ assert.equal((await game(0)).code,6);
+ const remoteView=await game(0,'fixture.view.v1');assert.equal(remoteView.kind,'receipt');assert.equal(remoteView.version,'0');assert.equal(remoteView.receipt.committed,false);
+ assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,0);
+ record('terminal-remote-command-denied-without-receipt-while-authorized-view-remains-readable');
  const first=await move();assert.equal(first.result.kind,'snapshot');assert.equal(snapshot.own.zMm,-3980);
  await call('send',link,first.id,first.seq,'moveIntent',first.value);
  assert.equal((await call('next',link)).hex,first.result.hex);
@@ -50,11 +59,48 @@ export async function movementScenarios({call,store,credential,scope,csrf,origin
  }
  assert(snapshot.own.zMm<=2020);assert(snapshot.own.zMm>=2019);
  record('movement-runtime-cannot-pass-through-terminal-capsule-margin');
+ // A second socket for this account must wait behind the command's spatial gate.
+ const saved={link,transportSequence,nextId,snapshot};await connect(false);
+ const peer=link,peerSnapshot=snapshot;
+ ({link,transportSequence,nextId,snapshot}=saved);
+ const blocker=await pool.connect();let committed;
+ try{
+  await blocker.query('BEGIN');await blocker.query('SELECT id FROM game_native_matches WHERE id=$1 FOR UPDATE',[matchId]);
+  await call('send',link,230,++transportSequence,'gameIntent',intent(0));
+  let waiting=false;
+  for(let attempt=0;attempt<50;attempt++){
+   waiting=(await admin.query("SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE usename=$1 AND wait_event_type='Lock' AND query LIKE '%game_native_matches%') AS waiting",[role])).rows[0].waiting;
+   if(waiting)break;await delay(10);
+  }
+  assert(waiting,'Actual command must reach the locked durable match');
+  await call('send',peer,2,2,'moveIntent',{...input({directionZ:-1000}),expectedTick:peerSnapshot.tick});
+  await delay(100);assert.deepEqual(await call('pending',peer),{messages:0,closed:false});
+  await blocker.query('COMMIT');
+  committed=await call('next',link);assert.equal(committed.kind,'receipt');assert.equal(committed.version,'1');
+  const moved=await call('next',peer);assert.equal(moved.kind,'snapshot');snapshot=moved.snapshot;
+ }finally{await blocker.query('ROLLBACK');blocker.release();await call('close',peer);}
+ record('terminal-commit-holds-same-account-movement-gate-across-two-wss-sockets');
+ // Moving outside the radius cannot invalidate an already committed immutable ID.
+ for(let step=0;step<35;step++)assert.equal((await move(input({directionZ:-1000}))).result.kind,'snapshot');
+ assert(snapshot.own.zMm<500);
+ await call('close',link);await connect();
+ const replay=await game(0,'fixture.advance.v1',230);assert.deepEqual(replay.receipt,committed.receipt);assert.equal(replay.version,'1');
+ assert.equal((await game(1)).code,6);
+ assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,1);
+ record('terminal-far-reconnect-replays-authenticated-receipt-without-new-effect');
+ for(let step=0;snapshot.own.zMm<1000&&step<70;step++)assert.equal((await move()).result.kind,'snapshot');
+ assert(snapshot.own.zMm>=1000);
+ const second=await game(1);assert.equal(second.kind,'receipt');assert.equal(second.version,'2');
  const position={x:snapshot.own.xMm,z:snapshot.own.zMm},epoch=snapshot.epoch;
  await call('close',link);await connect();assert.equal(snapshot.epoch,epoch);
  assert.deepEqual({x:snapshot.own.xMm,z:snapshot.own.zMm},position);
  record('movement-reconnect-retains-one-zone-actor-and-reconciles-own-position');
  await restart();await connect();assert.notEqual(snapshot.epoch,epoch);assert.equal(snapshot.own.zMm,-4000);
+ const recovered=await game(0,'fixture.advance.v1',230);assert.equal(recovered.version,'1');assert.deepEqual(recovered.receipt,committed.receipt);
+ assert.equal((await game(2)).code,6);
+ const restoredView=await game(0,'fixture.view.v1');assert.equal(restoredView.version,'2');assert.deepEqual(restoredView.receipt.projection,second.receipt.projection);
+ assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,2);
+ record('terminal-restart-safe-spawn-denies-new-effects-but-recovers-private-view-and-original-receipt');
  assert.equal((await move(input({authorityEpoch:epoch}))).result.code,5);
  record('movement-runtime-restart-issues-new-incarnation-and-safe-spawn-old-epoch-rejected');
  await store.release(credential);await call('send',link,++nextId,++transportSequence,'moveIntent',input());
