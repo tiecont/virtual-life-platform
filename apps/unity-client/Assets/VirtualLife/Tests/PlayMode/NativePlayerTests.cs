@@ -15,6 +15,7 @@ using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using VirtualLife.Networking;
+using VirtualLife.NativeScene;
 
 namespace VirtualLife.Blockout.Tests
 {
@@ -23,6 +24,75 @@ namespace VirtualLife.Blockout.Tests
     public sealed class NativePlayerTests
     {
         private string stage = "input";
+
+        [UnityTest]
+        [Category("NativePlayerFixture")]
+        public IEnumerator LinuxPlayerPanelKeyboardAndTerminal()
+        {
+            var file = Environment.GetEnvironmentVariable("VL_UNITY_NATIVE_FIXTURE");
+            if (string.IsNullOrEmpty(file)) Assert.Ignore("Requires the explicit real-process Unity fixture.");
+            Assert.That(Application.platform, Is.EqualTo(RuntimePlatform.LinuxPlayer));
+            Assert.That(SystemInfo.graphicsDeviceType, Is.Not.EqualTo(GraphicsDeviceType.Null));
+            var config = JsonUtility.FromJson<Fixture>(File.ReadAllText(file));
+            using var trust = new FixtureTrust(config.caCertificate);
+            yield return SceneManager.LoadSceneAsync("AuroraBlockout");
+            yield return new WaitForSecondsRealtime(0.5f);
+            var panel = UnityEngine.Object.FindFirstObjectByType<NativeSceneController>();
+            var district = UnityEngine.Object.FindFirstObjectByType<OfflineDistrict>();
+            Assert.That(panel, Is.Not.Null, "External development scope must activate the real scene controller");
+            Assert.That(Screen.width, Is.GreaterThanOrEqualTo(650));
+            Assert.That(Screen.height, Is.GreaterThanOrEqualTo(390));
+            using var input = new LinuxInput();
+            yield return input.Click(160, 188); yield return input.Type(config.loginName);
+            Assert.That(Entered(panel, "loginName", config.loginName), Is.True, "OS keyboard account entry must match disposable input");
+            yield return input.Click(440, 188); yield return input.Type(new string('a', 48));
+            yield return input.Click(90, 225);
+            yield return Until(() => !panel.Busy && panel.Status.Contains("Authentication"), () => "wrong-login: " + panel.Status);
+            Assert.That(panel.Ready, Is.False);
+            yield return input.Click(440, 188); yield return input.Type(config.password);
+            Assert.That(Entered(panel, "password", config.password), Is.True, "OS keyboard password entry must match disposable input");
+            yield return input.Click(90, 225);
+            yield return Until(() => panel.Ready, () => "login: " + panel.Status);
+            var initial = panel.PresentedState.Version;
+            Assert.That(initial, Is.LessThan(3));
+            input.Key("w", true);
+            yield return Until(() => district.Player.transform.position.z >= 1.0f, () => "walk: " + district.Player.transform.position.z + "/captured=" + district.InputCaptured);
+            input.Key("w", false); yield return null;
+            Assert.That(district.RehearsalTurns, Is.Zero);
+            input.Key("e", true); yield return new WaitForSecondsRealtime(0.08f); input.Key("e", false);
+            yield return Until(() => panel.Ready && panel.PresentedState.Version == initial + 1, () => "terminal: " + panel.Status);
+            Assert.That(panel.PresentedState.Turns, Is.EqualTo((int)initial + 1));
+            Assert.That(district.RehearsalTurns, Is.Zero, "Only a committed server receipt can advance native gameplay");
+            yield return input.Click(260, 225);
+            yield return Until(() => panel.Ready && !panel.Busy);
+            Assert.That(panel.PresentedState.Version, Is.EqualTo(initial + 1));
+            yield return new WaitForEndOfFrame();
+            ScreenCapture.CaptureScreenshot(config.screenshot);
+            yield return Until(() => File.Exists(config.screenshot));
+            yield return input.Click(260, 262);
+            yield return null;
+            Assert.That(panel.Ready, Is.False); Assert.That(panel.PresentedState, Is.Null);
+            // Re-entering the scene must create a fresh scoped controller, with no old state.
+            yield return SceneManager.LoadSceneAsync("AuroraBlockout");
+            yield return null;
+            var reentered = UnityEngine.Object.FindFirstObjectByType<NativeSceneController>();
+            Assert.That(reentered, Is.Not.Null); Assert.That(reentered.Ready, Is.False);
+            Assert.That(reentered.PresentedState, Is.Null);
+            File.WriteAllText(config.result, JsonUtility.ToJson(new Facts {
+                editor = Application.unityVersion, platform = Application.platform.ToString(),
+                graphics = SystemInfo.graphicsDeviceName, graphicsApi = SystemInfo.graphicsDeviceType.ToString(),
+                committedReceipt = true, reconnectReplay = false, wrongCaRejected = false,
+                panelKeyboardTerminal = true, version = initial + 1
+            }));
+        }
+        private static bool Entered(NativeSceneController panel, string field, string expected) =>
+            string.Equals((string)typeof(NativeSceneController).GetField(field, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel), expected, StringComparison.Ordinal);
+        private static IEnumerator Until(Func<bool> condition, Func<string> diagnostic = null)
+        {
+            var end = Time.realtimeSinceStartup + 15;
+            while (!condition() && Time.realtimeSinceStartup < end) yield return null;
+            Assert.That(condition(), Is.True, "Timed out waiting for the rendered player interaction: " + diagnostic?.Invoke());
+        }
 
         [UnityTest]
         [Category("NativePlayerFixture")]
@@ -130,7 +200,7 @@ namespace VirtualLife.Blockout.Tests
         }
         [Serializable] private sealed class Facts {
             public string editor, platform, graphics, graphicsApi;
-            public bool committedReceipt, reconnectReplay, wrongCaRejected;
+            public bool committedReceipt, reconnectReplay, wrongCaRejected, panelKeyboardTerminal;
             public ulong version;
         }
     }
