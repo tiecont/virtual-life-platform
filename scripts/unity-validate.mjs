@@ -4,7 +4,7 @@ import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 
 const action = process.argv[2] ?? 'tests';
-if (!['prepare', 'tests', 'linux', 'windows-mono'].includes(action) || process.argv.length > 3) throw Error('Unknown Unity validation action');
+if (!['prepare', 'tests', 'linux', 'linux-player-tests', 'windows-mono'].includes(action) || process.argv.length > 3) throw Error('Unknown Unity validation action');
 const project = resolve('apps/unity-client');
 const directory = resolve('artifacts/unity', new Date().toISOString().replaceAll(/[:.]/g, '-') + '-' + randomUUID().slice(0, 8));
 await mkdir(directory, {recursive: true});
@@ -44,6 +44,14 @@ try {
         if (!/<test-run\b[^>]*result="Passed"/.test(xml) || !/\bpassed="[1-9]\d*"/.test(xml))
           throw Error('Unity test results contain no passing test run');
       }
+    } else if (action === 'linux-player-tests') {
+      if (process.platform !== 'linux') throw Error('Linux player tests require a Linux workstation');
+      const results = resolve(directory, 'LinuxPlayer.xml');
+      await run(['-runTests', '-testPlatform', 'StandaloneLinux64', '-testFilter', 'VirtualLife.Blockout.Tests.BlockoutTests',
+        '-buildPlayerPath', resolve(directory, 'Player'), '-testResults', results, '-playerHeartbeatTimeout', '120'], 'LinuxPlayer');
+      const xml = await readFile(results, 'utf8');
+      if (!/<test-run\b[^>]*result="Passed"/.test(xml) || !/\bpassed="2"/.test(xml) || !/\bskipped="0"/.test(xml))
+        throw Error('Both actual Linux player blockout tests must pass without skips');
     } else if (action !== 'prepare') {
       const method = action === 'linux' ? 'Linux' : 'WindowsMono';
       await run(['-executeMethod', 'VirtualLife.Editor.ProjectBuild.' + method, '-quit'], action);

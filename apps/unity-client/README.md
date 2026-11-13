@@ -62,6 +62,7 @@ licensed Editor, then run from the repository root.
 node scripts/unity-validate.mjs prepare
 node scripts/unity-validate.mjs tests
 node scripts/unity-validate.mjs linux
+node scripts/unity-validate.mjs linux-player-tests
 ```
 
 The runner writes batch logs and NUnit XML under ignored artifacts/unity/.
@@ -69,6 +70,20 @@ A missing Editor returns exit code 2 with MISSING_OPTIONAL_LOCAL_TOOLING.
 Batch tests exercise rules, spawning, collision-controller movement and
 interaction. Rendering and physical GPU performance require a separate
 interactive player run.
+
+`linux-player-tests` builds and launches a rendered Linux test player. Both
+blockout tests must pass without skips. Routes physically move the capsule
+from spawn to cafe/Arena approaches, check a solid cafe collision and district
+bounds, and require a real graphics device outside the Editor.
+
+The developer primitives and approach anchors are defined once in
+`BlockoutGeometry.cs`. `ProjectBuild.Prepare` exports their stable shape GUIDs,
+resolved Unity source/material GUIDs, source hash and integer millimeter AABBs
+to `config/aurora-blockout-collision.json`. Commit this maintained configuration
+after geometry edits. The export reserves capsule radius/skin and the allowed
+center bounds for VL-028; it does not enable native movement or add an authority.
+These approach anchors are temporary walk targets, not a baked production
+navigation mesh or seated animation acceptance.
 
 The Linux Mono player also needs the serializer section supplied by
 `Editor/MonoConfiguration.cs`; Unity does not ship the usual machine.config

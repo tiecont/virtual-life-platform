@@ -1215,7 +1215,26 @@
         "geometry GUID manifest and server simplified collision exported",
         "walk path from spawn to caf\u00e9 and Arena reachable"
       ],
-      "status": "TODO",
+      "status": "VERIFIED",
+      "verification": {
+        "sourceRevision": "7cff49a09eeb2bd212b0f36812627a02d7baee1f",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "4 EditMode and 2 PlayMode tests passed in Editor 6000.3.14f1"},
+          {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux-player-tests", "exitCode": 0, "result": "2 actual rendered Linux player tests passed, none skipped: spawn, interaction, cafe/Arena approach routes, solid cafe collision, district bounds, camera and URP material"},
+          {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux", "exitCode": 0, "result": "Linux development build passed; all 252 build files hashed in artifacts/linux-player/7cff49a09eeb/build-manifest.json"},
+          {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "112 passed, including collision source hash, asset GUIDs, integer AABBs and capsule anchor clearance"},
+          {"command": "node node_modules/eslint/bin/eslint.js scripts/unity-validate.mjs tests/governance/aurora-collision.test.mjs", "exitCode": 0},
+          {"command": "git diff --check", "exitCode": 0}
+        ]
+      },
+      "implementation": {
+        "geometry": "apps/unity-client/Assets/VirtualLife/Features/Blockout/Domain/BlockoutGeometry.cs",
+        "collisionExport": "config/aurora-blockout-collision.json",
+        "evidence": "artifacts/unity/2026-11-12T16-40-05-513Z-2f62340c/result.json and artifacts/unity/2026-11-12T16-42-15-135Z-bdbed608/result.json",
+        "scope": "32m temporary developer blockout, stable geometry GUIDs and source hash, millimeter AABBs, capsule and approach anchors; rendered CharacterController routes reach cafe and Arena",
+        "remainingQualification": "VL-028 adds authoritative network movement; production baked navmesh, seated animation, final art and Windows certification are separate. Native movement remains default-off."
+      },
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-023"
@@ -1267,8 +1286,8 @@
         "VL-105"
       ],
       "acceptance": [
-        "desktop browser usable on real machine",
-        "web-lite fallback and measured size/GPU budget"
+        "Compiled Unity Windows native player usable on a physical qualification machine",
+        "Native district asset streaming/LOD and measured size/GPU budget; optional portal web-lite fallback remains separately qualified"
       ],
       "status": "TODO",
       "qualificationRequirements": []
@@ -1395,7 +1414,7 @@
         "VL-088"
       ],
       "acceptance": [
-        "world run reproducible browser demo and privacy projection",
+        "Reproducible compiled Unity Windows player run on physical qualification hardware with authorized privacy projection; browser evidence does not substitute native execution",
         "source-bound performance report and art signoff"
       ],
       "status": "TODO",
@@ -1644,8 +1663,8 @@
         "VL-091"
       ],
       "acceptance": [
-        "real browser completes match and resumes same authorized world",
-        "reduced motion and web-lite gameplay"
+        "Real Unity native player completes a Rust-authoritative match and resumes the same authorized world; platform-specific player evidence is recorded",
+        "Reduced motion works in the native player; web-lite gameplay remains separately qualified"
       ],
       "status": "TODO",
       "qualificationRequirements": []
@@ -2013,7 +2032,7 @@
         "VL-087"
       ],
       "acceptance": [
-        "browser device quality auto detected/overridable",
+        "Native player GPU/device quality is automatically detected and manually overridable; optional browser fallback is separately qualified",
         "no black screen on unsupported GPUs"
       ],
       "status": "TODO",
