@@ -83,7 +83,30 @@ try{
  const logoutGate=resolve(directory,'logout-gate'),logoutObserved=resolve(directory,'logout-observed');
  const ackGate=resolve(directory,'ack-gate'),ackObserved=resolve(directory,'ack-observed');
  const sceneGate=resolve(directory,'scene-gate'),sceneObserved=resolve(directory,'scene-observed'),sceneReleased=resolve(directory,'scene-released');
+ const ticketFault=resolve(directory,'ticket-fault');
  async function exists(file){try{await access(file);return true;}catch(error){if(error.code==='ENOENT')return false;throw error;}}
+ if(interactive)http.addHook('onSend',async(request,reply,payload)=>{
+  if(request.url!=='/v1/runtime-ticket'||reply.statusCode!==200||!await exists(ticketFault))return payload;
+  const fault=await readFile(ticketFault,'utf8');
+  assert(['invalid-signature','expired','protocol'].includes(fault));
+  const body=JSON.parse(payload),[header,encoded,signature]=body.ticket.split('.');
+  if(fault==='invalid-signature'){
+   const bytes=Buffer.from(signature,'base64url');bytes[0]^=1;
+   body.ticket=header+'.'+encoded+'.'+bytes.toString('base64url');
+  }else{
+   const claims=JSON.parse(Buffer.from(encoded,'base64url'));
+   if(fault==='expired'){
+    const now=Math.floor(Date.now()/1000);claims.iat=now-10;claims.nbf=now-10;claims.exp=now-1;
+   }else claims.protocol=2;
+   const input=header+'.'+Buffer.from(JSON.stringify(claims)).toString('base64url');
+   body.ticket=input+'.'+sign(null,Buffer.from(input),keys.privateKey).toString('base64url');
+  }
+  // The response envelope remains fresh, forcing the real Rust verifier to
+  // reject the signed expired claim instead of the client's local TTL check.
+  body.expiresAt=new Date(Date.now()+20000).toISOString();
+  (facts.panelTicketFaults??=[]).push(fault);
+  return JSON.stringify(body);
+ });
  // The isolated client fixture allocates only authenticated, CSRF-checked sessions
  // to the harness-owned scope. This hook is never part of the production API.
  http.addHook('preHandler',async req=>{
@@ -283,10 +306,12 @@ try{
   assert.equal(logoutProofs.length,2);await logoutProofs[1];
   assert.equal(facts.unityHttp.filter(value=>value.path==='/v1/session/logout'&&value.status===200).length,2);
   assert.equal(facts.sceneExitRequests,2);
+  for(const fault of ['invalid-signature','expired','protocol'])assert.equal(facts.panelTicketFaults.filter(value=>value===fault).length,2);
   assert(facts.unityHttp.some(value=>value.path==='/v1/session/login'&&value.status===401));
   record('rendered-panel-after-sigkill-recovers-and-commits-next-turn');
   record('rendered-panel-durable-ack-loss-retains-command-reconnect-retry-without-duplicate-effect');
   record('rendered-scene-teardown-during-held-ticket-drains-session-without-late-state-restore');
+  record('rendered-panel-rejects-wrong-ca-boot-content-invalid-expired-and-protocol-ticket');
   record('rendered-logout-revokes-identity-and-rejects-unexpired-unused-runtime-ticket');
  }else{
  if(unity){

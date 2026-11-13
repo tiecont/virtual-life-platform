@@ -44,6 +44,39 @@ namespace VirtualLife.Blockout.Tests
             Assert.That(Screen.width, Is.GreaterThanOrEqualTo(650));
             Assert.That(Screen.height, Is.GreaterThanOrEqualTo(390));
             using var input = new LinuxInput();
+            var scopeFile = Environment.GetEnvironmentVariable("VL_NATIVE_DEV_CONFIG");
+            var originalScope = File.ReadAllText(scopeFile);
+            var negatives = new[] { "wrong-ca", "wrong-boot", "wrong-content", "invalid-signature", "expired", "protocol" };
+            try {
+                foreach (var negative in negatives) {
+                    var badScope = JsonUtility.FromJson<PanelScope>(originalScope);
+                    if (negative == "wrong-boot") badScope.bootId = Guid.NewGuid().ToString();
+                    if (negative == "wrong-content") badScope.contentHash = new string('6', 64);
+                    File.WriteAllText(scopeFile, JsonUtility.ToJson(badScope));
+                    if (negative == "invalid-signature" || negative == "expired" || negative == "protocol") File.WriteAllText(config.ticketFault, negative);
+                    using (var wrongTrust = negative == "wrong-ca" ? new FixtureTrust(config.wrongCaCertificate) : null) {
+                        yield return SceneManager.LoadSceneAsync("AuroraBlockout");
+                        yield return null;
+                        panel = UnityEngine.Object.FindFirstObjectByType<NativeSceneController>();
+                        yield return input.Click(160, 188); yield return input.Type(config.loginName);
+                        yield return input.Click(440, 188); yield return input.Type(config.password);
+                        yield return input.Click(90, 225);
+                        yield return Until(() => !panel.Busy && panel.Status.StartsWith("Native "), () => negative + ": " + panel.Status);
+                        Assert.That(panel.Ready, Is.False, negative);
+                        Assert.That(panel.PresentedState, Is.Null, negative);
+                        Assert.That(panel.HasPendingCommand, Is.False, negative);
+                        Assert.That(Entered(panel, "password", ""), Is.True, negative);
+                        yield return new WaitForEndOfFrame();
+                        ScreenCapture.CaptureScreenshot(config.screenshot + "." + negative + ".png");
+                        yield return Until(() => File.Exists(config.screenshot + "." + negative + ".png"));
+                    }
+                    File.Delete(config.ticketFault);
+                }
+            } finally { File.WriteAllText(scopeFile, originalScope); File.Delete(config.ticketFault); }
+            yield return SceneManager.LoadSceneAsync("AuroraBlockout");
+            yield return null;
+            panel = UnityEngine.Object.FindFirstObjectByType<NativeSceneController>();
+            district = UnityEngine.Object.FindFirstObjectByType<OfflineDistrict>();
             yield return new WaitForEndOfFrame();
             ScreenCapture.CaptureScreenshot(config.screenshot + ".initial.png");
             yield return input.Click(160, 188);
@@ -172,7 +205,7 @@ namespace VirtualLife.Blockout.Tests
                 editor = Application.unityVersion, platform = Application.platform.ToString(),
                 graphics = SystemInfo.graphicsDeviceName, graphicsApi = SystemInfo.graphicsDeviceType.ToString(),
                 committedReceipt = true, reconnectReplay = false, wrongCaRejected = false,
-                panelKeyboardTerminal = true, ambiguousAckRetry = true, inflightSceneExit = true, retriedCommandId = retriedCommandId,
+                panelKeyboardTerminal = true, ambiguousAckRetry = true, inflightSceneExit = true, panelAdmissionErrors = negatives.Length, retriedCommandId = retriedCommandId,
                 authoritativeMovement = config.movement, version = initial + 1
             }));
         }
@@ -302,10 +335,16 @@ namespace VirtualLife.Blockout.Tests
             public bool movement;
             public string origin = "", caCertificate = "", wrongCaCertificate = "", boot = "", match = "", loginName = "", password = "", screenshot = "", result = "", logoutGate = "", logoutObserved = "", ackGate = "", ackObserved = "";
             public string sceneGate = "", sceneObserved = "", sceneReleased = "";
+            public string ticketFault = "";
+        }
+        [Serializable] private sealed class PanelScope {
+            public string httpsOrigin, wssOrigin, contentHash, bootId, matchId;
+            public bool movement;
         }
         [Serializable] private sealed class Facts {
             public string editor, platform, graphics, graphicsApi, retriedCommandId;
             public bool committedReceipt, reconnectReplay, wrongCaRejected, panelKeyboardTerminal, authoritativeMovement, ambiguousAckRetry, inflightSceneExit;
+            public int panelAdmissionErrors;
             public ulong version;
         }
     }
