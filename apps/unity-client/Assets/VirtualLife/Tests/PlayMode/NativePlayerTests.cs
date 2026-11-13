@@ -44,6 +44,40 @@ namespace VirtualLife.Blockout.Tests
             Assert.That(Screen.width, Is.GreaterThanOrEqualTo(650));
             Assert.That(Screen.height, Is.GreaterThanOrEqualTo(390));
             using var input = new LinuxInput();
+            var scopeFile = Environment.GetEnvironmentVariable("VL_NATIVE_DEV_CONFIG");
+            var originalScope = File.ReadAllText(scopeFile);
+            var negatives = new[] { "wrong-ca", "wrong-boot", "wrong-content", "invalid-signature", "expired", "protocol" };
+            try {
+                foreach (var negative in negatives) {
+                    var badScope = JsonUtility.FromJson<PanelScope>(originalScope);
+                    if (negative == "wrong-boot") badScope.bootId = Guid.NewGuid().ToString();
+                    if (negative == "wrong-content") badScope.contentHash = new string('6', 64);
+                    File.WriteAllText(scopeFile, JsonUtility.ToJson(badScope));
+                    if (negative == "invalid-signature" || negative == "expired" || negative == "protocol") File.WriteAllText(config.ticketFault, negative);
+                    using (var wrongTrust = negative == "wrong-ca" ? new FixtureTrust(config.wrongCaCertificate) : null) {
+                        yield return SceneManager.LoadSceneAsync("AuroraBlockout");
+                        yield return null;
+                        panel = UnityEngine.Object.FindFirstObjectByType<NativeSceneController>();
+                        yield return input.Click(160, 188); yield return input.Type(config.loginName);
+                        yield return input.Click(440, 188); yield return input.Type(config.password);
+                        yield return LoginClick(input, config.loginPace);
+                        yield return Until(() => !panel.Busy && panel.Status.StartsWith("Native "), () => negative + ": " + panel.Status);
+                        Assert.That(panel.Ready, Is.False, negative);
+                        Assert.That(panel.PresentedState, Is.Null, negative);
+                        Assert.That(panel.HasPendingCommand, Is.False, negative);
+                        Assert.That(panel.Status, Does.StartWith(negative == "wrong-boot" ? "Native failure: Scope" : "Native failure: Transport"), "Each negative must reach its intended failure boundary: " + negative);
+                        Assert.That(Entered(panel, "password", ""), Is.True, negative);
+                        yield return new WaitForEndOfFrame();
+                        ScreenCapture.CaptureScreenshot(config.screenshot + "." + negative + ".png");
+                        yield return Until(() => File.Exists(config.screenshot + "." + negative + ".png"));
+                    }
+                    File.Delete(config.ticketFault);
+                }
+            } finally { File.WriteAllText(scopeFile, originalScope); File.Delete(config.ticketFault); }
+            yield return SceneManager.LoadSceneAsync("AuroraBlockout");
+            yield return null;
+            panel = UnityEngine.Object.FindFirstObjectByType<NativeSceneController>();
+            district = UnityEngine.Object.FindFirstObjectByType<OfflineDistrict>();
             yield return new WaitForEndOfFrame();
             ScreenCapture.CaptureScreenshot(config.screenshot + ".initial.png");
             yield return input.Click(160, 188);
@@ -51,14 +85,46 @@ namespace VirtualLife.Blockout.Tests
             yield return input.Type(config.loginName);
             Assert.That(Entered(panel, "loginName", config.loginName), Is.True, "OS keyboard account entry must match disposable input; " + InputDiagnostic(panel, config.loginName));
             yield return input.Click(440, 188); yield return input.Type(new string('a', 48));
-            yield return input.Click(90, 225);
+            yield return LoginClick(input, config.loginPace);
             yield return Until(() => !panel.Busy && panel.Status.Contains("Authentication"), () => "wrong-login: " + panel.Status);
             Assert.That(panel.Ready, Is.False);
             yield return input.Click(440, 188); yield return input.Type(config.password);
             Assert.That(Entered(panel, "password", config.password), Is.True, "OS keyboard password entry must match disposable input");
-            yield return input.Click(90, 225);
+            yield return LoginClick(input, config.loginPace);
             yield return Until(() => panel.Ready, () => "login: " + panel.Status);
             var initial = panel.PresentedState.Version;
+            File.Delete(config.sceneObserved); File.Delete(config.sceneReleased);
+            File.WriteAllText(config.sceneGate, "Hold the old scene ticket request");
+            var exitedSession = Session(panel);
+            try {
+                yield return input.Click(260, 225);
+                yield return Until(() => File.Exists(config.sceneObserved), () => "scene ticket barrier: " + panel.Status);
+                Assert.That(panel.Busy, Is.True);
+                yield return SceneManager.LoadSceneAsync("AuroraBlockout");
+                yield return null;
+                Assert.That(panel == null, Is.True, "Scene unload must destroy the connected controller");
+                panel = UnityEngine.Object.FindFirstObjectByType<NativeSceneController>();
+                district = UnityEngine.Object.FindFirstObjectByType<OfflineDistrict>();
+                Assert.That(panel, Is.Not.Null);
+                Assert.That(panel.Ready, Is.False); Assert.That(panel.Busy, Is.False);
+                Assert.That(panel.PresentedState, Is.Null);
+                Assert.That(Entered(panel, "loginName", ""), Is.True);
+                Assert.That(Entered(panel, "password", ""), Is.True);
+                File.Delete(config.sceneGate);
+                yield return Until(() => File.Exists(config.sceneReleased));
+                var operation = (SemaphoreSlim)typeof(SyntheticPlaySession).GetField("operation", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(exitedSession);
+                yield return Until(() => operation.CurrentCount == 1, () => "Old scene operation did not drain");
+                Assert.That(exitedSession.State, Is.Null, "A late response cannot restore a disposed scene session");
+                Assert.That(panel.Ready, Is.False); Assert.That(panel.PresentedState, Is.Null);
+                yield return new WaitForEndOfFrame();
+                ScreenCapture.CaptureScreenshot(config.screenshot + ".scene-exit.png");
+                yield return Until(() => File.Exists(config.screenshot + ".scene-exit.png"));
+            } finally { File.Delete(config.sceneGate); File.Delete(config.sceneObserved); File.Delete(config.sceneReleased); }
+            yield return input.Click(160, 188); yield return input.Type(config.loginName);
+            yield return input.Click(440, 188); yield return input.Type(config.password);
+            yield return LoginClick(input, config.loginPace);
+            yield return Until(() => panel.Ready, () => "new-scene login: " + panel.Status);
+            Assert.That(panel.PresentedState.Version, Is.EqualTo(initial));
             Assert.That(district.NetworkAuthority, Is.EqualTo(config.movement));
             Assert.That(initial, Is.LessThan(3));
             input.Key("w", true);
@@ -75,8 +141,35 @@ namespace VirtualLife.Blockout.Tests
                 Assert.That(district.Player.transform.position, Is.EqualTo(before), "Offline movement cannot override connected authority");
             }
             Assert.That(district.RehearsalTurns, Is.Zero);
-            input.Key("e", true); yield return new WaitForSecondsRealtime(0.08f); input.Key("e", false);
-            yield return Until(() => panel.Ready && panel.PresentedState.Version == initial + 1, () => "terminal: " + panel.Status);
+            File.Delete(config.ackObserved);
+            File.WriteAllText(config.ackGate, (initial + 1).ToString(System.Globalization.CultureInfo.InvariantCulture));
+            string retriedCommandId;
+            try {
+                input.Key("e", true); yield return new WaitForSecondsRealtime(0.08f); input.Key("e", false);
+                yield return Until(() => File.Exists(config.ackObserved), () => "durable ACK barrier: " + panel.Status);
+                yield return Until(() => !panel.Busy, () => "lost ACK: " + panel.Status);
+                Assert.That(panel.Ready, Is.False);
+                Assert.That(panel.HasPendingCommand, Is.True);
+                Assert.That(panel.PresentedState.Version, Is.EqualTo(initial), "An undelivered receipt cannot advance presentation");
+                var original = PendingCommand(panel);
+                Assert.That(original, Is.Not.Null);
+                retriedCommandId = File.ReadAllText(config.ackObserved);
+                var bytes = (System.Collections.Generic.IEnumerable<byte>)typeof(GameCommand).GetField("Id", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(original);
+                Assert.That(string.Concat(bytes.Select(b => b.ToString("x2"))), Is.EqualTo(Guid.Parse(retriedCommandId).ToString("N")), "Retry must retain the committed command ID");
+                yield return new WaitForEndOfFrame();
+                ScreenCapture.CaptureScreenshot(config.screenshot + ".pending.png");
+                yield return Until(() => File.Exists(config.screenshot + ".pending.png"));
+                File.Delete(config.ackGate);
+                yield return input.Click(260, 225);
+                yield return Until(() => panel.Ready && !panel.Busy, () => "pending reconnect: " + panel.Status);
+                Assert.That(panel.PresentedState.Version, Is.EqualTo(initial + 1));
+                Assert.That(panel.HasPendingCommand, Is.True, "Reading committed state cannot acknowledge an ambiguous command");
+                Assert.That(PendingCommand(panel), Is.SameAs(original));
+                yield return input.Click(470, 225);
+                yield return Until(() => panel.Ready && !panel.Busy && !panel.HasPendingCommand, () => "same-ID retry: " + panel.Status);
+                Assert.That(PendingCommand(panel), Is.Null);
+            } finally { File.Delete(config.ackGate); File.Delete(config.ackObserved); }
+            Assert.That(panel.PresentedState.Version, Is.EqualTo(initial + 1));
             Assert.That(panel.PresentedState.Turns, Is.EqualTo((int)initial + 1));
             Assert.That(district.RehearsalTurns, Is.Zero, "Only a committed server receipt can advance native gameplay");
             yield return input.Click(260, 225);
@@ -113,8 +206,19 @@ namespace VirtualLife.Blockout.Tests
                 editor = Application.unityVersion, platform = Application.platform.ToString(),
                 graphics = SystemInfo.graphicsDeviceName, graphicsApi = SystemInfo.graphicsDeviceType.ToString(),
                 committedReceipt = true, reconnectReplay = false, wrongCaRejected = false,
-                panelKeyboardTerminal = true, authoritativeMovement = config.movement, version = initial + 1
+                panelKeyboardTerminal = true, ambiguousAckRetry = true, inflightSceneExit = true, panelAdmissionErrors = negatives.Length, retriedCommandId = retriedCommandId,
+                authoritativeMovement = config.movement, version = initial + 1
             }));
+        }
+        private static SyntheticPlaySession Session(NativeSceneController panel) =>
+            (SyntheticPlaySession)typeof(NativeSceneController).GetField("session", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel);
+        private static GameCommand PendingCommand(NativeSceneController panel) =>
+            (GameCommand)typeof(SyntheticPlaySession).GetField("pending", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(Session(panel));
+        private static IEnumerator LoginClick(LinuxInput input, string pacingFile)
+        {
+            var after = File.Exists(pacingFile) ? long.Parse(File.ReadAllText(pacingFile), System.Globalization.CultureInfo.InvariantCulture) : 0;
+            yield return Until(() => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >= after, () => "Waiting for the real identity rate window", 65);
+            yield return input.Click(90, 225);
         }
         private static bool Entered(NativeSceneController panel, string field, string expected) =>
             string.Equals((string)typeof(NativeSceneController).GetField(field, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel), expected, StringComparison.Ordinal);
@@ -236,11 +340,18 @@ namespace VirtualLife.Blockout.Tests
         private static void Require(bool condition) { if (!condition) throw new InvalidOperationException("Native player invariant failed"); }
         [Serializable] private sealed class Fixture {
             public bool movement;
-            public string origin = "", caCertificate = "", wrongCaCertificate = "", boot = "", match = "", loginName = "", password = "", screenshot = "", result = "", logoutGate = "", logoutObserved = "";
+            public string origin = "", caCertificate = "", wrongCaCertificate = "", boot = "", match = "", loginName = "", password = "", screenshot = "", result = "", logoutGate = "", logoutObserved = "", ackGate = "", ackObserved = "";
+            public string sceneGate = "", sceneObserved = "", sceneReleased = "";
+            public string ticketFault = "", loginPace = "";
+        }
+        [Serializable] private sealed class PanelScope {
+            public string httpsOrigin, wssOrigin, contentHash, bootId, matchId;
+            public bool movement;
         }
         [Serializable] private sealed class Facts {
-            public string editor, platform, graphics, graphicsApi;
-            public bool committedReceipt, reconnectReplay, wrongCaRejected, panelKeyboardTerminal, authoritativeMovement;
+            public string editor, platform, graphics, graphicsApi, retriedCommandId;
+            public bool committedReceipt, reconnectReplay, wrongCaRejected, panelKeyboardTerminal, authoritativeMovement, ambiguousAckRetry, inflightSceneExit;
+            public int panelAdmissionErrors;
             public ulong version;
         }
     }

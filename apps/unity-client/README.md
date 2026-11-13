@@ -116,6 +116,22 @@ process settings. No certificate validation callback accepts arbitrary servers.
 The fixture removes private inputs afterward.
 It does not install a CA into the owner's account or change production TLS.
 
+The `--unity-interactive --movement` variant uses OS keyboard/mouse input for
+login, Rust-owned walking, terminal E, reconnect and retry. Its test-only tunnel
+discards downstream data after E and closes only after PostgreSQL confirms the
+committed receipt. The panel must retain its old presented version and pending
+command, read the committed view on reconnect, then acknowledge the original ID
+through Retry without another effect. Two rendered players repeat this across
+a Rust restart. Before walking, the fixture also unloads the scene while its
+HTTPS ticket request is held. It requires the old operation to drain with no
+late state restoration and empty credentials/state in the new scene, then
+uses OS input to log in again. This retains the held-ticket logout/revocation checks;
+automated OS input does not replace physical owner or Windows qualification.
+Each player also checks wrong CA, boot and content, invalid signature, signed
+expired ticket and wrong protocol admission through the panel before valid login.
+Only the disposable fixture mutates ticket responses. OS logins respect the real
+five/minute identity limiter using wall-clock pacing; allow several minutes.
+
 CachyOS is a local compatibility trial. Unity lists Ubuntu 22.04 and 24.04
 for supported Linux Editor workstations. A supported Ubuntu workstation
 can run the same project and commands. Review license entitlement for the
