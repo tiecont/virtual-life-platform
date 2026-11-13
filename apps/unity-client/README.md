@@ -189,8 +189,10 @@ node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs -
 
 This isolated test player types disposable credentials into the IMGUI panel,
 checks a failed login, connects, holds W to approach the terminal, presses E,
-asserts the presented committed version, resynchronizes and ends the local
-session. A second player repeats the flow after a Rust SIGKILL. XTest events
+asserts the presented committed version, resynchronizes, interrupts a held ticket
+request with Logout and ends the local session. The fixture checks actual session
+revocation and rejects an unused ticket before it expires. A second player
+repeats the flow after a Rust SIGKILL. XTest events
 target only the test process's own window. This is automated OS input evidence;
 physical owner keyboard acceptance and Windows qualification remain separate.
 Ending a local session destroys its in-memory cookies and adapters, cancels
