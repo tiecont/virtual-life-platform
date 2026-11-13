@@ -88,8 +88,8 @@ namespace VirtualLife.Blockout.Tests
                 var original = PendingCommand(panel);
                 Assert.That(original, Is.Not.Null);
                 retriedCommandId = File.ReadAllText(config.ackObserved);
-                var bytes = (Google.Protobuf.ByteString)typeof(GameCommand).GetField("Id", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(original);
-                Assert.That(string.Concat(bytes.ToByteArray().Select(b => b.ToString("x2"))), Is.EqualTo(Guid.Parse(retriedCommandId).ToString("N")), "Retry must retain the committed command ID");
+                var bytes = (System.Collections.Generic.IEnumerable<byte>)typeof(GameCommand).GetField("Id", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(original);
+                Assert.That(string.Concat(bytes.Select(b => b.ToString("x2"))), Is.EqualTo(Guid.Parse(retriedCommandId).ToString("N")), "Retry must retain the committed command ID");
                 yield return new WaitForEndOfFrame();
                 ScreenCapture.CaptureScreenshot(config.screenshot + ".pending.png");
                 yield return Until(() => File.Exists(config.screenshot + ".pending.png"));
