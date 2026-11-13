@@ -3,7 +3,9 @@ import {createRequire} from 'node:module';
 import {generateKeyPairSync,randomBytes,randomUUID,sign} from 'node:crypto';
 import {spawn,spawnSync} from 'node:child_process';
 import {connect} from 'node:net';
+import {existsSync} from 'node:fs';
 import {access,mkdir,readFile,writeFile} from 'node:fs/promises';
+import {Transform} from 'node:stream';
 import {resolve} from 'node:path';
 import {Pool} from 'pg';
 import {chromium} from '@playwright/test';
@@ -39,6 +41,7 @@ let rewardRoleCreated=false,settlementWorker;
 const admin=new Pool({connectionString:address.toString()});let pool,app,browser,child,heartbeat,heartbeatWork=Promise.resolve(),heartbeatError,created=false,roleCreated=false;
 let childClosed=Promise.resolve(),upstream=0,origin,output='',errors='';
 const tunnels=new Set();
+const ackDropProofs=[];
 try{
  await admin.query(`CREATE SCHEMA "${schema}"`);created=true;
  address.searchParams.set('options','-csearch_path='+schema);pool=new Pool({connectionString:address.toString()});await migrate(pool);
@@ -78,6 +81,8 @@ try{
  let allocateForCsharp=false;
  const logoutTickets=[];
  const logoutGate=resolve(directory,'logout-gate'),logoutObserved=resolve(directory,'logout-observed');
+ const ackGate=resolve(directory,'ack-gate'),ackObserved=resolve(directory,'ack-observed');
+ const sceneGate=resolve(directory,'scene-gate'),sceneObserved=resolve(directory,'scene-observed'),sceneReleased=resolve(directory,'scene-released');
  async function exists(file){try{await access(file);return true;}catch(error){if(error.code==='ENOENT')return false;throw error;}}
  // The isolated client fixture allocates only authenticated, CSRF-checked sessions
  // to the harness-owned scope. This hook is never part of the production API.
@@ -88,6 +93,16 @@ try{
   if(allocateForCsharp&&req.url==='/v1/runtime-ticket'){
    const token=readSessionToken(req,config);identity.verifyCsrf(token,req.headers['x-csrf-token']);
    await store.allocate(token,scope);
+   if(interactive&&await exists(sceneGate)){
+    await writeFile(sceneObserved,'Scene request is blocked before ticket issuance',{mode:0o600});
+    const deadline=Date.now()+10000;
+    while(await exists(sceneGate)){
+     assert(Date.now()<deadline,'Rendered scene fixture did not release its ticket barrier');
+     await new Promise(ok=>setTimeout(ok,10));
+    }
+    facts.sceneExitRequests=(facts.sceneExitRequests??0)+1;
+    await writeFile(sceneReleased,'Old scene request resumed after scene teardown',{mode:0o600});
+   }
    if(interactive&&await exists(logoutGate)){
     await writeFile(logoutObserved,'Ticket request is blocked before issuance',{mode:0o600});
     const deadline=Date.now()+10000;
@@ -123,8 +138,34 @@ try{
   if(!upstream||req.url!=='/rt/v1'){socket.destroy();return;}
   const target=connect(upstream,'127.0.0.1');tunnels.add(socket);tunnels.add(target);
   const destroy=()=>{socket.destroy();target.destroy();tunnels.delete(socket);tunnels.delete(target);};
+  let dropping=false;
+  const downstream=new Transform({transform(chunk,_encoding,callback){
+   if(interactive&&existsSync(ackGate)){
+    if(!dropping){
+     dropping=true;
+     // Discard every downstream byte while armed. Close only after SQL proves
+     // a committed receipt, so a timeout alone cannot count as a lost ACK.
+     const proof=(async()=>{
+      const version=await readFile(ackGate,'utf8');assert.match(version,/^[12]$/);
+      const deadline=Date.now()+10000;
+      let receipt;
+      while(!receipt){
+       receipt=(await pool.query('SELECT command_id, committed_version FROM game_native_receipts WHERE match_id=$1 AND committed_version=$2',[matchId,version])).rows[0];
+       if(receipt)break;
+       assert(Date.now()<deadline,'No durable receipt observed before the ACK-drop deadline');
+       await new Promise(ok=>setTimeout(ok,10));
+      }
+      (facts.droppedCommittedAcks??=[]).push(receipt);
+      await writeFile(ackObserved,receipt.command_id,{mode:0o600});
+     })().finally(destroy);
+     ackDropProofs.push(proof);void proof.catch(()=>{});
+    }
+    callback();
+   }else callback(null,chunk);
+  }});
+  downstream.on('error',destroy);
   socket.on('error',destroy);target.on('error',destroy);socket.on('close',destroy);target.on('close',destroy);
-  target.on('connect',()=>{target.write('GET '+req.url+' HTTP/1.1\r\n'+Array.from({length:req.rawHeaders.length/2},(_,i)=>req.rawHeaders[2*i]+': '+req.rawHeaders[2*i+1]).join('\r\n')+'\r\n\r\n');if(head.length)target.write(head);socket.pipe(target);target.pipe(socket);});
+  target.on('connect',()=>{target.write('GET '+req.url+' HTTP/1.1\r\n'+Array.from({length:req.rawHeaders.length/2},(_,i)=>req.rawHeaders[2*i]+': '+req.rawHeaders[2*i+1]).join('\r\n')+'\r\n\r\n');if(head.length)target.write(head);socket.pipe(target);target.pipe(downstream).pipe(socket);});
  });
  await app.listen(port,'127.0.0.1');
  await store.configure(scope,0,true,8);
@@ -209,6 +250,11 @@ try{
   try{
    const {unityNativeProbe}=await import('./unity-native-probe.mjs');
    const result=await unityNativeProbe({directory,index:++unityProbeIndex,origin,boot:scope.runtimeBootId,match:matchId,loginName,password:loginPassword,interactive,movement});
+   if(interactive){
+    assert.equal(ackDropProofs.length,unityProbeIndex);await ackDropProofs[unityProbeIndex-1];
+    assert.equal(result.retriedCommandId,facts.droppedCommittedAcks[unityProbeIndex-1].command_id);
+    assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts WHERE match_id=$1',[matchId])).rows[0].n,unityProbeIndex);
+   }
    (facts.unityPlayers??=[]).push(result);
   }finally{allocateForCsharp=false;}
  }
@@ -236,8 +282,11 @@ try{
   assert.equal(await revokedCount(),beforeLogout+2);
   assert.equal(logoutProofs.length,2);await logoutProofs[1];
   assert.equal(facts.unityHttp.filter(value=>value.path==='/v1/session/logout'&&value.status===200).length,2);
+  assert.equal(facts.sceneExitRequests,2);
   assert(facts.unityHttp.some(value=>value.path==='/v1/session/login'&&value.status===401));
   record('rendered-panel-after-sigkill-recovers-and-commits-next-turn');
+  record('rendered-panel-durable-ack-loss-retains-command-reconnect-retry-without-duplicate-effect');
+  record('rendered-scene-teardown-during-held-ticket-drains-session-without-late-state-restore');
   record('rendered-logout-revokes-identity-and-rejects-unexpired-unused-runtime-ticket');
  }else{
  if(unity){
@@ -374,6 +423,7 @@ finally{
  if(settlementWorker&&settlementWorker.exitCode===null){settlementWorker.kill('SIGKILL');await new Promise(ok=>settlementWorker.once('close',ok));}
  if(heartbeat)clearInterval(heartbeat);await heartbeatWork;
  await browser?.close();for(const socket of tunnels)socket.destroy();
+ await Promise.allSettled(ackDropProofs);
  if(child){child.kill('SIGINT');const timer=setTimeout(()=>child.kill('SIGKILL'),3000);await childClosed;clearTimeout(timer);}
  await app?.close();await pool?.end();
  if(created)await admin.query(`DROP SCHEMA "${schema}" CASCADE`);if(rewardRoleCreated)await admin.query(`DROP ROLE "${rewardRole}"`);if(roleCreated)await admin.query(`DROP ROLE "${role}"`);await admin.end();
