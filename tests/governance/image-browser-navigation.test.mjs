@@ -10,6 +10,10 @@ function fixture(outcomes) {
     calls.push({operation: 'newPage', id});
     const page = {
       closed: false, failed: false,
+      listeners: new Map(),
+      on(name, listener) {this.listeners.set(name, listener);},
+      off(name, listener) {if (this.listeners.get(name) === listener) this.listeners.delete(name);},
+      url: () => 'https://localhost:1234/',
       context: () => context,
       async close() {calls.push({operation: 'close', id}); this.closed = true;},
       async goto(path, options) {
@@ -29,7 +33,7 @@ function fixture(outcomes) {
 }
 
 test('retires a network-error page before retrying in the same context', async () => {
-  const attempts = [], response = {status: 200}, f = fixture([changed(), response]);
+  const attempts = [], response = {status: () => 200}, f = fixture([changed(), response]);
   const first = await f.context.newPage();
   const result = await navigateImagePage(first, '/identity', attempts);
   assert.equal(result.response, response);
@@ -42,7 +46,8 @@ test('retires a network-error page before retrying in the same context', async (
     {operation: 'newPage', id: 1},
     {operation: 'goto', id: 1, path: '/identity', options: {timeout: 10000}},
   ]);
-  assert.deepEqual(attempts, [{path: '/identity', attempt: 1, result: 'ERR_NETWORK_CHANGED'}, {path: '/identity', attempt: 2, result: 'LOADED'}]);
+  assert.deepEqual(attempts, [{path: '/identity', attempt: 1, result: 'ERR_NETWORK_CHANGED'}, {path: '/identity', attempt: 2, result: 'LOADED', status: 200, internalErrorDocument: false, failures: []}]);
+  assert(f.pages.every(page => page.listeners.size === 0));
 });
 test('persistent network change fails after three requests and retires every failed page', async () => {
   const attempts = [], error = changed(), f = fixture([error, error, error]);
@@ -70,8 +75,32 @@ test('page retirement or context cancellation cannot be hidden by another reques
   }
 });
 test('unreviewed paths cannot issue a request and HTTP failures reach the normal assertions', async () => {
-  const response = {status: 503}, f = fixture([response]), page = await f.context.newPage();
+  const response = {status: () => 503}, f = fixture([response]), page = await f.context.newPage();
   await assert.rejects(navigateImagePage(page, '/v1/session/guest', []));
   assert.equal(f.calls.filter(call => call.operation === 'goto').length, 0);
   assert.deepEqual(await navigateImagePage(page, '/', []), {page, response});
+});
+test('a resolved internal error document fails closed without retrying application assertions', async () => {
+  const f = fixture([null]), page = await f.context.newPage(), attempts = [];
+  page.url = () => 'chrome-error://chromewebdata/';
+  await assert.rejects(navigateImagePage(page, '/', attempts), /did not return an application document/);
+  assert.deepEqual(attempts, [{path: '/', attempt: 1, result: 'NO_APPLICATION_DOCUMENT', status: null, internalErrorDocument: true, failures: []}]);
+  assert.equal(f.calls.filter(call => call.operation === 'goto').length, 1);
+});
+test('navigation diagnostics bound main-frame error codes and exclude request URLs or bodies', async () => {
+  const f = fixture([]), page = await f.context.newPage(), attempts = [], frame = {};
+  page.mainFrame = () => frame;
+  page.goto = async () => {
+    const failed = page.listeners.get('requestfailed');
+    const request = (navigation, own, code) => ({isNavigationRequest: () => navigation, frame: () => own ? frame : {}, failure: () => ({errorText: code})});
+    failed(request(false, true, 'net::ERR_FAILED'));
+    failed(request(true, false, 'net::ERR_ABORTED'));
+    failed(request(true, true, 'private credential or URL'));
+    for (let i = 0; i < 8; i++) failed(request(true, true, 'net::ERR_NETWORK_CHANGED'));
+    return {status: () => 200};
+  };
+  await navigateImagePage(page, '/', attempts);
+  assert.deepEqual(attempts[0].failures, ['OTHER_NAVIGATION_FAILURE', ...Array(3).fill('net::ERR_NETWORK_CHANGED')]);
+  assert(!JSON.stringify(attempts).includes('credential'));
+  assert.equal(page.listeners.size, 0);
 });
