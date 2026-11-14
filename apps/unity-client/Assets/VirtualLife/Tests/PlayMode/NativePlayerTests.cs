@@ -64,8 +64,8 @@ namespace VirtualLife.Blockout.Tests
             GameCommand original;
             string retriedCommandId;
             try {
-                yield return input.Click(800, 610);
-                yield return Until(() => File.Exists(config.ackObserved));
+                yield return CommandClick(input, panel, 800, 610);
+                yield return Until(() => File.Exists(config.ackObserved), () => "Pet start durable ACK: " + panel.Status);
                 yield return Until(() => !panel.Busy && panel.HasPendingCommand);
                 Assert.That(panel.Ready, Is.False); Assert.That(panel.PresentedState.Version, Is.Zero);
                 original = PendingCommand(panel);
@@ -83,7 +83,7 @@ namespace VirtualLife.Blockout.Tests
             var beforeInvalid = panel.PresentedState;
             yield return input.Click(684, 294); yield return input.Click(944, 554);
             Assert.That(panel.PresentedState, Is.SameAs(beforeInvalid), "Invalid nonadjacent tile selection cannot invent a result");
-            yield return input.Click(config.loss ? 890 : 734, 610);
+            yield return CommandClick(input, panel, config.loss ? 890 : 734, 610);
             yield return Until(() => panel.Ready && !panel.Busy && panel.PresentedState.Version == 2, () => "first combat turn: " + panel.Status);
             var saved = panel.PresentedState.Arena;
             var board = string.Join(",", saved.Board);
@@ -106,12 +106,12 @@ namespace VirtualLife.Blockout.Tests
                 yield return Until(() => panel.Ready && !panel.Busy && !panel.Moving);
                 yield return new WaitForEndOfFrame();
                 var current = panel.PresentedState;
-                if (config.loss) yield return input.Click(890, 610);
-                else if (current.Arena.Cooldown == 0) yield return input.Click(734, 610);
+                if (config.loss) yield return CommandClick(input, panel, 890, 610);
+                else if (current.Arena.Cooldown == 0) yield return CommandClick(input, panel, 734, 610);
                 else {
                     Assert.That(current.Arena.Hint(out var first, out var second), Is.True);
-                    yield return input.Click(684 + first % 6 * 52, 294 + first / 6 * 52);
-                    yield return input.Click(684 + second % 6 * 52, 294 + second / 6 * 52); usedSwap = true;
+                    yield return CommandClick(input, panel, 684 + first % 6 * 52, 294 + first / 6 * 52,
+                        684 + second % 6 * 52, 294 + second / 6 * 52); usedSwap = true;
                 }
                 yield return Until(() => panel.Ready && !panel.Busy && panel.PresentedState.Version == current.Version + 1,
                     () => "Pet turn: " + current.Version + " -> " + panel.PresentedState?.Version + "/busy=" + panel.Busy + "/pending=" + panel.HasPendingCommand + "/open=" + panel.ArenaOpen + "/phase=" + panel.PresentedState?.Arena.Phase + "/" + panel.Status);
@@ -151,6 +151,22 @@ namespace VirtualLife.Blockout.Tests
                 returnedToRoam = true, reducedMotion = true, outcome = terminal.Arena.Phase, reward = reward, version = terminal.Version,
                 retriedCommandId = retriedCommandId
             }));
+        }
+        private static IEnumerator CommandClick(LinuxInput input, NativeSceneController panel, params int[] coordinates)
+        {
+            var before = panel.PresentedState.Version;
+            for (var attempt = 0; attempt < 4; attempt++) {
+                yield return Until(() => panel.Ready && !panel.Busy && !panel.Moving && !panel.HasPendingCommand,
+                    () => "Pet action readiness: " + panel.Status);
+                for (var at = 0; at < coordinates.Length; at += 2) yield return input.Click(coordinates[at], coordinates[at + 1]);
+                yield return null;
+                yield return Until(() => !panel.Busy, () => "Pet action response: " + panel.Status);
+                if (panel.HasPendingCommand || panel.PresentedState.Version != before) yield break;
+                // A control disabled by admission refresh has sent no intent.
+                // Once pending or committed, only the explicit same-ID path may retry.
+                Assert.That(panel.Ready, Is.True, panel.Status);
+            }
+            Assert.Fail("OS clicks did not submit the enabled Pet action");
         }
         private static IEnumerator WalkToArena(LinuxInput input, NativeSceneController panel, OfflineDistrict district)
         {
