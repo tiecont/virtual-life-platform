@@ -134,6 +134,8 @@ try{
    const token=readSessionToken(req,config);identity.verifyCsrf(token,req.headers['x-csrf-token']);
    // Retain an unused, valid ticket only in fixture memory to prove logout,
    // rather than expiry or nonce replay, rejects the subsequent Rust admission.
+   await store.heartbeat(scope,1);
+   await store.allocate(token,scope);
    logoutTickets.push(await issuer.issue(token,scope));
   }
  });

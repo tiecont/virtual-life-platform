@@ -12,7 +12,9 @@ namespace VirtualLife.Editor
         public static void Write(BuildTarget target, string binary)
         {
             if (target != BuildTarget.StandaloneLinux64) return;
-            var path = binary.EndsWith(".x86_64") ? binary + ".config" : binary + ".x86_64.config";
+            // Mono resolves configuration from the actual executable name,
+            // including builds whose output deliberately has no extension.
+            var path = binary + ".config";
             File.WriteAllText(path, @"<?xml version=""1.0"" encoding=""utf-8""?>
 <configuration>
   <configSections>
