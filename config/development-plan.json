@@ -2821,7 +2821,31 @@
         "adapterValidation": "node scripts/native-csharp.mjs",
         "realProcessValidation": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client",
         "scope": "Pinned Linux Unity player now proves actual login/ticket/WSS/command/receipt/reconnect and runtime restart. VL-080 Windows acceptance remains an explicit incomplete dependency",
-        "remainingAcceptance": "Owner physical connected-panel acceptance, in-flight scene-exit acceptance, rendered ambiguous-ACK/error matrix, and inherited VL-080 Windows qualification remain. Automated Linux OS-input panel/terminal roundtrip and platform logout during a held ticket request passed; synthetic ruleset only.",
+        "remainingAcceptance": "Owner physical connected-panel acceptance, broader rendered schema/ticket/policy error matrix and inherited VL-080 Windows qualification remain. Automated Linux OS input covers authoritative movement, authentication/transport failure, committed-but-lost ACK, immutable retry, scene exit during held ticket and platform logout; synthetic ruleset only.",
+        "linuxRecoveryEvidence": {
+          "sourceRevision": "8ad4361ae2728334b66f93a38876db9cca03133c",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "4 EditMode and 2 PlayMode tests PASS on committed source; no skipped fixtures counted; artifacts/unity/2026-11-14T08-47-02-109Z-970df72d/result.json"},
+            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs linux", "exitCode": 0, "result": "Linux development build PASS; artifacts/unity/2026-11-14T08-48-19-274Z-37c3ad1b/result.json; apps/unity-client/Builds/Linux/build-manifest.json hashes build files"},
+            {"command": "DOTNET=artifacts/dotnet/dotnet node scripts/native-csharp.mjs", "exitCode": 0, "result": "61 standalone assertions; both target builds and 15 authored C# syntax checks PASS"},
+            {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "112 PASS"},
+            {"command": "pnpm lint", "exitCode": 0, "result": "PASS; existing generated public_pb.ts unused eslint-disable warning retained"},
+            {"command": "node scripts/verify-ci.mjs", "exitCode": 0},
+            {"command": "node scripts/verify-architecture.mjs", "exitCode": 0},
+            {"command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay", "exitCode": 0, "result": "20 real-process scenarios PASS; standard tunnel path unchanged"},
+            {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement", "exitCode": 0, "result": "6 scenarios PASS; two rendered Linux players with XTest login/W/E, PostgreSQL-confirmed commit followed by discarded response, visible transport failure, reconnect retaining pending intent, blocked new E, same-ID retry without extra effects, scene unload during held ticket and new-login recovery, confirmed logout rejecting unused unexpired tickets. Rust SIGKILL between players; versions 1/2 and exactly two durable receipts."}
+          ],
+          "evidence": "artifacts/desktop-first/vl022/interop-6bab18c1/{facts.json,unity-1.xml,unity-2.xml,unity-1.png.ambiguous.png,unity-1.png,unity-2.png.logout.png}; screenshots inspected; runtime regression interop-e5315acf; artifacts/linux-recovery-*.log",
+          "hashes": {
+            "playerEngine": "26901901cc6dd63212d741b339897f072d34cb7b3f08419fe451fc8e77c79a1f",
+            "nativeManaged": "cf43fce9584b18a4c9178b17330b901e2016f4abefbcafd33b02703ed552a349",
+            "nativeSceneManaged": "f27fc320a18291ed7b0799c024784ac0db9f2b83a5cb542048460610a4344067",
+            "playModeManaged": "705d4158b1209ff7e2769efc441499c704016f795d127d0f8c90713114ee9d84"
+          },
+          "initialEditorAttempt": {"command": "UNITY_EDITOR=<pinned licensed Editor> node scripts/unity-validate.mjs tests", "exitCode": 1, "result": "Initial stale Library import lost OfflineDistrict script: EditMode passed, both PlayMode tests failed NullReferenceException. Preserved old Library under ignored artifacts and reimported; clean import and subsequent committed-source rerun passed. Initial report artifacts/unity/2026-11-14T08-39-11-873Z-8c983435/result.json."},
+          "reviewNotes": "Self-audit: controller destruction cancels its lifetime, disposes adapters and clears state, credentials and references; old completions cannot target a fresh controller. Fault injection exists only in the isolated interop harness and suppresses response bytes after checking real PostgreSQL state/receipt counts. Native gameplay remains default-off; legacy RoomAuthority is unchanged. Automated CachyOS/AMD Renoir OpenGLCore input is not physical owner or Windows acceptance."
+        },
         "linuxPlatformLogoutEvidence": {
           "sourceRevision": "5bf1e84709649a505239948aeba68eee672dd5d1",
           "reviewMode": "SINGLE_AGENT_AUDIT",
