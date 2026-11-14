@@ -61,18 +61,24 @@ namespace VirtualLife.Blockout.Tests
             input.Key("e", true); yield return new WaitForSecondsRealtime(.08f); input.Key("e", false);
             yield return Until(() => panel.ArenaOpen);
             File.Delete(config.ackObserved); File.WriteAllText(config.ackGate, "1");
+            GameCommand original;
+            string retriedCommandId;
             try {
                 yield return input.Click(800, 610);
                 yield return Until(() => File.Exists(config.ackObserved));
                 yield return Until(() => !panel.Busy && panel.HasPendingCommand);
                 Assert.That(panel.Ready, Is.False); Assert.That(panel.PresentedState.Version, Is.Zero);
+                original = PendingCommand(panel);
+                retriedCommandId = AssertPendingId(panel, config.ackObserved);
             } finally { File.Delete(config.ackGate); File.Delete(config.ackObserved); }
             yield return input.Click(260, 225);
             yield return Until(() => panel.Ready && !panel.Busy, () => "lost ACK resync: " + panel.Status);
             Assert.That(panel.PresentedState.Version, Is.EqualTo(1)); Assert.That(panel.HasPendingCommand, Is.True);
+            Assert.That(PendingCommand(panel), Is.SameAs(original));
             yield return input.Click(470, 225);
             yield return Until(() => panel.Ready && !panel.Busy && !panel.HasPendingCommand, () => "start retry: " + panel.Status);
             Assert.That(panel.PresentedState.Version, Is.EqualTo(1));
+            Assert.That(PendingCommand(panel), Is.Null);
             Assert.That(panel.PresentedState.Arena.Phase, Is.EqualTo("playing"));
             var beforeInvalid = panel.PresentedState;
             yield return input.Click(684, 294); yield return input.Click(944, 554);
@@ -142,7 +148,8 @@ namespace VirtualLife.Blockout.Tests
                 editor = Application.unityVersion, platform = Application.platform.ToString(), graphics = SystemInfo.graphicsDeviceName,
                 graphicsApi = SystemInfo.graphicsDeviceType.ToString(), committedReceipt = true, authoritativeMovement = true,
                 ambiguousAckReplay = true, reconnectReplay = true, petArenaComplete = true, rewardReconciled = true,
-                returnedToRoam = true, reducedMotion = true, outcome = terminal.Arena.Phase, reward = reward, version = terminal.Version
+                returnedToRoam = true, reducedMotion = true, outcome = terminal.Arena.Phase, reward = reward, version = terminal.Version,
+                retriedCommandId = retriedCommandId
             }));
         }
         private static IEnumerator WalkToArena(LinuxInput input, NativeSceneController panel, OfflineDistrict district)
@@ -240,6 +247,8 @@ namespace VirtualLife.Blockout.Tests
             Assert.That(district.RehearsalTurns, Is.Zero);
             File.Delete(config.ackObserved);
             File.WriteAllText(config.ackGate, (initial + 1).ToString(System.Globalization.CultureInfo.InvariantCulture));
+            GameCommand original;
+            string retriedCommandId;
             try {
                 input.Key("e", true); yield return new WaitForSecondsRealtime(0.08f); input.Key("e", false);
                 yield return Until(() => File.Exists(config.ackObserved), () => "durable lost ACK: " + panel.Status);
@@ -247,6 +256,8 @@ namespace VirtualLife.Blockout.Tests
                 Assert.That(panel.Ready, Is.False);
                 Assert.That(panel.Status, Does.StartWith("Native failure:"));
                 Assert.That(panel.PresentedState.Version, Is.EqualTo(initial), "A missing receipt cannot update presentation");
+                original = PendingCommand(panel);
+                retriedCommandId = AssertPendingId(panel, config.ackObserved);
                 yield return new WaitForEndOfFrame();
                 ScreenCapture.CaptureScreenshot(config.screenshot + ".ambiguous.png");
                 yield return Until(() => File.Exists(config.screenshot + ".ambiguous.png"));
@@ -255,12 +266,14 @@ namespace VirtualLife.Blockout.Tests
             yield return Until(() => panel.Ready && !panel.Busy, () => "pending resync: " + panel.Status);
             Assert.That(panel.PresentedState.Version, Is.EqualTo(initial + 1));
             Assert.That(panel.HasPendingCommand, Is.True, "A read cannot resolve the immutable pending intent");
+            Assert.That(PendingCommand(panel), Is.SameAs(original));
             input.Key("e", true); yield return new WaitForSecondsRealtime(0.08f); input.Key("e", false);
             yield return Until(() => panel.Status.StartsWith("Reconnect and retry"));
             Assert.That(panel.PresentedState.Version, Is.EqualTo(initial + 1));
             yield return input.Click(470, 225);
             yield return Until(() => panel.Ready && !panel.Busy && !panel.HasPendingCommand, () => "same-ID retry: " + panel.Status);
             Assert.That(panel.PresentedState.Version, Is.EqualTo(initial + 1), "Retry resolves the original turn without a second effect");
+            Assert.That(PendingCommand(panel), Is.Null);
             Assert.That(panel.PresentedState.Turns, Is.EqualTo((int)initial + 1));
             Assert.That(district.RehearsalTurns, Is.Zero, "Only a committed server receipt can advance native gameplay");
             yield return input.Click(260, 225);
@@ -278,6 +291,7 @@ namespace VirtualLife.Blockout.Tests
                 yield return Until(() => File.Exists(config.logoutObserved), () => "scene-exit ticket barrier: " + panel.Status);
                 Assert.That(panel.Busy, Is.True);
                 var leaving = panel;
+                var exitedSession = Session(panel);
                 yield return SceneManager.LoadSceneAsync("AuroraBlockout");
                 yield return null;
                 Assert.That(leaving == null, Is.True, "Scene unload must destroy the old controller");
@@ -288,7 +302,9 @@ namespace VirtualLife.Blockout.Tests
                 Assert.That(panel, Is.Not.Null);
                 File.Delete(config.logoutGate);
                 yield return Until(() => File.Exists(config.ticketReleased));
-                yield return new WaitForSecondsRealtime(0.5f);
+                var operation = (SemaphoreSlim)typeof(NativePlaySession).GetField("operation", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(exitedSession);
+                yield return Until(() => operation.CurrentCount == 1, () => "Old scene operation did not drain");
+                Assert.That(exitedSession.State, Is.Null, "A late response cannot restore a disposed scene session");
                 Assert.That(panel.Ready || panel.Busy || panel.HasPendingCommand, Is.False);
                 Assert.That(panel.PresentedState, Is.Null);
                 Assert.That(panel.Status, Does.StartWith("Disconnected."));
@@ -327,7 +343,8 @@ namespace VirtualLife.Blockout.Tests
                 graphics = SystemInfo.graphicsDeviceName, graphicsApi = SystemInfo.graphicsDeviceType.ToString(),
                 committedReceipt = true, reconnectReplay = false, wrongCaRejected = false,
                 panelKeyboardTerminal = true, authoritativeMovement = config.movement,
-                ambiguousAckReplay = true, inflightSceneExit = true, panelAdmissionErrors = negatives.Length, version = initial + 1
+                ambiguousAckReplay = true, inflightSceneExit = true, panelAdmissionErrors = negatives.Length, version = initial + 1,
+                retriedCommandId = retriedCommandId
             }));
         }
         private static IEnumerator LoginClick(LinuxInput input, string pacingFile)
@@ -338,6 +355,19 @@ namespace VirtualLife.Blockout.Tests
         }
         private static bool Entered(NativeSceneController panel, string field, string expected) =>
             string.Equals((string)typeof(NativeSceneController).GetField(field, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel), expected, StringComparison.Ordinal);
+        private static NativePlaySession Session(NativeSceneController panel) =>
+            (NativePlaySession)typeof(NativeSceneController).GetField("session", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel);
+        private static GameCommand PendingCommand(NativeSceneController panel) =>
+            (GameCommand)typeof(NativePlaySession).GetField("pending", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(Session(panel));
+        private static string AssertPendingId(NativeSceneController panel, string observed)
+        {
+            var pending = PendingCommand(panel);
+            Assert.That(pending, Is.Not.Null);
+            var commandId = File.ReadAllText(observed);
+            var bytes = (System.Collections.Generic.IEnumerable<byte>)typeof(GameCommand).GetField("Id", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(pending);
+            Assert.That(string.Concat(bytes.Select(b => b.ToString("x2"))), Is.EqualTo(Guid.Parse(commandId).ToString("N")), "Pending retry must retain the command ID committed in PostgreSQL");
+            return commandId;
+        }
         private static string InputDiagnostic(NativeSceneController panel, string expected)
         {
             var value = (string)typeof(NativeSceneController).GetField("loginName", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel);
@@ -462,7 +492,7 @@ namespace VirtualLife.Blockout.Tests
         }
         [Serializable] private sealed class Facts {
             public int panelAdmissionErrors;
-            public string editor, platform, graphics, graphicsApi;
+            public string editor, platform, graphics, graphicsApi, retriedCommandId;
             public bool committedReceipt, reconnectReplay, wrongCaRejected, panelKeyboardTerminal, authoritativeMovement, ambiguousAckReplay, inflightSceneExit;
             public bool petArenaComplete, rewardReconciled, returnedToRoam, reducedMotion;
             public string outcome, reward;

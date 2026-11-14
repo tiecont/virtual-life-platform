@@ -169,7 +169,10 @@ try{
      const row=(await pool.query('SELECT state_version,(SELECT count(*)::int FROM game_native_receipts) AS receipts FROM game_native_matches WHERE id=$1',[matchId])).rows[0];
      assert.equal(Number(row.state_version),expected,'Lost ACK must follow a real durable commit');
      assert.equal(row.receipts,expected,'Lost ACK must have exactly one receipt per turn');
-     await writeFile(ackObserved,'Durable receipt confirmed; response discarded',{mode:0o600});
+     const receipt=(await pool.query('SELECT command_id,committed_version FROM game_native_receipts WHERE match_id=$1 AND committed_version=$2',[matchId,expected])).rows[0];
+     assert(receipt,'Lost ACK requires the matching durable receipt');
+     (facts.droppedCommittedAcks??=[]).push(receipt);
+     await writeFile(ackObserved,receipt.command_id,{mode:0o600});
      destroy();
     })();
     recoveryProofs.push(proof);void proof.catch(()=>destroy());
@@ -278,6 +281,10 @@ try{
   try{
    const {unityNativeProbe}=await import('./unity-native-probe.mjs');
    const result=await unityNativeProbe({directory,index:++unityProbeIndex,origin,boot:scope.runtimeBootId,match:matchId,loginName,password:loginPassword,interactive,movement,pet,loss,contentHash:scope.contentHash,...controls});
+   if(interactive){
+    assert.equal(recoveryProofs.length,unityProbeIndex);await recoveryProofs[unityProbeIndex-1];
+    assert.equal(result.retriedCommandId,facts.droppedCommittedAcks[unityProbeIndex-1].command_id);
+   }
    (facts.unityPlayers??=[]).push(result);
   }finally{allocateForCsharp=false;}
  }
@@ -360,7 +367,13 @@ try{
   petEffects=await petArenaScenarios({loss,pool,admin,schema,role,rewardRole,rewardPassword,markRewardRoleCreated:()=>{rewardRoleCreated=true;},address,directory,scope,identity,store,issuer,credential,csrf:guest.me.csrfToken,call,fresh,origin,hello,startHost,rejectHost,stopHost:async()=>{child.kill('SIGKILL');await childClosed;child=undefined;},upstream:()=>upstream,matchId,player:guest.me.profile.id,record});
  }
  if(playable&&!pet){
-  assert.equal((await fetch('http://127.0.0.1:'+upstream+'/health/ready')).status,200);
+  const readyStarted=Date.now(),ready=await fetch('http://127.0.0.1:'+upstream+'/health/ready');
+  facts.readiness={status:ready.status,elapsedMs:Date.now()-readyStarted};
+  if(ready.status!==200){
+   facts.readiness.world=(await pool.query('SELECT enabled,lease_until>clock_timestamp() AS leased FROM platform_native_worlds WHERE world_id=$1',[scope.worldId])).rows[0];
+   facts.readiness.heartbeatFailed=heartbeatError!==undefined;
+  }
+  assert.equal(ready.status,200,JSON.stringify(facts.readiness));
   const intent=(version,kind='fixture.advance.v1')=>({
    gameSessionId:Array.from(Buffer.from(matchId.replaceAll('-',''),'hex')),
    expectedStateVersion:String(version),kind,
@@ -395,11 +408,13 @@ try{
   if(csharp||unity){
    if(csharp){await csharpProbe();record('csharp-after-sigkill-replays-durable-receipt-without-extra-effects');}
    else{await probeUnity();record('actual-unity-linux-player-after-sigkill-replays-durable-receipt-without-extra-effects');}
-   // Admission is session-scoped: return the harness allocation to the browser
-   // only after the independent C# session has completed its restart proof.
-   await store.allocate(credential,scope);
   }
-  ticket=await call('ticket',guest.me.csrfToken);assert.equal(ticket.status,200);
+  const oldAdmission=(await pool.query('SELECT valid_until FROM platform_native_admissions WHERE account_id=$1',[guest.me.profile.id])).rows[0];
+  await new Promise(ok=>setTimeout(ok,Math.max(0,oldAdmission.valid_until.getTime()-Date.now()+100)));
+  assert.equal((await call('ticket',guest.me.csrfToken)).status,503,'An expired allocation must not issue a restart ticket');
+  // Return admission to the browser only after the independent client completes.
+  await store.allocate(credential,scope);
+  ticket=await call('ticket',guest.me.csrfToken);assert.equal(ticket.status,200,'Authorized allocation must issue the restart ticket');
   const restarted=await call('open',origin.replace('https:','wss:')+'/rt/v1');
   await call('send',restarted,1,1,'hello',hello(ticket.body.ticket));assert.equal((await call('next',restarted)).kind,'hello');
   await call('send',restarted,3,2,'gameIntent',intent(0));assert.equal((await call('next',restarted)).hex,first.hex);
@@ -426,12 +441,24 @@ try{
   assert(workerLog.includes('native-completion-v1'));
   assert(!workerLog.includes(rewardPassword));
   assert.equal((await pool.query('SELECT count(*)::int AS n FROM platform_native_reward_ledger')).rows[0].n,1);
+  // Worker execution may outlive admission. Prove expiry denies the old socket,
+  // then renew through the allocator and replay the immutable terminal command.
+  const admission=(await pool.query('SELECT valid_until FROM platform_native_admissions WHERE account_id=$1',[guest.me.profile.id])).rows[0];
+  await new Promise(ok=>setTimeout(ok,Math.max(0,admission.valid_until.getTime()-Date.now()+100)));
   await call('send',restarted,7,3,'gameIntent',intent(2));
-  assert.equal((await call('next',restarted)).receipt.projection.reward,'GRANTED');
-  await call('send',restarted,7,3,'gameIntent',intent(2));
-  assert.equal((await call('next',restarted)).receipt.projection.reward,'GRANTED');
+  assert(await call('closed',restarted));
+  await store.allocate(credential,scope);
+  ticket=await call('ticket',guest.me.csrfToken);assert.equal(ticket.status,200);
+  const renewed=await call('open',origin.replace('https:','wss:')+'/rt/v1');
+  await call('send',renewed,1,1,'hello',hello(ticket.body.ticket));assert.equal((await call('next',renewed)).kind,'hello');
+  for(let retry=0;retry<2;retry++){
+   await call('send',renewed,7,2,'gameIntent',intent(2));
+   const reconciled=await call('next',renewed);
+   assert.equal(reconciled.kind,'receipt',JSON.stringify({kind:reconciled.kind,code:reconciled.code,closed:reconciled.closed}));
+   assert.equal(reconciled.receipt.projection.reward,'GRANTED');
+  }
   assert.equal((await pool.query('SELECT count(*)::int AS n FROM platform_native_reward_ledger')).rows[0].n,1);
-  record('actual-native-only-platform-worker-grants-once-and-wss-replay-reconciles');
+  record('expired-admission-denies-replay-authorized-renewal-reconciles-one-worker-grant');
   const metrics=await (await fetch('http://127.0.0.1:'+upstream+'/metrics')).text();
   assert(metrics.includes('vl_native_command_receipts_total'));
   assert(!metrics.includes(guest.me.profile.id));assert(!metrics.includes('ownRoll'));record('runtime-metrics-contain-aggregate-counters');
@@ -439,16 +466,16 @@ try{
   clearInterval(heartbeat);heartbeat=undefined;await heartbeatWork;
   await store.configure(scope,1,false,0);
   assert.equal((await fetch('http://127.0.0.1:'+upstream+'/health/ready')).status,503);
-  await call('send',restarted,7,3,'gameIntent',intent(2));
-  assert(await call('closed',restarted));
+  await call('send',renewed,7,2,'gameIntent',intent(2));
+  assert(await call('closed',renewed));
   record('disabled-allocator-scope-removes-readiness-and-denies-private-replay');
-  await call('close',restarted);
+  await call('close',renewed);
  }
  const oversized=await call('open',origin.replace('https:','wss:')+'/rt/v1');await call('oversize',oversized);assert(await call('closed',oversized));record('oversized-binary-denied');
  const text=await call('open',origin.replace('https:','wss:')+'/rt/v1');await call('text',text);assert(await call('closed',text));record('text-frame-denied');
  await call('close',fresh);await context.close();await browser.close();browser=undefined;
  const effects=(await pool.query('SELECT (SELECT count(*)::int FROM game_native_matches) AS matches,(SELECT count(*)::int FROM game_native_receipts) AS receipts,(SELECT count(*)::int FROM platform_native_ticket_uses) AS nonces')).rows[0];
- assert.equal(effects.matches,playable?1:0);assert.equal(effects.receipts,pet?petEffects.receipts:playable?3:0);assert.equal(effects.nonces,pet?petEffects.nonces:playable?(csharp||unity?11:3):2);facts.effects=effects;record(pet?'full-pet-match-commits-one-native-match':playable?'three-game-commits-one-native-match':'zero-game-writes');
+ assert.equal(effects.matches,playable?1:0);assert.equal(effects.receipts,pet?petEffects.receipts:playable?3:0);assert.equal(effects.nonces,pet?petEffects.nonces:playable?(csharp||unity?12:4):2);facts.effects=effects;record(pet?'full-pet-match-commits-one-native-match':playable?'three-game-commits-one-native-match':'zero-game-writes');
  }
  }
  assert.equal(heartbeatError,undefined);facts.result='PASS';

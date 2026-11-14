@@ -3736,7 +3736,20 @@
         "movement": "Reuses the implemented isolated VL-028 movement slice. Full policy-filtered AOI, eviction and durable position remain tracked by VL-028 and are outside this one-player milestone.",
         "art": "Original code-authored primitive Cinder/Brook/Briar figures with two LODs and optional receipt-driven pulse. Production source art/exports remain VL-045.",
         "scope": "Linux developer prototype only. Windows/project/avatar/production qualifications on VL-080, VL-085, VL-091 and other tasks remain independent.",
-        "validation": "Rendered win/loss have passed locally; final committed-source validation and hosted CI pending."
+        "validation": "IN_PROGRESS: rendered win PASS at ab357856e3eb5c06ff83b29b53bbf1e8b8173bc3; loss player assertions passed but outer command exited 143 and requires a clean rerun. Final source and hosted CI remain pending.",
+        "linuxAudit": {
+          "sourceRevision": "ab357856e3eb5c06ff83b29b53bbf1e8b8173bc3",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {"command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena --unity-interactive --movement", "exitCode": 0, "result": "Five rendered Linux scenarios PASS: OS input, canonical movement, walk-in, win version 6, lost ACK/retry, exact SIGKILL recovery, GRANTED, return to roaming and logout", "evidence": "artifacts/linux-first-playable-clean/artifacts/desktop-first/vl022/interop-fa44b4f4"},
+            {"command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena-loss --unity-interactive --movement", "exitCode": 143, "result": "Player XML/JSON and five outer scenarios report PASS, lost version 18 and DECLINED; command exit is not PASS", "evidence": "artifacts/linux-first-playable-clean/artifacts/desktop-first/vl022/interop-d1a5c843"},
+            {"command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena", "exitCode": 0, "result": "30 real-process scenarios PASS", "evidence": "artifacts/linux-first-playable-clean/artifacts/desktop-first/vl022/interop-586745ec"},
+            {"command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --movement", "exitCode": 0, "result": "13 real-process scenarios PASS, including injected delay/jitter", "evidence": "artifacts/linux-first-playable-clean/artifacts/desktop-first/vl022/interop-e275645b"}
+          ],
+          "hosted": "Rust PR run 43605541712 PASS; Rust push 43605536789 FAIL after durable-command scenario. Quality push 43605536734 PASS; Quality PR 43605541858 FAIL (image document-load timeout and mobile Lounge audience-control assertion). No merge authorized by these mixed results.",
+          "localRegression": "pnpm check exited 1: 782/783 integration tests PASS, dating hourly chat cap timed out at 15s. Run overlapped source changes and is not exact-head proof. Compose TCP healthcheck regression passed six scenarios and 50 migrations.",
+          "remaining": "Complete final-source local/hosted checks, clean rendered loss and failure matrix, actual pnpm play:linux repetition/cleanup, merged-main and post-merge verification. Windows, production asset rights, performance and human release approvals remain separate. NO_GO_PUBLIC; OFFLINE_ONLY."
+        }
       }
     }
   ]
