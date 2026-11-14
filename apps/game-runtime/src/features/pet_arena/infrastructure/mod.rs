@@ -46,12 +46,20 @@ impl Game for Rules {
             return Err(Error::Unauthorized);
         }
         let combat = &state.combat;
+        let statuses = |values: &[vl_pet_arena::status::Status]| {
+            values.iter().map(|status|
+            serde_json::json!({"kind": status.kind as u8, "potency": status.potency.raw(), "remaining": status.remaining_turns})
+        ).collect::<Vec<_>>()
+        };
         // Deliberately authored DTO; no checkpoint, seed, RNG cursor or account ID.
         serde_json::to_vec(&serde_json::json!({
             "phase":match combat.phase() { Phase::Ready => "ready", Phase::Playing => "playing", Phase::Won => "won", Phase::Lost => "lost" },
+            "pet":combat.pet(), "stage":combat.stage(),
             "turn":combat.turn(), "board":combat.board().0.iter().map(|tile| *tile as u8).collect::<Vec<_>>(),
             "health":combat.health().raw(), "enemyHealth":combat.enemy_health().raw(),
             "cooldown":combat.cooldown(),
+            "shield":combat.shield().raw(), "enemyShield":combat.enemy_shield().raw(),
+            "playerStatuses":statuses(combat.player_status()), "enemyStatuses":statuses(combat.enemy_status()),
             "telegraph":combat.telegraph().map(|intent| serde_json::json!({"pattern":intent.pattern as u8,"cells":intent.cells,"resolvesTurn":intent.resolves_turn})),
         })).map_err(|_| Error::Invalid)
     }

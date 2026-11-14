@@ -13,11 +13,12 @@ import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
 
 const options=process.argv.slice(2);
 const movement=options.includes('--movement');
+const localPlayer=options.includes('--linux-play');
 const interactive=options.includes('--unity-interactive');
-const loss=options.includes('--pet-arena-loss'),pet=options.includes('--pet-arena')||loss,playable=options.includes('--runtime-gameplay')||pet,csharp=options.includes('--csharp-client'),unity=options.includes('--unity-player')||interactive;
+const loss=options.includes('--pet-arena-loss'),pet=options.includes('--pet-arena')||loss,playable=options.includes('--runtime-gameplay')||pet,csharp=options.includes('--csharp-client'),unity=options.includes('--unity-player')||interactive||localPlayer;
 const petContent=pet?spawnSync(resolve('artifacts/rust/target/debug/vl-game-runtime'),['--ruleset-content-hash','pet-arena-pve'],{encoding:'utf8'}).stdout.trim():undefined;
 if(pet)assert.match(petContent,/^[a-f0-9]{64}$/);
-if(options.some(value=>!['--runtime-gameplay','--csharp-client','--pet-arena','--pet-arena-loss','--unity-player','--unity-interactive','--movement'].includes(value))||new Set(options).size!==options.length||(csharp||unity)&&(!playable||pet)||csharp&&unity||interactive&&options.includes('--unity-player')||movement&&(!playable||pet||csharp||unity&&!interactive))throw Error('Unknown native interoperability mode');
+if(options.some(value=>!['--runtime-gameplay','--csharp-client','--pet-arena','--pet-arena-loss','--unity-player','--unity-interactive','--movement','--linux-play'].includes(value))||new Set(options).size!==options.length||(csharp||unity)&&!playable||pet&&(csharp||unity&&!interactive&&!localPlayer)||csharp&&unity||interactive&&options.includes('--unity-player')||movement&&(!playable||pet&&!interactive&&!localPlayer||csharp||unity&&!interactive&&!localPlayer)||pet&&(interactive||localPlayer)&&!movement||localPlayer&&(!pet||loss||interactive||options.includes('--unity-player')))throw Error('Unknown native interoperability mode');
 const require=createRequire(import.meta.url),apiRequire=createRequire(resolve('apps/platform-api/package.json'));
 apiRequire('reflect-metadata');
 const {NestFactory}=apiRequire('@nestjs/core'),{Module}=apiRequire('@nestjs/common'),{FastifyAdapter}=apiRequire('@nestjs/platform-fastify');
@@ -137,7 +138,7 @@ try{
     dropping=true;
     const proof=(async()=>{
      const expected=Number(await readFile(ackGate,'utf8'));
-     assert(Number.isSafeInteger(expected)&&expected>=1&&expected<=3);
+     assert(Number.isSafeInteger(expected)&&expected>=1&&expected<=61);
      const row=(await pool.query('SELECT state_version,(SELECT count(*)::int FROM game_native_receipts) AS receipts FROM game_native_matches WHERE id=$1',[matchId])).rows[0];
      assert.equal(Number(row.state_version),expected,'Lost ACK must follow a real durable commit');
      assert.equal(row.receipts,expected,'Lost ACK must have exactly one receipt per turn');
@@ -221,18 +222,27 @@ try{
  await startHost();
  const call=(method,...args)=>page.evaluate(({method,args})=>window.transport[method](...args),{method,args});
  const record=name=>facts.scenarios.push({name,result:'PASS'});
- if(movement&&!interactive){
+ if(localPlayer){
+  const {nativeRewardFixture}=await import('./native-reward-fixture.mjs');
+  const worker=await nativeRewardFixture({admin,pool,schema,rewardRole,rewardPassword,address,directory,scope,markRewardRoleCreated:()=>{rewardRoleCreated=true;}});
+  const {nativeLocalPlayer}=await import('./native-local-player.mjs');
+  allocateForCsharp=true;
+  try{await nativeLocalPlayer({directory,origin,scope,matchId,loginName,password:loginPassword,worker});}
+  finally{allocateForCsharp=false;}
+  facts.scope='Manual local Linux Pet Arena session; no automated acceptance claimed';
+  record('local-linux-player-opened-and-closed');
+ }else if(movement&&!interactive){
   await store.allocate(credential,scope);
   const {movementScenarios}=await import('./native-movement-scenarios.mjs');
   await movementScenarios({call,store,credential,scope,csrf:guest.me.csrfToken,origin,record,facts,matchId,pool,admin,role,restart:async()=>{child.kill('SIGKILL');await childClosed;child=undefined;await startHost();}});
   assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,2);
  }else{
  let unityProbeIndex=0;
- async function probeUnity(){
+ async function probeUnity(controls={}){
   allocateForCsharp=true;
   try{
    const {unityNativeProbe}=await import('./unity-native-probe.mjs');
-   const result=await unityNativeProbe({directory,index:++unityProbeIndex,origin,boot:scope.runtimeBootId,match:matchId,loginName,password:loginPassword,interactive,movement});
+   const result=await unityNativeProbe({directory,index:++unityProbeIndex,origin,boot:scope.runtimeBootId,match:matchId,loginName,password:loginPassword,interactive,movement,pet,loss,contentHash:scope.contentHash,...controls});
    (facts.unityPlayers??=[]).push(result);
   }finally{allocateForCsharp=false;}
  }
@@ -248,6 +258,15 @@ try{
    assert(Date.parse(ticket.expiresAt)>Date.now(),'Rust rejection must precede ticket expiry');
   };
   const beforeLogout=await revokedCount();
+  if(pet){
+   const {renderedPetArenaScenarios}=await import('./pet-arena-unity-scenarios.mjs');
+   await renderedPetArenaScenarios({pool,admin,schema,rewardRole,rewardPassword,address,directory,scope,credential,store,csrf:guest.me.csrfToken,call,origin,matchId,loss,record,facts,probeUnity,
+    restart:async()=>{child.kill('SIGKILL');await childClosed;child=undefined;await startHost();},
+    markRewardRoleCreated:()=>{rewardRoleCreated=true;}});
+   assert.equal(await revokedCount(),beforeLogout+1);
+   assert.equal(logoutProofs.length,1);await logoutProofs[0];
+   assert.equal(recoveryProofs.length,1);await recoveryProofs[0];
+  }else{
   await probeUnity();
   assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'1');
   assert.equal(await revokedCount(),beforeLogout+1);
@@ -266,6 +285,7 @@ try{
   record('rendered-logout-revokes-identity-and-rejects-unexpired-unused-runtime-ticket');
   record('rendered-lost-ack-reconnect-blocks-new-turn-and-same-id-retry-keeps-exactly-two-receipts');
   record('rendered-scene-exit-cancels-held-ticket-clears-controller-and-relogin-recovers-committed-state');
+  }
  }else{
  if(unity){
   assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'0');

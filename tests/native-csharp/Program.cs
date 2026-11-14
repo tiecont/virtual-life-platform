@@ -49,12 +49,47 @@ static class Program
         try {
             if (args.SequenceEqual(new[] { "--probe" })) { await Probe(); return; }
             Check(args.Length == 0);
+            PetViewTests();
             await MockTests(); Console.WriteLine(JsonSerializer.Serialize(new { result = "PASS", assertions = passed, scope = "standalone C#; not Unity execution" }));
         } catch (Exception e) {
             // Never print exception bodies, input credentials or authorized projections.
             Console.Error.WriteLine("Native client tests failed at " + stage + ": " + e.GetType().Name +
                 (e is NativeFailure native ? "/" + native.Reason + "/" + native.Code : "")); Environment.ExitCode = 1;
         }
+    }
+
+    static void PetViewTests()
+    {
+        stage = "pet-projection";
+        var projection = JsonSerializer.Serialize(new { epoch = 1, reward = (string)null, state = new {
+            phase = "playing", pet = 0, stage = 0, turn = 0, health = 100000, enemyHealth = 80000,
+            shield = 0, enemyShield = 0, cooldown = 0, board = Enumerable.Range(0, 36).Select(i => (i + i / 6) % 4).ToArray(),
+            telegraph = new { pattern = 0, cells = Enumerable.Range(0, 6).ToArray(), resolvesTurn = 1 },
+            playerStatuses = Array.Empty<object>(), enemyStatuses = Array.Empty<object>()
+        }});
+        var view = PetArenaView.Decode(1, Encoding.UTF8.GetBytes(projection));
+        Check(view.Phase == "playing" && view.Health == 100000 && view.Board.Count == 36 && view.WarningCells.Count == 6); passed++;
+        Check(!view.CanSwap(-1, 0) && !view.CanSwap(0, 35) && !view.CanSwap(5, 6)); passed++;
+        Check(!view.Terminal && view.Epoch == 1 && view.Cooldown == 0); passed++;
+        foreach (var mutate in new Action<System.Text.Json.Nodes.JsonObject>[] {
+            json => json["epoch"] = 0,
+            json => json["state"]["board"] = new System.Text.Json.Nodes.JsonArray(1, 2),
+            json => json["state"]["pet"] = 8,
+            json => json["state"]["health"] = -1,
+            json => json["state"]["cooldown"] = 4,
+            json => json["state"]["phase"] = "claimed-win",
+            json => json["state"]["telegraph"]["resolvesTurn"] = 3,
+            json => json["state"]["telegraph"]["cells"] = new System.Text.Json.Nodes.JsonArray(0, 0, 0, 0, 0, 0),
+            json => json["reward"] = "GRANTED",
+            json => json["state"].AsObject().Remove("board")
+        }) {
+            var json = System.Text.Json.Nodes.JsonNode.Parse(projection).AsObject(); mutate(json);
+            try { PetArenaView.Decode(1, Encoding.UTF8.GetBytes(json.ToJsonString())); throw new Exception("Accepted invalid Pet projection"); }
+            catch (FormatException) { passed++; }
+        }
+        try { PetArenaView.Decode(2, Encoding.UTF8.GetBytes(projection)); throw new Exception("Accepted mismatched Pet version"); }
+        catch (FormatException) { passed++; }
+        stage = "mock";
     }
 
     static async Task MockTests()

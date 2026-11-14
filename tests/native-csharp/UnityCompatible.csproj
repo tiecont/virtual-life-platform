@@ -13,5 +13,6 @@
     <Compile Include="../../contracts/generated/csharp/Public.cs" />
     <Compile Include="../../apps/unity-client/Assets/VirtualLife/Features/Native/Infrastructure/*.cs" />
     <Compile Include="../../apps/unity-client/Assets/VirtualLife/Features/Native/Application/*.cs" />
+    <Compile Include="../../apps/unity-client/Assets/VirtualLife/Features/Native/Domain/*.cs" />
   </ItemGroup>
 </Project>

@@ -139,10 +139,58 @@ SDK. Record signing, install/update, input, graphics and crash acceptance
 with build hashes on the related Windows tasks.
 [Windows build requirements](https://docs.unity.com/en-us/engine/6000.3/manual/platform-specific/windows/requirements-and-compatibility)
 
+## Play Pet Arena on Linux
+
+From the repository root, with Docker available, Node/pnpm/Rust pinned as above
+and the licensed Editor named by `UNITY_EDITOR`:
+
+```sh
+pnpm build:packages
+pnpm --filter @virtual-city/platform-api build
+cargo build --locked -p vl-game-runtime
+node scripts/unity-validate.mjs linux
+pnpm play:linux
+```
+
+The launcher uses the same isolated native fixture as the process tests. Its
+first run also needs the pinned Playwright Chromium cache (`pnpm exec playwright
+install chromium`) and `openssl`. It starts a fresh disposable database, a
+loopback Nest HTTPS/WSS gateway, the default-off Rust Pet Arena runtime with
+movement explicitly enabled, and a restricted reward worker. The path printed
+at startup contains the temporary account/password. Enter them in the player.
+Use WASD to approach the purple Arena gate, then E. Select adjacent tiles forming
+a match, use the pet skill when ready, or pass. The board marks the enemy's next
+attack. Return to plaza resumes roaming. Reconnect refreshes the authoritative
+result, including reward settlement; Retry resolves an ambiguous pending command
+without creating another turn. Reduced motion defaults on.
+
+Closing the player stops the local fixture and deletes the scope/login files
+and disposable database. A new launch starts a new match. This is a development
+prototype with original primitive pet figures, not production content or
+Windows qualification. No production endpoints, purchases or signing are used.
+The launcher creates an explicit local CA only for this process: the external
+`developmentCaFile` option is loopback-only, bounded, unavailable in release
+players, and restores Mono trust on scene disposal. Normal chain, expiry and
+hostname validation remain enabled; the owner's trust stores are unchanged.
+
+Rendered full-match regressions use actual Linux OS input:
+
+```sh
+node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena --unity-interactive --movement
+node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena-loss --unity-interactive --movement
+```
+
+Run them sequentially. Each requires a real graphics device and X11/XWayland.
+They cover spawn proximity rejection, walk-in, start with committed-but-lost ACK,
+same-ID retry, skill/swap or pass, exact checkpoint after Rust SIGKILL, terminal
+win/loss, one restricted worker settlement, reduced motion, return to roaming
+and server logout. The Pet tests use the same local-CA path as the normal
+development player. The separate adapter fixture retains wrong-CA rejection.
+
 ## Native developer scene controller
 
 The `NativeSceneController` source wires the scene to the existing adapters via
-`SyntheticPlaySession`. It is enabled only in the Editor or a development build
+`NativePlaySession` (`SyntheticPlaySession` or `PetArenaPlaySession`). It is enabled only in the Editor or a development build
 of `AuroraBlockout`, and only when `VL_NATIVE_DEV_CONFIG` names an external JSON
 file. No login happens automatically. The file must remain outside `Assets/` and
 the packaged player's data directory; it contains scope only:
@@ -162,6 +210,9 @@ match. Use an already configured isolated Nest login/admission service and Rust
 synthetic runtime behind system-trusted HTTPS/WSS. The client cannot allocate its
 own world or choose ticket scope. The JSON file has no credential fields. Enter
 account/password in the panel at runtime; neither is serialized or logged.
+Set `ruleset` to `pet-arena-pve` and `movement` to `true` for an allocated Pet
+match; use the runtime's `--ruleset-content-hash pet-arena-pve` value. The local
+launcher supplies that server-owned scope automatically.
 
 Login performs HTTPS authentication, ticket admission, WSS connection, resync and
 an authorized game-state view. Walk within terminal range and press E to request

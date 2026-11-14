@@ -3670,6 +3670,29 @@
         ],
         "reviewNotes": "Actual Rust process with restricted TLS PostgreSQL and Nest HTTPS/WSS admission; 26 scenarios each for a winning and losing PvE match. Invalid swap/action/reward payload, stale version/epoch, wrong actor and private view rejected; exact mid-match and terminal SIGKILL recovery; current account/incident eligibility; forged/mismatched/stale outcome rejection; deferred worker commit crash, concurrent delivery, inbox dedupe and reconciled own receipt. Shared Host and legacy RoomAuthority preserved. Full standalone adapter and synthetic orchestration regressions pass. Hosted exact-head Quality/Rust CI remains required before merge."
       }
+    },
+    {
+      "id": "VL-113",
+      "feature": "Native",
+      "title": "Linux playable Pet Arena milestone",
+      "objective": "Deliver an isolated Linux development player with walk-in Rust-authoritative Pet Arena PvE, recovery, settlement and a repeatable local launcher.",
+      "dependsOn": ["VL-010", "VL-024", "VL-022", "VL-044", "VL-047", "VL-112"],
+      "acceptance": [
+        "Actual rendered Linux player uses OS keyboard and mouse input to walk into Arena, complete winning and losing matches, reconcile rewards and resume roaming",
+        "Lost committed ACK, same-ID retry, exact mid-match Rust restart and server logout pass without duplicate effects",
+        "Reduced motion, original developer pet figures, bounded owner projections and an opt-in local launcher work in the Linux development build",
+        "Source-bound C#, Rust, Unity, governance and relevant regressions pass; hosted Quality/Rust CI is green before merge"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "source": "apps/unity-client/Assets/VirtualLife/Features/Native and NativeScene; scripts/native-local-player.mjs",
+        "launcher": "pnpm play:linux",
+        "movement": "Reuses the implemented isolated VL-028 movement slice. Full policy-filtered AOI, eviction and durable position remain tracked by VL-028 and are outside this one-player milestone.",
+        "art": "Original code-authored primitive Cinder/Brook/Briar figures with two LODs and optional receipt-driven pulse. Production source art/exports remain VL-045.",
+        "scope": "Linux developer prototype only. Windows/project/avatar/production qualifications on VL-080, VL-085, VL-091 and other tasks remain independent.",
+        "validation": "Rendered win/loss have passed locally; final committed-source validation and hosted CI pending."
+      }
     }
   ]
 }

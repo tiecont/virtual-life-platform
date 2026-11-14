@@ -26,6 +26,12 @@ backend. See [native runtime development](apps/game-runtime/README.md) for actua
 Pet Arena process tests and [Unity validation](apps/unity-client/README.md) for
 the separately required licensed Editor/player checks.
 
+After building the Linux development player and native backend, `pnpm play:linux`
+opens Pet Arena with disposable loopback Nest/Rust/PostgreSQL services. The
+launcher prints the path to a private local login file. Closing the player
+removes those services and the disposable match. See the Unity README for build
+prerequisites and controls.
+
 ## Source Layout
 
 ```text

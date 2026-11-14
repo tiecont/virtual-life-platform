@@ -214,6 +214,9 @@ mod tests {
         assert!(!collision.can_interact("activity-terminal", Position { x: 0, z: 499 }));
         assert!(collision.can_interact("activity-terminal", Position { x: 0, z: 500 }));
         assert!(collision.can_interact("activity-terminal", Position { x: 0, z: 1000 }));
+        assert!(collision.can_interact("pet-arena", Position { x: 9000, z: 6000 }));
+        assert!(!collision.can_interact("pet-arena", collision.spawn().unwrap()));
+        assert!(!collision.can_interact("pet-arena", Position { x: 9000, z: 8000 }));
         assert!(!collision.can_interact("activity-terminal", Position { x: 0, z: 3000 }));
         assert!(!collision.can_interact("unknown", Position { x: 0, z: 1000 }));
         assert!(!collision.can_interact(
