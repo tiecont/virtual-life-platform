@@ -108,7 +108,7 @@ namespace VirtualLife.NativeScene
             // Network continuations enqueue at most one update per UI operation.
             // All Unity presentation changes run here on the Unity main thread.
             while (updates.TryDequeue(out var update)) update();
-            if (movementEnabled && ready && !busy && !moving && !Input.GetMouseButton(0) && session != null && session.NeedsRefresh) Run(session.ReconnectAsync);
+            if (movementEnabled && ready && !busy && !moving && !Input.GetMouseButton(0) && !Input.GetMouseButtonUp(0) && session != null && session.NeedsRefresh) Run(session.ReconnectAsync);
             if (district != null) district.InputCaptured = busy || loggingOut || arenaOpen || GUIUtility.keyboardControl != 0;
         }
         private void Interact()

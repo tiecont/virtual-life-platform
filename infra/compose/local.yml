@@ -25,7 +25,7 @@ services:
       POSTGRES_PASSWORD: ${VC_DB_PASSWORD:?}
     volumes: [data:/var/lib/postgresql/data]
     healthcheck:
-      test: [CMD-SHELL, pg_isready -U vc -d vc]
+      test: [CMD-SHELL, pg_isready -h 127.0.0.1 -U vc -d vc]
       interval: 2s
       timeout: 3s
       retries: 30

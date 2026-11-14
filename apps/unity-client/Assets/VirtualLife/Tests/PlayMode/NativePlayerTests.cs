@@ -27,6 +27,7 @@ namespace VirtualLife.Blockout.Tests
 
         [UnityTest]
         [Category("NativePlayerFixture")]
+        [Timeout(360000)]
         public IEnumerator LinuxPlayerPetArenaFullMatch()
         {
             var file = Environment.GetEnvironmentVariable("VL_UNITY_NATIVE_FIXTURE");
