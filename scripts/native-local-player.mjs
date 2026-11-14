@@ -8,7 +8,10 @@ import {toolEnvironment} from './test-environment.mjs';
 export async function nativeLocalPlayer({directory,origin,scope,matchId,loginName,password,worker}){
  assert.equal(process.platform,'linux');
  const binary=resolve('apps/unity-client/Builds/Linux/VirtualLife');await access(binary);
- const files=[binary,resolve('apps/unity-client/Builds/Linux/VirtualLife_Data/Managed/VirtualLife.Native.dll'),resolve('apps/unity-client/Builds/Linux/VirtualLife_Data/Managed/VirtualLife.NativeScene.dll'),resolve('artifacts/rust/target/debug/vl-game-runtime')];
+ // The extensionless development executable still needs its own Mono config.
+ // Fail before allocating a player with an unusable identity serializer.
+ await access(binary+'.config');
+ const files=[binary,binary+'.config',resolve('apps/unity-client/Builds/Linux/VirtualLife_Data/Managed/VirtualLife.Native.dll'),resolve('apps/unity-client/Builds/Linux/VirtualLife_Data/Managed/VirtualLife.NativeScene.dll'),resolve('artifacts/rust/target/debug/vl-game-runtime')];
  const hashes=[];
  for(const file of files)hashes.push({file,sha256:createHash('sha256').update(await readFile(file)).digest('hex')});
  await writeFile(resolve(directory,'player-runtime-hashes.json'),JSON.stringify({hashes},null,2)+'\n');
