@@ -58,15 +58,14 @@ namespace VirtualLife.Blockout.Tests
             Assert.That(panel.ReducedMotion, Is.True);
             Assert.That(district.NativeTarget, Is.EqualTo(district.ArenaEntrance));
             yield return WalkToArena(input, panel, district);
-            input.Key("e", true); yield return new WaitForSecondsRealtime(.08f); input.Key("e", false);
-            yield return Until(() => panel.ArenaOpen);
+            yield return EnterArena(input, panel, district);
             File.Delete(config.ackObserved); File.WriteAllText(config.ackGate, "1");
             GameCommand original;
             string retriedCommandId;
             try {
                 yield return CommandClick(input, panel, 800, 610);
                 yield return Until(() => File.Exists(config.ackObserved), () => "Pet start durable ACK: " + panel.Status);
-                yield return Until(() => !panel.Busy && panel.HasPendingCommand);
+                yield return Until(() => !panel.Busy && panel.HasPendingCommand, () => "dropped ACK pending: " + panel.Status);
                 Assert.That(panel.Ready, Is.False); Assert.That(panel.PresentedState.Version, Is.Zero);
                 original = PendingCommand(panel);
                 retriedCommandId = AssertPendingId(panel, config.ackObserved);
@@ -88,7 +87,7 @@ namespace VirtualLife.Blockout.Tests
             var saved = panel.PresentedState.Arena;
             var board = string.Join(",", saved.Board);
             File.WriteAllText(config.restartRequested, "Checkpoint version 2 before fixture SIGKILL");
-            yield return Until(() => File.Exists(config.restartReady), seconds: 30);
+            yield return Until(() => File.Exists(config.restartReady), () => "fixture restart completion", 30);
             yield return input.Click(260, 225);
             yield return Until(() => panel.Ready && !panel.Busy, () => "Pet restart reconnect: " + panel.Status);
             Assert.That(panel.PresentedState.Version, Is.EqualTo(2));
@@ -99,11 +98,10 @@ namespace VirtualLife.Blockout.Tests
             yield return input.Click(890, 648); yield return null;
             Assert.That(panel.ArenaOpen, Is.False);
             yield return WalkToArena(input, panel, district);
-            input.Key("e", true); yield return new WaitForSecondsRealtime(.08f); input.Key("e", false);
-            yield return Until(() => panel.ArenaOpen);
+            yield return EnterArena(input, panel, district);
             var usedSwap = false;
             for (var action = 0; !panel.PresentedState.Arena.Terminal && action < 60; action++) {
-                yield return Until(() => panel.Ready && !panel.Busy && !panel.Moving);
+                yield return Until(() => panel.Ready && !panel.Busy && !panel.Moving, () => "combat readiness: " + panel.Status);
                 yield return new WaitForEndOfFrame();
                 var current = panel.PresentedState;
                 if (config.loss) yield return CommandClick(input, panel, 890, 610);
@@ -122,25 +120,25 @@ namespace VirtualLife.Blockout.Tests
             Assert.That(terminal.Reward, Is.EqualTo("REWARD_PENDING"));
             if (!config.loss) Assert.That(usedSwap, Is.True, "Real OS tile clicks must submit at least one swap");
             File.WriteAllText(config.settleRequested, "Reconcile the authoritative terminal outcome");
-            yield return Until(() => File.Exists(config.settleReady), seconds: 30);
+            yield return Until(() => File.Exists(config.settleReady), () => "fixture settlement completion", 30);
             yield return input.Click(260, 225);
             yield return Until(() => panel.Ready && !panel.Busy, () => "reward refresh: " + panel.Status);
             var reward = panel.PresentedState.Reward;
             Assert.That(reward, Is.EqualTo(config.loss ? "DECLINED" : "GRANTED"));
             Assert.That(panel.PresentedState.Version, Is.EqualTo(terminal.Version));
             yield return new WaitForEndOfFrame(); ScreenCapture.CaptureScreenshot(config.screenshot);
-            yield return Until(() => File.Exists(config.screenshot));
+            yield return Until(() => File.Exists(config.screenshot), () => "terminal screenshot");
             Assert.That(panel.ReducedMotion, Is.True);
             foreach (var name in new[] {"Cinder developer figure", "Brook developer figure", "Briar developer figure"})
                 Assert.That(GameObject.Find(name).transform.localScale, Is.EqualTo(Vector3.one), "Reduced motion removes optional receipt pulses");
             yield return input.Click(890, 648); yield return null;
             input.Key("s", true);
             yield return Until(() => district.Player.transform.position.z < 4.5f, () => "return to plaza: " + panel.Status, 30);
-            input.Key("s", false); yield return Until(() => !panel.Moving);
+            input.Key("s", false); yield return Until(() => !panel.Moving, () => "stop roaming movement: " + panel.Status);
             Assert.That(panel.ArenaOpen, Is.False); Assert.That(district.InputCaptured, Is.False);
             Assert.That(panel.PresentedState.Version, Is.EqualTo(terminal.Version));
             yield return input.Click(470, 262);
-            yield return Until(() => !panel.LoggingOut && panel.Status == "Signed out. Platform session revoked.");
+            yield return Until(() => !panel.LoggingOut && panel.Status == "Signed out. Platform session revoked.", () => "Pet logout: " + panel.Status);
             Assert.That(panel.PresentedState, Is.Null); Assert.That(panel.ArenaOpen, Is.False);
             Assert.That(Entered(panel, "password", "") && Entered(panel, "loginName", ""), Is.True);
             Assert.That(UnityEngine.Object.FindObjectsByType<PetArenaStage>(FindObjectsSortMode.None).Length, Is.EqualTo(1), "Logout cannot duplicate decorative actors");
@@ -173,12 +171,27 @@ namespace VirtualLife.Blockout.Tests
         {
             input.Key("d", true);
             yield return Until(() => district.Player.transform.position.x >= 8.9f, () => "Arena X: " + district.Player.transform.position.x + " / " + panel.Status, 90);
-            input.Key("d", false); yield return Until(() => !panel.Moving);
+            input.Key("d", false); yield return new WaitForEndOfFrame();
+            yield return Until(() => !panel.Moving, () => "stop Arena X movement: " + panel.Status);
             input.Key("w", true);
             yield return Until(() => district.Player.transform.position.z >= 6f, () => "Arena Z: " + district.Player.transform.position.z + " / " + panel.Status, 90);
-            input.Key("w", false); yield return Until(() => !panel.Moving && !panel.Busy);
+            input.Key("w", false); yield return new WaitForEndOfFrame();
+            yield return Until(() => !panel.Moving && !panel.Busy, () => "stop Arena Z movement: " + panel.Status);
             Assert.That(panel.MovementState.OwnActor.XMm / 1000f, Is.EqualTo(district.Player.transform.position.x).Within(.001f));
             Assert.That(panel.MovementState.OwnActor.ZMm / 1000f, Is.EqualTo(district.Player.transform.position.z).Within(.001f));
+        }
+
+        private static IEnumerator EnterArena(LinuxInput input, NativeSceneController panel, OfflineDistrict district)
+        {
+            // E only opens presentation. Retry if an admission refresh consumed
+            // the key while interaction was temporarily disabled.
+            for (var attempt = 0; attempt < 4 && !panel.ArenaOpen; attempt++) {
+                yield return Until(() => panel.Ready && !panel.Busy && !panel.Moving && !district.InputCaptured,
+                    () => "Arena entry readiness: " + panel.Status);
+                input.Key("e", true); yield return new WaitForSecondsRealtime(.08f); input.Key("e", false);
+                yield return new WaitForEndOfFrame();
+            }
+            Assert.That(panel.ArenaOpen, Is.True, "OS E must open Arena at " + district.Player.transform.position + ": " + panel.Status);
         }
 
         [UnityTest]
