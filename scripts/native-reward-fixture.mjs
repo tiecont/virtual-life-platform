@@ -15,8 +15,15 @@ export async function nativeRewardFixture({admin,pool,schema,rewardRole,rewardPa
  await writeFile(policy,JSON.stringify({schemaVersion:1,world:scope.worldId,ruleset:'pet-arena-pve',rulesetVersion:1,contentHash:scope.contentHash,rewardKey:'pet-training-win',completionKind:'pet-arena.completed.v1'}),{mode:0o600});
  const workerAddress=new URL(address);workerAddress.username=rewardRole;workerAddress.password=rewardPassword;
  return async()=>{
-  const child=spawn(process.execPath,['apps/platform-api/dist/worker.js','--once'],{env:{PATH:process.env.PATH,NODE_ENV:'test',DATABASE_URL:workerAddress.toString(),DURABLE_JOB_ROLE:'worker',NATIVE_REWARD_POLICY_FILE:policy},stdio:'ignore'});
+  const child=spawn(process.execPath,['apps/platform-api/dist/worker.js','--once'],{env:{PATH:process.env.PATH,NODE_ENV:'test',DATABASE_URL:workerAddress.toString(),DURABLE_JOB_ROLE:'worker',NATIVE_REWARD_POLICY_FILE:policy},stdio:['ignore','pipe','pipe']});
+  let log='';
+  const capture=chunk=>{log=(log+chunk).slice(-32768);};
+  child.stdout.on('data',capture);child.stderr.on('data',capture);
   const timer=setTimeout(()=>child.kill('SIGKILL'),15000);
-  try{assert.equal(await new Promise((ok,no)=>{child.once('error',no);child.once('close',ok);}),0,'Local restricted reward worker failed');}finally{clearTimeout(timer);}
+  try{
+   const code=await new Promise((ok,no)=>{child.once('error',no);child.once('close',ok);});
+   if(code!==0)await writeFile(resolve(directory,'reward-worker-failure.log'),log.replaceAll(rewardPassword,'[redacted]').replace(/postgres(?:ql)?:\/\/\S+/g,'[redacted-test-address]'),{mode:0o600});
+   assert.equal(code,0,'Local restricted reward worker failed; inspect reward-worker-failure.log');
+  }finally{clearTimeout(timer);}
  };
 }
