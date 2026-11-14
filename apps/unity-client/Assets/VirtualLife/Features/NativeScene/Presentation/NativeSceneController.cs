@@ -202,7 +202,10 @@ namespace VirtualLife.NativeScene
         }
         private void OnDestroy()
         {
-            alive = false; generation++; lifetime.Cancel(); session?.Dispose(); lifetime.Dispose(); password = "";
+            alive = false; generation++; lifetime.Cancel(); request = null;
+            session?.Dispose(); session = null; lifetime.Dispose();
+            state = null; ready = false; busy = false; moving = false; pending = false; loggingOut = false;
+            password = ""; loginName = "";
             if (district != null) { district.NativeInteraction = null; district.NativeMovement = null; district.InputCaptured = false; district.NetworkAuthority = false; }
             while (updates.TryDequeue(out _)) { }
         }

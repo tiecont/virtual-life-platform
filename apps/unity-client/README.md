@@ -191,7 +191,12 @@ node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs -
 
 This isolated test player types disposable credentials into the IMGUI panel,
 checks a failed login, connects, holds W to approach the terminal, presses E,
-asserts the presented committed version, resynchronizes, interrupts a held ticket
+loses the ACK after PostgreSQL confirms the turn committed, reconnects and retries
+the same command ID. It verifies that E cannot submit another turn while that
+intent is pending and that retry leaves the durable receipt count unchanged.
+It then unloads the scene during a held ticket request, releases the handler after
+a fresh controller exists, checks that no late state or credentials return, and
+logs in again to recover the committed turn. Finally it interrupts another held ticket
 request with Logout and ends the local session. The fixture checks actual session
 revocation and rejects an unused ticket before it expires. A second player
 repeats the flow after a Rust SIGKILL. XTest events
