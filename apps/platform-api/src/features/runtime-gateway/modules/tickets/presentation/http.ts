@@ -23,7 +23,9 @@ export function registerRuntimeGateway(http:FastifyInstance,config:Config,identi
    if(req.headers.origin!==origin.origin||req.headers.authorization!==undefined)throw new DomainError('FORBIDDEN',403,'Runtime admission denied');
    const credential=readSessionToken(req,config)!;
    identity.verifyCsrf(credential,req.headers['x-csrf-token']);
-   if(!limits.take('runtime:'+identity.hash(credential),12))throw new DomainError('RATE_LIMITED',429,'Please wait before trying again');
+   // Five-second admission leases require steady renewal plus bounded recovery.
+   const key=identity.hash(credential);
+   if(!limits.take('runtime:'+key,30)||!limits.take('runtime-burst:'+key,6,10000))throw new DomainError('RATE_LIMITED',429,'Please wait before trying again');
    return issuer.issue(credential,target);
   });
  });

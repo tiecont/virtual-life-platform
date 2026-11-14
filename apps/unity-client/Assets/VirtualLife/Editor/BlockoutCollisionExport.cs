@@ -20,8 +20,8 @@ namespace VirtualLife.Editor
                 geometrySourceGuid = AssetDatabase.AssetPathToGUID(geometrySource),
                 geometrySourceSha256 = BitConverter.ToString(hash.ComputeHash(File.ReadAllBytes(geometrySource))).Replace("-", "").ToLowerInvariant(),
                 materialAssetGuid = AssetDatabase.AssetPathToGUID("Assets/VirtualLife/Resources/BlockoutLit.mat"),
-                interactions = BlockoutGeometry.Boxes.Where(box => box.Name == "Activity terminal").Select(box => new Interaction {
-                    id = "activity-terminal", geometryGuid = box.Id, radiusMm = Mm(District.InteractionRadius)
+                interactions = BlockoutGeometry.Boxes.Where(box => box.Name == "Activity terminal" || box.Name == "Arena entrance placeholder").Select(box => new Interaction {
+                    id = box.Name == "Activity terminal" ? "activity-terminal" : "pet-arena", geometryGuid = box.Id, radiusMm = Mm(District.InteractionRadius)
                 }).ToArray(),
                 boxes = BlockoutGeometry.Boxes.Select(box => new CollisionBox {
                     geometryGuid = box.Id, name = box.Name,

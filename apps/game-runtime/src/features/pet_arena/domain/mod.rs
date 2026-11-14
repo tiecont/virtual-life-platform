@@ -29,7 +29,7 @@ pub fn content_hash() -> [u8; 32] {
         &Value::List(vec![
             Value::Bytes(vl_pet_arena::combat::rules_hash().to_vec()),
             Value::Text(
-                "single-player;server-pet-stage;terminal-win-loss;owner-view-v1;completion-v1"
+                "single-player;server-pet-stage;terminal-win-loss;owner-view-v2;completion-v1"
                     .into(),
             ),
         ]),

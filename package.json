@@ -7,6 +7,7 @@
     "node": "26.9.x"
   },
   "scripts": {
+    "play:linux": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena --movement --linux-play",
     "docker:prepare": "node scripts/local-compose.mjs prepare",
     "docker:up": "node scripts/local-compose.mjs up",
     "docker:stop": "node scripts/local-compose.mjs stop",
