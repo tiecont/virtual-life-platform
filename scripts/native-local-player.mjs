@@ -27,6 +27,8 @@ export async function nativeLocalPlayer({directory,origin,scope,matchId,loginNam
  try{
   const code=await closed;await rewards;if(workerError)throw workerError;
   assert.equal(code,0,'Linux player exited unexpectedly; inspect the local player log');
+  const log=await readFile(resolve(directory,'player.log'),'utf8');
+  assert(!log.includes(password)&&!log.includes(loginName),'Linux player log must not contain temporary login credentials');
  }finally{
   child.kill('SIGTERM');await closed.catch(()=>{});await rewards;
   process.removeListener('SIGINT',stop);process.removeListener('SIGTERM',stop);

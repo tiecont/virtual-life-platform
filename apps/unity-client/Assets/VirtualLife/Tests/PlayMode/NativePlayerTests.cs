@@ -144,12 +144,13 @@ namespace VirtualLife.Blockout.Tests
             Assert.That(panel.PresentedState, Is.Null); Assert.That(panel.ArenaOpen, Is.False);
             Assert.That(Entered(panel, "password", "") && Entered(panel, "loginName", ""), Is.True);
             Assert.That(UnityEngine.Object.FindObjectsByType<PetArenaStage>(FindObjectsSortMode.None).Length, Is.EqualTo(1), "Logout cannot duplicate decorative actors");
+            AssertPrivateLogs(config);
             File.WriteAllText(config.result, JsonUtility.ToJson(new Facts {
                 editor = Application.unityVersion, platform = Application.platform.ToString(), graphics = SystemInfo.graphicsDeviceName,
                 graphicsApi = SystemInfo.graphicsDeviceType.ToString(), committedReceipt = true, authoritativeMovement = true,
                 ambiguousAckReplay = true, reconnectReplay = true, petArenaComplete = true, rewardReconciled = true,
                 returnedToRoam = true, reducedMotion = true, outcome = terminal.Arena.Phase, reward = reward, version = terminal.Version,
-                retriedCommandId = retriedCommandId
+                retriedCommandId = retriedCommandId, credentialLogsClear = true
             }));
         }
         private static IEnumerator CommandClick(LinuxInput input, NativeSceneController panel, params int[] coordinates)
@@ -354,13 +355,14 @@ namespace VirtualLife.Blockout.Tests
             var reentered = UnityEngine.Object.FindFirstObjectByType<NativeSceneController>();
             Assert.That(reentered, Is.Not.Null); Assert.That(reentered.Ready, Is.False);
             Assert.That(reentered.PresentedState, Is.Null);
+            AssertPrivateLogs(config);
             File.WriteAllText(config.result, JsonUtility.ToJson(new Facts {
                 editor = Application.unityVersion, platform = Application.platform.ToString(),
                 graphics = SystemInfo.graphicsDeviceName, graphicsApi = SystemInfo.graphicsDeviceType.ToString(),
                 committedReceipt = true, reconnectReplay = false, wrongCaRejected = false,
                 panelKeyboardTerminal = true, authoritativeMovement = config.movement,
                 ambiguousAckReplay = true, inflightSceneExit = true, panelAdmissionErrors = negatives.Length, version = initial + 1,
-                retriedCommandId = retriedCommandId
+                retriedCommandId = retriedCommandId, credentialLogsClear = true
             }));
         }
         private static IEnumerator LoginClick(LinuxInput input, string pacingFile)
@@ -371,6 +373,13 @@ namespace VirtualLife.Blockout.Tests
         }
         private static bool Entered(NativeSceneController panel, string field, string expected) =>
             string.Equals((string)typeof(NativeSceneController).GetField(field, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel), expected, StringComparison.Ordinal);
+        private static void AssertPrivateLogs(Fixture config)
+        {
+            Assert.That(Application.consoleLogPath, Is.Not.Null.And.Not.Empty);
+            var log = File.ReadAllText(Application.consoleLogPath);
+            Assert.That(log.Contains(config.password), Is.False, "Player log must not contain the temporary password");
+            Assert.That(log.Contains(config.loginName), Is.False, "Player log must not contain the temporary login");
+        }
         private static NativePlaySession Session(NativeSceneController panel) =>
             (NativePlaySession)typeof(NativeSceneController).GetField("session", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel);
         private static GameCommand PendingCommand(NativeSceneController panel) =>
@@ -429,10 +438,11 @@ namespace VirtualLife.Blockout.Tests
             var until = Time.realtimeSinceStartup + 5;
             while (!File.Exists(config.screenshot) && Time.realtimeSinceStartup < until) yield return null;
             Assert.That(File.Exists(config.screenshot), Is.True);
+            AssertPrivateLogs(config);
             File.WriteAllText(config.result, JsonUtility.ToJson(new Facts {
                 editor = Application.unityVersion, platform = Application.platform.ToString(),
                 graphics = SystemInfo.graphicsDeviceName, graphicsApi = SystemInfo.graphicsDeviceType.ToString(),
-                committedReceipt = true, reconnectReplay = true, wrongCaRejected = true, version = task.Result
+                committedReceipt = true, reconnectReplay = true, wrongCaRejected = true, version = task.Result, credentialLogsClear = true
             }));
         }
 
@@ -509,7 +519,7 @@ namespace VirtualLife.Blockout.Tests
         [Serializable] private sealed class Facts {
             public int panelAdmissionErrors;
             public string editor, platform, graphics, graphicsApi, retriedCommandId;
-            public bool committedReceipt, reconnectReplay, wrongCaRejected, panelKeyboardTerminal, authoritativeMovement, ambiguousAckReplay, inflightSceneExit;
+            public bool committedReceipt, reconnectReplay, wrongCaRejected, panelKeyboardTerminal, authoritativeMovement, ambiguousAckReplay, inflightSceneExit, credentialLogsClear;
             public bool petArenaComplete, rewardReconciled, returnedToRoam, reducedMotion;
             public string outcome, reward;
             public ulong version;
