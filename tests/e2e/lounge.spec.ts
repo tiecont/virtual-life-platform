@@ -59,9 +59,15 @@ async function refreshLiveAudience(page:Page){await page.getByRole('region',{nam
 async function freshReactionWindow(page:Page,mode:'OPEN'|'DISABLED'='OPEN'){
  const audience=page.getByRole('region',{name:'Audience reactions',exact:true});
  for(let attempt=0;attempt<3;attempt++){
-  const started=performance.now(),reply=page.waitForResponse(response=>new URL(response.url()).pathname==='/v1/audience/view'&&response.request().method()==='POST'&&response.status()===200);
-  await audience.getByRole('button',{name:'Refresh audience',exact:true}).click();
-  const view=AudienceViewSchema.parse(await(await reply).json());
+  const started=performance.now();
+  // A preceding refresh may still deliver headers while this click aborts it.
+  // Bind to a newly issued request and consume its body as soon as it arrives.
+  const reply=page.waitForRequest(request=>new URL(request.url()).pathname==='/v1/audience/view'&&request.method()==='POST').then(async request=>{
+   const response=await request.response();
+   if(!response)throw Error('Audience refresh ended before a response');
+   expect(response.status()).toBe(200);return AudienceViewSchema.parse(await response.json());
+  });
+  const [view]=await Promise.all([reply,audience.getByRole('button',{name:'Refresh audience',exact:true}).click()]);
   // Disabled observations have a full TTL, but opening clips the reply to the
   // ten-second bucket. Keep setup away from that same boundary before opening.
   const remaining=Math.min(view.expiresAt-view.serverTime,10000-view.serverTime%10000)-(performance.now()-started);
