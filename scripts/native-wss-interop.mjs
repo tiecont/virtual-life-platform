@@ -4,7 +4,7 @@ import {generateKeyPairSync,randomBytes,randomUUID,sign} from 'node:crypto';
 import {spawn,spawnSync} from 'node:child_process';
 import {connect} from 'node:net';
 import {existsSync} from 'node:fs';
-import {access,mkdir,readFile,writeFile} from 'node:fs/promises';
+import {access,mkdir,readFile,writeFile,rm} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {Pool} from 'pg';
 import {chromium} from '@playwright/test';
@@ -82,11 +82,38 @@ try{
  const logoutGate=resolve(directory,'logout-gate'),logoutObserved=resolve(directory,'logout-observed');
  const ackGate=resolve(directory,'ack-gate'),ackObserved=resolve(directory,'ack-observed'),ticketReleased=resolve(directory,'ticket-released');
  const recoveryProofs=[];
+ const ticketFault=resolve(directory,'ticket-fault'),loginPace=resolve(directory,'login-pace');
+ let loginWindow={count:0,until:0};
  async function exists(file){try{await access(file);return true;}catch(error){if(error.code==='ENOENT')return false;throw error;}}
+ if(interactive)http.addHook('onSend',async(request,reply,payload)=>{
+  if(request.url!=='/v1/runtime-ticket'||reply.statusCode!==200||!await exists(ticketFault))return payload;
+  const fault=await readFile(ticketFault,'utf8');
+  assert(['invalid-signature','expired','protocol'].includes(fault));
+  const body=JSON.parse(payload),[header,encoded,signature]=body.ticket.split('.');
+  if(fault==='invalid-signature'){
+   const bytes=Buffer.from(signature,'base64url');bytes[0]^=1;
+   body.ticket=header+'.'+encoded+'.'+bytes.toString('base64url');
+  }else{
+   const claims=JSON.parse(Buffer.from(encoded,'base64url'));
+   if(fault==='expired'){
+    const now=Math.floor(Date.now()/1000);claims.iat=now-10;claims.nbf=now-10;claims.exp=now-1;
+   }else claims.protocol=2;
+   const input=header+'.'+Buffer.from(JSON.stringify(claims)).toString('base64url');
+   body.ticket=input+'.'+sign(null,Buffer.from(input),keys.privateKey).toString('base64url');
+  }
+  // Keep the envelope fresh so the actual Rust verifier rejects the signed claim.
+  body.expiresAt=new Date(Date.now()+20000).toISOString();
+  (facts.panelTicketFaults??=[]).push(fault);
+  return JSON.stringify(body);
+ });
  // The isolated client fixture allocates only authenticated, CSRF-checked sessions
  // to the harness-owned scope. This hook is never part of the production API.
  http.addHook('preHandler',async req=>{
   if(interactive&&req.url==='/v1/session/login'){
+   const now=Date.now();
+   if(loginWindow.until<=now)loginWindow={count:0,until:now+60250};
+   loginWindow.count++;
+   await writeFile(loginPace,String(loginWindow.count>=5?loginWindow.until:now),{mode:0o600});
    (facts.panelLoginInput??=[]).push({accountMatches:req.body?.loginName===loginName,passwordMatches:req.body?.password===loginPassword});
   }
   if(allocateForCsharp&&req.url==='/v1/runtime-ticket'){
@@ -285,6 +312,9 @@ try{
   record('rendered-logout-revokes-identity-and-rejects-unexpired-unused-runtime-ticket');
   record('rendered-lost-ack-reconnect-blocks-new-turn-and-same-id-retry-keeps-exactly-two-receipts');
   record('rendered-scene-exit-cancels-held-ticket-clears-controller-and-relogin-recovers-committed-state');
+  assert.equal(facts.unityPlayers[0].panelAdmissionErrors,6);
+  for(const fault of ['invalid-signature','expired','protocol'])assert.equal(facts.panelTicketFaults.filter(value=>value===fault).length,1);
+  record('rendered-panel-rejects-wrong-ca-boot-content-invalid-expired-and-protocol-ticket');
   }
  }else{
  if(unity){
@@ -424,6 +454,7 @@ finally{
  if(child){child.kill('SIGINT');const timer=setTimeout(()=>child.kill('SIGKILL'),3000);await childClosed;clearTimeout(timer);}
  await app?.close();await pool?.end();
  if(created)await admin.query(`DROP SCHEMA "${schema}" CASCADE`);if(rewardRoleCreated)await admin.query(`DROP ROLE "${rewardRole}"`);if(roleCreated)await admin.query(`DROP ROLE "${role}"`);await admin.end();
+ if(localPlayer)for(const file of ['host.private.json','pet-reward-policy.private.json','player.scope.private.json','player-login.private.txt','tls/server.key','tls/ca.key','tls/wrong-ca.key'])await rm(resolve(directory,file),{force:true});
  facts.cleanupComplete=true;facts.completedAt=new Date().toISOString();
  await writeFile(directory+'/facts.json',JSON.stringify(facts,null,2)+'\n',{mode:0o600});
  console.log(JSON.stringify({result:facts.result,scenarios:facts.scenarios.length,artifactDirectory:directory,failure:facts.failure}));

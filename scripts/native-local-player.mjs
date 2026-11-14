@@ -1,12 +1,17 @@
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
-import {access,writeFile,rm} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {access,readFile,writeFile,rm} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {toolEnvironment} from './test-environment.mjs';
 
 export async function nativeLocalPlayer({directory,origin,scope,matchId,loginName,password,worker}){
  assert.equal(process.platform,'linux');
  const binary=resolve('apps/unity-client/Builds/Linux/VirtualLife');await access(binary);
+ const files=[binary,resolve('apps/unity-client/Builds/Linux/VirtualLife_Data/Managed/VirtualLife.Native.dll'),resolve('apps/unity-client/Builds/Linux/VirtualLife_Data/Managed/VirtualLife.NativeScene.dll'),resolve('artifacts/rust/target/debug/vl-game-runtime')];
+ const hashes=[];
+ for(const file of files)hashes.push({file,sha256:createHash('sha256').update(await readFile(file)).digest('hex')});
+ await writeFile(resolve(directory,'player-runtime-hashes.json'),JSON.stringify({hashes},null,2)+'\n');
  const scopeFile=resolve(directory,'player.scope.private.json'),credentials=resolve(directory,'player-login.private.txt');
  await writeFile(scopeFile,JSON.stringify({httpsOrigin:origin,wssOrigin:origin.replace('https:','wss:')+'/rt/v1',contentHash:scope.contentHash,bootId:scope.runtimeBootId,matchId,movement:true,ruleset:'pet-arena-pve',developmentCaFile:resolve(directory,'tls/ca.pem')}),{mode:0o600});
  await writeFile(credentials,'Account: '+loginName+'\nPassword: '+password+'\n',{mode:0o600});

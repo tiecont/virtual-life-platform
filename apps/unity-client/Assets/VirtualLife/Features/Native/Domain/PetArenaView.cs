@@ -47,6 +47,30 @@ namespace VirtualLife.Networking
         public static PetArenaView Decode(ulong version, byte[] bytes)
         {
             if (bytes == null || bytes.Length == 0 || bytes.Length > 16384) throw new FormatException("Invalid Pet projection");
+            var root = ProjectionJson.Parse(bytes);
+            ProjectionJson.ObjectFields(root, "state", "epoch", "reward");
+            ProjectionJson.Integer(root.Element("epoch"));
+            if (root.Element("reward") == null) throw new FormatException("Missing Pet reward");
+            ProjectionJson.OptionalString(root.Element("reward"));
+            var state = root.Element("state");
+            ProjectionJson.ObjectFields(state, "phase", "pet", "stage", "turn", "board", "health", "enemyHealth",
+                "shield", "enemyShield", "cooldown", "telegraph", "playerStatuses", "enemyStatuses");
+            ProjectionJson.Scalar(state.Element("phase"), "string");
+            foreach (var name in new[] {"pet", "stage", "turn", "health", "enemyHealth", "shield", "enemyShield", "cooldown"})
+                ProjectionJson.Integer(state.Element(name));
+            foreach (var tile in ProjectionJson.Array(state.Element("board"), 36)) ProjectionJson.Integer(tile);
+            foreach (var name in new[] {"playerStatuses", "enemyStatuses"})
+                foreach (var status in ProjectionJson.Array(state.Element(name), 3)) {
+                    ProjectionJson.ObjectFields(status, "kind", "potency", "remaining");
+                    foreach (var key in new[] {"kind", "potency", "remaining"}) ProjectionJson.Integer(status.Element(key));
+                }
+            var warning = state.Element("telegraph");
+            if (ProjectionJson.Type(warning) == "null") ProjectionJson.Scalar(warning, "null");
+            else {
+                ProjectionJson.ObjectFields(warning, "pattern", "cells", "resolvesTurn");
+                ProjectionJson.Integer(warning.Element("pattern")); ProjectionJson.Integer(warning.Element("resolvesTurn"));
+                foreach (var cell in ProjectionJson.Array(warning.Element("cells"), 11)) ProjectionJson.Integer(cell);
+            }
             Projection projection;
             try { using var stream = new MemoryStream(bytes); projection = (Projection)new DataContractJsonSerializer(typeof(Projection)).ReadObject(stream); }
             catch (Exception e) when (e is SerializationException || e is System.Xml.XmlException) { throw new FormatException("Invalid Pet projection"); }

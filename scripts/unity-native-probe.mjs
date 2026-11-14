@@ -11,13 +11,14 @@ export async function unityNativeProbe({directory,index,origin,boot,match,loginN
  assert(editor,'UNITY_EDITOR must identify the installed licensed pinned Editor');
  assert.equal(spawnSync(editor,['-version'],{encoding:'utf8'}).stdout.trim(),'6000.3.14f1');
  const prefix=resolve(directory,'unity-'+index),config=prefix+'.private.json',scope=prefix+'.scope.private.json',results=prefix+'.xml';
- await writeFile(config,JSON.stringify({origin,caCertificate:resolve(directory,'tls/ca.pem'),wrongCaCertificate:resolve(directory,'tls/wrong-ca.pem'),boot,match,loginName,password,movement,loss,ackGate:resolve(directory,'ack-gate'),ackObserved:resolve(directory,'ack-observed'),ticketReleased:resolve(directory,'ticket-released'),logoutGate:resolve(directory,'logout-gate'),logoutObserved:resolve(directory,'logout-observed'),restartRequested:prefix+'.restart-requested',restartReady:prefix+'.restart-ready',settleRequested:prefix+'.settle-requested',settleReady:prefix+'.settle-ready',screenshot:prefix+'.png',result:prefix+'.json'}),{mode:0o600});
+ await writeFile(config,JSON.stringify({origin,caCertificate:resolve(directory,'tls/ca.pem'),wrongCaCertificate:resolve(directory,'tls/wrong-ca.pem'),boot,match,loginName,password,movement,loss,admissionErrors:interactive&&!pet&&index===1,ticketFault:resolve(directory,'ticket-fault'),loginPace:resolve(directory,'login-pace'),ackGate:resolve(directory,'ack-gate'),ackObserved:resolve(directory,'ack-observed'),ticketReleased:resolve(directory,'ticket-released'),logoutGate:resolve(directory,'logout-gate'),logoutObserved:resolve(directory,'logout-observed'),restartRequested:prefix+'.restart-requested',restartReady:prefix+'.restart-ready',settleRequested:prefix+'.settle-requested',settleReady:prefix+'.settle-ready',screenshot:prefix+'.png',result:prefix+'.json'}),{mode:0o600});
  if(interactive)await writeFile(scope,JSON.stringify({httpsOrigin:origin,wssOrigin:origin.replace('https:','wss:')+'/rt/v1',contentHash,bootId:boot,matchId:match,movement,ruleset:pet?'pet-arena-pve':'headless-counter',...(pet?{developmentCaFile:resolve(directory,'tls/ca.pem')}:{})}),{mode:0o600});
  try{
   await rm(resolve('artifacts/unity-native-player'),{recursive:true,force:true});
   const child=spawn(editor,['-batchmode','-nographics','-projectPath',resolve('apps/unity-client'),'-logFile',prefix+'.log',
    '-runTests','-testPlatform','StandaloneLinux64','-testFilter','VirtualLife.Blockout.Tests.NativePlayerTests.'+(pet?'LinuxPlayerPetArenaFullMatch':interactive?'LinuxPlayerPanelKeyboardAndTerminal':'LinuxPlayerLoginCommandAndReconnect'),
-   '-buildPlayerPath',resolve('artifacts/unity-native-player'),'-testResults',results,'-playerHeartbeatTimeout','120'],
+   // Unity emits its player heartbeat every 120 seconds; allow delivery beyond that interval.
+   '-buildPlayerPath',resolve('artifacts/unity-native-player'),'-testResults',results,'-playerHeartbeatTimeout','180'],
   {env:{...toolEnvironment(process.env),VL_UNITY_NATIVE_FIXTURE:config,...(interactive?{VL_NATIVE_DEV_CONFIG:scope}:{})},stdio:'ignore',detached:true});
   const cleanup=()=>{if(child.pid)try{process.kill(-child.pid,'SIGKILL');}catch(error){if(error.code!=='ESRCH')throw error;}};
   const timer=setTimeout(cleanup,420000);

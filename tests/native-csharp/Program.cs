@@ -89,6 +89,17 @@ static class Program
         }
         try { PetArenaView.Decode(2, Encoding.UTF8.GetBytes(projection)); throw new Exception("Accepted mismatched Pet version"); }
         catch (FormatException) { passed++; }
+        foreach (var invalid in new[] {
+            projection + "{}", projection.Replace("\"epoch\":1", "\"epoch\":1,\"epoch\":1"),
+            projection.Replace("\"epoch\":1", "\"epoch\":\"1\""), projection.Replace("\"epoch\":1", "\"epoch\":1.0"),
+            projection.Replace("\"health\":100000", "\"health\":100000,\"privateSeed\":42"),
+            projection.Replace("\"health\":100000", "\"health\":100000,\"health\":100000"),
+            projection.Replace("\"pattern\":0", "\"pattern\":0,\"private\":true"),
+            projection.Replace("\"playerStatuses\":[]", "\"playerStatuses\":[{\"kind\":0,\"potency\":1000,\"remaining\":1,\"owner\":\"private\"}]")
+        }) {
+            try { PetArenaView.Decode(1, Encoding.UTF8.GetBytes(invalid)); throw new Exception("Accepted private or ambiguous Pet projection"); }
+            catch (FormatException) { passed++; }
+        }
         stage = "mock";
     }
 
@@ -101,7 +112,7 @@ static class Program
         var builder = WebApplication.CreateBuilder(); builder.Logging.ClearProviders();
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0, endpoint => endpoint.UseHttps(certificate)));
         await using var app = builder.Build(); app.UseWebSockets();
-        string mode = "valid"; int playTurns = 0; var playReceipts = new Dictionary<string, int>(); int hellos = 0; int logins = 0; int tickets = 0; int resyncs = 0;
+        string mode = "valid", projectionOverride = null; int playTurns = 0; var playReceipts = new Dictionary<string, int>(); int hellos = 0; int logins = 0; int tickets = 0; int resyncs = 0;
         var logoutId = Guid.NewGuid(); int logouts = 0;
         TaskCompletionSource<bool> committed = null, releaseAck = null;
         TaskCompletionSource<bool> ticketRequested = null, releaseTicket = null;
@@ -193,6 +204,7 @@ static class Program
                                 response.Receipt = new Receipt { Committed = !view, AuthorizedProjection = ByteString.CopyFromUtf8(
                                     JsonSerializer.Serialize(new {state = new {turns, ownRoll = 42}, epoch = 1, reward = turns == 3 ? "REWARD_PENDING" : null})) };
                                 if (mode == "play-invalid") response.Receipt.AuthorizedProjection = ByteString.CopyFromUtf8("{}");
+                                if (projectionOverride != null) response.Receipt.AuthorizedProjection = ByteString.CopyFromUtf8(projectionOverride);
                             } else {
                                 response.CanonicalVersion = 1;
                                 response.Receipt = new Receipt { Committed = true, AuthorizedProjection = ByteString.CopyFromUtf8("{\"turn\":1}") };
@@ -299,6 +311,60 @@ static class Program
             try { await play.ReconnectAsync(cancelled.Token); throw new Exception("Scene cancellation ignored"); }
             catch (OperationCanceledException) { passed++; }
             Check(!play.ToString().Contains("secret"));
+        }
+        stage = "strict-viewer-projection"; mode = "play";
+        using (var platform = new PlatformSession(origin, Handler()))
+        using (var play = new SyntheticPlaySession(platform, Client(platform.TicketAsync), Match)) {
+            var before = await play.LoginAsync("fixture", "secret-password-123");
+            const string valid = "{\"state\":{\"turns\":3,\"ownRoll\":42},\"epoch\":1,\"reward\":null}";
+            var invalid = new[] {
+                "{", valid + "{}", "[]", "null", "{}",
+                valid.Replace("\"epoch\":1", "\"epoch\":1,\"private\":\"secret-other-player\""),
+                valid.Replace("\"ownRoll\":42", "\"ownRoll\":42,\"player\":\"secret-other-player\""),
+                valid.Replace("\"epoch\":1", "\"epoch\":1,\"epoch\":1"),
+                valid.Replace("\"turns\":3", "\"turns\":3,\"turns\":3"),
+                valid.Replace("\"turns\":3", "\"turns\":\"3\""),
+                valid.Replace("\"ownRoll\":42", "\"ownRoll\":true"),
+                valid.Replace("\"epoch\":1", "\"epoch\":1.0"),
+                valid.Replace("\"epoch\":1", "\"epoch\":9223372036854775808"),
+                valid.Replace("\"epoch\":1", "\"epoch\":0"),
+                valid.Replace("\"turns\":3", "\"turns\":2"),
+                valid.Replace("\"turns\":3", "\"turns\":4"),
+                valid.Replace("\"ownRoll\":42", "\"ownRoll\":-1"),
+                valid.Replace("\"ownRoll\":42", "\"ownRoll\":100"),
+                valid.Replace("\"ownRoll\":42", "\"ownRoll\":{}"),
+                valid.Replace("\"turns\":3,", ""),
+                valid.Replace("\"epoch\":1,", ""),
+                valid.Replace("\"reward\":null", "\"reward\":42"),
+                valid.Replace("\"reward\":null", "\"reward\":\"secret-other-player\""),
+                valid.Replace("\"reward\":null", "\"reward\":{\"private\":\"secret-other-player\"}"),
+                valid.Replace("\"reward\":null", "\"reward\":" + new string('[', 10) + "0" + new string(']', 10)),
+            };
+            var projectionCase = 0;
+            foreach (var projection in invalid) {
+                stage = "strict-viewer-projection-" + projectionCase++;
+                projectionOverride = projection;
+                await Denied(() => play.ReconnectAsync(), Failure.Protocol);
+                Check(ReferenceEquals(play.State, before) && !play.HasPendingCommand);
+            }
+            foreach (var reward in new[] {"null", "\"REWARD_PENDING\"", "\"GRANTED\"", "\"DECLINED\""}) {
+                stage = "valid-viewer-reward";
+                projectionOverride = valid.Replace("\"reward\":null", "\"reward\":" + reward);
+                var seen = await play.ReconnectAsync(); Check(seen.Version == 3 && seen.OwnRoll == 42); passed++;
+            }
+            projectionOverride = "{\"epoch\":1,\"state\":{\"ownRoll\":42,\"turns\":3}}";
+            stage = "valid-viewer-field-order";
+            Check((await play.ReconnectAsync()).Turns == 3); passed++;
+        }
+        stage = "invalid-committed-projection"; projectionOverride = null; playTurns = 0; playReceipts.Clear();
+        using (var platform = new PlatformSession(origin, Handler()))
+        using (var play = new SyntheticPlaySession(platform, Client(platform.TicketAsync), Match)) {
+            var before = await play.LoginAsync("fixture", "secret-password-123");
+            projectionOverride = "{\"state\":{\"turns\":1,\"ownRoll\":42,\"private\":\"secret-other-player\"},\"epoch\":1}";
+            await Denied(() => play.AdvanceAsync(), Failure.Protocol);
+            Check(ReferenceEquals(play.State, before) && play.HasPendingCommand && playTurns == 1 && playReceipts.Count == 1); passed++;
+            projectionOverride = null;
+            Check((await play.RetryAsync()).Version == 1 && !play.HasPendingCommand && playReceipts.Count == 1); passed++;
         }
         stage = "logout-in-flight"; mode = "play"; playTurns = 0; playReceipts.Clear();
         committed = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);

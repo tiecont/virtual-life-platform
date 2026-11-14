@@ -1,7 +1,4 @@
 using System;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,25 +16,23 @@ namespace VirtualLife.Networking
                     Encoding.UTF8.GetBytes("{\"epoch\":" + current.Epoch.ToString(System.Globalization.CultureInfo.InvariantCulture) + "}"));
             }, cancellation);
 
-        protected override PlayState Decode(ulong version, byte[] bytes)
+        protected override PlayState Decode(ulong version, byte[] bytes) => DecodeProjection(version, bytes);
+        private static PlayState DecodeProjection(ulong version, byte[] bytes)
         {
-            Result result;
-            try { using (var stream = new MemoryStream(bytes)) result = (Result)new DataContractJsonSerializer(typeof(Result)).ReadObject(stream); }
-            catch (Exception e) when (e is SerializationException || e is System.Xml.XmlException) { throw new NativeFailure(Failure.Protocol); }
-            if (result?.State == null || result.Epoch < 1 || result.State.Turns < 0 || result.State.Turns > 3 ||
-                (ulong)result.State.Turns != version || result.State.Roll < 0 || result.State.Roll >= 100 ||
-                (result.Reward != null && result.Reward != "REWARD_PENDING" && result.Reward != "GRANTED" && result.Reward != "DECLINED"))
-                throw new NativeFailure(Failure.Protocol);
-            return new PlayState(version, result.Epoch, result.State.Turns, result.State.Roll, result.Reward);
-        }
-        [DataContract] private sealed class Result {
-            [DataMember(Name = "state", IsRequired = true)] public Counter State { get; set; }
-            [DataMember(Name = "epoch", IsRequired = true)] public long Epoch { get; set; }
-            [DataMember(Name = "reward")] public string Reward { get; set; }
-        }
-        [DataContract] private sealed class Counter {
-            [DataMember(Name = "turns", IsRequired = true)] public int Turns { get; set; }
-            [DataMember(Name = "ownRoll", IsRequired = true)] public int Roll { get; set; }
+            try {
+                var result = ProjectionJson.Parse(bytes);
+                ProjectionJson.ObjectFields(result, "state", "epoch", "reward");
+                var counter = result.Element("state");
+                ProjectionJson.ObjectFields(counter, "turns", "ownRoll");
+                var epoch = ProjectionJson.Integer(result.Element("epoch"));
+                var turns = ProjectionJson.Integer(counter.Element("turns"));
+                var roll = ProjectionJson.Integer(counter.Element("ownRoll"));
+                var reward = ProjectionJson.OptionalString(result.Element("reward"));
+                if (epoch < 1 || turns < 0 || turns > 3 || (ulong)turns != version || roll < 0 || roll >= 100 ||
+                    (reward != null && reward != "REWARD_PENDING" && reward != "GRANTED" && reward != "DECLINED"))
+                    throw new FormatException("Invalid synthetic projection");
+                return new PlayState(version, epoch, (int)turns, (int)roll, reward);
+            } catch (FormatException) { throw new NativeFailure(Failure.Protocol); }
         }
     }
 }
