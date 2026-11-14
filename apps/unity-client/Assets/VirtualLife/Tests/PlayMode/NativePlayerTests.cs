@@ -46,7 +46,7 @@ namespace VirtualLife.Blockout.Tests
             yield return input.Click(160, 188); yield return input.Type(config.loginName);
             Assert.That(Entered(panel, "loginName", config.loginName), Is.True, InputDiagnostic(panel, config.loginName));
             yield return input.Click(440, 188); yield return input.Type(config.password);
-            Assert.That(Entered(panel, "password", config.password), Is.True, "OS password entry");
+            Assert.That(Entered(panel, "password", config.password), Is.True, "OS password entry: " + InputDiagnostic(panel, config.password, "password"));
             yield return input.Click(90, 225);
             yield return Until(() => panel.Ready, () => "Pet login: " + panel.Status);
             Assert.That(panel.PresentedState.Arena.Phase, Is.EqualTo("ready"));
@@ -384,9 +384,9 @@ namespace VirtualLife.Blockout.Tests
             Assert.That(string.Concat(bytes.Select(b => b.ToString("x2"))), Is.EqualTo(Guid.Parse(commandId).ToString("N")), "Pending retry must retain the command ID committed in PostgreSQL");
             return commandId;
         }
-        private static string InputDiagnostic(NativeSceneController panel, string expected)
+        private static string InputDiagnostic(NativeSceneController panel, string expected, string field = "loginName")
         {
-            var value = (string)typeof(NativeSceneController).GetField("loginName", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel);
+            var value = (string)typeof(NativeSceneController).GetField(field, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel);
             var mismatch = -1;
             for (var at = 0; at < Math.Min(value.Length, expected.Length); at++)
                 if (value[at] != expected[at]) { mismatch = at; break; }

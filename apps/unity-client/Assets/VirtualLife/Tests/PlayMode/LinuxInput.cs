@@ -26,6 +26,8 @@ namespace VirtualLife.Blockout.Tests
         }
         private void Focus()
         {
+            XGetInputFocus(display, out var focused, out _);
+            if (focused == window) return;
             // Activate through the window manager as well as X11, so XWayland
             // does not leave a focused player classified as a background app.
             var active = new WindowEvent { Message = new ClientMessage {
@@ -34,7 +36,7 @@ namespace VirtualLife.Blockout.Tests
             } };
             Assert.That(XSendEvent(display, root, false, new IntPtr((1 << 20) | (1 << 19)), ref active), Is.Not.EqualTo(0));
             XRaiseWindow(display, window); XSetInputFocus(display, window, 2, UIntPtr.Zero); XSync(display, false);
-            XGetInputFocus(display, out var focused, out _);
+            XGetInputFocus(display, out focused, out _);
             Assert.That(focused, Is.EqualTo(window), "OS input must target this player's own window");
         }
         private UIntPtr Find(UIntPtr parent, UIntPtr pidAtom)
