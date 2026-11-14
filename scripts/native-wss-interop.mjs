@@ -247,7 +247,15 @@ try{
   facts.scenarios.push({name:'unconfigured-runtime-fails-closed-before-match-or-listener',result:'PASS'});
  }
  await startHost();
- const call=(method,...args)=>page.evaluate(({method,args})=>window.transport[method](...args),{method,args});
+ let lastFixtureTicketAt=0;
+ const call=async(method,...args)=>{
+  if(method==='ticket'){
+   // Keep process fixtures within the production admission burst budget.
+   await new Promise(ok=>setTimeout(ok,Math.max(0,2100-(Date.now()-lastFixtureTicketAt))));
+   lastFixtureTicketAt=Date.now();
+  }
+  return page.evaluate(({method,args})=>window.transport[method](...args),{method,args});
+ };
  const record=name=>facts.scenarios.push({name,result:'PASS'});
  if(localPlayer){
   const {nativeRewardFixture}=await import('./native-reward-fixture.mjs');

@@ -96,6 +96,8 @@ namespace VirtualLife.Blockout.Tests
             yield return Until(() => panel.ArenaOpen);
             var usedSwap = false;
             for (var action = 0; !panel.PresentedState.Arena.Terminal && action < 60; action++) {
+                yield return Until(() => panel.Ready && !panel.Busy && !panel.Moving);
+                yield return new WaitForEndOfFrame();
                 var current = panel.PresentedState;
                 if (config.loss) yield return input.Click(890, 610);
                 else if (current.Arena.Cooldown == 0) yield return input.Click(734, 610);
@@ -104,7 +106,8 @@ namespace VirtualLife.Blockout.Tests
                     yield return input.Click(684 + first % 6 * 52, 294 + first / 6 * 52);
                     yield return input.Click(684 + second % 6 * 52, 294 + second / 6 * 52); usedSwap = true;
                 }
-                yield return Until(() => panel.Ready && !panel.Busy && panel.PresentedState.Version == current.Version + 1, () => "Pet turn: " + panel.Status);
+                yield return Until(() => panel.Ready && !panel.Busy && panel.PresentedState.Version == current.Version + 1,
+                    () => "Pet turn: " + current.Version + " -> " + panel.PresentedState?.Version + "/busy=" + panel.Busy + "/pending=" + panel.HasPendingCommand + "/open=" + panel.ArenaOpen + "/phase=" + panel.PresentedState?.Arena.Phase + "/" + panel.Status);
                 Assert.That(district.RehearsalTurns, Is.Zero);
             }
             var terminal = panel.PresentedState;
