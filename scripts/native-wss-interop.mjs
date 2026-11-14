@@ -3,6 +3,7 @@ import {createRequire} from 'node:module';
 import {generateKeyPairSync,randomBytes,randomUUID,sign} from 'node:crypto';
 import {spawn,spawnSync} from 'node:child_process';
 import {connect} from 'node:net';
+import {existsSync} from 'node:fs';
 import {access,mkdir,readFile,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {Pool} from 'pg';
@@ -78,6 +79,8 @@ try{
  let allocateForCsharp=false;
  const logoutTickets=[];
  const logoutGate=resolve(directory,'logout-gate'),logoutObserved=resolve(directory,'logout-observed');
+ const ackGate=resolve(directory,'ack-gate'),ackObserved=resolve(directory,'ack-observed'),ticketReleased=resolve(directory,'ticket-released');
+ const recoveryProofs=[];
  async function exists(file){try{await access(file);return true;}catch(error){if(error.code==='ENOENT')return false;throw error;}}
  // The isolated client fixture allocates only authenticated, CSRF-checked sessions
  // to the harness-owned scope. This hook is never part of the production API.
@@ -96,6 +99,7 @@ try{
      assert(Date.now()<deadline,'Rendered logout fixture did not release its ticket barrier');
      await new Promise(ok=>setTimeout(ok,10));
     }
+    await writeFile(ticketReleased,'Held ticket handler released',{mode:0o600});
    }
   }
   if(interactive&&req.url==='/v1/session/logout'){
@@ -124,7 +128,27 @@ try{
   const target=connect(upstream,'127.0.0.1');tunnels.add(socket);tunnels.add(target);
   const destroy=()=>{socket.destroy();target.destroy();tunnels.delete(socket);tunnels.delete(target);};
   socket.on('error',destroy);target.on('error',destroy);socket.on('close',destroy);target.on('close',destroy);
-  target.on('connect',()=>{target.write('GET '+req.url+' HTTP/1.1\r\n'+Array.from({length:req.rawHeaders.length/2},(_,i)=>req.rawHeaders[2*i]+': '+req.rawHeaders[2*i+1]).join('\r\n')+'\r\n\r\n');if(head.length)target.write(head);socket.pipe(target);target.pipe(socket);});
+  // Test-only transport fault: suppress the already-committed response, then
+  // disconnect. No response payload or private projection is inspected/logged.
+  let dropping=false;
+  if(interactive)target.on('data',chunk=>{
+   if(dropping)return;
+   if(interactive&&existsSync(ackGate)){
+    dropping=true;
+    const proof=(async()=>{
+     const expected=Number(await readFile(ackGate,'utf8'));
+     assert(Number.isSafeInteger(expected)&&expected>=1&&expected<=3);
+     const row=(await pool.query('SELECT state_version,(SELECT count(*)::int FROM game_native_receipts) AS receipts FROM game_native_matches WHERE id=$1',[matchId])).rows[0];
+     assert.equal(Number(row.state_version),expected,'Lost ACK must follow a real durable commit');
+     assert.equal(row.receipts,expected,'Lost ACK must have exactly one receipt per turn');
+     await writeFile(ackObserved,'Durable receipt confirmed; response discarded',{mode:0o600});
+     destroy();
+    })();
+    recoveryProofs.push(proof);void proof.catch(()=>destroy());
+   }else if(!socket.write(chunk))target.pause();
+  });
+  socket.on('drain',()=>target.resume());
+  target.on('connect',()=>{target.write('GET '+req.url+' HTTP/1.1\r\n'+Array.from({length:req.rawHeaders.length/2},(_,i)=>req.rawHeaders[2*i]+': '+req.rawHeaders[2*i+1]).join('\r\n')+'\r\n\r\n');if(head.length)target.write(head);socket.pipe(target);if(!interactive)target.pipe(socket);});
  });
  await app.listen(port,'127.0.0.1');
  await store.configure(scope,0,true,8);
@@ -235,10 +259,13 @@ try{
   assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,2);
   assert.equal(await revokedCount(),beforeLogout+2);
   assert.equal(logoutProofs.length,2);await logoutProofs[1];
+  assert.equal(recoveryProofs.length,2);await Promise.all(recoveryProofs);
   assert.equal(facts.unityHttp.filter(value=>value.path==='/v1/session/logout'&&value.status===200).length,2);
   assert(facts.unityHttp.some(value=>value.path==='/v1/session/login'&&value.status===401));
   record('rendered-panel-after-sigkill-recovers-and-commits-next-turn');
   record('rendered-logout-revokes-identity-and-rejects-unexpired-unused-runtime-ticket');
+  record('rendered-lost-ack-reconnect-blocks-new-turn-and-same-id-retry-keeps-exactly-two-receipts');
+  record('rendered-scene-exit-cancels-held-ticket-clears-controller-and-relogin-recovers-committed-state');
  }else{
  if(unity){
   assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'0');

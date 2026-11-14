@@ -23,7 +23,7 @@
     "unity": ["Input capture", "Camera", "Offline rehearsal", "Rendering"],
     "rust": ["Native match state", "Turn validity", "RNG", "Private projections", "Journal and receipts"],
     "nest": ["Identity", "Admission", "Consent and moderation", "Reward settlement ledger", "Legacy RoomAuthority"],
-    "movement": "Current offline movement is local. Network movement/collision acceptance belongs to VL-028 after geometry qualification."
+    "movement": "Offline rehearsal is local. With explicit movement opt-in, the existing Rust writer validates direction, speed, collision and terminal proximity; Unity reconciles own snapshots. AOI and durable position qualification remain with VL-028."
   },
   "protocolDependencies": ["VL-012", "VL-013", "VL-018", "VL-020", "VL-022", "VL-081", "VL-111"],
   "activity": {
@@ -37,9 +37,10 @@
     {"procedure": "node scripts/unity-validate.mjs linux-player-tests", "expected": "2 rendered Linux player tests: spawn, interaction, cafe/Arena routes, collision and bounds", "status": "PASSED_LINUX_PLAYER", "sourceRevision": "7cff49a09eeb2bd212b0f36812627a02d7baee1f"},
     {"procedure": "Owner WASD, approach terminal, E and window interaction in actual Linux development player", "expected": "Offline playable interaction accepted", "status": "OWNER_ACCEPTED", "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073"},
     {"procedure": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-player", "expected": "22 real Nest/Rust/PostgreSQL scenarios with two rendered Unity players before/after Rust restart", "status": "PASSED_LINUX_PLAYER", "sourceRevision": "5e918b86004db6a6713567ff9128e2b792ac8073"},
+    {"procedure": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --unity-interactive --movement", "expected": "OS-input login, Rust movement, terminal commit with lost ACK, same-ID retry, in-flight scene exit and platform logout before/after Rust restart", "status": "PASSED_LINUX_PLAYER", "sourceRevision": "8ad4361ae2728334b66f93a38876db9cca03133c"},
     {"procedure": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs", "expected": "Synthetic ruleset commits once, projects per viewer, settles once and survives restart", "status": "SOURCE_TEST"},
     {"procedure": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay", "expected": "ticket -> command -> receipt -> projection -> persistence -> restart; synthetic fixture only", "status": "SOURCE_TEST"}
   ],
   "scopeCeiling": ["One compact district", "One placeholder avatar", "One activity", "Isolated developer prototype"],
-  "remainingQualification": ["Connected developer-panel keyboard interaction", "Pet Arena Unity presentation", "Windows build and physical player qualification", "Authoritative district movement under VL-028"]
+  "remainingQualification": ["Physical owner acceptance of the connected developer panel", "Pet Arena Unity presentation", "Windows build and physical player qualification", "Policy-filtered AOI and durable movement lifecycle under VL-028"]
 }

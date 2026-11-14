@@ -75,8 +75,29 @@ namespace VirtualLife.Blockout.Tests
                 Assert.That(district.Player.transform.position, Is.EqualTo(before), "Offline movement cannot override connected authority");
             }
             Assert.That(district.RehearsalTurns, Is.Zero);
+            File.Delete(config.ackObserved);
+            File.WriteAllText(config.ackGate, (initial + 1).ToString(System.Globalization.CultureInfo.InvariantCulture));
+            try {
+                input.Key("e", true); yield return new WaitForSecondsRealtime(0.08f); input.Key("e", false);
+                yield return Until(() => File.Exists(config.ackObserved), () => "durable lost ACK: " + panel.Status);
+                yield return Until(() => !panel.Busy && panel.HasPendingCommand, () => "ambiguous command: " + panel.Status);
+                Assert.That(panel.Ready, Is.False);
+                Assert.That(panel.Status, Does.StartWith("Native failure:"));
+                Assert.That(panel.PresentedState.Version, Is.EqualTo(initial), "A missing receipt cannot update presentation");
+                yield return new WaitForEndOfFrame();
+                ScreenCapture.CaptureScreenshot(config.screenshot + ".ambiguous.png");
+                yield return Until(() => File.Exists(config.screenshot + ".ambiguous.png"));
+            } finally { File.Delete(config.ackGate); File.Delete(config.ackObserved); }
+            yield return input.Click(260, 225);
+            yield return Until(() => panel.Ready && !panel.Busy, () => "pending resync: " + panel.Status);
+            Assert.That(panel.PresentedState.Version, Is.EqualTo(initial + 1));
+            Assert.That(panel.HasPendingCommand, Is.True, "A read cannot resolve the immutable pending intent");
             input.Key("e", true); yield return new WaitForSecondsRealtime(0.08f); input.Key("e", false);
-            yield return Until(() => panel.Ready && panel.PresentedState.Version == initial + 1, () => "terminal: " + panel.Status);
+            yield return Until(() => panel.Status.StartsWith("Reconnect and retry"));
+            Assert.That(panel.PresentedState.Version, Is.EqualTo(initial + 1));
+            yield return input.Click(470, 225);
+            yield return Until(() => panel.Ready && !panel.Busy && !panel.HasPendingCommand, () => "same-ID retry: " + panel.Status);
+            Assert.That(panel.PresentedState.Version, Is.EqualTo(initial + 1), "Retry resolves the original turn without a second effect");
             Assert.That(panel.PresentedState.Turns, Is.EqualTo((int)initial + 1));
             Assert.That(district.RehearsalTurns, Is.Zero, "Only a committed server receipt can advance native gameplay");
             yield return input.Click(260, 225);
@@ -85,6 +106,35 @@ namespace VirtualLife.Blockout.Tests
             yield return new WaitForEndOfFrame();
             ScreenCapture.CaptureScreenshot(config.screenshot);
             yield return Until(() => File.Exists(config.screenshot));
+            // Unload while an actual HTTP request is blocked, then release its
+            // handler after a fresh controller exists. Late work cannot restore UI.
+            File.Delete(config.logoutObserved); File.Delete(config.ticketReleased);
+            File.WriteAllText(config.logoutGate, "Hold ticket until the old scene is gone");
+            try {
+                yield return input.Click(260, 225);
+                yield return Until(() => File.Exists(config.logoutObserved), () => "scene-exit ticket barrier: " + panel.Status);
+                Assert.That(panel.Busy, Is.True);
+                var leaving = panel;
+                yield return SceneManager.LoadSceneAsync("AuroraBlockout");
+                yield return null;
+                Assert.That(leaving == null, Is.True, "Scene unload must destroy the old controller");
+                Assert.That(leaving.PresentedState, Is.Null);
+                Assert.That(leaving.Ready || leaving.Busy || leaving.HasPendingCommand || leaving.Moving, Is.False);
+                Assert.That(Entered(leaving, "password", "") && Entered(leaving, "loginName", ""), Is.True);
+                panel = UnityEngine.Object.FindFirstObjectByType<NativeSceneController>();
+                Assert.That(panel, Is.Not.Null);
+                File.Delete(config.logoutGate);
+                yield return Until(() => File.Exists(config.ticketReleased));
+                yield return new WaitForSecondsRealtime(0.5f);
+                Assert.That(panel.Ready || panel.Busy || panel.HasPendingCommand, Is.False);
+                Assert.That(panel.PresentedState, Is.Null);
+                Assert.That(panel.Status, Does.StartWith("Disconnected."));
+            } finally { File.Delete(config.logoutGate); File.Delete(config.logoutObserved); File.Delete(config.ticketReleased); }
+            yield return input.Click(160, 188); yield return input.Type(config.loginName);
+            yield return input.Click(440, 188); yield return input.Type(config.password);
+            yield return input.Click(90, 225);
+            yield return Until(() => panel.Ready && !panel.Busy, () => "scene re-entry login: " + panel.Status);
+            Assert.That(panel.PresentedState.Version, Is.EqualTo(initial + 1), "New login recovers the committed turn");
             File.Delete(config.logoutObserved);
             File.WriteAllText(config.logoutGate, "Hold the next ticket response");
             try {
@@ -113,7 +163,8 @@ namespace VirtualLife.Blockout.Tests
                 editor = Application.unityVersion, platform = Application.platform.ToString(),
                 graphics = SystemInfo.graphicsDeviceName, graphicsApi = SystemInfo.graphicsDeviceType.ToString(),
                 committedReceipt = true, reconnectReplay = false, wrongCaRejected = false,
-                panelKeyboardTerminal = true, authoritativeMovement = config.movement, version = initial + 1
+                panelKeyboardTerminal = true, authoritativeMovement = config.movement,
+                ambiguousAckReplay = true, inflightSceneExit = true, version = initial + 1
             }));
         }
         private static bool Entered(NativeSceneController panel, string field, string expected) =>
@@ -236,11 +287,11 @@ namespace VirtualLife.Blockout.Tests
         private static void Require(bool condition) { if (!condition) throw new InvalidOperationException("Native player invariant failed"); }
         [Serializable] private sealed class Fixture {
             public bool movement;
-            public string origin = "", caCertificate = "", wrongCaCertificate = "", boot = "", match = "", loginName = "", password = "", screenshot = "", result = "", logoutGate = "", logoutObserved = "";
+            public string origin = "", caCertificate = "", wrongCaCertificate = "", boot = "", match = "", loginName = "", password = "", screenshot = "", result = "", logoutGate = "", logoutObserved = "", ackGate = "", ackObserved = "", ticketReleased = "";
         }
         [Serializable] private sealed class Facts {
             public string editor, platform, graphics, graphicsApi;
-            public bool committedReceipt, reconnectReplay, wrongCaRejected, panelKeyboardTerminal, authoritativeMovement;
+            public bool committedReceipt, reconnectReplay, wrongCaRejected, panelKeyboardTerminal, authoritativeMovement, ambiguousAckReplay, inflightSceneExit;
             public ulong version;
         }
     }
