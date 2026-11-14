@@ -19,6 +19,9 @@ enum IntentAction {
     Pass {},
 }
 impl NativeGame for Rules {
+    fn interaction(&self, kind: &str) -> Option<&'static str> {
+        (kind == "pet.intent.v1").then_some("pet-arena")
+    }
     fn view_kind(&self) -> &'static str {
         "pet.view.v1"
     }

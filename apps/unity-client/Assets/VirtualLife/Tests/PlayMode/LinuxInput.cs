@@ -13,8 +13,10 @@ namespace VirtualLife.Blockout.Tests
         private readonly IntPtr display;
         private readonly UIntPtr window;
         private readonly UIntPtr root;
-        public LinuxInput()
+        private readonly float scale;
+        public LinuxInput(int logicalWidth = 650, int logicalHeight = 390)
         {
+            scale = Mathf.Min(1f, Screen.width / (float)logicalWidth, Screen.height / (float)logicalHeight);
             display = XOpenDisplay(IntPtr.Zero);
             Assert.That(display, Is.Not.EqualTo(IntPtr.Zero), "An X11/XWayland display is required");
             root = XDefaultRootWindow(display);
@@ -40,6 +42,7 @@ namespace VirtualLife.Blockout.Tests
         }
         public IEnumerator Click(int x, int y)
         {
+            x = Mathf.RoundToInt(x * scale); y = Mathf.RoundToInt(y * scale);
             Assert.That(XTranslateCoordinates(display, window, root, x, y, out var rx, out var ry, out _), Is.Not.EqualTo(0));
             XTestFakeMotionEvent(display, -1, rx, ry, UIntPtr.Zero);
             XTestFakeButtonEvent(display, 1, true, UIntPtr.Zero); XSync(display, false);
@@ -57,16 +60,16 @@ namespace VirtualLife.Blockout.Tests
         {
             foreach (var character in value) {
                 var shifted = character == '_';
-                if (shifted) { Key("Shift_L", true); yield return new WaitForSecondsRealtime(0.04f); }
+                if (shifted) { Key("Shift_L", true); yield return new WaitForSecondsRealtime(0.08f); }
                 var name = shifted ? "minus" : character.ToString();
-                Key(name, true); yield return new WaitForSecondsRealtime(0.04f);
+                Key(name, true); yield return new WaitForSecondsRealtime(0.08f);
                 Key(name, false); if (shifted) Key("Shift_L", false);
-                yield return new WaitForSecondsRealtime(0.04f);
+                yield return new WaitForSecondsRealtime(0.08f);
             }
         }
         public void Dispose()
         {
-            foreach (var key in new[] {"w", "e", "Shift_L", "Control_L"}) Key(key, false);
+            foreach (var key in new[] {"w", "a", "s", "d", "e", "Shift_L", "Control_L"}) Key(key, false);
             XCloseDisplay(display);
         }
         [DllImport("libX11.so.6")] private static extern IntPtr XOpenDisplay(IntPtr name);

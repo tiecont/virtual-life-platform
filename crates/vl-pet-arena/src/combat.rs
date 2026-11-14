@@ -118,6 +118,18 @@ impl State {
     pub fn cooldown(&self) -> u8 {
         self.cooldown
     }
+    pub fn shield(&self) -> Fixed {
+        self.shield
+    }
+    pub fn enemy_shield(&self) -> Fixed {
+        self.enemy_shield
+    }
+    pub fn player_status(&self) -> &[Status] {
+        &self.player_status
+    }
+    pub fn enemy_status(&self) -> &[Status] {
+        &self.enemy_status
+    }
     pub fn telegraph(&self) -> Option<&Telegraph> {
         self.telegraph.as_ref()
     }

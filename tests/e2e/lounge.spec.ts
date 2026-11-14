@@ -56,14 +56,17 @@ test('voluntary bartender Stop remains available while a committed claim respons
 async function refreshLiveAudience(page:Page){await page.getByRole('region',{name:'Text and visual sets'}).getByRole('button',{name:'Refresh lounge sets',exact:true}).click();await expect(page.getByRole('article',{name:'Lounge set: Original browser text set'})).toContainText('Set state: LIVE');const audience=page.getByRole('region',{name:'Audience reactions',exact:true});await audience.getByRole('button',{name:'Refresh audience',exact:true}).click();return audience;}
 // Count assertions need an observation away from the ten-second rollover. Wait only
 // for an observed short window to expire; never retry a mutation or extend its TTL.
-async function freshReactionWindow(page:Page){
+async function freshReactionWindow(page:Page,mode:'OPEN'|'DISABLED'='OPEN'){
  const audience=page.getByRole('region',{name:'Audience reactions',exact:true});
  for(let attempt=0;attempt<3;attempt++){
   const started=performance.now(),reply=page.waitForResponse(response=>new URL(response.url()).pathname==='/v1/audience/view'&&response.request().method()==='POST'&&response.status()===200);
   await audience.getByRole('button',{name:'Refresh audience',exact:true}).click();
-  const view=AudienceViewSchema.parse(await(await reply).json()),remaining=view.expiresAt-view.serverTime-(performance.now()-started);
-  expect(view.mode).toBe('OPEN');
-  if(remaining>=2000){await expect(audience.getByRole('button',{name:'Send Clap',exact:true})).toBeEnabled();return audience;}
+  const view=AudienceViewSchema.parse(await(await reply).json());
+  // Disabled observations have a full TTL, but opening clips the reply to the
+  // ten-second bucket. Keep setup away from that same boundary before opening.
+  const remaining=Math.min(view.expiresAt-view.serverTime,10000-view.serverTime%10000)-(performance.now()-started);
+  expect(view.mode).toBe(mode);
+  if(remaining>=2000){await expect(audience.getByRole('button',{name:mode==='OPEN'?'Send Clap':'Open moderated reactions',exact:true})).toBeEnabled();return audience;}
   await page.waitForTimeout(Math.max(0,remaining)+100);
  }
  throw Error('No sufficiently fresh reaction observation in three bounded reads');
@@ -114,7 +117,7 @@ for(const action of ['view','send','control'] as const)test(`successful Lounge $
   await expect.poll(()=>snapshots,{timeout:20000}).toBeGreaterThanOrEqual(2);
   await expect(page.getByRole('status')).toHaveText('Connected');
   const audience=await refreshLiveAudience(page);
-  if(action==='send'){await audience.getByRole('button',{name:'Open moderated reactions',exact:true}).click();await expect(audience).toContainText('Audience control recorded.');await freshReactionWindow(page);}
+  if(action==='send'){await freshReactionWindow(page,'DISABLED');await audience.getByRole('button',{name:'Open moderated reactions',exact:true}).click();await expect(audience).toContainText('Audience control recorded.');await freshReactionWindow(page);}
   let windowMs=-1;
   await page.route('**/v1/audience/'+action,async route=>{
    mutations++;const response=await route.fetch();expect(response.status()).toBe(200);

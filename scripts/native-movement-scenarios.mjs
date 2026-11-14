@@ -3,9 +3,12 @@ import {setTimeout as delay} from 'node:timers/promises';
 import {performance} from 'node:perf_hooks';
 
 export async function movementScenarios({call,store,credential,scope,csrf,origin,record,facts,restart,matchId,pool,admin,role}){
- let link,transportSequence,nextId,snapshot;
+ let link,transportSequence,nextId,snapshot,lastTicketAt=0;
  async function connect(allocate=true){
+  // Exercise fresh admission without exceeding the real six-per-ten-second burst budget.
+  await delay(Math.max(0,2100-(performance.now()-lastTicketAt)));
   if(allocate)await store.allocate(credential,scope);
+  lastTicketAt=performance.now();
   const ticket=await call('ticket',csrf);assert.equal(ticket.status,200);
   link=await call('open',origin.replace('https:','wss:')+'/rt/v1');transportSequence=1;nextId=1;
   await call('send',link,nextId,transportSequence,'hello',{ticket:ticket.body.ticket,clientBuild:'movement-fixture-v1',contentHash:Array.from(Buffer.from(scope.contentHash,'hex'))});
@@ -53,20 +56,24 @@ export async function movementScenarios({call,store,credential,scope,csrf,origin
  // Return to the center line and drive into the terminal's swept capsule margin.
  while(snapshot.own.xMm>0){const result=await move(input({directionX:-1000,directionZ:0}));assert.equal(result.result.kind,'snapshot');if(snapshot.own.xMm<0)break;}
  await call('close',link);await connect();
- for(let step=0;step<90;step++){
+ for(let step=0;snapshot.own.zMm<2019&&step<400;step++){
   if(step>0&&step%25===0){const before=snapshot;await call('close',link);await connect();assert.deepEqual(snapshot.own,before.own);assert.equal(snapshot.epoch,before.epoch);}
   const result=await move();assert.equal(result.result.kind,'snapshot',JSON.stringify({step,kind:result.result.kind,code:result.result.code,closed:result.result.closed,elapsedMs:result.elapsedMs,transportSequence,nextId}));
  }
- assert(snapshot.own.zMm<=2020);assert(snapshot.own.zMm>=2019);
+ assert(snapshot.own.zMm<=2020);assert(snapshot.own.zMm>=2019,JSON.stringify({xMm:snapshot.own.xMm,zMm:snapshot.own.zMm}));
+ for(let step=0;step<10;step++){
+  assert.equal((await move()).result.kind,'snapshot');assert(snapshot.own.zMm<=2020);
+ }
  record('movement-runtime-cannot-pass-through-terminal-capsule-margin');
  // A second socket for this account must wait behind the command's spatial gate.
  const saved={link,transportSequence,nextId,snapshot};await connect(false);
  const peer=link,peerSnapshot=snapshot;
  ({link,transportSequence,nextId,snapshot}=saved);
  const blocker=await pool.connect();let committed;
+ const committedId=++nextId;
  try{
   await blocker.query('BEGIN');await blocker.query('SELECT id FROM game_native_matches WHERE id=$1 FOR UPDATE',[matchId]);
-  await call('send',link,230,++transportSequence,'gameIntent',intent(0));
+  await call('send',link,committedId,++transportSequence,'gameIntent',intent(0));
   let waiting=false;
   for(let attempt=0;attempt<50;attempt++){
    waiting=(await admin.query("SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE usename=$1 AND wait_event_type='Lock' AND query LIKE '%game_native_matches%') AS waiting",[role])).rows[0].waiting;
@@ -80,15 +87,23 @@ export async function movementScenarios({call,store,credential,scope,csrf,origin
   const moved=await call('next',peer);assert.equal(moved.kind,'snapshot');snapshot=moved.snapshot;
  }finally{await blocker.query('ROLLBACK');blocker.release();await call('close',peer);}
  record('terminal-commit-holds-same-account-movement-gate-across-two-wss-sockets');
+ await call('close',link);await connect();
  // Moving outside the radius cannot invalidate an already committed immutable ID.
- for(let step=0;step<35;step++)assert.equal((await move(input({directionZ:-1000}))).result.kind,'snapshot');
+ for(let step=0;snapshot.own.zMm>=500&&step<200;step++){
+  if(step>0&&step%25===0){await call('close',link);await connect();}
+  const moved=await move(input({directionZ:-1000}));
+  assert.equal(moved.result.kind,'snapshot',JSON.stringify({step,code:moved.result.code}));
+ }
  assert(snapshot.own.zMm<500);
  await call('close',link);await connect();
- const replay=await game(0,'fixture.advance.v1',230);assert.deepEqual(replay.receipt,committed.receipt);assert.equal(replay.version,'1');
+ const replay=await game(0,'fixture.advance.v1',committedId);assert.deepEqual(replay.receipt,committed.receipt);assert.equal(replay.version,'1');
  assert.equal((await game(1)).code,6);
  assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,1);
  record('terminal-far-reconnect-replays-authenticated-receipt-without-new-effect');
- for(let step=0;snapshot.own.zMm<1000&&step<70;step++)assert.equal((await move()).result.kind,'snapshot');
+ for(let step=0;snapshot.own.zMm<1000&&step<200;step++){
+  if(step>0&&step%25===0){await call('close',link);await connect();}
+  assert.equal((await move()).result.kind,'snapshot');
+ }
  assert(snapshot.own.zMm>=1000);
  const second=await game(1);assert.equal(second.kind,'receipt');assert.equal(second.version,'2');
  const position={x:snapshot.own.xMm,z:snapshot.own.zMm},epoch=snapshot.epoch;
@@ -96,7 +111,7 @@ export async function movementScenarios({call,store,credential,scope,csrf,origin
  assert.deepEqual({x:snapshot.own.xMm,z:snapshot.own.zMm},position);
  record('movement-reconnect-retains-one-zone-actor-and-reconciles-own-position');
  await restart();await connect();assert.notEqual(snapshot.epoch,epoch);assert.equal(snapshot.own.zMm,-4000);
- const recovered=await game(0,'fixture.advance.v1',230);assert.equal(recovered.version,'1');assert.deepEqual(recovered.receipt,committed.receipt);
+ const recovered=await game(0,'fixture.advance.v1',committedId);assert.equal(recovered.version,'1');assert.deepEqual(recovered.receipt,committed.receipt);
  assert.equal((await game(2)).code,6);
  const restoredView=await game(0,'fixture.view.v1');assert.equal(restoredView.version,'2');assert.deepEqual(restoredView.receipt.projection,second.receipt.projection);
  assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,2);

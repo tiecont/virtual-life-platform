@@ -15,7 +15,10 @@ namespace VirtualLife.NativeScene
     {
         private readonly ConcurrentQueue<Action> updates = new ConcurrentQueue<Action>();
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
-        private SyntheticPlaySession session;
+        private NativePlaySession session;
+        private DevelopmentCertificateTrust developmentTrust;
+        private PetArenaHud arena;
+        private bool arenaOpen;
         private OfflineDistrict district;
         private PlayState state;
         private string loginName = "", password = "", status = "Native configuration unavailable.";
@@ -32,6 +35,8 @@ namespace VirtualLife.NativeScene
         public bool HasPendingCommand => pending;
         public bool Moving => moving;
         public bool LoggingOut => loggingOut;
+        public bool ArenaOpen => arenaOpen;
+        public bool ReducedMotion => arena == null || arena.ReducedMotion;
         public VirtualLife.Native.Public.V1.WorldSnapshot MovementState => session?.MovementState;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -60,9 +65,17 @@ namespace VirtualLife.NativeScene
                 step = "scope-json";
                 var config = JsonUtility.FromJson<DevelopmentConfig>(File.ReadAllText(path));
                 if (config == null || config.contentHash.Length != 64) throw new ArgumentException();
+                if (string.IsNullOrEmpty(config.ruleset)) config.ruleset = "headless-counter";
                 var hash = new byte[32];
                 for (var at = 0; at < 32; at++) hash[at] = Convert.ToByte(config.contentHash.Substring(at * 2, 2), 16);
                 var origin = new Uri(config.httpsOrigin);
+                if (!string.IsNullOrEmpty(config.developmentCaFile) && developmentTrust == null) {
+                    if (!Application.isEditor && !Debug.isDebugBuild) throw new ArgumentException();
+                    step = "local-ca";
+                    var ca = Path.GetFullPath(config.developmentCaFile);
+                    if (ca.StartsWith(assets, StringComparison.Ordinal)) throw new ArgumentException();
+                    developmentTrust = new DevelopmentCertificateTrust(ca, origin);
+                }
                 var boot = Guid.Parse(config.bootId); var match = Guid.Parse(config.matchId);
                 if (match == Guid.Empty) throw new ArgumentException();
                 step = "platform";
@@ -71,15 +84,20 @@ namespace VirtualLife.NativeScene
                     step = "connection";
                     var connection = new NativeConnection(new Uri(config.wssOrigin), origin, hash, boot, platform.TicketAsync);
                     step = "session";
-                    session = new SyntheticPlaySession(platform, connection, match);
+                    if (config.ruleset != "headless-counter" && config.ruleset != "pet-arena-pve") throw new ArgumentException();
+                    session = config.ruleset == "pet-arena-pve" ? (NativePlaySession)new PetArenaPlaySession(platform, connection, match) : new SyntheticPlaySession(platform, connection, match);
                 } catch { platform.Dispose(); throw; }
                 step = "district";
                 if (district == null) throw new ArgumentException();
                 district.NativeInteraction = Interact;
+                if (session is PetArenaPlaySession) {
+                    arena = new PetArenaHud(GetComponent<PetArenaStage>() ?? gameObject.AddComponent<PetArenaStage>());
+                    district.NativeTarget = district.ArenaEntrance;
+                }
                 movementEnabled = config.movement;
                 district.NetworkAuthority = movementEnabled;
                 district.NativeMovement = Move;
-                status = "Disconnected. Log in to the isolated native synthetic match.";
+                status = "Disconnected. Log in to the isolated native " + (arena == null ? "synthetic match." : "Pet Arena.");
             } catch {
                 session?.Dispose(); session = null;
                 status = "Invalid local native configuration (" + step + "). Check the external scope file and system TLS trust.";
@@ -90,13 +108,14 @@ namespace VirtualLife.NativeScene
             // Network continuations enqueue at most one update per UI operation.
             // All Unity presentation changes run here on the Unity main thread.
             while (updates.TryDequeue(out var update)) update();
-            if (movementEnabled && ready && !busy && !moving && session != null && session.NeedsRefresh) Run(session.ReconnectAsync);
-            if (district != null) district.InputCaptured = busy || loggingOut || GUIUtility.keyboardControl != 0;
+            if (movementEnabled && ready && !busy && !moving && !Input.GetMouseButton(0) && !Input.GetMouseButtonUp(0) && session != null && session.NeedsRefresh) Run(session.ReconnectAsync);
+            if (district != null) district.InputCaptured = busy || loggingOut || arenaOpen || GUIUtility.keyboardControl != 0;
         }
         private void Interact()
         {
             if (session == null || busy || moving || !ready) return;
             if (pending) { status = "Reconnect and retry the pending command before another turn."; return; }
+            if (arena != null) { arenaOpen = true; return; }
             if (state == null || state.Turns >= 3) { status = "Synthetic match complete. Reconnect to refresh settlement."; return; }
             Run(session.AdvanceAsync);
         }
@@ -122,7 +141,7 @@ namespace VirtualLife.NativeScene
             busy = true; status = "Connecting / awaiting authoritative receipt...";
             try {
                 var result = await work(current.Token).ConfigureAwait(false);
-                if (alive) updates.Enqueue(() => { current.Dispose(); if (generation != startedGeneration) return; request = null; state = result; ready = true; pending = owner.HasPendingCommand; busy = false; if (movementEnabled && owner.MovementState != null) district.Reconcile(owner.MovementState.OwnActor.XMm, owner.MovementState.OwnActor.ZMm); status = "Authorized server state received."; });
+                if (alive) updates.Enqueue(() => { current.Dispose(); if (generation != startedGeneration) return; request = null; state = result; arena?.Present(result); ready = true; pending = owner.HasPendingCommand; busy = false; if (movementEnabled && owner.MovementState != null) district.Reconcile(owner.MovementState.OwnActor.XMm, owner.MovementState.OwnActor.ZMm); status = "Authorized server state received."; });
             } catch (OperationCanceledException) {
                 if (alive) updates.Enqueue(() => { current.Dispose(); if (generation != startedGeneration) return; request = null; ready = false; busy = false; pending = owner.HasPendingCommand; status = "Cancelled. Reconnect before continuing."; });
             } catch (NativeFailure failure) {
@@ -139,6 +158,7 @@ namespace VirtualLife.NativeScene
             var startedGeneration = ++generation;
             request?.Cancel(); request = null;
             ready = false; busy = false; moving = false; pending = false; state = null;
+            arenaOpen = false; arena?.Clear();
             password = ""; loginName = ""; loggingOut = true;
             GUIUtility.keyboardControl = 0;
             status = "Signing out through the platform...";
@@ -159,10 +179,10 @@ namespace VirtualLife.NativeScene
         {
             var matrix = GUI.matrix;
             var enabled = GUI.enabled;
-            var scale = Mathf.Min(1f, Screen.width / 650f, Screen.height / 390f);
+            var scale = arena == null ? Mathf.Min(1f, Screen.width / 650f, Screen.height / 390f) : Mathf.Min(1f, Screen.width / 1024f, Screen.height / 768f);
             GUI.matrix = Matrix4x4.Scale(new Vector3(scale, scale, 1f));
             var wrapped = new GUIStyle(GUI.skin.label) { wordWrap = true };
-            GUI.Box(new Rect(16, 100, 610, 270), "Native developer connection - synthetic ruleset");
+            GUI.Box(new Rect(16, 100, 610, 270), "Native developer connection - " + (arena == null ? "synthetic ruleset" : "Pet Arena PvE"));
             GUI.Label(new Rect(28, 128, 580, 44), status, wrapped);
             GUI.enabled = session != null && !busy && !moving;
             GUI.Label(new Rect(28, 177, 72, 24), "Account");
@@ -188,29 +208,36 @@ namespace VirtualLife.NativeScene
             if (GUI.Button(new Rect(188, 248, 170, 26), "End local session")) {
                 generation++; request?.Cancel(); request = null; session?.Dispose(); session = null;
                 state = null; ready = false; busy = false; moving = false; pending = false; password = ""; loginName = "";
+                arenaOpen = false; arena?.Clear();
                 GUIUtility.keyboardControl = 0;
                 Initialize();
             }
             GUI.enabled = session != null && !loggingOut;
             if (GUI.Button(new Rect(368, 248, 220, 26), "Logout")) Logout();
             GUI.enabled = true;
-            if (state != null) GUI.Label(new Rect(28, 282, 580, 24), "Committed version " + state.Version + " | turn " + state.Turns + "/3 | reward " + (state.Reward ?? "none"));
+            if (state != null) GUI.Label(new Rect(28, 282, 580, 24), "Committed version " + state.Version + " | turn " + state.Turns + (arena == null ? "/3" : "/60") + " | reward " + (state.Reward ?? "none"));
             var movement = movementEnabled ? session?.MovementState : null;
-            GUI.Label(new Rect(28, 314, 580, 44), movement == null ? "Walk to the blue terminal and press E for one authoritative turn." :
+            GUI.Label(new Rect(28, 314, 580, 44), movement == null ? "Walk to the " + (arena == null ? "blue terminal" : "purple Arena gate") + " and press E." :
                 "Rust position (mm): " + movement.OwnActor.XMm + ", " + movement.OwnActor.ZMm + " | tick " + movement.Tick + " | input " + movement.OwnActor.LastInputSequence, wrapped);
+            if (arena != null) arena.Draw(state?.Arena, arenaOpen, ready && !busy && !moving && !pending, session as PetArenaPlaySession,
+                Run, () => { arenaOpen = false; GUIUtility.keyboardControl = 0; });
             GUI.matrix = matrix; GUI.enabled = enabled;
         }
         private void OnDestroy()
         {
             alive = false; generation++; lifetime.Cancel(); request = null;
             session?.Dispose(); session = null; lifetime.Dispose();
+            developmentTrust?.Dispose(); developmentTrust = null;
             state = null; ready = false; busy = false; moving = false; pending = false; loggingOut = false;
+            arenaOpen = false; arena?.Clear();
             password = ""; loginName = "";
-            if (district != null) { district.NativeInteraction = null; district.NativeMovement = null; district.InputCaptured = false; district.NetworkAuthority = false; }
+            if (district != null) { district.NativeInteraction = null; district.NativeMovement = null; district.NativeTarget = null; district.InputCaptured = false; district.NetworkAuthority = false; }
             while (updates.TryDequeue(out _)) { }
         }
         [Serializable] private sealed class DevelopmentConfig {
             public string httpsOrigin = "", wssOrigin = "", contentHash = "", bootId = "", matchId = "";
+            public string developmentCaFile = "";
+            public string ruleset = "headless-counter";
             public bool movement = false;
         }
     }

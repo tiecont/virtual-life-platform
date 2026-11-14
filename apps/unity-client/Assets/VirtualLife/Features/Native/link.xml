@@ -1,5 +1,8 @@
 <linker>
   <assembly fullname="VirtualLife.Native" preserve="all" />
+  <assembly fullname="Mono.Security">
+    <type fullname="Mono.Security.Interface.MonoTlsSettings" preserve="all" />
+  </assembly>
   <!-- DataContractJsonSerializer loads its configuration and writers through
        reflection. Preserve the framework implementation in stripped players. -->
   <assembly fullname="System.Runtime.Serialization" preserve="all" />

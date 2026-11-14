@@ -14,10 +14,20 @@ fn fixture_rules() -> Rules {
 #[test]
 fn adapter_contract_rejects_forgery_and_cross_account_projection() {
     let rules = fixture_rules();
+    assert_eq!(rules.interaction("pet.intent.v1"), Some("pet-arena"));
+    assert_eq!(rules.interaction("pet.view.v1"), None);
     let state = rules.initial().unwrap();
     assert!(rules.completion(&state).is_err());
     assert!(rules.project(&state, "intruder").is_err());
     assert!(!rules.can_spectate(&state, "intruder"));
+    let projection: serde_json::Value =
+        serde_json::from_slice(&rules.project(&state, PLAYER).unwrap()).unwrap();
+    assert_eq!(projection["pet"], 0);
+    assert_eq!(projection["stage"], 0);
+    assert_eq!(projection["shield"], 0);
+    assert_eq!(projection["enemyShield"], 0);
+    assert_eq!(projection["playerStatuses"], serde_json::json!([]));
+    assert!(!projection.to_string().contains(PLAYER));
     for bytes in [
         br#"{"epoch":1,"action":{"kind":"start","reward":9000}}"#.as_slice(),
         br#"{"epoch":1,"action":{"kind":"swap","first":256,"second":0}}"#,

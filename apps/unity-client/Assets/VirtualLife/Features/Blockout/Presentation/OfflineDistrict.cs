@@ -6,6 +6,8 @@ namespace VirtualLife.Blockout
     {
         public CharacterController Player { get; private set; }
         public Transform Activity { get; private set; }
+        public Transform ArenaEntrance { get; private set; }
+        public Transform NativeTarget { get; set; }
         public System.Action NativeInteraction { get; set; }
         public bool InputCaptured { get; set; }
         public bool NetworkAuthority { get; set; }
@@ -20,6 +22,7 @@ namespace VirtualLife.Blockout
                 var box = BlockoutGeometry.Boxes[index];
                 var created = CreateBox(box.Name, new Vector3(box.X, box.Y, box.Z), new Vector3(box.Width, box.Height, box.Depth), colors[index]);
                 if (box.Name == "Activity terminal") Activity = created.transform;
+                if (box.Name == "Arena entrance placeholder") ArenaEntrance = created.transform;
             }
             var avatar = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             avatar.name = "Developer capsule";
@@ -93,13 +96,14 @@ namespace VirtualLife.Blockout
         public bool TryInteract()
         {
             var position = Player.transform.position;
-            if (!District.CanInteract(position.x, position.z, Activity.position.x, Activity.position.z))
+            var target = NativeTarget != null ? NativeTarget : Activity;
+            if (!District.CanInteract(position.x, position.z, target.position.x, target.position.z))
             {
-                feedback = "Move closer to the terminal.";
+                feedback = "Move closer to the activity entrance.";
                 return false;
             }
             if (NativeInteraction != null) {
-                NativeInteraction(); feedback = "Native terminal selected. See the connection panel."; return true;
+                NativeInteraction(); feedback = target == ArenaEntrance ? "Pet Arena" : "Activity terminal"; return true;
             }
             RehearsalTurns = (RehearsalTurns + 1) % 4;
             feedback = RehearsalTurns == 3 ? "Offline rehearsal complete." : "Offline rehearsal turn " + RehearsalTurns + "/3";
@@ -109,7 +113,7 @@ namespace VirtualLife.Blockout
         private void OnGUI()
         {
             GUI.Box(new Rect(16, 16, 470, 70), NativeInteraction == null ? "Aurora Plaza — offline developer blockout" : "Aurora Plaza — native developer blockout");
-            GUI.Label(new Rect(28, 45, 450, 35), feedback);
+            GUI.Label(new Rect(28, 45, 450, 35), NativeTarget == ArenaEntrance && feedback.StartsWith("WASD") ? "Pet District / Training Arena" : feedback);
         }
 
         private void OnDestroy()
