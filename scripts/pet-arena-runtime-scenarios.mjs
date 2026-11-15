@@ -10,17 +10,23 @@ export async function petArenaScenarios(c){
  const {pool,admin,schema,rewardRole,rewardPassword,address,directory,scope,identity,store,issuer,credential,csrf,call,fresh,origin,hello,startHost,stopHost,matchId,player,record}=c;
  const outcome=c.loss?'lost':'won',reward=c.loss?'DECLINED':'GRANTED',grants=c.loss?0:1;
  const baseNonces=(await pool.query('SELECT count(*)::int AS n FROM platform_native_ticket_uses')).rows[0].n;
- let extraNonces=0,id=10,link={index:fresh,sequence:2};
+ let extraNonces=0,id=10,ticketExpiry=0,link={index:fresh,sequence:2};
  const workers=new Set();
  const intent=(version,action,kind='pet.intent.v1')=>({gameSessionId:Array.from(Buffer.from(matchId.replaceAll('-',''),'hex')),expectedStateVersion:String(version),kind,actionPayload:kind==='pet.view.v1'?[]:Array.from(Buffer.from(JSON.stringify({epoch:1,action})))});
- const exchange=async(value,command=id++,sequence=link.sequence++)=>{await call('send',link.index,command,sequence,'gameIntent',value);return call('next',link.index);};
+ const exchange=async(value,command=id++)=>{
+  // Renew before a new exchange; an already sent intent is never retried here.
+  if(ticketExpiry-Date.now()<2000)await reconnect();
+  await call('send',link.index,command,link.sequence++,'gameIntent',value);return call('next',link.index);
+ };
  const checkpoint=async()=>(await pool.query('SELECT state_version,rng_cursor,audit_hash,sealed_snapshot FROM game_native_matches WHERE id=$1',[matchId])).rows[0];
  const receiptCount=async()=>(await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n;
  const view=async()=>{const result=await exchange(intent(0,undefined,'pet.view.v1'));assert.equal(result.kind,'receipt',JSON.stringify({kind:result.kind,code:result.code,closed:result.closed}));return result;};
  const grantCount=async()=>(await pool.query('SELECT count(*)::int AS n FROM platform_native_reward_ledger')).rows[0].n;
  const reconnect=async()=>{
+  await call('close',link.index);
   await store.allocate(credential,scope);
   const ticket=await call('ticket',csrf);assert.equal(ticket.status,200);
+  ticketExpiry=Date.parse(ticket.body.expiresAt);
   const index=await call('open',origin.replace('https:','wss:')+'/rt/v1');
   await call('send',index,1,1,'hello',hello(ticket.body.ticket));assert.equal((await call('next',index)).kind,'hello');
   extraNonces++;link={index,sequence:2};
@@ -33,6 +39,7 @@ export async function petArenaScenarios(c){
    assert.equal((await exchange(value)).kind,'rejection');assert.deepEqual(await checkpoint(),before);
   }
   assert.equal(await receiptCount(),0);assert.equal(await grantCount(),0);record('forged-reward-client-result-wrong-match-and-invalid-action-have-zero-effects');
+  if(ticketExpiry-Date.now()<2000)await reconnect();
   const startId=id++,startIntent=intent(0,{kind:'start'}),startSequence=link.sequence++;
   await call('send',link.index,startId,startSequence,'gameIntent',startIntent);const start=await call('next',link.index);
   assert.equal(start.kind,'receipt');assert.equal(start.version,'1');assert.equal(start.receipt.projection.state.phase,'playing');
@@ -51,7 +58,7 @@ export async function petArenaScenarios(c){
    const denied=await call('next',index);assert.equal(denied.kind,'rejection');assert.equal(denied.receipt,undefined);await call('close',index);
   }
   assert.deepEqual(await checkpoint(),active);record('admitted-wrong-actor-cannot-command-or-read-private-pet-projection');
-  const mid=await exchange(intent(1,{kind:'skill'}));assert.equal(mid.kind,'receipt');assert.equal(mid.version,'2');
+  const mid=await exchange(intent(1,{kind:'skill'}));assert.equal(mid.kind,'receipt',JSON.stringify({kind:mid.kind,code:mid.code,closed:mid.closed}));assert.equal(mid.version,'2');
   const saved=await checkpoint();await stopHost();
   await nativeRecoveryScenarios(c);
   await startHost();assert.deepEqual(await checkpoint(),saved);
