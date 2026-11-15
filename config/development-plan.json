@@ -4395,7 +4395,7 @@
         "22 race templates are presentation taxonomy, explicit radial/hexapod overrides supported; no extra element",
         "Strict contracts reject unknown fields, invalid references and unbounded effects"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "verificationRequirements": [
         "Focused unit/integration and exact CI",
@@ -4404,7 +4404,10 @@
       ],
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
-        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "source": "packages/contracts/src/pet-taxonomy-v3.ts",
+        "scope": "Strict draft-only taxonomy and acquisition schemas; all19 elements/361 pairs/22 races and four sources. No runtime activation, persistence or grants.",
+        "validation": "Focused6 contract tests, contracts build and ESLint passed before commit; committed-source verification and hosted CI still required."
       }
     },
     {
