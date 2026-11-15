@@ -1,10 +1,16 @@
 import type {ReactNode} from 'react';
-import {catalog,elements,roles,sources,skillNames,text,lore,motionPets,routes,pages,type Locale,type Pet} from '../domain/content';
+import {catalog,elements,roles,sources,skillNames,skillEffects,text,lore,motionPets,routes,pages,type Locale,type Pet} from '../domain/content';
 import {copy} from '../../site/presentation/copy';
 import Atlas from './atlas';
 import PetViewer from './pet-viewer';
 import styles from './product.module.css';
-function Skills({ids,locale}:{ids:string[];locale:Locale}){const vi=locale==='vi';return <div className={styles.tableWrap}><table className={styles.table}><caption>{vi?'Thông số thiết kế ứng viên, có thể thay đổi':'Candidate design values, subject to change'}</caption><thead><tr><th>{vi?'Kỹ năng':'Ability'}</th><th>Mana</th><th>{vi?'Nộ':'Rage'}</th><th>{vi?'Hồi chiêu (lượt)':'Cooldown (turns)'}</th></tr></thead><tbody>{ids.map(id=>{const skill=catalog.skills.find(s=>s.id===id);return skill?<tr key={id}><th>{text(skillNames[id]??[id,id],locale)}</th><td>{skill.mana}</td><td>{skill.rage}</td><td>{skill.cooldown}</td></tr>:null;})}</tbody></table></div>;}
+function Skills({ids,locale}:{ids:string[];locale:Locale}){
+ const vi=locale==='vi';
+ return <><p>{vi?'Thông số thiết kế ứng viên, có thể thay đổi.':'Candidate design values, subject to change.'}</p><div className={styles.grid}>{ids.map(id=>{
+  const skill=catalog.skills.find(s=>s.id===id);if(!skill)return null;
+  return <article className={styles.card} key={id}><h3>{text(skillNames[id],locale)}</h3><p>{text(skillEffects[id],locale)}</p><dl className={styles.skillStats}><div><dt>{vi?'Mở từ cấp':'Unlock level'}</dt><dd>{skill.unlock}</dd></div><div><dt>Mana</dt><dd>{skill.mana}</dd></div><div><dt>{vi?'Nộ':'Rage'}</dt><dd>{skill.rage}</dd></div><div><dt>{vi?'Hồi chiêu (lượt)':'Cooldown (turns)'}</dt><dd>{skill.cooldown}</dd></div></dl>{skill.ultimate?<><h4>{vi?'Tuyệt kỹ':'Ultimate'} · {skill.ultimate}</h4><p>{vi?'Tuyệt kỹ dùng 100 Nộ, không dùng mana. Kích hoạt thẻ dung hợp là thao tác riêng: cần sở hữu Pet, mở khóa thẻ và đủ 200 mana cùng 150 Nộ.':'The ultimate costs 100 Rage and no mana. Fusion-card activation is separate: own the Pet, unlock its card and have 200 mana plus 150 Rage.'}</p></>:null}</article>;
+ })}</div></>;
+}
 function Profile({pet,locale}:{pet:Pet;locale:Locale}){const vi=locale==='vi',key=pet.name.toLowerCase(),hasMotion=motionPets.includes(key);return <>
  <p>{text(elements[pet.element],locale)} · {pet.rank} · {text(sources[pet.source],locale)}</p><h1>{pet.name}</h1><p className={styles.intro}>{lore[key]?text(lore[key],locale):vi?'Một người bạn trong bộ sưu tập thiết kế Aetheria: Soulbound. Hình ảnh, cốt truyện chi tiết và cân bằng vẫn đang được phát triển.':'A companion in the Aetheria: Soulbound design collection. Art, detailed lore and balance remain in development.'}</p>
  {hasMotion?<PetViewer pet={pet} locale={locale}/>:<div className={styles.poster}><span aria-hidden="true">✧</span><strong>{pet.name}</strong><p>{vi?'Model và hoạt ảnh riêng chưa có. Hồ sơ thiết kế bên dưới vẫn có thể xem.':'A dedicated model and animations are not available yet. Explore the design profile below.'}</p></div>}

@@ -5362,6 +5362,16 @@
             "command": "pnpm exec eslint apps/admin-web tests/e2e/admin.spec.ts scripts/admin-boundary.mjs tests/governance/admin-boundary.test.mjs",
             "exitCode": 0,
             "result": "PASS"
+          },
+          {
+            "command": "pnpm --filter @virtual-city/admin-web build",
+            "exitCode": 0,
+            "result": "PASS at a05a3f6"
+          },
+          {
+            "command": "node scripts/run-ci-browser.mjs admin",
+            "exitCode": 0,
+            "result": "All four specs PASS on desktop/mobile at a05a3f6: admin, privacy, calendar, runtime. Owned databases cleaned by harness."
           }
         ],
         "priorRevisionChecks": {
@@ -5384,7 +5394,7 @@
             }
           ]
         },
-        "pending": "Full check started at3499eb9 crossed subsequent main integration and is not an exact-final-source acceptance. Current full admin browser group/build running at a05a3f6. Hosted PR Quality43742926481/Rust43742926440 pending; metadata follow-up also needs actual exact-revision CI before merge. No green final CI or release claim.",
+        "pending": "Full check started at3499eb9 crossed main integration and terminated exit143 during integration; owned worker and database cleaned. Not full or exact-final-source acceptance. Subsequent localized skill-detail cards require focused checks and final committed-source hosted PR CI before merge. No green final CI or release claim.",
         "limitations": "Six original geometric browser motion concepts only: no production Unity models, GLB/rigged clips or complete Limited cinematics. Gacha informational; no real pulls/purchases/odds promise. Campaign/API/mail work remains VL-164/166. Public source catalog state remains draft.",
         "evidenceRoot": "artifacts/aetheria-prelaunch"
       },
@@ -5443,6 +5453,16 @@
             "command": "pnpm exec eslint apps/admin-web tests/e2e/admin.spec.ts scripts/admin-boundary.mjs tests/governance/admin-boundary.test.mjs",
             "exitCode": 0,
             "result": "PASS"
+          },
+          {
+            "command": "pnpm --filter @virtual-city/admin-web build",
+            "exitCode": 0,
+            "result": "PASS at a05a3f6"
+          },
+          {
+            "command": "node scripts/run-ci-browser.mjs admin",
+            "exitCode": 0,
+            "result": "All four specs PASS on desktop/mobile at a05a3f6: admin, privacy, calendar, runtime. Owned databases cleaned by harness."
           }
         ],
         "priorRevisionChecks": {
@@ -5465,7 +5485,7 @@
             }
           ]
         },
-        "pending": "Full check started at3499eb9 crossed subsequent main integration and is not an exact-final-source acceptance. Current full admin browser group/build running at a05a3f6. Hosted PR Quality43742926481/Rust43742926440 pending; metadata follow-up also needs actual exact-revision CI before merge. No green final CI or release claim.",
+        "pending": "Full check started at3499eb9 crossed main integration and terminated exit143 during integration; owned worker and database cleaned. Not full or exact-final-source acceptance. Subsequent localized skill-detail cards require focused checks and final committed-source hosted PR CI before merge. No green final CI or release claim.",
         "limitations": "Six original geometric browser motion concepts only: no production Unity models, GLB/rigged clips or complete Limited cinematics. Gacha informational; no real pulls/purchases/odds promise. Campaign/API/mail work remains VL-164/166. Public source catalog state remains draft.",
         "evidenceRoot": "artifacts/aetheria-prelaunch"
       },

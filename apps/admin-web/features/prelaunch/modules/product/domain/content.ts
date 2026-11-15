@@ -6,6 +6,25 @@ export const elements:Record<string,[string,string]>={normal:['Thường','Norma
 export const roles:Record<string,[string,string]>={disruptor:['Khống chế','Disruptor'],guardian:['Hộ vệ','Guardian'],striker:['Tấn công','Striker'],support:['Hỗ trợ','Support'],tank:['Phòng thủ','Tank'],controller:['Khống chế','Control'],channeler:['Tích năng lượng','Channeler'],defender:['Phòng thủ','Defender']};
 export const sources:Record<string,[string,string]>={map_regular:['B/A bản đồ','Map B/A'],map_legendary:['S huyền thoại bản đồ','Map Legendary S'],standard_gacha:['S Standard','Standard S'],limited_event_gacha:['S Limited','Limited S']};
 export const skillNames:Record<string,[string,string]>={basic_strike:['Đòn đánh thường','Normal strike'],rage_strike_100:['Tuyệt kỹ Nộ','Rage ultimate'],generic_guard:['Thế thủ','Guard'],generic_elemental_skill:['Sức mạnh nguyên tố','Elemental power'],generic_heal:['Hồi phục','Heal'],generic_disrupt:['Gây trạng thái','Disrupt'],generic_empower:['Cường hóa','Empower'],generic_cleanse:['Thanh tẩy','Cleanse'],generic_protect:['Che chở','Protect'],generic_siphon:['Hút năng lượng','Siphon'],signature_icarus:['Ấn lửa Icarus','Icarus fire sigil'],signature_glaciemora:['Hàng băng Glaciemora','Glaciemora frost line'],signature_voltaris:['Chuỗi sét Voltaris','Voltaris chain mark'],signature_noctalith:['Ấn nguyền Noctalith','Noctalith curse sigil'],signature_sylvaris:['Mầm sống Sylvaris','Sylvaris growth glyph'],signature_leviara:['Dòng chảy Leviara','Leviara tide current']};
+// Player-facing summaries of the V3.1 skill candidate; no runtime implementation claim.
+export const skillEffects:Record<string,[string,string]>={
+ basic_strike:['Tấn công sau khi ghép kiếm hợp lệ.','Attack after a valid sword match.'],
+ rage_strike_100:['Tiêu hao 100 Nộ để tung tuyệt kỹ. Ghép từ bốn kiếm tạo cơ hội, không tự cấp đủ Nộ.','Spend 100 Rage for an ultimate. Matching four or more swords creates an opportunity, without granting free Rage.'],
+ generic_guard:['Tăng phòng thủ bằng khiên, không phá ô trên bàn.','Gain a defensive shield without destroying board tiles.'],
+ generic_elemental_skill:['Gây hiệu ứng nguyên tố có giới hạn. B/A và S bản đồ không có thẻ bàn cờ Signature.','Apply a bounded elemental effect. Map B/A and S companions have no Signature board card.'],
+ generic_heal:['Hồi phục cho một đồng minh phù hợp, không phá ô.','Restore health to an eligible ally without destroying tiles.'],
+ generic_disrupt:['Gây trạng thái lên mục tiêu, tối đa hai cộng dồn theo thiết kế.','Apply a status to the target, with at most two stacks in the design.'],
+ generic_empower:['Tạm tăng sức tấn công; tổng mức tăng dưới 50% theo thiết kế.','Temporarily strengthen attacks; the total increase is below 50% in the design.'],
+ generic_cleanse:['Xóa một trạng thái bất lợi đủ điều kiện.','Remove one eligible negative status.'],
+ generic_protect:['Tạo khiên cho đồng minh trong giới hạn cho phép.','Shield an ally within the allowed cap.'],
+ generic_siphon:['Rút một lượng mana giới hạn từ đối thủ; mana không xuống dưới không.','Draw a limited amount of enemy mana, without reducing it below zero.'],
+ signature_icarus:['Đánh dấu vùng 4×4 trong hai lượt; kỹ năng thường giữ nguyên ô. Tuyệt kỹ tác động lên các ô đã đánh dấu được chọn.','Mark a 4×4 zone for two turns while keeping tiles in place. The ultimate affects selected marked cells.'],
+ signature_glaciemora:['Đóng băng một hàng mười ô trong hai lượt. Tuyệt kỹ phá các ô bị đánh dấu rồi cho ô rơi.','Freeze a row of ten tiles for two turns. The ultimate shatters affected marked cells before tiles fall.'],
+ signature_voltaris:['Đánh dấu chuỗi tối đa tám ô sét. Tuyệt kỹ kích hoạt chuỗi một lần và bù ô một lần.','Mark a lightning chain of up to eight cells. The ultimate triggers the chain once, followed by one refill.'],
+ signature_noctalith:['Đặt tối đa năm dấu nguyền và hai dấu khóa. Tuyệt kỹ xóa các ô bị nguyền trong một đợt.','Place up to five curse marks and two locks. The ultimate clears cursed cells in one pulse.'],
+ signature_sylvaris:['Đánh dấu ba ô hồi phục cho lần ghép hợp lệ tiếp theo. Tuyệt kỹ mới có thể xóa phần vụn đã đánh dấu.','Mark three healing tiles for the next valid match. Only the ultimate can clear marked debris.'],
+ signature_leviara:['Vẽ dòng nước cho lần đổi ô kế tiếp, không dời ô ngay. Tuyệt kỹ tạo một đợt sóng xóa và bù ô.','Trace a current for the next swap without moving tiles immediately. The ultimate produces one wave of removal and refill.']
+};
 export function text(pair:readonly string[],locale:Locale){return pair[locale==='vi'?0:1];}
 export const motionPets=['cindrelis','marivell','quorion','vesperyn','gravorn','aurelune'];
 export const lore:Record<string,[string,string]>={

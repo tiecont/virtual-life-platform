@@ -106,7 +106,7 @@ when the preview variable is set. Preview HTML is private/no-store and noindex;
 static framework assets retain Next.js caching. There is no signup API, live
 email delivery, 3D production asset or deployment authorization in this slice.
 
-VL-163–132 in the master plan track this independent prelaunch workstream.
+VL-163–167 in the master plan track this independent prelaunch workstream.
 Existing official-site/download and Windows qualification tasks remain intact.
 The owner-requested name does not establish legal clearance. The illustrated preview uses a crop from the owner-supplied AI concept handoff,
 not game footage or approved launch media. Its provenance is beside the asset;
