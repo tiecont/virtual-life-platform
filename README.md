@@ -101,7 +101,7 @@ when the preview variable is set. Preview HTML is private/no-store and noindex;
 static framework assets retain Next.js caching. There is no signup API, live
 email delivery, 3D production asset or deployment authorization in this slice.
 
-VL-128–132 in the master plan track this independent prelaunch workstream.
+VL-163–132 in the master plan track this independent prelaunch workstream.
 Existing official-site/download and Windows qualification tasks remain intact.
 The owner-requested name does not establish legal clearance. The illustrated preview uses a crop from the owner-supplied AI concept handoff,
 not game footage or approved launch media. Its provenance is beside the asset;
@@ -109,3 +109,21 @@ not game footage or approved launch media. Its provenance is beside the asset;
 a static image import, and remains blocked in production.
 Production routing/indexing, campaign acceptance and real delivery require
 separate owner approval and implementation of the corresponding release gates.
+
+The development preview also includes `/world`, `/pets`, `/pets/:slug`,
+`/skills`, `/pet-arena`, `/gacha`, both `/places/*` venues, `/news`, `/faq`,
+`/privacy`, `/unsubscribe` and a non-consuming `/preregister/verify` placeholder.
+The product catalog is an explicit presentation projection of the V3.1 candidate
+from PR32, pinned by source SHA in the catalog JSON; it is not an import into the
+game database or a second gameplay authority. Reconcile that projection when the
+upstream candidate changes. The 240 count describes designs, not released Pets.
+
+Six Standard S browser motion concepts are original code-authored geometry,
+loaded with Three.js only on explicit activation. They are not Unity exports,
+finished production models, rigged GLB clips or gameplay simulations. The viewer
+caps pixel ratio at 1.5, render dimensions at 960×600, frame rate at 30, uses no
+textures/external fetches, pauses offscreen/hidden, disposes resources on close,
+and provides keyboard controls, reduced motion and context-loss fallback.
+Dedicated Limited clips and the remaining production Pet assets are unavailable;
+profiles state this honestly. Gacha is an informational candidate overview:
+no paid pulls, item grants, finalized odds or automatic game-account creation.

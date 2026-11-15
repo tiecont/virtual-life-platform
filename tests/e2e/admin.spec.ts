@@ -88,3 +88,39 @@ test('public VI/EN preview separates fantasy content from private operations on 
  const admin=await page.goto('/admin');expect(admin?.headers()['cache-control']).toContain('no-store');expect(admin?.headers()['x-robots-tag']).toBe('noindex, nofollow');
  await expect(page.locator('html')).toHaveAttribute('lang','en');await expect(page.getByRole('heading',{name:/quiet place/})).toBeVisible();await expect(page.getByRole('heading',{name:'City at a glance'})).toHaveCount(0);
 });
+
+test('complete product pages render both languages and Pet filters link to accurate profiles',async({page})=>{
+ test.setTimeout(120000);
+ await page.setViewportSize({width:320,height:800});
+ for(const locale of ['vi','en'])for(const path of ['world','pets','skills','pet-arena','gacha','places/maid-cafe','places/card-lounge','news','faq','privacy','unsubscribe','preregister/verify']){
+  const response=await page.goto('/'+path+'?lang='+locale);expect(response?.status()).toBe(200);
+  await expect(page.locator('h1')).toHaveCount(1);expect(await page.locator('h1').textContent()).toBeTruthy();
+  await expect(page.locator('html')).toHaveAttribute('lang',locale);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  expect(response?.headers()['x-robots-tag']).toBe('noindex, nofollow');
+ }
+ await page.goto('/pets?lang=en');await page.getByLabel('Element',{exact:true}).selectOption('fire');await page.getByLabel('Acquisition',{exact:true}).selectOption('standard_gacha');
+ await expect(page.getByRole('status')).toContainText('1 / 240');await page.getByRole('heading',{name:'Cindrelis',exact:true}).click();
+ await expect(page.getByRole('heading',{level:1})).toHaveText('Cindrelis');await expect(page.getByText('Ember Halo',{exact:true})).toBeVisible();
+ expect((await page.goto('/pets/not-a-pet?lang=en'))?.status()).toBe(404);
+});
+
+test('six Pet concepts load real 3D only by choice with motion, keyboard, reduced-motion and context-loss fallback',async({page})=>{
+ test.setTimeout(120000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ const names=[['fire','cindrelis'],['water','marivell'],['electric','quorion'],['ghost','vesperyn'],['ground','gravorn'],['light','aurelune']];
+ for(const [element,name] of names){
+  await page.goto('/pets/pet-v31-'+element+'-'+name+'?lang=en');await expect(page.locator('canvas')).toHaveCount(0);
+  await page.getByRole('button',{name:'Open 3D preview',exact:true}).click();await expect(page.getByRole('status')).toContainText('3D ready',{timeout:20000});
+  const canvas=page.locator('canvas');expect(await canvas.evaluate(c=>(c as HTMLCanvasElement).width)).toBeGreaterThan(100);
+  await canvas.focus();await page.keyboard.press('ArrowRight');await page.keyboard.press('ArrowUp');
+  await page.getByRole('button',{name:'Normal',exact:true}).click();await expect(page.getByRole('button',{name:'Normal',exact:true})).toHaveAttribute('aria-pressed','true');
+  await page.getByRole('button',{name:'Rage',exact:true}).click();await page.getByRole('button',{name:'Skill',exact:true}).click();await page.getByRole('button',{name:'Pause',exact:true}).click();
+  await page.getByRole('button',{name:'Reset camera',exact:true}).click();
+  await page.screenshot({path:test.info().outputPath('pet-'+name+'.png'),fullPage:true});
+  await page.getByRole('button',{name:'Close 3D',exact:true}).click();await expect(page.locator('canvas')).toHaveCount(0);
+ }
+ await page.emulateMedia({reducedMotion:'reduce'});await page.getByRole('button',{name:'Open 3D preview',exact:true}).click();await expect(page.getByRole('status')).toContainText('3D ready');
+ await expect(page.getByRole('button',{name:'Rage',exact:true})).toBeDisabled();
+ await page.locator('canvas').evaluate(c=>{const gl=(c as HTMLCanvasElement).getContext('webgl2');if(!gl)throw Error('Expected actual WebGL2 context');gl.getExtension('WEBGL_lose_context')?.loseContext();});
+ await expect(page.getByRole('status')).toContainText('3D is unavailable');await expect(page.getByRole('heading',{level:1})).toHaveText('Aurelune');expect(errors).toEqual([]);
+});

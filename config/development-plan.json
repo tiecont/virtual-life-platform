@@ -4277,7 +4277,7 @@
     }
   },
   {
-    "id": "VL-128",
+    "id": "VL-163",
     "feature": "Aetheria-Prelaunch",
     "title": "Aetheria: Soulbound public and operator route separation",
     "objective": "Prepare the renamed NOYUNE-Prelaunch workstream in existing admin-web. Move the existing console to /admin and add a default-off VI/EN public homepage; no new app, database or service.",
@@ -4294,12 +4294,12 @@
       "overlap": "VL-079/083/092 retain broader official-site IA, download/support/gallery work; this independent slice provides their reusable admin-web foundation. VL-098/106 retain Windows/full-product qualification. VL-110 and VL-121/123 retain gameplay capture/art ownership; no duplicate completion claim.",
       "auditSourceRevision": "80a9186f39b2401df6b88b33411bd9a1ad50c340",
       "brand": "Aetheria: Soulbound (owner requested name; legal clearance not assumed)",
-      "scope": "PR1 only: homepage, closed preregistration, route separation and this workstream. Later route/media/API/operator work remains TODO.",
+      "scope": "Owner expanded PR33 to complete product introduction and concept motion previews (VL-165). Signup API and operator marketing remain future slices. IDs moved from 128-132 to 163-167 after PR32 independently allocated 128-162; no old main task changed.",
       "designReference": "Owner supplied /home/tiecont/Downloads/NOYUNE_Prelaunch_AdminWeb_Handoff after initial audit. Read product copy, technical architecture, backlog, QA gates and both style-only previews. Aetheria: Soulbound supersedes the handoff name. Cropped concept media is served only in development, with source hash/provenance; no production-media or legal clearance inferred."
     }
   },
   {
-    "id": "VL-129",
+    "id": "VL-164",
     "feature": "Aetheria-Prelaunch",
     "title": "Double opt-in with atomic lifetime capacity",
     "objective": "Add isolated prelaunch tables and bounded feature modules to existing Nest/PostgreSQL and shared contracts. Re-read journal at implementation HEAD; current audit ends at 0051. No separate mail service.",
@@ -4315,13 +4315,12 @@
     "qualificationRequirements": []
   },
   {
-    "id": "VL-130",
+    "id": "VL-165",
     "feature": "Aetheria-Prelaunch",
-    "title": "Localized world exploration and Pet previews",
-    "objective": "Extend the VL-128 shell in admin-web with world, pets/:slug, arena, maid cafe, future original Card Lounge, news, FAQ, preregister/verify, privacy and unsubscribe routes. Integrate the existing Nest feature through a bounded public BFF.",
+    "title": "Localized complete product exploration and Pet previews",
+    "objective": "Extend the VL-163 shell in admin-web with world, pets/:slug, arena, maid cafe, future original Card Lounge, news, FAQ, preregister/verify, privacy and unsubscribe routes. Present the full product in VI/EN with Pet/skill motion previews and a clearly qualified gacha overview. Signup API integration follows VL-164 and remains disabled until then; editorial pages have no database implementation dependency.",
     "dependsOn": [
-      "VL-128",
-      "VL-129"
+      "VL-163"
     ],
     "acceptance": [
       "VI/EN mobile-first fantasy exploration; accurate current gameplay versus planned content, including 19-element design, 10x10 arena and co-op limits only when evidenced; no invented counts/rewards/dates",
@@ -4330,19 +4329,19 @@
       "Double opt-in and withdrawal UI never leaks tokens to URL logs, telemetry or referrers; complete privacy/retention copy before acceptance opens",
       "No stack/status/operator content in public bundles/pages; semantic SEO remains disabled until separate public release approval"
     ],
-    "status": "TODO",
+    "status": "IN_PROGRESS",
     "qualificationRequirements": [
       "Legal/brand and official media rights approval apply to publication, not unrelated source work"
     ]
   },
   {
-    "id": "VL-131",
+    "id": "VL-166",
     "feature": "Aetheria-Prelaunch",
     "title": "Prelaunch operator consent and editorial workflows",
     "objective": "Add /admin/prelaunch and scoped operator APIs using existing identity/BFF; no duplicate console or auth.",
     "dependsOn": [
-      "VL-128",
-      "VL-129"
+      "VL-163",
+      "VL-164"
     ],
     "acceptance": [
       "Authenticated actual confirmed/pending/lifetime allocation/closed counts and mail health; no invented funnel data",
@@ -4354,13 +4353,13 @@
     "qualificationRequirements": []
   },
   {
-    "id": "VL-132",
+    "id": "VL-167",
     "feature": "Aetheria-Prelaunch",
     "title": "Independent prelaunch acceptance and release checklist",
     "objective": "Qualify the public prelaunch surface independently of Windows gameplay/signing. Extend site-only measurements without claiming VL-098/106 Windows or full-product completion.",
     "dependsOn": [
-      "VL-130",
-      "VL-131"
+      "VL-165",
+      "VL-166"
     ],
     "acceptance": [
       "10k+ database confirm/retry security/load tests; privacy removal, capacity, outbox crash recovery and minimal monitoring validated",
