@@ -3796,7 +3796,17 @@
             "backlog": "PRs 18, 19, 20 and 22 closed as superseded, with individual coverage explanations. Useful ACK, teardown, TLS/admission and strict projection code/tests remain in main via PR 24; no security assertions removed.",
             "evidenceRoot": "Ignored artifacts/linux-first-playable-audit; interop-818c29e4 under linux-first-playable-clean; Pet process facts under pet-fixture-final"
           },
-          "remaining": "Green final-source hosted CI after Lounge fixture synchronization, merge, explicit post-merge CI and launcher verification on merged main. VL-113 stays IN_PROGRESS. Windows, production asset rights, performance and human release approvals remain separate. NO_GO_PUBLIC; OFFLINE_ONLY."
+          "finalFixtureChecks": {
+            "sourceRevision": "b6125552a5a3408e12e686aaf91edeaeabf465fc",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "check": "pnpm check exit 0: 114 governance, 499 unit, 783 integration and all builds PASS with isolated dependencies. Travel focused suite exit 0 / 34 tests. Earlier operator and travel failures remain in ignored logs; neither failed full invocation is counted as PASS.",
+            "native": "cargo fmt, cargo test (63 tests), cargo clippy and native-csharp each exit 0; C# 116 assertions / 23 syntax files. Unity tests exit 0 / 16 EditMode + 3 PlayMode; Linux build exit 0; Linux player smoke exit 0 / 2 tests.",
+            "browserFixtures": "At a7b98d1 Lounge 16 desktop + 16 mobile and six repeated expiry cases PASS. At 1eb4aae avatar 11 desktop + 11 mobile and twelve repeated camera cases PASS. Travel now prepares the competing actor before the bounded hold; no timeout or negative assertion changed.",
+            "hosted": "Rust push 43686370851 and PR 43686374566 PASS. Quality push 43686370873 and PR 43686374564: core-checks, runtime-images/release-bundle, admin/city/social PASS at this record; remaining groups/final gate pending, not PASS. Main 1178ba5 post-merge Quality 43674882985 and Rust 43674882991 PASS.",
+            "renderedFailure": "Pet win interop-350d4644 exit 1: Transport while waiting for action readiness, before any dropped committed ACK was recorded; cleanup complete. The ACK injector intercepted every first packet while armed, including precommit admission refresh. Follow-up forwards precommit traffic, serializes forwarding and retains exact committed version/receipt/command-ID assertions. An explicit OS reconnect while armed must pass before the committed Start response is dropped. Corrected source needs rendered win/loss and failure-matrix verification.",
+            "evidenceRoot": "artifacts/linux-first-playable-audit; Unity results 2026-11-15T07-06-28-436Z-70ac309e, 2026-11-15T07-08-53-675Z-19e15400 and 2026-11-15T07-13-00-699Z-391e2ee0 under linux-first-playable-clean"
+          },
+          "remaining": "Green final-source hosted CI and rendered ACK-gate regression, merge, explicit post-merge CI and launcher verification on merged main. VL-113 stays IN_PROGRESS. Windows, production asset rights, performance and human release approvals remain separate. NO_GO_PUBLIC; OFFLINE_ONLY."
         }
       }
     }

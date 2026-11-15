@@ -63,6 +63,9 @@ namespace VirtualLife.Blockout.Tests
             GameCommand original;
             string retriedCommandId;
             try {
+                yield return input.Click(260, 225);
+                yield return Until(() => panel.Ready && !panel.Busy, () => "precommit ACK gate reconnect: " + panel.Status);
+                Assert.That(panel.PresentedState.Version, Is.Zero); Assert.That(panel.HasPendingCommand, Is.False);
                 yield return CommandClick(input, panel, 800, 610);
                 yield return Until(() => File.Exists(config.ackObserved), () => "Pet start durable ACK: " + panel.Status);
                 yield return Until(() => !panel.Busy && panel.HasPendingCommand, () => "dropped ACK pending: " + panel.Status);
