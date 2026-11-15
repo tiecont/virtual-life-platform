@@ -4275,6 +4275,104 @@
       "wave": "P6/P7",
       "specification": "specs/pet-arena/v2.md"
     }
+  },
+  {
+    "id": "VL-128",
+    "feature": "Aetheria-Prelaunch",
+    "title": "Aetheria: Soulbound public and operator route separation",
+    "objective": "Prepare the renamed NOYUNE-Prelaunch workstream in existing admin-web. Move the existing console to /admin and add a default-off VI/EN public homepage; no new app, database or service.",
+    "dependsOn": [],
+    "acceptance": [
+      "Existing api/admin authorization, sessions, MFA, CSRF, audit and private no-store behavior survive the route move",
+      "Shared HTML has no blanket robots policy; public and operator layouts/CSP/headers are separated; production public routes remain unavailable",
+      "VI-first/EN homepage and closed preregistration explanation pass real mobile/desktop keyboard, overflow, reduced-motion and anonymous-data-leak checks",
+      "Exact committed source checks and hosted PR CI recorded; source merge grants no production activation"
+    ],
+    "status": "IN_PROGRESS",
+    "qualificationRequirements": [],
+    "implementation": {
+      "overlap": "VL-079/083/092 retain broader official-site IA, download/support/gallery work; this independent slice provides their reusable admin-web foundation. VL-098/106 retain Windows/full-product qualification. VL-110 and VL-121/123 retain gameplay capture/art ownership; no duplicate completion claim.",
+      "auditSourceRevision": "80a9186f39b2401df6b88b33411bd9a1ad50c340",
+      "brand": "Aetheria: Soulbound (owner requested name; legal clearance not assumed)",
+      "scope": "PR1 only: homepage, closed preregistration, route separation and this workstream. Later route/media/API/operator work remains TODO.",
+      "missingInputs": "PRODUCT_UX_AND_COPY.md and referenced marketing previews not present in checkout or archived tree search; no approved copy or production media inferred."
+    }
+  },
+  {
+    "id": "VL-129",
+    "feature": "Aetheria-Prelaunch",
+    "title": "Double opt-in with atomic lifetime capacity",
+    "objective": "Add isolated prelaunch tables and bounded feature modules to existing Nest/PostgreSQL and shared contracts. Re-read journal at implementation HEAD; current audit ends at 0051. No separate mail service.",
+    "dependsOn": [],
+    "acceptance": [
+      "Additive journal migration with least-privilege grants: campaigns, protected email registrations, hashed single-use expiring challenges, immutable consent events, transactional outbox and sanitized admin audit",
+      "One SQL transaction locks campaign capacity before confirmation; at most 5000 unique lifetime admissions; pending holds no slot; retries idempotent; withdrawal never reallocates a consumed slot without owner approval",
+      "10k+ concurrent confirm/retry requests against real PostgreSQL prove cap, unique email admission and rollback invariants; no automatic waitlist",
+      "Strict bounded registration/verify/resend/withdraw/status contracts, generic anti-enumeration, rate limits, redacted logs and minimal approved aggregates; marketing consent separate; no game accounts or beta entitlement",
+      "Fake/sink mail tests exercise outbox retry/suppression and expiring tokens; production campaign acceptance and delivery default OFF"
+    ],
+    "status": "TODO",
+    "qualificationRequirements": []
+  },
+  {
+    "id": "VL-130",
+    "feature": "Aetheria-Prelaunch",
+    "title": "Localized world exploration and Pet previews",
+    "objective": "Extend the VL-128 shell in admin-web with world, pets/:slug, arena, maid cafe, future original Card Lounge, news, FAQ, preregister/verify, privacy and unsubscribe routes. Integrate the existing Nest feature through a bounded public BFF.",
+    "dependsOn": [
+      "VL-128",
+      "VL-129"
+    ],
+    "acceptance": [
+      "VI/EN mobile-first fantasy exploration; accurate current gameplay versus planned content, including 19-element design, 10x10 arena and co-op limits only when evidenced; no invented counts/rewards/dates",
+      "Lazy GLB/glTF viewer with rotate/zoom, capability detection, hard asset/memory budgets, progressive loading and honest poster fallback; timelines only for actual clips",
+      "Audio OFF until user action, pause/mute, captions, reduced motion and low-bandwidth fallbacks; no unlicensed or mockup media",
+      "Double opt-in and withdrawal UI never leaks tokens to URL logs, telemetry or referrers; complete privacy/retention copy before acceptance opens",
+      "No stack/status/operator content in public bundles/pages; semantic SEO remains disabled until separate public release approval"
+    ],
+    "status": "TODO",
+    "qualificationRequirements": [
+      "Legal/brand and official media rights approval apply to publication, not unrelated source work"
+    ]
+  },
+  {
+    "id": "VL-131",
+    "feature": "Aetheria-Prelaunch",
+    "title": "Prelaunch operator consent and editorial workflows",
+    "objective": "Add /admin/prelaunch and scoped operator APIs using existing identity/BFF; no duplicate console or auth.",
+    "dependsOn": [
+      "VL-128",
+      "VL-129"
+    ],
+    "acceptance": [
+      "Authenticated actual confirmed/pending/lifetime allocation/closed counts and mail health; no invented funnel data",
+      "Minimal subscriber actions, immutable consent/audit, suppression, retention and privacy deletion workflows; step-up and explicit confirmation for exports/destructive changes",
+      "Versioned approved editorial content with optimistic concurrency, publish audit and release gates; no public edit endpoints",
+      "Real HTTP/browser auth, CSRF, stale session, privacy and concurrency regressions pass"
+    ],
+    "status": "TODO",
+    "qualificationRequirements": []
+  },
+  {
+    "id": "VL-132",
+    "feature": "Aetheria-Prelaunch",
+    "title": "Independent prelaunch acceptance and release checklist",
+    "objective": "Qualify the public prelaunch surface independently of Windows gameplay/signing. Extend site-only measurements without claiming VL-098/106 Windows or full-product completion.",
+    "dependsOn": [
+      "VL-130",
+      "VL-131"
+    ],
+    "acceptance": [
+      "10k+ database confirm/retry security/load tests; privacy removal, capacity, outbox crash recovery and minimal monitoring validated",
+      "Actual VI/EN mobile/desktop keyboard, accessibility, reduced-motion, performance, SEO and bundle-secret checks on exact source",
+      "Production site routing/indexing, campaign acceptance and real email delivery remain separately OFF; no deployment as a consequence of merge",
+      "Owner GO records legal/brand, approved media/copy/privacy/retention, sender/domain and SPF/DKIM/DMARC, monitored rollout and rollback; no beta entitlement"
+    ],
+    "status": "TODO",
+    "qualificationRequirements": [
+      "Explicit owner public release authorization",
+      "Brand/legal, media rights, privacy/retention, sender/domain and SPF/DKIM/DMARC approval"
+    ]
   }
   ]
 }

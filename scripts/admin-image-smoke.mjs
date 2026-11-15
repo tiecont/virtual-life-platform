@@ -65,7 +65,8 @@ try {
   await compose(['exec','-T','admin','node','-e',privateEnv]);
   facts.scenarios.push({id:'ADMIN-01',privateApiAdminDatabase:true,nonrootReadonlyApps:true,backendCredentialsAbsent:true});
   stage='tls-and-denials';
-  const first=await request('/'),second=await request('/');assert.equal(first.status,200);
+  assert.equal((await request('/')).status,404);assert.equal((await request('/preregister')).status,404);
+  const first=await request('/admin'),second=await request('/admin');assert.equal(first.status,200);
   for(const response of [first,second]){
     assert(String(response.headers['cache-control']).includes('no-store'));assert.equal(response.headers['x-frame-options'],'DENY');assert.equal(response.headers['referrer-policy'],'no-referrer');
     const csp=String(response.headers['content-security-policy']);assert(csp.includes("'strict-dynamic'"));assert(!csp.includes("'unsafe-inline'")&&!csp.includes("'unsafe-eval'"));
@@ -90,7 +91,7 @@ try {
   const outcomes=[];
   for(const profile of [{name:'desktop',viewport:{width:1280,height:800}},{name:'mobile',viewport:{width:360,height:800},isMobile:true}]){
     const context=await browser.newContext({baseURL:origin,viewport:profile.viewport,isMobile:profile.isMobile??false});context.setDefaultTimeout(15000);if(cookies)await context.addCookies(cookies);
-    const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.name));await page.goto('/');
+    const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.name));await page.goto('/admin');
     if(!cookies){
       stage='operator-login';
       await page.getByLabel('Password',{exact:true}).fill(password);

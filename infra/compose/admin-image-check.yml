@@ -70,7 +70,7 @@ services:
     depends_on:
       api: {condition: service_healthy}
     healthcheck:
-      test: [CMD, node, -e, "fetch('http://127.0.0.1:3400').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3400/admin').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 2s
       timeout: 5s
       retries: 30

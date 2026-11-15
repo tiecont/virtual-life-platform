@@ -85,3 +85,25 @@ reviews are available in Git at `archive/pre-cleanup-2026-11-10`.
 Public rollout, production operations, restricted worlds, content clearance and
 signing require their existing explicit approvals. Merging source does not turn
 those features on.
+
+## Aetheria: Soulbound prelaunch
+
+The public presentation uses the existing `apps/admin-web` runtime. The private
+operator login is now `/admin`; `/api/admin/*` retains the existing Nest identity,
+session and CSRF boundary. Update operator bookmarks and health probes to
+`/admin`. `ADMIN_ORIGIN` remains an origin (no `/admin` path).
+
+For a local, development-only homepage preview, run
+`AETHERIA_SITE_PREVIEW=1 pnpm --filter @virtual-city/admin-web dev`.
+Vietnamese is the default; `?lang=en` selects English. The homepage and closed
+preregistration page return 404 by default and always in production, including
+when the preview variable is set. Preview HTML is private/no-store and noindex;
+static framework assets retain Next.js caching. There is no signup API, live
+email delivery, 3D production asset or deployment authorization in this slice.
+
+VL-128–132 in the master plan track this independent prelaunch workstream.
+Existing official-site/download and Windows qualification tasks remain intact.
+The owner-requested name does not establish legal clearance. The inline SVG is
+an original concept illustration, not game footage or approved launch media.
+Production routing/indexing, campaign acceptance and real delivery require
+separate owner approval and implementation of the corresponding release gates.

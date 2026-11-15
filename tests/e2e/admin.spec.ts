@@ -8,9 +8,9 @@ test.beforeAll(()=>{const address=new URL(process.env.TEST_DATABASE_URL??'');if(
 // Synthetic seed reset is test-owner SQL, never an application endpoint.
 test.beforeEach(async()=>{await pool.query('UPDATE identity_operator SET totp_counter=-1,failures=0,locked_until=NULL');await pool.query('UPDATE identity_operator_sessions SET revoked_at=clock_timestamp() WHERE revoked_at IS NULL');});
 test.afterAll(async()=>{await pool.end();});
-async function signIn(page:Page){await page.goto('/');await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Authenticator code').fill(totp(secret,Date.now()));await page.getByLabel('Authenticator code').press('Enter');await expect(page.getByRole('heading',{name:'City at a glance'})).toBeVisible();}
+async function signIn(page:Page){await page.goto('/admin');await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Authenticator code').fill(totp(secret,Date.now()));await page.getByLabel('Authenticator code').press('Enter');await expect(page.getByRole('heading',{name:'City at a glance'})).toBeVisible();}
 test('unauthenticated UI and routes deny operator/service bypass, wrong Origin, arbitrary queries and private source paths',async({page,request})=>{
- await page.goto('/');await expect(page.getByRole('heading',{name:/quiet place/})).toBeVisible();expect(await page.locator('form').getAttribute('method')).toBe('post');
+ await page.goto('/admin');await expect(page.getByRole('heading',{name:/quiet place/})).toBeVisible();expect(await page.locator('form').getAttribute('method')).toBe('post');
  for(const path of ['/api/admin/session','/api/admin/metrics?view=summary&range=current','/api/admin/observations?view=system&range=current','/api/admin/system-state?view=system&range=current'])expect((await request.get(path,{headers:{authorization:'Bearer '+serviceToken}})).status()).toBe(401);
  expect((await request.post('/api/admin/login',{headers:{origin:'https://attacker.invalid'},data:{password,code:totp(secret,Date.now())}})).status()).toBe(403);
  expect((await request.get('/api/admin/metrics?view=summary&range=24h')).status()).toBe(400);
@@ -55,4 +55,34 @@ test('actual account controls minimize data, revoke player sessions and require 
  await page.getByRole('button',{name:'Suspend account',exact:true}).click();await expect(page.locator('dd').first()).toHaveText('suspended');expect((await request.get('http://127.0.0.1:4300/v1/me')).status()).toBe(401);await page.getByRole('button',{name:'Load account audit',exact:true}).click();await expect(page.getByRole('cell',{name:'suspend',exact:true})).toBeVisible();
  const concurrent=await page.evaluate(async accountId=>{const session=await (await fetch('/api/admin/session')).json();return (await fetch('/api/admin/account-command',{method:'POST',headers:{'content-type':'application/json','x-csrf-token':session.csrfToken},body:JSON.stringify({requestId:crypto.randomUUID(),accountId,expectedVersion:1,action:'resume',reason:'CORRECTION'})})).status;},id);expect(concurrent).toBe(200);
  await page.getByRole('button',{name:'Resume account',exact:true}).click();await expect(page.getByText('Account changed. Refresh before another command.',{exact:true})).toBeVisible();await page.getByRole('button',{name:'Load account',exact:true}).click();await expect(page.locator('dd').first()).toHaveText('active');await expect(page.locator('dd').nth(1)).toHaveText('2');await page.getByLabel('Reason',{exact:true}).selectOption('OWNER_REQUEST');await page.getByRole('button',{name:'Revoke player sessions',exact:true}).click();await expect(page.locator('dd').nth(1)).toHaveText('3');await page.getByRole('button',{name:'Load account audit',exact:true}).click();await expect(page.getByRole('cell',{name:'resume',exact:true})).toBeVisible();await page.screenshot({path:test.info().outputPath('operator-account-controls.png'),fullPage:true});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+});
+
+test('public VI/EN preview separates fantasy content from private operations on mobile and desktop',async({page,request})=>{
+ const errors:string[]=[],operatorRequests:string[]=[];
+ page.on('pageerror',error=>errors.push(error.message));
+ page.on('request',request=>{if(request.url().includes('/api/admin/'))operatorRequests.push(request.url());});
+ await page.emulateMedia({reducedMotion:'reduce'});
+ const response=await page.goto('/');expect(response?.status()).toBe(200);
+ expect(response?.headers()['x-robots-tag']).toBe('noindex, nofollow');
+ await expect(page.locator('html')).toHaveAttribute('lang','vi');
+ await expect(page.getByRole('heading',{level:1})).toContainText('kết nối cả tâm hồn');
+ await expect(page.getByText('Minh họa ý tưởng · Không phải hình ảnh trong trò chơi')).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.keyboard.press('Tab');await expect(page.getByRole('link',{name:'Đến nội dung chính'})).toBeFocused();
+ await page.keyboard.press('Enter');await expect(page.locator('main')).toBeFocused();
+ await page.screenshot({path:test.info().outputPath('aetheria-vi.png'),fullPage:true});
+ await page.getByRole('link',{name:'EN',exact:true}).click();await expect(page.locator('html')).toHaveAttribute('lang','en');
+ await expect(page.getByRole('heading',{level:1})).toContainText('connect our souls');
+ await expect(page.locator('audio,video,canvas')).toHaveCount(0);
+ await expect(page.getByText(/City at a glance|Requests since API start|Database and delivery/)).toHaveCount(0);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.screenshot({path:test.info().outputPath('aetheria-en.png'),fullPage:true});
+ await page.getByRole('link',{name:'Preregister',exact:true}).first().click();
+ await expect(page.getByRole('heading',{name:'Preregistration is not open yet'})).toBeVisible();
+ await expect(page.locator('input,form')).toHaveCount(0);
+ await expect(page.getByText(/does not create a game account/)).toBeVisible();
+ expect(operatorRequests).toEqual([]);expect(errors).toEqual([]);
+ for(const path of ['/api/admin/session','/api/admin/audit']){const denied=await request.get(path);expect(denied.status()).toBe(401);expect(denied.headers()['cache-control']).toContain('no-store');}
+ const admin=await page.goto('/admin');expect(admin?.headers()['cache-control']).toContain('no-store');expect(admin?.headers()['x-robots-tag']).toBe('noindex, nofollow');
+ await expect(page.locator('html')).toHaveAttribute('lang','en');await expect(page.getByRole('heading',{name:/quiet place/})).toBeVisible();await expect(page.getByRole('heading',{name:'City at a glance'})).toHaveCount(0);
 });
