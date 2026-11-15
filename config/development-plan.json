@@ -3770,7 +3770,21 @@
             "movementFixture": "Repeated original fixture failures retained. Diagnostic interop-31c6c300 proved socket closed 18ms after ticket expiry with input age 60ms. Fixture now renews via authorized ticket flow and resyncs aged snapshots before new movement, preserving explicit negatives/replays and server limits. Diagnostic variant interop-e36d27d7 exit 0 / 13 scenarios; final committed variant still requires rerun. No runtime authority changes.",
             "evidenceRoot": "artifacts/linux-first-playable-audit/; interop folders under artifacts/linux-first-playable-clean/artifacts/desktop-first/vl022/ except movement diagnostics under artifacts/movement-fixture-check/"
           },
-          "remaining": "Run final committed movement/Unity/launcher checks, green exact-head hosted CI, merge and post-merge verification. VL-113 stays IN_PROGRESS. Windows, production asset rights, performance and human release approvals remain separate. NO_GO_PUBLIC; OFFLINE_ONLY."
+          "finalSourceChecks": {
+            "sourceRevision": "ca503cc1d57e8931a9a0a781c11e39e47be97b32",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "rust": "cargo fmt --all -- --check; cargo test --workspace --locked (63 tests); cargo clippy --workspace --all-targets --locked -- -D warnings: each exit 0",
+            "csharp": "node scripts/native-csharp.mjs with local DOTNET: exit 0, 116 assertions / 23 syntax files",
+            "unity": "node scripts/unity-validate.mjs tests: exit 0, 16 EditMode / 3 PlayMode; linux: exit 0; linux-player-tests: exit 0, 2 tests. UNITY_EDITOR pinned 6000.3.14f1.",
+            "movement": "--runtime-gameplay --movement: exit 0 / 13 scenarios; interop-92d40e11",
+            "orchestration": "native-game-orchestration.mjs: exit 0 / 34 scenarios, 15 denied privileges; orchestration-37a4cc6d",
+            "rendered": "Pet win interop-d6ef63b1: exit 0 / 5 scenarios, won version 5 / GRANTED. Pet loss interop-a2590677: exit 0 / 5 scenarios, lost version 18 / DECLINED. Both include exact mid-match restart, immutable lost ACK replay, canonical OS movement, roaming return and logout. Screenshots inspected.",
+            "fullCheck": "pnpm check still running at this record; 499 unit PASS, integration hourly chat cap exceeded 15 seconds. Do not count invocation as PASS. Hosted Quality core-checks passed on both events; browser/final gates still pending.",
+            "failureMatrix": "interop-ddbc9a6f exit 1: Unity's default total test budget of 180 seconds expired during scene teardown after six negative logins, movement, ACK loss and retry. PR 27 grants the long OS-input chain 300 seconds; every step/request deadline and security assertion remains unchanged. Final committed rerun required.",
+            "petFixture": "Two original process runs failed after wrong-actor testing on the old ticket; diagnostic interop-67d9a162 confirmed closed socket. At ab655626487d96242d633b9953f988eeebc88bf6, --pet-arena and --pet-arena-loss each exit 0 / 30 scenarios, interop-6aac6115 and interop-9675c700. Renewal is through NestJS before new exchanges, never automatic effect retry.",
+            "evidenceRoot": "artifacts/linux-first-playable-audit; final Pet process evidence under artifacts/pet-fixture-final/artifacts/desktop-first/vl022"
+          },
+          "remaining": "Final failure-matrix and launcher verification, targeted dating timeout investigation, green exact-head hosted CI, merge and post-merge verification. VL-113 stays IN_PROGRESS. Windows, production asset rights, performance and human release approvals remain separate. NO_GO_PUBLIC; OFFLINE_ONLY."
         }
       }
     }

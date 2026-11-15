@@ -196,6 +196,8 @@ namespace VirtualLife.Blockout.Tests
 
         [UnityTest]
         [Category("NativePlayerFixture")]
+        // Six OS-entered negative logins precede recovery and scene teardown.
+        [Timeout(300000)]
         public IEnumerator LinuxPlayerPanelKeyboardAndTerminal()
         {
             var file = Environment.GetEnvironmentVariable("VL_UNITY_NATIVE_FIXTURE");
