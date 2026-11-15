@@ -42,7 +42,11 @@ export function createPetScene(canvas:HTMLCanvasElement,kind:string,color:string
   root.rotation.y=angle;root.position.y=paused||reduced.matches?0:Math.sin(elapsed*1.8)*.07;
   moving.forEach((m,i)=>{m.rotation.x=paused||reduced.matches?0:Math.sin(elapsed*2+i*.7)*.16;});
   const phase=(elapsed-started)/1.8,active=motion!=='idle'&&!paused&&!reduced.matches&&phase<1;
-  effect.visible=active;effect.scale.setScalar(1.1+Math.sin(Math.max(0,phase)*Math.PI)*.8);effect.rotation.z=elapsed;
+  effect.visible=active;
+  const pulse=Math.sin(Math.max(0,phase)*Math.PI);
+  effect.scale.setScalar(motion==='rage'?1.2+pulse:motion==='normal'?.45+pulse*.3:1.1+pulse*.4);
+  effect.position.set(motion==='normal'?pulse*.8:0,motion==='skill'?-1+pulse*.4:0,motion==='normal'?1:0);
+  effect.rotation.set(motion==='skill'?Math.PI/2:0,0,elapsed);
   root.rotation.z=active&&motion==='normal'?Math.sin(phase*Math.PI*2)*.12:0;
   if(active&&motion==='rage')root.position.y+=Math.sin(phase*Math.PI)*.35;
   camera.position.z=zoom;renderer.render(scene,camera);
