@@ -3913,6 +3913,28 @@
       "wave": "P1",
       "specification": "specs/pet-arena/v2.md",
       "draftFoundation": "Additive migration 0051, strict bounded 19-element contracts, normalized draft species/growth/skills/effectiveness, deterministic hash, transactional idempotent 114-species seed and integrity checks. Existing native grants and frozen v1 source unchanged. No application route or runtime activation.",
+      "draftVerification": {
+        "sourceRevision": "09e9297b8465fb9c2fb30217dde99a2d2a3fefcc",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {"command": "pnpm check", "exitCode": 0, "result": "Clean unchanged checkout throughout: 116 governance / 501 unit / 789 integration / all builds PASS; earlier check started at99e2713 is not used as exact-source evidence because probe/metadata edits occurred during it"},
+          {"command": "pnpm governance:check", "exitCode": 0, "result": "127 tasks: 28 VERIFIED / 8 IN_PROGRESS / 91 TODO; all 26 historical VERIFIED task objects unchanged"},
+          {"command": "node scripts/with-test-db.mjs pnpm exec vitest run packages/contracts/test/pet-content.test.ts tests/integration/pet-content.test.ts", "exitCode": 0, "result": "8 focused tests PASS: bounded drafts, concurrent seed, conflict/corruption, transactional rollback, SQL constraints and denied PUBLIC access"},
+          {"command": "node scripts/with-test-db.mjs node --import tsx scripts/pet-content-draft-seed.mjs", "exitCode": 0, "result": "114 unpublished species / 19 elements / 361 effectiveness pairs; content hash 3d137ef7706de3bba512c58c421091c775ede458057c5cbe397a8fa702609096; owned DB cleanup PASS"},
+          {"command": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-migration-compat.mjs", "exitCode": 0, "result": "Actual archived47 API/migrator ->51; frozen50 policy denied, explicit51 policy accepted, concurrent migrate/rollback/checksum/unknown migration negatives PASS"},
+          {"command": "node scripts/with-test-db.mjs node --import tsx scripts/runtime-admission-migration-compat.mjs", "exitCode": 0, "result": "Actual archived48 API/migrator ->51 with same fail-closed policy and legacy/native identity/data preservation PASS"},
+          {"command": "cargo fmt --all -- --check", "exitCode": 0, "result": "PASS"},
+          {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "63 tests PASS"},
+          {"command": "cargo clippy --workspace --all-targets --locked -- -D warnings", "exitCode": 0, "result": "PASS"},
+          {"command": "node scripts/native-csharp.mjs", "exitCode": 0, "result": "Pinned local .NET: 116 assertions / 23 authored C# syntax files PASS; not a new Unity execution claim"},
+          {"command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena", "exitCode": 0, "result": "30 real Nest/Rust/PostgreSQL/WSS scenarios PASS (interop-8f2f1fc8), including SIGKILL recovery, wrong actor/private viewer, invalid/stale commands, corrupt journals and reward crash/deduplication; cleanup PASS"},
+          {"command": "gh run view 43703201035 --exit-status", "exitCode": 0, "result": "Exact-source PR Rust PASS"},
+          {"command": "gh run view 43703196000 --exit-status", "exitCode": 0, "result": "Exact-source push Rust PASS"}
+        ],
+        "hostedQuality": "43703201039 (PR) / 43703195964 (push) core-checks and runtime-images PASS at this record; browser/final gate still pending, not PASS. Follow-up metadata commit must also receive actual green hosted CI before merge.",
+        "scope": "Draft metadata foundation only; no active match content publication, new capture/progression, admin workflow, v2 combat or production visual acceptance.",
+        "evidenceRoot": "artifacts/linux-first-playable-audit: full-check-09e9297, pet-content-09e9297, seed-09e9297, native-compat-09e9297, admission-compat-09e9297, cargo/fmt/clippy/csharp/pet-process-09e9297 logs"
+      },
       "validation": "Working-tree focused tests exit 0: 2 contract + 6 real PostgreSQL tests covering concurrent seed, corruption, rollback, wrong references and denied PUBLIC runtime access. CLI exit 0 after fixing ESM/CommonJS import; earlier fixture loadout and module-import failures retained. At 99e2713a0f8b7d6b00f0ab382a5b4e4febc3ef2a cargo fmt, 63 Rust tests and clippy exit 0; full pnpm check still running at this record. Hosted Rust 43701583810 / 43701491081 failed because archived probes pinned schema 50. Reproduced locally (compat-dd9d17cf); additive explicit 47/48-to-51 policies and unchanged frozen50-denial checks now pass locally (compat-1fb28f4d / migration-46e4ce22), exit 0 each. Focused ESLint and governance:check exit 0. Corrected committed source and full hosted checks remain required.",
       "remaining": "Cards/combinations, maps/encounters/assets and immutable published manifests; restricted versioned match pinning, retire/rollback and encrypted restore tests. Existing operator draft/preview is VL-120. No production-ready assets or gameplay v2 claimed."
     }
