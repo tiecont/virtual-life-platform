@@ -1,0 +1,349 @@
+{
+  "schemaVersion": 3,
+  "availableEffectOpcodes": [
+    "MATCH_SWORD_ATTACK",
+    "CHARGED_RAGE_ATTACK",
+    "ADD_SHIELD",
+    "ELEMENTAL_HIT",
+    "HEAL",
+    "APPLY_STATUS",
+    "BUFF_ATTACK",
+    "CLEANSE",
+    "RESOURCE_DRAIN",
+    "FIRE_ZONE",
+    "FROST_LINE",
+    "CHAIN_MARK",
+    "CURSE_SIGIL",
+    "GROWTH_GLYPH",
+    "TIDE_CURRENT"
+  ],
+  "note": "The six S-limited signature board effects are distinct content defined by a shared allowlisted Rust opcode system; bespoke animations only affect presentation. No arbitrary scripts or direct SQL in skill content.",
+  "skills": [
+    {
+      "id": "basic_strike",
+      "opcode": "MATCH_SWORD_ATTACK",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "description": "Normal attack after valid sword match; unique motion per produced 3D Pet or shared high-quality rig.",
+      "availableTo": "generic_all",
+      "unlockLevel": 1,
+      "boardEffect": {
+        "normalSkill": "no_remove_no_refill_no_shuffle",
+        "ultimate": "typed effect only if allowed"
+      }
+    },
+    {
+      "id": "rage_strike_100",
+      "opcode": "CHARGED_RAGE_ATTACK",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 0,
+      "description": "When rage>=100, fire unique Rage Sword/Ultimate attack; 4+ sword match makes opportunity (does not grant free 100).",
+      "availableTo": "generic_all",
+      "unlockLevel": 1,
+      "boardEffect": {
+        "normalSkill": "no_remove_no_refill_no_shuffle",
+        "ultimate": "typed effect only if allowed"
+      }
+    },
+    {
+      "id": "generic_guard",
+      "opcode": "ADD_SHIELD",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "description": "Defensive buff; no tile destruction.",
+      "availableTo": "generic_all",
+      "unlockLevel": 15,
+      "boardEffect": {
+        "normalSkill": "no_remove_no_refill_no_shuffle",
+        "ultimate": "typed effect only if allowed"
+      }
+    },
+    {
+      "id": "generic_elemental_skill",
+      "opcode": "ELEMENTAL_HIT",
+      "manaCost": 35,
+      "rageCost": 0,
+      "cooldownTurns": 3,
+      "description": "Small bounded elemental effect; no special board card for B/A or map S.",
+      "availableTo": "generic_all",
+      "unlockLevel": 15,
+      "boardEffect": {
+        "normalSkill": "no_remove_no_refill_no_shuffle",
+        "ultimate": "typed effect only if allowed"
+      }
+    },
+    {
+      "id": "generic_heal",
+      "opcode": "HEAL",
+      "manaCost": 35,
+      "rageCost": 0,
+      "cooldownTurns": 3,
+      "description": "Bounded heal to a permitted ally; no tile destruction.",
+      "availableTo": "generic_all",
+      "unlockLevel": 15,
+      "boardEffect": {
+        "normalSkill": "no_remove_no_refill_no_shuffle",
+        "ultimate": "typed effect only if allowed"
+      }
+    },
+    {
+      "id": "generic_disrupt",
+      "opcode": "APPLY_STATUS",
+      "manaCost": 40,
+      "rageCost": 0,
+      "cooldownTurns": 3,
+      "description": "Bounded status effect (max 2 stacks) to target.",
+      "availableTo": "generic_all",
+      "unlockLevel": 30,
+      "boardEffect": {
+        "normalSkill": "no_remove_no_refill_no_shuffle",
+        "ultimate": "typed effect only if allowed"
+      }
+    },
+    {
+      "id": "generic_empower",
+      "opcode": "BUFF_ATTACK",
+      "manaCost": 40,
+      "rageCost": 0,
+      "cooldownTurns": 4,
+      "description": "Bounded temporary attack buff, <+50% total.",
+      "availableTo": "generic_all",
+      "unlockLevel": 30,
+      "boardEffect": {
+        "normalSkill": "no_remove_no_refill_no_shuffle",
+        "ultimate": "typed effect only if allowed"
+      }
+    },
+    {
+      "id": "generic_cleanse",
+      "opcode": "CLEANSE",
+      "manaCost": 30,
+      "rageCost": 0,
+      "cooldownTurns": 3,
+      "description": "Remove one eligible negative status.",
+      "availableTo": "generic_all",
+      "unlockLevel": 30,
+      "boardEffect": {
+        "normalSkill": "no_remove_no_refill_no_shuffle",
+        "ultimate": "typed effect only if allowed"
+      }
+    },
+    {
+      "id": "generic_protect",
+      "opcode": "ADD_SHIELD",
+      "manaCost": 40,
+      "rageCost": 0,
+      "cooldownTurns": 4,
+      "description": "Bounded shield to ally; cannot exceed cap.",
+      "availableTo": "generic_all",
+      "unlockLevel": 45,
+      "boardEffect": {
+        "normalSkill": "no_remove_no_refill_no_shuffle",
+        "ultimate": "typed effect only if allowed"
+      }
+    },
+    {
+      "id": "generic_siphon",
+      "opcode": "RESOURCE_DRAIN",
+      "manaCost": 40,
+      "rageCost": 0,
+      "cooldownTurns": 4,
+      "description": "Limited mana draw from enemy, no negative resources.",
+      "availableTo": "generic_all",
+      "unlockLevel": 45,
+      "boardEffect": {
+        "normalSkill": "no_remove_no_refill_no_shuffle",
+        "ultimate": "typed effect only if allowed"
+      }
+    },
+    {
+      "id": "signature_icarus",
+      "ownerPet": "Icarus",
+      "availableTo": "limited_innate_and_unlocked_fusion_card",
+      "opcode": "FIRE_ZONE",
+      "targeting": "bounded_server_validated_board_cells",
+      "manaCost": 60,
+      "rageCost": 0,
+      "cooldownTurns": 4,
+      "unlockLevel": 1,
+      "normalEffectDescription": "4x4 zone overlay; mark cells for 2 turns; normal skill never clears/refills",
+      "ultimateName": "Solar Flamefall",
+      "ultimateEffectDescription": "Phoenix light burst then one bounded scripted clear on selected marked cells at impact",
+      "ultimateCosts": {
+        "rage": 100,
+        "mana": 0
+      },
+      "fusionCardActivationCost": {
+        "mana": 200,
+        "rage": 150
+      },
+      "requiresPetOwnAndCardUnlock": true,
+      "animationCue": "limited_icarus_signature",
+      "boardBehavior": {
+        "normalSkillMoveGrid": false,
+        "normalSkillDeleteTiles": false,
+        "normalSkillRefill": false,
+        "ultimateMayDeleteTiles": true,
+        "ultimateGridContainerAlwaysVisible": true
+      }
+    },
+    {
+      "id": "signature_glaciemora",
+      "ownerPet": "Glaciemora",
+      "availableTo": "limited_innate_and_unlocked_fusion_card",
+      "opcode": "FROST_LINE",
+      "targeting": "bounded_server_validated_board_cells",
+      "manaCost": 65,
+      "rageCost": 0,
+      "cooldownTurns": 4,
+      "unlockLevel": 1,
+      "normalEffectDescription": "Freeze one row of 10 tiles for 2 turns; keep cells in place",
+      "ultimateName": "Glacier Chorus",
+      "ultimateEffectDescription": "Ice shatter removes only affected marked cells and falls by deterministic rules",
+      "ultimateCosts": {
+        "rage": 100,
+        "mana": 0
+      },
+      "fusionCardActivationCost": {
+        "mana": 200,
+        "rage": 150
+      },
+      "requiresPetOwnAndCardUnlock": true,
+      "animationCue": "limited_glaciemora_signature",
+      "boardBehavior": {
+        "normalSkillMoveGrid": false,
+        "normalSkillDeleteTiles": false,
+        "normalSkillRefill": false,
+        "ultimateMayDeleteTiles": true,
+        "ultimateGridContainerAlwaysVisible": true
+      }
+    },
+    {
+      "id": "signature_voltaris",
+      "ownerPet": "Voltaris",
+      "availableTo": "limited_innate_and_unlocked_fusion_card",
+      "opcode": "CHAIN_MARK",
+      "targeting": "bounded_server_validated_board_cells",
+      "manaCost": 60,
+      "rageCost": 0,
+      "cooldownTurns": 4,
+      "unlockLevel": 1,
+      "normalEffectDescription": "Mark up to 8 lightning-chained cells; no automatic removal",
+      "ultimateName": "Tempest Covenant",
+      "ultimateEffectDescription": "Lightning reaches marked cells once, controlled chain limit, refill once",
+      "ultimateCosts": {
+        "rage": 100,
+        "mana": 0
+      },
+      "fusionCardActivationCost": {
+        "mana": 200,
+        "rage": 150
+      },
+      "requiresPetOwnAndCardUnlock": true,
+      "animationCue": "limited_voltaris_signature",
+      "boardBehavior": {
+        "normalSkillMoveGrid": false,
+        "normalSkillDeleteTiles": false,
+        "normalSkillRefill": false,
+        "ultimateMayDeleteTiles": true,
+        "ultimateGridContainerAlwaysVisible": true
+      }
+    },
+    {
+      "id": "signature_noctalith",
+      "ownerPet": "Noctalith",
+      "availableTo": "limited_innate_and_unlocked_fusion_card",
+      "opcode": "CURSE_SIGIL",
+      "targeting": "bounded_server_validated_board_cells",
+      "manaCost": 70,
+      "rageCost": 0,
+      "cooldownTurns": 4,
+      "unlockLevel": 1,
+      "normalEffectDescription": "Apply up to 5 cursed tile overlays and 2 lock overlays, no direct removal",
+      "ultimateName": "Eclipse Reliquary",
+      "ultimateEffectDescription": "Void eclipse pulse clears cursed cells in one verified event",
+      "ultimateCosts": {
+        "rage": 100,
+        "mana": 0
+      },
+      "fusionCardActivationCost": {
+        "mana": 200,
+        "rage": 150
+      },
+      "requiresPetOwnAndCardUnlock": true,
+      "animationCue": "limited_noctalith_signature",
+      "boardBehavior": {
+        "normalSkillMoveGrid": false,
+        "normalSkillDeleteTiles": false,
+        "normalSkillRefill": false,
+        "ultimateMayDeleteTiles": true,
+        "ultimateGridContainerAlwaysVisible": true
+      }
+    },
+    {
+      "id": "signature_sylvaris",
+      "ownerPet": "Sylvaris",
+      "availableTo": "limited_innate_and_unlocked_fusion_card",
+      "opcode": "GROWTH_GLYPH",
+      "targeting": "bounded_server_validated_board_cells",
+      "manaCost": 55,
+      "rageCost": 0,
+      "cooldownTurns": 4,
+      "unlockLevel": 1,
+      "normalEffectDescription": "Mark 3 future heal tiles; heals on next valid matching action",
+      "ultimateName": "Verdant Rebirth",
+      "ultimateEffectDescription": "Creates bounded growth response then clears marked debris only on ultimate",
+      "ultimateCosts": {
+        "rage": 100,
+        "mana": 0
+      },
+      "fusionCardActivationCost": {
+        "mana": 200,
+        "rage": 150
+      },
+      "requiresPetOwnAndCardUnlock": true,
+      "animationCue": "limited_sylvaris_signature",
+      "boardBehavior": {
+        "normalSkillMoveGrid": false,
+        "normalSkillDeleteTiles": false,
+        "normalSkillRefill": false,
+        "ultimateMayDeleteTiles": true,
+        "ultimateGridContainerAlwaysVisible": true
+      }
+    },
+    {
+      "id": "signature_leviara",
+      "ownerPet": "Leviara",
+      "availableTo": "limited_innate_and_unlocked_fusion_card",
+      "opcode": "TIDE_CURRENT",
+      "targeting": "bounded_server_validated_board_cells",
+      "manaCost": 60,
+      "rageCost": 0,
+      "cooldownTurns": 4,
+      "unlockLevel": 1,
+      "normalEffectDescription": "Draw water current path overlay for next swap; do not displace immediately",
+      "ultimateName": "Abyssal Serenade",
+      "ultimateEffectDescription": "Tidal cinematic performs a single typed wave removal/refill on server result",
+      "ultimateCosts": {
+        "rage": 100,
+        "mana": 0
+      },
+      "fusionCardActivationCost": {
+        "mana": 200,
+        "rage": 150
+      },
+      "requiresPetOwnAndCardUnlock": true,
+      "animationCue": "limited_leviara_signature",
+      "boardBehavior": {
+        "normalSkillMoveGrid": false,
+        "normalSkillDeleteTiles": false,
+        "normalSkillRefill": false,
+        "ultimateMayDeleteTiles": true,
+        "ultimateGridContainerAlwaysVisible": true
+      }
+    }
+  ]
+}

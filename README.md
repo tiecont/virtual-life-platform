@@ -60,6 +60,11 @@ world packages cannot import another world's persistence or SQL drivers.
 
 ## Work Plan
 
+The [V3.1 candidate specification](specs/pet-arena/v3.1.md) adds six Standard S
+Pets to the canonical240 draft catalog. Validate with
+`python3 scripts/validate-pet-v31.py`; no v3 DB import or runtime is enabled.
+
+
 Pet Arena expansion contracts and the original 19-element/114-species design
 catalog are in [the v2 specification](specs/pet-arena/v2.md) and
 [Pet catalog](specs/pet-arena/catalog.md). These are draft content designs, not

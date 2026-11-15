@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 3,
+  "system": "existing VirtualLife operator console",
+  "permissions": [
+    "pet_view",
+    "pet_draft_edit",
+    "pet_art_preview",
+    "pet_publish",
+    "pet_event_schedule",
+    "pet_economy_review",
+    "pet_audit_read"
+  ],
+  "draftEntities": [
+    "pet",
+    "element",
+    "race",
+    "map",
+    "encounter",
+    "skill",
+    "board_effect",
+    "anim_manifest",
+    "pity_banner",
+    "upgrade_curve",
+    "localization",
+    "standard_pool",
+    "banner_family_guarantee_policy",
+    "duplicate_exchange"
+  ],
+  "enforced": {
+    "serverValidateRefs": true,
+    "immutablePublishedVersions": true,
+    "publishRequiresAssetValidation": true,
+    "auditBeforeAfterActor": true,
+    "operatorStepUpForEconomy": true,
+    "arbitraryCodeInContent": false,
+    "serverWritesNotUnity": true,
+    "defaultOffUntilRelease": true,
+    "validatedDisclosedPoolWeights": true,
+    "reviewedEffectiveDates": true,
+    "separateStandardLimitedGuarantee": true,
+    "noMapLegendaryGacha": true,
+    "fullCurveBeforePublication": true
+  },
+  "plannedTabs": [
+    "Overview",
+    "Pets",
+    "Elements",
+    "Races",
+    "Skill Cards",
+    "Maps & Encounters",
+    "Banner Pity",
+    "Weekly Boss",
+    "Asset & 3D Rig",
+    "Version Publish",
+    "Audit & Rollback"
+  ],
+  "contentVersion": "3.1",
+  "canonicalManifest": "catalog_manifest.json"
+}

@@ -1,0 +1,449 @@
+{
+  "schemaVersion": 3,
+  "note": "Mechanic suggestions and VFX palettes. 19 elemental damage lookup remains element_effectiveness_matrix.json. Cross-element reaction combos are candidate v3 only; validate carefully for loops and balance.",
+  "statuses": [
+    {
+      "element": "normal",
+      "defaultEffectName": "balanced_focus",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#ECE9DD",
+        "#8A7DB0"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "ADD_SHIELD"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "fire",
+      "defaultEffectName": "burn",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#FF9B40",
+        "#D43B53"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "BUFF_ATTACK"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "water",
+      "defaultEffectName": "wet",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#4ACBFF",
+        "#2866CA"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "BUFF_ATTACK"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "grass",
+      "defaultEffectName": "rooted",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#93DF5D",
+        "#246D4E"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "BUFF_ATTACK"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "electric",
+      "defaultEffectName": "shocked",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#FCE650",
+        "#8868DF"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "ADD_SHIELD"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "ice",
+      "defaultEffectName": "chilled",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#B7F1FF",
+        "#5576F2"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "BUFF_ATTACK"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "fighting",
+      "defaultEffectName": "staggered",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#FF8364",
+        "#873F46"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "BUFF_ATTACK"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "poison",
+      "defaultEffectName": "toxic",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#B26ADF",
+        "#5D2C80"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "BUFF_ATTACK"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "ground",
+      "defaultEffectName": "buried",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#E2B06C",
+        "#7E5947"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "ADD_SHIELD"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "flying",
+      "defaultEffectName": "windborne",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#B6E0FF",
+        "#5877DA"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "BUFF_ATTACK"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "psychic",
+      "defaultEffectName": "mind_focus",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#FF9ECF",
+        "#8147C2"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "BUFF_ATTACK"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "bug",
+      "defaultEffectName": "hive_link",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#C2D85B",
+        "#506C4E"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "BUFF_ATTACK"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "rock",
+      "defaultEffectName": "fracture",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#C6B7A0",
+        "#625665"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "ADD_SHIELD"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "ghost",
+      "defaultEffectName": "haunted",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#B78EFF",
+        "#5E3E9A"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "BUFF_ATTACK"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "dragon",
+      "defaultEffectName": "dragon_breath",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#B5A2FC",
+        "#374C9C"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "BUFF_ATTACK"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "dark",
+      "defaultEffectName": "obscured",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#8F79AA",
+        "#31254E"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "BUFF_ATTACK"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "steel",
+      "defaultEffectName": "plated",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#ADB8D0",
+        "#45576A"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "ADD_SHIELD"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "fairy",
+      "defaultEffectName": "charmed",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#FFC5F8",
+        "#B467CE"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "BUFF_ATTACK"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    },
+    {
+      "element": "light",
+      "defaultEffectName": "radiant",
+      "statusDurationMaxTurns": 2,
+      "maxStacks": 2,
+      "resistanceScalingMaxPermille": 250,
+      "visualPalette": [
+        "#FFF2AE",
+        "#C59BD2"
+      ],
+      "recommendedAllowlistedOpCodes": [
+        "APPLY_STATUS",
+        "ELEMENTAL_HIT",
+        "BUFF_ATTACK"
+      ],
+      "normalSkillBoardMutation": "overlay_only",
+      "ultimateBoardMutation": "typed_event_only",
+      "mustNotBeAutoPublished": true
+    }
+  ],
+  "reviewedReactionCandidates": [
+    {
+      "pair": [
+        "fire",
+        "water"
+      ],
+      "effect": "steam_veil",
+      "result": "accuracy_down_bounded",
+      "maxDuration": 1,
+      "noFreeTileDeletion": true
+    },
+    {
+      "pair": [
+        "water",
+        "ice"
+      ],
+      "effect": "flash_freeze",
+      "result": "one_lock_overlay_with_countdown",
+      "maxDuration": 2,
+      "noFreeTileDeletion": true
+    },
+    {
+      "pair": [
+        "electric",
+        "water"
+      ],
+      "effect": "conductive_arc",
+      "result": "bounded_chain_target_limit_4",
+      "maxDuration": 1,
+      "noFreeTileDeletion": true
+    },
+    {
+      "pair": [
+        "grass",
+        "fire"
+      ],
+      "effect": "kindled_growth",
+      "result": "dot_with_capped_stacks",
+      "maxDuration": 2,
+      "noFreeTileDeletion": true
+    },
+    {
+      "pair": [
+        "rock",
+        "ground"
+      ],
+      "effect": "resonant_shield",
+      "result": "one_turn_shield",
+      "maxDuration": 1,
+      "noFreeTileDeletion": true
+    },
+    {
+      "pair": [
+        "ghost",
+        "light"
+      ],
+      "effect": "exorcism_mark",
+      "result": "reduced_ghost_shield",
+      "maxDuration": 1,
+      "noFreeTileDeletion": true
+    },
+    {
+      "pair": [
+        "dark",
+        "light"
+      ],
+      "effect": "eclipse_balance",
+      "result": "no_extra_damage_if_both_already_super_effective",
+      "maxDuration": 1,
+      "noFreeTileDeletion": true
+    },
+    {
+      "pair": [
+        "poison",
+        "bug"
+      ],
+      "effect": "venom_surge",
+      "result": "status_chance_not_infinite",
+      "maxDuration": 2,
+      "noFreeTileDeletion": true
+    }
+  ]
+}
