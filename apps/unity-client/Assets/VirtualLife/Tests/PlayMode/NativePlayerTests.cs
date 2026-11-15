@@ -264,7 +264,7 @@ namespace VirtualLife.Blockout.Tests
             input.Key("w", true);
             // Every step awaits authorization and a server tick; silence stops motion.
             // Allow the 5m route to complete under a loaded Linux test workstation.
-            yield return Until(() => district.Player.transform.position.z >= 1.0f, () => "walk: " + district.Player.transform.position.z + "/captured=" + district.InputCaptured + "/ready=" + panel.Ready + "/" + panel.Status, 60);
+            yield return Until(() => district.Player.transform.position.z >= 1.0f, () => "walk: " + district.Player.transform.position.z + "/focused=" + Application.isFocused + "/w=" + Input.GetKey(KeyCode.W) + "/moving=" + panel.Moving + "/busy=" + panel.Busy + "/captured=" + district.InputCaptured + "/ready=" + panel.Ready + "/" + panel.Status, 60);
             input.Key("w", false); yield return null;
             yield return Until(() => !panel.Moving);
             if (config.movement) {
