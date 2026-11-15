@@ -3936,7 +3936,29 @@
         "evidenceRoot": "artifacts/linux-first-playable-audit: full-check-09e9297, pet-content-09e9297, seed-09e9297, native-compat-09e9297, admission-compat-09e9297, cargo/fmt/clippy/csharp/pet-process-09e9297 logs"
       },
       "validation": "Working-tree focused tests exit 0: 2 contract + 6 real PostgreSQL tests covering concurrent seed, corruption, rollback, wrong references and denied PUBLIC runtime access. CLI exit 0 after fixing ESM/CommonJS import; earlier fixture loadout and module-import failures retained. At 99e2713a0f8b7d6b00f0ab382a5b4e4febc3ef2a cargo fmt, 63 Rust tests and clippy exit 0; full pnpm check still running at this record. Hosted Rust 43701583810 / 43701491081 failed because archived probes pinned schema 50. Reproduced locally (compat-dd9d17cf); additive explicit 47/48-to-51 policies and unchanged frozen50-denial checks now pass locally (compat-1fb28f4d / migration-46e4ce22), exit 0 each. Focused ESLint and governance:check exit 0. Corrected committed source and full hosted checks remain required.",
-      "remaining": "Cards/combinations, maps/encounters/assets and immutable published manifests; restricted versioned match pinning, retire/rollback and encrypted restore tests. Existing operator draft/preview is VL-120. No production-ready assets or gameplay v2 claimed."
+      "restoreVerification": {
+        "sourceRevision": "f6de468b6ff20d2faaac704a31d7d0d72b4d4a79",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {"command": "node --import tsx scripts/game-journal-restore-smoke.mjs", "exitCode": 0, "result": "Actual disposable pg_dump -> encrypted archive -> pg_restore (restore-run-89bd650b): exact 114-species/19-element metadata and hash round trip, idempotent reseed, corrupted restored metadata denied, wrong archive key and modified archive denied before SQL, legacy journal/identity checks and owned cleanup PASS"}
+        ],
+        "scope": "Unpublished Pet metadata only. Does not verify actual Pet match journal backup, owned Pets, capture, upgrades or progression restoration.",
+        "evidence": "artifacts/linux-first-playable-audit/pet-draft-restore-committed.log"
+      },
+      "integrationRecheck": {
+        "sourceRevision": "aa889fd4987af24ade99416ae7a1b2911d3a047a",
+        "commands": [
+          {"command": "pnpm play:linux", "exitCode": 0, "result": "Two real rendered Linux launches with schema 51 and OS keyboard/mouse input: win interop-d02bb29b version4/GRANTED and loss interop-04f79a36 version18/DECLINED; Plaza return, logout, owned services/database/private files cleanup PASS. Win helper initially timed out at logout; bounded OS-input retry confirmed revocation and exit. Diagnostic failure retained."},
+          {"command": "gh run view 43706069792 --exit-status", "exitCode": 0, "result": "PR Rust PASS at aa889fd"},
+          {"command": "gh run view 43706066072 --exit-status", "exitCode": 0, "result": "Push Rust PASS at aa889fd"},
+          {"command": "gh run view 43702081563 --exit-status", "exitCode": 0, "result": "Previous merged main 111cf8672aca772ff28cdb730dcf6828838e699f post-merge Quality PASS; not acceptance of PR29 or this restore follow-up"},
+          {"command": "gh run view 43702081550 --exit-status", "exitCode": 0, "result": "Previous merged main 111cf8672aca772ff28cdb730dcf6828838e699f post-merge Rust PASS"}
+        ],
+        "binaryQualification": "Reused ignored Linux player built at 8fa1b63, whose Unity/protocol/collision sources are unchanged here. Player sha256 26901901cc6dd63212d741b339897f072d34cb7b3f08419fe451fc8e77c79a1f; Native.dll ee213d25a34bfaae5b64d024d133d8b287c2168dc08525cbc6dba7bd780e6399; NativeScene.dll df8f12cff852ae82c899012e6e88c88b5e96d7227e3bcab42f7d35b88a991431. No new Unity build or production-art acceptance claimed.",
+        "pending": "PR29 aa889fd Quality push43706066035/PR43706069799 browser/final gates still pending at this record. This follow-up also requires actual hosted CI before merge.",
+        "evidence": "artifacts/linux-first-playable-audit/launcher-aa889fd-{win,win-input,win-logout-retry,loss,loss-input}.log"
+      },
+      "remaining": "Cards/combinations, maps/encounters/assets and immutable published manifests; restricted versioned match pinning, retire/rollback and actual Pet gameplay backup/replay. Existing operator draft/preview is VL-120. No production-ready assets or gameplay v2 claimed."
     }
   },
   {
