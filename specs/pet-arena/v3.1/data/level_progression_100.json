@@ -1,0 +1,728 @@
+{
+  "schemaVersion": 3,
+  "levelCap": 100,
+  "starEvolutionCap": 3,
+  "curveStatus": "DRAFT_PENDING_BALANCE",
+  "xpCurve": "85 + level^2.35*40 + max(0,level-75)^2*165",
+  "costCurve": "materials=12+level^1.85*2.25; gold=100+16*level^2",
+  "levelRows": [
+    {
+      "currentLevel": 1,
+      "xpToNextLevel": 125,
+      "levelupMaterialCost": 14,
+      "goldCost": 116,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 2,
+      "xpToNextLevel": 289,
+      "levelupMaterialCost": 20,
+      "goldCost": 164,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 3,
+      "xpToNextLevel": 614,
+      "levelupMaterialCost": 29,
+      "goldCost": 244,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 4,
+      "xpToNextLevel": 1125,
+      "levelupMaterialCost": 41,
+      "goldCost": 356,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 5,
+      "xpToNextLevel": 1841,
+      "levelupMaterialCost": 56,
+      "goldCost": 500,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 6,
+      "xpToNextLevel": 2781,
+      "levelupMaterialCost": 74,
+      "goldCost": 676,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 7,
+      "xpToNextLevel": 3958,
+      "levelupMaterialCost": 94,
+      "goldCost": 884,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 8,
+      "xpToNextLevel": 5386,
+      "levelupMaterialCost": 117,
+      "goldCost": 1124,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 9,
+      "xpToNextLevel": 7076,
+      "levelupMaterialCost": 143,
+      "goldCost": 1396,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 10,
+      "xpToNextLevel": 9040,
+      "levelupMaterialCost": 171,
+      "goldCost": 1700,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 11,
+      "xpToNextLevel": 11288,
+      "levelupMaterialCost": 202,
+      "goldCost": 2036,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 12,
+      "xpToNextLevel": 13830,
+      "levelupMaterialCost": 235,
+      "goldCost": 2404,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 13,
+      "xpToNextLevel": 16674,
+      "levelupMaterialCost": 271,
+      "goldCost": 2804,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 14,
+      "xpToNextLevel": 19830,
+      "levelupMaterialCost": 309,
+      "goldCost": 3236,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 15,
+      "xpToNextLevel": 23306,
+      "levelupMaterialCost": 349,
+      "goldCost": 3700,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 16,
+      "xpToNextLevel": 27109,
+      "levelupMaterialCost": 392,
+      "goldCost": 4196,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 17,
+      "xpToNextLevel": 31246,
+      "levelupMaterialCost": 437,
+      "goldCost": 4724,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 18,
+      "xpToNextLevel": 35726,
+      "levelupMaterialCost": 485,
+      "goldCost": 5284,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 19,
+      "xpToNextLevel": 40555,
+      "levelupMaterialCost": 534,
+      "goldCost": 5876,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 20,
+      "xpToNextLevel": 45739,
+      "levelupMaterialCost": 586,
+      "goldCost": 6500,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 21,
+      "xpToNextLevel": 51286,
+      "levelupMaterialCost": 640,
+      "goldCost": 7156,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 22,
+      "xpToNextLevel": 57200,
+      "levelupMaterialCost": 697,
+      "goldCost": 7844,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 23,
+      "xpToNextLevel": 63490,
+      "levelupMaterialCost": 756,
+      "goldCost": 8564,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 24,
+      "xpToNextLevel": 70159,
+      "levelupMaterialCost": 817,
+      "goldCost": 9316,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 25,
+      "xpToNextLevel": 77214,
+      "levelupMaterialCost": 880,
+      "goldCost": 10100,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 26,
+      "xpToNextLevel": 84661,
+      "levelupMaterialCost": 945,
+      "goldCost": 10916,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 27,
+      "xpToNextLevel": 92505,
+      "levelupMaterialCost": 1012,
+      "goldCost": 11764,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 28,
+      "xpToNextLevel": 100751,
+      "levelupMaterialCost": 1082,
+      "goldCost": 12644,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 29,
+      "xpToNextLevel": 109404,
+      "levelupMaterialCost": 1154,
+      "goldCost": 13556,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 30,
+      "xpToNextLevel": 118470,
+      "levelupMaterialCost": 1228,
+      "goldCost": 14500,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 31,
+      "xpToNextLevel": 127952,
+      "levelupMaterialCost": 1304,
+      "goldCost": 15476,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 32,
+      "xpToNextLevel": 137857,
+      "levelupMaterialCost": 1382,
+      "goldCost": 16484,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 33,
+      "xpToNextLevel": 148189,
+      "levelupMaterialCost": 1462,
+      "goldCost": 17524,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 34,
+      "xpToNextLevel": 158953,
+      "levelupMaterialCost": 1545,
+      "goldCost": 18596,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 35,
+      "xpToNextLevel": 170152,
+      "levelupMaterialCost": 1629,
+      "goldCost": 19700,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 36,
+      "xpToNextLevel": 181792,
+      "levelupMaterialCost": 1716,
+      "goldCost": 20836,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 37,
+      "xpToNextLevel": 193876,
+      "levelupMaterialCost": 1804,
+      "goldCost": 22004,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 38,
+      "xpToNextLevel": 206410,
+      "levelupMaterialCost": 1895,
+      "goldCost": 23204,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 39,
+      "xpToNextLevel": 219397,
+      "levelupMaterialCost": 1987,
+      "goldCost": 24436,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 40,
+      "xpToNextLevel": 232841,
+      "levelupMaterialCost": 2082,
+      "goldCost": 25700,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 41,
+      "xpToNextLevel": 246747,
+      "levelupMaterialCost": 2179,
+      "goldCost": 26996,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 42,
+      "xpToNextLevel": 261118,
+      "levelupMaterialCost": 2278,
+      "goldCost": 28324,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 43,
+      "xpToNextLevel": 275959,
+      "levelupMaterialCost": 2378,
+      "goldCost": 29684,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 44,
+      "xpToNextLevel": 291273,
+      "levelupMaterialCost": 2481,
+      "goldCost": 31076,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 45,
+      "xpToNextLevel": 307065,
+      "levelupMaterialCost": 2586,
+      "goldCost": 32500,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 46,
+      "xpToNextLevel": 323337,
+      "levelupMaterialCost": 2693,
+      "goldCost": 33956,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 47,
+      "xpToNextLevel": 340094,
+      "levelupMaterialCost": 2802,
+      "goldCost": 35444,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 48,
+      "xpToNextLevel": 357339,
+      "levelupMaterialCost": 2913,
+      "goldCost": 36964,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 49,
+      "xpToNextLevel": 375076,
+      "levelupMaterialCost": 3025,
+      "goldCost": 38516,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 50,
+      "xpToNextLevel": 393309,
+      "levelupMaterialCost": 3140,
+      "goldCost": 40100,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 51,
+      "xpToNextLevel": 412040,
+      "levelupMaterialCost": 3257,
+      "goldCost": 41716,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 52,
+      "xpToNextLevel": 431274,
+      "levelupMaterialCost": 3375,
+      "goldCost": 43364,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 53,
+      "xpToNextLevel": 451014,
+      "levelupMaterialCost": 3496,
+      "goldCost": 45044,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 54,
+      "xpToNextLevel": 471263,
+      "levelupMaterialCost": 3619,
+      "goldCost": 46756,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 55,
+      "xpToNextLevel": 492025,
+      "levelupMaterialCost": 3743,
+      "goldCost": 48500,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 56,
+      "xpToNextLevel": 513303,
+      "levelupMaterialCost": 3870,
+      "goldCost": 50276,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 57,
+      "xpToNextLevel": 535100,
+      "levelupMaterialCost": 3998,
+      "goldCost": 52084,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 58,
+      "xpToNextLevel": 557419,
+      "levelupMaterialCost": 4128,
+      "goldCost": 53924,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 59,
+      "xpToNextLevel": 580264,
+      "levelupMaterialCost": 4261,
+      "goldCost": 55796,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 60,
+      "xpToNextLevel": 603638,
+      "levelupMaterialCost": 4395,
+      "goldCost": 57700,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 61,
+      "xpToNextLevel": 627544,
+      "levelupMaterialCost": 4531,
+      "goldCost": 59636,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 62,
+      "xpToNextLevel": 651984,
+      "levelupMaterialCost": 4669,
+      "goldCost": 61604,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 63,
+      "xpToNextLevel": 676963,
+      "levelupMaterialCost": 4809,
+      "goldCost": 63604,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 64,
+      "xpToNextLevel": 702482,
+      "levelupMaterialCost": 4951,
+      "goldCost": 65636,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 65,
+      "xpToNextLevel": 728546,
+      "levelupMaterialCost": 5094,
+      "goldCost": 67700,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 66,
+      "xpToNextLevel": 755157,
+      "levelupMaterialCost": 5240,
+      "goldCost": 69796,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 67,
+      "xpToNextLevel": 782317,
+      "levelupMaterialCost": 5388,
+      "goldCost": 71924,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 68,
+      "xpToNextLevel": 810031,
+      "levelupMaterialCost": 5537,
+      "goldCost": 74084,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 69,
+      "xpToNextLevel": 838300,
+      "levelupMaterialCost": 5688,
+      "goldCost": 76276,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 70,
+      "xpToNextLevel": 867127,
+      "levelupMaterialCost": 5841,
+      "goldCost": 78500,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 71,
+      "xpToNextLevel": 896517,
+      "levelupMaterialCost": 5996,
+      "goldCost": 80756,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 72,
+      "xpToNextLevel": 926470,
+      "levelupMaterialCost": 6153,
+      "goldCost": 83044,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 73,
+      "xpToNextLevel": 956990,
+      "levelupMaterialCost": 6312,
+      "goldCost": 85364,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 74,
+      "xpToNextLevel": 988080,
+      "levelupMaterialCost": 6472,
+      "goldCost": 87716,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 75,
+      "xpToNextLevel": 1019742,
+      "levelupMaterialCost": 6635,
+      "goldCost": 90100,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 76,
+      "xpToNextLevel": 1052144,
+      "levelupMaterialCost": 6799,
+      "goldCost": 92516,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 77,
+      "xpToNextLevel": 1085454,
+      "levelupMaterialCost": 6965,
+      "goldCost": 94964,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 78,
+      "xpToNextLevel": 1119674,
+      "levelupMaterialCost": 7133,
+      "goldCost": 97444,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 79,
+      "xpToNextLevel": 1154808,
+      "levelupMaterialCost": 7303,
+      "goldCost": 99956,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 80,
+      "xpToNextLevel": 1190857,
+      "levelupMaterialCost": 7475,
+      "goldCost": 102500,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 81,
+      "xpToNextLevel": 1227824,
+      "levelupMaterialCost": 7648,
+      "goldCost": 105076,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 82,
+      "xpToNextLevel": 1265712,
+      "levelupMaterialCost": 7824,
+      "goldCost": 107684,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 83,
+      "xpToNextLevel": 1304524,
+      "levelupMaterialCost": 8001,
+      "goldCost": 110324,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 84,
+      "xpToNextLevel": 1344261,
+      "levelupMaterialCost": 8180,
+      "goldCost": 112996,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 85,
+      "xpToNextLevel": 1384926,
+      "levelupMaterialCost": 8360,
+      "goldCost": 115700,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 86,
+      "xpToNextLevel": 1426523,
+      "levelupMaterialCost": 8543,
+      "goldCost": 118436,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 87,
+      "xpToNextLevel": 1469053,
+      "levelupMaterialCost": 8728,
+      "goldCost": 121204,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 88,
+      "xpToNextLevel": 1512518,
+      "levelupMaterialCost": 8914,
+      "goldCost": 124004,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 89,
+      "xpToNextLevel": 1556922,
+      "levelupMaterialCost": 9102,
+      "goldCost": 126836,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 90,
+      "xpToNextLevel": 1602266,
+      "levelupMaterialCost": 9292,
+      "goldCost": 129700,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 91,
+      "xpToNextLevel": 1648553,
+      "levelupMaterialCost": 9483,
+      "goldCost": 132596,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 92,
+      "xpToNextLevel": 1695786,
+      "levelupMaterialCost": 9677,
+      "goldCost": 135524,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 93,
+      "xpToNextLevel": 1743966,
+      "levelupMaterialCost": 9872,
+      "goldCost": 138484,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 94,
+      "xpToNextLevel": 1793097,
+      "levelupMaterialCost": 10069,
+      "goldCost": 141476,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 95,
+      "xpToNextLevel": 1843179,
+      "levelupMaterialCost": 10268,
+      "goldCost": 144500,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 96,
+      "xpToNextLevel": 1894217,
+      "levelupMaterialCost": 10468,
+      "goldCost": 147556,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 97,
+      "xpToNextLevel": 1946211,
+      "levelupMaterialCost": 10671,
+      "goldCost": 150644,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 98,
+      "xpToNextLevel": 1999165,
+      "levelupMaterialCost": 10875,
+      "goldCost": 153764,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 99,
+      "xpToNextLevel": 2053080,
+      "levelupMaterialCost": 11081,
+      "goldCost": 156916,
+      "isMaxLevel": false
+    },
+    {
+      "currentLevel": 100,
+      "xpToNextLevel": 0,
+      "levelupMaterialCost": 11289,
+      "goldCost": 160100,
+      "isMaxLevel": true
+    }
+  ],
+  "evolutionStars": [
+    {
+      "star": 1,
+      "minimumLevel": 30,
+      "effect": "first appearance upgrade"
+    },
+    {
+      "star": 2,
+      "minimumLevel": 60,
+      "effect": "second appearance upgrade + reviewed stat bound"
+    },
+    {
+      "star": 3,
+      "minimumLevel": 100,
+      "effect": "final appearance refinement + reviewed stat bound"
+    }
+  ],
+  "note": "Stats and progression are candidates; do not force premium spend. Effective level while signature fusion is capped at 100."
+}

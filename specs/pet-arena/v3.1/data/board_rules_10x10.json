@@ -1,0 +1,77 @@
+{
+  "ruleset": "pet-arena-v3",
+  "mode": "deterministic-server-authoritative",
+  "board": {
+    "columns": 10,
+    "rows": 10,
+    "cellCount": 100,
+    "tileKinds": [
+      "sword",
+      "mana",
+      "rage",
+      "heart",
+      "shield",
+      "special"
+    ],
+    "orthogonalAdjacentSwap": true,
+    "minMatch": 3,
+    "refillOnMatch": true,
+    "guaranteedLegalMove": true,
+    "reshuffleIfNoMove": "server-logged and seeded",
+    "maxCascadesPerTurn": 16,
+    "roundLimit": 60,
+    "noUncontrolledChainReactions": true
+  },
+  "resources": {
+    "manaMax": 300,
+    "rageMax": 200,
+    "normalRageUltimateCost": 100,
+    "fusionCardActivationManaCost": 200,
+    "fusionCardActivationRageCost": 150,
+    "manaPerMatchedTileDraft": 5,
+    "ragePerMatchedTileDraft": 4,
+    "swordMatchLength4PlusEnablesChargedOpportunity": true,
+    "swordMatchLength4PlusAutoAdds100Rage": false,
+    "swordUltimateRequirements": "rage>=100 AND relevant sword trigger/allowed command; playtest",
+    "capsArePerActorNotTeam": true
+  },
+  "skillVsUltimateBoardContract": {
+    "normalSkill": {
+      "gridVisible": true,
+      "cellPositionStable": true,
+      "tilesDeleted": false,
+      "refill": false,
+      "shuffle": false,
+      "allowed": "overlay and bounded status only"
+    },
+    "ultimate": {
+      "gridContainerVisible": true,
+      "mayClearCells": true,
+      "mayRefillAfterServerEvent": true,
+      "mayTemporarilyDimBoard": true,
+      "noFreeFormRandomDestruction": true
+    },
+    "renderingEvents": [
+      "effect_applied",
+      "tile_overlay_updated",
+      "ultimate_windup",
+      "ultimate_impact",
+      "tiles_removed",
+      "tiles_fell",
+      "refill_committed",
+      "board_resumed"
+    ],
+    "reconnect": "exact frozen match state + event ordinal, no replay animation duplicates"
+  },
+  "statusCaps": {
+    "shieldMaxFractionOfMaxHP": 0.5,
+    "attackBuffMaxFraction": 0.5,
+    "criticalChanceMax": 0.25,
+    "criticalDamageMultiplierMax": 1.5,
+    "statusDurationTurnsMax": 3,
+    "tileLockDurationTurnsMax": 2
+  },
+  "rng": "private server seed/cursor with auditable deterministic replay",
+  "mustKeepV1AndV2Fixtures": true,
+  "qualification": "Candidate gameplay numbers; playtesting/benchmarking before publish"
+}

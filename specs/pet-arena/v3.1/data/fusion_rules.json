@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 3,
+  "signatureFusion": {
+    "normalReceiverRequired": true,
+    "limitedAsCardSource": true,
+    "ownOrEarnCard": true,
+    "cardIsReusableWhileEquipped": true,
+    "cardObtainingMethods": [
+      "limited_pet_mastery_quest",
+      "event_exchange",
+      "milestone_shards"
+    ],
+    "activation": {
+      "mana": 200,
+      "rage": 150
+    },
+    "temporaryBattleLevelBoost": 3,
+    "maxEffectiveLevel": 100,
+    "statInheritancePermille": {
+      "normal_receiver_from_limited": 150,
+      "limited_receiver_from_normal": 30,
+      "normal_receiver_from_normal": 50
+    },
+    "statInheritanceHardCap": {
+      "totalAttackBuffPermille": 500
+    },
+    "compatibility": {
+      "normal_plus_limited_signature": "yes",
+      "normal_plus_normal": "yes minor stats",
+      "limited_plus_normal": "yes minor stats",
+      "limited_plus_limited": "no"
+    },
+    "signatureSlotsPerActivePet": 1,
+    "durableConsumption": false,
+    "persistOwnership": true,
+    "endAfterMatch": true,
+    "replayAuthoritative": true
+  },
+  "permanentFusion": {
+    "featureTrack": "separate deferred progression track",
+    "consumesOwnedPetsIfAuthoritativelyConfigured": true,
+    "mustNotBeConfusedWithInBattleFusion": true,
+    "notRequiredForV3FirstPlayable": true,
+    "noMandatoryDiscardOfLimited": true
+  }
+}
