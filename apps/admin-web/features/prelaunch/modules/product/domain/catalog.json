@@ -1,6 +1,6 @@
 {
   "sourceRevision": "644fe152a397db5040a7ae856609627b91bd77e3",
-  "sourceStatus": "UNMERGED_DESIGN_CANDIDATE_NOT_GAMEPLAY",
+  "sourceStatus": "DESIGN_CANDIDATE_NOT_GAMEPLAY",
   "sourcePath": "specs/pet-arena/v3.1/data",
   "pets": [
     {
