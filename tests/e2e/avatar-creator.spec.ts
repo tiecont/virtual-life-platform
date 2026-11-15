@@ -3,7 +3,7 @@ import {test,expect,type BrowserContext,type Page} from '@playwright/test';
 import {request} from 'node:http';
 import {randomUUID} from 'node:crypto';
 import {mkdir,writeFile} from 'node:fs/promises';
-import {MeSchema,AvatarOwnStateSchema,AvatarSaveResultSchema,AVATAR_CATALOG_VERSION,starterAvatarParts} from '@virtual-city/contracts';
+import {MeSchema,RoomAckSchema,AvatarOwnStateSchema,AvatarSaveResultSchema,AVATAR_CATALOG_VERSION,starterAvatarParts} from '@virtual-city/contracts';
 const origin='http://127.0.0.1:3300',runId=process.env.UX_EVIDENCE_RUN??randomUUID().slice(0,8);if(!/^[a-f0-9]{8}$/.test(runId))throw Error('Invalid creator evidence run');let serial=0;
 async function guest(context:BrowserContext,name='Animal Creator Visitor'){
  const payload=JSON.stringify({requestId:randomUUID(),displayName:name,avatarKey:'mint'}),result=await new Promise<{cookie:string;body:unknown}>((ok,no)=>{const req=request('http://127.0.0.1:4300/v1/session/guest',{method:'POST',localAddress:'127.128.0.'+(++serial),headers:{origin,'content-type':'application/json','content-length':Buffer.byteLength(payload)}},res=>{let body='';res.on('data',chunk=>body+=chunk);res.on('end',()=>{try{expect(res.statusCode).toBe(201);ok({cookie:res.headers['set-cookie']![0].split(';')[0],body:JSON.parse(body)});}catch(error){no(error);}});});req.on('error',no);req.end(payload);});const at=result.cookie.indexOf('=');await context.addCookies([{name:result.cookie.slice(0,at),value:result.cookie.slice(at+1),url:origin,httpOnly:true,sameSite:'Lax'}]);return MeSchema.parse(result.body);
@@ -74,7 +74,14 @@ test('the first preview starts with the saved account appearance and a failed wa
 });
 
 for(const slug of ['deadline','maid'])test(`${slug} camera follows the saved animal through committed seating and walking without camera commands or persistence`,async({page,context},info)=>{
- let cameraMutations=0;page.on('websocket',socket=>socket.on('framesent',frame=>{if(typeof frame.payload==='string'&&/"(?:room.move|seat.claim|seat.release|room.leave)"/.test(frame.payload))cameraMutations++;}));
+ let cameraMutations=0,snapshots=0;page.on('websocket',socket=>{
+  socket.on('framesent',frame=>{if(typeof frame.payload==='string'&&/"(?:room.move|seat.claim|seat.release|room.leave)"/.test(frame.payload))cameraMutations++;});
+  socket.on('framereceived',frame=>{
+   const text=typeof frame.payload==='string'?frame.payload:'';
+   if(!/^43\d+\[/.test(text))return;
+   try{const ack=RoomAckSchema.safeParse(JSON.parse(text.slice(text.indexOf('[')))[0]);if(ack.success&&ack.data.ok&&ack.data.result.type==='snapshot')snapshots++;}catch{/* Ignore unrelated transport frames. */}
+  });
+ });
  const me=await guest(context,'Camera visitor'),parts=starterAvatarParts('plum','rabbit');
  const saved=await context.request.post('/v1/me/avatar',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{schemaVersion:2,catalogVersion:AVATAR_CATALOG_VERSION,expectedAccountId:me.profile.id,expectedRevision:0,parts}});expect(saved.status()).toBe(200);
  const beforeOwn=await own(context);await page.goto('/worlds/'+slug+'/room3d');
@@ -111,6 +118,8 @@ for(const slug of ['deadline','maid'])test(`${slug} camera follows the saved ani
  await room.screenshot({path:output+'/follow-walked-canvas.png'});
  await cameraControls.getByRole('button',{name:'Whole room',exact:true}).click();await expect(room).toHaveAttribute('data-camera-framing','room');
  expect(await own(context)).toEqual(beforeOwn);expect((await(await context.request.get('/v1/me')).json()).profile).toEqual(me.profile);
- await page.getByRole('button',{name:'Leave cafe',exact:true}).click();await expect(page.getByText('You left the cafe.',{exact:true})).toBeVisible();expect((await(await context.request.get('/v1/me/room')).json()).snapshot).toBeNull();await expect(room).toHaveAttribute('data-entity-count','0');await expect(cameraControls.getByRole('button',{name:'Follow my character',exact:true})).toBeDisabled();
+ // Finish the periodic refresh before activating Leave; it temporarily disables commands.
+ const beforeLeave=snapshots;await expect.poll(()=>snapshots,{timeout:20000}).toBeGreaterThan(beforeLeave);
+ await expect(page.getByRole('status')).toHaveText('Connected');const leave=page.getByRole('button',{name:'Leave cafe',exact:true});await expect(leave).toBeEnabled();await leave.focus();await page.keyboard.press('Enter');await expect(page.getByText('You left the cafe.',{exact:true})).toBeVisible();expect((await(await context.request.get('/v1/me/room')).json()).snapshot).toBeNull();await expect(room).toHaveAttribute('data-entity-count','0');await expect(cameraControls.getByRole('button',{name:'Follow my character',exact:true})).toBeDisabled();
  await writeFile(output+'/facts.json',JSON.stringify({world:slug,roomArt,actualOwnSavedRabbit:true,cameraOnlyMutations:0,allJourneyMutations:cameraMutations,identityPreserved:true,membershipPreserved:snapshot.membershipId===seated.membershipId,seatingAndWalkingServerConfirmed:true,aspectResizeCentered:true,savedAppearanceUnchanged:true,ownCameraResetOnLeave:true,wholeRoomRetained:true,limitations:'Functional room-art/camera slice;not final art or frame-budget qualification'},null,2));
 });
