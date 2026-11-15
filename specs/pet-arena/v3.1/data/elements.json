@@ -1,0 +1,484 @@
+{
+  "schemaVersion": 3,
+  "origin": "repo main afd914e089fe097f858bb4ce573cc315790480d4, specs/pet-arena/catalog-v2.json (canonical ID names)",
+  "elements": [
+    {
+      "id": "normal",
+      "nameEn": "Normal",
+      "nameVi": "Thường",
+      "mapId": "meadow-hollows",
+      "colors": [
+        "#ECE9DD",
+        "#8A7DB0"
+      ],
+      "strongAgainst": [],
+      "resistedBy": [
+        "rock",
+        "steel"
+      ],
+      "noEffectAgainst": [
+        "ghost"
+      ],
+      "order": 0,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/normal.png",
+      "activeForV3": true
+    },
+    {
+      "id": "fire",
+      "nameEn": "Fire",
+      "nameVi": "Hỏa",
+      "mapId": "cinder-terraces",
+      "colors": [
+        "#FF9B40",
+        "#D43B53"
+      ],
+      "strongAgainst": [
+        "grass",
+        "ice",
+        "bug",
+        "steel"
+      ],
+      "resistedBy": [
+        "fire",
+        "water",
+        "rock",
+        "dragon"
+      ],
+      "noEffectAgainst": [],
+      "order": 1,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/fire.png",
+      "activeForV3": true
+    },
+    {
+      "id": "water",
+      "nameEn": "Water",
+      "nameVi": "Thủy",
+      "mapId": "tideglass-lagoon",
+      "colors": [
+        "#4ACBFF",
+        "#2866CA"
+      ],
+      "strongAgainst": [
+        "fire",
+        "ground",
+        "rock"
+      ],
+      "resistedBy": [
+        "water",
+        "grass",
+        "dragon"
+      ],
+      "noEffectAgainst": [],
+      "order": 2,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/water.png",
+      "activeForV3": true
+    },
+    {
+      "id": "grass",
+      "nameEn": "Grass",
+      "nameVi": "Mộc",
+      "mapId": "canopy-weald",
+      "colors": [
+        "#93DF5D",
+        "#246D4E"
+      ],
+      "strongAgainst": [
+        "water",
+        "ground",
+        "rock",
+        "light"
+      ],
+      "resistedBy": [
+        "fire",
+        "grass",
+        "poison",
+        "flying",
+        "bug",
+        "dragon",
+        "steel"
+      ],
+      "noEffectAgainst": [],
+      "order": 3,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/grass.png",
+      "activeForV3": true
+    },
+    {
+      "id": "electric",
+      "nameEn": "Electric",
+      "nameVi": "Điện",
+      "mapId": "stormcoil-fields",
+      "colors": [
+        "#FCE650",
+        "#8868DF"
+      ],
+      "strongAgainst": [
+        "water",
+        "flying"
+      ],
+      "resistedBy": [
+        "electric",
+        "grass",
+        "dragon"
+      ],
+      "noEffectAgainst": [
+        "ground"
+      ],
+      "order": 4,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/electric.png",
+      "activeForV3": true
+    },
+    {
+      "id": "ice",
+      "nameEn": "Ice",
+      "nameVi": "Băng",
+      "mapId": "rimebell-basin",
+      "colors": [
+        "#B7F1FF",
+        "#5576F2"
+      ],
+      "strongAgainst": [
+        "grass",
+        "ground",
+        "flying",
+        "dragon"
+      ],
+      "resistedBy": [
+        "fire",
+        "water",
+        "ice",
+        "steel"
+      ],
+      "noEffectAgainst": [],
+      "order": 5,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/ice.png",
+      "activeForV3": true
+    },
+    {
+      "id": "fighting",
+      "nameEn": "Fighting",
+      "nameVi": "Đấu",
+      "mapId": "echo-steppe",
+      "colors": [
+        "#FF8364",
+        "#873F46"
+      ],
+      "strongAgainst": [
+        "normal",
+        "ice",
+        "rock",
+        "dark",
+        "steel"
+      ],
+      "resistedBy": [
+        "poison",
+        "flying",
+        "psychic",
+        "bug",
+        "fairy"
+      ],
+      "noEffectAgainst": [
+        "ghost"
+      ],
+      "order": 6,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/fighting.png",
+      "activeForV3": true
+    },
+    {
+      "id": "poison",
+      "nameEn": "Poison",
+      "nameVi": "Độc",
+      "mapId": "violet-mire",
+      "colors": [
+        "#B26ADF",
+        "#5D2C80"
+      ],
+      "strongAgainst": [
+        "grass",
+        "fairy"
+      ],
+      "resistedBy": [
+        "poison",
+        "ground",
+        "rock",
+        "ghost"
+      ],
+      "noEffectAgainst": [
+        "steel"
+      ],
+      "order": 7,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/poison.png",
+      "activeForV3": true
+    },
+    {
+      "id": "ground",
+      "nameEn": "Ground",
+      "nameVi": "Đất",
+      "mapId": "ochre-labyrinth",
+      "colors": [
+        "#E2B06C",
+        "#7E5947"
+      ],
+      "strongAgainst": [
+        "fire",
+        "electric",
+        "poison",
+        "rock",
+        "steel"
+      ],
+      "resistedBy": [
+        "grass",
+        "bug"
+      ],
+      "noEffectAgainst": [
+        "flying"
+      ],
+      "order": 8,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/ground.png",
+      "activeForV3": true
+    },
+    {
+      "id": "flying",
+      "nameEn": "Flying",
+      "nameVi": "Bay",
+      "mapId": "skyreed-isles",
+      "colors": [
+        "#B6E0FF",
+        "#5877DA"
+      ],
+      "strongAgainst": [
+        "grass",
+        "fighting",
+        "bug"
+      ],
+      "resistedBy": [
+        "electric",
+        "rock",
+        "steel"
+      ],
+      "noEffectAgainst": [],
+      "order": 9,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/flying.png",
+      "activeForV3": true
+    },
+    {
+      "id": "psychic",
+      "nameEn": "Psychic",
+      "nameVi": "Tâm Linh",
+      "mapId": "mirror-orchard",
+      "colors": [
+        "#FF9ECF",
+        "#8147C2"
+      ],
+      "strongAgainst": [
+        "fighting",
+        "poison"
+      ],
+      "resistedBy": [
+        "psychic",
+        "steel"
+      ],
+      "noEffectAgainst": [
+        "dark"
+      ],
+      "order": 10,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/psychic.png",
+      "activeForV3": true
+    },
+    {
+      "id": "bug",
+      "nameEn": "Bug",
+      "nameVi": "Trùng",
+      "mapId": "amber-understory",
+      "colors": [
+        "#C2D85B",
+        "#506C4E"
+      ],
+      "strongAgainst": [
+        "grass",
+        "psychic",
+        "dark"
+      ],
+      "resistedBy": [
+        "fire",
+        "fighting",
+        "poison",
+        "flying",
+        "ghost",
+        "steel",
+        "fairy"
+      ],
+      "noEffectAgainst": [],
+      "order": 11,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/bug.png",
+      "activeForV3": true
+    },
+    {
+      "id": "rock",
+      "nameEn": "Rock",
+      "nameVi": "Đá",
+      "mapId": "basalt-choir",
+      "colors": [
+        "#C6B7A0",
+        "#625665"
+      ],
+      "strongAgainst": [
+        "fire",
+        "ice",
+        "flying",
+        "bug"
+      ],
+      "resistedBy": [
+        "fighting",
+        "ground",
+        "steel"
+      ],
+      "noEffectAgainst": [],
+      "order": 12,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/rock.png",
+      "activeForV3": true
+    },
+    {
+      "id": "ghost",
+      "nameEn": "Ghost",
+      "nameVi": "Ma",
+      "mapId": "lantern-necropolis",
+      "colors": [
+        "#B78EFF",
+        "#5E3E9A"
+      ],
+      "strongAgainst": [
+        "psychic",
+        "ghost"
+      ],
+      "resistedBy": [
+        "dark",
+        "light"
+      ],
+      "noEffectAgainst": [
+        "normal"
+      ],
+      "order": 13,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/ghost.png",
+      "activeForV3": true
+    },
+    {
+      "id": "dragon",
+      "nameEn": "Dragon",
+      "nameVi": "Long",
+      "mapId": "wyrmglass-ridge",
+      "colors": [
+        "#B5A2FC",
+        "#374C9C"
+      ],
+      "strongAgainst": [
+        "dragon"
+      ],
+      "resistedBy": [
+        "steel"
+      ],
+      "noEffectAgainst": [
+        "fairy"
+      ],
+      "order": 14,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/dragon.png",
+      "activeForV3": true
+    },
+    {
+      "id": "dark",
+      "nameEn": "Dark",
+      "nameVi": "Hắc Ám",
+      "mapId": "umbra-vale",
+      "colors": [
+        "#8F79AA",
+        "#31254E"
+      ],
+      "strongAgainst": [
+        "psychic",
+        "ghost",
+        "light"
+      ],
+      "resistedBy": [
+        "fighting",
+        "dark",
+        "fairy"
+      ],
+      "noEffectAgainst": [],
+      "order": 15,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/dark.png",
+      "activeForV3": true
+    },
+    {
+      "id": "steel",
+      "nameEn": "Steel",
+      "nameVi": "Kim",
+      "mapId": "alloy-foundry",
+      "colors": [
+        "#ADB8D0",
+        "#45576A"
+      ],
+      "strongAgainst": [
+        "ice",
+        "rock",
+        "fairy",
+        "light"
+      ],
+      "resistedBy": [
+        "fire",
+        "water",
+        "electric",
+        "steel"
+      ],
+      "noEffectAgainst": [],
+      "order": 16,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/steel.png",
+      "activeForV3": true
+    },
+    {
+      "id": "fairy",
+      "nameEn": "Fairy",
+      "nameVi": "Tiên",
+      "mapId": "chimegrove",
+      "colors": [
+        "#FFC5F8",
+        "#B467CE"
+      ],
+      "strongAgainst": [
+        "fighting",
+        "dragon",
+        "dark"
+      ],
+      "resistedBy": [
+        "fire",
+        "poison",
+        "steel"
+      ],
+      "noEffectAgainst": [],
+      "order": 17,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/fairy.png",
+      "activeForV3": true
+    },
+    {
+      "id": "light",
+      "nameEn": "Light",
+      "nameVi": "Quang",
+      "mapId": "dawn-prism-sanctum",
+      "colors": [
+        "#FFF2AE",
+        "#C59BD2"
+      ],
+      "strongAgainst": [
+        "dark",
+        "ghost"
+      ],
+      "resistedBy": [
+        "grass",
+        "steel",
+        "light"
+      ],
+      "noEffectAgainst": [],
+      "order": 18,
+      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/light.png",
+      "activeForV3": true
+    }
+  ]
+}

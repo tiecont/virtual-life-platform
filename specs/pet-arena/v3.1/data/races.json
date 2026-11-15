@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 3,
+  "note": "Race is morphology/rig taxonomy, not a 20th element and not a rarity.",
+  "races": [
+    {
+      "id": "beast",
+      "name": "Beast",
+      "defaultBodyPlan": "quadruped",
+      "defaultRig": "rig_q4",
+      "locomotion": "walk",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "dragonkin",
+      "name": "Dragonkin",
+      "defaultBodyPlan": "serpentine",
+      "defaultRig": "rig_serpent",
+      "locomotion": "walk",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "spirit",
+      "name": "Spirit",
+      "defaultBodyPlan": "floating",
+      "defaultRig": "rig_float",
+      "locomotion": "hover",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "celestial",
+      "name": "Celestial",
+      "defaultBodyPlan": "humanoid",
+      "defaultRig": "rig_humanoid",
+      "locomotion": "walk",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "demon",
+      "name": "Fiend",
+      "defaultBodyPlan": "humanoid",
+      "defaultRig": "rig_humanoid",
+      "locomotion": "walk",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "avian",
+      "name": "Avian",
+      "defaultBodyPlan": "avian",
+      "defaultRig": "rig_avian",
+      "locomotion": "fly",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "flora",
+      "name": "Flora",
+      "defaultBodyPlan": "plant",
+      "defaultRig": "rig_flora",
+      "locomotion": "walk",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "aquatic",
+      "name": "Aquatic",
+      "defaultBodyPlan": "aquatic",
+      "defaultRig": "rig_aquatic",
+      "locomotion": "swim",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "undead",
+      "name": "Undead",
+      "defaultBodyPlan": "spectral",
+      "defaultRig": "rig_spectral",
+      "locomotion": "hover",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "construct",
+      "name": "Construct",
+      "defaultBodyPlan": "golem",
+      "defaultRig": "rig_heavy",
+      "locomotion": "walk",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "machine",
+      "name": "Machine",
+      "defaultBodyPlan": "mechanical",
+      "defaultRig": "rig_machine",
+      "locomotion": "walk",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "slime",
+      "name": "Slime",
+      "defaultBodyPlan": "slime",
+      "defaultRig": "rig_soft",
+      "locomotion": "walk",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "insectoid",
+      "name": "Insectoid",
+      "defaultBodyPlan": "insectoid",
+      "defaultRig": "rig_insect",
+      "locomotion": "walk",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "mythborn",
+      "name": "Mythborn",
+      "defaultBodyPlan": "centaur",
+      "defaultRig": "rig_centaur",
+      "locomotion": "walk",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "humanoid",
+      "name": "Humanoid",
+      "defaultBodyPlan": "humanoid",
+      "defaultRig": "rig_humanoid",
+      "locomotion": "walk",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "elemental",
+      "name": "Elemental",
+      "defaultBodyPlan": "amorphous",
+      "defaultRig": "rig_soft",
+      "locomotion": "hover",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "fungal",
+      "name": "Fungal",
+      "defaultBodyPlan": "plant",
+      "defaultRig": "rig_flora",
+      "locomotion": "walk",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "arthropod",
+      "name": "Arthropod",
+      "defaultBodyPlan": "insectoid",
+      "defaultRig": "rig_insect",
+      "locomotion": "walk",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "amorphous",
+      "name": "Amorphous",
+      "defaultBodyPlan": "amorphous",
+      "defaultRig": "rig_soft",
+      "locomotion": "hover",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "crystalborn",
+      "name": "Crystalborn",
+      "defaultBodyPlan": "golem",
+      "defaultRig": "rig_heavy",
+      "locomotion": "walk",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "living_artifact",
+      "name": "Living Artifact",
+      "defaultBodyPlan": "floating",
+      "defaultRig": "rig_float",
+      "locomotion": "hover",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    },
+    {
+      "id": "cephalopod",
+      "name": "Cephalopod",
+      "defaultBodyPlan": "aquatic",
+      "defaultRig": "rig_aquatic",
+      "locomotion": "swim",
+      "gameplayRule": "shared combat reducer; race passives only allowlisted bounded traits"
+    }
+  ],
+  "bodyPlans": [
+    "quadruped",
+    "floating",
+    "insectoid",
+    "serpentine",
+    "avian",
+    "humanoid",
+    "golem",
+    "plant",
+    "slime",
+    "spectral",
+    "amorphous",
+    "mechanical",
+    "centaur",
+    "aquatic",
+    "radial"
+  ],
+  "minimumDiversityTargets": {
+    "nonHumanoidFraction": 0.75,
+    "atLeastFiveUniqueSilhouettesPerMap": true,
+    "bipedHumanlikeNotDefault": true
+  }
+}

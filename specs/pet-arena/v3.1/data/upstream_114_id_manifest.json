@@ -1,0 +1,805 @@
+{
+  "expectedCount": 114,
+  "upstreamSha": "afd914e089fe097f858bb4ce573cc315790480d4",
+  "purpose": "Agent compares stable existing source IDs/names to actual catalog-v2.json at updated main before any DB writes",
+  "species": [
+    {
+      "id": "normal-puffern",
+      "name": "Puffern",
+      "element": "normal",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "meadow-hollows"
+    },
+    {
+      "id": "normal-mosspad",
+      "name": "Mosspad",
+      "element": "normal",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "meadow-hollows"
+    },
+    {
+      "id": "normal-brindleap",
+      "name": "Brindleap",
+      "element": "normal",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "meadow-hollows"
+    },
+    {
+      "id": "normal-reedruff",
+      "name": "Reedruff",
+      "element": "normal",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "meadow-hollows"
+    },
+    {
+      "id": "normal-tandemble",
+      "name": "Tandemble",
+      "element": "normal",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "meadow-hollows"
+    },
+    {
+      "id": "normal-hearthmantle",
+      "name": "Hearthmantle",
+      "element": "normal",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "meadow-hollows"
+    },
+    {
+      "id": "fire-coalwhisk",
+      "name": "Coalwhisk",
+      "element": "fire",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "cinder-terraces"
+    },
+    {
+      "id": "fire-emberloom",
+      "name": "Emberloom",
+      "element": "fire",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "cinder-terraces"
+    },
+    {
+      "id": "fire-kilnback",
+      "name": "Kilnback",
+      "element": "fire",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "cinder-terraces"
+    },
+    {
+      "id": "fire-flarequill",
+      "name": "Flarequill",
+      "element": "fire",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "cinder-terraces"
+    },
+    {
+      "id": "fire-scorchveil",
+      "name": "Scorchveil",
+      "element": "fire",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "cinder-terraces"
+    },
+    {
+      "id": "fire-pyrecrown",
+      "name": "Pyrecrown",
+      "element": "fire",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "cinder-terraces"
+    },
+    {
+      "id": "water-dewskip",
+      "name": "Dewskip",
+      "element": "water",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "tideglass-lagoon"
+    },
+    {
+      "id": "water-ripplefin",
+      "name": "Ripplefin",
+      "element": "water",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "tideglass-lagoon"
+    },
+    {
+      "id": "water-foamcurl",
+      "name": "Foamcurl",
+      "element": "water",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "tideglass-lagoon"
+    },
+    {
+      "id": "water-tideweft",
+      "name": "Tideweft",
+      "element": "water",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "tideglass-lagoon"
+    },
+    {
+      "id": "water-abyssail",
+      "name": "Abyssail",
+      "element": "water",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "tideglass-lagoon"
+    },
+    {
+      "id": "water-lagoonarch",
+      "name": "Lagoonarch",
+      "element": "water",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "tideglass-lagoon"
+    },
+    {
+      "id": "grass-budwisp",
+      "name": "Budwisp",
+      "element": "grass",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "canopy-weald"
+    },
+    {
+      "id": "grass-vinepurl",
+      "name": "Vinepurl",
+      "element": "grass",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "canopy-weald"
+    },
+    {
+      "id": "grass-mossmane",
+      "name": "Mossmane",
+      "element": "grass",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "canopy-weald"
+    },
+    {
+      "id": "grass-thornlace",
+      "name": "Thornlace",
+      "element": "grass",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "canopy-weald"
+    },
+    {
+      "id": "grass-bloomvault",
+      "name": "Bloomvault",
+      "element": "grass",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "canopy-weald"
+    },
+    {
+      "id": "grass-canopyr",
+      "name": "Canopyr",
+      "element": "grass",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "canopy-weald"
+    },
+    {
+      "id": "electric-zipspool",
+      "name": "Zipspool",
+      "element": "electric",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "stormcoil-fields"
+    },
+    {
+      "id": "electric-copperkip",
+      "name": "Copperkip",
+      "element": "electric",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "stormcoil-fields"
+    },
+    {
+      "id": "electric-arcshell",
+      "name": "Arcshell",
+      "element": "electric",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "stormcoil-fields"
+    },
+    {
+      "id": "electric-pulsecrest",
+      "name": "Pulsecrest",
+      "element": "electric",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "stormcoil-fields"
+    },
+    {
+      "id": "electric-thundrel",
+      "name": "Thundrel",
+      "element": "electric",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "stormcoil-fields"
+    },
+    {
+      "id": "electric-stormdiadem",
+      "name": "Stormdiadem",
+      "element": "electric",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "stormcoil-fields"
+    },
+    {
+      "id": "ice-rimebud",
+      "name": "Rimebud",
+      "element": "ice",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "rimebell-basin"
+    },
+    {
+      "id": "ice-frostknit",
+      "name": "Frostknit",
+      "element": "ice",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "rimebell-basin"
+    },
+    {
+      "id": "ice-glacetail",
+      "name": "Glacetail",
+      "element": "ice",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "rimebell-basin"
+    },
+    {
+      "id": "ice-hailmorrow",
+      "name": "Hailmorrow",
+      "element": "ice",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "rimebell-basin"
+    },
+    {
+      "id": "ice-cryocrest",
+      "name": "Cryocrest",
+      "element": "ice",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "rimebell-basin"
+    },
+    {
+      "id": "ice-wintervault",
+      "name": "Wintervault",
+      "element": "ice",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "rimebell-basin"
+    },
+    {
+      "id": "fighting-pawtempo",
+      "name": "Pawtempo",
+      "element": "fighting",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "echo-steppe"
+    },
+    {
+      "id": "fighting-knucklefern",
+      "name": "Knucklefern",
+      "element": "fighting",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "echo-steppe"
+    },
+    {
+      "id": "fighting-bracetusk",
+      "name": "Bracetusk",
+      "element": "fighting",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "echo-steppe"
+    },
+    {
+      "id": "fighting-rhythmant",
+      "name": "Rhythmant",
+      "element": "fighting",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "echo-steppe"
+    },
+    {
+      "id": "fighting-ironstance",
+      "name": "Ironstance",
+      "element": "fighting",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "echo-steppe"
+    },
+    {
+      "id": "fighting-echochamp",
+      "name": "Echochamp",
+      "element": "fighting",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "echo-steppe"
+    },
+    {
+      "id": "poison-mirepip",
+      "name": "Mirepip",
+      "element": "poison",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "violet-mire"
+    },
+    {
+      "id": "poison-venomoss",
+      "name": "Venomoss",
+      "element": "poison",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "violet-mire"
+    },
+    {
+      "id": "poison-sporeveil",
+      "name": "Sporeveil",
+      "element": "poison",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "violet-mire"
+    },
+    {
+      "id": "poison-brinebarb",
+      "name": "Brinebarb",
+      "element": "poison",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "violet-mire"
+    },
+    {
+      "id": "poison-toxilume",
+      "name": "Toxilume",
+      "element": "poison",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "violet-mire"
+    },
+    {
+      "id": "poison-mirematron",
+      "name": "Mirematron",
+      "element": "poison",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "violet-mire"
+    },
+    {
+      "id": "ground-clodkin",
+      "name": "Clodkin",
+      "element": "ground",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "ochre-labyrinth"
+    },
+    {
+      "id": "ground-burrowick",
+      "name": "Burrowick",
+      "element": "ground",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "ochre-labyrinth"
+    },
+    {
+      "id": "ground-dunebraid",
+      "name": "Dunebraid",
+      "element": "ground",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "ochre-labyrinth"
+    },
+    {
+      "id": "ground-siltmaw",
+      "name": "Siltmaw",
+      "element": "ground",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "ochre-labyrinth"
+    },
+    {
+      "id": "ground-terracrest",
+      "name": "Terracrest",
+      "element": "ground",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "ochre-labyrinth"
+    },
+    {
+      "id": "ground-faultwarden",
+      "name": "Faultwarden",
+      "element": "ground",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "ochre-labyrinth"
+    },
+    {
+      "id": "flying-breezlet",
+      "name": "Breezlet",
+      "element": "flying",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "skyreed-isles"
+    },
+    {
+      "id": "flying-kitespun",
+      "name": "Kitespun",
+      "element": "flying",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "skyreed-isles"
+    },
+    {
+      "id": "flying-gusthorn",
+      "name": "Gusthorn",
+      "element": "flying",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "skyreed-isles"
+    },
+    {
+      "id": "flying-cloudlace",
+      "name": "Cloudlace",
+      "element": "flying",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "skyreed-isles"
+    },
+    {
+      "id": "flying-tempestail",
+      "name": "Tempestail",
+      "element": "flying",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "skyreed-isles"
+    },
+    {
+      "id": "flying-skyregent",
+      "name": "Skyregent",
+      "element": "flying",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "skyreed-isles"
+    },
+    {
+      "id": "psychic-glimpseed",
+      "name": "Glimpseed",
+      "element": "psychic",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "mirror-orchard"
+    },
+    {
+      "id": "psychic-thoughtuft",
+      "name": "Thoughtuft",
+      "element": "psychic",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "mirror-orchard"
+    },
+    {
+      "id": "psychic-mirribbon",
+      "name": "Mirribbon",
+      "element": "psychic",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "mirror-orchard"
+    },
+    {
+      "id": "psychic-astraloom",
+      "name": "Astraloom",
+      "element": "psychic",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "mirror-orchard"
+    },
+    {
+      "id": "psychic-mindspire",
+      "name": "Mindspire",
+      "element": "psychic",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "mirror-orchard"
+    },
+    {
+      "id": "psychic-oracleaf",
+      "name": "Oracleaf",
+      "element": "psychic",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "mirror-orchard"
+    },
+    {
+      "id": "bug-threadpip",
+      "name": "Threadpip",
+      "element": "bug",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "amber-understory"
+    },
+    {
+      "id": "bug-waxwinglet",
+      "name": "Waxwinglet",
+      "element": "bug",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "amber-understory"
+    },
+    {
+      "id": "bug-carapurl",
+      "name": "Carapurl",
+      "element": "bug",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "amber-understory"
+    },
+    {
+      "id": "bug-silkforge",
+      "name": "Silkforge",
+      "element": "bug",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "amber-understory"
+    },
+    {
+      "id": "bug-amberclad",
+      "name": "Amberclad",
+      "element": "bug",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "amber-understory"
+    },
+    {
+      "id": "bug-hivecantor",
+      "name": "Hivecantor",
+      "element": "bug",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "amber-understory"
+    },
+    {
+      "id": "rock-peblune",
+      "name": "Peblune",
+      "element": "rock",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "basalt-choir"
+    },
+    {
+      "id": "rock-shalebell",
+      "name": "Shalebell",
+      "element": "rock",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "basalt-choir"
+    },
+    {
+      "id": "rock-flintspur",
+      "name": "Flintspur",
+      "element": "rock",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "basalt-choir"
+    },
+    {
+      "id": "rock-cragweft",
+      "name": "Cragweft",
+      "element": "rock",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "basalt-choir"
+    },
+    {
+      "id": "rock-geodrum",
+      "name": "Geodrum",
+      "element": "rock",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "basalt-choir"
+    },
+    {
+      "id": "rock-monolithorn",
+      "name": "Monolithorn",
+      "element": "rock",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "basalt-choir"
+    },
+    {
+      "id": "ghost-wickrift",
+      "name": "Wickrift",
+      "element": "ghost",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "lantern-necropolis"
+    },
+    {
+      "id": "ghost-shroudlet",
+      "name": "Shroudlet",
+      "element": "ghost",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "lantern-necropolis"
+    },
+    {
+      "id": "ghost-bellshade",
+      "name": "Bellshade",
+      "element": "ghost",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "lantern-necropolis"
+    },
+    {
+      "id": "ghost-echowisp",
+      "name": "Echowisp",
+      "element": "ghost",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "lantern-necropolis"
+    },
+    {
+      "id": "ghost-veilrelic",
+      "name": "Veilrelic",
+      "element": "ghost",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "lantern-necropolis"
+    },
+    {
+      "id": "ghost-lanternwake",
+      "name": "Lanternwake",
+      "element": "ghost",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "lantern-necropolis"
+    },
+    {
+      "id": "dragon-scalebud",
+      "name": "Scalebud",
+      "element": "dragon",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "wyrmglass-ridge"
+    },
+    {
+      "id": "dragon-coilcrest",
+      "name": "Coilcrest",
+      "element": "dragon",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "wyrmglass-ridge"
+    },
+    {
+      "id": "dragon-spirewing",
+      "name": "Spirewing",
+      "element": "dragon",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "wyrmglass-ridge"
+    },
+    {
+      "id": "dragon-runescale",
+      "name": "Runescale",
+      "element": "dragon",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "wyrmglass-ridge"
+    },
+    {
+      "id": "dragon-crestwyrm",
+      "name": "Crestwyrm",
+      "element": "dragon",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "wyrmglass-ridge"
+    },
+    {
+      "id": "dragon-wyrmglass",
+      "name": "Wyrmglass",
+      "element": "dragon",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "wyrmglass-ridge"
+    },
+    {
+      "id": "dark-dimble",
+      "name": "Dimble",
+      "element": "dark",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "umbra-vale"
+    },
+    {
+      "id": "dark-dusktuft",
+      "name": "Dusktuft",
+      "element": "dark",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "umbra-vale"
+    },
+    {
+      "id": "dark-sablecoil",
+      "name": "Sablecoil",
+      "element": "dark",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "umbra-vale"
+    },
+    {
+      "id": "dark-nightweft",
+      "name": "Nightweft",
+      "element": "dark",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "umbra-vale"
+    },
+    {
+      "id": "dark-umbramane",
+      "name": "Umbramane",
+      "element": "dark",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "umbra-vale"
+    },
+    {
+      "id": "dark-eclipseward",
+      "name": "Eclipseward",
+      "element": "dark",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "umbra-vale"
+    },
+    {
+      "id": "steel-rivetip",
+      "name": "Rivetip",
+      "element": "steel",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "alloy-foundry"
+    },
+    {
+      "id": "steel-tinmantle",
+      "name": "Tinmantle",
+      "element": "steel",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "alloy-foundry"
+    },
+    {
+      "id": "steel-cogcrest",
+      "name": "Cogcrest",
+      "element": "steel",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "alloy-foundry"
+    },
+    {
+      "id": "steel-chromeweft",
+      "name": "Chromeweft",
+      "element": "steel",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "alloy-foundry"
+    },
+    {
+      "id": "steel-alloyhorn",
+      "name": "Alloyhorn",
+      "element": "steel",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "alloy-foundry"
+    },
+    {
+      "id": "steel-foundryheart",
+      "name": "Foundryheart",
+      "element": "steel",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "alloy-foundry"
+    },
+    {
+      "id": "fairy-chimeling",
+      "name": "Chimeling",
+      "element": "fairy",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "chimegrove"
+    },
+    {
+      "id": "fairy-petalbell",
+      "name": "Petalbell",
+      "element": "fairy",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "chimegrove"
+    },
+    {
+      "id": "fairy-glimmerlace",
+      "name": "Glimmerlace",
+      "element": "fairy",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "chimegrove"
+    },
+    {
+      "id": "fairy-wishweft",
+      "name": "Wishweft",
+      "element": "fairy",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "chimegrove"
+    },
+    {
+      "id": "fairy-grovehalo",
+      "name": "Grovehalo",
+      "element": "fairy",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "chimegrove"
+    },
+    {
+      "id": "fairy-chimequeen",
+      "name": "Chimequeen",
+      "element": "fairy",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "chimegrove"
+    },
+    {
+      "id": "light-gleamlet",
+      "name": "Gleamlet",
+      "element": "light",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "dawn-prism-sanctum"
+    },
+    {
+      "id": "light-dawnpurl",
+      "name": "Dawnpurl",
+      "element": "light",
+      "sourceLegacyRarity": "common",
+      "sourceMap": "dawn-prism-sanctum"
+    },
+    {
+      "id": "light-raymantle",
+      "name": "Raymantle",
+      "element": "light",
+      "sourceLegacyRarity": "uncommon",
+      "sourceMap": "dawn-prism-sanctum"
+    },
+    {
+      "id": "light-solweft",
+      "name": "Solweft",
+      "element": "light",
+      "sourceLegacyRarity": "rare",
+      "sourceMap": "dawn-prism-sanctum"
+    },
+    {
+      "id": "light-prismhalo",
+      "name": "Prismhalo",
+      "element": "light",
+      "sourceLegacyRarity": "epic",
+      "sourceMap": "dawn-prism-sanctum"
+    },
+    {
+      "id": "light-dawnarchon",
+      "name": "Dawnarchon",
+      "element": "light",
+      "sourceLegacyRarity": "legendary",
+      "sourceMap": "dawn-prism-sanctum"
+    }
+  ]
+}

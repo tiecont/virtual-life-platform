@@ -1,0 +1,405 @@
+{
+  "schemaVersion": 3,
+  "scope": "global VirtualLife settings reused by Pet Arena (not duplicate menu)",
+  "playerSettings": [
+    {
+      "key": "language",
+      "inputType": "select",
+      "default": "vi",
+      "allowed": [
+        "vi",
+        "en"
+      ],
+      "meaning": "Save supported languages only; absent strings fallback to en, never machine translate during match"
+    },
+    {
+      "key": "subtitleLanguage",
+      "inputType": "select",
+      "default": "vi",
+      "allowed": [
+        "vi",
+        "en"
+      ],
+      "meaning": "Show NPC/tutorial subtitles"
+    },
+    {
+      "key": "voiceLanguage",
+      "inputType": "select",
+      "default": "en",
+      "allowed": [
+        "en",
+        "vi",
+        "none"
+      ],
+      "meaning": "Availability dependent on approved voice assets"
+    },
+    {
+      "key": "windowMode",
+      "inputType": "select",
+      "default": "fullscreen",
+      "allowed": [
+        "fullscreen",
+        "borderless",
+        "windowed"
+      ],
+      "meaning": "Supported desktop modes"
+    },
+    {
+      "key": "resolution",
+      "inputType": "select",
+      "default": "auto",
+      "allowed": [
+        "auto",
+        "1920x1080",
+        "2560x1440",
+        "1280x720"
+      ],
+      "meaning": "Show confirmed display modes only"
+    },
+    {
+      "key": "qualityPreset",
+      "inputType": "select",
+      "default": "high",
+      "allowed": [
+        "low",
+        "medium",
+        "high",
+        "ultra"
+      ],
+      "meaning": "URP quality tier"
+    },
+    {
+      "key": "targetFps",
+      "inputType": "select",
+      "default": "60",
+      "allowed": [
+        "30",
+        "60",
+        "120",
+        "unlimited"
+      ],
+      "meaning": "Hardware support and vsync warnings"
+    },
+    {
+      "key": "renderScale",
+      "inputType": "float",
+      "default": 1.0,
+      "allowed": [
+        0.65,
+        1.0,
+        1.25
+      ],
+      "meaning": "Min/Max dynamic resolution"
+    },
+    {
+      "key": "vsync",
+      "inputType": "bool",
+      "default": true,
+      "allowed": [
+        true,
+        false
+      ],
+      "meaning": "Frame pacing"
+    },
+    {
+      "key": "effectsIntensity",
+      "inputType": "select",
+      "default": "high",
+      "allowed": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "meaning": "Cinematic VFX level; no outcome changes"
+    },
+    {
+      "key": "reducedMotion",
+      "inputType": "bool",
+      "default": false,
+      "allowed": [
+        true,
+        false
+      ],
+      "meaning": "Disable shake, hitstop flashes and extra camera movement"
+    },
+    {
+      "key": "photosensitivityMode",
+      "inputType": "bool",
+      "default": false,
+      "allowed": [
+        true,
+        false
+      ],
+      "meaning": "Bound flashes, luminance and strobe effects"
+    },
+    {
+      "key": "colorblindMode",
+      "inputType": "select",
+      "default": "off",
+      "allowed": [
+        "off",
+        "deuteranopia",
+        "protanopia",
+        "tritanopia"
+      ],
+      "meaning": "Tile shape/icon remains distinct"
+    },
+    {
+      "key": "boardIconScale",
+      "inputType": "float",
+      "default": 1.0,
+      "allowed": [
+        0.85,
+        1.0,
+        1.2
+      ],
+      "meaning": "Large 10x10 readability"
+    },
+    {
+      "key": "uiScale",
+      "inputType": "float",
+      "default": 1.0,
+      "allowed": [
+        0.8,
+        1.0,
+        1.25,
+        1.5
+      ],
+      "meaning": "Accessible UI"
+    },
+    {
+      "key": "subtitleSize",
+      "inputType": "select",
+      "default": "medium",
+      "allowed": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "meaning": "Localization safety"
+    },
+    {
+      "key": "narration",
+      "inputType": "bool",
+      "default": false,
+      "allowed": [
+        true,
+        false
+      ],
+      "meaning": "Where screen reader integration exists"
+    },
+    {
+      "key": "cameraShake",
+      "inputType": "bool",
+      "default": true,
+      "allowed": [
+        true,
+        false
+      ],
+      "meaning": "No gameplay impact"
+    },
+    {
+      "key": "musicVolume",
+      "inputType": "float",
+      "default": 0.7,
+      "allowed": [
+        0,
+        1
+      ],
+      "meaning": "Save per device"
+    },
+    {
+      "key": "sfxVolume",
+      "inputType": "float",
+      "default": 0.85,
+      "allowed": [
+        0,
+        1
+      ],
+      "meaning": "Save per device"
+    },
+    {
+      "key": "voiceVolume",
+      "inputType": "float",
+      "default": 0.8,
+      "allowed": [
+        0,
+        1
+      ],
+      "meaning": "Save per device"
+    },
+    {
+      "key": "ambienceVolume",
+      "inputType": "float",
+      "default": 0.7,
+      "allowed": [
+        0,
+        1
+      ],
+      "meaning": "Save per device"
+    },
+    {
+      "key": "battleSpeed",
+      "inputType": "select",
+      "default": "1x",
+      "allowed": [
+        "1x",
+        "1.5x",
+        "2x"
+      ],
+      "meaning": "Skip-safe animation with authoritative outcomes"
+    },
+    {
+      "key": "autoSkills",
+      "inputType": "bool",
+      "default": false,
+      "allowed": [
+        true,
+        false
+      ],
+      "meaning": "Explicit opt-in; never auto-spend premium or irreversible items"
+    },
+    {
+      "key": "autoBattle",
+      "inputType": "bool",
+      "default": false,
+      "allowed": [
+        true,
+        false
+      ],
+      "meaning": "Limited to eligible PvE; no competitive automation"
+    },
+    {
+      "key": "showFloatingDamage",
+      "inputType": "bool",
+      "default": true,
+      "allowed": [
+        true,
+        false
+      ],
+      "meaning": "UI only"
+    },
+    {
+      "key": "controllerVibration",
+      "inputType": "bool",
+      "default": true,
+      "allowed": [
+        true,
+        false
+      ],
+      "meaning": "Only on supported controllers"
+    },
+    {
+      "key": "inputPreset",
+      "inputType": "select",
+      "default": "keyboard_mouse",
+      "allowed": [
+        "keyboard_mouse",
+        "gamepad"
+      ],
+      "meaning": "Rebind keys in live config"
+    },
+    {
+      "key": "mouseSensitivity",
+      "inputType": "float",
+      "default": 0.55,
+      "allowed": [
+        0,
+        1
+      ],
+      "meaning": "Independent 3D camera setting"
+    },
+    {
+      "key": "followPetInWorld",
+      "inputType": "bool",
+      "default": true,
+      "allowed": [
+        true,
+        false
+      ],
+      "meaning": "Pet companion appears outside Pet Arena, near player in open world"
+    },
+    {
+      "key": "showOtherPlayersPets",
+      "inputType": "select",
+      "default": "nearby",
+      "allowed": [
+        "all",
+        "nearby",
+        "none"
+      ],
+      "meaning": "Reduce world clutter"
+    },
+    {
+      "key": "companionVfxQuality",
+      "inputType": "select",
+      "default": "medium",
+      "allowed": [
+        "off",
+        "low",
+        "medium",
+        "high"
+      ],
+      "meaning": "World FPS / streamer comfort"
+    },
+    {
+      "key": "coOpInvitePrivacy",
+      "inputType": "select",
+      "default": "friends",
+      "allowed": [
+        "friends",
+        "party",
+        "none"
+      ],
+      "meaning": "Invite privacy"
+    },
+    {
+      "key": "streamerMode",
+      "inputType": "bool",
+      "default": false,
+      "allowed": [
+        true,
+        false
+      ],
+      "meaning": "Suppress personal identifiers, whispers"
+    },
+    {
+      "key": "showChat",
+      "inputType": "bool",
+      "default": true,
+      "allowed": [
+        true,
+        false
+      ],
+      "meaning": "Player preference, global safety controls take precedence"
+    },
+    {
+      "key": "analyticsConsent",
+      "inputType": "select",
+      "default": "unset",
+      "allowed": [
+        "unset",
+        "opt_in",
+        "opt_out"
+      ],
+      "meaning": "Consent; apply regional rules, not automatic opt-in"
+    }
+  ],
+  "localization": {
+    "supportedAtInitial": [
+      "vi",
+      "en"
+    ],
+    "additionalLanguages": "ja/ko/zh are planned ONLY; do not present as shipped until reviewed strings and fonts tested",
+    "playerVisiblePetNames": "English proper nouns only; UI descriptions are localized",
+    "fallback": "en",
+    "missingKeyTelemetry": "safe aggregate only"
+  },
+  "persistence": {
+    "serverForAccountPreferences": true,
+    "deviceOverrideForGraphics": true,
+    "versionedValidation": true,
+    "safeDefaults": true
+  },
+  "accessibilityMandatory": true
+}

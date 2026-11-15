@@ -1,0 +1,841 @@
+{
+  "schemaVersion": 3,
+  "contentVersion": "3.1",
+  "state": "DRAFT_ONLY",
+  "pets": [
+    {
+      "id": "pet-v31-fire-cindrelis",
+      "name": "Cindrelis",
+      "nameLocale": "en",
+      "element": "fire",
+      "race": "spirit",
+      "bodyPlan": "floating",
+      "rigArchetype": "rig_float",
+      "rank": "S",
+      "sourceRarityLegacy": null,
+      "source": "standard_gacha",
+      "sourceCatalog": "v3.1-standard-expansion",
+      "mapId": null,
+      "ownedLevelCap": 100,
+      "encounterLevelRange": null,
+      "evolution": {
+        "maxStars": 3,
+        "starMilestones": [
+          30,
+          60,
+          100
+        ],
+        "starsGrantedOnAcquisition": 0,
+        "appearanceVariants": [
+          "form_0",
+          "form_1",
+          "form_2",
+          "form_3"
+        ]
+      },
+      "awakening": {
+        "maxConstellation": 6,
+        "copiesToMax": 7,
+        "applies": true
+      },
+      "combat": {
+        "sharedRuleset": "pet-arena-v3",
+        "role": "striker",
+        "statProfile": {
+          "hp": 900,
+          "attack": 1200,
+          "defense": 800,
+          "speed": 1100
+        },
+        "maxSkillSlots": 4,
+        "skillRefs": [
+          "basic_strike",
+          "rage_strike_100",
+          "generic_disrupt",
+          "generic_elemental_skill"
+        ],
+        "signatureCard": null,
+        "hasExclusiveBoardSkill": false,
+        "normalAttackCue": "cindrelis_normal",
+        "rageAttackCue": "cindrelis_rage",
+        "animationQualityTier": "shared_hero_quality"
+      },
+      "capture": {
+        "requiredUniqueWins": 0,
+        "reset": "never",
+        "duplicateReceiptProgress": 0,
+        "requiresWinReceipts": false,
+        "mechanic": "server banner receipt only; no map recruitment"
+      },
+      "design": {
+        "silhouette": "Floating flame-lantern with crescent handle, hollow diamond core and three unequal ember tassels",
+        "primaryColor": "#FF7849",
+        "secondaryColor": "#FFD89A",
+        "designUniqueness": "Original silhouette; shared hero-quality rig with morphology-specific clips",
+        "lore": "Guides lost travelers through cherry-blossom fog, keeping one ember for every promise remembered."
+      },
+      "availability": "DRAFT_ONLY",
+      "assetStatus": "MISSING",
+      "gameplayStatus": "NOT_VALIDATED",
+      "published": false,
+      "productionReady": false,
+      "seedSafety": {
+        "dbWriteAllowed": "unpublished_drafts_only",
+        "playerEntitlementGrant": false,
+        "autoPublish": false
+      },
+      "standard": {
+        "bannerFamily": "pet-standard",
+        "eligibleLimitedMissFamilies": [
+          "pet-limited"
+        ],
+        "selectionWeight": 1,
+        "abilityName": "Ember Halo",
+        "effectIdentity": "burn",
+        "sharedOpcode": "dot",
+        "effectLimits": {
+          "powerPermille": 500,
+          "maxTargets": 1,
+          "durationTurns": 2,
+          "stackCap": 2,
+          "controlActionsSkipped": 0,
+          "maxShieldHpPermille": 500
+        },
+        "signatureCardAllowed": false,
+        "mayFollowPlayerOutsideArena": true,
+        "equipmentCompatibility": {
+          "slots": [
+            "charm",
+            "ward"
+          ],
+          "allowedTags": [
+            "generic",
+            "fire"
+          ],
+          "limitedSignatureCards": false
+        },
+        "progression": {
+          "levelCurveRef": "level_progression_100.json",
+          "minLevel": 1,
+          "maxLevel": 100,
+          "growthPermillePerLevel": 20,
+          "skillUnlocks": [
+            {
+              "skillId": "basic_strike",
+              "level": 1
+            },
+            {
+              "skillId": "rage_strike_100",
+              "level": 1
+            },
+            {
+              "skillId": "generic_disrupt",
+              "level": 30
+            },
+            {
+              "skillId": "generic_elemental_skill",
+              "level": 15
+            }
+          ]
+        },
+        "awakeningRule": "standard_shared_v1",
+        "balanceStatus": "SIMULATION_AND_PLAYTEST_REQUIRED"
+      }
+    },
+    {
+      "id": "pet-v31-water-marivell",
+      "name": "Marivell",
+      "nameLocale": "en",
+      "element": "water",
+      "race": "aquatic",
+      "bodyPlan": "radial",
+      "rigArchetype": "rig_aquatic",
+      "rank": "S",
+      "sourceRarityLegacy": null,
+      "source": "standard_gacha",
+      "sourceCatalog": "v3.1-standard-expansion",
+      "mapId": null,
+      "ownedLevelCap": 100,
+      "encounterLevelRange": null,
+      "evolution": {
+        "maxStars": 3,
+        "starMilestones": [
+          30,
+          60,
+          100
+        ],
+        "starsGrantedOnAcquisition": 0,
+        "appearanceVariants": [
+          "form_0",
+          "form_1",
+          "form_2",
+          "form_3"
+        ]
+      },
+      "awakening": {
+        "maxConstellation": 6,
+        "copiesToMax": 7,
+        "applies": true
+      },
+      "combat": {
+        "sharedRuleset": "pet-arena-v3",
+        "role": "support",
+        "statProfile": {
+          "hp": 1100,
+          "attack": 800,
+          "defense": 1100,
+          "speed": 1000
+        },
+        "maxSkillSlots": 4,
+        "skillRefs": [
+          "basic_strike",
+          "rage_strike_100",
+          "generic_heal",
+          "generic_protect"
+        ],
+        "signatureCard": null,
+        "hasExclusiveBoardSkill": false,
+        "normalAttackCue": "marivell_normal",
+        "rageAttackCue": "marivell_rage",
+        "animationQualityTier": "shared_hero_quality"
+      },
+      "capture": {
+        "requiredUniqueWins": 0,
+        "reset": "never",
+        "duplicateReceiptProgress": 0,
+        "requiresWinReceipts": false,
+        "mechanic": "server banner receipt only; no map recruitment"
+      },
+      "design": {
+        "silhouette": "Bioluminescent crystal jellyfish with faceted bell and six ribbon tendrils",
+        "primaryColor": "#65E6E1",
+        "secondaryColor": "#B4A6FF",
+        "designUniqueness": "Original silhouette; shared hero-quality rig with morphology-specific clips",
+        "lore": "Shelters small harbor spirits beneath a luminous mantle, restoring the glow of weary companions."
+      },
+      "availability": "DRAFT_ONLY",
+      "assetStatus": "MISSING",
+      "gameplayStatus": "NOT_VALIDATED",
+      "published": false,
+      "productionReady": false,
+      "seedSafety": {
+        "dbWriteAllowed": "unpublished_drafts_only",
+        "playerEntitlementGrant": false,
+        "autoPublish": false
+      },
+      "standard": {
+        "bannerFamily": "pet-standard",
+        "eligibleLimitedMissFamilies": [
+          "pet-limited"
+        ],
+        "selectionWeight": 1,
+        "abilityName": "Tidal Mantle",
+        "effectIdentity": "shield",
+        "sharedOpcode": "shield",
+        "effectLimits": {
+          "powerPermille": 500,
+          "maxTargets": 1,
+          "durationTurns": 2,
+          "stackCap": 2,
+          "controlActionsSkipped": 0,
+          "maxShieldHpPermille": 500
+        },
+        "signatureCardAllowed": false,
+        "mayFollowPlayerOutsideArena": true,
+        "equipmentCompatibility": {
+          "slots": [
+            "charm",
+            "ward"
+          ],
+          "allowedTags": [
+            "generic",
+            "water"
+          ],
+          "limitedSignatureCards": false
+        },
+        "progression": {
+          "levelCurveRef": "level_progression_100.json",
+          "minLevel": 1,
+          "maxLevel": 100,
+          "growthPermillePerLevel": 20,
+          "skillUnlocks": [
+            {
+              "skillId": "basic_strike",
+              "level": 1
+            },
+            {
+              "skillId": "rage_strike_100",
+              "level": 1
+            },
+            {
+              "skillId": "generic_heal",
+              "level": 15
+            },
+            {
+              "skillId": "generic_protect",
+              "level": 45
+            }
+          ]
+        },
+        "awakeningRule": "standard_shared_v1",
+        "balanceStatus": "SIMULATION_AND_PLAYTEST_REQUIRED"
+      }
+    },
+    {
+      "id": "pet-v31-electric-quorion",
+      "name": "Quorion",
+      "nameLocale": "en",
+      "element": "electric",
+      "race": "avian",
+      "bodyPlan": "avian",
+      "rigArchetype": "rig_avian",
+      "rank": "S",
+      "sourceRarityLegacy": null,
+      "source": "standard_gacha",
+      "sourceCatalog": "v3.1-standard-expansion",
+      "mapId": null,
+      "ownedLevelCap": 100,
+      "encounterLevelRange": null,
+      "evolution": {
+        "maxStars": 3,
+        "starMilestones": [
+          30,
+          60,
+          100
+        ],
+        "starsGrantedOnAcquisition": 0,
+        "appearanceVariants": [
+          "form_0",
+          "form_1",
+          "form_2",
+          "form_3"
+        ]
+      },
+      "awakening": {
+        "maxConstellation": 6,
+        "copiesToMax": 7,
+        "applies": true
+      },
+      "combat": {
+        "sharedRuleset": "pet-arena-v3",
+        "role": "channeler",
+        "statProfile": {
+          "hp": 900,
+          "attack": 1100,
+          "defense": 900,
+          "speed": 1100
+        },
+        "maxSkillSlots": 4,
+        "skillRefs": [
+          "basic_strike",
+          "rage_strike_100",
+          "generic_elemental_skill",
+          "generic_empower"
+        ],
+        "signatureCard": null,
+        "hasExclusiveBoardSkill": false,
+        "normalAttackCue": "quorion_normal",
+        "rageAttackCue": "quorion_rage",
+        "animationQualityTier": "shared_hero_quality"
+      },
+      "capture": {
+        "requiredUniqueWins": 0,
+        "reset": "never",
+        "duplicateReceiptProgress": 0,
+        "requiresWinReceipts": false,
+        "mechanic": "server banner receipt only; no map recruitment"
+      },
+      "design": {
+        "silhouette": "Metallic thunder owl with split circular wings, copper brows and a small lightning crest",
+        "primaryColor": "#D4C75B",
+        "secondaryColor": "#576CCA",
+        "designUniqueness": "Original silhouette; shared hero-quality rig with morphology-specific clips",
+        "lore": "An old observatory sentinel that carries storm messages between distant castle towers."
+      },
+      "availability": "DRAFT_ONLY",
+      "assetStatus": "MISSING",
+      "gameplayStatus": "NOT_VALIDATED",
+      "published": false,
+      "productionReady": false,
+      "seedSafety": {
+        "dbWriteAllowed": "unpublished_drafts_only",
+        "playerEntitlementGrant": false,
+        "autoPublish": false
+      },
+      "standard": {
+        "bannerFamily": "pet-standard",
+        "eligibleLimitedMissFamilies": [
+          "pet-limited"
+        ],
+        "selectionWeight": 1,
+        "abilityName": "Arc Relay",
+        "effectIdentity": "chain_damage",
+        "sharedOpcode": "damage",
+        "effectLimits": {
+          "powerPermille": 800,
+          "maxTargets": 3,
+          "durationTurns": 2,
+          "stackCap": 2,
+          "controlActionsSkipped": 0,
+          "maxShieldHpPermille": 500
+        },
+        "signatureCardAllowed": false,
+        "mayFollowPlayerOutsideArena": true,
+        "equipmentCompatibility": {
+          "slots": [
+            "charm",
+            "ward"
+          ],
+          "allowedTags": [
+            "generic",
+            "electric"
+          ],
+          "limitedSignatureCards": false
+        },
+        "progression": {
+          "levelCurveRef": "level_progression_100.json",
+          "minLevel": 1,
+          "maxLevel": 100,
+          "growthPermillePerLevel": 20,
+          "skillUnlocks": [
+            {
+              "skillId": "basic_strike",
+              "level": 1
+            },
+            {
+              "skillId": "rage_strike_100",
+              "level": 1
+            },
+            {
+              "skillId": "generic_elemental_skill",
+              "level": 15
+            },
+            {
+              "skillId": "generic_empower",
+              "level": 30
+            }
+          ]
+        },
+        "awakeningRule": "standard_shared_v1",
+        "balanceStatus": "SIMULATION_AND_PLAYTEST_REQUIRED"
+      }
+    },
+    {
+      "id": "pet-v31-ghost-vesperyn",
+      "name": "Vesperyn",
+      "nameLocale": "en",
+      "element": "ghost",
+      "race": "undead",
+      "bodyPlan": "spectral",
+      "rigArchetype": "rig_spectral",
+      "rank": "S",
+      "sourceRarityLegacy": null,
+      "source": "standard_gacha",
+      "sourceCatalog": "v3.1-standard-expansion",
+      "mapId": null,
+      "ownedLevelCap": 100,
+      "encounterLevelRange": null,
+      "evolution": {
+        "maxStars": 3,
+        "starMilestones": [
+          30,
+          60,
+          100
+        ],
+        "starsGrantedOnAcquisition": 0,
+        "appearanceVariants": [
+          "form_0",
+          "form_1",
+          "form_2",
+          "form_3"
+        ]
+      },
+      "awakening": {
+        "maxConstellation": 6,
+        "copiesToMax": 7,
+        "applies": true
+      },
+      "combat": {
+        "sharedRuleset": "pet-arena-v3",
+        "role": "disruptor",
+        "statProfile": {
+          "hp": 1000,
+          "attack": 1000,
+          "defense": 900,
+          "speed": 1100
+        },
+        "maxSkillSlots": 4,
+        "skillRefs": [
+          "basic_strike",
+          "rage_strike_100",
+          "generic_disrupt",
+          "generic_siphon"
+        ],
+        "signatureCard": null,
+        "hasExclusiveBoardSkill": false,
+        "normalAttackCue": "vesperyn_normal",
+        "rageAttackCue": "vesperyn_rage",
+        "animationQualityTier": "shared_hero_quality"
+      },
+      "capture": {
+        "requiredUniqueWins": 0,
+        "reset": "never",
+        "duplicateReceiptProgress": 0,
+        "requiresWinReceipts": false,
+        "mechanic": "server banner receipt only; no map recruitment"
+      },
+      "design": {
+        "silhouette": "Floating asymmetric porcelain mask above a tapering veil and two detached wisp hands",
+        "primaryColor": "#9B7DDB",
+        "secondaryColor": "#D7F0E8",
+        "designUniqueness": "Original silhouette; shared hero-quality rig with morphology-specific clips",
+        "lore": "Collects forgotten festival masks and returns their stories in quiet dreams, never stealing a face."
+      },
+      "availability": "DRAFT_ONLY",
+      "assetStatus": "MISSING",
+      "gameplayStatus": "NOT_VALIDATED",
+      "published": false,
+      "productionReady": false,
+      "seedSafety": {
+        "dbWriteAllowed": "unpublished_drafts_only",
+        "playerEntitlementGrant": false,
+        "autoPublish": false
+      },
+      "standard": {
+        "bannerFamily": "pet-standard",
+        "eligibleLimitedMissFamilies": [
+          "pet-limited"
+        ],
+        "selectionWeight": 1,
+        "abilityName": "Wisp Hex",
+        "effectIdentity": "curse",
+        "sharedOpcode": "initiative_debuff",
+        "effectLimits": {
+          "powerPermille": 500,
+          "maxTargets": 1,
+          "durationTurns": 2,
+          "stackCap": 2,
+          "controlActionsSkipped": 0,
+          "maxShieldHpPermille": 500
+        },
+        "signatureCardAllowed": false,
+        "mayFollowPlayerOutsideArena": true,
+        "equipmentCompatibility": {
+          "slots": [
+            "charm",
+            "ward"
+          ],
+          "allowedTags": [
+            "generic",
+            "ghost"
+          ],
+          "limitedSignatureCards": false
+        },
+        "progression": {
+          "levelCurveRef": "level_progression_100.json",
+          "minLevel": 1,
+          "maxLevel": 100,
+          "growthPermillePerLevel": 20,
+          "skillUnlocks": [
+            {
+              "skillId": "basic_strike",
+              "level": 1
+            },
+            {
+              "skillId": "rage_strike_100",
+              "level": 1
+            },
+            {
+              "skillId": "generic_disrupt",
+              "level": 30
+            },
+            {
+              "skillId": "generic_siphon",
+              "level": 45
+            }
+          ]
+        },
+        "awakeningRule": "standard_shared_v1",
+        "balanceStatus": "SIMULATION_AND_PLAYTEST_REQUIRED"
+      }
+    },
+    {
+      "id": "pet-v31-ground-gravorn",
+      "name": "Gravorn",
+      "nameLocale": "en",
+      "element": "ground",
+      "race": "construct",
+      "bodyPlan": "hexapod",
+      "rigArchetype": "rig_insect",
+      "rank": "S",
+      "sourceRarityLegacy": null,
+      "source": "standard_gacha",
+      "sourceCatalog": "v3.1-standard-expansion",
+      "mapId": null,
+      "ownedLevelCap": 100,
+      "encounterLevelRange": null,
+      "evolution": {
+        "maxStars": 3,
+        "starMilestones": [
+          30,
+          60,
+          100
+        ],
+        "starsGrantedOnAcquisition": 0,
+        "appearanceVariants": [
+          "form_0",
+          "form_1",
+          "form_2",
+          "form_3"
+        ]
+      },
+      "awakening": {
+        "maxConstellation": 6,
+        "copiesToMax": 7,
+        "applies": true
+      },
+      "combat": {
+        "sharedRuleset": "pet-arena-v3",
+        "role": "guardian",
+        "statProfile": {
+          "hp": 1200,
+          "attack": 800,
+          "defense": 1200,
+          "speed": 800
+        },
+        "maxSkillSlots": 4,
+        "skillRefs": [
+          "basic_strike",
+          "rage_strike_100",
+          "generic_guard",
+          "generic_protect"
+        ],
+        "signatureCard": null,
+        "hasExclusiveBoardSkill": false,
+        "normalAttackCue": "gravorn_normal",
+        "rageAttackCue": "gravorn_rage",
+        "animationQualityTier": "shared_hero_quality"
+      },
+      "capture": {
+        "requiredUniqueWins": 0,
+        "reset": "never",
+        "duplicateReceiptProgress": 0,
+        "requiresWinReceipts": false,
+        "mechanic": "server banner receipt only; no map recruitment"
+      },
+      "design": {
+        "silhouette": "Low six-legged stone construct with stepped basalt shell, jade seams and broad shield head",
+        "primaryColor": "#B59B7A",
+        "secondaryColor": "#73BFA2",
+        "designUniqueness": "Original silhouette; shared hero-quality rig with morphology-specific clips",
+        "lore": "Built to hold a mountain pass through winter, it now shelters seedlings in its ancient stone joints."
+      },
+      "availability": "DRAFT_ONLY",
+      "assetStatus": "MISSING",
+      "gameplayStatus": "NOT_VALIDATED",
+      "published": false,
+      "productionReady": false,
+      "seedSafety": {
+        "dbWriteAllowed": "unpublished_drafts_only",
+        "playerEntitlementGrant": false,
+        "autoPublish": false
+      },
+      "standard": {
+        "bannerFamily": "pet-standard",
+        "eligibleLimitedMissFamilies": [
+          "pet-limited"
+        ],
+        "selectionWeight": 1,
+        "abilityName": "Seismic Ward",
+        "effectIdentity": "shield",
+        "sharedOpcode": "shield",
+        "effectLimits": {
+          "powerPermille": 500,
+          "maxTargets": 1,
+          "durationTurns": 2,
+          "stackCap": 2,
+          "controlActionsSkipped": 0,
+          "maxShieldHpPermille": 500
+        },
+        "signatureCardAllowed": false,
+        "mayFollowPlayerOutsideArena": true,
+        "equipmentCompatibility": {
+          "slots": [
+            "charm",
+            "ward"
+          ],
+          "allowedTags": [
+            "generic",
+            "ground"
+          ],
+          "limitedSignatureCards": false
+        },
+        "progression": {
+          "levelCurveRef": "level_progression_100.json",
+          "minLevel": 1,
+          "maxLevel": 100,
+          "growthPermillePerLevel": 20,
+          "skillUnlocks": [
+            {
+              "skillId": "basic_strike",
+              "level": 1
+            },
+            {
+              "skillId": "rage_strike_100",
+              "level": 1
+            },
+            {
+              "skillId": "generic_guard",
+              "level": 15
+            },
+            {
+              "skillId": "generic_protect",
+              "level": 45
+            }
+          ]
+        },
+        "awakeningRule": "standard_shared_v1",
+        "balanceStatus": "SIMULATION_AND_PLAYTEST_REQUIRED"
+      }
+    },
+    {
+      "id": "pet-v31-light-aurelune",
+      "name": "Aurelune",
+      "nameLocale": "en",
+      "element": "light",
+      "race": "celestial",
+      "bodyPlan": "quadruped",
+      "rigArchetype": "rig_q4",
+      "rank": "S",
+      "sourceRarityLegacy": null,
+      "source": "standard_gacha",
+      "sourceCatalog": "v3.1-standard-expansion",
+      "mapId": null,
+      "ownedLevelCap": 100,
+      "encounterLevelRange": null,
+      "evolution": {
+        "maxStars": 3,
+        "starMilestones": [
+          30,
+          60,
+          100
+        ],
+        "starsGrantedOnAcquisition": 0,
+        "appearanceVariants": [
+          "form_0",
+          "form_1",
+          "form_2",
+          "form_3"
+        ]
+      },
+      "awakening": {
+        "maxConstellation": 6,
+        "copiesToMax": 7,
+        "applies": true
+      },
+      "combat": {
+        "sharedRuleset": "pet-arena-v3",
+        "role": "support",
+        "statProfile": {
+          "hp": 1100,
+          "attack": 800,
+          "defense": 1100,
+          "speed": 1000
+        },
+        "maxSkillSlots": 4,
+        "skillRefs": [
+          "basic_strike",
+          "rage_strike_100",
+          "generic_heal",
+          "generic_cleanse"
+        ],
+        "signatureCard": null,
+        "hasExclusiveBoardSkill": false,
+        "normalAttackCue": "aurelune_normal",
+        "rageAttackCue": "aurelune_rage",
+        "animationQualityTier": "shared_hero_quality"
+      },
+      "capture": {
+        "requiredUniqueWins": 0,
+        "reset": "never",
+        "duplicateReceiptProgress": 0,
+        "requiresWinReceipts": false,
+        "mechanic": "server banner receipt only; no map recruitment"
+      },
+      "design": {
+        "silhouette": "Slender celestial deer with branching crystal antlers, crescent chest and floating pollen motes",
+        "primaryColor": "#FFF0CC",
+        "secondaryColor": "#A8DCEB",
+        "designUniqueness": "Original silhouette; shared hero-quality rig with morphology-specific clips",
+        "lore": "Its dawn song clears lingering nightmares around the plaza, each antler branch remembering a safe journey."
+      },
+      "availability": "DRAFT_ONLY",
+      "assetStatus": "MISSING",
+      "gameplayStatus": "NOT_VALIDATED",
+      "published": false,
+      "productionReady": false,
+      "seedSafety": {
+        "dbWriteAllowed": "unpublished_drafts_only",
+        "playerEntitlementGrant": false,
+        "autoPublish": false
+      },
+      "standard": {
+        "bannerFamily": "pet-standard",
+        "eligibleLimitedMissFamilies": [
+          "pet-limited"
+        ],
+        "selectionWeight": 1,
+        "abilityName": "Dawn Chorus",
+        "effectIdentity": "cleanse",
+        "sharedOpcode": "cleanse",
+        "effectLimits": {
+          "powerPermille": 500,
+          "maxTargets": 1,
+          "durationTurns": 2,
+          "stackCap": 2,
+          "controlActionsSkipped": 0,
+          "maxShieldHpPermille": 500
+        },
+        "signatureCardAllowed": false,
+        "mayFollowPlayerOutsideArena": true,
+        "equipmentCompatibility": {
+          "slots": [
+            "charm",
+            "ward"
+          ],
+          "allowedTags": [
+            "generic",
+            "light"
+          ],
+          "limitedSignatureCards": false
+        },
+        "progression": {
+          "levelCurveRef": "level_progression_100.json",
+          "minLevel": 1,
+          "maxLevel": 100,
+          "growthPermillePerLevel": 20,
+          "skillUnlocks": [
+            {
+              "skillId": "basic_strike",
+              "level": 1
+            },
+            {
+              "skillId": "rage_strike_100",
+              "level": 1
+            },
+            {
+              "skillId": "generic_heal",
+              "level": 15
+            },
+            {
+              "skillId": "generic_cleanse",
+              "level": 30
+            }
+          ]
+        },
+        "awakeningRule": "standard_shared_v1",
+        "balanceStatus": "SIMULATION_AND_PLAYTEST_REQUIRED"
+      }
+    }
+  ]
+}

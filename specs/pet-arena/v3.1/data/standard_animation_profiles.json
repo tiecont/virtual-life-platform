@@ -1,0 +1,253 @@
+{
+  "schemaVersion": 3,
+  "contentVersion": "3.1",
+  "state": "DRAFT_ONLY",
+  "petAnimations": [
+    {
+      "petId": "pet-v31-fire-cindrelis",
+      "name": "Cindrelis",
+      "rig": "rig_float",
+      "bodyPlan": "floating",
+      "quality": "shared_hero_quality",
+      "actions": {
+        "idle": "lantern sway",
+        "move": "drifting ember arcs",
+        "normal_sword_hit": "short aimed gesture; cindrelis_normal",
+        "rage_sword_100": "Ember Halo radial VFX with distinct windup and committed impact",
+        "skill_cast": "Ember Halo bounded anticipation before committed event",
+        "hurt": "brief recoil without moving board or root authority",
+        "defend": "contained ward pulse",
+        "status": "readable silhouette-safe status cue",
+        "victory": "short upright or hovering flourish",
+        "defeat": "settle or dim without disappearing before receipt",
+        "world_follow": "drifting ember arcs; owner distance, obstacle navigation, teleport recovery, visibility and LOD gates",
+        "summon": "brief material reveal"
+      },
+      "audioBrief": "glass chime and soft fire breath",
+      "audioRef": "Assets/VirtualLife/PetArena/Pets/pet-v31-fire-cindrelis/Audio/events.json",
+      "visualRef": "Assets/VirtualLife/PetArena/Pets/pet-v31-fire-cindrelis/Prefabs/pet-v31-fire-cindrelis.prefab",
+      "serverOutcomeIndependent": true,
+      "boardPolicy": "visible stationary 10x10; no normal-skill tile mutation; ultimate mutation only typed Rust impact",
+      "reducedMotionFallback": "static camera, low-luminance brief pulse; identical event accounting",
+      "eventIdentity": "match/version/ordinal; dedupe on replay; no gameplay animation callback",
+      "budgetsCandidate": {
+        "lodTriangles": [
+          24000,
+          12000,
+          3000
+        ],
+        "maxBones": 64,
+        "maxMaterials": 3,
+        "textureMaxDimension": 2048,
+        "maxActiveParticles": 256,
+        "maxAudioVoices": 4
+      },
+      "assetStatus": "MISSING"
+    },
+    {
+      "petId": "pet-v31-water-marivell",
+      "name": "Marivell",
+      "rig": "rig_aquatic",
+      "bodyPlan": "radial",
+      "quality": "shared_hero_quality",
+      "actions": {
+        "idle": "bell pulse",
+        "move": "jet pulses with trailing tendrils",
+        "normal_sword_hit": "short aimed gesture; marivell_normal",
+        "rage_sword_100": "Tidal Mantle radial VFX with distinct windup and committed impact",
+        "skill_cast": "Tidal Mantle bounded anticipation before committed event",
+        "hurt": "brief recoil without moving board or root authority",
+        "defend": "contained ward pulse",
+        "status": "readable silhouette-safe status cue",
+        "victory": "short upright or hovering flourish",
+        "defeat": "settle or dim without disappearing before receipt",
+        "world_follow": "jet pulses with trailing tendrils; owner distance, obstacle navigation, teleport recovery, visibility and LOD gates",
+        "summon": "brief material reveal"
+      },
+      "audioBrief": "water bells and muted crystal resonance",
+      "audioRef": "Assets/VirtualLife/PetArena/Pets/pet-v31-water-marivell/Audio/events.json",
+      "visualRef": "Assets/VirtualLife/PetArena/Pets/pet-v31-water-marivell/Prefabs/pet-v31-water-marivell.prefab",
+      "serverOutcomeIndependent": true,
+      "boardPolicy": "visible stationary 10x10; no normal-skill tile mutation; ultimate mutation only typed Rust impact",
+      "reducedMotionFallback": "static camera, low-luminance brief pulse; identical event accounting",
+      "eventIdentity": "match/version/ordinal; dedupe on replay; no gameplay animation callback",
+      "budgetsCandidate": {
+        "lodTriangles": [
+          24000,
+          12000,
+          3000
+        ],
+        "maxBones": 64,
+        "maxMaterials": 3,
+        "textureMaxDimension": 2048,
+        "maxActiveParticles": 256,
+        "maxAudioVoices": 4
+      },
+      "assetStatus": "MISSING"
+    },
+    {
+      "petId": "pet-v31-electric-quorion",
+      "name": "Quorion",
+      "rig": "rig_avian",
+      "bodyPlan": "avian",
+      "quality": "shared_hero_quality",
+      "actions": {
+        "idle": "head swivel",
+        "move": "wingbeat then controlled glide",
+        "normal_sword_hit": "short aimed gesture; quorion_normal",
+        "rage_sword_100": "Arc Relay radial VFX with distinct windup and committed impact",
+        "skill_cast": "Arc Relay bounded anticipation before committed event",
+        "hurt": "brief recoil without moving board or root authority",
+        "defend": "contained ward pulse",
+        "status": "readable silhouette-safe status cue",
+        "victory": "short upright or hovering flourish",
+        "defeat": "settle or dim without disappearing before receipt",
+        "world_follow": "wingbeat then controlled glide; owner distance, obstacle navigation, teleport recovery, visibility and LOD gates",
+        "summon": "brief material reveal"
+      },
+      "audioBrief": "metal feather flutter and gentle static",
+      "audioRef": "Assets/VirtualLife/PetArena/Pets/pet-v31-electric-quorion/Audio/events.json",
+      "visualRef": "Assets/VirtualLife/PetArena/Pets/pet-v31-electric-quorion/Prefabs/pet-v31-electric-quorion.prefab",
+      "serverOutcomeIndependent": true,
+      "boardPolicy": "visible stationary 10x10; no normal-skill tile mutation; ultimate mutation only typed Rust impact",
+      "reducedMotionFallback": "static camera, low-luminance brief pulse; identical event accounting",
+      "eventIdentity": "match/version/ordinal; dedupe on replay; no gameplay animation callback",
+      "budgetsCandidate": {
+        "lodTriangles": [
+          24000,
+          12000,
+          3000
+        ],
+        "maxBones": 64,
+        "maxMaterials": 3,
+        "textureMaxDimension": 2048,
+        "maxActiveParticles": 256,
+        "maxAudioVoices": 4
+      },
+      "assetStatus": "MISSING"
+    },
+    {
+      "petId": "pet-v31-ghost-vesperyn",
+      "name": "Vesperyn",
+      "rig": "rig_spectral",
+      "bodyPlan": "spectral",
+      "quality": "shared_hero_quality",
+      "actions": {
+        "idle": "veil curl",
+        "move": "mask-led hover",
+        "normal_sword_hit": "short aimed gesture; vesperyn_normal",
+        "rage_sword_100": "Wisp Hex radial VFX with distinct windup and committed impact",
+        "skill_cast": "Wisp Hex bounded anticipation before committed event",
+        "hurt": "brief recoil without moving board or root authority",
+        "defend": "contained ward pulse",
+        "status": "readable silhouette-safe status cue",
+        "victory": "short upright or hovering flourish",
+        "defeat": "settle or dim without disappearing before receipt",
+        "world_follow": "mask-led hover; owner distance, obstacle navigation, teleport recovery, visibility and LOD gates",
+        "summon": "brief material reveal"
+      },
+      "audioBrief": "breathy ceramic tones",
+      "audioRef": "Assets/VirtualLife/PetArena/Pets/pet-v31-ghost-vesperyn/Audio/events.json",
+      "visualRef": "Assets/VirtualLife/PetArena/Pets/pet-v31-ghost-vesperyn/Prefabs/pet-v31-ghost-vesperyn.prefab",
+      "serverOutcomeIndependent": true,
+      "boardPolicy": "visible stationary 10x10; no normal-skill tile mutation; ultimate mutation only typed Rust impact",
+      "reducedMotionFallback": "static camera, low-luminance brief pulse; identical event accounting",
+      "eventIdentity": "match/version/ordinal; dedupe on replay; no gameplay animation callback",
+      "budgetsCandidate": {
+        "lodTriangles": [
+          24000,
+          12000,
+          3000
+        ],
+        "maxBones": 64,
+        "maxMaterials": 3,
+        "textureMaxDimension": 2048,
+        "maxActiveParticles": 256,
+        "maxAudioVoices": 4
+      },
+      "assetStatus": "MISSING"
+    },
+    {
+      "petId": "pet-v31-ground-gravorn",
+      "name": "Gravorn",
+      "rig": "rig_insect",
+      "bodyPlan": "hexapod",
+      "quality": "shared_hero_quality",
+      "actions": {
+        "idle": "settled stone breathing",
+        "move": "alternating tripod gait",
+        "normal_sword_hit": "short aimed gesture; gravorn_normal",
+        "rage_sword_100": "Seismic Ward radial VFX with distinct windup and committed impact",
+        "skill_cast": "Seismic Ward bounded anticipation before committed event",
+        "hurt": "brief recoil without moving board or root authority",
+        "defend": "contained ward pulse",
+        "status": "readable silhouette-safe status cue",
+        "victory": "short upright or hovering flourish",
+        "defeat": "settle or dim without disappearing before receipt",
+        "world_follow": "alternating tripod gait; owner distance, obstacle navigation, teleport recovery, visibility and LOD gates",
+        "summon": "brief material reveal"
+      },
+      "audioBrief": "rounded stone knocks and low drum",
+      "audioRef": "Assets/VirtualLife/PetArena/Pets/pet-v31-ground-gravorn/Audio/events.json",
+      "visualRef": "Assets/VirtualLife/PetArena/Pets/pet-v31-ground-gravorn/Prefabs/pet-v31-ground-gravorn.prefab",
+      "serverOutcomeIndependent": true,
+      "boardPolicy": "visible stationary 10x10; no normal-skill tile mutation; ultimate mutation only typed Rust impact",
+      "reducedMotionFallback": "static camera, low-luminance brief pulse; identical event accounting",
+      "eventIdentity": "match/version/ordinal; dedupe on replay; no gameplay animation callback",
+      "budgetsCandidate": {
+        "lodTriangles": [
+          24000,
+          12000,
+          3000
+        ],
+        "maxBones": 64,
+        "maxMaterials": 3,
+        "textureMaxDimension": 2048,
+        "maxActiveParticles": 256,
+        "maxAudioVoices": 4
+      },
+      "assetStatus": "MISSING"
+    },
+    {
+      "petId": "pet-v31-light-aurelune",
+      "name": "Aurelune",
+      "rig": "rig_q4",
+      "bodyPlan": "quadruped",
+      "quality": "shared_hero_quality",
+      "actions": {
+        "idle": "ear flick and antler shimmer",
+        "move": "light four-beat walk and bounded trot",
+        "normal_sword_hit": "short aimed gesture; aurelune_normal",
+        "rage_sword_100": "Dawn Chorus radial VFX with distinct windup and committed impact",
+        "skill_cast": "Dawn Chorus bounded anticipation before committed event",
+        "hurt": "brief recoil without moving board or root authority",
+        "defend": "contained ward pulse",
+        "status": "readable silhouette-safe status cue",
+        "victory": "short upright or hovering flourish",
+        "defeat": "settle or dim without disappearing before receipt",
+        "world_follow": "light four-beat walk and bounded trot; owner distance, obstacle navigation, teleport recovery, visibility and LOD gates",
+        "summon": "brief material reveal"
+      },
+      "audioBrief": "soft choir and crystal antler chimes",
+      "audioRef": "Assets/VirtualLife/PetArena/Pets/pet-v31-light-aurelune/Audio/events.json",
+      "visualRef": "Assets/VirtualLife/PetArena/Pets/pet-v31-light-aurelune/Prefabs/pet-v31-light-aurelune.prefab",
+      "serverOutcomeIndependent": true,
+      "boardPolicy": "visible stationary 10x10; no normal-skill tile mutation; ultimate mutation only typed Rust impact",
+      "reducedMotionFallback": "static camera, low-luminance brief pulse; identical event accounting",
+      "eventIdentity": "match/version/ordinal; dedupe on replay; no gameplay animation callback",
+      "budgetsCandidate": {
+        "lodTriangles": [
+          24000,
+          12000,
+          3000
+        ],
+        "maxBones": 64,
+        "maxMaterials": 3,
+        "textureMaxDimension": 2048,
+        "maxActiveParticles": 256,
+        "maxAudioVoices": 4
+      },
+      "assetStatus": "MISSING"
+    }
+  ]
+}
