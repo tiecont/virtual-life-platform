@@ -4295,7 +4295,7 @@
       "auditSourceRevision": "80a9186f39b2401df6b88b33411bd9a1ad50c340",
       "brand": "Aetheria: Soulbound (owner requested name; legal clearance not assumed)",
       "scope": "PR1 only: homepage, closed preregistration, route separation and this workstream. Later route/media/API/operator work remains TODO.",
-      "missingInputs": "PRODUCT_UX_AND_COPY.md and referenced marketing previews not present in checkout or archived tree search; no approved copy or production media inferred."
+      "designReference": "Owner supplied /home/tiecont/Downloads/NOYUNE_Prelaunch_AdminWeb_Handoff after initial audit. Read product copy, technical architecture, backlog, QA gates and both style-only previews. Aetheria: Soulbound supersedes the handoff name. Cropped concept media is served only in development, with source hash/provenance; no production-media or legal clearance inferred."
     }
   },
   {

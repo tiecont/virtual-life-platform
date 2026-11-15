@@ -36,3 +36,12 @@ describe('prelaunch release isolation',()=>{
   }
  });
 });
+
+it('the concept-media handler itself denies production even if Proxy is bypassed',async()=>{
+ const {GET}=await import('../app/preview-media/[asset]/route');
+ vi.stubEnv('NODE_ENV','production');vi.stubEnv('AETHERIA_SITE_PREVIEW','1');
+ const response=await GET(new Request('https://site.invalid/preview-media/world'),{params:Promise.resolve({asset:'world'})});
+ expect(response.status).toBe(404);expect(response.headers.get('cache-control')).toContain('no-store');
+ vi.stubEnv('NODE_ENV','development');
+ expect((await GET(new Request('http://localhost/preview-media/other'),{params:Promise.resolve({asset:'../world'})})).status).toBe(404);
+});

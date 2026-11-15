@@ -103,7 +103,9 @@ email delivery, 3D production asset or deployment authorization in this slice.
 
 VL-128–132 in the master plan track this independent prelaunch workstream.
 Existing official-site/download and Windows qualification tasks remain intact.
-The owner-requested name does not establish legal clearance. The inline SVG is
-an original concept illustration, not game footage or approved launch media.
+The owner-requested name does not establish legal clearance. The illustrated preview uses a crop from the owner-supplied AI concept handoff,
+not game footage or approved launch media. Its provenance is beside the asset;
+`/preview-media/world` serves it only in development. It is not in `public/` or
+a static image import, and remains blocked in production.
 Production routing/indexing, campaign acceptance and real delivery require
 separate owner approval and implementation of the corresponding release gates.

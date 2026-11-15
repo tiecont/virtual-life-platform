@@ -65,7 +65,7 @@ try {
   await compose(['exec','-T','admin','node','-e',privateEnv]);
   facts.scenarios.push({id:'ADMIN-01',privateApiAdminDatabase:true,nonrootReadonlyApps:true,backendCredentialsAbsent:true});
   stage='tls-and-denials';
-  assert.equal((await request('/')).status,404);assert.equal((await request('/preregister')).status,404);
+  assert.equal((await request('/')).status,404);assert.equal((await request('/preregister')).status,404);assert.equal((await request('/preview-media/world')).status,404);
   const first=await request('/admin'),second=await request('/admin');assert.equal(first.status,200);
   for(const response of [first,second]){
     assert(String(response.headers['cache-control']).includes('no-store'));assert.equal(response.headers['x-frame-options'],'DENY');assert.equal(response.headers['referrer-policy'],'no-referrer');
