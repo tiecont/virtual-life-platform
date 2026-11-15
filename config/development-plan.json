@@ -4298,7 +4298,41 @@
       ],
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
-        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "mergedVerification": {
+          "sourceRevision": "644fe152a397db5040a7ae856609627b91bd77e3",
+          "mergeRevision": "e3da673b56a64e8c3e3d5b10a2fea647cf00cc68",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/32",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {
+              "command": "gh run view 43735559147 --exit-status",
+              "exitCode": 0,
+              "result": "Final PR Quality PASS including core,images,8 browser groups and quality gate"
+            },
+            {
+              "command": "gh run view 43735554273 --exit-status",
+              "exitCode": 0,
+              "result": "Final push Quality attempt2 PASS; initial admin image ERR_NETWORK_CHANGED retained; unchanged-source retry, no assertions bypassed"
+            },
+            {
+              "command": "gh run view 43735559409 --exit-status",
+              "exitCode": 0,
+              "result": "PR Rust PASS; push Rust43735554270 also SUCCESS"
+            },
+            {
+              "command": "python3 scripts/validate-pet-v31.py",
+              "exitCode": 0,
+              "result": "Merged main e3da673:240 drafts/19 elements/361 pairs PASS; merge tree equals tested644fe15"
+            },
+            {
+              "command": "pnpm governance:check",
+              "exitCode": 0,
+              "result": "Merged main plan/governance PASS"
+            }
+          ],
+          "pending": "Post-merge main Quality43741771070 and Rust43741771072 started; not inferred PASS."
+        }
       },
       "verification": {
         "sourceRevision": "8fe4739126cc8771f5c769deeb384828b94d77ec",
@@ -4407,7 +4441,32 @@
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "source": "packages/contracts/src/pet-taxonomy-v3.ts",
         "scope": "Strict draft-only taxonomy and acquisition schemas; all19 elements/361 pairs/22 races and four sources. No runtime activation, persistence or grants.",
-        "validation": "Focused6 contract tests, contracts build and ESLint passed before commit; committed-source verification and hosted CI still required."
+        "validation": "Committed-source local checks PASS; hosted CI pending. Strict TypeScript schema slice only.",
+        "verification": {
+          "sourceRevision": "09ebdfac6df9c37c84d3f76f28c4461f03607cd8",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {
+              "command": "pnpm check",
+              "exitCode": 0,
+              "result": "118 governance,505 unit,789 PostgreSQL integration and all builds PASS. Initial run interrupted by closed Docker connection; exact owned DB cleaned and unchanged-source rerun passed."
+            },
+            {
+              "command": "pnpm exec vitest run --project unit packages/contracts/test/pet-taxonomy-v3.test.ts packages/contracts/test/pet-content.test.ts",
+              "exitCode": 0,
+              "result": "6 tests PASS; actual240 acquisition entries and19/361/22 taxonomy plus adversarial cases"
+            },
+            {
+              "command": "cargo fmt --all -- --check",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo test --workspace --locked",
+              "exitCode": 0
+            }
+          ],
+          "pending": "PR34 hosted Quality/Rust still pending at this record; remains IN_PROGRESS. No persistence/runtime/Unity implementation claim."
+        }
       }
     },
     {
@@ -5156,7 +5215,41 @@
       ],
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
-        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "mergedVerification": {
+          "sourceRevision": "644fe152a397db5040a7ae856609627b91bd77e3",
+          "mergeRevision": "e3da673b56a64e8c3e3d5b10a2fea647cf00cc68",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/32",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {
+              "command": "gh run view 43735559147 --exit-status",
+              "exitCode": 0,
+              "result": "Final PR Quality PASS including core,images,8 browser groups and quality gate"
+            },
+            {
+              "command": "gh run view 43735554273 --exit-status",
+              "exitCode": 0,
+              "result": "Final push Quality attempt2 PASS; initial admin image ERR_NETWORK_CHANGED retained; unchanged-source retry, no assertions bypassed"
+            },
+            {
+              "command": "gh run view 43735559409 --exit-status",
+              "exitCode": 0,
+              "result": "PR Rust PASS; push Rust43735554270 also SUCCESS"
+            },
+            {
+              "command": "python3 scripts/validate-pet-v31.py",
+              "exitCode": 0,
+              "result": "Merged main e3da673:240 drafts/19 elements/361 pairs PASS; merge tree equals tested644fe15"
+            },
+            {
+              "command": "pnpm governance:check",
+              "exitCode": 0,
+              "result": "Merged main plan/governance PASS"
+            }
+          ],
+          "pending": "Post-merge main Quality43741771070 and Rust43741771072 started; not inferred PASS."
+        }
       },
       "verification": {
         "sourceRevision": "8fe4739126cc8771f5c769deeb384828b94d77ec",
