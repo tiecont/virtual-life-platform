@@ -10,6 +10,7 @@ export * from './compatibility';
 export * from './native-auth';
 export * from './content';
 export * from './pet-content';
+export * from './pet-battle-assets';
 export * from './operator';
 export * from './operator-controls';
 export * from './privacy-requests';

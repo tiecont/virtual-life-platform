@@ -4076,7 +4076,7 @@
       "Idle/summon/normal/rage/skill/combo/hurt/defend/status/defeat/victory semantics and reduced-motion variants defined",
       "Original art directions for all 19 elements and six hero plus boss priority set; placeholders explicitly unpublished"
     ],
-    "status": "TODO",
+    "status": "IN_PROGRESS",
     "qualificationRequirements": [
       "Original source asset provenance and publishable rights review"
     ],
@@ -4086,7 +4086,9 @@
     ],
     "implementation": {
       "wave": "P0/P4",
-      "specification": "specs/pet-arena/v2.md"
+      "specification": "specs/pet-arena/v2.md; specs/pet-arena/art-direction.md",
+      "draftContract": "Strict typed asset/source/import hash references, all eleven animation semantics and six-hero/boss missing-asset preflight. Explicit 19-element art direction and original catalog-aligned model/animation briefs. Draft only; no runtime activation or production publication port.",
+      "remaining": "Actual editable artwork, models/rigs/clips, original sprite atlas/VFX/audio, Unity importer binding checks and rendered Linux previews; rights review, measured performance and physical Windows qualification remain separate. No image was generated: built-in image generation unavailable, CLI fallback not selected."
     }
   },
   {
