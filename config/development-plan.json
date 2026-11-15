@@ -3809,7 +3809,26 @@
             "renderedFailure": "Pet win interop-350d4644 exit 1: Transport while waiting for action readiness, before any dropped committed ACK was recorded; cleanup complete. The ACK injector intercepted every first packet while armed, including precommit admission refresh. Follow-up forwards precommit traffic, serializes forwarding and retains exact committed version/receipt/command-ID assertions. An explicit OS reconnect while armed must pass before the committed Start response is dropped. Corrected source needs rendered win/loss and failure-matrix verification.",
             "evidenceRoot": "artifacts/linux-first-playable-audit; Unity results 2026-11-15T07-06-28-436Z-70ac309e, 2026-11-15T07-08-53-675Z-19e15400 and 2026-11-15T07-13-00-699Z-391e2ee0 under linux-first-playable-clean"
           },
-          "remaining": "Green final-source hosted CI and rendered ACK-gate regression, merge, explicit post-merge CI and launcher verification on merged main. VL-113 stays IN_PROGRESS. Windows, production asset rights, performance and human release approvals remain separate. NO_GO_PUBLIC; OFFLINE_ONLY."
+          "mergedFixtureChecks": {
+            "sourceRevision": "f5dd7cc9ca6b5de61fdd63343eb47b89e1495c01",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "check": "pnpm check retry exit 0: 114 governance, 499 unit, 783 integration and all builds PASS. Initial full invocation exited 143 during integration; its orphaned owned subprocesses and database were stopped before retry. Neither cancellation nor partial output counts as PASS.",
+            "native": "cargo fmt --all -- --check, cargo test --workspace --locked (63 tests), cargo clippy --workspace --all-targets --locked -- -D warnings and native-csharp each exit 0. C# 116 assertions / 23 syntax files. Unity 16 EditMode / 3 PlayMode, build and 2 smoke tests were executed at b612555 as recorded above; no f5dd Editor rerun claimed.",
+            "renderedWin": "exit 0 / five scenarios: interop-6568c6e9, won version 4 / GRANTED. Four armed precommit chunks forwarded before the intended durable Start ACK was lost; immutable same-ID replay, exact mid-match SIGKILL recovery, movement, roaming return and logout PASS.",
+            "renderedLoss": "exit 0 / five scenarios: interop-4e340662, lost version 18 / DECLINED with the same recovery/ACK invariants. Initial interop-a47cc042 exited 1 at harness 420-second budget during Editor initialization, before player/login; retained, not counted as PASS.",
+            "renderedMatrix": "exit 0 / seven scenarios / two players: interop-c071d8b0, six TLS/admission negatives, canonical movement, committed ACK loss/retry, in-flight scene unload, logout/revocation and credential log privacy. cleanupComplete true; AMD Radeon OpenGLCore screenshots inspected.",
+            "hosted": "Quality push 43690507593 and PR 43690510614 PASS: core-checks, runtime-images/release-bundle, all eight browser groups and final quality gate. Rust push 43690507598 and PR 43690510658 PASS. PR 27 merged as 8fa1b63a2cbd20a59a059884346ca409c71f6cf8 with identical source tree.",
+            "mergedMainLauncher": "At main 8fa1b63a2cbd20a59a059884346ca409c71f6cf8, pnpm play:linux twice exit 0. OS helper win exit 0: version 5 / GRANTED; loss exit 0: version 18 / DECLINED; both return to Plaza, logout 200, cleanupComplete true and owned private files absent. Initial win input produced 401 then slower re-entry 200; initial loss E interaction missed and timed out without opening Arena; resumed OS interaction completed. Failures retained, no product-source change made for helper retries. Evidence interop-4ee288c9 / interop-e0eacf96 under linux-first-playable-clean. Reused b612555 player; runtime source identical, not a new build at merge SHA.",
+            "binarySha256": {
+              "linuxPlayer": "26901901cc6dd63212d741b339897f072d34cb7b3f08419fe451fc8e77c79a1f",
+              "nativeAssembly": "ee213d25a34bfaae5b64d024d133d8b287c2168dc08525cbc6dba7bd780e6399",
+              "nativeSceneAssembly": "df8f12cff852ae82c899012e6e88c88b5e96d7227e3bcab42f7d35b88a991431",
+              "rustRuntime": "27a479058b0856bc753ad132e0f479b37b90a20e01ec52cf3fc4ea7d350d88f5"
+            },
+            "postMerge": "Main 8fa1b63 Rust 43695336211 PASS. Quality 43695336276 core-checks and runtime-images PASS; browser groups and final gate pending at this record, not PASS.",
+            "evidenceRoot": "artifacts/linux-first-playable-audit; rendered facts under linux-first-playable-clean/artifacts/desktop-first/vl022"
+          },
+          "remaining": "Explicit merged-main Quality final gate pending. VL-113 stays IN_PROGRESS until all acceptance is reconciled. Windows, production asset rights, performance and human release approvals remain separate. NO_GO_PUBLIC; OFFLINE_ONLY."
         }
       }
     },
@@ -3837,7 +3856,7 @@
       "wave": "P0",
       "specification": "specs/pet-arena/v2.md",
       "catalog": "specs/pet-arena/catalog-v2.json",
-      "validation": "Design in progress; source checks and hosted CI not yet run for this branch. No v2 runtime or production art implemented."
+      "validation": "At b24c3fdea5ab5d60d6a8733b8ad0c4259898d83f after merging main 8fa1b63: catalog checker exit 0 (19 elements / 19 maps / 114 draft species), governance 116/116 exit 0, governance:check exit 0, focused ESLint and diff-check exit 0. All 26 historical VERIFIED task objects and VL-113 preserved exactly before adding the new VL-113 evidence above. At prior 60ab3a2 Rust push 43693908537 / PR 43694027277 PASS; Quality push 43693908583 / PR 43694027257 still pending. These are not hosted acceptance of this subsequent revision. No v2 runtime or production art implemented."
     }
   },
   {
