@@ -39,7 +39,7 @@ def validate(root, upstream=None):
     require(len(races) == 22 and len({r['id'] for r in races}) == 22, '22 races')
     for p in pets:
         require(re.fullmatch(r'[a-z][a-z0-9_-]{0,63}', p['id']) and re.fullmatch(r'[A-Z][A-Za-z]*', p['name']), 'identity format')
-        require(p['element'] in expected and p['race'] in {r['id'] for r in races}, 'taxonomy')
+        require(p['element'] in expected and p['race'] in {r['id'] for r in races} and p['bodyPlan'] in get('races.json')['bodyPlans'], 'taxonomy')
         require(p['availability'] == 'DRAFT_ONLY' and p['assetStatus'] == 'MISSING' and p['published'] is False and p['productionReady'] is False, 'draft safety')
         require(p['seedSafety'] == {'dbWriteAllowed':'unpublished_drafts_only','playerEntitlementGrant':False,'autoPublish':False}, 'grant safety')
         require(p['ownedLevelCap'] == 100 and p['evolution']['maxStars'] == 3 and p['awakening']['maxConstellation'] == 6 and p['awakening']['copiesToMax'] == 7, 'progression caps')

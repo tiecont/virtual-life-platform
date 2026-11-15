@@ -194,7 +194,8 @@
     "mechanical",
     "centaur",
     "aquatic",
-    "radial"
+    "radial",
+    "hexapod"
   ],
   "minimumDiversityTargets": {
     "nonHumanoidFraction": 0.75,
