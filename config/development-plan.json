@@ -4289,7 +4289,7 @@
         "Canonical manifest identifies 240 draft definitions and hashes; 19 elements/361 matchups and upstream114 preserved",
         "Catalog/negative/governance checks and actual committed-source hosted CI pass; self-review labeled honestly"
       ],
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "qualificationRequirements": [],
       "verificationRequirements": [
         "Focused unit/integration and exact CI",
@@ -4299,6 +4299,62 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      },
+      "verification": {
+        "sourceRevision": "8fe4739126cc8771f5c769deeb384828b94d77ec",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "python3 scripts/validate-pet-v31.py",
+            "exitCode": 0,
+            "result": "240 drafts;209 regular/19 map S/6 Limited/6 Standard;19 elements/361 matchups; actual upstream114 IDs/names unchanged"
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "118 PASS including V3.1 tampering and12 semantic negative cases"
+          },
+          {
+            "command": "pnpm check",
+            "exitCode": 0,
+            "result": "Retry after checksum-pinned Kubernetes tool cache preparation:118 governance,501 unit,789 integration and all builds PASS. Initial attempt exit1: tool download TimeoutError; no checks bypassed."
+          },
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0,
+            "result": "Workspace tests PASS"
+          },
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          },
+          {
+            "command": "gh run view 43729281798 --exit-status",
+            "exitCode": 0,
+            "result": "Hosted PR Rust PASS; push Rust43728765078 also SUCCESS"
+          },
+          {
+            "command": "node scripts/release-bundle.mjs --output artifacts/release-bundle-v31",
+            "exitCode": 0,
+            "result": "Actual API/web/admin images from8fe4739:6 scenarios each PASS; TLS/browser/security/cleanup; no registry publish"
+          },
+          {
+            "command": "node scripts/local-compose-smoke.mjs --bundle artifacts/release-bundle-v31/bundle.json",
+            "exitCode": 0,
+            "result": "PASS including persistent identity, restart and cleanup"
+          },
+          {
+            "command": "gh run view 43729281847 --exit-status",
+            "exitCode": 0,
+            "result": "PR Quality attempt2 PASS; initial runtime-images Password locator timeout retained; same source rerun, no assertion changes"
+          },
+          {
+            "command": "gh run view 43728765076 --exit-status",
+            "exitCode": 0,
+            "result": "Push Quality attempt2 PASS; initial runtime-images Display name locator timeout retained; unchanged-source rerun"
+          }
+        ],
+        "scope": "Roadmap and draft design/catalog only. No v3 database import, gameplay, production models or Unity motion qualification. VL-130/131 own bounded runtime contracts and additive persistence. PR32 metadata revision must itself receive green hosted CI before merge."
       }
     },
     {
@@ -5089,7 +5145,7 @@
         "Skills/unlocks/equipment, lore/palettes, all animation states, asset/audio references and canonical240 validation exist",
         "No map recruitment, Limited signature card, publication, player grants or production-art claims"
       ],
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "qualificationRequirements": [],
       "verificationRequirements": [
         "Focused positive/adversarial contract and integration checks against committed source",
@@ -5098,6 +5154,62 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      },
+      "verification": {
+        "sourceRevision": "8fe4739126cc8771f5c769deeb384828b94d77ec",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "python3 scripts/validate-pet-v31.py",
+            "exitCode": 0,
+            "result": "240 drafts;209 regular/19 map S/6 Limited/6 Standard;19 elements/361 matchups; actual upstream114 IDs/names unchanged"
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "118 PASS including V3.1 tampering and12 semantic negative cases"
+          },
+          {
+            "command": "pnpm check",
+            "exitCode": 0,
+            "result": "Retry after checksum-pinned Kubernetes tool cache preparation:118 governance,501 unit,789 integration and all builds PASS. Initial attempt exit1: tool download TimeoutError; no checks bypassed."
+          },
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0,
+            "result": "Workspace tests PASS"
+          },
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          },
+          {
+            "command": "gh run view 43729281798 --exit-status",
+            "exitCode": 0,
+            "result": "Hosted PR Rust PASS; push Rust43728765078 also SUCCESS"
+          },
+          {
+            "command": "node scripts/release-bundle.mjs --output artifacts/release-bundle-v31",
+            "exitCode": 0,
+            "result": "Actual API/web/admin images from8fe4739:6 scenarios each PASS; TLS/browser/security/cleanup; no registry publish"
+          },
+          {
+            "command": "node scripts/local-compose-smoke.mjs --bundle artifacts/release-bundle-v31/bundle.json",
+            "exitCode": 0,
+            "result": "PASS including persistent identity, restart and cleanup"
+          },
+          {
+            "command": "gh run view 43729281847 --exit-status",
+            "exitCode": 0,
+            "result": "PR Quality attempt2 PASS; initial runtime-images Password locator timeout retained; same source rerun, no assertion changes"
+          },
+          {
+            "command": "gh run view 43728765076 --exit-status",
+            "exitCode": 0,
+            "result": "Push Quality attempt2 PASS; initial runtime-images Display name locator timeout retained; unchanged-source rerun"
+          }
+        ],
+        "scope": "Roadmap and draft design/catalog only. No v3 database import, gameplay, production models or Unity motion qualification. VL-130/131 own bounded runtime contracts and additive persistence. PR32 metadata revision must itself receive green hosted CI before merge."
       }
     },
     {
