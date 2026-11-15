@@ -21,7 +21,8 @@ export function Site({locale,registration=false}:{locale:Locale;registration?:bo
    </section>
    <section id="world" className={styles.chapter} aria-labelledby="world-title"><p className={styles.eyebrow}>{t.chapter}</p><h2 id="world-title">{t.world}</h2><p>{t.worldText}</p><div className={styles.cards}>{t.cards.map(([number,title,body])=><article className={styles.card} key={number}><span className={styles.number} aria-hidden="true">{number}</span><h3>{title}</h3><p>{body}</p></article>)}</div></section>
    <section className={styles.status} aria-labelledby="status-title"><p className={styles.eyebrow}>Aetheria: Soulbound</p><h2 id="status-title">{t.status}</h2><p>{t.statusText}</p><a className={styles.secondary} href={'/preregister?lang='+locale}>{t.closed} <span aria-hidden="true">&nbsp;↗</span></a></section>
-   <section className={styles.faq} id="faq" aria-labelledby="faq-title"><p className={styles.eyebrow}>Aetheria: Soulbound</p><h2 id="faq-title">{t.faq}</h2>{t.questions.map(([question,answer])=><details key={question}><summary>{question}</summary><p>{answer}</p></details>)}</section>
+   {/* Native details may open before hydration; preserve that user-controlled state. */}
+   <section className={styles.faq} id="faq" aria-labelledby="faq-title"><p className={styles.eyebrow}>Aetheria: Soulbound</p><h2 id="faq-title">{t.faq}</h2>{t.questions.map(([question,answer])=><details key={question} suppressHydrationWarning><summary>{question}</summary><p>{answer}</p></details>)}</section>
   </main>}
   <footer className={styles.footer}><span>Aetheria: Soulbound · {t.footer}</span><span>{t.release}</span></footer>
  </div>;
