@@ -160,25 +160,35 @@ try{
   socket.on('error',destroy);target.on('error',destroy);socket.on('close',destroy);target.on('close',destroy);
   // Test-only transport fault: suppress the already-committed response, then
   // disconnect. No response payload or private projection is inspected/logged.
-  let dropping=false;
+  let dropping=false,forwarding=Promise.resolve();
   if(interactive)target.on('data',chunk=>{
    if(dropping)return;
-   if(interactive&&existsSync(ackGate)){
-    dropping=true;
-    const proof=(async()=>{
+   target.pause();
+   const proof=forwarding.then(async()=>{
+    if(dropping)return;
+    if(existsSync(ackGate)){
      const expected=Number(await readFile(ackGate,'utf8'));
      assert(Number.isSafeInteger(expected)&&expected>=1&&expected<=61);
      const row=(await pool.query('SELECT state_version,(SELECT count(*)::int FROM game_native_receipts) AS receipts FROM game_native_matches WHERE id=$1',[matchId])).rows[0];
-     assert.equal(Number(row.state_version),expected,'Lost ACK must follow a real durable commit');
-     assert.equal(row.receipts,expected,'Lost ACK must have exactly one receipt per turn');
-     const receipt=(await pool.query('SELECT command_id,committed_version FROM game_native_receipts WHERE match_id=$1 AND committed_version=$2',[matchId,expected])).rows[0];
-     assert(receipt,'Lost ACK requires the matching durable receipt');
-     (facts.droppedCommittedAcks??=[]).push(receipt);
-     await writeFile(ackObserved,receipt.command_id,{mode:0o600});
-     destroy();
-    })();
-    recoveryProofs.push(proof);void proof.catch(()=>destroy());
-   }else if(!socket.write(chunk))target.pause();
+     if(Number(row.state_version)>=expected){
+      dropping=true;recoveryProofs.push(proof);
+      assert.equal(Number(row.state_version),expected,'Lost ACK must follow a real durable commit');
+      assert.equal(row.receipts,expected,'Lost ACK must have exactly one receipt per turn');
+      const receipt=(await pool.query('SELECT command_id,committed_version FROM game_native_receipts WHERE match_id=$1 AND committed_version=$2',[matchId,expected])).rows[0];
+      assert(receipt,'Lost ACK requires the matching durable receipt');
+      (facts.droppedCommittedAcks??=[]).push(receipt);
+      await writeFile(ackObserved,receipt.command_id,{mode:0o600});
+      destroy();return;
+     }
+     // Admission refresh and resync can precede the intended committed response.
+     facts.ackGatePrecommitChunks=(facts.ackGatePrecommitChunks??0)+1;
+    }
+    if(socket.write(chunk))target.resume();
+   });
+   forwarding=proof.catch(()=>{
+    if(!recoveryProofs.includes(proof))recoveryProofs.push(proof);
+    dropping=true;destroy();
+   });
   });
   socket.on('drain',()=>target.resume());
   target.on('connect',()=>{target.write('GET '+req.url+' HTTP/1.1\r\n'+Array.from({length:req.rawHeaders.length/2},(_,i)=>req.rawHeaders[2*i]+': '+req.rawHeaders[2*i+1]).join('\r\n')+'\r\n\r\n');if(head.length)target.write(head);socket.pipe(target);if(!interactive)target.pipe(socket);});
@@ -310,6 +320,7 @@ try{
    assert.equal(await revokedCount(),beforeLogout+1);
    assert.equal(logoutProofs.length,1);await logoutProofs[0];
    assert.equal(recoveryProofs.length,1);await recoveryProofs[0];
+   assert(facts.ackGatePrecommitChunks>=1,'Armed ACK gate must forward the OS-requested precommit reconnect');
   }else{
   await probeUnity();
   assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[matchId])).rows[0].state_version,'1');

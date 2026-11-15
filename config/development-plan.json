@@ -3773,7 +3773,43 @@
             "movementFixture": "Repeated original fixture failures retained. Diagnostic interop-31c6c300 proved socket closed 18ms after ticket expiry with input age 60ms. Fixture now renews via authorized ticket flow and resyncs aged snapshots before new movement, preserving explicit negatives/replays and server limits. Diagnostic variant interop-e36d27d7 exit 0 / 13 scenarios; final committed variant still requires rerun. No runtime authority changes.",
             "evidenceRoot": "artifacts/linux-first-playable-audit/; interop folders under artifacts/linux-first-playable-clean/artifacts/desktop-first/vl022/ except movement diagnostics under artifacts/movement-fixture-check/"
           },
-          "remaining": "Run final committed movement/Unity/launcher checks, green exact-head hosted CI, merge and post-merge verification. VL-113 stays IN_PROGRESS. Windows, production asset rights, performance and human release approvals remain separate. NO_GO_PUBLIC; OFFLINE_ONLY."
+          "finalSourceChecks": {
+            "sourceRevision": "ca503cc1d57e8931a9a0a781c11e39e47be97b32",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "rust": "cargo fmt --all -- --check; cargo test --workspace --locked (63 tests); cargo clippy --workspace --all-targets --locked -- -D warnings: each exit 0",
+            "csharp": "node scripts/native-csharp.mjs with local DOTNET: exit 0, 116 assertions / 23 syntax files",
+            "unity": "node scripts/unity-validate.mjs tests: exit 0, 16 EditMode / 3 PlayMode; linux: exit 0; linux-player-tests: exit 0, 2 tests. UNITY_EDITOR pinned 6000.3.14f1.",
+            "movement": "--runtime-gameplay --movement: exit 0 / 13 scenarios; interop-92d40e11",
+            "orchestration": "native-game-orchestration.mjs: exit 0 / 34 scenarios, 15 denied privileges; orchestration-37a4cc6d",
+            "rendered": "Pet win interop-d6ef63b1: exit 0 / 5 scenarios, won version 5 / GRANTED. Pet loss interop-a2590677: exit 0 / 5 scenarios, lost version 18 / DECLINED. Both include exact mid-match restart, immutable lost ACK replay, canonical OS movement, roaming return and logout. Screenshots inspected.",
+            "fullCheck": "pnpm check still running at this record; 499 unit PASS, integration hourly chat cap exceeded 15 seconds. Do not count invocation as PASS. Hosted Quality core-checks passed on both events; browser/final gates still pending.",
+            "failureMatrix": "interop-ddbc9a6f exit 1: Unity's default total test budget of 180 seconds expired during scene teardown after six negative logins, movement, ACK loss and retry. PR 27 grants the long OS-input chain 300 seconds; every step/request deadline and security assertion remains unchanged. Final committed rerun required.",
+            "petFixture": "Two original process runs failed after wrong-actor testing on the old ticket; diagnostic interop-67d9a162 confirmed closed socket. At ab655626487d96242d633b9953f988eeebc88bf6, --pet-arena and --pet-arena-loss each exit 0 / 30 scenarios, interop-6aac6115 and interop-9675c700. Renewal is through NestJS before new exchanges, never automatic effect retry.",
+            "evidenceRoot": "artifacts/linux-first-playable-audit; final Pet process evidence under artifacts/pet-fixture-final/artifacts/desktop-first/vl022"
+          },
+          "fixtureVerification": {
+            "sourceRevision": "3788f0afb11127a655cd42935932e5c1d828f25a",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "csharp": "node scripts/native-csharp.mjs exit 0: 116 assertions / 23 syntax files",
+            "petProcesses": "--pet-arena and --pet-arena-loss each exit 0 / 30 scenarios: interop-fe4a1754 and interop-964923ab. Real Nest/Rust/TLS PostgreSQL and reward worker; wrong actor/private viewer, stale/invalid commands, exact SIGKILL recovery, journal corruption, reward dedupe and cleanup PASS.",
+            "renderedMatrix": "--runtime-gameplay --unity-interactive --movement exit 0: seven scenarios / two actual Linux players, interop-818c29e4. Six OS-entered TLS/admission failures, canonical movement, committed lost ACK / immutable same-ID retry, in-flight scene unload, logout/revocation and credential log privacy PASS; cleanupComplete true. AMD Radeon OpenGLCore screenshot inspected.",
+            "hosted": "PR Quality 43673275161 PASS including all eight browser groups and final gate; Rust PR 43673275119 and push 43673270540 PASS. Push Quality 43673270597 failed hospitality; not accepted as green. Trace shows a valid MUTED observation renewed by the periodic room resync during the expiry assertion. Fixture synchronization correction requires local and hosted reruns.",
+            "fullCheck": "pnpm check in the auxiliary symlink dependency worktree exited 1 because pnpm rejected its task-state path; rerun in the real dependency worktree is pending. Earlier ca503cc run exited 1 only at the 15-second dating chat cap deadline; quiet targeted rerun exited 0 in 14083ms. Neither failed full invocation is counted as PASS.",
+            "merges": "PR 26 merged as 1178ba5ebd599f86a299eec246d65cb70828c4b1; source tree matches ca503cc. Pre-merge Quality/Rust push and PR passed; post-merge Rust 43674882991 PASS, Quality 43674882985 still pending at this record.",
+            "backlog": "PRs 18, 19, 20 and 22 closed as superseded, with individual coverage explanations. Useful ACK, teardown, TLS/admission and strict projection code/tests remain in main via PR 24; no security assertions removed.",
+            "evidenceRoot": "Ignored artifacts/linux-first-playable-audit; interop-818c29e4 under linux-first-playable-clean; Pet process facts under pet-fixture-final"
+          },
+          "finalFixtureChecks": {
+            "sourceRevision": "b6125552a5a3408e12e686aaf91edeaeabf465fc",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "check": "pnpm check exit 0: 114 governance, 499 unit, 783 integration and all builds PASS with isolated dependencies. Travel focused suite exit 0 / 34 tests. Earlier operator and travel failures remain in ignored logs; neither failed full invocation is counted as PASS.",
+            "native": "cargo fmt, cargo test (63 tests), cargo clippy and native-csharp each exit 0; C# 116 assertions / 23 syntax files. Unity tests exit 0 / 16 EditMode + 3 PlayMode; Linux build exit 0; Linux player smoke exit 0 / 2 tests.",
+            "browserFixtures": "At a7b98d1 Lounge 16 desktop + 16 mobile and six repeated expiry cases PASS. At 1eb4aae avatar 11 desktop + 11 mobile and twelve repeated camera cases PASS. Travel now prepares the competing actor before the bounded hold; no timeout or negative assertion changed.",
+            "hosted": "Rust push 43686370851 and PR 43686374566 PASS. Quality push 43686370873 and PR 43686374564: core-checks, runtime-images/release-bundle, admin/city/social PASS at this record; remaining groups/final gate pending, not PASS. Main 1178ba5 post-merge Quality 43674882985 and Rust 43674882991 PASS.",
+            "renderedFailure": "Pet win interop-350d4644 exit 1: Transport while waiting for action readiness, before any dropped committed ACK was recorded; cleanup complete. The ACK injector intercepted every first packet while armed, including precommit admission refresh. Follow-up forwards precommit traffic, serializes forwarding and retains exact committed version/receipt/command-ID assertions. An explicit OS reconnect while armed must pass before the committed Start response is dropped. Corrected source needs rendered win/loss and failure-matrix verification.",
+            "evidenceRoot": "artifacts/linux-first-playable-audit; Unity results 2026-11-15T07-06-28-436Z-70ac309e, 2026-11-15T07-08-53-675Z-19e15400 and 2026-11-15T07-13-00-699Z-391e2ee0 under linux-first-playable-clean"
+          },
+          "remaining": "Green final-source hosted CI and rendered ACK-gate regression, merge, explicit post-merge CI and launcher verification on merged main. VL-113 stays IN_PROGRESS. Windows, production asset rights, performance and human release approvals remain separate. NO_GO_PUBLIC; OFFLINE_ONLY."
         }
       }
     },

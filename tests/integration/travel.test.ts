@@ -352,8 +352,10 @@ it('cancellation during nonpublic preparation wins and removes its hold without 
 it('counts pending holds in target capacity and never activates two users into a last slot', async () => {
   let release!: () => void, started = false;
   const r = await open(2, async () => { started = true; await new Promise<void>(resolve => { release = resolve; }); }), occupant = await join(r, await guest(r), 'maid'), a = await guest(r), source = await join(r, a), issued = await create(r, a, source.source, destination('maid', occupant.state.roomId));
+  // Prepare both actors before holding the bounded target preparation hook.
+  const b = await guest(r), second = await join(r, b);
   const pending = transfer(source, issued); await expect.poll(() => started).toBe(true);
-  const b = await guest(r), second = await join(r, b); expect((await post(r, b, 'travel-intents', input(second.source, destination('maid', occupant.state.roomId)))).statusCode).toBe(409);
+  expect((await post(r, b, 'travel-intents', input(second.source, destination('maid', occupant.state.roomId)))).statusCode).toBe(409);
   release(); expect((await pending).ok).toBe(true); expect((await r.app.rooms.list(credential(r, a), 'maid')).rooms.find(room => room.roomId === occupant.state.roomId)?.occupancy).toBe(2); expect(r.app.rooms.diagnostics().travelHolds).toBe(0);
 });
 
