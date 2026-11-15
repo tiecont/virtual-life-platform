@@ -60,6 +60,12 @@ world packages cannot import another world's persistence or SQL drivers.
 
 ## Work Plan
 
+Pet Arena expansion contracts and the original 19-element/114-species design
+catalog are in [the v2 specification](specs/pet-arena/v2.md) and
+[Pet catalog](specs/pet-arena/catalog.md). These are draft content designs, not
+implemented v2 gameplay or approved production art. Validate references with
+`node scripts/pet-design-check.mjs`.
+
 config/development-plan.json is the sole active backlog. Run `pnpm plan:status`
 for ready tasks and progress. Any ready task may proceed with the same agent;
 there are no reservations or mandatory independent-agent handoffs. Dependency

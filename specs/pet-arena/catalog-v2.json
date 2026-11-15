@@ -1,0 +1,6162 @@
+{
+  "schemaVersion": 2,
+  "id": "pet-arena-v2-design",
+  "state": "DRAFT_ONLY",
+  "ruleset": "pet-arena-pve-v2",
+  "runtimeEnabled": false,
+  "publicDecision": "NO_GO_PUBLIC",
+  "scope": "OFFLINE_ONLY",
+  "compatibility": "Frozen v1 training IDs, content digest and historical receipts unchanged; candidate metadata is not runtime seed or approved art",
+  "elements": [
+    {
+      "id": "normal",
+      "displayNameViAscii": "Thuong",
+      "advantage": [],
+      "resistedBy": [
+        "rock",
+        "steel"
+      ],
+      "immuneDefenders": [
+        "ghost"
+      ]
+    },
+    {
+      "id": "fire",
+      "displayNameViAscii": "Lua",
+      "advantage": [
+        "grass",
+        "ice",
+        "bug",
+        "steel"
+      ],
+      "resistedBy": [
+        "fire",
+        "water",
+        "rock",
+        "dragon"
+      ],
+      "immuneDefenders": []
+    },
+    {
+      "id": "water",
+      "displayNameViAscii": "Thuy",
+      "advantage": [
+        "fire",
+        "ground",
+        "rock"
+      ],
+      "resistedBy": [
+        "water",
+        "grass",
+        "dragon"
+      ],
+      "immuneDefenders": []
+    },
+    {
+      "id": "grass",
+      "displayNameViAscii": "Co",
+      "advantage": [
+        "water",
+        "ground",
+        "rock",
+        "light"
+      ],
+      "resistedBy": [
+        "fire",
+        "grass",
+        "poison",
+        "flying",
+        "bug",
+        "dragon",
+        "steel"
+      ],
+      "immuneDefenders": []
+    },
+    {
+      "id": "electric",
+      "displayNameViAscii": "Dien",
+      "advantage": [
+        "water",
+        "flying"
+      ],
+      "resistedBy": [
+        "electric",
+        "grass",
+        "dragon"
+      ],
+      "immuneDefenders": [
+        "ground"
+      ]
+    },
+    {
+      "id": "ice",
+      "displayNameViAscii": "Bang",
+      "advantage": [
+        "grass",
+        "ground",
+        "flying",
+        "dragon"
+      ],
+      "resistedBy": [
+        "fire",
+        "water",
+        "ice",
+        "steel"
+      ],
+      "immuneDefenders": []
+    },
+    {
+      "id": "fighting",
+      "displayNameViAscii": "Giac Dau",
+      "advantage": [
+        "normal",
+        "ice",
+        "rock",
+        "dark",
+        "steel"
+      ],
+      "resistedBy": [
+        "poison",
+        "flying",
+        "psychic",
+        "bug",
+        "fairy"
+      ],
+      "immuneDefenders": [
+        "ghost"
+      ]
+    },
+    {
+      "id": "poison",
+      "displayNameViAscii": "Doc",
+      "advantage": [
+        "grass",
+        "fairy"
+      ],
+      "resistedBy": [
+        "poison",
+        "ground",
+        "rock",
+        "ghost"
+      ],
+      "immuneDefenders": [
+        "steel"
+      ]
+    },
+    {
+      "id": "ground",
+      "displayNameViAscii": "Dat",
+      "advantage": [
+        "fire",
+        "electric",
+        "poison",
+        "rock",
+        "steel"
+      ],
+      "resistedBy": [
+        "grass",
+        "bug"
+      ],
+      "immuneDefenders": [
+        "flying"
+      ]
+    },
+    {
+      "id": "flying",
+      "displayNameViAscii": "Bay",
+      "advantage": [
+        "grass",
+        "fighting",
+        "bug"
+      ],
+      "resistedBy": [
+        "electric",
+        "rock",
+        "steel"
+      ],
+      "immuneDefenders": []
+    },
+    {
+      "id": "psychic",
+      "displayNameViAscii": "Tam Linh",
+      "advantage": [
+        "fighting",
+        "poison"
+      ],
+      "resistedBy": [
+        "psychic",
+        "steel"
+      ],
+      "immuneDefenders": [
+        "dark"
+      ]
+    },
+    {
+      "id": "bug",
+      "displayNameViAscii": "Bo",
+      "advantage": [
+        "grass",
+        "psychic",
+        "dark"
+      ],
+      "resistedBy": [
+        "fire",
+        "fighting",
+        "poison",
+        "flying",
+        "ghost",
+        "steel",
+        "fairy"
+      ],
+      "immuneDefenders": []
+    },
+    {
+      "id": "rock",
+      "displayNameViAscii": "Da",
+      "advantage": [
+        "fire",
+        "ice",
+        "flying",
+        "bug"
+      ],
+      "resistedBy": [
+        "fighting",
+        "ground",
+        "steel"
+      ],
+      "immuneDefenders": []
+    },
+    {
+      "id": "ghost",
+      "displayNameViAscii": "Ma",
+      "advantage": [
+        "psychic",
+        "ghost"
+      ],
+      "resistedBy": [
+        "dark",
+        "light"
+      ],
+      "immuneDefenders": [
+        "normal"
+      ]
+    },
+    {
+      "id": "dragon",
+      "displayNameViAscii": "Rong",
+      "advantage": [
+        "dragon"
+      ],
+      "resistedBy": [
+        "steel"
+      ],
+      "immuneDefenders": [
+        "fairy"
+      ]
+    },
+    {
+      "id": "dark",
+      "displayNameViAscii": "Bong Toi",
+      "advantage": [
+        "psychic",
+        "ghost",
+        "light"
+      ],
+      "resistedBy": [
+        "fighting",
+        "dark",
+        "fairy"
+      ],
+      "immuneDefenders": []
+    },
+    {
+      "id": "steel",
+      "displayNameViAscii": "Thep",
+      "advantage": [
+        "ice",
+        "rock",
+        "fairy",
+        "light"
+      ],
+      "resistedBy": [
+        "fire",
+        "water",
+        "electric",
+        "steel"
+      ],
+      "immuneDefenders": []
+    },
+    {
+      "id": "fairy",
+      "displayNameViAscii": "Tien",
+      "advantage": [
+        "fighting",
+        "dragon",
+        "dark"
+      ],
+      "resistedBy": [
+        "fire",
+        "poison",
+        "steel"
+      ],
+      "immuneDefenders": []
+    },
+    {
+      "id": "light",
+      "displayNameViAscii": "Anh Sang",
+      "advantage": [
+        "dark",
+        "ghost"
+      ],
+      "resistedBy": [
+        "grass",
+        "steel",
+        "light"
+      ],
+      "immuneDefenders": []
+    }
+  ],
+  "effectivenessPermille": {
+    "default": 1000,
+    "advantage": 1250,
+    "resistedBy": 800,
+    "immuneDefenders": 0
+  },
+  "statProfiles": {
+    "striker": {
+      "hp": 900,
+      "attack": 1200,
+      "defense": 800,
+      "speed": 1100
+    },
+    "support": {
+      "hp": 1100,
+      "attack": 800,
+      "defense": 1100,
+      "speed": 1000
+    },
+    "guardian": {
+      "hp": 1200,
+      "attack": 800,
+      "defense": 1200,
+      "speed": 800
+    },
+    "disruptor": {
+      "hp": 1000,
+      "attack": 1000,
+      "defense": 900,
+      "speed": 1100
+    },
+    "channeler": {
+      "hp": 900,
+      "attack": 1100,
+      "defense": 900,
+      "speed": 1100
+    }
+  },
+  "growthProfiles": [
+    {
+      "id": "shared-linear-35",
+      "minLevel": 1,
+      "maxLevel": 100,
+      "perLevelPermille": 35,
+      "rarityMultiplier": 1000
+    }
+  ],
+  "sharedSkills": [
+    {
+      "id": "strike",
+      "opcode": "damage",
+      "powerPermille": 1250,
+      "manaCost": 15,
+      "cooldown": 2,
+      "target": "enemy",
+      "stackCap": 1
+    },
+    {
+      "id": "guard",
+      "opcode": "shield",
+      "powerPermille": 1000,
+      "manaCost": 20,
+      "cooldown": 2,
+      "target": "self",
+      "stackCap": 1
+    },
+    {
+      "id": "mend",
+      "opcode": "heal",
+      "powerPermille": 1000,
+      "manaCost": 25,
+      "cooldown": 3,
+      "target": "self",
+      "stackCap": 1
+    },
+    {
+      "id": "poison",
+      "opcode": "dot",
+      "powerPermille": 200,
+      "manaCost": 25,
+      "cooldown": 3,
+      "target": "enemy",
+      "stackCap": 2,
+      "durationTurns": 3
+    },
+    {
+      "id": "cleanse",
+      "opcode": "cleanse",
+      "powerPermille": 1000,
+      "manaCost": 20,
+      "cooldown": 3,
+      "target": "self",
+      "stackCap": 1
+    },
+    {
+      "id": "empower",
+      "opcode": "attack_buff",
+      "powerPermille": 250,
+      "manaCost": 20,
+      "cooldown": 3,
+      "target": "self",
+      "stackCap": 1,
+      "durationTurns": 2
+    },
+    {
+      "id": "break_guard",
+      "opcode": "shield_damage",
+      "powerPermille": 1500,
+      "manaCost": 25,
+      "cooldown": 3,
+      "target": "enemy",
+      "stackCap": 1
+    },
+    {
+      "id": "slow",
+      "opcode": "initiative_debuff",
+      "powerPermille": 200,
+      "manaCost": 20,
+      "cooldown": 3,
+      "target": "enemy",
+      "stackCap": 1,
+      "durationTurns": 2
+    },
+    {
+      "id": "channel",
+      "opcode": "resource_mana",
+      "powerPermille": 200,
+      "manaCost": 0,
+      "cooldown": 3,
+      "target": "self",
+      "stackCap": 1
+    },
+    {
+      "id": "siphon",
+      "opcode": "damage_and_heal",
+      "powerPermille": 750,
+      "manaCost": 30,
+      "cooldown": 3,
+      "target": "enemy",
+      "stackCap": 1
+    }
+  ],
+  "cards": [
+    {
+      "id": "elemental-strike",
+      "skill": "strike",
+      "manaCost": 20,
+      "cooldown": 2
+    },
+    {
+      "id": "renewal",
+      "skill": "mend",
+      "manaCost": 25,
+      "cooldown": 3
+    }
+  ],
+  "combinations": [
+    {
+      "id": "warded-strike",
+      "components": [
+        "strike",
+        "guard"
+      ],
+      "manaCost": 40,
+      "comboCharges": 2,
+      "availability": "requires both allowed equipped components; no species-specific effect"
+    }
+  ],
+  "maps": [
+    {
+      "id": "meadow-hollows",
+      "name": "Meadow Hollows",
+      "primaryElement": "normal",
+      "recommendedLevel": [
+        1,
+        28
+      ],
+      "achievementPoints": 0,
+      "prerequisiteClear": null,
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "grass",
+        "poison"
+      ],
+      "bossSpeciesId": "normal-hearthmantle",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "cinder-terraces",
+      "name": "Cinder Terraces",
+      "primaryElement": "fire",
+      "recommendedLevel": [
+        5,
+        32
+      ],
+      "achievementPoints": 30,
+      "prerequisiteClear": "meadow-hollows:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "electric",
+        "ground"
+      ],
+      "bossSpeciesId": "fire-pyrecrown",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "tideglass-lagoon",
+      "name": "Tideglass Lagoon",
+      "primaryElement": "water",
+      "recommendedLevel": [
+        9,
+        36
+      ],
+      "achievementPoints": 60,
+      "prerequisiteClear": "cinder-terraces:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "ice",
+        "flying"
+      ],
+      "bossSpeciesId": "water-lagoonarch",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "canopy-weald",
+      "name": "Canopy Weald",
+      "primaryElement": "grass",
+      "recommendedLevel": [
+        13,
+        40
+      ],
+      "achievementPoints": 90,
+      "prerequisiteClear": "tideglass-lagoon:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "fighting",
+        "psychic"
+      ],
+      "bossSpeciesId": "grass-canopyr",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "stormcoil-fields",
+      "name": "Stormcoil Fields",
+      "primaryElement": "electric",
+      "recommendedLevel": [
+        17,
+        44
+      ],
+      "achievementPoints": 120,
+      "prerequisiteClear": "canopy-weald:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "poison",
+        "bug"
+      ],
+      "bossSpeciesId": "electric-stormdiadem",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "rimebell-basin",
+      "name": "Rimebell Basin",
+      "primaryElement": "ice",
+      "recommendedLevel": [
+        21,
+        48
+      ],
+      "achievementPoints": 150,
+      "prerequisiteClear": "stormcoil-fields:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "ground",
+        "rock"
+      ],
+      "bossSpeciesId": "ice-wintervault",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "echo-steppe",
+      "name": "Echo Steppe",
+      "primaryElement": "fighting",
+      "recommendedLevel": [
+        25,
+        52
+      ],
+      "achievementPoints": 180,
+      "prerequisiteClear": "rimebell-basin:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "flying",
+        "ghost"
+      ],
+      "bossSpeciesId": "fighting-echochamp",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "violet-mire",
+      "name": "Violet Mire",
+      "primaryElement": "poison",
+      "recommendedLevel": [
+        29,
+        56
+      ],
+      "achievementPoints": 210,
+      "prerequisiteClear": "echo-steppe:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "psychic",
+        "dragon"
+      ],
+      "bossSpeciesId": "poison-mirematron",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "ochre-labyrinth",
+      "name": "Ochre Labyrinth",
+      "primaryElement": "ground",
+      "recommendedLevel": [
+        33,
+        60
+      ],
+      "achievementPoints": 240,
+      "prerequisiteClear": "violet-mire:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "bug",
+        "dark"
+      ],
+      "bossSpeciesId": "ground-faultwarden",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "skyreed-isles",
+      "name": "Skyreed Isles",
+      "primaryElement": "flying",
+      "recommendedLevel": [
+        37,
+        64
+      ],
+      "achievementPoints": 270,
+      "prerequisiteClear": "ochre-labyrinth:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "rock",
+        "steel"
+      ],
+      "bossSpeciesId": "flying-skyregent",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "mirror-orchard",
+      "name": "Mirror Orchard",
+      "primaryElement": "psychic",
+      "recommendedLevel": [
+        41,
+        68
+      ],
+      "achievementPoints": 300,
+      "prerequisiteClear": "skyreed-isles:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "ghost",
+        "fairy"
+      ],
+      "bossSpeciesId": "psychic-oracleaf",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "amber-understory",
+      "name": "Amber Understory",
+      "primaryElement": "bug",
+      "recommendedLevel": [
+        45,
+        72
+      ],
+      "achievementPoints": 330,
+      "prerequisiteClear": "mirror-orchard:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "dragon",
+        "light"
+      ],
+      "bossSpeciesId": "bug-hivecantor",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "basalt-choir",
+      "name": "Basalt Choir",
+      "primaryElement": "rock",
+      "recommendedLevel": [
+        49,
+        76
+      ],
+      "achievementPoints": 360,
+      "prerequisiteClear": "amber-understory:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "dark",
+        "normal"
+      ],
+      "bossSpeciesId": "rock-monolithorn",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "lantern-necropolis",
+      "name": "Lantern Necropolis",
+      "primaryElement": "ghost",
+      "recommendedLevel": [
+        53,
+        80
+      ],
+      "achievementPoints": 390,
+      "prerequisiteClear": "basalt-choir:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "steel",
+        "fire"
+      ],
+      "bossSpeciesId": "ghost-lanternwake",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "wyrmglass-ridge",
+      "name": "Wyrmglass Ridge",
+      "primaryElement": "dragon",
+      "recommendedLevel": [
+        57,
+        84
+      ],
+      "achievementPoints": 420,
+      "prerequisiteClear": "lantern-necropolis:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "fairy",
+        "water"
+      ],
+      "bossSpeciesId": "dragon-wyrmglass",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "umbra-vale",
+      "name": "Umbra Vale",
+      "primaryElement": "dark",
+      "recommendedLevel": [
+        61,
+        88
+      ],
+      "achievementPoints": 450,
+      "prerequisiteClear": "wyrmglass-ridge:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "light",
+        "grass"
+      ],
+      "bossSpeciesId": "dark-eclipseward",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "alloy-foundry",
+      "name": "Alloy Foundry",
+      "primaryElement": "steel",
+      "recommendedLevel": [
+        65,
+        92
+      ],
+      "achievementPoints": 480,
+      "prerequisiteClear": "umbra-vale:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "normal",
+        "electric"
+      ],
+      "bossSpeciesId": "steel-foundryheart",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "chimegrove",
+      "name": "Chimegrove",
+      "primaryElement": "fairy",
+      "recommendedLevel": [
+        69,
+        96
+      ],
+      "achievementPoints": 510,
+      "prerequisiteClear": "alloy-foundry:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "fire",
+        "ice"
+      ],
+      "bossSpeciesId": "fairy-chimequeen",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    },
+    {
+      "id": "dawn-prism-sanctum",
+      "name": "Dawn Prism Sanctum",
+      "primaryElement": "light",
+      "recommendedLevel": [
+        73,
+        100
+      ],
+      "achievementPoints": 540,
+      "prerequisiteClear": "chimegrove:gate",
+      "access": "discoverable; combat entry requires current server policy and unlock receipts",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "secondaryElements": [
+        "water",
+        "fighting"
+      ],
+      "bossSpeciesId": "light-dawnarchon",
+      "firstClearAchievement": 30,
+      "repeatAchievementCapPerWeek": 10,
+      "captureRule": "three-unique-eligible-wins",
+      "weeklyReward": "separate versioned capped rotation; disabled"
+    }
+  ],
+  "species": [
+    {
+      "id": "normal-puffern",
+      "displayName": "Puffern",
+      "element": "normal",
+      "mapId": "meadow-hollows",
+      "subzone": "approach",
+      "encounterLevels": [
+        1,
+        8
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "puffern-base",
+      "silhouette": "seed-pouch glider with a striped sail",
+      "palette": [
+        "deep normal body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "normal-mosspad",
+      "displayName": "Mosspad",
+      "element": "normal",
+      "mapId": "meadow-hollows",
+      "subzone": "trail",
+      "encounterLevels": [
+        5,
+        12
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "mosspad-base",
+      "silhouette": "round reed-nest burrower",
+      "palette": [
+        "deep normal body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "normal-brindleap",
+      "displayName": "Brindleap",
+      "element": "normal",
+      "mapId": "meadow-hollows",
+      "subzone": "grove",
+      "encounterLevels": [
+        9,
+        16
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "brindleap-base",
+      "silhouette": "spring-legged felt grazer",
+      "palette": [
+        "deep normal body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "normal-reedruff",
+      "displayName": "Reedruff",
+      "element": "normal",
+      "mapId": "meadow-hollows",
+      "subzone": "ruins",
+      "encounterLevels": [
+        13,
+        20
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "reedruff-base",
+      "silhouette": "brush-tailed riverbank runner",
+      "palette": [
+        "deep normal body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "normal-tandemble",
+      "displayName": "Tandemble",
+      "element": "normal",
+      "mapId": "meadow-hollows",
+      "subzone": "summit",
+      "encounterLevels": [
+        17,
+        24
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "tandemble-base",
+      "silhouette": "paired-shell trail guardian",
+      "palette": [
+        "deep normal body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "normal-hearthmantle",
+      "displayName": "Hearthmantle",
+      "element": "normal",
+      "mapId": "meadow-hollows",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        21,
+        28
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "hearthmantle-base",
+      "silhouette": "broad antlerless cloak-backed guardian",
+      "palette": [
+        "deep normal body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fire-coalwhisk",
+      "displayName": "Coalwhisk",
+      "element": "fire",
+      "mapId": "cinder-terraces",
+      "subzone": "approach",
+      "encounterLevels": [
+        5,
+        12
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "coalwhisk-base",
+      "silhouette": "charcoal whiskered burrower",
+      "palette": [
+        "deep fire body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fire-emberloom",
+      "displayName": "Emberloom",
+      "element": "fire",
+      "mapId": "cinder-terraces",
+      "subzone": "trail",
+      "encounterLevels": [
+        9,
+        16
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "emberloom-base",
+      "silhouette": "glowing woven-wing mothlike spirit",
+      "palette": [
+        "deep fire body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fire-kilnback",
+      "displayName": "Kilnback",
+      "element": "fire",
+      "mapId": "cinder-terraces",
+      "subzone": "grove",
+      "encounterLevels": [
+        13,
+        20
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "kilnback-base",
+      "silhouette": "ceramic plated crawler",
+      "palette": [
+        "deep fire body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fire-flarequill",
+      "displayName": "Flarequill",
+      "element": "fire",
+      "mapId": "cinder-terraces",
+      "subzone": "ruins",
+      "encounterLevels": [
+        17,
+        24
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "flarequill-base",
+      "silhouette": "four-legged quill bearer",
+      "palette": [
+        "deep fire body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fire-scorchveil",
+      "displayName": "Scorchveil",
+      "element": "fire",
+      "mapId": "cinder-terraces",
+      "subzone": "summit",
+      "encounterLevels": [
+        21,
+        28
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "scorchveil-base",
+      "silhouette": "ribbon-maned heat mirage",
+      "palette": [
+        "deep fire body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fire-pyrecrown",
+      "displayName": "Pyrecrown",
+      "element": "fire",
+      "mapId": "cinder-terraces",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        25,
+        32
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "pyrecrown-base",
+      "silhouette": "six-horned volcanic sentinel",
+      "palette": [
+        "deep fire body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "water-dewskip",
+      "displayName": "Dewskip",
+      "element": "water",
+      "mapId": "tideglass-lagoon",
+      "subzone": "approach",
+      "encounterLevels": [
+        9,
+        16
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "dewskip-base",
+      "silhouette": "droplet-backed shore hopper",
+      "palette": [
+        "deep water body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "water-ripplefin",
+      "displayName": "Ripplefin",
+      "element": "water",
+      "mapId": "tideglass-lagoon",
+      "subzone": "trail",
+      "encounterLevels": [
+        13,
+        20
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "ripplefin-base",
+      "silhouette": "translucent fan-tailed swimmer",
+      "palette": [
+        "deep water body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "water-foamcurl",
+      "displayName": "Foamcurl",
+      "element": "water",
+      "mapId": "tideglass-lagoon",
+      "subzone": "grove",
+      "encounterLevels": [
+        17,
+        24
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "foamcurl-base",
+      "silhouette": "spiral foam-shelled drifter",
+      "palette": [
+        "deep water body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "water-tideweft",
+      "displayName": "Tideweft",
+      "element": "water",
+      "mapId": "tideglass-lagoon",
+      "subzone": "ruins",
+      "encounterLevels": [
+        21,
+        28
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "tideweft-base",
+      "silhouette": "braided kelp-fin stalker",
+      "palette": [
+        "deep water body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "water-abyssail",
+      "displayName": "Abyssail",
+      "element": "water",
+      "mapId": "tideglass-lagoon",
+      "subzone": "summit",
+      "encounterLevels": [
+        25,
+        32
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "abyssail-base",
+      "silhouette": "deep-blue sail-backed swimmer",
+      "palette": [
+        "deep water body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "water-lagoonarch",
+      "displayName": "Lagoonarch",
+      "element": "water",
+      "mapId": "tideglass-lagoon",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        29,
+        36
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "lagoonarch-base",
+      "silhouette": "arched coral antler lagoon sentinel",
+      "palette": [
+        "deep water body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "grass-budwisp",
+      "displayName": "Budwisp",
+      "element": "grass",
+      "mapId": "canopy-weald",
+      "subzone": "approach",
+      "encounterLevels": [
+        13,
+        20
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "budwisp-base",
+      "silhouette": "seed lantern walker",
+      "palette": [
+        "deep grass body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "grass-vinepurl",
+      "displayName": "Vinepurl",
+      "element": "grass",
+      "mapId": "canopy-weald",
+      "subzone": "trail",
+      "encounterLevels": [
+        17,
+        24
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "vinepurl-base",
+      "silhouette": "coiled vine woven sprinter",
+      "palette": [
+        "deep grass body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "grass-mossmane",
+      "displayName": "Mossmane",
+      "element": "grass",
+      "mapId": "canopy-weald",
+      "subzone": "grove",
+      "encounterLevels": [
+        21,
+        28
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "mossmane-base",
+      "silhouette": "moss fringe forest grazer",
+      "palette": [
+        "deep grass body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "grass-thornlace",
+      "displayName": "Thornlace",
+      "element": "grass",
+      "mapId": "canopy-weald",
+      "subzone": "ruins",
+      "encounterLevels": [
+        25,
+        32
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "thornlace-base",
+      "silhouette": "thorn-lace bark crawler",
+      "palette": [
+        "deep grass body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "grass-bloomvault",
+      "displayName": "Bloomvault",
+      "element": "grass",
+      "mapId": "canopy-weald",
+      "subzone": "summit",
+      "encounterLevels": [
+        29,
+        36
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "bloomvault-base",
+      "silhouette": "flower vault shelled guardian",
+      "palette": [
+        "deep grass body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "grass-canopyr",
+      "displayName": "Canopyr",
+      "element": "grass",
+      "mapId": "canopy-weald",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        33,
+        40
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "canopyr-base",
+      "silhouette": "branch-winged canopy sentinel",
+      "palette": [
+        "deep grass body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "electric-zipspool",
+      "displayName": "Zipspool",
+      "element": "electric",
+      "mapId": "stormcoil-fields",
+      "subzone": "approach",
+      "encounterLevels": [
+        17,
+        24
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "zipspool-base",
+      "silhouette": "spool-bodied spark runner",
+      "palette": [
+        "deep electric body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "electric-copperkip",
+      "displayName": "Copperkip",
+      "element": "electric",
+      "mapId": "stormcoil-fields",
+      "subzone": "trail",
+      "encounterLevels": [
+        21,
+        28
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "copperkip-base",
+      "silhouette": "copper frill marsh hopper",
+      "palette": [
+        "deep electric body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "electric-arcshell",
+      "displayName": "Arcshell",
+      "element": "electric",
+      "mapId": "stormcoil-fields",
+      "subzone": "grove",
+      "encounterLevels": [
+        25,
+        32
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "arcshell-base",
+      "silhouette": "capacitor shell crawler",
+      "palette": [
+        "deep electric body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "electric-pulsecrest",
+      "displayName": "Pulsecrest",
+      "element": "electric",
+      "mapId": "stormcoil-fields",
+      "subzone": "ruins",
+      "encounterLevels": [
+        29,
+        36
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "pulsecrest-base",
+      "silhouette": "pulse antenna crested flyer",
+      "palette": [
+        "deep electric body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "electric-thundrel",
+      "displayName": "Thundrel",
+      "element": "electric",
+      "mapId": "stormcoil-fields",
+      "subzone": "summit",
+      "encounterLevels": [
+        33,
+        40
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "thundrel-base",
+      "silhouette": "forked coil thunder runner",
+      "palette": [
+        "deep electric body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "electric-stormdiadem",
+      "displayName": "Stormdiadem",
+      "element": "electric",
+      "mapId": "stormcoil-fields",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        37,
+        44
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "stormdiadem-base",
+      "silhouette": "radial crown storm sentinel",
+      "palette": [
+        "deep electric body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ice-rimebud",
+      "displayName": "Rimebud",
+      "element": "ice",
+      "mapId": "rimebell-basin",
+      "subzone": "approach",
+      "encounterLevels": [
+        21,
+        28
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "rimebud-base",
+      "silhouette": "snow-bell bulb walker",
+      "palette": [
+        "deep ice body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ice-frostknit",
+      "displayName": "Frostknit",
+      "element": "ice",
+      "mapId": "rimebell-basin",
+      "subzone": "trail",
+      "encounterLevels": [
+        25,
+        32
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "frostknit-base",
+      "silhouette": "frost woven wool grazer",
+      "palette": [
+        "deep ice body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ice-glacetail",
+      "displayName": "Glacetail",
+      "element": "ice",
+      "mapId": "rimebell-basin",
+      "subzone": "grove",
+      "encounterLevels": [
+        29,
+        36
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "glacetail-base",
+      "silhouette": "faceted ice fin swimmer",
+      "palette": [
+        "deep ice body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ice-hailmorrow",
+      "displayName": "Hailmorrow",
+      "element": "ice",
+      "mapId": "rimebell-basin",
+      "subzone": "ruins",
+      "encounterLevels": [
+        33,
+        40
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "hailmorrow-base",
+      "silhouette": "floating hail ring guardian",
+      "palette": [
+        "deep ice body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ice-cryocrest",
+      "displayName": "Cryocrest",
+      "element": "ice",
+      "mapId": "rimebell-basin",
+      "subzone": "summit",
+      "encounterLevels": [
+        37,
+        44
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "cryocrest-base",
+      "silhouette": "crystal crest snow runner",
+      "palette": [
+        "deep ice body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ice-wintervault",
+      "displayName": "Wintervault",
+      "element": "ice",
+      "mapId": "rimebell-basin",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        41,
+        48
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "wintervault-base",
+      "silhouette": "vault-backed glacier sentinel",
+      "palette": [
+        "deep ice body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fighting-pawtempo",
+      "displayName": "Pawtempo",
+      "element": "fighting",
+      "mapId": "echo-steppe",
+      "subzone": "approach",
+      "encounterLevels": [
+        25,
+        32
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "pawtempo-base",
+      "silhouette": "drum-pawed steppe hopper",
+      "palette": [
+        "deep fighting body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fighting-knucklefern",
+      "displayName": "Knucklefern",
+      "element": "fighting",
+      "mapId": "echo-steppe",
+      "subzone": "trail",
+      "encounterLevels": [
+        29,
+        36
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "knucklefern-base",
+      "silhouette": "leaf cuff sparring sprinter",
+      "palette": [
+        "deep fighting body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fighting-bracetusk",
+      "displayName": "Bracetusk",
+      "element": "fighting",
+      "mapId": "echo-steppe",
+      "subzone": "grove",
+      "encounterLevels": [
+        33,
+        40
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "bracetusk-base",
+      "silhouette": "brace plated tuskless guardian",
+      "palette": [
+        "deep fighting body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fighting-rhythmant",
+      "displayName": "Rhythmant",
+      "element": "fighting",
+      "mapId": "echo-steppe",
+      "subzone": "ruins",
+      "encounterLevels": [
+        37,
+        44
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "rhythmant-base",
+      "silhouette": "four-arm rhythm chitin walker",
+      "palette": [
+        "deep fighting body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fighting-ironstance",
+      "displayName": "Ironstance",
+      "element": "fighting",
+      "mapId": "echo-steppe",
+      "subzone": "summit",
+      "encounterLevels": [
+        41,
+        48
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "ironstance-base",
+      "silhouette": "stone-braced balanced biped",
+      "palette": [
+        "deep fighting body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fighting-echochamp",
+      "displayName": "Echochamp",
+      "element": "fighting",
+      "mapId": "echo-steppe",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        45,
+        52
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "echochamp-base",
+      "silhouette": "echo membrane champion sentinel",
+      "palette": [
+        "deep fighting body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "poison-mirepip",
+      "displayName": "Mirepip",
+      "element": "poison",
+      "mapId": "violet-mire",
+      "subzone": "approach",
+      "encounterLevels": [
+        29,
+        36
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "mirepip-base",
+      "silhouette": "violet gland mire hopper",
+      "palette": [
+        "deep poison body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "poison-venomoss",
+      "displayName": "Venomoss",
+      "element": "poison",
+      "mapId": "violet-mire",
+      "subzone": "trail",
+      "encounterLevels": [
+        33,
+        40
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "venomoss-base",
+      "silhouette": "moss bottle-backed crawler",
+      "palette": [
+        "deep poison body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "poison-sporeveil",
+      "displayName": "Sporeveil",
+      "element": "poison",
+      "mapId": "violet-mire",
+      "subzone": "grove",
+      "encounterLevels": [
+        37,
+        44
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "sporeveil-base",
+      "silhouette": "spore veil winged drifter",
+      "palette": [
+        "deep poison body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "poison-brinebarb",
+      "displayName": "Brinebarb",
+      "element": "poison",
+      "mapId": "violet-mire",
+      "subzone": "ruins",
+      "encounterLevels": [
+        41,
+        48
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "brinebarb-base",
+      "silhouette": "saline barb reed stalker",
+      "palette": [
+        "deep poison body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "poison-toxilume",
+      "displayName": "Toxilume",
+      "element": "poison",
+      "mapId": "violet-mire",
+      "subzone": "summit",
+      "encounterLevels": [
+        45,
+        52
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "toxilume-base",
+      "silhouette": "glowing toxin lattice drifter",
+      "palette": [
+        "deep poison body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "poison-mirematron",
+      "displayName": "Mirematron",
+      "element": "poison",
+      "mapId": "violet-mire",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        49,
+        56
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "mirematron-base",
+      "silhouette": "wide frill mire sentinel",
+      "palette": [
+        "deep poison body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ground-clodkin",
+      "displayName": "Clodkin",
+      "element": "ground",
+      "mapId": "ochre-labyrinth",
+      "subzone": "approach",
+      "encounterLevels": [
+        33,
+        40
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "clodkin-base",
+      "silhouette": "clay pebble burrower",
+      "palette": [
+        "deep ground body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ground-burrowick",
+      "displayName": "Burrowick",
+      "element": "ground",
+      "mapId": "ochre-labyrinth",
+      "subzone": "trail",
+      "encounterLevels": [
+        37,
+        44
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "burrowick-base",
+      "silhouette": "candle-eared tunnel runner",
+      "palette": [
+        "deep ground body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ground-dunebraid",
+      "displayName": "Dunebraid",
+      "element": "ground",
+      "mapId": "ochre-labyrinth",
+      "subzone": "grove",
+      "encounterLevels": [
+        41,
+        48
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "dunebraid-base",
+      "silhouette": "braided dune crawler",
+      "palette": [
+        "deep ground body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ground-siltmaw",
+      "displayName": "Siltmaw",
+      "element": "ground",
+      "mapId": "ochre-labyrinth",
+      "subzone": "ruins",
+      "encounterLevels": [
+        45,
+        52
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "siltmaw-base",
+      "silhouette": "silt funnel cave grazer",
+      "palette": [
+        "deep ground body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ground-terracrest",
+      "displayName": "Terracrest",
+      "element": "ground",
+      "mapId": "ochre-labyrinth",
+      "subzone": "summit",
+      "encounterLevels": [
+        49,
+        56
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "terracrest-base",
+      "silhouette": "terrace crest earth guardian",
+      "palette": [
+        "deep ground body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ground-faultwarden",
+      "displayName": "Faultwarden",
+      "element": "ground",
+      "mapId": "ochre-labyrinth",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        53,
+        60
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "faultwarden-base",
+      "silhouette": "faultline slab-backed sentinel",
+      "palette": [
+        "deep ground body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "flying-breezlet",
+      "displayName": "Breezlet",
+      "element": "flying",
+      "mapId": "skyreed-isles",
+      "subzone": "approach",
+      "encounterLevels": [
+        37,
+        44
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "breezlet-base",
+      "silhouette": "reed sail floating hopper",
+      "palette": [
+        "deep flying body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "flying-kitespun",
+      "displayName": "Kitespun",
+      "element": "flying",
+      "mapId": "skyreed-isles",
+      "subzone": "trail",
+      "encounterLevels": [
+        41,
+        48
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "kitespun-base",
+      "silhouette": "woven kite-wing glider",
+      "palette": [
+        "deep flying body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "flying-gusthorn",
+      "displayName": "Gusthorn",
+      "element": "flying",
+      "mapId": "skyreed-isles",
+      "subzone": "grove",
+      "encounterLevels": [
+        45,
+        52
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "gusthorn-base",
+      "silhouette": "hollow horn updraft runner",
+      "palette": [
+        "deep flying body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "flying-cloudlace",
+      "displayName": "Cloudlace",
+      "element": "flying",
+      "mapId": "skyreed-isles",
+      "subzone": "ruins",
+      "encounterLevels": [
+        49,
+        56
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "cloudlace-base",
+      "silhouette": "lace-wing cloud drifter",
+      "palette": [
+        "deep flying body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "flying-tempestail",
+      "displayName": "Tempestail",
+      "element": "flying",
+      "mapId": "skyreed-isles",
+      "subzone": "summit",
+      "encounterLevels": [
+        53,
+        60
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "tempestail-base",
+      "silhouette": "split-sail storm flyer",
+      "palette": [
+        "deep flying body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "flying-skyregent",
+      "displayName": "Skyregent",
+      "element": "flying",
+      "mapId": "skyreed-isles",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        57,
+        64
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "skyregent-base",
+      "silhouette": "layered featherless sky sentinel",
+      "palette": [
+        "deep flying body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "psychic-glimpseed",
+      "displayName": "Glimpseed",
+      "element": "psychic",
+      "mapId": "mirror-orchard",
+      "subzone": "approach",
+      "encounterLevels": [
+        41,
+        48
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "glimpseed-base",
+      "silhouette": "floating mirrored seed pod",
+      "palette": [
+        "deep psychic body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "psychic-thoughtuft",
+      "displayName": "Thoughtuft",
+      "element": "psychic",
+      "mapId": "mirror-orchard",
+      "subzone": "trail",
+      "encounterLevels": [
+        45,
+        52
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "thoughtuft-base",
+      "silhouette": "tufted lens-eyed drifter",
+      "palette": [
+        "deep psychic body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "psychic-mirribbon",
+      "displayName": "Mirribbon",
+      "element": "psychic",
+      "mapId": "mirror-orchard",
+      "subzone": "grove",
+      "encounterLevels": [
+        49,
+        56
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "mirribbon-base",
+      "silhouette": "loop ribbon mirrored grazer",
+      "palette": [
+        "deep psychic body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "psychic-astraloom",
+      "displayName": "Astraloom",
+      "element": "psychic",
+      "mapId": "mirror-orchard",
+      "subzone": "ruins",
+      "encounterLevels": [
+        53,
+        60
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "astraloom-base",
+      "silhouette": "star woven antenna walker",
+      "palette": [
+        "deep psychic body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "psychic-mindspire",
+      "displayName": "Mindspire",
+      "element": "psychic",
+      "mapId": "mirror-orchard",
+      "subzone": "summit",
+      "encounterLevels": [
+        57,
+        64
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "mindspire-base",
+      "silhouette": "stacked prism crest guardian",
+      "palette": [
+        "deep psychic body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "psychic-oracleaf",
+      "displayName": "Oracleaf",
+      "element": "psychic",
+      "mapId": "mirror-orchard",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        61,
+        68
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "oracleaf-base",
+      "silhouette": "leaf-mirror oracle sentinel",
+      "palette": [
+        "deep psychic body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "bug-threadpip",
+      "displayName": "Threadpip",
+      "element": "bug",
+      "mapId": "amber-understory",
+      "subzone": "approach",
+      "encounterLevels": [
+        45,
+        52
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "threadpip-base",
+      "silhouette": "thread spool six-legged walker",
+      "palette": [
+        "deep bug body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "bug-waxwinglet",
+      "displayName": "Waxwinglet",
+      "element": "bug",
+      "mapId": "amber-understory",
+      "subzone": "trail",
+      "encounterLevels": [
+        49,
+        56
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "waxwinglet-base",
+      "silhouette": "wax pane winged gatherer",
+      "palette": [
+        "deep bug body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "bug-carapurl",
+      "displayName": "Carapurl",
+      "element": "bug",
+      "mapId": "amber-understory",
+      "subzone": "grove",
+      "encounterLevels": [
+        53,
+        60
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "carapurl-base",
+      "silhouette": "pearl carapace tunnel crawler",
+      "palette": [
+        "deep bug body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "bug-silkforge",
+      "displayName": "Silkforge",
+      "element": "bug",
+      "mapId": "amber-understory",
+      "subzone": "ruins",
+      "encounterLevels": [
+        57,
+        64
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "silkforge-base",
+      "silhouette": "woven silk anvil guardian",
+      "palette": [
+        "deep bug body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "bug-amberclad",
+      "displayName": "Amberclad",
+      "element": "bug",
+      "mapId": "amber-understory",
+      "subzone": "summit",
+      "encounterLevels": [
+        61,
+        68
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "amberclad-base",
+      "silhouette": "amber armor wingless stalker",
+      "palette": [
+        "deep bug body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "bug-hivecantor",
+      "displayName": "Hivecantor",
+      "element": "bug",
+      "mapId": "amber-understory",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        65,
+        72
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "hivecantor-base",
+      "silhouette": "resonant comb crown sentinel",
+      "palette": [
+        "deep bug body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "rock-peblune",
+      "displayName": "Peblune",
+      "element": "rock",
+      "mapId": "basalt-choir",
+      "subzone": "approach",
+      "encounterLevels": [
+        49,
+        56
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "peblune-base",
+      "silhouette": "crescent pebble walker",
+      "palette": [
+        "deep rock body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "rock-shalebell",
+      "displayName": "Shalebell",
+      "element": "rock",
+      "mapId": "basalt-choir",
+      "subzone": "trail",
+      "encounterLevels": [
+        53,
+        60
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "shalebell-base",
+      "silhouette": "hollow shale bell crawler",
+      "palette": [
+        "deep rock body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "rock-flintspur",
+      "displayName": "Flintspur",
+      "element": "rock",
+      "mapId": "basalt-choir",
+      "subzone": "grove",
+      "encounterLevels": [
+        57,
+        64
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "flintspur-base",
+      "silhouette": "flint spur cliff runner",
+      "palette": [
+        "deep rock body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "rock-cragweft",
+      "displayName": "Cragweft",
+      "element": "rock",
+      "mapId": "basalt-choir",
+      "subzone": "ruins",
+      "encounterLevels": [
+        61,
+        68
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "cragweft-base",
+      "silhouette": "woven stone plate guardian",
+      "palette": [
+        "deep rock body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "rock-geodrum",
+      "displayName": "Geodrum",
+      "element": "rock",
+      "mapId": "basalt-choir",
+      "subzone": "summit",
+      "encounterLevels": [
+        65,
+        72
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "geodrum-base",
+      "silhouette": "geode membrane drum grazer",
+      "palette": [
+        "deep rock body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "rock-monolithorn",
+      "displayName": "Monolithorn",
+      "element": "rock",
+      "mapId": "basalt-choir",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        69,
+        76
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "monolithorn-base",
+      "silhouette": "basalt arch horn sentinel",
+      "palette": [
+        "deep rock body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ghost-wickrift",
+      "displayName": "Wickrift",
+      "element": "ghost",
+      "mapId": "lantern-necropolis",
+      "subzone": "approach",
+      "encounterLevels": [
+        53,
+        60
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "wickrift-base",
+      "silhouette": "split wick lantern drifter",
+      "palette": [
+        "deep ghost body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ghost-shroudlet",
+      "displayName": "Shroudlet",
+      "element": "ghost",
+      "mapId": "lantern-necropolis",
+      "subzone": "trail",
+      "encounterLevels": [
+        57,
+        64
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "shroudlet-base",
+      "silhouette": "folded shroud cloth walker",
+      "palette": [
+        "deep ghost body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ghost-bellshade",
+      "displayName": "Bellshade",
+      "element": "ghost",
+      "mapId": "lantern-necropolis",
+      "subzone": "grove",
+      "encounterLevels": [
+        61,
+        68
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "bellshade-base",
+      "silhouette": "hollow shadow bell guardian",
+      "palette": [
+        "deep ghost body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ghost-echowisp",
+      "displayName": "Echowisp",
+      "element": "ghost",
+      "mapId": "lantern-necropolis",
+      "subzone": "ruins",
+      "encounterLevels": [
+        65,
+        72
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "echowisp-base",
+      "silhouette": "echo trail floating ribbon",
+      "palette": [
+        "deep ghost body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ghost-veilrelic",
+      "displayName": "Veilrelic",
+      "element": "ghost",
+      "mapId": "lantern-necropolis",
+      "subzone": "summit",
+      "encounterLevels": [
+        69,
+        76
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "veilrelic-base",
+      "silhouette": "relic mask veil grazer",
+      "palette": [
+        "deep ghost body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "ghost-lanternwake",
+      "displayName": "Lanternwake",
+      "element": "ghost",
+      "mapId": "lantern-necropolis",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        73,
+        80
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "lanternwake-base",
+      "silhouette": "lantern arch spectral sentinel",
+      "palette": [
+        "deep ghost body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "dragon-scalebud",
+      "displayName": "Scalebud",
+      "element": "dragon",
+      "mapId": "wyrmglass-ridge",
+      "subzone": "approach",
+      "encounterLevels": [
+        57,
+        64
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "scalebud-base",
+      "silhouette": "scale bud horned crawler",
+      "palette": [
+        "deep dragon body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "dragon-coilcrest",
+      "displayName": "Coilcrest",
+      "element": "dragon",
+      "mapId": "wyrmglass-ridge",
+      "subzone": "trail",
+      "encounterLevels": [
+        61,
+        68
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "coilcrest-base",
+      "silhouette": "spiral crest long-bodied runner",
+      "palette": [
+        "deep dragon body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "dragon-spirewing",
+      "displayName": "Spirewing",
+      "element": "dragon",
+      "mapId": "wyrmglass-ridge",
+      "subzone": "grove",
+      "encounterLevels": [
+        65,
+        72
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "spirewing-base",
+      "silhouette": "glass rib winged climber",
+      "palette": [
+        "deep dragon body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "dragon-runescale",
+      "displayName": "Runescale",
+      "element": "dragon",
+      "mapId": "wyrmglass-ridge",
+      "subzone": "ruins",
+      "encounterLevels": [
+        69,
+        76
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "runescale-base",
+      "silhouette": "rune lattice scaled guardian",
+      "palette": [
+        "deep dragon body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "dragon-crestwyrm",
+      "displayName": "Crestwyrm",
+      "element": "dragon",
+      "mapId": "wyrmglass-ridge",
+      "subzone": "summit",
+      "encounterLevels": [
+        73,
+        80
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "crestwyrm-base",
+      "silhouette": "crown-fin aerial serpent",
+      "palette": [
+        "deep dragon body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "dragon-wyrmglass",
+      "displayName": "Wyrmglass",
+      "element": "dragon",
+      "mapId": "wyrmglass-ridge",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        77,
+        84
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "wyrmglass-base",
+      "silhouette": "six-finned glass ridge sentinel",
+      "palette": [
+        "deep dragon body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "dark-dimble",
+      "displayName": "Dimble",
+      "element": "dark",
+      "mapId": "umbra-vale",
+      "subzone": "approach",
+      "encounterLevels": [
+        61,
+        68
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "dimble-base",
+      "silhouette": "soft shadow seed drifter",
+      "palette": [
+        "deep dark body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "dark-dusktuft",
+      "displayName": "Dusktuft",
+      "element": "dark",
+      "mapId": "umbra-vale",
+      "subzone": "trail",
+      "encounterLevels": [
+        65,
+        72
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "dusktuft-base",
+      "silhouette": "dusk tuft silent grazer",
+      "palette": [
+        "deep dark body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "dark-sablecoil",
+      "displayName": "Sablecoil",
+      "element": "dark",
+      "mapId": "umbra-vale",
+      "subzone": "grove",
+      "encounterLevels": [
+        69,
+        76
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "sablecoil-base",
+      "silhouette": "black ribbon coil stalker",
+      "palette": [
+        "deep dark body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "dark-nightweft",
+      "displayName": "Nightweft",
+      "element": "dark",
+      "mapId": "umbra-vale",
+      "subzone": "ruins",
+      "encounterLevels": [
+        73,
+        80
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "nightweft-base",
+      "silhouette": "woven night membrane flyer",
+      "palette": [
+        "deep dark body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "dark-umbramane",
+      "displayName": "Umbramane",
+      "element": "dark",
+      "mapId": "umbra-vale",
+      "subzone": "summit",
+      "encounterLevels": [
+        77,
+        84
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "umbramane-base",
+      "silhouette": "ink mane four-legged guardian",
+      "palette": [
+        "deep dark body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "dark-eclipseward",
+      "displayName": "Eclipseward",
+      "element": "dark",
+      "mapId": "umbra-vale",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        81,
+        88
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "eclipseward-base",
+      "silhouette": "eclipse ring valley sentinel",
+      "palette": [
+        "deep dark body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "steel-rivetip",
+      "displayName": "Rivetip",
+      "element": "steel",
+      "mapId": "alloy-foundry",
+      "subzone": "approach",
+      "encounterLevels": [
+        65,
+        72
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "rivetip-base",
+      "silhouette": "rivet seed metal walker",
+      "palette": [
+        "deep steel body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "steel-tinmantle",
+      "displayName": "Tinmantle",
+      "element": "steel",
+      "mapId": "alloy-foundry",
+      "subzone": "trail",
+      "encounterLevels": [
+        69,
+        76
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "tinmantle-base",
+      "silhouette": "folded tin cloak crawler",
+      "palette": [
+        "deep steel body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "steel-cogcrest",
+      "displayName": "Cogcrest",
+      "element": "steel",
+      "mapId": "alloy-foundry",
+      "subzone": "grove",
+      "encounterLevels": [
+        73,
+        80
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "cogcrest-base",
+      "silhouette": "interlocked crest gear grazer",
+      "palette": [
+        "deep steel body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "steel-chromeweft",
+      "displayName": "Chromeweft",
+      "element": "steel",
+      "mapId": "alloy-foundry",
+      "subzone": "ruins",
+      "encounterLevels": [
+        77,
+        84
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "chromeweft-base",
+      "silhouette": "woven chrome winged glider",
+      "palette": [
+        "deep steel body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "steel-alloyhorn",
+      "displayName": "Alloyhorn",
+      "element": "steel",
+      "mapId": "alloy-foundry",
+      "subzone": "summit",
+      "encounterLevels": [
+        81,
+        88
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "alloyhorn-base",
+      "silhouette": "layered alloy horn guardian",
+      "palette": [
+        "deep steel body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "steel-foundryheart",
+      "displayName": "Foundryheart",
+      "element": "steel",
+      "mapId": "alloy-foundry",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        85,
+        92
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "foundryheart-base",
+      "silhouette": "furnace core metal sentinel",
+      "palette": [
+        "deep steel body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fairy-chimeling",
+      "displayName": "Chimeling",
+      "element": "fairy",
+      "mapId": "chimegrove",
+      "subzone": "approach",
+      "encounterLevels": [
+        69,
+        76
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "chimeling-base",
+      "silhouette": "tiny chime petal walker",
+      "palette": [
+        "deep fairy body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fairy-petalbell",
+      "displayName": "Petalbell",
+      "element": "fairy",
+      "mapId": "chimegrove",
+      "subzone": "trail",
+      "encounterLevels": [
+        73,
+        80
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "petalbell-base",
+      "silhouette": "bell petal winged drifter",
+      "palette": [
+        "deep fairy body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fairy-glimmerlace",
+      "displayName": "Glimmerlace",
+      "element": "fairy",
+      "mapId": "chimegrove",
+      "subzone": "grove",
+      "encounterLevels": [
+        77,
+        84
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "glimmerlace-base",
+      "silhouette": "luminous lace meadow grazer",
+      "palette": [
+        "deep fairy body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fairy-wishweft",
+      "displayName": "Wishweft",
+      "element": "fairy",
+      "mapId": "chimegrove",
+      "subzone": "ruins",
+      "encounterLevels": [
+        81,
+        88
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "wishweft-base",
+      "silhouette": "woven wish ribbon guardian",
+      "palette": [
+        "deep fairy body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fairy-grovehalo",
+      "displayName": "Grovehalo",
+      "element": "fairy",
+      "mapId": "chimegrove",
+      "subzone": "summit",
+      "encounterLevels": [
+        85,
+        92
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "grovehalo-base",
+      "silhouette": "grove ring soft antler flyer",
+      "palette": [
+        "deep fairy body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "fairy-chimequeen",
+      "displayName": "Chimequeen",
+      "element": "fairy",
+      "mapId": "chimegrove",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        89,
+        96
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "chimequeen-base",
+      "silhouette": "branch-chime crowned sentinel",
+      "palette": [
+        "deep fairy body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "light-gleamlet",
+      "displayName": "Gleamlet",
+      "element": "light",
+      "mapId": "dawn-prism-sanctum",
+      "subzone": "approach",
+      "encounterLevels": [
+        73,
+        80
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "striker",
+      "statProfile": "striker",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "strike",
+        "break_guard"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "gleamlet-base",
+      "silhouette": "ray seed lantern walker",
+      "palette": [
+        "deep light body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "light-dawnpurl",
+      "displayName": "Dawnpurl",
+      "element": "light",
+      "mapId": "dawn-prism-sanctum",
+      "subzone": "trail",
+      "encounterLevels": [
+        77,
+        84
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "common",
+      "role": "support",
+      "statProfile": "support",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "mend",
+        "cleanse"
+      ],
+      "cards": [
+        "elemental-strike"
+      ],
+      "comboId": null,
+      "formId": "dawnpurl-base",
+      "silhouette": "braided dawn ribbon grazer",
+      "palette": [
+        "deep light body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "light-raymantle",
+      "displayName": "Raymantle",
+      "element": "light",
+      "mapId": "dawn-prism-sanctum",
+      "subzone": "grove",
+      "encounterLevels": [
+        81,
+        88
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "uncommon",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "raymantle-base",
+      "silhouette": "light pane mantle guardian",
+      "palette": [
+        "deep light body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "light-solweft",
+      "displayName": "Solweft",
+      "element": "light",
+      "mapId": "dawn-prism-sanctum",
+      "subzone": "ruins",
+      "encounterLevels": [
+        85,
+        92
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "rare",
+      "role": "disruptor",
+      "statProfile": "disruptor",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "poison",
+        "slow"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "solweft-base",
+      "silhouette": "solar woven winged drifter",
+      "palette": [
+        "deep light body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "light-prismhalo",
+      "displayName": "Prismhalo",
+      "element": "light",
+      "mapId": "dawn-prism-sanctum",
+      "subzone": "summit",
+      "encounterLevels": [
+        89,
+        96
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "epic",
+      "role": "channeler",
+      "statProfile": "channeler",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "channel",
+        "siphon"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": null,
+      "formId": "prismhalo-base",
+      "silhouette": "split prism halo climber",
+      "palette": [
+        "deep light body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "map gate and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": false,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    },
+    {
+      "id": "light-dawnarchon",
+      "displayName": "Dawnarchon",
+      "element": "light",
+      "mapId": "dawn-prism-sanctum",
+      "subzone": "sanctum",
+      "encounterLevels": [
+        93,
+        100
+      ],
+      "ownedLevelCap": 100,
+      "rarity": "legendary",
+      "role": "guardian",
+      "statProfile": "guardian",
+      "growthProfile": "shared-linear-35",
+      "skillLoadout": [
+        "guard",
+        "strike"
+      ],
+      "cards": [
+        "elemental-strike",
+        "renewal"
+      ],
+      "comboId": "warded-strike",
+      "formId": "dawnarchon-base",
+      "silhouette": "dawn arch crystalline sentinel",
+      "palette": [
+        "deep light body",
+        "contrasting neutral detail",
+        "readable emissive accent"
+      ],
+      "capture": {
+        "requiredUniqueWins": 3,
+        "reset": "never",
+        "eligibility": "post-campaign sanctuary clear and current policy",
+        "duplicateReceiptProgress": 0
+      },
+      "boss": true,
+      "acquisition": "PvE capture; no paid stats",
+      "evolution": "optional visual promotion at levels 30 and 60; same shared stat budget",
+      "availability": "DRAFT_ONLY",
+      "gameplayStatus": "NOT_VALIDATED",
+      "assetStatus": "MISSING",
+      "productionReady": false
+    }
+  ],
+  "priorityVisualSet": [
+    "fire-emberloom",
+    "water-ripplefin",
+    "ground-terracrest",
+    "flying-cloudlace",
+    "dark-umbramane",
+    "light-prismhalo"
+  ],
+  "priorityBoss": "light-dawnarchon",
+  "validation": "All coefficients, skills, maps and element edges require executable validation and human balance playtests before publication",
+  "upgrade": {
+    "maxTier": 10,
+    "successPermille": [
+      1000,
+      900,
+      800,
+      700,
+      600,
+      500,
+      400,
+      300,
+      250,
+      200
+    ],
+    "failure": "consume advertised materials once; retain current tier, level and ownership",
+    "pity": false,
+    "paidAdvantage": false
+  }
+}
