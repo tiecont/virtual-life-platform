@@ -5345,13 +5345,18 @@
         "designReference": "Owner supplied /home/tiecont/Downloads/NOYUNE_Prelaunch_AdminWeb_Handoff after initial audit. Read product copy, technical architecture, backlog, QA gates and both style-only previews. Aetheria: Soulbound supersedes the handoff name. Cropped concept media is served only in development, with source hash/provenance; no production-media or legal clearance inferred."
       },
       "verification": {
-        "sourceRevision": "a05a3f6ade54d68556dd9fabcd4382082e905dcf",
+        "sourceRevision": "ec8792a9f75fbf0f7280dd589b85f931f9d00198",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "commands": [
           {
             "command": "pnpm exec vitest run --project unit apps/admin-web",
             "exitCode": 0,
-            "result": "21 tests PASS, including public draft projection against merged V3.1, production gating and existing BFF unit checks"
+            "result": "22 tests PASS, including canonical skill cost/unlock and Signature/fusion cost separation"
+          },
+          {
+            "command": "pnpm exec eslint apps/admin-web",
+            "exitCode": 0,
+            "result": "PASS"
           },
           {
             "command": "node --test tests/governance/admin-boundary.test.mjs tests/governance/task-plan.test.mjs tests/governance/pet-v31.test.mjs",
@@ -5359,19 +5364,14 @@
             "result": "8 tests PASS"
           },
           {
-            "command": "pnpm exec eslint apps/admin-web tests/e2e/admin.spec.ts scripts/admin-boundary.mjs tests/governance/admin-boundary.test.mjs",
+            "command": "pnpm --filter @virtual-city/admin-web build",
             "exitCode": 0,
             "result": "PASS"
           },
           {
-            "command": "pnpm --filter @virtual-city/admin-web build",
+            "command": "BROWSER_REPORT_SCOPE=ci/local/aetheria-ec8792a node scripts/run-browser-tests.mjs tests/e2e/admin.spec.ts",
             "exitCode": 0,
-            "result": "PASS at a05a3f6"
-          },
-          {
-            "command": "node scripts/run-ci-browser.mjs admin",
-            "exitCode": 0,
-            "result": "All four specs PASS on desktop/mobile at a05a3f6: admin, privacy, calendar, runtime. Owned databases cleaned by harness."
+            "result": "16 desktop/mobile tests PASS: VI/EN routes at320px, filters, operator authorization/MFA regressions, six WebGL concepts and keyboard/reduced-motion/context-loss controls. Desktop homepage/Marivell and mobile Aurelune screenshots inspected."
           }
         ],
         "priorRevisionChecks": {
@@ -5394,9 +5394,39 @@
             }
           ]
         },
-        "pending": "Full check started at3499eb9 crossed main integration and terminated exit143 during integration; owned worker and database cleaned. Not full or exact-final-source acceptance. Subsequent localized skill-detail cards require focused checks and final committed-source hosted PR CI before merge. No green final CI or release claim.",
+        "pending": "Full pnpm check started at3499eb9 crossed main integration and terminated exit143 during integration; owned worker and database cleaned. Not a complete final-source check. Hosted Quality/Rust CI pending for ec8792a; this verification-only follow-up also needs green exact-revision PR CI before merge. No production launch authorized.",
         "limitations": "Six original geometric browser motion concepts only: no production Unity models, GLB/rigged clips or complete Limited cinematics. Gacha informational; no real pulls/purchases/odds promise. Campaign/API/mail work remains VL-164/166. Public source catalog state remains draft.",
-        "evidenceRoot": "artifacts/aetheria-prelaunch"
+        "evidenceRoot": "artifacts/aetheria-prelaunch",
+        "precedingProductChecks": {
+          "sourceRevision": "a05a3f6ade54d68556dd9fabcd4382082e905dcf",
+          "commands": [
+            {
+              "command": "pnpm exec vitest run --project unit apps/admin-web",
+              "exitCode": 0,
+              "result": "21 tests PASS, including public draft projection against merged V3.1, production gating and existing BFF unit checks"
+            },
+            {
+              "command": "node --test tests/governance/admin-boundary.test.mjs tests/governance/task-plan.test.mjs tests/governance/pet-v31.test.mjs",
+              "exitCode": 0,
+              "result": "8 tests PASS"
+            },
+            {
+              "command": "pnpm exec eslint apps/admin-web tests/e2e/admin.spec.ts scripts/admin-boundary.mjs tests/governance/admin-boundary.test.mjs",
+              "exitCode": 0,
+              "result": "PASS"
+            },
+            {
+              "command": "pnpm --filter @virtual-city/admin-web build",
+              "exitCode": 0,
+              "result": "PASS at a05a3f6"
+            },
+            {
+              "command": "node scripts/run-ci-browser.mjs admin",
+              "exitCode": 0,
+              "result": "All four specs PASS on desktop/mobile at a05a3f6: admin, privacy, calendar, runtime. Owned databases cleaned by harness."
+            }
+          ]
+        }
       },
       "remaining": "Exact-final-source CI and merge verification; production remains default-off."
     },
@@ -5436,13 +5466,18 @@
         "Legal/brand and official media rights approval apply to publication, not unrelated source work"
       ],
       "verification": {
-        "sourceRevision": "a05a3f6ade54d68556dd9fabcd4382082e905dcf",
+        "sourceRevision": "ec8792a9f75fbf0f7280dd589b85f931f9d00198",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "commands": [
           {
             "command": "pnpm exec vitest run --project unit apps/admin-web",
             "exitCode": 0,
-            "result": "21 tests PASS, including public draft projection against merged V3.1, production gating and existing BFF unit checks"
+            "result": "22 tests PASS, including canonical skill cost/unlock and Signature/fusion cost separation"
+          },
+          {
+            "command": "pnpm exec eslint apps/admin-web",
+            "exitCode": 0,
+            "result": "PASS"
           },
           {
             "command": "node --test tests/governance/admin-boundary.test.mjs tests/governance/task-plan.test.mjs tests/governance/pet-v31.test.mjs",
@@ -5450,19 +5485,14 @@
             "result": "8 tests PASS"
           },
           {
-            "command": "pnpm exec eslint apps/admin-web tests/e2e/admin.spec.ts scripts/admin-boundary.mjs tests/governance/admin-boundary.test.mjs",
+            "command": "pnpm --filter @virtual-city/admin-web build",
             "exitCode": 0,
             "result": "PASS"
           },
           {
-            "command": "pnpm --filter @virtual-city/admin-web build",
+            "command": "BROWSER_REPORT_SCOPE=ci/local/aetheria-ec8792a node scripts/run-browser-tests.mjs tests/e2e/admin.spec.ts",
             "exitCode": 0,
-            "result": "PASS at a05a3f6"
-          },
-          {
-            "command": "node scripts/run-ci-browser.mjs admin",
-            "exitCode": 0,
-            "result": "All four specs PASS on desktop/mobile at a05a3f6: admin, privacy, calendar, runtime. Owned databases cleaned by harness."
+            "result": "16 desktop/mobile tests PASS: VI/EN routes at320px, filters, operator authorization/MFA regressions, six WebGL concepts and keyboard/reduced-motion/context-loss controls. Desktop homepage/Marivell and mobile Aurelune screenshots inspected."
           }
         ],
         "priorRevisionChecks": {
@@ -5485,9 +5515,39 @@
             }
           ]
         },
-        "pending": "Full check started at3499eb9 crossed main integration and terminated exit143 during integration; owned worker and database cleaned. Not full or exact-final-source acceptance. Subsequent localized skill-detail cards require focused checks and final committed-source hosted PR CI before merge. No green final CI or release claim.",
+        "pending": "Full pnpm check started at3499eb9 crossed main integration and terminated exit143 during integration; owned worker and database cleaned. Not a complete final-source check. Hosted Quality/Rust CI pending for ec8792a; this verification-only follow-up also needs green exact-revision PR CI before merge. No production launch authorized.",
         "limitations": "Six original geometric browser motion concepts only: no production Unity models, GLB/rigged clips or complete Limited cinematics. Gacha informational; no real pulls/purchases/odds promise. Campaign/API/mail work remains VL-164/166. Public source catalog state remains draft.",
-        "evidenceRoot": "artifacts/aetheria-prelaunch"
+        "evidenceRoot": "artifacts/aetheria-prelaunch",
+        "precedingProductChecks": {
+          "sourceRevision": "a05a3f6ade54d68556dd9fabcd4382082e905dcf",
+          "commands": [
+            {
+              "command": "pnpm exec vitest run --project unit apps/admin-web",
+              "exitCode": 0,
+              "result": "21 tests PASS, including public draft projection against merged V3.1, production gating and existing BFF unit checks"
+            },
+            {
+              "command": "node --test tests/governance/admin-boundary.test.mjs tests/governance/task-plan.test.mjs tests/governance/pet-v31.test.mjs",
+              "exitCode": 0,
+              "result": "8 tests PASS"
+            },
+            {
+              "command": "pnpm exec eslint apps/admin-web tests/e2e/admin.spec.ts scripts/admin-boundary.mjs tests/governance/admin-boundary.test.mjs",
+              "exitCode": 0,
+              "result": "PASS"
+            },
+            {
+              "command": "pnpm --filter @virtual-city/admin-web build",
+              "exitCode": 0,
+              "result": "PASS at a05a3f6"
+            },
+            {
+              "command": "node scripts/run-ci-browser.mjs admin",
+              "exitCode": 0,
+              "result": "All four specs PASS on desktop/mobile at a05a3f6: admin, privacy, calendar, runtime. Owned databases cleaned by harness."
+            }
+          ]
+        }
       },
       "remaining": "Rights-cleared production models/animations/audio, full media/performance qualification and signup API integration; do not call the production product site complete."
     },
