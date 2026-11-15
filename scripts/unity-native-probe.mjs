@@ -36,11 +36,14 @@ export async function unityNativeProbe({directory,index,origin,boot,match,loginN
   };
   let code;try{[code]=await Promise.all([closed,controls()]);}finally{clearTimeout(timer);cleanup();await closed;}
   assert.equal(code,0,'Unity Linux test player failed; inspect private fixture logs');
-  assert(!/^Unable to parse file (?:ProjectSettings|Assets)\//m.test(await readFile(prefix+'.log','utf8')),'Unity project asset parsing must succeed');
+  const editorLog=await readFile(prefix+'.log','utf8');
+  assert(!/^Unable to parse file (?:ProjectSettings|Assets)\//m.test(editorLog),'Unity project asset parsing must succeed');
+  assert(!editorLog.includes(password)&&!editorLog.includes(loginName),'Editor log must not contain temporary login credentials');
   const xml=await readFile(results,'utf8');
   assert(/<test-run\b[^>]*result="Passed"/.test(xml)&&/\bpassed="1"/.test(xml),'Actual Unity player test must pass, not skip');
   const facts=JSON.parse(await readFile(prefix+'.json','utf8'));
   assert.equal(facts.editor,'6000.3.14f1');assert.equal(facts.platform,'LinuxPlayer');assert.notEqual(facts.graphicsApi,'Null');
+  assert(facts.credentialLogsClear,'The actual player must check its own credential log privacy');
   assert(facts.committedReceipt&&(pet?facts.petArenaComplete:interactive?facts.panelKeyboardTerminal:facts.reconnectReplay&&facts.wrongCaRejected));
   if(interactive&&!pet)assert(facts.ambiguousAckReplay&&facts.inflightSceneExit);
   if(pet)assert(facts.ambiguousAckReplay&&facts.reconnectReplay&&facts.rewardReconciled&&facts.returnedToRoam&&facts.reducedMotion);

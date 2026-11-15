@@ -46,7 +46,7 @@ namespace VirtualLife.Blockout.Tests
             yield return input.Click(160, 188); yield return input.Type(config.loginName);
             Assert.That(Entered(panel, "loginName", config.loginName), Is.True, InputDiagnostic(panel, config.loginName));
             yield return input.Click(440, 188); yield return input.Type(config.password);
-            Assert.That(Entered(panel, "password", config.password), Is.True, "OS password entry");
+            Assert.That(Entered(panel, "password", config.password), Is.True, "OS password entry: " + InputDiagnostic(panel, config.password, "password"));
             yield return input.Click(90, 225);
             yield return Until(() => panel.Ready, () => "Pet login: " + panel.Status);
             Assert.That(panel.PresentedState.Arena.Phase, Is.EqualTo("ready"));
@@ -58,15 +58,14 @@ namespace VirtualLife.Blockout.Tests
             Assert.That(panel.ReducedMotion, Is.True);
             Assert.That(district.NativeTarget, Is.EqualTo(district.ArenaEntrance));
             yield return WalkToArena(input, panel, district);
-            input.Key("e", true); yield return new WaitForSecondsRealtime(.08f); input.Key("e", false);
-            yield return Until(() => panel.ArenaOpen);
+            yield return EnterArena(input, panel, district);
             File.Delete(config.ackObserved); File.WriteAllText(config.ackGate, "1");
             GameCommand original;
             string retriedCommandId;
             try {
-                yield return input.Click(800, 610);
-                yield return Until(() => File.Exists(config.ackObserved));
-                yield return Until(() => !panel.Busy && panel.HasPendingCommand);
+                yield return CommandClick(input, panel, 800, 610);
+                yield return Until(() => File.Exists(config.ackObserved), () => "Pet start durable ACK: " + panel.Status);
+                yield return Until(() => !panel.Busy && panel.HasPendingCommand, () => "dropped ACK pending: " + panel.Status);
                 Assert.That(panel.Ready, Is.False); Assert.That(panel.PresentedState.Version, Is.Zero);
                 original = PendingCommand(panel);
                 retriedCommandId = AssertPendingId(panel, config.ackObserved);
@@ -83,12 +82,12 @@ namespace VirtualLife.Blockout.Tests
             var beforeInvalid = panel.PresentedState;
             yield return input.Click(684, 294); yield return input.Click(944, 554);
             Assert.That(panel.PresentedState, Is.SameAs(beforeInvalid), "Invalid nonadjacent tile selection cannot invent a result");
-            yield return input.Click(config.loss ? 890 : 734, 610);
+            yield return CommandClick(input, panel, config.loss ? 890 : 734, 610);
             yield return Until(() => panel.Ready && !panel.Busy && panel.PresentedState.Version == 2, () => "first combat turn: " + panel.Status);
             var saved = panel.PresentedState.Arena;
             var board = string.Join(",", saved.Board);
             File.WriteAllText(config.restartRequested, "Checkpoint version 2 before fixture SIGKILL");
-            yield return Until(() => File.Exists(config.restartReady), seconds: 30);
+            yield return Until(() => File.Exists(config.restartReady), () => "fixture restart completion", 30);
             yield return input.Click(260, 225);
             yield return Until(() => panel.Ready && !panel.Busy, () => "Pet restart reconnect: " + panel.Status);
             Assert.That(panel.PresentedState.Version, Is.EqualTo(2));
@@ -99,19 +98,18 @@ namespace VirtualLife.Blockout.Tests
             yield return input.Click(890, 648); yield return null;
             Assert.That(panel.ArenaOpen, Is.False);
             yield return WalkToArena(input, panel, district);
-            input.Key("e", true); yield return new WaitForSecondsRealtime(.08f); input.Key("e", false);
-            yield return Until(() => panel.ArenaOpen);
+            yield return EnterArena(input, panel, district);
             var usedSwap = false;
             for (var action = 0; !panel.PresentedState.Arena.Terminal && action < 60; action++) {
-                yield return Until(() => panel.Ready && !panel.Busy && !panel.Moving);
+                yield return Until(() => panel.Ready && !panel.Busy && !panel.Moving, () => "combat readiness: " + panel.Status);
                 yield return new WaitForEndOfFrame();
                 var current = panel.PresentedState;
-                if (config.loss) yield return input.Click(890, 610);
-                else if (current.Arena.Cooldown == 0) yield return input.Click(734, 610);
+                if (config.loss) yield return CommandClick(input, panel, 890, 610);
+                else if (current.Arena.Cooldown == 0) yield return CommandClick(input, panel, 734, 610);
                 else {
                     Assert.That(current.Arena.Hint(out var first, out var second), Is.True);
-                    yield return input.Click(684 + first % 6 * 52, 294 + first / 6 * 52);
-                    yield return input.Click(684 + second % 6 * 52, 294 + second / 6 * 52); usedSwap = true;
+                    yield return CommandClick(input, panel, 684 + first % 6 * 52, 294 + first / 6 * 52,
+                        684 + second % 6 * 52, 294 + second / 6 * 52); usedSwap = true;
                 }
                 yield return Until(() => panel.Ready && !panel.Busy && panel.PresentedState.Version == current.Version + 1,
                     () => "Pet turn: " + current.Version + " -> " + panel.PresentedState?.Version + "/busy=" + panel.Busy + "/pending=" + panel.HasPendingCommand + "/open=" + panel.ArenaOpen + "/phase=" + panel.PresentedState?.Arena.Phase + "/" + panel.Status);
@@ -122,46 +120,78 @@ namespace VirtualLife.Blockout.Tests
             Assert.That(terminal.Reward, Is.EqualTo("REWARD_PENDING"));
             if (!config.loss) Assert.That(usedSwap, Is.True, "Real OS tile clicks must submit at least one swap");
             File.WriteAllText(config.settleRequested, "Reconcile the authoritative terminal outcome");
-            yield return Until(() => File.Exists(config.settleReady), seconds: 30);
+            yield return Until(() => File.Exists(config.settleReady), () => "fixture settlement completion", 30);
             yield return input.Click(260, 225);
             yield return Until(() => panel.Ready && !panel.Busy, () => "reward refresh: " + panel.Status);
             var reward = panel.PresentedState.Reward;
             Assert.That(reward, Is.EqualTo(config.loss ? "DECLINED" : "GRANTED"));
             Assert.That(panel.PresentedState.Version, Is.EqualTo(terminal.Version));
             yield return new WaitForEndOfFrame(); ScreenCapture.CaptureScreenshot(config.screenshot);
-            yield return Until(() => File.Exists(config.screenshot));
+            yield return Until(() => File.Exists(config.screenshot), () => "terminal screenshot");
             Assert.That(panel.ReducedMotion, Is.True);
             foreach (var name in new[] {"Cinder developer figure", "Brook developer figure", "Briar developer figure"})
                 Assert.That(GameObject.Find(name).transform.localScale, Is.EqualTo(Vector3.one), "Reduced motion removes optional receipt pulses");
             yield return input.Click(890, 648); yield return null;
             input.Key("s", true);
             yield return Until(() => district.Player.transform.position.z < 4.5f, () => "return to plaza: " + panel.Status, 30);
-            input.Key("s", false); yield return Until(() => !panel.Moving);
+            input.Key("s", false); yield return Until(() => !panel.Moving, () => "stop roaming movement: " + panel.Status);
             Assert.That(panel.ArenaOpen, Is.False); Assert.That(district.InputCaptured, Is.False);
             Assert.That(panel.PresentedState.Version, Is.EqualTo(terminal.Version));
             yield return input.Click(470, 262);
-            yield return Until(() => !panel.LoggingOut && panel.Status == "Signed out. Platform session revoked.");
+            yield return Until(() => !panel.LoggingOut && panel.Status == "Signed out. Platform session revoked.", () => "Pet logout: " + panel.Status);
             Assert.That(panel.PresentedState, Is.Null); Assert.That(panel.ArenaOpen, Is.False);
             Assert.That(Entered(panel, "password", "") && Entered(panel, "loginName", ""), Is.True);
             Assert.That(UnityEngine.Object.FindObjectsByType<PetArenaStage>(FindObjectsSortMode.None).Length, Is.EqualTo(1), "Logout cannot duplicate decorative actors");
+            AssertPrivateLogs(config);
             File.WriteAllText(config.result, JsonUtility.ToJson(new Facts {
                 editor = Application.unityVersion, platform = Application.platform.ToString(), graphics = SystemInfo.graphicsDeviceName,
                 graphicsApi = SystemInfo.graphicsDeviceType.ToString(), committedReceipt = true, authoritativeMovement = true,
                 ambiguousAckReplay = true, reconnectReplay = true, petArenaComplete = true, rewardReconciled = true,
                 returnedToRoam = true, reducedMotion = true, outcome = terminal.Arena.Phase, reward = reward, version = terminal.Version,
-                retriedCommandId = retriedCommandId
+                retriedCommandId = retriedCommandId, credentialLogsClear = true
             }));
+        }
+        private static IEnumerator CommandClick(LinuxInput input, NativeSceneController panel, params int[] coordinates)
+        {
+            var before = panel.PresentedState.Version;
+            for (var attempt = 0; attempt < 4; attempt++) {
+                yield return Until(() => panel.Ready && !panel.Busy && !panel.Moving && !panel.HasPendingCommand,
+                    () => "Pet action readiness: " + panel.Status);
+                for (var at = 0; at < coordinates.Length; at += 2) yield return input.Click(coordinates[at], coordinates[at + 1]);
+                yield return null;
+                yield return Until(() => !panel.Busy, () => "Pet action response: " + panel.Status);
+                if (panel.HasPendingCommand || panel.PresentedState.Version != before) yield break;
+                // A control disabled by admission refresh has sent no intent.
+                // Once pending or committed, only the explicit same-ID path may retry.
+                Assert.That(panel.Ready, Is.True, panel.Status);
+            }
+            Assert.Fail("OS clicks did not submit the enabled Pet action");
         }
         private static IEnumerator WalkToArena(LinuxInput input, NativeSceneController panel, OfflineDistrict district)
         {
             input.Key("d", true);
             yield return Until(() => district.Player.transform.position.x >= 8.9f, () => "Arena X: " + district.Player.transform.position.x + " / " + panel.Status, 90);
-            input.Key("d", false); yield return Until(() => !panel.Moving);
+            input.Key("d", false); yield return new WaitForEndOfFrame();
+            yield return Until(() => !panel.Moving, () => "stop Arena X movement: " + panel.Status);
             input.Key("w", true);
             yield return Until(() => district.Player.transform.position.z >= 6f, () => "Arena Z: " + district.Player.transform.position.z + " / " + panel.Status, 90);
-            input.Key("w", false); yield return Until(() => !panel.Moving && !panel.Busy);
+            input.Key("w", false); yield return new WaitForEndOfFrame();
+            yield return Until(() => !panel.Moving && !panel.Busy, () => "stop Arena Z movement: " + panel.Status);
             Assert.That(panel.MovementState.OwnActor.XMm / 1000f, Is.EqualTo(district.Player.transform.position.x).Within(.001f));
             Assert.That(panel.MovementState.OwnActor.ZMm / 1000f, Is.EqualTo(district.Player.transform.position.z).Within(.001f));
+        }
+
+        private static IEnumerator EnterArena(LinuxInput input, NativeSceneController panel, OfflineDistrict district)
+        {
+            // E only opens presentation. Retry if an admission refresh consumed
+            // the key while interaction was temporarily disabled.
+            for (var attempt = 0; attempt < 4 && !panel.ArenaOpen; attempt++) {
+                yield return Until(() => panel.Ready && !panel.Busy && !panel.Moving && !district.InputCaptured,
+                    () => "Arena entry readiness: " + panel.Status);
+                input.Key("e", true); yield return new WaitForSecondsRealtime(.08f); input.Key("e", false);
+                yield return new WaitForEndOfFrame();
+            }
+            Assert.That(panel.ArenaOpen, Is.True, "OS E must open Arena at " + district.Player.transform.position + ": " + panel.Status);
         }
 
         [UnityTest]
@@ -234,7 +264,7 @@ namespace VirtualLife.Blockout.Tests
             input.Key("w", true);
             // Every step awaits authorization and a server tick; silence stops motion.
             // Allow the 5m route to complete under a loaded Linux test workstation.
-            yield return Until(() => district.Player.transform.position.z >= 1.0f, () => "walk: " + district.Player.transform.position.z + "/captured=" + district.InputCaptured + "/ready=" + panel.Ready + "/" + panel.Status, 60);
+            yield return Until(() => district.Player.transform.position.z >= 1.0f, () => "walk: " + district.Player.transform.position.z + "/focused=" + Application.isFocused + "/w=" + Input.GetKey(KeyCode.W) + "/moving=" + panel.Moving + "/busy=" + panel.Busy + "/captured=" + district.InputCaptured + "/ready=" + panel.Ready + "/" + panel.Status, 60);
             input.Key("w", false); yield return null;
             yield return Until(() => !panel.Moving);
             if (config.movement) {
@@ -338,13 +368,14 @@ namespace VirtualLife.Blockout.Tests
             var reentered = UnityEngine.Object.FindFirstObjectByType<NativeSceneController>();
             Assert.That(reentered, Is.Not.Null); Assert.That(reentered.Ready, Is.False);
             Assert.That(reentered.PresentedState, Is.Null);
+            AssertPrivateLogs(config);
             File.WriteAllText(config.result, JsonUtility.ToJson(new Facts {
                 editor = Application.unityVersion, platform = Application.platform.ToString(),
                 graphics = SystemInfo.graphicsDeviceName, graphicsApi = SystemInfo.graphicsDeviceType.ToString(),
                 committedReceipt = true, reconnectReplay = false, wrongCaRejected = false,
                 panelKeyboardTerminal = true, authoritativeMovement = config.movement,
                 ambiguousAckReplay = true, inflightSceneExit = true, panelAdmissionErrors = negatives.Length, version = initial + 1,
-                retriedCommandId = retriedCommandId
+                retriedCommandId = retriedCommandId, credentialLogsClear = true
             }));
         }
         private static IEnumerator LoginClick(LinuxInput input, string pacingFile)
@@ -355,6 +386,13 @@ namespace VirtualLife.Blockout.Tests
         }
         private static bool Entered(NativeSceneController panel, string field, string expected) =>
             string.Equals((string)typeof(NativeSceneController).GetField(field, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel), expected, StringComparison.Ordinal);
+        private static void AssertPrivateLogs(Fixture config)
+        {
+            Assert.That(Application.consoleLogPath, Is.Not.Null.And.Not.Empty);
+            var log = File.ReadAllText(Application.consoleLogPath);
+            Assert.That(log.Contains(config.password), Is.False, "Player log must not contain the temporary password");
+            Assert.That(log.Contains(config.loginName), Is.False, "Player log must not contain the temporary login");
+        }
         private static NativePlaySession Session(NativeSceneController panel) =>
             (NativePlaySession)typeof(NativeSceneController).GetField("session", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel);
         private static GameCommand PendingCommand(NativeSceneController panel) =>
@@ -368,9 +406,9 @@ namespace VirtualLife.Blockout.Tests
             Assert.That(string.Concat(bytes.Select(b => b.ToString("x2"))), Is.EqualTo(Guid.Parse(commandId).ToString("N")), "Pending retry must retain the command ID committed in PostgreSQL");
             return commandId;
         }
-        private static string InputDiagnostic(NativeSceneController panel, string expected)
+        private static string InputDiagnostic(NativeSceneController panel, string expected, string field = "loginName")
         {
-            var value = (string)typeof(NativeSceneController).GetField("loginName", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel);
+            var value = (string)typeof(NativeSceneController).GetField(field, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(panel);
             var mismatch = -1;
             for (var at = 0; at < Math.Min(value.Length, expected.Length); at++)
                 if (value[at] != expected[at]) { mismatch = at; break; }
@@ -413,10 +451,11 @@ namespace VirtualLife.Blockout.Tests
             var until = Time.realtimeSinceStartup + 5;
             while (!File.Exists(config.screenshot) && Time.realtimeSinceStartup < until) yield return null;
             Assert.That(File.Exists(config.screenshot), Is.True);
+            AssertPrivateLogs(config);
             File.WriteAllText(config.result, JsonUtility.ToJson(new Facts {
                 editor = Application.unityVersion, platform = Application.platform.ToString(),
                 graphics = SystemInfo.graphicsDeviceName, graphicsApi = SystemInfo.graphicsDeviceType.ToString(),
-                committedReceipt = true, reconnectReplay = true, wrongCaRejected = true, version = task.Result
+                committedReceipt = true, reconnectReplay = true, wrongCaRejected = true, version = task.Result, credentialLogsClear = true
             }));
         }
 
@@ -493,7 +532,7 @@ namespace VirtualLife.Blockout.Tests
         [Serializable] private sealed class Facts {
             public int panelAdmissionErrors;
             public string editor, platform, graphics, graphicsApi, retriedCommandId;
-            public bool committedReceipt, reconnectReplay, wrongCaRejected, panelKeyboardTerminal, authoritativeMovement, ambiguousAckReplay, inflightSceneExit;
+            public bool committedReceipt, reconnectReplay, wrongCaRejected, panelKeyboardTerminal, authoritativeMovement, ambiguousAckReplay, inflightSceneExit, credentialLogsClear;
             public bool petArenaComplete, rewardReconciled, returnedToRoam, reducedMotion;
             public string outcome, reward;
             public ulong version;

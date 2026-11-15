@@ -22,7 +22,22 @@ namespace VirtualLife.Blockout.Tests
             root = XDefaultRootWindow(display);
             window = Find(root, XInternAtom(display, "_NET_WM_PID", false));
             Assert.That(window, Is.Not.EqualTo(UIntPtr.Zero), "Find this Linux test player's own window");
+            Focus();
+        }
+        private void Focus()
+        {
+            XGetInputFocus(display, out var focused, out _);
+            if (focused == window) return;
+            // Activate through the window manager as well as X11, so XWayland
+            // does not leave a focused player classified as a background app.
+            var active = new WindowEvent { Message = new ClientMessage {
+                Type = 33, Display = display, Window = window,
+                MessageType = XInternAtom(display, "_NET_ACTIVE_WINDOW", false), Format = 32, Source = new IntPtr(2)
+            } };
+            Assert.That(XSendEvent(display, root, false, new IntPtr((1 << 20) | (1 << 19)), ref active), Is.Not.EqualTo(0));
             XRaiseWindow(display, window); XSetInputFocus(display, window, 2, UIntPtr.Zero); XSync(display, false);
+            XGetInputFocus(display, out focused, out _);
+            Assert.That(focused, Is.EqualTo(window), "OS input must target this player's own window");
         }
         private UIntPtr Find(UIntPtr parent, UIntPtr pidAtom)
         {
@@ -42,6 +57,7 @@ namespace VirtualLife.Blockout.Tests
         }
         public IEnumerator Click(int x, int y)
         {
+            Focus();
             x = Mathf.RoundToInt(x * scale); y = Mathf.RoundToInt(y * scale);
             Assert.That(XTranslateCoordinates(display, window, root, x, y, out var rx, out var ry, out _), Is.Not.EqualTo(0));
             XTestFakeMotionEvent(display, -1, rx, ry, UIntPtr.Zero);
@@ -52,6 +68,7 @@ namespace VirtualLife.Blockout.Tests
         }
         public void Key(string key, bool down)
         {
+            if (down) Focus();
             var code = XKeysymToKeycode(display, XStringToKeysym(key));
             Assert.That(code, Is.Not.EqualTo(0), "Key must exist in the active keyboard map");
             XTestFakeKeyEvent(display, code, down, UIntPtr.Zero); XSync(display, false);
@@ -72,6 +89,18 @@ namespace VirtualLife.Blockout.Tests
             foreach (var key in new[] {"w", "a", "s", "d", "e", "Shift_L", "Control_L"}) Key(key, false);
             XCloseDisplay(display);
         }
+        [StructLayout(LayoutKind.Sequential)] private struct ClientMessage {
+            public int Type;
+            public UIntPtr Serial;
+            public int SendEvent;
+            public IntPtr Display;
+            public UIntPtr Window, MessageType;
+            public int Format;
+            public IntPtr Source, Timestamp, Previous, Reserved1, Reserved2;
+        }
+        [StructLayout(LayoutKind.Explicit, Size = 192)] private struct WindowEvent {
+            [FieldOffset(0)] public ClientMessage Message;
+        }
         [DllImport("libX11.so.6")] private static extern IntPtr XOpenDisplay(IntPtr name);
         [DllImport("libX11.so.6")] private static extern int XCloseDisplay(IntPtr display);
         [DllImport("libX11.so.6")] private static extern UIntPtr XDefaultRootWindow(IntPtr display);
@@ -81,6 +110,8 @@ namespace VirtualLife.Blockout.Tests
         [DllImport("libX11.so.6")] private static extern int XFree(IntPtr data);
         [DllImport("libX11.so.6")] private static extern int XRaiseWindow(IntPtr display, UIntPtr window);
         [DllImport("libX11.so.6")] private static extern int XSetInputFocus(IntPtr display, UIntPtr window, int revert, UIntPtr time);
+        [DllImport("libX11.so.6")] private static extern int XGetInputFocus(IntPtr display, out UIntPtr window, out int revert);
+        [DllImport("libX11.so.6")] private static extern int XSendEvent(IntPtr display, UIntPtr window, bool propagate, IntPtr mask, ref WindowEvent message);
         [DllImport("libX11.so.6")] private static extern int XSync(IntPtr display, bool discard);
         [DllImport("libX11.so.6")] private static extern int XTranslateCoordinates(IntPtr display, UIntPtr source, UIntPtr destination, int x, int y, out int dx, out int dy, out UIntPtr child);
         [DllImport("libX11.so.6")] private static extern UIntPtr XStringToKeysym(string name);
