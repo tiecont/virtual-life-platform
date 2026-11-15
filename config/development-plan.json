@@ -3731,15 +3731,30 @@
         "Reduced motion, original developer pet figures, bounded owner projections and an opt-in local launcher work in the Linux development build",
         "Source-bound C#, Rust, Unity, governance and relevant regressions pass; hosted Quality/Rust CI is green before merge"
       ],
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "8fa1b63a2cbd20a59a059884346ca409c71f6cf8",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {"command": "gh run view 43695336276 --exit-status", "exitCode": 0, "result": "Post-merge Quality PASS: core, images/release-bundle, all eight browser groups and final gate"},
+          {"command": "gh run view 43695336211 --exit-status", "exitCode": 0, "result": "Post-merge Rust PASS"},
+          {"command": "pnpm play:linux", "exitCode": 0, "result": "Twice on merged main: actual OS input win version 5/GRANTED and loss version 18/DECLINED, Plaza return, logout 200 and owned cleanup; initial helper failures retained below"},
+          {"command": "node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "At this main SHA with pinned Editor: 16 EditMode and 3 PlayMode PASS"},
+          {"command": "node scripts/unity-validate.mjs linux", "exitCode": 0, "result": "Linux development player rebuilt at this main SHA with pinned Editor"},
+          {"command": "node scripts/unity-validate.mjs linux-player-tests", "exitCode": 0, "result": "2 player smoke tests PASS at this main SHA"},
+          {"command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena", "exitCode": 0, "result": "30 real-process PostgreSQL/WSS/recovery/settlement scenarios PASS; interop-28a7b1a3"}
+        ],
+        "sourceEquivalentValidation": "f5dd7cc tree equals merge 8fa1b63 exactly. pnpm check 114 governance / 499 unit / 783 integration; cargo fmt / 63 tests / clippy; C# 116 assertions / 23 syntax files; rendered win/loss five scenarios each and seven-scenario failure matrix PASS at f5dd7cc. Detailed commands, failures, evidence and binary hashes retained in linuxAudit.",
+        "qualification": "Linux offline developer prototype only. VL-091 and Windows, production art, rights/performance/release qualifications are not completed. NO_GO_PUBLIC; OFFLINE_ONLY."
+      },
       "implementation": {
         "source": "apps/unity-client/Assets/VirtualLife/Features/Native and NativeScene; scripts/native-local-player.mjs",
         "launcher": "pnpm play:linux",
         "movement": "Reuses the implemented isolated VL-028 movement slice. Full policy-filtered AOI, eviction and durable position remain tracked by VL-028 and are outside this one-player milestone.",
         "art": "Original code-authored primitive Cinder/Brook/Briar figures with two LODs and optional receipt-driven pulse. Production source art/exports remain VL-045.",
         "scope": "Linux developer prototype only. Windows/project/avatar/production qualifications on VL-080, VL-085, VL-091 and other tasks remain independent.",
-        "validation": "IN_PROGRESS: PRs 24 and 25 merged through green Quality/Rust. PR 26 at 5f3f08c32bc14c420c0be30cd609895c58e7062b passed local pnpm check, Rust, C#, rendered Pet win/loss and both hosted Quality/Rust events. Full rendered failure matrix passed with a diagnostic-only test change. Movement fixture renewal correction and merged-main launcher/final-source verification remain pending.",
+        "validation": "VERIFIED at merged main 8fa1b63: post-merge Quality/Rust PASS, two real launcher outcomes/cleanup, source-equivalent rendered win/loss and recovery matrix, fresh main Unity tests/build/player smoke. Historical failed/diagnostic runs remain recorded below; later evidence supersedes only their pending acceptance.",
         "linuxAudit": {
           "sourceRevision": "c40b19bb8fbeae7b1f48ab5a9b7efd57f7cefcd3",
           "reviewMode": "SINGLE_AGENT_AUDIT",
@@ -3828,7 +3843,8 @@
             "postMerge": "Main 8fa1b63 Rust 43695336211 PASS. Quality 43695336276 core-checks and runtime-images PASS; browser groups and final gate pending at this record, not PASS.",
             "evidenceRoot": "artifacts/linux-first-playable-audit; rendered facts under linux-first-playable-clean/artifacts/desktop-first/vl022"
           },
-          "remaining": "Explicit merged-main Quality final gate pending. VL-113 stays IN_PROGRESS until all acceptance is reconciled. Windows, production asset rights, performance and human release approvals remain separate. NO_GO_PUBLIC; OFFLINE_ONLY."
+          "mainAcceptance": "Main 8fa1b63 Quality 43695336276 and Rust 43695336211 PASS. Fresh main Unity tests 16 EditMode / 3 PlayMode, Linux rebuild and 2 player smoke tests each exit 0; result directories 2026-11-15T08-57-10-386Z-5b85a77a, 2026-11-15T09-01-26-802Z-4439d7a8 and 2026-11-15T09-06-30-681Z-2546b379. Main real Pet process win exit 0 / 30 scenarios, interop-28a7b1a3. Launcher results and earlier equivalent source/hash evidence recorded above.",
+          "remaining": "Linux prototype acceptance complete. Windows, production asset rights, performance and human release approvals remain separate. NO_GO_PUBLIC; OFFLINE_ONLY."
         }
       }
     },
@@ -3872,7 +3888,7 @@
       "Draft/published/retired/rollback invariants, active-match pinning and restore compatibility verified",
       "Frozen eight v1 Pets, codecs and digests remain unchanged"
     ],
-    "status": "TODO",
+    "status": "IN_PROGRESS",
     "qualificationRequirements": [],
     "verificationRequirements": [
       "PostgreSQL migration/rollback/restore/integrity and concurrency tests",
@@ -3880,7 +3896,10 @@
     ],
     "implementation": {
       "wave": "P1",
-      "specification": "specs/pet-arena/v2.md"
+      "specification": "specs/pet-arena/v2.md",
+      "draftFoundation": "Additive migration 0051, strict bounded 19-element contracts, normalized draft species/growth/skills/effectiveness, deterministic hash, transactional idempotent 114-species seed and integrity checks. Existing native grants and frozen v1 source unchanged. No application route or runtime activation.",
+      "validation": "Working-tree focused tests exit 0: 2 contract + 6 real PostgreSQL tests covering concurrent seed, corruption, rollback, wrong references and denied PUBLIC runtime access. CLI exit 0 after fixing ESM/CommonJS import; earlier fixture loadout and module-import failures retained. Contracts build, API typecheck, focused ESLint and architecture pass. Exact committed source/full hosted checks remain required.",
+      "remaining": "Cards/combinations, maps/encounters/assets and immutable published manifests; restricted versioned match pinning, retire/rollback and encrypted restore tests. Existing operator draft/preview is VL-120. No production-ready assets or gameplay v2 claimed."
     }
   },
   {

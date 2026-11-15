@@ -8,6 +8,14 @@
     "apiReplicas": 1
   },
   "modules": {
+    "pets": {
+      "owner": "platform.pet-content",
+      "responsibility": "Default-off versioned Pet metadata drafts; no combat or platform reward writer",
+      "currentPublicEntryFiles": [
+        "features/pets/modules/content/infrastructure/draft-store"
+      ],
+      "targetBoundary": "Nest owns content persistence through the existing journal; Rust gameplay and player settlement retain their existing writers"
+    },
     "runtime-gateway": {
       "owner": "platform.identity",
       "responsibility": "Explicit opt-in fixed-scope ticket HTTP adapter; no membership allocator or game authority",
@@ -285,6 +293,7 @@
     "Existing room/operations type and metrics coupling is retained, not declared acyclic"
   ],
   "tableOwnerModules": {
+    "platform.pet-content": "pets",
     "native.game-storage": "db",
     "platform.operations": "operations",
     "platform.foundation": "db",

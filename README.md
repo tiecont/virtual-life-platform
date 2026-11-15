@@ -66,6 +66,12 @@ catalog are in [the v2 specification](specs/pet-arena/v2.md) and
 implemented v2 gameplay or approved production art. Validate references with
 `node scripts/pet-design-check.mjs`.
 
+The first v2 persistence slice stores unpublished metadata only. After building
+packages, seed an owned disposable PostgreSQL database with
+`node scripts/with-test-db.mjs node --import tsx scripts/pet-content-draft-seed.mjs`.
+It uses migration 0051 and refuses non-test database URLs. It grants no runtime
+access, publishes no content and creates no owned player Pets.
+
 config/development-plan.json is the sole active backlog. Run `pnpm plan:status`
 for ready tasks and progress. Any ready task may proceed with the same agent;
 there are no reservations or mandatory independent-agent handoffs. Dependency
