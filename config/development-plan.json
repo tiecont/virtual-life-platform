@@ -3862,8 +3862,23 @@
       "Reviewed combat/content/progression/admin/presentation contracts and 19-element draft catalog are source-controlled",
       "Historical verified records and VL-113 remain intact; task DAG permits independent Linux source/art work"
     ],
-    "status": "IN_PROGRESS",
+    "status": "VERIFIED",
     "qualificationRequirements": [],
+    "verification": {
+      "sourceRevision": "173f8075ac5d42ec4cd1a9749ac04971c305ee0c",
+      "reviewMode": "SINGLE_AGENT_AUDIT",
+      "commands": [
+        {"command": "pnpm check", "exitCode": 0, "result": "116 governance, 499 unit, 783 integration and all builds PASS after preparing the checksum-pinned tool cache; initial download timeout retained"},
+        {"command": "node scripts/pet-design-check.mjs", "exitCode": 0, "result": "19 elements including Light, 19 maps and 114 original draft species"},
+        {"command": "node scripts/release-bundle.mjs --output artifacts/release-bundle-173f807-retry", "exitCode": 0, "result": "Exact-source API/web/admin images: six scenarios each, TLS/browser/security/cleanup PASS; initial local migration failure retained"},
+        {"command": "node scripts/local-compose-smoke.mjs --bundle artifacts/release-bundle-173f807-retry/bundle.json", "exitCode": 0, "result": "Retry PASS including persistent identity after down/up; initial Chromium ERR_NETWORK_CHANGED retained"},
+        {"command": "gh run view 43696805755 --exit-status", "exitCode": 0, "result": "Push Quality attempt 2 PASS; first initial HTTPS navigation timeout investigated without weakening assertions"},
+        {"command": "gh run view 43696809116 --exit-status", "exitCode": 0, "result": "PR Quality PASS, including all eight browser groups and artifact gate"},
+        {"command": "gh run view 43696809119 --exit-status", "exitCode": 0, "result": "PR Rust PASS; push Rust 43696805753 also SUCCESS"}
+      ],
+      "merge": "PR 28 merged as 111cf8672aca772ff28cdb730dcf6828838e699f; tree exactly equals tested 173f807. Post-merge Quality 43702081563 and Rust 43702081550 still pending at this record, not inferred PASS.",
+      "qualification": "Specification/catalog acceptance only. All Pet metadata remains DRAFT_ONLY with missing assets, no balance acceptance and no v2 runtime activation. OFFLINE_ONLY; NO_GO_PUBLIC."
+    },
     "verificationRequirements": [
       "Plan/governance and catalog integrity validation",
       "Exact-source hosted Quality/Rust; single-agent self-review; no gameplay or art PASS inferred"
@@ -3898,7 +3913,7 @@
       "wave": "P1",
       "specification": "specs/pet-arena/v2.md",
       "draftFoundation": "Additive migration 0051, strict bounded 19-element contracts, normalized draft species/growth/skills/effectiveness, deterministic hash, transactional idempotent 114-species seed and integrity checks. Existing native grants and frozen v1 source unchanged. No application route or runtime activation.",
-      "validation": "Working-tree focused tests exit 0: 2 contract + 6 real PostgreSQL tests covering concurrent seed, corruption, rollback, wrong references and denied PUBLIC runtime access. CLI exit 0 after fixing ESM/CommonJS import; earlier fixture loadout and module-import failures retained. Contracts build, API typecheck, focused ESLint and architecture pass. Exact committed source/full hosted checks remain required.",
+      "validation": "Working-tree focused tests exit 0: 2 contract + 6 real PostgreSQL tests covering concurrent seed, corruption, rollback, wrong references and denied PUBLIC runtime access. CLI exit 0 after fixing ESM/CommonJS import; earlier fixture loadout and module-import failures retained. At 99e2713a0f8b7d6b00f0ab382a5b4e4febc3ef2a cargo fmt, 63 Rust tests and clippy exit 0; full pnpm check still running at this record. Hosted Rust 43701583810 / 43701491081 failed because archived probes pinned schema 50. Reproduced locally (compat-dd9d17cf); additive explicit 47/48-to-51 policies and unchanged frozen50-denial checks now pass locally (compat-1fb28f4d / migration-46e4ce22), exit 0 each. Focused ESLint and governance:check exit 0. Corrected committed source and full hosted checks remain required.",
       "remaining": "Cards/combinations, maps/encounters/assets and immutable published manifests; restricted versioned match pinning, retire/rollback and encrypted restore tests. Existing operator draft/preview is VL-120. No production-ready assets or gameplay v2 claimed."
     }
   },
