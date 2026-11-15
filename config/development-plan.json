@@ -5343,7 +5343,52 @@
         "brand": "Aetheria: Soulbound (owner requested name; legal clearance not assumed)",
         "scope": "Owner expanded PR33 to complete product introduction and concept motion previews (VL-165). Signup API and operator marketing remain future slices. IDs moved from 128-132 to 163-167 after PR32 independently allocated 128-162; no old main task changed.",
         "designReference": "Owner supplied /home/tiecont/Downloads/NOYUNE_Prelaunch_AdminWeb_Handoff after initial audit. Read product copy, technical architecture, backlog, QA gates and both style-only previews. Aetheria: Soulbound supersedes the handoff name. Cropped concept media is served only in development, with source hash/provenance; no production-media or legal clearance inferred."
-      }
+      },
+      "verification": {
+        "sourceRevision": "a05a3f6ade54d68556dd9fabcd4382082e905dcf",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "pnpm exec vitest run --project unit apps/admin-web",
+            "exitCode": 0,
+            "result": "21 tests PASS, including public draft projection against merged V3.1, production gating and existing BFF unit checks"
+          },
+          {
+            "command": "node --test tests/governance/admin-boundary.test.mjs tests/governance/task-plan.test.mjs tests/governance/pet-v31.test.mjs",
+            "exitCode": 0,
+            "result": "8 tests PASS"
+          },
+          {
+            "command": "pnpm exec eslint apps/admin-web tests/e2e/admin.spec.ts scripts/admin-boundary.mjs tests/governance/admin-boundary.test.mjs",
+            "exitCode": 0,
+            "result": "PASS"
+          }
+        ],
+        "priorRevisionChecks": {
+          "sourceRevision": "3499eb94934bf9661b9d2cbd2ea81623e14090d0",
+          "commands": [
+            {
+              "command": "BROWSER_REPORT_SCOPE=ci/local/aetheria-3499eb9 node scripts/run-browser-tests.mjs tests/e2e/admin.spec.ts",
+              "exitCode": 0,
+              "result": "16 desktop/mobile cases PASS: all 12 product routes VI/EN at320px, filters/profile links, all six actual WebGL concept models, rotate/zoom/motions/pause/reduced-motion/context loss, existing operator regressions"
+            },
+            {
+              "command": "pnpm test:admin",
+              "exitCode": 0,
+              "result": "99 real DB/API/admin tests PASS"
+            },
+            {
+              "command": "pnpm --filter @virtual-city/admin-web build",
+              "exitCode": 0,
+              "result": "PASS; production smoke denies seven public paths and hydrates private /admin login"
+            }
+          ]
+        },
+        "pending": "Full check started at3499eb9 crossed subsequent main integration and is not an exact-final-source acceptance. Current full admin browser group/build running at a05a3f6. Hosted PR Quality43742926481/Rust43742926440 pending; metadata follow-up also needs actual exact-revision CI before merge. No green final CI or release claim.",
+        "limitations": "Six original geometric browser motion concepts only: no production Unity models, GLB/rigged clips or complete Limited cinematics. Gacha informational; no real pulls/purchases/odds promise. Campaign/API/mail work remains VL-164/166. Public source catalog state remains draft.",
+        "evidenceRoot": "artifacts/aetheria-prelaunch"
+      },
+      "remaining": "Exact-final-source CI and merge verification; production remains default-off."
     },
     {
       "id": "VL-164",
@@ -5379,7 +5424,52 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": [
         "Legal/brand and official media rights approval apply to publication, not unrelated source work"
-      ]
+      ],
+      "verification": {
+        "sourceRevision": "a05a3f6ade54d68556dd9fabcd4382082e905dcf",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "pnpm exec vitest run --project unit apps/admin-web",
+            "exitCode": 0,
+            "result": "21 tests PASS, including public draft projection against merged V3.1, production gating and existing BFF unit checks"
+          },
+          {
+            "command": "node --test tests/governance/admin-boundary.test.mjs tests/governance/task-plan.test.mjs tests/governance/pet-v31.test.mjs",
+            "exitCode": 0,
+            "result": "8 tests PASS"
+          },
+          {
+            "command": "pnpm exec eslint apps/admin-web tests/e2e/admin.spec.ts scripts/admin-boundary.mjs tests/governance/admin-boundary.test.mjs",
+            "exitCode": 0,
+            "result": "PASS"
+          }
+        ],
+        "priorRevisionChecks": {
+          "sourceRevision": "3499eb94934bf9661b9d2cbd2ea81623e14090d0",
+          "commands": [
+            {
+              "command": "BROWSER_REPORT_SCOPE=ci/local/aetheria-3499eb9 node scripts/run-browser-tests.mjs tests/e2e/admin.spec.ts",
+              "exitCode": 0,
+              "result": "16 desktop/mobile cases PASS: all 12 product routes VI/EN at320px, filters/profile links, all six actual WebGL concept models, rotate/zoom/motions/pause/reduced-motion/context loss, existing operator regressions"
+            },
+            {
+              "command": "pnpm test:admin",
+              "exitCode": 0,
+              "result": "99 real DB/API/admin tests PASS"
+            },
+            {
+              "command": "pnpm --filter @virtual-city/admin-web build",
+              "exitCode": 0,
+              "result": "PASS; production smoke denies seven public paths and hydrates private /admin login"
+            }
+          ]
+        },
+        "pending": "Full check started at3499eb9 crossed subsequent main integration and is not an exact-final-source acceptance. Current full admin browser group/build running at a05a3f6. Hosted PR Quality43742926481/Rust43742926440 pending; metadata follow-up also needs actual exact-revision CI before merge. No green final CI or release claim.",
+        "limitations": "Six original geometric browser motion concepts only: no production Unity models, GLB/rigged clips or complete Limited cinematics. Gacha informational; no real pulls/purchases/odds promise. Campaign/API/mail work remains VL-164/166. Public source catalog state remains draft.",
+        "evidenceRoot": "artifacts/aetheria-prelaunch"
+      },
+      "remaining": "Rights-cleared production models/animations/audio, full media/performance qualification and signup API integration; do not call the production product site complete."
     },
     {
       "id": "VL-166",
