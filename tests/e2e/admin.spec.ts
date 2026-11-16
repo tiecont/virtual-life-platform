@@ -143,7 +143,8 @@ test('six Pet concepts load real 3D only by choice with motion, keyboard, reduce
   await page.goto('/pets/pet-v31-'+element+'-'+name+'?lang=en');await expect(page.locator('canvas')).toHaveCount(0);
   await page.getByRole('button',{name:'Open 3D preview',exact:true}).click();await expect(page.getByRole('status')).toContainText('3D ready',{timeout:20000});
   const canvas=page.locator('canvas');expect(await canvas.evaluate(c=>(c as HTMLCanvasElement).width)).toBeGreaterThan(100);
-  await canvas.scrollIntoViewIfNeeded();const initial=await canvasFrame(canvas);expect(initial.occupied/initial.pixels).toBeGreaterThan(.02);expect(initial.occupied/initial.pixels).toBeLessThan(.8);expect(initial.inset).toBe(true);
+  await canvas.scrollIntoViewIfNeeded();const initial=await canvasFrame(canvas);expect(initial.occupied/initial.pixels).toBeGreaterThan(.02);expect(initial.occupied/initial.pixels).toBeLessThan(.8);expect(initial.inset,name+' '+JSON.stringify(initial.bounds)).toBe(true);
+  const b=initial.bounds;expect(Math.min(b.left/b.width,(b.width-1-b.right)/b.width,b.bottom/b.height,(b.height-1-b.top)/b.height),name+' camera margin').toBeGreaterThan(.02);
   await canvas.focus();await page.keyboard.press('ArrowRight');await page.keyboard.press('ArrowUp');
   await expect.poll(async()=>(await canvasFrame(canvas)).hash).not.toBe(initial.hash);
   await page.getByRole('button',{name:'Normal',exact:true}).click();await expect(page.getByRole('button',{name:'Normal',exact:true})).toHaveAttribute('aria-pressed','true');

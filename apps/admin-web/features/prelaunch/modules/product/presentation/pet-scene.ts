@@ -4,7 +4,8 @@ export function createPetScene(canvas:HTMLCanvasElement,kind:string,color:string
  const renderer=new T.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'low-power'});
  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(640,420,false);
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(38,640/420,.1,40),root=new T.Group();scene.add(root);
- camera.position.set(0,1.1,6);camera.lookAt(0,0,0);
+ const defaultZoom=7;
+ camera.position.set(0,1.1,defaultZoom);camera.lookAt(0,0,0);
  scene.add(new T.HemisphereLight(0xeef5ff,0x51416e,3));const light=new T.DirectionalLight(0xffffff,4);light.position.set(3,5,4);scene.add(light);
  const materials=[new T.MeshStandardMaterial({color,roughness:.36,metalness:.22}),new T.MeshStandardMaterial({color:accent,roughness:.25,metalness:.4}),new T.MeshStandardMaterial({color:0x283153}),new T.MeshStandardMaterial({color:0xfff6d4,emissive:0xffdc86,emissiveIntensity:.6})];
  const geometries:T.BufferGeometry[]=[];const moving:T.Mesh[]=[];
@@ -35,7 +36,7 @@ export function createPetScene(canvas:HTMLCanvasElement,kind:string,color:string
  }
  const ring=part('ring',[0,-1.36,0],[1.3,1.3,1.3],1);ring.rotation.x=Math.PI/2;
  const effect=part('ring',[0,0,.2],[1.3,1.3,1.3],3);effect.visible=false;
- let disposed=false,paused=true,visible=true,angle=0,zoom=6,motion:Motion='idle',elapsed=0,frame=0,last=0,started=0;
+ let disposed=false,paused=true,visible=true,angle=0,zoom=defaultZoom,motion:Motion='idle',elapsed=0,frame=0,last=0,started=0;
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  function render(time:number){if(disposed)return;frame=requestAnimationFrame(render);if(time-last<33||!visible||document.hidden)return;const dt=Math.min((time-last)/1000,.05);last=time;
   if(!paused&&!reduced.matches)elapsed+=dt;
@@ -55,5 +56,5 @@ export function createPetScene(canvas:HTMLCanvasElement,kind:string,color:string
  const resize=new ResizeObserver(()=>{const width=Math.min(canvas.clientWidth,960),height=Math.min(canvas.clientHeight,600);if(width&&height){renderer.setSize(width,height,false);camera.aspect=width/height;camera.updateProjectionMatrix();}});resize.observe(canvas);
  const lost=(event:Event)=>{event.preventDefault();onLost();};canvas.addEventListener('webglcontextlost',lost);
  frame=requestAnimationFrame(render);
- return {rotate:(value:number)=>{angle+=value;},zoom:(value:number)=>{zoom=T.MathUtils.clamp(zoom+value,3.8,8);},reset:()=>{angle=0;zoom=6;},motion:(value:Motion)=>{motion=value;started=elapsed;paused=false;},pause:()=>{paused=true;},dispose:()=>{disposed=true;cancelAnimationFrame(frame);observer.disconnect();resize.disconnect();canvas.removeEventListener('webglcontextlost',lost);geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());renderer.dispose();renderer.forceContextLoss();}};
+ return {rotate:(value:number)=>{angle+=value;},zoom:(value:number)=>{zoom=T.MathUtils.clamp(zoom+value,3.8,8);},reset:()=>{angle=0;zoom=defaultZoom;},motion:(value:Motion)=>{motion=value;started=elapsed;paused=false;},pause:()=>{paused=true;},dispose:()=>{disposed=true;cancelAnimationFrame(frame);observer.disconnect();resize.disconnect();canvas.removeEventListener('webglcontextlost',lost);geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());renderer.dispose();renderer.forceContextLoss();}};
 }
