@@ -26,17 +26,17 @@
       "limitedPets": ["Icarus", "Glaciemora", "Voltaris", "Noctalith", "Sylvaris", "Leviara"],
       "taskOwnership": "VL-149 owns six Limited S; VL-160 retains six distinct Standard S. Shared authoring conventions belong to VL-105; never substitute one roster for the other.",
       "milestones": [
-        {"id": "gate-0", "priority": 0, "tasks": ["VL-163", "VL-164", "VL-055"], "acceptance": "Fix actual main failures, review and merge PR33, rebase/fix/merge PR35 through green exact-source CI; prove native backup recovery and obtain actual retention/deletion approval before claiming VL-055 closure."},
-        {"id": "early-3d", "priority": 1, "tasks": ["VL-105", "VL-121", "VL-166", "VL-167", "VL-149", "VL-160"], "acceptance": "After Gate 0, produce Icarus editable model, rig, clips, Unity material/VFX and actual preview first; pass asset/provenance validation before replicating the five remaining Limited Pets. Standard S remains a separate deliverable."},
-        {"id": "media-showcase", "priority": 2, "tasks": ["VL-165", "VL-168"], "acceptance": "Private loopback S3 media ingest and preview-only portal; registration remains closed or approval-gated."},
-        {"id": "pet-arena-pve", "priority": 2, "tasks": ["VL-131", "VL-133", "VL-139", "VL-140", "VL-142", "VL-161", "VL-162", "VL-169"], "acceptance": "Authoritative 10x10 PvE board, regular/legendary capture and durable economy with simulation/abuse acceptance before new Lodge gameplay; mobile conditional."}
+        {"id": "gate-0", "priority": 0, "tasks": ["VL-168", "VL-169", "VL-055"], "acceptance": "Fix actual main failures, review and merge PR33, rebase/fix/merge PR35 through green exact-source CI; prove native backup recovery and obtain actual retention/deletion approval before claiming VL-055 closure."},
+        {"id": "early-3d", "priority": 1, "tasks": ["VL-105", "VL-121", "VL-171", "VL-172", "VL-149", "VL-160"], "acceptance": "After Gate 0, produce Icarus editable model, rig, clips, Unity material/VFX and actual preview first; pass asset/provenance validation before replicating the five remaining Limited Pets. Standard S remains a separate deliverable."},
+        {"id": "media-showcase", "priority": 2, "tasks": ["VL-170", "VL-173"], "acceptance": "Private loopback S3 media ingest and preview-only portal; registration remains closed or approval-gated."},
+        {"id": "pet-arena-pve", "priority": 2, "tasks": ["VL-131", "VL-133", "VL-139", "VL-140", "VL-142", "VL-161", "VL-162", "VL-174"], "acceptance": "Authoritative 10x10 PvE board, regular/legendary capture and durable economy with simulation/abuse acceptance before new Lodge gameplay; mobile conditional."}
       ],
       "productionGate": "PUBLISHED requires separate rights, privacy, moderation, consent, hardware, signing and release authorization; none is granted by this initiative."
     }
   ],
   "tasks": [
     {
-      "id": "VL-163",
+      "id": "VL-168",
       "feature": "QA-SRE",
       "title": "Gate 0: repair main CI and reconcile PR33/PR35",
       "objective": "Inspect current GitHub results instead of assuming kit snapshots; fix hospitality root causes without weaker assertions, review PR33, then rebase and harden loopback-only PR35.",
@@ -45,10 +45,22 @@
       "acceptance": ["Actual main Quality/Rust green at recorded SHA", "PR33 and rebased PR35 self-reviewed and merged only through complete green CI; local Compose ports bind 127.0.0.1 and secrets remain local"],
       "status": "IN_PROGRESS",
       "qualificationRequirements": [],
-      "implementation": {"release": "OFFLINE_ONLY / NO_GO_PUBLIC", "observedMain": "ac7719366be82f8bcd4e07a6013c25c55222f41e", "observedMainQuality": "https://github.com/tiecont/virtual-life-platform/actions/runs/43812987707", "observedPR33": "fd94f630e97e907629caf88c3344709620a69f18: 26 SUCCESS checks", "observedPR35": "aa22ffcfd4bd5aaf4d5cc9180ef2666bb0db6137: 24 SUCCESS and 2 FAILURE checks; base codex/aetheria-prelaunch-routes", "remaining": "Review actual failing jobs and existing local hospitality commit; rerun required checks and record final source/merge revisions."}
+      "implementation": {"release": "OFFLINE_ONLY / NO_GO_PUBLIC", "observedMain": "ac7719366be82f8bcd4e07a6013c25c55222f41e", "observedMainQuality": "https://github.com/tiecont/virtual-life-platform/actions/runs/43812987707", "observedPR33": "fd94f630e97e907629caf88c3344709620a69f18: 26 SUCCESS checks; merged as d3f23b4daaa96fa23d9112130f439d288d6eaec2", "observedPR35": "aa22ffcfd4bd5aaf4d5cc9180ef2666bb0db6137: 24 SUCCESS and 2 FAILURE checks; base codex/aetheria-prelaunch-routes", "remaining": "Post-PR33 main Quality43899049861 and Rust43899050557 must finish; rebase and validate PR35, and integrate PR36 through green CI."},
+      "verification": {
+        "sourceRevision": "49d1b5fe500f5e261ff3ceda5b68a4d20e71f861",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/36",
+        "commands": [
+          {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "122 PASS including priority ordering and rejection of invalid priorities"},
+          {"command": "pnpm governance:check", "exitCode": 0, "result": "PASS; historical byte verification is not fresh gameplay acceptance"},
+          {"command": "pnpm exec eslint scripts/task-plan.mjs tests/governance/task-plan.test.mjs tests/e2e/lounge.spec.ts", "exitCode": 0},
+          {"command": "pnpm ci:browser hospitality", "exitCode": 0, "result": "All Lounge and Lodge specs/devices PASS with validated batch reports and disposable database cleanup"}
+        ],
+        "scope": "Backlog and hospitality synchronization only. Task IDs subsequently moved to168-174 to preserve PR33 IDs163-167; final-head CI still required. No 3D assets produced or VL-055 closure claimed."
+      }
     },
     {
-      "id": "VL-164",
+      "id": "VL-169",
       "feature": "Persistence-Security",
       "title": "Gate 0: native Pet checkpoint/journal backup restoration",
       "objective": "Complete the native backup/restore evidence slice of VL-055 using actual encrypted PostgreSQL archive restoration and restricted Rust process recovery.",
@@ -60,7 +72,7 @@
       "implementation": {"parentTask": "VL-055", "release": "OFFLINE_ONLY / NO_GO_PUBLIC"}
     },
     {
-      "id": "VL-165",
+      "id": "VL-170",
       "feature": "Media",
       "title": "PR-B: private local S3 media metadata and ingest",
       "objective": "Add loopback MinIO and an additive journaled migration for versioned media metadata, RBAC ingest, signed preview access and provenance.",
@@ -72,7 +84,7 @@
       "implementation": {"release": "OFFLINE_ONLY / NO_GO_PUBLIC"}
     },
     {
-      "id": "VL-166",
+      "id": "VL-171",
       "feature": "Avatar-Art",
       "title": "PR-C: Icarus Blender to Unity vertical slice",
       "objective": "Produce the first Limited S end-to-end from kit references, preserving canonical identity and FIRE_ZONE semantics; contributes to VL-149, not the Standard S roster.",
@@ -84,36 +96,36 @@
       "implementation": {"parentTask": "VL-149", "sharedPipeline": "VL-105", "assetContract": "VL-121", "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"}
     },
     {
-      "id": "VL-167",
+      "id": "VL-172",
       "feature": "Avatar-Art",
       "title": "PR-D: remaining five Limited S cinematic assets",
       "objective": "Replicate the accepted Icarus pipeline for Glaciemora, Voltaris, Noctalith, Sylvaris and Leviara with distinct silhouettes, rigs, opcodes, audio and motion.",
       "priority": 1,
-      "dependsOn": ["VL-166"],
+      "dependsOn": ["VL-171"],
       "acceptance": ["Five actual editable models, LODs, exports, clips, Unity shaders/VFX, preview MP4s and provenance manifests", "FROST_LINE/CHAIN_MARK/CURSE_SIGIL/GROWTH_GLYPH/TIDE_CURRENT visual bindings preserve authoritative gameplay semantics", "Asset validation and actual licensed Unity rendered motion/performance checks pass for each Pet; no completion from concept PNGs"],
       "status": "TODO",
       "qualificationRequirements": ["Original/licensed art and audio provenance; actual rendered acceptance"],
       "implementation": {"parentTask": "VL-149", "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"}
     },
     {
-      "id": "VL-168",
+      "id": "VL-173",
       "feature": "Web-UX",
       "title": "PR-E: Aetheria SoulBound preview showcase",
       "objective": "Integrate the kit aesthetic and six-Pet showcase into portal-web using existing routes and auth/privacy conventions.",
       "priority": 2,
-      "dependsOn": ["VL-165"],
+      "dependsOn": ["VL-170"],
       "acceptance": ["Aetheria: SoulBound branding with approved reference direction, responsive VI/EN showcase, accessible media and reduced motion", "Signed private preview media with truthful missing-media fallbacks; concepts are labeled as concepts", "Registration stays closed or approval-gated; no invented founder counts/rewards, payment or live gacha", "Actual desktop/mobile browser tests and screenshots plus complete exact-source hosted CI"],
       "status": "TODO",
       "qualificationRequirements": ["Rights and human art acceptance before publication"],
       "implementation": {"release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"}
     },
     {
-      "id": "VL-169",
+      "id": "VL-174",
       "feature": "Pet-Arena",
       "title": "Aetheria integrated offline PvE and media acceptance",
       "objective": "Verify 10x10 Pet Arena, capture, six Limited presentations, private media and shared awakening/economy without authorizing a public release.",
       "priority": 2,
-      "dependsOn": ["VL-133", "VL-139", "VL-161", "VL-162", "VL-167", "VL-168"],
+      "dependsOn": ["VL-133", "VL-139", "VL-161", "VL-162", "VL-172", "VL-173"],
       "acceptance": ["Actual replay/reconnect/duplicate-receipt, economy and abuse tests pass across Nest/Rust/PostgreSQL/Unity", "Final asset hashes, source SHA, actual CI and remaining human/hardware acceptance are recorded", "NO_GO_PUBLIC remains enforced; Pet Arena PvE precedes new Lodge gameplay and mobile remains conditional"],
       "status": "TODO",
       "qualificationRequirements": ["Consented human playtests, retention/deletion decisions and separate release qualification"],
