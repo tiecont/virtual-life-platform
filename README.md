@@ -76,6 +76,11 @@ styles and the first six hero/boss asset briefs. After building packages,
 `node --import tsx scripts/pet-asset-check.mjs` reports explicit missing art and
 animation bindings. A valid draft preflight grants no rights or production status.
 
+The separate [Limited asset pipeline](specs/pet-arena/limited-asset-pipeline.md)
+uses `--limited-v31` for canonical Limited identities and hashed authoring
+bindings. Add `--require-complete` with an authored manifest to reject missing
+bindings; byte validation alone is not model, Unity or rendered acceptance.
+
 The first v2 persistence slice stores unpublished metadata only. After building
 packages, seed an owned disposable PostgreSQL database with
 `node scripts/with-test-db.mjs node --import tsx scripts/pet-content-draft-seed.mjs`.
