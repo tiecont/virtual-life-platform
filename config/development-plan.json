@@ -4110,7 +4110,73 @@
       "wave": "P0/P4",
       "specification": "specs/pet-arena/v2.md; specs/pet-arena/art-direction.md",
       "draftContract": "Strict typed asset/source/import hash references, all eleven animation semantics and six-hero/boss missing-asset preflight. Explicit 19-element art direction and original catalog-aligned model/animation briefs. Draft only; no runtime activation or production publication port.",
-      "remaining": "Actual editable artwork, models/rigs/clips, original sprite atlas/VFX/audio, Unity importer binding checks and rendered Linux previews; rights review, measured performance and physical Windows qualification remain separate. No image was generated: built-in image generation unavailable, CLI fallback not selected."
+      "remaining": "Actual editable artwork, models/rigs/clips, original sprite atlas/VFX/audio, Unity importer binding checks and rendered Linux previews; rights review, measured performance and physical Windows qualification remain separate. No image was generated: built-in image generation unavailable, CLI fallback not selected.",
+      "verification": {
+        "sourceRevision": "907e76c2573182193821062af7fb1b51a2829419",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/31",
+        "findings": "Reproduced blocking FIFO opens in runtime/source/import files. Nonblocking/no-follow open reaches regular-file validation promptly; bounded regression fails before the fix and passes after it. Paths, actual source/import/runtime bytes, hashes, stable IDs, animation bindings and nonproduction/rights gates self-reviewed.",
+        "commands": [
+          {
+            "command": "pnpm exec vitest run --project unit packages/contracts/test/pet-battle-assets.test.ts packages/contracts/test/pet-taxonomy-v3.test.ts packages/contracts/test/pet-content.test.ts",
+            "exitCode": 0,
+            "result": "12 tests PASS, including strict schema/reference/animation negatives and existing V1 compatibility."
+          },
+          {
+            "command": "node --test tests/governance/pet-assets.test.mjs",
+            "exitCode": 0,
+            "result": "3 tests PASS: actual file hashes/missing/directory/escape rejection and three bounded FIFO child probes."
+          },
+          {
+            "command": "node --import tsx scripts/pet-asset-check.mjs",
+            "exitCode": 0,
+            "result": "Draft preflight PASS; missing assets remain explicit, rights PENDING, Unity/render acceptance NOT_TESTED and productionReady false."
+          },
+          {
+            "command": "pnpm check (hosted PR core-checks at exact source)",
+            "exitCode": 0,
+            "result": "121 governance / 511 unit / 789 PostgreSQL integration tests and builds PASS. Actual completed core job133069885385 in Quality43797608080; whole workflow/browser aggregate was still pending when recorded."
+          },
+          {
+            "command": "pnpm check (local clean rerun)",
+            "exitCode": 143,
+            "result": "Parent received SIGTERM, cause not established; not claimed a complete local check. Logs show121 governance/511 unit/789 integration PASS; the detached integration child finished normally. Owned leftover fixture virtual-city-test-f820ecf5 was explicitly removed with volumes (exit0)."
+          },
+          {
+            "command": "pnpm build",
+            "exitCode": 0,
+            "result": "All package/application builds PASS after the interrupted local check."
+          },
+          {
+            "command": "node scripts/release-bundle.mjs --output artifacts/focused-sprint/pr31-fixed-bundle --source-revision 907e76c2573182193821062af7fb1b51a2829419",
+            "exitCode": 0,
+            "result": "18 actual API/web/admin image scenarios PASS; image inspections, owned cleanup and generated secret removal PASS; no registry publication."
+          },
+          {
+            "command": "node scripts/local-compose-smoke.mjs --bundle artifacts/focused-sprint/pr31-fixed-bundle/bundle.json",
+            "exitCode": 0,
+            "result": "PASS, 51 migrations in disposable fixture, services and generated secrets cleaned."
+          },
+          {
+            "command": "pnpm plan:status; git diff --check (separate invocations)",
+            "exitCode": 0,
+            "result": "Task remains IN_PROGRESS; no additional roadmap task started."
+          }
+        ],
+        "failedAttempts": [
+          "New FIFO regression timed out after5000ms before the fix (exit1); no timeout or assertion relaxed.",
+          "Original push Quality43711012475 failed at admin Password locator after15s. Actual logs reviewed; original-source local18-scenario release/Compose and failed-job rerun attempt2 PASS. Deeper cause not captured; no production fix invented for that failure.",
+          "Initial local full check exited2 on stale ignored Next route types. Preserved old .next under artifacts and rebuilt; source validation was not weakened.",
+          "One release CLI invocation exited1 because an abbreviated SHA was invalid; full committed SHA rerun PASS."
+        ],
+        "hostedAtSource": {
+          "quality": "https://github.com/tiecont/virtual-life-platform/actions/runs/43797608080",
+          "rust": "https://github.com/tiecont/virtual-life-platform/actions/runs/43797608093",
+          "state": "Quality core/images PASS; Rust PASS. Final evidence revision still requires complete exact-head Quality/Rust before merge."
+        },
+        "pending": "Record final source/base, complete CI URLs and actual merge SHA in PR discussion; verify post-merge main before merging PR33.",
+        "limitations": "Draft contract/file validation only. Missing production art, models, clips, Unity import/render checks, original rights and human art approval remain outstanding; no task-wide VERIFIED claim. OFFLINE_ONLY / NO_GO_PUBLIC."
+      }
     }
   },
   {
