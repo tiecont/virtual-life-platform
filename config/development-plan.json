@@ -5490,6 +5490,22 @@
       "sourceRevision": "ead95c52eccf4130d96f2bdcb6e39a9f325bbb1e",
       "reviewMode": "SINGLE_AGENT_AUDIT",
       "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/33",
+      "hydrationFollowup": {
+        "sourceRevision": "29654b9b337e2227704a86883d78df6eaced2345",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "finding": "Cold development navigation could accept a Pet filter or3D click before browser hydration. Controls now remain disabled until hydration; a delayed-JavaScript browser regression checks the actual SSR boundary and subsequent interaction. Production image smoke now records bounded navigation status/path/title/form-count and error names for intermittent Password-locator failures; no credentials or private payloads are recorded.",
+        "commands": [
+          {"command": "pnpm ci:browser admin", "exitCode": 0, "result": "28 PASS:20 admin/public cases,4 privacy,2 calendar and2 runtime across isolated desktop/mobile lifetimes. All batch reports validated."},
+          {"command": "owned migrated database + delayed-JavaScript browser regression against committed source", "exitCode": 0, "result": "2 desktop/320px mobile PASS; a separate actual before-fix probe failed1 because SSR controls were enabled while scripts were held."},
+          {"command": "pnpm exec vitest run --project unit apps/admin-web", "exitCode": 0, "result": "22 PASS"},
+          {"command": "pnpm --filter @virtual-city/admin-web typecheck; targeted eslint; git diff --check (separate invocations)", "exitCode": 0, "result": "PASS"},
+          {"command": "node scripts/release-bundle.mjs --output artifacts/focused-sprint/pr33-hydration-bundle --source-revision 29654b9b337e2227704a86883d78df6eaced2345", "exitCode": 0, "result": "18 real API/web/admin image scenarios PASS; actual operator navigation200, production route/static-chunk denials, authorization/CSRF/Origin, owned cleanup and generated-secret removal PASS."},
+          {"command": "node scripts/local-compose-smoke.mjs --bundle artifacts/focused-sprint/pr33-hydration-bundle/bundle.json", "exitCode": 0, "result": "PASS;51 migrations and cleanup verified."}
+        ],
+        "harnessFailures": "Initial ad-hoc regression launches omitted the required disposable database, then its migrations. Both failed before test assertions; the correct migrated owned fixture passed2. No assertion or timeout was relaxed.",
+        "catalogCheck": {"sourceRevision": "6422734429b75b48aec0fa621f2d92542feca37f", "command": "pnpm exec vitest run --project unit apps/admin-web/features/prelaunch/modules/product/domain/content.unit.test.ts", "exitCode": 0, "result": "3 PASS; every projected Pet field, including body/map/colors/ability/Signature, and all19 maps/16 skills match canonical source. Projection is read-only, not an independent metadata authority; no data changed."},
+        "pending": "Final metadata and integration revisions still require complete exact-head hosted Quality/Rust; reconcile merged PR31 and verify main between merges."
+      },
       "findings": "Real production HTML/RSC denial did not prevent catalog IDs in static JavaScript. Server-only catalog projection fixed this. Deeper actual image scan then found lazy scene geometry/names still served as static chunks; production compilation now aliases the development scene to an inert rejecting module. Static image and actual HTTP scans cover all chunks and reject renderer/concept markers. Actual WebGL context loss also dropped canvas focus to BODY; fallback restores focus to the toggle.",
       "commands": [
         {
