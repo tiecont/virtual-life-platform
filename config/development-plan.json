@@ -2167,7 +2167,7 @@
       ],
       "implementation": {
         "scope": "Existing encrypted PostgreSQL backup/restore smoke now compares every restored migration name and checksum against the source manifest; exercised in Rust CI",
-        "remainingAcceptance": "Native Rust checkpoint/journal backup restore and hash recovery, incompatible state and keyless startup negatives, private projection/export/deletion review; retention/deletion approvals unresolved",
+        "remainingAcceptance": "Native backup/restore now exercised by VL-169. Remaining lifecycle gaps are maintained in specs/native-data-lifecycle.md: participant indexing at version zero, account-scoped native journal/reward export and erasure handlers, writer/worker deletion races, deletion surviving archive restoration, full reducer replay and retention/key custody approval. No closure or policy approval claimed.",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "verification": {
           "sourceRevision": "13086304ec599d4a4da98b8861cf89f4afece080",
