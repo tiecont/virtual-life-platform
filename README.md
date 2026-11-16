@@ -71,6 +71,11 @@ catalog are in [the v2 specification](specs/pet-arena/v2.md) and
 implemented v2 gameplay or approved production art. Validate references with
 `node scripts/pet-design-check.mjs`.
 
+[Battle art direction](specs/pet-arena/art-direction.md) defines all 19 element
+styles and the first six hero/boss asset briefs. After building packages,
+`node --import tsx scripts/pet-asset-check.mjs` reports explicit missing art and
+animation bindings. A valid draft preflight grants no rights or production status.
+
 The first v2 persistence slice stores unpublished metadata only. After building
 packages, seed an owned disposable PostgreSQL database with
 `node scripts/with-test-db.mjs node --import tsx scripts/pet-content-draft-seed.mjs`.
