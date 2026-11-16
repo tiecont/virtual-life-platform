@@ -4110,6 +4110,22 @@
       "wave": "P0/P4",
       "specification": "specs/pet-arena/v2.md; specs/pet-arena/art-direction.md",
       "draftContract": "Strict typed asset/source/import hash references, all eleven animation semantics and six-hero/boss missing-asset preflight. Explicit 19-element art direction and original catalog-aligned model/animation briefs. Draft only; no runtime activation or production publication port.",
+      "limitedBindingVerification": {
+        "sourceRevision": "9a9e250d7ba59f8e03ed718906ba8709d69a9597",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "scope": "Canonical v3.1 Limited authoring overlay with exact catalog/reference/source/import hashes, 16 actions, identity/opcode checks, distinct reduced-motion preview and a required-binding CLI gate. Frozen candidate and Standard S roster unchanged.",
+        "commands": [
+          {"command": "pnpm build:packages", "exitCode": 0, "result": "All18 package builds PASS"},
+          {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "127 PASS including5 new Limited tests and3 existing byte/path/FIFO tests"},
+          {"command": "pnpm exec vitest run --project unit packages/contracts/test/pet-battle-assets.test.ts packages/contracts/test/pet-taxonomy-v3.test.ts packages/contracts/test/pet-content.test.ts", "exitCode": 0, "result": "12 PASS"},
+          {"command": "pnpm exec eslint scripts/pet-asset-check.mjs scripts/pet-limited-asset-check.mjs scripts/pet-asset-files.mjs tests/governance/pet-limited-assets.test.mjs packages/contracts/src/pet-battle-assets.ts packages/contracts/src/pet-limited-assets.ts", "exitCode": 0},
+          {"command": "node --import tsx scripts/pet-asset-check.mjs --limited-v31", "exitCode": 0, "result": "MISSING_BINDINGS for all6 Limited;0 files verified; no asset acceptance"},
+          {"command": "node --import tsx scripts/pet-asset-check.mjs", "exitCode": 0, "result": "Existing v2 preflight retains explicit missing assets and NOT_TESTED Unity/render status"},
+          {"command": "git diff --check", "exitCode": 0}
+        ],
+        "selfReview": "Initial new CLI regression exposed circular top-level-await import (exit13). Extracted shared byte verification without relaxing FIFO/hash/path checks; all8 focused tests then PASS. Fixed3 lint no-undef errors. Synthetic complete bindings explicitly remain NOT_TESTED, not valid art.",
+        "remaining": "Exact final-head hosted Quality/Rust before merge. No actual Icarus model/rig/animation/video exists in this source slice; Blender inspection, Unity motion/render/performance and rights acceptance remain open. OFFLINE_ONLY / NO_GO_PUBLIC."
+      },
       "remaining": "Actual editable artwork, models/rigs/clips, original sprite atlas/VFX/audio, Unity importer binding checks and rendered Linux previews; rights review, measured performance and physical Windows qualification remain separate. No image was generated: built-in image generation unavailable, CLI fallback not selected.",
       "verification": {
         "sourceRevision": "907e76c2573182193821062af7fb1b51a2829419",
