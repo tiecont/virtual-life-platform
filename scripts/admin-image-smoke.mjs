@@ -6,6 +6,7 @@ import https from 'node:https';
 import net from 'node:net';
 import {chromium, expect} from '@playwright/test';
 import {imageTestTools} from './image-test-tools.mjs';
+import {observeImageBrowser} from './image-browser-navigation.mjs';
 
 const args = process.argv.slice(2);
 assert(args.length === 8 && args[0] === '--admin' && args[2] === '--api' && args[4] === '--context' && args[6] === '--output');
@@ -16,7 +17,7 @@ const expectedMigrations = (await readdir(resolve(contextRoot, 'apps/platform-ap
 const {run: execute, save, commands, signal, dispose} = await imageTestTools(directory);
 const project = 'virtual-city-admin-image-' + randomUUID().slice(0, 8), sockets = new Set();
 let stage = 'prepare', browser, started = false, cert, probe;
-const facts = {taskId: 'N03-05', apiImage: api, adminImage: admin, publicRelease: false, scenarios: []};
+const facts = {taskId: 'N03-05', apiImage: api, adminImage: admin, publicRelease: false, scenarios: [], browserDiagnostics: []};
 const run = (command, values, options = {}) => execute(stage, command, values, options);
 const cancelled = () => {for (const socket of sockets) socket.close(); void browser?.close().catch(() => {});};
 signal.addEventListener('abort', cancelled, {once: true});
@@ -98,6 +99,7 @@ try {
   const outcomes=[];
   for(const profile of [{name:'desktop',viewport:{width:1280,height:800}},{name:'mobile',viewport:{width:360,height:800},isMobile:true}]){
     const context=await browser.newContext({baseURL:origin,viewport:profile.viewport,isMobile:profile.isMobile??false});context.setDefaultTimeout(15000);if(cookies)await context.addCookies(cookies);
+    observeImageBrowser(context,origin,facts.browserDiagnostics);
     const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.name));assert.equal((await page.goto('/pets?lang=en')).status(),404);await expect(page.locator('canvas,form')).toHaveCount(0);const navigation=await page.goto('/admin');
     facts.operatorNavigations??=[];facts.operatorNavigations.push({profile:profile.name,status:navigation?.status(),path:new URL(page.url()).pathname,title:await page.title(),passwordFields:await page.getByLabel('Password',{exact:true}).count(),browserErrorNames:errors});
     assert.equal(navigation?.status(),200,'Operator document must render successfully');

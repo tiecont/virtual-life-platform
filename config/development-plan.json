@@ -69,7 +69,19 @@
       "acceptance": ["Restore actual native checkpoint, receipts, events and settlement records; verify exact hashes and authoritative state", "Missing/wrong keys, corrupt data and incompatible versions abort before serving; unpublished metadata stays private", "Record unresolved retention/export/deletion decisions honestly; source tests do not constitute owner policy approval"],
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Actual owner retention/deletion policy approval remains required for VL-055 closure"],
-      "implementation": {"parentTask": "VL-055", "release": "OFFLINE_ONLY / NO_GO_PUBLIC", "source": "Real Pet win/loss process harness now exercises encrypted mid-match and terminal archive restoration to separate empty loopback PostgreSQL; restricted TLS role and explicitly reacquired allocator lease preserve runtime checks.", "remaining": "Full updated process scenarios and exact-source hosted CI remain pending. Local Docker is inactive and system service startup requires interactive authentication; no PASS or retention/deletion approval claimed."}
+      "implementation": {"parentTask": "VL-055", "release": "OFFLINE_ONLY / NO_GO_PUBLIC", "source": "Real Pet win/loss process harness exercises encrypted mid-match and terminal archive restoration to separate empty loopback PostgreSQL; restricted TLS role and explicitly reacquired allocator lease preserve runtime checks.", "remaining": "Full Quality and final-head hosted CI remain required. Local Docker is inactive and system service startup requires interactive authentication. Retention/deletion policy approval is unresolved; VL-055 is not closed."},
+      "verification": {
+        "sourceRevision": "ca3c32deaa965232f528b064f5acde804feb98f2",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/36",
+        "commands": [
+          {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "123 PASS"},
+          {"command": "pnpm exec eslint scripts/native-backup-restore-scenarios.mjs scripts/native-wss-interop.mjs scripts/pet-arena-runtime-scenarios.mjs", "exitCode": 0},
+          {"command": "pnpm governance:check", "exitCode": 0},
+          {"command": "Hosted Rust workflow43910505100 (push) and43910512176 (PR)", "exitCode": 0, "result": "Both complete SUCCESS including actual Pet win/loss encrypted restore scenarios, restricted Rust TLS readiness, key/engine negatives and exact hashes"}
+        ],
+        "scope": "Native archive recovery acceptance only; not complete deletion/export policy approval, production deployment, final Quality or art acceptance. Subsequent image diagnostics require fresh CI."
+      }
     },
     {
       "id": "VL-170",
