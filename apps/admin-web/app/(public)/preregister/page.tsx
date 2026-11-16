@@ -1,0 +1,7 @@
+import {Site} from '../../../features/prelaunch/modules/site/presentation/site';
+import {copy} from '../../../features/prelaunch/modules/site/presentation/copy';
+import {siteLocale} from '../../../server/public-site';
+type Props={searchParams:Promise<{lang?:string|string[]}>};
+async function locale(props:Props){const value=(await props.searchParams).lang;return siteLocale(typeof value==='string'?value:null);}
+export async function generateMetadata(props:Props){const t=copy[await locale(props)];return {title:t.closed+' · Aetheria: Soulbound',description:t.closedText};}
+export default async function Page(props:Props){return <Site locale={await locale(props)} registration/>;}

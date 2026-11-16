@@ -65,7 +65,15 @@ try {
   await compose(['exec','-T','admin','node','-e',privateEnv]);
   facts.scenarios.push({id:'ADMIN-01',privateApiAdminDatabase:true,nonrootReadonlyApps:true,backendCredentialsAbsent:true});
   stage='tls-and-denials';
-  const first=await request('/'),second=await request('/');assert.equal(first.status,200);
+  const productPaths=['/','/world','/pets','/pets/pet-v31-fire-cindrelis','/skills','/gacha','/preregister','/preregister/verify','/preview-media/world'];
+  for(const path of productPaths)for(const headers of [{},{rsc:'1','next-router-prefetch':'1','x-aetheria-locale':'en'}]){
+    const denied=await request(path,'GET',headers);assert.equal(denied.status,404);assert(String(denied.headers['cache-control']).includes('no-store'));assert(!denied.body.includes(Buffer.from('pet-v31-')));
+  }
+  for(const path of ['/api/preregister','/api/signup','/api/pets/grant'])assert.equal((await request(path,'POST',{'content-type':'application/json'},'{}')).status,404);
+  const publicChunks=JSON.parse((await compose(['exec','-T','admin','node','--input-type=module','-e',"import{readdir}from'node:fs/promises';const root='.next/static/chunks';async function walk(path){const files=[];for(const e of await readdir(path,{withFileTypes:true})){const p=path+'/'+e.name;if(e.isDirectory())files.push(...await walk(p));else if(p.endsWith('.js'))files.push('/_next/static/'+p.slice('.next/static/'.length));}return files;}console.log(JSON.stringify(await walk(root)));"])).stdout);
+  assert(publicChunks.length>0);
+  for(const path of publicChunks){const asset=await request(path.split('/').map(encodeURIComponent).join('/'));assert.equal(asset.status,200);for(const marker of ['pet-v31-','DESIGN_CANDIDATE_NOT_GAMEPLAY','WebGLRenderer','cindrelis',values.IMAGE_METRICS_TOKEN,values.IMAGE_OPERATOR_KEY,values.IMAGE_SESSION_SECRET])assert(!asset.body.includes(Buffer.from(marker)));}
+  const first=await request('/admin'),second=await request('/admin');assert.equal(first.status,200);
   for(const response of [first,second]){
     assert(String(response.headers['cache-control']).includes('no-store'));assert.equal(response.headers['x-frame-options'],'DENY');assert.equal(response.headers['referrer-policy'],'no-referrer');
     const csp=String(response.headers['content-security-policy']);assert(csp.includes("'strict-dynamic'"));assert(!csp.includes("'unsafe-inline'")&&!csp.includes("'unsafe-eval'"));
@@ -90,7 +98,9 @@ try {
   const outcomes=[];
   for(const profile of [{name:'desktop',viewport:{width:1280,height:800}},{name:'mobile',viewport:{width:360,height:800},isMobile:true}]){
     const context=await browser.newContext({baseURL:origin,viewport:profile.viewport,isMobile:profile.isMobile??false});context.setDefaultTimeout(15000);if(cookies)await context.addCookies(cookies);
-    const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.name));await page.goto('/');
+    const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.name));assert.equal((await page.goto('/pets?lang=en')).status(),404);await expect(page.locator('canvas,form')).toHaveCount(0);const navigation=await page.goto('/admin');
+    facts.operatorNavigations??=[];facts.operatorNavigations.push({profile:profile.name,status:navigation?.status(),path:new URL(page.url()).pathname,title:await page.title(),passwordFields:await page.getByLabel('Password',{exact:true}).count(),browserErrorNames:errors});
+    assert.equal(navigation?.status(),200,'Operator document must render successfully');
     if(!cookies){
       stage='operator-login';
       await page.getByLabel('Password',{exact:true}).fill(password);

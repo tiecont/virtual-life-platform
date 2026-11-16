@@ -1,0 +1,19 @@
+{
+  "status": "DEVELOPMENT_CONCEPT_ONLY",
+  "source": "Owner supplied NOYUNE_Prelaunch_AdminWeb_Handoff/previews/01_legacy_style_homepage_reference.jpg",
+  "sourceSha256": "da04ab33687e98d6031d71331b7420b351ef93786255161d686abb6a12b742ee",
+  "sourceDescription": "Earlier AI-generated VirtualLife style exploration; not game footage or rights-cleared launch media. Source handoff previews/README.md labels it style-only.",
+  "derivation": {
+    "cropPixels": [
+      0,
+      350,
+      836,
+      680
+    ],
+    "format": "webp",
+    "quality": 88
+  },
+  "outputSha256": "b6f2f1ad88d6e2006728fc8beb62f648b7d286c0643761098ef32713a6ed0f12",
+  "use": "Cropped illustration for owner development preview, without screenshot UI, brand, counts or reward claims. Not approved for publication.",
+  "releaseGate": "Served only by a development-gated Next route; never in public/ or static Next imports. Replace or obtain explicit rights/publication approval before production release."
+}

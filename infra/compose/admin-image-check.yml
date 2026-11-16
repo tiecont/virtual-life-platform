@@ -59,6 +59,7 @@ services:
       HOSTNAME: 0.0.0.0
       PORT: '3400'
       NEXT_TELEMETRY_DISABLED: '1'
+      AETHERIA_SITE_PREVIEW: '1'
       ADMIN_ORIGIN: ${IMAGE_ADMIN_ORIGIN:?}
       ADMIN_API_ORIGIN: ${IMAGE_ADMIN_API_ORIGIN:?}
       ADMIN_METRICS_READ_TOKEN: ${IMAGE_ADMIN_METRICS_TOKEN-}
@@ -70,7 +71,7 @@ services:
     depends_on:
       api: {condition: service_healthy}
     healthcheck:
-      test: [CMD, node, -e, "fetch('http://127.0.0.1:3400').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3400/admin').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 2s
       timeout: 5s
       retries: 30

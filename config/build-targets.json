@@ -5,7 +5,7 @@
   "packageManager": "pnpm@11.28.5",
   "rootBuild": "pnpm -r build",
   "packagesBuild": "pnpm --filter './packages/*' -r build",
-  "lockSha256": "32c63ff178ff23f28173cd5da086018b6988b87f7c07aa78252ea1b929c1e8b0",
+  "lockSha256": "0e4480f6ce7cff7b5af39f0648ea19c70204719756479ae9c81bdc16002801ec",
   "workspaceConfigSha256": "0c79bdd36e2d8eac11365b4cba92045f1d494d8e191f41de14298de2263d0ec1",
   "rootDependencies": {
     "dependencies": {},
@@ -82,9 +82,12 @@
           "next": "16.4.4",
           "react": "19.3.1",
           "react-dom": "19.3.1",
+          "three": "0.187.0",
           "zod": "4.6.7"
         },
-        "devDependencies": {},
+        "devDependencies": {
+          "@types/three": "0.187.0"
+        },
         "peerDependencies": {},
         "optionalDependencies": {}
       },
