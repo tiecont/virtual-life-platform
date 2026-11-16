@@ -56,7 +56,19 @@
           {"command": "pnpm exec eslint scripts/task-plan.mjs tests/governance/task-plan.test.mjs tests/e2e/lounge.spec.ts", "exitCode": 0},
           {"command": "pnpm ci:browser hospitality", "exitCode": 0, "result": "All Lounge and Lodge specs/devices PASS with validated batch reports and disposable database cleanup"}
         ],
-        "scope": "Backlog and hospitality synchronization only. Task IDs subsequently moved to168-174 to preserve PR33 IDs163-167; final-head CI still required. No 3D assets produced or VL-055 closure claimed."
+        "scope": "Backlog and hospitality synchronization only. Task IDs subsequently moved to168-174 to preserve PR33 IDs163-167; final-head CI still required. No 3D assets produced or VL-055 closure claimed.",
+        "browserDiagnosticsFollowup": {
+          "sourceRevision": "819d07b942025b4c9a757e221ad8b040f0205927",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "finding": "At c72bdc3, PR Quality43916018619 core passed and both Rust workflows passed; PR runtime-images failed after guest creation and reload with Failed to fetch while push runtime-images passed. The first48 diagnostics were exhausted before the failure; its network cause is not established.",
+          "change": "Keep the latest48 redacted browser events and recognize the privacy GET route; preserve every application assertion and retry policy.",
+          "commands": [
+            {"command": "node --test tests/governance/image-browser-navigation.test.mjs", "exitCode": 0, "result": "9 PASS, including bounded late-failure capture and secret redaction"},
+            {"command": "pnpm exec eslint scripts/image-browser-navigation.mjs tests/governance/image-browser-navigation.test.mjs", "exitCode": 0},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "remaining": "Complete hosted Quality and Rust against the final PR head before merge. Retain prior failed runs; no production or task-wide acceptance is inferred."
+        }
       }
     },
     {
