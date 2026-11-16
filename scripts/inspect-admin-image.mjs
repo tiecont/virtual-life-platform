@@ -33,7 +33,7 @@ export async function inspectAdminImage(containsCredential) {
     const bytes = await readFile(actual); inventory.push({path: actual.slice(root.length + 1), size: bytes.length, sha256: hash(bytes)});
     if (/\.(?:[cm]?js|tsx?|json|ya?ml|env)$/.test(actual)) {assert(bytes.length <= 32 * 1024 * 1024, 'Web text scan bound exceeded'); assert(!containsCredential(bytes.toString()), 'Credential pattern in web artifact'); scannedTextFiles++;}
     if (actual.startsWith(app + '/.next/static/')) {
-      for (const marker of ['build-only-admin.invalid', 'build-only-admin-api.invalid', 'abababababababababababababababababababababababababababababababab', '/internal/telemetry', 'pet-v31-', 'DESIGN_CANDIDATE_NOT_GAMEPLAY']) assert(!bytes.includes(Buffer.from(marker)), 'Private admin configuration or route leaked into browser assets');
+      for (const marker of ['build-only-admin.invalid', 'build-only-admin-api.invalid', 'abababababababababababababababababababababababababababababababab', '/internal/telemetry', 'pet-v31-', 'DESIGN_CANDIDATE_NOT_GAMEPLAY', 'WebGLRenderer', 'cindrelis']) assert(!bytes.includes(Buffer.from(marker)), 'Private admin configuration or draft preview leaked into browser assets');
       if (actual.endsWith('.js')) clientJs++; if (actual.endsWith('.css')) clientCss++;
     }
   }
