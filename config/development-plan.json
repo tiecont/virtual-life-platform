@@ -67,9 +67,9 @@
       "priority": 0,
       "dependsOn": ["VL-021", "VL-020"],
       "acceptance": ["Restore actual native checkpoint, receipts, events and settlement records; verify exact hashes and authoritative state", "Missing/wrong keys, corrupt data and incompatible versions abort before serving; unpublished metadata stays private", "Record unresolved retention/export/deletion decisions honestly; source tests do not constitute owner policy approval"],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": ["Actual owner retention/deletion policy approval remains required for VL-055 closure"],
-      "implementation": {"parentTask": "VL-055", "release": "OFFLINE_ONLY / NO_GO_PUBLIC"}
+      "implementation": {"parentTask": "VL-055", "release": "OFFLINE_ONLY / NO_GO_PUBLIC", "source": "Real Pet win/loss process harness now exercises encrypted mid-match and terminal archive restoration to separate empty loopback PostgreSQL; restricted TLS role and explicitly reacquired allocator lease preserve runtime checks.", "remaining": "Full updated process scenarios and exact-source hosted CI remain pending. Local Docker is inactive and system service startup requires interactive authentication; no PASS or retention/deletion approval claimed."}
     },
     {
       "id": "VL-170",
