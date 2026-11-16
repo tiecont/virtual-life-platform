@@ -32,7 +32,7 @@ async function main(){
   console.log('Prepared private artifacts/local-preview/runtime.env. Existing database volumes are retained by down.');return;
  }
  const env=await readPreviewEnvironment();
- const code=await new Promise((done,fail)=>{const child=spawn('docker',['compose','--env-file',envFile,'-f','infra/compose/preview.yml',...commands[action]],{stdio:'inherit',env:{...process.env,...env}});child.once('error',fail);child.once('exit',code=>done(code??1));});
+ const code=await new Promise((done,fail)=>{const child=spawn('docker',['compose','--project-name','aetheria-preview','--env-file',envFile,'-f','infra/compose/preview.yml',...commands[action]],{stdio:'inherit',env:{...process.env,...env}});child.once('error',fail);child.once('exit',code=>done(code??1));});
  process.exitCode=code;
  if(action==='up'&&code===0)console.log('Local preview: http://127.0.0.1:'+env.PREVIEW_ADMIN_PORT+' | Portal: http://127.0.0.1:'+env.PREVIEW_WEB_PORT+' | Private console: http://127.0.0.1:'+env.PREVIEW_ADMIN_PORT+'/admin\nDevelopment only; registration/email and native gameplay remain unavailable.');
 }

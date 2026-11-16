@@ -9,14 +9,16 @@ import {ProgressionPolicySchema} from '@virtual-city/contracts';
 import {readPreviewEnvironment} from '../../scripts/local-preview.mjs';
 const env={PREVIEW_DB_PASSWORD:'a'.repeat(64),PREVIEW_SESSION_SECRET:'b'.repeat(96),PREVIEW_OPERATOR_KEY:'c'.repeat(64),PREVIEW_METRICS_TOKEN:'d'.repeat(64),PREVIEW_WEB_PORT:'4800',PREVIEW_ADMIN_PORT:'4900',PREVIEW_API_PORT:'4700',PREVIEW_NATIVE_PORT:'4600'};
 const serialize=value=>Object.entries(value).map(([key,value])=>key+'='+value).join('\n');
-test('launcher passes validated private values to Docker despite inherited preview overrides',async()=>{
+test('launcher pins its own project and passes validated values despite inherited Compose overrides',async()=>{
  const root=await mkdtemp(join(tmpdir(),'aetheria-launcher-'));
  try{
   const privateDir=join(root,'artifacts/local-preview');await mkdir(privateDir,{recursive:true,mode:0o700});
   await writeFile(join(privateDir,'runtime.env'),serialize(env),{mode:0o600});
-  await writeFile(join(root,'docker'),'#!'+process.execPath+'\nprocess.stdout.write(JSON.stringify(Object.fromEntries(Object.entries(process.env).filter(([key])=>key.startsWith("PREVIEW_")))));\n',{mode:0o700});
-  const output=execFileSync(process.execPath,[fileURLToPath(new URL('../../scripts/local-preview.mjs',import.meta.url)),'config'],{cwd:root,env:{...process.env,PATH:root+delimiter+process.env.PATH,...Object.fromEntries(Object.keys(env).map(key=>[key,'invalid-shell-override']))},encoding:'utf8'});
-  assert.deepEqual(JSON.parse(output),env);
+  await writeFile(join(root,'docker'),'#!'+process.execPath+'\nprocess.stdout.write(JSON.stringify({args:process.argv.slice(2),values:Object.fromEntries(Object.entries(process.env).filter(([key])=>key.startsWith("PREVIEW_")))})+"\\n");\n',{mode:0o700});
+  for(const action of ['config','up','stop','down','status','logs']){
+   const output=execFileSync(process.execPath,[fileURLToPath(new URL('../../scripts/local-preview.mjs',import.meta.url)),action],{cwd:root,env:{...process.env,PATH:root+delimiter+process.env.PATH,COMPOSE_PROJECT_NAME:'vc',...Object.fromEntries(Object.keys(env).map(key=>[key,'invalid-shell-override']))},encoding:'utf8'});
+   const captured=JSON.parse(output.split('\n')[0]);assert.deepEqual(captured.values,env);assert.deepEqual(captured.args.slice(0,3),['compose','--project-name','aetheria-preview']);
+  }
  }finally{await rm(root,{recursive:true,force:true});}
 });
 test('local environment rejects exposed/missing/shared secrets, symlinks and invalid or colliding ports',async()=>{
