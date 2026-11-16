@@ -4115,6 +4115,18 @@
         "sourceRevision": "907e76c2573182193821062af7fb1b51a2829419",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/31",
+      "fixtureFollowup": {
+        "sourceRevision": "982e8ca4a12311f538059fcbb4ae681367ccb5af",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "finding": "Exact-head PR Quality43800777410 hospitality failed while push hospitality passed. Actual trace proves successful audience OPEN response had only24ms remaining before its ten-second bucket expired; the UI correctly removed the expired observation before the assertion.",
+        "fix": "The existing freshReactionWindow helper now establishes a sufficiently fresh DISABLED observation before the one OPEN mutation in the failing fixture. Confirmation assertions, negative expiry cases, server TTLs and timeouts are unchanged.",
+        "commands": [
+          {"command": "node scripts/run-browser-tests.mjs tests/e2e/lounge.spec.ts (actual first child of pnpm ci:browser hospitality)", "exitCode": 0, "result": "32 PASS across desktop/mobile, including the reproduced fixture and delayed expired control/view/send negatives; batch report validated."},
+          {"command": "pnpm exec eslint tests/e2e/lounge.spec.ts", "exitCode": 0, "result": "PASS"},
+          {"command": "git diff --check", "exitCode": 0, "result": "PASS"}
+        ],
+        "pending": "Complete remaining hospitality specs and exact final-head hosted Quality/Rust; record aggregate outcomes in PR discussion before merge."
+      },
         "findings": "Reproduced blocking FIFO opens in runtime/source/import files. Nonblocking/no-follow open reaches regular-file validation promptly; bounded regression fails before the fix and passes after it. Paths, actual source/import/runtime bytes, hashes, stable IDs, animation bindings and nonproduction/rights gates self-reviewed.",
         "commands": [
           {
