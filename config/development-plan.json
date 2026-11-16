@@ -5486,91 +5486,70 @@
         "scope": "Owner expanded PR33 to complete product introduction and concept motion previews (VL-165). Signup API and operator marketing remain future slices. IDs moved from 128-132 to 163-167 after PR32 independently allocated 128-162; no old main task changed.",
         "designReference": "Owner supplied /home/tiecont/Downloads/NOYUNE_Prelaunch_AdminWeb_Handoff after initial audit. Read product copy, technical architecture, backlog, QA gates and both style-only previews. Aetheria: Soulbound supersedes the handoff name. Cropped concept media is served only in development, with source hash/provenance; no production-media or legal clearance inferred."
       },
-      "verification": {
-        "sourceRevision": "ec8792a9f75fbf0f7280dd589b85f931f9d00198",
-        "reviewMode": "SINGLE_AGENT_AUDIT",
-        "commands": [
-          {
-            "command": "pnpm exec vitest run --project unit apps/admin-web",
-            "exitCode": 0,
-            "result": "22 tests PASS, including canonical skill cost/unlock and Signature/fusion cost separation"
-          },
-          {
-            "command": "pnpm exec eslint apps/admin-web",
-            "exitCode": 0,
-            "result": "PASS"
-          },
-          {
-            "command": "node --test tests/governance/admin-boundary.test.mjs tests/governance/task-plan.test.mjs tests/governance/pet-v31.test.mjs",
-            "exitCode": 0,
-            "result": "8 tests PASS"
-          },
-          {
-            "command": "pnpm --filter @virtual-city/admin-web build",
-            "exitCode": 0,
-            "result": "PASS"
-          },
-          {
-            "command": "BROWSER_REPORT_SCOPE=ci/local/aetheria-ec8792a node scripts/run-browser-tests.mjs tests/e2e/admin.spec.ts",
-            "exitCode": 0,
-            "result": "16 desktop/mobile tests PASS: VI/EN routes at320px, filters, operator authorization/MFA regressions, six WebGL concepts and keyboard/reduced-motion/context-loss controls. Desktop homepage/Marivell and mobile Aurelune screenshots inspected."
-          }
-        ],
-        "priorRevisionChecks": {
-          "sourceRevision": "3499eb94934bf9661b9d2cbd2ea81623e14090d0",
-          "commands": [
-            {
-              "command": "BROWSER_REPORT_SCOPE=ci/local/aetheria-3499eb9 node scripts/run-browser-tests.mjs tests/e2e/admin.spec.ts",
-              "exitCode": 0,
-              "result": "16 desktop/mobile cases PASS: all 12 product routes VI/EN at320px, filters/profile links, all six actual WebGL concept models, rotate/zoom/motions/pause/reduced-motion/context loss, existing operator regressions"
-            },
-            {
-              "command": "pnpm test:admin",
-              "exitCode": 0,
-              "result": "99 real DB/API/admin tests PASS"
-            },
-            {
-              "command": "pnpm --filter @virtual-city/admin-web build",
-              "exitCode": 0,
-              "result": "PASS; production smoke denies seven public paths and hydrates private /admin login"
-            }
-          ]
+    "verification": {
+      "sourceRevision": "ead95c52eccf4130d96f2bdcb6e39a9f325bbb1e",
+      "reviewMode": "SINGLE_AGENT_AUDIT",
+      "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/33",
+      "findings": "Real production HTML/RSC denial did not prevent catalog IDs in static JavaScript. Server-only catalog projection fixed this. Deeper actual image scan then found lazy scene geometry/names still served as static chunks; production compilation now aliases the development scene to an inert rejecting module. Static image and actual HTTP scans cover all chunks and reject renderer/concept markers. Actual WebGL context loss also dropped canvas focus to BODY; fallback restores focus to the toggle.",
+      "commands": [
+        {
+          "command": "pnpm check",
+          "exitCode": 0,
+          "result": "119 governance / 515 unit / 789 PostgreSQL integration tests and all package/application builds PASS on unchanged committed source."
         },
-        "pending": "Full pnpm check started at3499eb9 crossed main integration and terminated exit143 during integration; owned worker and database cleaned. Not a complete final-source check. Hosted Quality/Rust CI pending for ec8792a; this verification-only follow-up also needs green exact-revision PR CI before merge. No production launch authorized.",
-        "limitations": "Six original geometric browser motion concepts only: no production Unity models, GLB/rigged clips or complete Limited cinematics. Gacha informational; no real pulls/purchases/odds promise. Campaign/API/mail work remains VL-164/166. Public source catalog state remains draft.",
-        "evidenceRoot": "artifacts/aetheria-prelaunch",
-        "precedingProductChecks": {
-          "sourceRevision": "a05a3f6ade54d68556dd9fabcd4382082e905dcf",
-          "commands": [
-            {
-              "command": "pnpm exec vitest run --project unit apps/admin-web",
-              "exitCode": 0,
-              "result": "21 tests PASS, including public draft projection against merged V3.1, production gating and existing BFF unit checks"
-            },
-            {
-              "command": "node --test tests/governance/admin-boundary.test.mjs tests/governance/task-plan.test.mjs tests/governance/pet-v31.test.mjs",
-              "exitCode": 0,
-              "result": "8 tests PASS"
-            },
-            {
-              "command": "pnpm exec eslint apps/admin-web tests/e2e/admin.spec.ts scripts/admin-boundary.mjs tests/governance/admin-boundary.test.mjs",
-              "exitCode": 0,
-              "result": "PASS"
-            },
-            {
-              "command": "pnpm --filter @virtual-city/admin-web build",
-              "exitCode": 0,
-              "result": "PASS at a05a3f6"
-            },
-            {
-              "command": "node scripts/run-ci-browser.mjs admin",
-              "exitCode": 0,
-              "result": "All four specs PASS on desktop/mobile at a05a3f6: admin, privacy, calendar, runtime. Owned databases cleaned by harness."
-            }
-          ]
+        {
+          "command": "node --test tests/governance/admin-bundle.test.mjs tests/governance/admin-boundary.test.mjs",
+          "exitCode": 0,
+          "result": "5 tests PASS, including environment/server-import denial, type-only import erasure and actual file marker negatives for catalog and draft renderer."
+        },
+        {
+          "command": "pnpm exec eslint apps/admin-web/next.config.ts apps/admin-web/features/prelaunch/modules/product/presentation/pet-scene-disabled.ts scripts/admin-image-smoke.mjs scripts/inspect-admin-image.mjs scripts/admin-bundle-check.mjs tests/governance/admin-bundle.test.mjs",
+          "exitCode": 0,
+          "result": "PASS; full lint also passed in pnpm check."
+        },
+        {
+          "command": "node scripts/release-bundle.mjs --output artifacts/focused-sprint/pr33-scene-bundle",
+          "exitCode": 0,
+          "result": "18 actual API/web/admin image scenarios PASS at ead95c5. Production denies18 HTML/RSC requests with preview flag1, denies signup/grant endpoints, scans actual TLS-served static chunks for draft/renderer/secret bytes, and preserves operator MFA/Origin/CSRF/private headers/session rotation/revocation. Services and generated secrets cleaned; registry publish NOT_RUN."
+        },
+        {
+          "command": "node scripts/local-compose-smoke.mjs --bundle artifacts/focused-sprint/pr33-scene-bundle/bundle.json",
+          "exitCode": 0,
+          "result": "PASS; owned services/51-migration database and generated secrets cleaned."
+        },
+        {
+          "command": "pnpm ci:browser admin",
+          "exitCode": 1,
+          "result": "At this source all18 admin desktop/mobile cases PASS. The next privacy spec could not start because this isolated checkout lacked a portal production build; not claimed a complete green group command."
+        },
+        {
+          "command": "pnpm --filter @virtual-city/portal-web build",
+          "exitCode": 0,
+          "result": "Prepared the missing production portal artifact without a source workaround."
+        },
+        {
+          "command": "node scripts/run-browser-tests.mjs tests/e2e/privacy.spec.ts; node scripts/run-browser-tests.mjs tests/e2e/calendar.spec.ts; node scripts/run-browser-tests.mjs tests/e2e/runtime.spec.ts (separate sequential child invocations)",
+          "exitCode": 0,
+          "result": "8 cases PASS: privacy4/calendar2/runtime2 across desktop/mobile. Together with18 admin cases, all26 cases across the four relevant specs PASS; each spec/device has an owned isolated DB/API."
+        },
+        {
+          "command": "pnpm plan:status; git diff --check (separate invocations)",
+          "exitCode": 0,
+          "result": "PASS. VL-163/VL-165 remain IN_PROGRESS; no signup/mail or Pet persistence task implemented."
         }
-      },
-      "remaining": "Exact-final-source CI and merge verification; production remains default-off."
+      ],
+      "failedAttempts": [
+        "Original-source production probe: HTML/RSC404 but actual static JS200 contained unpublished240-Pet catalog; baseline actual WebGL2 context loss moved focus to BODY.",
+        "fc7ebab production image still contained five concept names in lazy chunk630. The added renderer/name rejection regression failed1 before the exclusion fix; corrected production build and18-scenario image suite PASS.",
+        "Initial canvas readPixels sampled a cleared non-preserved drawing buffer. Switched the test to actual composited screenshots; matched the parent matte at fractional screenshot edges. Occupancy/framing/rotation/motion assertions retained.",
+        "One earlier complete admin group attempt exited1 on Chromium ERR_NETWORK_CHANGED during Docker fixture networking. Stable-network rerun at this source passed18 cases; no timeout/assertion relaxed.",
+        "Earlier ee49 push image smoke failed on the unchanged portal generic error page. Same-source local release and later fc7/ead releases PASS; precise cause not established.",
+        "Local fc7 full check intentionally stopped143 to implement the newly reproduced production concept leak. Final ead full check completed0."
+      ],
+      "pending": "Evidence-only head requires exact committed hosted Quality/Rust and clean mergeability. Reconcile merged PR31 first, record final CI/merge SHAs in PR discussion and verify post-merge main. OFFLINE_ONLY / NO_GO_PUBLIC.",
+      "limitations": "Development-only preview; actual operator authorization and publication gates retained. No public deployment, signup/mail acceptance, live credentials, media/legal clearance or production model acceptance.99 real admin DB/API cases also passed at earlier ee49 source; fresh full789 integration run above is the current-source evidence."
+    },
+    "remaining": "Exact-final-source CI and merge verification; production remains default-off."
     },
     {
       "id": "VL-164",
@@ -5607,91 +5586,38 @@
       "qualificationRequirements": [
         "Legal/brand and official media rights approval apply to publication, not unrelated source work"
       ],
-      "verification": {
-        "sourceRevision": "ec8792a9f75fbf0f7280dd589b85f931f9d00198",
-        "reviewMode": "SINGLE_AGENT_AUDIT",
-        "commands": [
-          {
-            "command": "pnpm exec vitest run --project unit apps/admin-web",
-            "exitCode": 0,
-            "result": "22 tests PASS, including canonical skill cost/unlock and Signature/fusion cost separation"
-          },
-          {
-            "command": "pnpm exec eslint apps/admin-web",
-            "exitCode": 0,
-            "result": "PASS"
-          },
-          {
-            "command": "node --test tests/governance/admin-boundary.test.mjs tests/governance/task-plan.test.mjs tests/governance/pet-v31.test.mjs",
-            "exitCode": 0,
-            "result": "8 tests PASS"
-          },
-          {
-            "command": "pnpm --filter @virtual-city/admin-web build",
-            "exitCode": 0,
-            "result": "PASS"
-          },
-          {
-            "command": "BROWSER_REPORT_SCOPE=ci/local/aetheria-ec8792a node scripts/run-browser-tests.mjs tests/e2e/admin.spec.ts",
-            "exitCode": 0,
-            "result": "16 desktop/mobile tests PASS: VI/EN routes at320px, filters, operator authorization/MFA regressions, six WebGL concepts and keyboard/reduced-motion/context-loss controls. Desktop homepage/Marivell and mobile Aurelune screenshots inspected."
-          }
-        ],
-        "priorRevisionChecks": {
-          "sourceRevision": "3499eb94934bf9661b9d2cbd2ea81623e14090d0",
-          "commands": [
-            {
-              "command": "BROWSER_REPORT_SCOPE=ci/local/aetheria-3499eb9 node scripts/run-browser-tests.mjs tests/e2e/admin.spec.ts",
-              "exitCode": 0,
-              "result": "16 desktop/mobile cases PASS: all 12 product routes VI/EN at320px, filters/profile links, all six actual WebGL concept models, rotate/zoom/motions/pause/reduced-motion/context loss, existing operator regressions"
-            },
-            {
-              "command": "pnpm test:admin",
-              "exitCode": 0,
-              "result": "99 real DB/API/admin tests PASS"
-            },
-            {
-              "command": "pnpm --filter @virtual-city/admin-web build",
-              "exitCode": 0,
-              "result": "PASS; production smoke denies seven public paths and hydrates private /admin login"
-            }
-          ]
+    "verification": {
+      "sourceRevision": "ead95c52eccf4130d96f2bdcb6e39a9f325bbb1e",
+      "reviewMode": "SINGLE_AGENT_AUDIT",
+      "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/33",
+      "relatedVerificationTask": "VL-163",
+      "commands": [
+        {
+          "command": "pnpm ci:browser admin",
+          "exitCode": 1,
+          "result": "At this source all18 admin desktop/mobile cases PASS. The next privacy spec could not start because this isolated checkout lacked a portal production build; not claimed a complete green group command."
         },
-        "pending": "Full pnpm check started at3499eb9 crossed main integration and terminated exit143 during integration; owned worker and database cleaned. Not a complete final-source check. Hosted Quality/Rust CI pending for ec8792a; this verification-only follow-up also needs green exact-revision PR CI before merge. No production launch authorized.",
-        "limitations": "Six original geometric browser motion concepts only: no production Unity models, GLB/rigged clips or complete Limited cinematics. Gacha informational; no real pulls/purchases/odds promise. Campaign/API/mail work remains VL-164/166. Public source catalog state remains draft.",
-        "evidenceRoot": "artifacts/aetheria-prelaunch",
-        "precedingProductChecks": {
-          "sourceRevision": "a05a3f6ade54d68556dd9fabcd4382082e905dcf",
-          "commands": [
-            {
-              "command": "pnpm exec vitest run --project unit apps/admin-web",
-              "exitCode": 0,
-              "result": "21 tests PASS, including public draft projection against merged V3.1, production gating and existing BFF unit checks"
-            },
-            {
-              "command": "node --test tests/governance/admin-boundary.test.mjs tests/governance/task-plan.test.mjs tests/governance/pet-v31.test.mjs",
-              "exitCode": 0,
-              "result": "8 tests PASS"
-            },
-            {
-              "command": "pnpm exec eslint apps/admin-web tests/e2e/admin.spec.ts scripts/admin-boundary.mjs tests/governance/admin-boundary.test.mjs",
-              "exitCode": 0,
-              "result": "PASS"
-            },
-            {
-              "command": "pnpm --filter @virtual-city/admin-web build",
-              "exitCode": 0,
-              "result": "PASS at a05a3f6"
-            },
-            {
-              "command": "node scripts/run-ci-browser.mjs admin",
-              "exitCode": 0,
-              "result": "All four specs PASS on desktop/mobile at a05a3f6: admin, privacy, calendar, runtime. Owned databases cleaned by harness."
-            }
-          ]
+        {
+          "command": "pnpm --filter @virtual-city/portal-web build",
+          "exitCode": 0,
+          "result": "Prepared the missing production portal artifact without a source workaround."
+        },
+        {
+          "command": "node scripts/run-browser-tests.mjs tests/e2e/privacy.spec.ts; node scripts/run-browser-tests.mjs tests/e2e/calendar.spec.ts; node scripts/run-browser-tests.mjs tests/e2e/runtime.spec.ts (separate sequential child invocations)",
+          "exitCode": 0,
+          "result": "8 cases PASS: privacy4/calendar2/runtime2 across desktop/mobile. Together with18 admin cases, all26 cases across the four relevant specs PASS; each spec/device has an owned isolated DB/API."
+        },
+        {
+          "command": "VLP_ADMIN_SCAN_MARKERS=<two explicit synthetic markers> node scripts/admin-bundle-check.mjs",
+          "exitCode": 0,
+          "result": "Actual production static31 files /1,614,670bytes PASS. No draft IDs, configured synthetic markers or WebGLRenderer/concept marker. Separate actual-image scan found none of the six concept names after exclusion."
         }
-      },
-      "remaining": "Rights-cleared production models/animations/audio, full media/performance qualification and signup API integration; do not call the production product site complete."
+      ],
+      "uiAcceptance": "VI/EN product routes at320px, catalog filters and canonical240-Pet/16-skill consistency, keyboard navigation/focus, explicit draft/nonproduction statements and closed registration PASS. All six actual canvases pass composited pixel occupancy/inset framing, keyboard rotation/zoom changes, motion changes, reduced-motion static rendering, unavailable-WebGL fallback and actual context-loss keyboard exit on desktop/mobile. Final desktop Aurelune/mobile Marivell screenshots inspected.",
+      "pending": "Evidence-only head requires exact committed hosted Quality/Rust and clean mergeability. Reconcile merged PR31 first, record final CI/merge SHAs in PR discussion and verify post-merge main. OFFLINE_ONLY / NO_GO_PUBLIC.",
+      "limitations": "Six geometric browser motion concepts, not production Unity models, rigged GLB clips or complete Limited cinematics. Dedicated assets for other Pets remain missing. No actual gacha/purchases/rates/availability promises, signup endpoint, mail delivery or Pet grants. Rights-cleared media/performance/hardware qualification and the remaining task acceptance are incomplete; task remains IN_PROGRESS."
+    },
+    "remaining": "Rights-cleared production models/animations/audio, full media/performance qualification and signup API integration; do not call the production product site complete."
     },
     {
       "id": "VL-166",
