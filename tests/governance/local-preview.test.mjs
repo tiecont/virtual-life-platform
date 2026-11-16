@@ -1,13 +1,24 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
-import {mkdtemp,writeFile,readFile,rm,chmod,symlink} from 'node:fs/promises';
+import {mkdtemp,mkdir,writeFile,readFile,rm,chmod,symlink} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
-import {join} from 'node:path';
+import {join,delimiter} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {ProgressionPolicySchema} from '@virtual-city/contracts';
 import {readPreviewEnvironment} from '../../scripts/local-preview.mjs';
 const env={PREVIEW_DB_PASSWORD:'a'.repeat(64),PREVIEW_SESSION_SECRET:'b'.repeat(96),PREVIEW_OPERATOR_KEY:'c'.repeat(64),PREVIEW_METRICS_TOKEN:'d'.repeat(64),PREVIEW_WEB_PORT:'4800',PREVIEW_ADMIN_PORT:'4900',PREVIEW_API_PORT:'4700',PREVIEW_NATIVE_PORT:'4600'};
 const serialize=value=>Object.entries(value).map(([key,value])=>key+'='+value).join('\n');
+test('launcher passes validated private values to Docker despite inherited preview overrides',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'aetheria-launcher-'));
+ try{
+  const privateDir=join(root,'artifacts/local-preview');await mkdir(privateDir,{recursive:true,mode:0o700});
+  await writeFile(join(privateDir,'runtime.env'),serialize(env),{mode:0o600});
+  await writeFile(join(root,'docker'),'#!'+process.execPath+'\nprocess.stdout.write(JSON.stringify(Object.fromEntries(Object.entries(process.env).filter(([key])=>key.startsWith("PREVIEW_")))));\n',{mode:0o700});
+  const output=execFileSync(process.execPath,[fileURLToPath(new URL('../../scripts/local-preview.mjs',import.meta.url)),'config'],{cwd:root,env:{...process.env,PATH:root+delimiter+process.env.PATH,...Object.fromEntries(Object.keys(env).map(key=>[key,'invalid-shell-override']))},encoding:'utf8'});
+  assert.deepEqual(JSON.parse(output),env);
+ }finally{await rm(root,{recursive:true,force:true});}
+});
 test('local environment rejects exposed/missing/shared secrets, symlinks and invalid or colliding ports',async()=>{
  const root=await mkdtemp(join(tmpdir(),'aetheria-preview-')),file=join(root,'runtime.env');
  try{

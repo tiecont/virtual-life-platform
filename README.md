@@ -48,7 +48,10 @@ preview at http://127.0.0.1:4900, the portal at http://127.0.0.1:4800 and the
 private console at http://127.0.0.1:4900/admin. The API is on loopback port 4700
 and the native foundation on 4600. PostgreSQL, migrations, API, durable worker,
 both Next.js apps and the Rust foundation share `infra/compose/preview.yml`.
-Desktop/mobile clients are separate builds, not server processes.
+Desktop/mobile clients are separate builds, not server processes. Native liveness
+returns 200; readiness intentionally returns 503 while gameplay is disabled.
+The optional `preview:test` browser check requires Playwright Chromium installed
+locally (`pnpm exec playwright install chromium`).
 
 This stack uses Next development mode because product routes and concept scenes
 remain unavailable in production. Registration and email acceptance remain
