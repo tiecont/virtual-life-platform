@@ -9,12 +9,15 @@ test.beforeAll(()=>{const address=new URL(process.env.TEST_DATABASE_URL??'');if(
 test.beforeEach(async()=>{await pool.query('UPDATE identity_operator SET totp_counter=-1,failures=0,locked_until=NULL');await pool.query('UPDATE identity_operator_sessions SET revoked_at=clock_timestamp() WHERE revoked_at IS NULL');});
 test.afterAll(async()=>{await pool.end();});
 async function signIn(page:Page){await page.goto('/admin');await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Authenticator code').fill(totp(secret,Date.now()));await page.getByLabel('Authenticator code').press('Enter');await expect(page.getByRole('heading',{name:'City at a glance'})).toBeVisible();}
-async function canvasFrame(canvas:Locator){return canvas.evaluate(element=>new Promise<{hash:number;occupied:number;pixels:number;inset:boolean}>(resolve=>requestAnimationFrame(()=>{
- const c=element as HTMLCanvasElement,gl=c.getContext('webgl2');if(!gl)throw Error('Actual WebGL2 required');
- const width=gl.drawingBufferWidth,height=gl.drawingBufferHeight,bytes=new Uint8Array(width*height*4);gl.readPixels(0,0,width,height,gl.RGBA,gl.UNSIGNED_BYTE,bytes);
- let hash=0,occupied=0,left=width,right=0,bottom=height,top=0;for(let i=0;i<bytes.length;i+=4){hash=Math.imul(hash^bytes[i]^bytes[i+1]<<8^bytes[i+2]<<16,16777619);if(bytes[i+3]){occupied++;const x=i/4%width,y=Math.floor(i/4/width);left=Math.min(left,x);right=Math.max(right,x);bottom=Math.min(bottom,y);top=Math.max(top,y);}}
- resolve({hash,occupied,pixels:width*height,inset:left>0&&right<width-1&&bottom>0&&top<height-1});
- })));}
+async function canvasFrame(canvas:Locator){
+ // WebGL uses a non-preserved drawing buffer; measure the composited image.
+ const png=await canvas.screenshot({style:'canvas { background: rgb(1, 2, 3) !important; }'});
+ return canvas.page().evaluate(async encoded=>{
+  const bitmap=await createImageBitmap(new Blob([Uint8Array.from(atob(encoded),c=>c.charCodeAt(0))],{type:'image/png'})),{width,height}=bitmap,frame=new OffscreenCanvas(width,height),ctx=frame.getContext('2d')!;ctx.drawImage(bitmap,0,0);bitmap.close();const bytes=ctx.getImageData(0,0,width,height).data;
+  let hash=0,occupied=0,left=width,right=0,bottom=height,top=0;for(let i=0;i<bytes.length;i+=4){hash=Math.imul(hash^bytes[i]^bytes[i+1]<<8^bytes[i+2]<<16,16777619);if(bytes[i]!==1||bytes[i+1]!==2||bytes[i+2]!==3){occupied++;const x=i/4%width,y=Math.floor(i/4/width);left=Math.min(left,x);right=Math.max(right,x);bottom=Math.min(bottom,y);top=Math.max(top,y);}}
+  return {hash,occupied,pixels:width*height,inset:left>0&&right<width-1&&bottom>0&&top<height-1};
+ },png.toString('base64'));
+}
 test('unauthenticated UI and routes deny operator/service bypass, wrong Origin, arbitrary queries and private source paths',async({page,request})=>{
  await page.goto('/admin');await expect(page.getByRole('heading',{name:/quiet place/})).toBeVisible();expect(await page.locator('form').getAttribute('method')).toBe('post');
  for(const path of ['/api/admin/session','/api/admin/metrics?view=summary&range=current','/api/admin/observations?view=system&range=current','/api/admin/system-state?view=system&range=current'])expect((await request.get(path,{headers:{authorization:'Bearer '+serviceToken}})).status()).toBe(401);
