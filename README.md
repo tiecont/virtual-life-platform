@@ -40,12 +40,13 @@ Run the existing server runtimes together on an isolated local database:
 pnpm preview:prepare
 pnpm preview:up
 pnpm preview:status
+pnpm preview:test
 ```
 
 The first build includes Node and Rust dependencies. Open the Aetheria VI/EN
 preview at http://127.0.0.1:4900, the portal at http://127.0.0.1:4800 and the
-private console at http://127.0.0.1:4900/admin. The API is on loopback port4700
-and the native foundation on4600. PostgreSQL, migrations, API, durable worker,
+private console at http://127.0.0.1:4900/admin. The API is on loopback port 4700
+and the native foundation on 4600. PostgreSQL, migrations, API, durable worker,
 both Next.js apps and the Rust foundation share `infra/compose/preview.yml`.
 Desktop/mobile clients are separate builds, not server processes.
 

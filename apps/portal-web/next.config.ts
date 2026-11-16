@@ -2,6 +2,7 @@ import type { NextConfig } from 'next';
 import {resolve} from 'node:path';
 const standalone = process.env.VLP_WEB_STANDALONE === '1';
 const config: NextConfig = {
+  allowedDevOrigins: ['127.0.0.1'],
   output: standalone ? 'standalone' : undefined,
   outputFileTracingRoot: standalone ? resolve(__dirname, '../..') : undefined,
   poweredByHeader: false, transpilePackages: ['@virtual-city/game-client', '@virtual-city/client-sdk', '@virtual-city/scene3d', '@virtual-city/contracts', '@virtual-city/world-sdk', '@virtual-city/pixi-scene', '@virtual-city/focus-ui'],
