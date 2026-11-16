@@ -67,6 +67,8 @@ services:
       api: {condition: service_healthy}
   portal:
     <<: *node
+    # Next dev regenerates next-env.d.ts; writes stay inside this dev container.
+    read_only: false
     working_dir: /app/apps/portal-web
     command: [pnpm, exec, next, dev, --webpack, --hostname, 0.0.0.0, --port, '3300']
     environment:
@@ -86,6 +88,7 @@ services:
       retries: 30
   admin:
     <<: *node
+    read_only: false
     working_dir: /app/apps/admin-web
     command: [pnpm, exec, next, dev, --webpack, --hostname, 0.0.0.0, --port, '3400']
     environment:

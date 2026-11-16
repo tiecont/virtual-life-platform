@@ -26,6 +26,8 @@ test('all local server runtimes bind only loopback and preserve auth, migration 
   assert.deepEqual(Object.keys(s).sort(),['admin','api','db','game-runtime','migrate','portal','worker']);
   for(const service of Object.values(s))for(const port of service.ports??[])assert.equal(port.host_ip,'127.0.0.1');
   assert(!s.db.ports);assert(!s.worker.ports);assert.equal(s.api.depends_on.migrate.condition,'service_completed_successfully');
+  assert.equal(s.api.read_only,true);assert.equal(s.worker.read_only,true);assert.equal(s['game-runtime'].read_only,true);
+  for(const frontend of [s.portal,s.admin]){assert.equal(frontend.read_only??false,false);assert(!frontend.volumes);}
   assert.equal(s.api.environment.ADMIN_ORIGIN,'http://127.0.0.1:4900');assert.equal(s.admin.environment.AETHERIA_SITE_PREVIEW,'1');assert.equal(s.admin.environment.NODE_ENV,'development');
   for(const key of ['DATABASE_URL','SESSION_SECRET','OPERATOR_AUTH_KEY'])assert(!Object.hasOwn(s.admin.environment,key));
   for(const key of ['SESSION_SECRET','OPERATOR_AUTH_KEY','NATIVE_REWARD_POLICY_FILE'])assert(!Object.hasOwn(s.worker.environment,key));
