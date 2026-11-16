@@ -2380,10 +2380,11 @@
             {"command": "node artifacts/preview-idempotence-probe.mjs", "exitCode": 0, "result": "Actual prepare preserves the original private runtime.env byte-for-byte; no credentials printed."}
           ],
           "liveRuntimeVerification": {
-            "sourceRevision": "f12efc2e22b44c88359f7eb420a0bf9c0ef65d86",
+            "sourceRevision": "34865ff1a734d639fff2280e2aff551d746444ba",
             "commands": [
               {"command": "pnpm preview:up", "exitCode": 0, "result": "Actual Node/Rust image builds and all server runtimes started; existing51-migration database retained. API ready200, native live200/default-off ready503."},
-              {"command": "pnpm preview:test", "exitCode": 0, "result": "Desktop1280/mobile320 PASS: VI/EN, HMR, no horizontal overflow, closed registration, canonical240 atlas and1-result filter, actual Cindrelis WebGL pixels, unauthenticated admin401/private no-store, bad Origin403 and absent signup/grant APIs404. Screenshots visually inspected."}
+              {"command": "pnpm preview:test", "exitCode": 0, "result": "Desktop1280/mobile320 PASS: VI/EN, HMR, no horizontal overflow, closed registration, canonical240 atlas and1-result filter, actual Cindrelis WebGL pixels, unauthenticated admin401/private no-store, bad Origin403 and absent signup/grant APIs404. Screenshots visually inspected."},
+              {"command": "node artifacts/concept-framing-probe.mjs", "exitCode": 0, "result": "All12 actual canvas cases PASS: six concepts at1280px and320px have more than2percent inset on every edge. Aurelune320 top margin22/321 pixels, previously0. This source includes camera fix61dfc2e."}
             ]
           },
           "failedAttempts": "Initial readonly Next dev root failed on next-env writes; writes now stay inside frontend containers without host mounts. Loopback HMR initially403; explicit127.0.0.1 allowed, untrusted Origin still403. Cold control clicks fixed upstream PR33. Launcher inherited env/project overrides reproduced and fixed.922 full check exited1 with788/789 integration under memory/swap pressure; precise cause unproven, unchanged shutdown rerun2/2 PASS. f12 check deliberately stopped143 before tests to fix project override. Initial fake-Docker fixture lacked a newline and was corrected.",
