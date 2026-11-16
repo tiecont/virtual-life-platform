@@ -1,6 +1,7 @@
 {
   "schemaVersion": 2,
-  "product": "VirtualLife",
+  "product": "Aetheria: SoulBound",
+  "legacyPlatform": "VirtualLife",
   "execution": "single-agent",
   "primaryClient": "Windows Unity URP",
   "authority": "Rust new gameplay; Nest legacy rooms and control plane",
@@ -10,9 +11,114 @@
     "independentReviewRequired": false,
     "verification": "Exact committed source, actual checks, self-audit honestly labeled, actual CI before merge",
     "qualification": "Hardware, content rights, signing and deployment requirements apply to their own acceptance or release; do not gate unrelated implementation",
-    "priority": "Pet Arena PvE before new Lodge gameplay; mobile conditional"
+    "priority": "P0 Gate 0: main CI, PR33, PR35 and VL-055; P1 early Blender/Unity art including VL-160 and Limited Icarus; P2 Pet Arena PvE before new Lodge gameplay; mobile conditional",
+    "release": "OFFLINE_ONLY / NO_GO_PUBLIC; source or CI acceptance never authorizes PUBLISHED content, public registration, purchases, signing or deployment"
   },
+  "initiatives": [
+    {
+      "id": "aetheria-soulbound",
+      "title": "Aetheria: SoulBound cinematic and playable Pet Arena",
+      "status": "DRAFT_ONLY",
+      "runtimeScope": "OFFLINE_ONLY",
+      "publication": "UNPUBLISHED",
+      "localKit": "/home/tiecont/Downloads/aetheria-soulbound-cinematic-kit/",
+      "referencePolicy": "Kit artwork and historical UI are design references; retain canonical Pet IDs and opcodes, use Aetheria: SoulBound branding and record actual file hashes and provenance. Concept assets and synthesized audio do not imply final models, footage or publishable rights.",
+      "limitedPets": ["Icarus", "Glaciemora", "Voltaris", "Noctalith", "Sylvaris", "Leviara"],
+      "taskOwnership": "VL-149 owns six Limited S; VL-160 retains six distinct Standard S. Shared authoring conventions belong to VL-105; never substitute one roster for the other.",
+      "milestones": [
+        {"id": "gate-0", "priority": 0, "tasks": ["VL-163", "VL-164", "VL-055"], "acceptance": "Fix actual main failures, review and merge PR33, rebase/fix/merge PR35 through green exact-source CI; prove native backup recovery and obtain actual retention/deletion approval before claiming VL-055 closure."},
+        {"id": "early-3d", "priority": 1, "tasks": ["VL-105", "VL-121", "VL-166", "VL-167", "VL-149", "VL-160"], "acceptance": "After Gate 0, produce Icarus editable model, rig, clips, Unity material/VFX and actual preview first; pass asset/provenance validation before replicating the five remaining Limited Pets. Standard S remains a separate deliverable."},
+        {"id": "media-showcase", "priority": 2, "tasks": ["VL-165", "VL-168"], "acceptance": "Private loopback S3 media ingest and preview-only portal; registration remains closed or approval-gated."},
+        {"id": "pet-arena-pve", "priority": 2, "tasks": ["VL-131", "VL-133", "VL-139", "VL-140", "VL-142", "VL-161", "VL-162", "VL-169"], "acceptance": "Authoritative 10x10 PvE board, regular/legendary capture and durable economy with simulation/abuse acceptance before new Lodge gameplay; mobile conditional."}
+      ],
+      "productionGate": "PUBLISHED requires separate rights, privacy, moderation, consent, hardware, signing and release authorization; none is granted by this initiative."
+    }
+  ],
   "tasks": [
+    {
+      "id": "VL-163",
+      "feature": "QA-SRE",
+      "title": "Gate 0: repair main CI and reconcile PR33/PR35",
+      "objective": "Inspect current GitHub results instead of assuming kit snapshots; fix hospitality root causes without weaker assertions, review PR33, then rebase and harden loopback-only PR35.",
+      "priority": 0,
+      "dependsOn": [],
+      "acceptance": ["Actual main Quality/Rust green at recorded SHA", "PR33 and rebased PR35 self-reviewed and merged only through complete green CI; local Compose ports bind 127.0.0.1 and secrets remain local"],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {"release": "OFFLINE_ONLY / NO_GO_PUBLIC", "observedMain": "ac7719366be82f8bcd4e07a6013c25c55222f41e", "observedMainQuality": "https://github.com/tiecont/virtual-life-platform/actions/runs/43812987707", "observedPR33": "fd94f630e97e907629caf88c3344709620a69f18: 26 SUCCESS checks", "observedPR35": "aa22ffcfd4bd5aaf4d5cc9180ef2666bb0db6137: 24 SUCCESS and 2 FAILURE checks; base codex/aetheria-prelaunch-routes", "remaining": "Review actual failing jobs and existing local hospitality commit; rerun required checks and record final source/merge revisions."}
+    },
+    {
+      "id": "VL-164",
+      "feature": "Persistence-Security",
+      "title": "Gate 0: native Pet checkpoint/journal backup restoration",
+      "objective": "Complete the native backup/restore evidence slice of VL-055 using actual encrypted PostgreSQL archive restoration and restricted Rust process recovery.",
+      "priority": 0,
+      "dependsOn": ["VL-021", "VL-020"],
+      "acceptance": ["Restore actual native checkpoint, receipts, events and settlement records; verify exact hashes and authoritative state", "Missing/wrong keys, corrupt data and incompatible versions abort before serving; unpublished metadata stays private", "Record unresolved retention/export/deletion decisions honestly; source tests do not constitute owner policy approval"],
+      "status": "TODO",
+      "qualificationRequirements": ["Actual owner retention/deletion policy approval remains required for VL-055 closure"],
+      "implementation": {"parentTask": "VL-055", "release": "OFFLINE_ONLY / NO_GO_PUBLIC"}
+    },
+    {
+      "id": "VL-165",
+      "feature": "Media",
+      "title": "PR-B: private local S3 media metadata and ingest",
+      "objective": "Add loopback MinIO and an additive journaled migration for versioned media metadata, RBAC ingest, signed preview access and provenance.",
+      "priority": 2,
+      "dependsOn": [],
+      "acceptance": ["Private buckets, bounded signed URLs, operator authorization and no public draft listing", "Reject traversal, MIME spoofing, oversized uploads and unauthorized read/write; verify real object bytes and content hashes", "Use the next available migration in the existing journal, isolated tests and local secrets; no production publication"],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "implementation": {"release": "OFFLINE_ONLY / NO_GO_PUBLIC"}
+    },
+    {
+      "id": "VL-166",
+      "feature": "Avatar-Art",
+      "title": "PR-C: Icarus Blender to Unity vertical slice",
+      "objective": "Produce the first Limited S end-to-end from kit references, preserving canonical identity and FIRE_ZONE semantics; contributes to VL-149, not the Standard S roster.",
+      "priority": 1,
+      "dependsOn": [],
+      "acceptance": ["Actual editable Blender 4.x LTS source and FBX/GLB export, meter scale and Y-up transfer; LOD0 26000-29500 triangles, Icarus 74 bones and at most 3 materials", "Actual UV/textures, idle/intro/normal/rage/signature clips, URP cel material, FIRE_ZONE VFX and Timeline/Cinemachine preview MP4 exist", "Record character_id, design_revision, reference_hash and actual source/import/runtime hashes; pet-asset-check passes with Icarus bindings present, not merely a missing-asset draft preflight", "Actual licensed Unity import, rendered motion and reduced-motion/performance checks; no runtime animation authority"],
+      "status": "TODO",
+      "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
+      "implementation": {"parentTask": "VL-149", "sharedPipeline": "VL-105", "assetContract": "VL-121", "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"}
+    },
+    {
+      "id": "VL-167",
+      "feature": "Avatar-Art",
+      "title": "PR-D: remaining five Limited S cinematic assets",
+      "objective": "Replicate the accepted Icarus pipeline for Glaciemora, Voltaris, Noctalith, Sylvaris and Leviara with distinct silhouettes, rigs, opcodes, audio and motion.",
+      "priority": 1,
+      "dependsOn": ["VL-166"],
+      "acceptance": ["Five actual editable models, LODs, exports, clips, Unity shaders/VFX, preview MP4s and provenance manifests", "FROST_LINE/CHAIN_MARK/CURSE_SIGIL/GROWTH_GLYPH/TIDE_CURRENT visual bindings preserve authoritative gameplay semantics", "Asset validation and actual licensed Unity rendered motion/performance checks pass for each Pet; no completion from concept PNGs"],
+      "status": "TODO",
+      "qualificationRequirements": ["Original/licensed art and audio provenance; actual rendered acceptance"],
+      "implementation": {"parentTask": "VL-149", "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"}
+    },
+    {
+      "id": "VL-168",
+      "feature": "Web-UX",
+      "title": "PR-E: Aetheria SoulBound preview showcase",
+      "objective": "Integrate the kit aesthetic and six-Pet showcase into portal-web using existing routes and auth/privacy conventions.",
+      "priority": 2,
+      "dependsOn": ["VL-165"],
+      "acceptance": ["Aetheria: SoulBound branding with approved reference direction, responsive VI/EN showcase, accessible media and reduced motion", "Signed private preview media with truthful missing-media fallbacks; concepts are labeled as concepts", "Registration stays closed or approval-gated; no invented founder counts/rewards, payment or live gacha", "Actual desktop/mobile browser tests and screenshots plus complete exact-source hosted CI"],
+      "status": "TODO",
+      "qualificationRequirements": ["Rights and human art acceptance before publication"],
+      "implementation": {"release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"}
+    },
+    {
+      "id": "VL-169",
+      "feature": "Pet-Arena",
+      "title": "Aetheria integrated offline PvE and media acceptance",
+      "objective": "Verify 10x10 Pet Arena, capture, six Limited presentations, private media and shared awakening/economy without authorizing a public release.",
+      "priority": 2,
+      "dependsOn": ["VL-133", "VL-139", "VL-161", "VL-162", "VL-167", "VL-168"],
+      "acceptance": ["Actual replay/reconnect/duplicate-receipt, economy and abuse tests pass across Nest/Rust/PostgreSQL/Unity", "Final asset hashes, source SHA, actual CI and remaining human/hardware acceptance are recorded", "NO_GO_PUBLIC remains enforced; Pet Arena PvE precedes new Lodge gameplay and mobile remains conditional"],
+      "status": "TODO",
+      "qualificationRequirements": ["Consented human playtests, retention/deletion decisions and separate release qualification"],
+      "implementation": {"release": "OFFLINE_ONLY / NO_GO_PUBLIC"}
+    },
     {
       "id": "VL-001",
       "feature": "Coordinator",
@@ -2017,6 +2123,7 @@
     },
     {
       "id": "VL-055",
+      "priority": 0,
       "feature": "Persistence-Security",
       "title": "Durable backup, privacy and hidden data recovery",
       "objective": "Restore game schema and legacy Lodge encrypted history under account privacy.",
@@ -3446,6 +3553,7 @@
     },
     {
       "id": "VL-105",
+      "priority": 1,
       "feature": "Avatar-Art",
       "title": "Blender\u2192Unity rig and per-scene shader/material/LOD budgets",
       "objective": "Define texture, bone, draw, materials and shader keyword budget for first 3 golden scenes.",
@@ -4087,6 +4195,7 @@
   },
   {
     "id": "VL-121",
+      "priority": 1,
     "feature": "Avatar-Art",
     "title": "Battle art direction asset and animation contract",
     "objective": "Specify original silhouettes, editable source provenance, importer/bundle schema and shared animation/VFX semantics.",
@@ -5073,6 +5182,7 @@
     },
     {
       "id": "VL-149",
+      "priority": 1,
       "feature": "Pet-Arena",
       "title": "Unity URP hero 3D pipeline and six Limited cinematic gates",
       "objective": "Six bespoke characters, unique rigs and VFX, render/performance snapshots, original art rights.",
@@ -5461,6 +5571,7 @@
     },
     {
       "id": "VL-160",
+      "priority": 1,
       "feature": "Pet-Arena",
       "title": "Six Standard S Unity models, rigs, animation and VFX",
       "objective": "Produce original lantern/jellyfish/owl/phantom/hexapod/deer assets using shared hero-quality rigs, Rust event-driven animation and world companionship.",
@@ -5488,6 +5599,7 @@
     },
     {
       "id": "VL-161",
+      "priority": 2,
       "feature": "Pet-Arena",
       "title": "Shared S awakening, duplicate exchange and admin economy controls",
       "objective": "Implement transactional Standard/Limited C0-C6 copies and overflow conversion on the VL-140 receipt ledger; extend VL-142 economy editor without duplicating banners.",
@@ -5514,6 +5626,7 @@
     },
     {
       "id": "VL-162",
+      "priority": 2,
       "feature": "Pet-Arena",
       "title": "Gacha simulation, balance, accessible UX and abuse acceptance",
       "objective": "Qualify integrated Standard/Limited distribution, persistent pulls, fair endgame kits and player-facing disclosure.",

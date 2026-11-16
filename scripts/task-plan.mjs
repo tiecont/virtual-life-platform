@@ -14,6 +14,7 @@ export function validateTaskPlan(plan){
   assert(/^VL-\d{3}$/.test(task.id)&&!tasks.has(task.id),'Invalid or duplicate task ID');
   assert(typeof task.title==='string'&&task.title.trim());
   assert(statuses.has(task.status),'Invalid task status');
+  assert(task.priority===undefined||(Number.isInteger(task.priority)&&task.priority>=0&&task.priority<=2),'Invalid task priority');
   assert(Array.isArray(task.dependsOn)&&new Set(task.dependsOn).size===task.dependsOn.length);
   assert(Array.isArray(task.acceptance)&&task.acceptance.length>0);
   assert(Array.isArray(task.qualificationRequirements));
@@ -42,9 +43,9 @@ export function validateTaskPlan(plan){
 export function taskStatus(plan){
  const tasks=validateTaskPlan(plan),counts={};
  for(const task of tasks.values())counts[task.status]=(counts[task.status]??0)+1;
- const pending=[...tasks.values()].filter(t=>['TODO','IN_PROGRESS'].includes(t.status));
+ const pending=[...tasks.values()].filter(t=>['TODO','IN_PROGRESS'].includes(t.status)).sort((a,b)=>(a.priority??3)-(b.priority??3));
  return {execution:plan.execution,total:tasks.size,counts,remaining:tasks.size-(counts.VERIFIED??0),
-  ready:pending.filter(t=>t.dependsOn.every(id=>tasks.get(id).status==='VERIFIED')).map(({id,title,qualificationRequirements})=>({id,title,qualificationRequirements})),
+  ready:pending.filter(t=>t.dependsOn.every(id=>tasks.get(id).status==='VERIFIED')).map(({id,title,priority,qualificationRequirements})=>({id,title,...(priority===undefined?{}:{priority}),qualificationRequirements})),
   waitingOnImplementation:pending.filter(t=>t.dependsOn.some(id=>tasks.get(id).status!=='VERIFIED')).map(t=>({id:t.id,dependencies:t.dependsOn.filter(id=>tasks.get(id).status!=='VERIFIED')}))};
 }
 export async function readTaskPlan(){return JSON.parse(await readFile(new URL('../config/development-plan.json',import.meta.url),'utf8'));}
