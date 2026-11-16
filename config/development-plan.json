@@ -5570,6 +5570,34 @@
       "sourceRevision": "ead95c52eccf4130d96f2bdcb6e39a9f325bbb1e",
       "reviewMode": "SINGLE_AGENT_AUDIT",
       "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/33",
+      "hospitalityFollowup": {
+        "sourceRevision": "02da42ab8975e5680f43472414eb23cb0864e07d",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "finding": "Main Quality43812987707 trace shows host audience reads aborted during the first periodic room resync; the fixture waited for only the guest resync and issued consecutive refreshes without awaiting acceptance. Push Quality43818837284 on PR35 separately returned OPEN at1794813279977 with expiresAt1794813280000:23ms TTL, correctly expired before rendering. Push/PR timing differs; neither failure demonstrates an authorization or production expiry defect.",
+        "correction": "Wait for authoritative snapshots and Connected in both rooms; await audience read acceptance before another read; establish a fresh DISABLED window before the media fixture opens once. Keep real clocks, all expiry/forged response assertions, server TTLs and timeouts.",
+        "commands": [
+          {
+            "command": "node scripts/run-browser-tests.mjs tests/e2e/lounge.spec.ts",
+            "exitCode": 0,
+            "result": "32 PASS desktop/mobile at6a9e1e1; identical lounge.spec.ts cherry-picked into02da42a; real PostgreSQL fixture cleanup PASS."
+          },
+          {
+            "command": "pnpm exec eslint tests/e2e/lounge.spec.ts",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm exec vitest run --project unit apps/admin-web/server/public-site.unit.test.ts apps/admin-web/features/prelaunch/modules/product/domain/content.unit.test.ts",
+            "exitCode": 0,
+            "result": "8 PASS at02da42a"
+          },
+          {
+            "command": "node --test tests/governance/admin-boundary.test.mjs tests/governance/admin-bundle.test.mjs",
+            "exitCode": 0,
+            "result": "5 PASS at02da42a"
+          }
+        ],
+        "pending": "Admin/public browser suite and final metadata-head hosted Quality/Rust must pass before merge; main post-merge verification required."
+      },
       "hydrationFollowup": {
         "sourceRevision": "29654b9b337e2227704a86883d78df6eaced2345",
         "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
