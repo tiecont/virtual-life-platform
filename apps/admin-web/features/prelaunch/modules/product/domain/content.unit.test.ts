@@ -1,5 +1,6 @@
 import {expect,it} from 'vitest';
-import {catalog,elements,roles,sources,skillNames,skillEffects,motionPets} from './content';
+import catalog from './catalog.json';
+import {elements,roles,sources,skillNames,skillEffects,motionPets} from './content';
 it('every public draft profile has bounded unique identity and valid localized references',()=>{
  expect(catalog.sourceStatus).toBe('DESIGN_CANDIDATE_NOT_GAMEPLAY');expect(catalog.sourceRevision).toMatch(/^[a-f0-9]{40}$/);
  expect(catalog.pets).toHaveLength(240);expect(new Set(catalog.pets.map(p=>p.id)).size).toBe(240);expect(Object.keys(elements)).toHaveLength(19);

@@ -6,14 +6,14 @@ export function adminClientImports(code,publicPresentation=false){
  const source=ts.createSourceFile('client.tsx',code,ts.ScriptTarget.Latest,true),imports=[];
  function visit(node){
   if(ts.isIdentifier(node)&&node.text==='process')throw Error('Admin client cannot read process environment');
-  if(ts.isImportDeclaration(node)&&ts.isStringLiteral(node.moduleSpecifier))imports.push(node.moduleSpecifier.text);
+  if(ts.isImportDeclaration(node)&&!node.importClause?.isTypeOnly&&ts.isStringLiteral(node.moduleSpecifier))imports.push(node.moduleSpecifier.text);
   if(ts.isCallExpression(node)&&(node.expression.kind===ts.SyntaxKind.ImportKeyword||ts.isIdentifier(node.expression)&&node.expression.text==='require')){
    if(publicPresentation&&node.expression.kind===ts.SyntaxKind.ImportKeyword&&node.arguments.length===1&&ts.isStringLiteral(node.arguments[0])&&node.arguments[0].text==='./pet-scene')imports.push('./pet-scene');
    else throw Error('Admin client imports must be static');
   }
   ts.forEachChild(node,visit);
  }visit(source);
- for(const specifier of imports)assert(specifier.startsWith('.')||['react','next/link','next/navigation','@virtual-city/contracts',...(publicPresentation?['three']:[])].includes(specifier),'Admin client dependency not allowlisted');return imports;
+ for(const specifier of imports){assert(!specifier.endsWith('.json'),'Draft data must remain server-only');assert(specifier.startsWith('.')||['react','next/link','next/navigation','@virtual-city/contracts',...(publicPresentation?['three']:[])].includes(specifier),'Admin client dependency not allowlisted');}return imports;
 }
 export async function checkAdminBoundary(root=process.cwd()){
  const base=resolve(root,'apps/admin-web'),files=new Map();

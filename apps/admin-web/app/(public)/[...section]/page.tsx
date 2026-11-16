@@ -1,6 +1,7 @@
 import {notFound} from 'next/navigation';
 import {Product} from '../../../features/prelaunch/modules/product/presentation/product';
-import {catalog,pages,routes} from '../../../features/prelaunch/modules/product/domain/content';
+import catalog from '../../../features/prelaunch/modules/product/domain/catalog.json';
+import {pages,routes} from '../../../features/prelaunch/modules/product/domain/content';
 import {siteLocale} from '../../../server/public-site';
 type Props={params:Promise<{section:string[]}>;searchParams:Promise<{lang?:string|string[]}>};
 async function resolve(props:Props){const path=(await props.params).section.join('/'),query=(await props.searchParams).lang,locale=siteLocale(typeof query==='string'?query:null),pet=path.startsWith('pets/')?catalog.pets.find(p=>p.id===path.slice(5)):undefined;

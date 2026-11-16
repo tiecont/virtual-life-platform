@@ -1,5 +1,4 @@
-import catalog from './catalog.json';
-export {catalog};
+import type catalog from './catalog.json';
 export type Locale='vi'|'en';
 export type Pet=typeof catalog.pets[number];
 export const elements:Record<string,[string,string]>={normal:['Thường','Normal'],fire:['Lửa','Fire'],water:['Nước','Water'],grass:['Cỏ','Grass'],electric:['Điện','Electric'],ice:['Băng','Ice'],fighting:['Giác đấu','Fighting'],poison:['Độc','Poison'],ground:['Đất','Ground'],flying:['Bay','Flying'],psychic:['Tâm linh','Psychic'],bug:['Bọ','Bug'],rock:['Đá','Rock'],ghost:['Ma','Ghost'],dragon:['Rồng','Dragon'],dark:['Bóng tối','Dark'],steel:['Thép','Steel'],fairy:['Tiên','Fairy'],light:['Ánh sáng','Light']};

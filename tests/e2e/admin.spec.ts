@@ -1,4 +1,4 @@
-import {test,expect,type Page} from '@playwright/test';
+import {test,expect,type Page,type Locator} from '@playwright/test';
 import {Pool} from 'pg';
 import {OperatorObservationViewSchema,OperatorSystemViewSchema} from '@virtual-city/contracts';
 import {totp} from '../../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto';
@@ -9,6 +9,12 @@ test.beforeAll(()=>{const address=new URL(process.env.TEST_DATABASE_URL??'');if(
 test.beforeEach(async()=>{await pool.query('UPDATE identity_operator SET totp_counter=-1,failures=0,locked_until=NULL');await pool.query('UPDATE identity_operator_sessions SET revoked_at=clock_timestamp() WHERE revoked_at IS NULL');});
 test.afterAll(async()=>{await pool.end();});
 async function signIn(page:Page){await page.goto('/admin');await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Authenticator code').fill(totp(secret,Date.now()));await page.getByLabel('Authenticator code').press('Enter');await expect(page.getByRole('heading',{name:'City at a glance'})).toBeVisible();}
+async function canvasFrame(canvas:Locator){return canvas.evaluate(element=>new Promise<{hash:number;occupied:number;pixels:number;inset:boolean}>(resolve=>requestAnimationFrame(()=>{
+ const c=element as HTMLCanvasElement,gl=c.getContext('webgl2');if(!gl)throw Error('Actual WebGL2 required');
+ const width=gl.drawingBufferWidth,height=gl.drawingBufferHeight,bytes=new Uint8Array(width*height*4);gl.readPixels(0,0,width,height,gl.RGBA,gl.UNSIGNED_BYTE,bytes);
+ let hash=0,occupied=0,left=width,right=0,bottom=height,top=0;for(let i=0;i<bytes.length;i+=4){hash=Math.imul(hash^bytes[i]^bytes[i+1]<<8^bytes[i+2]<<16,16777619);if(bytes[i+3]){occupied++;const x=i/4%width,y=Math.floor(i/4/width);left=Math.min(left,x);right=Math.max(right,x);bottom=Math.min(bottom,y);top=Math.max(top,y);}}
+ resolve({hash,occupied,pixels:width*height,inset:left>0&&right<width-1&&bottom>0&&top<height-1});
+ })));}
 test('unauthenticated UI and routes deny operator/service bypass, wrong Origin, arbitrary queries and private source paths',async({page,request})=>{
  await page.goto('/admin');await expect(page.getByRole('heading',{name:/quiet place/})).toBeVisible();expect(await page.locator('form').getAttribute('method')).toBe('post');
  for(const path of ['/api/admin/session','/api/admin/metrics?view=summary&range=current','/api/admin/observations?view=system&range=current','/api/admin/system-state?view=system&range=current'])expect((await request.get(path,{headers:{authorization:'Bearer '+serviceToken}})).status()).toBe(401);
@@ -19,7 +25,7 @@ test('unauthenticated UI and routes deny operator/service bypass, wrong Origin, 
 });
 test('actual browser MFA reads private metrics, audit and system traffic with labeled source fixtures then logs out',async({page})=>{
  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));const observed:string[]=[];page.on('response',response=>{if(response.url().includes('/api/admin/'))void response.text().then(text=>observed.push(text)).catch(()=>{});});
- await signIn(page);expect(await page.evaluate(()=>document.cookie.includes('city_operator'))).toBe(false);await page.getByRole('button',{name:'Refresh snapshot'}).click();await expect(page.getByText('Fresh observation',{exact:true})).toBeVisible();await expect(page.getByText('Requests since API start')).toBeVisible();
+ await signIn(page);const session=await (await page.request.get('/api/admin/session')).json();for(const headers of [{origin:'https://attacker.invalid','x-csrf-token':session.csrfToken},{origin:'http://127.0.0.1:3400','x-csrf-token':'0'.repeat(64)},{origin:'http://127.0.0.1:3400'}] as Record<string,string>[]){const denied=await page.request.post('/api/admin/logout',{headers,data:{}});expect(denied.status()).toBe(403);expect(denied.headers()['cache-control']).toContain('no-store');}expect((await page.request.get('/api/admin/session')).status()).toBe(200);expect(await page.evaluate(()=>document.cookie.includes('city_operator'))).toBe(false);await page.getByRole('button',{name:'Refresh snapshot'}).click();await expect(page.getByText('Fresh observation',{exact:true})).toBeVisible();await expect(page.getByText('Requests since API start')).toBeVisible();
  await page.screenshot({path:test.info().outputPath('operator-overview.png'),fullPage:true});await page.getByRole('button',{name:'Audit trail',exact:true}).click();await page.getByRole('button',{name:'Load audit'}).click();await expect(page.getByRole('cell',{name:'login',exact:true})).toBeVisible();
 
  // Reuse this authenticated fixture session: a sixth login would exceed the unchanged5/minute guard.
@@ -112,8 +118,11 @@ test('six Pet concepts load real 3D only by choice with motion, keyboard, reduce
   await page.goto('/pets/pet-v31-'+element+'-'+name+'?lang=en');await expect(page.locator('canvas')).toHaveCount(0);
   await page.getByRole('button',{name:'Open 3D preview',exact:true}).click();await expect(page.getByRole('status')).toContainText('3D ready',{timeout:20000});
   const canvas=page.locator('canvas');expect(await canvas.evaluate(c=>(c as HTMLCanvasElement).width)).toBeGreaterThan(100);
+  await canvas.scrollIntoViewIfNeeded();const initial=await canvasFrame(canvas);expect(initial.occupied/initial.pixels).toBeGreaterThan(.02);expect(initial.occupied/initial.pixels).toBeLessThan(.8);expect(initial.inset).toBe(true);
   await canvas.focus();await page.keyboard.press('ArrowRight');await page.keyboard.press('ArrowUp');
+  await expect.poll(async()=>(await canvasFrame(canvas)).hash).not.toBe(initial.hash);
   await page.getByRole('button',{name:'Normal',exact:true}).click();await expect(page.getByRole('button',{name:'Normal',exact:true})).toHaveAttribute('aria-pressed','true');
+  const animated=await canvasFrame(canvas);await expect.poll(async()=>(await canvasFrame(canvas)).hash).not.toBe(animated.hash);
   await page.getByRole('button',{name:'Rage',exact:true}).click();await page.getByRole('button',{name:'Skill',exact:true}).click();await page.getByRole('button',{name:'Pause',exact:true}).click();
   await page.getByRole('button',{name:'Reset camera',exact:true}).click();
   await page.screenshot({path:test.info().outputPath('pet-'+name+'.png'),fullPage:true});
@@ -121,6 +130,15 @@ test('six Pet concepts load real 3D only by choice with motion, keyboard, reduce
  }
  await page.emulateMedia({reducedMotion:'reduce'});await page.getByRole('button',{name:'Open 3D preview',exact:true}).click();await expect(page.getByRole('status')).toContainText('3D ready');
  await expect(page.getByRole('button',{name:'Rage',exact:true})).toBeDisabled();
+ await page.locator('canvas').scrollIntoViewIfNeeded();const still=await canvasFrame(page.locator('canvas'));expect((await canvasFrame(page.locator('canvas'))).hash).toBe(still.hash);
+ await page.locator('canvas').focus();
  await page.locator('canvas').evaluate(c=>{const gl=(c as HTMLCanvasElement).getContext('webgl2');if(!gl)throw Error('Expected actual WebGL2 context');gl.getExtension('WEBGL_lose_context')?.loseContext();});
- await expect(page.getByRole('status')).toContainText('3D is unavailable');await expect(page.getByRole('heading',{level:1})).toHaveText('Aurelune');expect(errors).toEqual([]);
+ await expect(page.getByRole('status')).toContainText('3D is unavailable');await expect(page.getByRole('button',{name:'Close 3D',exact:true})).toBeFocused();await page.keyboard.press('Enter');await expect(page.getByRole('button',{name:'Open 3D preview',exact:true})).toBeFocused();await expect(page.getByRole('heading',{level:1})).toHaveText('Aurelune');expect(errors).toEqual([]);
+});
+
+test('unavailable WebGL keeps Pet details and a keyboard exit without loading motion controls',async({page})=>{
+ await page.addInitScript(()=>{const original=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(this:HTMLCanvasElement,...args:Parameters<typeof original>){if(String(args[0]).startsWith('webgl'))return null;return original.apply(this,args);} as typeof original;});
+ await page.goto('/pets/pet-v31-fire-cindrelis?lang=en');await page.getByRole('button',{name:'Open 3D preview',exact:true}).focus();await page.keyboard.press('Enter');
+ await expect(page.getByRole('status')).toContainText('3D is unavailable');await expect(page.getByRole('heading',{level:1})).toHaveText('Cindrelis');await expect(page.locator('canvas')).toBeHidden();await expect(page.getByRole('button',{name:'Rage',exact:true})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Close 3D',exact:true})).toBeFocused();await page.keyboard.press('Enter');await expect(page.getByRole('button',{name:'Open 3D preview',exact:true})).toBeFocused();
 });
