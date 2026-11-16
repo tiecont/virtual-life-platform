@@ -98,7 +98,9 @@ try {
   const outcomes=[];
   for(const profile of [{name:'desktop',viewport:{width:1280,height:800}},{name:'mobile',viewport:{width:360,height:800},isMobile:true}]){
     const context=await browser.newContext({baseURL:origin,viewport:profile.viewport,isMobile:profile.isMobile??false});context.setDefaultTimeout(15000);if(cookies)await context.addCookies(cookies);
-    const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.name));assert.equal((await page.goto('/pets?lang=en')).status(),404);await expect(page.locator('canvas,form')).toHaveCount(0);await page.goto('/admin');
+    const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.name));assert.equal((await page.goto('/pets?lang=en')).status(),404);await expect(page.locator('canvas,form')).toHaveCount(0);const navigation=await page.goto('/admin');
+    facts.operatorNavigations??=[];facts.operatorNavigations.push({profile:profile.name,status:navigation?.status(),path:new URL(page.url()).pathname,title:await page.title(),passwordFields:await page.getByLabel('Password',{exact:true}).count(),browserErrorNames:errors});
+    assert.equal(navigation?.status(),200,'Operator document must render successfully');
     if(!cookies){
       stage='operator-login';
       await page.getByLabel('Password',{exact:true}).fill(password);

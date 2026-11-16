@@ -114,6 +114,28 @@ test('complete product pages render both languages and Pet filters link to accur
  expect((await page.goto('/pets/not-a-pet?lang=en'))?.status()).toBe(404);
 });
 
+test('Pet controls stay disabled until delayed browser JavaScript hydrates them',async({page})=>{
+ for(const path of ['/pets?lang=en','/pets/pet-v31-fire-cindrelis?lang=en']){
+  let release!:()=>void;
+  const gate=new Promise<void>(resolve=>release=resolve);
+  await page.route('**/_next/static/chunks/**',async route=>{await gate;await route.continue();});
+  try{
+   await page.goto(path,{waitUntil:'commit'});
+   const controls=path.startsWith('/pets?')?page.locator('main input, main select'):page.getByRole('button',{name:'Open 3D preview',exact:true});
+   await expect(controls.first()).toBeVisible();
+   expect(await controls.count()).toBe(path.startsWith('/pets?')?3:1);
+   for(const control of await controls.all())await expect(control).toBeDisabled();
+   release();
+   for(const control of await controls.all())await expect(control).toBeEnabled();
+   if(path.startsWith('/pets?')){
+    await page.getByLabel('Element',{exact:true}).selectOption('fire');await page.getByLabel('Acquisition',{exact:true}).selectOption('standard_gacha');await expect(page.getByRole('status')).toContainText('1 / 240');
+   }else{
+    await controls.click();await expect(page.getByRole('status')).toContainText('3D ready',{timeout:20000});
+   }
+  }finally{release();await page.unrouteAll({behavior:'wait'});}
+ }
+});
+
 test('six Pet concepts load real 3D only by choice with motion, keyboard, reduced-motion and context-loss fallback',async({page})=>{
  test.setTimeout(120000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  const names=[['fire','cindrelis'],['water','marivell'],['electric','quorion'],['ghost','vesperyn'],['ground','gravorn'],['light','aurelune']];
