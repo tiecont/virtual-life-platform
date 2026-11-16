@@ -11,11 +11,11 @@ test.afterAll(async()=>{await pool.end();});
 async function signIn(page:Page){await page.goto('/admin');await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Authenticator code').fill(totp(secret,Date.now()));await page.getByLabel('Authenticator code').press('Enter');await expect(page.getByRole('heading',{name:'City at a glance'})).toBeVisible();}
 async function canvasFrame(canvas:Locator){
  // WebGL uses a non-preserved drawing buffer; measure the composited image.
- const png=await canvas.screenshot({style:'canvas { background: rgb(1, 2, 3) !important; }'});
+ const png=await canvas.screenshot({path:test.info().outputPath('canvas-pixels.png'),style:'canvas, section[aria-label="3D Pet preview"] { background: rgb(1, 2, 3) !important; }'});
  return canvas.page().evaluate(async encoded=>{
   const bitmap=await createImageBitmap(new Blob([Uint8Array.from(atob(encoded),c=>c.charCodeAt(0))],{type:'image/png'})),{width,height}=bitmap,frame=new OffscreenCanvas(width,height),ctx=frame.getContext('2d')!;ctx.drawImage(bitmap,0,0);bitmap.close();const bytes=ctx.getImageData(0,0,width,height).data;
   let hash=0,occupied=0,left=width,right=0,bottom=height,top=0;for(let i=0;i<bytes.length;i+=4){hash=Math.imul(hash^bytes[i]^bytes[i+1]<<8^bytes[i+2]<<16,16777619);if(bytes[i]!==1||bytes[i+1]!==2||bytes[i+2]!==3){occupied++;const x=i/4%width,y=Math.floor(i/4/width);left=Math.min(left,x);right=Math.max(right,x);bottom=Math.min(bottom,y);top=Math.max(top,y);}}
-  return {hash,occupied,pixels:width*height,inset:left>0&&right<width-1&&bottom>0&&top<height-1};
+  return {hash,occupied,pixels:width*height,inset:left>0&&right<width-1&&bottom>0&&top<height-1,bounds:{left,right,bottom,top,width,height}};
  },png.toString('base64'));
 }
 test('unauthenticated UI and routes deny operator/service bypass, wrong Origin, arbitrary queries and private source paths',async({page,request})=>{
