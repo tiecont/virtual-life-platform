@@ -47,6 +47,9 @@ def validate(root, upstream=None):
         require(set(stats) == {'hp','attack','defense','speed'} and all(type(v) is int and 800 <= v <= 1200 for v in stats.values()) and sum(stats.values()) == 4000, 'stat budget')
         require(1 <= len(p['combat']['skillRefs']) <= 4 and all(s in skills for s in p['combat']['skillRefs']), 'skill references')
         limited = p['source'] == 'limited_event_gacha'; banner = p['source'] in ['standard_gacha','limited_event_gacha']
+        require(all(skills[s]['availableTo'] == 'generic_all' or
+                    (limited and skills[s]['availableTo'] == 'limited_innate_and_unlocked_fusion_card' and skills[s]['ownerPet'] == p['name'])
+                    for s in p['combat']['skillRefs']), 'Limited-only skill owner')
         require((p['combat']['signatureCard'] is not None) == limited and p['combat']['hasExclusiveBoardSkill'] == limited, 'Limited-only signature')
         require(p['rank'] in (['B','A'] if p['source'] == 'map_regular' else ['S']), 'source rank')
         require(p['capture']['requiredUniqueWins'] == (0 if banner else 5 if p['rank'] == 'S' else 3), '3/5 recruitment')

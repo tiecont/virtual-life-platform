@@ -39,4 +39,34 @@ describe('versioned Pet taxonomy and acquisition drafts',()=>{
   expect(PetAcquisitionDraftV3Schema.safeParse({...standard,source:'map_legendary',mapId:'fire-map',requiredUniqueWins:3,awakeningEnabled:false}).success).toBe(false);
   expect(PetAcquisitionDraftV3Schema.safeParse({...standard,source:'limited_event_gacha'}).success).toBe(false);
  });
+ it('fails closed on missing fields and invalid types at each taxonomy layer',()=>{
+  const original=taxonomy();
+  for(const path of [[],['elements',0],['races',0],['effectiveness'],['effectiveness','fire']] as const){
+   const target=(value:unknown)=>path.reduce((row,key)=>Reflect.get(row as object,key),value) as Record<string,unknown>;
+   for(const key of Object.keys(target(original))){
+    for(const replacement of [undefined,null,true,[],{},'1000',1001]){
+     if(Array.isArray(target(original)[key])&&Array.isArray(replacement))continue;
+     const copy=structuredClone(original);
+     if(replacement===undefined)Reflect.deleteProperty(target(copy),key);else Reflect.set(target(copy),key,replacement);
+     expect(PetTaxonomyDraftV3Schema.safeParse(copy).success,`${path.join('.')}.${key}=${JSON.stringify(replacement)}`).toBe(false);
+    }
+   }
+   const copy=structuredClone(original);Reflect.set(target(copy),'unexpected',1000);
+   expect(PetTaxonomyDraftV3Schema.safeParse(copy).success).toBe(false);
+  }
+ });
+ it('enforces eligibility across every rank and acquisition source',()=>{
+  const sources=['map_regular','map_legendary','standard_gacha','limited_event_gacha'];
+  for(const source of sources)for(const rank of ['B','A','S']){
+   const banner=source.endsWith('gacha'),limited=source==='limited_event_gacha';
+   const candidate={rank,source,mapId:banner?null:'fire-map',requiredUniqueWins:banner?0:source==='map_regular'?3:5,signatureCard:limited?'signature-icarus':null,awakeningEnabled:banner};
+   expect(PetAcquisitionDraftV3Schema.safeParse(candidate).success).toBe(source==='map_regular'?rank!=='S':rank==='S');
+   if(source==='map_regular'?rank==='S':rank!=='S')continue;
+   for(const key of Object.keys(candidate)){
+    const missing={...candidate};Reflect.deleteProperty(missing,key);
+    expect(PetAcquisitionDraftV3Schema.safeParse(missing).success).toBe(false);
+    expect(PetAcquisitionDraftV3Schema.safeParse({...candidate,[key]:[]}).success).toBe(false);
+   }
+  }
+ });
 });
