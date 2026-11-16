@@ -1,0 +1,4977 @@
+{
+  "sourceRevision": "644fe152a397db5040a7ae856609627b91bd77e3",
+  "sourceStatus": "DESIGN_CANDIDATE_NOT_GAMEPLAY",
+  "sourcePath": "specs/pet-arena/v3.1/data",
+  "pets": [
+    {
+      "id": "normal-puffern",
+      "name": "Puffern",
+      "element": "normal",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "meadow-hollows",
+      "body": "golem",
+      "color": "#ECE9DD",
+      "accent": "#8A7DB0",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "normal-mosspad",
+      "name": "Mosspad",
+      "element": "normal",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "meadow-hollows",
+      "body": "humanoid",
+      "color": "#ECE9DD",
+      "accent": "#8A7DB0",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "normal-brindleap",
+      "name": "Brindleap",
+      "element": "normal",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "meadow-hollows",
+      "body": "plant",
+      "color": "#ECE9DD",
+      "accent": "#8A7DB0",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "normal-reedruff",
+      "name": "Reedruff",
+      "element": "normal",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "meadow-hollows",
+      "body": "quadruped",
+      "color": "#ECE9DD",
+      "accent": "#8A7DB0",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "normal-tandemble",
+      "name": "Tandemble",
+      "element": "normal",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "meadow-hollows",
+      "body": "humanoid",
+      "color": "#ECE9DD",
+      "accent": "#8A7DB0",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "normal-hearthmantle",
+      "name": "Hearthmantle",
+      "element": "normal",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "meadow-hollows",
+      "body": "mechanical",
+      "color": "#ECE9DD",
+      "accent": "#8A7DB0",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-normal-whimsy",
+      "name": "Whimsy",
+      "element": "normal",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "meadow-hollows",
+      "body": "quadruped",
+      "color": "#ECE9DD",
+      "accent": "#8A7DB0",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-normal-arlo",
+      "name": "Arlo",
+      "element": "normal",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "meadow-hollows",
+      "body": "humanoid",
+      "color": "#ECE9DD",
+      "accent": "#8A7DB0",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-normal-nibelle",
+      "name": "Nibelle",
+      "element": "normal",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "meadow-hollows",
+      "body": "centaur",
+      "color": "#ECE9DD",
+      "accent": "#8A7DB0",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-normal-taffin",
+      "name": "Taffin",
+      "element": "normal",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "meadow-hollows",
+      "body": "plant",
+      "color": "#ECE9DD",
+      "accent": "#8A7DB0",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-normal-pepprel",
+      "name": "Pepprel",
+      "element": "normal",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "meadow-hollows",
+      "body": "serpentine",
+      "color": "#ECE9DD",
+      "accent": "#8A7DB0",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-normal-wexley",
+      "name": "Wexley",
+      "element": "normal",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "meadow-hollows",
+      "body": "aquatic",
+      "color": "#ECE9DD",
+      "accent": "#8A7DB0",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fire-coalwhisk",
+      "name": "Coalwhisk",
+      "element": "fire",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "cinder-terraces",
+      "body": "centaur",
+      "color": "#FF9B40",
+      "accent": "#D43B53",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fire-emberloom",
+      "name": "Emberloom",
+      "element": "fire",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "cinder-terraces",
+      "body": "golem",
+      "color": "#FF9B40",
+      "accent": "#D43B53",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fire-kilnback",
+      "name": "Kilnback",
+      "element": "fire",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "cinder-terraces",
+      "body": "humanoid",
+      "color": "#FF9B40",
+      "accent": "#D43B53",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fire-flarequill",
+      "name": "Flarequill",
+      "element": "fire",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "cinder-terraces",
+      "body": "amorphous",
+      "color": "#FF9B40",
+      "accent": "#D43B53",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fire-scorchveil",
+      "name": "Scorchveil",
+      "element": "fire",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "cinder-terraces",
+      "body": "floating",
+      "color": "#FF9B40",
+      "accent": "#D43B53",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fire-pyrecrown",
+      "name": "Pyrecrown",
+      "element": "fire",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "cinder-terraces",
+      "body": "plant",
+      "color": "#FF9B40",
+      "accent": "#D43B53",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fire-emberpaw",
+      "name": "Emberpaw",
+      "element": "fire",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "cinder-terraces",
+      "body": "quadruped",
+      "color": "#FF9B40",
+      "accent": "#D43B53",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fire-solira",
+      "name": "Solira",
+      "element": "fire",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "cinder-terraces",
+      "body": "amorphous",
+      "color": "#FF9B40",
+      "accent": "#D43B53",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fire-veyrin",
+      "name": "Veyrin",
+      "element": "fire",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "cinder-terraces",
+      "body": "aquatic",
+      "color": "#FF9B40",
+      "accent": "#D43B53",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fire-cindrel",
+      "name": "Cindrel",
+      "element": "fire",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "cinder-terraces",
+      "body": "centaur",
+      "color": "#FF9B40",
+      "accent": "#D43B53",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fire-orivox",
+      "name": "Orivox",
+      "element": "fire",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "cinder-terraces",
+      "body": "quadruped",
+      "color": "#FF9B40",
+      "accent": "#D43B53",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fire-faelith",
+      "name": "Faelith",
+      "element": "fire",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "cinder-terraces",
+      "body": "floating",
+      "color": "#FF9B40",
+      "accent": "#D43B53",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "water-dewskip",
+      "name": "Dewskip",
+      "element": "water",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "tideglass-lagoon",
+      "body": "amorphous",
+      "color": "#4ACBFF",
+      "accent": "#2866CA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "water-ripplefin",
+      "name": "Ripplefin",
+      "element": "water",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "tideglass-lagoon",
+      "body": "plant",
+      "color": "#4ACBFF",
+      "accent": "#2866CA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "water-foamcurl",
+      "name": "Foamcurl",
+      "element": "water",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "tideglass-lagoon",
+      "body": "aquatic",
+      "color": "#4ACBFF",
+      "accent": "#2866CA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "water-tideweft",
+      "name": "Tideweft",
+      "element": "water",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "tideglass-lagoon",
+      "body": "amorphous",
+      "color": "#4ACBFF",
+      "accent": "#2866CA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "water-abyssail",
+      "name": "Abyssail",
+      "element": "water",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "tideglass-lagoon",
+      "body": "humanoid",
+      "color": "#4ACBFF",
+      "accent": "#2866CA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "water-lagoonarch",
+      "name": "Lagoonarch",
+      "element": "water",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "tideglass-lagoon",
+      "body": "plant",
+      "color": "#4ACBFF",
+      "accent": "#2866CA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-water-brooklet",
+      "name": "Brooklet",
+      "element": "water",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "tideglass-lagoon",
+      "body": "aquatic",
+      "color": "#4ACBFF",
+      "accent": "#2866CA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-water-nerevia",
+      "name": "Nerevia",
+      "element": "water",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "tideglass-lagoon",
+      "body": "humanoid",
+      "color": "#4ACBFF",
+      "accent": "#2866CA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-water-qualin",
+      "name": "Qualin",
+      "element": "water",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "tideglass-lagoon",
+      "body": "spectral",
+      "color": "#4ACBFF",
+      "accent": "#2866CA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-water-talova",
+      "name": "Talova",
+      "element": "water",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "tideglass-lagoon",
+      "body": "humanoid",
+      "color": "#4ACBFF",
+      "accent": "#2866CA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-water-merith",
+      "name": "Merith",
+      "element": "water",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "tideglass-lagoon",
+      "body": "aquatic",
+      "color": "#4ACBFF",
+      "accent": "#2866CA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-water-azuli",
+      "name": "Azuli",
+      "element": "water",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "tideglass-lagoon",
+      "body": "plant",
+      "color": "#4ACBFF",
+      "accent": "#2866CA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "grass-budwisp",
+      "name": "Budwisp",
+      "element": "grass",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "canopy-weald",
+      "body": "amorphous",
+      "color": "#93DF5D",
+      "accent": "#246D4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "grass-vinepurl",
+      "name": "Vinepurl",
+      "element": "grass",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "canopy-weald",
+      "body": "floating",
+      "color": "#93DF5D",
+      "accent": "#246D4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "grass-mossmane",
+      "name": "Mossmane",
+      "element": "grass",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "canopy-weald",
+      "body": "centaur",
+      "color": "#93DF5D",
+      "accent": "#246D4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "grass-thornlace",
+      "name": "Thornlace",
+      "element": "grass",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "canopy-weald",
+      "body": "amorphous",
+      "color": "#93DF5D",
+      "accent": "#246D4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "grass-bloomvault",
+      "name": "Bloomvault",
+      "element": "grass",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "canopy-weald",
+      "body": "humanoid",
+      "color": "#93DF5D",
+      "accent": "#246D4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "grass-canopyr",
+      "name": "Canopyr",
+      "element": "grass",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "canopy-weald",
+      "body": "aquatic",
+      "color": "#93DF5D",
+      "accent": "#246D4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-grass-thornwick",
+      "name": "Thornwick",
+      "element": "grass",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "canopy-weald",
+      "body": "plant",
+      "color": "#93DF5D",
+      "accent": "#246D4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-grass-viridia",
+      "name": "Viridia",
+      "element": "grass",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "canopy-weald",
+      "body": "humanoid",
+      "color": "#93DF5D",
+      "accent": "#246D4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-grass-eloria",
+      "name": "Eloria",
+      "element": "grass",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "canopy-weald",
+      "body": "spectral",
+      "color": "#93DF5D",
+      "accent": "#246D4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-grass-calyra",
+      "name": "Calyra",
+      "element": "grass",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "canopy-weald",
+      "body": "centaur",
+      "color": "#93DF5D",
+      "accent": "#246D4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-grass-verdalis",
+      "name": "Verdalis",
+      "element": "grass",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "canopy-weald",
+      "body": "golem",
+      "color": "#93DF5D",
+      "accent": "#246D4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-grass-feywyn",
+      "name": "Feywyn",
+      "element": "grass",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "canopy-weald",
+      "body": "humanoid",
+      "color": "#93DF5D",
+      "accent": "#246D4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "electric-zipspool",
+      "name": "Zipspool",
+      "element": "electric",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "stormcoil-fields",
+      "body": "aquatic",
+      "color": "#FCE650",
+      "accent": "#8868DF",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "electric-copperkip",
+      "name": "Copperkip",
+      "element": "electric",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "stormcoil-fields",
+      "body": "amorphous",
+      "color": "#FCE650",
+      "accent": "#8868DF",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "electric-arcshell",
+      "name": "Arcshell",
+      "element": "electric",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "stormcoil-fields",
+      "body": "plant",
+      "color": "#FCE650",
+      "accent": "#8868DF",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "electric-pulsecrest",
+      "name": "Pulsecrest",
+      "element": "electric",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "stormcoil-fields",
+      "body": "plant",
+      "color": "#FCE650",
+      "accent": "#8868DF",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "electric-thundrel",
+      "name": "Thundrel",
+      "element": "electric",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "stormcoil-fields",
+      "body": "centaur",
+      "color": "#FCE650",
+      "accent": "#8868DF",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "electric-stormdiadem",
+      "name": "Stormdiadem",
+      "element": "electric",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "stormcoil-fields",
+      "body": "amorphous",
+      "color": "#FCE650",
+      "accent": "#8868DF",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-electric-zivolt",
+      "name": "Zivolt",
+      "element": "electric",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "stormcoil-fields",
+      "body": "quadruped",
+      "color": "#FCE650",
+      "accent": "#8868DF",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-electric-elixor",
+      "name": "Elixor",
+      "element": "electric",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "stormcoil-fields",
+      "body": "centaur",
+      "color": "#FCE650",
+      "accent": "#8868DF",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-electric-sparra",
+      "name": "Sparra",
+      "element": "electric",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "stormcoil-fields",
+      "body": "amorphous",
+      "color": "#FCE650",
+      "accent": "#8868DF",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-electric-tenzai",
+      "name": "Tenzai",
+      "element": "electric",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "stormcoil-fields",
+      "body": "humanoid",
+      "color": "#FCE650",
+      "accent": "#8868DF",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-electric-arcyra",
+      "name": "Arcyra",
+      "element": "electric",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "stormcoil-fields",
+      "body": "aquatic",
+      "color": "#FCE650",
+      "accent": "#8868DF",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-electric-kirel",
+      "name": "Kirel",
+      "element": "electric",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "stormcoil-fields",
+      "body": "amorphous",
+      "color": "#FCE650",
+      "accent": "#8868DF",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ice-rimebud",
+      "name": "Rimebud",
+      "element": "ice",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "rimebell-basin",
+      "body": "mechanical",
+      "color": "#B7F1FF",
+      "accent": "#5576F2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ice-frostknit",
+      "name": "Frostknit",
+      "element": "ice",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "rimebell-basin",
+      "body": "golem",
+      "color": "#B7F1FF",
+      "accent": "#5576F2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ice-glacetail",
+      "name": "Glacetail",
+      "element": "ice",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "rimebell-basin",
+      "body": "avian",
+      "color": "#B7F1FF",
+      "accent": "#5576F2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ice-hailmorrow",
+      "name": "Hailmorrow",
+      "element": "ice",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "rimebell-basin",
+      "body": "insectoid",
+      "color": "#B7F1FF",
+      "accent": "#5576F2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ice-cryocrest",
+      "name": "Cryocrest",
+      "element": "ice",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "rimebell-basin",
+      "body": "amorphous",
+      "color": "#B7F1FF",
+      "accent": "#5576F2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ice-wintervault",
+      "name": "Wintervault",
+      "element": "ice",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "rimebell-basin",
+      "body": "serpentine",
+      "color": "#B7F1FF",
+      "accent": "#5576F2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ice-frostel",
+      "name": "Frostel",
+      "element": "ice",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "rimebell-basin",
+      "body": "quadruped",
+      "color": "#B7F1FF",
+      "accent": "#5576F2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ice-virelle",
+      "name": "Virelle",
+      "element": "ice",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "rimebell-basin",
+      "body": "humanoid",
+      "color": "#B7F1FF",
+      "accent": "#5576F2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ice-noivara",
+      "name": "Noivara",
+      "element": "ice",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "rimebell-basin",
+      "body": "aquatic",
+      "color": "#B7F1FF",
+      "accent": "#5576F2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ice-glissara",
+      "name": "Glissara",
+      "element": "ice",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "rimebell-basin",
+      "body": "mechanical",
+      "color": "#B7F1FF",
+      "accent": "#5576F2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ice-reyka",
+      "name": "Reyka",
+      "element": "ice",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "rimebell-basin",
+      "body": "humanoid",
+      "color": "#B7F1FF",
+      "accent": "#5576F2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ice-elaris",
+      "name": "Elaris",
+      "element": "ice",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "rimebell-basin",
+      "body": "humanoid",
+      "color": "#B7F1FF",
+      "accent": "#5576F2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fighting-pawtempo",
+      "name": "Pawtempo",
+      "element": "fighting",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "echo-steppe",
+      "body": "aquatic",
+      "color": "#FF8364",
+      "accent": "#873F46",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fighting-knucklefern",
+      "name": "Knucklefern",
+      "element": "fighting",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "echo-steppe",
+      "body": "slime",
+      "color": "#FF8364",
+      "accent": "#873F46",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fighting-bracetusk",
+      "name": "Bracetusk",
+      "element": "fighting",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "echo-steppe",
+      "body": "aquatic",
+      "color": "#FF8364",
+      "accent": "#873F46",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fighting-rhythmant",
+      "name": "Rhythmant",
+      "element": "fighting",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "echo-steppe",
+      "body": "plant",
+      "color": "#FF8364",
+      "accent": "#873F46",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fighting-ironstance",
+      "name": "Ironstance",
+      "element": "fighting",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "echo-steppe",
+      "body": "spectral",
+      "color": "#FF8364",
+      "accent": "#873F46",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fighting-echochamp",
+      "name": "Echochamp",
+      "element": "fighting",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "echo-steppe",
+      "body": "plant",
+      "color": "#FF8364",
+      "accent": "#873F46",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fighting-varnok",
+      "name": "Varnok",
+      "element": "fighting",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "echo-steppe",
+      "body": "serpentine",
+      "color": "#FF8364",
+      "accent": "#873F46",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fighting-brixton",
+      "name": "Brixton",
+      "element": "fighting",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "echo-steppe",
+      "body": "insectoid",
+      "color": "#FF8364",
+      "accent": "#873F46",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fighting-kelmor",
+      "name": "Kelmor",
+      "element": "fighting",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "echo-steppe",
+      "body": "amorphous",
+      "color": "#FF8364",
+      "accent": "#873F46",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fighting-rensai",
+      "name": "Rensai",
+      "element": "fighting",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "echo-steppe",
+      "body": "quadruped",
+      "color": "#FF8364",
+      "accent": "#873F46",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fighting-torvan",
+      "name": "Torvan",
+      "element": "fighting",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "echo-steppe",
+      "body": "mechanical",
+      "color": "#FF8364",
+      "accent": "#873F46",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fighting-drelio",
+      "name": "Drelio",
+      "element": "fighting",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "echo-steppe",
+      "body": "golem",
+      "color": "#FF8364",
+      "accent": "#873F46",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "poison-mirepip",
+      "name": "Mirepip",
+      "element": "poison",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "violet-mire",
+      "body": "aquatic",
+      "color": "#B26ADF",
+      "accent": "#5D2C80",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "poison-venomoss",
+      "name": "Venomoss",
+      "element": "poison",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "violet-mire",
+      "body": "humanoid",
+      "color": "#B26ADF",
+      "accent": "#5D2C80",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "poison-sporeveil",
+      "name": "Sporeveil",
+      "element": "poison",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "violet-mire",
+      "body": "centaur",
+      "color": "#B26ADF",
+      "accent": "#5D2C80",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "poison-brinebarb",
+      "name": "Brinebarb",
+      "element": "poison",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "violet-mire",
+      "body": "serpentine",
+      "color": "#B26ADF",
+      "accent": "#5D2C80",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "poison-toxilume",
+      "name": "Toxilume",
+      "element": "poison",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "violet-mire",
+      "body": "avian",
+      "color": "#B26ADF",
+      "accent": "#5D2C80",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "poison-mirematron",
+      "name": "Mirematron",
+      "element": "poison",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "violet-mire",
+      "body": "insectoid",
+      "color": "#B26ADF",
+      "accent": "#5D2C80",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-poison-mizora",
+      "name": "Mizora",
+      "element": "poison",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "violet-mire",
+      "body": "golem",
+      "color": "#B26ADF",
+      "accent": "#5D2C80",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-poison-ophira",
+      "name": "Ophira",
+      "element": "poison",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "violet-mire",
+      "body": "plant",
+      "color": "#B26ADF",
+      "accent": "#5D2C80",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-poison-velrix",
+      "name": "Velrix",
+      "element": "poison",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "violet-mire",
+      "body": "humanoid",
+      "color": "#B26ADF",
+      "accent": "#5D2C80",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-poison-parina",
+      "name": "Parina",
+      "element": "poison",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "violet-mire",
+      "body": "aquatic",
+      "color": "#B26ADF",
+      "accent": "#5D2C80",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-poison-nivoss",
+      "name": "Nivoss",
+      "element": "poison",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "violet-mire",
+      "body": "plant",
+      "color": "#B26ADF",
+      "accent": "#5D2C80",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-poison-zerith",
+      "name": "Zerith",
+      "element": "poison",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "violet-mire",
+      "body": "golem",
+      "color": "#B26ADF",
+      "accent": "#5D2C80",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ground-clodkin",
+      "name": "Clodkin",
+      "element": "ground",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "ochre-labyrinth",
+      "body": "golem",
+      "color": "#E2B06C",
+      "accent": "#7E5947",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ground-burrowick",
+      "name": "Burrowick",
+      "element": "ground",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "ochre-labyrinth",
+      "body": "humanoid",
+      "color": "#E2B06C",
+      "accent": "#7E5947",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ground-dunebraid",
+      "name": "Dunebraid",
+      "element": "ground",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "ochre-labyrinth",
+      "body": "humanoid",
+      "color": "#E2B06C",
+      "accent": "#7E5947",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ground-siltmaw",
+      "name": "Siltmaw",
+      "element": "ground",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "ochre-labyrinth",
+      "body": "floating",
+      "color": "#E2B06C",
+      "accent": "#7E5947",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ground-terracrest",
+      "name": "Terracrest",
+      "element": "ground",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "ochre-labyrinth",
+      "body": "plant",
+      "color": "#E2B06C",
+      "accent": "#7E5947",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ground-faultwarden",
+      "name": "Faultwarden",
+      "element": "ground",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "ochre-labyrinth",
+      "body": "humanoid",
+      "color": "#E2B06C",
+      "accent": "#7E5947",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ground-doran",
+      "name": "Doran",
+      "element": "ground",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "ochre-labyrinth",
+      "body": "amorphous",
+      "color": "#E2B06C",
+      "accent": "#7E5947",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ground-mavelo",
+      "name": "Mavelo",
+      "element": "ground",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "ochre-labyrinth",
+      "body": "humanoid",
+      "color": "#E2B06C",
+      "accent": "#7E5947",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ground-kerush",
+      "name": "Kerush",
+      "element": "ground",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "ochre-labyrinth",
+      "body": "slime",
+      "color": "#E2B06C",
+      "accent": "#7E5947",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ground-orrin",
+      "name": "Orrin",
+      "element": "ground",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "ochre-labyrinth",
+      "body": "amorphous",
+      "color": "#E2B06C",
+      "accent": "#7E5947",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ground-tulara",
+      "name": "Tulara",
+      "element": "ground",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "ochre-labyrinth",
+      "body": "floating",
+      "color": "#E2B06C",
+      "accent": "#7E5947",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ground-gorvel",
+      "name": "Gorvel",
+      "element": "ground",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "ochre-labyrinth",
+      "body": "centaur",
+      "color": "#E2B06C",
+      "accent": "#7E5947",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "flying-breezlet",
+      "name": "Breezlet",
+      "element": "flying",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "skyreed-isles",
+      "body": "serpentine",
+      "color": "#B6E0FF",
+      "accent": "#5877DA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "flying-kitespun",
+      "name": "Kitespun",
+      "element": "flying",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "skyreed-isles",
+      "body": "plant",
+      "color": "#B6E0FF",
+      "accent": "#5877DA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "flying-gusthorn",
+      "name": "Gusthorn",
+      "element": "flying",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "skyreed-isles",
+      "body": "mechanical",
+      "color": "#B6E0FF",
+      "accent": "#5877DA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "flying-cloudlace",
+      "name": "Cloudlace",
+      "element": "flying",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "skyreed-isles",
+      "body": "amorphous",
+      "color": "#B6E0FF",
+      "accent": "#5877DA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "flying-tempestail",
+      "name": "Tempestail",
+      "element": "flying",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "skyreed-isles",
+      "body": "humanoid",
+      "color": "#B6E0FF",
+      "accent": "#5877DA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "flying-skyregent",
+      "name": "Skyregent",
+      "element": "flying",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "skyreed-isles",
+      "body": "mechanical",
+      "color": "#B6E0FF",
+      "accent": "#5877DA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-flying-galehorn",
+      "name": "Galehorn",
+      "element": "flying",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "skyreed-isles",
+      "body": "avian",
+      "color": "#B6E0FF",
+      "accent": "#5877DA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-flying-avorin",
+      "name": "Avorin",
+      "element": "flying",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "skyreed-isles",
+      "body": "floating",
+      "color": "#B6E0FF",
+      "accent": "#5877DA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-flying-zevia",
+      "name": "Zevia",
+      "element": "flying",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "skyreed-isles",
+      "body": "spectral",
+      "color": "#B6E0FF",
+      "accent": "#5877DA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-flying-alrune",
+      "name": "Alrune",
+      "element": "flying",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "skyreed-isles",
+      "body": "floating",
+      "color": "#B6E0FF",
+      "accent": "#5877DA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-flying-veylith",
+      "name": "Veylith",
+      "element": "flying",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "skyreed-isles",
+      "body": "humanoid",
+      "color": "#B6E0FF",
+      "accent": "#5877DA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-flying-sirova",
+      "name": "Sirova",
+      "element": "flying",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "skyreed-isles",
+      "body": "golem",
+      "color": "#B6E0FF",
+      "accent": "#5877DA",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "psychic-glimpseed",
+      "name": "Glimpseed",
+      "element": "psychic",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "mirror-orchard",
+      "body": "quadruped",
+      "color": "#FF9ECF",
+      "accent": "#8147C2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "psychic-thoughtuft",
+      "name": "Thoughtuft",
+      "element": "psychic",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "mirror-orchard",
+      "body": "aquatic",
+      "color": "#FF9ECF",
+      "accent": "#8147C2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "psychic-mirribbon",
+      "name": "Mirribbon",
+      "element": "psychic",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "mirror-orchard",
+      "body": "humanoid",
+      "color": "#FF9ECF",
+      "accent": "#8147C2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "psychic-astraloom",
+      "name": "Astraloom",
+      "element": "psychic",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "mirror-orchard",
+      "body": "aquatic",
+      "color": "#FF9ECF",
+      "accent": "#8147C2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "psychic-mindspire",
+      "name": "Mindspire",
+      "element": "psychic",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "mirror-orchard",
+      "body": "avian",
+      "color": "#FF9ECF",
+      "accent": "#8147C2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "psychic-oracleaf",
+      "name": "Oracleaf",
+      "element": "psychic",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "mirror-orchard",
+      "body": "insectoid",
+      "color": "#FF9ECF",
+      "accent": "#8147C2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-psychic-mirelle",
+      "name": "Mirelle",
+      "element": "psychic",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "mirror-orchard",
+      "body": "aquatic",
+      "color": "#FF9ECF",
+      "accent": "#8147C2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-psychic-psynara",
+      "name": "Psynara",
+      "element": "psychic",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "mirror-orchard",
+      "body": "spectral",
+      "color": "#FF9ECF",
+      "accent": "#8147C2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-psychic-orisyn",
+      "name": "Orisyn",
+      "element": "psychic",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "mirror-orchard",
+      "body": "slime",
+      "color": "#FF9ECF",
+      "accent": "#8147C2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-psychic-vaelis",
+      "name": "Vaelis",
+      "element": "psychic",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "mirror-orchard",
+      "body": "amorphous",
+      "color": "#FF9ECF",
+      "accent": "#8147C2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-psychic-lumira",
+      "name": "Lumira",
+      "element": "psychic",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "mirror-orchard",
+      "body": "humanoid",
+      "color": "#FF9ECF",
+      "accent": "#8147C2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-psychic-qenari",
+      "name": "Qenari",
+      "element": "psychic",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "mirror-orchard",
+      "body": "humanoid",
+      "color": "#FF9ECF",
+      "accent": "#8147C2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "bug-threadpip",
+      "name": "Threadpip",
+      "element": "bug",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "amber-understory",
+      "body": "humanoid",
+      "color": "#C2D85B",
+      "accent": "#506C4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "bug-waxwinglet",
+      "name": "Waxwinglet",
+      "element": "bug",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "amber-understory",
+      "body": "plant",
+      "color": "#C2D85B",
+      "accent": "#506C4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "bug-carapurl",
+      "name": "Carapurl",
+      "element": "bug",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "amber-understory",
+      "body": "avian",
+      "color": "#C2D85B",
+      "accent": "#506C4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "bug-silkforge",
+      "name": "Silkforge",
+      "element": "bug",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "amber-understory",
+      "body": "spectral",
+      "color": "#C2D85B",
+      "accent": "#506C4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "bug-amberclad",
+      "name": "Amberclad",
+      "element": "bug",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "amber-understory",
+      "body": "amorphous",
+      "color": "#C2D85B",
+      "accent": "#506C4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "bug-hivecantor",
+      "name": "Hivecantor",
+      "element": "bug",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "amber-understory",
+      "body": "floating",
+      "color": "#C2D85B",
+      "accent": "#506C4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-bug-tibbi",
+      "name": "Tibbi",
+      "element": "bug",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "amber-understory",
+      "body": "slime",
+      "color": "#C2D85B",
+      "accent": "#506C4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-bug-zynelle",
+      "name": "Zynelle",
+      "element": "bug",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "amber-understory",
+      "body": "humanoid",
+      "color": "#C2D85B",
+      "accent": "#506C4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-bug-corven",
+      "name": "Corven",
+      "element": "bug",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "amber-understory",
+      "body": "quadruped",
+      "color": "#C2D85B",
+      "accent": "#506C4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-bug-pipra",
+      "name": "Pipra",
+      "element": "bug",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "amber-understory",
+      "body": "mechanical",
+      "color": "#C2D85B",
+      "accent": "#506C4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-bug-kaxila",
+      "name": "Kaxila",
+      "element": "bug",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "amber-understory",
+      "body": "insectoid",
+      "color": "#C2D85B",
+      "accent": "#506C4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-bug-xirent",
+      "name": "Xirent",
+      "element": "bug",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "amber-understory",
+      "body": "floating",
+      "color": "#C2D85B",
+      "accent": "#506C4E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "rock-peblune",
+      "name": "Peblune",
+      "element": "rock",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "basalt-choir",
+      "body": "humanoid",
+      "color": "#C6B7A0",
+      "accent": "#625665",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "rock-shalebell",
+      "name": "Shalebell",
+      "element": "rock",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "basalt-choir",
+      "body": "aquatic",
+      "color": "#C6B7A0",
+      "accent": "#625665",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "rock-flintspur",
+      "name": "Flintspur",
+      "element": "rock",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "basalt-choir",
+      "body": "spectral",
+      "color": "#C6B7A0",
+      "accent": "#625665",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "rock-cragweft",
+      "name": "Cragweft",
+      "element": "rock",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "basalt-choir",
+      "body": "insectoid",
+      "color": "#C6B7A0",
+      "accent": "#625665",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "rock-geodrum",
+      "name": "Geodrum",
+      "element": "rock",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "basalt-choir",
+      "body": "floating",
+      "color": "#C6B7A0",
+      "accent": "#625665",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "rock-monolithorn",
+      "name": "Monolithorn",
+      "element": "rock",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "basalt-choir",
+      "body": "plant",
+      "color": "#C6B7A0",
+      "accent": "#625665",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-rock-gravelo",
+      "name": "Gravelo",
+      "element": "rock",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "basalt-choir",
+      "body": "mechanical",
+      "color": "#C6B7A0",
+      "accent": "#625665",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-rock-korbun",
+      "name": "Korbun",
+      "element": "rock",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "basalt-choir",
+      "body": "amorphous",
+      "color": "#C6B7A0",
+      "accent": "#625665",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-rock-tessara",
+      "name": "Tessara",
+      "element": "rock",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "basalt-choir",
+      "body": "humanoid",
+      "color": "#C6B7A0",
+      "accent": "#625665",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-rock-baxlin",
+      "name": "Baxlin",
+      "element": "rock",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "basalt-choir",
+      "body": "humanoid",
+      "color": "#C6B7A0",
+      "accent": "#625665",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-rock-thoryn",
+      "name": "Thoryn",
+      "element": "rock",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "basalt-choir",
+      "body": "floating",
+      "color": "#C6B7A0",
+      "accent": "#625665",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-rock-veldra",
+      "name": "Veldra",
+      "element": "rock",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "basalt-choir",
+      "body": "humanoid",
+      "color": "#C6B7A0",
+      "accent": "#625665",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ghost-wickrift",
+      "name": "Wickrift",
+      "element": "ghost",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "lantern-necropolis",
+      "body": "floating",
+      "color": "#B78EFF",
+      "accent": "#5E3E9A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ghost-shroudlet",
+      "name": "Shroudlet",
+      "element": "ghost",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "lantern-necropolis",
+      "body": "floating",
+      "color": "#B78EFF",
+      "accent": "#5E3E9A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ghost-bellshade",
+      "name": "Bellshade",
+      "element": "ghost",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "lantern-necropolis",
+      "body": "spectral",
+      "color": "#B78EFF",
+      "accent": "#5E3E9A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ghost-echowisp",
+      "name": "Echowisp",
+      "element": "ghost",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "lantern-necropolis",
+      "body": "plant",
+      "color": "#B78EFF",
+      "accent": "#5E3E9A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ghost-veilrelic",
+      "name": "Veilrelic",
+      "element": "ghost",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "lantern-necropolis",
+      "body": "serpentine",
+      "color": "#B78EFF",
+      "accent": "#5E3E9A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "ghost-lanternwake",
+      "name": "Lanternwake",
+      "element": "ghost",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "lantern-necropolis",
+      "body": "spectral",
+      "color": "#B78EFF",
+      "accent": "#5E3E9A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ghost-mireshade",
+      "name": "Mireshade",
+      "element": "ghost",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "lantern-necropolis",
+      "body": "spectral",
+      "color": "#B78EFF",
+      "accent": "#5E3E9A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ghost-elyth",
+      "name": "Elyth",
+      "element": "ghost",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "lantern-necropolis",
+      "body": "floating",
+      "color": "#B78EFF",
+      "accent": "#5E3E9A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ghost-umbriel",
+      "name": "Umbriel",
+      "element": "ghost",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "lantern-necropolis",
+      "body": "plant",
+      "color": "#B78EFF",
+      "accent": "#5E3E9A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ghost-phayra",
+      "name": "Phayra",
+      "element": "ghost",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "lantern-necropolis",
+      "body": "insectoid",
+      "color": "#B78EFF",
+      "accent": "#5E3E9A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ghost-selmora",
+      "name": "Selmora",
+      "element": "ghost",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "lantern-necropolis",
+      "body": "humanoid",
+      "color": "#B78EFF",
+      "accent": "#5E3E9A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-ghost-ossyne",
+      "name": "Ossyne",
+      "element": "ghost",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "lantern-necropolis",
+      "body": "spectral",
+      "color": "#B78EFF",
+      "accent": "#5E3E9A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "dragon-scalebud",
+      "name": "Scalebud",
+      "element": "dragon",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "wyrmglass-ridge",
+      "body": "quadruped",
+      "color": "#B5A2FC",
+      "accent": "#374C9C",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "dragon-coilcrest",
+      "name": "Coilcrest",
+      "element": "dragon",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "wyrmglass-ridge",
+      "body": "plant",
+      "color": "#B5A2FC",
+      "accent": "#374C9C",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "dragon-spirewing",
+      "name": "Spirewing",
+      "element": "dragon",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "wyrmglass-ridge",
+      "body": "plant",
+      "color": "#B5A2FC",
+      "accent": "#374C9C",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "dragon-runescale",
+      "name": "Runescale",
+      "element": "dragon",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "wyrmglass-ridge",
+      "body": "aquatic",
+      "color": "#B5A2FC",
+      "accent": "#374C9C",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "dragon-crestwyrm",
+      "name": "Crestwyrm",
+      "element": "dragon",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "wyrmglass-ridge",
+      "body": "avian",
+      "color": "#B5A2FC",
+      "accent": "#374C9C",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "dragon-wyrmglass",
+      "name": "Wyrmglass",
+      "element": "dragon",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "wyrmglass-ridge",
+      "body": "amorphous",
+      "color": "#B5A2FC",
+      "accent": "#374C9C",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-dragon-ralyx",
+      "name": "Ralyx",
+      "element": "dragon",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "wyrmglass-ridge",
+      "body": "quadruped",
+      "color": "#B5A2FC",
+      "accent": "#374C9C",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-dragon-zephyris",
+      "name": "Zephyris",
+      "element": "dragon",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "wyrmglass-ridge",
+      "body": "aquatic",
+      "color": "#B5A2FC",
+      "accent": "#374C9C",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-dragon-kadrion",
+      "name": "Kadrion",
+      "element": "dragon",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "wyrmglass-ridge",
+      "body": "humanoid",
+      "color": "#B5A2FC",
+      "accent": "#374C9C",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-dragon-myraken",
+      "name": "Myraken",
+      "element": "dragon",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "wyrmglass-ridge",
+      "body": "golem",
+      "color": "#B5A2FC",
+      "accent": "#374C9C",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-dragon-valdrix",
+      "name": "Valdrix",
+      "element": "dragon",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "wyrmglass-ridge",
+      "body": "avian",
+      "color": "#B5A2FC",
+      "accent": "#374C9C",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-dragon-ophreon",
+      "name": "Ophreon",
+      "element": "dragon",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "wyrmglass-ridge",
+      "body": "spectral",
+      "color": "#B5A2FC",
+      "accent": "#374C9C",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "dark-dimble",
+      "name": "Dimble",
+      "element": "dark",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "umbra-vale",
+      "body": "insectoid",
+      "color": "#8F79AA",
+      "accent": "#31254E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "dark-dusktuft",
+      "name": "Dusktuft",
+      "element": "dark",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "umbra-vale",
+      "body": "humanoid",
+      "color": "#8F79AA",
+      "accent": "#31254E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "dark-sablecoil",
+      "name": "Sablecoil",
+      "element": "dark",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "umbra-vale",
+      "body": "golem",
+      "color": "#8F79AA",
+      "accent": "#31254E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "dark-nightweft",
+      "name": "Nightweft",
+      "element": "dark",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "umbra-vale",
+      "body": "humanoid",
+      "color": "#8F79AA",
+      "accent": "#31254E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "dark-umbramane",
+      "name": "Umbramane",
+      "element": "dark",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "umbra-vale",
+      "body": "amorphous",
+      "color": "#8F79AA",
+      "accent": "#31254E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "dark-eclipseward",
+      "name": "Eclipseward",
+      "element": "dark",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "umbra-vale",
+      "body": "humanoid",
+      "color": "#8F79AA",
+      "accent": "#31254E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-dark-noxen",
+      "name": "Noxen",
+      "element": "dark",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "umbra-vale",
+      "body": "centaur",
+      "color": "#8F79AA",
+      "accent": "#31254E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-dark-duskira",
+      "name": "Duskira",
+      "element": "dark",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "umbra-vale",
+      "body": "amorphous",
+      "color": "#8F79AA",
+      "accent": "#31254E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-dark-veylor",
+      "name": "Veylor",
+      "element": "dark",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "umbra-vale",
+      "body": "aquatic",
+      "color": "#8F79AA",
+      "accent": "#31254E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-dark-zarrith",
+      "name": "Zarrith",
+      "element": "dark",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "umbra-vale",
+      "body": "slime",
+      "color": "#8F79AA",
+      "accent": "#31254E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-dark-morvale",
+      "name": "Morvale",
+      "element": "dark",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "umbra-vale",
+      "body": "plant",
+      "color": "#8F79AA",
+      "accent": "#31254E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-dark-kravis",
+      "name": "Kravis",
+      "element": "dark",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "umbra-vale",
+      "body": "avian",
+      "color": "#8F79AA",
+      "accent": "#31254E",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "steel-rivetip",
+      "name": "Rivetip",
+      "element": "steel",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "alloy-foundry",
+      "body": "plant",
+      "color": "#ADB8D0",
+      "accent": "#45576A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "steel-tinmantle",
+      "name": "Tinmantle",
+      "element": "steel",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "alloy-foundry",
+      "body": "quadruped",
+      "color": "#ADB8D0",
+      "accent": "#45576A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "steel-cogcrest",
+      "name": "Cogcrest",
+      "element": "steel",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "alloy-foundry",
+      "body": "mechanical",
+      "color": "#ADB8D0",
+      "accent": "#45576A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "steel-chromeweft",
+      "name": "Chromeweft",
+      "element": "steel",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "alloy-foundry",
+      "body": "amorphous",
+      "color": "#ADB8D0",
+      "accent": "#45576A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "steel-alloyhorn",
+      "name": "Alloyhorn",
+      "element": "steel",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "alloy-foundry",
+      "body": "humanoid",
+      "color": "#ADB8D0",
+      "accent": "#45576A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "steel-foundryheart",
+      "name": "Foundryheart",
+      "element": "steel",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "alloy-foundry",
+      "body": "insectoid",
+      "color": "#ADB8D0",
+      "accent": "#45576A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-steel-tixor",
+      "name": "Tixor",
+      "element": "steel",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "alloy-foundry",
+      "body": "insectoid",
+      "color": "#ADB8D0",
+      "accent": "#45576A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-steel-bravik",
+      "name": "Bravik",
+      "element": "steel",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "alloy-foundry",
+      "body": "humanoid",
+      "color": "#ADB8D0",
+      "accent": "#45576A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-steel-caltron",
+      "name": "Caltron",
+      "element": "steel",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "alloy-foundry",
+      "body": "avian",
+      "color": "#ADB8D0",
+      "accent": "#45576A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-steel-nexira",
+      "name": "Nexira",
+      "element": "steel",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "alloy-foundry",
+      "body": "insectoid",
+      "color": "#ADB8D0",
+      "accent": "#45576A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-steel-velsyn",
+      "name": "Velsyn",
+      "element": "steel",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "alloy-foundry",
+      "body": "humanoid",
+      "color": "#ADB8D0",
+      "accent": "#45576A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-steel-korex",
+      "name": "Korex",
+      "element": "steel",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "alloy-foundry",
+      "body": "golem",
+      "color": "#ADB8D0",
+      "accent": "#45576A",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fairy-chimeling",
+      "name": "Chimeling",
+      "element": "fairy",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "chimegrove",
+      "body": "floating",
+      "color": "#FFC5F8",
+      "accent": "#B467CE",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fairy-petalbell",
+      "name": "Petalbell",
+      "element": "fairy",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "chimegrove",
+      "body": "plant",
+      "color": "#FFC5F8",
+      "accent": "#B467CE",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fairy-glimmerlace",
+      "name": "Glimmerlace",
+      "element": "fairy",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "chimegrove",
+      "body": "slime",
+      "color": "#FFC5F8",
+      "accent": "#B467CE",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fairy-wishweft",
+      "name": "Wishweft",
+      "element": "fairy",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "chimegrove",
+      "body": "humanoid",
+      "color": "#FFC5F8",
+      "accent": "#B467CE",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fairy-grovehalo",
+      "name": "Grovehalo",
+      "element": "fairy",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "chimegrove",
+      "body": "avian",
+      "color": "#FFC5F8",
+      "accent": "#B467CE",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "fairy-chimequeen",
+      "name": "Chimequeen",
+      "element": "fairy",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "chimegrove",
+      "body": "plant",
+      "color": "#FFC5F8",
+      "accent": "#B467CE",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fairy-faylia",
+      "name": "Faylia",
+      "element": "fairy",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "chimegrove",
+      "body": "amorphous",
+      "color": "#FFC5F8",
+      "accent": "#B467CE",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fairy-yunelle",
+      "name": "Yunelle",
+      "element": "fairy",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "chimegrove",
+      "body": "humanoid",
+      "color": "#FFC5F8",
+      "accent": "#B467CE",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fairy-seraphie",
+      "name": "Seraphie",
+      "element": "fairy",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "chimegrove",
+      "body": "plant",
+      "color": "#FFC5F8",
+      "accent": "#B467CE",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fairy-pimora",
+      "name": "Pimora",
+      "element": "fairy",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "chimegrove",
+      "body": "humanoid",
+      "color": "#FFC5F8",
+      "accent": "#B467CE",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fairy-aureli",
+      "name": "Aureli",
+      "element": "fairy",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "chimegrove",
+      "body": "aquatic",
+      "color": "#FFC5F8",
+      "accent": "#B467CE",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fairy-lilithia",
+      "name": "Lilithia",
+      "element": "fairy",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "chimegrove",
+      "body": "plant",
+      "color": "#FFC5F8",
+      "accent": "#B467CE",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "light-gleamlet",
+      "name": "Gleamlet",
+      "element": "light",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "dawn-prism-sanctum",
+      "body": "amorphous",
+      "color": "#FFF2AE",
+      "accent": "#C59BD2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "light-dawnpurl",
+      "name": "Dawnpurl",
+      "element": "light",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "dawn-prism-sanctum",
+      "body": "humanoid",
+      "color": "#FFF2AE",
+      "accent": "#C59BD2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "light-raymantle",
+      "name": "Raymantle",
+      "element": "light",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "dawn-prism-sanctum",
+      "body": "mechanical",
+      "color": "#FFF2AE",
+      "accent": "#C59BD2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "light-solweft",
+      "name": "Solweft",
+      "element": "light",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "dawn-prism-sanctum",
+      "body": "floating",
+      "color": "#FFF2AE",
+      "accent": "#C59BD2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "light-prismhalo",
+      "name": "Prismhalo",
+      "element": "light",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "dawn-prism-sanctum",
+      "body": "serpentine",
+      "color": "#FFF2AE",
+      "accent": "#C59BD2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "light-dawnarchon",
+      "name": "Dawnarchon",
+      "element": "light",
+      "rank": "S",
+      "source": "map_legendary",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "dawn-prism-sanctum",
+      "body": "insectoid",
+      "color": "#FFF2AE",
+      "accent": "#C59BD2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-light-oralie",
+      "name": "Oralie",
+      "element": "light",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "dawn-prism-sanctum",
+      "body": "insectoid",
+      "color": "#FFF2AE",
+      "accent": "#C59BD2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-light-luciel",
+      "name": "Luciel",
+      "element": "light",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "dawn-prism-sanctum",
+      "body": "floating",
+      "color": "#FFF2AE",
+      "accent": "#C59BD2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-light-viorin",
+      "name": "Viorin",
+      "element": "light",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "dawn-prism-sanctum",
+      "body": "avian",
+      "color": "#FFF2AE",
+      "accent": "#C59BD2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-light-celestra",
+      "name": "Celestra",
+      "element": "light",
+      "rank": "B",
+      "source": "map_regular",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard"
+      ],
+      "map": "dawn-prism-sanctum",
+      "body": "plant",
+      "color": "#FFF2AE",
+      "accent": "#C59BD2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-light-solene",
+      "name": "Solene",
+      "element": "light",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "dawn-prism-sanctum",
+      "body": "humanoid",
+      "color": "#FFF2AE",
+      "accent": "#C59BD2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-light-dayrin",
+      "name": "Dayrin",
+      "element": "light",
+      "rank": "A",
+      "source": "map_regular",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_elemental_skill"
+      ],
+      "map": "dawn-prism-sanctum",
+      "body": "aquatic",
+      "color": "#FFF2AE",
+      "accent": "#C59BD2",
+      "ability": null,
+      "signature": null
+    },
+    {
+      "id": "pet-v3-fire-icarus",
+      "name": "Icarus",
+      "element": "fire",
+      "rank": "S",
+      "source": "limited_event_gacha",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "signature_icarus"
+      ],
+      "map": null,
+      "body": "humanoid",
+      "color": "#FF9B40",
+      "accent": "#D43B53",
+      "ability": null,
+      "signature": "signature_card_icarus"
+    },
+    {
+      "id": "pet-v3-ice-glaciemora",
+      "name": "Glaciemora",
+      "element": "ice",
+      "rank": "S",
+      "source": "limited_event_gacha",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "signature_glaciemora"
+      ],
+      "map": null,
+      "body": "quadruped",
+      "color": "#B7F1FF",
+      "accent": "#5576F2",
+      "ability": null,
+      "signature": "signature_card_glaciemora"
+    },
+    {
+      "id": "pet-v3-electric-voltaris",
+      "name": "Voltaris",
+      "element": "electric",
+      "rank": "S",
+      "source": "limited_event_gacha",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "signature_voltaris"
+      ],
+      "map": null,
+      "body": "avian",
+      "color": "#FCE650",
+      "accent": "#8868DF",
+      "ability": null,
+      "signature": "signature_card_voltaris"
+    },
+    {
+      "id": "pet-v3-ghost-noctalith",
+      "name": "Noctalith",
+      "element": "ghost",
+      "rank": "S",
+      "source": "limited_event_gacha",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "signature_noctalith"
+      ],
+      "map": null,
+      "body": "serpentine",
+      "color": "#B78EFF",
+      "accent": "#5E3E9A",
+      "ability": null,
+      "signature": "signature_card_noctalith"
+    },
+    {
+      "id": "pet-v3-grass-sylvaris",
+      "name": "Sylvaris",
+      "element": "grass",
+      "rank": "S",
+      "source": "limited_event_gacha",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "signature_sylvaris"
+      ],
+      "map": null,
+      "body": "humanoid",
+      "color": "#93DF5D",
+      "accent": "#246D4E",
+      "ability": null,
+      "signature": "signature_card_sylvaris"
+    },
+    {
+      "id": "pet-v3-water-leviara",
+      "name": "Leviara",
+      "element": "water",
+      "rank": "S",
+      "source": "limited_event_gacha",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "signature_leviara"
+      ],
+      "map": null,
+      "body": "serpentine",
+      "color": "#4ACBFF",
+      "accent": "#2866CA",
+      "ability": null,
+      "signature": "signature_card_leviara"
+    },
+    {
+      "id": "pet-v31-fire-cindrelis",
+      "name": "Cindrelis",
+      "element": "fire",
+      "rank": "S",
+      "source": "standard_gacha",
+      "role": "striker",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_disrupt",
+        "generic_elemental_skill"
+      ],
+      "map": null,
+      "body": "floating",
+      "color": "#FF7849",
+      "accent": "#FFD89A",
+      "ability": "Ember Halo",
+      "signature": null
+    },
+    {
+      "id": "pet-v31-water-marivell",
+      "name": "Marivell",
+      "element": "water",
+      "rank": "S",
+      "source": "standard_gacha",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_heal",
+        "generic_protect"
+      ],
+      "map": null,
+      "body": "radial",
+      "color": "#65E6E1",
+      "accent": "#B4A6FF",
+      "ability": "Tidal Mantle",
+      "signature": null
+    },
+    {
+      "id": "pet-v31-electric-quorion",
+      "name": "Quorion",
+      "element": "electric",
+      "rank": "S",
+      "source": "standard_gacha",
+      "role": "channeler",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_elemental_skill",
+        "generic_empower"
+      ],
+      "map": null,
+      "body": "avian",
+      "color": "#D4C75B",
+      "accent": "#576CCA",
+      "ability": "Arc Relay",
+      "signature": null
+    },
+    {
+      "id": "pet-v31-ghost-vesperyn",
+      "name": "Vesperyn",
+      "element": "ghost",
+      "rank": "S",
+      "source": "standard_gacha",
+      "role": "disruptor",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_disrupt",
+        "generic_siphon"
+      ],
+      "map": null,
+      "body": "spectral",
+      "color": "#9B7DDB",
+      "accent": "#D7F0E8",
+      "ability": "Wisp Hex",
+      "signature": null
+    },
+    {
+      "id": "pet-v31-ground-gravorn",
+      "name": "Gravorn",
+      "element": "ground",
+      "rank": "S",
+      "source": "standard_gacha",
+      "role": "guardian",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_guard",
+        "generic_protect"
+      ],
+      "map": null,
+      "body": "hexapod",
+      "color": "#B59B7A",
+      "accent": "#73BFA2",
+      "ability": "Seismic Ward",
+      "signature": null
+    },
+    {
+      "id": "pet-v31-light-aurelune",
+      "name": "Aurelune",
+      "element": "light",
+      "rank": "S",
+      "source": "standard_gacha",
+      "role": "support",
+      "skills": [
+        "basic_strike",
+        "rage_strike_100",
+        "generic_heal",
+        "generic_cleanse"
+      ],
+      "map": null,
+      "body": "quadruped",
+      "color": "#FFF0CC",
+      "accent": "#A8DCEB",
+      "ability": "Dawn Chorus",
+      "signature": null
+    }
+  ],
+  "maps": [
+    {
+      "id": "meadow-hollows",
+      "name": "Meadow Hollows",
+      "element": "normal",
+      "levels": [
+        1,
+        28
+      ]
+    },
+    {
+      "id": "cinder-terraces",
+      "name": "Cinder Terraces",
+      "element": "fire",
+      "levels": [
+        5,
+        32
+      ]
+    },
+    {
+      "id": "tideglass-lagoon",
+      "name": "Tideglass Lagoon",
+      "element": "water",
+      "levels": [
+        9,
+        36
+      ]
+    },
+    {
+      "id": "canopy-weald",
+      "name": "Canopy Weald",
+      "element": "grass",
+      "levels": [
+        13,
+        40
+      ]
+    },
+    {
+      "id": "stormcoil-fields",
+      "name": "Stormcoil Fields",
+      "element": "electric",
+      "levels": [
+        17,
+        44
+      ]
+    },
+    {
+      "id": "rimebell-basin",
+      "name": "Rimebell Basin",
+      "element": "ice",
+      "levels": [
+        21,
+        48
+      ]
+    },
+    {
+      "id": "echo-steppe",
+      "name": "Echo Steppe",
+      "element": "fighting",
+      "levels": [
+        25,
+        52
+      ]
+    },
+    {
+      "id": "violet-mire",
+      "name": "Violet Mire",
+      "element": "poison",
+      "levels": [
+        29,
+        56
+      ]
+    },
+    {
+      "id": "ochre-labyrinth",
+      "name": "Ochre Labyrinth",
+      "element": "ground",
+      "levels": [
+        33,
+        60
+      ]
+    },
+    {
+      "id": "skyreed-isles",
+      "name": "Skyreed Isles",
+      "element": "flying",
+      "levels": [
+        37,
+        64
+      ]
+    },
+    {
+      "id": "mirror-orchard",
+      "name": "Mirror Orchard",
+      "element": "psychic",
+      "levels": [
+        41,
+        68
+      ]
+    },
+    {
+      "id": "amber-understory",
+      "name": "Amber Understory",
+      "element": "bug",
+      "levels": [
+        45,
+        72
+      ]
+    },
+    {
+      "id": "basalt-choir",
+      "name": "Basalt Choir",
+      "element": "rock",
+      "levels": [
+        49,
+        76
+      ]
+    },
+    {
+      "id": "lantern-necropolis",
+      "name": "Lantern Necropolis",
+      "element": "ghost",
+      "levels": [
+        53,
+        80
+      ]
+    },
+    {
+      "id": "wyrmglass-ridge",
+      "name": "Wyrmglass Ridge",
+      "element": "dragon",
+      "levels": [
+        57,
+        84
+      ]
+    },
+    {
+      "id": "umbra-vale",
+      "name": "Umbra Vale",
+      "element": "dark",
+      "levels": [
+        61,
+        88
+      ]
+    },
+    {
+      "id": "alloy-foundry",
+      "name": "Alloy Foundry",
+      "element": "steel",
+      "levels": [
+        65,
+        92
+      ]
+    },
+    {
+      "id": "chimegrove",
+      "name": "Chimegrove",
+      "element": "fairy",
+      "levels": [
+        69,
+        96
+      ]
+    },
+    {
+      "id": "dawn-prism-sanctum",
+      "name": "Dawn Prism Sanctum",
+      "element": "light",
+      "levels": [
+        73,
+        100
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "id": "basic_strike",
+      "mana": 0,
+      "rage": 0,
+      "cooldown": 0,
+      "unlock": 1,
+      "ultimate": null
+    },
+    {
+      "id": "rage_strike_100",
+      "mana": 0,
+      "rage": 100,
+      "cooldown": 0,
+      "unlock": 1,
+      "ultimate": null
+    },
+    {
+      "id": "generic_guard",
+      "mana": 20,
+      "rage": 0,
+      "cooldown": 2,
+      "unlock": 15,
+      "ultimate": null
+    },
+    {
+      "id": "generic_elemental_skill",
+      "mana": 35,
+      "rage": 0,
+      "cooldown": 3,
+      "unlock": 15,
+      "ultimate": null
+    },
+    {
+      "id": "generic_heal",
+      "mana": 35,
+      "rage": 0,
+      "cooldown": 3,
+      "unlock": 15,
+      "ultimate": null
+    },
+    {
+      "id": "generic_disrupt",
+      "mana": 40,
+      "rage": 0,
+      "cooldown": 3,
+      "unlock": 30,
+      "ultimate": null
+    },
+    {
+      "id": "generic_empower",
+      "mana": 40,
+      "rage": 0,
+      "cooldown": 4,
+      "unlock": 30,
+      "ultimate": null
+    },
+    {
+      "id": "generic_cleanse",
+      "mana": 30,
+      "rage": 0,
+      "cooldown": 3,
+      "unlock": 30,
+      "ultimate": null
+    },
+    {
+      "id": "generic_protect",
+      "mana": 40,
+      "rage": 0,
+      "cooldown": 4,
+      "unlock": 45,
+      "ultimate": null
+    },
+    {
+      "id": "generic_siphon",
+      "mana": 40,
+      "rage": 0,
+      "cooldown": 4,
+      "unlock": 45,
+      "ultimate": null
+    },
+    {
+      "id": "signature_icarus",
+      "mana": 60,
+      "rage": 0,
+      "cooldown": 4,
+      "unlock": 1,
+      "ultimate": "Solar Flamefall"
+    },
+    {
+      "id": "signature_glaciemora",
+      "mana": 65,
+      "rage": 0,
+      "cooldown": 4,
+      "unlock": 1,
+      "ultimate": "Glacier Chorus"
+    },
+    {
+      "id": "signature_voltaris",
+      "mana": 60,
+      "rage": 0,
+      "cooldown": 4,
+      "unlock": 1,
+      "ultimate": "Tempest Covenant"
+    },
+    {
+      "id": "signature_noctalith",
+      "mana": 70,
+      "rage": 0,
+      "cooldown": 4,
+      "unlock": 1,
+      "ultimate": "Eclipse Reliquary"
+    },
+    {
+      "id": "signature_sylvaris",
+      "mana": 55,
+      "rage": 0,
+      "cooldown": 4,
+      "unlock": 1,
+      "ultimate": "Verdant Rebirth"
+    },
+    {
+      "id": "signature_leviara",
+      "mana": 60,
+      "rage": 0,
+      "cooldown": 4,
+      "unlock": 1,
+      "ultimate": "Abyssal Serenade"
+    }
+  ]
+}

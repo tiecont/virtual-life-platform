@@ -1,7 +1,23 @@
 {
-  "name":"@virtual-city/admin-web",
-  "version":"0.1.0",
-  "private":true,
-  "scripts":{"dev":"next dev --hostname 127.0.0.1 --port 3400 --webpack","start":"next start --hostname 127.0.0.1 --port 3400","build":"next build --webpack","typecheck":"tsc --noEmit"},
-  "dependencies":{"@virtual-city/contracts":"workspace:*","@virtual-city/ui":"workspace:*","next":"16.4.4","react":"19.3.1","react-dom":"19.3.1","zod":"4.6.7"}
+  "name": "@virtual-city/admin-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1 --port 3400 --webpack",
+    "start": "next start --hostname 127.0.0.1 --port 3400",
+    "build": "next build --webpack",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@virtual-city/contracts": "workspace:*",
+    "@virtual-city/ui": "workspace:*",
+    "next": "16.4.4",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "three": "0.187.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/three": "0.187.0"
+  }
 }
