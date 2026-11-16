@@ -5599,6 +5599,19 @@
         ],
         "limitations": "Browser concepts only, not production models or Unity import acceptance. No timeout, publication gate or pixel assertion relaxed; final exact-head hosted checks remain required."
       },
+      "integrationFixtureFollowup": {
+        "sourceRevision": "0c0a3f73d574bef22c0a4bc54a7453e7294b82e4",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "finding": "Actual a104c01 push hospitality trace shows a fresh3000ms audience observation followed by an OPEN request aborted after31ms at the host's15s room resync. The test awaited only the guest resync. Main ac77193 and89bb1c1 push also failed in that host refresh boundary before a read response. Fixture now awaits validated authoritative snapshots and Connected UI for both participants before control/expiry assertions; no product code, timeout, TTL, mutation retry or assertion relaxed.",
+        "commands": [
+          {"command": "node scripts/run-browser-tests.mjs tests/e2e/lounge.spec.ts", "exitCode": 0, "result": "32 PASS:16 desktop and16 mobile actual Chromium cases; includes RSVP idempotency, host suppression, source loss, private reporting and delayed view/send/control expiry negatives. Owned databases cleaned."},
+          {"command": "pnpm exec eslint tests/e2e/lounge.spec.ts", "exitCode": 0},
+          {"command": "pnpm exec tsc -p tests/legacy-tsconfig.json --noEmit", "exitCode": 0},
+          {"command": "git diff --check", "exitCode": 0}
+        ],
+        "failedHostedRuns": ["https://github.com/tiecont/virtual-life-platform/actions/runs/43813299181/job/133124617864", "https://github.com/tiecont/virtual-life-platform/actions/runs/43812987707/job/133128016657", "https://github.com/tiecont/virtual-life-platform/actions/runs/43813058382/job/133128080188"],
+        "limitations": "Unchanged a104c01 focused local repetition passed6/6 and did not reproduce the intermittent CI failure; diagnosis uses actual downloaded hosted traces and logs. Full PR89 merge-ref Quality passed while its push failed this fixture; neither proves the new revision green. Final exact-head hosted checks and main verification remain required."
+      },
       "adminApiFollowup": {"sourceRevision": "442c990aeecd5c09d6d2159ba0851f7e5c41345d", "reviewMode": "SINGLE_AGENT_SELF_REVIEW", "command": "pnpm test:admin", "exitCode": 0, "result": "99 PASS,10 files: actual PostgreSQL/HTTP RBAC, Origin/CSRF, session revocation, private projections, concurrent/idempotent commands and failed-COMMIT rollback. Owned database cleaned."},
       "findings": "Real production HTML/RSC denial did not prevent catalog IDs in static JavaScript. Server-only catalog projection fixed this. Deeper actual image scan then found lazy scene geometry/names still served as static chunks; production compilation now aliases the development scene to an inert rejecting module. Static image and actual HTTP scans cover all chunks and reject renderer/concept markers. Actual WebGL context loss also dropped canvas focus to BODY; fallback restores focus to the toggle.",
       "commands": [
