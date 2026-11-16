@@ -10,9 +10,11 @@ it('every public draft profile has bounded unique identity and valid localized r
 });
 it('the website projection matches the merged candidate catalog without asserting asset readiness',async()=>{
  const {readFile}=await import('node:fs/promises');
- const source=JSON.parse(await readFile('specs/pet-arena/v3.1/data/pets_initial_240.json','utf8')) as {pets:{id:string;name:string;element:string;rank:string;source:string;combat:{role:string;skillRefs:string[]};assetStatus:string;productionReady:boolean}[]};
+ const source=JSON.parse(await readFile('specs/pet-arena/v3.1/data/pets_initial_240.json','utf8')) as {pets:{id:string;name:string;element:string;rank:string;source:string;mapId:string|null;bodyPlan:string;design:{primaryColor:string;secondaryColor:string};standard?:{abilityName:string};combat:{role:string;skillRefs:string[];signatureCard:string|null};assetStatus:string;productionReady:boolean}[]};
  expect(catalog.pets.map(p=>p.id)).toEqual(source.pets.map(p=>p.id));
- for(const pet of catalog.pets){const original=source.pets.find(p=>p.id===pet.id)!;expect({name:pet.name,element:pet.element,rank:pet.rank,source:pet.source,role:pet.role,skills:pet.skills}).toEqual({name:original.name,element:original.element,rank:original.rank,source:original.source,role:original.combat.role,skills:original.combat.skillRefs});expect(original.assetStatus).toBe('MISSING');expect(original.productionReady).toBe(false);}
+ for(const pet of catalog.pets){const original=source.pets.find(p=>p.id===pet.id)!;expect(pet).toEqual({id:original.id,name:original.name,element:original.element,rank:original.rank,source:original.source,role:original.combat.role,skills:original.combat.skillRefs,map:original.mapId,body:original.bodyPlan,color:original.design.primaryColor,accent:original.design.secondaryColor,ability:original.standard?.abilityName??null,signature:original.combat.signatureCard});expect(original.assetStatus).toBe('MISSING');expect(original.productionReady).toBe(false);}
+ const maps=JSON.parse(await readFile('specs/pet-arena/v3.1/data/maps_19.json','utf8')) as {maps:{id:string;name:string;primaryElement:string;recommendedLevelRange:number[]}[]};
+ expect(catalog.maps).toEqual(maps.maps.map(m=>({id:m.id,name:m.name,element:m.primaryElement,levels:m.recommendedLevelRange})));
 });
 
 it('skill costs and unlocks match the canonical design used by the detailed pages',async()=>{
