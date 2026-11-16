@@ -1,4 +1,5 @@
 import {createHash} from 'node:crypto';
+import {constants} from 'node:fs';
 import {open,realpath,readFile} from 'node:fs/promises';
 import {resolve,relative,isAbsolute} from 'node:path';
 import {pathToFileURL} from 'node:url';
@@ -15,7 +16,9 @@ export async function verifyPetAssetFiles(input,root=process.cwd()){
  for(const asset of value.assets)for(const file of [asset,asset.source,asset.importSettings]){
   const target=await realpath(resolve(base,file.path)),rel=relative(base,target);
   if(rel==='..'||rel.startsWith('../')||isAbsolute(rel))throw Error('Asset escapes workspace');
-  const handle=await open(target,'r');
+  // A FIFO must reach fstat without blocking for a writer. Reject a replaced
+  // leaf symlink rather than following it after the containment check.
+  const handle=await open(target,constants.O_RDONLY|constants.O_NONBLOCK|constants.O_NOFOLLOW);
   try{
    const stat=await handle.stat();if(!stat.isFile()||stat.size>64*1024*1024)throw Error('Asset file missing, non-regular or exceeds 64 MiB');
    const prior=verified.get(target);if(prior){if(prior!==file.sha256)throw Error('Conflicting asset hash');continue;}
