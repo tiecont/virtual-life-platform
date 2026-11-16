@@ -5506,6 +5506,20 @@
         "catalogCheck": {"sourceRevision": "6422734429b75b48aec0fa621f2d92542feca37f", "command": "pnpm exec vitest run --project unit apps/admin-web/features/prelaunch/modules/product/domain/content.unit.test.ts", "exitCode": 0, "result": "3 PASS; every projected Pet field, including body/map/colors/ability/Signature, and all19 maps/16 skills match canonical source. Projection is read-only, not an independent metadata authority; no data changed."},
         "pending": "Final metadata and integration revisions still require complete exact-head hosted Quality/Rust; reconcile merged PR31 and verify main between merges."
       },
+      "framingFollowup": {
+        "sourceRevision": "61dfc2e316ceb468767e04e4473652238eb4aea8",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "finding": "Exact442c990 PR and push browser artifacts showed Aurelune clipped at the top of its default camera. A real Compose six-concept pixel probe reproduced a zero-pixel top margin at320px and only one pixel on desktop. Default/reset camera distance now7 instead of6; regression keeps the existing nonblank/framing assertions and additionally requires more than2percent margin on every edge for all six concepts.",
+        "commands": [
+          {"command": "pnpm ci:browser admin", "exitCode": 0, "result": "28 PASS across desktop/mobile:20 admin/public,4 privacy,2 calendar,2 runtime. All four report batches validated; six concept canvases nonblank/framed, rotation/motion hashes change, reduced motion static, actual context loss and keyboard focus fallback PASS. Final Aurelune screenshots visually inspected."},
+          {"command": "pnpm exec eslint apps/admin-web/features/prelaunch/modules/product/presentation/pet-scene.ts tests/e2e/admin.spec.ts", "exitCode": 0, "result": "PASS"},
+          {"command": "pnpm --filter @virtual-city/admin-web typecheck", "exitCode": 0, "result": "PASS"},
+          {"command": "git diff --check", "exitCode": 0, "result": "PASS"},
+          {"command": "pnpm --filter @virtual-city/admin-web build", "exitCode": 0, "result": "PASS after framing fix; no public deployment."}
+        ],
+        "limitations": "Browser concepts only, not production models or Unity import acceptance. No timeout, publication gate or pixel assertion relaxed; final exact-head hosted checks remain required."
+      },
+      "adminApiFollowup": {"sourceRevision": "442c990aeecd5c09d6d2159ba0851f7e5c41345d", "reviewMode": "SINGLE_AGENT_SELF_REVIEW", "command": "pnpm test:admin", "exitCode": 0, "result": "99 PASS,10 files: actual PostgreSQL/HTTP RBAC, Origin/CSRF, session revocation, private projections, concurrent/idempotent commands and failed-COMMIT rollback. Owned database cleaned."},
       "findings": "Real production HTML/RSC denial did not prevent catalog IDs in static JavaScript. Server-only catalog projection fixed this. Deeper actual image scan then found lazy scene geometry/names still served as static chunks; production compilation now aliases the development scene to an inert rejecting module. Static image and actual HTTP scans cover all chunks and reject renderer/concept markers. Actual WebGL context loss also dropped canvas focus to BODY; fallback restores focus to the toggle.",
       "commands": [
         {
