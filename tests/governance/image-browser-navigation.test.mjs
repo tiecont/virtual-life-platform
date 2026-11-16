@@ -57,6 +57,15 @@ test('persistent network change fails after three requests and retires every fai
   assert.equal(f.calls.filter(call => call.operation === 'goto').length, 3);
   assert.equal(attempts.length, 3);
 });
+test('operator GET network interruption retires its page while retaining the authentication context', async () => {
+  const response = {status: () => 200}, f = fixture([changed(), response]), attempts = [];
+  const first = await f.context.newPage(), loaded = await navigateImagePage(first, '/admin', attempts);
+  assert(first.closed);
+  assert.equal(loaded.page.context(), first.context());
+  assert.equal(loaded.response, response);
+  assert.deepEqual(attempts.map(({path, result}) => ({path, result})), [{path: '/admin', result: 'ERR_NETWORK_CHANGED'}, {path: '/admin', result: 'LOADED'}]);
+  assert.equal(f.calls.filter(call => call.operation === 'goto').length, 2);
+});
 test('certificate, refused connection, timeout, cancellation and unrelated navigation errors fail immediately', async () => {
   for (const message of ['page.goto: net::ERR_CERT_AUTHORITY_INVALID', 'page.goto: net::ERR_CONNECTION_REFUSED', 'page.goto: Timeout 10000ms exceeded', 'page.goto: Target page, context or browser has been closed', 'page.goto: Navigation interrupted by chrome-error://chromewebdata/', 'expected net::ERR_NETWORK_CHANGED but received a failure']) {
     const error = Error(message), attempts = [], f = fixture([error]);

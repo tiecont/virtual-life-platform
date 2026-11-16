@@ -27,7 +27,7 @@ export function observeImageBrowser(context, origin, observations) {
 // Docker interface changes can interrupt Chromium's read-only document request.
 // Only these GET navigations may retry; application assertions run once afterward.
 export async function navigateImagePage(page, path, attempts) {
-  assert(['/', '/identity'].includes(path), 'Only reviewed image smoke GET pages may retry');
+  assert(['/', '/identity', '/admin'].includes(path), 'Only reviewed image smoke GET pages may retry');
   for (let attempt = 1; attempt <= 3; attempt++) {
     const observedPage = page;
     const failures = [];
