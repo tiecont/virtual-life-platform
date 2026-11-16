@@ -1,0 +1,881 @@
+{
+  "schemaVersion": 3,
+  "maps": [
+    {
+      "id": "meadow-hollows",
+      "name": "Meadow Hollows",
+      "primaryElement": "normal",
+      "recommendedLevelRange": [
+        1,
+        28
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[0]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": false,
+        "requiredAchievementsPoints": 0,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "normal-puffern",
+        "normal-mosspad",
+        "normal-brindleap",
+        "normal-reedruff",
+        "normal-tandemble",
+        "pet-v3-normal-whimsy",
+        "pet-v3-normal-arlo",
+        "pet-v3-normal-nibelle",
+        "pet-v3-normal-taffin",
+        "pet-v3-normal-pepprel",
+        "pet-v3-normal-wexley"
+      ],
+      "legendaryPetId": "normal-hearthmantle",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy normal biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "cinder-terraces",
+      "name": "Cinder Terraces",
+      "primaryElement": "fire",
+      "recommendedLevelRange": [
+        5,
+        32
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[1]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 30,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "fire-coalwhisk",
+        "fire-emberloom",
+        "fire-kilnback",
+        "fire-flarequill",
+        "fire-scorchveil",
+        "pet-v3-fire-emberpaw",
+        "pet-v3-fire-solira",
+        "pet-v3-fire-veyrin",
+        "pet-v3-fire-cindrel",
+        "pet-v3-fire-orivox",
+        "pet-v3-fire-faelith"
+      ],
+      "legendaryPetId": "fire-pyrecrown",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy fire biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "tideglass-lagoon",
+      "name": "Tideglass Lagoon",
+      "primaryElement": "water",
+      "recommendedLevelRange": [
+        9,
+        36
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[2]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 60,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "water-dewskip",
+        "water-ripplefin",
+        "water-foamcurl",
+        "water-tideweft",
+        "water-abyssail",
+        "pet-v3-water-brooklet",
+        "pet-v3-water-nerevia",
+        "pet-v3-water-qualin",
+        "pet-v3-water-talova",
+        "pet-v3-water-merith",
+        "pet-v3-water-azuli"
+      ],
+      "legendaryPetId": "water-lagoonarch",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy water biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "canopy-weald",
+      "name": "Canopy Weald",
+      "primaryElement": "grass",
+      "recommendedLevelRange": [
+        13,
+        40
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[3]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 90,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "grass-budwisp",
+        "grass-vinepurl",
+        "grass-mossmane",
+        "grass-thornlace",
+        "grass-bloomvault",
+        "pet-v3-grass-thornwick",
+        "pet-v3-grass-viridia",
+        "pet-v3-grass-eloria",
+        "pet-v3-grass-calyra",
+        "pet-v3-grass-verdalis",
+        "pet-v3-grass-feywyn"
+      ],
+      "legendaryPetId": "grass-canopyr",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy grass biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "stormcoil-fields",
+      "name": "Stormcoil Fields",
+      "primaryElement": "electric",
+      "recommendedLevelRange": [
+        17,
+        44
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[4]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 120,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "electric-zipspool",
+        "electric-copperkip",
+        "electric-arcshell",
+        "electric-pulsecrest",
+        "electric-thundrel",
+        "pet-v3-electric-zivolt",
+        "pet-v3-electric-elixor",
+        "pet-v3-electric-sparra",
+        "pet-v3-electric-tenzai",
+        "pet-v3-electric-arcyra",
+        "pet-v3-electric-kirel"
+      ],
+      "legendaryPetId": "electric-stormdiadem",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy electric biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "rimebell-basin",
+      "name": "Rimebell Basin",
+      "primaryElement": "ice",
+      "recommendedLevelRange": [
+        21,
+        48
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[5]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 150,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "ice-rimebud",
+        "ice-frostknit",
+        "ice-glacetail",
+        "ice-hailmorrow",
+        "ice-cryocrest",
+        "pet-v3-ice-frostel",
+        "pet-v3-ice-virelle",
+        "pet-v3-ice-noivara",
+        "pet-v3-ice-glissara",
+        "pet-v3-ice-reyka",
+        "pet-v3-ice-elaris"
+      ],
+      "legendaryPetId": "ice-wintervault",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy ice biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "echo-steppe",
+      "name": "Echo Steppe",
+      "primaryElement": "fighting",
+      "recommendedLevelRange": [
+        25,
+        52
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[6]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 180,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "fighting-pawtempo",
+        "fighting-knucklefern",
+        "fighting-bracetusk",
+        "fighting-rhythmant",
+        "fighting-ironstance",
+        "pet-v3-fighting-varnok",
+        "pet-v3-fighting-brixton",
+        "pet-v3-fighting-kelmor",
+        "pet-v3-fighting-rensai",
+        "pet-v3-fighting-torvan",
+        "pet-v3-fighting-drelio"
+      ],
+      "legendaryPetId": "fighting-echochamp",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy fighting biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "violet-mire",
+      "name": "Violet Mire",
+      "primaryElement": "poison",
+      "recommendedLevelRange": [
+        29,
+        56
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[7]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 210,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "poison-mirepip",
+        "poison-venomoss",
+        "poison-sporeveil",
+        "poison-brinebarb",
+        "poison-toxilume",
+        "pet-v3-poison-mizora",
+        "pet-v3-poison-ophira",
+        "pet-v3-poison-velrix",
+        "pet-v3-poison-parina",
+        "pet-v3-poison-nivoss",
+        "pet-v3-poison-zerith"
+      ],
+      "legendaryPetId": "poison-mirematron",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy poison biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "ochre-labyrinth",
+      "name": "Ochre Labyrinth",
+      "primaryElement": "ground",
+      "recommendedLevelRange": [
+        33,
+        60
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[8]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 240,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "ground-clodkin",
+        "ground-burrowick",
+        "ground-dunebraid",
+        "ground-siltmaw",
+        "ground-terracrest",
+        "pet-v3-ground-doran",
+        "pet-v3-ground-mavelo",
+        "pet-v3-ground-kerush",
+        "pet-v3-ground-orrin",
+        "pet-v3-ground-tulara",
+        "pet-v3-ground-gorvel"
+      ],
+      "legendaryPetId": "ground-faultwarden",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy ground biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "skyreed-isles",
+      "name": "Skyreed Isles",
+      "primaryElement": "flying",
+      "recommendedLevelRange": [
+        37,
+        64
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[9]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 270,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "flying-breezlet",
+        "flying-kitespun",
+        "flying-gusthorn",
+        "flying-cloudlace",
+        "flying-tempestail",
+        "pet-v3-flying-galehorn",
+        "pet-v3-flying-avorin",
+        "pet-v3-flying-zevia",
+        "pet-v3-flying-alrune",
+        "pet-v3-flying-veylith",
+        "pet-v3-flying-sirova"
+      ],
+      "legendaryPetId": "flying-skyregent",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy flying biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "mirror-orchard",
+      "name": "Mirror Orchard",
+      "primaryElement": "psychic",
+      "recommendedLevelRange": [
+        41,
+        68
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[10]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 300,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "psychic-glimpseed",
+        "psychic-thoughtuft",
+        "psychic-mirribbon",
+        "psychic-astraloom",
+        "psychic-mindspire",
+        "pet-v3-psychic-mirelle",
+        "pet-v3-psychic-psynara",
+        "pet-v3-psychic-orisyn",
+        "pet-v3-psychic-vaelis",
+        "pet-v3-psychic-lumira",
+        "pet-v3-psychic-qenari"
+      ],
+      "legendaryPetId": "psychic-oracleaf",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy psychic biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "amber-understory",
+      "name": "Amber Understory",
+      "primaryElement": "bug",
+      "recommendedLevelRange": [
+        45,
+        72
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[11]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 330,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "bug-threadpip",
+        "bug-waxwinglet",
+        "bug-carapurl",
+        "bug-silkforge",
+        "bug-amberclad",
+        "pet-v3-bug-tibbi",
+        "pet-v3-bug-zynelle",
+        "pet-v3-bug-corven",
+        "pet-v3-bug-pipra",
+        "pet-v3-bug-kaxila",
+        "pet-v3-bug-xirent"
+      ],
+      "legendaryPetId": "bug-hivecantor",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy bug biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "basalt-choir",
+      "name": "Basalt Choir",
+      "primaryElement": "rock",
+      "recommendedLevelRange": [
+        49,
+        76
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[12]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 360,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "rock-peblune",
+        "rock-shalebell",
+        "rock-flintspur",
+        "rock-cragweft",
+        "rock-geodrum",
+        "pet-v3-rock-gravelo",
+        "pet-v3-rock-korbun",
+        "pet-v3-rock-tessara",
+        "pet-v3-rock-baxlin",
+        "pet-v3-rock-thoryn",
+        "pet-v3-rock-veldra"
+      ],
+      "legendaryPetId": "rock-monolithorn",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy rock biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "lantern-necropolis",
+      "name": "Lantern Necropolis",
+      "primaryElement": "ghost",
+      "recommendedLevelRange": [
+        53,
+        80
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[13]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 390,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "ghost-wickrift",
+        "ghost-shroudlet",
+        "ghost-bellshade",
+        "ghost-echowisp",
+        "ghost-veilrelic",
+        "pet-v3-ghost-mireshade",
+        "pet-v3-ghost-elyth",
+        "pet-v3-ghost-umbriel",
+        "pet-v3-ghost-phayra",
+        "pet-v3-ghost-selmora",
+        "pet-v3-ghost-ossyne"
+      ],
+      "legendaryPetId": "ghost-lanternwake",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy ghost biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "wyrmglass-ridge",
+      "name": "Wyrmglass Ridge",
+      "primaryElement": "dragon",
+      "recommendedLevelRange": [
+        57,
+        84
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[14]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 420,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "dragon-scalebud",
+        "dragon-coilcrest",
+        "dragon-spirewing",
+        "dragon-runescale",
+        "dragon-crestwyrm",
+        "pet-v3-dragon-ralyx",
+        "pet-v3-dragon-zephyris",
+        "pet-v3-dragon-kadrion",
+        "pet-v3-dragon-myraken",
+        "pet-v3-dragon-valdrix",
+        "pet-v3-dragon-ophreon"
+      ],
+      "legendaryPetId": "dragon-wyrmglass",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy dragon biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "umbra-vale",
+      "name": "Umbra Vale",
+      "primaryElement": "dark",
+      "recommendedLevelRange": [
+        61,
+        88
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[15]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 450,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "dark-dimble",
+        "dark-dusktuft",
+        "dark-sablecoil",
+        "dark-nightweft",
+        "dark-umbramane",
+        "pet-v3-dark-noxen",
+        "pet-v3-dark-duskira",
+        "pet-v3-dark-veylor",
+        "pet-v3-dark-zarrith",
+        "pet-v3-dark-morvale",
+        "pet-v3-dark-kravis"
+      ],
+      "legendaryPetId": "dark-eclipseward",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy dark biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "alloy-foundry",
+      "name": "Alloy Foundry",
+      "primaryElement": "steel",
+      "recommendedLevelRange": [
+        65,
+        92
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[16]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 480,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "steel-rivetip",
+        "steel-tinmantle",
+        "steel-cogcrest",
+        "steel-chromeweft",
+        "steel-alloyhorn",
+        "pet-v3-steel-tixor",
+        "pet-v3-steel-bravik",
+        "pet-v3-steel-caltron",
+        "pet-v3-steel-nexira",
+        "pet-v3-steel-velsyn",
+        "pet-v3-steel-korex"
+      ],
+      "legendaryPetId": "steel-foundryheart",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy steel biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "chimegrove",
+      "name": "Chimegrove",
+      "primaryElement": "fairy",
+      "recommendedLevelRange": [
+        69,
+        96
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[17]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 510,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "fairy-chimeling",
+        "fairy-petalbell",
+        "fairy-glimmerlace",
+        "fairy-wishweft",
+        "fairy-grovehalo",
+        "pet-v3-fairy-faylia",
+        "pet-v3-fairy-yunelle",
+        "pet-v3-fairy-seraphie",
+        "pet-v3-fairy-pimora",
+        "pet-v3-fairy-aureli",
+        "pet-v3-fairy-lilithia"
+      ],
+      "legendaryPetId": "fairy-chimequeen",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy fairy biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    },
+    {
+      "id": "dawn-prism-sanctum",
+      "name": "Dawn Prism Sanctum",
+      "primaryElement": "light",
+      "recommendedLevelRange": [
+        73,
+        100
+      ],
+      "legacyMapReference": "specs/pet-arena/catalog-v2.json#maps[18]",
+      "subzones": [
+        "approach",
+        "trail",
+        "grove",
+        "ruins",
+        "summit",
+        "sanctum"
+      ],
+      "unlock": {
+        "requiresPreviousMapClear": true,
+        "requiredAchievementsPoints": 540,
+        "serverAuthoritative": true
+      },
+      "regularPetIds": [
+        "light-gleamlet",
+        "light-dawnpurl",
+        "light-raymantle",
+        "light-solweft",
+        "light-prismhalo",
+        "pet-v3-light-oralie",
+        "pet-v3-light-luciel",
+        "pet-v3-light-viorin",
+        "pet-v3-light-celestra",
+        "pet-v3-light-solene",
+        "pet-v3-light-dayrin"
+      ],
+      "legendaryPetId": "light-dawnarchon",
+      "recruitment": {
+        "regularUniqueWins": 3,
+        "legendaryUniqueWins": 5,
+        "requiresSameTarget": true,
+        "resetOnLogout": false,
+        "noCaptureBall": true
+      },
+      "visualBiome": "Original fantasy light biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "availability": "DRAFT_ONLY"
+    }
+  ],
+  "state": "DRAFT_ONLY",
+  "purpose": "Separate PvE map selection by element; win receipts to acquire, never throw/catch"
+}

@@ -3936,34 +3936,56 @@
         "evidenceRoot": "artifacts/linux-first-playable-audit: full-check-09e9297, pet-content-09e9297, seed-09e9297, native-compat-09e9297, admission-compat-09e9297, cargo/fmt/clippy/csharp/pet-process-09e9297 logs"
       },
       "validation": "Working-tree focused tests exit 0: 2 contract + 6 real PostgreSQL tests covering concurrent seed, corruption, rollback, wrong references and denied PUBLIC runtime access. CLI exit 0 after fixing ESM/CommonJS import; earlier fixture loadout and module-import failures retained. At 99e2713a0f8b7d6b00f0ab382a5b4e4febc3ef2a cargo fmt, 63 Rust tests and clippy exit 0; full pnpm check still running at this record. Hosted Rust 43701583810 / 43701491081 failed because archived probes pinned schema 50. Reproduced locally (compat-dd9d17cf); additive explicit 47/48-to-51 policies and unchanged frozen50-denial checks now pass locally (compat-1fb28f4d / migration-46e4ce22), exit 0 each. Focused ESLint and governance:check exit 0. Corrected committed source and full hosted checks remain required.",
-      "remaining": "Cards/combinations, maps/encounters/assets and immutable published manifests; restricted versioned match pinning, retire/rollback and encrypted restore tests. Existing operator draft/preview is VL-120. No production-ready assets or gameplay v2 claimed."
+      "restoreVerification": {
+        "sourceRevision": "f6de468b6ff20d2faaac704a31d7d0d72b4d4a79",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {"command": "node --import tsx scripts/game-journal-restore-smoke.mjs", "exitCode": 0, "result": "Actual disposable pg_dump -> encrypted archive -> pg_restore (restore-run-89bd650b): exact 114-species/19-element metadata and hash round trip, idempotent reseed, corrupted restored metadata denied, wrong archive key and modified archive denied before SQL, legacy journal/identity checks and owned cleanup PASS"}
+        ],
+        "scope": "Unpublished Pet metadata only. Does not verify actual Pet match journal backup, owned Pets, capture, upgrades or progression restoration.",
+        "evidence": "artifacts/linux-first-playable-audit/pet-draft-restore-committed.log"
+      },
+      "integrationRecheck": {
+        "sourceRevision": "aa889fd4987af24ade99416ae7a1b2911d3a047a",
+        "commands": [
+          {"command": "pnpm play:linux", "exitCode": 0, "result": "Two real rendered Linux launches with schema 51 and OS keyboard/mouse input: win interop-d02bb29b version4/GRANTED and loss interop-04f79a36 version18/DECLINED; Plaza return, logout, owned services/database/private files cleanup PASS. Win helper initially timed out at logout; bounded OS-input retry confirmed revocation and exit. Diagnostic failure retained."},
+          {"command": "gh run view 43706069792 --exit-status", "exitCode": 0, "result": "PR Rust PASS at aa889fd"},
+          {"command": "gh run view 43706066072 --exit-status", "exitCode": 0, "result": "Push Rust PASS at aa889fd"},
+          {"command": "gh run view 43702081563 --exit-status", "exitCode": 0, "result": "Previous merged main 111cf8672aca772ff28cdb730dcf6828838e699f post-merge Quality PASS; not acceptance of PR29 or this restore follow-up"},
+          {"command": "gh run view 43702081550 --exit-status", "exitCode": 0, "result": "Previous merged main 111cf8672aca772ff28cdb730dcf6828838e699f post-merge Rust PASS"}
+        ],
+        "binaryQualification": "Reused ignored Linux player built at 8fa1b63, whose Unity/protocol/collision sources are unchanged here. Player sha256 26901901cc6dd63212d741b339897f072d34cb7b3f08419fe451fc8e77c79a1f; Native.dll ee213d25a34bfaae5b64d024d133d8b287c2168dc08525cbc6dba7bd780e6399; NativeScene.dll df8f12cff852ae82c899012e6e88c88b5e96d7227e3bcab42f7d35b88a991431. No new Unity build or production-art acceptance claimed.",
+        "pending": "PR29 aa889fd Quality push43706066035/PR43706069799 browser/final gates still pending at this record. This follow-up also requires actual hosted CI before merge.",
+        "evidence": "artifacts/linux-first-playable-audit/launcher-aa889fd-{win,win-input,win-logout-retry,loss,loss-input}.log"
+      },
+      "remaining": "Cards/combinations, maps/encounters/assets and immutable published manifests; restricted versioned match pinning, retire/rollback and actual Pet gameplay backup/replay. Existing operator draft/preview is VL-120. No production-ready assets or gameplay v2 claimed."
     }
   },
   {
-    "id": "VL-116",
-    "feature": "Pet-Arena",
-    "title": "Generic functional match-3 combat v2",
-    "objective": "Implement a separate deterministic v2 reducer with six functional tiles, mana/rage, normal/rage/defend actions and bounded shared formulas.",
-    "dependsOn": [
-      "VL-115",
-      "VL-044"
-    ],
-    "acceptance": [
-      "6x6 legal swaps, cascades/refill/reshuffle and RNG replay are deterministic and bounded",
-      "All 19 element relations including immunities use shared data and common damage/stat rules",
-      "Normal, charged attack and one reusable skill complete a real authoritative PvE match; v1 replay unchanged"
-    ],
-    "status": "TODO",
-    "qualificationRequirements": [],
-    "verificationRequirements": [
-      "Rust fixtures/property/replay/overflow/invalid-action/stale-version tests",
-      "Real WSS/process restart and restricted PostgreSQL tests; exact-source hosted CI"
-    ],
-    "implementation": {
-      "wave": "P2",
-      "specification": "specs/pet-arena/v2.md"
-    }
-  },
+      "id": "VL-116",
+      "feature": "Pet-Arena",
+      "title": "Shared functional combat foundation for versioned Pet Arena v3",
+      "objective": "Implement shared deterministic functional-tile formulas and commands for v3; retain v2 specification as historical design, do not build a redundant v2 gameplay release.",
+      "dependsOn": [
+        "VL-115",
+        "VL-044"
+      ],
+      "acceptance": [
+        "Shared normal/rage/defend and six tile kinds use bounded integer formulas and deterministic RNG",
+        "All 19 element relations and immunity responses use data; distinct v3 codec/view/completion, frozen v1 fixtures unchanged",
+        "VL-129 owns 10x10 board generation/cascade integration; this task owns shared combat rules"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Rust fixtures/property/replay/overflow/invalid-action/stale-version tests",
+        "Real WSS/process restart and restricted PostgreSQL tests; exact-source hosted CI"
+      ],
+      "implementation": {
+        "wave": "P2",
+        "specification": "specs/pet-arena/v2.md"
+      }
+    },
   {
     "id": "VL-117",
     "feature": "Pet-Arena",
@@ -3989,56 +4011,56 @@
     }
   },
   {
-    "id": "VL-118",
-    "feature": "Pet-Arena",
-    "title": "Capture inventory progression and risky upgrades",
-    "objective": "Persist receipt-backed capture, owned Pets, XP/levels, achievements, materials and bounded probabilistic upgrades.",
-    "dependsOn": [
-      "VL-115",
-      "VL-116",
-      "VL-047"
-    ],
-    "acceptance": [
-      "Three separate eligible wins grant exactly one Pet; duplicate/loss/practice receipts add zero capture progress",
-      "Inventory and achievement gates survive logout/restart; retirement never silently resets capture progress",
-      "Published odds govern upgrade success/failure, with exactly-once costs and no hidden pity or paid advantage"
-    ],
-    "status": "TODO",
-    "qualificationRequirements": [],
-    "verificationRequirements": [
-      "Transactional races, lost ACK, worker crash/dedupe, restore and wrong-actor negatives",
-      "Real PostgreSQL and restart evidence plus authoritative probability fixtures; hosted CI"
-    ],
-    "implementation": {
-      "wave": "P3",
-      "specification": "specs/pet-arena/v2.md"
-    }
-  },
+      "id": "VL-118",
+      "feature": "Pet-Arena",
+      "title": "Capture inventory progression and risky upgrades",
+      "objective": "Persist common receipt-backed owned inventory, XP/materials and upgrade transactions; VL-132 specializes v3 3/5-win map recruitment and VL-134 specializes Lv100/three-star progression.",
+      "dependsOn": [
+        "VL-115",
+        "VL-116",
+        "VL-047"
+      ],
+      "acceptance": [
+        "Unique eligible receipts grant once; losses/practice/duplicates grant nothing",
+        "Inventory survives restart and retirement; no silent v2 progress conversion",
+        "Account-scoped wallet/ownership writes, crash recovery and bounded disclosed upgrade odds verified"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Transactional races, lost ACK, worker crash/dedupe, restore and wrong-actor negatives",
+        "Real PostgreSQL and restart evidence plus authoritative probability fixtures; hosted CI"
+      ],
+      "implementation": {
+        "wave": "P3",
+        "specification": "specs/pet-arena/v2.md"
+      }
+    },
   {
-    "id": "VL-119",
-    "feature": "Pet-Arena",
-    "title": "Friend assistance weekly bosses and seasons",
-    "objective": "Reuse social consent/identity for assistance, versioned weekly bosses, capped rewards, private rankings and seasonal objectives.",
-    "dependsOn": [
-      "VL-118",
-      "VL-117"
-    ],
-    "acceptance": [
-      "Explicit friend/expert invitations revalidate consent/block/revocation and eligibility during gameplay",
-      "Weekly milestones and assistance rewards cannot exceed configured account/time caps or duplicate receipts",
-      "Ranking tie-breakers, season boundaries and privacy withdrawal follow authoritative time and approved retention"
-    ],
-    "status": "TODO",
-    "qualificationRequirements": [],
-    "verificationRequirements": [
-      "Concurrent participation/retry/time-boundary/abuse/privacy tests",
-      "Real policy revocation and settlement races; no production event activation; hosted CI"
-    ],
-    "implementation": {
-      "wave": "P6",
-      "specification": "specs/pet-arena/v2.md"
-    }
-  },
+      "id": "VL-119",
+      "feature": "Pet-Arena",
+      "title": "Friend assistance weekly bosses and seasons",
+      "objective": "Implement shared consented assistance, scheduled boss reward and season services; VL-143 adds four-player room coordination and VL-145 ranked/PvP integration.",
+      "dependsOn": [
+        "VL-118",
+        "VL-117"
+      ],
+      "acceptance": [
+        "Explicit friend/expert invitations revalidate consent/block/revocation and eligibility during gameplay",
+        "Weekly milestones and assistance rewards cannot exceed configured account/time caps or duplicate receipts",
+        "Ranking tie-breakers, season boundaries and privacy withdrawal follow authoritative time and approved retention"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Concurrent participation/retry/time-boundary/abuse/privacy tests",
+        "Real policy revocation and settlement races; no production event activation; hosted CI"
+      ],
+      "implementation": {
+        "wave": "P6",
+        "specification": "specs/pet-arena/v2.md"
+      }
+    },
   {
     "id": "VL-120",
     "feature": "Admin",
@@ -4118,33 +4140,33 @@
     }
   },
   {
-    "id": "VL-123",
-    "feature": "Avatar-Art",
-    "title": "Original species seed catalog and rendered hero set",
-    "objective": "Seed at least 24 original definitions from the 114-species/19-biome design; author six priority heroes and one boss before expanding approved visuals.",
-    "dependsOn": [
-      "VL-115",
-      "VL-120",
-      "VL-121"
-    ],
-    "acceptance": [
-      "Idempotent seed has at least four definitions per original six elements and preserves eight v1 definitions",
-      "All 114 candidates retain map/level/loadout/progression/asset status; unfinished content stays unpublished",
-      "Six original hero Pets and one boss have portraits/icons and complete animation sets with actual rendered Unity previews"
-    ],
-    "status": "TODO",
-    "qualificationRequirements": [
-      "Original source asset provenance and publishable rights review"
-    ],
-    "verificationRequirements": [
-      "Seed repeatability and missing-asset/skill/stat/curve/duplicate/element-reference negatives",
-      "Source provenance, visual review and Unity preview evidence; metadata is distinct from validated gameplay and approved visuals"
-    ],
-    "implementation": {
-      "wave": "P5",
-      "specification": "specs/pet-arena/v2.md"
-    }
-  },
+      "id": "VL-123",
+      "feature": "Avatar-Art",
+      "title": "Original species seed catalog and rendered hero set",
+      "objective": "Retain 114 original IDs and v2 seed foundation; VL-131 owns the single 240-draft v3.1 importer. This task qualifies the existing six-hero plus boss priority art set; do not reseed a second catalog.",
+      "dependsOn": [
+        "VL-115",
+        "VL-120",
+        "VL-121"
+      ],
+      "acceptance": [
+        "Idempotent seed has at least four definitions per original six elements and preserves eight v1 definitions",
+        "All 114 candidates retain map/level/loadout/progression/asset status; unfinished content stays unpublished",
+        "Six original hero Pets and one boss have portraits/icons and complete animation sets with actual rendered Unity previews"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Original source asset provenance and publishable rights review"
+      ],
+      "verificationRequirements": [
+        "Seed repeatability and missing-asset/skill/stat/curve/duplicate/element-reference negatives",
+        "Source provenance, visual review and Unity preview evidence; metadata is distinct from validated gameplay and approved visuals"
+      ],
+      "implementation": {
+        "wave": "P5",
+        "specification": "specs/pet-arena/v2.md"
+      }
+    },
   {
     "id": "VL-124",
     "feature": "Native",
@@ -4255,6 +4277,1195 @@
       "wave": "P6/P7",
       "specification": "specs/pet-arena/v2.md"
     }
-  }
+  },
+    {
+      "id": "VL-128",
+      "feature": "Pet-Arena",
+      "title": "Reconcile V3.1 roadmap and canonical draft catalog",
+      "objective": "Integrate V3 design and six Standard S drafts against main 80a9186 and PR31; preserve verified task records, v1/v2 source and the original local V3 handoff.",
+      "dependsOn": [
+        "VL-114"
+      ],
+      "acceptance": [
+        "One active backlog; no collisions or duplicate feature implementations; PR30 restore work reused and PR31 art work preserved",
+        "Canonical manifest identifies 240 draft definitions and hashes; 19 elements/361 matchups and upstream114 preserved",
+        "Catalog/negative/governance checks and actual committed-source hosted CI pass; self-review labeled honestly"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "mergedVerification": {
+          "sourceRevision": "644fe152a397db5040a7ae856609627b91bd77e3",
+          "mergeRevision": "e3da673b56a64e8c3e3d5b10a2fea647cf00cc68",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/32",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {
+              "command": "gh run view 43735559147 --exit-status",
+              "exitCode": 0,
+              "result": "Final PR Quality PASS including core,images,8 browser groups and quality gate"
+            },
+            {
+              "command": "gh run view 43735554273 --exit-status",
+              "exitCode": 0,
+              "result": "Final push Quality attempt2 PASS; initial admin image ERR_NETWORK_CHANGED retained; unchanged-source retry, no assertions bypassed"
+            },
+            {
+              "command": "gh run view 43735559409 --exit-status",
+              "exitCode": 0,
+              "result": "PR Rust PASS; push Rust43735554270 also SUCCESS"
+            },
+            {
+              "command": "python3 scripts/validate-pet-v31.py",
+              "exitCode": 0,
+              "result": "Merged main e3da673:240 drafts/19 elements/361 pairs PASS; merge tree equals tested644fe15"
+            },
+            {
+              "command": "pnpm governance:check",
+              "exitCode": 0,
+              "result": "Merged main plan/governance PASS"
+            }
+          ],
+          "pending": "Post-merge main Quality43741771070 and Rust43741771072 started; not inferred PASS."
+        }
+      },
+      "verification": {
+        "sourceRevision": "8fe4739126cc8771f5c769deeb384828b94d77ec",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "python3 scripts/validate-pet-v31.py",
+            "exitCode": 0,
+            "result": "240 drafts;209 regular/19 map S/6 Limited/6 Standard;19 elements/361 matchups; actual upstream114 IDs/names unchanged"
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "118 PASS including V3.1 tampering and12 semantic negative cases"
+          },
+          {
+            "command": "pnpm check",
+            "exitCode": 0,
+            "result": "Retry after checksum-pinned Kubernetes tool cache preparation:118 governance,501 unit,789 integration and all builds PASS. Initial attempt exit1: tool download TimeoutError; no checks bypassed."
+          },
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0,
+            "result": "Workspace tests PASS"
+          },
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          },
+          {
+            "command": "gh run view 43729281798 --exit-status",
+            "exitCode": 0,
+            "result": "Hosted PR Rust PASS; push Rust43728765078 also SUCCESS"
+          },
+          {
+            "command": "node scripts/release-bundle.mjs --output artifacts/release-bundle-v31",
+            "exitCode": 0,
+            "result": "Actual API/web/admin images from8fe4739:6 scenarios each PASS; TLS/browser/security/cleanup; no registry publish"
+          },
+          {
+            "command": "node scripts/local-compose-smoke.mjs --bundle artifacts/release-bundle-v31/bundle.json",
+            "exitCode": 0,
+            "result": "PASS including persistent identity, restart and cleanup"
+          },
+          {
+            "command": "gh run view 43729281847 --exit-status",
+            "exitCode": 0,
+            "result": "PR Quality attempt2 PASS; initial runtime-images Password locator timeout retained; same source rerun, no assertion changes"
+          },
+          {
+            "command": "gh run view 43728765076 --exit-status",
+            "exitCode": 0,
+            "result": "Push Quality attempt2 PASS; initial runtime-images Display name locator timeout retained; unchanged-source rerun"
+          }
+        ],
+        "scope": "Roadmap and draft design/catalog only. No v3 database import, gameplay, production models or Unity motion qualification. VL-130/131 own bounded runtime contracts and additive persistence. PR32 metadata revision must itself receive green hosted CI before merge."
+      }
+    },
+    {
+      "id": "VL-129",
+      "feature": "Pet-Arena",
+      "title": "10x10 authoritative board and deterministic migration",
+      "objective": "Distinct v3 ruleset, 100-cell board, replay/property tests, performance and viewport calculations.",
+      "dependsOn": [
+        "VL-116",
+        "VL-128"
+      ],
+      "acceptance": [
+        "Separate v3 10x10 codec, 100 cells, legal initial board, bounded 16 cascades and deterministic shuffle/replay",
+        "Invalid actions spend no resources or RNG; restart and v1 frozen digest tests pass"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-130",
+      "feature": "Pet-Arena",
+      "title": "19-element bounded matrix and 22-race atlas",
+      "objective": "Reuse canonical element IDs, add morphological race data and validate all 361 matchup pairs.",
+      "dependsOn": [
+        "VL-128"
+      ],
+      "acceptance": [
+        "All 361 directional matchups bounded to 0/800/1000/1250 and match the canonical19 elements",
+        "22 race templates are presentation taxonomy, explicit radial/hexapod overrides supported; no extra element",
+        "Strict contracts reject unknown fields, invalid references and unbounded effects"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "source": "packages/contracts/src/pet-taxonomy-v3.ts",
+        "scope": "Strict draft-only taxonomy and acquisition schemas; all19 elements/361 pairs/22 races and four sources. No runtime activation, persistence or grants.",
+        "validation": "Focused quality sprint: strict taxonomy/acquisition and existing catalog eligibility self-review; local full check PASS at ce0bf14. Exact final-head hosted Quality/Rust required before merge; task remains IN_PROGRESS.",
+        "verification": {
+          "sourceRevision": "ce0bf1443190e966d74e7d30919164d05d60a850",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/34",
+          "commands": [
+            {
+              "command": "pnpm check",
+              "exitCode": 0,
+              "result": "118 governance / 507 unit / 789 PostgreSQL integration tests and all package/application builds PASS; unchanged committed source throughout the successful run."
+            },
+            {
+              "command": "pnpm exec vitest run --project unit packages/contracts/test/pet-taxonomy-v3.test.ts packages/contracts/test/pet-content.test.ts",
+              "exitCode": 0,
+              "result": "8 tests PASS on committed source: 19 elements, 361 directed pairs, 22 races, actual 240 acquisitions, all rank/source combinations, missing/unknown field and type negatives."
+            },
+            {
+              "command": "node --test tests/governance/pet-v31.test.mjs",
+              "exitCode": 0,
+              "result": "2 tests PASS, including rehashed map/Standard/other-owner Limited skill injections; actual catalog has no ineligible assignment or duplicated species."
+            },
+            {
+              "command": "cargo test --locked --package vl-pet-arena",
+              "exitCode": 0,
+              "result": "14 V1 Rust tests PASS (3 unit / 5 combat / 6 content); frozen V1 sources and protocol unchanged."
+            },
+            {
+              "command": "pnpm plan:status",
+              "exitCode": 0,
+              "result": "162 tasks: 30 VERIFIED / 9 IN_PROGRESS / 123 TODO. No additional roadmap task started."
+            },
+            {
+              "command": "git diff --check",
+              "exitCode": 0
+            },
+            {
+              "command": "node scripts/with-test-db.mjs node --import tsx artifacts/focused-sprint/deadline-close-probe.mjs",
+              "exitCode": 0,
+              "result": "30 actual Deadline fixture create/query/close cycles; no idle-client errors reproduced; owned database/container cleanup PASS. Initial probe module import failed1 and was corrected without changing repository source."
+            }
+          ],
+          "findings": "Offline validator previously accepted rehashed map/Standard/other-owner Limited skill references. Added fail-closed availableTo/owner validation and regression cases; production runtime, migrations, grants and publication unchanged.",
+          "failedAttempts": [
+            {
+              "exitCode": 1,
+              "result": "Added Limited skill regression failed before validator fix (ineligible map assignment accepted); fixed and rerun PASS."
+            },
+            {
+              "exitCode": 1,
+              "result": "Initial new type-boundary test incorrectly rejected a valid empty relation array. Corrected the test; no schema rule relaxed."
+            },
+            {
+              "exitCode": 143,
+              "result": "Initial audit full check intentionally stopped before implementing the reproduced catalog validator defect."
+            },
+            {
+              "exitCode": 2,
+              "result": "First ce0bf14 full check hit ignored Next route types retained from PR33. Moved old .next into artifacts, rebuilt admin-web, then complete unchanged-source rerun PASS."
+            },
+            {
+              "exitCode": 1,
+              "result": "Hosted push Quality43786687091: test cases passed but an unhandled PostgreSQL57P01 occurred while dropping an owned Deadline fixture DB; PR core and local full check at the same source passed. Thirty local lifecycle cycles did not reproduce it. No legacy/production code changed or errors ignored."
+            }
+          ],
+          "hostedAtSource": {
+            "rust": "https://github.com/tiecont/virtual-life-platform/actions/runs/43786691306",
+            "quality": "https://github.com/tiecont/virtual-life-platform/actions/runs/43786691272",
+            "qualityState": "PR core/images PASS; browser/aggregate pending at this record. Push failure retained above; not inferred green."
+          },
+          "pending": "This evidence-only revision must pass exact-head hosted Quality/Rust before merge. Record final CI and merge SHA in PR discussion; verify post-merge main before the next workstream.",
+          "limitations": "Strict draft TypeScript contract and offline-catalog validation only. No new persistence/runtime/Unity implementation or entire Pet schema-chain completion; OFFLINE_ONLY / NO_GO_PUBLIC."
+        }
+      }
+    },
+    {
+      "id": "VL-131",
+      "feature": "Pet-Arena",
+      "title": "B/A/S sources and idempotent 240-Pet draft persistence",
+      "objective": "Extend existing VL-115 draft storage with additive rank/source/version contracts and one canonical 240-draft import; never alter 0051 or prior v2 metadata.",
+      "dependsOn": [
+        "VL-130",
+        "VL-158"
+      ],
+      "acceptance": [
+        "209 B/A map +19 map S +6 Limited S +6 Standard S, unique stable IDs/names, exact upstream114 identity",
+        "Nest-owned additive journal and strict contracts enforce four acquisition sources and draft-only imports",
+        "Deterministic version/hash; concurrent identical seed is a no-op; conflicting hash aborts entire transaction",
+        "Real PostgreSQL restore, SQL constraints and denied runtime/PUBLIC writes; zero owned Pets, purchases or publication"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "foundation": "Reuse migration0051 and VL-115 completed draft foundation; remaining publication work is not required to seed unpublished v3.1 drafts."
+      }
+    },
+    {
+      "id": "VL-132",
+      "feature": "Pet-Arena",
+      "title": "19 PvE element maps and 3/5-win recruitment receipts",
+      "objective": "No capture ball; 19 gated maps; A/B require 3 wins, map S 5 wins; idempotent unlock.",
+      "dependsOn": [
+        "VL-118",
+        "VL-131"
+      ],
+      "acceptance": [
+        "No capture ball; 19 gated maps; A/B require 3 wins, map S 5 wins; idempotent unlock.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json",
+        "Unique authoritative wins only; 3 for B/A and 5 for S map legends; no throw/catch mechanic"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-133",
+      "feature": "Pet-Arena",
+      "title": "Combat static-board skill overlays and ultimate impact diffs",
+      "objective": "Normal skill does not move/delete/refill board; typed ultimate may clear/refill with no container disappearance.",
+      "dependsOn": [
+        "VL-129",
+        "VL-117"
+      ],
+      "acceptance": [
+        "Normal skill does not move/delete/refill board; typed ultimate may clear/refill with no container disappearance.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-134",
+      "feature": "Pet-Arena",
+      "title": "Per-Pet Lv.100 curve and 3-star evolution",
+      "objective": "Nonlinear XP/material costs; three stars MAX; immutable progression receipts.",
+      "dependsOn": [
+        "VL-118",
+        "VL-131"
+      ],
+      "acceptance": [
+        "Nonlinear XP/material costs; three stars MAX; immutable progression receipts.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-135",
+      "feature": "Pet-Arena",
+      "title": "Six ordinary B/A Pet archetypes and shared presentation",
+      "objective": "Preserve Emberpaw/Brooklet/Thornwick/Galehorn/Mireshade/Frostel; quality reusable rigs, modest VFX and usable balanced kits. These are not Standard S.",
+      "dependsOn": [
+        "VL-131",
+        "VL-121"
+      ],
+      "acceptance": [
+        "Preserve Emberpaw/Brooklet/Thornwick/Galehorn/Mireshade/Frostel; quality reusable rigs, modest VFX and usable balanced kits. These are not Standard S.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-136",
+      "feature": "Pet-Arena",
+      "title": "Six bespoke S-Limited pets and unique card board effects",
+      "objective": "Implement six Limited signature cards and bounded shared board effects; bespoke models/timelines owned by VL-149.",
+      "dependsOn": [
+        "VL-131",
+        "VL-117",
+        "VL-133"
+      ],
+      "acceptance": [
+        "Implement six Limited signature cards and bounded shared board effects; bespoke models/timelines owned by VL-149.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-137",
+      "feature": "Pet-Arena",
+      "title": "Signature-card battle fusion and unlock source",
+      "objective": "Regular recipient, Limited donor, 200 Mana +150 Rage, +3 temporary battle level, incompatibility of two signatures.",
+      "dependsOn": [
+        "VL-138",
+        "VL-134",
+        "VL-136"
+      ],
+      "acceptance": [
+        "Regular recipient, Limited donor, 200 Mana +150 Rage, +3 temporary battle level, incompatibility of two signatures.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-138",
+      "feature": "Pet-Arena",
+      "title": "Separated ordinary Rage 100 and fusion resources",
+      "objective": "Mana cap 300, Rage cap 200; 100 ordinary rage ult, 200/150 fusion; private RNG and replay.",
+      "dependsOn": [
+        "VL-129",
+        "VL-117"
+      ],
+      "acceptance": [
+        "Mana cap 300, Rage cap 200; 100 ordinary rage ult, 200/150 fusion; private RNG and replay.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-139",
+      "feature": "Pet-Arena",
+      "title": "Pet Profile, collection, unlock and star UI in Unity",
+      "objective": "3-star, Level100, locked skill levels, rig preview and responsive UI with readable 10x10 HUD.",
+      "dependsOn": [
+        "VL-122",
+        "VL-131",
+        "VL-134"
+      ],
+      "acceptance": [
+        "3-star, Level100, locked skill levels, rig preview and responsive UI with readable 10x10 HUD.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-140",
+      "feature": "Pet-Arena",
+      "title": "Durable gacha pull ledger and transactional delivery",
+      "objective": "One Nest-owned ledger for Standard and Limited pulls: persist immutable ordered outcomes, debit once, replay receipts and deliver ownership atomically. VL-159 owns probability/guarantee transitions; VL-161 owns duplicate conversion.",
+      "dependsOn": [
+        "VL-159",
+        "VL-047"
+      ],
+      "acceptance": [
+        "Account request key binds request hash and banner version; same-key retries return same outcomes and conflicts reject",
+        "Server entropy reservation prevents crash/retry rerolls; atomic debit/pity/ownership/receipt transaction serializes simultaneous requests",
+        "Restart, timeout, rejected request, insufficient balance and wrong-actor tests show no double debit, reroll or unauthorized grants",
+        "Standard and Limited history/pity read APIs expose only owner-safe results"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-141",
+      "feature": "Pet-Arena",
+      "title": "F2P economy disclosure and release qualification",
+      "objective": "Earnable tickets and approved exchange items, full rate/curve disclosure, spending and age controls; regional legal and payment enablement remain independent release gates.",
+      "dependsOn": [
+        "VL-140",
+        "VL-161"
+      ],
+      "acceptance": [
+        "Published odds and exchange rates match reviewed versioned server configuration",
+        "Campaign/endgame remain viable without Limited purchases; no forced spending or undisclosed rerolls",
+        "Regional legal, minors, rights and consumer-safety review required before real-money activation"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Regional legal/age and purchase approval before monetization; not a prerequisite for offline source implementation"
+      ],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-142",
+      "feature": "Admin",
+      "title": "Admin Pet Studio: 19 systems and catalog management",
+      "objective": "Extend existing Admin Studio for 240 drafts, four sources and reviewed Standard/Limited pools, weights, full odds curves, dates and audit; one authoring workflow.",
+      "dependsOn": [
+        "VL-120",
+        "VL-131",
+        "VL-159"
+      ],
+      "acceptance": [
+        "Server rejects wrong source/rank, empty pools, incomplete curves and invalid effective-date overlaps",
+        "Reviewed immutable publication versions disclose normalized weights; step-up/RBAC/CSRF/audit and rollback tested",
+        "New banner versions preserve family pity/guarantee; active requests remain pinned; no automatic publication"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-143",
+      "feature": "Pet-Arena",
+      "title": "Weekly Boss rooms with owner + at most 3 invited players",
+      "objective": "Max four participants total; deterministic co-op turns; invitation, leave, ready, reconnect and reward anti-dup.",
+      "dependsOn": [
+        "VL-119",
+        "VL-138"
+      ],
+      "acceptance": [
+        "Max four participants total; deterministic co-op turns; invitation, leave, ready, reconnect and reward anti-dup.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json",
+        "Room total cannot exceed 4 players including host under concurrency / reconnect"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-144",
+      "feature": "Pet-Arena",
+      "title": "Boss lobby and friend invitation Unity UX",
+      "objective": "Invitations capped to 3 friends, ready state, permissions, privacy and safe timeouts.",
+      "dependsOn": [
+        "VL-143",
+        "VL-139"
+      ],
+      "acceptance": [
+        "Invitations capped to 3 friends, ready state, permissions, privacy and safe timeouts.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-145",
+      "feature": "Pet-Arena",
+      "title": "Leaderboard, seasons, PvE/PvP balance modes",
+      "objective": "Verifiable rankings, no P2W ranked stat advantage, anti-cheat, opt-out settings.",
+      "dependsOn": [
+        "VL-119",
+        "VL-127"
+      ],
+      "acceptance": [
+        "Server-verified rankings, ties, privacy withdrawal and anti-abuse work across season boundaries",
+        "PvP uses disclosed normalized awakening/caps; Standard and Limited neither bypass consent nor gain undisclosed paid advantage"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-146",
+      "feature": "Pet-Arena",
+      "title": "Owned Pet companions across the VirtualLife world",
+      "objective": "Shared permitted-zone companion controller for map, Limited and Standard species; morphology-specific navigation, LOD, emotes and privacy. Each species qualifies assets independently.",
+      "dependsOn": [
+        "VL-139",
+        "VL-028"
+      ],
+      "acceptance": [
+        "Shared permitted-zone companion controller for map, Limited and Standard species; morphology-specific navigation, LOD, emotes and privacy. Each species qualifies assets independently.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-147",
+      "feature": "Pet-Arena",
+      "title": "Global player settings / accessibility / keyboard / gamepad",
+      "objective": "Reuse global settings for graphics, motion, audio, input, privacy and readable 10x10 UI; integrate accessibility without waiting on unrelated world qualification.",
+      "dependsOn": [
+        "VL-139"
+      ],
+      "acceptance": [
+        "Reuse global settings for graphics, motion, audio, input, privacy and readable 10x10 UI; integrate accessibility without waiting on unrelated world qualification.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-148",
+      "feature": "Pet-Arena",
+      "title": "Vietnamese/English locale system and translation QA",
+      "objective": "Reuse global locale service for full VI/EN Pet Arena strings, proper English Pet names, font coverage and translated menus; other languages gated on actual translations.",
+      "dependsOn": [
+        "VL-147"
+      ],
+      "acceptance": [
+        "Reuse global locale service for full VI/EN Pet Arena strings, proper English Pet names, font coverage and translated menus; other languages gated on actual translations.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-149",
+      "feature": "Pet-Arena",
+      "title": "Unity URP hero 3D pipeline and six Limited cinematic gates",
+      "objective": "Six bespoke characters, unique rigs and VFX, render/performance snapshots, original art rights.",
+      "dependsOn": [
+        "VL-121",
+        "VL-105",
+        "VL-128"
+      ],
+      "acceptance": [
+        "Six bespoke characters, unique rigs and VFX, render/performance snapshots, original art rights.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json",
+        "Rendered Unity animation footage and asset provenance, not PNG-only concept"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-150",
+      "feature": "Pet-Arena",
+      "title": "Unity URP generic Pet scale-up and rig library",
+      "objective": "Shared rigs for 209 B/A and 19 map S pets, morph variety, LOD/VFX quality not placeholders.",
+      "dependsOn": [
+        "VL-121",
+        "VL-105",
+        "VL-128"
+      ],
+      "acceptance": [
+        "Shared rigs for 209 B/A and 19 map S pets, morph variety, LOD/VFX quality not placeholders.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-151",
+      "feature": "Pet-Arena",
+      "title": "Linux playable 10x10 + capture + fusion vertical slice",
+      "objective": "Actual rendered Linux Unity + Rust + Nest + Postgres; no mocked pass.",
+      "dependsOn": [
+        "VL-132",
+        "VL-133",
+        "VL-137",
+        "VL-139"
+      ],
+      "acceptance": [
+        "Actual Linux Unity/Rust/Nest/PostgreSQL win/loss, 3/5 recruitment, fusion and return-to-world using OS input",
+        "Lost ACK, retry, reconnect/restart and logout preserve committed board/rewards; no synthetic visual PASS"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-152",
+      "feature": "Pet-Arena",
+      "title": "Pet card/boss/progression QA and economy simulation",
+      "objective": "Combat/capture/fusion/boss simulations, replay fuzz, 361 pair immunity softlocks and human fun tests; gacha-specific simulations belong solely to VL-162.",
+      "dependsOn": [
+        "VL-143",
+        "VL-151"
+      ],
+      "acceptance": [
+        "Combat/capture/fusion/boss simulations, replay fuzz, 361 pair immunity softlocks and human fun tests; gacha-specific simulations belong solely to VL-162.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-153",
+      "feature": "Pet-Arena",
+      "title": "Windows physical GPU/rendered content qualification",
+      "objective": "Only qualify Windows after physical tested build, signed media/provenance, quality and rights.",
+      "dependsOn": [
+        "VL-126",
+        "VL-149",
+        "VL-150",
+        "VL-152"
+      ],
+      "acceptance": [
+        "Only qualify Windows after physical tested build, signed media/provenance, quality and rights.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Named physical Windows GPU tiers and actual original-content rights; no Linux-only substitute"
+      ],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-154",
+      "feature": "Pet-Arena",
+      "title": "Permanent Pet fusion expansion (separate optional system)",
+      "objective": "Keep distinct from in-battle card fusion; transactional ownership/consumption policy and opt-in rollout.",
+      "dependsOn": [
+        "VL-134",
+        "VL-142"
+      ],
+      "acceptance": [
+        "Keep distinct from in-battle card fusion; transactional ownership/consumption policy and opt-in rollout.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-155",
+      "feature": "Pet-Arena",
+      "title": "Authoritative 19-map weekly events and content operations",
+      "objective": "Event rotation, 5-win legend availability, boss tables, version snapshot, publish/rollback.",
+      "dependsOn": [
+        "VL-132",
+        "VL-142",
+        "VL-143"
+      ],
+      "acceptance": [
+        "Event rotation, 5-win legend availability, boss tables, version snapshot, publish/rollback.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-156",
+      "feature": "Pet-Arena",
+      "title": "Gacha, collection and independent star/awakening Unity UI",
+      "objective": "Standard/Limited banner details, rates/full curves, pity/guarantee/history, C0-C6 and independent 0-3 star progression; bind durable owner projections.",
+      "dependsOn": [
+        "VL-139",
+        "VL-140",
+        "VL-161"
+      ],
+      "acceptance": [
+        "Standard and Limited source labels, disclosed per-Pet weights, exact pity and guarantee are accessible via keyboard/gamepad",
+        "First copy C0, seventh C6, overflow exchange and star evolution shown distinctly",
+        "Reconnect/retry does not replay purchases or summon rewards; reduced motion and VI/EN semantics tested in real Unity"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-157",
+      "feature": "Pet-Arena",
+      "title": "Full integrated acceptance and no-go-public release gate",
+      "objective": "Source CI is not release approval; enforce security, legal, moderation, consent and hardware gates.",
+      "dependsOn": [
+        "VL-152",
+        "VL-155",
+        "VL-156",
+        "VL-162"
+      ],
+      "acceptance": [
+        "Source CI is not release approval; enforce security, legal, moderation, consent and hardware gates.",
+        "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
+        "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused unit/integration and exact CI",
+        "Actual Unity PlayMode/rendered Linux where the feature affects visuals",
+        "Separate Windows hardware acceptance where relevant"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      },
+      "qualificationDependencies": [
+        "VL-153"
+      ]
+    },
+    {
+      "id": "VL-158",
+      "feature": "Pet-Arena",
+      "title": "Six Standard S designs, lore and catalog contracts",
+      "objective": "Author exactly six distinct Standard S candidates with stable identity, shared effects and complete metadata; preserve all original234.",
+      "dependsOn": [
+        "VL-114"
+      ],
+      "acceptance": [
+        "Six named designs use four-source taxonomy, bounded 4000-budget stats, Lv1-100, max3 stars and C0-C6",
+        "Skills/unlocks/equipment, lore/palettes, all animation states, asset/audio references and canonical240 validation exist",
+        "No map recruitment, Limited signature card, publication, player grants or production-art claims"
+      ],
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused positive/adversarial contract and integration checks against committed source",
+        "Actual hosted Quality/Rust CI green before merge; honest single-agent self-review"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "mergedVerification": {
+          "sourceRevision": "644fe152a397db5040a7ae856609627b91bd77e3",
+          "mergeRevision": "e3da673b56a64e8c3e3d5b10a2fea647cf00cc68",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/32",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {
+              "command": "gh run view 43735559147 --exit-status",
+              "exitCode": 0,
+              "result": "Final PR Quality PASS including core,images,8 browser groups and quality gate"
+            },
+            {
+              "command": "gh run view 43735554273 --exit-status",
+              "exitCode": 0,
+              "result": "Final push Quality attempt2 PASS; initial admin image ERR_NETWORK_CHANGED retained; unchanged-source retry, no assertions bypassed"
+            },
+            {
+              "command": "gh run view 43735559409 --exit-status",
+              "exitCode": 0,
+              "result": "PR Rust PASS; push Rust43735554270 also SUCCESS"
+            },
+            {
+              "command": "python3 scripts/validate-pet-v31.py",
+              "exitCode": 0,
+              "result": "Merged main e3da673:240 drafts/19 elements/361 pairs PASS; merge tree equals tested644fe15"
+            },
+            {
+              "command": "pnpm governance:check",
+              "exitCode": 0,
+              "result": "Merged main plan/governance PASS"
+            }
+          ],
+          "pending": "Post-merge main Quality43741771070 and Rust43741771072 started; not inferred PASS."
+        }
+      },
+      "verification": {
+        "sourceRevision": "8fe4739126cc8771f5c769deeb384828b94d77ec",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "python3 scripts/validate-pet-v31.py",
+            "exitCode": 0,
+            "result": "240 drafts;209 regular/19 map S/6 Limited/6 Standard;19 elements/361 matchups; actual upstream114 IDs/names unchanged"
+          },
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "118 PASS including V3.1 tampering and12 semantic negative cases"
+          },
+          {
+            "command": "pnpm check",
+            "exitCode": 0,
+            "result": "Retry after checksum-pinned Kubernetes tool cache preparation:118 governance,501 unit,789 integration and all builds PASS. Initial attempt exit1: tool download TimeoutError; no checks bypassed."
+          },
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0,
+            "result": "Workspace tests PASS"
+          },
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          },
+          {
+            "command": "gh run view 43729281798 --exit-status",
+            "exitCode": 0,
+            "result": "Hosted PR Rust PASS; push Rust43728765078 also SUCCESS"
+          },
+          {
+            "command": "node scripts/release-bundle.mjs --output artifacts/release-bundle-v31",
+            "exitCode": 0,
+            "result": "Actual API/web/admin images from8fe4739:6 scenarios each PASS; TLS/browser/security/cleanup; no registry publish"
+          },
+          {
+            "command": "node scripts/local-compose-smoke.mjs --bundle artifacts/release-bundle-v31/bundle.json",
+            "exitCode": 0,
+            "result": "PASS including persistent identity, restart and cleanup"
+          },
+          {
+            "command": "gh run view 43729281847 --exit-status",
+            "exitCode": 0,
+            "result": "PR Quality attempt2 PASS; initial runtime-images Password locator timeout retained; same source rerun, no assertion changes"
+          },
+          {
+            "command": "gh run view 43728765076 --exit-status",
+            "exitCode": 0,
+            "result": "Push Quality attempt2 PASS; initial runtime-images Display name locator timeout retained; unchanged-source rerun"
+          }
+        ],
+        "scope": "Roadmap and draft design/catalog only. No v3 database import, gameplay, production models or Unity motion qualification. VL-130/131 own bounded runtime contracts and additive persistence. PR32 metadata revision must itself receive green hosted CI before merge."
+      }
+    },
+    {
+      "id": "VL-159",
+      "feature": "Pet-Arena",
+      "title": "Standard and Featured eligibility, 50/50 and family guarantee",
+      "objective": "Implement one server-authoritative probability/eligibility state machine with explicit persistence adapter contract; VL-140 owns durable pull transactions.",
+      "dependsOn": [
+        "VL-131"
+      ],
+      "acceptance": [
+        "Failed featured50/50 always selects one of six Standard S with validated weights, never lower rank/map S",
+        "Next eligible S is featured; pity/guarantee scoped to account+family survive banner rotation; Standard never changes Limited state",
+        "Base0.8%, soft60, hard80 are configurable candidates; full monotonic per-pull curve required before publishing",
+        "Controlled hit/miss/guarantee, hard pity, version changes and identical ordered single/ten-pull tests pass"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused positive/adversarial contract and integration checks against committed source",
+        "Actual hosted Quality/Rust CI green before merge; honest single-agent self-review"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-160",
+      "feature": "Pet-Arena",
+      "title": "Six Standard S Unity models, rigs, animation and VFX",
+      "objective": "Produce original lantern/jellyfish/owl/phantom/hexapod/deer assets using shared hero-quality rigs, Rust event-driven animation and world companionship.",
+      "dependsOn": [
+        "VL-158"
+      ],
+      "acceptance": [
+        "Actual editable models, imports, rigs, materials, idle/move/hurt/defeat/victory/normal/Rage100/skill/status clips and audio exist",
+        "Radial and six-legged locomotion are valid; board stays stationary/visible; animation never decides results",
+        "LOD/performance, reduced motion and event dedupe verified in licensed Linux Unity; integrate VL-146 companion adapter and VL-133 combat events when ready"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Original asset provenance/rights and actual Unity motion/render acceptance; physical Windows separately"
+      ],
+      "verificationRequirements": [
+        "Focused positive/adversarial contract and integration checks against committed source",
+        "Actual hosted Quality/Rust CI green before merge; honest single-agent self-review",
+        "Licensed Unity EditMode/PlayMode and rendered Linux performance and companion tests"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-161",
+      "feature": "Pet-Arena",
+      "title": "Shared S awakening, duplicate exchange and admin economy controls",
+      "objective": "Implement transactional Standard/Limited C0-C6 copies and overflow conversion on the VL-140 receipt ledger; extend VL-142 economy editor without duplicating banners.",
+      "dependsOn": [
+        "VL-140",
+        "VL-118"
+      ],
+      "acceptance": [
+        "Copy1 C0 and copy7 C6; later copies convert once into configured exchange resources and approved tickets/items",
+        "Independent three-star state; Standard uses smaller shared bonuses, no exclusive card/cinematic abilities",
+        "Concurrent receipt replay, insufficient balance, exchange rollback/crash and unauthorized grants denied in PostgreSQL",
+        "Reviewed bounded economy configuration and audited admin changes use existing operator workflow"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Focused positive/adversarial contract and integration checks against committed source",
+        "Actual hosted Quality/Rust CI green before merge; honest single-agent self-review"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
+    },
+    {
+      "id": "VL-162",
+      "feature": "Pet-Arena",
+      "title": "Gacha simulation, balance, accessible UX and abuse acceptance",
+      "objective": "Qualify integrated Standard/Limited distribution, persistent pulls, fair endgame kits and player-facing disclosure.",
+      "dependsOn": [
+        "VL-140",
+        "VL-161",
+        "VL-142",
+        "VL-156"
+      ],
+      "acceptance": [
+        "Analytical and fixed-seed Monte Carlo rates/pity/weights with declared confidence and thresholds; no fabricated balance approval",
+        "Crash/retry/concurrent pulls, rotation, version pinning and duplicate exchange verified in actual Nest/PostgreSQL",
+        "Standard-vs-Limited endgame simulations plus consented human playtests; accessible rates/history/guarantee UI tested",
+        "Visual integration acceptance waits for actual VL-160 assets; physical Windows remains separate"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Consented human balance playtests; physical Windows and regional paid-release reviews separately"
+      ],
+      "verificationRequirements": [
+        "Focused positive/adversarial contract and integration checks against committed source",
+        "Actual hosted Quality/Rust CI green before merge; honest single-agent self-review"
+      ],
+      "implementation": {
+        "specification": "specs/pet-arena/v3.1.md",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      },
+      "qualificationDependencies": [
+        "VL-160"
+      ]
+    }
   ]
 }

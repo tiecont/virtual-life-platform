@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 3,
+  "grid": [
+    10,
+    10
+  ],
+  "markers": [
+    {
+      "id": "fire_zone_4x4",
+      "cells": 16,
+      "durationTurns": 2,
+      "normalSkill": "mark_only",
+      "ultimate": "clears_only_affected_cells_at_impact"
+    },
+    {
+      "id": "ice_row_10",
+      "cells": 10,
+      "durationTurns": 2,
+      "normalSkill": "lock_status_only",
+      "ultimate": "bounded_shatter"
+    },
+    {
+      "id": "lightning_chain_8",
+      "cells": 8,
+      "durationTurns": 1,
+      "normalSkill": "chain_mark_only",
+      "ultimate": "one_deterministic_chain"
+    },
+    {
+      "id": "ghost_curse_5",
+      "cells": 5,
+      "durationTurns": 2,
+      "normalSkill": "curse_mark_only",
+      "ultimate": "one_curse_burst"
+    },
+    {
+      "id": "wood_growth_3",
+      "cells": 3,
+      "durationTurns": 2,
+      "normalSkill": "future_match_heal",
+      "ultimate": "bounded_growth_pulse"
+    },
+    {
+      "id": "water_current_path",
+      "cells": 8,
+      "durationTurns": 1,
+      "normalSkill": "overlay_path_only",
+      "ultimate": "bounded_wave_remove"
+    }
+  ],
+  "multipliers": [
+    {
+      "id": "tile_multiplier_x2",
+      "multiply": 2,
+      "trigger": "on_next_eligible_swapped_match",
+      "mayBeAppliedBy": "allowlisted_limited_effect_or_event",
+      "effect": "mark tile, visual glow; no immediate clear/refill",
+      "scope": "matched_tile_value_only",
+      "maxMarkedTilesPerAction": 3,
+      "stacking": "never multiply two modifiers; take highest x",
+      "expiresAfterTurns": 2,
+      "serverDeterministic": true
+    },
+    {
+      "id": "tile_multiplier_x4",
+      "multiply": 4,
+      "trigger": "on_next_eligible_swapped_match",
+      "mayBeAppliedBy": "allowlisted_limited_effect_or_event",
+      "effect": "mark tile, visual glow; no immediate clear/refill",
+      "scope": "matched_tile_value_only",
+      "maxMarkedTilesPerAction": 2,
+      "stacking": "never multiply two modifiers; take highest x",
+      "expiresAfterTurns": 2,
+      "serverDeterministic": true
+    },
+    {
+      "id": "tile_multiplier_x8",
+      "multiply": 8,
+      "trigger": "on_next_eligible_swapped_match",
+      "mayBeAppliedBy": "allowlisted_limited_effect_or_event",
+      "effect": "mark tile, visual glow; no immediate clear/refill",
+      "scope": "matched_tile_value_only",
+      "maxMarkedTilesPerAction": 1,
+      "stacking": "never multiply two modifiers; take highest x",
+      "expiresAfterTurns": 2,
+      "serverDeterministic": true
+    }
+  ],
+  "rule": "Normal skills never remove/move/shuffle/refill tiles. An Ultimate can do a typed mutation only at server-committed impact. Multipliers x4/x8 always capped and auditable.",
+  "zeroEnergyFromSkillDeletedTilesByDefault": true,
+  "onCascadeEnergy": "normal cascade rules only; bound 16 cascades",
+  "compatibility": "new v3 only; no mutation of legacy 6x6"
+}

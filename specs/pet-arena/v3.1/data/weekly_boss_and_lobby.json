@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 3,
+  "partyRules": {
+    "maxTotalPlayers": 4,
+    "maxInvitedPlayers": 3,
+    "includesHost": true,
+    "maxReadyPlayers": 4,
+    "minimumToStart": 1,
+    "maxSimultaneousPlayerActions": 1,
+    "inviteTtlSeconds": 120,
+    "rejoinGraceSeconds": 90,
+    "serverAdmitsBeforeUnityScene": true,
+    "fifthPlayerAdmission": "reject"
+  },
+  "turnUx": {
+    "preselectActionWhileOtherPlayerAnimates": true,
+    "skipNonLocalCinematics": true,
+    "battleSpeedOptions": [
+      "1x",
+      "1.5x",
+      "2x"
+    ],
+    "showOrderAndTelegraphs": true
+  },
+  "bossRotation": {
+    "period": "weekly",
+    "rewardIdempotency": "account/boss/week/match_receipt",
+    "source": "published_version_only",
+    "examples": [
+      "Noctalith Shadow Trial",
+      "Glaciemora Winter Trial"
+    ],
+    "noWeeklyCaptureReset": true
+  },
+  "lobbyUi": {
+    "readyStatus": true,
+    "inviteFriend": true,
+    "privacyControls": true,
+    "leaveRoom": true,
+    "chatModeration": true,
+    "disconnectInfo": true
+  },
+  "availability": "OFFLINE_ONLY"
+}

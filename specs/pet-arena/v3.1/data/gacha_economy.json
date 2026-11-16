@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 3,
+  "candidateOnly": true,
+  "ranks": [
+    "B",
+    "A",
+    "S"
+  ],
+  "sOnlyTypes": [
+    "map_legendary",
+    "limited_event_gacha",
+    "standard_gacha"
+  ],
+  "limitedOnlyByEventOrGacha": true,
+  "noLimitedInMap": true,
+  "limitedBanner": {
+    "baseSRollProbability": 0.008,
+    "softPityStartsAtPull": 60,
+    "hardPityAtPull": 80,
+    "rateUpProbabilityForS": 0.5,
+    "nextSFeaturedGuaranteedIfRateUpMiss": true,
+    "maxPullsToFeaturedIfNoGuarantee": 160,
+    "carryPityAcrossSameFamily": true,
+    "publishFullPerPullProbabilityTableBeforeLive": true,
+    "oneAndTenPullsIdenticalRngAndPityAccounting": true,
+    "noForcedPurchases": true,
+    "family": "pet-limited",
+    "failedFeaturedSPoolRef": "standardPool",
+    "failedFeaturedRank": "S",
+    "guaranteeScope": "account_and_banner_family",
+    "softPityCurve": null,
+    "softPityCurveStatus": "UNAPPROVED_RELEASE_BLOCKER",
+    "bannerVersionPinnedPerRequest": true
+  },
+  "constellation": {
+    "levels": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "copiesRequiredForC0": 1,
+    "copiesRequiredForC6": 7,
+    "copiesBeyond7": "duplicate_shards_instead_of_strength",
+    "exchangeTarget": "summon_tickets_and_cosmetics",
+    "mustBeTransactional": true,
+    "appliesToSources": [
+      "standard_gacha",
+      "limited_event_gacha"
+    ]
+  },
+  "starEvolution": {
+    "maxStars": 3,
+    "separateFromConstellation": true,
+    "acquisitionDoesNotAutoGrant3Stars": true,
+    "requiresLevelAndMaterials": true
+  },
+  "f2p": {
+    "earnablePullsPerSeason": "MUST_BE_BALANCE_APPROVED_BEFORE_GO_LIVE",
+    "target": "steady meaningful long-term progress without forced spend",
+    "pvpRanked": "normalized_awakening_or_strict_caps",
+    "bannerForMinors": "regional_review_and_age_appropriate_controls",
+    "oddsShownAndAuditable": true,
+    "noHiddenRerolls": true
+  },
+  "playerFundFlows": "NestJS authoritative transactions/ledger only, no client computed wallet; existing platform settlement boundaries preserved",
+  "contentVersion": "3.1",
+  "enabled": false,
+  "purchasesEnabled": false,
+  "standardPool": [
+    {
+      "petId": "pet-v31-fire-cindrelis",
+      "weight": 1
+    },
+    {
+      "petId": "pet-v31-water-marivell",
+      "weight": 1
+    },
+    {
+      "petId": "pet-v31-electric-quorion",
+      "weight": 1
+    },
+    {
+      "petId": "pet-v31-ghost-vesperyn",
+      "weight": 1
+    },
+    {
+      "petId": "pet-v31-ground-gravorn",
+      "weight": 1
+    },
+    {
+      "petId": "pet-v31-light-aurelune",
+      "weight": 1
+    }
+  ],
+  "standardBanner": {
+    "family": "pet-standard",
+    "sPoolRef": "standardPool",
+    "limitedGuaranteeMutation": false,
+    "ratesStatus": "UNAPPROVED_REQUIRES_COMPLETE_PUBLISHED_CURVE"
+  },
+  "poolPolicy": {
+    "allowedSSources": [
+      "standard_gacha",
+      "limited_event_gacha"
+    ],
+    "mapLegendaryAllowed": false,
+    "weightMin": 1,
+    "weightMax": 1000000,
+    "discloseNormalizedWeights": true,
+    "reviewedEffectiveDatedVersions": true,
+    "emptyPoolPublicationDenied": true
+  },
+  "standardAwakening": {
+    "id": "standard_shared_v1",
+    "candidateOnly": true,
+    "maxLevel": 6,
+    "perStepAllStatsPermille": 10,
+    "maxTotalAllStatsPermille": 60,
+    "exclusiveEffects": false,
+    "limitedComparisonRequiredBeforePublish": true
+  },
+  "transactionContract": {
+    "owner": "NestJS",
+    "lockScope": "account_and_banner_family_plus_wallet",
+    "idempotencyScope": "account_request_id",
+    "bindRequestHash": true,
+    "orderedTenPulls": true,
+    "atomicDebitPityRewardReceipt": true,
+    "replayCommittedResult": true,
+    "durableServerEntropyReservationBeforeResolution": true,
+    "failedRequestCannotAdvancePityOrDebit": true,
+    "retryCannotReroll": true,
+    "rotationCarriesFamilyState": true
+  }
+}
