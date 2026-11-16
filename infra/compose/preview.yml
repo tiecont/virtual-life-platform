@@ -1,0 +1,126 @@
+# Local development only. Public release and registration are not activated.
+name: aetheria-preview
+x-node: &node
+  image: aetheria-preview-node:local
+  init: true
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  pids_limit: 256
+  stop_grace_period: 20s
+  tmpfs: ['/tmp:size=128m,uid=1000,gid=1000,mode=0700']
+  networks: [preview]
+x-api-env: &api-env
+  NODE_ENV: development
+  HOST: 0.0.0.0
+  PORT: '4300'
+  DATABASE_URL: postgresql://preview:${PREVIEW_DB_PASSWORD:?Run pnpm preview:prepare}@db:5432/aetheria_preview
+  SESSION_SECRET: ${PREVIEW_SESSION_SECRET:?Run pnpm preview:prepare}
+  OPERATOR_AUTH_KEY: ${PREVIEW_OPERATOR_KEY:?Run pnpm preview:prepare}
+  OPERATOR_TELEMETRY_TOKEN: ${PREVIEW_METRICS_TOKEN:?Run pnpm preview:prepare}
+  WEB_ORIGIN: http://127.0.0.1:${PREVIEW_WEB_PORT:-4800}
+  ADMIN_ORIGIN: http://127.0.0.1:${PREVIEW_ADMIN_PORT:-4900}
+services:
+  db:
+    image: postgres:17.7-alpine
+    environment:
+      POSTGRES_USER: preview
+      POSTGRES_DB: aetheria_preview
+      POSTGRES_PASSWORD: ${PREVIEW_DB_PASSWORD:?Run pnpm preview:prepare}
+    volumes: [preview-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -h 127.0.0.1 -U preview -d aetheria_preview]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks: [preview]
+  migrate:
+    <<: *node
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.preview
+    environment: *api-env
+    command: [node, apps/platform-api/dist/shared/database/migrate.js]
+    depends_on:
+      db: {condition: service_healthy}
+  api:
+    <<: *node
+    environment: *api-env
+    ports: ['127.0.0.1:${PREVIEW_API_PORT:-4700}:4300']
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:4300/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+  worker:
+    <<: *node
+    command: [node, apps/platform-api/dist/worker.js]
+    environment:
+      NODE_ENV: development
+      DURABLE_JOB_ROLE: worker
+      DATABASE_URL: postgresql://preview:${PREVIEW_DB_PASSWORD:?}@db:5432/aetheria_preview
+      PROGRESSION_POLICY_FILE: /app/infra/compose/preview-worker.json
+      WORKER_INTERVAL_MS: '3000'
+    depends_on:
+      api: {condition: service_healthy}
+  portal:
+    <<: *node
+    working_dir: /app/apps/portal-web
+    command: [pnpm, exec, next, dev, --webpack, --hostname, 0.0.0.0, --port, '3300']
+    environment:
+      NODE_ENV: development
+      NEXT_TELEMETRY_DISABLED: '1'
+      API_INTERNAL_URL: http://api:4300
+      PUBLIC_SOCKET_ORIGIN: http://127.0.0.1:${PREVIEW_API_PORT:-4700}
+    ports: ['127.0.0.1:${PREVIEW_WEB_PORT:-4800}:3300']
+    tmpfs: ['/tmp:size=128m,uid=1000,gid=1000,mode=0700', '/app/apps/portal-web/.next:size=512m,uid=1000,gid=1000,mode=0700']
+    depends_on:
+      api: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3300').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 30
+  admin:
+    <<: *node
+    working_dir: /app/apps/admin-web
+    command: [pnpm, exec, next, dev, --webpack, --hostname, 0.0.0.0, --port, '3400']
+    environment:
+      NODE_ENV: development
+      NEXT_TELEMETRY_DISABLED: '1'
+      AETHERIA_SITE_PREVIEW: '1'
+      ADMIN_ORIGIN: http://127.0.0.1:${PREVIEW_ADMIN_PORT:-4900}
+      ADMIN_API_ORIGIN: http://api:4300
+      ADMIN_METRICS_READ_TOKEN: ${PREVIEW_METRICS_TOKEN:?}
+    ports: ['127.0.0.1:${PREVIEW_ADMIN_PORT:-4900}:3400']
+    tmpfs: ['/tmp:size=128m,uid=1000,gid=1000,mode=0700', '/app/apps/admin-web/.next:size=512m,uid=1000,gid=1000,mode=0700']
+    depends_on:
+      api: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3400/admin').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 30
+  game-runtime:
+    build:
+      context: ../..
+      dockerfile: apps/game-runtime/Dockerfile
+    image: aetheria-preview-native:local
+    environment:
+      VL_RUNTIME_BIND: 0.0.0.0:4400
+      VL_GAMEPLAY_ENABLED: '0'
+    ports: ['127.0.0.1:${PREVIEW_NATIVE_PORT:-4600}:4400']
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    stop_grace_period: 20s
+    networks: [preview]
+networks:
+  preview:
+volumes:
+  preview-data:
