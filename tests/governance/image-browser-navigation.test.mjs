@@ -131,6 +131,9 @@ test('image browser diagnostics bound events and redact URLs, queries, request v
     {event: 'PAGE_ERROR', name: 'OTHER_ERROR'}, {event: 'CONSOLE_ERROR'},
   ]);
   for (let i = 0; i < 80; i++) listeners.get('console')({type: () => 'error'});
+  listeners.get('requestfailed')(request('/v1/me/privacy?token=private'));
   assert.equal(records.length, 48);
+  assert.deepEqual(records.at(-1), {event: 'REQUEST_FAILED', route: '/v1/me/privacy', code: 'OTHER_FAILURE'});
+  assert.deepEqual(records[0], {event: 'CONSOLE_ERROR'});
   assert(!/private|token|password|credential/.test(JSON.stringify(records)));
 });

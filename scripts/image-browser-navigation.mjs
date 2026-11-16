@@ -6,10 +6,12 @@ export function observeImageBrowser(context, origin, observations) {
   const route = request => {
     const url = new URL(request.url());
     if (url.origin !== origin) return 'OTHER_ORIGIN';
-    if (['/', '/identity', '/admin', '/v1/me', '/v1/session/guest', '/api/admin/session', '/api/admin/login'].includes(url.pathname)) return url.pathname;
+    if (['/', '/identity', '/admin', '/v1/me', '/v1/me/privacy', '/v1/session/guest', '/api/admin/session', '/api/admin/login'].includes(url.pathname)) return url.pathname;
     return url.pathname.startsWith('/_next/static/') ? 'FRAMEWORK_ASSET' : 'OTHER_ROUTE';
   };
-  const record = value => {if (observations.length < 48) observations.push(value);};
+  // Preserve the events nearest a failure even after a busy hydrated page has
+  // exhausted the bounded buffer. The initial document attempts are separate.
+  const record = value => {observations.push(value); if (observations.length > 48) observations.shift();};
   context.on('page', page => {
     page.on('requestfailed', request => {
       const code = request.failure()?.errorText;
