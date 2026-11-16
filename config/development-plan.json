@@ -4441,31 +4441,77 @@
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "source": "packages/contracts/src/pet-taxonomy-v3.ts",
         "scope": "Strict draft-only taxonomy and acquisition schemas; all19 elements/361 pairs/22 races and four sources. No runtime activation, persistence or grants.",
-        "validation": "Committed-source local checks PASS; hosted CI pending. Strict TypeScript schema slice only.",
+        "validation": "Focused quality sprint: strict taxonomy/acquisition and existing catalog eligibility self-review; local full check PASS at ce0bf14. Exact final-head hosted Quality/Rust required before merge; task remains IN_PROGRESS.",
         "verification": {
-          "sourceRevision": "09ebdfac6df9c37c84d3f76f28c4461f03607cd8",
+          "sourceRevision": "ce0bf1443190e966d74e7d30919164d05d60a850",
           "reviewMode": "SINGLE_AGENT_AUDIT",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/34",
           "commands": [
             {
               "command": "pnpm check",
               "exitCode": 0,
-              "result": "118 governance,505 unit,789 PostgreSQL integration and all builds PASS. Initial run interrupted by closed Docker connection; exact owned DB cleaned and unchanged-source rerun passed."
+              "result": "118 governance / 507 unit / 789 PostgreSQL integration tests and all package/application builds PASS; unchanged committed source throughout the successful run."
             },
             {
               "command": "pnpm exec vitest run --project unit packages/contracts/test/pet-taxonomy-v3.test.ts packages/contracts/test/pet-content.test.ts",
               "exitCode": 0,
-              "result": "6 tests PASS; actual240 acquisition entries and19/361/22 taxonomy plus adversarial cases"
+              "result": "8 tests PASS on committed source: 19 elements, 361 directed pairs, 22 races, actual 240 acquisitions, all rank/source combinations, missing/unknown field and type negatives."
             },
             {
-              "command": "cargo fmt --all -- --check",
+              "command": "node --test tests/governance/pet-v31.test.mjs",
+              "exitCode": 0,
+              "result": "2 tests PASS, including rehashed map/Standard/other-owner Limited skill injections; actual catalog has no ineligible assignment or duplicated species."
+            },
+            {
+              "command": "cargo test --locked --package vl-pet-arena",
+              "exitCode": 0,
+              "result": "14 V1 Rust tests PASS (3 unit / 5 combat / 6 content); frozen V1 sources and protocol unchanged."
+            },
+            {
+              "command": "pnpm plan:status",
+              "exitCode": 0,
+              "result": "162 tasks: 30 VERIFIED / 9 IN_PROGRESS / 123 TODO. No additional roadmap task started."
+            },
+            {
+              "command": "git diff --check",
               "exitCode": 0
             },
             {
-              "command": "cargo test --workspace --locked",
-              "exitCode": 0
+              "command": "node scripts/with-test-db.mjs node --import tsx artifacts/focused-sprint/deadline-close-probe.mjs",
+              "exitCode": 0,
+              "result": "30 actual Deadline fixture create/query/close cycles; no idle-client errors reproduced; owned database/container cleanup PASS. Initial probe module import failed1 and was corrected without changing repository source."
             }
           ],
-          "pending": "PR34 hosted Quality/Rust still pending at this record; remains IN_PROGRESS. No persistence/runtime/Unity implementation claim."
+          "findings": "Offline validator previously accepted rehashed map/Standard/other-owner Limited skill references. Added fail-closed availableTo/owner validation and regression cases; production runtime, migrations, grants and publication unchanged.",
+          "failedAttempts": [
+            {
+              "exitCode": 1,
+              "result": "Added Limited skill regression failed before validator fix (ineligible map assignment accepted); fixed and rerun PASS."
+            },
+            {
+              "exitCode": 1,
+              "result": "Initial new type-boundary test incorrectly rejected a valid empty relation array. Corrected the test; no schema rule relaxed."
+            },
+            {
+              "exitCode": 143,
+              "result": "Initial audit full check intentionally stopped before implementing the reproduced catalog validator defect."
+            },
+            {
+              "exitCode": 2,
+              "result": "First ce0bf14 full check hit ignored Next route types retained from PR33. Moved old .next into artifacts, rebuilt admin-web, then complete unchanged-source rerun PASS."
+            },
+            {
+              "exitCode": 1,
+              "result": "Hosted push Quality43786687091: test cases passed but an unhandled PostgreSQL57P01 occurred while dropping an owned Deadline fixture DB; PR core and local full check at the same source passed. Thirty local lifecycle cycles did not reproduce it. No legacy/production code changed or errors ignored."
+            }
+          ],
+          "hostedAtSource": {
+            "rust": "https://github.com/tiecont/virtual-life-platform/actions/runs/43786691306",
+            "quality": "https://github.com/tiecont/virtual-life-platform/actions/runs/43786691272",
+            "qualityState": "PR core/images PASS; browser/aggregate pending at this record. Push failure retained above; not inferred green."
+          },
+          "pending": "This evidence-only revision must pass exact-head hosted Quality/Rust before merge. Record final CI and merge SHA in PR discussion; verify post-merge main before the next workstream.",
+          "limitations": "Strict draft TypeScript contract and offline-catalog validation only. No new persistence/runtime/Unity implementation or entire Pet schema-chain completion; OFFLINE_ONLY / NO_GO_PUBLIC."
         }
       }
     },
