@@ -1,5 +1,13 @@
 # Canonical 240 Pet stories and design prompts
 
+For Limited production, follow the maintained Vietnamese
+[Limited blueprint](limited-production-blueprint.vi.md). Glaciemora, Voltaris,
+Noctalith, Sylvaris and Leviara are `OWNER_DESIGN_PENDING`: do not use the
+proposed stories/prompts below as authorization to design, generate or develop
+those characters. Their owner designs must enter intake first. The blueprint
+defines future deliverable quantities, technical contracts and acceptance;
+it does not deliver new art or approve existing lore.
+
 [pet-lore-design-240.json](pet-lore-design-240.json) contains one individually
 authored Vietnamese story and detailed English image prompt for every Pet in
 `../v3.1/data/pets_initial_240.json`, in canonical order. The stories are new
