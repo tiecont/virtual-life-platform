@@ -57,7 +57,7 @@ Shader "Aetheria/StudyVertexColor"
                 // Facial color is authored independently of the costume's hard cel bands.
                 if (_StudySurface < 0.5 && input.uv.x > 5.5 && input.uv.x < 7.5)
                 {
-                    band = lerp(0.84, 1.0, smoothstep(-0.25, 0.8, dot(normal, light.direction)));
+                    band = lerp(0.70, 1.0, smoothstep(-0.25, 0.8, dot(normal, light.direction)));
                     rim *= 0.2;
                     specular = 0;
                 }

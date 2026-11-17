@@ -48,6 +48,20 @@ unvalidated screenshot health values, skills or interface copy.
 
 ## Remaining Art Deliverables
 
+The production skill is invoked for a new offline reference-matching pass.
+Character ID is `pet-v3-fire-icarus`; canonical opcode remains `FIRE_ZONE` and
+the required action profile is `v3.1/data/limited_animation_profiles.json`.
+Primary appearance reference remains the hashed owner battle screenshot above.
+No new attachment was persisted in this request; reuse that reference rather
+than silently reverting to the kit's older appearance. Back/side costume,
+unseen hair construction and bow details are explicitly design proposals.
+Requested output is editable Blender source, Unity URP assets and actual motion
+video. The reusable style target is still `UNVALIDATED_TARGET`, with no accepted
+design revision or owner acceptance. This pass first addresses the failed visual
+design gate: face proportions, hair silhouette, feather shape and layered dress.
+Three targeted repair attempts per unresolved visual gap are allowed before a
+local artist handoff; no external provider or spending is selected.
+
 Produce a full-body character concept and face detail matching the
 reference, then consistent front/side/back orthographic views in a neutral pose
 with wings spread. Use a plain neutral backdrop, even lighting and no interface,
@@ -57,14 +71,26 @@ bow and jewelry legible for modeling.
 Refine the draft mesh and skinning after visual review, then author production
 UVs, textures and canonical action bindings. The white/gold study retains the
 26k-29.5k LOD0 budget, 74 bones, three materials and five authoring actions. Unity
-renders idle, normal and signature in a 22-second preview;
-intro and rage import and deform but are absent from that video. These technical
+renders all five study clips and a neutral turntable in a 49-second preview.
+These technical
 checks do not establish art acceptance, all sixteen gameplay actions, production
 Shader Graph/VFX, Timeline/Cinemachine or player performance qualification.
-Revision 05 refines the face, curving hair and feather surfaces, folded long
-trains and gold jewelry; adds detail renders; and corrects arm-opening motion.
+Revision 06 replaces tube hair with curved clumps and asymmetric bangs, adjusts
+face/neck proportions, corrects mirrored feather curvature and rebuilds folded
+trains. Saved review materials, prefab and a five-state controller are separate
+from the unfilled production bindings.
 The source inspection counts are in its import settings. Keep judging the face,
 silhouette and costume against the supplied screenshot, not only file budgets.
+
+Current visual review is `ARTIST_HANDOFF_REQUIRED`, `SINGLE_AGENT_SELF_REVIEW`.
+Two targeted visual repair passes were inspected; the face remains generic,
+hair too strip-like, feather roots tubular and cloth insufficiently draped.
+The technique has not reached the required focal finish, so stop this run's
+procedural rework and preserve the best source for sculpt/paint correction.
+G1-G3 do not pass; G4 production UV/bakes/LODs, G5 deformation acceptance,
+G6 full actions and G7 cinematic/VFX remain open. A local handoff contains the
+real source/exports/Unity package, reference, comparisons and correction order;
+it does not constitute artist assignment, production completion or a benchmark.
 
 ## Concept Generation Brief
 
@@ -81,5 +107,4 @@ Avoid: red armored bodysuit, toy proportions, primitive oval limbs, blank glowin
 eyes, spiked metallic wings, battle interface, logos, dragon, fire covering the
 outfit, cropped feet or wing tips. New hidden design details remain proposals.
 
-No generated image is claimed by this brief. The current execution environment
-does not expose the built-in image generation tool.
+No generated image or external image-to-3D service was used for this study.

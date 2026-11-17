@@ -14,6 +14,7 @@ namespace VirtualLife.Editor
     public static class IcarusStudyRender
     {
         [Serializable] private sealed class ClipFact { public string name; public float seconds; public float deformation; }
+        [Serializable] private sealed class SegmentFact { public string name; public int startFrame; public int frames; public bool cameraMoves; }
         [Serializable] private sealed class Facts
         {
             public string state = "DRAFT_STUDY";
@@ -23,6 +24,7 @@ namespace VirtualLife.Editor
             public int bones;
             public int materials;
             public ClipFact[] clips;
+            public SegmentFact[] segments;
             public int frames;
             public int framesPerSecond = 20;
             public string renderMethod = "SampleAnimation + BakeMesh + URP GPU render";
@@ -48,11 +50,12 @@ namespace VirtualLife.Editor
             importer.optimizeGameObjects = false;
             importer.isReadable = true;
             importer.SaveAndReimport();
+            IcarusStudyPackage.Prepare();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var pipeline = AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>("Assets/VirtualLife/Settings/BlockoutURP.asset");
             GraphicsSettings.defaultRenderPipeline = pipeline;
             QualitySettings.renderPipeline = pipeline;
-            var instance = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(modelPath));
+            var instance = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(IcarusStudyPackage.PrefabPath));
             var skin = instance.GetComponentsInChildren<SkinnedMeshRenderer>().Single();
             var mesh = skin.sharedMesh;
             int triangles = mesh.triangles.Length / 3;
@@ -61,11 +64,8 @@ namespace VirtualLife.Editor
             if (mesh.colors.Length != mesh.vertexCount) throw new InvalidOperationException("Vertex colors missing from FBX");
             var shader = Shader.Find("Aetheria/StudyVertexColor");
             if (shader == null || !shader.isSupported) throw new InvalidOperationException("Study shader unavailable");
-            skin.sharedMaterials = skin.sharedMaterials.Select(source => {
-                var material = new Material(shader);
-                material.SetFloat("_StudySurface", source.name.Contains("FeatherSilk", StringComparison.Ordinal) ? 1 : source.name.Contains("Ornament", StringComparison.Ordinal) ? 2 : 0);
-                return material;
-            }).ToArray();
+            if (skin.sharedMaterials.Any(material => material == null || material.shader != shader))
+                throw new InvalidOperationException("Delivered study materials missing");
             skin.updateWhenOffscreen = true;
             RenderSettings.ambientMode = AmbientMode.Flat;
             RenderSettings.ambientLight = new Color(0.52f, 0.54f, 0.59f);
@@ -154,16 +154,25 @@ namespace VirtualLife.Editor
             focus = fullFocus;
             camera.orthographicSize = 1.28f;
             int frame = 0;
-            foreach (var name in new[] {"idle", "normal", "signature"})
+            var segments = new List<SegmentFact>();
+            foreach (var name in new[] {"idle", "intro", "normal", "rage", "signature"})
+            {
+                int start = frame;
                 for (int i = 0; i < Mathf.RoundToInt(selected[name].length * 20); i++)
                 {
                     var clip = selected[name];
                     render($"frame-{frame++:D4}.png", clip, i / 20f, 160);
                 }
+                segments.Add(new SegmentFact { name = name, startFrame = start, frames = frame - start, cameraMoves = false });
+            }
+            int turntableStart = frame;
+            for (int i = 0; i < 120; i++)
+                render($"frame-{frame++:D4}.png", selected["idle"], 0, 180 + i * 3);
+            segments.Add(new SegmentFact { name = "turntable", startFrame = turntableStart, frames = 120, cameraMoves = true });
             File.WriteAllText(Path.Combine(output, "inspection.json"), JsonUtility.ToJson(new Facts {
                 editor = Application.unityVersion, graphicsDevice = SystemInfo.graphicsDeviceName,
                 triangles = triangles, bones = skin.bones.Length, materials = mesh.subMeshCount,
-                clips = facts.ToArray(), frames = frame, productionReady = false
+                clips = facts.ToArray(), segments = segments.ToArray(), frames = frame, productionReady = false
             }, true));
             target.Release();
             Debug.Log("ICARUS_STUDY_RENDER_PASS");
