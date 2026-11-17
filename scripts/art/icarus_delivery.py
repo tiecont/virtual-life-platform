@@ -37,6 +37,7 @@ def main():
     selected = original / 'references/selected_design_01.png'
     assert sha(selected) == '6bb497272dde6d6fa74a1eb4fccf88a60ae147ed529bd894f23e86441623c7fc'
     ledger = json.loads((ROOT / 'provenance/task-ledger-reconciled.json').read_text())
+    balance = ledger.get('latestBalance', ledger['balanceAfter'])
     assert sum(job['actualCredits'] for job in ledger['jobs']) == 35
     assert all(not job['taskId'].startswith('00000000') for job in ledger['jobs'])
     unity = json.loads((RENDER / 'inspection.json').read_text())
@@ -63,7 +64,7 @@ def main():
         changed = 0
         for frame in frames[1:]:
             difference = ImageChops.difference(first, Image.open(frame).convert('RGB').crop((100,100,540,590)))
-            changed = max(changed, sum(pixel > 8 for pixel in difference.convert('L').getdata()))
+            changed = max(changed, sum(difference.convert('L').histogram()[9:]))
         assert changed > 100, f'No significant rendered body-pixel change: {stem}'
         front = Image.open(frames[0]).convert('RGB')
         assert max(ImageStat.Stat(front).stddev) > 10, f'Blank frame: {stem}'
@@ -115,9 +116,9 @@ def main():
     rows = ''.join(f'<tr><td>{html.escape(i["area"])}</td><td>{i["status"]}</td><td>{html.escape(i["detail"])}</td></tr>' for i in issues)
     videos = ''.join(f'<figure><video controls preload="metadata" poster="../unity/render-05/front.png" src="../{m["file"]}"></video><figcaption>{Path(m["file"]).stem} / DRAFT MOTION TEST</figcaption></figure>' for m in media)
     page = f'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Icarus V3 offline review</title>
-<style>body{{background:#181a1b;color:#eee;font:16px/1.5 system-ui;margin:0;padding:24px;max-width:1280px}}h1{{font-size:32px}}img{{max-width:100%;height:auto}}.media{{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}}figure{{margin:0}}video{{width:100%;aspect-ratio:1;background:#333}}table{{border-collapse:collapse;width:100%}}td,th{{padding:12px;border-bottom:1px solid #555;text-align:left;vertical-align:top}}a{{color:#ffba70}}code{{overflow-wrap:anywhere}}@media(max-width:600px){{body{{padding:12px}}td,th{{padding:6px;font-size:13px}}}}</style>
+<style>body{{background:#181a1b;color:#eee;font:16px/1.5 system-ui;margin:0;padding:24px;max-width:1280px}}h1{{font-size:32px}}img{{max-width:100%;height:auto}}.media{{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}}figure{{margin:0}}video{{width:100%;aspect-ratio:1;background:#333}}table{{border-collapse:collapse;width:100%;table-layout:fixed}}td,th{{padding:12px;border-bottom:1px solid #555;text-align:left;vertical-align:top;overflow-wrap:anywhere}}th:first-child{{width:18%}}th:nth-child(2){{width:24%}}a{{color:#ffba70}}code{{overflow-wrap:anywhere}}@media(max-width:600px){{body{{padding:12px}}td,th{{padding:6px;font-size:13px}}}}</style>
 <h1>Icarus V3</h1><p>ART_REVISION_REQUIRED / partial offline handoff / SINGLE_AGENT_SELF_REVIEW</p>
-<p>35 Meshy credits consumed. Balance1009 (999 monthly +10 permanent). Approved V3 direction; final model art is unapproved. DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC.</p>
+<p>35 Meshy credits consumed. Latest balance{balance['balance']} ({balance['monthlyCredits']} monthly +{balance['permanentCredits']} permanent). The subsequent50 permanent-credit increase has an unverified cause; no purchase was initiated. Approved V3 direction; final model art is unapproved. DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC.</p>
 <img src="design-versus-model.png" alt="Approved front reference beside actual Unity draft render"><p>Left: native276px owner crop enlarged only for comparison, without added detail. Right: actual Unity URP draft. The visible gap remains open.</p>
 <div class="media">{videos}</div><h2>Quality review</h2><table><tr><th>Area</th><th>State</th><th>Observed result / required correction</th></tr>{rows}</table>
 <h2>Real deliverables</h2><p><a href="../blender/assembled-04/icarus-assembled.blend">Editable Blender</a> | <a href="../blender/assembled-04/icarus-review.glb">GLB</a> | <a href="../blender/assembled-04/icarus-review.fbx">FBX</a> | <a href="../unity/render-05/IcarusV3Pilot.unitypackage">Unity package</a> | <a href="technical-validation.json">Validation facts</a></p>
@@ -167,9 +168,9 @@ player loading/frame/memory behavior separately. No public activation or art mer
                  'unity/render-05/IcarusV3Pilot.unitypackage','unity/render-05/front.png',
                  'unity/render-05/side.png','unity/render-05/back.png']:
         include.append(ROOT / file)
-    include.extend((ROOT / 'review/final-blender').glob('*.png'))
+    include.extend((ROOT / 'review/final-blender-v2').glob('*.png'))
     include.extend((ROOT / 'review/decoded-video').glob('*.png'))
-    include.append(ROOT / 'review/final-blender/inspection.json')
+    include.append(ROOT / 'review/final-blender-v2/inspection.json')
     mapping = {str(path.relative_to(ROOT)):path for path in include}
     for script in Path('scripts/art').glob('icarus_*.py'):
         mapping['tools/' + script.name] = script
