@@ -3980,7 +3980,71 @@
         "pending": "PR29 aa889fd Quality push43706066035/PR43706069799 browser/final gates still pending at this record. This follow-up also requires actual hosted CI before merge.",
         "evidence": "artifacts/linux-first-playable-audit/launcher-aa889fd-{win,win-input,win-logout-retry,loss,loss-input}.log"
       },
-      "remaining": "Cards/combinations, maps/encounters/assets and immutable published manifests; restricted versioned match pinning, retire/rollback and actual Pet gameplay backup/replay. Existing operator draft/preview is VL-120. No production-ready assets or gameplay v2 claimed."
+      "remaining": "Production publication readiness and operator authorization remain VL-120 integration work; normalized editable cards/maps/assets and actual v3 allocation/combat journal recovery remain unimplemented. Offline sealed manifests now carry bounded cards/combinations/loadouts/maps/encounters/asset metadata, immutable native match pins, retirement/rollback and encrypted restore coverage. No production-ready assets or enabled v3 gameplay claimed.",
+      "offlineManifestVerification": {
+        "sourceRevision": "f5f4c88ac269ebd6fdf963104ef23d264a4531b2",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "scope": "VL-115 offline v3 immutable manifest and allocation-binding slice only. Schema 0052, strict 114-species-capable metadata/ref/immunity validation, content-addressed idempotent sealing, optimistic selection/compatible rollback/retirement with append-only transitions, immutable native allocation pins and strict shared Rust/TS pin codec. Trusted persistence port has no HTTP or live allocator caller; release is OFFLINE_ONLY and all PUBLIC grants remain denied. Existing v1 reducers/codecs/digests unchanged.",
+        "commands": [
+          {
+            "command": "node scripts/with-test-db.mjs pnpm exec vitest run packages/contracts/test/pet-content.test.ts packages/contracts/test/pet-manifest-v3.test.ts tests/integration/pet-content.test.ts tests/integration/pet-manifest.test.ts",
+            "exitCode": 0,
+            "result": "15 PASS, including eight concurrent seals, stale/invalid allocation atomicity, rollback compatibility, retirement/allocation race, immutable rows, audit failure rollback and denied PUBLIC access"
+          },
+          {
+            "command": "cargo fmt --all -- --check",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo test --workspace --locked",
+            "exitCode": 0,
+            "result": "65 PASS including frozen v1 and two strict v3 binding tests"
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-migration-compat.mjs",
+            "exitCode": 0,
+            "result": "Archived47-to52 concurrent migration/rollback/checksum/unknown future migration and unchanged identity/native ciphertext PASS"
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/runtime-admission-migration-compat.mjs",
+            "exitCode": 0,
+            "result": "Archived48-to52 migration/rollback and unchanged closed-world identity PASS"
+          },
+          {
+            "command": "node --import tsx scripts/game-journal-restore-smoke.mjs",
+            "exitCode": 0,
+            "result": "Actual encrypted pg_dump/pg_restore PASS: retired v3 synthetic allocation pin/manifest/selection roundtrip, missing pin and corrupt manifest fail closed. Not actual v3 combat or progression recovery"
+          },
+          {
+            "command": "pnpm check",
+            "exitCode": 1,
+            "result": "Passed governance (125), lint, types, unit (520), policy and assets; stopped at legacy:prepare because isolated /tmp offline package cache lacked archived Deadline packages. Earlier precommit infra run also timed out downloading Kubernetes tools; verified existing pinned tools copied into ignored worktree cache. Hosted exact-source core-checks passed; local integration/build continuation running at this record; first standalone pnpm build compiled the apps but exited 1 on Next.js SecurityFatalError reporting the existing pinned Next.js version has a known vulnerability. No dependency upgrade made in this Pet-only slice"
+          },
+          {
+            "command": "node scripts/prepare-deadline-baseline.mjs --allow-network && node scripts/prepare-maid-baseline.mjs --allow-network",
+            "exitCode": 0,
+            "result": "Archived source digests unchanged; isolated fixture dependencies prepared successfully"
+          },
+          {
+            "command": "gh run view 44121121125 --exit-status",
+            "exitCode": 0,
+            "result": "Exact-source PR Rust PASS, including WSS/process/recovery/settlement, restore and schema compatibility"
+          },
+          {
+            "command": "gh run view 44120771183 --exit-status",
+            "exitCode": 0,
+            "result": "Exact-source push Rust PASS"
+          }
+        ],
+        "hostedQuality": "PR44121121093 and push44120770896 core-checks/runtime-images PASS; browser/final gates queued or running at this record, not PASS. Metadata follow-up also requires actual hosted CI before merge.",
+        "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/48",
+        "evidenceRoot": "artifacts/pet-content-verification",
+        "remaining": "VL-115 stays IN_PROGRESS. No production publication, normalized editable v3 catalog or live v3 allocation. VL-116/117/118/120/129 not implemented or advanced in this slice. Next: complete publication-readiness/normalized draft contract and authorized operator workflow, then wire v3 allocation and combat using these immutable bindings."
+      }
     }
   },
   {
