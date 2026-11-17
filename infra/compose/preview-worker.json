@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "version": "1.0.0",
+  "enabled": true,
+  "accountDailyXp": 1,
+  "partnerDailyCompletions": 1,
+  "cooldownSeconds": 60,
+  "maxObservationAgeSeconds": 3600,
+  "tradable": false,
+  "monetaryValue": false,
+  "publicLeaderboard": false,
+  "worlds": {
+    "deadline": {"kinds": [], "xp": 1, "dailyXp": 0},
+    "maid": {"kinds": [], "xp": 1, "dailyXp": 0},
+    "library": {"kinds": [], "xp": 1, "dailyXp": 0},
+    "restaurant": {"kinds": [], "xp": 1, "dailyXp": 0},
+    "lounge": {"kinds": [], "xp": 1, "dailyXp": 0},
+    "park": {"kinds": [], "xp": 1, "dailyXp": 0},
+    "dating": {"kinds": [], "xp": 1, "dailyXp": 0}
+  },
+  "cosmetics": [{"key": "casual", "lifetimeXp": 0}, {"key": "cafe-apron", "lifetimeXp": 10}]
+}

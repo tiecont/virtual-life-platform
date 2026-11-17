@@ -32,6 +32,41 @@ launcher prints the path to a private local login file. Closing the player
 removes those services and the disposable match. See the Unity README for build
 prerequisites and controls.
 
+## Local UI Preview
+
+Run the existing server runtimes together on an isolated local database:
+
+```sh
+pnpm preview:prepare
+pnpm preview:up
+pnpm preview:status
+pnpm preview:test
+```
+
+The first build includes Node and Rust dependencies. Open the Aetheria VI/EN
+preview at http://127.0.0.1:4900, the portal at http://127.0.0.1:4800 and the
+private console at http://127.0.0.1:4900/admin. The API is on loopback port 4700
+and the native foundation on 4600. PostgreSQL, migrations, API, durable worker,
+both Next.js apps and the Rust foundation share `infra/compose/preview.yml`.
+Desktop/mobile clients are separate builds, not server processes. Native liveness
+returns 200; readiness intentionally returns 503 while gameplay is disabled.
+The optional `preview:test` browser check requires Playwright Chromium installed
+locally (`pnpm exec playwright install chromium`).
+
+This stack uses Next development mode because product routes and concept scenes
+remain unavailable in production. Registration and email acceptance remain
+unimplemented; native gameplay stays disabled. The worker's local policy accepts
+no reward kinds and awards no XP. Operator accounts still require the existing
+out-of-band bootstrap CLI and MFA; no default operator credentials are created.
+
+`preview:prepare` creates independent random keys in ignored, private
+`artifacts/local-preview/runtime.env` and preserves them on reruns. Edit only its
+port values before starting if the defaults are occupied. Use `preview:logs` for
+diagnostics, `preview:stop` to pause or `preview:down` to remove this stack's
+containers/network while retaining its database volume. Keep its original
+environment for that database; do not reuse production data or credentials.
+The separate existing `vc-*` production-artifact stack is unaffected.
+
 ## Source Layout
 
 ```text
