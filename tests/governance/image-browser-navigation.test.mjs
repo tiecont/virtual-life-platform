@@ -23,7 +23,7 @@ function fixture(outcomes) {
         calls.push({operation: 'goto', id, path, options});
         const outcome = outcomes.shift();
         if (outcome instanceof Error) {this.failed = true; throw outcome;}
-        return outcome;
+        return typeof outcome === 'function' ? outcome(this) : outcome;
       },
     };
     pages.push(page);
@@ -136,4 +136,49 @@ test('image browser diagnostics bound events and redact URLs, queries, request v
   assert.deepEqual(records.at(-1), {event: 'REQUEST_FAILED', route: '/v1/me/privacy', code: 'OTHER_FAILURE'});
   assert.deepEqual(records[0], {event: 'CONSOLE_ERROR'});
   assert(!/private|token|password|credential/.test(JSON.stringify(records)));
+});
+
+function interruptedAsset(overrides = {}) {
+  return page => {
+    page.mainFrame = () => page;
+    page.listeners.get('requestfailed')({
+      isNavigationRequest: () => false, frame: () => page, method: () => 'GET',
+      resourceType: () => 'script', url: () => 'https://localhost:1234/_next/static/chunks/app.js?private=value',
+      failure: () => ({errorText: 'net::ERR_NETWORK_CHANGED'}), ...overrides,
+    });
+    return {status: () => 200};
+  };
+}
+test('a successful document with interrupted same-origin framework scripts retires before any login', async () => {
+  const f = fixture([interruptedAsset(), {status: () => 200}]), attempts = [];
+  const result = await navigateImagePage(await f.context.newPage(), '/admin', attempts);
+  assert.equal(result.page, f.pages[1]);
+  assert(f.pages[0].closed);
+  assert.deepEqual(attempts.map(a => a.result), ['ASSET_ERR_NETWORK_CHANGED', 'LOADED']);
+  assert(!JSON.stringify(attempts).includes('private'));
+  assert(f.pages.every(p => p.listeners.size === 0));
+});
+test('persistent interrupted stylesheets stop at the existing three-attempt bound', async () => {
+  const fail = interruptedAsset({resourceType: () => 'stylesheet'});
+  const f = fixture([fail, fail, fail]), attempts = [];
+  await assert.rejects(navigateImagePage(await f.context.newPage(), '/admin', attempts), /framework asset.*network change/);
+  assert.equal(attempts.length, 3);assert.equal(f.pages.length, 3);assert(f.pages.every(p => p.closed));
+});
+test('application requests, external assets, other failures and mutations never trigger an asset retry', async () => {
+  for (const overrides of [
+    {method: () => 'POST'}, {resourceType: () => 'fetch'}, {resourceType: () => 'image'},
+    {url: () => 'https://other.invalid/_next/static/app.js'}, {url: () => 'https://localhost:1234/api/admin/login'},
+    {failure: () => ({errorText: 'net::ERR_CONNECTION_REFUSED'})},
+    {failure: () => ({errorText: 'net::ERR_CERT_AUTHORITY_INVALID'})}, {frame: () => ({})},
+  ]) {
+    const f = fixture([interruptedAsset(overrides)]), attempts = [];
+    await navigateImagePage(await f.context.newPage(), '/admin', attempts);
+    assert.equal(f.pages.length, 1);assert.equal(attempts[0].result, 'LOADED');
+  }
+  const f = fixture([page => {
+    page.listeners.get('request')({method: () => 'POST'});
+    return interruptedAsset()(page);
+  }]);
+  await assert.rejects(navigateImagePage(await f.context.newPage(), '/admin', []), /mutation/);
+  assert.equal(f.pages.length, 1);
 });
