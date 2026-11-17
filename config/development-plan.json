@@ -1452,6 +1452,31 @@
       "qualificationRequirements": [],
       "implementation": {
         "source": "crates/vl-world/src/collision.rs; crates/vl-world/src/movement.rs; crates/vl-gateway/src/durable.rs; apps/unity-client/Assets/VirtualLife/Features/NativeScene",
+        "mergeAudit": {
+          "sourceRevision": "6bdcad65e03f6cd146e6a576f5e816af2e496632",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/46",
+          "commands": [
+            {"command": "cargo fmt --all -- --check", "exitCode": 0},
+            {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "All Rust workspace tests and doc tests passed, including destination, viewer-policy, jitter and duplicate/reordered input regressions."},
+            {"command": "cargo clippy --workspace --all-targets --locked -- -D warnings", "exitCode": 0},
+            {"command": "node --test tests/governance/image-browser-navigation.test.mjs", "exitCode": 0, "result": "12 tests passed; retries remain bounded to read-only document/framework asset network changes; mutations and other failures never retry."},
+            {"command": "node --check scripts/image-browser-navigation.mjs", "exitCode": 0},
+            {"command": "node scripts/verify-ci.mjs", "exitCode": 0, "result": "Local workflow contract passed; this command does not establish hosted CI success."}
+          ],
+          "hostedCI": {
+            "sourceRevision": "6bdcad65e03f6cd146e6a576f5e816af2e496632",
+            "status": "CORE_IMAGES_RUST_PASS_BROWSER_PENDING",
+            "runs": [
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44187058701",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44187058966",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44187045546",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44187045558"
+            ],
+            "result": "Both exact-source Rust runs, Quality core and runtime-images passed; remaining browser jobs were pending when recorded. This verification-only revision must pass its own complete hosted CI before merge; final runs and merge SHA belong in the PR discussion."
+          },
+          "limitations": "Library/gateway self-review only; current peer-disclosure and authenticated destination-provider integration remain incomplete. Rust gameplay stays default-off and Nest remains the sole legacy room writer. No production or hardware qualification."
+        },
         "scope": "Default-off Aurora movement through the existing single Rust zone writer, exported collision/interaction manifest, current Nest policy locks, own-only snapshots, authoritative synthetic terminal proximity and main-thread Unity reconciliation",
         "remainingAcceptance": "Viewer-bound policy projection and own-only gateway integration are implemented. Peer visibility still requires current mutual-block/consent/private-membership policy integration and protocol fields; no peer positions are disclosed. Reconnect retains a bounded registry within one runtime; durable movement checkpoints, registry eviction and client prediction remain unimplemented. Runtime restart rejects old epochs and returns to safe manifest spawn. Injected application delays and deterministic silent ticks are not physical network or Windows qualification.",
         "reviewMode": "SINGLE_AGENT_AUDIT",
@@ -1752,6 +1777,12 @@
       ],
       "implementation": {
         "source": "crates/vl-world/src/destinations.rs",
+        "mergeAudit": {
+          "sourceRevision": "6bdcad65e03f6cd146e6a576f5e816af2e496632",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "relatedVerificationTask": "VL-028",
+          "result": "Same PR46 committed-source Rust format/workspace tests/Clippy and hosted status as VL-028.mergeAudit. Schema, private-location omission, stale revisions, live revocation and capacity/hold overflow cases passed; authenticated adapter and maintained server policy/catalog remain outstanding."
+        },
         "scope": "Bounded strict versioned native POI schema; trusted current-policy discovery; hidden private entries absent; advisory candidate resolution rechecks live entitlement, revision, capacity and reservations without membership writes",
         "remainingAcceptance": "Library implementation only. Authenticated runtime adapter, server-owned current policy/occupancy provider and maintained runtime catalog remain; no network endpoint, capability, admission or teleport writer is exposed. Catalog candidates must be revalidated under locks when reserving/committing.",
         "verification": {
