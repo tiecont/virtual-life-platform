@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "petId": "pet-v3-fire-icarus",
+  "name": "Icarus",
+  "designRevision": "owner-sheet-v2",
+  "taskIds": ["VL-171", "VL-149", "VL-105", "VL-121"],
+  "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
+  "source": {
+    "path": "/home/tiecont/Downloads/Aetheria_SoulBound_Icarus_Character_Bow_Concepts/00_Icarus_Full_Concept_Sheet.png",
+    "sha256": "925d341660bf355081b2f055dbece44631c0f803a6da1d8506b1424b4fc95460",
+    "dimensions": [1672, 941],
+    "origin": "OWNER_SUPPLIED_REFERENCE",
+    "rights": "PENDING_REVIEW",
+    "approval": "NOT_APPROVED",
+    "authority": "Primary appearance reference for this intake; prior battle-reference studies remain historical, unaccepted work."
+  },
+  "appearance": {
+    "identity": "Anime fantasy female celestial archer; elegant humanoid silhouette and expressive face.",
+    "hair": "Long flowing pink hair, curved layered locks and swept bangs; preserve the gold celestial hair ornaments.",
+    "outfit": "Layered white and pink cloth with gold edging, red/pink jewel accents, fitted torso, long split trains and decorative heeled footwear.",
+    "anatomy": "Large white feathered wings with overlapping rows; halo above the head. Tail and paw panels require an explicit owner decision.",
+    "weapon": "Gold and red fire/light bow with a central jewel; preserve the visible bow silhouette and separate luminous effects from solid geometry.",
+    "materials": "Sheet labels silk, metal armor, gemstone, feathers and emission. Palette swatches are visual references, not calibrated PBR values.",
+    "scale": "Sheet annotation is approximately 168 cm; confirm whether this excludes halo, wings, hair and heels.",
+    "benchmark": "UNVALIDATED_TARGET"
+  },
+  "crops": [
+    {"id": "hero", "folder": "concept", "label": "Hero illustration / identity", "box": [0, 45, 538, 706]},
+    {"id": "front", "folder": "turnaround", "label": "Front / orthographic intent unverified", "box": [548, 30, 779, 329]},
+    {"id": "front-three-quarter", "folder": "turnaround", "label": "Front three-quarter", "box": [782, 30, 1006, 329]},
+    {"id": "side", "folder": "turnaround", "label": "Side / orthographic intent unverified", "box": [1020, 30, 1198, 329]},
+    {"id": "rear-three-quarter", "folder": "turnaround", "label": "Rear three-quarter", "box": [1204, 30, 1425, 329]},
+    {"id": "back", "folder": "turnaround", "label": "Back / orthographic intent unverified", "box": [1430, 30, 1672, 329]},
+    {"id": "expressions", "folder": "details", "label": "Face, hairstyle and six expression panels", "box": [508, 393, 1172, 520]},
+    {"id": "face-ornaments-halo", "folder": "details", "label": "Eye, facial profile, hair ornament and halo", "box": [1195, 399, 1655, 514]},
+    {"id": "outfit", "folder": "details", "label": "Torso, belt, sleeves, fabric and rear skirt", "box": [451, 596, 905, 687]},
+    {"id": "accessories", "folder": "details", "label": "Crown, earring, emblem, bracelet and thigh band", "box": [927, 599, 1284, 710]},
+    {"id": "wings", "folder": "details", "label": "Feather layering / roots obscured", "box": [1322, 599, 1652, 712]},
+    {"id": "palette-materials", "folder": "details", "label": "Palette and material reference swatches", "box": [22, 731, 332, 926]},
+    {"id": "bow", "folder": "details", "label": "Bow silhouette, jewel, alternate views and arrow", "box": [355, 737, 909, 925]},
+    {"id": "footwear", "folder": "details", "label": "Human footwear plus inconsistent paw underside", "box": [934, 758, 1129, 890]},
+    {"id": "paw-effect", "folder": "details", "label": "Paw symbol / owner decision required", "box": [1138, 758, 1252, 890]},
+    {"id": "tail-question", "folder": "details", "label": "Tail-labelled panel / owner decision required", "box": [1278, 748, 1658, 923]}
+  ],
+  "coverage": [
+    {"requirement": "Full concept sheet", "status": "PRESENT", "references": ["source"]},
+    {"requirement": "Front orthographic", "status": "REQUIRES_OWNER_REVIEW", "references": ["front"], "note": "Front-labelled view exists; illustrated perspective and exact orthographic projection are not certified."},
+    {"requirement": "Front three-quarter", "status": "PRESENT", "references": ["front-three-quarter"]},
+    {"requirement": "Side orthographic", "status": "REQUIRES_OWNER_REVIEW", "references": ["side"], "note": "Side-labelled view exists; wing tips/roots and back construction are partly obscured."},
+    {"requirement": "Rear three-quarter", "status": "PRESENT", "references": ["rear-three-quarter"]},
+    {"requirement": "Back orthographic", "status": "REQUIRES_OWNER_REVIEW", "references": ["back"], "note": "Back-labelled view exists; hair covers garment closure and wing attachment."},
+    {"requirement": "Face, hair and expressions", "status": "PRESENT", "references": ["expressions", "face-ornaments-halo", "back"]},
+    {"requirement": "Outfit and accessories", "status": "PRESENT", "references": ["outfit", "accessories", "footwear"]},
+    {"requirement": "Weapon", "status": "REQUIRES_OWNER_REVIEW", "references": ["bow", "hero"], "note": "Shape is visible; grip, bowstring path, scale and solid-versus-effect separation need confirmation."},
+    {"requirement": "Wings and other anatomy", "status": "REQUIRES_OWNER_REVIEW", "references": ["wings", "tail-question", "paw-effect", "footwear"]},
+    {"requirement": "Palette and materials", "status": "PRESENT", "references": ["palette-materials"]},
+    {"requirement": "Provenance and explicit owner approval", "status": "MISSING_APPROVAL", "references": ["source"]}
+  ],
+  "designCompletionTasks": [
+    {"id": "ICARUS-D01", "status": "REQUIRES_OWNER_REVIEW", "question": "Confirm humanoid legs/feet and whether the tail-labelled and paw panels are excluded from Icarus, effects only, or actual anatomy. No tail or paw anatomy is authorized by this intake."},
+    {"id": "ICARUS-D02", "status": "REQUIRES_OWNER_REVIEW", "question": "Approve consistent front/side/back neutral orthographic references at usable detail, or supply corrected views. The native sheet turnaround crops are only 299 pixels tall; nearby larger PNGs do not establish new detail or approval."},
+    {"id": "ICARUS-D03", "status": "REQUIRES_OWNER_REVIEW", "question": "Supply or approve wing-root placement, folded-wing range, back garment closure, and hair/cloth layering hidden by the back hair. Also confirm the height measurement and intended age impression."},
+    {"id": "ICARUS-D04", "status": "REQUIRES_OWNER_REVIEW", "question": "Approve the sheet bow version, grip/handedness and relative scale; distinguish rigid bow/arrow, string, halo/ornaments and luminous VFX. Nearby Phoenix Fire Bow Upgrade files are not a separate approved design."},
+    {"id": "ICARUS-D05", "status": "MISSING_APPROVAL", "question": "Record explicit owner approval of the exact immutable design snapshot and input hashes, including resolution of D01-D04, plus permitted provider upload/reference use. Public or production rights remain a separate gate."}
+  ],
+  "technicalContract": {
+    "animationProfile": "specs/pet-arena/v3.1/data/limited_animation_profiles.json",
+    "assetManifest": "specs/pet-arena/v3.1/data/pet_asset_manifest_240.json",
+    "signatureOpcode": "FIRE_ZONE",
+    "serverOutcomeIndependent": true,
+    "blender": "4.5 LTS",
+    "unity": "6000.3.14f1",
+    "urp": "17.3.0",
+    "lodTriangles": [[26000, 29500], [14000, 16500], [6500, 8000]],
+    "bones": 74,
+    "maxMaterials": 3,
+    "textureSet": [2048, 2048],
+    "units": "meters; Y-up export; forward axis checked on import",
+    "bindingsDependency": "PR37 at 734c5dd35db822a3bca46af0c19e1d264e0815c8; do not replace its production binding schema with this design intake."
+  },
+  "generationGate": {
+    "ownerDesignApproval": null,
+    "creditAuthorization": null,
+    "allowedPaidJobs": 0,
+    "jobs": [],
+    "creditsConsumedByThisIntake": 0
+  }
+}

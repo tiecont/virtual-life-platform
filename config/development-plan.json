@@ -115,9 +115,23 @@
       "priority": 1,
       "dependsOn": [],
       "acceptance": ["Actual editable Blender 4.x LTS source and FBX/GLB export, meter scale and Y-up transfer; LOD0 26000-29500 triangles, Icarus 74 bones and at most 3 materials", "Actual UV/textures, idle/intro/normal/rage/signature clips, URP cel material, FIRE_ZONE VFX and Timeline/Cinemachine preview MP4 exist", "Record character_id, design_revision, reference_hash and actual source/import/runtime hashes; pet-asset-check passes with Icarus bindings present, not merely a missing-asset draft preflight", "Actual licensed Unity import, rendered motion and reduced-motion/performance checks; no runtime animation authority"],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
-      "implementation": {"parentTask": "VL-149", "sharedPipeline": "VL-105", "assetContract": "VL-121", "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"}
+      "implementation": {
+        "parentTask": "VL-149", "sharedPipeline": "VL-105", "assetContract": "VL-121",
+        "designIntake": {
+          "specification": "specs/pet-arena/meshy-character-pipeline.md",
+          "inputManifest": "specs/pet-arena/references/icarus/design-intake-v2.json",
+          "tool": "scripts/art/pet_design_intake.py",
+          "state": "DESIGN_REVIEW",
+          "sourceSha256": "925d341660bf355081b2f055dbece44631c0f803a6da1d8506b1424b4fc95460",
+          "snapshotSha256": "3a8aecf4c7f83475746d4df3bf38734b0aad4a0e1d55f61f20b2b6c26ea50c78",
+          "ownerApproval": "MISSING", "creditAuthorization": "MISSING",
+          "jobs": [], "creditsConsumed": 0,
+          "remaining": "Resolve ICARUS-D01-D05: paw/tail anatomy, consistent usable orthographic views, hidden wing/back/hair construction and scale, bow version/grip/VFX separation, and explicit snapshot-specific owner approval. Separate paid batch authorization is required afterwards. No new Blender/GLB/FBX/Unity asset or accepted benchmark. Existing PR37/38/40 assets and importer GUIDs remain owned by their original work. VL-170 retains absent private object-store infrastructure."
+        },
+        "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
     },
     {
       "id": "VL-172",

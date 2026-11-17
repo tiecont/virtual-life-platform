@@ -103,6 +103,11 @@ it infers existing project defaults and reports missing inputs or failed gates.
 The skill includes style calibration and bounded repair/artist handoff. Its
 presence does not establish an accepted art benchmark or a finished character.
 
+The [owner-design intake](specs/pet-arena/meshy-character-pipeline.md) packages
+Icarus's exact supplied sheet, native reference crops and unresolved owner
+decisions with content hashes. It remains DESIGN_REVIEW; no Meshy generation,
+design approval, spending authorization or accepted production model is implied.
+
 The [V3.1 candidate specification](specs/pet-arena/v3.1.md) adds six Standard S
 Pets to the canonical240 draft catalog. Validate with
 `python3 scripts/validate-pet-v31.py`; no v3 DB import or runtime is enabled.
