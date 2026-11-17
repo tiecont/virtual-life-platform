@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "characterId": "pet-v3-fire-icarus",
+  "designRevision": "white-gold-study-04",
+  "state": "DRAFT_ONLY",
+  "blender": "4.5.16 LTS",
+  "unity": "6000.3.14f1",
+  "urp": "17.3.0",
+  "metersPerUnit": 1,
+  "exportUp": "Y",
+  "fbxForward": "-Z",
+  "armatureBones": 74,
+  "sourceTriangles": 29376,
+  "maximumMaterials": 3,
+  "shading": "Three vertex-color study materials; no baked production texture set",
+  "animation": "Generic; five authored actions; no gameplay authority",
+  "importer": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/icarus-study.fbx.meta",
+  "renderer": "apps/unity-client/Assets/VirtualLife/Editor/IcarusStudyRender.cs",
+  "shader": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/StudyVertexColor.shader",
+  "runtimeEnabled": false,
+  "productionReady": false,
+  "rights": "PENDING_REVIEW",
+  "provenance": [
+    {
+      "path": "scripts/art/build-icarus-blockout.py",
+      "sha256": "fec52b4a4c26bab41c35e9c9b6d7a0612cbe8be40fc6f9649b41412720be4937"
+    },
+    {
+      "path": "scripts/art/icarus_white_gold.py",
+      "sha256": "c16edf11a4dc97d218c1a4e6c09e09099b06e8234e8d77f006dec7afcff860d1"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/icarus-study.fbx.meta",
+      "sha256": "c0605c622825fb468fa9d61cdbcf7ce796fa7cb7d362133af1216841d6497670"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/Editor/IcarusStudyRender.cs",
+      "sha256": "d1dae7bfdc5905140b89b079d5d7203e4d65de57d810d1937c7a6f6b7238e3b0"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/StudyVertexColor.shader",
+      "sha256": "f9265d9e2d345f10df47fe633945b4fcc695c995dc16807ac8a2150f8aa10e8c"
+    },
+    {
+      "path": "specs/pet-arena/references/icarus/owner-battle-reference.png",
+      "sha256": "af3d8af34268cb01b29fd400e62b71378c0c2176b72991ebfcfd3e722f0eb76c"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/front.png",
+      "sha256": "a309ab85ce972242af1533f44cd0395ddf3597fcf4fdb5ee2e3676bec91d6df5"
+    }
+  ],
+  "preview": {
+    "codec": "h264",
+    "width": 960,
+    "height": 960,
+    "fps": 20,
+    "frames": 440,
+    "seconds": 22,
+    "clips": [
+      "idle",
+      "normal",
+      "signature"
+    ],
+    "audio": false
+  }
+}

@@ -6,7 +6,11 @@ The owner-supplied [battle reference](references/icarus/owner-battle-reference.p
 is the primary appearance reference for Icarus. It supersedes the crimson-armored
 procedural blockout as an appearance target. Preserve the older study as an
 unaccepted technical experiment; do not replicate it to the other Limited Pets.
-No revised concept drawing or revised 3D model has been produced yet.
+The [white/gold Blender study](../../assets/characters/icarus/white-gold-study/README.md)
+now has editable source, rigged GLB/FBX exports and an actual Unity URP motion
+preview. It is an unaccepted draft: face, anatomy, hair, costume and feather
+construction still fall short of the supplied illustration. No revised concept
+drawing or approved turnaround has been produced.
 
 ## Character
 
@@ -42,20 +46,21 @@ fewer particles and no sweeping camera or repeated full-screen flashes.
 Use Aetheria: SoulBound branding; do not copy the old VirtualLife wordmark or
 unvalidated screenshot health values, skills or interface copy.
 
-## Next Art Deliverables
+## Remaining Art Deliverables
 
-First produce a full-body character concept and face detail matching the
+Produce a full-body character concept and face detail matching the
 reference, then consistent front/side/back orthographic views in a neutral pose
 with wings spread. Use a plain neutral backdrop, even lighting and no interface,
 enemy, fire overlay or title obscuring the character. Keep hair, cloth, wings,
 bow and jewelry legible for modeling.
 
-After visual review, author the Blender mesh, UVs, textures, rig and animation
-using the established Limited budgets and canonical action bindings. The first
-procedural study had 35,968 triangles and was over the LOD0 budget; its 74-bone
-armature and five exported actions are technical observations only. Neither
-those exports nor a new concept PNG satisfy production mesh, skinning, Unity
-shader/VFX, Timeline/Cinemachine or rendered motion acceptance.
+Refine the draft mesh and skinning after visual review, then author production
+UVs, textures and canonical action bindings. The white/gold source has 29,376
+triangles, 74 bones, three materials and five authoring actions. Unity imports
+27,564 triangles and renders idle, normal and signature in a 22-second preview;
+intro and rage import and deform but are absent from that video. These technical
+checks do not establish art acceptance, all sixteen gameplay actions, production
+Shader Graph/VFX, Timeline/Cinemachine or player performance qualification.
 
 ## Concept Generation Brief
 

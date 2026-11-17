@@ -5117,7 +5117,9 @@
         "icarus": "specs/pet-arena/icarus-art-direction.md",
         "primaryReference": "specs/pet-arena/references/icarus/owner-battle-reference.png",
         "referenceSha256": "af3d8af34268cb01b29fd400e62b71378c0c2176b72991ebfcfd3e722f0eb76c",
-        "status": "Owner screenshot sets pink hair, white/gold costume and feathered wings. Initial crimson procedural blockout is unaccepted; do not replicate it. Revised concept and model remain unproduced."
+        "status": "White/gold Blender study now exists with pink hair, shaped face, feather wings and gold bow; 29376 source triangles, 74 bones, three materials, five authoring actions. Unity imports 27564 triangles and renders a 22-second motion preview. Unaccepted draft, below reference quality; no approved concept, production UV/textures, sixteen action bindings, VFX/audio or performance acceptance. Do not replicate to other Pets yet.",
+        "draftAssets": "assets/characters/icarus/white-gold-study/README.md",
+        "draftBindings": "assets/characters/icarus/white-gold-study/bindings.json"
       },
       "objective": "Six bespoke characters, unique rigs and VFX, render/performance snapshots, original art rights.",
       "dependsOn": [
@@ -5131,7 +5133,7 @@
         "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json",
         "Rendered Unity animation footage and asset provenance, not PNG-only concept"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "verificationRequirements": [
         "Focused unit/integration and exact CI",

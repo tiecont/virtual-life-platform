@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 2,
+  "ruleset": "pet-arena-v3.1-limited",
+  "catalogManifestHash": "dc8b2173c8e853b60072567dc736a65d68e252f87aff2314c8a790803ba11914",
+  "state": "DRAFT_ONLY",
+  "runtimeEnabled": false,
+  "productionReady": false,
+  "compatibility": {
+    "blender": "4.5 LTS",
+    "unity": "6000.3.14f1",
+    "urp": "17.3.0"
+  },
+  "assets": [
+    {
+      "id": "icarus-study-glb",
+      "kind": "model",
+      "path": "assets/characters/icarus/white-gold-study/icarus-blockout.glb",
+      "sha256": "f79a57098357d89dd06e73b447c5050b259cbbf97482798cf8307e6143f50f44",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",
+        "sha256": "5ad7ea0a2d932d1572ebb11839536cbac29241a68ad40f12bbfe526e4408c8a2",
+        "origin": "generated",
+        "author": "Codex; owner-supplied visual reference",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/import-settings.json",
+        "sha256": "d806606c0e4aab98e0eae9e94a500b84fab298ebc5f987ffacf4e45ac4a43084"
+      }
+    },
+    {
+      "id": "icarus-study-fbx",
+      "kind": "model",
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/icarus-study.fbx",
+      "sha256": "f05c856753e58e9b1a616492d950a4ddaa43937b09d8bcfd2b227661847a384c",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",
+        "sha256": "5ad7ea0a2d932d1572ebb11839536cbac29241a68ad40f12bbfe526e4408c8a2",
+        "origin": "generated",
+        "author": "Codex; owner-supplied visual reference",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/import-settings.json",
+        "sha256": "d806606c0e4aab98e0eae9e94a500b84fab298ebc5f987ffacf4e45ac4a43084"
+      }
+    },
+    {
+      "id": "icarus-study-preview",
+      "kind": "preview",
+      "path": "assets/characters/icarus/white-gold-study/icarus-study.mp4",
+      "sha256": "129288ddf34d1e6ae655ee7747108a56e532ff888a323a4c31a8d47ac02bf453",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",
+        "sha256": "5ad7ea0a2d932d1572ebb11839536cbac29241a68ad40f12bbfe526e4408c8a2",
+        "origin": "generated",
+        "author": "Codex; owner-supplied visual reference",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/import-settings.json",
+        "sha256": "d806606c0e4aab98e0eae9e94a500b84fab298ebc5f987ffacf4e45ac4a43084"
+      }
+    }
+  ],
+  "pets": [
+    {
+      "petId": "pet-v3-fire-icarus",
+      "designRevision": "white-gold-study-04",
+      "reference": {
+        "path": "specs/pet-arena/references/icarus/owner-battle-reference.png",
+        "sha256": "af3d8af34268cb01b29fd400e62b71378c0c2176b72991ebfcfd3e722f0eb76c"
+      },
+      "signatureOpcode": "FIRE_ZONE",
+      "serverOutcomeIndependent": true,
+      "portrait": null,
+      "icon": null,
+      "model": "icarus-study-glb",
+      "prefab": null,
+      "controller": null,
+      "localization": null,
+      "materials": [],
+      "preview": "icarus-study-preview",
+      "reducedMotionPreview": null,
+      "animations": [
+        {
+          "action": "idle",
+          "clip": null,
+          "vfx": null,
+          "audio": null
+        },
+        {
+          "action": "world_walk_or_hover",
+          "clip": null,
+          "vfx": null,
+          "audio": null
+        },
+        {
+          "action": "world_follow",
+          "clip": null,
+          "vfx": null,
+          "audio": null
+        },
+        {
+          "action": "emote",
+          "clip": null,
+          "vfx": null,
+          "audio": null
+        },
+        {
+          "action": "summon",
+          "clip": null,
+          "vfx": null,
+          "audio": null
+        },
+        {
+          "action": "normal_sword_hit",
+          "clip": null,
+          "vfx": null,
+          "audio": null
+        },
+        {
+          "action": "rage_sword_100",
+          "clip": null,
+          "vfx": null,
+          "audio": null
+        },
+        {
+          "action": "signature_skill_windup",
+          "clip": null,
+          "vfx": null,
+          "audio": null
+        },
+        {
+          "action": "signature_skill_cast",
+          "clip": null,
+          "vfx": null,
+          "audio": null
+        },
+        {
+          "action": "ultimate_cut_in",
+          "clip": null,
+          "vfx": null,
+          "audio": null
+        },
+        {
+          "action": "ultimate_impact",
+          "clip": null,
+          "vfx": null,
+          "audio": null
+        },
+        {
+          "action": "damage_reaction",
+          "clip": null,
+          "vfx": null,
+          "audio": null
+        },
+        {
+          "action": "defend",
+          "clip": null,
+          "vfx": null,
+          "audio": null
+        },
+        {
+          "action": "status_affected",
+          "clip": null,
+          "vfx": null,
+          "audio": null
+        },
+        {
+          "action": "victory",
+          "clip": null,
+          "vfx": null,
+          "audio": null
+        },
+        {
+          "action": "defeat",
+          "clip": null,
+          "vfx": null,
+          "audio": null
+        }
+      ]
+    }
+  ]
+}
