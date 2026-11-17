@@ -63,6 +63,18 @@ class CandidateIntegrityTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'authorize delivery'):
                     MODULE.verify(ROOT, copy)
 
+    def test_inspection_handoff_cannot_claim_repair_or_acceptance(self):
+        source = ROOT / 'specs/pet-arena/references/icarus/production-v4-pbr.json'
+        with tempfile.TemporaryDirectory() as directory:
+            copy = Path(directory) / 'manifest.json'
+            for key, value in [('productionReady', True), ('geometryEdited', True),
+                               ('state', 'ART_PASS_SELF_REVIEWED')]:
+                data = json.loads(source.read_text())
+                data['continuityFollowup']['offlineHandoff'][key] = value
+                copy.write_text(json.dumps(data))
+                with self.assertRaisesRegex(ValueError, 'cannot claim'):
+                    MODULE.verify(ROOT, copy)
+
 
 if __name__ == '__main__':
     unittest.main()

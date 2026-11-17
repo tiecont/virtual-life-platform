@@ -247,7 +247,7 @@
   "gaps": [
     "No claim of100percent likeness",
     "Face, hair and filigree detail remain soft under neutral closeup",
-    "Finger construction and wing articulation require repair",
+    "Finger deformation topology, thumb opposition and bow grip remain unvalidated; wing articulation requires reconstruction",
     "High-poly sources require purposeful retopology and texture baking, not triangle-count acceptance",
     "No rig or canonical actions in either new candidate",
     "Supplementary views differ in hair/back construction and are not owner-approved",
@@ -295,11 +295,23 @@
       "result": "PBR channels connected correctly; neutral close-up shows fused fingers and soft face/ornament detail. Exposure-only inspection, no geometry repair claimed."
     },
     "remaining": [
-      "Game retopology, separate five-finger hands, articulated feather/wing structure, 74-bone rig and canonical actions remain missing.",
+      "Game retopology, deformable hand joints/bow grip, articulated feather/wing structure, 74-bone rig and canonical actions remain missing. Multi-angle inspection of the front candidate shows five separated digit silhouettes; the previous fused-fingers description is superseded for this candidate.",
       "Back continuity improved; exact cross-view garment and hair matching remains open.",
       "Wing study is a proposed fold silhouette, not kinematic validation. Spread left wing reaches the image boundary; cannot qualify as a complete uncut design sheet."
     ],
-    "uploadEligible": false
+    "uploadEligible": false,
+    "offlineHandoff": {
+      "state": "ARTIST_HANDOFF_REQUIRED",
+      "builder": "scripts/art/icarus_pbr_handoff.py",
+      "candidateSha256": "943ad8fc0258e80e120349e1bf97521eebb108abc04d399f02c75758647b7d9c",
+      "localOutput": "artifacts/character-production/icarus-v4-handoff-r2",
+      "productionReady": false,
+      "geometryEdited": false,
+      "hands": "Five separated digit silhouettes visible from dorsal and palm views on both sides. Edge view overlaps fingers in projection; it does not prove fused geometry. Joint topology, thumb opposition and actual bow grip still need work and deformation review.",
+      "wings": "Back hair obscures the roots; neutral back render cannot certify attachment or fold clearance. No articulated wing rig exists.",
+      "textureQualification": "Base color and packed metallic/roughness are 4096 square; normal is 2048 square. The current source does not meet an all-channel 4K/8K requirement.",
+      "scope": "Local editable high-poly source, embedded textures, original GLB, hashed owner reference, explicitly separate AI proposals, eight neutral stills and canonical 16-action work order. No new model geometry, rig, animation, Unity asset or cloud upload."
+    }
   },
   "scopeRestriction": {
     "allowedCurrentProduction": [

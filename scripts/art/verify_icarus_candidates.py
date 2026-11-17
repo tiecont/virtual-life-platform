@@ -65,6 +65,11 @@ def verify(root, manifest, require_models=False):
     if any(followup[key] is not False for key in
            ('ownerApproved', 'productionReady', 'uploadEligible')):
         raise ValueError('Open continuity review cannot authorize delivery')
+    handoff = followup.get('offlineHandoff')
+    if handoff is not None and (handoff.get('state') != 'ARTIST_HANDOFF_REQUIRED'
+                               or handoff.get('productionReady') is not False
+                               or handoff.get('geometryEdited') is not False):
+        raise ValueError('Inspection handoff cannot claim production or geometry repair')
     images = data['designImages'] + data['continuityFollowup']['images']
     if len({entry['path'] for entry in images}) != len(images):
         raise ValueError('Duplicate image path')

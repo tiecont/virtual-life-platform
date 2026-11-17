@@ -234,3 +234,21 @@ Unity 6000.3.14f1 project with URP 17.3.0. LOD1/2 remain required. Preserve PR37
 complete-binding validator and PR40's actual study assets; complete hashes do
 not validate likeness, deformation, rights or performance. No raw Meshy export
 is production-ready. Windows qualification requires actual Windows hardware.
+# PBR geometry-repair handoff
+
+`scripts/art/icarus_pbr_handoff.py` imports the hash-pinned front PBR candidate
+into a separate Blender 4.5 LTS process. Pass `--output` with a new directory under
+ignored `artifacts/`; existing directories are refused. It preserves the original
+GLB, packs textures into an editable `.blend`, copies the exact owner reference
+separately from generated proposals, renders eight neutral inspection views and
+writes a 16-action repair work order and file inventory. Reopen the delivered
+Blend and verify the inventory before using the package. No geometry is repaired
+by this command, and an inspection package cannot pass the production art gate.
+
+The front candidate has five visibly separated digit silhouettes on both hands
+in dorsal/palm views. The previous blanket description of fused fingers is not
+supported for this candidate; finger joint topology, thumb opposition and bow
+grip remain unvalidated. Hair hides the wing roots in the back view, so that view
+does not establish correct attachment or clearance. Its normal map is 2K even
+though base color and metallic/roughness are 4K; the source is not an all-channel
+4K/8K delivery. Keep the production, rig, animation and Unity gates open.
