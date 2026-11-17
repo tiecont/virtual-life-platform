@@ -13,6 +13,8 @@ import configModule from '../apps/platform-api/src/shared/config/environment.ts'
 import migrationModule from '../apps/platform-api/src/shared/database/migrations.ts';
 import cipherModule from '../apps/platform-api/src/features/games/modules/persistence/infrastructure/journal-crypto.ts';
 import fixtureModule from '../tests/games/journal-rules-fixture.ts';
+import petAcquisitionModule from '../apps/platform-api/src/features/pets/modules/content/infrastructure/acquisition-draft-store.ts';
+import {petAcquisitionDraft,petAcquisitionDraftId} from './pet-acquisition-draft-seed.mjs';
 import petManifestModule from '../apps/platform-api/src/features/pets/modules/content/infrastructure/manifest-store.ts';
 import petManifestFixtureModule from '../tests/support/pet-manifest-fixture.ts';
 import petDraftModule from '../apps/platform-api/src/features/pets/modules/content/infrastructure/draft-store.ts';
@@ -20,6 +22,7 @@ import {petDesignDraft,petDesignDraftId} from './pet-content-draft-seed.mjs';
 import {backupPostgres,restorePostgres} from './postgres-backup.mjs';
 const {createApp}=appModule,{readConfig}=configModule,{migrate,migrationManifest}=migrationModule,{GameJournalCrypto}=cipherModule,{engine,factory}=fixtureModule;
 const {PetDraftStore,petDraftHash}=petDraftModule;
+const {PetAcquisitionDraftStore,petAcquisitionHash}=petAcquisitionModule;
 const {PetManifestStore}=petManifestModule,{petManifestFixture}=petManifestFixtureModule;
 const require=createRequire(import.meta.url),{RoomAckSchema,MeSchema,GameLobbyViewSchema}=require('@virtual-city/contracts');
 const id=randomUUID().slice(0,8),project='virtual-city-backup-test-'+id,dir=resolve('artifacts/lantern-lodge/n15-04/restore-run-'+id),sha=b=>createHash('sha256').update(b).digest('hex'),origin='http://127.0.0.1:3300';
@@ -35,6 +38,7 @@ try{
  const gameKey=randomBytes(32).toString('hex'),sessionSecret=randomBytes(48).toString('hex'),sourceURL=dbURL(values.CITY_BACKUP_SOURCE_PORT,'virtual_city_test_game_backup'),targetURL=dbURL(values.CITY_BACKUP_RESTORE_PORT,'virtual_city_restore_test');sourcePool=new Pool({connectionString:sourceURL});targetPool=new Pool({connectionString:targetURL});await migrate(sourcePool);
  stage='pet-metadata-draft';const petInput=await petDesignDraft(),petSeed=await new PetDraftStore(sourcePool).seed(petDesignDraftId,petInput);
  const petBefore=await new PetDraftStore(sourcePool).read(petDesignDraftId);assert.equal(petDraftHash(petBefore),petSeed.hash);assert.equal(petBefore.species.length,114);
+ stage='pet-acquisition-draft';const acquisition=await petAcquisitionDraft(),acquisitionStore=new PetAcquisitionDraftStore(sourcePool,acquisition.upstream),acquisitionSeed=await acquisitionStore.seed(petAcquisitionDraftId,acquisition.value),acquisitionBefore=await acquisitionStore.read(petAcquisitionDraftId);assert.equal(acquisitionBefore.pets.length,240);
  stage='pet-offline-manifest';const manifests=new PetManifestStore(sourcePool),sealed=await manifests.seal(petManifestFixture(petInput)),selected=await manifests.transition('select',sealed.hash,0),nativeMatch=randomUUID();
  const pin={schemaVersion:3,ruleset:'pet-arena-pve-v3',contentHash:sealed.hash,rulesHash:'a'.repeat(64),encounter:'practice-fire',encounterRevision:1,loadout:'starter',level:1,stats:{hp:100,attack:10,defense:5,speed:10}};
  const allocation=await sourcePool.connect();try{await allocation.query('BEGIN');await allocation.query(`INSERT INTO game_native_matches(id,world_id,ruleset_id,ruleset_version,content_hash,engine_hash,owner_boot_id,epoch,server_tick,logical_time_ms,rng_cursor,status,seed_commitment,audit_hash,snapshot_key_id,snapshot_nonce,snapshot_tag,sealed_snapshot,protocol_version,canonical_version,rng_version)
@@ -57,6 +61,9 @@ try{
  assert(petAfter.species.every(pet=>pet.assetState==='MISSING'&&!pet.productionReady));assert.equal((await targetPool.query("SELECT count(*)::int AS n FROM pet_content_drafts WHERE state<>'draft'")).rows[0].n,0);
  await targetPool.query("UPDATE pet_content_species SET display_name='Corrupted restore probe' WHERE draft_id=$1 AND species_id=$2",[petDesignDraftId,petBefore.species[0].id]);await assert.rejects(petStore.read(petDesignDraftId),/Draft integrity mismatch/);await assert.rejects(petStore.seed(petDesignDraftId,petInput),/Draft integrity mismatch/);
  await targetPool.query('UPDATE pet_content_species SET display_name=$3 WHERE draft_id=$1 AND species_id=$2',[petDesignDraftId,petBefore.species[0].id,petBefore.species[0].displayName]);assert.deepEqual(await petStore.read(petDesignDraftId),petBefore);
+ stage='restored-pet-acquisition';const restoredAcquisition=new PetAcquisitionDraftStore(targetPool,acquisition.upstream),acquisitionAfter=await restoredAcquisition.read(petAcquisitionDraftId);assert.deepEqual(acquisitionAfter,acquisitionBefore);assert.equal(petAcquisitionHash(acquisitionAfter),acquisitionSeed.hash);assert.deepEqual(await restoredAcquisition.seed(petAcquisitionDraftId,acquisition.value),{...acquisitionSeed,created:false});
+ const standard=acquisitionAfter.pets.find(p=>p.acquisition.source==='standard_gacha');await targetPool.query("UPDATE pet_acquisition_species SET legacy_rarity='rare' WHERE draft_id=$1 AND species_id=$2",[petAcquisitionDraftId,standard.id]);await assert.rejects(restoredAcquisition.read(petAcquisitionDraftId),/integrity/);await assert.rejects(restoredAcquisition.seed(petAcquisitionDraftId,acquisition.value),/integrity/);await targetPool.query('UPDATE pet_acquisition_species SET legacy_rarity=$3 WHERE draft_id=$1 AND species_id=$2',[petAcquisitionDraftId,standard.id,standard.sourceRarityLegacy]);assert.deepEqual(await restoredAcquisition.read(petAcquisitionDraftId),acquisitionBefore);
+ facts.petAcquisition={hash:acquisitionSeed.hash,pets:240,maps:19,exactMetadataRoundTrip:true,reseedCreated:false,corruptMetadataDenied:true,state:'DRAFT_ONLY',ownedPetsGranted:0};
  stage='restored-pet-manifest';const restoredManifests=new PetManifestStore(targetPool);assert.deepEqual(await restoredManifests.readPin(nativeMatch),pinBefore);assert.equal((await restoredManifests.read(sealed.hash)).state,'retired');assert.deepEqual(await restoredManifests.selection(),{hash:null,revision:2});await assert.rejects(restoredManifests.transition('select',sealed.hash,2),/retired/);
  await assert.rejects(targetPool.query('DELETE FROM pet_content_versions WHERE content_hash=$1',[sealed.hash]));
  // Simulate privileged restore damage, then verify the reader fails closed.
