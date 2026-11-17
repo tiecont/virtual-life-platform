@@ -95,6 +95,14 @@ world packages cannot import another world's persistence or SQL drivers.
 
 ## Work Plan
 
+The repository skill [Aetheria Character Production](.agents/skills/aetheria-character-production/SKILL.md)
+guides reference images through Blender modeling, textures, rigging, animation,
+Unity URP and delivery, with separate art and technical gates. Invoke
+`$aetheria-character-production` with the character name and reference images;
+it infers existing project defaults and reports missing inputs or failed gates.
+The skill includes style calibration and bounded repair/artist handoff. Its
+presence does not establish an accepted art benchmark or a finished character.
+
 The [V3.1 candidate specification](specs/pet-arena/v3.1.md) adds six Standard S
 Pets to the canonical240 draft catalog. Validate with
 `python3 scripts/validate-pet-v31.py`; no v3 DB import or runtime is enabled.

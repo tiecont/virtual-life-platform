@@ -1,0 +1,34 @@
+{
+  "characterId": null,
+  "designRevision": null,
+  "taskIds": [],
+  "roster": null,
+  "primaryReference": {"path": null, "sha256": null},
+  "additionalReferences": [],
+  "appearance": {
+    "identityAndProportions": null,
+    "faceAndExpression": null,
+    "hairAndAppendages": null,
+    "costumeAndMaterials": null,
+    "motionLanguage": null,
+    "mustPreserve": [],
+    "hiddenViewProposals": [],
+    "assumptions": []
+  },
+  "technicalContractPaths": [],
+  "requiredActionProfilePath": null,
+  "requestedDeliverables": [],
+  "benchmark": {
+    "status": "UNVALIDATED_TARGET",
+    "sourceSpecification": null,
+    "acceptedDesignRevision": null,
+    "acceptanceMode": null
+  },
+  "tools": {
+    "primary": "Blender",
+    "connection": "NOT_TESTED",
+    "externalProvider": null,
+    "externalSpendingAuthorization": null
+  },
+  "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
+}
