@@ -29,8 +29,9 @@ export function assertImportAllowed(from, specifier, root) {
       throw new Error(`Forbidden workspace package: ${path} → ${specifier}`);
     }
     if (path.startsWith('packages/contracts/') && targetPackage !== 'config') throw new Error(`Contracts must not import SDK/apps: ${specifier}`);
+    const privatePetAcquisition = specifier === '@virtual-city/contracts/pet-acquisition-v3' && path.startsWith('apps/platform-api/src/features/pets/');
     const publicRenderer = specifier === '@virtual-city/pixi-scene/csp-renderer'&&path.startsWith('apps/mobile/') || specifier === '@virtual-city/pixi-scene/renderer' && (path.startsWith('apps/portal-web/')||path.startsWith('packages/game-client/'));
-    if (specifier.split('/').length > 2 && !publicRenderer && !publicUi && !publicGameStyles) throw new Error(`Workspace deep import: ${specifier}`);
+    if (specifier.split('/').length > 2 && !publicRenderer && !publicUi && !publicGameStyles && !privatePetAcquisition) throw new Error(`Workspace deep import: ${specifier}`);
   }
 }
 export async function checkBoundaries(root) {

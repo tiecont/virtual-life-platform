@@ -1,5 +1,5 @@
 import type {BannerRules,FamilyState,PullEntropy,PullResolution} from '../domain/rules';
-import type {PetAcquisitionCatalogV3} from '@virtual-city/contracts';
+import type {PetAcquisitionCatalogV3} from '@virtual-city/contracts/pet-acquisition-v3';
 
 /** VL-140 must implement this inside Nest's account/family/wallet transaction.
  * Reserve locks account+family+wallet, binds requestId to requestHash, and durably
