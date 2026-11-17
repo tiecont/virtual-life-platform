@@ -4759,6 +4759,74 @@
           },
           "pending": "This evidence-only revision must pass exact-head hosted Quality/Rust before merge. Record final CI and merge SHA in PR discussion; verify post-merge main before the next workstream.",
           "limitations": "Strict draft TypeScript contract and offline-catalog validation only. No new persistence/runtime/Unity implementation or entire Pet schema-chain completion; OFFLINE_ONLY / NO_GO_PUBLIC."
+        },
+        "logicRulesFollowup": {
+          "scope": "Separate offline Rust taxonomy_v3 module implements19 canonical elements,361 directional multipliers, checked floor-once damage scaling,22 race defaults and compatible explicit radial/hexapod overrides. Unknown enums/fields and partial/incompatible morphology are rejected. No v1 reducer/codec edits or runtime registration.",
+          "remaining": "Hosted exact-final-head acceptance; no Unity visualization or production art claim.",
+          "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+          "verification": {
+            "sourceRevision": "c8bbb5bad4f65d06f5378b6f2bc998603a25ba08",
+            "reviewMode": "SINGLE_AGENT_AUDIT",
+            "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/47",
+            "commands": [
+              {
+                "command": "pnpm test",
+                "exitCode": 0,
+                "result": "126 governance and 530 unit tests PASS on unchanged committed source."
+              },
+              {
+                "command": "cargo test --locked -p vl-pet-arena",
+                "exitCode": 0,
+                "result": "17 tests PASS: frozen v1 replay/content/combat plus canonical361 pairs, integer damage bounds,22 race defaults and240 morphologies."
+              },
+              {
+                "command": "cargo clippy --locked -p vl-pet-arena --all-targets -- -D warnings",
+                "exitCode": 0
+              },
+              {
+                "command": "cargo fmt --all -- --check",
+                "exitCode": 0
+              },
+              {
+                "command": "pnpm --filter @virtual-city/platform-api typecheck",
+                "exitCode": 0
+              },
+              {
+                "command": "pnpm exec tsc -p tests/games/tsconfig.json",
+                "exitCode": 0
+              },
+              {
+                "command": "pnpm --filter @virtual-city/admin-web build",
+                "exitCode": 0,
+                "result": "Retry PASS; initial builds compiled but exited1 on Next16.4.4 security advisory. Existing version was not upgraded or bypassed."
+              },
+              {
+                "command": "node --input-type=module (inspectAdminBundle on apps/admin-web/.next/static with two explicit synthetic markers)",
+                "exitCode": 0,
+                "result": "31 actual production static files /1,617,644 bytes PASS; no draft IDs/private/renderer markers. No deployment."
+              },
+              {
+                "command": "python3 scripts/validate-pet-v31.py",
+                "exitCode": 0,
+                "result": "240 draft identities /361 pairs /upstream114 PASS."
+              },
+              {
+                "command": "pnpm plan:status",
+                "exitCode": 0
+              },
+              {
+                "command": "git diff --check",
+                "exitCode": 0
+              }
+            ],
+            "hosted": {
+              "sourceRevision": "c8bbb5bad4f65d06f5378b6f2bc998603a25ba08",
+              "quality": "https://github.com/tiecont/virtual-life-platform/actions/runs/44120435109",
+              "rust": "https://github.com/tiecont/virtual-life-platform/actions/runs/44120435041",
+              "result": "RUNNING at recording; not claimed green. Final metadata head also requires actual CI. No merge."
+            },
+            "findings": "Self-review reproduced unpublished IDs in admin static JS through the contracts root export at947cacc. Moved draft acquisition contracts to isolated Pet-server subpath; import-boundary regression and actual rebuilt production scan PASS. Initial fixture used maps.element instead of primaryElement; corrected fixture, no assertions weakened."
+          }
         }
       }
     },
@@ -4777,7 +4845,7 @@
         "Deterministic version/hash; concurrent identical seed is a no-op; conflicting hash aborts entire transaction",
         "Real PostgreSQL restore, SQL constraints and denied runtime/PUBLIC writes; zero owned Pets, purchases or publication"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "verificationRequirements": [
         "Focused unit/integration and exact CI",
@@ -4787,7 +4855,19 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
-        "foundation": "Reuse migration0051 and VL-115 completed draft foundation; remaining publication work is not required to seed unpublished v3.1 drafts."
+        "foundation": "Reuse migration0051 and VL-115 completed draft foundation; remaining publication work is not required to seed unpublished v3.1 drafts.",
+        "logicRulesFollowup": {
+          "scope": "Partial strict acquisition projection only:240 identities,209 regular/19 map S/6 Limited/6 Standard; canonical banner identities, map/source/rank references, morphology and trusted upstream114 ID/name/element/legacy-rarity/map preservation. Separate Pet-server contract entry prevents draft browser exposure.",
+          "remaining": "Additive Nest migration, full manifest importer/hash verification, transactional concurrent seed, SQL privileges/corruption/restore tests are not implemented. Deferred to schema integration; no database import, purchases, ownership or publication.",
+          "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+          "verification": {
+            "sourceRevision": "c8bbb5bad4f65d06f5378b6f2bc998603a25ba08",
+            "reviewMode": "SINGLE_AGENT_AUDIT",
+            "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/47",
+            "relatedVerificationTask": "VL-130",
+            "result": "Same committed-source unit/governance/Rust/type/production-bundle checks; hosted CI running at recording."
+          }
+        }
       }
     },
     {
@@ -5616,7 +5696,7 @@
         "Base0.8%, soft60, hard80 are configurable candidates; full monotonic per-pull curve required before publishing",
         "Controlled hit/miss/guarantee, hard pity, version changes and identical ordered single/ten-pull tests pass"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "verificationRequirements": [
         "Focused positive/adversarial contract and integration checks against committed source",
@@ -5624,7 +5704,19 @@
       ],
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
-        "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "logicRulesFollowup": {
+          "scope": "Offline pure server-domain resolver consumes the concrete acquisition contract. Validates complete monotonic integer probability curves, positive bounded eligible S weights, exact hard pity, effective version interval, account/family/kind binding and complete entropy batch before resolution. Featured50/50 miss always selects canonical Standard S, nextS guarantee and pity carry across version rotation, Standard state remains separate; ordered1/10 equivalence tested. Explicit reservation/commit adapter interface documents required VL-140 durability without claiming it.",
+          "remaining": "Candidate-only; not_s has no lower-rank grant. Canonical soft curve/lower pools remain unapproved; no live publication, wallet, durable reservation/entropy/receipt adapter, owned copies or routes. VL-131 persistence and VL-140 transaction integration remain required.",
+          "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+          "verification": {
+            "sourceRevision": "c8bbb5bad4f65d06f5378b6f2bc998603a25ba08",
+            "reviewMode": "SINGLE_AGENT_AUDIT",
+            "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/47",
+            "relatedVerificationTask": "VL-130",
+            "result": "Same committed-source unit/governance/Rust/type/production-bundle checks; hosted CI running at recording."
+          }
+        }
       }
     },
     {

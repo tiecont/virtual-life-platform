@@ -87,3 +87,8 @@ test('the scanner rejects actual source imports and manifest cycles', async () =
     await assert.rejects(checkBoundaries(dir), /cycle/);
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
+test('draft acquisition contracts use an isolated entry available only to the Pet server',()=>{
+ const entry='@virtual-city/contracts/pet-acquisition-v3';
+ assert.doesNotThrow(()=>assertImportAllowed('/repo/apps/platform-api/src/features/pets/modules/summoning/domain/rules.ts',entry,root));
+ for(const from of ['/repo/apps/admin-web/app/page.tsx','/repo/apps/portal-web/app/page.tsx','/repo/packages/game-client/src/index.ts','/repo/apps/mobile/src/main.ts'])assert.throws(()=>assertImportAllowed(from,entry,root));
+});
