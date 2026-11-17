@@ -97,6 +97,40 @@ class DesignIntakeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "cannot authorize"):
                 self.build(design)
 
+    def test_generated_or_unspecified_authoritative_origin_is_rejected(self):
+        for origin in ("AI_GENERATED", "OWNER_APPROVED_GENERATION", "", None):
+            with self.subTest(origin=origin):
+                design = copy.deepcopy(self.design)
+                design["source"]["origin"] = origin
+                with self.assertRaisesRegex(ValueError, "owner-supplied"):
+                    self.build(design)
+                self.assertFalse((self.root / "output").exists())
+
+    def test_missing_or_untraceable_coverage_is_rejected(self):
+        for kind in ("missing", "duplicate", "unknown-reference", "empty-references", "approved-status"):
+            with self.subTest(kind=kind):
+                design = copy.deepcopy(self.design)
+                if kind == "missing":
+                    design["coverage"].pop()
+                elif kind == "duplicate":
+                    design["coverage"].append(design["coverage"][0])
+                elif kind == "unknown-reference":
+                    design["coverage"][0]["references"] = ["invented-view"]
+                elif kind == "empty-references":
+                    design["coverage"][0]["references"] = []
+                else:
+                    design["coverage"][0]["status"] = "DESIGN_APPROVED"
+                with self.assertRaisesRegex(ValueError, "[Cc]overage"):
+                    self.build(design)
+                self.assertFalse((self.root / "output").exists())
+
+    def test_turnaround_ids_must_be_turnaround_assets(self):
+        design = copy.deepcopy(self.design)
+        design["crops"][1]["folder"] = "details"
+        with self.assertRaisesRegex(ValueError, "Missing turnaround"):
+            self.build(design)
+        self.assertFalse((self.root / "output").exists())
+
     def test_symlinked_crop_is_rejected(self):
         result = self.build()
         path = Path(result["package"]) / "turnaround/front.png"

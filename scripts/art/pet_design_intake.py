@@ -14,6 +14,12 @@ from PIL import Image, __version__ as pillow_version
 STAGES = ("concept", "turnaround", "details", "meshy", "blender", "exports",
           "unity", "review", "provenance")
 RELEASE = "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
+TURNAROUND = {"front", "front-three-quarter", "side", "rear-three-quarter", "back"}
+REQUIRED_COVERAGE = {"Full concept sheet", "Front orthographic", "Front three-quarter",
+                     "Side orthographic", "Rear three-quarter", "Back orthographic",
+                     "Face, hair and expressions", "Outfit and accessories", "Weapon",
+                     "Wings and other anatomy", "Palette and materials",
+                     "Provenance and explicit owner approval"}
 
 
 def digest(data):
@@ -67,6 +73,8 @@ def read_design(manifest, source_override=None):
     require(gate == {"ownerDesignApproval": None, "creditAuthorization": None,
                      "allowedPaidJobs": 0, "jobs": [], "creditsConsumedByThisIntake": 0},
             "Intake cannot authorize generation or record approval")
+    require(design["source"]["origin"] == "OWNER_SUPPLIED_REFERENCE",
+            "Authoritative design must be an owner-supplied reference")
     require(design["source"]["approval"] == "NOT_APPROVED" and
             design["source"]["rights"] == "PENDING_REVIEW",
             "Intake cannot confer approval or rights")
@@ -89,8 +97,21 @@ def read_design(manifest, source_override=None):
         left, top, right, bottom = box
         require(0 <= left < right <= image.width and 0 <= top < bottom <= image.height,
                 "Crop out of bounds")
-    require({"front", "front-three-quarter", "side", "rear-three-quarter", "back"} <= ids,
+    require(TURNAROUND <= {c["id"] for c in design["crops"] if c["folder"] == "turnaround"},
             "Missing turnaround extraction")
+    requirements = set()
+    for coverage in design["coverage"]:
+        requirement = coverage["requirement"]
+        require(requirement in REQUIRED_COVERAGE and requirement not in requirements,
+                "Unknown or duplicate coverage requirement")
+        requirements.add(requirement)
+        require(coverage["status"] in {"PRESENT", "REQUIRES_OWNER_REVIEW", "MISSING",
+                                        "MISSING_APPROVAL"}, "Invalid intake coverage status")
+        references = coverage["references"]
+        require(isinstance(references, list) and references and
+                all(isinstance(ref, str) and ref in ids | {"source"} for ref in references),
+                "Coverage must reference existing source or crops")
+    require(requirements == REQUIRED_COVERAGE, "Incomplete design coverage")
     return design, raw, source_bytes, image
 
 

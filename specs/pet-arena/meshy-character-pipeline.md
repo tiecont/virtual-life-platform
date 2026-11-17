@@ -13,12 +13,14 @@ appearance target for this intake. PR40's battle screenshot and white/gold study
 remain preserved, unaccepted historical work. They cannot approve this design.
 No Meshy input was uploaded, paid job started, model produced or art accepted.
 
-Run from the repository root with Python 3.10+ and Pillow installed:
+Run from the repository root with Python 3.10+ and the pinned Pillow dependency:
 
 ```sh
-python3 scripts/art/pet_design_intake.py --manifest specs/pet-arena/references/icarus/design-intake-v2.json
-python3 scripts/art/pet_design_intake.py --verify artifacts/design-intake/pets/pet-v3-fire-icarus/owner-sheet-v2
-python3 -m unittest discover -s tests/art -p 'test_*.py'
+python3 -m venv artifacts/design-intake-venv
+artifacts/design-intake-venv/bin/python -m pip install -r scripts/art/requirements.txt
+artifacts/design-intake-venv/bin/python scripts/art/pet_design_intake.py --manifest specs/pet-arena/references/icarus/design-intake-v2.json
+artifacts/design-intake-venv/bin/python scripts/art/pet_design_intake.py --verify artifacts/design-intake/pets/pet-v3-fire-icarus/owner-sheet-v2
+artifacts/design-intake-venv/bin/python -m unittest discover -s tests/art -p 'test_*.py'
 ```
 
 Open `artifacts/design-intake/pets/pet-v3-fire-icarus/owner-sheet-v2/review/index.html`
@@ -93,6 +95,11 @@ under VL-165 after applicable media gates, not a new app or public publication.
 Icarus remains DESIGN_REVIEW. The CLI only builds/verifies that state and
 rejects attempts to grant approval, rights or spending. It has no Meshy client
 and performs no lifecycle advancement, production write or website publication.
+Authoritative sources must declare `OWNER_SUPPLIED_REFERENCE`; generated images
+cannot become authoritative intake sources. Coverage must include every required
+category and point to existing source/crop IDs. These checks validate traceability,
+not the truth of a provenance declaration or artistic consistency. Synthetic
+fixtures exercise the gates in hosted Quality CI without uploading owner images.
 
 ## Meshy capability assessment
 
