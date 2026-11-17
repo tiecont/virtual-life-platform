@@ -4253,6 +4253,44 @@
   },
   {
     "id": "VL-121",
+      "loreDesignVerification": {
+        "sourceRevision": "11ece200fcdf72ff19f1d8b9e917c24eec16dde7",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "scope": "Authored 240 individual Vietnamese stories and English design prompts in specs/pet-arena/design/pet-lore-design-240.json. Exact canonical snapshots preserved; 150 explicit silhouette/appearance conflict or ambiguity notes. Icarus owner V3 appearance only. Editorial fiction and proposed design views, not existing lore or runtime behavior.",
+        "commands": [
+          {
+            "command": "python3 scripts/validate-pet-lore-design.py",
+            "exitCode": 0,
+            "result": "240 unique entries; exact ID/order/name/element/race/bodyPlan/rig/rank/source/map/colors and source hashes PASS; 150 notes disclosed."
+          },
+          {
+            "command": "python3 scripts/validate-pet-v31.py",
+            "exitCode": 0,
+            "result": "240 draft Pets,19 elements/361 matchups and upstream114 stable PASS."
+          },
+          {
+            "command": "node scripts/pet-design-check.mjs",
+            "exitCode": 0,
+            "result": "19 elements/19 maps/114 original species PASS; DRAFT_ONLY, runtimeEnabled false."
+          },
+          {
+            "command": "node --test tests/governance/pet-lore-design.test.mjs tests/governance/pet-v31.test.mjs",
+            "exitCode": 0,
+            "result": "4 tests PASS; includes eight editorial tamper negatives and existing canonical semantic regressions."
+          },
+          {
+            "command": "pnpm exec eslint tests/governance/pet-lore-design.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "failedAttempts": "Initial lint rejected structuredClone as undefined under repository ESLint globals; switched the JSON-only test fixture clone to JSON parse/stringify, then reran focused tests and lint successfully on committed source. Initial ignored authoring script syntax error corrected before JSON generation; no failed output committed.",
+        "hosted": "NOT_RUN at this metadata record; final committed PR source requires actual Quality/Rust CI. Do not infer prior main checks cover this change.",
+        "limitations": "Text only; no generated image, model, rig, animation, Unity import/render, rights review or production approval. The source taxonomy conflicts remain unresolved canon decisions; proposed anatomy-preserving images require actual visual review. VL-121 remains IN_PROGRESS; related VL-130/149/160/171/172 are not completed. OFFLINE_ONLY / NO_GO_PUBLIC."
+      },
       "priority": 1,
     "feature": "Avatar-Art",
     "title": "Battle art direction asset and animation contract",
