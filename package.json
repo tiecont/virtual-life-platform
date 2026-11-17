@@ -7,6 +7,13 @@
     "node": "26.9.x"
   },
   "scripts": {
+    "preview:prepare": "node scripts/local-preview.mjs prepare",
+    "preview:up": "node scripts/local-preview.mjs up",
+    "preview:stop": "node scripts/local-preview.mjs stop",
+    "preview:down": "node scripts/local-preview.mjs down",
+    "preview:status": "node scripts/local-preview.mjs status",
+    "preview:logs": "node scripts/local-preview.mjs logs",
+    "preview:test": "node scripts/local-preview-smoke.mjs",
     "play:linux": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena --movement --linux-play",
     "docker:prepare": "node scripts/local-compose.mjs prepare",
     "docker:up": "node scripts/local-compose.mjs up",
