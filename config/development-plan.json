@@ -45,7 +45,24 @@
       "acceptance": ["Actual main Quality/Rust green at recorded SHA", "PR33 and rebased PR35 self-reviewed and merged only through complete green CI; local Compose ports bind 127.0.0.1 and secrets remain local"],
       "status": "IN_PROGRESS",
       "qualificationRequirements": [],
-      "implementation": {"release": "OFFLINE_ONLY / NO_GO_PUBLIC", "observedMain": "d3f23b4daaa96fa23d9112130f439d288d6eaec2", "observedMainQuality": "https://github.com/tiecont/virtual-life-platform/actions/runs/43899049861: SUCCESS on attempt3 after two recorded image failures; Rust43899050557 SUCCESS", "observedPR33": "fd94f630e97e907629caf88c3344709620a69f18: 26 SUCCESS checks; merged as d3f23b4daaa96fa23d9112130f439d288d6eaec2", "observedPR35": "Rebased onto post-PR33 main as b10ac493cc78f0fd299f55a3f2c9dafe2b61d63a; unchanged tree versus d26d7cf; 3 launcher governance tests and targeted lint PASS; hosted Quality/Rust pending", "remaining": "Merge PR35 and PR36 only through complete green final-source CI, then verify new main. PR36 image diagnostics at0bcb420 confirmed Chromium ERR_NETWORK_CHANGED on GET /admin before login; reuse the existing bounded document-only retry without retrying mutations or assertions."},
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "observedMain": "b2b1a079662556c45ab7f9e135d38d72d107237c",
+        "observedMainQuality": "Quality43995038750 SUCCESS; Rust43995038683 SUCCESS at observedMain; inspected hosted evidence, not a fresh local run.",
+        "observedPR33": "fd94f630e97e907629caf88c3344709620a69f18: 26 SUCCESS checks; merged as d3f23b4daaa96fa23d9112130f439d288d6eaec2",
+        "observedPR35": "MERGED on2026-11-17 from4450de786d4036f42970becab1a5890bf29df335 as b2b1a079662556c45ab7f9e135d38d72d107237c; main Quality/Rust green.",
+        "v4Audit": {
+          "sourceRevision": "c7a1f8647bb4d6d6fc4e7b979abcf4e85b810736",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "observedDate": "2026-11-17",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/41",
+          "prHeads": {"36": "c45865d3860af8c9230648fea5faf73413a319ad", "37": "734c5dd35db822a3bca46af0c19e1d264e0815c8", "38": "47f8249aaf26e41255cc5e33493f5ca622bc9b0e", "39": "221aa34be6e4a24ed000b7464de90dde5518b828", "40": "4d29fdeae9bd37f8f929fa27dc6552572a4f0603"},
+          "ancestry": "Exact base is an ancestor of each head. PR36 -> PR39 -> PR41; separate PR37 -> PR38 -> PR40 retained. Existing worktrees and owner untracked blend preserved.",
+          "ci": "All PR36-40 report26 SUCCESS checks and CLEAN at the recorded heads. Same-source failed-job reruns43995822670,43995833635,44037174790 all SUCCESS on attempt2. Prior failure artifacts retained under ignored artifacts/v4-audit/; no assertions weakened or source fixes inferred from transient navigation failures.",
+          "mergeStatus": "PR36-40 remain OPEN; PR38/40 remain DRAFT with art gates unmet. No merge performed. PR41 is a separate intake DRAFT; final-head CI pending."
+        },
+        "remaining": "Review any source merge through green exact-final-source CI and verify resulting main. Draft art acceptance remains blocked independently. VL-169/VL-055 retention, export and deletion requirements remain open; no Gate0-wide or production acceptance claimed."
+      },
       "verification": {
         "sourceRevision": "49d1b5fe500f5e261ff3ceda5b68a4d20e71f861",
         "reviewMode": "SINGLE_AGENT_AUDIT",
@@ -81,7 +98,7 @@
       "acceptance": ["Restore actual native checkpoint, receipts, events and settlement records; verify exact hashes and authoritative state", "Missing/wrong keys, corrupt data and incompatible versions abort before serving; unpublished metadata stays private", "Record unresolved retention/export/deletion decisions honestly; source tests do not constitute owner policy approval"],
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Actual owner retention/deletion policy approval remains required for VL-055 closure"],
-      "implementation": {"parentTask": "VL-055", "release": "OFFLINE_ONLY / NO_GO_PUBLIC", "source": "Real Pet win/loss process harness exercises encrypted mid-match and terminal archive restoration to separate empty loopback PostgreSQL; restricted TLS role and explicitly reacquired allocator lease preserve runtime checks.", "remaining": "Full Quality and final-head hosted CI remain required. Local Docker is inactive and system service startup requires interactive authentication. Retention/deletion policy approval is unresolved; VL-055 is not closed."},
+      "implementation": {"parentTask": "VL-055", "release": "OFFLINE_ONLY / NO_GO_PUBLIC", "source": "Real Pet win/loss process harness exercises encrypted mid-match and terminal archive restoration to separate empty loopback PostgreSQL; restricted TLS role and explicitly reacquired allocator lease preserve runtime checks.", "remaining": "Final PR36 head c45865d3860af8c9230648fea5faf73413a319ad now has green hosted Quality/Rust. Local recovery was not rerun in the V4 audit. Account export/deletion, deletion surviving restore, writer races and retention/key custody policy approval remain unresolved in specs/native-data-lifecycle.md; VL-055 is not closed."},
       "verification": {
         "sourceRevision": "ca3c32deaa965232f528b064f5acde804feb98f2",
         "reviewMode": "SINGLE_AGENT_AUDIT",
@@ -92,7 +109,14 @@
           {"command": "pnpm governance:check", "exitCode": 0},
           {"command": "Hosted Rust workflow43910505100 (push) and43910512176 (PR)", "exitCode": 0, "result": "Both complete SUCCESS including actual Pet win/loss encrypted restore scenarios, restricted Rust TLS readiness, key/engine negatives and exact hashes"}
         ],
-        "scope": "Native archive recovery acceptance only; not complete deletion/export policy approval, production deployment, final Quality or art acceptance. Subsequent image diagnostics require fresh CI."
+        "scope": "Native archive recovery acceptance only; not complete deletion/export policy approval, production deployment, final Quality or art acceptance. Subsequent image diagnostics require fresh CI.",
+        "finalSourceAudit": {
+          "sourceRevision": "c45865d3860af8c9230648fea5faf73413a319ad",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "command": "gh run view 43995822683 --repo tiecont/virtual-life-platform --json status,conclusion,headSha,jobs",
+          "exitCode": 0,
+          "result": "Hosted Rust43995822683 SUCCESS at exact final head; actual transactional recovery, encrypted journal backup/restored migration integrity, runtime crash recovery and Pet Arena recovery/settlement steps SUCCESS. PR36 Quality43995822670 attempt2 also SUCCESS. This audits executed hosted evidence; no new local recovery execution or privacy-policy approval claimed."
+        }
       }
     },
     {
@@ -158,6 +182,27 @@
             "failedAttempts": "Sandbox pnpm store lock, Chromium launch and FIFO subprocess were denied; required unsandboxed reruns passed. Tight front-wing crop from v1 was corrected in separate immutable v2; no source pixels reconstructed.",
             "gateResults": {"designApproval": "BLOCKED", "creditAuthorization": "BLOCKED", "blenderExportImport": "NOT_RUN", "unityImportMotion": "NOT_RUN", "windowsPerformance": "NOT_RUN", "rustRuntime": "NOT_RUN", "fullTypeScriptApplicationTests": "NOT_RUN", "hostedNewBranchCI": "NOT_RUN"},
             "pending": "No new PR or hosted CI; no merge. Implementation verified at sourceRevision; later verification-only commit still requires exact-final-head hosted CI before any merge. Owner must resolve ICARUS-D01-D05 and approve exact snapshot before a separately authorized paid batch. VL-171 stays IN_PROGRESS."
+          },
+          "v4Verification": {
+            "sourceRevision": "c7a1f8647bb4d6d6fc4e7b979abcf4e85b810736",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/41",
+            "change": "Require OWNER_SUPPLIED_REFERENCE provenance, complete coverage with valid source/crop links and actual turnaround assets; reject generated authoritative designs. Pin Pillow12.0.0 and execute intake tests in required hosted core checks. Existing immutable v2 bytes preserved.",
+            "commands": [
+              {"command": "artifacts/ci/design-intake-venv/bin/python -B -m unittest discover -s tests/art -p 'test_*.py'", "exitCode": 0, "result": "10 PASS with Pillow12.0.0; independent system Pillow13.0.0 also passed before commit."},
+              {"command": "artifacts/ci/design-intake-venv/bin/python -B scripts/art/pet_design_intake.py --verify artifacts/design-intake/pets/pet-v3-fire-icarus/owner-sheet-v2", "exitCode": 0, "result": "19 files and16 exact crop pixel comparisons PASS; same snapshot3a8aecf4c7f83475746d4df3bf38734b0aad4a0e1d55f61f20b2b6c26ea50c78. Approval missing;0 paid jobs allowed; runtime and production false."},
+              {"command": "node --test tests/governance/pet-design.test.mjs tests/governance/pet-assets.test.mjs tests/governance/ci.test.mjs tests/governance/artifact-release.test.mjs", "exitCode": 0, "result": "15 PASS."},
+              {"command": "pnpm ci:check", "exitCode": 0, "result": "Workflow pins, required aggregate and41-spec browser grouping contract PASS."},
+              {"command": "pnpm governance:check", "exitCode": 0, "result": "174-task dependency/status and historical evidence integrity checks PASS; not fresh runtime acceptance."},
+              {"command": "pnpm architecture:check", "exitCode": 0, "result": "136 SQL tables plus journal,504 sources and API/worker ownership PASS."},
+              {"command": "pnpm build:packages", "exitCode": 0, "result": "All18 shared TypeScript package builds PASS; no application TypeScript source changed."},
+              {"command": "git show --format= --check HEAD", "exitCode": 0, "result": "Committed implementation patch PASS at sourceRevision."}
+            ],
+            "meshy": {"available": true, "balance": 1044, "monthly": 1034, "permanent": 10, "jobs": [], "creditsConsumed": 0},
+            "metadataChecks": "8 task-plan/plan-status tests and pnpm governance:check PASS on reconciled backlog; no task status promoted or policy approval inferred.",
+            "gates": {"referenceIntegrity": "PASS", "designConsistency": "BLOCKED", "ownerApproval": "BLOCKED", "creditAuthorization": "BLOCKED", "blenderExportImport": "NOT_RUN", "unityImportMotion": "NOT_RUN", "windowsPerformance": "NOT_RUN", "fullApplicationTests": "NOT_RUN", "finalHeadHostedCI": "BLOCKED"},
+            "evidence": "Original1672x941 PNG visually inspected at native resolution and SHA rechecked. Prior desktop/mobile local HTML screenshots remain valid because source/crops/review HTML bytes did not change. Report and PR audit under ignored artifacts/v4-audit/; no new character render, model, rig, animation or Unity export.",
+            "remaining": "Draft PR41 final-head hosted CI must finish before any merge. ICARUS-D01-D05 remain open. No paid batch is authorized. VL-171 stays IN_PROGRESS."
           },
           "remaining": "Resolve ICARUS-D01-D05: paw/tail anatomy, consistent usable orthographic views, hidden wing/back/hair construction and scale, bow version/grip/VFX separation, and explicit snapshot-specific owner approval. Separate paid batch authorization is required afterwards. No new Blender/GLB/FBX/Unity asset or accepted benchmark. Existing PR37/38/40 assets and importer GUIDs remain owned by their original work. VL-170 retains absent private object-store infrastructure."
         },
