@@ -256,6 +256,8 @@
       "owner": "platform.operations",
       "responsibility": "Private telemetry/readiness/log projections",
       "currentPublicEntryFiles": [
+        "features/operations/modules/art-media/application/private-art",
+        "features/operations/modules/art-media/presentation/private-art-http",
         "features/operations/modules/observability/presentation/http",
         "features/operations/modules/observability/infrastructure/log",
         "features/operations/modules/health/application/readiness",

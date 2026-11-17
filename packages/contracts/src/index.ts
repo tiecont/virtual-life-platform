@@ -104,6 +104,7 @@ export * from './progression';
 export * from './stage';
 export * from './audience';
 export * from './media';
+export * from './private-art';
 export * from './dating-policy';
 export * from './dating-profile';
 export * from './dating-match';
