@@ -5091,6 +5091,12 @@
       "id": "VL-149",
       "feature": "Pet-Arena",
       "title": "Unity URP hero 3D pipeline and six Limited cinematic gates",
+      "artDirection": {
+        "icarus": "specs/pet-arena/icarus-art-direction.md",
+        "primaryReference": "specs/pet-arena/references/icarus/owner-battle-reference.png",
+        "referenceSha256": "af3d8af34268cb01b29fd400e62b71378c0c2176b72991ebfcfd3e722f0eb76c",
+        "status": "Owner screenshot sets pink hair, white/gold costume and feathered wings. Initial crimson procedural blockout is unaccepted; do not replicate it. Revised concept and model remain unproduced."
+      },
       "objective": "Six bespoke characters, unique rigs and VFX, render/performance snapshots, original art rights.",
       "dependsOn": [
         "VL-121",

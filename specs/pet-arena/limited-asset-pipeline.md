@@ -5,6 +5,10 @@ Standard S roster. The Icarus vertical slice must pass before replicating the
 other five Limited characters. Source implementation does not authorize media
 publication, public registration, purchases or a production import.
 
+Use the owner-supplied [Icarus visual target](icarus-art-direction.md) for
+appearance. The initial crimson procedural study is unaccepted and must not
+become the visual template for the remaining Limited characters.
+
 ## Offline validation
 
 After `pnpm build:packages`, run:
