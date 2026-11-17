@@ -114,6 +114,39 @@
           "artGate": "NOT_REVIEWED; upload requires separately reviewed and independently hash-pinned art/technical/rights/private-target receipt. Tooling cannot establish visual acceptance or provider privacy by itself.",
           "remaining": "Real art review, private provider configuration/compatibility and account-wide quota qualification; journaled metadata, existing operator RBAC ingest and bounded signed preview delivery remain unimplemented. No merge, public release or deployment authorization."
         }
+      },
+      "verification": {
+        "sourceRevision": "500a1eb6bbd8be34b3c32ea564c6b74419374409",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "commands": [
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "143 PASS on committed source, including14 private-delivery tests with owned loopback HTTP/S3 fixture; SigV4, conditional private PUT, byte-hash GET readback, safe retries, gate/path/MIME/size/redirect/corruption negatives. No external endpoint contacted."
+          },
+          {
+            "command": "pnpm exec eslint scripts/media/private-art-manifest.mjs scripts/media/private-art-s3.mjs scripts/private-art-delivery.mjs tests/governance/private-art-delivery.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm governance:check",
+            "exitCode": 0,
+            "result": "PASS; historical evidence retrieval is not new art or release acceptance."
+          },
+          {
+            "command": "pnpm plan:status",
+            "exitCode": 0,
+            "result": "VL-170 ready and IN_PROGRESS; remaining task-wide media work retained."
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "preparation": "pnpm install --offline --frozen-lockfile and pnpm build:packages completed0 in isolated worktree. Initial broad governance run failed2 imports because fresh checkout lacked built contracts (135 passed); rerun after normal package build passed143 without weakening assertions.",
+        "scope": "Tooling complete for scoped private staging/upload. Owner already authorizes private upload after honest scoped art foundation review; no additional owner/public-release approval required. Current art batch remains unfinished, so no live upload or provider probes ran. Credentials were synthetic fixture values only.",
+        "limitations": "10GB cap applies per manifest/batch, not an unobserved account quota. Provider private configuration and conditional-write compatibility are not live-verified; receipt is a trusted local attestation. Full application check, hosted CI, public delivery, metadata/RBAC/signed-preview APIs, PR and merge NOT_RUN.",
+        "nextAction": "Parent reviews/cherry-picks the tooling commits, then runs hosted CI before any merge. Complete current art foundation and hash-pin its scoped private review before using parent-held credentials for the already-authorized private delivery."
       }
     },
     {

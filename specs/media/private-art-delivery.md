@@ -75,8 +75,10 @@ separate accepted textures as explicit manifest entries.
 ## Separate review and private destination
 
 A trusted reviewer creates a local receipt only after reviewing the exact staged
-manifest and its content. Review must cover art, technical import and the rights
-for private delivery, plus the destination's access configuration. The review
+manifest and its content. Review covers the art foundation and technical checks
+for the files in this delivery, the existing private-delivery authorization, and
+the destination's access configuration. It does not require a finished animation
+library, final Unity qualification, public release or completion of VL-171. The review
 expires within seven days. The following is an **invalid template**, not approval:
 
 ```json
