@@ -226,6 +226,16 @@
         "productionRestriction": "Owner instruction: do not create or refine designs, images, models, rigs, animations or character-specific Unity implementations for these five Limited Pets until the owner supplies their designs. Existing lore and prompts are proposals, not permission to produce them.",
         "allowedPreparation": "Shared Rust/Unity contracts, reusable tooling and the Limited production blueprint may proceed independently. Keep actual implementation dependencies; this hold applies only to the five named characters.",
         "resumeRequirement": "Receive owner designs, preserve canonical identity and gameplay, record reference hashes and resolve appearance/rig conflicts before resuming dependent character production.",
+        "scopeVerification": {
+          "sourceRevision": "9148ebcd9d52b939d1bb863f24876ae272636db9",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "commands": [
+            {"command": "node scripts/task-plan.mjs", "exitCode": 0, "result": "Active dependency plan parsed; owner hold does not mark unrelated tasks complete or block their implementation."},
+            {"command": "node --test tests/governance/task-plan.test.mjs tests/governance/plan-status.test.mjs", "exitCode": 0, "result": "8 tests PASS on committed source."},
+            {"command": "git diff --check", "exitCode": 0, "result": "PASS."}
+          ],
+          "limitations": "Planning restriction only; no new character designs, assets, runtime implementation or production acceptance. Exact final-head hosted CI is required before merge."
+        },
         "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
       }
     },
