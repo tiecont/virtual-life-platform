@@ -55,12 +55,16 @@ enemy, fire overlay or title obscuring the character. Keep hair, cloth, wings,
 bow and jewelry legible for modeling.
 
 Refine the draft mesh and skinning after visual review, then author production
-UVs, textures and canonical action bindings. The white/gold source has 29,376
-triangles, 74 bones, three materials and five authoring actions. Unity imports
-27,564 triangles and renders idle, normal and signature in a 22-second preview;
+UVs, textures and canonical action bindings. The white/gold study retains the
+26k-29.5k LOD0 budget, 74 bones, three materials and five authoring actions. Unity
+renders idle, normal and signature in a 22-second preview;
 intro and rage import and deform but are absent from that video. These technical
 checks do not establish art acceptance, all sixteen gameplay actions, production
 Shader Graph/VFX, Timeline/Cinemachine or player performance qualification.
+Revision 05 refines the face, curving hair and feather surfaces, folded long
+trains and gold jewelry; adds detail renders; and corrects arm-opening motion.
+The source inspection counts are in its import settings. Keep judging the face,
+silhouette and costume against the supplied screenshot, not only file budgets.
 
 ## Concept Generation Brief
 

@@ -10,6 +10,22 @@ shaped face and eyes, layered feather wings and a recurve bow. Back and side
 details absent from the reference are proposals. It still needs more refined
 anatomy, hair, clothing, feather detail and art review to approach the reference.
 
+Revision 05 adds curved, staggered hair locks and loose swept strands, folded
+long trains, layered skirt hems, diagonal gold bodice bands, dark corset inlays,
+faceted brooches, shoulder/wrist/boot ornaments, thigh chains, earrings and a
+laurel crown. The face has softer jaw sections, cheek color, layered irises and
+eyes following the facial surface, an integrated nose bridge and an open smile.
+Neck continuity and boot geometry were corrected.
+Feathers have curved, overlapping surfaces with tapered shafts. Unity uses
+three light bands, restrained gold highlights and procedural feather/hair detail
+with derivative filtering. This is still below the supplied illustration's
+finish and likeness; additional detail alone is not visual acceptance.
+
+The preview explicitly bakes every sampled animation pose before URP rendering.
+The previous synchronous skinned-render path could display a stale pose even
+when vertex deformation checks passed. This revision replaces that footage;
+frame checks now inspect nonblank content and framing throughout each clip.
+
 ## Rebuild And Inspect
 
 Use the pinned Blender 4.5 LTS and the existing licensed Unity 6000.3.14f1.
@@ -36,8 +52,8 @@ at their authored speed, using a fixed camera. Intro15s and rage6s are present i
 the rigged exports and checked for deformation. This is Editor URP rendering,
 not standalone-player performance qualification or Timeline/Cinemachine work.
 
-Source/GLB has 29,376 triangles. Unity imports 27,564 after its mesh cleanup;
-both counts are in the current LOD0 budget. The armature has 74 bones and uses
+Exact source/import triangle counts are recorded in the import settings and
+the VL-149 task. Both must stay in the current LOD0 budget. The armature has 74 bones and uses
 three vertex-color materials. UVs are preliminary and overlap; there is no
 production unwrap or baked 2K albedo/normal/ORM/emissive set. Five authoring clips
 do not constitute all16 canonical gameplay action bindings. The draft manifest
@@ -58,6 +74,10 @@ Geometry and five motion studies were authored procedurally by Codex using
 Blender's bpy API. The screenshot is an owner-supplied appearance reference;
 it is not a licensed production texture or proof of third-party rights.
 `front.png` is an actual Unity frame, not a concept illustration.
+`portrait-detail.png` and `signature.png` are additional Unity inspection
+renders. They do not fill canonical portrait/clip bindings. The signature study
+now raises both arms using the bone's transformed world axis, rather than
+twisting them around their length.
 
 MCP for Blender 2.3.0 was also tested against the live Blender 4.5.16 GUI:
 addon protocol 16 handshake, scene inspection, rig/frame selection and actual

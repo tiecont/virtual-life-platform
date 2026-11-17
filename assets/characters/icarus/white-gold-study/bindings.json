@@ -15,10 +15,10 @@
       "id": "icarus-study-glb",
       "kind": "model",
       "path": "assets/characters/icarus/white-gold-study/icarus-blockout.glb",
-      "sha256": "f79a57098357d89dd06e73b447c5050b259cbbf97482798cf8307e6143f50f44",
+      "sha256": "8960c2920eb9cb5be8312cfbf9672abbc34c41d3dcb4a8b065f8df7a774a5666",
       "source": {
         "path": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",
-        "sha256": "5ad7ea0a2d932d1572ebb11839536cbac29241a68ad40f12bbfe526e4408c8a2",
+        "sha256": "acff111a658bb7632c20f71af4afb608ff8f70ed86fe580da727c619f5fac36d",
         "origin": "generated",
         "author": "Codex; owner-supplied visual reference",
         "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
@@ -26,17 +26,17 @@
       },
       "importSettings": {
         "path": "assets/characters/icarus/white-gold-study/import-settings.json",
-        "sha256": "d806606c0e4aab98e0eae9e94a500b84fab298ebc5f987ffacf4e45ac4a43084"
+        "sha256": "3b5cff71e017b2b0dede6de8423bd1957598fc21dacbcc7001ee2ef4de1bb27c"
       }
     },
     {
       "id": "icarus-study-fbx",
       "kind": "model",
       "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/icarus-study.fbx",
-      "sha256": "f05c856753e58e9b1a616492d950a4ddaa43937b09d8bcfd2b227661847a384c",
+      "sha256": "05e30977578d164035233c12bcee586bcc31d1f85bc6567a225a104189bcee50",
       "source": {
         "path": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",
-        "sha256": "5ad7ea0a2d932d1572ebb11839536cbac29241a68ad40f12bbfe526e4408c8a2",
+        "sha256": "acff111a658bb7632c20f71af4afb608ff8f70ed86fe580da727c619f5fac36d",
         "origin": "generated",
         "author": "Codex; owner-supplied visual reference",
         "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
@@ -44,17 +44,17 @@
       },
       "importSettings": {
         "path": "assets/characters/icarus/white-gold-study/import-settings.json",
-        "sha256": "d806606c0e4aab98e0eae9e94a500b84fab298ebc5f987ffacf4e45ac4a43084"
+        "sha256": "3b5cff71e017b2b0dede6de8423bd1957598fc21dacbcc7001ee2ef4de1bb27c"
       }
     },
     {
       "id": "icarus-study-preview",
       "kind": "preview",
       "path": "assets/characters/icarus/white-gold-study/icarus-study.mp4",
-      "sha256": "129288ddf34d1e6ae655ee7747108a56e532ff888a323a4c31a8d47ac02bf453",
+      "sha256": "77bee8629a14f66c3017f92db5101211b6c6f272e392f0449d43c4614ed60057",
       "source": {
         "path": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",
-        "sha256": "5ad7ea0a2d932d1572ebb11839536cbac29241a68ad40f12bbfe526e4408c8a2",
+        "sha256": "acff111a658bb7632c20f71af4afb608ff8f70ed86fe580da727c619f5fac36d",
         "origin": "generated",
         "author": "Codex; owner-supplied visual reference",
         "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
@@ -62,14 +62,14 @@
       },
       "importSettings": {
         "path": "assets/characters/icarus/white-gold-study/import-settings.json",
-        "sha256": "d806606c0e4aab98e0eae9e94a500b84fab298ebc5f987ffacf4e45ac4a43084"
+        "sha256": "3b5cff71e017b2b0dede6de8423bd1957598fc21dacbcc7001ee2ef4de1bb27c"
       }
     }
   ],
   "pets": [
     {
       "petId": "pet-v3-fire-icarus",
-      "designRevision": "white-gold-study-04",
+      "designRevision": "white-gold-study-05",
       "reference": {
         "path": "specs/pet-arena/references/icarus/owner-battle-reference.png",
         "sha256": "af3d8af34268cb01b29fd400e62b71378c0c2176b72991ebfcfd3e722f0eb76c"

@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 import bpy
-from mathutils import Vector
+from mathutils import Quaternion, Vector
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from icarus_white_gold import build_character
@@ -43,7 +43,7 @@ scene.render.resolution_percentage = 100
 scene.world.color = (0.18, 0.18, 0.18)
 scene.view_settings.view_transform = 'AgX'
 scene['character_id'] = 'pet-v3-fire-icarus'
-scene['design_revision'] = 'white-gold-study-04'
+scene['design_revision'] = 'white-gold-study-05'
 scene['asset_status'] = 'DRAFT_BLOCKOUT_NOT_PRODUCTION'
 scene['reference_hash'] = hashlib.sha256(reference.read_bytes()).hexdigest()
 
@@ -117,6 +117,12 @@ bpy.ops.object.mode_set(mode='OBJECT')
 assert len(armature.bones) == 74
 
 parts = build_character(rig, scene)
+part_triangles = {}
+for part in parts:
+    part.data.calc_loop_triangles()
+    category = part.name.split('.')[0].rstrip('0123456789')
+    part_triangles[category] = part_triangles.get(category, 0)+len(part.data.loop_triangles)
+print('ICARUS_PART_TRIANGLES '+json.dumps(part_triangles))
 
 bpy.ops.object.select_all(action='DESELECT')
 for obj in parts:
@@ -160,11 +166,15 @@ for name, seconds in clips:
             for chain in range(2):
                 rig.pose.bones[f'hair.{chain}.{side}'].rotation_euler.x = wave*0.035
         if name in ['normal', 'rage', 'signature']:
-            power = {'normal': 0.55, 'rage': 0.9, 'signature': 1.05}[name]
-            rig.pose.bones['upper_arm.R'].rotation_euler.y = power*pulse
-            rig.pose.bones['upper_arm.L'].rotation_euler.y = -power*pulse
-            rig.pose.bones['forearm.L'].rotation_euler.z = -0.6*pulse
+            power = {'normal': 0.55, 'rage': 0.9, 'signature': 1.30}[name]
+            for sign, side in [(1, 'L'), (-1, 'R')]:
+                value = rig.pose.bones['upper_arm.'+side]
+                axis = value.bone.matrix_local.to_3x3().inverted() @ Vector((0, 1, 0))
+                value.rotation_euler = Quaternion(axis, -sign*power*pulse).to_euler('XYZ')
+            rig.pose.bones['forearm.L'].rotation_euler.z = -0.18*pulse
             rig.pose.bones['spine'].rotation_euler.z = -0.14*pulse
+            if name == 'signature':
+                rig.pose.bones['head'].rotation_euler.x = -0.12*pulse
         elif name == 'intro':
             rig.pose.bones['upper_arm.L'].rotation_euler.y = -0.35*pulse
             rig.pose.bones['head'].rotation_euler.x = -0.15*pulse

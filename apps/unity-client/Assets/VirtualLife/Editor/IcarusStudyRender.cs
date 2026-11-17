@@ -25,6 +25,7 @@ namespace VirtualLife.Editor
             public ClipFact[] clips;
             public int frames;
             public int framesPerSecond = 20;
+            public string renderMethod = "SampleAnimation + BakeMesh + URP GPU render";
             public bool productionReady;
         }
 
@@ -60,7 +61,11 @@ namespace VirtualLife.Editor
             if (mesh.colors.Length != mesh.vertexCount) throw new InvalidOperationException("Vertex colors missing from FBX");
             var shader = Shader.Find("Aetheria/StudyVertexColor");
             if (shader == null || !shader.isSupported) throw new InvalidOperationException("Study shader unavailable");
-            skin.sharedMaterials = Enumerable.Range(0, 3).Select(i => new Material(shader)).ToArray();
+            skin.sharedMaterials = skin.sharedMaterials.Select(source => {
+                var material = new Material(shader);
+                material.SetFloat("_StudySurface", source.name.Contains("FeatherSilk", StringComparison.Ordinal) ? 1 : source.name.Contains("Ornament", StringComparison.Ordinal) ? 2 : 0);
+                return material;
+            }).ToArray();
             skin.updateWhenOffscreen = true;
             RenderSettings.ambientMode = AmbientMode.Flat;
             RenderSettings.ambientLight = new Color(0.52f, 0.54f, 0.59f);
@@ -100,9 +105,32 @@ namespace VirtualLife.Editor
                 facts.Add(new ClipFact { name = pair.Key, seconds = clip.length, deformation = delta });
             }
             var focus = skin.bounds.center;
+            // Synchronous Editor renders do not advance the player skinning loop.
+            // Bake each sampled pose explicitly so the GPU sees that frame's mesh.
+            var sampledMesh = new Mesh();
+            var sampledObject = new GameObject("SampledStudyMesh");
+            sampledObject.transform.SetParent(skin.transform, false);
+            // BakeMesh already incorporates the FBX import scale in its vertices.
+            var importScale = skin.transform.lossyScale;
+            sampledObject.transform.localScale = new Vector3(1 / importScale.x, 1 / importScale.y, 1 / importScale.z);
+            var sampledFilter = sampledObject.AddComponent<MeshFilter>();
+            var sampledRenderer = sampledObject.AddComponent<MeshRenderer>();
+            sampledRenderer.sharedMaterials = skin.sharedMaterials;
+            skin.enabled = false;
             Action<string, AnimationClip, float, float> render = (filename, clip, time, angle) =>
             {
                 clip.SampleAnimation(instance, time);
+                skin.BakeMesh(sampledMesh);
+                if (sampledMesh.vertexCount != mesh.vertexCount) throw new InvalidOperationException("Sampled render mesh missing vertices");
+                sampledMesh.RecalculateBounds();
+                sampledMesh.UploadMeshData(false);
+                sampledFilter.sharedMesh = null;
+                sampledFilter.sharedMesh = sampledMesh;
+                sampledRenderer.localBounds = sampledMesh.bounds;
+                var dimensions = sampledRenderer.bounds.size;
+                float largest = Mathf.Max(dimensions.x, dimensions.y, dimensions.z);
+                if (largest < 0.5f || largest > 3)
+                    throw new InvalidOperationException("Baked pose outside meter-scale character bounds");
                 var offset = Quaternion.Euler(0, angle, 0) * new Vector3(0, 0.10f, -5);
                 camera.transform.position = focus + offset;
                 camera.transform.LookAt(focus);
@@ -117,6 +145,14 @@ namespace VirtualLife.Editor
             render("front.png", selected["idle"], 0, 180);
             render("side.png", selected["idle"], 0, 270);
             render("back.png", selected["idle"], 0, 0);
+            render("signature.png", selected["signature"], 5, 160);
+            var fullFocus = focus;
+            camera.orthographicSize = 0.24f;
+            selected["idle"].SampleAnimation(instance, 0);
+            focus = instance.GetComponentsInChildren<Transform>().Single(t => t.name == "head").position + Vector3.up * 0.10f;
+            render("portrait-detail.png", selected["idle"], 0, 180);
+            focus = fullFocus;
+            camera.orthographicSize = 1.28f;
             int frame = 0;
             foreach (var name in new[] {"idle", "normal", "signature"})
                 for (int i = 0; i < Mathf.RoundToInt(selected[name].length * 20); i++)
