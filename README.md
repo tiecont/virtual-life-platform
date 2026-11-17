@@ -117,6 +117,10 @@ packages, seed an owned disposable PostgreSQL database with
 It uses migration 0051 and refuses non-test database URLs. It grants no runtime
 access, publishes no content and creates no owned player Pets.
 
+Private R2/t3 art delivery tooling and its separate reviewed-art upload gate are
+documented in [private art delivery](specs/media/private-art-delivery.md). Local
+staging never grants art acceptance or public publication.
+
 config/development-plan.json is the sole active backlog. Run `pnpm plan:status`
 for ready tasks and progress. Any ready task may proceed with the same agent;
 there are no reservations or mandatory independent-agent handoffs. Dependency

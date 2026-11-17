@@ -98,14 +98,23 @@
     {
       "id": "VL-170",
       "feature": "Media",
-      "title": "PR-B: private local S3 media metadata and ingest",
-      "objective": "Add loopback MinIO and an additive journaled migration for versioned media metadata, RBAC ingest, signed preview access and provenance.",
+      "title": "PR-B: private S3 media delivery, metadata and ingest",
+      "objective": "Prepare fail-closed private art delivery to Cloudflare R2 and t3.storage.dev using the existing Node stack; retain additive journaled media metadata, RBAC ingest, signed preview access and provenance as follow-up scope.",
       "priority": 2,
       "dependsOn": [],
       "acceptance": ["Private buckets, bounded signed URLs, operator authorization and no public draft listing", "Reject traversal, MIME spoofing, oversized uploads and unauthorized read/write; verify real object bytes and content hashes", "Use the next available migration in the existing journal, isolated tests and local secrets; no production publication"],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
-      "implementation": {"release": "OFFLINE_ONLY / NO_GO_PUBLIC"}
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "privateDelivery": {
+          "entrypoint": "scripts/private-art-delivery.mjs",
+          "specification": "specs/media/private-art-delivery.md",
+          "scope": "Local private manifest staging and gated S3 SigV4 delivery tooling; exact R2/t3 HTTPS endpoints, immutable conditional keys, full SHA-256 readback, strict path/MIME/content/size checks, maximum10GB per batch and256MiB per file. No credentials, approved art, provider probes or remote uploads included.",
+          "artGate": "NOT_REVIEWED; upload requires separately reviewed and independently hash-pinned art/technical/rights/private-target receipt. Tooling cannot establish visual acceptance or provider privacy by itself.",
+          "remaining": "Real art review, private provider configuration/compatibility and account-wide quota qualification; journaled metadata, existing operator RBAC ingest and bounded signed preview delivery remain unimplemented. No merge, public release or deployment authorization."
+        }
+      }
     },
     {
       "id": "VL-171",
