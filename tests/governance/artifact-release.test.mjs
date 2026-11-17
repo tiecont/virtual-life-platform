@@ -29,8 +29,12 @@ test('real Git PR/push event planning handles source/shared/lock/docs/overlay di
         assert(result.includes('images=' + expected + '\n'));
       }
     }
-    await writeFile(eventPath, JSON.stringify({before: '0'.repeat(40)}));
-    assert(execFileSync('node', [resolve('scripts/artifact-plan.mjs')], {cwd: repo, env: {...process.env, GITHUB_EVENT_NAME: 'push', GITHUB_EVENT_PATH: eventPath}, encoding: 'utf8'}).includes('images=true'));
+    const blob=git(['hash-object','config/artifact-release.json']).trim();
+    for(const base of ['0'.repeat(40),'f'.repeat(40),blob])for(const name of ['push','pull_request']){
+      await writeFile(eventPath, JSON.stringify({before:base,pull_request:{base:{sha:base}}}));
+      const result=execFileSync('node', [resolve('scripts/artifact-plan.mjs')], {cwd: repo, env: {...process.env, GITHUB_EVENT_NAME:name, GITHUB_EVENT_PATH:eventPath}, encoding:'utf8'});
+      assert(result.includes('images=true\n'),'Absent or non-commit comparison base must require all runtime images');
+    }
   } finally {await rm(temporary, {recursive: true, force: true});}
 });
 
