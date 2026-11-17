@@ -119,8 +119,10 @@ thiết kế hoàn chỉnh:
 
 1. **S01 — nhận diện:** một full-body 3/4 trung tính, một silhouette đen, thước
    chiều cao/rộng, palette body/material/element tách riêng; không VFX che người.
-2. **S02 — turnaround:** front, side, back orthographic cùng tỷ lệ và ground line;
-   appendage đầy đủ trong khung. Mỗi view phải có bản riêng tối thiểu 2048 px
+2. **S02 — turnaround:** năm view riêng front, 3/4 front, side, 3/4 back, back;
+   các view chính diện/ngang/sau orthographic cùng tỷ lệ và ground line,
+   hai góc 3/4 đối chiếu cùng anatomy. Appendage đầy đủ trong khung.
+   Mỗi view phải có bản riêng tối thiểu 2048 px
    theo chiều cao nhân vật; sheet tổng không được làm mất chi tiết.
 3. **S03 — đầu/biểu cảm:** front và profile cận mặt, sáu biểu cảm hoặc sáu trạng
    thái cơ thể nếu anatomy không có mặt người; ghi feature phải giữ, không ép
@@ -182,6 +184,13 @@ root/socket, chân chạm đất, silhouette hoặc cue quan trọng. LODGroup t
 và fade cần đo tại camera thật; chưa có ngưỡng khoảng cách được chứng nhận.
 
 PBR vẫn cần dù look cuối là cel/anime. Đề xuất thống nhất texture export:
+
+Với Icarus, chủ sở hữu đã chọn nguồn high-poly Meshy 7.1 + Meshy 7 PBR
+4K/8K; giữ nguyên nguồn chi tiết và các map thực nhận. Budget 2K trong bảng
+là mục tiêu texture runtime sau bake/streaming, không phải yêu cầu hạ chất
+lượng nguồn authoring. Kiểm kích thước từng map vì normal có thể khác albedo;
+không gọi cả bộ 8K chỉ từ tham số job. Năm Limited pending chưa được chọn
+model/generator hoặc sinh nguồn chỉ vì pipeline Icarus có lựa chọn này.
 
 | Map | Dữ liệu và color space | Quy tắc URP |
 | --- | --- | --- |
