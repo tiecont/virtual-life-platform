@@ -219,7 +219,15 @@
       "acceptance": ["Five actual editable models, LODs, exports, clips, Unity shaders/VFX, preview MP4s and provenance manifests", "FROST_LINE/CHAIN_MARK/CURSE_SIGIL/GROWTH_GLYPH/TIDE_CURRENT visual bindings preserve authoritative gameplay semantics", "Asset validation and actual licensed Unity rendered motion/performance checks pass for each Pet; no completion from concept PNGs"],
       "status": "TODO",
       "qualificationRequirements": ["Original/licensed art and audio provenance; actual rendered acceptance"],
-      "implementation": {"parentTask": "VL-149", "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"}
+      "implementation": {
+        "parentTask": "VL-149",
+        "ownerDesignState": "OWNER_DESIGN_PENDING",
+        "heldPets": ["Glaciemora", "Voltaris", "Noctalith", "Sylvaris", "Leviara"],
+        "productionRestriction": "Owner instruction: do not create or refine designs, images, models, rigs, animations or character-specific Unity implementations for these five Limited Pets until the owner supplies their designs. Existing lore and prompts are proposals, not permission to produce them.",
+        "allowedPreparation": "Shared Rust/Unity contracts, reusable tooling and the Limited production blueprint may proceed independently. Keep actual implementation dependencies; this hold applies only to the five named characters.",
+        "resumeRequirement": "Receive owner designs, preserve canonical identity and gameplay, record reference hashes and resolve appearance/rig conflicts before resuming dependent character production.",
+        "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
     },
     {
       "id": "VL-173",
