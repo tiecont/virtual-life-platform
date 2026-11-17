@@ -1,10 +1,8 @@
-import {createHash} from 'node:crypto';
-import {constants} from 'node:fs';
-import {open,realpath,readFile} from 'node:fs/promises';
-import {resolve,relative,isAbsolute} from 'node:path';
+import {readFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
 import {PetBattleVisualDraftSchema,petAnimationSemantics} from '@virtual-city/contracts';
 import {readPetDesign,validatePetDesign} from './pet-design-check.mjs';
+import {verifyPetAssetBytes} from './pet-asset-files.mjs';
 
 export function createMissingPetVisualDraft(c,contentHash){
  return PetBattleVisualDraftSchema.parse({schemaVersion:1,ruleset:c.ruleset,contentHash,state:'DRAFT_ONLY',runtimeEnabled:false,productionReady:false,compatibility:{unity:'6000.3.14f1',urp:'17.3.0'},assets:[],tileAtlas:null,
@@ -12,29 +10,25 @@ export function createMissingPetVisualDraft(c,contentHash){
  });
 }
 export async function verifyPetAssetFiles(input,root=process.cwd()){
- const value=PetBattleVisualDraftSchema.parse(input),base=await realpath(root),verified=new Map();
- for(const asset of value.assets)for(const file of [asset,asset.source,asset.importSettings]){
-  const target=await realpath(resolve(base,file.path)),rel=relative(base,target);
-  if(rel==='..'||rel.startsWith('../')||isAbsolute(rel))throw Error('Asset escapes workspace');
-  // A FIFO must reach fstat without blocking for a writer. Reject a replaced
-  // leaf symlink rather than following it after the containment check.
-  const handle=await open(target,constants.O_RDONLY|constants.O_NONBLOCK|constants.O_NOFOLLOW);
-  try{
-   const stat=await handle.stat();if(!stat.isFile()||stat.size>64*1024*1024)throw Error('Asset file missing, non-regular or exceeds 64 MiB');
-   const prior=verified.get(target);if(prior){if(prior!==file.sha256)throw Error('Conflicting asset hash');continue;}
-   const digest=createHash('sha256');for await(const chunk of handle.createReadStream({autoClose:false}))digest.update(chunk);
-   if(digest.digest('hex')!==file.sha256)throw Error('Asset hash mismatch');verified.set(target,file.sha256);
-  }finally{await handle.close();}
- }
+ const value=PetBattleVisualDraftSchema.parse(input);
+ const filesVerified=await verifyPetAssetBytes(value.assets.flatMap(asset=>[asset,asset.source,asset.importSettings]),root);
  const missing=[];if(value.tileAtlas===null)missing.push('tile-atlas');
  for(const pet of value.pets){
   for(const key of ['portrait','icon','model','prefab','controller','localization'])if(pet[key]===null)missing.push(pet.speciesId+':'+key);
   if(!pet.materials.length)missing.push(pet.speciesId+':materials');
   for(const a of pet.animations){if(a.clip===null)missing.push(pet.speciesId+':'+a.semantic+':clip');if(a.vfx===null)missing.push(pet.speciesId+':'+a.semantic+':vfx');if(a.audio===null)missing.push(pet.speciesId+':'+a.semantic+':audio');}
  }
- return {state:value.state,pets:value.pets.length,filesVerified:verified.size,missing,rightsReview:'PENDING',unityImport:'NOT_TESTED',renderedPreview:'NOT_TESTED',productionReady:false,runtimeEnabled:false};
+ return {state:value.state,pets:value.pets.length,filesVerified,missing,rightsReview:'PENDING',unityImport:'NOT_TESTED',renderedPreview:'NOT_TESTED',productionReady:false,runtimeEnabled:false};
 }
 async function main(){
+ if(process.argv[2]==='--limited-v31'){
+  const {readLimitedPetCatalog,createMissingLimitedPetVisualDraft,verifyLimitedPetAssetFiles}=await import('./pet-limited-asset-check.mjs');
+  const args=process.argv.slice(3),requireComplete=args.at(-1)==='--require-complete';if(requireComplete)args.pop();
+  if(args.length>1||args.some(arg=>arg.startsWith('--')))throw Error('Usage: node --import tsx scripts/pet-asset-check.mjs --limited-v31 [bindings.json] [--require-complete]');
+  const catalog=await readLimitedPetCatalog(),value=args.length?JSON.parse(await readFile(args[0],'utf8')):createMissingLimitedPetVisualDraft(catalog);
+  console.log(JSON.stringify(await verifyLimitedPetAssetFiles(value,catalog,process.cwd(),{requireComplete})));
+  return;
+ }
  const file=process.argv[2];if(process.argv.length>3)throw Error('Usage: node scripts/pet-asset-check.mjs [draft-manifest.json]');
  const c=await readPetDesign();validatePetDesign(c);
  const {petDesignDraft}=await import('./pet-content-draft-seed.mjs');
