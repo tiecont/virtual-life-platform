@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "characterId": "pet-v3-fire-icarus",
-  "designRevision": "white-gold-study-05",
+  "designRevision": "white-gold-study-06",
   "state": "DRAFT_ONLY",
   "blender": "4.5.16 LTS",
   "unity": "6000.3.14f1",
@@ -10,12 +10,18 @@
   "exportUp": "Y",
   "fbxForward": "-Z",
   "armatureBones": 74,
-  "sourceTriangles": 29438,
+  "sourceTriangles": 29392,
   "maximumMaterials": 3,
   "shading": "Three-band cel study with soft facial shading, rim light, gold highlights and filtered hair/feather detail; preliminary overlapping UVs, no production bake",
   "animation": "Generic; five authored actions; no gameplay authority",
   "importer": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/icarus-study.fbx.meta",
   "renderer": "apps/unity-client/Assets/VirtualLife/Editor/IcarusStudyRender.cs",
+  "reviewPackageBuilder": "apps/unity-client/Assets/VirtualLife/Editor/IcarusStudyPackage.cs",
+  "reviewPrefab": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/IcarusStudy.prefab",
+  "reviewController": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/IcarusStudy.controller",
+  "artStatus": "ARTIST_HANDOFF_REQUIRED",
+  "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+  "styleTarget": "UNVALIDATED_TARGET",
   "shader": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/StudyVertexColor.shader",
   "runtimeEnabled": false,
   "productionReady": false,
@@ -23,11 +29,11 @@
   "provenance": [
     {
       "path": "scripts/art/build-icarus-blockout.py",
-      "sha256": "a9b53d14a4f07c86e3badf548b6004d0d3fa9f18534019771f4ad1f6d7484b33"
+      "sha256": "83aabe20502bf540d08b026351e4e64971c840121fb0c7c61044bafaa921709d"
     },
     {
       "path": "scripts/art/icarus_white_gold.py",
-      "sha256": "5a9b372c139c0cec931d5c6dd19f36d99b4d25904e93d45ba648ca57c2464898"
+      "sha256": "161c09d23f8463bf3868e6f61837dae0b37fa82f8f0268744dd265c103a4df42"
     },
     {
       "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/icarus-study.fbx.meta",
@@ -35,11 +41,11 @@
     },
     {
       "path": "apps/unity-client/Assets/VirtualLife/Editor/IcarusStudyRender.cs",
-      "sha256": "ccd4a1aa752c70dfb3f9e8c0a97e2b07fb15246137585088a7fc2a763084aa3a"
+      "sha256": "b238b9871a4960ba5ecfe704ad2469fe8d7bbf2a017f786aa44f8f1071040be4"
     },
     {
       "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/StudyVertexColor.shader",
-      "sha256": "dcfb12cf48fd3faa9c7a2859f5857aab44ac0f5bb58e6ca0bc6e74e7da042e3c"
+      "sha256": "d4cbb238b9a75f1beb921b2c20038b129034eabfb80836635f4cc17ac3dd6142"
     },
     {
       "path": "specs/pet-arena/references/icarus/owner-battle-reference.png",
@@ -47,15 +53,83 @@
     },
     {
       "path": "assets/characters/icarus/white-gold-study/front.png",
-      "sha256": "f245ed64701ed37f57a255bbfa73536f67c88dafd7ae742268c90b897218ca23"
+      "sha256": "1ecc5a273177c2af2e2a9db1df82eee7f200185f135c0c94569a8aee81022f40"
     },
     {
       "path": "assets/characters/icarus/white-gold-study/portrait-detail.png",
-      "sha256": "d85c80ec1e39a31e4ce84987a94391398440f057d222d9f369aaa89b8bca3b8a"
+      "sha256": "c828f1d2f495a0ed77b97ef210415326ea6a7d1ce0e4f3c731e5e9129ba033e0"
     },
     {
       "path": "assets/characters/icarus/white-gold-study/signature.png",
-      "sha256": "b4fa33c7f2399f79964fcc4b905d2548b77a5fa1c81635c7cfa35b8a87ee5b4b"
+      "sha256": "2760a20b662a96bd99add2ef5f5a24abce640e0f5cb93d9250ffb33046a9e01f"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/side.png",
+      "sha256": "e015df7259edea2226cd15dbdacdce469e004b95d1a0e24435d0b1c2e19f35d3"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/back.png",
+      "sha256": "96eab5c33a0bd8b6db53a1e18dcbd891d133e18389a8461ec786fb57b830a4f9"
+    },
+    {
+      "path": "scripts/art/verify-study-preview.py",
+      "sha256": "78e62861080370144b71368fcfaa8aabd538ad5df28977c4faa8bde3cee0c626"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/Editor/IcarusStudyPackage.cs",
+      "sha256": "63e8c14d0fdf95cfb246fd41274026669cd312b7f067559f09928f1940ffe229"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/Editor/IcarusStudyPackage.cs.meta",
+      "sha256": "1978c472f6fcc2cc944adbf037a63a29b84fb30fd87ea9615e5d9ff1b80b8fe2"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review.meta",
+      "sha256": "7c0aa2f0e6bc2381c9f055dbe6545819bb76174cfbcd8a3095f1e4bcde3d72de"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/StudyVertexColor.shader.meta",
+      "sha256": "91e7e6571af74e5c6f193b0db6a0c13c75aa4a84a6a3fe8217edceeeb0ba1265"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/FeatherSilk.mat",
+      "sha256": "bdcfa519809eb0b9354512a935ec6810e29c1b816362f6552ecde3ff41353088"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/FeatherSilk.mat.meta",
+      "sha256": "6e63bc1bd1037cc7f1d51a627f61ccc01e9a1b351102b4df2dc0a3d8410b6626"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/IcarusStudy.controller",
+      "sha256": "5e46817bcf212add78806f15893e81cba8f8764d7cdd9b072304ac98d0cd99b1"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/IcarusStudy.controller.meta",
+      "sha256": "45abeb0b7ee22ae4b8dd9d1b55b9fa9d956bd0b4afcb34a77a40f0c171a52154"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/IcarusStudy.prefab",
+      "sha256": "865d84ba4ea7f06b6c4b541772a424515dac2b74430f06956be745e04c51ad90"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/IcarusStudy.prefab.meta",
+      "sha256": "961f2aab2dac4bd681e58eb4002e5be56396ea2fe63c4e5098e570243c0f7a57"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/Ornament.mat",
+      "sha256": "c17e666dad58777c54a4e8ffd4eabf3d2719ad5d6b39fa7d7385aed634896e85"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/Ornament.mat.meta",
+      "sha256": "92de0b06189786985b297f2b6698be8b552e483b31f81120e2fa9d5fae786afd"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/SkinHair.mat",
+      "sha256": "6803ee1730c15de16f70ebfbe3fdc60d8a68b92ebea3313e37a545c526989050"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/SkinHair.mat.meta",
+      "sha256": "e0efbb820006eb7c15567ce3be336d5ffc1434f946a1112f3726060b2298a055"
     }
   ],
   "preview": {
@@ -63,15 +137,18 @@
     "width": 960,
     "height": 960,
     "fps": 20,
-    "frames": 440,
-    "seconds": 22,
+    "frames": 980,
+    "seconds": 49,
     "clips": [
       "idle",
+      "intro",
       "normal",
+      "rage",
       "signature"
     ],
+    "turntableSeconds": 6,
     "audio": false,
     "renderMethod": "SampleAnimation + BakeMesh + URP GPU render"
   },
-  "unityImportedTriangles": 28990
+  "unityImportedTriangles": 29016
 }

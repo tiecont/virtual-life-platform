@@ -43,7 +43,7 @@ scene.render.resolution_percentage = 100
 scene.world.color = (0.18, 0.18, 0.18)
 scene.view_settings.view_transform = 'AgX'
 scene['character_id'] = 'pet-v3-fire-icarus'
-scene['design_revision'] = 'white-gold-study-05'
+scene['design_revision'] = 'white-gold-study-06'
 scene['asset_status'] = 'DRAFT_BLOCKOUT_NOT_PRODUCTION'
 scene['reference_hash'] = hashlib.sha256(reference.read_bytes()).hexdigest()
 
@@ -51,7 +51,7 @@ scene['reference_hash'] = hashlib.sha256(reference.read_bytes()).hexdigest()
 def material(name, color, metallic=0, emission=0):
     value = bpy.data.materials.new(name)
     value.use_nodes = True
-    shader = value.node_tree.nodes.get('Principled BSDF')
+    shader = next(n for n in value.node_tree.nodes if n.type == 'BSDF_PRINCIPLED')
     shader.inputs['Base Color'].default_value = (*color, 1)
     shader.inputs['Metallic'].default_value = metallic
     shader.inputs['Roughness'].default_value = 0.37
