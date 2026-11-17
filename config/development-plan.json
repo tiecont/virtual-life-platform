@@ -4253,6 +4253,24 @@
   },
   {
     "id": "VL-121",
+      "limitedBlueprintVerification": {
+        "sourceRevision": "14cd992ba9e1c23eafcbd60e04cc8d15ed3cd54a",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "specification": "specs/pet-arena/design/limited-production-blueprint.vi.md",
+        "scope": "Maintained Vietnamese Limited blueprint: current Rust/Unity v1 versus candidate v3 boundary; six canonical identities, skills/cards/opcodes and sixteen action bindings; future story/sheet/storyboard quantities and resolutions; rig/LOD/PBR budgets, intake and independent acceptance gates. No asset or gameplay implementation.",
+        "ownerDesignBoundary": "Glaciemora, Voltaris, Noctalith, Sylvaris and Leviara remain OWNER_DESIGN_PENDING. No design, image generation, modeling, rigging, animation or character development performed. Existing lore/prompts are editorial proposals only; README explicitly points to the new intake boundary.",
+        "commands": [
+          {"command": "pnpm plan:status", "exitCode": 0, "result": "174 tasks; 14 IN_PROGRESS / 130 TODO / 30 VERIFIED. No task closure from blueprint."},
+          {"command": "python3 scripts/validate-pet-lore-design.py", "exitCode": 0, "result": "240 unique stories/prompts; exact canonical fields and hashes; 150 disclosed appearance notes PASS. Text integrity only."},
+          {"command": "python3 scripts/validate-pet-v31.py", "exitCode": 0, "result": "240 draft Pets, 19 elements/361 matchups and upstream114 stability PASS."},
+          {"command": "node scripts/pet-design-check.mjs", "exitCode": 0, "result": "19 elements/19 maps/114 original species PASS; runtimeEnabled false."},
+          {"command": "node --test tests/governance/pet-lore-design.test.mjs tests/governance/pet-v31.test.mjs", "exitCode": 0, "result": "4 PASS including editorial tamper negatives and canonical semantic regressions."},
+          {"command": "python3 - (inline read-only blueprint link/token consistency probe)", "exitCode": 0, "result": "15 local links resolve; six Limited identity/skill/card/opcode mappings and all sixteen action rows present; pending/proposal gates present. Not a visual, behavioral or literary acceptance test."},
+          {"command": "git diff --check", "exitCode": 0, "result": "PASS on committed blueprint source."}
+        ],
+        "limitations": "Hosted CI, Blender inspection, Unity import/render, hardware, media rights and owner art acceptance NOT_RUN. Other worktrees/main inspected read-only; their edits preserved. Limited --limited-v31 CLI exists on separate pipeline branch, not this blueprint checkout. UNVALIDATED_TARGET; DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC.",
+        "nextAction": "Review and integrate the blueprint via a green exact-source PR when assigned; no merge or external upload in this task. Production separately requires Icarus pilot acceptance and owner design intake for the five remaining Limited Pets. VL-121/105/149/171/172 remain open."
+      },
       "loreDesignVerification": {
         "sourceRevision": "11ece200fcdf72ff19f1d8b9e917c24eec16dde7",
         "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
