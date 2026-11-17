@@ -9,6 +9,12 @@ ready task; keep actual code/contract dependencies. Hardware, media rights,
 signing and release qualification apply to their own acceptance and deployment,
 and must not delay unrelated source work. Never claim a check ran when it did not.
 
+For reference-driven character modeling, textures, rigs, animation, Unity art
+delivery or artist handoff, read and apply
+`.agents/skills/aetheria-character-production/SKILL.md`. Users can invoke it as
+`$aetheria-character-production`. Keep ordinary gameplay/code work outside this
+skill. Skill installation does not imply an accepted art benchmark or asset.
+
 Use feature/module/layer folders for application source. Keep entrypoints and
 framework routes where the framework expects them. Domain code contains pure
 rules; application code coordinates use cases; infrastructure handles external

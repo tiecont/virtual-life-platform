@@ -3622,12 +3622,18 @@
         "Signed art/tech-art scale/rig/material/LOD authoring conventions",
         "Shader variant and VRAM audit fields documented"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-006",
         "VL-078"
-      ]
+      ],
+      "implementation": {
+        "characterProductionSkill": ".agents/skills/aetheria-character-production/SKILL.md",
+        "scope": "Reusable Blender-first character production instructions, separate visual/technical gates, unvalidated style target and bounded repair/artist handoff. Documentation only; no new model, accepted benchmark or task-wide completion claimed.",
+        "remaining": "Validate the process against an actual reference-quality pilot; signed authoring conventions, measured shader/VRAM budgets and production character assets remain open.",
+        "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
     },
     {
       "id": "VL-106",
