@@ -69,6 +69,11 @@ jobs:
         run: node scripts/ci-browser-plan.mjs >> "$GITHUB_OUTPUT"
       - name: Verify disposable test isolation and cleanup
         run: node scripts/test-harness-smoke.mjs
+      - name: Verify owner-design intake integrity and gates
+        run: |
+          python3 -m venv artifacts/ci/design-intake-venv
+          artifacts/ci/design-intake-venv/bin/python -m pip install -r scripts/art/requirements.txt
+          artifacts/ci/design-intake-venv/bin/python -m unittest discover -s tests/art -p 'test_*.py'
       - name: Lint,types,unit,integration and builds
         run: |
           mkdir -p artifacts/ci/core
