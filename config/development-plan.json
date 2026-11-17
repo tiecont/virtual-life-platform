@@ -4269,8 +4269,37 @@
           {"command": "git diff --check", "exitCode": 0, "result": "PASS on committed blueprint source."}
         ],
         "limitations": "Hosted CI, Blender inspection, Unity import/render, hardware, media rights and owner art acceptance NOT_RUN. Other worktrees/main inspected read-only; their edits preserved. Limited --limited-v31 CLI exists on separate pipeline branch, not this blueprint checkout. UNVALIDATED_TARGET; DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC.",
-        "nextAction": "Review and integrate the blueprint via a green exact-source PR when assigned; no merge or external upload in this task. Production separately requires Icarus pilot acceptance and owner design intake for the five remaining Limited Pets. VL-121/105/149/171/172 remain open."
-      },
+        "nextAction": "Review and integrate the blueprint via a green exact-source PR when assigned; no merge or external upload in this task. Production separately requires Icarus pilot acceptance and owner design intake for the five remaining Limited Pets. VL-121/105/149/171/172 remain open.",
+      "fiveViewSourceBudgetFollowup": {
+        "sourceRevision": "0b6835d8477fed46689e2cff60eb509b384e924b",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "change": "Require five separate turnaround views and distinguish owner-selected Icarus Meshy7.1/Meshy7 source4K/8K from runtime texture budgets; five held Limited remain unselected.",
+        "commands": [
+          {
+            "command": "python3 scripts/validate-pet-lore-design.py",
+            "exitCode": 0
+          },
+          {
+            "command": "python3 scripts/validate-pet-v31.py",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/pet-design-check.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "node --test tests/governance/pet-lore-design.test.mjs",
+            "exitCode": 0,
+            "result": "2 PASS"
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "hostedFinalHeadCI": "PENDING"
+      }
+    },
       "loreDesignVerification": {
         "sourceRevision": "11ece200fcdf72ff19f1d8b9e917c24eec16dde7",
         "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
