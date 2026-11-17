@@ -12,7 +12,10 @@ export function validateTarget(target){
 const hmac=(key,value)=>createHmac('sha256',key).update(value).digest();
 export function signedRequest({target,key,method,body,credentials,now=new Date(),headers={}}){
  validateTarget(target);assert(['PUT','GET'].includes(method)&&/^private-art\/v1\/[a-z0-9/-]+\.[a-z0-9]+$/.test(key),'Unsupported object operation');
- assert(typeof credentials.accessKeyId==='string'&&/^[A-Za-z0-9]{3,128}$/.test(credentials.accessKeyId)&&typeof credentials.secretAccessKey==='string'&&credentials.secretAccessKey.length>=16&&credentials.secretAccessKey.length<=256,'Missing/invalid credentials');
+ // T3 issues tid_ identifiers. Keep the alphabet safe for the SigV4 credential
+ // component: never accept slashes, commas, whitespace or header controls.
+ const accessKeyPattern=target.provider==='t3'?/^[A-Za-z0-9_-]{3,128}$/:/^[A-Za-z0-9]{3,128}$/;
+ assert(typeof credentials.accessKeyId==='string'&&accessKeyPattern.test(credentials.accessKeyId)&&typeof credentials.secretAccessKey==='string'&&credentials.secretAccessKey.length>=16&&credentials.secretAccessKey.length<=256,'Missing/invalid credentials');
  assert(!credentials.sessionToken||typeof credentials.sessionToken==='string'&&/^[\x21-\x7e]{1,4096}$/.test(credentials.sessionToken),'Invalid session token');
  const url=new URL(`${target.endpoint}/${target.bucket}/${key}`),stamp=now.toISOString().replace(/[:-]|\.\d{3}/g,''),date=stamp.slice(0,8),payloadHash=sha256(body??Buffer.alloc(0));
  const signed={...headers,host:url.host,'x-amz-date':stamp,'x-amz-content-sha256':payloadHash};if(credentials.sessionToken)signed['x-amz-security-token']=credentials.sessionToken;

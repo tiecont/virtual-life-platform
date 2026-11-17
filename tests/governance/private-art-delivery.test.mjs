@@ -11,7 +11,7 @@ import {upload,validateTarget,signedRequest,sendRequest} from '../../scripts/med
 
 const target={provider:'t3',endpoint:'https://t3.storage.dev',bucket:'owned-fixture',region:'auto'};
 // Deliberately synthetic credentials, used only by the in-process loopback fixture.
-const credentials={accessKeyId:'OWNEDFIXTUREKEY',secretAccessKey:'owned-local-fixture-secret-not-live'};
+const credentials={accessKeyId:'tid_OWNED_fixture-01',secretAccessKey:'owned-local-fixture-secret-not-live'};
 const now=Date.parse('2026-11-18T00:00:00.000Z');
 function wav(){const b=Buffer.alloc(48);b.write('RIFF');b.writeUInt32LE(40,4);b.write('WAVEfmt ',8);b.writeUInt32LE(16,16);b.writeUInt16LE(1,20);b.writeUInt16LE(1,22);b.writeUInt32LE(8000,24);b.writeUInt32LE(16000,28);b.writeUInt16LE(2,32);b.writeUInt16LE(16,34);b.write('data',36);b.writeUInt32LE(4,40);return b;}
 async function fixture(work){
@@ -95,7 +95,7 @@ test('only exact HTTPS R2 and t3 endpoints pass; no local, MinIO, userinfo, quer
  assert.throws(()=>validateTarget({...target,bucket:'a/b'}));assert.throws(()=>validateTarget({...target,provider:'minio'}));
 });
 
-test('owned HTTP fixture verifies SigV4, immutable private PUT/readback and safe idempotent retries',()=>fixture(async({options})=>localS3(async({transport,objects,requests})=>{
+test('owned HTTP fixture verifies T3 tid_ key SigV4, immutable private PUT/readback and safe idempotent retries',()=>fixture(async({options})=>localS3(async({transport,objects,requests})=>{
  const first=await upload({...options,transport});assert.equal(first.uploaded,1);assert.equal(first.reused,0);
  const second=await upload({...options,transport});assert.equal(second.uploaded,0);assert.equal(second.reused,1);assert.equal(objects.size,1);
  assert.deepEqual(requests.map(r=>r.method),['PUT','GET','PUT','GET']);assert.equal(requests[0].path,requests[2].path);
@@ -142,3 +142,13 @@ test('existing-key conflict never overwrites corrupted remote bytes',()=>fixture
  await assert.rejects(upload({...options,transport}),/readback/);
  assert.deepEqual(object.body,Buffer.alloc(object.body.length));assert.deepEqual(requests.map(r=>r.method),['PUT','GET','PUT','GET']);
 })));
+
+
+test('provider key alphabets accept T3 underscores/hyphens and reject authorization delimiters',()=>{
+ const input={target,key:`private-art/v1/fixture/v1/${'a'.repeat(64)}/${'b'.repeat(64)}.wav`,method:'GET',credentials,now:new Date(now)};
+ assert.ok(signedRequest(input).headers.authorization.startsWith('AWS4-HMAC-SHA256 Credential=tid_OWNED_fixture-01/'));
+ const r2={provider:'r2',endpoint:`https://${'a'.repeat(32)}.r2.cloudflarestorage.com`,bucket:'owned-fixture',region:'auto'};
+ assert.ok(signedRequest({...input,target:r2,credentials:{...credentials,accessKeyId:'OWNEDR2FIXTUREKEY'}}).headers.authorization.includes('Credential=OWNEDR2FIXTUREKEY/'));
+ assert.throws(()=>signedRequest({...input,target:r2}),/credentials/);
+ for(const accessKeyId of ['tid_bad/key','tid_bad,key','tid_bad key','tid_bad\\key','tid_bad\r\nheader','tid_bad:key','ab','a'.repeat(129)])assert.throws(()=>signedRequest({...input,credentials:{...credentials,accessKeyId}}),/credentials/);
+});

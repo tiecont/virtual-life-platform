@@ -112,6 +112,17 @@ credentials restricted to PUT/GET on the private-art prefix. Do not grant bucket
 administration or object deletion to this uploader. The CLI sends **no ACL
 header** (R2 does not support S3 ACL management), listing or bucket mutation.
 
+`publicAccess: DISABLED` records declared operator evidence; it is not automatic
+provider privacy verification. Before creating the receipt or invoking upload,
+the operator must inspect and retain actual configuration evidence for the exact
+provider/account/bucket, such as a dated sanitized settings export or screenshots
+showing public access disabled, bucket policy/ACL where supported, and every
+public domain/delivery route disabled. Keep that evidence privately under ignored
+`artifacts/` with the review; never include credentials. A default assumption,
+this document, a test fixture or the receipt field alone is not evidence. If the
+actual configuration evidence is absent or stale after a configuration change,
+the private-target review has not passed and upload must not run.
+
 The receipt is a trusted local operator attestation, not a provider-signed proof
 or automated ACL audit. It must be supplied independently from untrusted art
 inputs. Pin its exact SHA-256 through `--review-sha256` after review, not by
@@ -132,7 +143,10 @@ local environment file or the operator's secret manager:
 - `ART_S3_BUCKET`: a lowercase DNS-style bucket name without dots.
 - `ART_S3_REGION`: `auto` for R2; the region configured by t3 for that bucket.
 - `ART_S3_ACCESS_KEY_ID`, `ART_S3_SECRET_ACCESS_KEY`, and optional
-  `ART_S3_SESSION_TOKEN`: scoped credentials. Never put them in a manifest,
+  `ART_S3_SESSION_TOKEN`: scoped credentials. T3 access key IDs may contain
+  underscores and hyphens, including the `tid_` prefix; R2 IDs remain alphanumeric.
+  Both are bounded to 3–128 characters and reject authorization delimiters and
+  header controls. Never put credentials in a manifest,
   receipt, command argument, source file, commit or shared log.
 
 Only after the real review gate passes:
