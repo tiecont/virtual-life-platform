@@ -206,8 +206,47 @@
           },
           "remaining": "Resolve ICARUS-D01-D05: paw/tail anatomy, consistent usable orthographic views, hidden wing/back/hair construction and scale, bow version/grip/VFX separation, and explicit snapshot-specific owner approval. Separate paid batch authorization is required afterwards. No new Blender/GLB/FBX/Unity asset or accepted benchmark. Existing PR37/38/40 assets and importer GUIDs remain owned by their original work. VL-170 retains absent private object-store infrastructure."
         },
-        "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
+        "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
+      "pbrContinuityFollowup": {
+        "sourceRevision": "2aafc2ac270bd942e6ad19a192fb04f9b5331ece",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "manifest": "specs/pet-arena/references/icarus/production-v4-pbr.json",
+        "scope": "Preserve two Meshy7.1/Meshy7 PBR4K high-poly candidates, eight V4 supplementary views and two V5 continuity proposals; no game mesh/rig/Unity acceptance.",
+        "commands": [
+          {
+            "command": "python3 -B -m unittest discover -s tests/art -p 'test_*.py' -v",
+            "exitCode": 0,
+            "result": "14 PASS; image hash/dimension/authority/path tamper, GLB facts and delivery-gate promotion regressions included."
+          },
+          {
+            "command": "python3 scripts/art/verify_icarus_candidates.py --require-models",
+            "exitCode": 0,
+            "result": "10 actual image hashes/dimensions and2 actual GLB hashes/triangle/material/skin counts PASS. Both models unrigged."
+          },
+          {
+            "command": "pnpm governance:check",
+            "exitCode": 0,
+            "result": "174 tasks and historical integrity PASS; no fresh gameplay or release claim."
+          },
+          {
+            "command": "git show --format= --check HEAD",
+            "exitCode": 0,
+            "result": "Committed implementation whitespace PASS."
+          }
+        ],
+        "blender": "Live MCP5.3.0 connected; separate appended scene preserved original scene and4.5 LTS file. Actual neutral portrait and hand renders inspected. PBR links correct; fused fingers and soft focal detail remain. Exposure inspection only; no geometry repair claimed.",
+        "credits": "24 for2 V5 image-to-image proposals; no purchases. Historical V4 costs retained separately.",
+        "gates": {
+          "designContinuity": "ART_REVISION_REQUIRED",
+          "handsAndWingGeometry": "ARTIST_HANDOFF_REQUIRED",
+          "rigAnimation": "NOT_RUN",
+          "unity": "NOT_RUN",
+          "cloudUpload": "NOT_RUN",
+          "hostedFinalHeadCI": "PENDING"
+        },
+        "remaining": "Retopologize separate fingers/feather articulation, resolve cross-view construction, author actual74-bone rig/actions before Unity acceptance. Five other Limited held for owner designs. No source/CI acceptance promotes art."
       }
+    }
     },
     {
       "id": "VL-172",
