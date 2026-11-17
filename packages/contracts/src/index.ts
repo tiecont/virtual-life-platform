@@ -120,3 +120,5 @@ export * from './native-safety';
 export * from './games';
 export * from './game-lobby';
 export * from './pet-taxonomy-v3';
+
+export * from './pet-manifest-v3';

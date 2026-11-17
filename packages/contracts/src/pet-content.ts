@@ -12,7 +12,9 @@ export const PetContentDraftSchema=z.strictObject({schemaVersion:z.literal(2),ru
  elements:z.array(z.strictObject({id:PetElementSchema,displayName:z.string().min(1).max(64)})).length(19),
  effectiveness:z.array(z.strictObject({attacker:PetElementSchema,defender:PetElementSchema,permille:z.union([z.literal(0),z.literal(800),z.literal(1000),z.literal(1250)])})).length(361),
  profiles:z.array(profile).min(1).max(32),growth:z.array(growth).min(1).max(32),skills:z.array(skill).min(1).max(64),species:z.array(PetSpeciesDraftSchema).min(1).max(1024),
-}).superRefine((c,ctx)=>{
+}).superRefine(validatePetCatalog);
+
+export function validatePetCatalog(c: {elements:{id:string}[];profiles:{id:string}[];growth:{id:string}[];skills:{id:string}[];species:{id:string;element:string;statProfile:string;growthProfile:string;skills:string[]}[];effectiveness:{attacker:string;defender:string}[]},ctx:z.RefinementCtx){
  const unique=(values:string[],path:string)=>{if(new Set(values).size!==values.length)ctx.addIssue({code:'custom',path:[path],message:'Duplicate content identifier'});};
  for(const key of ['elements','profiles','growth','skills','species'] as const)unique(c[key].map(x=>x.id),key);
  unique(c.effectiveness.map(x=>x.attacker+':'+x.defender),'effectiveness');
@@ -22,6 +24,6 @@ export const PetContentDraftSchema=z.strictObject({schemaVersion:z.literal(2),ru
   if(!elements.has(pet.element)||!profiles.has(pet.statProfile)||!growth.has(pet.growthProfile)||pet.skills.some(id=>!skills.has(id)))ctx.addIssue({code:'custom',path:['species'],message:'Missing content reference'});
   unique(pet.skills,'species');
  }
-});
+}
 export type PetContentDraft=z.infer<typeof PetContentDraftSchema>;
 export type PetSpeciesDraft=z.infer<typeof PetSpeciesDraftSchema>;
