@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "characterId": "pet-v3-fire-icarus",
+  "designRevision": "white-gold-study-05",
+  "state": "DRAFT_ONLY",
+  "blender": "4.5.16 LTS",
+  "unity": "6000.3.14f1",
+  "urp": "17.3.0",
+  "metersPerUnit": 1,
+  "exportUp": "Y",
+  "fbxForward": "-Z",
+  "armatureBones": 74,
+  "sourceTriangles": 29438,
+  "maximumMaterials": 3,
+  "shading": "Three-band cel study with soft facial shading, rim light, gold highlights and filtered hair/feather detail; preliminary overlapping UVs, no production bake",
+  "animation": "Generic; five authored actions; no gameplay authority",
+  "importer": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/icarus-study.fbx.meta",
+  "renderer": "apps/unity-client/Assets/VirtualLife/Editor/IcarusStudyRender.cs",
+  "shader": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/StudyVertexColor.shader",
+  "runtimeEnabled": false,
+  "productionReady": false,
+  "rights": "PENDING_REVIEW",
+  "provenance": [
+    {
+      "path": "scripts/art/build-icarus-blockout.py",
+      "sha256": "a9b53d14a4f07c86e3badf548b6004d0d3fa9f18534019771f4ad1f6d7484b33"
+    },
+    {
+      "path": "scripts/art/icarus_white_gold.py",
+      "sha256": "5a9b372c139c0cec931d5c6dd19f36d99b4d25904e93d45ba648ca57c2464898"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/icarus-study.fbx.meta",
+      "sha256": "c0605c622825fb468fa9d61cdbcf7ce796fa7cb7d362133af1216841d6497670"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/Editor/IcarusStudyRender.cs",
+      "sha256": "ccd4a1aa752c70dfb3f9e8c0a97e2b07fb15246137585088a7fc2a763084aa3a"
+    },
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/StudyVertexColor.shader",
+      "sha256": "dcfb12cf48fd3faa9c7a2859f5857aab44ac0f5bb58e6ca0bc6e74e7da042e3c"
+    },
+    {
+      "path": "specs/pet-arena/references/icarus/owner-battle-reference.png",
+      "sha256": "af3d8af34268cb01b29fd400e62b71378c0c2176b72991ebfcfd3e722f0eb76c"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/front.png",
+      "sha256": "f245ed64701ed37f57a255bbfa73536f67c88dafd7ae742268c90b897218ca23"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/portrait-detail.png",
+      "sha256": "d85c80ec1e39a31e4ce84987a94391398440f057d222d9f369aaa89b8bca3b8a"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/signature.png",
+      "sha256": "b4fa33c7f2399f79964fcc4b905d2548b77a5fa1c81635c7cfa35b8a87ee5b4b"
+    }
+  ],
+  "preview": {
+    "codec": "h264",
+    "width": 960,
+    "height": 960,
+    "fps": 20,
+    "frames": 440,
+    "seconds": 22,
+    "clips": [
+      "idle",
+      "normal",
+      "signature"
+    ],
+    "audio": false,
+    "renderMethod": "SampleAnimation + BakeMesh + URP GPU render"
+  },
+  "unityImportedTriangles": 28990
+}
