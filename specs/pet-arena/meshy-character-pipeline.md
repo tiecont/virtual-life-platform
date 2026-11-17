@@ -5,6 +5,44 @@ This offline reference tool complements the production bindings in PR37; it is
 not an asset database, game importer, approval service or accepted art benchmark.
 Use the existing Blender sources and Unity project rather than replacing them.
 
+## V4 high-detail comparison
+
+The current owner request selects Meshy7.1 geometry with Meshy7 PBR4K/8K.
+The [V4 candidate record](references/icarus/production-v4-pbr.json) retains two
+actual4K high-poly candidates and new native-resolution design supplements.
+Both have real basecolor/normal/metallic/roughness maps, one material and no rig.
+The owner-sheet multi-view source has5,481,024 triangles and an incorrect head
+orientation; the supplementary-front source has4,208,442 triangles and improved
+front alignment. Neutral Blender4.5.16 closeups still show soft facial/hair and
+ornament detail. Neither passes artistic, topology, deformation or Unity gates.
+
+The generated design images are proposals, not exact copies or owner approvals.
+Back hair and skirt continuity remain under review. High-poly source textures
+may be4K; game LOD, texture streaming and memory budgets still require measured
+retopology/baking and Unity qualification. No raw dense mesh replaces a runtime
+asset. Eight supplemental image attempts and two model jobs used156 credits;
+no credit purchases were made. Final selected files and actual hashes are in
+the V4 record; unsuccessful design interpretations are retained locally.
+
+The V5 continuity follow-up preserves the corrected V4 three-quarter views and
+adds a long-haired rear proposal plus a three-state wing study. These two new
+images consumed 24 credits. The wing study has a clipped spread tip and does not
+prove joint motion or collision clearance. Neither image is owner-approved.
+Live Blender MCP 5.3.0 inspection confirms fused fingers and soft focal detail;
+the existing 4.5 LTS source is preserved. No new rig or Unity acceptance follows.
+
+Run `python3 scripts/art/verify_icarus_candidates.py --require-models` on the
+authoring workstation to compare the ten image hashes/dimensions and two actual
+GLB triangle/material/skin counts with the candidate record. Without that flag,
+missing machine-local models are reported explicitly. This is integrity checking,
+not an artistic score. Generated proposals remain separate from owner references.
+
+Glaciemora, Voltaris, Noctalith, Sylvaris and Leviara are now held for explicit
+owner designs: no new images, models, rigs or animations for those five. Shared
+pipeline planning may continue; the currently authorized image batch is limited
+to map_regular and map_legendary Pets. Private storage follows completed scoped
+art review and does not imply public publication.
+
 ## Approved V3 production pilot
 
 The subsequent owner instruction approves the V3 visual direction and available
