@@ -10,6 +10,7 @@ use std::{
 };
 use tokio::sync::{mpsc, oneshot, watch};
 pub mod collision;
+pub mod destinations;
 pub mod movement;
 pub mod visibility;
 
