@@ -5,6 +5,36 @@ This offline reference tool complements the production bindings in PR37; it is
 not an asset database, game importer, approval service or accepted art benchmark.
 Use the existing Blender sources and Unity project rather than replacing them.
 
+## Approved V3 production pilot
+
+The subsequent owner instruction approves the V3 visual direction and available
+Meshy credit use for Icarus development. The separate
+[V3 production record](references/icarus/production-v3-pilot.json) pins that
+authorization, immutable package hash, actual jobs and unresolved quality gates.
+The V2 records below remain historical and unmodified. Their missing approval and
+five-credit proposal do not override the later owner instruction.
+
+The pilot uses the selected V3 sheet's exact native front crop, not the poster
+or unapproved standalone interpretation. Character, humanoid rig and separate
+Phoenix bow jobs consumed35 credits. No purchases were made. Native276px views
+remain low-detail references; enlarged files add no information. No new
+supplemental artwork is independently approved.
+
+Production scripts under `scripts/art/icarus_*.py` preserve raw Meshy outputs,
+create distinct Blender revisions, render actual inspection views, assemble a
+separate bow and reimport FBX/GLB to check skinning, textures and deformation.
+`scripts/art/unity/IcarusPilotReview.cs` runs only when explicitly copied into an
+isolated copy of the existing Unity project. It creates a draft prefab/controller
+and renders sampled, baked poses through URP; it never activates gameplay.
+Generated assets, logs, comparisons and delivery archives stay under ignored
+`artifacts/character-production/icarus/`. Private storage and web publication
+remain separately scoped.
+
+The current44-bone draft is not the74-bone production contract. Face, feather
+construction, PBR, LODs, three-material budget and the16 exact canonical actions
+remain open. Three motion probes are not accepted combat/skill animations.
+Technical import/render success does not imply artistic acceptance or release.
+
 ## Icarus review package
 
 The [maintained intake](references/icarus/design-intake-v2.json) pins the exact
