@@ -112,7 +112,7 @@
           "specification": "specs/media/private-art-delivery.md",
           "scope": "Local private manifest staging and gated S3 SigV4 delivery tooling; exact R2/t3 HTTPS endpoints, immutable conditional keys, full SHA-256 readback, strict path/MIME/content/size checks, maximum10GB per batch and256MiB per file. No credentials, approved art, provider probes or remote uploads included.",
           "artGate": "NOT_REVIEWED; upload requires separately reviewed and independently hash-pinned art/technical/rights/private-target receipt. Tooling cannot establish visual acceptance or provider privacy by itself.",
-          "remaining": "Real art review, private provider configuration/compatibility and account-wide quota qualification; journaled metadata, existing operator RBAC ingest and bounded signed preview delivery remain unimplemented. No merge, public release or deployment authorization."
+          "remaining": "Real art review, private provider configuration/compatibility and account-wide quota qualification; reviewed object ingest and bounded signed preview delivery remain unimplemented. Separate operator draft metadata declarations do not verify content or approve art. Public release and deployment remain unauthorized."
         }
       },
       "verification": {
@@ -173,6 +173,26 @@
         ],
         "privacy": "publicAccess DISABLED is declared operator evidence, not automatic provider privacy verification. Documentation requires actual current configuration evidence for the exact destination before creating a passing private-target receipt or uploading. Existing owner authorization is retained; no new public-release approval required.",
         "limitations": "No real secrets, third-party probes or live uploads used.10GB remains a per-batch cap; account quota is separate. Final draft PR head requires hosted CI before any merge; no merge authorized."
+      },
+      "metadataIntakeFollowup": {
+        "sourceRevision": "bc9e3e0b51a5e9dbf6f2bf401274ab720e36ba42",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/55",
+        "implementation": "Additive0053 journal migration, strict shared declaration schemas, existing operator fresh-MFA/cookie/Origin/CSRF transaction for POST /v1/operator/art-intake and exact-ID GET /v1/operator/art-draft. Immutable rows, keyed operator reference/fingerprint, serialized30/hour and10000-total metadata limits, stable concurrent retries, no PUBLIC privileges, private/no-store responses. Every entry remains UNPUBLISHED / NOT_REVIEWED / UNVERIFIED. No object ingest, URL, credential, listing, upload or art acceptance.",
+        "commands": [
+          {"command": "pnpm test:admin", "sourceRevision": "7fc8e515aada39854ba7055f2fd83d2c761ecbec", "exitCode": 1, "result": "106/109 PASS, including all10 new private-art PostgreSQL/HTTP cases. Three existing calendar setup/cleanup hooks timed out at the unchanged15000ms limit while heavy image builds overlapped; not claimed green."},
+          {"command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/private-art-intake.test.ts tests/integration/operator-events.test.ts tests/integration/schema-compatibility.test.ts", "exitCode": 0, "result": "26 PASS at committed bc9e3e0: all10 private intake cases, all14 calendar cases including the three earlier hook timeouts, and2 actual schema compatibility cases. Disposable database/container/network cleanup completed. No timeout/assertion changed; this is a focused rerun, not a second complete109-case operator run."},
+          {"command": "pnpm exec eslint packages/contracts/src/private-art.ts apps/platform-api/src/features/operations/modules/art-media tests/integration/private-art-intake.test.ts apps/platform-api/src/app.ts vitest.config.mts", "exitCode": 0},
+          {"command": "pnpm exec tsc -p tests/admin-tsconfig.json --noEmit", "exitCode": 0},
+          {"command": "pnpm --filter @virtual-city/platform-api build", "exitCode": 0},
+          {"command": "pnpm architecture:check", "exitCode": 0, "result": "141 SQL tables+journal,515 source files and existing worker boundary PASS."},
+          {"command": "node --test tests/governance/source-schema-policy.test.mjs tests/governance/private-art-delivery.test.mjs tests/governance/boundaries.test.mjs", "exitCode": 0, "result": "23 PASS at committed bc9e3e0; synthetic owned loopback fixture only."},
+          {"command": "node --check scripts/migration-compat-smoke.mjs; node --check packages/contracts/dist/private-art.js; node --check apps/platform-api/dist/features/operations/modules/art-media/application/private-art.js; node --check apps/platform-api/dist/features/operations/modules/art-media/presentation/private-art-http.js (separate invocations)", "exitCode": 0, "result": "Actual compiled JavaScript syntax PASS. Direct node --check on TypeScript was unsupported; TypeScript syntax/types verified by tsc."},
+          {"command": "pnpm test:migration-compat", "sourceRevision": "7fc8e515aada39854ba7055f2fd83d2c761ecbec", "exitCode": 1, "result": "Actual committed image built with53 migrations, then old smoke runner rejected historical45-migration config policy. Owned resources cleaned. bc9e3e0 derives policy from the existing immutable source helper."},
+          {"command": "pnpm test:migration-compat", "sourceRevision": "bc9e3e0b51a5e9dbf6f2bf401274ab720e36ba42", "exitCode": 143, "result": "Corrected exact-source rerun interrupted by signal before any result/facts receipt. Disposable database/container/network cleanup completed. Image compatibility remains unverified; cause of interruption not established."}
+        ],
+        "failedAttempts": "The original8-case focused intake suite passed. After adding two more cases, disabled-operator fixture supplied ADMIN_ORIGIN without an operator key and correctly failed environment validation; fixture corrected and all10 passed in the operator suite. One test helper used unknown instead of an HTTP object payload; tsc caught it and corrected typecheck passed. No product timeout or assertion relaxed.",
+        "remaining": "Complete corrected migration image smoke (last run interrupted143), then rebase stacked PR55 onto merged PR52/main and require final-head hosted CI. PR52 at39ae08b is ready but not merged: both core/image/Rust checks pass; several browser groups still pending. Real object binding/ingest, signed preview, retention/correction policy, provenance document verification and private provider/art acceptance remain outstanding. No live provider requests or credentials used."
       }
     },
     {
