@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {navigateImagePage} from '../../scripts/image-browser-navigation.mjs';
+import {navigateImagePage,observeImageBrowser} from '../../scripts/image-browser-navigation.mjs';
 
 const changed = () => Error('page.goto: net::ERR_NETWORK_CHANGED at https://localhost:1234/\nCall log:');
 function fixture(outcomes) {
@@ -57,6 +57,15 @@ test('persistent network change fails after three requests and retires every fai
   assert.equal(f.calls.filter(call => call.operation === 'goto').length, 3);
   assert.equal(attempts.length, 3);
 });
+test('operator GET network interruption retires its page while retaining the authentication context', async () => {
+  const response = {status: () => 200}, f = fixture([changed(), response]), attempts = [];
+  const first = await f.context.newPage(), loaded = await navigateImagePage(first, '/admin', attempts);
+  assert(first.closed);
+  assert.equal(loaded.page.context(), first.context());
+  assert.equal(loaded.response, response);
+  assert.deepEqual(attempts.map(({path, result}) => ({path, result})), [{path: '/admin', result: 'ERR_NETWORK_CHANGED'}, {path: '/admin', result: 'LOADED'}]);
+  assert.equal(f.calls.filter(call => call.operation === 'goto').length, 2);
+});
 test('certificate, refused connection, timeout, cancellation and unrelated navigation errors fail immediately', async () => {
   for (const message of ['page.goto: net::ERR_CERT_AUTHORITY_INVALID', 'page.goto: net::ERR_CONNECTION_REFUSED', 'page.goto: Timeout 10000ms exceeded', 'page.goto: Target page, context or browser has been closed', 'page.goto: Navigation interrupted by chrome-error://chromewebdata/', 'expected net::ERR_NETWORK_CHANGED but received a failure']) {
     const error = Error(message), attempts = [], f = fixture([error]);
@@ -103,4 +112,28 @@ test('navigation diagnostics bound main-frame error codes and exclude request UR
   assert.deepEqual(attempts[0].failures, ['OTHER_NAVIGATION_FAILURE', ...Array(3).fill('net::ERR_NETWORK_CHANGED')]);
   assert(!JSON.stringify(attempts).includes('credential'));
   assert.equal(page.listeners.size, 0);
+});
+
+test('image browser diagnostics bound events and redact URLs, queries, request values and arbitrary errors', () => {
+  const listeners = new Map(), records = [];
+  const page = {on: (name, listener) => listeners.set(name, listener)};
+  observeImageBrowser({on: (name, listener) => {assert.equal(name, 'page'); listener(page);}}, 'https://localhost:1234', records);
+  const request = path => ({url: () => 'https://localhost:1234' + path, resourceType: () => 'fetch', failure: () => ({errorText: 'private body'})});
+  listeners.get('requestfailed')(request('/api/admin/session?token=private'));
+  listeners.get('requestfailed')(request('/private-subject'));
+  listeners.get('response')({request: () => request('/_next/static/private.js'), status: () => 404});
+  listeners.get('pageerror')({name: 'private error', message: 'private password'});
+  listeners.get('console')({type: () => 'error', text: () => 'private credential'});
+  assert.deepEqual(records, [
+    {event: 'REQUEST_FAILED', route: '/api/admin/session', code: 'OTHER_FAILURE'},
+    {event: 'REQUEST_FAILED', route: 'OTHER_ROUTE', code: 'OTHER_FAILURE'},
+    {event: 'RESPONSE', route: 'FRAMEWORK_ASSET', status: 404},
+    {event: 'PAGE_ERROR', name: 'OTHER_ERROR'}, {event: 'CONSOLE_ERROR'},
+  ]);
+  for (let i = 0; i < 80; i++) listeners.get('console')({type: () => 'error'});
+  listeners.get('requestfailed')(request('/v1/me/privacy?token=private'));
+  assert.equal(records.length, 48);
+  assert.deepEqual(records.at(-1), {event: 'REQUEST_FAILED', route: '/v1/me/privacy', code: 'OTHER_FAILURE'});
+  assert.deepEqual(records[0], {event: 'CONSOLE_ERROR'});
+  assert(!/private|token|password|credential/.test(JSON.stringify(records)));
 });

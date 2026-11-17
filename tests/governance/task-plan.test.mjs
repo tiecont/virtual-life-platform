@@ -15,6 +15,12 @@ test('real implementation dependencies, invalid states, cycles and invented veri
  assert.throws(()=>validateTaskPlan(plan([task('VL-001',[],{status:'VERIFIED',verification:{...verification,commands:[{command:'pnpm test',exitCode:1}]}})])));
  assert.throws(()=>validateTaskPlan(plan([task('VL-001'),task('VL-002',['VL-001'],{status:'VERIFIED',verification})])));
 });
+test('priority orders ready work without overriding real dependencies or imposing qualification locks',()=>{
+ const p=plan([task('VL-001'),task('VL-002',[],{priority:2}),task('VL-003',['VL-001'],{priority:0}),task('VL-004',[],{priority:1}),task('VL-005',[],{priority:0,qualificationRequirements:['owner policy approval']})]);
+ assert.deepEqual(taskStatus(p).ready.map(t=>[t.id,t.priority]),[['VL-005',0],['VL-004',1],['VL-002',2],['VL-001',undefined]]);
+ assert.deepEqual(taskStatus(p).waitingOnImplementation,[{id:'VL-003',dependencies:['VL-001']}]);
+ for(const priority of [-1,3,0.5,'0',null])assert.throws(()=>validateTaskPlan(plan([task('VL-001',[],{priority})])));
+});
 test('the active backlog preserves historical work and exposes independent work immediately',async()=>{
  const p=await readTaskPlan(),s=taskStatus(p);
   assert(s.total>=110);
