@@ -128,6 +128,37 @@
           "snapshotSha256": "3a8aecf4c7f83475746d4df3bf38734b0aad4a0e1d55f61f20b2b6c26ea50c78",
           "ownerApproval": "MISSING", "creditAuthorization": "MISSING",
           "jobs": [], "creditsConsumed": 0,
+          "verification": {
+            "sourceRevision": "93a918c009ea3f5b23b444f02de662240d0aa5e0",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "commands": [
+              {"command": "python3 -B -m unittest discover -s tests/art -p 'test_*.py' -v", "exitCode": 0, "result": "7 PASS: exact original/crop pixels, immutable revision refusal, source/index/crop tampering, bounds/path/duplicate rejection, symlink refusal and no inferred approval/spending."},
+              {"command": "python3 -B scripts/art/pet_design_intake.py --verify artifacts/design-intake/pets/pet-v3-fire-icarus/owner-sheet-v2", "exitCode": 0, "result": "19 files and16 native pixel crops PASS; snapshot3a8aecf4c7f83475746d4df3bf38734b0aad4a0e1d55f61f20b2b6c26ea50c78; DESIGN_REVIEW, ownerApproval MISSING, paidJobsAllowed0, runtimeEnabled/productionReady false."},
+              {"command": "node --test tests/governance/pet-assets.test.mjs tests/governance/pet-design.test.mjs tests/governance/pet-v31.test.mjs tests/governance/task-plan.test.mjs", "exitCode": 0, "result": "11 PASS including actual FIFO/path/hash negatives, canonical240 tampering, implementation dependencies and no invented verification."},
+              {"command": "node --test tests/governance/ci.test.mjs tests/governance/plan-status.test.mjs", "exitCode": 0, "result": "7 PASS; failed/missing CI and unsupported verification claims remain rejected."},
+              {"command": "pnpm governance:check", "exitCode": 0, "result": "PASS.174 tasks, VL-171 IN_PROGRESS. Historical3586-file retrieval is not fresh runtime or art acceptance."},
+              {"command": "pnpm architecture:check", "exitCode": 0, "result": "PASS:136 SQL tables plus journal,504 source files,138 API production files and worker boundary."},
+              {"command": "git show --format= --check HEAD", "exitCode": 0, "result": "Committed implementation patch PASS at sourceRevision above."}
+            ],
+            "sameImplementationPrecommitChecks": [
+              {"command": "pnpm build:packages", "exitCode": 0, "result": "18 shared TypeScript package builds PASS; no TypeScript source changed."},
+              {"command": "python3 scripts/validate-pet-v31.py", "exitCode": 0, "result": "Canonical240 draft catalog PASS; no content publication or grant."},
+              {"command": "node --import tsx scripts/pet-asset-check.mjs", "exitCode": 0, "result": "Existing v2 missing-art draft preflight PASS,0 files verified; not Icarus bindings, model or artistic acceptance. PR37 Limited validator remains on its own branch."},
+              {"command": "Playwright Chromium local file review at1440x1000 and390x844", "exitCode": 0, "result": "17 actual images loaded at both viewports; no horizontal overflow or remote requests. Full-page screenshots inspected, including native front wing framing. Not gameplay/browser-product acceptance."}
+            ],
+            "prAudit": [
+              {"number": 36, "head": "c45865d3860af8c9230648fea5faf73413a319ad", "base": "b2b1a079662556c45ab7f9e135d38d72d107237c", "result": "OPEN;24 success checks,2 failed push runtime-images/quality checks; PR-context checks green. No merge."},
+              {"number": 37, "head": "734c5dd35db822a3bca46af0c19e1d264e0815c8", "base": "b2b1a079662556c45ab7f9e135d38d72d107237c", "result": "OPEN;24 success checks,2 failed PR runtime-images/quality checks; push checks green. Existing shared Limited binding owner."},
+              {"number": 38, "head": "47f8249aaf26e41255cc5e33493f5ca622bc9b0e", "base": "734c5dd35db822a3bca46af0c19e1d264e0815c8", "result": "OPEN DRAFT;26 successful checks observed; existing unaccepted Blender/GLB/FBX/Unity study, not approved art."},
+              {"number": 39, "head": "221aa34be6e4a24ed000b7464de90dde5518b828", "base": "c45865d3860af8c9230648fea5faf73413a319ad", "result": "OPEN;26 successful checks observed; skill-only branch is this intake's base."},
+              {"number": 40, "head": "4d29fdeae9bd37f8f929fa27dc6552572a4f0603", "base": "47f8249aaf26e41255cc5e33493f5ca622bc9b0e", "result": "OPEN DRAFT;24 success checks,2 failed push runtime-images/quality checks; PR-context checks green. ARTIST_HANDOFF_REQUIRED study preserved, including owner untracked blend backup."}
+            ],
+            "capabilities": "Meshy balance1044 =1034 monthly+10 permanent, unchanged across this task; free bow/float animation queries only.0 jobs/0 credits. Multi-image supports1-4views and no smart topology; proposed single-image t2.5 bare-mesh5-credit trial remains NOT_AUTHORIZED. Blender MCP addon/scene connection both FAILED. Background Blender printed5.2.3 LTS, then audio shutdown stalled and owned process stopped143; not pinned4.5 authoring acceptance. Unity pinned6000.3.14f1/URP17.3.0 inspected; no Unity invocation or import/render claim.",
+            "artifacts": "artifacts/design-intake/ contains local audit.json with exact PR/source/check inventory, owner-sheet-v1 preserved and corrected owner-sheet-v2 package, and actual desktop/mobile HTML screenshots. No generated evidence committed.",
+            "failedAttempts": "Sandbox pnpm store lock, Chromium launch and FIFO subprocess were denied; required unsandboxed reruns passed. Tight front-wing crop from v1 was corrected in separate immutable v2; no source pixels reconstructed.",
+            "gateResults": {"designApproval": "BLOCKED", "creditAuthorization": "BLOCKED", "blenderExportImport": "NOT_RUN", "unityImportMotion": "NOT_RUN", "windowsPerformance": "NOT_RUN", "rustRuntime": "NOT_RUN", "fullTypeScriptApplicationTests": "NOT_RUN", "hostedNewBranchCI": "NOT_RUN"},
+            "pending": "No new PR or hosted CI; no merge. Implementation verified at sourceRevision; later verification-only commit still requires exact-final-head hosted CI before any merge. Owner must resolve ICARUS-D01-D05 and approve exact snapshot before a separately authorized paid batch. VL-171 stays IN_PROGRESS."
+          },
           "remaining": "Resolve ICARUS-D01-D05: paw/tail anatomy, consistent usable orthographic views, hidden wing/back/hair construction and scale, bow version/grip/VFX separation, and explicit snapshot-specific owner approval. Separate paid batch authorization is required afterwards. No new Blender/GLB/FBX/Unity asset or accepted benchmark. Existing PR37/38/40 assets and importer GUIDs remain owned by their original work. VL-170 retains absent private object-store infrastructure."
         },
         "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
