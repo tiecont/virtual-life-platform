@@ -4,6 +4,7 @@ pub mod combat;
 mod combat_codec;
 pub mod content;
 pub mod status;
+pub mod taxonomy_v3;
 pub mod telegraph;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
