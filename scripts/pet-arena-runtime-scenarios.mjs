@@ -3,6 +3,7 @@ import {spawn} from 'node:child_process';
 import {createHash,randomUUID} from 'node:crypto';
 import {readFile,writeFile} from 'node:fs/promises';
 import {nativeRecoveryScenarios} from './native-recovery-scenarios.mjs';
+import {nativeBackupRestoreScenarios} from './native-backup-restore-scenarios.mjs';
 
 // Extends the shared real Nest/Chromium/WSS/Rust/TLS-PostgreSQL harness. The
 // driver chooses intents from public board data; Rust computes every effect.
@@ -61,6 +62,7 @@ export async function petArenaScenarios(c){
   const mid=await exchange(intent(1,{kind:'skill'}));assert.equal(mid.kind,'receipt',JSON.stringify({kind:mid.kind,code:mid.code,closed:mid.closed}));assert.equal(mid.version,'2');
   const saved=await checkpoint();await stopHost();
   await nativeRecoveryScenarios(c);
+  await nativeBackupRestoreScenarios(c);
   await startHost();assert.deepEqual(await checkpoint(),saved);
   await reconnect();const restored=await view();assert.equal(restored.version,'2');assert.deepEqual(restored.receipt.projection,mid.receipt.projection);
   const replay=await exchange(startIntent,startId);assert.equal(replay.receipt.committed,true);assert.equal(replay.version,'1');assert.deepEqual(replay.receipt.projection,start.receipt.projection);
@@ -144,7 +146,7 @@ export async function petArenaScenarios(c){
   assert.equal((await exchange(terminalIntent,terminalId)).receipt.projection.reward,reward);
   await pool.query('UPDATE game_native_outbox SET delivered_at=NULL,delivery_outcome=NULL');await runWorker();assert.equal(await grantCount(),grants);
   record('worker-commit-crash-concurrent-retry-and-outbox-redelivery-have-one-account-scoped-grant');
-  const terminal=await checkpoint();await stopHost();await startHost();assert.deepEqual(await checkpoint(),terminal);
+  const terminal=await checkpoint();await stopHost();await nativeBackupRestoreScenarios(c);await startHost();assert.deepEqual(await checkpoint(),terminal);
   await reconnect();assert.equal((await view()).receipt.projection.reward,reward);assert.equal(await grantCount(),grants);
   const ended=await exchange(intent(finalVersion,{kind:'pass'}));assert.equal(ended.kind,'rejection');assert.equal(await receiptCount(),finalVersion);
   record('terminal-runtime-restart-reconciles-reward-and-rejects-further-turns');

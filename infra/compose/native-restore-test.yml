@@ -1,0 +1,15 @@
+name: ${CITY_BACKUP_TEST_PROJECT:?Disposable project required}
+services:
+  restore:
+    image: postgres:17.7-alpine
+    environment:
+      POSTGRES_USER: city_backup_test
+      POSTGRES_PASSWORD: ${CITY_BACKUP_TEST_PASSWORD:?Ephemeral password required}
+      POSTGRES_DB: virtual_city_restore_test
+    ports: ['127.0.0.1::5432']
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 1s
+      timeout: 3s
+      retries: 30

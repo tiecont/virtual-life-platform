@@ -38,9 +38,16 @@ can read the encrypted event journal for this check and cannot update/delete it.
 Missing historical keys, damaged snapshots/journals and an incompatible engine
 stop startup before a listener opens, preserving state and pending settlement.
 The Pet Arena process suites exercise these failures and then resume the intact
-match through a terminal outcome. These checks do not prove a complete reducer
-replay from genesis, detect deletion of every event for a turn, or qualify native
-backup/restore, retention or deletion policy. Those remain part of VL-055.
+match through a terminal outcome. The Pet suites also restore encrypted
+mid-match and terminal database archives into separate empty loopback PostgreSQL,
+compare exact journal/reward/migration hashes, and start the actual restricted
+TLS Rust host after explicit allocator lease reacquisition. Wrong archive/runtime
+keys, tampering, occupied targets and incompatible engines remain denied.
+These checks do not prove complete reducer replay from genesis, detect deletion
+of every event for a turn, or qualify production backup custody, retention or
+deletion policy. See the [native data lifecycle](../../specs/native-data-lifecycle.md)
+for the remaining account export/erasure and restore-after-deletion requirements
+of VL-055.
 
 The `headless-counter` ruleset remains a synthetic three-turn transport fixture.
 The `pet-arena-pve` ruleset runs the pinned `vl-pet-arena::combat::Combat` reducer.

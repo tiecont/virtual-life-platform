@@ -212,14 +212,14 @@ try{
 
  const matchId=randomUUID(),privateFile=directory+'/host.private.json';
  const storageKeys={current:Array.from(randomBytes(32))};
- async function startHost(){
+ async function startHost(databaseUrl=runtime.toString()){
   const common={publicKeys:{fixture:keys.publicKey.export({format:'jwk'}).x},world:scope.worldId,boot:scope.runtimeBootId,caFile:tls.caFile,origin};
   await writeFile(privateFile,JSON.stringify(playable?{
    ...common,schemaVersion:1,ruleset:pet?'pet-arena-pve':'headless-counter',...(pet?{pet:0,stage:0}:{}),...(movement?{movement:true}:{}),matchId,player:guest.me.profile.id,
    role,activeStorageKey:'current',storageKeys,engineHash:Array(32).fill(0x64),
   }:{...common,content:scope.contentHash,expectedRole:role}),{mode:0o600});
   const binary=resolve(playable?'artifacts/rust/target/debug/vl-game-runtime':'artifacts/rust/target/debug/examples/interop');
-  const env=playable?{PATH:process.env.PATH,VL_RUNTIME_BIND:'127.0.0.1:0',VL_GAMEPLAY_ENABLED:'1',VL_GAMEPLAY_CONFIG:privateFile,VL_GAME_DATABASE_URL:runtime.toString()}:{PATH:process.env.PATH,TEST_DATABASE_URL:runtime.toString()};
+  const env=playable?{PATH:process.env.PATH,VL_RUNTIME_BIND:'127.0.0.1:0',VL_GAMEPLAY_ENABLED:'1',VL_GAMEPLAY_CONFIG:privateFile,VL_GAME_DATABASE_URL:databaseUrl}:{PATH:process.env.PATH,TEST_DATABASE_URL:runtime.toString()};
   child=spawn(binary,playable?[]:[privateFile],{env,stdio:['ignore','pipe','pipe']});
   let startup='';child.stderr.on('data',chunk=>{errors+=chunk;});
   childClosed=new Promise(ok=>child.once('close',code=>ok(code)));
@@ -235,12 +235,12 @@ try{
 
  // Probe recovery with the same restricted role and real runtime executable.
  // Diagnostics are checked for the fixed redacted error, never archived raw.
- async function rejectHost(overrides={}){
+ async function rejectHost(overrides={},databaseUrl=runtime.toString()){
   const original=await readFile(privateFile);
   let probe;
   try{
    await writeFile(privateFile,JSON.stringify({...JSON.parse(original),...overrides}),{mode:0o600});
-   probe=spawn(resolve('artifacts/rust/target/debug/vl-game-runtime'),[],{env:{PATH:process.env.PATH,VL_RUNTIME_BIND:'127.0.0.1:0',VL_GAMEPLAY_ENABLED:'1',VL_GAMEPLAY_CONFIG:privateFile,VL_GAME_DATABASE_URL:runtime.toString()},stdio:['ignore','pipe','pipe']});
+   probe=spawn(resolve('artifacts/rust/target/debug/vl-game-runtime'),[],{env:{PATH:process.env.PATH,VL_RUNTIME_BIND:'127.0.0.1:0',VL_GAMEPLAY_ENABLED:'1',VL_GAMEPLAY_CONFIG:privateFile,VL_GAME_DATABASE_URL:databaseUrl},stdio:['ignore','pipe','pipe']});
    let stdout='',stderr='';probe.stdout.on('data',b=>{stdout+=b;});probe.stderr.on('data',b=>{stderr+=b;});
    const timer=setTimeout(()=>probe.kill('SIGKILL'),10000);
    let code;
@@ -377,7 +377,7 @@ try{
  let petEffects;
  if(pet){
   const {petArenaScenarios}=await import('./pet-arena-runtime-scenarios.mjs');
-  petEffects=await petArenaScenarios({loss,pool,admin,schema,role,rewardRole,rewardPassword,markRewardRoleCreated:()=>{rewardRoleCreated=true;},address,directory,scope,identity,store,issuer,credential,csrf:guest.me.csrfToken,call,fresh,origin,hello,startHost,rejectHost,stopHost:async()=>{child.kill('SIGKILL');await childClosed;child=undefined;},upstream:()=>upstream,matchId,player:guest.me.profile.id,record});
+  petEffects=await petArenaScenarios({loss,pool,admin,schema,role,runtime,tls,createAdmissionStore:target=>new RuntimeAdmissionStore(target,identity),rewardRole,rewardPassword,markRewardRoleCreated:()=>{rewardRoleCreated=true;},address,directory,scope,identity,store,issuer,credential,csrf:guest.me.csrfToken,call,fresh,origin,hello,startHost,rejectHost,stopHost:async()=>{if(child){child.kill('SIGKILL');await childClosed;child=undefined;}},upstream:()=>upstream,matchId,player:guest.me.profile.id,record});
  }
  if(playable&&!pet){
   const readyStarted=Date.now(),ready=await fetch('http://127.0.0.1:'+upstream+'/health/ready');
