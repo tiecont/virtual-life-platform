@@ -71,6 +71,39 @@ Batch tests exercise rules, spawning, collision-controller movement and
 interaction. Rendering and physical GPU performance require a separate
 interactive player run.
 
+### Icarus Import Audit
+
+Audit an actual candidate FBX without changing its source or the main Unity
+project:
+
+```sh
+UNITY_EDITOR=/absolute/path/to/6000.3.14f1/Editor/Unity node scripts/art/icarus-unity-audit.mjs --model /absolute/path/to/icarus.fbx
+```
+
+The runner creates an isolated pinned Unity/URP project under ignored
+`artifacts/character-production/icarus-unity-audit/`, copies the FBX and its
+existing `.meta` if present, and imports as Generic with readable meshes and
+untruncated weights. Embedded FBX textures are supported; unresolved external
+texture references remain missing and fail. It writes the actual Editor log,
+source revision, FBX/importer hashes and import facts; exit 1 reports failed requirements and
+exit 2 means no Editor was configured.
+
+The import contract measures one actual LODGroup containing three levels,
+including geometry outside the group that persists at every level. It checks
+triangle, joint, material and texture size budgets, all skin weights and joints,
+and all sixteen canonical actions from the maintained Limited profile. Each
+clip is sampled at seventeen times after restoring the rest pose; all LODs must
+deform, curve paths must resolve, and identical sampled transform sequences
+cannot qualify as different actions. FBX take namespaces ending in `|action`
+are recorded with their original clip names. The audit creates no animations,
+prefab, materials or gameplay bindings.
+
+`IMPORT_CONTRACT_PASS` covers only these measured import requirements. It cannot
+establish likeness, topology quality, expressive timing, material packing/BC7,
+reduced motion, rig controls, collision clearance, rendered motion, rights or
+player performance. Art and runtime acceptance remain separate; the report
+always leaves production and gameplay disabled.
+
 `linux-player-tests` builds and launches a rendered Linux test player. Both
 blockout tests must pass without skips. Routes physically move the capsule
 from spawn to cafe/Arena approaches, check a solid cafe collision and district

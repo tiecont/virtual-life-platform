@@ -40,6 +40,9 @@ for o in meshes:
 for im in bpy.data.images:
  facts['images'].append({'name':im.name,'size':list(im.size),'colorspace':im.colorspace_settings.name})
 (out/'inspection.json').write_text(json.dumps(facts,indent=2))
+# Store a useful inspection view in the editable source as well as the PNGs.
+cam.location=focus+Vector((0,-1,.05))*size*4
+cam.rotation_euler=(focus-cam.location).to_track_quat('-Z','Y').to_euler()
 bpy.ops.wm.save_as_mainfile(filepath=str(root/'icarus-pbr4k-inspection.blend'))
 for name,angle in [('front',0),('side',90),('back',180),('three-quarter',35)]:
  a=math.radians(angle);cam.location=focus+Vector((math.sin(a),-math.cos(a),.05))*size*4;cam.rotation_euler=(focus-cam.location).to_track_quat('-Z','Y').to_euler();scene.render.filepath=str(out/(name+'.png'));bpy.ops.render.render(write_still=True)

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "characterId": "pet-v3-fire-icarus",
+  "file": "owner-battle-reference.png",
+  "sha256": "af3d8af34268cb01b29fd400e62b71378c0c2176b72991ebfcfd3e722f0eb76c",
+  "origin": "owner_supplied_conversation_attachment",
+  "purpose": "Primary Icarus appearance and style reference",
+  "state": "DRAFT_ONLY",
+  "runtimeEnabled": false,
+  "productionReady": false,
+  "rights": "PENDING_REVIEW",
+  "restrictions": [
+    "Reference only; no production asset or publication authorization",
+    "Old VirtualLife branding is not Aetheria: SoulBound product copy",
+    "Screenshot VFX and displayed values do not define gameplay rules"
+  ]
+}
