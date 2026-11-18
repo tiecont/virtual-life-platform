@@ -2788,6 +2788,34 @@
             }
           ],
           "remaining": "Native backup/restore, full reducer replay from genesis and deletion of all events for a turn are not proven by envelope verification. Export/deletion/retention approvals remain unresolved. Task stays IN_PROGRESS. Hosted Quality and Rust on final head required before merge."
+        },
+        "privacyRequestExpiryVerification": {
+          "sourceRevision": "e1970b93f039e09e6a36746dc55972cba22a1df3",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/60",
+          "finding": "Quality run 44230811202 job 134565848598 recorded HTTP 503 on POST /v1/privacy/requests during the mobile deletion case. A clock that advances one millisecond between reads reproduced HTTP 503 on the old source. PostgreSQL limits expiry to seven days after creation.",
+          "change": "Derive the expiry from the captured creation timestamp and test the advancing clock at the HTTP boundary against disposable PostgreSQL.",
+          "commands": [
+            {
+              "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/privacy-requests.test.ts -t 'when the service clock advances between reads'",
+              "exitCode": 1,
+              "result": "Expected 201 and received 503 with the new regression test and the original application code."
+            },
+            {
+              "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/privacy-requests.test.ts",
+              "exitCode": 0,
+              "result": "20 passed, including request expiry with an advancing clock."
+            },
+            {
+              "command": "pnpm exec eslint apps/platform-api/src/features/identity/modules/privacy/application/privacy-requests.ts tests/integration/privacy-requests.test.ts",
+              "exitCode": 0
+            },
+            {
+              "command": "git show --format= --check HEAD",
+              "exitCode": 0
+            }
+          ],
+          "remaining": "The lifecycle acceptance stays open. The final PR head requires green hosted Quality and Rust before merge."
         }
       }
     },
