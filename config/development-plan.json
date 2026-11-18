@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "product": "Aetheria: SoulBound",
   "legacyPlatform": "VirtualLife",
-  "execution": "single-agent",
+  "execution": "opt-in-multi-agent",
   "primaryClient": "Windows Unity URP",
   "authority": "Rust new gameplay; Nest legacy rooms and control plane",
   "archive": "archive/pre-cleanup-2026-11-10",
@@ -302,7 +302,7 @@
       "priority": 1,
       "dependsOn": [],
       "acceptance": [
-        "Owner selected_design_01.png remains the primary appearance reference; actual neutral front/side/back and face/hand/wing closeups pass SINGLE_AGENT_SELF_REVIEW for likeness, anatomy, layered construction and finish. Generated supplements remain proposals; no numeric likeness claim.",
+        "Owner selected_design_01.png remains the primary appearance reference. Stop for owner review of hashed visual evidence after H1 face/hair, H2 costume/wings/bow, H3 rig/motion and H4 Unity presentation. Generated supplements remain proposals. Technical checks and self-review cannot approve a gate.",
         "Editable Blender source with purposeful joint topology, separate articulated wings and usable five-finger hands; actual bow grip, draw and fold clearance pass before downstream animation acceptance.",
         "LOD0 including bow/accessories has 26000-29500 triangles, 74 Icarus bones and at most 3 materials; LOD1/LOD2 meet current kit budgets. Correct UVs and isolated component bakes preserve focal detail; whole-mesh decimation or triangle totals alone do not pass.",
         "High-resolution authoring PBR channel dimensions and provenance are measured against the owner 4K/8K request; runtime texture budgets, channel packing and color spaces are validated separately. Upscaling does not establish source detail.",
@@ -4604,7 +4604,7 @@
       "priority": 1,
       "feature": "Avatar-Art",
       "title": "Blender\u2192Unity rig and per-scene shader/material/LOD budgets",
-      "objective": "Define texture, bone, draw, materials and shader keyword budget for first 3 golden scenes.",
+      "objective": "Define texture, bone, draw, materials and shader keyword budget for first 3 golden scenes. Maintain shared character input preflight and owner gate receipt validation.",
       "dependsOn": [
         "VL-010"
       ],

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "characterId": "pet-v3-fire-icarus",
+  "gate": "H1",
+  "status": "PENDING_OWNER_REVIEW",
+  "sourceRevision": "GIT_SHA_AT_CAPTURE",
+  "artifactHashes": {},
+  "commands": [],
+  "reviewer": "CTO_SELF_REVIEW",
+  "ownerApprovalRef": null,
+  "ownerApprovedAt": null,
+  "previousGateReceiptSha256": null,
+  "blockers": [],
+  "rightsState": "PENDING_REVIEW",
+  "performanceState": "NOT_TESTED",
+  "releaseState": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
+}

@@ -147,7 +147,9 @@ documented in [private art delivery](specs/media/private-art-delivery.md). Local
 staging never grants art acceptance or public publication.
 
 config/development-plan.json is the sole active backlog. Run `pnpm plan:status`
-for ready tasks and progress. Any ready task may proceed with the same agent;
+for ready tasks and progress. Explicit multi-agent work uses file-owned scopes
+and a single integrator. Character art requires owner approval at H1 through
+H4 before dependent stages proceed. Any ready task may proceed with one agent;
 there are no reservations or mandatory independent-agent handoffs. Dependency
 edges describe needed implementations. Qualification dependencies describe later
 hardware, rights, signing or release acceptance and do not block implementation.

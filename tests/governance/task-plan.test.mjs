@@ -3,6 +3,11 @@ import {test} from 'node:test';
 import {readTaskPlan,taskStatus,validateTaskPlan} from '../../scripts/task-plan.mjs';
 const task=(id,dependsOn=[],extra={})=>({id,title:id,dependsOn,acceptance:['actual check'],qualificationRequirements:[],status:'TODO',...extra});
 const plan=tasks=>({schemaVersion:2,execution:'single-agent',policy:{reservationsRequired:false,independentReviewRequired:false},tasks});
+test('explicit delegation preserves task readiness',()=>{
+ const p=plan([task('VL-001')]);
+ assert.deepEqual(taskStatus({...p,execution:'opt-in-multi-agent'}).ready,taskStatus(p).ready);
+ assert.throws(()=>validateTaskPlan({...p,execution:'unrestricted'}));
+});
 test('all independent implementations are ready without an agent, phase, hardware or review reservation',()=>{
  const p=plan([task('VL-001',[],{qualificationRequirements:['physical Windows GPU']}),task('VL-002'),task('VL-003',['VL-001']),task('VL-004',[],{qualificationDependencies:['VL-001']})]);
  assert.deepEqual(taskStatus(p).ready.map(t=>t.id),['VL-001','VL-002','VL-004']);

@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "characterId": "pet-v3-fire-icarus",
+  "displayName": "Icarus",
+  "designRevision": "OWNER_APPROVED_VERSION_1_RECONCILE_HASHES",
+  "heightMeters": 1.68,
+  "anatomy": "adult_human_no_tail_no_beast_legs",
+  "appendages": {
+    "type": "pair_of_feather_wings",
+    "count": 2,
+    "attachment": "upper_back",
+    "foldable": true
+  },
+  "weapon": {
+    "type": "bow",
+    "name": "Phoenix Fire Bow",
+    "separateProp": true
+  },
+  "upAxis": "Y",
+  "forwardAxis": "-Z",
+  "paletteHex": {
+    "white": "#F6F4EF",
+    "gold": "#D8B669",
+    "hairPink": "#E7AFC2",
+    "fire": "#F6A14B"
+  },
+  "paletteReviewStatus": "PROVISIONAL_RECONCILE_WITH_APPROVED_DESIGN",
+  "materials": [
+    "fabric",
+    "metal",
+    "gem",
+    "emissive"
+  ],
+  "signatureOpcode": "FIRE_ZONE",
+  "rigImportType": "Generic",
+  "toolVersions": {
+    "unity": "6000.3.14f1",
+    "urp": "17.3.0",
+    "blender": "4.5 LTS"
+  },
+  "referenceHashes": {},
+  "designApprovalReference": "ADD_EXACT_USER_APPROVAL_REFERENCE",
+  "releaseState": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
+}

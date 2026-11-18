@@ -3,8 +3,11 @@
 Read README.md and config/development-plan.json before changing code. Run
 `pnpm plan:status` to see every task whose implementation dependencies are met.
 
-One agent executes all features. No agent assignment, reservation, second-agent
-approval or phase-wide signoff is required before implementation. Work on any
+One agent executes by default. For explicitly requested multi-agent work, the
+lead assigns independent file scopes in isolated worktrees and alone integrates
+changes and edits the backlog. Use model aliases only when available.
+Character production requires explicit owner review at each H1-H4 gate before
+the next dependent art stage. Other ready work needs no reservation. Work on any
 ready task; keep actual code/contract dependencies. Hardware, media rights,
 signing and release qualification apply to their own acceptance and deployment,
 and must not delay unrelated source work. Never claim a check ran when it did not.
