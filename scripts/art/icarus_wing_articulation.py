@@ -137,7 +137,7 @@ def rig_wings():
 
 def set_pose(rig, amount):
     for side, sign in [('L', 1), ('R', -1)]:
-        for segment, pitch, sweep in [('Shoulder', 22, 24), ('Elbow', 68, 0), ('Wrist', -28, 0)]:
+        for segment, pitch, sweep in [('Shoulder', 22, 24), ('Elbow', 68, 0), ('Wrist', 28, 0)]:
             bone = rig.pose.bones[bone_name(side, segment)]
             inverse = bone.bone.matrix_local.to_3x3().inverted()
             pitch_axis = inverse @ Vector((0, 1, 0))
@@ -208,12 +208,89 @@ def render_views(output, rig, meshes, context):
     return facts
 
 
+def verify(output, source):
+    blend = output / 'icarus-wing-study.blend'
+    glb = output / 'icarus-wing-study.glb'
+    bpy.ops.wm.open_mainfile(filepath=str(blend))
+    rig = bpy.data.objects['Icarus_Wing_Study_6Bones']
+    meshes = [o for o in rig.children if o.type == 'MESH']
+    body_vertices, body_faces = world_geometry(bpy.data.objects['DisplayContext.Mesh_0'])
+    tree = BVHTree.FromPolygons(body_vertices, body_faces, all_triangles=True)
+    bpy.context.scene.frame_set(1)
+    opened = {o.name: world_geometry(o)[0] for o in meshes}
+    report = {'blender': bpy.app.version_string, 'sourceSha256': digest(source),
+              'productionReady': False, 'artState': 'NOT_REVIEWED',
+              'reviewMode': 'SINGLE_AGENT_SELF_REVIEW', 'studyBones': len(rig.data.bones),
+              'meshCount': len(meshes), 'poses': [],
+              'scope': 'Wing root/fold study only; canonical rig/actions remain missing',
+              'contextMask': {o.name: o.get('masked_legacy_wing_vertices', 0)
+                              for o in bpy.data.objects if o.name.startswith('DisplayContext.')},
+              'reopen': {'bones': len(rig.data.bones),
+                         'packedImages': sum(i.packed_file is not None for i in bpy.data.images)},
+              'files': {p.name: digest(p) for p in output.iterdir()
+                        if p.suffix in ('.blend', '.glb', '.png')}}
+    report['unweightedVertices'] = sum(
+        not v.groups or abs(sum(g.weight for g in v.groups) - 1) > .0001
+        for o in meshes for v in o.data.vertices)
+    report['nonManifoldEdges'] = 0
+    for obj in meshes:
+        bm = bmesh.new()
+        bm.from_mesh(obj.data)
+        report['nonManifoldEdges'] += sum(not e.is_manifold for e in bm.edges)
+        bm.free()
+    for frame in range(1, 32):
+        bpy.context.scene.frame_set(frame)
+        intersections, movement, triangles = {}, 0, 0
+        all_vertices = []
+        for obj in meshes:
+            vertices, faces = world_geometry(obj)
+            all_vertices.extend(vertices)
+            triangles += len(faces)
+            movement = max(movement, max((v - opened[obj.name][i]).length
+                                         for i, v in enumerate(vertices)))
+            overlaps = tree.overlap(BVHTree.FromPolygons(vertices, faces, all_triangles=True))
+            if overlaps:
+                intersections[obj.name] = len(overlaps)
+        report['poses'].append({'frame': frame, 'triangles': triangles,
+                                'movementFromOpenMaxMeters': movement,
+                                'bodyTriangleIntersectionPairs': intersections,
+                                'bounds': {'min': [min(v[i] for v in all_vertices) for i in range(3)],
+                                           'max': [max(v[i] for v in all_vertices) for i in range(3)]}})
+    expected_count = len(meshes)
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    bpy.ops.import_scene.gltf(filepath=str(glb))
+    # The importer creates an Icosphere for bone display, separate from GLB meshes.
+    imported = [o for o in bpy.context.scene.objects if o.type == 'MESH'
+                and any(m.type == 'ARMATURE' for m in o.modifiers)]
+    report['glbReimport'] = {'meshes': len(imported),
+                            'armatures': sum(o.type == 'ARMATURE' for o in bpy.context.scene.objects),
+                            'actions': [a.name for a in bpy.data.actions],
+                            'triangles': sum(len(world_geometry(o)[1]) for o in imported)}
+    bpy.context.scene.frame_set(1)
+    imported_open = {o.name: world_geometry(o)[0] for o in imported}
+    bpy.context.scene.frame_set(31)
+    report['glbReimport']['movementFromOpenMaxMeters'] = max(
+        (v - imported_open[o.name][i]).length
+        for o in imported for i, v in enumerate(world_geometry(o)[0]))
+    (output / 'verification.json').write_text(json.dumps(report, indent=2) + '\n')
+    assert report['reopen']['bones'] == 6
+    assert report['glbReimport']['meshes'] == expected_count == 68
+    assert report['glbReimport']['triangles'] == report['poses'][0]['triangles']
+    assert report['poses'][-1]['movementFromOpenMaxMeters'] > .1
+    assert report['glbReimport']['movementFromOpenMaxMeters'] > .1
+    assert report['unweightedVertices'] == report['nonManifoldEdges'] == 0
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
+    parser.add_argument('--verify-existing', action='store_true')
     args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:])
     output = args.output.resolve()
+    if args.verify_existing:
+        verify(output, args.source)
+        return
     output.mkdir(parents=True, exist_ok=False)
     source_hash = digest(args.source)
     bpy.ops.wm.open_mainfile(filepath=str(args.source.resolve()))
@@ -265,37 +342,8 @@ def main():
                              export_force_sampling=True)
     blend = output / 'icarus-wing-study.blend'
     bpy.ops.wm.save_as_mainfile(filepath=str(blend))
-    report = {'blender': bpy.app.version_string, 'sourceSha256': source_hash,
-              'productionReady': False, 'artState': 'NOT_REVIEWED',
-              'reviewMode': 'SINGLE_AGENT_SELF_REVIEW', 'studyBones': len(rig.data.bones),
-              'meshCount': len(meshes), 'poses': facts,
-              'contextMask': {o.name: o.get('masked_legacy_wing_vertices', 0) for o in context},
-              'scope': 'Wing support/root and folding study only; canonical rig/actions remain missing',
-              'files': {p.name: digest(p) for p in output.iterdir() if p.is_file()}}
-    # Reopen the saved source, then import the actual export into an empty scene.
-    rig_name = rig.name
-    bpy.ops.wm.open_mainfile(filepath=str(blend))
-    report['reopen'] = {'bones': len(bpy.data.objects[rig_name].data.bones),
-                        'packedImages': sum(i.packed_file is not None for i in bpy.data.images)}
-    bpy.ops.wm.read_factory_settings(use_empty=True)
-    bpy.ops.import_scene.gltf(filepath=str(glb))
-    imported = [o for o in bpy.data.objects if o.type == 'MESH']
-    report['glbReimport'] = {'meshes': len(imported),
-                            'armatures': sum(o.type == 'ARMATURE' for o in bpy.data.objects),
-                            'actions': [a.name for a in bpy.data.actions],
-                            'triangles': sum(len(world_geometry(o)[1]) for o in imported)}
-    imported_open = {o.name: world_geometry(o)[0] for o in imported}
-    bpy.context.scene.frame_set(31)
-    report['glbReimport']['movementFromOpenMaxMeters'] = max(
-        (v - imported_open[o.name][i]).length
-        for o in imported for i, v in enumerate(world_geometry(o)[0]))
-    assert report['reopen']['bones'] == 6
-    assert report['glbReimport']['meshes'] == len(meshes)
-    assert report['glbReimport']['triangles'] == facts[0]['triangles']
-    assert facts[2]['movementFromOpenMaxMeters'] > .1
-    assert report['glbReimport']['movementFromOpenMaxMeters'] > .1
     assert digest(args.source) == source_hash, 'r3 source changed'
-    (output / 'verification.json').write_text(json.dumps(report, indent=2) + '\n')
+    verify(output, args.source)
 
 
 if __name__ == '__main__':
