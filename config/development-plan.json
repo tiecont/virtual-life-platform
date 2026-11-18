@@ -160,7 +160,27 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
-      "topologyBakeR3": {
+    "handJointRepair": {
+      "sourceRevision": "5a2ef2b3f5b89dd57587e4313296b0ec66323a88",
+      "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+      "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/60",
+      "state": "ART_REVISION_REQUIRED",
+      "productionReady": false,
+      "scope": "Isolated five-digit editable hand cage and 16-bone grip test; not integrated into Icarus or Unity.",
+      "commands": [
+        {"command": "python3 -m py_compile scripts/art/icarus_hand_repair.py", "exitCode": 0, "result": "PASS"},
+        {"command": "python3 -m unittest discover -s tests/art -p 'test_*.py'", "exitCode": 0, "result": "15 PASS"},
+        {"command": "node --check scripts/task-plan.mjs", "exitCode": 0, "result": "PASS; unchanged plan tooling syntax only"},
+        {"command": "git diff --cached --check", "exitCode": 0, "result": "Implementation whitespace PASS before source commit"},
+        {"command": "Blender 4.5.16 --background --threads 4 --python scripts/art/icarus_hand_repair.py -- --output /home/tiecont/Projects/Aetheria/artifacts/character-production/icarus-hand-authoring/r4-fit", "exitCode": 0, "result": "1050 cage triangles,16 deform bones,zero nonmanifold/loose/unweighted vertices;15 actual open/half/grip/gauge renders. Finite skin movement up to0.108205m.20mm gauge: no sampled digit vertices inside, minimum gaps0.38-2.59mm. Visual anatomy remains unaccepted."},
+        {"command": "Blender 4.5.16 --background r4-fit/icarus-hand-joint-candidate.blend --python-expr reopen/manifold/bone/frame32 finite assertions", "exitCode": 0, "result": "Delivered Blend reopened; manifold,16bones and finite posed mesh PASS"}
+      ],
+      "artifacts": {"directory": "artifacts/character-production/icarus-hand-authoring/r4-fit", "blendSha256": "041f10a71faa93a1634a35ec737c2f79c35eb2f98466dfd95ad46af4338d1226"},
+      "limitations": "Live Blender plugin unavailable; installed4.5.16 background route ran. Earlier r4 render process exited143 before completion; r4-fit subsequently completed0. No paid generator calls, uploads or owner file replacements.",
+      "hostedCI": "PR60 Quality and Rust running at sourceRevision; final metadata head pending. No merge.",
+      "remaining": "Integrate marked wrist seam into actual character; reference proportions/knuckle finish, final Phoenix bow contact, full74-bone budget,UV/skin bake,LOD/canonical actions and actual Unity deformation remain open. This candidate does not close VL-171 or VL-149."
+    },
+    "topologyBakeR3": {
         "sourceRevision": "c88626736023a681f429665d7fb4f747a4f138de",
         "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
         "state": "ARTIST_HANDOFF_REQUIRED",
