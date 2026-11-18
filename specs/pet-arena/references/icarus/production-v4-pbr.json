@@ -1,0 +1,337 @@
+{
+  "schemaVersion": 1,
+  "petId": "pet-v3-fire-icarus",
+  "state": "ART_REVISION_REQUIRED",
+  "styleTarget": "UNVALIDATED_TARGET",
+  "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
+  "productionReady": false,
+  "runtimeEnabled": false,
+  "authorization": "Current owner request specifies Meshy7.1 + Meshy7 PBR4K/8K, autonomous offline development and all-Pet design images; no purchase or release",
+  "reference": "/home/tiecont/Downloads/Aetheria_Icarus_Design_Review_V3/references/selected_design_01.png",
+  "referenceSha256": "6bb497272dde6d6fa74a1eb4fccf88a60ae147ed529bd894f23e86441623c7fc",
+  "candidateModels": [
+    {
+      "taskId": "01a1ea3d-a9c9-701f-a386-a8bc849dae2e",
+      "taskType": "multi-image-to-3d",
+      "aiModel": "meshy-7.1",
+      "textureModel": "meshy-7",
+      "textureResolution": "4k",
+      "enablePbr": true,
+      "consumedCredits": 30,
+      "input": "Three native owner-sheet crops,276px high",
+      "localPath": "/home/tiecont/Projects/Aetheria/artifacts/character-production/icarus-v4-pbr/meshy/icarus-pbr4k.glb",
+      "sha256": "8919fff1e78aa4901812ceda0233e36a3ee1dc9d28ac6c0b603f821b40587cef",
+      "blender": "4.5.16 LTS",
+      "triangles": 5481024,
+      "materials": 1,
+      "rigged": false,
+      "inspection": {
+        "blender": "4.5.16 LTS",
+        "bounds": [
+          [
+            -0.8120530247688293,
+            -0.388808012008667,
+            -0.9526919722557068
+          ],
+          [
+            0.8114510178565979,
+            0.3696880042552948,
+            0.9448890089988708
+          ]
+        ],
+        "objects": [
+          {
+            "name": "Mesh_0",
+            "triangles": 5481024,
+            "vertices": 3020265,
+            "materials": 1,
+            "uvLayers": 1
+          }
+        ],
+        "images": [
+          {
+            "name": "Image_0",
+            "size": [
+              4096,
+              4096
+            ],
+            "colorspace": "sRGB"
+          },
+          {
+            "name": "Image_1",
+            "size": [
+              2048,
+              2048
+            ],
+            "colorspace": "Non-Color"
+          },
+          {
+            "name": "Image_2",
+            "size": [
+              4096,
+              4096
+            ],
+            "colorspace": "Non-Color"
+          }
+        ],
+        "productionReady": false
+      }
+    },
+    {
+      "taskId": "01a1ea7f-4d6a-7445-8db6-db29285948b7",
+      "taskType": "image-to-3d",
+      "aiModel": "meshy-7.1",
+      "textureModel": "meshy-7",
+      "textureResolution": "4k",
+      "enablePbr": true,
+      "consumedCredits": 30,
+      "input": "Generated front-native.png supplementary interpretation",
+      "localPath": "/home/tiecont/Projects/Aetheria/artifacts/character-production/icarus-v4-front/meshy/icarus-pbr4k.glb",
+      "sha256": "943ad8fc0258e80e120349e1bf97521eebb108abc04d399f02c75758647b7d9c",
+      "blender": "4.5.16 LTS",
+      "triangles": 4208442,
+      "materials": 1,
+      "rigged": false,
+      "inspection": {
+        "blender": "4.5.16 LTS",
+        "bounds": [
+          [
+            -0.9206600189208984,
+            -0.3151000142097473,
+            -0.9520990252494812
+          ],
+          [
+            0.9195939898490906,
+            0.3286310136318207,
+            0.9497650265693665
+          ]
+        ],
+        "objects": [
+          {
+            "name": "Mesh_0",
+            "triangles": 4208442,
+            "vertices": 2326527,
+            "materials": 1,
+            "uvLayers": 1
+          }
+        ],
+        "images": [
+          {
+            "name": "Image_0",
+            "size": [
+              4096,
+              4096
+            ],
+            "colorspace": "sRGB"
+          },
+          {
+            "name": "Image_1",
+            "size": [
+              2048,
+              2048
+            ],
+            "colorspace": "Non-Color"
+          },
+          {
+            "name": "Image_2",
+            "size": [
+              4096,
+              4096
+            ],
+            "colorspace": "Non-Color"
+          }
+        ],
+        "productionReady": false
+      }
+    }
+  ],
+  "designImages": [
+    {
+      "path": "assets/characters/icarus/design-v4/back-native.png",
+      "sha256": "4a2ba4b23e706ab1ca66080f37f3491f56123d1e74b820d058061ca57bfda3a0",
+      "origin": "AI_GENERATED_SUPPLEMENT",
+      "model": "gpt-image-2 via Meshy",
+      "consumedCredits": 12,
+      "status": "DESIGN_REVIEW_NOT_APPROVED",
+      "dimensions": [
+        1024,
+        1536
+      ]
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/bow-native.png",
+      "sha256": "9779cb92ea1ae55cb114f28a854b53e712b929058eeb26da7992b5c95afba0af",
+      "origin": "AI_GENERATED_SUPPLEMENT",
+      "model": "gpt-image-2 via Meshy",
+      "consumedCredits": 12,
+      "status": "DESIGN_REVIEW_NOT_APPROVED",
+      "dimensions": [
+        1024,
+        1536
+      ]
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/front-native.png",
+      "sha256": "04887f56f81aac94d8116713f64480afe6c4d9272ebe052f98b7d84029cd522b",
+      "origin": "AI_GENERATED_SUPPLEMENT",
+      "model": "gpt-image-2 via Meshy",
+      "consumedCredits": 12,
+      "status": "DESIGN_REVIEW_NOT_APPROVED",
+      "dimensions": [
+        1024,
+        1536
+      ]
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/front-three-quarter-native.png",
+      "sha256": "210b3882cf90c3af82ac8fb5afed553d14e9ee5803fdead1b41dfbb92556af14",
+      "origin": "AI_GENERATED_SUPPLEMENT",
+      "model": "gpt-image-2 via Meshy",
+      "consumedCredits": 12,
+      "status": "DESIGN_REVIEW_NOT_APPROVED",
+      "dimensions": [
+        1024,
+        1536
+      ]
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/rear-three-quarter-native.png",
+      "sha256": "f24f7f4e96943e894eaa3feb1ba75115b0ade39473e0632a35451c448ae0b9e6",
+      "origin": "AI_GENERATED_SUPPLEMENT",
+      "model": "gpt-image-2 via Meshy",
+      "consumedCredits": 12,
+      "status": "DESIGN_REVIEW_NOT_APPROVED",
+      "dimensions": [
+        1024,
+        1536
+      ]
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/side-native.png",
+      "sha256": "eec5420a83e209f30524414d357b003b099403940cd44852ab8f48c8148cd32d",
+      "origin": "AI_GENERATED_SUPPLEMENT",
+      "model": "gpt-image-2 via Meshy",
+      "consumedCredits": 12,
+      "status": "DESIGN_REVIEW_NOT_APPROVED",
+      "dimensions": [
+        1024,
+        1536
+      ]
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/front-three-quarter-corrected-native.png",
+      "sha256": "b915bb4d5c7e79cc2d82d36b4e6e12e99268fa73c7cb7c26ef638b18c95bf032",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "origin": "AI_GENERATED_SUPPLEMENT",
+      "model": "gpt-image-2 via Meshy",
+      "consumedCredits": 12,
+      "status": "DESIGN_REVIEW_NOT_APPROVED"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/rear-three-quarter-corrected-native.png",
+      "sha256": "38551cd593d90c0262f081a4a47c72bb30fc58333edaa49ef9cbe2898798356f",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "origin": "AI_GENERATED_SUPPLEMENT",
+      "model": "gpt-image-2 via Meshy",
+      "consumedCredits": 12,
+      "status": "DESIGN_REVIEW_NOT_APPROVED"
+    }
+  ],
+  "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+  "gaps": [
+    "No claim of100percent likeness",
+    "Face, hair and filigree detail remain soft under neutral closeup",
+    "Finger deformation topology, thumb opposition and bow grip remain unvalidated; wing articulation requires reconstruction",
+    "High-poly sources require purposeful retopology and texture baking, not triangle-count acceptance",
+    "No rig or canonical actions in either new candidate",
+    "Supplementary views differ in hair/back construction and are not owner-approved",
+    "Unity integration waits for visual/topology/rig gates"
+  ],
+  "continuityFollowup": {
+    "revision": "v5",
+    "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+    "ownerApproved": false,
+    "productionReady": false,
+    "images": [
+      {
+        "path": "assets/characters/icarus/design-v5/back-native.png",
+        "sha256": "7448ede001e2db1768e4db4fa17fda7b7edc1e4126a0b1b15ffdea3fb12e4e4a",
+        "dimensions": [
+          1024,
+          1536
+        ],
+        "origin": "AI_GENERATED_SUPPLEMENT",
+        "model": "gpt-image-2 via Meshy",
+        "taskId": "01a1eb85-dd21-7436-8200-a25bc3efdd80",
+        "consumedCredits": 12,
+        "status": "DESIGN_REVIEW_NOT_APPROVED",
+        "visualReview": "Central long hair restored; coherent proposal relative to rear-three-quarter. Not final owner design approval."
+      },
+      {
+        "path": "assets/characters/icarus/design-v5/wing-articulation.png",
+        "sha256": "dcb749f06350a3b075cffd0645a85275dbfc0d8012b14ef5e8ede7392a093567",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "origin": "AI_GENERATED_SUPPLEMENT",
+        "model": "gpt-image-2 via Meshy",
+        "taskId": "01a1eb88-48d7-7795-bf33-5d6301f9e0c3",
+        "consumedCredits": 12,
+        "status": "DESIGN_REVIEW_NOT_APPROVED",
+        "visualReview": "Three fold silhouettes readable; outer spread tip clipped and physical joints/clearance unproven. ART_REVISION_REQUIRED."
+      }
+    ],
+    "blenderObservation": {
+      "version": "5.3.0",
+      "route": "LIVE_MCP",
+      "source": "icarus-v4-front/icarus-pbr4k-inspection.blend",
+      "result": "PBR channels connected correctly; neutral close-up shows fused fingers and soft face/ornament detail. Exposure-only inspection, no geometry repair claimed."
+    },
+    "remaining": [
+      "Game retopology, deformable hand joints/bow grip, articulated feather/wing structure, 74-bone rig and canonical actions remain missing. Multi-angle inspection of the front candidate shows five separated digit silhouettes; the previous fused-fingers description is superseded for this candidate.",
+      "Back continuity improved; exact cross-view garment and hair matching remains open.",
+      "Wing study is a proposed fold silhouette, not kinematic validation. Spread left wing reaches the image boundary; cannot qualify as a complete uncut design sheet."
+    ],
+    "uploadEligible": false,
+    "offlineHandoff": {
+      "state": "ARTIST_HANDOFF_REQUIRED",
+      "builder": "scripts/art/icarus_pbr_handoff.py",
+      "candidateSha256": "943ad8fc0258e80e120349e1bf97521eebb108abc04d399f02c75758647b7d9c",
+      "localOutput": "artifacts/character-production/icarus-v4-handoff-r2",
+      "productionReady": false,
+      "geometryEdited": false,
+      "hands": "Five separated digit silhouettes visible from dorsal and palm views on both sides. Edge view overlaps fingers in projection; it does not prove fused geometry. Joint topology, thumb opposition and actual bow grip still need work and deformation review.",
+      "wings": "Back hair obscures the roots; neutral back render cannot certify attachment or fold clearance. No articulated wing rig exists.",
+      "textureQualification": "Base color and packed metallic/roughness are 4096 square; normal is 2048 square. The current source does not meet an all-channel 4K/8K requirement.",
+      "scope": "Local editable high-poly source, embedded textures, original GLB, hashed owner reference, explicitly separate AI proposals, eight neutral stills and canonical 16-action work order. No new model geometry, rig, animation, Unity asset or cloud upload."
+    }
+  },
+  "scopeRestriction": {
+    "allowedCurrentProduction": [
+      "pet-v3-fire-icarus"
+    ],
+    "heldForOwnerDesign": [
+      "pet-v3-ice-glaciemora",
+      "pet-v3-electric-voltaris",
+      "pet-v3-ghost-noctalith",
+      "pet-v3-grass-sylvaris",
+      "pet-v3-water-leviara"
+    ],
+    "heldActions": [
+      "new designs",
+      "image generation",
+      "model generation",
+      "rigging",
+      "animation",
+      "Unity production"
+    ],
+    "allowedPlanning": "Shared pipeline and owner intake blueprint only; existing lore is not design approval."
+  }
+}

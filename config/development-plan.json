@@ -74,6 +74,36 @@
           {"command": "pnpm ci:browser hospitality", "exitCode": 0, "result": "All Lounge and Lodge specs/devices PASS with validated batch reports and disposable database cleanup"}
         ],
         "scope": "Backlog and hospitality synchronization only. Task IDs subsequently moved to168-174 to preserve PR33 IDs163-167; final-head CI still required. No 3D assets produced or VL-055 closure claimed.",
+        "pr45LegacyCaptureObservation": {
+          "sourceRevision": "8e38dc46fb9638de692b7d80ed4931330b6ff9e3",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "failedRun": "Quality44225610936 push,legacy job134544012460",
+          "finding": "Chromium screenshot preflight at scripts/prepare-ci-browser.mjs:44 failed Page.captureScreenshot:Unable to capture screenshot before any application case. No trace/browser failure artifact existed; no network or legacy fixture defect established.",
+          "sameSourceSuccess": "PR Quality44225616016 completed SUCCESS; legacy job134544005586 passed preflight and all38 desktop/mobile legacy cases.",
+          "commands": [
+            {"command": "pnpm plan:status; node --check scripts/prepare-ci-browser.mjs", "exitCode": 0, "result": "Actual local plan and syntax checks only; no local browser suite claimed."}
+          ],
+          "result": "Intermittent hosted capture failure observed; underlying host/browser cause unproven. No source fix, assertion/timeout/retry change. New combined PR45 final head still requires actual green hosted CI before merge.",
+          "evidence": "/tmp/aetheria-pr45-legacy/artifacts/pr45-legacy/"
+        },
+        "frameworkAssetRecovery": {
+          "sourceRevision": "095af3a6a10e76465c15fedb9381a6127844e70e",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/45",
+          "finding": "Hosted Quality44216321857 runtime-images job134507115486 failed at39890d21f22dcd0fbd09888318bf1199cf041078. Downloaded failure artifact14388308880 shows /admin HTTP200 followed by six FRAMEWORK_ASSET ERR_NETWORK_CHANGED events, zero password fields and operator-login locator.fill timeout. Web image scenarios passed; concurrent PR Quality44216330829 runtime-images passed. This is a framework-load interruption before operator interaction, not the earlier /identity failure.",
+          "change": "Reuse PR46 commit6bdcad65e03f6cd146e6a576f5e816af2e496632 as095af3a6a10e76465c15fedb9381a6127844e70e. Retry only same-origin /_next/static/ GET script or stylesheet network changes on reviewed initial pages, with the existing three-attempt bound and fresh page; reject retry after a mutation. Application assertions and timeouts remain intact.",
+          "commands": [
+            {"command": "node --check scripts/image-browser-navigation.mjs", "exitCode": 0},
+            {"command": "node --check tests/governance/image-browser-navigation.test.mjs", "exitCode": 0},
+            {"command": "node --test tests/governance/image-browser-navigation.test.mjs", "exitCode": 0, "result": "12 PASS, including framework asset recovery, persistent interruption bound and mutation/non-framework exclusions"},
+            {"command": "pnpm install --frozen-lockfile", "exitCode": 0},
+            {"command": "pnpm exec eslint scripts/image-browser-navigation.mjs tests/governance/image-browser-navigation.test.mjs", "exitCode": 0},
+            {"command": "node --test tests/governance/task-plan.test.mjs", "exitCode": 0, "result": "4 PASS"},
+            {"command": "pnpm governance:check", "exitCode": 0, "result": "Governance consistency and indexed historical byte verification passed; not fresh historical gameplay execution"},
+            {"command": "git diff --check HEAD^ HEAD", "exitCode": 0}
+          ],
+          "remaining": "Fresh hosted Quality and Rust against the final PR45 head are required before merge. No local image rebuild or runtime smoke rerun is claimed. Failure artifacts remain under ignored artifacts/pr45-runtime-failure; no deployment or art acceptance."
+        },
         "sceneFloorRaycastFollowup": {
           "sourceRevision": "70c2aac898499654f1a78511fd914ff34d151fb3",
           "reviewMode": "SINGLE_AGENT_AUDIT",
@@ -271,10 +301,494 @@
       "objective": "Produce the first Limited S end-to-end from kit references, preserving canonical identity and FIRE_ZONE semantics; contributes to VL-149, not the Standard S roster.",
       "priority": 1,
       "dependsOn": [],
-      "acceptance": ["Actual editable Blender 4.x LTS source and FBX/GLB export, meter scale and Y-up transfer; LOD0 26000-29500 triangles, Icarus 74 bones and at most 3 materials", "Actual UV/textures, idle/intro/normal/rage/signature clips, URP cel material, FIRE_ZONE VFX and Timeline/Cinemachine preview MP4 exist", "Record character_id, design_revision, reference_hash and actual source/import/runtime hashes; pet-asset-check passes with Icarus bindings present, not merely a missing-asset draft preflight", "Actual licensed Unity import, rendered motion and reduced-motion/performance checks; no runtime animation authority"],
+      "acceptance": [
+        "Owner selected_design_01.png remains the primary appearance reference; actual neutral front/side/back and face/hand/wing closeups pass SINGLE_AGENT_SELF_REVIEW for likeness, anatomy, layered construction and finish. Generated supplements remain proposals; no numeric likeness claim.",
+        "Editable Blender source with purposeful joint topology, separate articulated wings and usable five-finger hands; actual bow grip, draw and fold clearance pass before downstream animation acceptance.",
+        "LOD0 including bow/accessories has 26000-29500 triangles, 74 Icarus bones and at most 3 materials; LOD1/LOD2 meet current kit budgets. Correct UVs and isolated component bakes preserve focal detail; whole-mesh decimation or triangle totals alone do not pass.",
+        "High-resolution authoring PBR channel dimensions and provenance are measured against the owner 4K/8K request; runtime texture budgets, channel packing and color spaces are validated separately. Upscaling does not establish source detail.",
+        "All 16 canonical actions from specs/pet-arena/v3.1/data/limited_animation_profiles.json for pet-v3-fire-icarus exist as distinct authored motion with tested contacts, loops and transitions. The historical five kit authoring clips are not the complete gameplay contract; canonical sword-named keys retain Icarus bow visuals without protocol changes.",
+        "Actual licensed Unity import/reimport of FBX/GLB, URP materials, LODs, prefab, Animator, FIRE_ZONE VFX and requested cinematic preview; inspect moving body geometry in encoded footage and reduced-motion output. Presentation never decides Rust outcomes.",
+        "Self-contained Blender/export/runtime files reopen with actual reference/source/import hashes and complete Limited asset bindings. Measure loading, memory and frame time on named test hardware; offline art qualification, Windows qualification, rights and public release stay separate.",
+        "Upload only the qualified art package using the existing private storage pipeline and verify remote bytes/hash; no public publication or production-ready promotion from CI alone. Other five Limited remain held for owner design; ordinary/map pets remain image-only."
+      ],
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
+        "combinedSourceChecks": {
+          "sourceRevision": "265f2e2c49bf236289d645bf78a8dad1efde1a82",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "commands": [
+            {"command": "pnpm lint", "exitCode": 0, "result": "514 source boundary checks PASS; one existing unused eslint-disable warning in generated public_pb.ts."},
+            {"command": "pnpm typecheck", "exitCode": 0, "result": "All workspace typechecks PASS after regenerating current Next route types. Initial two attempts exited2 on stale ignored .next types referencing removed app/page; old types preserved under ignored artifacts before next typegen. No application source or assertions changed for this local generated-output issue."},
+            {"command": "pnpm assets:check", "exitCode": 0, "result": "Original atlas/provenance and draft checks PASS;11 actual Icarus study references verified,55 missing canonical bindings explicitly remain MISSING_BINDINGS. No production asset completeness or art acceptance."},
+            {"command": "node --test tests/governance/icarus-import.test.mjs tests/governance/pet-limited-assets.test.mjs", "exitCode": 0, "result": "10 PASS, including complete-binding CLI rejection and no promotion of synthetic byte bindings."},
+            {"command": "python3 -B -m unittest discover -s tests/art -p test_*.py; targeted JS ESLint; Python AST parse; git diff --check origin/main...HEAD", "exitCode": 0, "result": "15 art integrity tests PASS;6 JS art wrappers/helpers lint and18 Python art modules parse PASS; combined patch whitespace PASS. No full pnpm check or final-head hosted CI result inferred."}
+          ],
+          "remaining": "Guarded PR59/60 source integration and complete combined-source hosted CI before PR45 merge. Art remains partial and cannot be qualified by source checks."
+        },
+        "combinedRigSourceRegression": {
+          "sourceRevision": "c916790445f132762c50a480c7ad48b3fa1e4f10",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "commands": [
+            {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "80 unit/integration tests plus1 compile-fail doc test PASS on the combined source; no new production route or asset acceptance."},
+            {"command": "cargo fmt --all -- --check", "exitCode": 0},
+            {"command": "node --test tests/governance/icarus-import.test.mjs tests/governance/pet-limited-assets.test.mjs tests/governance/private-art-delivery.test.mjs tests/governance/task-plan.test.mjs tests/governance/plan-status.test.mjs", "exitCode": 0, "result": "33 PASS."},
+            {"command": "python3 -B -m unittest discover -s tests/art -p test_*.py; pnpm governance:check", "exitCode": 0, "result": "15 art integrity tests and174-task/historical-byte consistency PASS; historical data check is not fresh gameplay execution."}
+          ],
+          "remaining": "PR60 and final combined PR45 hosted CI/guarded merges still required. Production art, complete bindings and conditional storage upload remain unqualified."
+        },
+        "consolidatedPartialHandoff": {
+          "sourceRevision": "1215b6505e0de5ff59bb659f85c15eefcfb33254",
+          "handSourceRevision": "f27ececc2668adc927c1a3ba4f06464f611c6e88",
+          "focalSourceRevision": "d304d3acf29bc324f42ce6a1b0855e5d3045b026",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "PARTIAL / ARTIST_HANDOFF_REQUIRED",
+          "productionReady": false,
+          "artifacts": "artifacts/character-production/icarus-consolidated-handoff-r1/index.html",
+          "inventorySha256": "fa03db03da3ea4673f1bdf300f2db160f8bdaba56e3bcc6eba120525d081dacc",
+          "scope": "Self-contained local high-poly, preserved focal source, wing assembly and partial hand candidates remain separate. Original reference, relative opening recipes, Vietnamese correction order, canonical16-action contract and actual previews included. No finished combined character or assigned artist.",
+          "verification": "164 payload files,158 original source hashes,6 embedded-only GLBs,3 decoded MP4s,46 local links,9 Node syntax and10 Python compile checks PASS. Payload2151809161bytes; no duplicate tar. Prior Blender reopen/import/render records are explicitly prior checks, not rerun at consolidation. No new Unity/player/Windows qualification.",
+          "portableReopen": {"sourceRevision": "683eedb40ed7516085d482ae1f3b0b572edeb637", "command": "Blender4.5.16 --background --threads2 --python-exit-code1 --python artifacts/character-production/reopen-consolidated.py -- artifacts/character-production/icarus-consolidated-handoff-r1", "exitCode": 0, "result": "Parent separately reopened all4 packaged Blend files: high-poly0bones/3packed images,focal0/6,wings6/5,hands32/7. No missing external image. Dependency/reopen check only; no new deformation/render/Unity acceptance. Fresh report sits beside the immutable handoff inventory."},
+          "remaining": "Correct focal topology/hair, anatomical wing roots, hand/thumb/armor and exhaustive bow contact, then full74-bone rig,16actions,UV/bake/LODs and actual Unity/player qualification. No qualified art package exists for the conditional private upload. Other five Limited held; ordinary/map Pets remain image-only."
+        },
+        "focalSurfacePreservation": {
+          "sourceRevision": "4395f55fc527938ff52dead8748e14499c43dec4",
+          "upstreamStudyRevision": "d304d3acf29bc324f42ce6a1b0855e5d3045b026",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "ARTIST_HANDOFF_REQUIRED",
+          "productionReady": false,
+          "scope": "Exact dense original face/hair triangle subset, preserved normals/UVs and failed closed control-cage deformation study; not facial retopology, game mesh or canonical animation.",
+          "artifacts": "artifacts/character-production/icarus-focal-handoff-r3 and Icarus_Focal_Surface_Handoff_R3.tar.gz",
+          "commands": [
+            {"command": "node scripts/art/icarus-focal-extract.mjs --source <icarus-v4-front/meshy/icarus-pbr4k.glb> --output <icarus-focal-extract-check/head.glb>", "exitCode": 0, "result": "From4208442 triangles extract589211 triangles/328757 vertices without projection or subdivision. SHA2563a2fd69a629ffc25a43a158435d46c995cce40c77303a1c0f5f4797b8c0450ae exactly matches the reviewed focal source. Existing-output retry exits1/EEXIST without overwriting source or derived file."},
+            {"command": "Blender4.5.16 focal extraction/cage binding, neutral/deformation renders and separate source reopen", "exitCode": 0, "result": "Packed editable source reopened,6 packed images,neutral drift2.986e-7m; actual matching-camera reduced/preserved front/quarter comparisons inspected. Dense preservation restores smooth contour/detail but identity and original carved hair defects persist."},
+            {"command": "node scripts/art/icarus-focal-verify.mjs --output artifacts/character-production/icarus-focal-handoff-r3", "exitCode": 1, "result": "Correct deformation rejection at sourceRevision: yaw30 has2258 normal reversals and P01/P99 edge stretch0.679/1.766; pitch15 has12704 reversals and0.747/2.503.21 checks evaluated;4 failed. Finite vertices,zero new collapsed triangles and valid source/PNG hashes do not cancel failed deformation."},
+            {"command": "node --check extraction/verification utilities; Python compile; targeted ESLint; git diff --check", "exitCode": 0, "result": "PASS; source utility checks only."}
+          ],
+          "remaining": "Three bounded variants exhausted. Keep TEST keys at zero and reject cage for animation. Retopologize connected eyelid/mouth/cheek/jaw/neck loops against the preserved source; separate hair masses, bake onto accepted topology, test extremes, then integrate the full character. Actionable work order and full source/reference/texture package retained locally; no artist contacted or assigned."
+        },
+        "wingAssemblyGuardVerification": {
+          "sourceRevision": "73597639932830edb58202478a93d85e52dfde63",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "commands": [
+            {"command": "node scripts/art/icarus-wing-assemble.mjs --blender <Blender4.5.16> --source <icarus-wing-sweep-r5c/icarus-wing-study.blend> --output <icarus-wing-face-assembly-r2> --verify-existing", "exitCode": 0, "result": "Actual Blend reopen/GLB reimport remains valid with source-hash and unresolved-intersection guards;70 meshes,maximum surface error5.22e-7m."},
+            {"command": "Same Blender verification against separate synthetic changed-source and unresolved-intersection report probes", "exitCode": 1, "result": "Both correctly reject before asset opening with source mismatch or unresolved retained-body intersections. Synthetic negative reports are not character acceptance evidence."}
+          ],
+          "remaining": "These guards verify the recorded retained-body study only, not anatomical attachment, source artistry or production acceptance."
+        },
+        "wingAssemblyVerification": {
+          "sourceRevision": "b657572128c7e846ec62aa91eee15a148a7295de",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "ART_REVISION_REQUIRED",
+          "productionReady": false,
+          "scope": "Retained static body plus six-bone wing study, not the high-poly hand integration or canonical full-character rig. Preserve the rejected face patch separately; no facial geometry replacement.",
+          "artifacts": "artifacts/character-production/icarus-wing-face-assembly-r2",
+          "commands": [
+            {"command": "node scripts/art/icarus-wing-assemble.mjs --blender <Blender4.5.16> --source <icarus-wing-sweep-r5c/icarus-wing-study.blend> --output <icarus-wing-face-assembly-r2>", "exitCode": 0, "result": "Actual Blender construction, ten stills, Blend reopen and GLB reimport PASS. Both retained body vertex hashes unchanged; inner secondary vanes shifted0.03m after0.015m left36 intersection pairs. Zero wing/body intersections across31 frames against retained geometry only.70 meshes,28216 triangles,zero unweighted wing vertices; maximum exported surface error5.22e-7m. Reopening uses full-character front camera."},
+            {"command": "node --check scripts/art/icarus-wing-assemble.mjs; Python AST parse of assembly, motion and PBR inspection modules; pnpm exec eslint scripts/art/icarus-wing-assemble.mjs scripts/art/icarus-import-contract.mjs scripts/art/icarus-unity-audit.mjs", "exitCode": 0, "result": "PASS; no Blender or Unity acceptance inferred from syntax checks."}
+          ],
+          "visualReview": "Actual front/back/side fold views and facial closeup inspected. Root remains tubular, folded side stands away from hair, face/hair/garments remain visibly faceted and detached geometry remains. The input body was already coordinate-masked at old wings; zero intersections does not qualify anatomical attachment or full-body clearance.",
+          "remaining": "Rebuild accepted body/hair and anatomical wing roots, reconcile the separate high-poly hand repair, purposeful retopology/UV/bakes/LODs,74-bone full-body rig and16 canonical actions before actual Unity production qualification. Five other Limited held; ordinary/map Pets image-only."
+        },
+        "wingTimelineVerification": {
+          "sourceRevision": "87c5ff7a1ecd6762b3d1289d0cc8333c0f0470ef",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "productionReady": false,
+          "artifacts": "artifacts/character-production/icarus-wing-face-motion-r1",
+          "commands": [
+            {"command": "Blender4.5.16 --background --threads4 --python-exit-code1 --python scripts/art/icarus_study_motion.py -- --source <icarus-wing-face-assembly-r1/icarus-character-wing-assembly.blend> --output <icarus-wing-face-motion-r1>", "exitCode": 0, "result": "93 actual timeline frames rendered; three H264 MP4s,640x640,31 frames each,15fps,2.066667seconds each. Rendering began at e503774; later validation adds measured geometry motion without claiming an animation redesign."},
+            {"command": "Blender4.5.16 --background --threads2 --python-exit-code1 --python scripts/art/icarus_study_motion.py -- --source <icarus-wing-face-assembly-r1/icarus-character-wing-assembly.blend> --output <icarus-wing-face-motion-r1> --verify-existing", "exitCode": 0, "result": "At sourceRevision, reopened source,93 actual frame hashes and3 encoded video hashes verified; all3 videos fully decoded with ffmpeg -xerror. Actual wing vertex displacement1.158213m; productionReady remains false."},
+            {"command": "ffmpeg decoded frame0/15/30 contact sheets for all3 videos; Pillow front frame1/31 difference probe", "exitCode": 0, "result": "All3 encoded contact sheets visually inspected. Front has18701 pixels changed by more than12/255 of409600; static body and moving wings are explicit. Full framing present in encoded clips; no camera movement used as animation evidence."}
+          ],
+          "limitations": "Wing fold study only. No canonical action, full-body deformation, expressive timing, reduced-motion output, audio, Unity rendering or hardware-performance acceptance. Source/CI merge cannot promote these previews to production art."
+        },
+        "importMeasurementValidation": {
+          "licensedEditorFollowup": {
+            "sourceRevision": "5d0bd274957a8cd1dc69066e801ee19ed23e27d7",
+            "result": "Pinned Unity 6000.3.14f1 imported the same archived FBX (Editor exit 0). Updated contract rejected the asset (exit 1), including explicit missing measurements for LOD1 and LOD2.",
+            "evidence": "artifacts/character-production/icarus-unity-audit/2026-11-18T04-11-03-284Z-aeae49de/result.json"
+          },
+          "sourceRevision": "f1afd2df42b1eaec236d9ca9edc90e52766b86ff",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "command": "node --test tests/governance/icarus-import.test.mjs",
+          "result": "7 passed. Absent or null levels, sparse per-LOD motion samples, and fractional or nonnumeric influence/binding counts fail validation. This contract check does not qualify a Unity asset."
+        },
+        "faceAndAttachmentReview": {
+          "followup": {
+            "ocularR6": "Corrective albedo covers painted irises on blink. 456 lid triangles sampled at 21 blink weights with zero normal reversals. Reopened packed source in Blender 4.5.16. Raised lid overlay and open-eye UV distortion remain.",
+            "attachmentR5": "Candidate C compared at 31 frames: intersection pairs with pink texture-classified geometry reduced to 54 left and 48-49 right. Hair is not semantically isolated, penetration remains and the folded connector is exposed. Offline study only.",
+            "ocularEvidence": "artifacts/character-production/icarus-ocular-repair-r6/reopen.json",
+            "attachmentEvidence": "artifacts/character-production/icarus-wing-attachment-r5/c/verification.json"
+          },
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "ARTIST_HANDOFF_REQUIRED",
+          "productionReady": false,
+          "face": "R4 isolated face patch lacks volume. R5 reconstructed head preserves source UVs and packed images; closed eyelids expose painted eyes and seven upper-lid triangles reverse. Reopened in Blender 4.5.16. Separate skin from hair and accessories, rebuild orbital and lip loops, test closed lids before bake.",
+          "wing": "R4 adds 13 coverts per side. Reopened and inspected across 31 study frames. Side view shows hair crossing the white root connector. Rebuild scapular hair and back costume at the attachment before accepting the fold.",
+          "evidence": [
+            "artifacts/character-production/icarus-head-retopology-r5/REVIEW.md",
+            "artifacts/character-production/icarus-wing-root-r4/REVIEW.vi.md"
+          ]
+        },
+        "legacyFbxImportAudit": {
+          "sourceRevision": "eb9bdfead4645de1d346e9189423163d630485bc",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "IMPORT_REVISION_REQUIRED",
+          "productionReady": false,
+          "modelSha256": "7e900132f0492b1fae64297431eec1a66a5fe2e85b21016b6cbc3e5d41e70d86",
+          "command": "UNITY_EDITOR=<Unity6000.3.14f1> node scripts/art/icarus-unity-audit.mjs --model <icarus/blender/assembled-04/icarus-review.fbx>",
+          "exitCode": 1,
+          "result": "Actual licensed Unity6000.3.14f1/URP17.3.0 import in disposable project exited0; acceptance validator correctly exited1. Measured26044 triangles,44 joints,4 materials,zero unweighted/invalid vertices,one LOD without LODGroup and4 imported study clips.15 canonical actions missing; one imported idle cannot meet three-LOD requirements. No new wing/hand assembly imported or GPU/player/performance claim.",
+          "evidence": "/tmp/aetheria-icarus-rig-import/artifacts/character-production/icarus-unity-audit/2026-11-18T02-41-00-705Z-13eb73e9/result.json"
+        },
+        "limitedBindingCompleteness": {
+          "sourceRevision": "ccb2765f137b9a4c07fac99863ccf8dc17605861",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "commands": [
+            {"command": "pnpm build:packages", "exitCode": 0, "result": "All shared packages built after integrating current main; initial asset check before rebuild failed on stale ignored contracts exports and was not counted as a binding result."},
+            {"command": "node --import tsx scripts/pet-asset-check.mjs --limited-v31 assets/characters/icarus/white-gold-study/bindings.json --require-complete", "exitCode": 1, "result": "Correct incomplete-binding rejection:55 missing canonical bindings, including all16 action clip/VFX/audio sets. The five study actions and new wing previews were not substituted for canonical actions."},
+            {"command": "node --test tests/governance/task-plan.test.mjs tests/governance/plan-status.test.mjs tests/governance/icarus-import.test.mjs", "exitCode": 0, "result": "13 PASS on current combined source; no art acceptance inferred."},
+            {"command": "pnpm governance:check", "exitCode": 0, "result": "174-task consistency and3586 historical byte checks PASS; historical retrieval is not fresh runtime execution."}
+          ],
+          "remaining": "G1-G4 visual/topology/bake gates remain open before full rig,16 actual canonical actions and production Unity bindings. Full source currently has no completed production art package eligible for the conditional private upload."
+        },
+        "handBodyIntegration": {
+          "sourceRevision": "771a7d9c77036694fb6a2fec7f437d4f8809a83f",
+          "commits": [
+            "fed2da8",
+            "771a7d9"
+          ],
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "ART_REVISION_REQUIRED",
+          "productionReady": false,
+          "scope": "Bilateral authored hands stitched into the pinned current high-poly character through shared wrist vertex indices; partial 32-bone hand rigs and actual Phoenix draft bow surface measurements. Not a complete character rig, runtime mesh or Unity asset.",
+          "source": "scripts/art/icarus_hand_integrate.py",
+          "artifacts": "/home/tiecont/Projects/Aetheria-icarus-hand-repair/artifacts/character-production/icarus-hand-integration/r4",
+          "blendSha256": "412636c092a17d2089c4032efa551733cbfa833bf87499ee0ca2e0afca123c73",
+          "checks": [
+            {
+              "command": "python3 -m py_compile scripts/art/icarus_hand_integrate.py",
+              "exitCode": 0
+            },
+            {
+              "command": "node --check scripts/task-plan.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "git diff --check HEAD~2 HEAD",
+              "exitCode": 0
+            },
+            {
+              "command": "Blender 4.5.16 LTS --background --threads 2 --python scripts/art/icarus_hand_integrate.py -- --character icarus-v4-handoff-r2/source/icarus-highpoly-unrigged.blend --hand icarus-hand-authoring/r4-fit/icarus-hand-joint-candidate.blend --bow icarus/blender/assembled-04/phoenix-bow.blend --output hand-integration/r4 --render --render-frames 32 --render-sides left",
+              "exitCode": 0,
+              "result": "Both hands have zero unweighted vertices, finite open/half/grip evaluated poses and maximum movement0.109469m. Three final actual Phoenix bow grip renders inspected. Earlier r3 has18 multi-angle integrated renders; its bow placement and mirrored normals are superseded by r4."
+            },
+            {
+              "command": "Blender 4.5.16 LTS --background --threads 2 --python-exit-code 1 --python artifacts/character-production/icarus-hand-integration/verify.py",
+              "exitCode": 0,
+              "result": "Reopened final Blend. 4138339 original faces retain exact source geometry/UV hashes. All144 left and136 right seam edges have exactly two adjacent faces. Four images packed; weight error2.98e-8; finite frame32; three visible materials."
+            },
+            {
+              "command": "pnpm governance:check",
+              "exitCode": 143,
+              "result": "Final-head rerun terminated after governance consistency output; do not claim full final-head governance PASS. Earlier run before these script commits completed with exit0. No hosted CI or merge performed."
+            }
+          ],
+          "actualBowContact": "Not accepted: per-digit nearest surface gaps2.32-9.22mm. Existing Phoenix bow is a thin open surface, so signed normal side tests cannot prove solid penetration/contact.",
+          "remaining": "Restore source-design hand armor lost by wrist replacement; refine thumb opposition, knuckle/fingertip anatomy and grip; unwrap and bake matched skin; reconstruct a solid Phoenix bow handle and inspect contact; integrate partial hands into the complete74-bone rig, canonical actions and qualified LODs; actual Unity import/deformation remains unperformed.",
+          "nextAction": "Use the preserved r6 followup and its artist handoff for anatomy and plate correction; r4 remains the earlier integrated source.",
+          "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
+          "evidenceScope": "Recorded authoring checks at sourceRevision; no Blender rerun during final source integration. R4 output SHA256 freshly rechecked. Later bounded contact repair is recorded under handContactFinish."
+        },
+        "handContactFinish": {
+          "sourceRevision": "4b004dd0b16cb1cb255e86c3eb8a26b7dc82a6af",
+          "branch": "codex/icarus-hand-deformation-repair",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "ARTIST_HANDOFF_REQUIRED",
+          "productionReady": false,
+          "source": "scripts/art/icarus_hand_contact_finish.py",
+          "artifacts": "/home/tiecont/Projects/Aetheria-icarus-hand-repair/artifacts/character-production/icarus-hand-integration/r6",
+          "blendSha256": "d2df83a2b9b125d14d7c1f98c1bf578ed7d060191065390e623265f4c98b0f81",
+          "scope": "Two bounded targeted passes: bilateral distal finger taper; fitted thumb/finger poses; actual source white/gold dorsal relief and UV motif resampled onto clean armor shields; closed solid 23mm Phoenix handle replacing113 open central sheet faces. Existing r4 preserved.",
+          "checks": [
+            {
+              "command": "pnpm plan:status",
+              "exitCode": 0
+            },
+            {
+              "command": "python3 -m py_compile scripts/art/icarus_hand_contact_finish.py",
+              "exitCode": 0
+            },
+            {
+              "command": "node --check scripts/task-plan.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "git diff --check HEAD^ HEAD",
+              "exitCode": 0
+            },
+            {
+              "command": "Blender4.5.16 --background --threads2 --python-exit-code1 --python scripts/art/icarus_hand_contact_finish.py -- --integrated r4/icarus-hands-integrated.blend --character icarus-v4-handoff-r2/source/icarus-highpoly-unrigged.blend --output r6 --render",
+              "exitCode": 0,
+              "result": "Final three neutral dorsal/palm/oblique renders inspected at exact r4 cameras. Two meaningful repair attempts; initial Python entrypoint errors corrected before successful renders."
+            },
+            {
+              "command": "Blender4.5.16 --background --threads2 --python-exit-code1 --python artifacts/character-production/icarus-hand-integration/verify-contact.py",
+              "exitCode": 0,
+              "result": "Reopened r6: original2288969 body vertex coordinates exact vs r4; complete loop indices/UV array exact; actual handle zero nonmanifold edges;7 packed images;32 partial hand bones; finite frames1/16/32, max hand displacement0.102421m."
+            }
+          ],
+          "contact": {
+            "accepted": false,
+            "method": "Actual closed handle BVH,473 samples per digit from cage vertices, face centres and edge midpoints at frame32; not exhaustive triangle collision or motion acceptance.",
+            "minimumSignedDistanceMm": {
+              "thumb": -0.0866274,
+              "index": 0.310748,
+              "middle": 0.197242,
+              "ring": 0.231867,
+              "little": 0.209906
+            },
+            "maximumSampledPenetrationMm": 0.0866274
+          },
+          "anatomyReview": "Source white/gold dorsal motif and real handle contact visibly improved. Fingers still faceted/tubular; thenar/web transition narrow and angular; clean plate has floating proximal edge and sampled texture distortion. Not production anatomy/finish.",
+          "remaining": "Artist sculpt/retopology of hand anatomy and plate/cuff fit; remove residual thumb penetration and inspect exhaustive body/prop/self collision in all poses/actions; reconstruct closed decorative bow limbs/string; matched skin/armor UV/bake and three-material runtime budget (currently6 visible unique materials), LODs, complete74-bone rig/canonical actions and actual Unity import/deformation. No art gate or runtime budget pass.",
+          "handoffWorkOrder": "r6/WORK_ORDER.md",
+          "nextAction": "Artist-level hand anatomy, plate/cuff fit and collision corrections using the preserved r6 source and WORK_ORDER.md; exact final-head hosted CI is required before source merge.",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/60",
+          "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
+          "evidenceScope": "Recorded authoring/render/reopen checks at sourceRevision; no Blender rerun during final source integration. R6 output SHA256 and work order freshly inspected.",
+          "hostedCI": "Final reconciled source head PENDING; no final-head CI or merge claimed."
+        },
+        "handSourceIntegrationVerification": {
+          "sourceRevision": "bb5592f6b16f622c71328ff55430aa09ae56c313",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/60",
+          "state": "ARTIST_HANDOFF_REQUIRED",
+          "productionReady": false,
+          "scope": "Source integration and self-review of isolated authoring, bilateral wrist stitching and bounded Phoenix grip followup. Preserves stronger current VL-171 acceptance and all prior task records. No additional art repair, Blender invocation, paid calls, Unity acceptance or cloud delivery.",
+          "commands": [
+            {
+              "command": "python3 -B -m unittest discover -s tests/art -p 'test_*.py'",
+              "exitCode": 0,
+              "result": "15 PASS."
+            },
+            {
+              "command": "node --test tests/governance/task-plan.test.mjs tests/governance/plan-status.test.mjs",
+              "exitCode": 0,
+              "result": "8 PASS."
+            },
+            {
+              "command": "python3 -m py_compile scripts/art/icarus_hand_repair.py scripts/art/icarus_hand_integrate.py scripts/art/icarus_hand_contact_finish.py",
+              "exitCode": 0,
+              "result": "PASS."
+            },
+            {
+              "command": "node --check scripts/task-plan.mjs",
+              "exitCode": 0,
+              "result": "PASS; plan tooling syntax only."
+            },
+            {
+              "command": "pnpm lint",
+              "exitCode": 0,
+              "result": "PASS; 513 source boundaries; one existing unused eslint-disable warning in generated public_pb.ts."
+            },
+            {
+              "command": "pnpm governance:check",
+              "exitCode": 0,
+              "result": "174-task consistency PASS; historical 3586-file byte retrieval PASS, not fresh runtime acceptance."
+            },
+            {
+              "command": "git show --format= --check HEAD",
+              "exitCode": 0,
+              "result": "Base reconciliation commit whitespace PASS."
+            },
+            {
+              "command": "sha256sum artifacts/character-production/icarus-hand-integration/r4/icarus-hands-integrated.blend artifacts/character-production/icarus-hand-integration/r6/icarus-hands-contact-refined.blend",
+              "exitCode": 0,
+              "result": "Both files match the exact authoring hashes recorded under handBodyIntegration and handContactFinish."
+            }
+          ],
+          "findings": "Three meaningful hand-repair rounds are exhausted. R6 remains high-poly working source with faceted/tubular fingers, angular thumb/web anatomy, floating/distorted dorsal plate, sampled thumb penetration0.0866274mm and6 visible unique materials. Contact is not accepted. Partial32-bone hands do not establish a complete74-bone rig, canonical actions, runtime LODs or actual Unity import/deformation.",
+          "hostedCI": "New metadata head must pass exact-source hosted Quality and Rust checks; source integration does not claim final-head CI or merge.",
+          "remaining": "ARTIST_HANDOFF_REQUIRED; VL-171 and VL-149 remain IN_PROGRESS. Other five Limited held for owner designs; ordinary/map Pets images only. Preserve DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC. No source or CI result promotes art acceptance.",
+          "nextAction": "Push the reconciled PR60 source; sync later PR59/base changes if needed; obtain actual green hosted checks and guarded PR60 merge into PR45 only. Artist-level anatomy/plate correction follows the local r6 work order."
+        },
+    "handJointRepair": {
+      "sourceRevision": "5a2ef2b3f5b89dd57587e4313296b0ec66323a88",
+      "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+      "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/60",
+      "state": "ART_REVISION_REQUIRED",
+      "productionReady": false,
+      "scope": "Isolated five-digit editable hand cage and 16-bone grip test; not integrated into Icarus or Unity.",
+      "commands": [
+        {"command": "python3 -m py_compile scripts/art/icarus_hand_repair.py", "exitCode": 0, "result": "PASS"},
+        {"command": "python3 -m unittest discover -s tests/art -p 'test_*.py'", "exitCode": 0, "result": "15 PASS"},
+        {"command": "node --check scripts/task-plan.mjs", "exitCode": 0, "result": "PASS; unchanged plan tooling syntax only"},
+        {"command": "git diff --cached --check", "exitCode": 0, "result": "Implementation whitespace PASS before source commit"},
+        {"command": "Blender 4.5.16 --background --threads 4 --python scripts/art/icarus_hand_repair.py -- --output /home/tiecont/Projects/Aetheria/artifacts/character-production/icarus-hand-authoring/r4-fit", "exitCode": 0, "result": "1050 cage triangles,16 deform bones,zero nonmanifold/loose/unweighted vertices;15 actual open/half/grip/gauge renders. Finite skin movement up to0.108205m.20mm gauge: no sampled digit vertices inside, minimum gaps0.38-2.59mm. Visual anatomy remains unaccepted."},
+        {"command": "Blender 4.5.16 --background r4-fit/icarus-hand-joint-candidate.blend --python-expr reopen/manifold/bone/frame32 finite assertions", "exitCode": 0, "result": "Delivered Blend reopened; manifold,16bones and finite posed mesh PASS"}
+      ],
+      "artifacts": {"directory": "artifacts/character-production/icarus-hand-authoring/r4-fit", "blendSha256": "041f10a71faa93a1634a35ec737c2f79c35eb2f98466dfd95ad46af4338d1226"},
+      "limitations": "Live Blender plugin unavailable; installed4.5.16 background route ran. Earlier r4 render process exited143 before completion; r4-fit subsequently completed0. No paid generator calls, uploads or owner file replacements.",
+      "hostedCI": "PR60 Quality and Rust running at sourceRevision; final metadata head pending. No merge.",
+      "remaining": "Integrate marked wrist seam into actual character; reference proportions/knuckle finish, final Phoenix bow contact, full74-bone budget,UV/skin bake,LOD/canonical actions and actual Unity deformation remain open. This candidate does not close VL-171 or VL-149."
+    },
+        "wingComponentStudy": {
+          "sourceRevision": "7feaff8ea7563d48a0afb47ccee56696d883c861",
+          "integrationReview": {
+            "sourceRevision": "670719b854b90b72928d866e0203d882c01c7c09",
+            "baseRevision": "8e38dc46fb9638de692b7d80ed4931330b6ff9e3",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "commands": [
+              {"command": "node --test tests/governance/task-plan.test.mjs tests/governance/plan-status.test.mjs", "exitCode": 0, "result": "8 PASS at sourceRevision and after merging baseRevision."},
+              {"command": "node --check scripts/art/icarus-wing-articulation.mjs and node --check scripts/art/icarus-wing-repair.mjs", "exitCode": 0, "result": "Both entrypoints PASS; Python AST parses for both corresponding Blender scripts also PASS."},
+              {"command": "git show --format= --check 670719b854b90b72928d866e0203d882c01c7c09", "exitCode": 0, "result": "Committed patch whitespace PASS."}
+            ],
+            "scope": "Source review and base integration only. No new Blender, Unity, visual art acceptance or storage upload performed. Final integrated head requires complete hosted CI before merge."
+          },
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "productionReady": false,
+          "state": "ART_REVISION_REQUIRED",
+          "scope": "Separate feather components, isolated matched-pair Albedo/Normal bake, six-bone root/support/fold study only; not full character rig or canonical action acceptance.",
+          "artifacts": "artifacts/character-production/icarus-wing-components-r3 and icarus-wing-articulation-r4b",
+          "commands": [
+            {
+              "command": "node scripts/art/icarus-wing-articulation.mjs --blender <Blender4.5.16> --source <r3/icarus-wing-candidate.blend> --output <r4b> --verify-existing",
+              "exitCode": 0,
+              "result": "Actual Blend reopen and GLB reimport; 68 meshes, 17,688 wing/support triangles, six study bones; actual exported motion, no unweighted vertices or nonmanifold edges. Not full-body clearance acceptance."
+            },
+            {
+              "command": "node --check scripts/art/icarus-wing-articulation.mjs; Python AST parse; git diff --check",
+              "exitCode": 0,
+              "result": "PASS before commit; committed source unchanged."
+            }
+          ],
+          "visualReview": "Actual open-front and folded-back renders inspected. Vanes too regular, fold silhouette and root appearance require further repair; body/face/hair remain old unaccepted reduction. No bow-grip or hair/cloth motion acceptance.",
+          "remaining": "Reallocate whole-character budget (wing/support alone17,688), refine root/fold silhouette and face/hand/hair/garment topology, full74-bone rig,16 actions,LODs,Unity and delivery. Five other Limited held; ordinary/map pets image-only. Hosted CI required before merge."
+        },
+        "productionAcceptanceClarification": {
+          "sourceRevision": "f13492a1925c75a594b96aa87f3e8fa7ecee178b",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "scope": "Clarify existing Icarus completion criteria; no art acceptance, runtime activation or production release.",
+          "commands": [
+            {
+              "command": "node --test tests/governance/task-plan.test.mjs tests/governance/plan-status.test.mjs",
+              "exitCode": 0,
+              "result": "8 PASS against committed criteria."
+            },
+            {
+              "command": "git show --format= --check HEAD",
+              "exitCode": 0,
+              "result": "Committed patch whitespace PASS."
+            }
+          ],
+          "remaining": "Exact final-head hosted CI before merge. Visual topology/bake, rig/actions, Unity and delivery qualification remain incomplete."
+        },
+      "topologyBakeR3": {
+        "sourceRevision": "c88626736023a681f429665d7fb4f747a4f138de",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "state": "ARTIST_HANDOFF_REQUIRED",
+        "productionReady": false,
+        "scope": "Local Blender geometry and actual texture bake experiments; no canonical asset replacement, rig, Unity import, upload or release.",
+        "commands": [
+          {
+            "command": "Blender 4.5.16 -b -t 8 --python artifacts/character-production/icarus-game-mesh-r3/repair.py",
+            "exitCode": 0,
+            "result": "Uniform reduction, imported split normal clearing, 3 neutral views; 28,997 total triangles."
+          },
+          {
+            "command": "Blender 4.5.16 -b -t 8 --python artifacts/character-production/icarus-game-mesh-r3/bake.py; separate invocation bake_cage.py",
+            "exitCode": 0,
+            "result": "Two actual 2K Albedo/Normal/Roughness/Metallic bake variants. BOTH FAIL VISUAL REVIEW: projection misses and damaged face/feather detail."
+          },
+          {
+            "command": "Blender 4.5.16 -b -t 4 --python artifacts/character-production/icarus-game-mesh-r3/verify.py",
+            "exitCode": 0,
+            "result": "Reopen PASS: 28,997 triangles, four packed readable 2048 maps, no rig/actions."
+          },
+          {
+            "command": "python3 artifacts/character-production/icarus-game-mesh-r3/package.py",
+            "exitCode": 0,
+            "result": "Portable prior source plus new studies archived; CRC PASS."
+          }
+        ],
+        "artifact": {
+          "archive": "/home/tiecont/Projects/Aetheria/artifacts/character-production/Icarus_Topology_Repair_R3.zip",
+          "entries": 32,
+          "bytes": 550467035,
+          "sha256": "11c694ed6cdac8db50f9442cd0316774630e3e06e4b8dc91c3e89d4366965160",
+          "CRC": "PASS"
+        },
+        "files": [
+          {
+            "path": "/home/tiecont/Projects/Aetheria/artifacts/character-production/icarus-game-mesh-r3/icarus-uniform-reduction.blend",
+            "sha256": "c2a3637f3e6ed329beaf01637f118743abb9509d717cf38acc9781449b5ebb31"
+          },
+          {
+            "path": "/home/tiecont/Projects/Aetheria/artifacts/character-production/icarus-game-mesh-r3/baked/icarus-baked-study.blend",
+            "sha256": "aa98c1a688a3e93e9017f1c0f023ae9fc8df5956655a6e475202302caf2171d9"
+          },
+          {
+            "path": "/home/tiecont/Projects/Aetheria/artifacts/character-production/icarus-game-mesh-r3/baked-cage/icarus-baked-study.blend",
+            "sha256": "369254a25dc455e5c897eee456e729067532f717a000b91fce6349394ffdaf71"
+          }
+        ],
+        "remaining": "Rebuild separate feather/hair/garment surfaces and face/hand joint loops; isolated matched-component cages/bakes. Budget must also include missing bow. 74-bone rig,16 actions,LODs,Unity and hardware/rights acceptance remain open. Other five Limited held; ordinary/map pets images only.",
+        "hostedCI": "PR51 c886267 runtime-images failed with identity-page framework asset ERR_NETWORK_CHANGED and Display name timeout; no merge or rerun claimed."
+      },
+      "pbrHandoffVerification": {
+        "sourceRevision": "7ec4c3c8c9f7a83a451316b2fc92a9ee4a26576d",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/51",
+        "scope": "Portable high-poly repair source and corrected multi-angle hand diagnosis only. No geometry, rig, animation or Unity production work claimed.",
+        "commands": [
+          {
+            "command": "python3 -B -m unittest discover -s tests/art -p 'test_*.py'",
+            "exitCode": 0,
+            "result": "15 PASS, including rejection of false geometry-repair and production acceptance in the inspection handoff."
+          },
+          {
+            "command": "python3 scripts/art/verify_icarus_candidates.py --require-models",
+            "exitCode": 0,
+            "result": "10 image hashes/dimensions and both GLB hashes/facts PASS; productionReady false."
+          },
+          {
+            "command": "pnpm governance:check",
+            "exitCode": 0,
+            "result": "174-task consistency and historical integrity PASS; not fresh gameplay acceptance."
+          },
+          {
+            "command": "git show --format= --check HEAD",
+            "exitCode": 0,
+            "result": "Implementation commit whitespace PASS."
+          },
+          {
+            "command": "/home/tiecont/Projects/Aetheria/artifacts/toolchains/blender-4.5.16/blender-4.5.16-linux-x64/blender --background --threads 6 --python scripts/art/icarus_pbr_handoff.py -- --output /home/tiecont/Projects/Aetheria/artifacts/character-production/icarus-v4-handoff-r2",
+            "exitCode": 0,
+            "result": "Verified GLB imported; 4,208,442 triangles, 0 armatures, 0 actions; 3 textures packed; 8 actual neutral views rendered; editable Blend and work order written."
+          },
+          {
+            "command": "Blender 4.5.16 LTS --background: delivered Blend reopened with bpy mesh, packed pixel and absent rig/action assertions",
+            "exitCode": 0,
+            "result": "PASS; 4,208,442 mesh polygons, all 3 packed images have readable pixels, no armatures/actions. Actual invocation and output retained in ignored local session tooling/log."
+          },
+          {
+            "command": "python3 inline inventory/image/ZIP verification",
+            "exitCode": 0,
+            "result": "26 file hashes/sizes PASS; 8 images 768x768 nonblank and pixel-identical to inspected r1 views; ZIP CRC and archived file hashes PASS. Archive 371091821 bytes, SHA256 35428f98ee052609c39a4b1a43e179f5cc8a277a5a41b0d3a3b91e4e1db33fda."
+          }
+        ],
+        "artifacts": {
+          "directory": "artifacts/character-production/icarus-v4-handoff-r2",
+          "archive": "artifacts/character-production/Icarus_V4_Repair_Source.zip",
+          "verification": "artifacts/character-production/icarus-v4-handoff-r2-verification.json",
+          "reopenLog": "artifacts/character-production/icarus-v4-handoff-r2-reopen.log"
+        },
+        "findings": "Both dorsal/palm views show separated five-digit silhouettes. Edge overlap is not evidence of fused fingers; older blanket diagnosis superseded for the front candidate. Joint topology, thumb opposition and bow-grip deformation remain unvalidated. Hair obscures wing roots. Normal map is 2K; two other embedded maps are 4K, so all-channel 4K/8K acceptance is unmet.",
+        "remaining": "ARTIST_HANDOFF_REQUIRED for purposeful game topology/articulation; full 74-bone rig, 16 canonical actions, Unity acceptance and full-resolution texture qualification remain open. No upload or production release. Five other Limited held; ordinary/map Pets images only.",
+        "hostedCI": "New final head PENDING; no merge claimed. Existing parent PR45 has a repeated image-navigation failure; no checks bypassed.",
+        "failedAttempts": "An intermediate package r1 established camera review before source commit. Two inline archive-verification commands had Python syntax errors before creating an archive; corrected command passed. Earlier diff check found one trailing blank line; corrected before source commit."
+      },
         "parentTask": "VL-149", "sharedPipeline": "VL-105", "assetContract": "VL-121",
         "designIntake": {
           "specification": "specs/pet-arena/meshy-character-pipeline.md",
@@ -339,8 +853,47 @@
           },
           "remaining": "Resolve ICARUS-D01-D05: paw/tail anatomy, consistent usable orthographic views, hidden wing/back/hair construction and scale, bow version/grip/VFX separation, and explicit snapshot-specific owner approval. Separate paid batch authorization is required afterwards. No new Blender/GLB/FBX/Unity asset or accepted benchmark. Existing PR37/38/40 assets and importer GUIDs remain owned by their original work. VL-170 retains absent private object-store infrastructure."
         },
-        "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
+        "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
+      "pbrContinuityFollowup": {
+        "sourceRevision": "2aafc2ac270bd942e6ad19a192fb04f9b5331ece",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "manifest": "specs/pet-arena/references/icarus/production-v4-pbr.json",
+        "scope": "Preserve two Meshy7.1/Meshy7 PBR4K high-poly candidates, eight V4 supplementary views and two V5 continuity proposals; no game mesh/rig/Unity acceptance.",
+        "commands": [
+          {
+            "command": "python3 -B -m unittest discover -s tests/art -p 'test_*.py' -v",
+            "exitCode": 0,
+            "result": "14 PASS; image hash/dimension/authority/path tamper, GLB facts and delivery-gate promotion regressions included."
+          },
+          {
+            "command": "python3 scripts/art/verify_icarus_candidates.py --require-models",
+            "exitCode": 0,
+            "result": "10 actual image hashes/dimensions and2 actual GLB hashes/triangle/material/skin counts PASS. Both models unrigged."
+          },
+          {
+            "command": "pnpm governance:check",
+            "exitCode": 0,
+            "result": "174 tasks and historical integrity PASS; no fresh gameplay or release claim."
+          },
+          {
+            "command": "git show --format= --check HEAD",
+            "exitCode": 0,
+            "result": "Committed implementation whitespace PASS."
+          }
+        ],
+        "blender": "Live MCP5.3.0 connected; separate appended scene preserved original scene and4.5 LTS file. Actual neutral portrait and hand renders inspected. PBR links correct; fused fingers and soft focal detail remain. Exposure inspection only; no geometry repair claimed.",
+        "credits": "24 for2 V5 image-to-image proposals; no purchases. Historical V4 costs retained separately.",
+        "gates": {
+          "designContinuity": "ART_REVISION_REQUIRED",
+          "handsAndWingGeometry": "ARTIST_HANDOFF_REQUIRED",
+          "rigAnimation": "NOT_RUN",
+          "unity": "NOT_RUN",
+          "cloudUpload": "NOT_RUN",
+          "hostedFinalHeadCI": "PENDING"
+        },
+        "remaining": "Retopologize separate fingers/feather articulation, resolve cross-view construction, author actual74-bone rig/actions before Unity acceptance. Five other Limited held for owner designs. No source/CI acceptance promotes art."
       }
+    }
     },
     {
       "id": "VL-172",
@@ -2664,6 +3217,34 @@
             }
           ],
           "remaining": "Native backup/restore, full reducer replay from genesis and deletion of all events for a turn are not proven by envelope verification. Export/deletion/retention approvals remain unresolved. Task stays IN_PROGRESS. Hosted Quality and Rust on final head required before merge."
+        },
+        "privacyRequestExpiryVerification": {
+          "sourceRevision": "e1970b93f039e09e6a36746dc55972cba22a1df3",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/60",
+          "finding": "Quality run 44230811202 job 134565848598 recorded HTTP 503 on POST /v1/privacy/requests during the mobile deletion case. A clock that advances one millisecond between reads reproduced HTTP 503 on the old source. PostgreSQL limits expiry to seven days after creation.",
+          "change": "Derive the expiry from the captured creation timestamp and test the advancing clock at the HTTP boundary against disposable PostgreSQL.",
+          "commands": [
+            {
+              "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/privacy-requests.test.ts -t 'when the service clock advances between reads'",
+              "exitCode": 1,
+              "result": "Expected 201 and received 503 with the new regression test and the original application code."
+            },
+            {
+              "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/privacy-requests.test.ts",
+              "exitCode": 0,
+              "result": "20 passed, including request expiry with an advancing clock."
+            },
+            {
+              "command": "pnpm exec eslint apps/platform-api/src/features/identity/modules/privacy/application/privacy-requests.ts tests/integration/privacy-requests.test.ts",
+              "exitCode": 0
+            },
+            {
+              "command": "git show --format= --check HEAD",
+              "exitCode": 0
+            }
+          ],
+          "remaining": "The lifecycle acceptance stays open. The final PR head requires green hosted Quality and Rust before merge."
         }
       }
     },

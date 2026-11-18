@@ -59,7 +59,8 @@ export class PrivacyRequestService {
   let row=(await db.query<Row>(select+'WHERE r.account_id=$1 AND r.request_key=$2 FOR UPDATE OF r',[accountId,value.requestId])).rows[0];
   if(row){if(row.fingerprint!==fingerprint)throw conflict();if(row.closed_at||row.retain_until.getTime()<=this.now())throw denied();return {token:this.token(row),state:PrivacyOwnerStateSchema.parse({...this.view(row),csrfToken:this.csrf(this.token(row))}),created:false};}
   if((await db.query<{n:number}>('SELECT count(*)::int AS n FROM identity_privacy_requests WHERE account_id=$1 AND created_at>$2',[accountId,new Date(this.now()-DAY)])).rows[0].n>=3)throw limited();
-  const id=randomUUID(),nonce=randomBytes(16).toString('hex'),token=this.token({id,server_nonce:nonce}),at=new Date(this.now()),until=new Date(this.now()+7*DAY);
+  const id=randomUUID(),nonce=randomBytes(16).toString('hex'),token=this.token({id,server_nonce:nonce});
+  const at=new Date(this.now()),until=new Date(at.getTime()+7*DAY);
   await db.query("INSERT INTO identity_privacy_requests(id,account_id,request_key,operation,state,fingerprint,credential_fingerprint,server_nonce,token_hash,created_at,expires_at,retain_until) VALUES($1,$2,$3,$4,'PENDING',$5,$6,$7,$8,$9,$10,$10)",[id,accountId,value.requestId,value.operation,fingerprint,this.credential({...proof.credential!,account_id:accountId}),nonce,this.tokenHash(token),at,until]);
   row=await this.row(token,db,true);await this.audit(db,row,'create','OWNER_REQUEST',null);return {token,state:PrivacyOwnerStateSchema.parse({...this.view(row),csrfToken:this.csrf(token)}),created:true};
  });}

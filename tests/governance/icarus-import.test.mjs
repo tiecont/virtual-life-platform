@@ -62,3 +62,16 @@ test('unmeasured import facts and authoritative root motion fail closed', () => 
   reject(facts => { facts.urp = '17.6.0'; }, /Pinned URP/);
   reject(facts => { facts.applyRootMotion = true; }, /root motion/);
 });
+test('missing LOD measurements and sparse motion arrays cannot skip required checks', () => {
+  reject(facts => { facts.lods = new Array(3); }, /LOD0: measured level required/);
+  reject(facts => { delete facts.lods[1]; }, /LOD1: measured level required/);
+  reject(facts => { facts.lods[2] = null; }, /LOD2: measured level required/);
+  reject(facts => { facts.clips[0].lodDisplacementMeters = new Array(3); }, /deformation/);
+  reject(facts => { delete facts.clips[0].lodDisplacementMeters[1]; }, /deformation/);
+});
+test('skin influence and transform binding counts must be finite positive integers', () => {
+  for (const count of [1.5, Infinity, '4']) {
+    reject(facts => { facts.lods[0].maximumInfluences = count; }, /four skin/);
+    reject(facts => { facts.clips[0].transformBindings = count; }, /resolved transform/);
+  }
+});

@@ -23,14 +23,15 @@ export function validateIcarusImport(facts, actions) {
   const budgets = [[26000, 29500, 74, 74, 3, 2048], [14000, 16500, 48, 56, 2, 1024], [6500, 8000, 28, 34, 1, 512]];
   for (const [index, [minTris, maxTris, minBones, maxBones, materials, textureSize]] of budgets.entries()) {
     const lod = facts.lods?.[index];
-    if (!lod) continue;
+    check(lod !== null && typeof lod === 'object', `LOD${index}: measured level required`);
+    if (lod === null || typeof lod !== 'object') continue;
     check(lod.level === index, `LOD${index}: ordered level required`);
     check(Number.isInteger(lod.triangles) && lod.triangles >= minTris && lod.triangles <= maxTris, `LOD${index}: total triangle budget ${minTris}-${maxTris}`);
     check(Number.isInteger(lod.bones) && lod.bones >= minBones && lod.bones <= maxBones, `LOD${index}: skin joint budget ${minBones}-${maxBones}`);
     check(Number.isInteger(lod.materials) && lod.materials > 0 && lod.materials <= materials, `LOD${index}: material budget 1-${materials}`);
     check(lod.skinnedVertices > 0 && Number.isInteger(lod.skinnedVertices), `LOD${index}: skinned vertices required`);
     check(lod.unweightedVertices === 0 && lod.invalidWeights === 0 && lod.missingBones === 0, `LOD${index}: complete normalized finite skin weights and joints required`);
-    check(lod.maximumInfluences > 0 && lod.maximumInfluences <= 4, `LOD${index}: one to four skin influences required`);
+    check(Number.isInteger(lod.maximumInfluences) && lod.maximumInfluences > 0 && lod.maximumInfluences <= 4, `LOD${index}: one to four skin influences required`);
     check(lod.missingMaterials === 0, `LOD${index}: missing material slots`);
     check(Array.isArray(lod.textures) && lod.textures.length > 0, `LOD${index}: actual material textures required`);
     for (const texture of lod.textures ?? []) {
@@ -46,8 +47,8 @@ export function validateIcarusImport(facts, actions) {
     if (matches.length !== 1) continue;
     const clip = matches[0];
     check(finite(clip.seconds) && clip.seconds > 0, `${action}: positive duration required`);
-    check(clip.invalidBindings === 0 && clip.transformBindings > 0, `${action}: resolved transform bindings required`);
-    check(Array.isArray(clip.lodDisplacementMeters) && clip.lodDisplacementMeters.length === 3 && clip.lodDisplacementMeters.every(delta => finite(delta) && delta > .0001), `${action}: actual deformation on all three LODs required`);
+    check(clip.invalidBindings === 0 && Number.isInteger(clip.transformBindings) && clip.transformBindings > 0, `${action}: resolved transform bindings required`);
+    check(Array.isArray(clip.lodDisplacementMeters) && clip.lodDisplacementMeters.length === 3 && Array.from(clip.lodDisplacementMeters).every(delta => finite(delta) && delta > .0001), `${action}: actual deformation on all three LODs required`);
     check(typeof clip.motionHash === 'string' && /^[a-f0-9]{64}$/.test(clip.motionHash), `${action}: measured motion fingerprint required`);
     if (clip.motionHash) {
       check(!fingerprints.has(clip.motionHash), `${action}: same sampled joint motion as ${fingerprints.get(clip.motionHash)}`);

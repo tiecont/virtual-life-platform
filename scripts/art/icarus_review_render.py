@@ -59,7 +59,7 @@ def main():
     if args.portrait_only:
         render('portrait', portrait=True)
         return
-    for name, angle in [('front', 0), ('three-quarter', 45), ('side', 90), ('back', 180)]:
+    for name, angle in [('front', 0), ('three-quarter', 45), ('side', 90), ('rear-three-quarter', 135), ('back', 180)]:
         render(name, angle)
     render('portrait', portrait=True)
     for name in ['idle', 'wing_fold_test', 'bow_draw_test', 'provider_walk_unreviewed']:
