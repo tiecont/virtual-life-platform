@@ -26,6 +26,7 @@
     "support/calendar-browser-runtime.ts",
     "../playwright.calendar.config.ts",
     "integration/operator-runtime.test.ts",
+    "integration/private-art-intake.test.ts",
     "e2e/runtime.spec.ts",
     "support/runtime-browser-runtime.ts",
     "../playwright.runtime.config.ts"

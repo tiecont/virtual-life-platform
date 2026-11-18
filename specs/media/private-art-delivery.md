@@ -2,8 +2,8 @@
 
 This Node CLI prepares a local, private stage and can deliver an explicitly
 reviewed batch to Cloudflare R2 or `https://t3.storage.dev` using S3 SigV4.
-It does not implement the remaining database ingest, operator HTTP authorization,
-signed preview access or public release portions of VL-170. No MinIO service,
+Separate operator endpoints can record unverified draft metadata as described
+below. Object ingest, signed preview access and public release remain pending. No MinIO service,
 new application stack, credentials or approved art are supplied.
 
 The owner has already authorized routine private delivery after the art
@@ -183,3 +183,39 @@ counts only. No R2/t3 endpoint has been contacted by the automated tests; the
 owned loopback S3 fixture checks signed requests, conditional writes, readback,
 privacy headers and negative paths. Provider compatibility and actual private
 configuration remain deployment acceptance work.
+
+## Private draft metadata intake
+
+Migration `0054_private_art_metadata.sql` adds `operator_art_drafts` to the
+existing migration journal. `POST /v1/operator/art-intake` records one immutable
+metadata declaration, and `GET /v1/operator/art-draft?draftId=<uuid>` reads one
+exact entry. Both use the existing operator cookie and fresh MFA boundary;
+writes also require the existing administrator Origin and operator CSRF token.
+They are unavailable without configured operator authentication. Responses are
+private/no-store and vary by Cookie. There is no listing endpoint.
+
+An intake body has exactly `requestId` (UUID) and `metadata`. The metadata has
+`characterId`, `designRevision`, `manifestSha256`, `provenanceSha256` and `file`.
+The file has the same `path`, `bytes`, `sha256` and `mime` shape as a manifest
+entry. Metadata paths additionally require every segment to begin with an ASCII
+letter or number. The provenance hash identifies the operator's private local
+provenance document; this endpoint does not read or verify that document.
+Do not include personal information or secrets in identifiers or file paths.
+The existing 8 KiB HTTP body cap remains in effect.
+
+Intake does not receive bytes or a review receipt and cannot establish that the
+declared file belongs to the named manifest. Every response explicitly reports
+`UNPUBLISHED`, `NOT_REVIEWED` and `UNVERIFIED`. No provider location, credential,
+signed URL, ownership grant, art acceptance or upload follows from registration.
+Actual ingest must later bind the complete reviewed manifest, provenance and
+verified bytes before supplying any private preview capability.
+
+The existing operator transaction serializes authorization, idempotency, intake
+capacity and commit. The same request ID and parsed metadata return the original
+entry; changing that metadata conflicts. A fresh request can register the same
+unverified declaration again, subject to limits of 30 new entries per hour and
+10,000 total entries. These are metadata limits, separate from provider storage
+quotas. Fresh MFA is rechecked before commit. The append-only row retains a
+keyed operator reference and fingerprint; it grants no PUBLIC database privileges.
+Correction, retention/deletion policy and reviewed object binding remain later
+work, so this intake is not the complete VL-170 ingest acceptance.
