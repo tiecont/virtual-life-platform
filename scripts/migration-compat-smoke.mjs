@@ -9,6 +9,7 @@ import net from 'node:net';
 import {Pool} from 'pg';
 import {io} from 'socket.io-client';
 import {validateTestDatabaseURL} from './test-environment.mjs';
+import {sourceSchemaPolicy} from './source-schema-policy.mjs';
 
 const exec=promisify(execFile),id=randomUUID().slice(0,8),directory=resolve('artifacts','schema-compat-'+id),containers=new Set();
 const require=createRequire(import.meta.url),{resolveSchemaCompatibility,migrationSetDigest}=require('../apps/platform-api/dist/shared/config/schema-compatibility.js');
@@ -34,7 +35,7 @@ async function main(){
  stage='build-current-runtime';const tagA='virtual-life-platform:n02-schema-'+id+'-current';await run('docker',['build','--pull=false','--label','org.opencontainers.image.revision='+revision,'-f',resolve(context,'Dockerfile.schema-fixture'),'-t',tagA,context]);const imageA=(await run('docker',['image','inspect','--format','{{.Id}}',tagA])).output.trim();
  const manifestCode="const fs=require('node:fs'),crypto=require('node:crypto'),dir='apps/platform-api/dist/shared/database/migrations';console.log(JSON.stringify(Object.fromEntries(fs.readdirSync(dir).filter(n=>/^\\d+.*\\.sql$/.test(n)).sort().map(n=>[n,crypto.createHash('sha256').update(fs.readFileSync(dir+'/'+n)).digest('hex')]))));";
  const manifest=JSON.parse((await run('docker',['run','--rm','--network','none','--read-only','--entrypoint','node',imageA,'-e',manifestCode])).output);const migrationCount=Object.keys(manifest).length;assert(migrationCount>=38);const expansionName=String(migrationCount+1).padStart(4,'0')+'_expand_probe.sql';facts.migrations={current:migrationCount,expanded:migrationCount+1,expansionName};
- const canonical=JSON.parse(await readFile(resolve(context,'config/schema-compatibility.json'),'utf8'));assert.deepEqual(resolveSchemaCompatibility(manifest,canonical),resolveSchemaCompatibility(manifest));
+ const canonical=sourceSchemaPolicy(revision);assert.deepEqual(resolveSchemaCompatibility(manifest,canonical),resolveSchemaCompatibility(manifest));
  stage='build-next-expansion';const expansion=await readFile(resolve(context,'tests/fixtures/schema-compat/0039_expand_probe.sql')),expanded={...manifest,[expansionName]:sha(expansion)},overlay=resolve(directory,'expansion');await mkdir(overlay);await writeFile(resolve(overlay,expansionName),expansion);await writeFile(resolve(overlay,'Dockerfile'),'FROM '+tagA+'\nCOPY --chown=node:node '+expansionName+' /app/apps/platform-api/dist/shared/database/migrations/'+expansionName+'\n');const tagB='virtual-life-platform:n02-schema-'+id+'-expanded';await run('docker',['build','--pull=false','--network=none','-t',tagB,overlay]);const imageB=(await run('docker',['image','inspect','--format','{{.Id}}',tagB])).output.trim();
  assert.equal((await run('docker',['image','inspect','--format','{{.Id}}',tagA])).output.trim(),imageA,'Expansion base tag changed');
  assert.deepEqual(JSON.parse((await run('docker',['run','--rm','--network','none','--read-only','--entrypoint','node',imageB,'-e',manifestCode])).output),expanded);

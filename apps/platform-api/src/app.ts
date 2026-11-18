@@ -26,6 +26,8 @@ import {NativeIdentityService,registerNativePrivacy} from './features/identity/m
 import {registerNativeIdentity,prepareNativeApiRequest,assertNativeTransport} from './features/identity/modules/native-auth/presentation/native-http';
 import {apiErrorHandler} from './shared/common/http-errors';
 import {OperatorService} from './features/identity/modules/operators/application/operator-service';
+import {PrivateArtIntake} from './features/operations/modules/art-media/application/private-art';
+import {registerPrivateArt} from './features/operations/modules/art-media/presentation/private-art-http';
 import {registerOperator} from './features/identity/modules/operators/presentation/operator-http';
 import { migrationManifest } from './shared/database/migrations';
 import {loadSchemaCompatibility} from './shared/config/schema-compatibility';
@@ -151,6 +153,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const privacyRequests=new PrivacyRequestService(identity,config.SESSION_SECRET,operator,options.now);
   const accountControls=operator?new AccountControlService(identity,operator,options.now):undefined;
   registerOperator(http,config,operator,options.now,accountControls,privacyRequests);
+  registerPrivateArt(http,config,operator?new PrivateArtIntake(operator,options.now):undefined,options.now);
   const deadlineIdentity=new DeadlineIdentityLinks(db,identity,config.NODE_ENV!=='production'&&config.LOCAL_DEADLINE_IDENTITY==='1'?(options.deadlineIdentity??new DeadlineHttpIdentityPort(config.DEADLINE_LEGACY_API_URL!)):undefined,options.now);
   identity.registerExportOwner('legacyIdentity',(account,transaction)=>deadlineIdentity.exportAccount(account,transaction));
   http.addHook('preClose',async()=>{deadlineIdentity.close();});
