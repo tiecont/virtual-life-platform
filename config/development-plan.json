@@ -5051,6 +5051,44 @@
           "pending": "This evidence-only revision must pass exact-head hosted Quality/Rust before merge. Record final CI and merge SHA in PR discussion; verify post-merge main before the next workstream.",
           "limitations": "Strict draft TypeScript contract and offline-catalog validation only. No new persistence/runtime/Unity implementation or entire Pet schema-chain completion; OFFLINE_ONLY / NO_GO_PUBLIC."
         },
+        "taxonomyDraftFollowup": {
+          "scope": "Bounded offline Rust decoder for the existing shared v3 taxonomy draft shape. Requires19 unique elements,361 complete directed matchups consistent with nonoverlapping declared relations and22 unique compatible race templates. Rejects duplicate JSON keys, unknown/missing/type-invalid fields, unbounded multipliers, missing offensive counters, incompatible rigs and enabled/published documents. Validated candidate data supplies checked floor-once damage scaling and morphology; no v1 reducer, protocol or runtime selector changes.",
+          "verification": {
+            "sourceRevision": "96cd355ee6a9f4c2599b37f2d208e564c7161f26",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/56",
+            "commands": [
+              {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "73 tests and1 compile-fail doctest PASS, including6 new decoder regressions, all361 directional damage boundaries and frozen v1 replay/restart fixtures."},
+              {"command": "cargo clippy --workspace --all-targets --locked -- -D warnings", "exitCode": 0},
+              {"command": "cargo fmt --all -- --check", "exitCode": 0},
+              {"command": "pnpm governance:check", "exitCode": 0, "result": "174-task plan/governance and historical indexed byte integrity PASS; not new execution of historical checks."},
+              {"command": "node --check scripts/task-plan.mjs", "exitCode": 0},
+              {"command": "git diff HEAD~1 --check", "exitCode": 0}
+            ],
+            "failedAttempt": "Initial focused decoder run failed one test because its invalid-type loop replaced a valid empty relation with the identical empty array. Corrected the test to skip unchanged values; no validation rule relaxed. Full committed-source workspace rerun PASS.",
+            "hosted": "Final-head Quality/Rust checks pending at recording; not claimed green or merged."
+          },
+          "enumStringReview": {
+            "sourceRevision": "842b9ee0af093e4eaa44451bdcf5094b1647b144",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/56",
+            "finding": "Review of the existing9f0fe0b head reproduced acceptance of Serde variant objects such as {normal:null} where the shared taxonomy contract requires JSON strings. The draft decoder now requires strings for element IDs, all three relation lists, race IDs, body plans, rigs and locomotion; canonical enum validation still rejects unknown strings.",
+            "commands": [
+              {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "74 tests and1 compile-fail doctest PASS at unchanged committed source, including7 decoder cases and8 representative enum-field object rejections; frozen v1 replay/restart and default-off runtime tests PASS."},
+              {"command": "cargo clippy --workspace --all-targets --locked -- -D warnings", "exitCode": 0},
+              {"command": "cargo fmt --all -- --check", "exitCode": 0},
+              {"command": "pnpm governance:check", "exitCode": 0, "result": "174-task governance and3586 indexed historical byte checks PASS; historical checks were not rerun."},
+              {"command": "node --test tests/governance/pet-v31.test.mjs", "exitCode": 0, "result": "2 PASS: canonical240 catalog and rehashed semantic tamper negatives."},
+              {"command": "node --check scripts/task-plan.mjs", "exitCode": 0},
+              {"command": "git diff HEAD~1 --check", "exitCode": 0}
+            ],
+            "failedAttempt": "New enum-object regression failed with exit101 before the fix because /elements/0/id accepted {normal:null}; the unchanged regression passes after strict string decoding.",
+            "hosted": "Previous head9f0fe0b Quality44194451204 and Rust44194451274 were inspected and SUCCESS. They do not qualify this fix or its evidence revision; exact-final-head hosted checks remain required before merge.",
+            "limitations": "Offline taxonomy validation only. VL-130 remains IN_PROGRESS; no v3 runtime selection, ownership, publication, Unity visual qualification or deployment."
+          },
+          "remaining": "VL-130 remains IN_PROGRESS. Live v3 manifest loading/combat allocation and any Unity presentation qualification remain separate. This decoder parses offline candidate documents only.",
+          "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+        },
         "logicRulesFollowup": {
           "scope": "Separate offline Rust taxonomy_v3 module implements19 canonical elements,361 directional multipliers, checked floor-once damage scaling,22 race defaults and compatible explicit radial/hexapod overrides. Unknown enums/fields and partial/incompatible morphology are rejected. No v1 reducer/codec edits or runtime registration.",
           "remaining": "Hosted exact-final-head acceptance; no Unity visualization or production art claim.",

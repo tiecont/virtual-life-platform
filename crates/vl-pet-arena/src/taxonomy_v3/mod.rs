@@ -1,10 +1,14 @@
 //! Offline v3 taxonomy. No runtime selector, publication, RNG or v1 reducer changes.
 use serde::{Deserialize, Serialize};
 
+mod draft;
+pub use draft::TaxonomyDraft;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum TaxonomyError {
     Arithmetic,
     IncompatibleRig,
+    InvalidDraft,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Deserialize, Serialize)]
@@ -261,7 +265,12 @@ impl MorphologyRequest {
         let morphology = self
             .override_morphology
             .unwrap_or_else(|| self.race.default_morphology());
-        let expected = match morphology.body_plan {
+        morphology.validate()
+    }
+}
+impl Morphology {
+    fn validate(self) -> Result<Self, TaxonomyError> {
+        let expected = match self.body_plan {
             BodyPlan::Golem => Rig::RigHeavy,
             BodyPlan::Humanoid => Rig::RigHumanoid,
             BodyPlan::Plant => Rig::RigFlora,
@@ -279,9 +288,9 @@ impl MorphologyRequest {
             BodyPlan::Radial => Rig::RigAquatic,
             BodyPlan::Hexapod => Rig::RigInsect,
         };
-        if morphology.rig != expected {
+        if self.rig != expected {
             return Err(TaxonomyError::IncompatibleRig);
         }
-        Ok(morphology)
+        Ok(self)
     }
 }
