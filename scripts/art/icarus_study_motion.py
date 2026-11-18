@@ -15,6 +15,19 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def wing_vertices(rig):
+    points = []
+    graph = bpy.context.evaluated_depsgraph_get()
+    for obj in sorted(rig.children, key=lambda item: item.name):
+        if obj.type != 'MESH':
+            continue
+        evaluated = obj.evaluated_get(graph)
+        mesh = evaluated.to_mesh()
+        points.extend(evaluated.matrix_world @ vertex.co for vertex in mesh.vertices)
+        evaluated.to_mesh_clear()
+    return points
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', required=True, type=Path)
@@ -45,6 +58,16 @@ def main():
               'blender': bpy.app.version_string,
               'scope': 'Six-bone wing fold study; static retained body, no canonical action acceptance',
               'productionReady': False, 'runtimeEnabled': False, 'views': []}
+    scene.frame_set(1)
+    opened = wing_vertices(rig)
+    scene.frame_set(31)
+    folded = wing_vertices(rig)
+    if not opened or len(opened) != len(folded):
+        raise ValueError('Wing geometry changed topology or is missing')
+    movement = max((after - before).length for before, after in zip(opened, folded))
+    if movement < .01:
+        raise ValueError('The wing mesh does not visibly deform across the timeline')
+    report['maximumWingVertexDisplacementMeters'] = movement
     focus = Vector((0, .08, 0))
     for name, direction in [('front', (0, -1, 0)), ('back', (0, 1, 0)), ('side', (1, 0, 0))]:
         frames = output / name
