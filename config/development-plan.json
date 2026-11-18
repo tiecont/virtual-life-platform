@@ -350,6 +350,39 @@
       "hostedCI": "PR60 Quality and Rust running at sourceRevision; final metadata head pending. No merge.",
       "remaining": "Integrate marked wrist seam into actual character; reference proportions/knuckle finish, final Phoenix bow contact, full74-bone budget,UV/skin bake,LOD/canonical actions and actual Unity deformation remain open. This candidate does not close VL-171 or VL-149."
     },
+        "wingComponentStudy": {
+          "sourceRevision": "7feaff8ea7563d48a0afb47ccee56696d883c861",
+          "integrationReview": {
+            "sourceRevision": "670719b854b90b72928d866e0203d882c01c7c09",
+            "baseRevision": "8e38dc46fb9638de692b7d80ed4931330b6ff9e3",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "commands": [
+              {"command": "node --test tests/governance/task-plan.test.mjs tests/governance/plan-status.test.mjs", "exitCode": 0, "result": "8 PASS at sourceRevision and after merging baseRevision."},
+              {"command": "node --check scripts/art/icarus-wing-articulation.mjs and node --check scripts/art/icarus-wing-repair.mjs", "exitCode": 0, "result": "Both entrypoints PASS; Python AST parses for both corresponding Blender scripts also PASS."},
+              {"command": "git show --format= --check 670719b854b90b72928d866e0203d882c01c7c09", "exitCode": 0, "result": "Committed patch whitespace PASS."}
+            ],
+            "scope": "Source review and base integration only. No new Blender, Unity, visual art acceptance or storage upload performed. Final integrated head requires complete hosted CI before merge."
+          },
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "productionReady": false,
+          "state": "ART_REVISION_REQUIRED",
+          "scope": "Separate feather components, isolated matched-pair Albedo/Normal bake, six-bone root/support/fold study only; not full character rig or canonical action acceptance.",
+          "artifacts": "artifacts/character-production/icarus-wing-components-r3 and icarus-wing-articulation-r4b",
+          "commands": [
+            {
+              "command": "node scripts/art/icarus-wing-articulation.mjs --blender <Blender4.5.16> --source <r3/icarus-wing-candidate.blend> --output <r4b> --verify-existing",
+              "exitCode": 0,
+              "result": "Actual Blend reopen and GLB reimport; 68 meshes, 17,688 wing/support triangles, six study bones; actual exported motion, no unweighted vertices or nonmanifold edges. Not full-body clearance acceptance."
+            },
+            {
+              "command": "node --check scripts/art/icarus-wing-articulation.mjs; Python AST parse; git diff --check",
+              "exitCode": 0,
+              "result": "PASS before commit; committed source unchanged."
+            }
+          ],
+          "visualReview": "Actual open-front and folded-back renders inspected. Vanes too regular, fold silhouette and root appearance require further repair; body/face/hair remain old unaccepted reduction. No bow-grip or hair/cloth motion acceptance.",
+          "remaining": "Reallocate whole-character budget (wing/support alone17,688), refine root/fold silhouette and face/hand/hair/garment topology, full74-bone rig,16 actions,LODs,Unity and delivery. Five other Limited held; ordinary/map pets image-only. Hosted CI required before merge."
+        },
         "productionAcceptanceClarification": {
           "sourceRevision": "f13492a1925c75a594b96aa87f3e8fa7ecee178b",
           "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
