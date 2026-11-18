@@ -156,6 +156,11 @@ def main():
             render(output, f'{label}-{view}', direction, (0, .08, 0), 2.45)
     scene.frame_set(1)
     render(output, 'face-preserved', (0, -1, 0), (0, -.12, .61), .40)
+    # Reopening the source should show the whole character, not the last closeup.
+    focus = Vector((0, .08, 0))
+    scene.camera.location = focus + Vector((0, -4, 0))
+    scene.camera.rotation_euler = (focus - scene.camera.location).to_track_quat('-Z', 'Y').to_euler()
+    scene.camera.data.ortho_scale = 2.45
     bpy.ops.object.select_all(action='DESELECT')
     for obj in bodies + meshes + [rig]:
         obj.select_set(True)
