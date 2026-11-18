@@ -267,6 +267,18 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
+        "combinedSourceChecks": {
+          "sourceRevision": "265f2e2c49bf236289d645bf78a8dad1efde1a82",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "commands": [
+            {"command": "pnpm lint", "exitCode": 0, "result": "514 source boundary checks PASS; one existing unused eslint-disable warning in generated public_pb.ts."},
+            {"command": "pnpm typecheck", "exitCode": 0, "result": "All workspace typechecks PASS after regenerating current Next route types. Initial two attempts exited2 on stale ignored .next types referencing removed app/page; old types preserved under ignored artifacts before next typegen. No application source or assertions changed for this local generated-output issue."},
+            {"command": "pnpm assets:check", "exitCode": 0, "result": "Original atlas/provenance and draft checks PASS;11 actual Icarus study references verified,55 missing canonical bindings explicitly remain MISSING_BINDINGS. No production asset completeness or art acceptance."},
+            {"command": "node --test tests/governance/icarus-import.test.mjs tests/governance/pet-limited-assets.test.mjs", "exitCode": 0, "result": "10 PASS, including complete-binding CLI rejection and no promotion of synthetic byte bindings."},
+            {"command": "python3 -B -m unittest discover -s tests/art -p test_*.py; targeted JS ESLint; Python AST parse; git diff --check origin/main...HEAD", "exitCode": 0, "result": "15 art integrity tests PASS;6 JS art wrappers/helpers lint and18 Python art modules parse PASS; combined patch whitespace PASS. No full pnpm check or final-head hosted CI result inferred."}
+          ],
+          "remaining": "Guarded PR59/60 source integration and complete combined-source hosted CI before PR45 merge. Art remains partial and cannot be qualified by source checks."
+        },
         "consolidatedPartialHandoff": {
           "sourceRevision": "1215b6505e0de5ff59bb659f85c15eefcfb33254",
           "handSourceRevision": "f27ececc2668adc927c1a3ba4f06464f611c6e88",
