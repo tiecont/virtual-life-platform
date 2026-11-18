@@ -7,6 +7,7 @@ import { parseArgs } from 'node:util';
 // other GLBs rather than dropping skins, node transforms or unknown attributes.
 const { values } = parseArgs({ options: { source: { type: 'string' }, output: { type: 'string' } } });
 if (!values.source || !values.output) throw new Error('Required: --source INPUT.glb --output OUTPUT.glb');
+if (path.resolve(values.source) === path.resolve(values.output)) throw new Error('Source and output must differ');
 const input = await readFile(values.source);
 if (input.readUInt32LE(0) !== 0x46546c67 || input.readUInt32LE(4) !== 2
   || input.readUInt32LE(8) !== input.length || input.readUInt32LE(16) !== 0x4e4f534a) throw new Error('Invalid GLB2');
@@ -118,6 +119,6 @@ header.writeUInt32LE(paddedJson.length, 12); header.writeUInt32LE(0x4e4f534a, 16
 const binHeader = Buffer.alloc(8);
 binHeader.writeUInt32LE(binaryLength, 0); binHeader.writeUInt32LE(0x004e4942, 4);
 await mkdir(path.dirname(values.output), { recursive: true });
-await writeFile(values.output, Buffer.concat([header, paddedJson, binHeader, ...chunks]));
-await writeFile(`${values.output}.json`, `${JSON.stringify(report, null, 2)}\n`);
+await writeFile(values.output, Buffer.concat([header, paddedJson, binHeader, ...chunks]), { flag: 'wx' });
+await writeFile(`${values.output}.json`, `${JSON.stringify(report, null, 2)}\n`, { flag: 'wx' });
 console.log(JSON.stringify(report, null, 2));
