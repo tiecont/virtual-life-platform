@@ -151,6 +151,24 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
+        "productionAcceptanceClarification": {
+          "sourceRevision": "f13492a1925c75a594b96aa87f3e8fa7ecee178b",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "scope": "Clarify existing Icarus completion criteria; no art acceptance, runtime activation or production release.",
+          "commands": [
+            {
+              "command": "node --test tests/governance/task-plan.test.mjs tests/governance/plan-status.test.mjs",
+              "exitCode": 0,
+              "result": "8 PASS against committed criteria."
+            },
+            {
+              "command": "git show --format= --check HEAD",
+              "exitCode": 0,
+              "result": "Committed patch whitespace PASS."
+            }
+          ],
+          "remaining": "Exact final-head hosted CI before merge. Visual topology/bake, rig/actions, Unity and delivery qualification remain incomplete."
+        },
       "topologyBakeR3": {
         "sourceRevision": "c88626736023a681f429665d7fb4f747a4f138de",
         "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
