@@ -74,6 +74,18 @@
           {"command": "pnpm ci:browser hospitality", "exitCode": 0, "result": "All Lounge and Lodge specs/devices PASS with validated batch reports and disposable database cleanup"}
         ],
         "scope": "Backlog and hospitality synchronization only. Task IDs subsequently moved to168-174 to preserve PR33 IDs163-167; final-head CI still required. No 3D assets produced or VL-055 closure claimed.",
+        "pr45LegacyCaptureObservation": {
+          "sourceRevision": "8e38dc46fb9638de692b7d80ed4931330b6ff9e3",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "failedRun": "Quality44225610936 push,legacy job134544012460",
+          "finding": "Chromium screenshot preflight at scripts/prepare-ci-browser.mjs:44 failed Page.captureScreenshot:Unable to capture screenshot before any application case. No trace/browser failure artifact existed; no network or legacy fixture defect established.",
+          "sameSourceSuccess": "PR Quality44225616016 completed SUCCESS; legacy job134544005586 passed preflight and all38 desktop/mobile legacy cases.",
+          "commands": [
+            {"command": "pnpm plan:status; node --check scripts/prepare-ci-browser.mjs", "exitCode": 0, "result": "Actual local plan and syntax checks only; no local browser suite claimed."}
+          ],
+          "result": "Intermittent hosted capture failure observed; underlying host/browser cause unproven. No source fix, assertion/timeout/retry change. New combined PR45 final head still requires actual green hosted CI before merge.",
+          "evidence": "/tmp/aetheria-pr45-legacy/artifacts/pr45-legacy/"
+        },
         "frameworkAssetRecovery": {
           "sourceRevision": "095af3a6a10e76465c15fedb9381a6127844e70e",
           "reviewMode": "SINGLE_AGENT_AUDIT",
@@ -266,6 +278,7 @@
           "inventorySha256": "fa03db03da3ea4673f1bdf300f2db160f8bdaba56e3bcc6eba120525d081dacc",
           "scope": "Self-contained local high-poly, preserved focal source, wing assembly and partial hand candidates remain separate. Original reference, relative opening recipes, Vietnamese correction order, canonical16-action contract and actual previews included. No finished combined character or assigned artist.",
           "verification": "164 payload files,158 original source hashes,6 embedded-only GLBs,3 decoded MP4s,46 local links,9 Node syntax and10 Python compile checks PASS. Payload2151809161bytes; no duplicate tar. Prior Blender reopen/import/render records are explicitly prior checks, not rerun at consolidation. No new Unity/player/Windows qualification.",
+          "portableReopen": {"sourceRevision": "683eedb40ed7516085d482ae1f3b0b572edeb637", "command": "Blender4.5.16 --background --threads2 --python-exit-code1 --python artifacts/character-production/reopen-consolidated.py -- artifacts/character-production/icarus-consolidated-handoff-r1", "exitCode": 0, "result": "Parent separately reopened all4 packaged Blend files: high-poly0bones/3packed images,focal0/6,wings6/5,hands32/7. No missing external image. Dependency/reopen check only; no new deformation/render/Unity acceptance. Fresh report sits beside the immutable handoff inventory."},
           "remaining": "Correct focal topology/hair, anatomical wing roots, hand/thumb/armor and exhaustive bow contact, then full74-bone rig,16actions,UV/bake/LODs and actual Unity/player qualification. No qualified art package exists for the conditional private upload. Other five Limited held; ordinary/map Pets remain image-only."
         },
         "focalSurfacePreservation": {
