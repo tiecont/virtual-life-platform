@@ -314,6 +314,20 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
+        "productionWorkPlan": {
+          "verification": {"sourceRevision": "87b7d8eb2fe76e23fc1c7e980d1057671cb07229", "reviewMode": "SINGLE_AGENT_SELF_REVIEW", "result": "node --test tests/governance/task-plan.test.mjs tests/governance/plan-status.test.mjs passed 8 tests; skill-creator quick_validate.py passed for aetheria-character-production. Scope: plan and skill validation only."},
+          "scope": "VL-171 Icarus only. Complete the existing acceptance criteria in this entry; VL-149 tracks the Limited roster. Keep the other five Limited on hold for owner designs and ordinary/map Pets image-only.",
+          "startingPoint": "Use orbital R9, back costume R7 and grip R11 as editable inputs. The combined bow/wing fit R2 recorded intersections in 15/31 simultaneous study frames. Preserve that scene as a regression fixture. The archived Unity FBX is a separate earlier asset.",
+          "milestones": [
+            "1. Assemble one editable full body with one skeleton hierarchy, correctly bound shoulders, elbows, wrists, finger chains, wing roots and bow sockets. Author a continuous acquire, draw, release and fold on the same timeline. Inspect both hands, string, bow, feathers, hair and costume at contact and between keys. Exit with convincing grip, draw and fold clearance in the assembled scene.",
+            "2. In parallel with the shared rig, correct left lid/head intersections, hand self-contact, garment attachment, hair silhouette and feather layering. Reintegrate corrections into that same body, reopen it, inspect neutral front, side, back, focal views and moving draw against selected_design_01.png. Retain reviewed source and comparison hashes.",
+            "3. Retopologize deformation regions, lay out UVs, bake isolated high-resolution PBR sources and author all three runtime LODs. Measure the complete asset including the bow against current triangle, joint, texture and material budgets. Verify shading, normal maps and deformation across LOD transitions.",
+            "4. Finish skinning and author the 16 canonical clips on the qualified body. Check weight normalization, loop continuity, contacts and transitions. In parallel, validate the Rust event to Unity presentation mapping for FIRE_ZONE under the existing default-off runtime contract.",
+            "5. Import and reimport the same export into the pinned Unity URP project. Exercise prefab, Animator, LODGroup, materials, VFX, reduced motion and cinematic output through their real entry points. Run the import audit and complete binding validator, inspect encoded motion, and profile the player on named target hardware.",
+            "6. Reopen the self-contained delivery from a clean location, verify provenance, rights status, hashes and all qualification evidence. Run relevant local checks and exact-source hosted CI, merge through green PRs. Upload the qualified private art package to the authorized stores and verify remote content against its manifest. Record Windows qualification and publication authorization separately."
+          ],
+          "resume": "Use the latest integrated source and outstanding acceptance checks. Continue feasible authorized milestones across component revisions; checkpoint source, evidence and next operation in this task and ignored artifacts. Record actual external blockers against only the affected qualification."
+        },
         "combinedSourceChecks": {
           "sourceRevision": "265f2e2c49bf236289d645bf78a8dad1efde1a82",
           "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
