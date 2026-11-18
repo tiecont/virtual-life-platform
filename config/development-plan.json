@@ -169,6 +169,167 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
+        "handBodyIntegration": {
+          "sourceRevision": "771a7d9c77036694fb6a2fec7f437d4f8809a83f",
+          "commits": [
+            "fed2da8",
+            "771a7d9"
+          ],
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "ART_REVISION_REQUIRED",
+          "productionReady": false,
+          "scope": "Bilateral authored hands stitched into the pinned current high-poly character through shared wrist vertex indices; partial 32-bone hand rigs and actual Phoenix draft bow surface measurements. Not a complete character rig, runtime mesh or Unity asset.",
+          "source": "scripts/art/icarus_hand_integrate.py",
+          "artifacts": "/home/tiecont/Projects/Aetheria-icarus-hand-repair/artifacts/character-production/icarus-hand-integration/r4",
+          "blendSha256": "412636c092a17d2089c4032efa551733cbfa833bf87499ee0ca2e0afca123c73",
+          "checks": [
+            {
+              "command": "python3 -m py_compile scripts/art/icarus_hand_integrate.py",
+              "exitCode": 0
+            },
+            {
+              "command": "node --check scripts/task-plan.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "git diff --check HEAD~2 HEAD",
+              "exitCode": 0
+            },
+            {
+              "command": "Blender 4.5.16 LTS --background --threads 2 --python scripts/art/icarus_hand_integrate.py -- --character icarus-v4-handoff-r2/source/icarus-highpoly-unrigged.blend --hand icarus-hand-authoring/r4-fit/icarus-hand-joint-candidate.blend --bow icarus/blender/assembled-04/phoenix-bow.blend --output hand-integration/r4 --render --render-frames 32 --render-sides left",
+              "exitCode": 0,
+              "result": "Both hands have zero unweighted vertices, finite open/half/grip evaluated poses and maximum movement0.109469m. Three final actual Phoenix bow grip renders inspected. Earlier r3 has18 multi-angle integrated renders; its bow placement and mirrored normals are superseded by r4."
+            },
+            {
+              "command": "Blender 4.5.16 LTS --background --threads 2 --python-exit-code 1 --python artifacts/character-production/icarus-hand-integration/verify.py",
+              "exitCode": 0,
+              "result": "Reopened final Blend. 4138339 original faces retain exact source geometry/UV hashes. All144 left and136 right seam edges have exactly two adjacent faces. Four images packed; weight error2.98e-8; finite frame32; three visible materials."
+            },
+            {
+              "command": "pnpm governance:check",
+              "exitCode": 143,
+              "result": "Final-head rerun terminated after governance consistency output; do not claim full final-head governance PASS. Earlier run before these script commits completed with exit0. No hosted CI or merge performed."
+            }
+          ],
+          "actualBowContact": "Not accepted: per-digit nearest surface gaps2.32-9.22mm. Existing Phoenix bow is a thin open surface, so signed normal side tests cannot prove solid penetration/contact.",
+          "remaining": "Restore source-design hand armor lost by wrist replacement; refine thumb opposition, knuckle/fingertip anatomy and grip; unwrap and bake matched skin; reconstruct a solid Phoenix bow handle and inspect contact; integrate partial hands into the complete74-bone rig, canonical actions and qualified LODs; actual Unity import/deformation remains unperformed.",
+          "nextAction": "Use the preserved r6 followup and its artist handoff for anatomy and plate correction; r4 remains the earlier integrated source.",
+          "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
+          "evidenceScope": "Recorded authoring checks at sourceRevision; no Blender rerun during final source integration. R4 output SHA256 freshly rechecked. Later bounded contact repair is recorded under handContactFinish."
+        },
+        "handContactFinish": {
+          "sourceRevision": "4b004dd0b16cb1cb255e86c3eb8a26b7dc82a6af",
+          "branch": "codex/icarus-hand-deformation-repair",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "ARTIST_HANDOFF_REQUIRED",
+          "productionReady": false,
+          "source": "scripts/art/icarus_hand_contact_finish.py",
+          "artifacts": "/home/tiecont/Projects/Aetheria-icarus-hand-repair/artifacts/character-production/icarus-hand-integration/r6",
+          "blendSha256": "d2df83a2b9b125d14d7c1f98c1bf578ed7d060191065390e623265f4c98b0f81",
+          "scope": "Two bounded targeted passes: bilateral distal finger taper; fitted thumb/finger poses; actual source white/gold dorsal relief and UV motif resampled onto clean armor shields; closed solid 23mm Phoenix handle replacing113 open central sheet faces. Existing r4 preserved.",
+          "checks": [
+            {
+              "command": "pnpm plan:status",
+              "exitCode": 0
+            },
+            {
+              "command": "python3 -m py_compile scripts/art/icarus_hand_contact_finish.py",
+              "exitCode": 0
+            },
+            {
+              "command": "node --check scripts/task-plan.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "git diff --check HEAD^ HEAD",
+              "exitCode": 0
+            },
+            {
+              "command": "Blender4.5.16 --background --threads2 --python-exit-code1 --python scripts/art/icarus_hand_contact_finish.py -- --integrated r4/icarus-hands-integrated.blend --character icarus-v4-handoff-r2/source/icarus-highpoly-unrigged.blend --output r6 --render",
+              "exitCode": 0,
+              "result": "Final three neutral dorsal/palm/oblique renders inspected at exact r4 cameras. Two meaningful repair attempts; initial Python entrypoint errors corrected before successful renders."
+            },
+            {
+              "command": "Blender4.5.16 --background --threads2 --python-exit-code1 --python artifacts/character-production/icarus-hand-integration/verify-contact.py",
+              "exitCode": 0,
+              "result": "Reopened r6: original2288969 body vertex coordinates exact vs r4; complete loop indices/UV array exact; actual handle zero nonmanifold edges;7 packed images;32 partial hand bones; finite frames1/16/32, max hand displacement0.102421m."
+            }
+          ],
+          "contact": {
+            "accepted": false,
+            "method": "Actual closed handle BVH,473 samples per digit from cage vertices, face centres and edge midpoints at frame32; not exhaustive triangle collision or motion acceptance.",
+            "minimumSignedDistanceMm": {
+              "thumb": -0.0866274,
+              "index": 0.310748,
+              "middle": 0.197242,
+              "ring": 0.231867,
+              "little": 0.209906
+            },
+            "maximumSampledPenetrationMm": 0.0866274
+          },
+          "anatomyReview": "Source white/gold dorsal motif and real handle contact visibly improved. Fingers still faceted/tubular; thenar/web transition narrow and angular; clean plate has floating proximal edge and sampled texture distortion. Not production anatomy/finish.",
+          "remaining": "Artist sculpt/retopology of hand anatomy and plate/cuff fit; remove residual thumb penetration and inspect exhaustive body/prop/self collision in all poses/actions; reconstruct closed decorative bow limbs/string; matched skin/armor UV/bake and three-material runtime budget (currently6 visible unique materials), LODs, complete74-bone rig/canonical actions and actual Unity import/deformation. No art gate or runtime budget pass.",
+          "handoffWorkOrder": "r6/WORK_ORDER.md",
+          "nextAction": "Artist-level hand anatomy, plate/cuff fit and collision corrections using the preserved r6 source and WORK_ORDER.md; exact final-head hosted CI is required before source merge.",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/60",
+          "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
+          "evidenceScope": "Recorded authoring/render/reopen checks at sourceRevision; no Blender rerun during final source integration. R6 output SHA256 and work order freshly inspected.",
+          "hostedCI": "Final reconciled source head PENDING; no final-head CI or merge claimed."
+        },
+        "handSourceIntegrationVerification": {
+          "sourceRevision": "bb5592f6b16f622c71328ff55430aa09ae56c313",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/60",
+          "state": "ARTIST_HANDOFF_REQUIRED",
+          "productionReady": false,
+          "scope": "Source integration and self-review of isolated authoring, bilateral wrist stitching and bounded Phoenix grip followup. Preserves stronger current VL-171 acceptance and all prior task records. No additional art repair, Blender invocation, paid calls, Unity acceptance or cloud delivery.",
+          "commands": [
+            {
+              "command": "python3 -B -m unittest discover -s tests/art -p 'test_*.py'",
+              "exitCode": 0,
+              "result": "15 PASS."
+            },
+            {
+              "command": "node --test tests/governance/task-plan.test.mjs tests/governance/plan-status.test.mjs",
+              "exitCode": 0,
+              "result": "8 PASS."
+            },
+            {
+              "command": "python3 -m py_compile scripts/art/icarus_hand_repair.py scripts/art/icarus_hand_integrate.py scripts/art/icarus_hand_contact_finish.py",
+              "exitCode": 0,
+              "result": "PASS."
+            },
+            {
+              "command": "node --check scripts/task-plan.mjs",
+              "exitCode": 0,
+              "result": "PASS; plan tooling syntax only."
+            },
+            {
+              "command": "pnpm lint",
+              "exitCode": 0,
+              "result": "PASS; 513 source boundaries; one existing unused eslint-disable warning in generated public_pb.ts."
+            },
+            {
+              "command": "pnpm governance:check",
+              "exitCode": 0,
+              "result": "174-task consistency PASS; historical 3586-file byte retrieval PASS, not fresh runtime acceptance."
+            },
+            {
+              "command": "git show --format= --check HEAD",
+              "exitCode": 0,
+              "result": "Base reconciliation commit whitespace PASS."
+            },
+            {
+              "command": "sha256sum artifacts/character-production/icarus-hand-integration/r4/icarus-hands-integrated.blend artifacts/character-production/icarus-hand-integration/r6/icarus-hands-contact-refined.blend",
+              "exitCode": 0,
+              "result": "Both files match the exact authoring hashes recorded under handBodyIntegration and handContactFinish."
+            }
+          ],
+          "findings": "Three meaningful hand-repair rounds are exhausted. R6 remains high-poly working source with faceted/tubular fingers, angular thumb/web anatomy, floating/distorted dorsal plate, sampled thumb penetration0.0866274mm and6 visible unique materials. Contact is not accepted. Partial32-bone hands do not establish a complete74-bone rig, canonical actions, runtime LODs or actual Unity import/deformation.",
+          "hostedCI": "New metadata head must pass exact-source hosted Quality and Rust checks; source integration does not claim final-head CI or merge.",
+          "remaining": "ARTIST_HANDOFF_REQUIRED; VL-171 and VL-149 remain IN_PROGRESS. Other five Limited held for owner designs; ordinary/map Pets images only. Preserve DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC. No source or CI result promotes art acceptance.",
+          "nextAction": "Push the reconciled PR60 source; sync later PR59/base changes if needed; obtain actual green hosted checks and guarded PR60 merge into PR45 only. Artist-level anatomy/plate correction follows the local r6 work order."
+        },
     "handJointRepair": {
       "sourceRevision": "5a2ef2b3f5b89dd57587e4313296b0ec66323a88",
       "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
