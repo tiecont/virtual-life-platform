@@ -12,7 +12,8 @@
       "owner": "platform.pet-content",
       "responsibility": "Default-off versioned Pet metadata drafts; no combat or platform reward writer",
       "currentPublicEntryFiles": [
-        "features/pets/modules/content/infrastructure/draft-store"
+        "features/pets/modules/content/infrastructure/draft-store",
+        "features/pets/modules/content/infrastructure/manifest-store"
       ],
       "targetBoundary": "Nest owns content persistence through the existing journal; Rust gameplay and player settlement retain their existing writers"
     },

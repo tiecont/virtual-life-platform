@@ -77,3 +77,14 @@ invalid swap/telegraph cases, fixed-point status examples and boundary checks.
 It also runs full matches across all 8 pets/6 stages/4 seeds, skill and AI
 contracts, invalid intent/version/seed cases, malformed snapshots, the 60-turn
 cap, and frozen full-match restart hashes in an independent process.
+
+## Offline v3 Taxonomy
+
+`taxonomy_v3::TaxonomyDraft::decode` accepts the shared draft taxonomy JSON
+contract, bounded to 64 KiB. It requires all 19 element definitions, 361 directed
+matchups, and 22 race templates. Duplicate JSON keys, unknown/missing fields,
+overlapping relations, inconsistent or unbounded multipliers, missing offensive
+counters, incompatible rigs and enabled/published documents fail closed.
+Validated candidate data supplies checked integer damage scaling and presentation
+morphology. Parsing never selects a live ruleset or publishes content; immutable
+manifest binding, actual v3 gameplay and operator authorization remain separate.
