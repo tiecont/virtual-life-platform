@@ -160,6 +160,28 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
+        "wingComponentStudy": {
+          "sourceRevision": "7feaff8ea7563d48a0afb47ccee56696d883c861",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "productionReady": false,
+          "state": "ART_REVISION_REQUIRED",
+          "scope": "Separate feather components, isolated matched-pair Albedo/Normal bake, six-bone root/support/fold study only; not full character rig or canonical action acceptance.",
+          "artifacts": "artifacts/character-production/icarus-wing-components-r3 and icarus-wing-articulation-r4b",
+          "commands": [
+            {
+              "command": "node scripts/art/icarus-wing-articulation.mjs --blender <Blender4.5.16> --source <r3/icarus-wing-candidate.blend> --output <r4b> --verify-existing",
+              "exitCode": 0,
+              "result": "Actual Blend reopen and GLB reimport; 68 meshes, 17,688 wing/support triangles, six study bones; actual exported motion, no unweighted vertices or nonmanifold edges. Not full-body clearance acceptance."
+            },
+            {
+              "command": "node --check scripts/art/icarus-wing-articulation.mjs; Python AST parse; git diff --check",
+              "exitCode": 0,
+              "result": "PASS before commit; committed source unchanged."
+            }
+          ],
+          "visualReview": "Actual open-front and folded-back renders inspected. Vanes too regular, fold silhouette and root appearance require further repair; body/face/hair remain old unaccepted reduction. No bow-grip or hair/cloth motion acceptance.",
+          "remaining": "Reallocate whole-character budget (wing/support alone17,688), refine root/fold silhouette and face/hand/hair/garment topology, full74-bone rig,16 actions,LODs,Unity and delivery. Five other Limited held; ordinary/map pets image-only. Hosted CI required before merge."
+        },
       "topologyBakeR3": {
         "sourceRevision": "c88626736023a681f429665d7fb4f747a4f138de",
         "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
