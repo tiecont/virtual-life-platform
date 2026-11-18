@@ -11,7 +11,7 @@ import {validateTestDatabaseURL} from './test-environment.mjs';
 const execute=promisify(execFile),root=process.cwd(),revision='aca14de0c50fe5d80c7563846a07b6bd55fc7321';
 const directory=resolve('artifacts/desktop-first/vl013/migration-'+randomUUID().slice(0,8)),source=directory+'/source';
 const require=createRequire(import.meta.url),sha=value=>createHash('sha256').update(value).digest('hex');
-const previousPolicyRef='config/schema-compatibility-0048-pet-acquisition-expand.json',policyRef='config/schema-compatibility-0048-private-art-expand.json';
+const previousPolicyRefs=['config/schema-compatibility-0048-admission-expand.json','config/schema-compatibility-0048-pet-acquisition-expand.json'],policyRef='config/schema-compatibility-0048-private-art-expand.json';
 const facts={taskId:'VL-013',scope:'Actual archived48 Nest runtime on additive54 disposable PG; no production, runtime-role or TLS qualification',previousRevision:revision,commands:[],scenarios:[],startedAt:new Date().toISOString()};
 await mkdir(source,{recursive:true,mode:0o700});
 async function run(bin,args,cwd=root){
@@ -68,10 +68,10 @@ try{
  const world='native:compat-'+randomUUID();await pool.query("INSERT INTO platform_native_worlds(world_id,boot_id,content_hash,lease_until) VALUES($1,$2,$3,clock_timestamp())",[world,randomUUID(),'ab'.repeat(32)]);
  const frozen=(await pool.query('SELECT to_jsonb(w) AS data FROM platform_native_worlds w WHERE world_id=$1',[world])).rows[0].data;
  stage='strict-old';await stop();await start(old);await ready(503);await assert.rejects(old.migrate(pool,source+'/apps/platform-api/dist/db/migrations'));await stop();
- stage='runtime-rollback';await start(old,true,previousPolicyRef);await ready(503);await assert.rejects(old.migrate(pool,source+'/apps/platform-api/dist/db/migrations',JSON.parse(await readFile(previousPolicyRef))));await stop();
+ stage='runtime-rollback';for(const previousPolicyRef of previousPolicyRefs){await start(old,true,previousPolicyRef);await ready(503);await assert.rejects(old.migrate(pool,source+'/apps/platform-api/dist/db/migrations',JSON.parse(await readFile(previousPolicyRef))));await stop();}
  await start(old,true);await ready(200);await sameIdentity(cookie,account);await old.migrate(pool,source+'/apps/platform-api/dist/db/migrations',policy);
  assert.deepEqual((await pool.query('SELECT to_jsonb(w) AS data FROM platform_native_worlds w WHERE world_id=$1',[world])).rows[0].data,frozen);
- facts.scenarios.push('Strict old48 and frozen53 expansion policy reject unknown54; explicit exact-prefix54 policy permits runtime rollback without destructive down migration or altering closed world');
+ facts.scenarios.push('Strict old48 and frozen50/53 expansion policies reject unknown54; explicit exact-prefix54 policy permits runtime rollback without destructive down migration or altering closed world');
  stage='negative-checks';
  for(const name of [Object.keys(before)[0],Object.keys(after).at(-1)]){
   await pool.query('UPDATE city_schema_migrations SET checksum=$2 WHERE name=$1',[name,'0'.repeat(64)]);await ready(503);await assert.rejects(old.migrate(pool,source+'/apps/platform-api/dist/db/migrations',policy));
