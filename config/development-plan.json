@@ -315,6 +315,21 @@
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
         "productionWorkPlan": {
+          "ownerDesignFinalH0": {
+            "revision": "icarus-design-final-h0",
+            "ownerDecision": "Duyệt bộ Final cho H0",
+            "sourceRevision": "ab2f62b3b795307028289487ab5bc7ebb94d4954",
+            "inputDirectory": "artifacts/character-production/icarus-owner-gates-v1/input",
+            "verification": "preflight.py input --profile icarus: exit 0, six native PNGs and reconciled specification. Python art suite: 20 passed. Node task-plan, plan-status, icarus-import and pet-limited-assets: 21 passed. H1-H4 require separate owner decisions.",
+            "sha256": {
+              "01_front_apose.png": "960bd90a4a2a5c749ee02bab682922600525f49dbc0cad2075aa8e315d1493ee",
+              "02_side_apose.png": "9ad6044ce3c9f518c010bfb53f554f67f347469aa9ba1e5769c34970efa831a3",
+              "03_back_apose.png": "ffc5ef4d630c4a5f5a4f0a6f5d0aec9b718834005583e7e075c3a10a015eda76",
+              "04_face_closeup.png": "24790c9feb56d4d7ada188419fae9a16edc34b6eefc39d48847bc413e115cf94",
+              "05_wings_or_tail.png": "826b9bda11ee3332b8b5c12c94663b90282f66d6c3d1520c5adb892eea852825",
+              "06_weapon_prop.png": "55f366664c32bd8d7a11f985d3866fd233bc4e48bbac46bd422169c8b4a80948"
+            }
+          },
           "consolidatedRuntimeImport": {
             "sourceRevision": "f84b63d9f63c7f0464db726df876fc76df51d48e",
             "fbxSha256": "1bdf81c91bf828eba44ffb68e8011f8116268b44d26e1855f6ea26632fd4137b",
