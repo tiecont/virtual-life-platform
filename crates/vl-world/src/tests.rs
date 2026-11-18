@@ -270,3 +270,73 @@ async fn live_actor_mailbox_replies_and_shutdown_do_not_detach_work() {
         Err(Error::Closed)
     ));
 }
+
+#[test]
+fn area_interest_projection_denies_unknown_policy_and_rechecks_revocation() {
+    let (_, mut zone) = zone(4, 8).unwrap();
+    let viewer = zone.join(1, Position::default()).unwrap();
+    let _near = zone.join(2, Position { x: 100, z: 0 }).unwrap();
+    let _blocked = zone.join(3, Position { x: 200, z: 0 }).unwrap();
+    let _far = zone.join(4, Position { x: 6000, z: 0 }).unwrap();
+    let snapshot = zone.snapshot(1, viewer.generation).unwrap();
+    let own = snapshot.project(visibility::Audience::own(1)).unwrap();
+    assert!(own.peers.is_empty());
+    assert_eq!(own.own.id, 1);
+    assert_eq!(
+        snapshot.project(visibility::Audience::own(2)),
+        Err(Error::StaleActor)
+    );
+    let allowed = snapshot
+        .project(visibility::Audience::current(1, |id| id == 2 || id == 4))
+        .unwrap();
+    assert_eq!(
+        allowed
+            .peers
+            .iter()
+            .map(|entity| entity.id)
+            .collect::<Vec<_>>(),
+        vec![2]
+    );
+    // Even the same geometric snapshot confers no enduring disclosure right.
+    let revoked = snapshot
+        .project(visibility::Audience::current(1, |_| false))
+        .unwrap();
+    assert!(revoked.peers.is_empty());
+    assert_eq!(
+        snapshot.project(visibility::Audience::own(99)),
+        Err(Error::StaleActor)
+    );
+}
+
+#[test]
+fn delayed_reordered_and_duplicate_inputs_reconcile_without_banking_silent_ticks() {
+    let (_, zone) = zone(1, 8).unwrap();
+    let mut zone = zone.with_collision(collision::Collision::aurora().unwrap());
+    let actor = zone.join(1, Position { x: 0, z: -4000 }).unwrap();
+    // Deterministic application jitter: no sleeps or scheduler-sensitive assertions.
+    for (sequence, silent_ticks) in [(1, 0), (2, 1), (3, 3), (4, 2), (5, 40)] {
+        let before = zone.actors[&1].position;
+        for _ in 0..silent_ticks {
+            zone.advance().unwrap();
+            assert_eq!(zone.actors[&1].position, before);
+        }
+        actor.input(sequence, 1000, 1000).unwrap();
+        zone.advance().unwrap();
+        let reconciled = zone.snapshot(1, actor.generation).unwrap().visible[0].clone();
+        assert_eq!(reconciled.last_input, sequence);
+        assert!(
+            (reconciled.position.x - before.x).abs() + (reconciled.position.z - before.z).abs()
+                <= STEP_MM
+        );
+        assert_eq!(actor.input(sequence, -1000, -1000), Err(Error::StaleInput));
+        if sequence > 1 {
+            assert_eq!(
+                actor.input(sequence - 1, -1000, -1000),
+                Err(Error::StaleInput)
+            );
+        }
+        zone.advance().unwrap();
+        assert_eq!(zone.actors[&1].position, reconciled.position);
+        assert_eq!(zone.actors[&1].velocity, Position::default());
+    }
+}

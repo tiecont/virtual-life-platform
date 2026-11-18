@@ -10,7 +10,9 @@ use std::{
 };
 use tokio::sync::{mpsc, oneshot, watch};
 pub mod collision;
+pub mod destinations;
 pub mod movement;
+pub mod visibility;
 
 pub const TICK_PERIOD: Duration = Duration::from_millis(50);
 pub const MAX_ACTORS: usize = 256;
@@ -92,6 +94,7 @@ pub struct Entity {
 }
 #[derive(Clone, Debug)]
 pub struct Snapshot {
+    viewer: u64,
     pub authority_epoch: u64,
     pub tick: u64,
     pub visible: Vec<Entity>,
@@ -339,6 +342,7 @@ impl Zone {
             ordered[(ordered.len() * 95).div_ceil(100) - 1]
         };
         Ok(Snapshot {
+            viewer: id,
             authority_epoch: self.epoch.checked_add(generation).ok_or(Error::Capacity)?,
             tick: self.tick,
             visible,

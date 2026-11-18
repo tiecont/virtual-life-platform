@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "petId": "pet-v3-fire-icarus",
+  "designRevision": "owner-review-v3",
+  "state": "BLENDER_REFINED_DRAFT",
+  "styleTarget": "UNVALIDATED_TARGET",
+  "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
+  "productionReady": false,
+  "runtimeEnabled": false,
+  "design": {
+    "packagePath": "/home/tiecont/Downloads/Aetheria_Icarus_Design_Review_V3",
+    "selectedSource": "references/selected_design_01.png",
+    "selectedSourceSha256": "6bb497272dde6d6fa74a1eb4fccf88a60ae147ed529bd894f23e86441623c7fc",
+    "packageSha256Manifest": "docs/FILES_SHA256.txt",
+    "packageManifestSha256": "cca7796e438fd23d6faba7a8c0277876700e36a1712f8cb62c369366996e80f4",
+    "packageFilesVerified": 33,
+    "originalPackageUnchanged": true,
+    "nativeTurnaroundHeightPixels": 276,
+    "unapprovedStandaloneInterpretationExcluded": true
+  },
+  "authorization": {
+    "recordedAt": "2026-11-17T10:26:32.234817+00:00",
+    "authority": "Explicit owner instruction in current production request",
+    "evidenceFile": "provenance/owner-authorization-v3.json",
+    "evidenceSha256": "31923ec200a99f3300ddb21074f158de205a98f523446c07808fbad265719e6d",
+    "designDirection": "APPROVED",
+    "availableMeshyCreditUse": "AUTHORIZED_FOR_ICARUS_DEVELOPMENT",
+    "newSupplementApproval": false,
+    "artApproval": false,
+    "publicReleaseApproval": false
+  },
+  "meshy": {
+    "schemaVersion": 1,
+    "petId": "pet-v3-fire-icarus",
+    "designRevision": "owner-review-v3",
+    "selectedSourceSha256": "6bb497272dde6d6fa74a1eb4fccf88a60ae147ed529bd894f23e86441623c7fc",
+    "jobs": [
+      {
+        "taskId": "01a1e90b-9969-748a-82bf-29ef1a85cb2f",
+        "providerAssetTaskIds": [
+          "01a1e90b-9969-748a-82bf-29ef1a85cb2f"
+        ],
+        "originalMcpTaskId": "00000000-0000-0000-0000-000000000000",
+        "identityReconciliation": "Canonical ID from provider asset paths; original raw responses preserved",
+        "taskType": "image-to-3d",
+        "status": "SUCCEEDED",
+        "estimatedCredits": 15,
+        "actualCredits": 15,
+        "role": "character-pilot",
+        "input": "references/meshy-front-native.png",
+        "inputSha256": "9047d1725d0cc16a804f5ae1c5b6a93f12d0b47790e340f87002194a19f4a593",
+        "settings": {
+          "ai_model": "meshy-t2.5",
+          "model_type": "smart-topology",
+          "texture_model": "meshy-n1",
+          "texture_resolution": "2k",
+          "pose_mode": "t-pose",
+          "target_polycount": 14000,
+          "target_formats": [
+            "glb",
+            "fbx"
+          ],
+          "image_enhancement": false,
+          "multi_view_thumbnails": true
+        }
+      },
+      {
+        "taskId": "01a1e913-1a0e-73ee-9eef-6125afaa008f",
+        "providerAssetTaskIds": [
+          "01a1e913-1a0e-73ee-9eef-6125afaa008f"
+        ],
+        "originalMcpTaskId": "00000000-0000-0000-0000-000000000000",
+        "identityReconciliation": "Canonical ID from provider asset paths; original raw responses preserved",
+        "taskType": "rigging",
+        "status": "SUCCEEDED",
+        "estimatedCredits": 5,
+        "actualCredits": 5,
+        "role": "humanoid-rig",
+        "input": "01a1e90b-9969-748a-82bf-29ef1a85cb2f",
+        "settings": {
+          "height_meters": 1.68,
+          "basic_animations": [
+            "walking",
+            "running"
+          ]
+        }
+      },
+      {
+        "taskId": "01a1e923-3b7f-7443-8b94-dff09ff84c47",
+        "providerAssetTaskIds": [
+          "01a1e923-3b7f-7443-8b94-dff09ff84c47"
+        ],
+        "originalMcpTaskId": "00000000-0000-0000-0000-000000000000",
+        "identityReconciliation": "Canonical ID from provider asset paths; original raw responses preserved",
+        "taskType": "image-to-3d",
+        "status": "SUCCEEDED",
+        "estimatedCredits": 15,
+        "actualCredits": 15,
+        "role": "phoenix-bow-pilot",
+        "input": "references/phoenix-bow-native.png",
+        "inputSha256": "38dd0fd5a32a890650d1c4d698f8cfdfa8fb84964cfe64d61386718f7e214310",
+        "settings": {
+          "ai_model": "meshy-t2.5",
+          "model_type": "smart-topology",
+          "texture_model": "meshy-n1",
+          "texture_resolution": "2k",
+          "target_polycount": 3500,
+          "target_formats": [
+            "glb",
+            "fbx"
+          ],
+          "image_enhancement": false
+        }
+      }
+    ],
+    "balanceBefore": 1044,
+    "balanceAfter": {
+      "balance": 1009,
+      "monthlyCredits": 999,
+      "permanentCredits": 10
+    },
+    "creditsConsumed": 35,
+    "additionalPurchases": 0,
+    "productionReady": false,
+    "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
+    "pricingSource": "Connected MCP tool documentation observed during production; actual per-task consumption returned by status. Studio-only aggregate usage query returned403.",
+    "settingsLimitation": "Single-image t2.5 game topology. Multi-image accepts1-4 views and has no smart topology; no five-view guarantee. N1 produces base color only."
+  },
+  "tools": {
+    "blender": "4.5.16 LTS",
+    "unity": "6000.3.14f1",
+    "urp": "17.3.0"
+  },
+  "localDeliveryRoot": "artifacts/character-production/icarus",
+  "artifactStorage": "Local ignored draft delivery; private MinIO ingestion remains VL-170",
+  "approvalGate": "Initial V3 design and Meshy spending approved; final art and release remain unapproved",
+  "canonicalAnimationContract": "specs/pet-arena/v3.1/data/limited_animation_profiles.json",
+  "canonicalBindingsAccepted": [],
+  "quality": {
+    "status": "ART_REVISION_REQUIRED",
+    "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+    "gaps": [
+      "Facial likeness and ruby eye detail",
+      "Foldable layered wing construction, rest contacts and hair clearance",
+      "Finger/face rig;44 draft bones versus74 target",
+      "Body height excluding halo/wings not certified",
+      "12690 body triangles below26000-29500 target; detail missing",
+      "Four review materials exceed three-material budget",
+      "Basecolor only; normal/ORM/emissive-mask texture sets missing",
+      "LOD1/2 candidates not exported or Unity-qualified",
+      "Canonical16 actions, events, skill/ultimate, audio, reduced-motion variant missing",
+      "Bow depth, hand grip, independent tension string and nocked arrow",
+      "Windows/player performance and art acceptance"
+    ]
+  }
+}

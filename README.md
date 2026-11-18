@@ -95,9 +95,29 @@ world packages cannot import another world's persistence or SQL drivers.
 
 ## Work Plan
 
+The repository skill [Aetheria Character Production](.agents/skills/aetheria-character-production/SKILL.md)
+guides reference images through Blender modeling, textures, rigging, animation,
+Unity URP and delivery, with separate art and technical gates. Invoke
+`$aetheria-character-production` with the character name and reference images;
+it infers existing project defaults and reports missing inputs or failed gates.
+The skill includes style calibration and bounded repair/artist handoff. Its
+presence does not establish an accepted art benchmark or a finished character.
+
+The [owner-design intake](specs/pet-arena/meshy-character-pipeline.md) preserves
+Icarus's original sheet and immutable native crops. Its later V3 production
+record separately pins the owner's design/spending authorization and actual
+Meshy pilot. The resulting Blender/Unity review remains ART_REVISION_REQUIRED;
+it is not an accepted production model or public-release approval.
+
 The [V3.1 candidate specification](specs/pet-arena/v3.1.md) adds six Standard S
 Pets to the canonical240 draft catalog. Validate with
-`python3 scripts/validate-pet-v31.py`; no v3 DB import or runtime is enabled.
+`python3 scripts/validate-pet-v31.py`; no v3 runtime is enabled.
+The offline acquisition projection can be imported into an owned disposable DB
+with `node scripts/with-test-db.mjs node --import tsx scripts/pet-acquisition-draft-seed.mjs`
+after building packages. Migration 0053 stores 240 draft identities, taxonomy and
+acquisition rules; it leaves v2 drafts intact and creates no ownership, purchases
+or published content. The importer verifies all candidate manifest hashes and
+the actual upstream 114 identities. It does not import combat, art or lore payloads.
 
 
 Pet Arena expansion contracts and the original 19-element/114-species design
@@ -110,6 +130,11 @@ implemented v2 gameplay or approved production art. Validate references with
 styles and the first six hero/boss asset briefs. After building packages,
 `node --import tsx scripts/pet-asset-check.mjs` reports explicit missing art and
 animation bindings. A valid draft preflight grants no rights or production status.
+
+The separate [Limited asset pipeline](specs/pet-arena/limited-asset-pipeline.md)
+uses `--limited-v31` for canonical Limited identities and hashed authoring
+bindings. Add `--require-complete` with an authored manifest to reject missing
+bindings; byte validation alone is not model, Unity or rendered acceptance.
 
 The first v2 persistence slice stores unpublished metadata only. After building
 packages, seed an owned disposable PostgreSQL database with

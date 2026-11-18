@@ -45,7 +45,24 @@
       "acceptance": ["Actual main Quality/Rust green at recorded SHA", "PR33 and rebased PR35 self-reviewed and merged only through complete green CI; local Compose ports bind 127.0.0.1 and secrets remain local"],
       "status": "IN_PROGRESS",
       "qualificationRequirements": [],
-      "implementation": {"release": "OFFLINE_ONLY / NO_GO_PUBLIC", "observedMain": "d3f23b4daaa96fa23d9112130f439d288d6eaec2", "observedMainQuality": "https://github.com/tiecont/virtual-life-platform/actions/runs/43899049861: SUCCESS on attempt3 after two recorded image failures; Rust43899050557 SUCCESS", "observedPR33": "fd94f630e97e907629caf88c3344709620a69f18: 26 SUCCESS checks; merged as d3f23b4daaa96fa23d9112130f439d288d6eaec2", "observedPR35": "Rebased onto post-PR33 main as b10ac493cc78f0fd299f55a3f2c9dafe2b61d63a; unchanged tree versus d26d7cf; 3 launcher governance tests and targeted lint PASS; hosted Quality/Rust pending", "remaining": "Merge PR35 and PR36 only through complete green final-source CI, then verify new main. PR36 image diagnostics at0bcb420 confirmed Chromium ERR_NETWORK_CHANGED on GET /admin before login; reuse the existing bounded document-only retry without retrying mutations or assertions."},
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "observedMain": "b2b1a079662556c45ab7f9e135d38d72d107237c",
+        "observedMainQuality": "Quality43995038750 SUCCESS; Rust43995038683 SUCCESS at observedMain; inspected hosted evidence, not a fresh local run.",
+        "observedPR33": "fd94f630e97e907629caf88c3344709620a69f18: 26 SUCCESS checks; merged as d3f23b4daaa96fa23d9112130f439d288d6eaec2",
+        "observedPR35": "MERGED on2026-11-17 from4450de786d4036f42970becab1a5890bf29df335 as b2b1a079662556c45ab7f9e135d38d72d107237c; main Quality/Rust green.",
+        "v4Audit": {
+          "sourceRevision": "c7a1f8647bb4d6d6fc4e7b979abcf4e85b810736",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "observedDate": "2026-11-17",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/41",
+          "prHeads": {"36": "c45865d3860af8c9230648fea5faf73413a319ad", "37": "734c5dd35db822a3bca46af0c19e1d264e0815c8", "38": "47f8249aaf26e41255cc5e33493f5ca622bc9b0e", "39": "221aa34be6e4a24ed000b7464de90dde5518b828", "40": "4d29fdeae9bd37f8f929fa27dc6552572a4f0603"},
+          "ancestry": "Exact base is an ancestor of each head. PR36 -> PR39 -> PR41; separate PR37 -> PR38 -> PR40 retained. Existing worktrees and owner untracked blend preserved.",
+          "ci": "All PR36-40 report26 SUCCESS checks and CLEAN at the recorded heads. Same-source failed-job reruns43995822670,43995833635,44037174790 all SUCCESS on attempt2. Prior failure artifacts retained under ignored artifacts/v4-audit/; no assertions weakened or source fixes inferred from transient navigation failures.",
+          "mergeStatus": "PR36-40 remain OPEN; PR38/40 remain DRAFT with art gates unmet. No merge performed. PR41 is a separate intake DRAFT; final-head CI pending."
+        },
+        "remaining": "Review any source merge through green exact-final-source CI and verify resulting main. Draft art acceptance remains blocked independently. VL-169/VL-055 retention, export and deletion requirements remain open; no Gate0-wide or production acceptance claimed."
+      },
       "verification": {
         "sourceRevision": "49d1b5fe500f5e261ff3ceda5b68a4d20e71f861",
         "reviewMode": "SINGLE_AGENT_AUDIT",
@@ -57,6 +74,24 @@
           {"command": "pnpm ci:browser hospitality", "exitCode": 0, "result": "All Lounge and Lodge specs/devices PASS with validated batch reports and disposable database cleanup"}
         ],
         "scope": "Backlog and hospitality synchronization only. Task IDs subsequently moved to168-174 to preserve PR33 IDs163-167; final-head CI still required. No 3D assets produced or VL-055 closure claimed.",
+        "sceneFloorRaycastFollowup": {
+          "sourceRevision": "70c2aac898499654f1a78511fd914ff34d151fb3",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/54",
+          "finding": "Quality44078725887 floor-raycast trace has an unchanged1214x502 canvas and correct spawn coordinate at the click, immediately followed by suspended input during the15-second authoritative refresh. The broad validated-ACK observer then sees the refresh destination3:3. A local real-resize regression before the fix also reproduced3:3 instead of10:11; stale floor target sampling is independently possible because only seat targets were reread after scrolling.",
+          "change": "Control the browser clock and explicitly advance actual seat/floor animations in the floor scenario; sample symbolic spawn targets with the current canvas box after scrolling. Retain ACK, final position, identity, viewport and WebGL assertions, existing timeouts and zero mutation retries. Existing periodic-refresh scenario still exercises suspended input.",
+          "commands": [
+            {"command": "node scripts/run-browser-tests.mjs tests/e2e/scene3d-room.spec.ts --grep 'actual floor raycast' (pre-fix resize regression)", "exitCode": 1, "result": "Expected regression reproduction: desktop receives3:3 instead of10:11; trace retained under ignored artifacts/test output"},
+            {"command": "node scripts/run-browser-tests.mjs tests/e2e/scene3d-room.spec.ts --grep 'actual floor raycast' (corrected implementation before rebase)", "exitCode": 0, "result": "Desktop1 PASS, mobile1 PASS; actual PostgreSQL/HTTP/Socket.IO/WebGL"},
+            {"command": "pnpm exec eslint tests/e2e/scene3d-room.spec.ts", "exitCode": 0},
+            {"command": "pnpm governance:check", "exitCode": 0, "result": "PASS including historical indexed-byte retrieval; no fresh historical gameplay acceptance inferred"},
+            {"command": "node --check on TypeScript-transpiled tests/e2e/scene3d-room.spec.ts via stdin", "exitCode": 0},
+            {"command": "pnpm test:scene3d-room (first full attempt before rebase)", "exitCode": 1, "result": "No tests ran: existing60-second webServer startup timeout on heavily loaded local host; no timeout changed"},
+            {"command": "pnpm test:scene3d-room", "exitCode": 0, "result": "18 PASS: desktop9/mobile9, reportValid=true, both batch exits0, disposable DB/network cleanup PASS; committed sourceRevision; ignored facts run-e7922c30"},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "remaining": "Final-head hosted Quality/Rust checks pending; merge only after complete green CI. No runtime behavior, authority, release, production or art acceptance changes."
+        },
         "browserDiagnosticsFollowup": {
           "sourceRevision": "819d07b942025b4c9a757e221ad8b040f0205927",
           "reviewMode": "SINGLE_AGENT_AUDIT",
@@ -81,7 +116,7 @@
       "acceptance": ["Restore actual native checkpoint, receipts, events and settlement records; verify exact hashes and authoritative state", "Missing/wrong keys, corrupt data and incompatible versions abort before serving; unpublished metadata stays private", "Record unresolved retention/export/deletion decisions honestly; source tests do not constitute owner policy approval"],
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Actual owner retention/deletion policy approval remains required for VL-055 closure"],
-      "implementation": {"parentTask": "VL-055", "release": "OFFLINE_ONLY / NO_GO_PUBLIC", "source": "Real Pet win/loss process harness exercises encrypted mid-match and terminal archive restoration to separate empty loopback PostgreSQL; restricted TLS role and explicitly reacquired allocator lease preserve runtime checks.", "remaining": "Full Quality and final-head hosted CI remain required. Local Docker is inactive and system service startup requires interactive authentication. Retention/deletion policy approval is unresolved; VL-055 is not closed."},
+      "implementation": {"parentTask": "VL-055", "release": "OFFLINE_ONLY / NO_GO_PUBLIC", "source": "Real Pet win/loss process harness exercises encrypted mid-match and terminal archive restoration to separate empty loopback PostgreSQL; restricted TLS role and explicitly reacquired allocator lease preserve runtime checks.", "remaining": "Final PR36 head c45865d3860af8c9230648fea5faf73413a319ad now has green hosted Quality/Rust. Local recovery was not rerun in the V4 audit. Account export/deletion, deletion surviving restore, writer races and retention/key custody policy approval remain unresolved in specs/native-data-lifecycle.md; VL-055 is not closed."},
       "verification": {
         "sourceRevision": "ca3c32deaa965232f528b064f5acde804feb98f2",
         "reviewMode": "SINGLE_AGENT_AUDIT",
@@ -92,7 +127,14 @@
           {"command": "pnpm governance:check", "exitCode": 0},
           {"command": "Hosted Rust workflow43910505100 (push) and43910512176 (PR)", "exitCode": 0, "result": "Both complete SUCCESS including actual Pet win/loss encrypted restore scenarios, restricted Rust TLS readiness, key/engine negatives and exact hashes"}
         ],
-        "scope": "Native archive recovery acceptance only; not complete deletion/export policy approval, production deployment, final Quality or art acceptance. Subsequent image diagnostics require fresh CI."
+        "scope": "Native archive recovery acceptance only; not complete deletion/export policy approval, production deployment, final Quality or art acceptance. Subsequent image diagnostics require fresh CI.",
+        "finalSourceAudit": {
+          "sourceRevision": "c45865d3860af8c9230648fea5faf73413a319ad",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "command": "gh run view 43995822683 --repo tiecont/virtual-life-platform --json status,conclusion,headSha,jobs",
+          "exitCode": 0,
+          "result": "Hosted Rust43995822683 SUCCESS at exact final head; actual transactional recovery, encrypted journal backup/restored migration integrity, runtime crash recovery and Pet Arena recovery/settlement steps SUCCESS. PR36 Quality43995822670 attempt2 also SUCCESS. This audits executed hosted evidence; no new local recovery execution or privacy-policy approval claimed."
+        }
       }
     },
     {
@@ -203,9 +245,75 @@
       "priority": 1,
       "dependsOn": [],
       "acceptance": ["Actual editable Blender 4.x LTS source and FBX/GLB export, meter scale and Y-up transfer; LOD0 26000-29500 triangles, Icarus 74 bones and at most 3 materials", "Actual UV/textures, idle/intro/normal/rage/signature clips, URP cel material, FIRE_ZONE VFX and Timeline/Cinemachine preview MP4 exist", "Record character_id, design_revision, reference_hash and actual source/import/runtime hashes; pet-asset-check passes with Icarus bindings present, not merely a missing-asset draft preflight", "Actual licensed Unity import, rendered motion and reduced-motion/performance checks; no runtime animation authority"],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
-      "implementation": {"parentTask": "VL-149", "sharedPipeline": "VL-105", "assetContract": "VL-121", "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"}
+      "implementation": {
+        "parentTask": "VL-149", "sharedPipeline": "VL-105", "assetContract": "VL-121",
+        "designIntake": {
+          "specification": "specs/pet-arena/meshy-character-pipeline.md",
+          "inputManifest": "specs/pet-arena/references/icarus/design-intake-v2.json",
+          "tool": "scripts/art/pet_design_intake.py",
+          "state": "DESIGN_REVIEW",
+          "sourceSha256": "925d341660bf355081b2f055dbece44631c0f803a6da1d8506b1424b4fc95460",
+          "snapshotSha256": "3a8aecf4c7f83475746d4df3bf38734b0aad4a0e1d55f61f20b2b6c26ea50c78",
+          "ownerApproval": "MISSING", "creditAuthorization": "MISSING",
+          "jobs": [], "creditsConsumed": 0,
+          "verification": {
+            "sourceRevision": "93a918c009ea3f5b23b444f02de662240d0aa5e0",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "commands": [
+              {"command": "python3 -B -m unittest discover -s tests/art -p 'test_*.py' -v", "exitCode": 0, "result": "7 PASS: exact original/crop pixels, immutable revision refusal, source/index/crop tampering, bounds/path/duplicate rejection, symlink refusal and no inferred approval/spending."},
+              {"command": "python3 -B scripts/art/pet_design_intake.py --verify artifacts/design-intake/pets/pet-v3-fire-icarus/owner-sheet-v2", "exitCode": 0, "result": "19 files and16 native pixel crops PASS; snapshot3a8aecf4c7f83475746d4df3bf38734b0aad4a0e1d55f61f20b2b6c26ea50c78; DESIGN_REVIEW, ownerApproval MISSING, paidJobsAllowed0, runtimeEnabled/productionReady false."},
+              {"command": "node --test tests/governance/pet-assets.test.mjs tests/governance/pet-design.test.mjs tests/governance/pet-v31.test.mjs tests/governance/task-plan.test.mjs", "exitCode": 0, "result": "11 PASS including actual FIFO/path/hash negatives, canonical240 tampering, implementation dependencies and no invented verification."},
+              {"command": "node --test tests/governance/ci.test.mjs tests/governance/plan-status.test.mjs", "exitCode": 0, "result": "7 PASS; failed/missing CI and unsupported verification claims remain rejected."},
+              {"command": "pnpm governance:check", "exitCode": 0, "result": "PASS.174 tasks, VL-171 IN_PROGRESS. Historical3586-file retrieval is not fresh runtime or art acceptance."},
+              {"command": "pnpm architecture:check", "exitCode": 0, "result": "PASS:136 SQL tables plus journal,504 source files,138 API production files and worker boundary."},
+              {"command": "git show --format= --check HEAD", "exitCode": 0, "result": "Committed implementation patch PASS at sourceRevision above."}
+            ],
+            "sameImplementationPrecommitChecks": [
+              {"command": "pnpm build:packages", "exitCode": 0, "result": "18 shared TypeScript package builds PASS; no TypeScript source changed."},
+              {"command": "python3 scripts/validate-pet-v31.py", "exitCode": 0, "result": "Canonical240 draft catalog PASS; no content publication or grant."},
+              {"command": "node --import tsx scripts/pet-asset-check.mjs", "exitCode": 0, "result": "Existing v2 missing-art draft preflight PASS,0 files verified; not Icarus bindings, model or artistic acceptance. PR37 Limited validator remains on its own branch."},
+              {"command": "Playwright Chromium local file review at1440x1000 and390x844", "exitCode": 0, "result": "17 actual images loaded at both viewports; no horizontal overflow or remote requests. Full-page screenshots inspected, including native front wing framing. Not gameplay/browser-product acceptance."}
+            ],
+            "prAudit": [
+              {"number": 36, "head": "c45865d3860af8c9230648fea5faf73413a319ad", "base": "b2b1a079662556c45ab7f9e135d38d72d107237c", "result": "OPEN;24 success checks,2 failed push runtime-images/quality checks; PR-context checks green. No merge."},
+              {"number": 37, "head": "734c5dd35db822a3bca46af0c19e1d264e0815c8", "base": "b2b1a079662556c45ab7f9e135d38d72d107237c", "result": "OPEN;24 success checks,2 failed PR runtime-images/quality checks; push checks green. Existing shared Limited binding owner."},
+              {"number": 38, "head": "47f8249aaf26e41255cc5e33493f5ca622bc9b0e", "base": "734c5dd35db822a3bca46af0c19e1d264e0815c8", "result": "OPEN DRAFT;26 successful checks observed; existing unaccepted Blender/GLB/FBX/Unity study, not approved art."},
+              {"number": 39, "head": "221aa34be6e4a24ed000b7464de90dde5518b828", "base": "c45865d3860af8c9230648fea5faf73413a319ad", "result": "OPEN;26 successful checks observed; skill-only branch is this intake's base."},
+              {"number": 40, "head": "4d29fdeae9bd37f8f929fa27dc6552572a4f0603", "base": "47f8249aaf26e41255cc5e33493f5ca622bc9b0e", "result": "OPEN DRAFT;24 success checks,2 failed push runtime-images/quality checks; PR-context checks green. ARTIST_HANDOFF_REQUIRED study preserved, including owner untracked blend backup."}
+            ],
+            "capabilities": "Meshy balance1044 =1034 monthly+10 permanent, unchanged across this task; free bow/float animation queries only.0 jobs/0 credits. Multi-image supports1-4views and no smart topology; proposed single-image t2.5 bare-mesh5-credit trial remains NOT_AUTHORIZED. Blender MCP addon/scene connection both FAILED. Background Blender printed5.2.3 LTS, then audio shutdown stalled and owned process stopped143; not pinned4.5 authoring acceptance. Unity pinned6000.3.14f1/URP17.3.0 inspected; no Unity invocation or import/render claim.",
+            "artifacts": "artifacts/design-intake/ contains local audit.json with exact PR/source/check inventory, owner-sheet-v1 preserved and corrected owner-sheet-v2 package, and actual desktop/mobile HTML screenshots. No generated evidence committed.",
+            "failedAttempts": "Sandbox pnpm store lock, Chromium launch and FIFO subprocess were denied; required unsandboxed reruns passed. Tight front-wing crop from v1 was corrected in separate immutable v2; no source pixels reconstructed.",
+            "gateResults": {"designApproval": "BLOCKED", "creditAuthorization": "BLOCKED", "blenderExportImport": "NOT_RUN", "unityImportMotion": "NOT_RUN", "windowsPerformance": "NOT_RUN", "rustRuntime": "NOT_RUN", "fullTypeScriptApplicationTests": "NOT_RUN", "hostedNewBranchCI": "NOT_RUN"},
+            "pending": "No new PR or hosted CI; no merge. Implementation verified at sourceRevision; later verification-only commit still requires exact-final-head hosted CI before any merge. Owner must resolve ICARUS-D01-D05 and approve exact snapshot before a separately authorized paid batch. VL-171 stays IN_PROGRESS."
+          },
+          "v4Verification": {
+            "sourceRevision": "c7a1f8647bb4d6d6fc4e7b979abcf4e85b810736",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/41",
+            "change": "Require OWNER_SUPPLIED_REFERENCE provenance, complete coverage with valid source/crop links and actual turnaround assets; reject generated authoritative designs. Pin Pillow12.0.0 and execute intake tests in required hosted core checks. Existing immutable v2 bytes preserved.",
+            "commands": [
+              {"command": "artifacts/ci/design-intake-venv/bin/python -B -m unittest discover -s tests/art -p 'test_*.py'", "exitCode": 0, "result": "10 PASS with Pillow12.0.0; independent system Pillow13.0.0 also passed before commit."},
+              {"command": "artifacts/ci/design-intake-venv/bin/python -B scripts/art/pet_design_intake.py --verify artifacts/design-intake/pets/pet-v3-fire-icarus/owner-sheet-v2", "exitCode": 0, "result": "19 files and16 exact crop pixel comparisons PASS; same snapshot3a8aecf4c7f83475746d4df3bf38734b0aad4a0e1d55f61f20b2b6c26ea50c78. Approval missing;0 paid jobs allowed; runtime and production false."},
+              {"command": "node --test tests/governance/pet-design.test.mjs tests/governance/pet-assets.test.mjs tests/governance/ci.test.mjs tests/governance/artifact-release.test.mjs", "exitCode": 0, "result": "15 PASS."},
+              {"command": "pnpm ci:check", "exitCode": 0, "result": "Workflow pins, required aggregate and41-spec browser grouping contract PASS."},
+              {"command": "pnpm governance:check", "exitCode": 0, "result": "174-task dependency/status and historical evidence integrity checks PASS; not fresh runtime acceptance."},
+              {"command": "pnpm architecture:check", "exitCode": 0, "result": "136 SQL tables plus journal,504 sources and API/worker ownership PASS."},
+              {"command": "pnpm build:packages", "exitCode": 0, "result": "All18 shared TypeScript package builds PASS; no application TypeScript source changed."},
+              {"command": "git show --format= --check HEAD", "exitCode": 0, "result": "Committed implementation patch PASS at sourceRevision."}
+            ],
+            "meshy": {"available": true, "balance": 1044, "monthly": 1034, "permanent": 10, "jobs": [], "creditsConsumed": 0},
+            "metadataChecks": "8 task-plan/plan-status tests and pnpm governance:check PASS on reconciled backlog; no task status promoted or policy approval inferred.",
+            "gates": {"referenceIntegrity": "PASS", "designConsistency": "BLOCKED", "ownerApproval": "BLOCKED", "creditAuthorization": "BLOCKED", "blenderExportImport": "NOT_RUN", "unityImportMotion": "NOT_RUN", "windowsPerformance": "NOT_RUN", "fullApplicationTests": "NOT_RUN", "finalHeadHostedCI": "BLOCKED"},
+            "evidence": "Original1672x941 PNG visually inspected at native resolution and SHA rechecked. Prior desktop/mobile local HTML screenshots remain valid because source/crops/review HTML bytes did not change. Report and PR audit under ignored artifacts/v4-audit/; no new character render, model, rig, animation or Unity export.",
+            "remaining": "Draft PR41 final-head hosted CI must finish before any merge. ICARUS-D01-D05 remain open. No paid batch is authorized. VL-171 stays IN_PROGRESS."
+          },
+          "remaining": "Resolve ICARUS-D01-D05: paw/tail anatomy, consistent usable orthographic views, hidden wing/back/hair construction and scale, bow version/grip/VFX separation, and explicit snapshot-specific owner approval. Separate paid batch authorization is required afterwards. No new Blender/GLB/FBX/Unity asset or accepted benchmark. Existing PR37/38/40 assets and importer GUIDs remain owned by their original work. VL-170 retains absent private object-store infrastructure."
+        },
+        "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
     },
     {
       "id": "VL-172",
@@ -217,7 +325,25 @@
       "acceptance": ["Five actual editable models, LODs, exports, clips, Unity shaders/VFX, preview MP4s and provenance manifests", "FROST_LINE/CHAIN_MARK/CURSE_SIGIL/GROWTH_GLYPH/TIDE_CURRENT visual bindings preserve authoritative gameplay semantics", "Asset validation and actual licensed Unity rendered motion/performance checks pass for each Pet; no completion from concept PNGs"],
       "status": "TODO",
       "qualificationRequirements": ["Original/licensed art and audio provenance; actual rendered acceptance"],
-      "implementation": {"parentTask": "VL-149", "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"}
+      "implementation": {
+        "parentTask": "VL-149",
+        "ownerDesignState": "OWNER_DESIGN_PENDING",
+        "heldPets": ["Glaciemora", "Voltaris", "Noctalith", "Sylvaris", "Leviara"],
+        "productionRestriction": "Owner instruction: do not create or refine designs, images, models, rigs, animations or character-specific Unity implementations for these five Limited Pets until the owner supplies their designs. Existing lore and prompts are proposals, not permission to produce them.",
+        "allowedPreparation": "Shared Rust/Unity contracts, reusable tooling and the Limited production blueprint may proceed independently. Keep actual implementation dependencies; this hold applies only to the five named characters.",
+        "resumeRequirement": "Receive owner designs, preserve canonical identity and gameplay, record reference hashes and resolve appearance/rig conflicts before resuming dependent character production.",
+        "scopeVerification": {
+          "sourceRevision": "9148ebcd9d52b939d1bb863f24876ae272636db9",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "commands": [
+            {"command": "node scripts/task-plan.mjs", "exitCode": 0, "result": "Active dependency plan parsed; owner hold does not mark unrelated tasks complete or block their implementation."},
+            {"command": "node --test tests/governance/task-plan.test.mjs tests/governance/plan-status.test.mjs", "exitCode": 0, "result": "8 tests PASS on committed source."},
+            {"command": "git diff --check", "exitCode": 0, "result": "PASS."}
+          ],
+          "limitations": "Planning restriction only; no new character designs, assets, runtime implementation or production acceptance. Exact final-head hosted CI is required before merge."
+        },
+        "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
     },
     {
       "id": "VL-173",
@@ -1540,8 +1666,33 @@
       "qualificationRequirements": [],
       "implementation": {
         "source": "crates/vl-world/src/collision.rs; crates/vl-world/src/movement.rs; crates/vl-gateway/src/durable.rs; apps/unity-client/Assets/VirtualLife/Features/NativeScene",
+        "mergeAudit": {
+          "sourceRevision": "6bdcad65e03f6cd146e6a576f5e816af2e496632",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/46",
+          "commands": [
+            {"command": "cargo fmt --all -- --check", "exitCode": 0},
+            {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "All Rust workspace tests and doc tests passed, including destination, viewer-policy, jitter and duplicate/reordered input regressions."},
+            {"command": "cargo clippy --workspace --all-targets --locked -- -D warnings", "exitCode": 0},
+            {"command": "node --test tests/governance/image-browser-navigation.test.mjs", "exitCode": 0, "result": "12 tests passed; retries remain bounded to read-only document/framework asset network changes; mutations and other failures never retry."},
+            {"command": "node --check scripts/image-browser-navigation.mjs", "exitCode": 0},
+            {"command": "node scripts/verify-ci.mjs", "exitCode": 0, "result": "Local workflow contract passed; this command does not establish hosted CI success."}
+          ],
+          "hostedCI": {
+            "sourceRevision": "6bdcad65e03f6cd146e6a576f5e816af2e496632",
+            "status": "CORE_IMAGES_RUST_PASS_BROWSER_PENDING",
+            "runs": [
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44187058701",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44187058966",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44187045546",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44187045558"
+            ],
+            "result": "Both exact-source Rust runs, Quality core and runtime-images passed; remaining browser jobs were pending when recorded. This verification-only revision must pass its own complete hosted CI before merge; final runs and merge SHA belong in the PR discussion."
+          },
+          "limitations": "Library/gateway self-review only; current peer-disclosure and authenticated destination-provider integration remain incomplete. Rust gameplay stays default-off and Nest remains the sole legacy room writer. No production or hardware qualification."
+        },
         "scope": "Default-off Aurora movement through the existing single Rust zone writer, exported collision/interaction manifest, current Nest policy locks, own-only snapshots, authoritative synthetic terminal proximity and main-thread Unity reconciliation",
-        "remainingAcceptance": "Policy-filtered AOI remains. Reconnect retains a bounded actor registry within one runtime; durable movement checkpoints, registry eviction and client prediction are not implemented. Runtime restart rejects old epochs and returns to safe manifest spawn. Injected application delay evidence is not physical network latency or Windows qualification.",
+        "remainingAcceptance": "Viewer-bound policy projection and own-only gateway integration are implemented. Peer visibility still requires current mutual-block/consent/private-membership policy integration and protocol fields; no peer positions are disclosed. Reconnect retains a bounded registry within one runtime; durable movement checkpoints, registry eviction and client prediction remain unimplemented. Runtime restart rejects old epochs and returns to safe manifest spawn. Injected application delays and deterministic silent ticks are not physical network or Windows qualification.",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "proximityVerification": {
           "sourceRevision": "c02e9f9fa7d3ab343ff37e11fbfb81fb0dbe1ebd",
@@ -1653,6 +1804,58 @@
           "rendering": "Unity 6000.3.14f1 LinuxPlayer, AMD Renoir OpenGLCore on CachyOS; screenshot inspected; player executable SHA256 26901901cc6dd63212d741b339897f072d34cb7b3f08419fe451fc8e77c79a1f",
           "ociVerification": {"sourceRevision": "60d201d385b177eabf5603589d119b82df9fdf4f", "command": "docker build -f apps/game-runtime/Dockerfile -t vl-runtime-g2-local .; python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-g2-local", "exitCode": 0, "result": "Canonical collision manifest included; nonroot/read-only; liveness 200, default-off readiness 503, native route 404, activation denied and graceful exit 0"},
           "limitations": "Automated OS input, not physical owner or Windows qualification. A reboot interrupted the first source-bound Unity attempt and left no completed NUnit result; no pass was inferred. A later 15s route timeout was corrected to a bounded 60s acknowledged walk without changing position/receipt assertions. Hosted Quality/Rust at final PR HEAD remain required before merge."
+        },
+        "worldLogicVerification": {
+          "sourceRevision": "0672c80e01208a18fed6d47a8ff944cb3872e8b7",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {
+              "command": "cargo fmt --all -- --check",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo test --workspace --locked",
+              "exitCode": 0,
+              "result": "69 tests passed, including 15 vl-world cases; workspace doc tests passed"
+            },
+            {
+              "command": "node --test tests/governance/*.test.mjs",
+              "exitCode": 0,
+              "result": "125 passed after package builds; first run at b06be6b overlapped package build and failed two modules with ERR_MODULE_NOT_FOUND (119 passed, 2 failed), then rerun successfully"
+            },
+            {
+              "command": "node scripts/verify-architecture.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "node scripts/verify-ci.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo build --locked --package vl-game-runtime && node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --movement",
+              "exitCode": 0,
+              "result": "13 real-process WSS/Nest/Rust/restricted TLS PostgreSQL scenarios passed on committed source; application delay/jitter, collision, replay, current policy revocation, reconnect and restart"
+            },
+            {
+              "command": "git diff --check",
+              "exitCode": 0
+            }
+          ],
+          "evidence": "artifacts/world-logic/{clippy,rust-tests,governance,movement-interop}.log; artifacts/desktop-first/vl022/interop-236f0175/facts.json",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/46",
+          "hostedCI": {
+            "status": "CORE_FAILED_OTHER_JOBS_PENDING",
+            "sourceRevision": "0672c80e01208a18fed6d47a8ff944cb3872e8b7",
+            "runs": [
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44118644895",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44118645181"
+            ],
+            "note": "Quality core-checks failed in scripts/verify-infra.mjs before lint/application tests; hosted log only reports infrastructure validation failure. Rust format/check/Clippy/tests and generated bindings passed; later Rust jobs were still running when checked. No green CI claim. Final metadata commit requires its own hosted checks before merge."
+          }
         }
       }
     },
@@ -1780,12 +1983,75 @@
         "schema validation and unauthorized private locations absent",
         "stale POI never confers permission"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-023",
         "VL-031"
-      ]
+      ],
+      "implementation": {
+        "source": "crates/vl-world/src/destinations.rs",
+        "mergeAudit": {
+          "sourceRevision": "6bdcad65e03f6cd146e6a576f5e816af2e496632",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "relatedVerificationTask": "VL-028",
+          "result": "Same PR46 committed-source Rust format/workspace tests/Clippy and hosted status as VL-028.mergeAudit. Schema, private-location omission, stale revisions, live revocation and capacity/hold overflow cases passed; authenticated adapter and maintained server policy/catalog remain outstanding."
+        },
+        "scope": "Bounded strict versioned native POI schema; trusted current-policy discovery; hidden private entries absent; advisory candidate resolution rechecks live entitlement, revision, capacity and reservations without membership writes",
+        "remainingAcceptance": "Library implementation only. Authenticated runtime adapter, server-owned current policy/occupancy provider and maintained runtime catalog remain; no network endpoint, capability, admission or teleport writer is exposed. Catalog candidates must be revalidated under locks when reserving/committing.",
+        "verification": {
+          "sourceRevision": "0672c80e01208a18fed6d47a8ff944cb3872e8b7",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {
+              "command": "cargo fmt --all -- --check",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo test --workspace --locked",
+              "exitCode": 0,
+              "result": "69 tests passed, including 15 vl-world cases; workspace doc tests passed"
+            },
+            {
+              "command": "node --test tests/governance/*.test.mjs",
+              "exitCode": 0,
+              "result": "125 passed after package builds; first run at b06be6b overlapped package build and failed two modules with ERR_MODULE_NOT_FOUND (119 passed, 2 failed), then rerun successfully"
+            },
+            {
+              "command": "node scripts/verify-architecture.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "node scripts/verify-ci.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo build --locked --package vl-game-runtime && node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --movement",
+              "exitCode": 0,
+              "result": "13 real-process WSS/Nest/Rust/restricted TLS PostgreSQL scenarios passed on committed source; application delay/jitter, collision, replay, current policy revocation, reconnect and restart"
+            },
+            {
+              "command": "git diff --check",
+              "exitCode": 0
+            }
+          ],
+          "evidence": "artifacts/world-logic/{clippy,rust-tests,governance,movement-interop}.log; artifacts/desktop-first/vl022/interop-236f0175/facts.json",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/46",
+          "hostedCI": {
+            "status": "CORE_FAILED_OTHER_JOBS_PENDING",
+            "sourceRevision": "0672c80e01208a18fed6d47a8ff944cb3872e8b7",
+            "runs": [
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44118644895",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44118645181"
+            ],
+            "note": "Quality core-checks failed in scripts/verify-infra.mjs before lint/application tests; hosted log only reports infrastructure validation failure. Rust format/check/Clippy/tests and generated bindings passed; later Rust jobs were still running when checked. No green CI claim. Final metadata commit requires its own hosted checks before merge."
+          }
+        }
+      }
     },
     {
       "id": "VL-036",
@@ -1801,7 +2067,13 @@
         "target full, timeouts, duplicate clicks and concurrent transfer no ghost membership"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "implementation": {
+        "scope": "Not started; audited against existing Nest legacy transfers and native admission ownership.",
+        "remainingAcceptance": "VL-028 peer policy integration and VL-035 authenticated runtime destination provider remain incomplete. Preserve the implementation dependency gate; subsequent Rust saga must coordinate allowlisted target holds, source release, epochs, duplicate clicks, cancellation and restart rollback without writing legacy rooms.",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "auditSourceRevision": "0672c80e01208a18fed6d47a8ff944cb3872e8b7"
+      }
     },
     {
       "id": "VL-037",
@@ -3710,12 +3982,30 @@
         "Signed art/tech-art scale/rig/material/LOD authoring conventions",
         "Shader variant and VRAM audit fields documented"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-006",
         "VL-078"
-      ]
+      ],
+      "implementation": {
+        "characterProductionSkill": ".agents/skills/aetheria-character-production/SKILL.md",
+        "scope": "Reusable Blender-first character production instructions, separate visual/technical gates, unvalidated style target and bounded repair/artist handoff. Documentation only; no new model, accepted benchmark or task-wide completion claimed.",
+        "remaining": "Validate the process against an actual reference-quality pilot; signed authoring conventions, measured shader/VRAM budgets and production character assets remain open.",
+        "skillVerification": {
+          "sourceRevision": "99d7469ef2f87a7f1470dd457e7c3f3777c1e95f",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "commands": [
+            {"command": "python3 /home/tiecont/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/aetheria-character-production", "exitCode": 0, "result": "Skill frontmatter/name/scaffold validation PASS on committed source"},
+            {"command": "pnpm plan:status", "exitCode": 0, "result": "174 tasks parsed; VL-105 IN_PROGRESS, no task-wide completion"},
+            {"command": "pnpm governance:check", "exitCode": 0, "result": "Governance/release consistency PASS; archived byte verification is not fresh gameplay or art acceptance"},
+            {"command": "git show --format= --check 99d7469ef2f87a7f1470dd457e7c3f3777c1e95f", "exitCode": 0, "result": "Committed patch whitespace check PASS"}
+          ],
+          "additionalInspection": "Relative skill links and intake JSON parsed with Node; benchmark remains UNVALIDATED_TARGET, connection NOT_TESTED, no invented provider or approval. UI YAML parsed with PyYAML; invocation prompt and default implicit invocation validated. The skill is present in the session skill catalog.",
+          "limitations": "Instruction packaging validated, not a new production pilot or end-to-end art benchmark. No Blender/Unity/model generation run for this docs-only change. Hosted final-head CI still required before merge; base Gate 0 PR36 remains open."
+        },
+        "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
+      }
     },
     {
       "id": "VL-106",
@@ -4405,6 +4695,91 @@
   },
   {
     "id": "VL-121",
+      "limitedBlueprintVerification": {
+        "sourceRevision": "14cd992ba9e1c23eafcbd60e04cc8d15ed3cd54a",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "specification": "specs/pet-arena/design/limited-production-blueprint.vi.md",
+        "scope": "Maintained Vietnamese Limited blueprint: current Rust/Unity v1 versus candidate v3 boundary; six canonical identities, skills/cards/opcodes and sixteen action bindings; future story/sheet/storyboard quantities and resolutions; rig/LOD/PBR budgets, intake and independent acceptance gates. No asset or gameplay implementation.",
+        "ownerDesignBoundary": "Glaciemora, Voltaris, Noctalith, Sylvaris and Leviara remain OWNER_DESIGN_PENDING. No design, image generation, modeling, rigging, animation or character development performed. Existing lore/prompts are editorial proposals only; README explicitly points to the new intake boundary.",
+        "commands": [
+          {"command": "pnpm plan:status", "exitCode": 0, "result": "174 tasks; 14 IN_PROGRESS / 130 TODO / 30 VERIFIED. No task closure from blueprint."},
+          {"command": "python3 scripts/validate-pet-lore-design.py", "exitCode": 0, "result": "240 unique stories/prompts; exact canonical fields and hashes; 150 disclosed appearance notes PASS. Text integrity only."},
+          {"command": "python3 scripts/validate-pet-v31.py", "exitCode": 0, "result": "240 draft Pets, 19 elements/361 matchups and upstream114 stability PASS."},
+          {"command": "node scripts/pet-design-check.mjs", "exitCode": 0, "result": "19 elements/19 maps/114 original species PASS; runtimeEnabled false."},
+          {"command": "node --test tests/governance/pet-lore-design.test.mjs tests/governance/pet-v31.test.mjs", "exitCode": 0, "result": "4 PASS including editorial tamper negatives and canonical semantic regressions."},
+          {"command": "python3 - (inline read-only blueprint link/token consistency probe)", "exitCode": 0, "result": "15 local links resolve; six Limited identity/skill/card/opcode mappings and all sixteen action rows present; pending/proposal gates present. Not a visual, behavioral or literary acceptance test."},
+          {"command": "git diff --check", "exitCode": 0, "result": "PASS on committed blueprint source."}
+        ],
+        "limitations": "Hosted CI, Blender inspection, Unity import/render, hardware, media rights and owner art acceptance NOT_RUN. Other worktrees/main inspected read-only; their edits preserved. Limited --limited-v31 CLI exists on separate pipeline branch, not this blueprint checkout. UNVALIDATED_TARGET; DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC.",
+        "nextAction": "Review and integrate the blueprint via a green exact-source PR when assigned; no merge or external upload in this task. Production separately requires Icarus pilot acceptance and owner design intake for the five remaining Limited Pets. VL-121/105/149/171/172 remain open.",
+      "fiveViewSourceBudgetFollowup": {
+        "sourceRevision": "0b6835d8477fed46689e2cff60eb509b384e924b",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "change": "Require five separate turnaround views and distinguish owner-selected Icarus Meshy7.1/Meshy7 source4K/8K from runtime texture budgets; five held Limited remain unselected.",
+        "commands": [
+          {
+            "command": "python3 scripts/validate-pet-lore-design.py",
+            "exitCode": 0
+          },
+          {
+            "command": "python3 scripts/validate-pet-v31.py",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/pet-design-check.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "node --test tests/governance/pet-lore-design.test.mjs",
+            "exitCode": 0,
+            "result": "2 PASS"
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "hostedFinalHeadCI": "PENDING"
+      }
+    },
+      "loreDesignVerification": {
+        "sourceRevision": "11ece200fcdf72ff19f1d8b9e917c24eec16dde7",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "scope": "Authored 240 individual Vietnamese stories and English design prompts in specs/pet-arena/design/pet-lore-design-240.json. Exact canonical snapshots preserved; 150 explicit silhouette/appearance conflict or ambiguity notes. Icarus owner V3 appearance only. Editorial fiction and proposed design views, not existing lore or runtime behavior.",
+        "commands": [
+          {
+            "command": "python3 scripts/validate-pet-lore-design.py",
+            "exitCode": 0,
+            "result": "240 unique entries; exact ID/order/name/element/race/bodyPlan/rig/rank/source/map/colors and source hashes PASS; 150 notes disclosed."
+          },
+          {
+            "command": "python3 scripts/validate-pet-v31.py",
+            "exitCode": 0,
+            "result": "240 draft Pets,19 elements/361 matchups and upstream114 stable PASS."
+          },
+          {
+            "command": "node scripts/pet-design-check.mjs",
+            "exitCode": 0,
+            "result": "19 elements/19 maps/114 original species PASS; DRAFT_ONLY, runtimeEnabled false."
+          },
+          {
+            "command": "node --test tests/governance/pet-lore-design.test.mjs tests/governance/pet-v31.test.mjs",
+            "exitCode": 0,
+            "result": "4 tests PASS; includes eight editorial tamper negatives and existing canonical semantic regressions."
+          },
+          {
+            "command": "pnpm exec eslint tests/governance/pet-lore-design.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "failedAttempts": "Initial lint rejected structuredClone as undefined under repository ESLint globals; switched the JSON-only test fixture clone to JSON parse/stringify, then reran focused tests and lint successfully on committed source. Initial ignored authoring script syntax error corrected before JSON generation; no failed output committed.",
+        "hosted": "NOT_RUN at this metadata record; final committed PR source requires actual Quality/Rust CI. Do not infer prior main checks cover this change.",
+        "limitations": "Text only; no generated image, model, rig, animation, Unity import/render, rights review or production approval. The source taxonomy conflicts remain unresolved canon decisions; proposed anatomy-preserving images require actual visual review. VL-121 remains IN_PROGRESS; related VL-130/149/160/171/172 are not completed. OFFLINE_ONLY / NO_GO_PUBLIC."
+      },
       "priority": 1,
     "feature": "Avatar-Art",
     "title": "Battle art direction asset and animation contract",
@@ -4429,6 +4804,22 @@
       "wave": "P0/P4",
       "specification": "specs/pet-arena/v2.md; specs/pet-arena/art-direction.md",
       "draftContract": "Strict typed asset/source/import hash references, all eleven animation semantics and six-hero/boss missing-asset preflight. Explicit 19-element art direction and original catalog-aligned model/animation briefs. Draft only; no runtime activation or production publication port.",
+      "limitedBindingVerification": {
+        "sourceRevision": "9a9e250d7ba59f8e03ed718906ba8709d69a9597",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "scope": "Canonical v3.1 Limited authoring overlay with exact catalog/reference/source/import hashes, 16 actions, identity/opcode checks, distinct reduced-motion preview and a required-binding CLI gate. Frozen candidate and Standard S roster unchanged.",
+        "commands": [
+          {"command": "pnpm build:packages", "exitCode": 0, "result": "All18 package builds PASS"},
+          {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "127 PASS including5 new Limited tests and3 existing byte/path/FIFO tests"},
+          {"command": "pnpm exec vitest run --project unit packages/contracts/test/pet-battle-assets.test.ts packages/contracts/test/pet-taxonomy-v3.test.ts packages/contracts/test/pet-content.test.ts", "exitCode": 0, "result": "12 PASS"},
+          {"command": "pnpm exec eslint scripts/pet-asset-check.mjs scripts/pet-limited-asset-check.mjs scripts/pet-asset-files.mjs tests/governance/pet-limited-assets.test.mjs packages/contracts/src/pet-battle-assets.ts packages/contracts/src/pet-limited-assets.ts", "exitCode": 0},
+          {"command": "node --import tsx scripts/pet-asset-check.mjs --limited-v31", "exitCode": 0, "result": "MISSING_BINDINGS for all6 Limited;0 files verified; no asset acceptance"},
+          {"command": "node --import tsx scripts/pet-asset-check.mjs", "exitCode": 0, "result": "Existing v2 preflight retains explicit missing assets and NOT_TESTED Unity/render status"},
+          {"command": "git diff --check", "exitCode": 0}
+        ],
+        "selfReview": "Initial new CLI regression exposed circular top-level-await import (exit13). Extracted shared byte verification without relaxing FIFO/hash/path checks; all8 focused tests then PASS. Fixed3 lint no-undef errors. Synthetic complete bindings explicitly remain NOT_TESTED, not valid art.",
+        "remaining": "Exact final-head hosted Quality/Rust before merge. No actual Icarus model/rig/animation/video exists in this source slice; Blender inspection, Unity motion/render/performance and rights acceptance remain open. OFFLINE_ONLY / NO_GO_PUBLIC."
+      },
       "remaining": "Actual editable artwork, models/rigs/clips, original sprite atlas/VFX/audio, Unity importer binding checks and rendered Linux previews; rights review, measured performance and physical Windows qualification remain separate. No image was generated: built-in image generation unavailable, CLI fallback not selected.",
       "verification": {
         "sourceRevision": "907e76c2573182193821062af7fb1b51a2829419",
@@ -4912,6 +5303,44 @@
           "pending": "This evidence-only revision must pass exact-head hosted Quality/Rust before merge. Record final CI and merge SHA in PR discussion; verify post-merge main before the next workstream.",
           "limitations": "Strict draft TypeScript contract and offline-catalog validation only. No new persistence/runtime/Unity implementation or entire Pet schema-chain completion; OFFLINE_ONLY / NO_GO_PUBLIC."
         },
+        "taxonomyDraftFollowup": {
+          "scope": "Bounded offline Rust decoder for the existing shared v3 taxonomy draft shape. Requires19 unique elements,361 complete directed matchups consistent with nonoverlapping declared relations and22 unique compatible race templates. Rejects duplicate JSON keys, unknown/missing/type-invalid fields, unbounded multipliers, missing offensive counters, incompatible rigs and enabled/published documents. Validated candidate data supplies checked floor-once damage scaling and morphology; no v1 reducer, protocol or runtime selector changes.",
+          "verification": {
+            "sourceRevision": "96cd355ee6a9f4c2599b37f2d208e564c7161f26",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/56",
+            "commands": [
+              {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "73 tests and1 compile-fail doctest PASS, including6 new decoder regressions, all361 directional damage boundaries and frozen v1 replay/restart fixtures."},
+              {"command": "cargo clippy --workspace --all-targets --locked -- -D warnings", "exitCode": 0},
+              {"command": "cargo fmt --all -- --check", "exitCode": 0},
+              {"command": "pnpm governance:check", "exitCode": 0, "result": "174-task plan/governance and historical indexed byte integrity PASS; not new execution of historical checks."},
+              {"command": "node --check scripts/task-plan.mjs", "exitCode": 0},
+              {"command": "git diff HEAD~1 --check", "exitCode": 0}
+            ],
+            "failedAttempt": "Initial focused decoder run failed one test because its invalid-type loop replaced a valid empty relation with the identical empty array. Corrected the test to skip unchanged values; no validation rule relaxed. Full committed-source workspace rerun PASS.",
+            "hosted": "Final-head Quality/Rust checks pending at recording; not claimed green or merged."
+          },
+          "enumStringReview": {
+            "sourceRevision": "842b9ee0af093e4eaa44451bdcf5094b1647b144",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/56",
+            "finding": "Review of the existing9f0fe0b head reproduced acceptance of Serde variant objects such as {normal:null} where the shared taxonomy contract requires JSON strings. The draft decoder now requires strings for element IDs, all three relation lists, race IDs, body plans, rigs and locomotion; canonical enum validation still rejects unknown strings.",
+            "commands": [
+              {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "74 tests and1 compile-fail doctest PASS at unchanged committed source, including7 decoder cases and8 representative enum-field object rejections; frozen v1 replay/restart and default-off runtime tests PASS."},
+              {"command": "cargo clippy --workspace --all-targets --locked -- -D warnings", "exitCode": 0},
+              {"command": "cargo fmt --all -- --check", "exitCode": 0},
+              {"command": "pnpm governance:check", "exitCode": 0, "result": "174-task governance and3586 indexed historical byte checks PASS; historical checks were not rerun."},
+              {"command": "node --test tests/governance/pet-v31.test.mjs", "exitCode": 0, "result": "2 PASS: canonical240 catalog and rehashed semantic tamper negatives."},
+              {"command": "node --check scripts/task-plan.mjs", "exitCode": 0},
+              {"command": "git diff HEAD~1 --check", "exitCode": 0}
+            ],
+            "failedAttempt": "New enum-object regression failed with exit101 before the fix because /elements/0/id accepted {normal:null}; the unchanged regression passes after strict string decoding.",
+            "hosted": "Previous head9f0fe0b Quality44194451204 and Rust44194451274 were inspected and SUCCESS. They do not qualify this fix or its evidence revision; exact-final-head hosted checks remain required before merge.",
+            "limitations": "Offline taxonomy validation only. VL-130 remains IN_PROGRESS; no v3 runtime selection, ownership, publication, Unity visual qualification or deployment."
+          },
+          "remaining": "VL-130 remains IN_PROGRESS. Live v3 manifest loading/combat allocation and any Unity presentation qualification remain separate. This decoder parses offline candidate documents only.",
+          "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+        },
         "logicRulesFollowup": {
           "scope": "Separate offline Rust taxonomy_v3 module implements19 canonical elements,361 directional multipliers, checked floor-once damage scaling,22 race defaults and compatible explicit radial/hexapod overrides. Unknown enums/fields and partial/incompatible morphology are rejected. No v1 reducer/codec edits or runtime registration.",
           "remaining": "Hosted exact-final-head acceptance; no Unity visualization or production art claim.",
@@ -5008,9 +5437,56 @@
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "foundation": "Reuse migration0051 and VL-115 completed draft foundation; remaining publication work is not required to seed unpublished v3.1 drafts.",
+        "draftPersistence": {
+          "source": "apps/platform-api/src/features/pets/modules/content/infrastructure/acquisition-draft-store.ts; apps/platform-api/src/shared/database/migrations/0053_pet_acquisition_drafts.sql; scripts/pet-acquisition-draft-seed.mjs",
+          "scope": "Nest-owned additive migration 0053 and offline exact-manifest importer persist 240 acquisition projections only. Hash-checked repeatable reads, eight concurrent seed attempts, conflicting data, late rollback, lost COMMIT acknowledgement, runtime/PUBLIC SQL denials and encrypted restore are covered. No ownership, purchases, publication or gameplay activation.",
+          "verification": {
+            "sourceRevision": "189f7365669573605b9c21f3b8ff68f83000ebd6",
+            "reviewMode": "SINGLE_AGENT_AUDIT",
+            "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/49",
+            "commands": [
+              {
+                "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project unit --project integration tests/games/pet-draft-import.unit.test.ts packages/contracts/test/pet-acquisition-catalog-v3.test.ts tests/integration/pet-acquisition-draft.test.ts",
+                "exitCode": 0,
+                "result": "15 tests passed on unchanged committed source; disposable PostgreSQL container and network removed."
+              },
+              {
+                "command": "node --import tsx scripts/game-journal-restore-smoke.mjs",
+                "exitCode": 0,
+                "result": "PASS; actual encrypted PostgreSQL backup/restore preserves all 240 acquisition projections and detects corruption; owned resources cleaned."
+              },
+              {
+                "command": "node scripts/with-test-db.mjs node --import tsx scripts/runtime-admission-migration-compat.mjs",
+                "exitCode": 0,
+                "result": "PASS; archived 48-migration API accepts exact additive 53 policy, preserves identity and frozen rows, and rejects unknown/checksum-mismatched migrations."
+              },
+              {
+                "command": "node scripts/verify-architecture.mjs",
+                "exitCode": 0,
+                "result": "143 SQL tables plus journal and 513 source files passed; Nest content ownership retained."
+              },
+              {
+                "command": "node --check scripts/pet-acquisition-draft-seed.mjs",
+                "exitCode": 0
+              }
+            ],
+            "hostedCI": {
+              "sourceRevision": "189f7365669573605b9c21f3b8ff68f83000ebd6",
+              "status": "PASS",
+              "runs": [
+                "https://github.com/tiecont/virtual-life-platform/actions/runs/44140080228",
+                "https://github.com/tiecont/virtual-life-platform/actions/runs/44140080209",
+                "https://github.com/tiecont/virtual-life-platform/actions/runs/44140032690",
+                "https://github.com/tiecont/virtual-life-platform/actions/runs/44140032588"
+              ],
+              "result": "Both push and pull-request Quality and Rust runtime runs succeeded on the exact recorded source; this verification-only revision requires its own green hosted checks before merge."
+            },
+            "limitations": "Task remains IN_PROGRESS while actual upstream implementation dependencies are incomplete. This is acquisition metadata only; no combat/art/lore payload import or Unity/Windows acceptance. Prior local pnpm check at this source exited 1 when the Next build security advisory gate stopped; hosted pnpm check succeeded. No local full-check success is inferred."
+          }
+        },
         "logicRulesFollowup": {
           "scope": "Partial strict acquisition projection only:240 identities,209 regular/19 map S/6 Limited/6 Standard; canonical banner identities, map/source/rank references, morphology and trusted upstream114 ID/name/element/legacy-rarity/map preservation. Separate Pet-server contract entry prevents draft browser exposure.",
-          "remaining": "Additive Nest migration, full manifest importer/hash verification, transactional concurrent seed, SQL privileges/corruption/restore tests are not implemented. Deferred to schema integration; no database import, purchases, ownership or publication.",
+          "remaining": "This historical PR47 projection was extended by PR49 draftPersistence above with migration/import/concurrency/privilege/restore coverage. Player ownership, purchases and publication remain outside the draft contract.",
           "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
           "verification": {
             "sourceRevision": "c8bbb5bad4f65d06f5378b6f2bc998603a25ba08",
@@ -5475,6 +5951,34 @@
       "priority": 1,
       "feature": "Pet-Arena",
       "title": "Unity URP hero 3D pipeline and six Limited cinematic gates",
+      "artDirection": {
+        "icarus": "specs/pet-arena/icarus-art-direction.md",
+        "primaryReference": "specs/pet-arena/references/icarus/owner-battle-reference.png",
+        "referenceSha256": "af3d8af34268cb01b29fd400e62b71378c0c2176b72991ebfcfd3e722f0eb76c",
+        "status": "Revision06 refines face/neck,hair clumps/bangs,mirrored feather curvature and folded trains;29392 source/29016 Unity triangles,74bones,3materials,5study actions. Real49s Unity video includes all5clips and turntable. Saved review prefab/materials/Animator and dependency-bounded Unity package exist. ARTIST_HANDOFF_REQUIRED after2inspected visual repairs:likeness,soft hair,feather roots and cloth still below owner image. UNVALIDATED_TARGET;production UV/textures/LODs,16canonical actions,VFX/audio and performance remain open. Do not replicate to other Pets.",
+        "draftAssets": "assets/characters/icarus/white-gold-study/README.md",
+        "draftBindings": "assets/characters/icarus/white-gold-study/bindings.json",
+        "verification": {
+          "sourceRevision": "9de50a2357ade8fda8a4289d6637c72e0136e949",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
+          "commands": [
+            {"command": "node --import tsx --test tests/governance/unity-metadata.test.mjs tests/governance/pet-assets.test.mjs tests/governance/pet-limited-assets.test.mjs tests/governance/artifact-release.test.mjs tests/governance/task-plan.test.mjs", "exitCode": 0, "result": "19 PASS on committed source"},
+            {"command": "pnpm assets:check", "exitCode": 0, "result": "Existing asset checks and Limited draft hashes PASS on committed source;11unique file references verified;55missing canonical bindings remain explicit. Five review assets recorded but not substituted for incomplete production bindings."},
+            {"command": "Unity 6000.3.14f1 -batchmode -projectPath apps/unity-client -executeMethod VirtualLife.Editor.IcarusStudyRender.Render -quit", "exitCode": 0, "result": "Actual GPU URP render on committed source:29016 imported triangles,74bones,3materials;idle8/intro15/normal4/rage6/signature10seconds,all5deform;980frames include6s turntable. Log:ignored artifacts/icarus-unity-committed-06.log. All5inspection stills and980frame bytes exactly match maintained preview inputs."},
+            {"command": "python3 scripts/art/verify-study-preview.py artifacts/icarus-unity-committed-06", "exitCode": 0, "result": "PASS:980frames/20fps/49s;sampled nonblank/framing throughout5clips and turntable. Fixed-camera body differences idle2.4224/intro81.3441/normal102.156/rage106.184/signature101.2271;turntable camera motion separately identified;no relaxed assertion."},
+            {"command": "node artifacts/verify-icarus-detail.mjs", "exitCode": 0, "result": "GLB actual bytes:29392triangles,74joints,3materials,5named animations;26provenance hashes and authoring source/export hashes PASS on committed source. Inspection helper remains ignored."},
+            {"command": "/home/tiecont/Projects/Aetheria/artifacts/toolchains/blender-4.5.16/blender-4.5.16-linux-x64/blender --background --python-exit-code 1 --python artifacts/reopen-icarus.py", "exitCode": 0, "result": "Maintained committed .blend reopened:29392tris,74bones,3materials,5actions,normalized weights,no external image dependency. Log:ignored artifacts/icarus-source-reopen-9de50a2.log."},
+            {"command": "env VL_REVIEW_IMPORT_PACKAGE=/home/tiecont/Projects/Aetheria-icarus/artifacts/Icarus-Review-06-delivery.unitypackage /home/tiecont/Unity/Hub/Editor/6000.3.14f1/Editor/Unity -batchmode -projectPath /home/tiecont/Projects/Aetheria-icarus/artifacts/icarus-package-import -logFile /home/tiecont/Projects/Aetheria-icarus/artifacts/icarus-package-import-4.log -executeMethod ReviewImport.Start", "exitCode": 0, "result": "Fresh URP project actually imported delivered7asset Unity package;prefab,3materials,supported shader,74bones,5deforming clips reload PASS,no gameplay scripts. Async import completion awaited before validation. Exact7asset payloads match committed maintained bytes;no vendored URP. Package SHA256:1e3df130e2270466e70eb7ee1b86f568b49b5117b6316cb96f91e7ce4e58cbba. Log:ignored artifacts/icarus-package-import-4.log."},
+            {"command": "ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames,duration -of json assets/characters/icarus/white-gold-study/icarus-study.mp4", "exitCode": 0, "result": "Actual H264,960x960,20fps,980frames,49s,no audio;encoded signature and turntable frames visually inspected."},
+            {"command": "node --import tsx scripts/pet-asset-check.mjs --limited-v31 assets/characters/icarus/white-gold-study/bindings.json --require-complete", "exitCode": 1, "result": "Expected incomplete-binding rejection; not an accepted PR-C character"}
+          ],
+          "additionalInspection": "Blender4.5.16 authored2visually inspected repair passes in ignored artifacts/icarus-rework-06-b/c;maintained bytes match passc inspection. MCP protocol16 scene inspection and front/three-quarter/back captures succeeded for passb;GUI later disconnected,so final authoring/reopen used real background bpy. All external generators/libraries off. Initial triangle overrun failed correctly and was reduced without changing budgets. Two package-helper bugs and asynchronous import timing were corrected after actual failed runs;one Unity startup hang/crash was retried,not counted as PASS. Generated Unity quality/meta formatting changes restored after final Editor exit.",
+          "selfReview": "ARTIST_HANDOFF_REQUIRED / SINGLE_AGENT_SELF_REVIEW. Face remains generic and flat,hair strip-like,feather roots tubular,cloth stiff;G1-G3not accepted. Stop procedural repair early for demonstrated technique limitation under production-skill policy. G4retopo/UV/bakes/LODs,G5deformation acceptance,G6canonical16actions andG7production shader/VFX/audio/cinematic/performance still open. Review prefab/controller/materials are useful delivery assets but not production acceptance.55canonical bindings missing;--require-complete must fail. Byte preflight acceptance stays NOT_TESTED;actual observations recorded separately. Style target UNVALIDATED_TARGET. Local ignored handoff includes real sources,exports,reference,comparisons,video,Unitypackage,hashes and Vietnamese correction order;no artist contacted.",
+          "hostedCI": "PR38 previous head47f8249aaf26e41255cc5e33493f5ca622bc9b0e has26/26SUCCESS checks. This rework is a new stacked draft;its exact final head still requires actual Quality/Rust CI before merge. No merge or art acceptance claimed.",
+          "nextAction": "Character artist must correct G1-G3face/hair/wing-root/cloth likeness in delivered source and return neutral close-up/front/side/back before UV/bake/rig completion. Work order:ignored artifacts/icarus-handoff-work-order.md;partial offline delivery archive:artifacts/Icarus-06-Delivery.tar.gz. Review exact new PR head CI and pipeline base before any source merge. Do not replicate failed pilot to5other Limited Pets;NO_GO_PUBLIC stays locked."
+        }
+      },
       "objective": "Six bespoke characters, unique rigs and VFX, render/performance snapshots, original art rights.",
       "dependsOn": [
         "VL-121",
@@ -5487,7 +5991,7 @@
         "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json",
         "Rendered Unity animation footage and asset provenance, not PNG-only concept"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "verificationRequirements": [
         "Focused unit/integration and exact CI",
