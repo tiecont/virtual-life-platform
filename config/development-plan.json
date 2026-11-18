@@ -142,6 +142,58 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
+      "topologyBakeR3": {
+        "sourceRevision": "c88626736023a681f429665d7fb4f747a4f138de",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "state": "ARTIST_HANDOFF_REQUIRED",
+        "productionReady": false,
+        "scope": "Local Blender geometry and actual texture bake experiments; no canonical asset replacement, rig, Unity import, upload or release.",
+        "commands": [
+          {
+            "command": "Blender 4.5.16 -b -t 8 --python artifacts/character-production/icarus-game-mesh-r3/repair.py",
+            "exitCode": 0,
+            "result": "Uniform reduction, imported split normal clearing, 3 neutral views; 28,997 total triangles."
+          },
+          {
+            "command": "Blender 4.5.16 -b -t 8 --python artifacts/character-production/icarus-game-mesh-r3/bake.py; separate invocation bake_cage.py",
+            "exitCode": 0,
+            "result": "Two actual 2K Albedo/Normal/Roughness/Metallic bake variants. BOTH FAIL VISUAL REVIEW: projection misses and damaged face/feather detail."
+          },
+          {
+            "command": "Blender 4.5.16 -b -t 4 --python artifacts/character-production/icarus-game-mesh-r3/verify.py",
+            "exitCode": 0,
+            "result": "Reopen PASS: 28,997 triangles, four packed readable 2048 maps, no rig/actions."
+          },
+          {
+            "command": "python3 artifacts/character-production/icarus-game-mesh-r3/package.py",
+            "exitCode": 0,
+            "result": "Portable prior source plus new studies archived; CRC PASS."
+          }
+        ],
+        "artifact": {
+          "archive": "/home/tiecont/Projects/Aetheria/artifacts/character-production/Icarus_Topology_Repair_R3.zip",
+          "entries": 32,
+          "bytes": 550467035,
+          "sha256": "11c694ed6cdac8db50f9442cd0316774630e3e06e4b8dc91c3e89d4366965160",
+          "CRC": "PASS"
+        },
+        "files": [
+          {
+            "path": "/home/tiecont/Projects/Aetheria/artifacts/character-production/icarus-game-mesh-r3/icarus-uniform-reduction.blend",
+            "sha256": "c2a3637f3e6ed329beaf01637f118743abb9509d717cf38acc9781449b5ebb31"
+          },
+          {
+            "path": "/home/tiecont/Projects/Aetheria/artifacts/character-production/icarus-game-mesh-r3/baked/icarus-baked-study.blend",
+            "sha256": "aa98c1a688a3e93e9017f1c0f023ae9fc8df5956655a6e475202302caf2171d9"
+          },
+          {
+            "path": "/home/tiecont/Projects/Aetheria/artifacts/character-production/icarus-game-mesh-r3/baked-cage/icarus-baked-study.blend",
+            "sha256": "369254a25dc455e5c897eee456e729067532f717a000b91fce6349394ffdaf71"
+          }
+        ],
+        "remaining": "Rebuild separate feather/hair/garment surfaces and face/hand joint loops; isolated matched-component cages/bakes. Budget must also include missing bow. 74-bone rig,16 actions,LODs,Unity and hardware/rights acceptance remain open. Other five Limited held; ordinary/map pets images only.",
+        "hostedCI": "PR51 c886267 runtime-images failed with identity-page framework asset ERR_NETWORK_CHANGED and Display name timeout; no merge or rerun claimed."
+      },
       "pbrHandoffVerification": {
         "sourceRevision": "7ec4c3c8c9f7a83a451316b2fc92a9ee4a26576d",
         "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
