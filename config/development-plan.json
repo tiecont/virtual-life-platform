@@ -74,6 +74,24 @@
           {"command": "pnpm ci:browser hospitality", "exitCode": 0, "result": "All Lounge and Lodge specs/devices PASS with validated batch reports and disposable database cleanup"}
         ],
         "scope": "Backlog and hospitality synchronization only. Task IDs subsequently moved to168-174 to preserve PR33 IDs163-167; final-head CI still required. No 3D assets produced or VL-055 closure claimed.",
+        "sceneFloorRaycastFollowup": {
+          "sourceRevision": "70c2aac898499654f1a78511fd914ff34d151fb3",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/54",
+          "finding": "Quality44078725887 floor-raycast trace has an unchanged1214x502 canvas and correct spawn coordinate at the click, immediately followed by suspended input during the15-second authoritative refresh. The broad validated-ACK observer then sees the refresh destination3:3. A local real-resize regression before the fix also reproduced3:3 instead of10:11; stale floor target sampling is independently possible because only seat targets were reread after scrolling.",
+          "change": "Control the browser clock and explicitly advance actual seat/floor animations in the floor scenario; sample symbolic spawn targets with the current canvas box after scrolling. Retain ACK, final position, identity, viewport and WebGL assertions, existing timeouts and zero mutation retries. Existing periodic-refresh scenario still exercises suspended input.",
+          "commands": [
+            {"command": "node scripts/run-browser-tests.mjs tests/e2e/scene3d-room.spec.ts --grep 'actual floor raycast' (pre-fix resize regression)", "exitCode": 1, "result": "Expected regression reproduction: desktop receives3:3 instead of10:11; trace retained under ignored artifacts/test output"},
+            {"command": "node scripts/run-browser-tests.mjs tests/e2e/scene3d-room.spec.ts --grep 'actual floor raycast' (corrected implementation before rebase)", "exitCode": 0, "result": "Desktop1 PASS, mobile1 PASS; actual PostgreSQL/HTTP/Socket.IO/WebGL"},
+            {"command": "pnpm exec eslint tests/e2e/scene3d-room.spec.ts", "exitCode": 0},
+            {"command": "pnpm governance:check", "exitCode": 0, "result": "PASS including historical indexed-byte retrieval; no fresh historical gameplay acceptance inferred"},
+            {"command": "node --check on TypeScript-transpiled tests/e2e/scene3d-room.spec.ts via stdin", "exitCode": 0},
+            {"command": "pnpm test:scene3d-room (first full attempt before rebase)", "exitCode": 1, "result": "No tests ran: existing60-second webServer startup timeout on heavily loaded local host; no timeout changed"},
+            {"command": "pnpm test:scene3d-room", "exitCode": 0, "result": "18 PASS: desktop9/mobile9, reportValid=true, both batch exits0, disposable DB/network cleanup PASS; committed sourceRevision; ignored facts run-e7922c30"},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "remaining": "Final-head hosted Quality/Rust checks pending; merge only after complete green CI. No runtime behavior, authority, release, production or art acceptance changes."
+        },
         "browserDiagnosticsFollowup": {
           "sourceRevision": "819d07b942025b4c9a757e221ad8b040f0205927",
           "reviewMode": "SINGLE_AGENT_AUDIT",
