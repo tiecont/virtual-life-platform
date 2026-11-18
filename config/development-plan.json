@@ -315,6 +315,7 @@
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
         "productionWorkPlan": {
+          "verification": {"sourceRevision": "87b7d8eb2fe76e23fc1c7e980d1057671cb07229", "reviewMode": "SINGLE_AGENT_SELF_REVIEW", "result": "node --test tests/governance/task-plan.test.mjs tests/governance/plan-status.test.mjs passed 8 tests; skill-creator quick_validate.py passed for aetheria-character-production. Scope: plan and skill validation only."},
           "scope": "VL-171 Icarus only. Complete the existing acceptance criteria in this entry; VL-149 tracks the Limited roster. Keep the other five Limited on hold for owner designs and ordinary/map Pets image-only.",
           "startingPoint": "Use orbital R9, back costume R7 and grip R11 as editable inputs. The combined bow/wing fit R2 recorded intersections in 15/31 simultaneous study frames. Preserve that scene as a regression fixture. The archived Unity FBX is a separate earlier asset.",
           "milestones": [
