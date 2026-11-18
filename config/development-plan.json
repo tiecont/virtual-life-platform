@@ -255,6 +255,43 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
+        "wingAssemblyVerification": {
+          "sourceRevision": "b657572128c7e846ec62aa91eee15a148a7295de",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "ART_REVISION_REQUIRED",
+          "productionReady": false,
+          "scope": "Retained static body plus six-bone wing study, not the high-poly hand integration or canonical full-character rig. Preserve the rejected face patch separately; no facial geometry replacement.",
+          "artifacts": "artifacts/character-production/icarus-wing-face-assembly-r2",
+          "commands": [
+            {"command": "node scripts/art/icarus-wing-assemble.mjs --blender <Blender4.5.16> --source <icarus-wing-sweep-r5c/icarus-wing-study.blend> --output <icarus-wing-face-assembly-r2>", "exitCode": 0, "result": "Actual Blender construction, ten stills, Blend reopen and GLB reimport PASS. Both retained body vertex hashes unchanged; inner secondary vanes shifted0.03m after0.015m left36 intersection pairs. Zero wing/body intersections across31 frames against retained geometry only.70 meshes,28216 triangles,zero unweighted wing vertices; maximum exported surface error5.22e-7m. Reopening uses full-character front camera."},
+            {"command": "node --check scripts/art/icarus-wing-assemble.mjs; Python AST parse of assembly, motion and PBR inspection modules; pnpm exec eslint scripts/art/icarus-wing-assemble.mjs scripts/art/icarus-import-contract.mjs scripts/art/icarus-unity-audit.mjs", "exitCode": 0, "result": "PASS; no Blender or Unity acceptance inferred from syntax checks."}
+          ],
+          "visualReview": "Actual front/back/side fold views and facial closeup inspected. Root remains tubular, folded side stands away from hair, face/hair/garments remain visibly faceted and detached geometry remains. The input body was already coordinate-masked at old wings; zero intersections does not qualify anatomical attachment or full-body clearance.",
+          "remaining": "Rebuild accepted body/hair and anatomical wing roots, reconcile the separate high-poly hand repair, purposeful retopology/UV/bakes/LODs,74-bone full-body rig and16 canonical actions before actual Unity production qualification. Five other Limited held; ordinary/map Pets image-only."
+        },
+        "wingTimelineVerification": {
+          "sourceRevision": "87c5ff7a1ecd6762b3d1289d0cc8333c0f0470ef",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "productionReady": false,
+          "artifacts": "artifacts/character-production/icarus-wing-face-motion-r1",
+          "commands": [
+            {"command": "Blender4.5.16 --background --threads4 --python-exit-code1 --python scripts/art/icarus_study_motion.py -- --source <icarus-wing-face-assembly-r1/icarus-character-wing-assembly.blend> --output <icarus-wing-face-motion-r1>", "exitCode": 0, "result": "93 actual timeline frames rendered; three H264 MP4s,640x640,31 frames each,15fps,2.066667seconds each. Rendering began at e503774; later validation adds measured geometry motion without claiming an animation redesign."},
+            {"command": "Blender4.5.16 --background --threads2 --python-exit-code1 --python scripts/art/icarus_study_motion.py -- --source <icarus-wing-face-assembly-r1/icarus-character-wing-assembly.blend> --output <icarus-wing-face-motion-r1> --verify-existing", "exitCode": 0, "result": "At sourceRevision, reopened source,93 actual frame hashes and3 encoded video hashes verified; all3 videos fully decoded with ffmpeg -xerror. Actual wing vertex displacement1.158213m; productionReady remains false."},
+            {"command": "ffmpeg decoded frame0/15/30 contact sheets for all3 videos; Pillow front frame1/31 difference probe", "exitCode": 0, "result": "All3 encoded contact sheets visually inspected. Front has18701 pixels changed by more than12/255 of409600; static body and moving wings are explicit. Full framing present in encoded clips; no camera movement used as animation evidence."}
+          ],
+          "limitations": "Wing fold study only. No canonical action, full-body deformation, expressive timing, reduced-motion output, audio, Unity rendering or hardware-performance acceptance. Source/CI merge cannot promote these previews to production art."
+        },
+        "legacyFbxImportAudit": {
+          "sourceRevision": "eb9bdfead4645de1d346e9189423163d630485bc",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "IMPORT_REVISION_REQUIRED",
+          "productionReady": false,
+          "modelSha256": "7e900132f0492b1fae64297431eec1a66a5fe2e85b21016b6cbc3e5d41e70d86",
+          "command": "UNITY_EDITOR=<Unity6000.3.14f1> node scripts/art/icarus-unity-audit.mjs --model <icarus/blender/assembled-04/icarus-review.fbx>",
+          "exitCode": 1,
+          "result": "Actual licensed Unity6000.3.14f1/URP17.3.0 import in disposable project exited0; acceptance validator correctly exited1. Measured26044 triangles,44 joints,4 materials,zero unweighted/invalid vertices,one LOD without LODGroup and4 imported study clips.15 canonical actions missing; one imported idle cannot meet three-LOD requirements. No new wing/hand assembly imported or GPU/player/performance claim.",
+          "evidence": "/tmp/aetheria-icarus-rig-import/artifacts/character-production/icarus-unity-audit/2026-11-18T02-41-00-705Z-13eb73e9/result.json"
+        },
         "productionAcceptanceClarification": {
           "sourceRevision": "f13492a1925c75a594b96aa87f3e8fa7ecee178b",
           "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
