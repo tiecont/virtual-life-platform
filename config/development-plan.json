@@ -74,6 +74,24 @@
           {"command": "pnpm ci:browser hospitality", "exitCode": 0, "result": "All Lounge and Lodge specs/devices PASS with validated batch reports and disposable database cleanup"}
         ],
         "scope": "Backlog and hospitality synchronization only. Task IDs subsequently moved to168-174 to preserve PR33 IDs163-167; final-head CI still required. No 3D assets produced or VL-055 closure claimed.",
+        "frameworkAssetRecovery": {
+          "sourceRevision": "095af3a6a10e76465c15fedb9381a6127844e70e",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/45",
+          "finding": "Hosted Quality44216321857 runtime-images job134507115486 failed at39890d21f22dcd0fbd09888318bf1199cf041078. Downloaded failure artifact14388308880 shows /admin HTTP200 followed by six FRAMEWORK_ASSET ERR_NETWORK_CHANGED events, zero password fields and operator-login locator.fill timeout. Web image scenarios passed; concurrent PR Quality44216330829 runtime-images passed. This is a framework-load interruption before operator interaction, not the earlier /identity failure.",
+          "change": "Reuse PR46 commit6bdcad65e03f6cd146e6a576f5e816af2e496632 as095af3a6a10e76465c15fedb9381a6127844e70e. Retry only same-origin /_next/static/ GET script or stylesheet network changes on reviewed initial pages, with the existing three-attempt bound and fresh page; reject retry after a mutation. Application assertions and timeouts remain intact.",
+          "commands": [
+            {"command": "node --check scripts/image-browser-navigation.mjs", "exitCode": 0},
+            {"command": "node --check tests/governance/image-browser-navigation.test.mjs", "exitCode": 0},
+            {"command": "node --test tests/governance/image-browser-navigation.test.mjs", "exitCode": 0, "result": "12 PASS, including framework asset recovery, persistent interruption bound and mutation/non-framework exclusions"},
+            {"command": "pnpm install --frozen-lockfile", "exitCode": 0},
+            {"command": "pnpm exec eslint scripts/image-browser-navigation.mjs tests/governance/image-browser-navigation.test.mjs", "exitCode": 0},
+            {"command": "node --test tests/governance/task-plan.test.mjs", "exitCode": 0, "result": "4 PASS"},
+            {"command": "pnpm governance:check", "exitCode": 0, "result": "Governance consistency and indexed historical byte verification passed; not fresh historical gameplay execution"},
+            {"command": "git diff --check HEAD^ HEAD", "exitCode": 0}
+          ],
+          "remaining": "Fresh hosted Quality and Rust against the final PR45 head are required before merge. No local image rebuild or runtime smoke rerun is claimed. Failure artifacts remain under ignored artifacts/pr45-runtime-failure; no deployment or art acceptance."
+        },
         "browserDiagnosticsFollowup": {
           "sourceRevision": "819d07b942025b4c9a757e221ad8b040f0205927",
           "reviewMode": "SINGLE_AGENT_AUDIT",
