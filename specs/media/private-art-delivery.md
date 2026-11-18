@@ -186,7 +186,7 @@ configuration remain deployment acceptance work.
 
 ## Private draft metadata intake
 
-Migration `0053_private_art_metadata.sql` adds `operator_art_drafts` to the
+Migration `0054_private_art_metadata.sql` adds `operator_art_drafts` to the
 existing migration journal. `POST /v1/operator/art-intake` records one immutable
 metadata declaration, and `GET /v1/operator/art-draft?draftId=<uuid>` reads one
 exact entry. Both use the existing operator cookie and fresh MFA boundary;
