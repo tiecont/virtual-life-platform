@@ -283,7 +283,7 @@
           "sourceRevision": "c916790445f132762c50a480c7ad48b3fa1e4f10",
           "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
           "commands": [
-            {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "94 unit/integration tests plus1 compile-fail doc test PASS on the combined source; no new production route or asset acceptance."},
+            {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "80 unit/integration tests plus1 compile-fail doc test PASS on the combined source; no new production route or asset acceptance."},
             {"command": "cargo fmt --all -- --check", "exitCode": 0},
             {"command": "node --test tests/governance/icarus-import.test.mjs tests/governance/pet-limited-assets.test.mjs tests/governance/private-art-delivery.test.mjs tests/governance/task-plan.test.mjs tests/governance/plan-status.test.mjs", "exitCode": 0, "result": "33 PASS."},
             {"command": "python3 -B -m unittest discover -s tests/art -p test_*.py; pnpm governance:check", "exitCode": 0, "result": "15 art integrity tests and174-task/historical-byte consistency PASS; historical data check is not fresh gameplay execution."}
