@@ -255,6 +255,19 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
+        "consolidatedPartialHandoff": {
+          "sourceRevision": "1215b6505e0de5ff59bb659f85c15eefcfb33254",
+          "handSourceRevision": "f27ececc2668adc927c1a3ba4f06464f611c6e88",
+          "focalSourceRevision": "d304d3acf29bc324f42ce6a1b0855e5d3045b026",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "PARTIAL / ARTIST_HANDOFF_REQUIRED",
+          "productionReady": false,
+          "artifacts": "artifacts/character-production/icarus-consolidated-handoff-r1/index.html",
+          "inventorySha256": "fa03db03da3ea4673f1bdf300f2db160f8bdaba56e3bcc6eba120525d081dacc",
+          "scope": "Self-contained local high-poly, preserved focal source, wing assembly and partial hand candidates remain separate. Original reference, relative opening recipes, Vietnamese correction order, canonical16-action contract and actual previews included. No finished combined character or assigned artist.",
+          "verification": "164 payload files,158 original source hashes,6 embedded-only GLBs,3 decoded MP4s,46 local links,9 Node syntax and10 Python compile checks PASS. Payload2151809161bytes; no duplicate tar. Prior Blender reopen/import/render records are explicitly prior checks, not rerun at consolidation. No new Unity/player/Windows qualification.",
+          "remaining": "Correct focal topology/hair, anatomical wing roots, hand/thumb/armor and exhaustive bow contact, then full74-bone rig,16actions,UV/bake/LODs and actual Unity/player qualification. No qualified art package exists for the conditional private upload. Other five Limited held; ordinary/map Pets remain image-only."
+        },
         "focalSurfacePreservation": {
           "sourceRevision": "4395f55fc527938ff52dead8748e14499c43dec4",
           "upstreamStudyRevision": "d304d3acf29bc324f42ce6a1b0855e5d3045b026",
