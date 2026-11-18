@@ -138,7 +138,16 @@
       "objective": "Produce the first Limited S end-to-end from kit references, preserving canonical identity and FIRE_ZONE semantics; contributes to VL-149, not the Standard S roster.",
       "priority": 1,
       "dependsOn": [],
-      "acceptance": ["Actual editable Blender 4.x LTS source and FBX/GLB export, meter scale and Y-up transfer; LOD0 26000-29500 triangles, Icarus 74 bones and at most 3 materials", "Actual UV/textures, idle/intro/normal/rage/signature clips, URP cel material, FIRE_ZONE VFX and Timeline/Cinemachine preview MP4 exist", "Record character_id, design_revision, reference_hash and actual source/import/runtime hashes; pet-asset-check passes with Icarus bindings present, not merely a missing-asset draft preflight", "Actual licensed Unity import, rendered motion and reduced-motion/performance checks; no runtime animation authority"],
+      "acceptance": [
+        "Owner selected_design_01.png remains the primary appearance reference; actual neutral front/side/back and face/hand/wing closeups pass SINGLE_AGENT_SELF_REVIEW for likeness, anatomy, layered construction and finish. Generated supplements remain proposals; no numeric likeness claim.",
+        "Editable Blender source with purposeful joint topology, separate articulated wings and usable five-finger hands; actual bow grip, draw and fold clearance pass before downstream animation acceptance.",
+        "LOD0 including bow/accessories has 26000-29500 triangles, 74 Icarus bones and at most 3 materials; LOD1/LOD2 meet current kit budgets. Correct UVs and isolated component bakes preserve focal detail; whole-mesh decimation or triangle totals alone do not pass.",
+        "High-resolution authoring PBR channel dimensions and provenance are measured against the owner 4K/8K request; runtime texture budgets, channel packing and color spaces are validated separately. Upscaling does not establish source detail.",
+        "All 16 canonical actions from specs/pet-arena/v3.1/data/limited_animation_profiles.json for pet-v3-fire-icarus exist as distinct authored motion with tested contacts, loops and transitions. The historical five kit authoring clips are not the complete gameplay contract; canonical sword-named keys retain Icarus bow visuals without protocol changes.",
+        "Actual licensed Unity import/reimport of FBX/GLB, URP materials, LODs, prefab, Animator, FIRE_ZONE VFX and requested cinematic preview; inspect moving body geometry in encoded footage and reduced-motion output. Presentation never decides Rust outcomes.",
+        "Self-contained Blender/export/runtime files reopen with actual reference/source/import hashes and complete Limited asset bindings. Measure loading, memory and frame time on named test hardware; offline art qualification, Windows qualification, rights and public release stay separate.",
+        "Upload only the qualified art package using the existing private storage pipeline and verify remote bytes/hash; no public publication or production-ready promotion from CI alone. Other five Limited remain held for owner design; ordinary/map pets remain image-only."
+      ],
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
