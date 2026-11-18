@@ -403,10 +403,26 @@
           "limitations": "Wing fold study only. No canonical action, full-body deformation, expressive timing, reduced-motion output, audio, Unity rendering or hardware-performance acceptance. Source/CI merge cannot promote these previews to production art."
         },
         "importMeasurementValidation": {
+          "licensedEditorFollowup": {
+            "sourceRevision": "5d0bd274957a8cd1dc69066e801ee19ed23e27d7",
+            "result": "Pinned Unity 6000.3.14f1 imported the same archived FBX (Editor exit 0). Updated contract rejected the asset (exit 1), including explicit missing measurements for LOD1 and LOD2.",
+            "evidence": "artifacts/character-production/icarus-unity-audit/2026-11-18T04-11-03-284Z-aeae49de/result.json"
+          },
           "sourceRevision": "f1afd2df42b1eaec236d9ca9edc90e52766b86ff",
           "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
           "command": "node --test tests/governance/icarus-import.test.mjs",
           "result": "7 passed. Absent or null levels, sparse per-LOD motion samples, and fractional or nonnumeric influence/binding counts fail validation. This contract check does not qualify a Unity asset."
+        },
+        "faceAndAttachmentReview": {
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "ARTIST_HANDOFF_REQUIRED",
+          "productionReady": false,
+          "face": "R4 isolated face patch lacks volume. R5 reconstructed head preserves source UVs and packed images; closed eyelids expose painted eyes and seven upper-lid triangles reverse. Reopened in Blender 4.5.16. Separate skin from hair and accessories, rebuild orbital and lip loops, test closed lids before bake.",
+          "wing": "R4 adds 13 coverts per side. Reopened and inspected across 31 study frames. Side view shows hair crossing the white root connector. Rebuild scapular hair and back costume at the attachment before accepting the fold.",
+          "evidence": [
+            "artifacts/character-production/icarus-head-retopology-r5/REVIEW.md",
+            "artifacts/character-production/icarus-wing-root-r4/REVIEW.vi.md"
+          ]
         },
         "legacyFbxImportAudit": {
           "sourceRevision": "eb9bdfead4645de1d346e9189423163d630485bc",
