@@ -66,7 +66,11 @@ def render(output, label, direction, focus, scale):
     bpy.ops.render.render(write_still=True)
 
 
-def verify_export(output, report):
+def verify_export(output, report, source):
+    if digest(source) != report['sourceSha256']:
+        raise ValueError('Wing study source differs from the assembly record')
+    if not report['repaired'] or any(pose['triangleIntersectionPairs'] for pose in report['repaired']):
+        raise ValueError('Unresolved intersections with retained body geometry')
     bpy.ops.wm.open_mainfile(filepath=str(output / 'icarus-character-wing-assembly.blend'))
     objects = [obj for obj in bpy.context.scene.objects if obj.name in report['meshTriangles']]
     export_names = {obj.data.name: obj.name for obj in objects}
@@ -88,10 +92,10 @@ def verify_export(output, report):
     report['reopened'] = True
     report['files'] = {path.name: digest(path) for path in output.iterdir()
                        if path.suffix in ('.blend', '.glb', '.png')}
-    (output / 'verification.json').write_text(json.dumps(report, indent=2) + '\n')
     assert report['retainedBodyUnchanged'] and report['unweightedWingVertices'] == 0
     assert len(imported) == 70
     assert max(report['reimport']['surfaceErrorMeters'].values()) < .0001
+    (output / 'verification.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps({key: report[key] for key in ('repairTrials', 'totalTriangles', 'reimport')}))
 
 
@@ -103,7 +107,7 @@ def main():
     args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:])
     output = args.output.resolve()
     if args.verify_existing:
-        verify_export(output, json.loads((output / 'verification.json').read_text()))
+        verify_export(output, json.loads((output / 'verification.json').read_text()), args.source)
         return
     output.mkdir(parents=True, exist_ok=False)
     original_hash = digest(args.source)
@@ -174,7 +178,7 @@ def main():
     bpy.ops.wm.save_as_mainfile(filepath=str(output / 'icarus-character-wing-assembly.blend'))
     assert digest(args.source) == original_hash
     (output / 'verification.json').write_text(json.dumps(report, indent=2) + '\n')
-    verify_export(output, report)
+    verify_export(output, report, args.source)
 
 
 if __name__ == '__main__':
