@@ -1,6 +1,10 @@
 {
   "schemaVersion": 1,
   "tables": {
+    "pet_content_versions": "platform.pet-content",
+    "pet_content_selection": "platform.pet-content",
+    "pet_content_transitions": "platform.pet-content",
+    "pet_content_match_pins": "platform.pet-content",
     "pet_content_drafts": "platform.pet-content",
     "pet_content_elements": "platform.pet-content",
     "pet_content_effectiveness": "platform.pet-content",

@@ -10,5 +10,22 @@
   },
   "dependencies": {
     "zod": "4.6.7"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./pet-acquisition-v3": {
+      "types": "./dist/pet-acquisition-catalog-v3.d.ts",
+      "default": "./dist/pet-acquisition-catalog-v3.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "pet-acquisition-v3": [
+        "dist/pet-acquisition-catalog-v3.d.ts"
+      ]
+    }
   }
 }
