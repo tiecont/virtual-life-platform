@@ -32,11 +32,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
+    parser.add_argument('--verify-existing', action='store_true')
     args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:])
     source = args.source.resolve()
     source_hash = digest(source)
     output = args.output.resolve()
-    output.mkdir(parents=True, exist_ok=False)
+    if not args.verify_existing:
+        output.mkdir(parents=True, exist_ok=False)
     bpy.ops.wm.open_mainfile(filepath=str(source))
     scene = bpy.context.scene
     rig = scene.objects.get('Icarus_Wing_Study_6Bones')
@@ -68,6 +70,24 @@ def main():
     if movement < .01:
         raise ValueError('The wing mesh does not visibly deform across the timeline')
     report['maximumWingVertexDisplacementMeters'] = movement
+    if args.verify_existing:
+        saved = json.loads((output / 'verification.json').read_text())
+        if saved['sourceSha256'] != source_hash or [view['view'] for view in saved['views']] != ['front', 'back', 'side']:
+            raise ValueError('Preview source or complete view set differs')
+        for view in saved['views']:
+            frames = output / view['view']
+            actual = [digest(frames / f'{frame:04d}.png') for frame in range(1, 32)]
+            video = output / view['video']
+            if actual != view['frameSha256'] or digest(video) != view['sha256']:
+                raise ValueError('Preview bytes differ from their render record')
+            subprocess.run(['ffmpeg', '-nostdin', '-v', 'error', '-xerror', '-i',
+                            str(video), '-f', 'null', '-'], check=True)
+        saved['maximumWingVertexDisplacementMeters'] = movement
+        saved['encodedVideosDecoded'] = True
+        (output / 'verification.json').write_text(json.dumps(saved, indent=2) + '\n')
+        print(json.dumps({'views': len(saved['views']), 'maximumWingVertexDisplacementMeters': movement,
+                          'encodedVideosDecoded': True, 'productionReady': False}))
+        return
     focus = Vector((0, .08, 0))
     for name, direction in [('front', (0, -1, 0)), ('back', (0, 1, 0)), ('side', (1, 0, 0))]:
         frames = output / name
