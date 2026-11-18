@@ -140,14 +140,82 @@
     {
       "id": "VL-170",
       "feature": "Media",
-      "title": "PR-B: private local S3 media metadata and ingest",
-      "objective": "Add loopback MinIO and an additive journaled migration for versioned media metadata, RBAC ingest, signed preview access and provenance.",
+      "title": "PR-B: private S3 media delivery, metadata and ingest",
+      "objective": "Prepare fail-closed private art delivery to Cloudflare R2 and t3.storage.dev using the existing Node stack; retain additive journaled media metadata, RBAC ingest, signed preview access and provenance as follow-up scope.",
       "priority": 2,
       "dependsOn": [],
       "acceptance": ["Private buckets, bounded signed URLs, operator authorization and no public draft listing", "Reject traversal, MIME spoofing, oversized uploads and unauthorized read/write; verify real object bytes and content hashes", "Use the next available migration in the existing journal, isolated tests and local secrets; no production publication"],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
-      "implementation": {"release": "OFFLINE_ONLY / NO_GO_PUBLIC"}
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "privateDelivery": {
+          "entrypoint": "scripts/private-art-delivery.mjs",
+          "specification": "specs/media/private-art-delivery.md",
+          "scope": "Local private manifest staging and gated S3 SigV4 delivery tooling; exact R2/t3 HTTPS endpoints, immutable conditional keys, full SHA-256 readback, strict path/MIME/content/size checks, maximum10GB per batch and256MiB per file. No credentials, approved art, provider probes or remote uploads included.",
+          "artGate": "NOT_REVIEWED; upload requires separately reviewed and independently hash-pinned art/technical/rights/private-target receipt. Tooling cannot establish visual acceptance or provider privacy by itself.",
+          "remaining": "Real art review, private provider configuration/compatibility and account-wide quota qualification; journaled metadata, existing operator RBAC ingest and bounded signed preview delivery remain unimplemented. No merge, public release or deployment authorization."
+        }
+      },
+      "verification": {
+        "sourceRevision": "500a1eb6bbd8be34b3c32ea564c6b74419374409",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "commands": [
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "143 PASS on committed source, including14 private-delivery tests with owned loopback HTTP/S3 fixture; SigV4, conditional private PUT, byte-hash GET readback, safe retries, gate/path/MIME/size/redirect/corruption negatives. No external endpoint contacted."
+          },
+          {
+            "command": "pnpm exec eslint scripts/media/private-art-manifest.mjs scripts/media/private-art-s3.mjs scripts/private-art-delivery.mjs tests/governance/private-art-delivery.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm governance:check",
+            "exitCode": 0,
+            "result": "PASS; historical evidence retrieval is not new art or release acceptance."
+          },
+          {
+            "command": "pnpm plan:status",
+            "exitCode": 0,
+            "result": "VL-170 ready and IN_PROGRESS; remaining task-wide media work retained."
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "preparation": "pnpm install --offline --frozen-lockfile and pnpm build:packages completed0 in isolated worktree. Initial broad governance run failed2 imports because fresh checkout lacked built contracts (135 passed); rerun after normal package build passed143 without weakening assertions.",
+        "scope": "Tooling complete for scoped private staging/upload. Owner already authorizes private upload after honest scoped art foundation review; no additional owner/public-release approval required. Current art batch remains unfinished, so no live upload or provider probes ran. Credentials were synthetic fixture values only.",
+        "limitations": "10GB cap applies per manifest/batch, not an unobserved account quota. Provider private configuration and conditional-write compatibility are not live-verified; receipt is a trusted local attestation. Full application check, hosted CI, public delivery, metadata/RBAC/signed-preview APIs, PR and merge NOT_RUN.",
+        "nextAction": "Parent reviews/cherry-picks the tooling commits, then runs hosted CI before any merge. Complete current art foundation and hash-pin its scoped private review before using parent-held credentials for the already-authorized private delivery."
+      },
+      "t3CredentialFollowup": {
+        "sourceRevision": "e1baa87f7b1c36a5f9dce6776389eacddf13f672",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "finding": "Real T3 tid_ credential shape was rejected by the alphanumeric-only validator. Two synthetic regression cases failed on the prior implementation. T3 now permits bounded ASCII alphanumeric, underscore and hyphen; R2 keeps its alphanumeric alphabet. Both reject SigV4 credential delimiters, whitespace and header controls.",
+        "commands": [
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "144 PASS on committed source, including15 private delivery tests; owned loopback S3 fixture verifies full PUT/GET signatures using synthetic tid_ credentials."
+          },
+          {
+            "command": "pnpm exec eslint scripts/media/private-art-s3.mjs tests/governance/private-art-delivery.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm governance:check",
+            "exitCode": 0
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "privacy": "publicAccess DISABLED is declared operator evidence, not automatic provider privacy verification. Documentation requires actual current configuration evidence for the exact destination before creating a passing private-target receipt or uploading. Existing owner authorization is retained; no new public-release approval required.",
+        "limitations": "No real secrets, third-party probes or live uploads used.10GB remains a per-batch cap; account quota is separate. Final draft PR head requires hosted CI before any merge; no merge authorized."
+      }
     },
     {
       "id": "VL-171",
