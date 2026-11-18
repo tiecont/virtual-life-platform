@@ -67,13 +67,18 @@ not the pilot's identity or actions indiscriminately.
 3. If unresolved, change technique: reshape overlapping hair clumps, sculpt/
    paint the face, rebuild feather vanes or correct topology/weights. More
    triangles/subdivisions alone are not evidence of improvement.
-4. Default to at most three meaningful attempts on the same blocking gap per run.
-   Stop earlier for a clear capability/input limitation; honor explicit user
-   budgets or later instructions to continue. Keep iteration logs/comparisons
-   under ignored artifacts; retain stable design decisions in maintained specs.
-5. If still unresolved, use `ARTIST_HANDOFF_REQUIRED` for that area, preserve
-   useful work and prepare the package below. Continue independent authorized
-   work, but do not replicate a failed pilot across the Limited roster.
+4. Bound repeated attempts with the same technique. When measurements plateau,
+   identify the controlling geometry, weights or motion in the assembled
+   character. Change that source and repeat the affected checks in context.
+   For example, a bow that clears the fingers but intersects a wing during a
+   draw requires coordinated shoulder, elbow, hand and wing motion. Preserve
+   local regression tests for the grip and wing when editing the shared rig.
+5. Continue through the next feasible milestone under the existing authorization.
+   Save the current editable assembly, input revisions, failing pose and next
+   operation so work can resume after interruption. Use progress updates for
+   intermediate results. If a specific capability, input or permission blocks
+   further repair, record what was tried and what would unblock it, prepare a
+   handoff for the affected area, and finish independent in-scope work.
 
 ## Artist Handoff
 

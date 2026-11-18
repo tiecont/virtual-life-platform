@@ -80,8 +80,9 @@ tool is unavailable; never pretend generated assets exist.
 
 Deliver only the scope that actually passed, linking editable source and real
 previews. If full production was requested and a gate remains open, mark delivery
-partial and name the blocker. Follow bounded repair/artist handoff instead of
-declaring a rough study final. Report task IDs, changed areas, actual checks,
+  partial and name the blocker when further in-scope work is blocked. Treat
+  component revisions as checkpoints. Carry repairs into the assembled asset
+  and continue the existing task through its delivery gates. Report task IDs, changed areas, actual checks,
 source SHA/PR if any, limitations and next exact action in Vietnamese. Do not
 imply continued work after the turn ends.
 
