@@ -1646,8 +1646,33 @@
       "qualificationRequirements": [],
       "implementation": {
         "source": "crates/vl-world/src/collision.rs; crates/vl-world/src/movement.rs; crates/vl-gateway/src/durable.rs; apps/unity-client/Assets/VirtualLife/Features/NativeScene",
+        "mergeAudit": {
+          "sourceRevision": "6bdcad65e03f6cd146e6a576f5e816af2e496632",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/46",
+          "commands": [
+            {"command": "cargo fmt --all -- --check", "exitCode": 0},
+            {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "All Rust workspace tests and doc tests passed, including destination, viewer-policy, jitter and duplicate/reordered input regressions."},
+            {"command": "cargo clippy --workspace --all-targets --locked -- -D warnings", "exitCode": 0},
+            {"command": "node --test tests/governance/image-browser-navigation.test.mjs", "exitCode": 0, "result": "12 tests passed; retries remain bounded to read-only document/framework asset network changes; mutations and other failures never retry."},
+            {"command": "node --check scripts/image-browser-navigation.mjs", "exitCode": 0},
+            {"command": "node scripts/verify-ci.mjs", "exitCode": 0, "result": "Local workflow contract passed; this command does not establish hosted CI success."}
+          ],
+          "hostedCI": {
+            "sourceRevision": "6bdcad65e03f6cd146e6a576f5e816af2e496632",
+            "status": "CORE_IMAGES_RUST_PASS_BROWSER_PENDING",
+            "runs": [
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44187058701",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44187058966",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44187045546",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44187045558"
+            ],
+            "result": "Both exact-source Rust runs, Quality core and runtime-images passed; remaining browser jobs were pending when recorded. This verification-only revision must pass its own complete hosted CI before merge; final runs and merge SHA belong in the PR discussion."
+          },
+          "limitations": "Library/gateway self-review only; current peer-disclosure and authenticated destination-provider integration remain incomplete. Rust gameplay stays default-off and Nest remains the sole legacy room writer. No production or hardware qualification."
+        },
         "scope": "Default-off Aurora movement through the existing single Rust zone writer, exported collision/interaction manifest, current Nest policy locks, own-only snapshots, authoritative synthetic terminal proximity and main-thread Unity reconciliation",
-        "remainingAcceptance": "Policy-filtered AOI remains. Reconnect retains a bounded actor registry within one runtime; durable movement checkpoints, registry eviction and client prediction are not implemented. Runtime restart rejects old epochs and returns to safe manifest spawn. Injected application delay evidence is not physical network latency or Windows qualification.",
+        "remainingAcceptance": "Viewer-bound policy projection and own-only gateway integration are implemented. Peer visibility still requires current mutual-block/consent/private-membership policy integration and protocol fields; no peer positions are disclosed. Reconnect retains a bounded registry within one runtime; durable movement checkpoints, registry eviction and client prediction remain unimplemented. Runtime restart rejects old epochs and returns to safe manifest spawn. Injected application delays and deterministic silent ticks are not physical network or Windows qualification.",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "proximityVerification": {
           "sourceRevision": "c02e9f9fa7d3ab343ff37e11fbfb81fb0dbe1ebd",
@@ -1759,6 +1784,58 @@
           "rendering": "Unity 6000.3.14f1 LinuxPlayer, AMD Renoir OpenGLCore on CachyOS; screenshot inspected; player executable SHA256 26901901cc6dd63212d741b339897f072d34cb7b3f08419fe451fc8e77c79a1f",
           "ociVerification": {"sourceRevision": "60d201d385b177eabf5603589d119b82df9fdf4f", "command": "docker build -f apps/game-runtime/Dockerfile -t vl-runtime-g2-local .; python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-g2-local", "exitCode": 0, "result": "Canonical collision manifest included; nonroot/read-only; liveness 200, default-off readiness 503, native route 404, activation denied and graceful exit 0"},
           "limitations": "Automated OS input, not physical owner or Windows qualification. A reboot interrupted the first source-bound Unity attempt and left no completed NUnit result; no pass was inferred. A later 15s route timeout was corrected to a bounded 60s acknowledged walk without changing position/receipt assertions. Hosted Quality/Rust at final PR HEAD remain required before merge."
+        },
+        "worldLogicVerification": {
+          "sourceRevision": "0672c80e01208a18fed6d47a8ff944cb3872e8b7",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {
+              "command": "cargo fmt --all -- --check",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo test --workspace --locked",
+              "exitCode": 0,
+              "result": "69 tests passed, including 15 vl-world cases; workspace doc tests passed"
+            },
+            {
+              "command": "node --test tests/governance/*.test.mjs",
+              "exitCode": 0,
+              "result": "125 passed after package builds; first run at b06be6b overlapped package build and failed two modules with ERR_MODULE_NOT_FOUND (119 passed, 2 failed), then rerun successfully"
+            },
+            {
+              "command": "node scripts/verify-architecture.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "node scripts/verify-ci.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo build --locked --package vl-game-runtime && node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --movement",
+              "exitCode": 0,
+              "result": "13 real-process WSS/Nest/Rust/restricted TLS PostgreSQL scenarios passed on committed source; application delay/jitter, collision, replay, current policy revocation, reconnect and restart"
+            },
+            {
+              "command": "git diff --check",
+              "exitCode": 0
+            }
+          ],
+          "evidence": "artifacts/world-logic/{clippy,rust-tests,governance,movement-interop}.log; artifacts/desktop-first/vl022/interop-236f0175/facts.json",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/46",
+          "hostedCI": {
+            "status": "CORE_FAILED_OTHER_JOBS_PENDING",
+            "sourceRevision": "0672c80e01208a18fed6d47a8ff944cb3872e8b7",
+            "runs": [
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44118644895",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44118645181"
+            ],
+            "note": "Quality core-checks failed in scripts/verify-infra.mjs before lint/application tests; hosted log only reports infrastructure validation failure. Rust format/check/Clippy/tests and generated bindings passed; later Rust jobs were still running when checked. No green CI claim. Final metadata commit requires its own hosted checks before merge."
+          }
         }
       }
     },
@@ -1886,12 +1963,75 @@
         "schema validation and unauthorized private locations absent",
         "stale POI never confers permission"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-023",
         "VL-031"
-      ]
+      ],
+      "implementation": {
+        "source": "crates/vl-world/src/destinations.rs",
+        "mergeAudit": {
+          "sourceRevision": "6bdcad65e03f6cd146e6a576f5e816af2e496632",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "relatedVerificationTask": "VL-028",
+          "result": "Same PR46 committed-source Rust format/workspace tests/Clippy and hosted status as VL-028.mergeAudit. Schema, private-location omission, stale revisions, live revocation and capacity/hold overflow cases passed; authenticated adapter and maintained server policy/catalog remain outstanding."
+        },
+        "scope": "Bounded strict versioned native POI schema; trusted current-policy discovery; hidden private entries absent; advisory candidate resolution rechecks live entitlement, revision, capacity and reservations without membership writes",
+        "remainingAcceptance": "Library implementation only. Authenticated runtime adapter, server-owned current policy/occupancy provider and maintained runtime catalog remain; no network endpoint, capability, admission or teleport writer is exposed. Catalog candidates must be revalidated under locks when reserving/committing.",
+        "verification": {
+          "sourceRevision": "0672c80e01208a18fed6d47a8ff944cb3872e8b7",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {
+              "command": "cargo fmt --all -- --check",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo test --workspace --locked",
+              "exitCode": 0,
+              "result": "69 tests passed, including 15 vl-world cases; workspace doc tests passed"
+            },
+            {
+              "command": "node --test tests/governance/*.test.mjs",
+              "exitCode": 0,
+              "result": "125 passed after package builds; first run at b06be6b overlapped package build and failed two modules with ERR_MODULE_NOT_FOUND (119 passed, 2 failed), then rerun successfully"
+            },
+            {
+              "command": "node scripts/verify-architecture.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "node scripts/verify-ci.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo build --locked --package vl-game-runtime && node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --movement",
+              "exitCode": 0,
+              "result": "13 real-process WSS/Nest/Rust/restricted TLS PostgreSQL scenarios passed on committed source; application delay/jitter, collision, replay, current policy revocation, reconnect and restart"
+            },
+            {
+              "command": "git diff --check",
+              "exitCode": 0
+            }
+          ],
+          "evidence": "artifacts/world-logic/{clippy,rust-tests,governance,movement-interop}.log; artifacts/desktop-first/vl022/interop-236f0175/facts.json",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/46",
+          "hostedCI": {
+            "status": "CORE_FAILED_OTHER_JOBS_PENDING",
+            "sourceRevision": "0672c80e01208a18fed6d47a8ff944cb3872e8b7",
+            "runs": [
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44118644895",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44118645181"
+            ],
+            "note": "Quality core-checks failed in scripts/verify-infra.mjs before lint/application tests; hosted log only reports infrastructure validation failure. Rust format/check/Clippy/tests and generated bindings passed; later Rust jobs were still running when checked. No green CI claim. Final metadata commit requires its own hosted checks before merge."
+          }
+        }
+      }
     },
     {
       "id": "VL-036",
@@ -1907,7 +2047,13 @@
         "target full, timeouts, duplicate clicks and concurrent transfer no ghost membership"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "implementation": {
+        "scope": "Not started; audited against existing Nest legacy transfers and native admission ownership.",
+        "remainingAcceptance": "VL-028 peer policy integration and VL-035 authenticated runtime destination provider remain incomplete. Preserve the implementation dependency gate; subsequent Rust saga must coordinate allowlisted target holds, source release, epochs, duplicate clicks, cancellation and restart rollback without writing legacy rooms.",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "auditSourceRevision": "0672c80e01208a18fed6d47a8ff944cb3872e8b7"
+      }
     },
     {
       "id": "VL-037",
