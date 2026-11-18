@@ -414,6 +414,12 @@
           "result": "7 passed. Absent or null levels, sparse per-LOD motion samples, and fractional or nonnumeric influence/binding counts fail validation. This contract check does not qualify a Unity asset."
         },
         "faceAndAttachmentReview": {
+          "followup": {
+            "ocularR6": "Corrective albedo covers painted irises on blink. 456 lid triangles sampled at 21 blink weights with zero normal reversals. Reopened packed source in Blender 4.5.16. Raised lid overlay and open-eye UV distortion remain.",
+            "attachmentR5": "Candidate C compared at 31 frames: intersection pairs with pink texture-classified geometry reduced to 54 left and 48-49 right. Hair is not semantically isolated, penetration remains and the folded connector is exposed. Offline study only.",
+            "ocularEvidence": "artifacts/character-production/icarus-ocular-repair-r6/reopen.json",
+            "attachmentEvidence": "artifacts/character-production/icarus-wing-attachment-r5/c/verification.json"
+          },
           "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
           "state": "ARTIST_HANDOFF_REQUIRED",
           "productionReady": false,
