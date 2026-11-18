@@ -5417,9 +5417,56 @@
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "foundation": "Reuse migration0051 and VL-115 completed draft foundation; remaining publication work is not required to seed unpublished v3.1 drafts.",
+        "draftPersistence": {
+          "source": "apps/platform-api/src/features/pets/modules/content/infrastructure/acquisition-draft-store.ts; apps/platform-api/src/shared/database/migrations/0053_pet_acquisition_drafts.sql; scripts/pet-acquisition-draft-seed.mjs",
+          "scope": "Nest-owned additive migration 0053 and offline exact-manifest importer persist 240 acquisition projections only. Hash-checked repeatable reads, eight concurrent seed attempts, conflicting data, late rollback, lost COMMIT acknowledgement, runtime/PUBLIC SQL denials and encrypted restore are covered. No ownership, purchases, publication or gameplay activation.",
+          "verification": {
+            "sourceRevision": "189f7365669573605b9c21f3b8ff68f83000ebd6",
+            "reviewMode": "SINGLE_AGENT_AUDIT",
+            "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/49",
+            "commands": [
+              {
+                "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project unit --project integration tests/games/pet-draft-import.unit.test.ts packages/contracts/test/pet-acquisition-catalog-v3.test.ts tests/integration/pet-acquisition-draft.test.ts",
+                "exitCode": 0,
+                "result": "15 tests passed on unchanged committed source; disposable PostgreSQL container and network removed."
+              },
+              {
+                "command": "node --import tsx scripts/game-journal-restore-smoke.mjs",
+                "exitCode": 0,
+                "result": "PASS; actual encrypted PostgreSQL backup/restore preserves all 240 acquisition projections and detects corruption; owned resources cleaned."
+              },
+              {
+                "command": "node scripts/with-test-db.mjs node --import tsx scripts/runtime-admission-migration-compat.mjs",
+                "exitCode": 0,
+                "result": "PASS; archived 48-migration API accepts exact additive 53 policy, preserves identity and frozen rows, and rejects unknown/checksum-mismatched migrations."
+              },
+              {
+                "command": "node scripts/verify-architecture.mjs",
+                "exitCode": 0,
+                "result": "143 SQL tables plus journal and 513 source files passed; Nest content ownership retained."
+              },
+              {
+                "command": "node --check scripts/pet-acquisition-draft-seed.mjs",
+                "exitCode": 0
+              }
+            ],
+            "hostedCI": {
+              "sourceRevision": "189f7365669573605b9c21f3b8ff68f83000ebd6",
+              "status": "PASS",
+              "runs": [
+                "https://github.com/tiecont/virtual-life-platform/actions/runs/44140080228",
+                "https://github.com/tiecont/virtual-life-platform/actions/runs/44140080209",
+                "https://github.com/tiecont/virtual-life-platform/actions/runs/44140032690",
+                "https://github.com/tiecont/virtual-life-platform/actions/runs/44140032588"
+              ],
+              "result": "Both push and pull-request Quality and Rust runtime runs succeeded on the exact recorded source; this verification-only revision requires its own green hosted checks before merge."
+            },
+            "limitations": "Task remains IN_PROGRESS while actual upstream implementation dependencies are incomplete. This is acquisition metadata only; no combat/art/lore payload import or Unity/Windows acceptance. Prior local pnpm check at this source exited 1 when the Next build security advisory gate stopped; hosted pnpm check succeeded. No local full-check success is inferred."
+          }
+        },
         "logicRulesFollowup": {
           "scope": "Partial strict acquisition projection only:240 identities,209 regular/19 map S/6 Limited/6 Standard; canonical banner identities, map/source/rank references, morphology and trusted upstream114 ID/name/element/legacy-rarity/map preservation. Separate Pet-server contract entry prevents draft browser exposure.",
-          "remaining": "Additive Nest migration, full manifest importer/hash verification, transactional concurrent seed, SQL privileges/corruption/restore tests are not implemented. Deferred to schema integration; no database import, purchases, ownership or publication.",
+          "remaining": "This historical PR47 projection was extended by PR49 draftPersistence above with migration/import/concurrency/privilege/restore coverage. Player ownership, purchases and publication remain outside the draft contract.",
           "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
           "verification": {
             "sourceRevision": "c8bbb5bad4f65d06f5378b6f2bc998603a25ba08",
