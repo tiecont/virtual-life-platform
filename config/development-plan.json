@@ -279,6 +279,17 @@
           ],
           "remaining": "Guarded PR59/60 source integration and complete combined-source hosted CI before PR45 merge. Art remains partial and cannot be qualified by source checks."
         },
+        "combinedRigSourceRegression": {
+          "sourceRevision": "c916790445f132762c50a480c7ad48b3fa1e4f10",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "commands": [
+            {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "94 unit/integration tests plus1 compile-fail doc test PASS on the combined source; no new production route or asset acceptance."},
+            {"command": "cargo fmt --all -- --check", "exitCode": 0},
+            {"command": "node --test tests/governance/icarus-import.test.mjs tests/governance/pet-limited-assets.test.mjs tests/governance/private-art-delivery.test.mjs tests/governance/task-plan.test.mjs tests/governance/plan-status.test.mjs", "exitCode": 0, "result": "33 PASS."},
+            {"command": "python3 -B -m unittest discover -s tests/art -p test_*.py; pnpm governance:check", "exitCode": 0, "result": "15 art integrity tests and174-task/historical-byte consistency PASS; historical data check is not fresh gameplay execution."}
+          ],
+          "remaining": "PR60 and final combined PR45 hosted CI/guarded merges still required. Production art, complete bindings and conditional storage upload remain unqualified."
+        },
         "consolidatedPartialHandoff": {
           "sourceRevision": "1215b6505e0de5ff59bb659f85c15eefcfb33254",
           "handSourceRevision": "f27ececc2668adc927c1a3ba4f06464f611c6e88",
