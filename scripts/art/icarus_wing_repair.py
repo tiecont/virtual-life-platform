@@ -22,8 +22,8 @@ def arguments():
     return parser.parse_args(sys.argv[sys.argv.index('--') + 1:])
 
 
-def feather(name, root, tip, width, index, high=False):
-    rows, columns = (48, 12) if high else (12, 4)
+def feather(name, root, tip, width, index, high=False, cage=(12, 4), swept=False):
+    rows, columns = (48, 12) if high else cage
     direction = Vector(tip) - Vector(root)
     lateral = Vector((-direction.z, 0, direction.x)).normalized()
     vertices, faces, uv = [], [], []
@@ -31,13 +31,18 @@ def feather(name, root, tip, width, index, high=False):
         for row in range(rows + 1):
             t = row / rows
             profile = max(.012, math.sin(math.pi * t) ** .72)
+            if swept:
+                profile *= 1.22 - .57 * t
             center = Vector(root) + direction * t
             center.y += .028 * math.sin(math.pi * t)
             center.x += (.014 if root[0] > 0 else -.014) * math.sin(math.pi * t)
+            if swept:
+                center += lateral * .028 * math.sin(math.pi * t) * t
             for column in range(columns + 1):
                 s = 2 * column / columns - 1
                 # Full vane shoulders and a central camber replace faceted spikes.
-                point = center + lateral * (width * profile * s * (.92 if s < 0 else 1.08))
+                asymmetry = (.70 if s < 0 else 1.30) if swept else (.92 if s < 0 else 1.08)
+                point = center + lateral * (width * profile * s * asymmetry)
                 point.y += (.0045 * s * s + .0015 * surface) * profile
                 if high:
                     point.y += .00012 * math.sin(t * 260 + abs(s) * 23) * (1 - s * s) * profile

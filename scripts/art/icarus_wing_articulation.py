@@ -48,15 +48,14 @@ def spine(x):
     return .405 + .43 * (x - .105), depth
 
 
-def support(side, sign, rig, material):
+def support(side, sign, rig, material, stations=25, sides=8):
     vertices, faces, weights = [], [], {}
-    stations = 25
     for row in range(stations):
         x = .105 + .405 * row / (stations - 1)
         z, y = spine(x)
         radius = .030 - .013 * row / (stations - 1)
-        for col in range(8):
-            angle = col * math.tau / 8
+        for col in range(sides):
+            angle = col * math.tau / sides
             vertices.append((sign * x, y + .023 * math.sin(angle), z + radius * math.cos(angle)))
             # A short blend at each joint bends the support without stretching vanes.
             elbow = max(0, min(1, (x - .235) / .075))
@@ -66,11 +65,11 @@ def support(side, sign, rig, material):
                 if value:
                     weights.setdefault(bone_name(side, segment), []).append((len(vertices) - 1, value))
         if row:
-            for col in range(8):
-                a = (row - 1) * 8 + col
-                b = (row - 1) * 8 + (col + 1) % 8
-                faces.append((a, b, b + 8, a + 8))
-    faces.extend([tuple(reversed(range(8))), tuple(range((stations - 1) * 8, stations * 8))])
+            for col in range(sides):
+                a = (row - 1) * sides + col
+                b = (row - 1) * sides + (col + 1) % sides
+                faces.append((a, b, b + sides, a + sides))
+    faces.extend([tuple(reversed(range(sides))), tuple(range((stations - 1) * sides, stations * sides))])
     mesh = bpy.data.meshes.new(f'WingSupport.{side}')
     mesh.from_pydata(vertices, [], faces)
     mesh.update()
@@ -158,7 +157,7 @@ def world_geometry(obj):
     return vertices, triangles
 
 
-def render_views(output, rig, meshes, context):
+def render_views(output, rig, meshes, context, pose_fn=None):
     scene = bpy.context.scene
     scene.render.engine = 'CYCLES'
     scene.cycles.samples = 16
@@ -175,7 +174,7 @@ def render_views(output, rig, meshes, context):
     facts, snapshots = [], {}
     for label, amount, frame in [('open', 0, 1), ('half', .5, 16), ('fold', 1, 31)]:
         scene.frame_set(frame)
-        set_pose(rig, amount)
+        (pose_fn or set_pose)(rig, amount)
         for bone in rig.pose.bones:
             bone.keyframe_insert(data_path='rotation_quaternion', frame=frame, group=bone.name)
         all_vertices, triangles, intersections = [], 0, {}
