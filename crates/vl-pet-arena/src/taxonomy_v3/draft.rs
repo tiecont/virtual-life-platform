@@ -3,7 +3,7 @@ use std::{fmt, marker::PhantomData};
 
 use serde::{
     Deserialize, Deserializer,
-    de::{self, MapAccess, Visitor},
+    de::{self, IntoDeserializer, MapAccess, Visitor},
 };
 
 use super::{BodyPlan, Element, Locomotion, Morphology, Race, Rig, TaxonomyError};
@@ -30,19 +30,43 @@ struct WireDraft {
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 struct ElementDefinition {
+    #[serde(deserialize_with = "string_enum")]
     id: Element,
+    #[serde(deserialize_with = "string_enums")]
     strong_against: Vec<Element>,
+    #[serde(deserialize_with = "string_enums")]
     resisted_by: Vec<Element>,
+    #[serde(deserialize_with = "string_enums")]
     no_effect_against: Vec<Element>,
 }
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 struct RaceDefinition {
+    #[serde(deserialize_with = "string_enum")]
     id: Race,
+    #[serde(deserialize_with = "string_enum")]
     default_body_plan: BodyPlan,
+    #[serde(deserialize_with = "string_enum")]
     default_rig: Rig,
+    #[serde(deserialize_with = "string_enum")]
     locomotion: Locomotion,
+}
+
+// The shared JSON contract uses string enums, not Serde's tagged-object form.
+fn string_enum<'de, D: Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<T, D::Error> {
+    T::deserialize(String::deserialize(deserializer)?.into_deserializer())
+}
+
+fn string_enums<'de, D: Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Vec<T>, D::Error> {
+    Vec::<String>::deserialize(deserializer)?
+        .into_iter()
+        .map(|value| T::deserialize(value.into_deserializer()))
+        .collect()
 }
 
 // Map deserialization must retain duplicate-key detection before JSON values can

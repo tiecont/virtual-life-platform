@@ -130,6 +130,26 @@ fn strict_layers_reject_missing_fields_wrong_types_and_unknown_fields() {
 }
 
 #[test]
+fn enum_values_require_strings_instead_of_serde_variant_objects() {
+    let original = fixture();
+    for path in [
+        "/elements/0/id",
+        "/elements/0/resistedBy/0",
+        "/elements/0/noEffectAgainst/0",
+        "/elements/1/strongAgainst/0",
+        "/races/0/id",
+        "/races/0/defaultBodyPlan",
+        "/races/0/defaultRig",
+        "/races/0/locomotion",
+    ] {
+        let mut changed = original.clone();
+        let variant = changed.pointer(path).unwrap().as_str().unwrap().to_owned();
+        *changed.pointer_mut(path).unwrap() = json!({variant: null});
+        assert_eq!(decode(&changed), Err(TaxonomyError::InvalidDraft), "{path}");
+    }
+}
+
+#[test]
 fn duplicate_json_keys_fail_before_any_overwrite() {
     let original = fixture();
     let encoded = serde_json::to_string(&original).unwrap();
