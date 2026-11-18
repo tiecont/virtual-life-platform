@@ -402,6 +402,12 @@
           ],
           "limitations": "Wing fold study only. No canonical action, full-body deformation, expressive timing, reduced-motion output, audio, Unity rendering or hardware-performance acceptance. Source/CI merge cannot promote these previews to production art."
         },
+        "importMeasurementValidation": {
+          "sourceRevision": "f1afd2df42b1eaec236d9ca9edc90e52766b86ff",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "command": "node --test tests/governance/icarus-import.test.mjs",
+          "result": "7 passed. Absent or null levels, sparse per-LOD motion samples, and fractional or nonnumeric influence/binding counts fail validation. This contract check does not qualify a Unity asset."
+        },
         "legacyFbxImportAudit": {
           "sourceRevision": "eb9bdfead4645de1d346e9189423163d630485bc",
           "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
