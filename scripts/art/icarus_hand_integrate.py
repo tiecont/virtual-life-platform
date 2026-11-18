@@ -204,8 +204,9 @@ def weld_into_body(body, hands):
         local = array(hand.data.vertices, 'co', 3, np.float32)
         uv = (local[:, :2] - local[:, :2].min(axis=0)) / np.maximum(np.ptp(local[:, :2], axis=0), 1e-6)
         uvs.append(uv[local_loops])
-        materials.append(np.full(len(hand.data.polygons), side + 1, dtype=np.int32))
-        source.materials.append(hand.data.materials[0])
+        materials.append(np.ones(len(hand.data.polygons), dtype=np.int32))
+        if side == 0:
+            source.materials.append(hand.data.materials[0])
         for vertex in hand.data.vertices:
             target = int(mapping[vertex.index])
             for weight in vertex.groups:
