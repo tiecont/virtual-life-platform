@@ -292,6 +292,17 @@
           "result": "Actual licensed Unity6000.3.14f1/URP17.3.0 import in disposable project exited0; acceptance validator correctly exited1. Measured26044 triangles,44 joints,4 materials,zero unweighted/invalid vertices,one LOD without LODGroup and4 imported study clips.15 canonical actions missing; one imported idle cannot meet three-LOD requirements. No new wing/hand assembly imported or GPU/player/performance claim.",
           "evidence": "/tmp/aetheria-icarus-rig-import/artifacts/character-production/icarus-unity-audit/2026-11-18T02-41-00-705Z-13eb73e9/result.json"
         },
+        "limitedBindingCompleteness": {
+          "sourceRevision": "ccb2765f137b9a4c07fac99863ccf8dc17605861",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "commands": [
+            {"command": "pnpm build:packages", "exitCode": 0, "result": "All shared packages built after integrating current main; initial asset check before rebuild failed on stale ignored contracts exports and was not counted as a binding result."},
+            {"command": "node --import tsx scripts/pet-asset-check.mjs --limited-v31 assets/characters/icarus/white-gold-study/bindings.json --require-complete", "exitCode": 1, "result": "Correct incomplete-binding rejection:55 missing canonical bindings, including all16 action clip/VFX/audio sets. The five study actions and new wing previews were not substituted for canonical actions."},
+            {"command": "node --test tests/governance/task-plan.test.mjs tests/governance/plan-status.test.mjs tests/governance/icarus-import.test.mjs", "exitCode": 0, "result": "13 PASS on current combined source; no art acceptance inferred."},
+            {"command": "pnpm governance:check", "exitCode": 0, "result": "174-task consistency and3586 historical byte checks PASS; historical retrieval is not fresh runtime execution."}
+          ],
+          "remaining": "G1-G4 visual/topology/bake gates remain open before full rig,16 actual canonical actions and production Unity bindings. Full source currently has no completed production art package eligible for the conditional private upload."
+        },
         "productionAcceptanceClarification": {
           "sourceRevision": "f13492a1925c75a594b96aa87f3e8fa7ecee178b",
           "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
