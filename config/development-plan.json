@@ -92,6 +92,24 @@
           ],
           "remaining": "Fresh hosted Quality and Rust against the final PR45 head are required before merge. No local image rebuild or runtime smoke rerun is claimed. Failure artifacts remain under ignored artifacts/pr45-runtime-failure; no deployment or art acceptance."
         },
+        "sceneFloorRaycastFollowup": {
+          "sourceRevision": "70c2aac898499654f1a78511fd914ff34d151fb3",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/54",
+          "finding": "Quality44078725887 floor-raycast trace has an unchanged1214x502 canvas and correct spawn coordinate at the click, immediately followed by suspended input during the15-second authoritative refresh. The broad validated-ACK observer then sees the refresh destination3:3. A local real-resize regression before the fix also reproduced3:3 instead of10:11; stale floor target sampling is independently possible because only seat targets were reread after scrolling.",
+          "change": "Control the browser clock and explicitly advance actual seat/floor animations in the floor scenario; sample symbolic spawn targets with the current canvas box after scrolling. Retain ACK, final position, identity, viewport and WebGL assertions, existing timeouts and zero mutation retries. Existing periodic-refresh scenario still exercises suspended input.",
+          "commands": [
+            {"command": "node scripts/run-browser-tests.mjs tests/e2e/scene3d-room.spec.ts --grep 'actual floor raycast' (pre-fix resize regression)", "exitCode": 1, "result": "Expected regression reproduction: desktop receives3:3 instead of10:11; trace retained under ignored artifacts/test output"},
+            {"command": "node scripts/run-browser-tests.mjs tests/e2e/scene3d-room.spec.ts --grep 'actual floor raycast' (corrected implementation before rebase)", "exitCode": 0, "result": "Desktop1 PASS, mobile1 PASS; actual PostgreSQL/HTTP/Socket.IO/WebGL"},
+            {"command": "pnpm exec eslint tests/e2e/scene3d-room.spec.ts", "exitCode": 0},
+            {"command": "pnpm governance:check", "exitCode": 0, "result": "PASS including historical indexed-byte retrieval; no fresh historical gameplay acceptance inferred"},
+            {"command": "node --check on TypeScript-transpiled tests/e2e/scene3d-room.spec.ts via stdin", "exitCode": 0},
+            {"command": "pnpm test:scene3d-room (first full attempt before rebase)", "exitCode": 1, "result": "No tests ran: existing60-second webServer startup timeout on heavily loaded local host; no timeout changed"},
+            {"command": "pnpm test:scene3d-room", "exitCode": 0, "result": "18 PASS: desktop9/mobile9, reportValid=true, both batch exits0, disposable DB/network cleanup PASS; committed sourceRevision; ignored facts run-e7922c30"},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "remaining": "Final-head hosted Quality/Rust checks pending; merge only after complete green CI. No runtime behavior, authority, release, production or art acceptance changes."
+        },
         "browserDiagnosticsFollowup": {
           "sourceRevision": "819d07b942025b4c9a757e221ad8b040f0205927",
           "reviewMode": "SINGLE_AGENT_AUDIT",
@@ -140,14 +158,82 @@
     {
       "id": "VL-170",
       "feature": "Media",
-      "title": "PR-B: private local S3 media metadata and ingest",
-      "objective": "Add loopback MinIO and an additive journaled migration for versioned media metadata, RBAC ingest, signed preview access and provenance.",
+      "title": "PR-B: private S3 media delivery, metadata and ingest",
+      "objective": "Prepare fail-closed private art delivery to Cloudflare R2 and t3.storage.dev using the existing Node stack; retain additive journaled media metadata, RBAC ingest, signed preview access and provenance as follow-up scope.",
       "priority": 2,
       "dependsOn": [],
       "acceptance": ["Private buckets, bounded signed URLs, operator authorization and no public draft listing", "Reject traversal, MIME spoofing, oversized uploads and unauthorized read/write; verify real object bytes and content hashes", "Use the next available migration in the existing journal, isolated tests and local secrets; no production publication"],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
-      "implementation": {"release": "OFFLINE_ONLY / NO_GO_PUBLIC"}
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "privateDelivery": {
+          "entrypoint": "scripts/private-art-delivery.mjs",
+          "specification": "specs/media/private-art-delivery.md",
+          "scope": "Local private manifest staging and gated S3 SigV4 delivery tooling; exact R2/t3 HTTPS endpoints, immutable conditional keys, full SHA-256 readback, strict path/MIME/content/size checks, maximum10GB per batch and256MiB per file. No credentials, approved art, provider probes or remote uploads included.",
+          "artGate": "NOT_REVIEWED; upload requires separately reviewed and independently hash-pinned art/technical/rights/private-target receipt. Tooling cannot establish visual acceptance or provider privacy by itself.",
+          "remaining": "Real art review, private provider configuration/compatibility and account-wide quota qualification; journaled metadata, existing operator RBAC ingest and bounded signed preview delivery remain unimplemented. No merge, public release or deployment authorization."
+        }
+      },
+      "verification": {
+        "sourceRevision": "500a1eb6bbd8be34b3c32ea564c6b74419374409",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "commands": [
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "143 PASS on committed source, including14 private-delivery tests with owned loopback HTTP/S3 fixture; SigV4, conditional private PUT, byte-hash GET readback, safe retries, gate/path/MIME/size/redirect/corruption negatives. No external endpoint contacted."
+          },
+          {
+            "command": "pnpm exec eslint scripts/media/private-art-manifest.mjs scripts/media/private-art-s3.mjs scripts/private-art-delivery.mjs tests/governance/private-art-delivery.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm governance:check",
+            "exitCode": 0,
+            "result": "PASS; historical evidence retrieval is not new art or release acceptance."
+          },
+          {
+            "command": "pnpm plan:status",
+            "exitCode": 0,
+            "result": "VL-170 ready and IN_PROGRESS; remaining task-wide media work retained."
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "preparation": "pnpm install --offline --frozen-lockfile and pnpm build:packages completed0 in isolated worktree. Initial broad governance run failed2 imports because fresh checkout lacked built contracts (135 passed); rerun after normal package build passed143 without weakening assertions.",
+        "scope": "Tooling complete for scoped private staging/upload. Owner already authorizes private upload after honest scoped art foundation review; no additional owner/public-release approval required. Current art batch remains unfinished, so no live upload or provider probes ran. Credentials were synthetic fixture values only.",
+        "limitations": "10GB cap applies per manifest/batch, not an unobserved account quota. Provider private configuration and conditional-write compatibility are not live-verified; receipt is a trusted local attestation. Full application check, hosted CI, public delivery, metadata/RBAC/signed-preview APIs, PR and merge NOT_RUN.",
+        "nextAction": "Parent reviews/cherry-picks the tooling commits, then runs hosted CI before any merge. Complete current art foundation and hash-pin its scoped private review before using parent-held credentials for the already-authorized private delivery."
+      },
+      "t3CredentialFollowup": {
+        "sourceRevision": "e1baa87f7b1c36a5f9dce6776389eacddf13f672",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "finding": "Real T3 tid_ credential shape was rejected by the alphanumeric-only validator. Two synthetic regression cases failed on the prior implementation. T3 now permits bounded ASCII alphanumeric, underscore and hyphen; R2 keeps its alphanumeric alphabet. Both reject SigV4 credential delimiters, whitespace and header controls.",
+        "commands": [
+          {
+            "command": "node --test tests/governance/*.test.mjs",
+            "exitCode": 0,
+            "result": "144 PASS on committed source, including15 private delivery tests; owned loopback S3 fixture verifies full PUT/GET signatures using synthetic tid_ credentials."
+          },
+          {
+            "command": "pnpm exec eslint scripts/media/private-art-s3.mjs tests/governance/private-art-delivery.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm governance:check",
+            "exitCode": 0
+          },
+          {
+            "command": "git diff --check",
+            "exitCode": 0
+          }
+        ],
+        "privacy": "publicAccess DISABLED is declared operator evidence, not automatic provider privacy verification. Documentation requires actual current configuration evidence for the exact destination before creating a passing private-target receipt or uploading. Existing owner authorization is retained; no new public-release approval required.",
+        "limitations": "No real secrets, third-party probes or live uploads used.10GB remains a per-batch cap; account quota is separate. Final draft PR head requires hosted CI before any merge; no merge authorized."
+      }
     },
     {
       "id": "VL-171",
@@ -1749,8 +1835,33 @@
       "qualificationRequirements": [],
       "implementation": {
         "source": "crates/vl-world/src/collision.rs; crates/vl-world/src/movement.rs; crates/vl-gateway/src/durable.rs; apps/unity-client/Assets/VirtualLife/Features/NativeScene",
+        "mergeAudit": {
+          "sourceRevision": "6bdcad65e03f6cd146e6a576f5e816af2e496632",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/46",
+          "commands": [
+            {"command": "cargo fmt --all -- --check", "exitCode": 0},
+            {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "All Rust workspace tests and doc tests passed, including destination, viewer-policy, jitter and duplicate/reordered input regressions."},
+            {"command": "cargo clippy --workspace --all-targets --locked -- -D warnings", "exitCode": 0},
+            {"command": "node --test tests/governance/image-browser-navigation.test.mjs", "exitCode": 0, "result": "12 tests passed; retries remain bounded to read-only document/framework asset network changes; mutations and other failures never retry."},
+            {"command": "node --check scripts/image-browser-navigation.mjs", "exitCode": 0},
+            {"command": "node scripts/verify-ci.mjs", "exitCode": 0, "result": "Local workflow contract passed; this command does not establish hosted CI success."}
+          ],
+          "hostedCI": {
+            "sourceRevision": "6bdcad65e03f6cd146e6a576f5e816af2e496632",
+            "status": "CORE_IMAGES_RUST_PASS_BROWSER_PENDING",
+            "runs": [
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44187058701",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44187058966",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44187045546",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44187045558"
+            ],
+            "result": "Both exact-source Rust runs, Quality core and runtime-images passed; remaining browser jobs were pending when recorded. This verification-only revision must pass its own complete hosted CI before merge; final runs and merge SHA belong in the PR discussion."
+          },
+          "limitations": "Library/gateway self-review only; current peer-disclosure and authenticated destination-provider integration remain incomplete. Rust gameplay stays default-off and Nest remains the sole legacy room writer. No production or hardware qualification."
+        },
         "scope": "Default-off Aurora movement through the existing single Rust zone writer, exported collision/interaction manifest, current Nest policy locks, own-only snapshots, authoritative synthetic terminal proximity and main-thread Unity reconciliation",
-        "remainingAcceptance": "Policy-filtered AOI remains. Reconnect retains a bounded actor registry within one runtime; durable movement checkpoints, registry eviction and client prediction are not implemented. Runtime restart rejects old epochs and returns to safe manifest spawn. Injected application delay evidence is not physical network latency or Windows qualification.",
+        "remainingAcceptance": "Viewer-bound policy projection and own-only gateway integration are implemented. Peer visibility still requires current mutual-block/consent/private-membership policy integration and protocol fields; no peer positions are disclosed. Reconnect retains a bounded registry within one runtime; durable movement checkpoints, registry eviction and client prediction remain unimplemented. Runtime restart rejects old epochs and returns to safe manifest spawn. Injected application delays and deterministic silent ticks are not physical network or Windows qualification.",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "proximityVerification": {
           "sourceRevision": "c02e9f9fa7d3ab343ff37e11fbfb81fb0dbe1ebd",
@@ -1862,6 +1973,58 @@
           "rendering": "Unity 6000.3.14f1 LinuxPlayer, AMD Renoir OpenGLCore on CachyOS; screenshot inspected; player executable SHA256 26901901cc6dd63212d741b339897f072d34cb7b3f08419fe451fc8e77c79a1f",
           "ociVerification": {"sourceRevision": "60d201d385b177eabf5603589d119b82df9fdf4f", "command": "docker build -f apps/game-runtime/Dockerfile -t vl-runtime-g2-local .; python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-g2-local", "exitCode": 0, "result": "Canonical collision manifest included; nonroot/read-only; liveness 200, default-off readiness 503, native route 404, activation denied and graceful exit 0"},
           "limitations": "Automated OS input, not physical owner or Windows qualification. A reboot interrupted the first source-bound Unity attempt and left no completed NUnit result; no pass was inferred. A later 15s route timeout was corrected to a bounded 60s acknowledged walk without changing position/receipt assertions. Hosted Quality/Rust at final PR HEAD remain required before merge."
+        },
+        "worldLogicVerification": {
+          "sourceRevision": "0672c80e01208a18fed6d47a8ff944cb3872e8b7",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {
+              "command": "cargo fmt --all -- --check",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo test --workspace --locked",
+              "exitCode": 0,
+              "result": "69 tests passed, including 15 vl-world cases; workspace doc tests passed"
+            },
+            {
+              "command": "node --test tests/governance/*.test.mjs",
+              "exitCode": 0,
+              "result": "125 passed after package builds; first run at b06be6b overlapped package build and failed two modules with ERR_MODULE_NOT_FOUND (119 passed, 2 failed), then rerun successfully"
+            },
+            {
+              "command": "node scripts/verify-architecture.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "node scripts/verify-ci.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo build --locked --package vl-game-runtime && node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --movement",
+              "exitCode": 0,
+              "result": "13 real-process WSS/Nest/Rust/restricted TLS PostgreSQL scenarios passed on committed source; application delay/jitter, collision, replay, current policy revocation, reconnect and restart"
+            },
+            {
+              "command": "git diff --check",
+              "exitCode": 0
+            }
+          ],
+          "evidence": "artifacts/world-logic/{clippy,rust-tests,governance,movement-interop}.log; artifacts/desktop-first/vl022/interop-236f0175/facts.json",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/46",
+          "hostedCI": {
+            "status": "CORE_FAILED_OTHER_JOBS_PENDING",
+            "sourceRevision": "0672c80e01208a18fed6d47a8ff944cb3872e8b7",
+            "runs": [
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44118644895",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44118645181"
+            ],
+            "note": "Quality core-checks failed in scripts/verify-infra.mjs before lint/application tests; hosted log only reports infrastructure validation failure. Rust format/check/Clippy/tests and generated bindings passed; later Rust jobs were still running when checked. No green CI claim. Final metadata commit requires its own hosted checks before merge."
+          }
         }
       }
     },
@@ -1989,12 +2152,75 @@
         "schema validation and unauthorized private locations absent",
         "stale POI never confers permission"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-023",
         "VL-031"
-      ]
+      ],
+      "implementation": {
+        "source": "crates/vl-world/src/destinations.rs",
+        "mergeAudit": {
+          "sourceRevision": "6bdcad65e03f6cd146e6a576f5e816af2e496632",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "relatedVerificationTask": "VL-028",
+          "result": "Same PR46 committed-source Rust format/workspace tests/Clippy and hosted status as VL-028.mergeAudit. Schema, private-location omission, stale revisions, live revocation and capacity/hold overflow cases passed; authenticated adapter and maintained server policy/catalog remain outstanding."
+        },
+        "scope": "Bounded strict versioned native POI schema; trusted current-policy discovery; hidden private entries absent; advisory candidate resolution rechecks live entitlement, revision, capacity and reservations without membership writes",
+        "remainingAcceptance": "Library implementation only. Authenticated runtime adapter, server-owned current policy/occupancy provider and maintained runtime catalog remain; no network endpoint, capability, admission or teleport writer is exposed. Catalog candidates must be revalidated under locks when reserving/committing.",
+        "verification": {
+          "sourceRevision": "0672c80e01208a18fed6d47a8ff944cb3872e8b7",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "commands": [
+            {
+              "command": "cargo fmt --all -- --check",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo test --workspace --locked",
+              "exitCode": 0,
+              "result": "69 tests passed, including 15 vl-world cases; workspace doc tests passed"
+            },
+            {
+              "command": "node --test tests/governance/*.test.mjs",
+              "exitCode": 0,
+              "result": "125 passed after package builds; first run at b06be6b overlapped package build and failed two modules with ERR_MODULE_NOT_FOUND (119 passed, 2 failed), then rerun successfully"
+            },
+            {
+              "command": "node scripts/verify-architecture.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "node scripts/verify-ci.mjs",
+              "exitCode": 0
+            },
+            {
+              "command": "cargo build --locked --package vl-game-runtime && node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --movement",
+              "exitCode": 0,
+              "result": "13 real-process WSS/Nest/Rust/restricted TLS PostgreSQL scenarios passed on committed source; application delay/jitter, collision, replay, current policy revocation, reconnect and restart"
+            },
+            {
+              "command": "git diff --check",
+              "exitCode": 0
+            }
+          ],
+          "evidence": "artifacts/world-logic/{clippy,rust-tests,governance,movement-interop}.log; artifacts/desktop-first/vl022/interop-236f0175/facts.json",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/46",
+          "hostedCI": {
+            "status": "CORE_FAILED_OTHER_JOBS_PENDING",
+            "sourceRevision": "0672c80e01208a18fed6d47a8ff944cb3872e8b7",
+            "runs": [
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44118644895",
+              "https://github.com/tiecont/virtual-life-platform/actions/runs/44118645181"
+            ],
+            "note": "Quality core-checks failed in scripts/verify-infra.mjs before lint/application tests; hosted log only reports infrastructure validation failure. Rust format/check/Clippy/tests and generated bindings passed; later Rust jobs were still running when checked. No green CI claim. Final metadata commit requires its own hosted checks before merge."
+          }
+        }
+      }
     },
     {
       "id": "VL-036",
@@ -2010,7 +2236,13 @@
         "target full, timeouts, duplicate clicks and concurrent transfer no ghost membership"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "implementation": {
+        "scope": "Not started; audited against existing Nest legacy transfers and native admission ownership.",
+        "remainingAcceptance": "VL-028 peer policy integration and VL-035 authenticated runtime destination provider remain incomplete. Preserve the implementation dependency gate; subsequent Rust saga must coordinate allowlisted target holds, source release, epochs, duplicate clicks, cancellation and restart rollback without writing legacy rooms.",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "auditSourceRevision": "0672c80e01208a18fed6d47a8ff944cb3872e8b7"
+      }
     },
     {
       "id": "VL-037",
@@ -5374,9 +5606,56 @@
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "foundation": "Reuse migration0051 and VL-115 completed draft foundation; remaining publication work is not required to seed unpublished v3.1 drafts.",
+        "draftPersistence": {
+          "source": "apps/platform-api/src/features/pets/modules/content/infrastructure/acquisition-draft-store.ts; apps/platform-api/src/shared/database/migrations/0053_pet_acquisition_drafts.sql; scripts/pet-acquisition-draft-seed.mjs",
+          "scope": "Nest-owned additive migration 0053 and offline exact-manifest importer persist 240 acquisition projections only. Hash-checked repeatable reads, eight concurrent seed attempts, conflicting data, late rollback, lost COMMIT acknowledgement, runtime/PUBLIC SQL denials and encrypted restore are covered. No ownership, purchases, publication or gameplay activation.",
+          "verification": {
+            "sourceRevision": "189f7365669573605b9c21f3b8ff68f83000ebd6",
+            "reviewMode": "SINGLE_AGENT_AUDIT",
+            "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/49",
+            "commands": [
+              {
+                "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project unit --project integration tests/games/pet-draft-import.unit.test.ts packages/contracts/test/pet-acquisition-catalog-v3.test.ts tests/integration/pet-acquisition-draft.test.ts",
+                "exitCode": 0,
+                "result": "15 tests passed on unchanged committed source; disposable PostgreSQL container and network removed."
+              },
+              {
+                "command": "node --import tsx scripts/game-journal-restore-smoke.mjs",
+                "exitCode": 0,
+                "result": "PASS; actual encrypted PostgreSQL backup/restore preserves all 240 acquisition projections and detects corruption; owned resources cleaned."
+              },
+              {
+                "command": "node scripts/with-test-db.mjs node --import tsx scripts/runtime-admission-migration-compat.mjs",
+                "exitCode": 0,
+                "result": "PASS; archived 48-migration API accepts exact additive 53 policy, preserves identity and frozen rows, and rejects unknown/checksum-mismatched migrations."
+              },
+              {
+                "command": "node scripts/verify-architecture.mjs",
+                "exitCode": 0,
+                "result": "143 SQL tables plus journal and 513 source files passed; Nest content ownership retained."
+              },
+              {
+                "command": "node --check scripts/pet-acquisition-draft-seed.mjs",
+                "exitCode": 0
+              }
+            ],
+            "hostedCI": {
+              "sourceRevision": "189f7365669573605b9c21f3b8ff68f83000ebd6",
+              "status": "PASS",
+              "runs": [
+                "https://github.com/tiecont/virtual-life-platform/actions/runs/44140080228",
+                "https://github.com/tiecont/virtual-life-platform/actions/runs/44140080209",
+                "https://github.com/tiecont/virtual-life-platform/actions/runs/44140032690",
+                "https://github.com/tiecont/virtual-life-platform/actions/runs/44140032588"
+              ],
+              "result": "Both push and pull-request Quality and Rust runtime runs succeeded on the exact recorded source; this verification-only revision requires its own green hosted checks before merge."
+            },
+            "limitations": "Task remains IN_PROGRESS while actual upstream implementation dependencies are incomplete. This is acquisition metadata only; no combat/art/lore payload import or Unity/Windows acceptance. Prior local pnpm check at this source exited 1 when the Next build security advisory gate stopped; hosted pnpm check succeeded. No local full-check success is inferred."
+          }
+        },
         "logicRulesFollowup": {
           "scope": "Partial strict acquisition projection only:240 identities,209 regular/19 map S/6 Limited/6 Standard; canonical banner identities, map/source/rank references, morphology and trusted upstream114 ID/name/element/legacy-rarity/map preservation. Separate Pet-server contract entry prevents draft browser exposure.",
-          "remaining": "Additive Nest migration, full manifest importer/hash verification, transactional concurrent seed, SQL privileges/corruption/restore tests are not implemented. Deferred to schema integration; no database import, purchases, ownership or publication.",
+          "remaining": "This historical PR47 projection was extended by PR49 draftPersistence above with migration/import/concurrency/privilege/restore coverage. Player ownership, purchases and publication remain outside the draft contract.",
           "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
           "verification": {
             "sourceRevision": "c8bbb5bad4f65d06f5378b6f2bc998603a25ba08",

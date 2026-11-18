@@ -333,18 +333,17 @@ impl Session for PgSession {
                 .map_err(|_| Fault::Unavailable)?
                 .map_err(|_| Fault::Unavailable)?;
             // Never serialize geometric AOI candidates, counts or profiling data.
-            let own = snapshot
-                .visible
-                .iter()
-                .find(|entity| entity.id == self.actor.id)
-                .ok_or(Fault::Unavailable)?;
+            let view = snapshot
+                .project(vl_world::visibility::Audience::own(self.actor.id))
+                .map_err(|_| Fault::Unavailable)?;
+            let own = view.own;
             Ok(public::WorldSnapshot {
                 authority_epoch: if self.collision.is_some() {
-                    snapshot.authority_epoch
+                    view.authority_epoch
                 } else {
                     1
                 },
-                tick: snapshot.tick,
+                tick: view.tick,
                 own_actor: Some(public::OwnActor {
                     x_mm: own.position.x,
                     z_mm: own.position.z,

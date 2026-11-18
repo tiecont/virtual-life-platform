@@ -111,7 +111,13 @@ it is not an accepted production model or public-release approval.
 
 The [V3.1 candidate specification](specs/pet-arena/v3.1.md) adds six Standard S
 Pets to the canonical240 draft catalog. Validate with
-`python3 scripts/validate-pet-v31.py`; no v3 DB import or runtime is enabled.
+`python3 scripts/validate-pet-v31.py`; no v3 runtime is enabled.
+The offline acquisition projection can be imported into an owned disposable DB
+with `node scripts/with-test-db.mjs node --import tsx scripts/pet-acquisition-draft-seed.mjs`
+after building packages. Migration 0053 stores 240 draft identities, taxonomy and
+acquisition rules; it leaves v2 drafts intact and creates no ownership, purchases
+or published content. The importer verifies all candidate manifest hashes and
+the actual upstream 114 identities. It does not import combat, art or lore payloads.
 
 
 Pet Arena expansion contracts and the original 19-element/114-species design
@@ -135,6 +141,10 @@ packages, seed an owned disposable PostgreSQL database with
 `node scripts/with-test-db.mjs node --import tsx scripts/pet-content-draft-seed.mjs`.
 It uses migration 0051 and refuses non-test database URLs. It grants no runtime
 access, publishes no content and creates no owned player Pets.
+
+Private R2/t3 art delivery tooling and its separate reviewed-art upload gate are
+documented in [private art delivery](specs/media/private-art-delivery.md). Local
+staging never grants art acceptance or public publication.
 
 config/development-plan.json is the sole active backlog. Run `pnpm plan:status`
 for ready tasks and progress. Any ready task may proceed with the same agent;
