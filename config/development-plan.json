@@ -255,6 +255,31 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
+        "focalSurfacePreservation": {
+          "sourceRevision": "4395f55fc527938ff52dead8748e14499c43dec4",
+          "upstreamStudyRevision": "d304d3acf29bc324f42ce6a1b0855e5d3045b026",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "ARTIST_HANDOFF_REQUIRED",
+          "productionReady": false,
+          "scope": "Exact dense original face/hair triangle subset, preserved normals/UVs and failed closed control-cage deformation study; not facial retopology, game mesh or canonical animation.",
+          "artifacts": "artifacts/character-production/icarus-focal-handoff-r3 and Icarus_Focal_Surface_Handoff_R3.tar.gz",
+          "commands": [
+            {"command": "node scripts/art/icarus-focal-extract.mjs --source <icarus-v4-front/meshy/icarus-pbr4k.glb> --output <icarus-focal-extract-check/head.glb>", "exitCode": 0, "result": "From4208442 triangles extract589211 triangles/328757 vertices without projection or subdivision. SHA2563a2fd69a629ffc25a43a158435d46c995cce40c77303a1c0f5f4797b8c0450ae exactly matches the reviewed focal source. Existing-output retry exits1/EEXIST without overwriting source or derived file."},
+            {"command": "Blender4.5.16 focal extraction/cage binding, neutral/deformation renders and separate source reopen", "exitCode": 0, "result": "Packed editable source reopened,6 packed images,neutral drift2.986e-7m; actual matching-camera reduced/preserved front/quarter comparisons inspected. Dense preservation restores smooth contour/detail but identity and original carved hair defects persist."},
+            {"command": "node scripts/art/icarus-focal-verify.mjs --output artifacts/character-production/icarus-focal-handoff-r3", "exitCode": 1, "result": "Correct deformation rejection at sourceRevision: yaw30 has2258 normal reversals and P01/P99 edge stretch0.679/1.766; pitch15 has12704 reversals and0.747/2.503.21 checks evaluated;4 failed. Finite vertices,zero new collapsed triangles and valid source/PNG hashes do not cancel failed deformation."},
+            {"command": "node --check extraction/verification utilities; Python compile; targeted ESLint; git diff --check", "exitCode": 0, "result": "PASS; source utility checks only."}
+          ],
+          "remaining": "Three bounded variants exhausted. Keep TEST keys at zero and reject cage for animation. Retopologize connected eyelid/mouth/cheek/jaw/neck loops against the preserved source; separate hair masses, bake onto accepted topology, test extremes, then integrate the full character. Actionable work order and full source/reference/texture package retained locally; no artist contacted or assigned."
+        },
+        "wingAssemblyGuardVerification": {
+          "sourceRevision": "73597639932830edb58202478a93d85e52dfde63",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "commands": [
+            {"command": "node scripts/art/icarus-wing-assemble.mjs --blender <Blender4.5.16> --source <icarus-wing-sweep-r5c/icarus-wing-study.blend> --output <icarus-wing-face-assembly-r2> --verify-existing", "exitCode": 0, "result": "Actual Blend reopen/GLB reimport remains valid with source-hash and unresolved-intersection guards;70 meshes,maximum surface error5.22e-7m."},
+            {"command": "Same Blender verification against separate synthetic changed-source and unresolved-intersection report probes", "exitCode": 1, "result": "Both correctly reject before asset opening with source mismatch or unresolved retained-body intersections. Synthetic negative reports are not character acceptance evidence."}
+          ],
+          "remaining": "These guards verify the recorded retained-body study only, not anatomical attachment, source artistry or production acceptance."
+        },
         "wingAssemblyVerification": {
           "sourceRevision": "b657572128c7e846ec62aa91eee15a148a7295de",
           "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
