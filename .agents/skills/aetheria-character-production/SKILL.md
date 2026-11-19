@@ -59,6 +59,8 @@ CTO discovers available delegation APIs; scopes isolated tasks/worktrees by file
 
 ## Owner hard gates (H1–H4)
 
+For the Icarus replacement base, apply the B1 stop and presentation bindings in [icarus-presentation.md](references/icarus-presentation.md).
+
 1. **H1 Face & Hair** — Wireframe + shaded close-ups and genuine facial deformations; neutral/blink/smile/shout/frown or equivalent 5 distinct facial controls. Inspect eye lids, mouth, bangs, normals and target likeness. STOP for owner review before progressing to detailed full-body polish.
 2. **H2 Modular turnaround** — real front/right/back/three-quarter neutral renders; wings folded/spread, bow detached; inspect garment layering, surface/UV seams, feather roots, material and triangle budget. STOP for owner review before rig/animation completion.
 3. **H3 Rig & extreme pose** — hands/bow, shoulder 90°, draw/release, wing fold, hair/skirt clipping, skin-weight tests. 16 canonical moving clips and three game LODs are *delivery contract*; rig checkpoint still requires actual owner review before final effects. FBX orientation/scale measured by actual import.
