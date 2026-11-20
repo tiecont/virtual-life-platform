@@ -5,7 +5,7 @@ import {pathToFileURL} from 'node:url';
 const statuses=new Set(['TODO','IN_PROGRESS','VERIFIED','DEFERRED_APPROVED']);
 export function validateTaskPlan(plan){
  assert.equal(plan.schemaVersion,2);
- assert.equal(plan.execution,'single-agent');
+ assert(['single-agent','opt-in-multi-agent'].includes(plan.execution),'Unknown execution policy');
  assert.equal(plan.policy.reservationsRequired,false);
  assert.equal(plan.policy.independentReviewRequired,false);
  assert(Array.isArray(plan.tasks)&&plan.tasks.length>0);
