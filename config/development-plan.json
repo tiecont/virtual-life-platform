@@ -317,12 +317,14 @@
         "productionWorkPlan": {
           "baseTemplateReview": {
             "gate": "B1",
-            "status": "PENDING_OWNER_APPROVAL",
+            "status": "OWNER_APPROVED",
+            "ownerApprovalDate": "2026-11-20",
+            "approvedBlendSHA256": "9ebdc13fb6dbe1c76f7081bec6132d558e63d159abb0d236597b4d5b74583526",
             "sourceRevision": "3a357f351cfe2a2afefe478f328ec1c18c2890fc",
             "sourceSHA256": "68ea376759175d0b5682fa4d6f52cb8fd47116a7e29291c47dd3e6fdc7d113fb",
             "verification": "Blender 5.3.0 reopened the B1 clay/wire/checker base. Live MCP verified 1.68 m, identity scale, feet Z=0 and 51164 triangles. Both composites decoded. Source has 14 boundary loops and 17103 zero-area UV triangles. Owner authorized diagnostic materials. Separate VRM trial has 69 moving facial morphs, 190 joints and 70874 triangles.",
             "h1Status": "REVISION_REQUIRED",
-            "next": "Owner reviews both B1 composites and selects the H1 working source. H2 requires owner approval of revised H1."
+            "next": "Review the revised H1 face and hair against H0. H2 requires separate owner approval of revised H1 hashes."
           },
           "ownerDesignFinalH0": {
             "revision": "icarus-design-final-h0",
