@@ -1,5 +1,5 @@
 {
   "name": "Aetheria.PlayMode",
-  "references": ["Aetheria.Blockout", "Aetheria.Native", "Aetheria.NativeScene"],
+  "references": ["Aetheria.Blockout", "Aetheria.Icarus.Presentation", "Aetheria.Native", "Aetheria.NativeScene"],
   "optionalUnityReferences": ["TestAssemblies"]
 }

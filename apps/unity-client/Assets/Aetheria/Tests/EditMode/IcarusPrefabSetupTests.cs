@@ -4,10 +4,10 @@ using System.Reflection;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
-using VirtualLife.Icarus;
+using Aetheria.Icarus;
 using Object = UnityEngine.Object;
 
-namespace VirtualLife.Editor.Tests
+namespace Aetheria.Editor.Tests
 {
     public sealed class IcarusPrefabSetupTests
     {

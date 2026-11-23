@@ -3,9 +3,9 @@ using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using VirtualLife.Icarus;
+using Aetheria.Icarus;
 
-namespace VirtualLife.Blockout.Tests
+namespace Aetheria.Blockout.Tests
 {
     public sealed class IcarusPresentationTests
     {

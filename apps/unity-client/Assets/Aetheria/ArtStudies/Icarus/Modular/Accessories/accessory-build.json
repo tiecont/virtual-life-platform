@@ -1,0 +1,119 @@
+{
+  "blender": "5.3.0",
+  "reports": [
+    {
+      "source": "artifacts/icarus-accessories/Icarus_Wings.glb",
+      "sourceSha256": "5e5dff3bb423e915e96bc91f999125708305e9937b65a27fc0fa696c115cd53a",
+      "output": "artifacts/icarus-accessories/optimized-r2/Icarus_Wings.glb",
+      "outputSha256": "96a464b376aec37c8299da7b41280716c938d9bedbe1f214d98eaf2526e440a3",
+      "label": "Icarus_Wings",
+      "initialTriangles": 1330294,
+      "triangles": 22000,
+      "targetTriangles": 22000,
+      "boundsMeters": [
+        [
+          -0.9511772394180298,
+          0.9500957131385803
+        ],
+        [
+          -0.28560009598731995,
+          0.2829655110836029
+        ],
+        [
+          -0.4534834921360016,
+          0.4494765102863312
+        ]
+      ],
+      "pivotWorldMeters": [
+        0.0,
+        -0.28560009598731995,
+        -0.002003490924835205
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "textures": [
+        {
+          "role": "base_color",
+          "path": "artifacts/icarus-accessories/optimized-r2/Icarus_Wings_textures/Icarus_Wings_base_color.png",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "role": "metallic_roughness",
+          "path": "artifacts/icarus-accessories/optimized-r2/Icarus_Wings_textures/Icarus_Wings_metallic_roughness.png",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "role": "normal",
+          "path": "artifacts/icarus-accessories/optimized-r2/Icarus_Wings_textures/Icarus_Wings_normal.png",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "bowStringStatus": "NOT_APPLICABLE",
+      "normalizedScaleMeters": true,
+      "status": "ART_REVISION_REQUIRED"
+    },
+    {
+      "source": "artifacts/icarus-accessories/Icarus_Bow.glb",
+      "sourceSha256": "5a27f75462b20d5e309d72c86c32f10239638f76890293e09f5cabfacb89130a",
+      "output": "artifacts/icarus-accessories/optimized-r2/Icarus_Bow.glb",
+      "outputSha256": "a07bb1fb32750e2275f329c3eb3d8d6d9ed8dad18c43a251d3b3ccf2d6e6079c",
+      "label": "Icarus_Bow",
+      "initialTriangles": 432462,
+      "triangles": 10000,
+      "targetTriangles": 10000,
+      "boundsMeters": [
+        [
+          -0.19996686279773712,
+          0.1983618289232254
+        ],
+        [
+          -0.09360966086387634,
+          0.09441855549812317
+        ],
+        [
+          -0.952332079410553,
+          0.9525123834609985
+        ]
+      ],
+      "pivotWorldMeters": [
+        -0.0008025169372558594,
+        0.00040445104241371155,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "textures": [
+        {
+          "role": "base_color",
+          "path": "artifacts/icarus-accessories/optimized-r2/Icarus_Bow_textures/Icarus_Bow_base_color.png",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "role": "metallic_roughness",
+          "path": "artifacts/icarus-accessories/optimized-r2/Icarus_Bow_textures/Icarus_Bow_metallic_roughness.png",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "role": "normal",
+          "path": "artifacts/icarus-accessories/optimized-r2/Icarus_Bow_textures/Icarus_Bow_normal.png",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "bowStringStatus": "SOURCE_VERIFIED_NO_SEPARATE_BOWSTRING_COMPONENT",
+      "normalizedScaleMeters": true,
+      "status": "ART_REVISION_REQUIRED"
+    }
+  ]
+}

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace VirtualLife.Icarus
+namespace Aetheria.Icarus
 {
     public enum IcarusPresentationMode
     {

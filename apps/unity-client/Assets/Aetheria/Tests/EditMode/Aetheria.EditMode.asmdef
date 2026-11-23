@@ -1,6 +1,6 @@
 {
   "name": "Aetheria.EditMode",
-  "references": ["Aetheria.Blockout", "Aetheria.Native"],
+  "references": ["Aetheria.Blockout", "Aetheria.Editor", "Aetheria.Icarus.Presentation", "Aetheria.Native"],
   "includePlatforms": ["Editor"],
   "optionalUnityReferences": ["TestAssemblies"]
 }

@@ -1,5 +1,5 @@
 {
   "name": "Aetheria.Editor",
-  "references": ["Aetheria.Blockout", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime"],
+  "references": ["Aetheria.Blockout", "Aetheria.Icarus.Presentation", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime", "VRM10"],
   "includePlatforms": ["Editor"]
 }
