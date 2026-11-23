@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "assetType": "icarus-presentation-vfx",
+  "action": "defeat",
+  "family": "rage",
+  "cue": "ICARUS_RAGE",
+  "intensity": 0.8,
+  "durationSeconds": 1.05,
+  "palette": "warm-fire",
+  "authoredIndex": 11,
+  "rights": "PENDING_REVIEW",
+  "runtimeEnabled": false,
+  "productionReady": false
+}

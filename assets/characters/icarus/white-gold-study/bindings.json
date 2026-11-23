@@ -213,7 +213,7 @@
       "id": "icarus-study-reduced-motion",
       "kind": "preview",
       "path": "assets/characters/icarus/white-gold-study/reduced-motion.mp4",
-      "sha256": "e56e2d7214f3591ee4fe4e01221ad9812d540ac08cfcc874039638fb8c68d536",
+      "sha256": "0d11344947022df56b75038a544f43e3f228b226bdc47325e310fc29395ff72e",
       "source": {
         "path": "assets/characters/icarus/white-gold-study/front.png",
         "sha256": "1ecc5a273177c2af2e2a9db1df82eee7f200185f135c0c94569a8aee81022f40",
@@ -225,6 +225,870 @@
       "importSettings": {
         "path": "assets/characters/icarus/white-gold-study/import-settings.json",
         "sha256": "e4b3dc1ab1434f7bd9cf84d91b475fca616fadf77bb39ab9bc5695d98cbc9559"
+      }
+    },
+    {
+      "id": "icarus-idle-clip",
+      "kind": "clip",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/clips/idle.anim",
+      "sha256": "7a9047065e4036d1320a4d84c81e8d15db82c000e6063708c2c0e2066d83b1c0",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-idle-vfx",
+      "kind": "vfx",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/vfx/idle.vfx.json",
+      "sha256": "084ee46390a50c6e11234953a7f29d829c92ce435a0e6e369c41c73b0c835ba2",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-idle-audio",
+      "kind": "audio",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/audio/idle.wav",
+      "sha256": "fc514cc1d07ac5eb520bf003c72e0f09a51717b18ae54841928c9413e7d706b8",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-world-walk-or-hover-clip",
+      "kind": "clip",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/clips/world_walk_or_hover.anim",
+      "sha256": "4b01633926f3ea3456132c8406b4a4e887e1b59df66c4744c6160351a858cf3a",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-world-walk-or-hover-vfx",
+      "kind": "vfx",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/vfx/world_walk_or_hover.vfx.json",
+      "sha256": "b86b72737612459ea5052e62b0c2d470036a9999e4f2153db94962e1976f167f",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-world-walk-or-hover-audio",
+      "kind": "audio",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/audio/world_walk_or_hover.wav",
+      "sha256": "9f546ae1a6db71d575df689f7202d413491bd1a2c9fd0a9b40ca98544d3b579d",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-world-follow-clip",
+      "kind": "clip",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/clips/world_follow.anim",
+      "sha256": "e13daaede5980fb35976016d0f080efe28b0feb09870018dc9a22da93eff9d65",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-world-follow-vfx",
+      "kind": "vfx",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/vfx/world_follow.vfx.json",
+      "sha256": "e05b3971a1dc245712b1881771553ac2902536d1bee945ab0933a9d9f1724a35",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-world-follow-audio",
+      "kind": "audio",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/audio/world_follow.wav",
+      "sha256": "763f52efde046cc90ea83a39ff44387b1278391ced498172c8f5404c090902ec",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-emote-clip",
+      "kind": "clip",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/clips/emote.anim",
+      "sha256": "03846272ddb3e430bc5693b33f9bb86c9f7ab57e089d28e41bdb815bbc321297",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-emote-vfx",
+      "kind": "vfx",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/vfx/emote.vfx.json",
+      "sha256": "65e10a157e46372d7b6271d8788c4ceb07c147fc69a5a4ae83175de91461c446",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-emote-audio",
+      "kind": "audio",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/audio/emote.wav",
+      "sha256": "32dd95e95c721d226911b3917ccfb067816beb09920ad3533844a05de556db2e",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-summon-clip",
+      "kind": "clip",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/clips/summon.anim",
+      "sha256": "17e9d92d7b120e2d8fa2317d855a67a7fee02b6854c9064c912d6fe72ea19c88",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-summon-vfx",
+      "kind": "vfx",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/vfx/summon.vfx.json",
+      "sha256": "e9222ffa786d438be6dfa161b31ea4ffc58e36191cc77df0a34396f63b2c6fb7",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-summon-audio",
+      "kind": "audio",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/audio/summon.wav",
+      "sha256": "ef044639b1448f234db6041c11414ed79cac5568dcc875e3653220affe8ac0bf",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-normal-sword-hit-clip",
+      "kind": "clip",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/clips/normal_sword_hit.anim",
+      "sha256": "24ddcf28b68e3e881e57a327d7fd0b3bfe9167f6dfa148c8b33badf39906fb96",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-normal-sword-hit-vfx",
+      "kind": "vfx",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/vfx/normal_sword_hit.vfx.json",
+      "sha256": "14627b755de03a242b5c1d3f76f59cf7911f8a597773fcf8b934f97a61e29aa3",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-normal-sword-hit-audio",
+      "kind": "audio",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/audio/normal_sword_hit.wav",
+      "sha256": "03137fec7f79bdb3a3305111d17617fc9d4185a13199806cfbbe85e5fcd6f09b",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-damage-reaction-clip",
+      "kind": "clip",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/clips/damage_reaction.anim",
+      "sha256": "8d77bf024f2447590f368cbddc3dbf23497493c39a5c93b6a4d3a569d2ece49e",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-damage-reaction-vfx",
+      "kind": "vfx",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/vfx/damage_reaction.vfx.json",
+      "sha256": "083aef518ceafae15c21f386dcdfa9508b75a605bf6eef43f2c7645b7278ac35",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-damage-reaction-audio",
+      "kind": "audio",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/audio/damage_reaction.wav",
+      "sha256": "f7683bc8810f20bf5c637f67adfd3831981e4f6bf8a99671fe5b12d139e5c533",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-defend-clip",
+      "kind": "clip",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/clips/defend.anim",
+      "sha256": "4b13765ed9f35d8586633883b63308ffe277cbc96edc358cbc7dec090516742d",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-defend-vfx",
+      "kind": "vfx",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/vfx/defend.vfx.json",
+      "sha256": "2f361f0a098b89fcf056bcffb602a86f9dfa206e88a4a87f46d33b3d84e85380",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-defend-audio",
+      "kind": "audio",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/audio/defend.wav",
+      "sha256": "223acf8b513fb4b5c28d29a4faaf47c401c31d6e6e974ef1a666d5ec615c220e",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-status-affected-clip",
+      "kind": "clip",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/clips/status_affected.anim",
+      "sha256": "b15ad39ea92f2c5484a3a09bf92b347b86616fd11e3af2cdbd933a7d865dfdf1",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-status-affected-vfx",
+      "kind": "vfx",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/vfx/status_affected.vfx.json",
+      "sha256": "3692b7170b776cd79c17afa6c0ba4b0a0b54812773bf67ad6bc98af4db06d622",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-status-affected-audio",
+      "kind": "audio",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/audio/status_affected.wav",
+      "sha256": "4ca55d9164a285075c939b63def86ccb38debef1452d9dc01179976cc6d3f262",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-rage-sword-100-clip",
+      "kind": "clip",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/clips/rage_sword_100.anim",
+      "sha256": "61919ff3a11758e24de4ee35c3df89ae780e751519f76fbc51854b21ab0da9a1",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-rage-sword-100-vfx",
+      "kind": "vfx",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/vfx/rage_sword_100.vfx.json",
+      "sha256": "a214157265851ade8a75e76300e9d2667b2036aac1b9e541ece67ce610747e81",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-rage-sword-100-audio",
+      "kind": "audio",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/audio/rage_sword_100.wav",
+      "sha256": "c093b415b833c9295e97775d7b029b29dbba181ae33dcac741bc7bde4ba3dec3",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-victory-clip",
+      "kind": "clip",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/clips/victory.anim",
+      "sha256": "d1db7e691f238aee2187d41ade4b11c272f6471e1991dad0fa260f8d3dc21dc6",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-victory-vfx",
+      "kind": "vfx",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/vfx/victory.vfx.json",
+      "sha256": "b7c1beab14cb7484f19725bc85bb225aaec9721bce9a95171479c0e7c953edd2",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-victory-audio",
+      "kind": "audio",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/audio/victory.wav",
+      "sha256": "2af8ad019427dd32a8e01c9537be227e694903abf7b92e177367e3b0d0352f83",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-defeat-clip",
+      "kind": "clip",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/clips/defeat.anim",
+      "sha256": "f5831e4c15c756099c7f559d8aed24a15f45c1d5ade58b13a52fc10a881fd10c",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-defeat-vfx",
+      "kind": "vfx",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/vfx/defeat.vfx.json",
+      "sha256": "165afb346431b568710c70ee1544aca9f1e7e487d8c06e10a4e5361cf2a3ef82",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-defeat-audio",
+      "kind": "audio",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/audio/defeat.wav",
+      "sha256": "d3ff663fbc5dbf60dacedd851861c10b5e3b1cb8e9d94fa967a16347862510aa",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-signature-skill-windup-clip",
+      "kind": "clip",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/clips/signature_skill_windup.anim",
+      "sha256": "53157df58b8d8385fcece22701e7807f162b893f5a0078ff6b74a69f4c3c28fc",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-signature-skill-windup-vfx",
+      "kind": "vfx",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/vfx/signature_skill_windup.vfx.json",
+      "sha256": "c69889de9e18cc99a8a561bbe1af84d7d472fd8830b179ecdbedb0293927d7ce",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-signature-skill-windup-audio",
+      "kind": "audio",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/audio/signature_skill_windup.wav",
+      "sha256": "8a18535748fd9a1e554bd3297a35a12f59bd0d88300f3e9566343dceeb263f73",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-signature-skill-cast-clip",
+      "kind": "clip",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/clips/signature_skill_cast.anim",
+      "sha256": "69ef0d9b62683f78ec2eb9a274648317099d8798b913ae171a510923c0eb911a",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-signature-skill-cast-vfx",
+      "kind": "vfx",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/vfx/signature_skill_cast.vfx.json",
+      "sha256": "c9e7c59e6ac7a86052f55e4a9767f7aef28203a7746792a14a7205b011b6fa5b",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-signature-skill-cast-audio",
+      "kind": "audio",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/audio/signature_skill_cast.wav",
+      "sha256": "0d6c6e824bbbcc85b3eefd50d9ba6004f5a0ca5b18bb77bc344d62eb9773adb1",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-ultimate-cut-in-clip",
+      "kind": "clip",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/clips/ultimate_cut_in.anim",
+      "sha256": "847084b1f8243e19b682305be90619727cf627ebca76eb17a3637afc9d9ab4ad",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-ultimate-cut-in-vfx",
+      "kind": "vfx",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/vfx/ultimate_cut_in.vfx.json",
+      "sha256": "8f17fd9a31330c1bf3298da78af3f34517526ecc91c1ac29bb694d738d5cd1b4",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-ultimate-cut-in-audio",
+      "kind": "audio",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/audio/ultimate_cut_in.wav",
+      "sha256": "707f1aa893bc583089b9e215593081ec8fe5b1a0c7f369f40b233dd606f8f69f",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-ultimate-impact-clip",
+      "kind": "clip",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/clips/ultimate_impact.anim",
+      "sha256": "8ec1557e0cd08417f8ff1e261aa077ddd2eb9c38aa4100982e5c4bec3d396909",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-ultimate-impact-vfx",
+      "kind": "vfx",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/vfx/ultimate_impact.vfx.json",
+      "sha256": "cf51cac4026f09c75b64635a781be268a1454516c782cf9435a2d8b5636da7e3",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
+      }
+    },
+    {
+      "id": "icarus-ultimate-impact-audio",
+      "kind": "audio",
+      "path": "assets/characters/icarus/white-gold-study/round5-bindings/audio/ultimate_impact.wav",
+      "sha256": "ff71397d3343fd9fe74e69c0c9bf880a9369f38505c8f45bfa7b319f39d3a6aa",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+        "sha256": "6619409e2f2bd9f7604b3e089d940e796921abcc9077e389e2d7e6f596a1bc3d",
+        "origin": "generated",
+        "author": "Codex local authoring pack",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-import-settings.json",
+        "sha256": "06c32e4461791b8e782b82d162ac0243775f7b7d17f49e4693ba534e53825df6"
       }
     }
   ],
@@ -244,105 +1108,109 @@
       "prefab": "icarus-review-prefab",
       "controller": "icarus-review-controller",
       "localization": "icarus-study-localization",
-      "materials": ["icarus-review-skin-hair", "icarus-review-feather-silk", "icarus-review-ornament"],
+      "materials": [
+        "icarus-review-skin-hair",
+        "icarus-review-feather-silk",
+        "icarus-review-ornament"
+      ],
       "preview": "icarus-study-preview",
       "reducedMotionPreview": "icarus-study-reduced-motion",
       "animations": [
         {
           "action": "idle",
-          "clip": null,
-          "vfx": null,
-          "audio": null
+          "clip": "icarus-idle-clip",
+          "vfx": "icarus-idle-vfx",
+          "audio": "icarus-idle-audio"
         },
         {
           "action": "world_walk_or_hover",
-          "clip": null,
-          "vfx": null,
-          "audio": null
+          "clip": "icarus-world-walk-or-hover-clip",
+          "vfx": "icarus-world-walk-or-hover-vfx",
+          "audio": "icarus-world-walk-or-hover-audio"
         },
         {
           "action": "world_follow",
-          "clip": null,
-          "vfx": null,
-          "audio": null
+          "clip": "icarus-world-follow-clip",
+          "vfx": "icarus-world-follow-vfx",
+          "audio": "icarus-world-follow-audio"
         },
         {
           "action": "emote",
-          "clip": null,
-          "vfx": null,
-          "audio": null
+          "clip": "icarus-emote-clip",
+          "vfx": "icarus-emote-vfx",
+          "audio": "icarus-emote-audio"
         },
         {
           "action": "summon",
-          "clip": null,
-          "vfx": null,
-          "audio": null
+          "clip": "icarus-summon-clip",
+          "vfx": "icarus-summon-vfx",
+          "audio": "icarus-summon-audio"
         },
         {
           "action": "normal_sword_hit",
-          "clip": null,
-          "vfx": null,
-          "audio": null
+          "clip": "icarus-normal-sword-hit-clip",
+          "vfx": "icarus-normal-sword-hit-vfx",
+          "audio": "icarus-normal-sword-hit-audio"
         },
         {
           "action": "rage_sword_100",
-          "clip": null,
-          "vfx": null,
-          "audio": null
+          "clip": "icarus-rage-sword-100-clip",
+          "vfx": "icarus-rage-sword-100-vfx",
+          "audio": "icarus-rage-sword-100-audio"
         },
         {
           "action": "signature_skill_windup",
-          "clip": null,
-          "vfx": null,
-          "audio": null
+          "clip": "icarus-signature-skill-windup-clip",
+          "vfx": "icarus-signature-skill-windup-vfx",
+          "audio": "icarus-signature-skill-windup-audio"
         },
         {
           "action": "signature_skill_cast",
-          "clip": null,
-          "vfx": null,
-          "audio": null
+          "clip": "icarus-signature-skill-cast-clip",
+          "vfx": "icarus-signature-skill-cast-vfx",
+          "audio": "icarus-signature-skill-cast-audio"
         },
         {
           "action": "ultimate_cut_in",
-          "clip": null,
-          "vfx": null,
-          "audio": null
+          "clip": "icarus-ultimate-cut-in-clip",
+          "vfx": "icarus-ultimate-cut-in-vfx",
+          "audio": "icarus-ultimate-cut-in-audio"
         },
         {
           "action": "ultimate_impact",
-          "clip": null,
-          "vfx": null,
-          "audio": null
+          "clip": "icarus-ultimate-impact-clip",
+          "vfx": "icarus-ultimate-impact-vfx",
+          "audio": "icarus-ultimate-impact-audio"
         },
         {
           "action": "damage_reaction",
-          "clip": null,
-          "vfx": null,
-          "audio": null
+          "clip": "icarus-damage-reaction-clip",
+          "vfx": "icarus-damage-reaction-vfx",
+          "audio": "icarus-damage-reaction-audio"
         },
         {
           "action": "defend",
-          "clip": null,
-          "vfx": null,
-          "audio": null
+          "clip": "icarus-defend-clip",
+          "vfx": "icarus-defend-vfx",
+          "audio": "icarus-defend-audio"
         },
         {
           "action": "status_affected",
-          "clip": null,
-          "vfx": null,
-          "audio": null
+          "clip": "icarus-status-affected-clip",
+          "vfx": "icarus-status-affected-vfx",
+          "audio": "icarus-status-affected-audio"
         },
         {
           "action": "victory",
-          "clip": null,
-          "vfx": null,
-          "audio": null
+          "clip": "icarus-victory-clip",
+          "vfx": "icarus-victory-vfx",
+          "audio": "icarus-victory-audio"
         },
         {
           "action": "defeat",
-          "clip": null,
-          "vfx": null,
-          "audio": null
+          "clip": "icarus-defeat-clip",
+          "vfx": "icarus-defeat-vfx",
+          "audio": "icarus-defeat-audio"
         }
       ]
     }
