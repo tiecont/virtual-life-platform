@@ -4651,8 +4651,9 @@
         "VL-078"
       ],
       "implementation": {
-        "characterProductionSkill": ".agents/skills/aetheria-character-production/SKILL.md",
-        "scope": "Reusable Blender-first character production instructions, separate visual/technical gates, unvalidated style target and bounded repair/artist handoff. Documentation only; no new model, accepted benchmark or task-wide completion claimed.",
+        "heroCharacterSkill": ".agents/skills/aetheria-hero-character-vrm/SKILL.md",
+        "standardAssetSkill": ".agents/skills/aetheria-standard-asset-3d/SKILL.md",
+        "scope": "Two canonical 3D skills: Charakuru-to-VRM hero production and direct Tripo/Meshy standard-asset production, with separate owner, poly-budget, provenance, SHA-256 and Unity admission gates. Documentation only; no new model, accepted benchmark or task-wide completion claimed.",
         "remaining": "Validate the process against an actual reference-quality pilot; signed authoring conventions, measured shader/VRAM budgets and production character assets remain open.",
         "skillVerification": {
           "sourceRevision": "99d7469ef2f87a7f1470dd457e7c3f3777c1e95f",

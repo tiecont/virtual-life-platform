@@ -7,7 +7,8 @@ import unittest
 from pathlib import Path
 from PIL import Image
 
-HOME = Path(__file__).resolve().parents[2] / ".agents/skills/aetheria-character-production"
+SKILLS = Path(__file__).resolve().parents[2] / ".agents/skills"
+HOME = SKILLS / "aetheria-hero-character-vrm"
 
 
 def mod(path, name):
@@ -23,6 +24,13 @@ receipts = mod(HOME / "scripts/validate_receipts.py", "receipts")
 
 
 class SkillChecks(unittest.TestCase):
+    def test_only_two_canonical_aetheria_3d_skills(self):
+        names = {path.name for path in SKILLS.iterdir() if path.is_dir()}
+        self.assertEqual(
+            {name for name in names if name.startswith("aetheria-")},
+            {"aetheria-hero-character-vrm", "aetheria-standard-asset-3d"},
+        )
+
     def test_missing_files_fails(self):
         with tempfile.TemporaryDirectory() as temp:
             result = preflight.inspect(Path(temp), "icarus")

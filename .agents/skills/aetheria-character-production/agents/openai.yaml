@@ -1,6 +1,0 @@
-interface:
-  display_name: "Aetheria Character Production"
-  short_description: "Reference-driven Blender to Unity character production"
-  default_prompt: "Use $aetheria-character-production to produce a character from my reference images through Blender and Unity URP, reviewing visual quality and reporting any unmet delivery gates."
-policy:
-  allow_implicit_invocation: true
