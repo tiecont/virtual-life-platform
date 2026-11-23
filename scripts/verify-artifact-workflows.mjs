@@ -26,7 +26,7 @@ export function assertArtifactWorkflows(quality, publish, pins) {
   assert(integrationJob.includes('name: integration-report-${{ matrix.shard }}'));
   const browserJob = quality.split('\n  browser:')[1]?.split('\n  images:')[0];
   assert(browserJob?.includes('max-parallel: 4'));
-  assert.equal((quality.match(/uses: actions\/cache@/g)??[]).length,5,'Core, integration, browser and image jobs require bounded cache restores');
+  assert.equal((quality.match(/uses: actions\/cache@/g)??[]).length,7,'Core, integration, browser and image jobs require bounded cache restores');
   const imageJob = quality.split('\n  images:')[1]?.split('\n  quality:')[0];
   assert(imageJob?.includes("if: ${{ needs.plan.outputs.images == 'true' }}"));
   assert(imageJob.includes('node scripts/release-bundle.mjs --output artifacts/release-bundle'));
