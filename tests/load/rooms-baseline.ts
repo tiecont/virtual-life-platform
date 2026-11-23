@@ -8,7 +8,7 @@ import { performance } from 'node:perf_hooks';
 import { setTimeout as delay } from 'node:timers/promises';
 import { Pool } from 'pg';
 import { io, type Socket } from 'socket.io-client';
-import { MeSchema, RoomAckSchema, type RoomSnapshot } from '@virtual-city/contracts';
+import { MeSchema, RoomAckSchema, type RoomSnapshot } from '@aetheria/contracts';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 import { startRoomProcess } from '../support/room-process';
 
@@ -16,7 +16,7 @@ const socketCount = Number(process.env.ROOM_LOAD_SOCKETS ?? 24);
 assert(Number.isInteger(socketCount) && socketCount >= 2 && socketCount <= 24, 'Keep baseline within unchanged loopback handshake budget (24 sockets + 4 reconnects)');
 const schema = 'room_load_' + randomUUID().replaceAll('-', '');
 const db = new URL(process.env.TEST_DATABASE_URL ?? '');
-assert(['127.0.0.1', 'localhost', '[::1]'].includes(db.hostname) && /^virtual_city_test(?:_|$)/.test(db.pathname.slice(1)), 'Local disposable DB only');
+assert(['127.0.0.1', 'localhost', '[::1]'].includes(db.hostname) && /^aetheria_soulbound_test(?:_|$)/.test(db.pathname.slice(1)), 'Local disposable DB only');
 const admin = new Pool({ connectionString: db.toString() }); db.searchParams.set('options', '-c search_path=' + schema);
 const pool = new Pool({ connectionString: db.toString() });
 const clients = new Set<Socket>();

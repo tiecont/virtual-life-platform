@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { FocusTimer } from '@virtual-city/focus-ui';
-import { ApiErrorSchema, FocusResultSchema, type FocusResult, type Me, type TravelSource } from '@virtual-city/contracts';
+import { FocusTimer } from '@aetheria/focus-ui';
+import { ApiErrorSchema, FocusResultSchema, type FocusResult, type Me, type TravelSource } from '@aetheria/contracts';
 import './focus.css';
 type Pending = { key: string; path: string; body: unknown };
 export default function FocusPanel({ me, source }: { me: Me; source: TravelSource | null }) {
@@ -40,7 +40,7 @@ export default function FocusPanel({ me, source }: { me: Me; source: TravelSourc
     const offline = () => { setUncertain(true); setMessage('Offline. Timer unconfirmed.'); };
     const online = () => { void refresh.current(); };
     document.addEventListener('visibilitychange', visible); window.addEventListener('focus', online); window.addEventListener('online', online); window.addEventListener('offline', offline);
-    bus = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel('virtual-city-focus'); if (bus) bus.onmessage = event => { if (event.data?.accountId === me.profile.id) void refresh.current(); };
+    bus = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel('aetheria-soulbound-focus'); if (bus) bus.onmessage = event => { if (event.data?.accountId === me.profile.id) void refresh.current(); };
     const timer = setInterval(() => { if (document.visibilityState === 'visible') void refresh.current(); }, 30000); void refresh.current();
     return () => { lifetime.abort(); sequence++; clearInterval(timer); document.removeEventListener('visibilitychange', visible); window.removeEventListener('focus', online); window.removeEventListener('online', online); window.removeEventListener('offline', offline); bus?.close(); pending.current = null; current.current = null; };
   }, [me.profile.id, me.csrfToken]);

@@ -31,7 +31,7 @@ export function verifyExistingPromotionHead(commit, {baseRevision, tree, message
 }
 async function activation() {
   const policy = validatePromotionPolicy(JSON.parse(await readFile('config/digest-promotion.json', 'utf8')));
-  assert(policy.manualWorkflowEnabled && process.env.VLP_PROMOTION_ENABLED === 'true', 'Manual promotion workflow disabled');
+  assert(policy.manualWorkflowEnabled && process.env.AETHERIA_PROMOTION_ENABLED === 'true', 'Manual promotion workflow disabled');
   const event = JSON.parse(await readFile(process.env.GITHUB_EVENT_PATH, 'utf8'));
   const input = validatePromotionEvent(event, {event: process.env.GITHUB_EVENT_NAME, repository: process.env.GITHUB_REPOSITORY, ref: process.env.GITHUB_REF, revision: process.env.GITHUB_SHA});
   assert.equal(execFileSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8'}).trim(), input.baseRevision); return input;
@@ -75,7 +75,7 @@ async function publish(input) {
   const prs = await appApi('repos/' + repository + '/pulls?state=open&base=main&head=' + encodeURIComponent('tiecont:' + branch)); assert(Array.isArray(prs) && prs.length <= 1);
   let pr = prs[0];
   if (!pr) pr = await appApi('repos/' + repository + '/pulls', 'POST', {title: message, base: 'main', head: branch, draft: true, body: 'Proposes the same proof-checked immutable release set.\n\nSource: ' + plan.binding.sourceRevision + '\nQuality run: ' + plan.binding.quality.runId + '/' + plan.binding.quality.runAttempt + '\nAPI: ' + plan.binding.images.api + '\nWeb: ' + plan.binding.images.web + '\n\nRequired Quality must run and pass on this bot PR. Owner review remains required; no auto-merge, cluster operation or production/public authorization. Review vulnerability status, current target prerequisites, compatibility and actual staging evidence before any production promotion.'});
-  assert.equal(pr.base.ref, 'main'); assert.equal(pr.head.ref, branch); assert.equal(pr.head.sha, head); assert.equal(pr.draft, true); assert.equal(pr.user.type, 'Bot'); assert(/^[A-Za-z0-9][A-Za-z0-9-]{0,99}\[bot\]$/.test(pr.user.login)); assert(/^https:\/\/github\.com\/tiecont\/virtual-life-platform\/pull\/[1-9][0-9]*$/.test(pr.html_url));
+  assert.equal(pr.base.ref, 'main'); assert.equal(pr.head.ref, branch); assert.equal(pr.head.sha, head); assert.equal(pr.draft, true); assert.equal(pr.user.type, 'Bot'); assert(/^[A-Za-z0-9][A-Za-z0-9-]{0,99}\[bot\]$/.test(pr.user.login)); assert(/^https:\/\/github\.com\/tiecont\/aetheria-soulbound\/pull\/[1-9][0-9]*$/.test(pr.html_url));
   return {result: 'DRAFT_PR_CREATED_OR_REUSED', url: pr.html_url, sourceRevision: head, botLogin: pr.user.login, hostedPrChecks: 'NOT_OBSERVED', autoMerge: false, deploymentAuthorized: false};
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

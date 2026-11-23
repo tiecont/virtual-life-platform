@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
 import { z } from 'zod';
-import { EventAdjustSchema, EventCancelSchema, EventControlsSchema, EventNoticesSchema, EventScheduleInputSchema, EventScheduleSchema, EventCatalogQuerySchema, EventCatalogSchema, EventResultSchema, EventViewSchema, EventRsvpResultSchema, EventRsvpViewSchema, type EventSchedule, type EventPhase, type WorldDefinition } from '@virtual-city/contracts';
-import { WorldError, type WorldRegistry } from '@virtual-city/world-sdk';
+import { EventAdjustSchema, EventCancelSchema, EventControlsSchema, EventNoticesSchema, EventScheduleInputSchema, EventScheduleSchema, EventCatalogQuerySchema, EventCatalogSchema, EventResultSchema, EventViewSchema, EventRsvpResultSchema, EventRsvpViewSchema, type EventSchedule, type EventPhase, type WorldDefinition } from '@aetheria/contracts';
+import { WorldError, type WorldRegistry } from '@aetheria/world-sdk';
 import type { IdentityService, IdentityContext } from '../../../../identity/modules/accounts/application/service';
 import type { SocialService } from '../../../../social/modules/relationships/application/service';
 import { DomainError } from '../../../../../shared/common/errors';
@@ -288,7 +288,7 @@ export class EventService {
     const escape = (value: string) => value.replaceAll('\\', '\\\\').replaceAll(';', '\\;').replaceAll(',', '\\,').replaceAll('\n', '\\n');
     // Fold by UTF-8 octets, preserving each code point and the continuation space.
     const fold = (value: string) => { let line = '', bytes = 0, output = ''; for (const char of value) { const size = Buffer.byteLength(char); if (bytes + size > 75) { output += line + '\r\n'; line = ' '; bytes = 1; } line += char; bytes += size; } return output + line; };
-    return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//virtual-life-platform//Silent Events//EN', 'CALSCALE:GREGORIAN', 'X-WR-TIMEZONE:' + event.schedule.timeZone, 'BEGIN:VEVENT', 'UID:' + event.id + '@virtual-life-platform.local', 'DTSTAMP:' + stamp(event.createdAt), 'DTSTART:' + stamp(event.schedule.startsAt), 'DTEND:' + stamp(event.schedule.endsAt), 'SUMMARY:' + escape(event.title), 'DESCRIPTION:' + escape(event.schedule.timeZone + ' | ' + event.startsLabel + ' - ' + event.endsLabel), 'END:VEVENT', 'END:VCALENDAR'].map(fold).join('\r\n') + '\r\n';
+    return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//aetheria-soulbound//Silent Events//EN', 'CALSCALE:GREGORIAN', 'X-WR-TIMEZONE:' + event.schedule.timeZone, 'BEGIN:VEVENT', 'UID:' + event.id + '@aetheria.local', 'DTSTAMP:' + stamp(event.createdAt), 'DTSTART:' + stamp(event.schedule.startsAt), 'DTEND:' + stamp(event.schedule.endsAt), 'SUMMARY:' + escape(event.title), 'DESCRIPTION:' + escape(event.schedule.timeZone + ' | ' + event.startsLabel + ' - ' + event.endsLabel), 'END:VEVENT', 'END:VCALENDAR'].map(fold).join('\r\n') + '\r\n';
   }
   async withdrawContact(db: PoolClient, a: string, b: string) {
     if (!await this.social.isBlocked(a, b, db)) return;

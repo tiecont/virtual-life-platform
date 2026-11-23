@@ -6,7 +6,7 @@ import { performance } from 'node:perf_hooks';
 import { writeFile } from 'node:fs/promises';
 import { Pool } from 'pg';
 import { io,type Socket } from 'socket.io-client';
-import { MeSchema,RoomAckSchema,type Me,type RoomSnapshot } from '@virtual-city/contracts';
+import { MeSchema,RoomAckSchema,type Me,type RoomSnapshot } from '@aetheria/contracts';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 import { startRoomProcess } from '../support/room-process';
 let admin:Pool,pool:Pool,schema:string,runtime:Awaited<ReturnType<typeof startRoomProcess>>|undefined,serial=0;
@@ -15,7 +15,7 @@ const seatScenario='100 actual socket members claim one seat with one winner99Se
 type Visit={socket:Socket;snapshot:RoomSnapshot};
 let seatVisits:Visit[]=[];
 let cleanup=async()=>{};
-beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
+beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
 beforeEach(async context=>{
  cleanup=async()=>{};seatVisits=[];schema='room_race_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA "${schema}"`);const url=new URL(process.env.TEST_DATABASE_URL!);url.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:url.toString()});await migrate(pool);runtime=await startRoomProcess(url.toString(),'synthetic-network-race-session-secret-00001',0,'race');
  if(context.task.name===seatScenario){

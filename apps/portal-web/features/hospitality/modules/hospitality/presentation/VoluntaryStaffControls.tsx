@@ -1,6 +1,6 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
-import { StaffStateSchema,StaffShiftResultSchema,StaffStoppedSchema,type Me,type TravelSource,type HospitalityPolicy } from '@virtual-city/contracts';
+import { StaffStateSchema,StaffShiftResultSchema,StaffStoppedSchema,type Me,type TravelSource,type HospitalityPolicy } from '@aetheria/contracts';
 type State=ReturnType<typeof StaffStateSchema.parse>;
 type Change={path:string;body:object;key:string};
 class ShiftRequestError extends Error{constructor(readonly status:number){super('Shift unavailable');}}

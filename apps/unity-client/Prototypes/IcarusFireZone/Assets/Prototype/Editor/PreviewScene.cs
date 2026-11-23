@@ -10,7 +10,7 @@ namespace Aetheria.IcarusPrototype
 {
     public static class PreviewScene
     {
-        private const string Prefab = "Assets/VirtualLife/ArtStudies/Icarus/Review/IcarusStudy.prefab";
+        private const string Prefab = "Assets/Aetheria/ArtStudies/Icarus/Review/IcarusStudy.prefab";
         private const string ShaderPath = "Assets/Prototype/IcarusEmber.shader";
 
         [MenuItem("Aetheria/Icarus/Create Preview Scene")]
@@ -29,7 +29,7 @@ namespace Aetheria.IcarusPrototype
             var rendererData = pipeline == null ? null : new SerializedObject(pipeline).FindProperty("m_RendererDataList");
             if (rendererData == null || rendererData.arraySize != 1 ||
                 AssetDatabase.GetAssetPath(rendererData.GetArrayElementAtIndex(0).objectReferenceValue) !=
-                "Assets/VirtualLife/Settings/BlockoutRenderer.asset")
+                "Assets/Aetheria/Settings/BlockoutRenderer.asset")
                 throw new InvalidOperationException("The preview requires the pinned Universal Renderer.");
             var study = AssetDatabase.LoadAssetAtPath<GameObject>(Prefab);
             var shader = AssetDatabase.LoadAssetAtPath<Shader>(ShaderPath);

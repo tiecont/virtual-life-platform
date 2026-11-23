@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { RoomJoinSchema, RoomOwnCommandSchema, RoomAckSchema, SeatClaimSchema, SeatReleaseSchema, RoomMoveSchema, type RoomMove, type RoomJoin, type RoomOwnCommand, type SeatClaim, type SeatRelease } from '@virtual-city/contracts';
-import { WorldError } from '@virtual-city/world-sdk';
+import { RoomJoinSchema, RoomOwnCommandSchema, RoomAckSchema, SeatClaimSchema, SeatReleaseSchema, RoomMoveSchema, type RoomMove, type RoomJoin, type RoomOwnCommand, type SeatClaim, type SeatRelease } from '@aetheria/contracts';
+import { WorldError } from '@aetheria/world-sdk';
 import type { createIdentityGateway } from '../../../../identity/modules/accounts/presentation/socket';
 import { DomainError } from '../../../../../shared/common/errors';
 import { IdentityError } from '../../../../identity/modules/accounts/domain/errors';

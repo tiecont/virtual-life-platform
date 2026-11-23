@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useId, useRef, useState } from 'react';
-import type { FocusResult } from '@virtual-city/contracts';
+import type { FocusResult } from '@aetheria/contracts';
 import { completionSummary } from './summary';
 export { completionSummary } from './summary';
 export type FocusTimerProps = {

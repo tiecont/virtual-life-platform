@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { MeSchema, ModerationSessionSchema, CasePageSchema, CaseDetailSchema, CaseSanctionsSchema, CaseAppealsSchema, IncidentPageSchema, SanctionResultSchema, AppealDispositionSchema, IncidentResultSchema, SafetyCategorySchema, SafetySeveritySchema, SafetySanctionSchema, type Me } from '@virtual-city/contracts';
+import { MeSchema, ModerationSessionSchema, CasePageSchema, CaseDetailSchema, CaseSanctionsSchema, CaseAppealsSchema, IncidentPageSchema, SanctionResultSchema, AppealDispositionSchema, IncidentResultSchema, SafetyCategorySchema, SafetySeveritySchema, SafetySanctionSchema, type Me } from '@aetheria/contracts';
 type Session = ReturnType<typeof ModerationSessionSchema.parse>;
 type Summary = ReturnType<typeof CasePageSchema.parse>['items'][number];
 type Detail = ReturnType<typeof CaseDetailSchema.parse>;
@@ -53,7 +53,7 @@ export default function ModerationPanel() {
   function applyDesk(value: Desk) { setDesk(value); setControlWorld(value.session.scopes.find(scope => scope.role === 'safety-admin')?.worldSlug ?? ''); }
   loadRef.current = () => { void run(signal => load(signal), value => { applyDesk(value); setCurrent(null); setFilters(blankFilters); }); };
   useEffect(() => {
-    mounted.current = true; loadRef.current(); const channel = new BroadcastChannel('virtual-city-identity');
+    mounted.current = true; loadRef.current(); const channel = new BroadcastChannel('aetheria-soulbound-identity');
     channel.onmessage = () => { generation.current++; pending.current?.abort(); active.current = false; clear(); loadRef.current(); };
     const hidden = () => { if (document.visibilityState === 'hidden') { generation.current++; pending.current?.abort(); active.current = false; setBusy(false); clear(); } else loadRef.current(); };
     document.addEventListener('visibilitychange', hidden);

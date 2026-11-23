@@ -41,5 +41,6 @@ apps/unity-client/UserSettings/
 apps/unity-client/Builds/
 apps/unity-client/mono_crash.*
 apps/unity-client/Assets/InitTestScene*.unity*
-apps/unity-client/Assets/VirtualLife/Features/Native/Generated/
-apps/unity-client/Assets/VirtualLife/Features/Native/Plugins/
+apps/unity-client/Assets/Aetheria/Features/Native/Generated/
+apps/unity-client/Assets/Aetheria/Features/Native/Plugins/
+!assets/manifests/*.json

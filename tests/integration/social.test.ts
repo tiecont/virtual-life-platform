@@ -5,7 +5,7 @@ import { io, type Socket } from 'socket.io-client';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
-import { MeSchema, SocialSettingsSchema, FriendRequestResultSchema, FriendsPageSchema, SocialRequestsPageSchema, BlocksPageSchema, type Me, type SocialSettings, type SharedActivity } from '@virtual-city/contracts';
+import { MeSchema, SocialSettingsSchema, FriendRequestResultSchema, FriendsPageSchema, SocialRequestsPageSchema, BlocksPageSchema, type Me, type SocialSettings, type SharedActivity } from '@aetheria/contracts';
 let pool: Pool; let admin: Pool; let app: Awaited<ReturnType<typeof createApp>>; let url: string; let serial = 1; let offset = 0;
 const origin = 'http://127.0.0.1:3300'; const now = () => Date.now() + offset;
 const schema = 'social_test_' + randomUUID().replaceAll('-', '');
@@ -16,7 +16,7 @@ const cookie = (r: { headers: Record<string, unknown> }) => String(Array.isArray
 type User = { cookie: string; me: Me; settings: SocialSettings };
 beforeAll(async () => {
   const connection = new URL(process.env.TEST_DATABASE_URL ?? '');
-  if (!['127.0.0.1', 'localhost', '[::1]'].includes(connection.hostname) || !/^virtual_city_test(?:_|$)/.test(connection.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
+  if (!['127.0.0.1', 'localhost', '[::1]'].includes(connection.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(connection.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
   admin = new Pool({ connectionString: connection.toString() }); await admin.query(`CREATE SCHEMA "${schema}"`);
   connection.searchParams.set('options', '-c search_path=' + schema); pool = new Pool({ connectionString: connection.toString() }); await migrate(pool);
   app = await createApp(config(), pool, false, { now, socialPresence: { visibleActivity: async (_viewer, target) => activity.get(target) ?? null } }); await app.app.listen(0, '127.0.0.1'); url = await app.app.getUrl();

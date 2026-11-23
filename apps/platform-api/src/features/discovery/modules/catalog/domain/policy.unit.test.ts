@@ -1,5 +1,5 @@
 import { it,expect } from 'vitest';
-import { WorldCardSchema } from '@virtual-city/contracts';
+import { WorldCardSchema } from '@aetheria/contracts';
 import { rankDiscovery } from './policy';
 const now=Date.parse('2026-11-03T10:00:00.000Z'),observedAt=new Date(now).toISOString(),roomId='00000000-0000-4000-8000-000000000001';
 const card=(slug:string)=>WorldCardSchema.parse({slug,version:'1.0.0',title:slug,kind:'sandbox',sceneRef:{key:slug,version:'1.0.0'},capacity:8,capabilities:['presence'],map:{region:'sandbox',position:{x:.5,y:.5},icon:'flask'},accessHint:'session-required',availability:'available',discoverability:'listed'});

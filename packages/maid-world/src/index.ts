@@ -1,5 +1,5 @@
-import { defineWorld,WorldError } from '@virtual-city/world-sdk';
-import { HospitalityPolicySchema } from '@virtual-city/contracts';
+import { defineWorld,WorldError } from '@aetheria/world-sdk';
+import { HospitalityPolicySchema } from '@aetheria/contracts';
 import { maidScene } from './scene';
 export { maidScene,maidAreas } from './scene';
 

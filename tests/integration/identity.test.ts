@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
-import { MeSchema, PrivacySchema, ApiErrorSchema, type Me } from '@virtual-city/contracts';
+import { MeSchema, PrivacySchema, ApiErrorSchema, type Me } from '@aetheria/contracts';
 let pool: Pool; let admin: Pool; let server: Awaited<ReturnType<typeof createApp>>;
 let now = Date.now(); let nextIP = 1;
 const schema = 'identity_test_' + randomUUID().replaceAll('-', '');
@@ -13,7 +13,7 @@ const cookie = (response: { headers: Record<string, unknown> }) => String(Array.
 const key = () => randomUUID();
 beforeAll(async () => {
   const url = new URL(process.env.TEST_DATABASE_URL ?? '');
-  if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
+  if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
   admin = new Pool({ connectionString: url.toString() }); await admin.query(`CREATE SCHEMA "${schema}"`);
   url.searchParams.set('options', '-c search_path=' + schema);
   pool = new Pool({ connectionString: url.toString() }); await migrate(pool);

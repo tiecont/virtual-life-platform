@@ -1,5 +1,5 @@
 import { defineWorld, WorldError } from './registry';
-import { SandboxCommandSchema } from '@virtual-city/contracts';
+import { SandboxCommandSchema } from '@aetheria/contracts';
 import { sandboxScene } from './scene';
 
 // Lifecycle example only. This module does not allocate rooms, publish presence or load a scene.

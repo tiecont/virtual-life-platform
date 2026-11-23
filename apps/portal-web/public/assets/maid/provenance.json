@@ -5,15 +5,15 @@
   "sources": [
     {
       "path": "packages/maid-world/src/scene.ts",
-      "sha256": "b08ebe067b8dda3a8d20edc69cf81e8036e9ff5933b42baa8127783821f6aa96"
+      "sha256": "7bb097bf353038c851b9d56acdb720c0e559f67c52e3ed010a081abd9b775ed7"
     },
     {
       "path": "packages/pixi-scene/src/maid-art.ts",
-      "sha256": "74e8fce874e96db08f4127f7394a8204e0bdc684e288a53196232b085b3f08bb"
+      "sha256": "29de6c0888f1503296ebd54516de4405f7dfcd14b82b93a9fbeb7bdb26adaade"
     },
     {
       "path": "packages/pixi-scene/src/renderer.ts",
-      "sha256": "d421ed940624a1eee01f3c60fb2edd44c655252001fb6c15636f272a494ff2c0"
+      "sha256": "9f727e28671a7018e73d0c93e018a9f581ce7d3d7336f203eb91a01c785eeaa8"
     }
   ],
   "sourceApproval": "integrations/legacy-snapshots/approval.json;offline integration only",

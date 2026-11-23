@@ -1,5 +1,5 @@
 import { it, expect } from 'vitest';
-import { AvatarAppearanceSchema, AvatarKeySchema, AvatarOutfitSchema, AnimationStateSchema, ProfilePatchSchema } from '@virtual-city/contracts';
+import { AvatarAppearanceSchema, AvatarKeySchema, AvatarOutfitSchema, AnimationStateSchema, ProfilePatchSchema } from '@aetheria/contracts';
 import { avatarFrame, avatarAtlasSpec } from '../src/avatar-art';
 import { avatarAtlasSvg } from '../src/avatar-art-generator';
 

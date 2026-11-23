@@ -3,13 +3,13 @@ import { randomUUID } from 'node:crypto';
 import { request } from 'node:http';
 import { Pool } from 'pg';
 import { io,type Socket } from 'socket.io-client';
-import { MeSchema,RoomAckSchema,SessionCheckAckSchema,type Me,type RoomSnapshot } from '@virtual-city/contracts';
+import { MeSchema,RoomAckSchema,SessionCheckAckSchema,type Me,type RoomSnapshot } from '@aetheria/contracts';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 import { startRoomProcess } from '../support/room-process';
 
 const origin='http://127.0.0.1:3300',secret='synthetic-network-security-session-secret-0001',clients=new Set<Socket>();
 let admin:Pool,pool:Pool,schema:string,databaseUrl:string,runtime:Awaited<ReturnType<typeof startRoomProcess>>|undefined,serial=0;
-beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
+beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
 beforeEach(async()=>{schema='security_tcp_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA "${schema}"`);const url=new URL(process.env.TEST_DATABASE_URL!);url.searchParams.set('options','-c search_path='+schema);databaseUrl=url.toString();pool=new Pool({connectionString:databaseUrl});await migrate(pool);runtime=await startRoomProcess(databaseUrl,secret);});
 afterEach(async()=>{for(const client of clients)client.close();clients.clear();if(runtime){await runtime.stop();expect(runtime.child.exitCode).toBe(0);runtime=undefined;}await pool.end();await admin.query(`DROP SCHEMA "${schema}" CASCADE`);});
 afterAll(async()=>{await admin.end();});

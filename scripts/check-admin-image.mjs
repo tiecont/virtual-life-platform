@@ -15,10 +15,10 @@ try{
  const revision=(await run('source','git',['rev-parse',args[2]??'HEAD'])).stdout.trim();assert(/^[a-f0-9]{40}$/.test(revision));facts.sourceRevision=revision;
  const context=resolve(directory,'source');await mkdir(context);
  await run('source','git',['archive','--format=tar','--output',resolve(directory,'source.tar'),revision]);await run('source','tar',['-xf',resolve(directory,'source.tar'),'-C',context]);
- const tag='vlp-admin:source-'+revision.slice(0,12)+'-'+randomUUID().slice(0,8);
+ const tag='aetheria-admin:source-'+revision.slice(0,12)+'-'+randomUUID().slice(0,8);
  await run('build-admin','docker',['build','--pull=false','--build-arg','SOURCE_REVISION='+revision,'-f',resolve(context,'infra/docker/Dockerfile.admin'),'--target','runtime','-t',tag,context]);
  const image=JSON.parse((await run('metadata','docker',['image','inspect',tag])).stdout)[0];
- assert.equal(image.Config.User,'node');assert.equal(image.Config.Labels['org.opencontainers.image.revision'],revision);assert.equal(image.Config.Labels['org.opencontainers.image.title'],'vlp-admin');assert.deepEqual(image.Config.Cmd,['node','start-runtime.mjs']);
+ assert.equal(image.Config.User,'node');assert.equal(image.Config.Labels['org.opencontainers.image.revision'],revision);assert.equal(image.Config.Labels['org.opencontainers.image.title'],'aetheria-admin');assert.deepEqual(image.Config.Cmd,['node','start-runtime.mjs']);
  for(const name of ['DATABASE_URL','SESSION_SECRET','OPERATOR_AUTH_KEY','ADMIN_ORIGIN','ADMIN_API_ORIGIN','ADMIN_METRICS_READ_TOKEN'])assert(!image.Config.Env.some(value=>value.startsWith(name+'=')),'Private configuration baked into image environment');
  facts.image={id:image.Id,tag,sourceRevision:revision,user:image.Config.User,workdir:image.Config.WorkingDir,sizeBytes:image.Size,identityScope:'Local Docker image ID, not a published registry digest'};
  for(const environment of [{},{ADMIN_ORIGIN:'http://admin.invalid',ADMIN_API_ORIGIN:'http://api:4300'},{ADMIN_ORIGIN:'https://admin.invalid',ADMIN_API_ORIGIN:'http://user:synthetic-secret@api:4300'},{ADMIN_ORIGIN:'https://admin.invalid',ADMIN_API_ORIGIN:'http://api:4300',ADMIN_METRICS_READ_TOKEN:'synthetic-invalid-token'}]){

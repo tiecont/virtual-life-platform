@@ -1,6 +1,6 @@
 import { createHash, createHmac, randomUUID, randomBytes, timingSafeEqual } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
-import { PrivacySchema, type Me, type Privacy, type ProfileInput, type PublicProfile, type UpgradeInput } from '@virtual-city/contracts';
+import { PrivacySchema, type Me, type Privacy, type ProfileInput, type PublicProfile, type UpgradeInput } from '@aetheria/contracts';
 import type { Config } from '../../../../../shared/config/environment';
 import { IdentityError, unauthorized } from '../domain/errors';
 import { PasswordHasher, type PasswordRecord } from '../infrastructure/passwords';

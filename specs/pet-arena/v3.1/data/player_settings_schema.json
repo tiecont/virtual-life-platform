@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "scope": "global VirtualLife settings reused by Pet Arena (not duplicate menu)",
+  "scope": "global Aetheria settings reused by Pet Arena (not duplicate menu)",
   "playerSettings": [
     {
       "key": "language",

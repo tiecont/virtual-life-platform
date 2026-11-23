@@ -1,7 +1,7 @@
-import {RoomSnapshotSchema,AVATAR_CATALOG_VERSION,starterAvatarParts,type SceneManifest} from '@virtual-city/contracts';
-import {isWalkable} from '@virtual-city/world-sdk';
-import {deadlineScene} from '@virtual-city/deadline-world';
-import {maidScene} from '@virtual-city/maid-world';
+import {RoomSnapshotSchema,AVATAR_CATALOG_VERSION,starterAvatarParts,type SceneManifest} from '@aetheria/contracts';
+import {isWalkable} from '@aetheria/world-sdk';
+import {deadlineScene} from '@aetheria/deadline-world';
+import {maidScene} from '@aetheria/maid-world';
 
 export const scenes={deadline:deadlineScene,maid:maidScene};
 export type Cafe=keyof typeof scenes;

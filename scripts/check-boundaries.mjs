@@ -20,17 +20,17 @@ export function assertImportAllowed(from, specifier, root) {
   if (layer === 'packages' && /^(apps|domains|worlds)\//.test(target)) throw new Error(`Package imports higher layer: ${path} → ${target}`);
   if (layer === 'worlds' && /^(apps|domains)\//.test(target)) throw new Error(`World imports domain internals: ${path} → ${target}`);
   if (layer === 'worlds' && target.startsWith('worlds/') && targetProject !== project) throw new Error(`Cross-world import: ${path} → ${target}`);
-  if (specifier.startsWith('@virtual-city/')) {
+  if (specifier.startsWith('@aetheria/')) {
     const targetPackage = specifier.split('/')[1];
-    const publicGameStyles=specifier==='@virtual-city/game-client/styles.css'&&(path.startsWith('apps/portal-web/')||path.startsWith('apps/mobile/'));
-    const publicUi = path.startsWith('apps/admin-web/') && ['@virtual-city/ui/tokens.css','@virtual-city/ui/components.css'].includes(specifier);
+    const publicGameStyles=specifier==='@aetheria/game-client/styles.css'&&(path.startsWith('apps/portal-web/')||path.startsWith('apps/mobile/'));
+    const publicUi = path.startsWith('apps/admin-web/') && ['@aetheria/ui/tokens.css','@aetheria/ui/components.css'].includes(specifier);
     if (layer === 'packages' && worldPackages.includes(targetPackage) && !path.startsWith('packages/'+targetPackage+'/')) throw new Error(`Shared package imports world implementation: ${path}`);
     if (['apps', 'packages', 'worlds'].includes(layer) && !['contracts', 'boardgame-core', 'world-sdk', 'pixi-scene', 'scene3d', 'focus-ui', 'game-client', 'client-sdk', 'config', ...worldPackages].includes(targetPackage) && !publicUi) {
       throw new Error(`Forbidden workspace package: ${path} → ${specifier}`);
     }
     if (path.startsWith('packages/contracts/') && targetPackage !== 'config') throw new Error(`Contracts must not import SDK/apps: ${specifier}`);
-    const privatePetAcquisition = specifier === '@virtual-city/contracts/pet-acquisition-v3' && path.startsWith('apps/platform-api/src/features/pets/');
-    const publicRenderer = specifier === '@virtual-city/pixi-scene/csp-renderer'&&path.startsWith('apps/mobile/') || specifier === '@virtual-city/pixi-scene/renderer' && (path.startsWith('apps/portal-web/')||path.startsWith('packages/game-client/'));
+    const privatePetAcquisition = specifier === '@aetheria/contracts/pet-acquisition-v3' && path.startsWith('apps/platform-api/src/features/pets/');
+    const publicRenderer = specifier === '@aetheria/pixi-scene/csp-renderer'&&path.startsWith('apps/mobile/') || specifier === '@aetheria/pixi-scene/renderer' && (path.startsWith('apps/portal-web/')||path.startsWith('packages/game-client/'));
     if (specifier.split('/').length > 2 && !publicRenderer && !publicUi && !publicGameStyles && !privatePetAcquisition) throw new Error(`Workspace deep import: ${specifier}`);
   }
 }
@@ -55,7 +55,7 @@ export async function checkBoundaries(root) {
     for (const entry of await readdir(resolve(root, folder))) {
       const manifest = await readNodeWorkspace(root,folder+'/'+entry);
       if(!manifest)continue;
-      manifests.set(manifest.name, Object.keys(manifest.dependencies ?? {}).filter(n => n.startsWith('@virtual-city/')));
+      manifests.set(manifest.name, Object.keys(manifest.dependencies ?? {}).filter(n => n.startsWith('@aetheria/')));
     }
   }
   const active = new Set(); const done = new Set();

@@ -8,7 +8,7 @@ import {createHash,randomUUID} from 'node:crypto';
 // Own debug app on the task-owned AVD only. No USB fallback, browser profile,
 // personal app, key material or production backend is inspected.
 const config=JSON.parse(await readFile('config/mobile/android-emulator.json','utf8')),instance=JSON.parse(await readFile('artifacts/vnext/n10-05/runtime/instance.json','utf8'));
-const adb=process.env.ADB_PATH,serial=process.env.VLP_EMULATOR_SERIAL,apk=resolve(process.env.VLP_EMULATOR_APK??''),root=process.cwd(),app='life.virtualcity.spike',component=app+'/.MainActivity';
+const adb=process.env.ADB_PATH,serial=process.env.AETHERIA_EMULATOR_SERIAL,apk=resolve(process.env.AETHERIA_EMULATOR_APK??''),root=process.cwd(),app='life.aetheriasoulbound.spike',component=app+'/.MainActivity';
 assert(adb&&serial==='emulator-'+config.port&&instance.serial===serial&&instance.avdName===config.avdName);
 const ticks=readFileSync('/proc/'+instance.pid+'/stat','utf8').split(') ').at(-1).split(' ')[19],argv=readFileSync('/proc/'+instance.pid+'/cmdline','utf8').split('\0');assert.equal(ticks,instance.startTicks);assert(argv.includes(config.avdName)&&argv.includes(String(config.port)));
 assert((apk.startsWith(root+'/artifacts/')||apk.startsWith(root+'/apps/mobile/android/app/build/outputs/apk/'))&&apk.endsWith('.apk'));
@@ -38,7 +38,7 @@ try{
  const exceptions=[];ws.addEventListener('message',event=>{const message=JSON.parse(event.data);if(message.id){const callback=pending.get(message.id);if(callback){pending.delete(message.id);clearTimeout(callback.timer);if(message.error)callback.no(Error(message.error.message));else callback.ok(message.result);}}else if(message.method==='Runtime.exceptionThrown')exceptions.push(message.params.exceptionDetails.text);});await send('Runtime.enable');
  facts.device={model:run('model',['shell','getprop','ro.product.model']),android:run('android',['shell','getprop','ro.build.version.release']),api:run('api',['shell','getprop','ro.build.version.sdk']),webview:await evaluate('navigator.userAgent')};
  await until("[...document.querySelectorAll('button')].some(node=>node.textContent.trim()==='3D animal studio')");
- if(process.env.VLP_EMULATOR_ROOM3D==='1'){
+ if(process.env.AETHERIA_EMULATOR_ROOM3D==='1'){
   await until("document.querySelector('canvas[data-engine=\"three-webgl2\"]')?.dataset.entityCount==='0'");facts.rootRoom=await evaluate("(()=>{const canvas=document.querySelector('canvas[data-engine=\"three-webgl2\"]'),gl=canvas.getContext('webgl2'),ext=gl.getExtension('WEBGL_debug_renderer_info');return {engine:canvas.dataset.engine,entityCount:Number(canvas.dataset.entityCount),gpu:ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):'Unknown',version:gl.getParameter(gl.VERSION),diagnostics:JSON.parse(canvas.dataset.scene3dDiagnostics)};})()");assert.equal(facts.rootRoom.diagnostics.resources.references,0);await capture('native-empty-room3d');
   await evaluate("(()=>{const ext=document.querySelector('canvas[data-engine=\"three-webgl2\"]').getContext('webgl2').getExtension('WEBGL_lose_context');if(!ext)throw Error('No own-room context probe');ext.loseContext();setTimeout(()=>ext.restoreContext(),1500);})()");await until("document.body.textContent.includes('Scene unavailable. Seat controls remain available.')");await until("document.body.textContent.includes('3D room study · original technical art')");facts.scenarios.push({name:'Packaged3D room, no fabricated visitors and actual context recovery with DOM controls',result:'PASS',scope:'Logged-out preview; native auth/gameplay NOT_QUALIFIED'});
  }

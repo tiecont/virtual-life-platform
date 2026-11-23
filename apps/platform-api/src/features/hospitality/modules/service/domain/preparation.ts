@@ -1,5 +1,5 @@
 import { timingSafeEqual } from 'node:crypto';
-import type { OrderPhase,OrderWorkflowStrategy } from '@virtual-city/contracts';
+import type { OrderPhase,OrderWorkflowStrategy } from '@aetheria/contracts';
 import { DomainError } from '../../../../../shared/common/errors';
 type Order={id:string;assignee_id:string|null;phase:OrderPhase;version:number;course_index:number;ready_at:Date|null;workflow:OrderWorkflowStrategy|null};
 type Input={nonce:string;ingredients:string[]};

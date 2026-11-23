@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 const children = [
-  spawn('pnpm', ['--filter', '@virtual-city/platform-api', 'dev'], { stdio: 'inherit', env: process.env }),
-  spawn('pnpm', ['--filter', '@virtual-city/portal-web', 'dev'], { stdio: 'inherit', env: process.env }),
+  spawn('pnpm', ['--filter', '@aetheria/platform-api', 'dev'], { stdio: 'inherit', env: process.env }),
+  spawn('pnpm', ['--filter', '@aetheria/portal-web', 'dev'], { stdio: 'inherit', env: process.env }),
 ];
 let stopping = false;
 function stop(code) {

@@ -7,7 +7,7 @@ const origin='http://127.0.0.1:3300';
 test('private wardrobe previews locked styles, equips with a durable retry and reconciles revocation and logout',async({page,context})=>{
  test.setTimeout(60000);const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
  const response=await context.request.post('/v1/session/guest',{headers:{origin},data:{requestId:randomUUID(),displayName:'Wardrobe Visitor',avatarKey:'fern'}});expect(response.status()).toBe(201);const me=await response.json();
- const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Refusing non-local/non-test DB');const db=new Pool({connectionString:url.toString()});
+ const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Refusing non-local/non-test DB');const db=new Pool({connectionString:url.toString()});
  try{
   await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/worlds/sdk-sandbox');const toggle=page.getByText('Your wardrobe',{exact:true});await toggle.focus();await page.keyboard.press('Enter');
   const wardrobe=page.getByRole('region',{name:'Private wardrobe'});await expect(wardrobe.getByText('Your private wardrobe is up to date.',{exact:true})).toBeVisible();
@@ -25,7 +25,7 @@ test('private wardrobe previews locked styles, equips with a durable retry and r
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);const targets=await wardrobe.locator('button').evaluateAll(buttons=>buttons.map(button=>{const r=button.getBoundingClientRect();return {width:r.width,height:r.height};}));expect(targets.every(r=>r.width>=44&&r.height>=44)).toBe(true);
   await db.query('DELETE FROM engine_progression_entitlements WHERE account_id=$1',[me.profile.id]);await expect(canvas).toHaveAttribute('data-avatar-outfit','casual',{timeout:20000});await wardrobe.getByRole('button',{name:'Refresh wardrobe',exact:true}).click();await expect(wardrobe.getByRole('button',{name:'Equip Cafe apron',exact:true})).toBeDisabled();
   await wardrobe.getByRole('radio',{name:/City casual/}).check();await wardrobe.getByRole('button',{name:'Equip City casual',exact:true}).click();await expect(wardrobe.getByText('Outfit confirmed: City casual.',{exact:true})).toBeVisible();
-  expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);await page.evaluate(()=>{const bus=new BroadcastChannel('virtual-city-identity');bus.postMessage({changed:true});bus.close();});await expect(wardrobe).toHaveCount(0);expect(errors).toEqual([]);
+  expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);await page.evaluate(()=>{const bus=new BroadcastChannel('aetheria-soulbound-identity');bus.postMessage({changed:true});bus.close();});await expect(wardrobe).toHaveCount(0);expect(errors).toEqual([]);
   await writeFile(`${dir}/${test.info().project.name}.json`,JSON.stringify({lostCommittedResponse:lost,sameRetryKey:keys[0]===keys[1],revokedEntitlementFallback:true,privateInventoryRemovedOnLogout:true,targets,pageErrors:errors},null,2));
  }finally{await db.end();}
 });
@@ -34,6 +34,6 @@ test('late wardrobe reads cannot repopulate the previous identity after logout',
  let release!:()=>void,observed!:()=>void;const held=new Promise<void>(resolve=>release=resolve),seen=new Promise<void>(resolve=>observed=resolve);
  await page.route('**/v1/me/cosmetics',async route=>{const actual=await route.fetch();observed();await held;await route.fulfill({response:actual}).catch(()=>{});});
  await page.goto('/worlds/sdk-sandbox');await page.getByText('Your wardrobe',{exact:true}).click();await seen;
- expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);await page.evaluate(()=>{const bus=new BroadcastChannel('virtual-city-identity');bus.postMessage({changed:true});bus.close();});await expect(page.getByRole('region',{name:'Private wardrobe'})).toHaveCount(0);
+ expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);await page.evaluate(()=>{const bus=new BroadcastChannel('aetheria-soulbound-identity');bus.postMessage({changed:true});bus.close();});await expect(page.getByRole('region',{name:'Private wardrobe'})).toHaveCount(0);
  release();await page.unrouteAll({behavior:'wait'});await expect(page.getByRole('region',{name:'Private wardrobe'})).toHaveCount(0);await expect(page.getByRole('link',{name:'Open identity',exact:true})).toBeVisible();
 });

@@ -1,6 +1,6 @@
 import {androidSession} from '../../apps/mobile/src/native-session';
 import {io,type Socket} from 'socket.io-client';
-import {RoomAckSchema} from '@virtual-city/contracts';
+import {RoomAckSchema} from '@aetheria/contracts';
 const session=androidSession();let socket:Socket|undefined,messages=0;
 const probe={
  async reset(){socket?.close();socket=undefined;return session.logout();},

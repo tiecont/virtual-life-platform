@@ -1,6 +1,6 @@
-import { DiscoveryViewSchema,type EventCatalogSchema } from '@virtual-city/contracts';
+import { DiscoveryViewSchema,type EventCatalogSchema } from '@aetheria/contracts';
 import type { z } from 'zod';
-import type { WorldCard } from '@virtual-city/contracts';
+import type { WorldCard } from '@aetheria/contracts';
 import { DomainError } from '../../../../../shared/common/errors';
 type Events=z.infer<typeof EventCatalogSchema>;
 type RoomDiscoveryObservation={observedAt:string;worlds:WorldCard[];rooms:{worldSlug:string;roomId:string;capacity:number;occupancy:number}[]};

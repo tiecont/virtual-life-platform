@@ -15,11 +15,11 @@ test('staging and production preserve private singleton preparation and separate
 test('policy rejects owner overlap, unsafe runtime/network/prune changes and unqualified images', async () => {
   const input = await readKubernetesSource('staging');
   const cases = [
-    objects => {objects.find(o => o.metadata.name === 'vlp-api' && o.kind === 'Deployment').spec.replicas = 2;},
-    objects => {objects.find(o => o.metadata.name === 'vlp-api' && o.kind === 'Deployment').spec.strategy = {type: 'RollingUpdate'};},
+    objects => {objects.find(o => o.metadata.name === 'aetheria-api' && o.kind === 'Deployment').spec.replicas = 2;},
+    objects => {objects.find(o => o.metadata.name === 'aetheria-api' && o.kind === 'Deployment').spec.strategy = {type: 'RollingUpdate'};},
     objects => {objects.find(o => o.kind === 'Deployment').spec.template.spec.terminationGracePeriodSeconds = 5;},
-    objects => {objects.find(o => o.kind === 'Deployment').spec.template.spec.containers[0].image = 'ghcr.io/tiecont/vlp-api:latest';},
-    objects => {objects.find(o => o.kind === 'Deployment').spec.template.spec.containers[0].image = 'ghcr.io/tiecont/vlp-api@sha256:' + 'a'.repeat(64);},
+    objects => {objects.find(o => o.kind === 'Deployment').spec.template.spec.containers[0].image = 'ghcr.io/tiecont/aetheria-api:latest';},
+    objects => {objects.find(o => o.kind === 'Deployment').spec.template.spec.containers[0].image = 'ghcr.io/tiecont/aetheria-api@sha256:' + 'a'.repeat(64);},
     objects => {objects.find(o => o.kind === 'Deployment').spec.template.spec.containers[0].command = ['node', 'dist/worker.js'];},
     objects => {objects.find(o => o.kind === 'Deployment').spec.template.spec.containers[0].env.push({name: 'LOCAL_MAID_WORLD', value: '1'});},
     objects => {objects.find(o => o.kind === 'Deployment').spec.template.spec.automountServiceAccountToken = true;},
@@ -30,12 +30,12 @@ test('policy rejects owner overlap, unsafe runtime/network/prune changes and unq
     objects => {delete objects.find(o => o.kind === 'Deployment').spec.template.spec.containers[0].readinessProbe;},
     objects => {objects.find(o => o.kind === 'Deployment').spec.template.spec.volumes[0] = {name: 'tmp', hostPath: {path: '/'}};},
     objects => {objects.find(o => o.kind === 'Service').spec.type = 'LoadBalancer';},
-    objects => {objects.find(o => o.metadata.name === 'vlp-default-deny').spec.ingress = [{}];},
-    objects => {objects.find(o => o.metadata.name === 'vlp-api-from-web').spec.ingress[0].from = [{}];},
-    objects => {objects.find(o => o.metadata.name === 'vlp-database').spec.egress[0].to = [{ipBlock: {cidr: '0.0.0.0/0'}}];},
-    objects => {objects.push({apiVersion: 'v1', kind: 'Secret', metadata: {name: 'database', namespace: 'vlp-staging'}});},
-    objects => {objects.push({apiVersion: 'v1', kind: 'PersistentVolumeClaim', metadata: {name: 'database', namespace: 'vlp-staging'}});},
-    objects => {objects[0].metadata.namespace = 'vlp-production';},
+    objects => {objects.find(o => o.metadata.name === 'aetheria-default-deny').spec.ingress = [{}];},
+    objects => {objects.find(o => o.metadata.name === 'aetheria-api-from-web').spec.ingress[0].from = [{}];},
+    objects => {objects.find(o => o.metadata.name === 'aetheria-database').spec.egress[0].to = [{ipBlock: {cidr: '0.0.0.0/0'}}];},
+    objects => {objects.push({apiVersion: 'v1', kind: 'Secret', metadata: {name: 'database', namespace: 'aetheria-staging'}});},
+    objects => {objects.push({apiVersion: 'v1', kind: 'PersistentVolumeClaim', metadata: {name: 'database', namespace: 'aetheria-staging'}});},
+    objects => {objects[0].metadata.namespace = 'aetheria-production';},
   ];
   for (const mutate of cases) {const objects = globalThis.structuredClone(input.objects); mutate(objects); assert.throws(() => verifyKubernetesPolicy(objects, 'staging', input.budget));}
 });

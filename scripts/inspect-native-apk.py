@@ -30,7 +30,7 @@ try:
         return result.stdout.decode()
     aapt = str(sdk / 'build-tools/36.0.0/aapt2')
     badging = run('badging', [aapt, 'dump', 'badging', str(apk)])
-    assert "package: name='life.virtualcity.spike'" in badging
+    assert "package: name='life.aetheriasoulbound.spike'" in badging
     assert "targetSdkVersion:'36'" in badging
     assert ('application-debuggable' in badging) == (mode != 'release-unsigned')
     if mode != 'release-unsigned':
@@ -41,7 +41,7 @@ try:
     policy = run('network-policy', [aapt, 'dump', 'xmltree', str(apk), '--file', resource.group(1)])
     assert 'cleartextTrafficPermitted=false' in policy and 'cleartextTrafficPermitted=true' not in policy and 'system' in policy
     assert 'src="user"' not in policy
-    assert ('raw/vlp_native_test_ca' in resources) == qualification
+    assert ('raw/aetheria_native_test_ca' in resources) == qualification
     assert ('localhost' in policy) == qualification
     with zipfile.ZipFile(apk) as archive:
         matched = 0
@@ -53,7 +53,7 @@ try:
         capacitor = json.loads(archive.read('assets/capacitor.config.json'))
         assert not capacitor['server'].get('url') and capacitor['server']['cleartext'] is False
         assert capacitor['android']['allowMixedContent'] is False
-        raw_ca = 'res/raw/vlp_native_test_ca.pem'
+        raw_ca = 'res/raw/aetheria_native_test_ca.pem'
         assert (raw_ca in archive.namelist()) == qualification
         if qualification:
             assert archive.read(raw_ca) == Path(task_root + '/tls/ca.pem').read_bytes()

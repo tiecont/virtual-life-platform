@@ -1,7 +1,7 @@
 import { timingSafeEqual } from 'node:crypto';
 import type { Pool,PoolClient } from 'pg';
 import { z } from 'zod';
-import { DatingProfileDataSchema,DatingProfileWriteSchema,DatingProfileWithdrawnSchema,DatingProfileViewSchema,type DatingProfileData } from '@virtual-city/contracts';
+import { DatingProfileDataSchema,DatingProfileWriteSchema,DatingProfileWithdrawnSchema,DatingProfileViewSchema,type DatingProfileData } from '@aetheria/contracts';
 import type { Config } from '../../../../../shared/config/environment';
 import type { IdentityService,IdentityContext } from '../../../../identity/modules/accounts/application/service';
 import { DomainError } from '../../../../../shared/common/errors';

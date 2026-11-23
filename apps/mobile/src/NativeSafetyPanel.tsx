@@ -1,5 +1,5 @@
 import {useEffect,useRef,useState} from 'react';
-import {NativeSafetyStateSchema,ReportReceiptSchema,SafetyCategorySchema,type NativeSafetyState,type ReportInput} from '@virtual-city/contracts';
+import {NativeSafetyStateSchema,ReportReceiptSchema,SafetyCategorySchema,type NativeSafetyState,type ReportInput} from '@aetheria/contracts';
 import {androidSession} from './native-session';
 
 export function NativeSafetyPanel({accountId,busy,onBusy}:{accountId:string;busy:boolean;onBusy:(value:boolean)=>void}){

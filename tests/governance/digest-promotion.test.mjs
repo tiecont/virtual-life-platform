@@ -15,14 +15,14 @@ import {promotionApiFixture} from '../support/promotion-api-fixture.mjs';
 // Synthetic shape fixtures only. No hosted/registry result or real digest is
 // minted by these tests; the production writer must verify remote evidence.
 const h = 'a'.repeat(64), revision = 'b'.repeat(40);
-const overlay = environment => ({apiVersion: 'kustomize.config.k8s.io/v1beta1', kind: 'Kustomization', namespace: 'vlp-' + environment, resources: ['../../base', 'database-egress.json']});
+const overlay = environment => ({apiVersion: 'kustomize.config.k8s.io/v1beta1', kind: 'Kustomization', namespace: 'aetheria-' + environment, resources: ['../../base', 'database-egress.json']});
 function manifest() {
   const descriptor = file => ({file, sha256: h});
-  return {schemaVersion: 1, kind: 'vlp-release-candidate', source: {repository: 'tiecont/virtual-life-platform', revision}, quality: {runId: 123, runAttempt: 2, workflow: '.github/workflows/quality.yml', event: 'push', branch: 'main'}, artifacts: Object.fromEntries(['api', 'web'].map(target => [target, {image: 'ghcr.io/tiecont/vlp-' + target + '@sha256:' + h, localImageId: 'sha256:' + h, sbom: descriptor(target + '-sbom.cdx.json'), provenance: descriptor(target + '-provenance.json')}])), compatibility: {protocol: {minimum: 1, current: 1, maximum: 1}, schema: {metadataVersion: 1, minimumMigrations: 38, maximumMigrations: 38, manifestSha256: h, policySha256: h}, assets: {manifestSha256: h}}, promotion: {autoMerge: false, productionAutoPromotion: false, ownerRequired: true, publicRelease: false}, evidence: {quality: descriptor('quality-proof.json'), imageChecks: descriptor('image-checks.json')}, vulnerabilities: {status: 'NOT_RUN', promotionRequiresReview: true}};
+  return {schemaVersion: 1, kind: 'aetheria-release-candidate', source: {repository: 'tiecont/aetheria-soulbound', revision}, quality: {runId: 123, runAttempt: 2, workflow: '.github/workflows/quality.yml', event: 'push', branch: 'main'}, artifacts: Object.fromEntries(['api', 'web'].map(target => [target, {image: 'ghcr.io/tiecont/aetheria-' + target + '@sha256:' + h, localImageId: 'sha256:' + h, sbom: descriptor(target + '-sbom.cdx.json'), provenance: descriptor(target + '-provenance.json')}])), compatibility: {protocol: {minimum: 1, current: 1, maximum: 1}, schema: {metadataVersion: 1, minimumMigrations: 38, maximumMigrations: 38, manifestSha256: h, policySha256: h}, assets: {manifestSha256: h}}, promotion: {autoMerge: false, productionAutoPromotion: false, ownerRequired: true, publicRelease: false}, evidence: {quality: descriptor('quality-proof.json'), imageChecks: descriptor('image-checks.json')}, vulnerabilities: {status: 'NOT_RUN', promotionRequiresReview: true}};
 }
 const plan = (environment = 'staging', options = {}) => buildPromotionPlan(manifest(), {environment, releaseId: 'synthetic-fixture', manifestSha256: h, baseRevision: revision, currentOverlay: overlay(environment), ...options});
 test('promotion preview binds both digests without granting artifact/deployment authority or rebuilding', () => {
-  const result = plan(); assert.equal(result.kind, 'vlp-unverified-promotion-preview'); assert.equal(result.remoteEvidenceVerified, false); assert.equal(result.productionReleaseAuthorized, false);
+  const result = plan(); assert.equal(result.kind, 'aetheria-unverified-promotion-preview'); assert.equal(result.remoteEvidenceVerified, false); assert.equal(result.productionReleaseAuthorized, false);
   assert.equal(result.changed, true); assert.equal(result.binding.releasePath, 'releases/synthetic-fixture'); validateOverlayRelease(result.binding);
   assert.deepEqual(result.overlay.images.map(image => image.digest), ['sha256:' + h, 'sha256:' + h]); assert(result.overlay.images.every(image => !Object.hasOwn(image, 'newTag')));
   assert.equal(plan('staging', {currentOverlay: result.overlay, currentBinding: result.binding}).changed, false);
@@ -30,12 +30,12 @@ test('promotion preview binds both digests without granting artifact/deployment 
 test('production can propose only the identical staging release set, never a rebuilt or changed descriptor', () => {
   const staging = plan(); const production = plan('production', {stagingBinding: staging.binding}); assert.deepEqual(production.binding, staging.binding);
   assert.throws(() => plan('production'));
-  for (const mutate of [value => {value.manifestSha256 = 'c'.repeat(64);}, value => {value.images.web = 'ghcr.io/tiecont/vlp-web@sha256:' + 'd'.repeat(64);}, value => {value.releasePath = 'releases/other';}]) {
+  for (const mutate of [value => {value.manifestSha256 = 'c'.repeat(64);}, value => {value.images.web = 'ghcr.io/tiecont/aetheria-web@sha256:' + 'd'.repeat(64);}, value => {value.releasePath = 'releases/other';}]) {
     const changed = globalThis.structuredClone(staging.binding); mutate(changed); assert.throws(() => plan('production', {stagingBinding: changed}));
   }
 });
 test('preview rejects mutable/foreign/rehearsal inputs and unreviewed paths/namespace transforms', () => {
-  for (const mutate of [m => {m.artifacts.api.image = 'ghcr.io/tiecont/vlp-api:latest';}, m => {m.kind = 'local-registry-rehearsal';}, m => {m.source.repository = 'foreign/repo';}, m => {m.promotion.autoMerge = true;}]) {
+  for (const mutate of [m => {m.artifacts.api.image = 'ghcr.io/tiecont/aetheria-api:latest';}, m => {m.kind = 'local-registry-rehearsal';}, m => {m.source.repository = 'foreign/repo';}, m => {m.promotion.autoMerge = true;}]) {
     const m = manifest(); mutate(m); assert.throws(() => buildPromotionPlan(m, {environment: 'staging', releaseId: 'fixture', manifestSha256: h, baseRevision: revision, currentOverlay: overlay('staging')}));
   }
   for (const options of [{environment: 'dev'}, {releaseId: '../secret'}, {baseRevision: 'main'}, {currentOverlay: {...overlay('staging'), namespace: 'default'}}, {currentOverlay: {...overlay('staging'), generators: ['remote']}}]) assert.throws(() => plan('staging', options));
@@ -46,7 +46,7 @@ test('promotion path allowlist remains deploy-only and cannot change code, workf
   for (const file of ['package.json', '.github/workflows/quality.yml', 'scripts/promotion-contract.mjs', 'infra/k8s/overlays/production/kustomization.yaml', 'releases/other/release.json', 'releases/synthetic-fixture/../secret']) assert.throws(() => assertPromotionPaths([...paths, file], 'staging', 'synthetic-fixture'));
 });
 test('actual preview CLI produces an applicable diff without repository mutation; synthetic proof never verifies', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'vlp-promotion-fixture-')), script = resolve('scripts/promotion-proposal.mjs'), planner = resolve('scripts/artifact-plan.mjs');
+  const root = await mkdtemp(join(tmpdir(), 'aetheria-promotion-fixture-')), script = resolve('scripts/promotion-proposal.mjs'), planner = resolve('scripts/artifact-plan.mjs');
   try {
     const git = args => execFileSync('git', args, {cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe']}).trim();
     await cp('infra/k8s', join(root, 'infra/k8s'), {recursive: true}); await mkdir(join(root, 'config'));
@@ -58,11 +58,11 @@ test('actual preview CLI produces an applicable diff without repository mutation
     m.evidence.imageChecks = await save('image-checks.json', {sourceRevision: m.source.revision, result: 'PASS', apiScenarios: 6, webScenarios: 6, cleanupComplete: true, images: {api:m.artifacts.api.localImageId,web:m.artifacts.web.localImageId}});
     for (const target of ['api', 'web']) {
       const artifact = m.artifacts[target]; artifact.sbom = await save(target + '-sbom.cdx.json', {bomFormat: 'CycloneDX', components: [{name: 'SYNTHETIC_NOT_RELEASED'}]});
-      artifact.provenance = await save(target + '-provenance.json', {_type: 'https://in-toto.io/Statement/v1', subject: [{name: artifact.image.split('@')[0], digest: {sha256: h}}], predicateType: 'https://github.com/tiecont/virtual-life-platform/provenance/v1', predicate: {source: m.source, quality: m.quality, compatibility: m.compatibility, imageId: artifact.localImageId, sbomSha256: artifact.sbom.sha256, checksSha256: m.evidence.imageChecks.sha256, signed: false}});
+      artifact.provenance = await save(target + '-provenance.json', {_type: 'https://in-toto.io/Statement/v1', subject: [{name: artifact.image.split('@')[0], digest: {sha256: h}}], predicateType: 'https://github.com/tiecont/aetheria-soulbound/provenance/v1', predicate: {source: m.source, quality: m.quality, compatibility: m.compatibility, imageId: artifact.localImageId, sbomSha256: artifact.sbom.sha256, checksSha256: m.evidence.imageChecks.sha256, signed: false}});
     }
     await save('release.json', m); assert.equal((await checkManifest(input)).remoteImagesVerified, false);
     const output = execFileSync('node', [script, 'preview', 'staging', 'synthetic-fixture', input, 'artifacts/preview'], {cwd: root, encoding: 'utf8'}), result = JSON.parse(output);
-    assert.equal(result.kind, 'vlp-unverified-promotion-preview'); assert.equal(result.remoteEvidenceVerified, false); assert.equal(result.edits, 9); assert.equal(git(['status', '--porcelain']), '');
+    assert.equal(result.kind, 'aetheria-unverified-promotion-preview'); assert.equal(result.remoteEvidenceVerified, false); assert.equal(result.edits, 9); assert.equal(git(['status', '--porcelain']), '');
     const rejected = spawnSync('node', [script, 'verify', 'staging', 'synthetic-fixture', input, 'artifacts/must-not-exist'], {cwd: root, encoding: 'utf8'}); assert.equal(rejected.status, 1); assert.equal(git(['status', '--porcelain']), '');
     git(['apply', '--check', 'artifacts/preview/proposal.diff']); git(['apply', 'artifacts/preview/proposal.diff']); git(['add', '.']);
     const policyModule = pathToFileURL(resolve('scripts/kubernetes-policy.mjs')).href;
@@ -79,7 +79,7 @@ test('actual preview CLI produces an applicable diff without repository mutation
     assert.equal(await readFile(join(root, 'infra/k8s/overlays/production/release.json'), 'utf8'), await readFile(join(root, 'infra/k8s/overlays/staging/release.json'), 'utf8'));
     assert.equal(JSON.parse(execFileSync('node', ['--input-type=module', '-e', inspect('production')], {cwd: root, encoding: 'utf8'})).deploymentEligible, false);
   } finally {
-    if (process.env.VLP_CAPTURE_PROMOTION_FIXTURE === '1') {
+    if (process.env.AETHERIA_CAPTURE_PROMOTION_FIXTURE === '1') {
       const destination = resolve('artifacts/vnext/n04-02/bound-render-fixture'); await cp(root, destination, {recursive: true, errorOnExist: true, force: false});
     }
     await rm(root, {recursive: true, force: true});
@@ -88,7 +88,7 @@ test('actual preview CLI produces an applicable diff without repository mutation
 test('manual bot context and publisher artifact authorization reject forks, wrong events, mutable identities and missing proofs', async () => {
   const policy = JSON.parse(await readFile('config/digest-promotion.json', 'utf8')); validatePromotionPolicy(policy); assert.equal(policy.manualWorkflowEnabled, false);
   for (const name of ['automaticPromotion', 'autoMerge', 'productionAutoPromotion']) assert.throws(() => validatePromotionPolicy({...policy, [name]: true}));
-  const event = {repository: {full_name: 'tiecont/virtual-life-platform'}, inputs: {environment: 'staging', release_id: 'fixture', publish_run_id: '123'}}, context = {event: 'workflow_dispatch', repository: 'tiecont/virtual-life-platform', ref: 'refs/heads/main', revision};
+  const event = {repository: {full_name: 'tiecont/aetheria-soulbound'}, inputs: {environment: 'staging', release_id: 'fixture', publish_run_id: '123'}}, context = {event: 'workflow_dispatch', repository: 'tiecont/aetheria-soulbound', ref: 'refs/heads/main', revision};
   assert.equal(validatePromotionEvent(event, context).publisherRunId, 123);
   for (const patch of [{event: 'pull_request'}, {ref: 'refs/heads/feature'}, {repository: 'attacker/fork'}, {revision: 'main'}]) assert.throws(() => validatePromotionEvent(event, {...context, ...patch}));
   const run = {id: 123, repository: event.repository, head_repository: event.repository, path: '.github/workflows/publish.yml', name: 'Publish verified artifacts', event: 'workflow_run', head_branch: 'main', status: 'completed', conclusion: 'success'}, artifact = {name: 'release-candidate-' + revision + '-2', expired: false};
@@ -105,10 +105,10 @@ test('immutable promotion branches can reuse only the same base/tree/message wit
 });
 test('promotion workflow keeps a manual trusted-main gate and mints a narrow App token only after proof preparation', async () => {
   const workflow = await readFile('.github/workflows/promote.yml', 'utf8'), pins = JSON.parse(await readFile('config/ci-actions.json', 'utf8')); assertPromotionWorkflow(workflow, pins);
-  for (const mutate of [text => text.replace('workflow_dispatch:', 'pull_request:'), text => text.replace("github.ref == 'refs/heads/main'", "github.ref == 'refs/heads/feature'"), text => text.replace('packages: read', 'packages: write'), text => text.replace('repositories: virtual-life-platform', 'repositories: another-repo'), text => text.replace('node scripts/promotion-bot.mjs prepare', 'echo PASS'), text => text.replace('secrets.VLP_PROMOTION_APP_PRIVATE_KEY', 'secrets.BROAD_TOKEN'), text => text.replace('permission-contents: write', 'permission-administration: write'), text => text.replace('persist-credentials: false', 'persist-credentials: true'), text => text + '\n  unsafe:\n    permissions: write-all\n']) assert.throws(() => assertPromotionWorkflow(mutate(workflow), pins));
+  for (const mutate of [text => text.replace('workflow_dispatch:', 'pull_request:'), text => text.replace("github.ref == 'refs/heads/main'", "github.ref == 'refs/heads/feature'"), text => text.replace('packages: read', 'packages: write'), text => text.replace('repositories: aetheria-soulbound', 'repositories: another-repo'), text => text.replace('node scripts/promotion-bot.mjs prepare', 'echo PASS'), text => text.replace('secrets.AETHERIA_PROMOTION_APP_PRIVATE_KEY', 'secrets.BROAD_TOKEN'), text => text.replace('permission-contents: write', 'permission-administration: write'), text => text.replace('persist-credentials: false', 'persist-credentials: true'), text => text + '\n  unsafe:\n    permissions: write-all\n']) assert.throws(() => assertPromotionWorkflow(mutate(workflow), pins));
 });
 for (const version of [1,2]) test('schema '+version+' isolated CLI protocol stand-ins exercise read/write credentials, proof recheck, partial PR failure and immutable branch reuse; no real GitHub request', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'vlp-bot-protocol-')), bot = resolve('scripts/promotion-bot.mjs');
+  const root = await mkdtemp(join(tmpdir(), 'aetheria-bot-protocol-')), bot = resolve('scripts/promotion-bot.mjs');
   try {
     await cp('infra/k8s', join(root, 'infra/k8s'), {recursive: true}); await mkdir(join(root, 'config')); await writeFile(join(root, '.gitignore'), 'artifacts/\n');
     const policy = JSON.parse(await readFile('config/digest-promotion.json', 'utf8')); policy.manualWorkflowEnabled = true; await writeFile(join(root, 'config/digest-promotion.json'), jsonBytes(policy));
@@ -118,18 +118,18 @@ for (const version of [1,2]) test('schema '+version+' isolated CLI protocol stan
     for (const name of ['gh', 'docker']) await writeFile(join(bin, name), promotionApiFixture, {mode: 0o700});
     const m = manifest(); m.source.revision = source;
     const targets=version===1?['api','web']:['api','web','admin'];
-    if(version===2){m.schemaVersion=2;m.artifacts.admin={...globalThis.structuredClone(m.artifacts.web),image:m.artifacts.web.image.replace('vlp-web@','vlp-admin@')};for(const target of targets)m.artifacts[target].sourceRevision=source;}
+    if(version===2){m.schemaVersion=2;m.artifacts.admin={...globalThis.structuredClone(m.artifacts.web),image:m.artifacts.web.image.replace('aetheria-web@','aetheria-admin@')};for(const target of targets)m.artifacts[target].sourceRevision=source;}
     const save = async (file, value) => {const bytes = jsonBytes(value); await writeFile(join(candidate, file), bytes); return {file, sha256: hash(bytes)};};
     const names = ['change-plan', 'core-checks', 'runtime-images', 'quality', ...Object.keys(groups.groups).map(group => 'browser (' + group + ')')];
     const proof = {repository: m.source.repository, workflow: m.quality.workflow, sourceRevision: source, runId: 123, runAttempt: 2, event: 'push', branch: 'main', jobs: names}; m.evidence.quality = await save('quality-proof.json', proof);
     m.evidence.imageChecks = await save('image-checks.json', {sourceRevision: source, result: 'PASS', apiScenarios: 6, webScenarios: 6, ...version===2?{adminScenarios:6}:{}, cleanupComplete: true, images: Object.fromEntries(targets.map(target=>[target,m.artifacts[target].localImageId]))});
-    for (const target of targets) {const artifact = m.artifacts[target]; artifact.sbom = await save(target + '-sbom.cdx.json', {bomFormat: 'CycloneDX', components: [{name: 'SYNTHETIC_PROTOCOL_ONLY'}]}); artifact.provenance = await save(target + '-provenance.json', {_type: 'https://in-toto.io/Statement/v1', subject: [{name: artifact.image.split('@')[0], digest: {sha256: h}}], predicateType: 'https://github.com/tiecont/virtual-life-platform/provenance/v1', predicate: {source: m.source, quality: m.quality, compatibility: m.compatibility, imageId: artifact.localImageId, sbomSha256: artifact.sbom.sha256, checksSha256: m.evidence.imageChecks.sha256, signed: false}});}
+    for (const target of targets) {const artifact = m.artifacts[target]; artifact.sbom = await save(target + '-sbom.cdx.json', {bomFormat: 'CycloneDX', components: [{name: 'SYNTHETIC_PROTOCOL_ONLY'}]}); artifact.provenance = await save(target + '-provenance.json', {_type: 'https://in-toto.io/Statement/v1', subject: [{name: artifact.image.split('@')[0], digest: {sha256: h}}], predicateType: 'https://github.com/tiecont/aetheria-soulbound/provenance/v1', predicate: {source: m.source, quality: m.quality, compatibility: m.compatibility, imageId: artifact.localImageId, sbomSha256: artifact.sbom.sha256, checksSha256: m.evidence.imageChecks.sha256, signed: false}});}
     await save('release.json', m);
     const publisher = {id: 456, repository: {full_name: m.source.repository}, head_repository: {full_name: m.source.repository}, path: '.github/workflows/publish.yml', name: 'Publish verified artifacts', event: 'workflow_run', head_branch: 'main', status: 'completed', conclusion: 'success'};
     const qualityRun = {id: 123, run_attempt: 2, repository: publisher.repository, head_repository: publisher.repository, path: '.github/workflows/quality.yml', name: 'Quality', event: 'push', head_branch: 'main', head_sha: source, status: 'completed', conclusion: 'success'};
     const stateFile = join(root, 'artifacts/api-state.json'); const initial = {revision: source, manifest: m, candidate, publisher, qualityRun, jobs: names.map(name => ({name, status: 'completed', conclusion: 'success', head_sha: source})), bundle: {schemaVersion: version, sourceRevision: source, compatibility: m.compatibility, checks: m.evidence.imageChecks, images: Object.fromEntries(targets.map(target => [target, {id: m.artifacts[target].localImageId, sbom: m.artifacts[target].sbom}]))}, allowedPaths: [...['release.json', 'quality-proof.json', 'image-checks.json', ...targets.flatMap(target=>[target+'-sbom.cdx.json',target+'-provenance.json'])].map(file => 'releases/protocol-fixture/' + file), 'infra/k8s/overlays/staging/release.json', 'infra/k8s/overlays/staging/kustomization.yaml'].sort(), calls: []}; await writeFile(stateFile, jsonBytes(initial));
     const eventPath = join(root, 'artifacts/event.json'), outputs = join(root, 'artifacts/outputs'); await writeFile(eventPath, jsonBytes({repository: publisher.repository, inputs: {environment: 'staging', release_id: 'protocol-fixture', publish_run_id: '456'}})); await writeFile(outputs, '');
-    const env = {...process.env, PATH: bin + ':' + process.env.PATH, GH_TOKEN: 'synthetic-read', PROMOTION_APP_TOKEN: 'synthetic-write', PROMOTION_FIXTURE_STATE: stateFile, VLP_PROMOTION_ENABLED: 'true', GITHUB_EVENT_NAME: 'workflow_dispatch', GITHUB_REPOSITORY: m.source.repository, GITHUB_REF: 'refs/heads/main', GITHUB_SHA: source, GITHUB_EVENT_PATH: eventPath, GITHUB_OUTPUT: outputs, EXPECTED_SOURCE: source, EXPECTED_ATTEMPT: '2'};
+    const env = {...process.env, PATH: bin + ':' + process.env.PATH, GH_TOKEN: 'synthetic-read', PROMOTION_APP_TOKEN: 'synthetic-write', PROMOTION_FIXTURE_STATE: stateFile, AETHERIA_PROMOTION_ENABLED: 'true', GITHUB_EVENT_NAME: 'workflow_dispatch', GITHUB_REPOSITORY: m.source.repository, GITHUB_REF: 'refs/heads/main', GITHUB_SHA: source, GITHUB_EVENT_PATH: eventPath, GITHUB_OUTPUT: outputs, EXPECTED_SOURCE: source, EXPECTED_ATTEMPT: '2'};
     const call = mode => spawnSync('node', [bot, mode], {cwd: root, env, encoding: 'utf8'}), state = async () => JSON.parse(await readFile(stateFile, 'utf8'));
     assert.equal(call('authorize').status, 0); assert.equal(call('prepare').status, 0); const prepared = await readFile(join(root, 'artifacts/promotion-proposal/proposal.json')); env.PROMOTION_PROPOSAL_SHA = hash(prepared);
     assert(!(await state()).calls.some(call => call.role === 'write'), 'No App role before proof preparation');

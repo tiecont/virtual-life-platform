@@ -1,0 +1,5 @@
+{
+  "name": "Aetheria.NativeScene",
+  "rootNamespace": "Aetheria.NativeScene",
+  "references": ["Aetheria.Native", "Aetheria.Blockout"]
+}

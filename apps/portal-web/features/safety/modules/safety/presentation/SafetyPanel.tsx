@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { MeSchema, OwnSanctionsSchema, ReportStatusSchema, AppealReceiptSchema, type Me } from '@virtual-city/contracts';
+import { MeSchema, OwnSanctionsSchema, ReportStatusSchema, AppealReceiptSchema, type Me } from '@aetheria/contracts';
 type Own = ReturnType<typeof OwnSanctionsSchema.parse>;
 class Failure extends Error { constructor(readonly status: number, message: string) { super(message); } }
 async function request(path: string, signal: AbortSignal, options: RequestInit = {}) {
@@ -40,7 +40,7 @@ export default function SafetyPanel() {
       } finally { clearTimeout(timeout); if (revision.current === run && !parent.signal.aborted) { active.current = false; pending.current = null; setBusy(false); } }
     };
     void refresh.current();
-    const channel = new BroadcastChannel('virtual-city-identity'); channel.onmessage = () => { revision.current++; pending.current?.abort(); active.current = false; setData(null); setMe(null); setNotes({}); keys.current.clear(); owner.current = null; void refresh.current(); };
+    const channel = new BroadcastChannel('aetheria-soulbound-identity'); channel.onmessage = () => { revision.current++; pending.current?.abort(); active.current = false; setData(null); setMe(null); setNotes({}); keys.current.clear(); owner.current = null; void refresh.current(); };
     const visible = () => { if (document.visibilityState === 'visible') void refresh.current(); }; document.addEventListener('visibilitychange', visible);
     return () => { revision.current++; pending.current?.abort(); parent.abort(); lifetime.current = null; channel.close(); document.removeEventListener('visibilitychange', visible); };
   }, []);

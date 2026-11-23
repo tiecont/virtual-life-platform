@@ -2,13 +2,13 @@ import { test, expect } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 import { io } from 'socket.io-client';
-import { MeSchema, RoomAckSchema, SanctionResultSchema, type RoomSnapshot } from '@virtual-city/contracts';
+import { MeSchema, RoomAckSchema, SanctionResultSchema, type RoomSnapshot } from '@aetheria/contracts';
 
 const origin = 'http://127.0.0.1:3300';
 test('assigned moderator decisions, private appeal retry and independent recovery work on desktop/mobile', async ({ page, context, browser }) => {
   test.setTimeout(45000); // Three browser identities, real staff issuance/review and world interruption/recovery.
   const url = new URL(process.env.TEST_DATABASE_URL ?? '');
-  if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
+  if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
   const pool = new Pool({ connectionString: url.toString() });
   const subject = await context.request.post('/v1/session/guest', { headers: { origin }, data: { requestId: randomUUID(), displayName: 'Appeal Visitor', avatarKey: 'mint' } }); expect(subject.status()).toBe(201);
   const me = MeSchema.parse(await subject.json());

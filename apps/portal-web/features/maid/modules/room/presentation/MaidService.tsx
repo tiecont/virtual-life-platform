@@ -1,5 +1,5 @@
 'use client';
-import type { Me,TravelSource } from '@virtual-city/contracts';
+import type { Me,TravelSource } from '@aetheria/contracts';
 import useHospitalityOrders,{type Orders} from '../../../../hospitality/modules/hospitality/application/use-hospitality-orders';
 import RecipePreparation from './RecipePreparation';
 export default function MaidService({me,source,seated,active,workAllowed}:{me:Me;source:TravelSource|null;seated:boolean;active:boolean;workAllowed:boolean}){

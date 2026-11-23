@@ -11,11 +11,11 @@
   "sources": [
     {
       "path": "specs/pet-arena/v3.1/data/pets_initial_240.json",
-      "sha256": "2318013aa0713ac0fa5f99e75183506cf2c1280e191671782ec9b49fdf2ce38c"
+      "sha256": "216b808328bc73755c0b35bc9b9f50a3d249d1a010537b4780d88a030df267f6"
     },
     {
       "path": "specs/pet-arena/v3.1/data/maps_19.json",
-      "sha256": "6971bc983c15a35c52d56f774cf347557f61c4597b8972a891a4228392daf7ed"
+      "sha256": "0ee69c4c20e5e30a9a2d8ae526639bbe2af347e7da13ec3d5a3ed791d8b024db"
     },
     {
       "path": "specs/pet-arena/v3.1/data/races.json",

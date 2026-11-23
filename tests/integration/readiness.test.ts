@@ -3,13 +3,13 @@ import { randomUUID } from 'node:crypto';
 import { performance } from 'node:perf_hooks';
 import { Pool } from 'pg';
 import { io,type Socket } from 'socket.io-client';
-import { MeSchema,RoomAckSchema } from '@virtual-city/contracts';
+import { MeSchema,RoomAckSchema } from '@aetheria/contracts';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 const origin='http://127.0.0.1:3300';
 let admin:Pool;const opened:Awaited<ReturnType<typeof open>>[]=[],sockets=new Set<Socket>();
-beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
+beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
 afterEach(async()=>{for(const socket of sockets)socket.close();sockets.clear();const runtimes=opened.splice(0);for(const r of runtimes){await r.app.app.close();await r.pool.end();}for(const schema of new Set(runtimes.map(r=>r.schema)))await admin.query(`DROP SCHEMA "${schema}" CASCADE`);});
 afterAll(async()=>{await admin.end();});
 async function open(max=10,schema?:string){

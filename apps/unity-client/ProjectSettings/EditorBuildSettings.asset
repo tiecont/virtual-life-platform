@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/VirtualLife/Scenes/AuroraBlockout.unity
+    path: Assets/Aetheria/Scenes/AuroraBlockout.unity
     guid: 80cd271255f53f6b6b78d60e9d1ca883
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

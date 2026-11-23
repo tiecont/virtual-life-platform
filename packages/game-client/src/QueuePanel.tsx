@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useMemo,useState} from 'react';
-import type {ClientPlatform} from '@virtual-city/client-sdk';
+import type {ClientPlatform} from '@aetheria/client-sdk';
 import {QueueController,type QueuePresentation} from './queue-controller';
 
 export function QueuePanel({platform}:{platform:ClientPlatform}){

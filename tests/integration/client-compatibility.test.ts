@@ -2,15 +2,15 @@ import {beforeAll, afterAll, afterEach, expect, it, vi} from 'vitest';
 import {randomUUID} from 'node:crypto';
 import {Pool} from 'pg';
 import {io, type Socket} from 'socket.io-client';
-import {MeSchema, RoomAckSchema, CURRENT_CLIENT_COMPATIBILITY, sceneManifestHash, type ClientProtocolOffer} from '@virtual-city/contracts';
-import {createClientProtocolOffer, sandboxScene} from '@virtual-city/world-sdk';
+import {MeSchema, RoomAckSchema, CURRENT_CLIENT_COMPATIBILITY, sceneManifestHash, type ClientProtocolOffer} from '@aetheria/contracts';
+import {createClientProtocolOffer, sandboxScene} from '@aetheria/world-sdk';
 import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
 import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 import legacyWire from '../fixtures/client-legacy-wire.json';
 const origin = 'http://127.0.0.1:3300'; let admin: Pool;
 const opened: {app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: string}[] = [], sockets = new Set<Socket>();
-beforeAll(() => {const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw Error('Disposable local database only'); admin = new Pool({connectionString: url.toString()});});
+beforeAll(() => {const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))) throw Error('Disposable local database only'); admin = new Pool({connectionString: url.toString()});});
 afterEach(async () => {vi.restoreAllMocks(); for (const socket of sockets) socket.close(); sockets.clear(); for (const r of opened.splice(0)) {await r.app.app.close(); await r.pool.end(); await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`);}});
 afterAll(async () => {await admin.end();});
 async function open() {

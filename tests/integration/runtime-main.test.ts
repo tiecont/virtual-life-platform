@@ -11,7 +11,7 @@ let admin: Pool, db: Pool, schema: string, databaseUrl: string;
 const children = new Set<ChildProcess>();
 beforeAll(() => {
   const url = new URL(process.env.TEST_DATABASE_URL ?? '');
-  if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw Error('Disposable local database only');
+  if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))) throw Error('Disposable local database only');
   admin = new Pool({connectionString: url.toString()});
 });
 beforeEach(async () => {

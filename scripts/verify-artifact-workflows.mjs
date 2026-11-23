@@ -25,7 +25,7 @@ export function assertArtifactWorkflows(quality, publish, pins) {
   assert.equal((publish.match(/: write\b/g) ?? []).length, 1);
   assert(publish.includes('    permissions:\n      contents: read\n      actions: read\n      packages: write\n'));
   assert.equal((publish.split('\njobs:\n')[1]?.match(/^ {2}[a-z][a-z-]*:\s*$/gm) ?? []).length, 1, 'Only one privileged publish job expected');
-  for (const condition of ["github.event.workflow_run.event == 'push'", "github.event.workflow_run.conclusion == 'success'", "github.event.workflow_run.head_branch == 'main'", 'github.event.workflow_run.head_repository.full_name == github.repository', "github.repository == 'tiecont/virtual-life-platform'", "vars.VLP_PUBLISH_ENABLED == 'true'"]) assert(publish.includes(condition));
+  for (const condition of ["github.event.workflow_run.event == 'push'", "github.event.workflow_run.conclusion == 'success'", "github.event.workflow_run.head_branch == 'main'", 'github.event.workflow_run.head_repository.full_name == github.repository', "github.repository == 'tiecont/aetheria-soulbound'", "vars.AETHERIA_PUBLISH_ENABLED == 'true'"]) assert(publish.includes(condition));
   assert(publish.includes('ref: ${{ github.event.workflow_run.head_sha }}'));
   assert(publish.includes('persist-credentials: false') && publish.includes('node-version-file: .node-version'));
   const authorization = publish.indexOf('node scripts/release-publish.mjs authorize');
@@ -50,19 +50,19 @@ export function assertRustWorkflow(workflow,pins) {
   assert.deepEqual([...workflow.matchAll(/^\s*runs-on:\s*(.+)$/gm)].map(row=>row[1]),['ubuntu-24.04'],'Rust foundation uses the declared Ubuntu runner');
   assert.equal((workflow.split('\njobs:\n')[1]?.match(/^ {2}[a-z][a-z-]*:\s*$/gm)??[]).length,1,'Unexpected Rust CI job');
   for(const match of workflow.matchAll(/uses:\s*([^\s#]+)/g)){const [name,revision]=match[1].split('@');assert(/^[a-f0-9]{40}$/.test(revision??'')&&revision===pins[name],'Unpinned Rust action');}
-  for(const gate of ['sha256sum --check','--default-toolchain 1.99.1','fmt --all -- --check','check --workspace --all-targets --locked','clippy --workspace --all-targets --locked -- -D warnings','test --workspace --locked','-f apps/game-runtime/Dockerfile','python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-ci',
-    'pnpm install --frozen-lockfile','--package vl-protocol --bin native-codegen -- --check','pnpm --filter @virtual-city/native-protocol typecheck','packages/native-protocol/test/wire.test.ts',
-    'CARGO_TARGET_DIR: artifacts/rust/target','build --locked --package vl-security --bin durable-check','scripts/runtime-admission-durable-check.mjs',
+  for(const gate of ['sha256sum --check','--default-toolchain 1.99.1','fmt --all -- --check','check --workspace --all-targets --locked','clippy --workspace --all-targets --locked -- -D warnings','test --workspace --locked','-f apps/game-runtime/Dockerfile','python3 apps/game-runtime/tools/oci-smoke.py aetheria-runtime-ci',
+    'pnpm install --frozen-lockfile','--package aetheria-protocol --bin native-codegen -- --check','pnpm --filter @aetheria/native-protocol typecheck','packages/native-protocol/test/wire.test.ts',
+    'CARGO_TARGET_DIR: artifacts/rust/target','build --locked --package aetheria-security --bin durable-check','scripts/runtime-admission-durable-check.mjs',
     'tests/integration/runtime-admission.test.ts','tests/integration/native-game-schema.test.ts','tests/integration/schema-compatibility.test.ts',
     'scripts/native-game-migration-compat.mjs','scripts/runtime-admission-migration-compat.mjs',
-    '--package vl-world --example zone-probe','node scripts/prepare-ci-browser.mjs',
-    'build --locked --package vl-gateway --example interop',
+    '--package aetheria-world --example zone-probe','node scripts/prepare-ci-browser.mjs',
+    'build --locked --package aetheria-gateway --example interop',
     'node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs\n',
     'node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay\n',
     'node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena\n',
     'node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena-loss\n',
-    'build --locked --package vl-game-runtime',
-    'build --locked --package vl-persistence --example orchestration','scripts/native-game-orchestration.mjs'])assert(workflow.includes(gate),'Missing Rust gate '+gate);
+    'build --locked --package aetheria-game-runtime',
+    'build --locked --package aetheria-persistence --example orchestration','scripts/native-game-orchestration.mjs'])assert(workflow.includes(gate),'Missing Rust gate '+gate);
 }
 export function assertPromotionWorkflow(workflow, pins) {
   assert(workflow.startsWith('name: Propose verified digest promotion\non:\n  workflow_dispatch:\n'));
@@ -70,16 +70,16 @@ export function assertPromotionWorkflow(workflow, pins) {
   assert(!/^\s+(?:push|pull_request|workflow_run|schedule):/m.test(workflow));
   assert(!/^\s+(?:contents|packages|actions|id-token): write\b/m.test(workflow));
   assert(!/docker (?:build|push)|git push|gh pr merge|kubectl|argocd/.test(workflow));
-  assert.deepEqual([...workflow.matchAll(/secrets\.([A-Za-z0-9_]+)/g)].map(match => match[1]), ['VLP_PROMOTION_APP_PRIVATE_KEY']);
+  assert.deepEqual([...workflow.matchAll(/secrets\.([A-Za-z0-9_]+)/g)].map(match => match[1]), ['AETHERIA_PROMOTION_APP_PRIVATE_KEY']);
   for (const match of workflow.matchAll(/uses:\s*([^\s#]+)/g)) {const [name, revision] = match[1].split('@'); assert(/^[a-f0-9]{40}$/.test(revision ?? '')); assert.equal(revision, pins[name]);}
   assert.equal((workflow.match(/: write\b/g) ?? []).length, 2);
   assert.equal((workflow.split('\njobs:\n')[1]?.match(/^ {2}[a-z][a-z-]*:\s*$/gm) ?? []).length, 1);
-  for (const condition of ["github.repository == 'tiecont/virtual-life-platform'", "github.ref == 'refs/heads/main'", "vars.VLP_PROMOTION_ENABLED == 'true'"]) assert(workflow.includes(condition));
+  for (const condition of ["github.repository == 'tiecont/aetheria-soulbound'", "github.ref == 'refs/heads/main'", "vars.AETHERIA_PROMOTION_ENABLED == 'true'"]) assert(workflow.includes(condition));
   assert(workflow.includes('    permissions:\n      contents: read\n      actions: read\n      packages: read\n'));
   assert(workflow.includes('ref: ${{ github.sha }}') && workflow.includes('persist-credentials: false') && workflow.includes('fetch-depth: 0') && workflow.includes('node-version-file: .node-version'));
   const authorize = workflow.indexOf('node scripts/promotion-bot.mjs authorize'), download = workflow.indexOf('uses: actions/download-artifact@'), prepare = workflow.indexOf('node scripts/promotion-bot.mjs prepare'), app = workflow.indexOf('uses: actions/create-github-app-token@'), publish = workflow.indexOf('node scripts/promotion-bot.mjs publish');
   assert(authorize >= 0 && authorize < download && download < prepare && prepare < app && app < publish);
-  for (const text of ['name: ${{ steps.authorize.outputs.artifact }}', 'run-id: ${{ steps.authorize.outputs.publisher_run }}', 'owner: tiecont', 'repositories: virtual-life-platform', 'permission-contents: write', 'permission-pull-requests: write', 'PROMOTION_APP_TOKEN: ${{ steps.app.outputs.token }}', 'PROMOTION_PROPOSAL_SHA: ${{ steps.prepare.outputs.sha }}', 'docker logout ghcr.io']) assert(workflow.includes(text));
+  for (const text of ['name: ${{ steps.authorize.outputs.artifact }}', 'run-id: ${{ steps.authorize.outputs.publisher_run }}', 'owner: tiecont', 'repositories: aetheria-soulbound', 'permission-contents: write', 'permission-pull-requests: write', 'PROMOTION_APP_TOKEN: ${{ steps.app.outputs.token }}', 'PROMOTION_PROPOSAL_SHA: ${{ steps.prepare.outputs.sha }}', 'docker logout ghcr.io']) assert(workflow.includes(text));
   assert.equal((workflow.match(/if: \$\{\{ steps.prepare.outputs.changed == 'true' \}\}/g) ?? []).length, 2);
   for (const line of workflow.split('\n').filter(line => /^\s+run:/.test(line))) assert(!line.includes('inputs.'));
 }

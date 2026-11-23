@@ -1,5 +1,0 @@
-{
-  "name": "VirtualLife.Editor",
-  "references": ["VirtualLife.Blockout", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime"],
-  "includePlatforms": ["Editor"]
-}

@@ -1,5 +1,5 @@
 import { it, expect } from 'vitest';
-import { HospitalityPolicySchema, type OrderWorkflowStrategy } from '@virtual-city/contracts';
+import { HospitalityPolicySchema, type OrderWorkflowStrategy } from '@aetheria/contracts';
 import { advanceService } from './workflow';
 const workflow: OrderWorkflowStrategy = { key: 'dining-workflow', version: '1.0.0', kind: 'timed-courses', courses: [{ key: 'starter', label: 'Starter', prepareSeconds: 2 }, { key: 'main', label: 'Main', prepareSeconds: 3 }] };
 it('sets a trusted preparation deadline,denies early readiness and serves successive courses without skipping', () => {

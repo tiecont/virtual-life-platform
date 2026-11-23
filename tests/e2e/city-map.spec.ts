@@ -2,7 +2,7 @@ import {evidenceOutput} from '../../scripts/evidence-output.mjs';
 import { test,expect,type BrowserContext } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { mkdir,writeFile } from 'node:fs/promises';
-import { WorldCatalogSchema } from '@virtual-city/contracts';
+import { WorldCatalogSchema } from '@aetheria/contracts';
 const origin='http://127.0.0.1:3300';
 async function guest(context:BrowserContext){const response=await context.request.post('/v1/session/guest',{headers:{origin},data:{requestId:randomUUID(),displayName:'City Visitor',avatarKey:'mint'}});expect(response.status()).toBe(201);return response.json();}
 test('original city map uses real catalog hotspots with matching native list,keyboard access and session-preserving cafe navigation',async({page,context})=>{
@@ -20,6 +20,6 @@ test('catalog outage clears hotspots and an aborted old catalog cannot restore t
  await page.route('**/v1/worlds',route=>route.abort('failed'));await page.getByRole('button',{name:'Refresh city map',exact:true}).click();await expect(page.getByText('City catalog unavailable. Refresh or return when connected.',{exact:true})).toBeVisible();await expect(map.locator('a')).toHaveCount(0);await expect(page.getByRole('list',{name:'Available city catalog'})).toHaveCount(0);await page.unroute('**/v1/worlds');await page.getByRole('button',{name:'Refresh city map',exact:true}).click();await expect(map.locator('a')).toHaveCount(4);
  let release!:()=>void,observed!:()=>void,heldOnce=false;const held=new Promise<void>(resolve=>release=resolve),seen=new Promise<void>(resolve=>observed=resolve);
  await page.route('**/v1/worlds',async route=>{if(heldOnce){await route.continue();return;}heldOnce=true;const actual=await route.fetch();observed();await held;await route.fulfill({response:actual}).catch(()=>{});});await page.getByRole('button',{name:'Refresh city map',exact:true}).click();await seen;
- try{expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);await page.evaluate(()=>{const bus=new BroadcastChannel('virtual-city-identity');bus.postMessage({changed:true});bus.close();});await expect(page.getByText('Open identity to see places available to your session.',{exact:true})).toBeVisible();await expect(map.locator('a')).toHaveCount(0);}finally{release();await page.unrouteAll({behavior:'wait'});}
+ try{expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);await page.evaluate(()=>{const bus=new BroadcastChannel('aetheria-soulbound-identity');bus.postMessage({changed:true});bus.close();});await expect(page.getByText('Open identity to see places available to your session.',{exact:true})).toBeVisible();await expect(map.locator('a')).toHaveCount(0);}finally{release();await page.unrouteAll({behavior:'wait'});}
  await expect(map.locator('a')).toHaveCount(0);await expect(page.getByRole('list',{name:'Available city catalog'})).toHaveCount(0);
 });

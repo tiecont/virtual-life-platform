@@ -11,6 +11,33 @@ importers:
 
   .:
     devDependencies:
+      '@aetheria/boardgame-core':
+        specifier: workspace:*
+        version: link:packages/boardgame-core
+      '@aetheria/contracts':
+        specifier: workspace:*
+        version: link:packages/contracts
+      '@aetheria/deadline-world':
+        specifier: workspace:*
+        version: link:packages/deadline-world
+      '@aetheria/library-world':
+        specifier: workspace:*
+        version: link:packages/library-world
+      '@aetheria/lounge-world':
+        specifier: workspace:*
+        version: link:packages/lounge-world
+      '@aetheria/maid-world':
+        specifier: workspace:*
+        version: link:packages/maid-world
+      '@aetheria/park-world':
+        specifier: workspace:*
+        version: link:packages/park-world
+      '@aetheria/restaurant-world':
+        specifier: workspace:*
+        version: link:packages/restaurant-world
+      '@aetheria/world-sdk':
+        specifier: workspace:*
+        version: link:packages/world-sdk
       '@bufbuild/protoc-gen-es':
         specifier: 2.17.0
         version: 2.17.0(supports-color@7.2.0)
@@ -32,33 +59,6 @@ importers:
       '@types/react-dom':
         specifier: 19.3.0
         version: 19.3.0(@types/react@19.3.0)
-      '@virtual-city/boardgame-core':
-        specifier: workspace:*
-        version: link:packages/boardgame-core
-      '@virtual-city/contracts':
-        specifier: workspace:*
-        version: link:packages/contracts
-      '@virtual-city/deadline-world':
-        specifier: workspace:*
-        version: link:packages/deadline-world
-      '@virtual-city/library-world':
-        specifier: workspace:*
-        version: link:packages/library-world
-      '@virtual-city/lounge-world':
-        specifier: workspace:*
-        version: link:packages/lounge-world
-      '@virtual-city/maid-world':
-        specifier: workspace:*
-        version: link:packages/maid-world
-      '@virtual-city/park-world':
-        specifier: workspace:*
-        version: link:packages/park-world
-      '@virtual-city/restaurant-world':
-        specifier: workspace:*
-        version: link:packages/restaurant-world
-      '@virtual-city/world-sdk':
-        specifier: workspace:*
-        version: link:packages/world-sdk
       eslint:
         specifier: 9.39.1
         version: 9.39.1(supports-color@7.2.0)
@@ -83,10 +83,10 @@ importers:
 
   apps/admin-web:
     dependencies:
-      '@virtual-city/contracts':
+      '@aetheria/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
-      '@virtual-city/ui':
+      '@aetheria/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       next:
@@ -111,6 +111,27 @@ importers:
 
   apps/mobile:
     dependencies:
+      '@aetheria/client-sdk':
+        specifier: workspace:*
+        version: link:../../packages/client-sdk
+      '@aetheria/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@aetheria/deadline-world':
+        specifier: workspace:*
+        version: link:../../packages/deadline-world
+      '@aetheria/game-client':
+        specifier: workspace:*
+        version: link:../../packages/game-client
+      '@aetheria/maid-world':
+        specifier: workspace:*
+        version: link:../../packages/maid-world
+      '@aetheria/pixi-scene':
+        specifier: workspace:*
+        version: link:../../packages/pixi-scene
+      '@aetheria/scene3d':
+        specifier: workspace:*
+        version: link:../../packages/scene3d
       '@capacitor/android':
         specifier: 8.6.0
         version: 8.6.0(@capacitor/core@8.6.0)
@@ -120,27 +141,6 @@ importers:
       '@capacitor/core':
         specifier: 8.6.0
         version: 8.6.0
-      '@virtual-city/client-sdk':
-        specifier: workspace:*
-        version: link:../../packages/client-sdk
-      '@virtual-city/contracts':
-        specifier: workspace:*
-        version: link:../../packages/contracts
-      '@virtual-city/deadline-world':
-        specifier: workspace:*
-        version: link:../../packages/deadline-world
-      '@virtual-city/game-client':
-        specifier: workspace:*
-        version: link:../../packages/game-client
-      '@virtual-city/maid-world':
-        specifier: workspace:*
-        version: link:../../packages/maid-world
-      '@virtual-city/pixi-scene':
-        specifier: workspace:*
-        version: link:../../packages/pixi-scene
-      '@virtual-city/scene3d':
-        specifier: workspace:*
-        version: link:../../packages/scene3d
       react:
         specifier: 19.3.1
         version: 19.3.1
@@ -157,6 +157,36 @@ importers:
 
   apps/platform-api:
     dependencies:
+      '@aetheria/boardgame-core':
+        specifier: workspace:*
+        version: link:../../packages/boardgame-core
+      '@aetheria/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@aetheria/deadline-world':
+        specifier: workspace:*
+        version: link:../../packages/deadline-world
+      '@aetheria/lantern-lodge-world':
+        specifier: workspace:*
+        version: link:../../packages/lantern-lodge-world
+      '@aetheria/library-world':
+        specifier: workspace:*
+        version: link:../../packages/library-world
+      '@aetheria/lounge-world':
+        specifier: workspace:*
+        version: link:../../packages/lounge-world
+      '@aetheria/maid-world':
+        specifier: workspace:*
+        version: link:../../packages/maid-world
+      '@aetheria/park-world':
+        specifier: workspace:*
+        version: link:../../packages/park-world
+      '@aetheria/restaurant-world':
+        specifier: workspace:*
+        version: link:../../packages/restaurant-world
+      '@aetheria/world-sdk':
+        specifier: workspace:*
+        version: link:../../packages/world-sdk
       '@fastify/cookie':
         specifier: 11.0.2
         version: 11.0.2
@@ -178,36 +208,6 @@ importers:
       '@upstash/redis':
         specifier: 1.41.0
         version: 1.41.0
-      '@virtual-city/boardgame-core':
-        specifier: workspace:*
-        version: link:../../packages/boardgame-core
-      '@virtual-city/contracts':
-        specifier: workspace:*
-        version: link:../../packages/contracts
-      '@virtual-city/deadline-world':
-        specifier: workspace:*
-        version: link:../../packages/deadline-world
-      '@virtual-city/lantern-lodge-world':
-        specifier: workspace:*
-        version: link:../../packages/lantern-lodge-world
-      '@virtual-city/library-world':
-        specifier: workspace:*
-        version: link:../../packages/library-world
-      '@virtual-city/lounge-world':
-        specifier: workspace:*
-        version: link:../../packages/lounge-world
-      '@virtual-city/maid-world':
-        specifier: workspace:*
-        version: link:../../packages/maid-world
-      '@virtual-city/park-world':
-        specifier: workspace:*
-        version: link:../../packages/park-world
-      '@virtual-city/restaurant-world':
-        specifier: workspace:*
-        version: link:../../packages/restaurant-world
-      '@virtual-city/world-sdk':
-        specifier: workspace:*
-        version: link:../../packages/world-sdk
       drizzle-orm:
         specifier: 0.45.4
         version: 0.45.4(@opentelemetry/api@1.10.0)(@types/pg@8.23.1)(@upstash/redis@1.41.0)(pg@8.23.1)
@@ -235,46 +235,46 @@ importers:
 
   apps/portal-web:
     dependencies:
-      '@virtual-city/client-sdk':
+      '@aetheria/client-sdk':
         specifier: workspace:*
         version: link:../../packages/client-sdk
-      '@virtual-city/contracts':
+      '@aetheria/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
-      '@virtual-city/deadline-world':
+      '@aetheria/deadline-world':
         specifier: workspace:*
         version: link:../../packages/deadline-world
-      '@virtual-city/focus-ui':
+      '@aetheria/focus-ui':
         specifier: workspace:*
         version: link:../../packages/focus-ui
-      '@virtual-city/game-client':
+      '@aetheria/game-client':
         specifier: workspace:*
         version: link:../../packages/game-client
-      '@virtual-city/lantern-lodge-world':
+      '@aetheria/lantern-lodge-world':
         specifier: workspace:*
         version: link:../../packages/lantern-lodge-world
-      '@virtual-city/library-world':
+      '@aetheria/library-world':
         specifier: workspace:*
         version: link:../../packages/library-world
-      '@virtual-city/lounge-world':
+      '@aetheria/lounge-world':
         specifier: workspace:*
         version: link:../../packages/lounge-world
-      '@virtual-city/maid-world':
+      '@aetheria/maid-world':
         specifier: workspace:*
         version: link:../../packages/maid-world
-      '@virtual-city/park-world':
+      '@aetheria/park-world':
         specifier: workspace:*
         version: link:../../packages/park-world
-      '@virtual-city/pixi-scene':
+      '@aetheria/pixi-scene':
         specifier: workspace:*
         version: link:../../packages/pixi-scene
-      '@virtual-city/restaurant-world':
+      '@aetheria/restaurant-world':
         specifier: workspace:*
         version: link:../../packages/restaurant-world
-      '@virtual-city/scene3d':
+      '@aetheria/scene3d':
         specifier: workspace:*
         version: link:../../packages/scene3d
-      '@virtual-city/world-sdk':
+      '@aetheria/world-sdk':
         specifier: workspace:*
         version: link:../../packages/world-sdk
       next:
@@ -292,13 +292,13 @@ importers:
 
   packages/boardgame-core:
     dependencies:
-      '@virtual-city/contracts':
+      '@aetheria/contracts':
         specifier: workspace:*
         version: link:../contracts
 
   packages/client-sdk:
     dependencies:
-      '@virtual-city/contracts':
+      '@aetheria/contracts':
         specifier: workspace:*
         version: link:../contracts
 
@@ -312,16 +312,16 @@ importers:
 
   packages/deadline-world:
     dependencies:
-      '@virtual-city/contracts':
+      '@aetheria/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@virtual-city/world-sdk':
+      '@aetheria/world-sdk':
         specifier: workspace:*
         version: link:../world-sdk
 
   packages/focus-ui:
     dependencies:
-      '@virtual-city/contracts':
+      '@aetheria/contracts':
         specifier: workspace:*
         version: link:../contracts
       react:
@@ -334,16 +334,16 @@ importers:
 
   packages/game-client:
     dependencies:
-      '@virtual-city/client-sdk':
+      '@aetheria/client-sdk':
         specifier: workspace:*
         version: link:../client-sdk
-      '@virtual-city/contracts':
+      '@aetheria/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@virtual-city/pixi-scene':
+      '@aetheria/pixi-scene':
         specifier: workspace:*
         version: link:../pixi-scene
-      '@virtual-city/world-sdk':
+      '@aetheria/world-sdk':
         specifier: workspace:*
         version: link:../world-sdk
       react:
@@ -355,37 +355,37 @@ importers:
 
   packages/lantern-lodge-world:
     dependencies:
-      '@virtual-city/contracts':
+      '@aetheria/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@virtual-city/world-sdk':
+      '@aetheria/world-sdk':
         specifier: workspace:*
         version: link:../world-sdk
 
   packages/library-world:
     dependencies:
-      '@virtual-city/contracts':
+      '@aetheria/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@virtual-city/world-sdk':
+      '@aetheria/world-sdk':
         specifier: workspace:*
         version: link:../world-sdk
 
   packages/lounge-world:
     dependencies:
-      '@virtual-city/contracts':
+      '@aetheria/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@virtual-city/world-sdk':
+      '@aetheria/world-sdk':
         specifier: workspace:*
         version: link:../world-sdk
 
   packages/maid-world:
     dependencies:
-      '@virtual-city/contracts':
+      '@aetheria/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@virtual-city/world-sdk':
+      '@aetheria/world-sdk':
         specifier: workspace:*
         version: link:../world-sdk
 
@@ -397,19 +397,19 @@ importers:
 
   packages/park-world:
     dependencies:
-      '@virtual-city/contracts':
+      '@aetheria/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@virtual-city/world-sdk':
+      '@aetheria/world-sdk':
         specifier: workspace:*
         version: link:../world-sdk
 
   packages/pixi-scene:
     dependencies:
-      '@virtual-city/contracts':
+      '@aetheria/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@virtual-city/world-sdk':
+      '@aetheria/world-sdk':
         specifier: workspace:*
         version: link:../world-sdk
       pixi.js:
@@ -418,22 +418,22 @@ importers:
 
   packages/restaurant-world:
     dependencies:
-      '@virtual-city/contracts':
+      '@aetheria/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@virtual-city/world-sdk':
+      '@aetheria/world-sdk':
         specifier: workspace:*
         version: link:../world-sdk
 
   packages/scene3d:
     dependencies:
-      '@virtual-city/client-sdk':
+      '@aetheria/client-sdk':
         specifier: workspace:*
         version: link:../client-sdk
-      '@virtual-city/contracts':
+      '@aetheria/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@virtual-city/world-sdk':
+      '@aetheria/world-sdk':
         specifier: workspace:*
         version: link:../world-sdk
       three:
@@ -448,7 +448,7 @@ importers:
 
   packages/world-sdk:
     dependencies:
-      '@virtual-city/contracts':
+      '@aetheria/contracts':
         specifier: workspace:*
         version: link:../contracts
 

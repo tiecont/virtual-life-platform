@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';import {randomUUID} from 'node:crypto';import {OperationalObservationSchema,ObservationHistogramSchema} from '@virtual-city/contracts';
+import {it,expect} from 'vitest';import {randomUUID} from 'node:crypto';import {OperationalObservationSchema,ObservationHistogramSchema} from '@aetheria/contracts';
 import {OperationalTelemetry,prometheus} from '../infrastructure/telemetry';import {observation} from './observation';import {RoomMetrics} from '../../../../rooms/modules/presence/application/metrics';
 const online={rooms:0,memberships:0,connections:0,occupiedSeats:0,graceMemberships:0};
 it('aggregate contract labels lifetime approximations explicitly and retains real zero, empty and overflow distinctions',async()=>{

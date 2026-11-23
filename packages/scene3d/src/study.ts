@@ -1,12 +1,12 @@
 import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
-import {AvatarPartsSchema,type AvatarParts,type AnimationState,type AvatarAppearance} from '@virtual-city/contracts';
-import type {AnimalCreatorHandle,AvatarFraming} from '@virtual-city/client-sdk';
+import {AvatarPartsSchema,type AvatarParts,type AnimationState,type AvatarAppearance} from '@aetheria/contracts';
+import type {AnimalCreatorHandle,AvatarFraming} from '@aetheria/client-sdk';
 import {createAnimal,animalResourceSummary,type Quality} from './animal';
 import {createRoomArt} from './room';
 import {creatorFrame} from './creator-framing';
 
-export type {AnimalStudyHandle} from '@virtual-city/client-sdk';
+export type {AnimalStudyHandle} from '@aetheria/client-sdk';
 export function createAnimalStudy(host:HTMLElement,options:{signal?:AbortSignal;quality?:Quality;appearance?:AvatarParts;onContext?:(available:boolean)=>void}={}):AnimalCreatorHandle{
  options.signal?.throwIfAborted();let renderer:T.WebGLRenderer;
  try{renderer=new T.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});}catch{throw Error('3D graphics unavailable. The text controls remain available.');}

@@ -1,6 +1,6 @@
 import { describe,it,expect } from 'vitest';
 import { createParkWorld,parkScene,parkAreas,parkDestinations } from '../src/index';
-import { findScenePath,isWalkable } from '@virtual-city/world-sdk';
+import { findScenePath,isWalkable } from '@aetheria/world-sdk';
 describe('original Central Park geometry and shared-owner adapter',()=>{
  it('eight bench places and every native destination are reachable without entering trees or boards',()=>{
   expect(parkScene.seats).toHaveLength(8);expect(new Set(parkAreas.flatMap(area=>area.seatIds))).toEqual(new Set(parkScene.seats.map(seat=>seat.seatId)));

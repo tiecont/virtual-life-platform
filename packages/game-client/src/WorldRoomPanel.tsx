@@ -1,11 +1,11 @@
 'use client';
 import { useEffect, useRef, useState,type ReactNode,type ComponentType,type RefObject } from 'react';
 import { io, type Socket } from 'socket.io-client';
-import { MeSchema,AvatarOwnStateSchema,NativeSocketHandshakeSchema, RoomAckSchema, WorldCatalogSchema, sceneManifestHash, type ClientProtocolOffer, type NegotiatedSession, type SceneIdentity, type Me, type RoomSnapshot,type SceneManifest,type TravelSource,type AvatarAppearance,type TravelDestination } from '@virtual-city/contracts';
-import { RoomRecovery, resolveClientCompatibility, createClientProtocolOffer, acceptSessionCompatibility, type ResolvedClientCompatibility, type RoomRecoveryView } from '@virtual-city/world-sdk';
-import { sandboxScene } from '@virtual-city/pixi-scene';
+import { MeSchema,AvatarOwnStateSchema,NativeSocketHandshakeSchema, RoomAckSchema, WorldCatalogSchema, sceneManifestHash, type ClientProtocolOffer, type NegotiatedSession, type SceneIdentity, type Me, type RoomSnapshot,type SceneManifest,type TravelSource,type AvatarAppearance,type TravelDestination } from '@aetheria/contracts';
+import { RoomRecovery, resolveClientCompatibility, createClientProtocolOffer, acceptSessionCompatibility, type ResolvedClientCompatibility, type RoomRecoveryView } from '@aetheria/world-sdk';
+import { sandboxScene } from '@aetheria/pixi-scene';
 import {rendererFactory} from './renderer';
-import type {ClientPlatform,RoomSceneHandle} from '@virtual-city/client-sdk';
+import type {ClientPlatform,RoomSceneHandle} from '@aetheria/client-sdk';
 
 const idle: RoomRecoveryView = { status: 'idle', snapshot: null, reason: null };
 type SceneView = RoomSceneHandle;
@@ -35,7 +35,7 @@ function RoomDrawer({enabled,title,drawerRef,onClosed,children}:{enabled:boolean
  if(!enabled)return <>{children}</>;
  return <dialog ref={drawerRef} className="cafe-drawer" aria-label={title} onClose={onClosed}><div className="cafe-drawer-heading"><h2>{title}</h2><button onClick={()=>drawerRef.current?.close()}>Close {title.toLowerCase()}</button></div>{children}</dialog>;
 }
-const defaultRenderer=()=>import('@virtual-city/pixi-scene/renderer');
+const defaultRenderer=()=>import('@aetheria/pixi-scene/renderer');
 export interface WorldRoomPanelProps {modularAppearance?:boolean;sceneFirst?:boolean;rendererLoader?:()=>Promise<unknown>;artLabel?:string;socketOrigin:string;platform:ClientPlatform;widgets:RoomWidgets;experience?:RoomExperience;children?:ReactNode|((context:RoomChildContext)=>ReactNode)}
 export default function WorldRoomPanel({socketOrigin,platform,widgets,modularAppearance=false,sceneFirst=false,rendererLoader=defaultRenderer,artLabel='Original starter art',experience=sandboxExperience,children}:WorldRoomPanelProps) {
  const {Link,FocusPanel,Wardrobe,WorldEvents,RoomInvitation,RoomSafety}=widgets;
@@ -258,7 +258,7 @@ export default function WorldRoomPanel({socketOrigin,platform,widgets,modularApp
   {experience.portalReturn&&<button disabled={busy||loading||view.status==='syncing'||view.status==='reconnecting'} onClick={()=>void returnToCity()}>{active?'Leave and return to city':'Return to city'}</button>}</>;
   return <main className={'cafe-shell'+(sceneFirst?' scene-first':'')} data-shell={sceneFirst?'scene-first':'classic'} data-world={experience.slug}>
     <a className="cafe-skip" href="#cafe-room-controls">Skip to room controls</a>
-    <header className="cafe-nav"><Link href="/">Virtual Life Platform</Link><nav aria-label="Room navigation"><Link href="/identity">Identity</Link><Link href="/social">Your circle</Link></nav><span className="cafe-local">{experience.badge}</span></header>
+    <header className="cafe-nav"><Link href="/">Aetheria: SoulBound</Link><nav aria-label="Room navigation"><Link href="/identity">Identity</Link><Link href="/social">Your circle</Link></nav><span className="cafe-local">{experience.badge}</span></header>
     <div className="cafe-heading"><div><p className="cafe-eyebrow">{experience.eyebrow}</p><h1>{experience.title}</h1></div><div className="cafe-occupancy" aria-label={view.snapshot ? 'Room occupancy' : 'Room occupancy unconfirmed'}><strong>{view.snapshot?.occupancy ?? '—'}</strong><span>/ {view.snapshot?.capacity??experience.capacity??manifest.seats.length} present</span></div></div>
     {sceneFirst&&<><div className="cafe-game-hud"><div className="cafe-game-status">{panel===null&&<>{connection}{feedback}</>}</div><div className="cafe-game-entry">{visitControls}</div></div>
       <nav className="cafe-game-nav" aria-label="Activity shortcuts"><button ref={actionsButton} onClick={event=>showPanel('actions',event.currentTarget)}>Room actions</button><button onClick={event=>showPanel('visit',event.currentTarget)}>People, safety &amp; options</button><Link href="/travel">Travel</Link></nav><p className="cafe-portrait-hint">Turn sideways for a wider view. All controls remain available.</p>

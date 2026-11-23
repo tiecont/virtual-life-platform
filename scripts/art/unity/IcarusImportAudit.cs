@@ -48,9 +48,9 @@ namespace Aetheria.ArtValidation
         public static void Run()
         {
             if (Application.unityVersion != "6000.3.14f1") throw new InvalidOperationException("Pinned Editor required");
-            string model = Environment.GetEnvironmentVariable("VL_ICARUS_AUDIT_MODEL");
-            string output = Environment.GetEnvironmentVariable("VL_ICARUS_AUDIT_OUTPUT");
-            var actions = JsonUtility.FromJson<ActionProfile>(Environment.GetEnvironmentVariable("VL_ICARUS_AUDIT_ACTIONS"));
+            string model = Environment.GetEnvironmentVariable("AETHERIA_ICARUS_AUDIT_MODEL");
+            string output = Environment.GetEnvironmentVariable("AETHERIA_ICARUS_AUDIT_OUTPUT");
+            var actions = JsonUtility.FromJson<ActionProfile>(Environment.GetEnvironmentVariable("AETHERIA_ICARUS_AUDIT_ACTIONS"));
             if (string.IsNullOrEmpty(output) || !Path.IsPathRooted(output) || File.Exists(output))
                 throw new InvalidOperationException("New absolute report path required");
             var importer = AssetImporter.GetAtPath(model) as ModelImporter;

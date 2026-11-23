@@ -1,6 +1,6 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
-import { EventCatalogSchema,EventRsvpResultSchema,type Me,type TravelSource } from '@virtual-city/contracts';
+import { EventCatalogSchema,EventRsvpResultSchema,type Me,type TravelSource } from '@aetheria/contracts';
 import StudyProgress from '../../../../focus/modules/focus/presentation/StudyProgress';
 import StopStudySharing from '../../../../focus/modules/focus/presentation/StopStudySharing';
 import Link from 'next/link';

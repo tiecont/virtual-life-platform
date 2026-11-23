@@ -1,6 +1,6 @@
 import type { FastifyInstance,FastifyRequest } from 'fastify';
 import { z } from 'zod';
-import { ProgressionClaimFocusSchema } from '@virtual-city/contracts';
+import { ProgressionClaimFocusSchema } from '@aetheria/contracts';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import type { Config } from '../../../../../shared/config/environment';
 import { readSessionToken } from '../../../../identity/modules/accounts/presentation/http';

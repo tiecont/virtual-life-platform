@@ -1,5 +1,5 @@
 {
-  "name": "@virtual-city/client-sdk",
+  "name": "@aetheria/client-sdk",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -15,5 +15,5 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
-  "dependencies":{"@virtual-city/contracts":"workspace:*"}
+  "dependencies":{"@aetheria/contracts":"workspace:*"}
 }

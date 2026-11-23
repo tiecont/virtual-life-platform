@@ -1,6 +1,6 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
-import { MeSchema,DatingProfileWithdrawnSchema,DatingContinuationRevokedSchema,type Me } from '@virtual-city/contracts';
+import { MeSchema,DatingProfileWithdrawnSchema,DatingContinuationRevokedSchema,type Me } from '@aetheria/contracts';
 export default function PrivateWithdraw({me,onStart,onDone,kind='profile'}:{me:Me;onStart?:()=>void;onDone?:(confirmed:boolean)=>void;kind?:'profile'|'continuation'}){
  const [busy,setBusy]=useState(false),[message,setMessage]=useState(''),[uncertain,setUncertain]=useState(false),key=useRef<string|null>(null),life=useRef<AbortController|null>(null);
  useEffect(()=>{const controller=new AbortController();life.current=controller;key.current=null;setBusy(false);setMessage('');setUncertain(false);return()=>controller.abort();},[me.profile.id,me.csrfToken,kind]);

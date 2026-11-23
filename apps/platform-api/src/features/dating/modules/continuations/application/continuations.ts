@@ -1,6 +1,6 @@
 import { timingSafeEqual } from 'node:crypto';
 import type { Pool,PoolClient } from 'pg';
-import { DatingContinuationLikeSchema,DatingContinuationViewSchema,DatingContinuationListSchema,DatingContinuationRevokedSchema,type DatingAliasSchema } from '@virtual-city/contracts';
+import { DatingContinuationLikeSchema,DatingContinuationViewSchema,DatingContinuationListSchema,DatingContinuationRevokedSchema,type DatingAliasSchema } from '@aetheria/contracts';
 import type { IdentityService,IdentityContext } from '../../../../identity/modules/accounts/application/service';
 import type { SocialService } from '../../../../social/modules/relationships/application/service';
 import { DomainError } from '../../../../../shared/common/errors';

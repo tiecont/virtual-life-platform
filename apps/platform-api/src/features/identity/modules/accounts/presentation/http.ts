@@ -1,7 +1,7 @@
 import cookie from '@fastify/cookie';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
-import { GuestInputSchema, ProfilePatchSchema, PrivacySchema, UpgradeInputSchema, LoginInputSchema, CURRENT_CLIENT_COMPATIBILITY } from '@virtual-city/contracts';
+import { GuestInputSchema, ProfilePatchSchema, PrivacySchema, UpgradeInputSchema, LoginInputSchema, CURRENT_CLIENT_COMPATIBILITY } from '@aetheria/contracts';
 import type { Config } from '../../../../../shared/config/environment';
 import { IdentityService } from '../application/service';
 import { IdentityError, unauthorized } from '../domain/errors';

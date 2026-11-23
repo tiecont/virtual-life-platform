@@ -1,4 +1,4 @@
-import type {RoomSceneFactory} from '@virtual-city/client-sdk';
+import type {RoomSceneFactory} from '@aetheria/client-sdk';
 // The existing renderer is CommonJS. Next exposes its named exports, while the
 // Vite lazy chunk can expose that same module under default. Keep both adapters.
 export function rendererFactory(namespace:unknown):RoomSceneFactory{

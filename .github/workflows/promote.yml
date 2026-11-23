@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   propose:
-    if: ${{ github.repository == 'tiecont/virtual-life-platform' && github.ref == 'refs/heads/main' && vars.VLP_PROMOTION_ENABLED == 'true' }}
+    if: ${{ github.repository == 'tiecont/aetheria-soulbound' && github.ref == 'refs/heads/main' && vars.AETHERIA_PROMOTION_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -27,7 +27,7 @@ jobs:
       actions: read
       packages: read
     env:
-      VLP_PROMOTION_ENABLED: ${{ vars.VLP_PROMOTION_ENABLED }}
+      AETHERIA_PROMOTION_ENABLED: ${{ vars.AETHERIA_PROMOTION_ENABLED }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -63,10 +63,10 @@ jobs:
         if: ${{ steps.prepare.outputs.changed == 'true' }}
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510
         with:
-          app-id: ${{ vars.VLP_PROMOTION_APP_ID }}
-          private-key: ${{ secrets.VLP_PROMOTION_APP_PRIVATE_KEY }}
+          app-id: ${{ vars.AETHERIA_PROMOTION_APP_ID }}
+          private-key: ${{ secrets.AETHERIA_PROMOTION_APP_PRIVATE_KEY }}
           owner: tiecont
-          repositories: virtual-life-platform
+          repositories: aetheria-soulbound
           permission-contents: write
           permission-pull-requests: write
       - name: Create or reuse a draft promotion PR

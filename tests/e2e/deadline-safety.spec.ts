@@ -1,5 +1,5 @@
 import { test,expect,devices } from '@playwright/test';
-import { deadlineWorldVersion } from '@virtual-city/deadline-world';
+import { deadlineWorldVersion } from '@aetheria/deadline-world';
 import { origin,guest,headers,friends,allowInvites,publicRooms,enter,own,testDb } from '../support/deadline-safety-fixtures';
 test('actual Library visitor opts into a Deadline offer,accepts privately and separately confirms travel to the offered room',async({page,context,browser},info)=>{
  const peer=await browser.newContext({...devices[info.project.name==='mobile'?'iPhone 13':'Desktop Chrome'],baseURL:origin}),db=testDb();

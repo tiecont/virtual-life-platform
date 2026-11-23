@@ -43,5 +43,5 @@ export async function inspectWebImage(containsCredential) {
   const buildId = (await readFile(resolve(app, '.next/BUILD_ID'), 'utf8')).trim(); assert(buildId.length > 0);
   return {uid: process.getuid(), node: process.versions.node, filesystemWriteDenied: denied, buildId, clientJs, clientCss, scannedTextFiles, definedCredentialFindings: 0,
     inventory, inventorySha256: hash(JSON.stringify(inventory)),
-    sbom: {bomFormat: 'CycloneDX', specVersion: '1.6', version: 1, serialNumber: 'urn:uuid:' + randomUUID(), metadata: {component: {type: 'application', name: 'vlp-web', version: '0.1.0'}}, components: [...components.values()].sort((a, b) => a.purl < b.purl ? -1 : 1)}};
+    sbom: {bomFormat: 'CycloneDX', specVersion: '1.6', version: 1, serialNumber: 'urn:uuid:' + randomUUID(), metadata: {component: {type: 'application', name: 'aetheria-web', version: '0.1.0'}}, components: [...components.values()].sort((a, b) => a.purl < b.purl ? -1 : 1)}};
 }

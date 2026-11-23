@@ -1,5 +1,5 @@
 import {useEffect,useRef,useState} from 'react';
-import {NativeAccountDeleteOutcomeSchema,type NativeAccountDeleteOutcome} from '@virtual-city/contracts';
+import {NativeAccountDeleteOutcomeSchema,type NativeAccountDeleteOutcome} from '@aetheria/contracts';
 import {androidSession} from './native-session';
 
 export function NativeAccountDeletion({accountId,displayName,busy,onBusy,onResult}:{accountId:string;displayName:string;busy:boolean;onBusy:(value:boolean)=>void;onResult:(accountId:string,result:NativeAccountDeleteOutcome)=>void}){

@@ -44,7 +44,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy normal biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy normal biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -90,7 +90,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy fire biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy fire biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -136,7 +136,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy water biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy water biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -182,7 +182,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy grass biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy grass biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -228,7 +228,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy electric biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy electric biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -274,7 +274,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy ice biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy ice biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -320,7 +320,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy fighting biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy fighting biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -366,7 +366,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy poison biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy poison biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -412,7 +412,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy ground biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy ground biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -458,7 +458,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy flying biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy flying biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -504,7 +504,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy psychic biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy psychic biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -550,7 +550,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy bug biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy bug biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -596,7 +596,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy rock biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy rock biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -642,7 +642,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy ghost biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy ghost biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -688,7 +688,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy dragon biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy dragon biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -734,7 +734,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy dark biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy dark biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -780,7 +780,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy steel biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy steel biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -826,7 +826,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy fairy biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy fairy biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     },
     {
@@ -872,7 +872,7 @@
         "resetOnLogout": false,
         "noCaptureBall": true
       },
-      "visualBiome": "Original fantasy light biome connected to the VirtualLife portal; distinct silhouettes and boss arena",
+      "visualBiome": "Original fantasy light biome connected to the Aetheria portal; distinct silhouettes and boss arena",
       "availability": "DRAFT_ONLY"
     }
   ],

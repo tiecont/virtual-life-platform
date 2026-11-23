@@ -1,6 +1,6 @@
 import type {Pool,PoolClient} from 'pg';
 import {z} from 'zod';
-import {AVATAR_CATALOG_VERSION,AvatarPartsSchema,AvatarSaveInputSchema,AvatarOwnStateSchema,AvatarSaveResultSchema,starterAvatarParts,type AvatarParts,type AvatarOwnState,type PublicProfile} from '@virtual-city/contracts';
+import {AVATAR_CATALOG_VERSION,AvatarPartsSchema,AvatarSaveInputSchema,AvatarOwnStateSchema,AvatarSaveResultSchema,starterAvatarParts,type AvatarParts,type AvatarOwnState,type PublicProfile} from '@aetheria/contracts';
 import type {IdentityService} from '../../../../identity/modules/accounts/application/service';
 import {DomainError} from '../../../../../shared/common/errors';
 type DB=Pick<Pool,'query'>;

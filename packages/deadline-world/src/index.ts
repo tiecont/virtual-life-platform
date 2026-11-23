@@ -1,4 +1,4 @@
-import { defineWorld,WorldError } from '@virtual-city/world-sdk';
+import { defineWorld,WorldError } from '@aetheria/world-sdk';
 import { deadlineScene } from './scene';
 import { deadlineLayout } from './baseline';
 export { deadlineSourceCommit,deadlineLayout } from './baseline';

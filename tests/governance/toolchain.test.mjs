@@ -3,32 +3,32 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {assertBuildAll, assertQualityToolchain, describeToolchain, workspaceGraph} from '../../scripts/verify-toolchain.mjs';
 
-const project = (name, dependencies = {}) => ({path: 'packages/' + name, manifest: {name: '@virtual-city/' + name, scripts: {build: 'tsc', typecheck: 'tsc --noEmit'}, dependencies}});
+const project = (name, dependencies = {}) => ({path: 'packages/' + name, manifest: {name: '@aetheria/' + name, scripts: {build: 'tsc', typecheck: 'tsc --noEmit'}, dependencies}});
 
 test('shared contracts reach all four real apps and every compiled workspace participates in the build-all map', async () => {
   const {map} = await describeToolchain();
-  const contracts = map.projects.find(project => project.name === '@virtual-city/contracts');
-  assert.deepEqual(contracts.applicationConsumers, ['@virtual-city/admin-web', '@virtual-city/mobile', '@virtual-city/platform-api', '@virtual-city/portal-web']);
-  assert.deepEqual(map.projects.find(project => project.name === '@virtual-city/config').applicationConsumers, contracts.applicationConsumers);
-  assert(map.projects.find(project => project.name === '@virtual-city/platform-api').compilerInputs.some(input => input.path === 'packages/config/tsconfig.json'));
+  const contracts = map.projects.find(project => project.name === '@aetheria/contracts');
+  assert.deepEqual(contracts.applicationConsumers, ['@aetheria/admin-web', '@aetheria/mobile', '@aetheria/platform-api', '@aetheria/portal-web']);
+  assert.deepEqual(map.projects.find(project => project.name === '@aetheria/config').applicationConsumers, contracts.applicationConsumers);
+  assert(map.projects.find(project => project.name === '@aetheria/platform-api').compilerInputs.some(input => input.path === 'packages/config/tsconfig.json'));
   assert(map.projects.filter(project => project.kind === 'application').every(project => map.buildOrder.includes(project.name)));
   assert.equal(map.projects.filter(project => project.kind === 'source-only').length, 2);
   const root = JSON.parse(await readFile('package.json', 'utf8'));
   assertBuildAll(root);
-  for (const command of ['pnpm --filter @virtual-city/platform-api build', 'pnpm -r --filter "...[HEAD]" build']) {
+  for (const command of ['pnpm --filter @aetheria/platform-api build', 'pnpm -r --filter "...[HEAD]" build']) {
     assert.throws(() => assertBuildAll({...root, scripts: {...root.scripts, build: command}}));
   }
 });
 
 test('graph rejects unknown workspaces, implicit external ranges, cycles, duplicate names and missing app build targets', () => {
-  assert.deepEqual(workspaceGraph([project('base'), project('client', {'@virtual-city/base': 'workspace:*'})]).order, ['@virtual-city/base', '@virtual-city/client']);
+  assert.deepEqual(workspaceGraph([project('base'), project('client', {'@aetheria/base': 'workspace:*'})]).order, ['@aetheria/base', '@aetheria/client']);
   const cases = [
-    [project('base', {'@virtual-city/missing': 'workspace:*'})],
+    [project('base', {'@aetheria/missing': 'workspace:*'})],
     [project('base', {zod: '^4.6.7'})],
-    [project('base', {'@virtual-city/base': '4.6.7'})],
-    [project('a', {'@virtual-city/b': 'workspace:*'}), project('b', {'@virtual-city/a': 'workspace:*'})],
+    [project('base', {'@aetheria/base': '4.6.7'})],
+    [project('a', {'@aetheria/b': 'workspace:*'}), project('b', {'@aetheria/a': 'workspace:*'})],
     [project('base'), project('base')],
-    [{path: 'apps/missing', manifest: {name: '@virtual-city/missing'}}]
+    [{path: 'apps/missing', manifest: {name: '@aetheria/missing'}}]
   ];
   for (const value of cases) assert.throws(() => workspaceGraph(value));
 });

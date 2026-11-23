@@ -2,16 +2,16 @@
   "apiVersion": "networking.k8s.io/v1",
   "kind": "NetworkPolicy",
   "metadata": {
-    "name": "vlp-api-from-web",
+    "name": "aetheria-api-from-web",
     "labels": {
-      "app.kubernetes.io/part-of": "virtual-life-platform"
+      "app.kubernetes.io/part-of": "aetheria-soulbound"
     }
   },
   "spec": {
     "podSelector": {
       "matchLabels": {
-        "app.kubernetes.io/part-of": "virtual-life-platform",
-        "app.kubernetes.io/name": "vlp-api"
+        "app.kubernetes.io/part-of": "aetheria-soulbound",
+        "app.kubernetes.io/name": "aetheria-api"
       }
     },
     "policyTypes": [
@@ -23,8 +23,8 @@
           {
             "podSelector": {
               "matchLabels": {
-                "app.kubernetes.io/part-of": "virtual-life-platform",
-                "app.kubernetes.io/name": "vlp-web"
+                "app.kubernetes.io/part-of": "aetheria-soulbound",
+                "app.kubernetes.io/name": "aetheria-web"
               }
             }
           }

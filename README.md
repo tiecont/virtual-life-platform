@@ -1,4 +1,4 @@
-# VirtualLife
+# Aetheria: SoulBound
 
 Shared identity, social safety and activities across virtual worlds. The primary
 client direction is Windows Unity/URP, with Rust for new gameplay and NestJS for
@@ -43,7 +43,7 @@ pnpm preview:status
 pnpm preview:test
 ```
 
-The first build includes Node and Rust dependencies. Open the Aetheria VI/EN
+The first build includes Node and Rust dependencies. Open the Aetheria: SoulBound VI/EN
 preview at http://127.0.0.1:4900, the portal at http://127.0.0.1:4800 and the
 private console at http://127.0.0.1:4900/admin. The API is on loopback port 4700
 and the native foundation on 4600. PostgreSQL, migrations, API, durable worker,
@@ -65,7 +65,7 @@ port values before starting if the defaults are occupied. Use `preview:logs` for
 diagnostics, `preview:stop` to pause or `preview:down` to remove this stack's
 containers/network while retaining its database volume. Keep its original
 environment for that database; do not reuse production data or credentials.
-The separate existing `vc-*` production-artifact stack is unaffected.
+The separate existing `aetheria-*` production-artifact stack is unaffected.
 
 ## Source Layout
 
@@ -165,7 +165,7 @@ Public rollout, production operations, restricted worlds, content clearance and
 signing require their existing explicit approvals. Merging source does not turn
 those features on.
 
-## Aetheria: Soulbound prelaunch
+## Aetheria: SoulBound prelaunch
 
 The public presentation uses the existing `apps/admin-web` runtime. The private
 operator login is now `/admin`; `/api/admin/*` retains the existing Nest identity,
@@ -173,7 +173,7 @@ session and CSRF boundary. Update operator bookmarks and health probes to
 `/admin`. `ADMIN_ORIGIN` remains an origin (no `/admin` path).
 
 For a local, development-only homepage preview, run
-`AETHERIA_SITE_PREVIEW=1 pnpm --filter @virtual-city/admin-web dev`.
+`AETHERIA_SITE_PREVIEW=1 pnpm --filter @aetheria/admin-web dev`.
 Vietnamese is the default; `?lang=en` selects English. The homepage and closed
 preregistration page return 404 by default and always in production, including
 when the preview variable is set. Preview HTML is private/no-store and noindex;

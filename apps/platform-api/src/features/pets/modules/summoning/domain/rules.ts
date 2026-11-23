@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {PetAcquisitionCatalogV3Schema,PetStandardIdentityV3,type PetAcquisitionCatalogV3} from '@virtual-city/contracts/pet-acquisition-v3';
+import {PetAcquisitionCatalogV3Schema,PetStandardIdentityV3,type PetAcquisitionCatalogV3} from '@aetheria/contracts/pet-acquisition-v3';
 
 const id=z.string().regex(/^[a-z][a-z0-9_-]{0,63}$/);
 const digest=z.string().regex(/^[a-f0-9]{64}$/);

@@ -2,11 +2,11 @@ import { beforeAll, afterAll, afterEach, describe, it, expect, vi } from 'vitest
 import { Pool } from 'pg';
 import { randomUUID } from 'node:crypto';
 import { io, type Socket } from 'socket.io-client';
-import { RoomAckSchema, RoomsListSchema, MeSchema, type Me, type RoomSnapshot, type RoomJoin } from '@virtual-city/contracts';
+import { RoomAckSchema, RoomsListSchema, MeSchema, type Me, type RoomSnapshot, type RoomJoin } from '@aetheria/contracts';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
-import { defineWorld, applyRoomDelta, sandboxScene, isWalkable } from '@virtual-city/world-sdk';
+import { defineWorld, applyRoomDelta, sandboxScene, isWalkable } from '@aetheria/world-sdk';
 import { DISCONNECT_GRACE_MS } from '../../apps/platform-api/src/features/rooms/modules/presence/application/service';
 
 let pool: Pool; let admin: Pool; let app: Awaited<ReturnType<typeof createApp>>; let url: string; let offset = 0; let serial = 1;
@@ -17,7 +17,7 @@ const config = () => readConfig({ NODE_ENV: 'test', DATABASE_URL: process.env.TE
 type User = { cookie: string; me: Me };
 beforeAll(async () => {
   const connection = new URL(process.env.TEST_DATABASE_URL ?? '');
-  if (!['127.0.0.1', 'localhost', '[::1]'].includes(connection.hostname) || !/^virtual_city_test(?:_|$)/.test(connection.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
+  if (!['127.0.0.1', 'localhost', '[::1]'].includes(connection.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(connection.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
   admin = new Pool({ connectionString: connection.toString() }); await admin.query(`CREATE SCHEMA "${schema}"`);
   connection.searchParams.set('options', '-c search_path=' + schema); pool = new Pool({ connectionString: connection.toString() }); await migrate(pool);
   app = await createApp(config(), pool, false, { now, worlds: { modules: [defineWorld({

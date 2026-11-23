@@ -1,6 +1,6 @@
 import {randomUUID} from 'node:crypto';
 import type {PoolClient} from 'pg';
-import {ProgressionPolicySchema, RewardObservationSchema, ProgressionWorldSchema, type ProgressionPolicy} from '@virtual-city/contracts';
+import {ProgressionPolicySchema, RewardObservationSchema, ProgressionWorldSchema, type ProgressionPolicy} from '@aetheria/contracts';
 import type {HospitalityCompletionSink} from '../../../../hospitality/modules/service/application/jobs';
 import {DEFAULT_PROGRESSION_POLICY, assessReward} from '../domain/policy';
 type Db = Pick<PoolClient, 'query'>;

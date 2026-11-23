@@ -1,8 +1,8 @@
 import {createHash,randomUUID} from 'node:crypto';
 import type {Pool,PoolClient} from 'pg';
 import {z} from 'zod';
-import {GameAckSchema,GameCommandSchema,GameIdSchema,GameModeSchema,GameRulesetVersionSchema,TravelSourceSchema,type GameAck,type GameErrorCode,type GameMode,type GameOwnView,type TravelSource} from '@virtual-city/contracts';
-import {GameRulesEngine,projectGameOwn,projectGamePublic,type GameState} from '@virtual-city/boardgame-core';
+import {GameAckSchema,GameCommandSchema,GameIdSchema,GameModeSchema,GameRulesetVersionSchema,TravelSourceSchema,type GameAck,type GameErrorCode,type GameMode,type GameOwnView,type TravelSource} from '@aetheria/contracts';
+import {GameRulesEngine,projectGameOwn,projectGamePublic,type GameState} from '@aetheria/boardgame-core';
 import type {IdentityService} from '../../../../identity/modules/accounts/application/service';
 import type {SocialService} from '../../../../social/modules/relationships/application/service';
 import {IncidentPolicy} from '../../../../safety/modules/incidents/application/incidents';

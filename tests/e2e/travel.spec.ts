@@ -2,11 +2,11 @@ import {evidenceOutput} from '../../scripts/evidence-output.mjs';
 import { test, expect, type WebSocketRoute } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
-import {MeSchema} from '@virtual-city/contracts';
-import {deadlineWorldVersion} from '@virtual-city/deadline-world';
-import {maidWorldVersion} from '@virtual-city/maid-world';
-import {libraryWorldVersion} from '@virtual-city/library-world';
-import {restaurantWorldVersion} from '@virtual-city/restaurant-world';
+import {MeSchema} from '@aetheria/contracts';
+import {deadlineWorldVersion} from '@aetheria/deadline-world';
+import {maidWorldVersion} from '@aetheria/maid-world';
+import {libraryWorldVersion} from '@aetheria/library-world';
+import {restaurantWorldVersion} from '@aetheria/restaurant-world';
 const origin = 'http://127.0.0.1:3300';
 test('actual City Portal to Deadline,Maid,Library,Restaurant and City retains one identity and voluntary native activity',async({page,context},info)=>{
  test.setTimeout(90000);const created=await context.request.post('/v1/session/guest',{headers:{origin},data:{requestId:randomUUID(),displayName:'Across the city',avatarKey:'amber'}});expect(created.status()).toBe(201);const me=MeSchema.parse(await created.json()),errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));await page.emulateMedia({reducedMotion:'reduce'});

@@ -1,4 +1,4 @@
-import { SceneManifestSchema, type SceneManifest, type RoomMotion } from '@virtual-city/contracts';
+import { SceneManifestSchema, type SceneManifest, type RoomMotion } from '@aetheria/contracts';
 
 export const sandboxScene: SceneManifest = SceneManifestSchema.parse({
   schemaVersion: 1, key: 'sdk-sandbox', version: '1.0.0', projection: 'orthogonal', tileSize: 48, columns: 20, rows: 14, spawn: { x: 10, y: 11 },

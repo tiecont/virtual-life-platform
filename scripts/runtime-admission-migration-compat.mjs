@@ -23,13 +23,14 @@ async function linkDependencies(relative){
  const from=resolve(root,relative,'node_modules'),to=resolve(source,relative,'node_modules');
  let names;try{names=await readdir(from);}catch{return;}
  await mkdir(to,{recursive:true});
- for(const name of names)if(name!=='@virtual-city')await symlink(resolve(from,name),resolve(to,name));
+ for(const name of names)if(!['@aetheria','@virtual-city','@vl'].includes(name))await symlink(resolve(from,name),resolve(to,name));
 }
 let pool,admin,api,created=false,stage='archive';const schema='admission_compat_'+randomUUID().replaceAll('-','');
 try{
  await run('git',['archive','--format=tar','--output',directory+'/previous.tar',revision,'packages','apps/platform-api','scripts/copy-migrations.mjs','config']);
  facts.archiveSha256=sha(await readFile(directory+'/previous.tar'));await run('tar',['-xf',directory+'/previous.tar','-C',source]);
- await linkDependencies('.');await mkdir(source+'/node_modules/@virtual-city',{recursive:true});
+ await linkDependencies('.');
+ await Promise.all(['@aetheria','@virtual-city','@vl'].map(name=>mkdir(source+'/node_modules/'+name,{recursive:true})));
  const packages=new Map();
  for(const name of await readdir(source+'/packages')){
   let pkg;try{pkg=JSON.parse(await readFile(source+'/packages/'+name+'/package.json'));}catch{continue;}

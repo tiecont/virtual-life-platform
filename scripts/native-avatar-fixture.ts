@@ -7,7 +7,7 @@ import {readConfig} from '../apps/platform-api/src/shared/config/environment';
 import {migrate} from '../apps/platform-api/src/shared/database/migrations';
 async function main(){
  const root='artifacts/vnext/n06-07/native-v1/tls',url=new URL(process.env.TEST_DATABASE_URL??'');
- if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable DB required');
+ if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable DB required');
  const admin=new Pool({connectionString:url.toString()}),schema='native_avatar_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA "${schema}"`);url.searchParams.set('options','-c search_path='+schema);const pool=new Pool({connectionString:url.toString()});
  const facts={saveStarts:0,confirmedReturns:0,droppedCommitAcknowledgements:0,result:'RUNNING',cleanupComplete:false};let writes=Promise.resolve();const flush=()=>{const body=JSON.stringify(facts,null,2)+'\n';writes=writes.then(async()=>{await writeFile(root+'/stats-next.json',body,{mode:0o600});await rename(root+'/stats-next.json',root+'/stats.json');});};
  let api:Awaited<ReturnType<typeof createApp>>|undefined,https:ReturnType<typeof createServer>|undefined;

@@ -1,4 +1,4 @@
-import type { OrderPhase } from '@virtual-city/contracts';
+import type { OrderPhase } from '@aetheria/contracts';
 import { DomainError } from '../../../../../shared/common/errors';
 export type OrderAction = 'claim' | 'prepare' | 'ready' | 'serve' | 'complete' | 'cancel' | 'requeue';
 const edges: Partial<Record<OrderPhase, Partial<Record<OrderAction, OrderPhase>>>> = { PENDING: { claim: 'ASSIGNED', cancel: 'CANCELLED' }, ASSIGNED: { prepare: 'PREPARING', requeue: 'PENDING' }, PREPARING: { ready: 'READY', requeue: 'PENDING' }, READY: { serve: 'SERVED', requeue: 'PENDING' }, SERVED: { complete: 'COMPLETED' } };

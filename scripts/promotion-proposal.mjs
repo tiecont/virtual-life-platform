@@ -40,7 +40,7 @@ export async function promotionProposal({mode, environment, releaseId, candidate
   if (edits.length) assertPromotionPaths(edits.map(edit => edit.path), environment, releaseId,manifest.schemaVersion);
   assert.equal(git(['rev-parse', 'HEAD']), baseRevision, 'Source changed during verification');
   if (mode === 'verify') assert.equal(git(['status', '--porcelain']), '', 'Source changed during verified proposal capture');
-  return {...preview, kind: mode === 'verify' ? 'vlp-proof-checked-promotion-proposal' : preview.kind, changed: edits.length > 0, remoteEvidenceVerified: mode === 'verify', sourceValidation: validation, edits, scope: 'Reviewable proposal only. This command never writes overlays/releases, calls GitHub mutation APIs, deploys or authorizes production. Any future writer must reverify remote proof and exact edits.'};
+  return {...preview, kind: mode === 'verify' ? 'aetheria-proof-checked-promotion-proposal' : preview.kind, changed: edits.length > 0, remoteEvidenceVerified: mode === 'verify', sourceValidation: validation, edits, scope: 'Reviewable proposal only. This command never writes overlays/releases, calls GitHub mutation APIs, deploys or authorizes production. Any future writer must reverify remote proof and exact edits.'};
 }
 export function promotionDiff(proposal) {
   return proposal.edits.map(edit => {

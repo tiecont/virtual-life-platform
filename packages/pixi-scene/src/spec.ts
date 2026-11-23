@@ -1,1 +1,1 @@
-export { sandboxScene, tileCenter, isWalkable } from '@virtual-city/world-sdk';
+export { sandboxScene, tileCenter, isWalkable } from '@aetheria/world-sdk';

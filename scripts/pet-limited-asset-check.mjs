@@ -3,7 +3,7 @@ import {readFile} from 'node:fs/promises';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {fileURLToPath} from 'node:url';
-import {LimitedPetVisualDraftSchema,limitedPetAnimationActions} from '@virtual-city/contracts';
+import {LimitedPetVisualDraftSchema,limitedPetAnimationActions} from '@aetheria/contracts';
 import {verifyPetAssetBytes} from './pet-asset-files.mjs';
 
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');

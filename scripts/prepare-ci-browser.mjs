@@ -17,7 +17,7 @@ function run(command,args){
  assert(!result.error&&result.status===0,'Browser dependency preparation failed: '+command);
 }
 run('docker',['pull',image]);
-const container='vl-ci-browser-'+randomUUID();
+const container='aetheria-ci-browser-'+randomUUID();
 let created=false;
 try{
  run('docker',['create','--name',container,'--network','none',image,'/bin/true']);created=true;

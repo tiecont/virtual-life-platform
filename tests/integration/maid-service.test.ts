@@ -8,8 +8,8 @@ import { mkdtemp,readFile,writeFile,rm,mkdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { Pool } from 'pg';
 import { io,type Socket } from 'socket.io-client';
-import { MeSchema,RoomAckSchema,OrderResultSchema,type RoomSnapshot } from '@virtual-city/contracts';
-import { maidWorldVersion,maidServicePolicy,maidRecipes } from '@virtual-city/maid-world';
+import { MeSchema,RoomAckSchema,OrderResultSchema,type RoomSnapshot } from '@aetheria/contracts';
+import { maidWorldVersion,maidServicePolicy,maidRecipes } from '@aetheria/maid-world';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { migrate,migrationManifest } from '../../apps/platform-api/src/shared/database/migrations';
@@ -19,7 +19,7 @@ import { DEFAULT_PROGRESSION_POLICY } from '../../apps/platform-api/src/features
 const origin='http://127.0.0.1:3300',schema='maid_service_'+randomUUID().replaceAll('-',''),sockets=new Set<Socket>();
 let admin:Pool,pool:Pool,app:Awaited<ReturnType<typeof createApp>>,config:ReturnType<typeof readConfig>,url:string,serial=0,at=Date.parse('2026-11-05T12:00:00Z');
 async function open(){app=await createApp(config,pool,false,{now:()=>at,progression:{policy:{...DEFAULT_PROGRESSION_POLICY,enabled:true}}});await app.app.listen(0,'127.0.0.1');url=await app.app.getUrl();await app.worlds.registry.setEnabled('maid',true);}
-beforeAll(async()=>{const address=new URL(process.env.TEST_DATABASE_URL??'');if(address.hostname!=='127.0.0.1'||!/^virtual_city_test(?:_|$)/.test(address.pathname.slice(1))||address.search||address.hash)throw Error('Disposable local test DB required');admin=new Pool({connectionString:address.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);address.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:address.toString()});await migrate(pool);config=readConfig({NODE_ENV:'test',DATABASE_URL:address.toString(),SESSION_SECRET:'synthetic-maid-service-test-key-'.repeat(2),LOCAL_MAID_WORLD:'1'});await open();});
+beforeAll(async()=>{const address=new URL(process.env.TEST_DATABASE_URL??'');if(address.hostname!=='127.0.0.1'||!/^aetheria_soulbound_test(?:_|$)/.test(address.pathname.slice(1))||address.search||address.hash)throw Error('Disposable local test DB required');admin=new Pool({connectionString:address.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);address.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:address.toString()});await migrate(pool);config=readConfig({NODE_ENV:'test',DATABASE_URL:address.toString(),SESSION_SECRET:'synthetic-maid-service-test-key-'.repeat(2),LOCAL_MAID_WORLD:'1'});await open();});
 afterEach(async()=>{for(const s of sockets)s.close();sockets.clear();await app?.app.close();await open();});
 afterAll(async()=>{await app?.app.close();await pool?.end();if(admin){await admin.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);await admin.end();}});
 const source=(r:RoomSnapshot)=>({epoch:r.epoch,roomId:r.roomId,membershipId:r.membershipId});

@@ -16,10 +16,10 @@ export async function unityNativeProbe({directory,index,origin,boot,match,loginN
  try{
   await rm(resolve('artifacts/unity-native-player'),{recursive:true,force:true});
   const child=spawn(editor,['-batchmode','-nographics','-projectPath',resolve('apps/unity-client'),'-logFile',prefix+'.log',
-   '-runTests','-testPlatform','StandaloneLinux64','-testFilter','VirtualLife.Blockout.Tests.NativePlayerTests.'+(pet?'LinuxPlayerPetArenaFullMatch':interactive?'LinuxPlayerPanelKeyboardAndTerminal':'LinuxPlayerLoginCommandAndReconnect'),
+   '-runTests','-testPlatform','StandaloneLinux64','-testFilter','Aetheria.Blockout.Tests.NativePlayerTests.'+(pet?'LinuxPlayerPetArenaFullMatch':interactive?'LinuxPlayerPanelKeyboardAndTerminal':'LinuxPlayerLoginCommandAndReconnect'),
    // Unity emits its player heartbeat every 120 seconds; allow delivery beyond that interval.
    '-buildPlayerPath',resolve('artifacts/unity-native-player'),'-testResults',results,'-playerHeartbeatTimeout','180'],
-  {env:{...toolEnvironment(process.env),VL_UNITY_NATIVE_FIXTURE:config,...(interactive?{VL_NATIVE_DEV_CONFIG:scope}:{})},stdio:'ignore',detached:true});
+  {env:{...toolEnvironment(process.env),AETHERIA_UNITY_NATIVE_FIXTURE:config,...(interactive?{AETHERIA_NATIVE_DEV_CONFIG:scope}:{})},stdio:'ignore',detached:true});
   const cleanup=()=>{if(child.pid)try{process.kill(-child.pid,'SIGKILL');}catch(error){if(error.code!=='ESRCH')throw error;}};
   const timer=setTimeout(cleanup,420000);
   let finished=false;

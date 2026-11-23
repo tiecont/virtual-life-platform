@@ -4,7 +4,7 @@ import {spawnSync} from 'node:child_process';
 import {resolve} from 'node:path';
 
 // Generated bindings remain canonical in contracts/. Never resolve arbitrary/latest packages.
-const root = resolve('apps/unity-client/Assets/VirtualLife/Features/Native');
+const root = resolve('apps/unity-client/Assets/Aetheria/Features/Native');
 const packages = [
   {id: 'google.protobuf', version: '3.36.2', hash: '1182590db175f9057707857a1df48b217226d0732716cd353fa4aa4683d38dcb', file: 'lib/netstandard2.0/Google.Protobuf.dll'},
   {id: 'system.runtime.compilerservices.unsafe', version: '4.5.2', hash: 'f1e5175c658ed8b2fbb804cc6727b6882a503844e7da309c8d4846e9ca11e4ef', file: 'lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll'},

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "avdName": "vlp_n10_05_api35",
+  "avdName": "aetheria_n10_05_api35",
   "port": 5580,
   "emulatorVersion": "37.2.13",
   "systemImage": "system-images;android-35;google_apis;x86_64",

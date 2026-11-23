@@ -1,6 +1,6 @@
 import {it,expect} from 'vitest';
 import * as T from 'three';
-import {starterAvatarParts} from '@virtual-city/contracts';
+import {starterAvatarParts} from '@aetheria/contracts';
 import {createAnimal,animalResourceSummary} from '../src/animal';
 import {fitRoomCamera,selfCameraBounds,translateCameraTarget} from '../src/room-camera';
 

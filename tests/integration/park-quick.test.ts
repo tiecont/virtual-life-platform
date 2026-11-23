@@ -2,14 +2,14 @@ import { beforeAll,afterAll,afterEach,it,expect } from 'vitest';
 import { Pool } from 'pg';
 import { randomUUID } from 'node:crypto';
 import { io,type Socket } from 'socket.io-client';
-import { MeSchema,RoomAckSchema,ChatAckSchema,ChatMessageSchema,type ChatMessage,type RoomSnapshot,type ChatSend } from '@virtual-city/contracts';
-import { defineWorld } from '@virtual-city/world-sdk';
-import { parkWorldVersion } from '@virtual-city/park-world';
+import { MeSchema,RoomAckSchema,ChatAckSchema,ChatMessageSchema,type ChatMessage,type RoomSnapshot,type ChatSend } from '@aetheria/contracts';
+import { defineWorld } from '@aetheria/world-sdk';
+import { parkWorldVersion } from '@aetheria/park-world';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 const origin='http://127.0.0.1:3300',schema='park_quick_'+randomUUID().replaceAll('-',''),sockets=new Set<Socket>();let admin:Pool,pool:Pool,app:Awaited<ReturnType<typeof createApp>>,url:string,serial=0,inspections=0;
-beforeAll(async()=>{const address=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(address.hostname)||!/^virtual_city_test(?:_|$)/.test(address.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:address.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);address.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:address.toString()});await migrate(pool);
+beforeAll(async()=>{const address=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(address.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(address.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:address.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);address.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:address.toString()});await migrate(pool);
  // Synthetic scope control,not actual Maid integration. Its policy would permit chat if globally enabled.
  const control=defineWorld({schemaVersion:1,apiVersion:1,slug:'maid',version:'1.0.0',title:'Synthetic chat scope control',kind:'sandbox',sceneRef:{key:'maid',version:'1.0.0'},capacity:2,capabilities:['presence','chat'],accessPolicy:{kind:'public'},visibility:'listed',map:{region:'sandbox',position:{x:0,y:0},icon:'flask'}},{bootstrap:async()=>{},shutdown:async()=>{},onJoin:async()=>{},onLeave:async()=>{},onCommand:async()=>{}});
  app=await createApp(readConfig({NODE_ENV:'test',DATABASE_URL:address.toString(),SESSION_SECRET:'park-quick-fixture-secret-'.repeat(2),LOCAL_PARK_WORLD:'1'}),pool,false,{worlds:{modules:[control]},safety:{moderator:{inspect:async()=>{inspections++;return {decision:'allow'};}}}});await app.app.listen(0,'127.0.0.1');url=await app.app.getUrl();});

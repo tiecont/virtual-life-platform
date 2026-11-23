@@ -1,5 +1,5 @@
 import type {Pool,PoolClient} from 'pg';
-import {SystemObservationSchema,type SystemObservation} from '@virtual-city/contracts';
+import {SystemObservationSchema,type SystemObservation} from '@aetheria/contracts';
 type Source<T>={status:'OBSERVED';sampledAt:number;value:T}|{status:'UNKNOWN';sampledAt:null;value:null};
 type Lease={client:PoolClient;release:(destroy?:boolean)=>void};
 // One in-flight checkout/read per source. Timeout never frees the checkout latch

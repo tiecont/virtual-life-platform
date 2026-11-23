@@ -4,26 +4,26 @@ import {loadOverlayRelease} from './overlay-release.mjs';
 import {validateOverlayRelease} from './promotion-contract.mjs';
 
 const baseFiles = ['api-deployment.json', 'web-deployment.json', 'api-service.json', 'web-service.json', 'default-deny.json', 'dns-egress.json', 'web-to-api.json', 'api-from-web.json'];
-const part = {'app.kubernetes.io/part-of': 'virtual-life-platform'};
-const labels = name => ({...part, 'app.kubernetes.io/name': 'vlp-' + name});
+const part = {'app.kubernetes.io/part-of': 'aetheria-soulbound'};
+const labels = name => ({...part, 'app.kubernetes.io/name': 'aetheria-' + name});
 const keys = (object, expected) => assert.deepEqual(Object.keys(object).sort(), [...expected].sort());
 const ref = (name, key, secret = false, optional = false) => ({[secret ? 'secretKeyRef' : 'configMapKeyRef']: {name, key, ...(optional ? {optional: true} : {})}});
 const value = value => ({value});
 const reference = valueFrom => ({valueFrom});
 const apiEnvironment = {
   NODE_ENV: value('production'), HOST: value('0.0.0.0'), PORT: value('4300'), DURABLE_JOB_ROLE: value('api'),
-  WEB_ORIGIN: reference(ref('vlp-runtime', 'WEB_ORIGIN')), TRUSTED_PROXY_IP: reference(ref('vlp-runtime', 'TRUSTED_PROXY_IP')),
-  RELEASE_ENVIRONMENT: reference(ref('vlp-runtime', 'RELEASE_ENVIRONMENT')),
-  RELEASE_POLICY_FILE: value('/run/vlp-policy/release.json'), RUNTIME_WORLD_POLICY_FILE: value('/run/vlp-policy/runtime-worlds.json'), SAFETY_POLICY_FILE: value('/run/vlp-policy/safety.json'),
-  DATABASE_URL: reference(ref('vlp-runtime-secrets', 'DATABASE_URL', true)), SESSION_SECRET: reference(ref('vlp-runtime-secrets', 'SESSION_SECRET', true)), SAFETY_EVIDENCE_KEY: reference(ref('vlp-runtime-secrets', 'SAFETY_EVIDENCE_KEY', true, true)),
+  WEB_ORIGIN: reference(ref('aetheria-runtime', 'WEB_ORIGIN')), TRUSTED_PROXY_IP: reference(ref('aetheria-runtime', 'TRUSTED_PROXY_IP')),
+  RELEASE_ENVIRONMENT: reference(ref('aetheria-runtime', 'RELEASE_ENVIRONMENT')),
+  RELEASE_POLICY_FILE: value('/run/aetheria-policy/release.json'), RUNTIME_WORLD_POLICY_FILE: value('/run/aetheria-policy/runtime-worlds.json'), SAFETY_POLICY_FILE: value('/run/aetheria-policy/safety.json'),
+  DATABASE_URL: reference(ref('aetheria-runtime-secrets', 'DATABASE_URL', true)), SESSION_SECRET: reference(ref('aetheria-runtime-secrets', 'SESSION_SECRET', true)), SAFETY_EVIDENCE_KEY: reference(ref('aetheria-runtime-secrets', 'SAFETY_EVIDENCE_KEY', true, true)),
 };
 const webEnvironment = {
-  NODE_ENV: value('production'), HOSTNAME: value('0.0.0.0'), PORT: value('3300'), NEXT_TELEMETRY_DISABLED: value('1'), API_INTERNAL_URL: value('http://vlp-api:4300'), PUBLIC_SOCKET_ORIGIN: reference(ref('vlp-runtime', 'WEB_ORIGIN')),
+  NODE_ENV: value('production'), HOSTNAME: value('0.0.0.0'), PORT: value('3300'), NEXT_TELEMETRY_DISABLED: value('1'), API_INTERNAL_URL: value('http://aetheria-api:4300'), PUBLIC_SOCKET_ORIGIN: reference(ref('aetheria-runtime', 'WEB_ORIGIN')),
 };
 const runtimeSecurity = {runAsNonRoot: true, runAsUser: 1000, runAsGroup: 1000, fsGroup: 1000, seccompProfile: {type: 'RuntimeDefault'}};
 const containerSecurity = {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: ['ALL']}};
 const health = path => ['node', '-e', `fetch('http://127.0.0.1:4300/health/${path}',{signal:AbortSignal.timeout(1500)}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))`];
-function environment(name) {assert(['staging', 'production'].includes(name), 'Unknown Kubernetes environment'); return 'vlp-' + name;}
+function environment(name) {assert(['staging', 'production'].includes(name), 'Unknown Kubernetes environment'); return 'aetheria-' + name;}
 async function json(path) {return JSON.parse(await readFile(path, 'utf8'));}
 function kustomization(input, fields) {
   keys(input, ['apiVersion', 'kind', ...fields]);
@@ -41,14 +41,14 @@ export async function readKubernetesSource(name) {
   const objects = await Promise.all(paths.map(json));
   for (const object of objects) {assert(!Object.hasOwn(object.metadata, 'namespace'), 'Namespace must come from the environment overlay'); object.metadata.namespace = namespace;}
   if (release) for (const object of objects.filter(object => object.kind === 'Deployment')) {
-    const component = object.metadata.name === 'vlp-api' ? 'api' : object.metadata.name === 'vlp-web' ? 'web' : null; assert(component);
-    const container = object.spec.template.spec.containers[0]; assert.equal(container.image, 'registry.invalid/vlp-' + component + ':release-required'); container.image = release.images[component];
+    const component = object.metadata.name === 'aetheria-api' ? 'api' : object.metadata.name === 'aetheria-web' ? 'web' : null; assert(component);
+    const container = object.spec.template.spec.containers[0]; assert.equal(container.image, 'registry.invalid/aetheria-' + component + ':release-required'); container.image = release.images[component];
   }
   const prerequisites = await json('infra/k8s/prerequisites.json');
   assert.equal(prerequisites.schemaVersion, 1); assert.equal(prerequisites.status, 'REQUIRED_NOT_VERIFIED'); assert.equal(prerequisites.deploymentEligible, false);
   keys(prerequisites.environments, ['staging', 'production']);
-  const required = prerequisites.environments[name]; assert.equal(required.applicationNamespace, namespace); assert.equal(required.dataNamespace, 'vlp-data-' + name); assert.deepEqual(required.architecture, {os: 'linux', architecture: 'amd64'});
-  assert.deepEqual(required.databasePeer, {namespace: 'vlp-data-' + name, podLabels: {'app.kubernetes.io/name': 'vlp-postgres'}, port: 5432});
+  const required = prerequisites.environments[name]; assert.equal(required.applicationNamespace, namespace); assert.equal(required.dataNamespace, 'aetheria-data-' + name); assert.deepEqual(required.architecture, {os: 'linux', architecture: 'amd64'});
+  assert.deepEqual(required.databasePeer, {namespace: 'aetheria-data-' + name, podLabels: {'app.kubernetes.io/name': 'aetheria-postgres'}, port: 5432});
   const references = new Set();
   for (const object of objects.filter(object => object.kind === 'Deployment')) {
     const pod = object.spec.template.spec; references.add('ServiceAccount/' + pod.serviceAccountName);
@@ -77,12 +77,12 @@ function workload(object, name, release) {
   assert.deepEqual(object.spec.selector, {matchLabels: labels(name)}); assert.deepEqual(object.spec.template.metadata, {labels: labels(name)});
   const pod = object.spec.template.spec;
   keys(pod, ['serviceAccountName', 'automountServiceAccountToken', 'enableServiceLinks', 'hostNetwork', 'nodeSelector', 'imagePullSecrets', 'terminationGracePeriodSeconds', 'securityContext', 'containers', 'volumes']);
-  assert.equal(pod.serviceAccountName, 'vlp-runtime'); assert.equal(pod.automountServiceAccountToken, false); assert.equal(pod.enableServiceLinks, false); assert.equal(pod.hostNetwork, false);
-  assert.deepEqual(pod.nodeSelector, {'kubernetes.io/os': 'linux', 'kubernetes.io/arch': 'amd64'}); assert.deepEqual(pod.imagePullSecrets, [{name: 'vlp-registry-pull'}]); assert.equal(pod.terminationGracePeriodSeconds, 20);
+  assert.equal(pod.serviceAccountName, 'aetheria-runtime'); assert.equal(pod.automountServiceAccountToken, false); assert.equal(pod.enableServiceLinks, false); assert.equal(pod.hostNetwork, false);
+  assert.deepEqual(pod.nodeSelector, {'kubernetes.io/os': 'linux', 'kubernetes.io/arch': 'amd64'}); assert.deepEqual(pod.imagePullSecrets, [{name: 'aetheria-registry-pull'}]); assert.equal(pod.terminationGracePeriodSeconds, 20);
   assert.deepEqual(pod.securityContext, runtimeSecurity); assert.equal(pod.containers.length, 1);
   const container = pod.containers[0];
   keys(container, ['name', 'image', 'imagePullPolicy', 'command', 'ports', 'env', 'resources', 'securityContext', 'startupProbe', 'livenessProbe', 'readinessProbe', 'volumeMounts']);
-  assert.equal(container.name, name); assert.equal(container.image, release?.images[name] ?? 'registry.invalid/vlp-' + name + ':release-required', 'Image must match the integrity-checked release binding or inert sentinel'); assert.equal(container.imagePullPolicy, 'Always');
+  assert.equal(container.name, name); assert.equal(container.image, release?.images[name] ?? 'registry.invalid/aetheria-' + name + ':release-required', 'Image must match the integrity-checked release binding or inert sentinel'); assert.equal(container.imagePullPolicy, 'Always');
   assert.deepEqual(container.command, ['node', name === 'api' ? 'dist/main.js' : 'start-runtime.mjs']); assert.deepEqual(container.securityContext, containerSecurity);
   assert.deepEqual(container.ports, [{name: 'http', containerPort: name === 'api' ? 4300 : 3300}]);
   const entries = container.env.map(({name, ...entry}) => [name, entry]); assert.equal(new Set(entries.map(([name]) => name)).size, entries.length);
@@ -95,8 +95,8 @@ function workload(object, name, release) {
   }
   const volumes = [{name: 'tmp', emptyDir: {sizeLimit: '16Mi'}}], mounts = [{name: 'tmp', mountPath: '/tmp'}];
   if (name === 'api') {
-    volumes.push({name: 'policy', configMap: {name: 'vlp-installation-policy', items: ['release.json', 'runtime-worlds.json', 'safety.json'].map(key => ({key, path: key}))}});
-    mounts.push({name: 'policy', mountPath: '/run/vlp-policy', readOnly: true});
+    volumes.push({name: 'policy', configMap: {name: 'aetheria-installation-policy', items: ['release.json', 'runtime-worlds.json', 'safety.json'].map(key => ({key, path: key}))}});
+    mounts.push({name: 'policy', mountPath: '/run/aetheria-policy', readOnly: true});
   } else {volumes.push({name: 'cache', emptyDir: {sizeLimit: '64Mi'}}); mounts.push({name: 'cache', mountPath: '/app/apps/portal-web/.next/cache'});}
   assert.deepEqual(pod.volumes, volumes); assert.deepEqual(container.volumeMounts, mounts);
   return resources(container.resources);
@@ -104,11 +104,11 @@ function workload(object, name, release) {
 function networkPolicies(name) {
   const selector = labels('api'), tcp = port => [{protocol: 'TCP', port}];
   return {
-    'vlp-default-deny': {podSelector: {matchLabels: part}, policyTypes: ['Ingress', 'Egress'], ingress: [], egress: []},
-    'vlp-dns': {podSelector: {matchLabels: part}, policyTypes: ['Egress'], egress: [{to: [{namespaceSelector: {matchLabels: {'kubernetes.io/metadata.name': 'kube-system'}}, podSelector: {matchLabels: {'k8s-app': 'kube-dns'}}}], ports: [{protocol: 'UDP', port: 53}, {protocol: 'TCP', port: 53}]}]},
-    'vlp-web-to-api': {podSelector: {matchLabels: labels('web')}, policyTypes: ['Egress'], egress: [{to: [{podSelector: {matchLabels: selector}}], ports: tcp(4300)}]},
-    'vlp-api-from-web': {podSelector: {matchLabels: selector}, policyTypes: ['Ingress'], ingress: [{from: [{podSelector: {matchLabels: labels('web')}}], ports: tcp(4300)}]},
-    'vlp-database': {podSelector: {matchLabels: selector}, policyTypes: ['Egress'], egress: [{to: [{namespaceSelector: {matchLabels: {'kubernetes.io/metadata.name': 'vlp-data-' + name}}, podSelector: {matchLabels: {'app.kubernetes.io/name': 'vlp-postgres'}}}], ports: tcp(5432)}]},
+    'aetheria-default-deny': {podSelector: {matchLabels: part}, policyTypes: ['Ingress', 'Egress'], ingress: [], egress: []},
+    'aetheria-dns': {podSelector: {matchLabels: part}, policyTypes: ['Egress'], egress: [{to: [{namespaceSelector: {matchLabels: {'kubernetes.io/metadata.name': 'kube-system'}}, podSelector: {matchLabels: {'k8s-app': 'kube-dns'}}}], ports: [{protocol: 'UDP', port: 53}, {protocol: 'TCP', port: 53}]}]},
+    'aetheria-web-to-api': {podSelector: {matchLabels: labels('web')}, policyTypes: ['Egress'], egress: [{to: [{podSelector: {matchLabels: selector}}], ports: tcp(4300)}]},
+    'aetheria-api-from-web': {podSelector: {matchLabels: selector}, policyTypes: ['Ingress'], ingress: [{from: [{podSelector: {matchLabels: labels('web')}}], ports: tcp(4300)}]},
+    'aetheria-database': {podSelector: {matchLabels: selector}, policyTypes: ['Egress'], egress: [{to: [{namespaceSelector: {matchLabels: {'kubernetes.io/metadata.name': 'aetheria-data-' + name}}, podSelector: {matchLabels: {'app.kubernetes.io/name': 'aetheria-postgres'}}}], ports: tcp(5432)}]},
   };
 }
 export function verifyKubernetesPolicy(objects, name, budget, release = null) {
@@ -121,7 +121,7 @@ export function verifyKubernetesPolicy(objects, name, budget, release = null) {
     const id = object.kind + '/' + object.metadata.name; assert(!identities.has(id)); identities.add(id);
     if (object.kind === 'NetworkPolicy') {assert.equal(object.apiVersion, 'networking.k8s.io/v1'); assert(Object.hasOwn(policies, object.metadata.name)); assert.deepEqual(object.metadata.labels, part); assert.deepEqual(object.spec, policies[object.metadata.name]);}
     else {
-      const component = object.metadata.name === 'vlp-api' ? 'api' : object.metadata.name === 'vlp-web' ? 'web' : null; assert(component); assert.deepEqual(object.metadata.labels, labels(component));
+      const component = object.metadata.name === 'aetheria-api' ? 'api' : object.metadata.name === 'aetheria-web' ? 'web' : null; assert(component); assert.deepEqual(object.metadata.labels, labels(component));
       if (object.kind === 'Deployment') {assert.equal(object.apiVersion, 'apps/v1'); limits[component] = workload(object, component, release);}
       else {assert.equal(object.kind, 'Service', 'No persistent/privileged/public resources in application prune ownership'); assert.equal(object.apiVersion, 'v1'); assert.deepEqual(object.spec, {type: 'ClusterIP', selector: labels(component), ports: [{name: 'http', port: component === 'api' ? 4300 : 3300, targetPort: 'http', protocol: 'TCP'}]});}
     }

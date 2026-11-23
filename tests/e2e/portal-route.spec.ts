@@ -4,12 +4,12 @@ import { randomUUID } from 'node:crypto';
 import { request } from 'node:http';
 import { Pool } from 'pg';
 import { io,type Socket } from 'socket.io-client';
-import { MeSchema,RoomAckSchema,type Me } from '@virtual-city/contracts';
+import { MeSchema,RoomAckSchema,type Me } from '@aetheria/contracts';
 import { mkdir,writeFile } from 'node:fs/promises';
 const origin='http://127.0.0.1:3300';let serial=1;
 type User={me:Me;cookie:string};
 async function guest(context?:BrowserContext):Promise<User>{const payload=JSON.stringify({requestId:randomUUID(),displayName:'Route Visitor',avatarKey:'mint'});const result=await new Promise<User>((resolve,reject)=>{const req=request('http://127.0.0.1:4300/v1/session/guest',{method:'POST',localAddress:'127.29.0.'+serial++,headers:{origin,'content-type':'application/json','content-length':Buffer.byteLength(payload)}},res=>{let body='';res.on('data',chunk=>body+=chunk);res.on('end',()=>{try{expect(res.statusCode).toBe(201);resolve({cookie:res.headers['set-cookie']![0].split(';')[0],me:MeSchema.parse(JSON.parse(body))});}catch(error){reject(error);}});});req.on('error',reject);req.end(payload);});if(context){const at=result.cookie.indexOf('=');await context.addCookies([{name:result.cookie.slice(0,at),value:result.cookie.slice(at+1),url:origin,httpOnly:true,sameSite:'Lax'}]);}return result;}
-function database(){const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Refusing non-local/non-test DB');return new Pool({connectionString:url.toString()});}
+function database(){const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Refusing non-local/non-test DB');return new Pool({connectionString:url.toString()});}
 async function join(user:User,worldSlug:string,sockets:Set<Socket>,roomId?:string){const socket=io('http://127.0.0.1:4300',{autoConnect:false,forceNew:true,reconnection:false,transports:['websocket'],transportOptions:{websocket:{localAddress:'127.30.0.'+serial++}},extraHeaders:{origin,cookie:user.cookie},auth:{schemaVersion:1,csrfToken:user.me.csrfToken}});sockets.add(socket);await new Promise<void>((resolve,reject)=>{socket.once('connect',resolve);socket.once('connect_error',reject);socket.connect();});const ack=RoomAckSchema.parse(await socket.timeout(5000).emitWithAck('room.join',{schemaVersion:1,requestId:randomUUID(),worldSlug,worldVersion:'1.0.0',sceneVersion:'1.0.0',...roomId?{roomId}:{}}));if(!ack.ok||ack.result.type!=='snapshot')throw Error('Synthetic room join failed');return {socket,snapshot:ack.result};}
 test('specific public room link waits for confirmation,full target preserves source,and released capacity permits actual travel',async({page,context})=>{
  const sockets=new Set<Socket>(),db=database();try{

@@ -24,9 +24,9 @@ async function fingerprint(pool){
 export async function nativeBackupRestoreScenarios(c){
  const {pool,schema,role,runtime,tls,directory,startHost,stopHost,rejectHost,record}=c;
  assert.match(runtime.password,/^[a-f0-9]{64}$/);
- const sourceProject=process.env.CITY_TEST_DB_PROJECT;
- assert.match(sourceProject??'',/^virtual-city-test-[a-f0-9]{8}$/);
- const project='virtual-city-backup-test-'+randomUUID().slice(0,8),root=resolve(directory,'native-restore');
+ const sourceProject=process.env.AETHERIA_TEST_DB_PROJECT;
+ assert.match(sourceProject??'',/^aetheria-soulbound-test-[a-f0-9]{8}$/);
+ const project='aetheria-soulbound-backup-test-'+randomUUID().slice(0,8),root=resolve(directory,'native-restore');
  await mkdir(root,{recursive:true,mode:0o700});
  const keyPath=root+'/archive.key',wrongPath=root+'/wrong.key',archive=root+'/native.vlcb',damaged=root+'/damaged.vlcb',envPath=root+'/compose.env';
  const password=randomBytes(32).toString('hex');
@@ -35,7 +35,7 @@ export async function nativeBackupRestoreScenarios(c){
  const compose=args=>docker([...composeArgs,...args]);
  let target,started=false,running=false,heartbeat,heartbeatWork=Promise.resolve();
  try{
-  await writeFile(envPath,'CITY_BACKUP_TEST_PROJECT='+project+'\nCITY_BACKUP_TEST_PASSWORD='+password+'\n',{mode:0o600});
+  await writeFile(envPath,'AETHERIA_BACKUP_TEST_PROJECT='+project+'\nAETHERIA_BACKUP_TEST_PASSWORD='+password+'\n',{mode:0o600});
   await writeFile(keyPath,randomBytes(32).toString('hex'),{mode:0o600});
   await writeFile(wrongPath,randomBytes(32).toString('hex'),{mode:0o600});
   const before=await fingerprint(pool);
@@ -44,7 +44,7 @@ export async function nativeBackupRestoreScenarios(c){
   assert(!bytes.subarray(0,5).equals(Buffer.from('PGDMP')));
   started=true;await compose(['up','-d','--wait','--wait-timeout','60']);
   const mapping=await compose(['port','restore','5432']),port=/^127\.0\.0\.1:(\d+)$/.exec(mapping)?.[1];assert(port);
-  const address=new URL('postgresql://127.0.0.1:'+port+'/virtual_city_restore_test');
+  const address=new URL('postgresql://127.0.0.1:'+port+'/aetheria_soulbound_restore_test');
   address.username='city_backup_test';address.password=password;
   target=new Pool({connectionString:address.toString()});
   const empty=async()=>assert.equal((await target.query("SELECT count(*)::int AS n FROM pg_namespace WHERE nspname=$1",[schema])).rows[0].n,0);

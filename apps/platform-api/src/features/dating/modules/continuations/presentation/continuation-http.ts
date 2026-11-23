@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { DatingContinuationRevokeSchema } from '@virtual-city/contracts';
+import { DatingContinuationRevokeSchema } from '@aetheria/contracts';
 import type { Config } from '../../../../../shared/config/environment';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import { readSessionToken } from '../../../../identity/modules/accounts/presentation/http';

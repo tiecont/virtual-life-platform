@@ -4,8 +4,8 @@ import { randomUUID } from 'node:crypto';
 import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { WorldCatalogSchema, MeSchema, type WorldDefinition } from '@virtual-city/contracts';
-import { defineWorld } from '@virtual-city/world-sdk';
+import { WorldCatalogSchema, MeSchema, type WorldDefinition } from '@aetheria/contracts';
+import { defineWorld } from '@aetheria/world-sdk';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
@@ -21,7 +21,7 @@ const flags = (development: Record<string, boolean> = {}, test: Record<string, b
 const config = () => readConfig({ NODE_ENV: 'test', DATABASE_URL: process.env.TEST_DATABASE_URL, SESSION_SECRET: 'worlds-test-only-session-secret-00000001', WORLD_FLAGS_FILE: flagsFile });
 beforeAll(async () => {
   const connection = new URL(process.env.TEST_DATABASE_URL ?? '');
-  if (!['127.0.0.1', 'localhost', '[::1]'].includes(connection.hostname) || !/^virtual_city_test(?:_|$)/.test(connection.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
+  if (!['127.0.0.1', 'localhost', '[::1]'].includes(connection.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(connection.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
   admin = new Pool({ connectionString: connection.toString() }); await admin.query(`CREATE SCHEMA "${schema}"`);
   connection.searchParams.set('options', '-c search_path=' + schema); pool = new Pool({ connectionString: connection.toString() }); await migrate(pool);
   directory = await mkdtemp(join(tmpdir(), 'city-world-flags-')); flagsFile = join(directory, 'flags.json'); await writeFile(flagsFile, JSON.stringify(flags()));

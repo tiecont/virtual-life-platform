@@ -2,7 +2,7 @@ import {beforeAll,afterAll,afterEach,it,expect} from 'vitest';
 import {Pool} from 'pg';
 import {randomUUID} from 'node:crypto';
 import {io,type Socket} from 'socket.io-client';
-import {AVATAR_CATALOG_VERSION,AvatarOwnStateSchema,AvatarSaveResultSchema,MeSchema,NativeSessionResultSchema,RoomAckSchema,RoomParticipantSchema,RoomDeltaSchema,starterAvatarParts,type RoomSnapshot,type AvatarParts,type Me} from '@virtual-city/contracts';
+import {AVATAR_CATALOG_VERSION,AvatarOwnStateSchema,AvatarSaveResultSchema,MeSchema,NativeSessionResultSchema,RoomAckSchema,RoomParticipantSchema,RoomDeltaSchema,starterAvatarParts,type RoomSnapshot,type AvatarParts,type Me} from '@aetheria/contracts';
 import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
 import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
@@ -10,7 +10,7 @@ let pool:Pool,admin:Pool,server:Awaited<ReturnType<typeof createApp>>,offset=0,i
 const schema='avatar_parts_'+randomUUID().replaceAll('-',''),origin='http://127.0.0.1:3300',now=()=>Date.now()+offset;
 const sockets=new Set<Socket>();let target:string;
 type User={headers:Record<string,string>;me:Me};
-beforeAll(async()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB required');admin=new Pool({connectionString:url.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);url.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:url.toString()});await migrate(pool);server=await createApp(readConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'avatar-parts-test-only-secret-00001',NATIVE_AUTH_ENABLED:'1',NATIVE_AUTH_KEY:'4'.repeat(64)}),pool,false,{now});});
+beforeAll(async()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB required');admin=new Pool({connectionString:url.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);url.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:url.toString()});await migrate(pool);server=await createApp(readConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'avatar-parts-test-only-secret-00001',NATIVE_AUTH_ENABLED:'1',NATIVE_AUTH_KEY:'4'.repeat(64)}),pool,false,{now});});
 beforeAll(async()=>{await server.app.listen(0,'127.0.0.1');target=await server.app.getUrl();await server.worlds.registry.setEnabled('sdk-sandbox',true);});
 afterEach(async()=>{offset=0;for(const socket of sockets)socket.close();sockets.clear();await server.worlds.registry.setEnabled('sdk-sandbox',false);await server.rooms.maintain();await server.worlds.registry.setEnabled('sdk-sandbox',true);});afterAll(async()=>{await server?.app.close();await pool?.end();if(admin){await admin.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);await admin.end();}});
 async function guest(native=false):Promise<User>{

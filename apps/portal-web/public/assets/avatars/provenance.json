@@ -30,7 +30,7 @@
   ],
   "sha256": "7dee4545ce162f6583a1e60092607cb01735b2fd02f524711e859a48118e6775",
   "source": "Original code-authored pixel geometry in packages/pixi-scene/src/avatar-art-generator.ts",
-  "authoring": "Created in this workspace for virtual-life-platform; no imported media or character references",
+  "authoring": "Created in this workspace for aetheria-soulbound; no imported media or character references",
   "attribution": "No third-party attribution requirements identified; no external artwork used",
   "rights": "Project owner retains distribution/license decision; this manifest does not assign a media license",
   "releaseApproved": false

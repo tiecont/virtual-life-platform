@@ -3,7 +3,7 @@ import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {compactFaceGeometry} from './face-geometry';
 import {createServingProp} from './serve-prop';
 import {createFurAtlas as furTexture,createClothWeave,createTailoredApron,poseTailoredApron,groomFlow,TORSO_PROFILE} from './surfaces';
-import {AvatarPartsSchema,type AvatarParts,type AnimationState,type AvatarAppearance} from '@virtual-city/contracts';
+import {AvatarPartsSchema,type AvatarParts,type AnimationState,type AvatarAppearance} from '@aetheria/contracts';
 import {shapePartGeometry,packPartGeometry,coveredByGarment,addPartDetails,partCoatColor} from './parts-geometry';
 
 export type Quality='low'|'balanced'|'high';

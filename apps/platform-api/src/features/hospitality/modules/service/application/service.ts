@@ -1,15 +1,15 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
 import { z } from 'zod';
-import { OrderPickUpSchema,StaffStateSchema,StaffStoppedSchema,StaffShiftRoleSchema,OrderRefusedSchema, OrderCompleteSchema, HospitalityMenuSchema, OrderWorkflowStrategySchema, StaffShiftStartSchema, StaffShiftResultSchema, StaffShiftViewSchema, OrderPlaceSchema, OrderMutationSchema, OrderQueueSchema, OrderPageSchema, OrderResultSchema, OrderViewSchema, type OrderPhase, type HospitalityPolicy, type OrderWorkflowStrategy } from '@virtual-city/contracts';
+import { OrderPickUpSchema,StaffStateSchema,StaffStoppedSchema,StaffShiftRoleSchema,OrderRefusedSchema, OrderCompleteSchema, HospitalityMenuSchema, OrderWorkflowStrategySchema, StaffShiftStartSchema, StaffShiftResultSchema, StaffShiftViewSchema, OrderPlaceSchema, OrderMutationSchema, OrderQueueSchema, OrderPageSchema, OrderResultSchema, OrderViewSchema, type OrderPhase, type HospitalityPolicy, type OrderWorkflowStrategy } from '@aetheria/contracts';
 import type { IdentityService, IdentityContext } from '../../../../identity/modules/accounts/application/service';
 import type { RoomService } from '../../../../rooms/modules/presence/application/service';
 import type { SocialService } from '../../../../social/modules/relationships/application/service';
 import { DomainError } from '../../../../../shared/common/errors';
 import { nextOrderPhase } from '../domain/lifecycle';
 import { advanceService, type ServiceAction } from '../domain/workflow';
-import { OrderPhaseSchema } from '@virtual-city/contracts';
-import { OrderReadySchema } from '@virtual-city/contracts';
+import { OrderPhaseSchema } from '@aetheria/contracts';
+import { OrderReadySchema } from '@aetheria/contracts';
 import { preparationFor,verifyPreparation,canRestartPreparation } from '../domain/preparation';
 type Row = { id: string; customer_id: string; assignee_id: string | null; customer_epoch: string; customer_membership_id: string; world_slug: string; room_id: string; item_key: string; policy_version: string; phase: OrderPhase; version: number; created_at: Date; updated_at: Date; workflow: OrderWorkflowStrategy | null; course_index: number; ready_at: Date | null };
 type Shift = { id: string;role_key:string; account_id: string; world_slug: string; room_id: string; owner_epoch: string; membership_id: string; policy_version: string; started_at: Date; expires_at: Date; interrupted_at: Date | null; ended_at: Date | null; reason: 'voluntary' | 'disconnected' | 'visit-ended' | 'restart' | 'expired' | 'restricted' | null };

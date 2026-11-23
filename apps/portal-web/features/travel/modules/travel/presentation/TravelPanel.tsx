@@ -1,8 +1,8 @@
 'use client';
 import Link from 'next/link';
 import {useMemo} from 'react';
-import {TravelPanel as SharedTravelPanel} from '@virtual-city/game-client';
-import {browserPlatform} from '@virtual-city/client-sdk';
+import {TravelPanel as SharedTravelPanel} from '@aetheria/game-client';
+import {browserPlatform} from '@aetheria/client-sdk';
 import {announceVisitChange} from '../../../../rooms/modules/rooms/application/visit-hint';
 import type {DestinationLink} from '../application/destination-link';
 export default function TravelPanel({socketOrigin,preferred={kind:'none'}}:{socketOrigin:string;preferred?:DestinationLink}){

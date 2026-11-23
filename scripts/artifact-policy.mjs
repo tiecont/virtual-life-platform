@@ -3,7 +3,7 @@ import {execFileSync} from 'node:child_process';
 import {readFile} from 'node:fs/promises';
 import {releaseTargets} from './artifact-targets.mjs';
 
-export const repository = 'tiecont/virtual-life-platform';
+export const repository = 'tiecont/aetheria-soulbound';
 export const qualityWorkflow = '.github/workflows/quality.yml';
 export const shaPattern = /^[a-f0-9]{40}$/;
 export const digestPattern = /^sha256:[a-f0-9]{64}$/;
@@ -14,7 +14,7 @@ export function validateArtifactPolicy(value) {
   assert.equal(value.branch, 'main'); assert.equal(value.qualityWorkflow, qualityWorkflow);
   assert.equal(typeof value.publishEnabled, 'boolean');
   assert.equal(value.autoMerge, false); assert.equal(value.productionAutoPromotion, false); assert.equal(value.ownerPromotionRequired, true);
-  assert.deepEqual(value.images,Object.fromEntries(targets.map(target=>[target,'ghcr.io/tiecont/vlp-'+target])));
+  assert.deepEqual(value.images,Object.fromEntries(targets.map(target=>[target,'ghcr.io/tiecont/aetheria-'+target])));
   assert(value.candidate === null || /^releases\/[a-z0-9-]+$/.test(value.candidate));
   return value;
 }

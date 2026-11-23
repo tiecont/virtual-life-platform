@@ -5,15 +5,15 @@
   "sources": [
     {
       "path": "packages/park-world/src/index.ts",
-      "sha256": "4df97ecd6a374cca8c3819efd8df9f6844d6a74f5efb27af0cb715e58414ca90"
+      "sha256": "2a5f5f57ca86207fcdaaa1252ace6ca35d4ad22b8966690c12ee1cba9bbfd47e"
     },
     {
       "path": "packages/pixi-scene/src/park-art.ts",
-      "sha256": "5de12ef8b7f205973731d54e3664778fb040838ef7e3b361f4d2ecec7521b25e"
+      "sha256": "19dfb9faedcc129d11a5d4969b6dd67ed012190424c77e56497cbd0ef38f949e"
     },
     {
       "path": "packages/pixi-scene/src/renderer.ts",
-      "sha256": "d421ed940624a1eee01f3c60fb2edd44c655252001fb6c15636f272a494ff2c0"
+      "sha256": "9f727e28671a7018e73d0c93e018a9f581ce7d3d7336f203eb91a01c785eeaa8"
     }
   ],
   "avatar": "Existing original starter atlas;separate avatar provenance applies",

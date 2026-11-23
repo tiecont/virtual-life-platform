@@ -1,5 +1,5 @@
 import { Container,Graphics,Text } from 'pixi.js';
-import type { SceneManifest } from '@virtual-city/contracts';
+import type { SceneManifest } from '@aetheria/contracts';
 
 // Original deterministic outdoor graphics. Geometry remains in the world manifest;
 // this shared renderer imports no world implementation and grants no interaction.

@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
-import { WorldError } from '@virtual-city/world-sdk';
+import { WorldError } from '@aetheria/world-sdk';
 import type { Config } from '../../../../../shared/config/environment';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import { readSessionToken } from '../../../../identity/modules/accounts/presentation/http';
@@ -8,7 +8,7 @@ import { WindowLimiter } from '../../../../identity/modules/accounts/domain/limi
 import { DomainError } from '../../../../../shared/common/errors';
 import { apiErrorHandler } from '../../../../../shared/common/http-errors';
 import type { TravelService } from '../application/service';
-import { OwnRoomSchema } from '@virtual-city/contracts';
+import { OwnRoomSchema } from '@aetheria/contracts';
 export function registerTravel(http: FastifyInstance, config: Config, identity: IdentityService, travel: TravelService, now = Date.now) {
   const limits = new WindowLimiter(now), uuid = z.uuid().transform(value => value.toLowerCase());
   const token = (req: FastifyRequest) => readSessionToken(req, config)!;

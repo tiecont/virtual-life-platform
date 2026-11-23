@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
-import {AVATAR_PART_OPTIONS,AVATAR_COMPATIBILITY,type AvatarParts,type Me,type AnimationState} from '@virtual-city/contracts';
-import type {AnimalCreatorHandle,AvatarFraming,ClientPlatform,SceneQuality} from '@virtual-city/client-sdk';
+import {AVATAR_PART_OPTIONS,AVATAR_COMPATIBILITY,type AvatarParts,type Me,type AnimationState} from '@aetheria/contracts';
+import type {AnimalCreatorHandle,AvatarFraming,ClientPlatform,SceneQuality} from '@aetheria/client-sdk';
 import {AvatarEditor,type AvatarStorePort} from './avatar-editor';
 import {AvatarThumbnail} from './AvatarThumbnail';
 const titles:Record<keyof AvatarParts,string>={species:'Animal',body:'Body',head:'Cheeks',eyes:'Eyes',muzzle:'Muzzle',ears:'Ears',tail:'Tail',fur:'Coat',marking:'Markings',hair:'Hair',outfit:'Outfit',accessory:'Accessories'};

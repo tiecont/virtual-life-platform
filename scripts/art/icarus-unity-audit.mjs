@@ -41,7 +41,7 @@ try {
     report.command = command;
     report.exitCode = await new Promise((ok, reject) => {
       const child = spawn(command[0], command.slice(1), {cwd: dirname(project), stdio: 'ignore', env: {...process.env,
-        VL_ICARUS_AUDIT_MODEL: 'Assets/IcarusCandidate/' + basename(model), VL_ICARUS_AUDIT_ACTIONS: JSON.stringify({actions}), VL_ICARUS_AUDIT_OUTPUT: factsPath}});
+        AETHERIA_ICARUS_AUDIT_MODEL: 'Assets/IcarusCandidate/' + basename(model), AETHERIA_ICARUS_AUDIT_ACTIONS: JSON.stringify({actions}), AETHERIA_ICARUS_AUDIT_OUTPUT: factsPath}});
       child.once('error', reject);
       child.once('close', code => ok(code ?? 1));
     });

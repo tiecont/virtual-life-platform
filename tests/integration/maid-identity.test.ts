@@ -4,15 +4,15 @@ import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { Pool } from 'pg';
 import { io,type Socket } from 'socket.io-client';
-import { MeSchema,RoomAckSchema,AvatarKeySchema,ChatAckSchema,ChatMessageSchema,type RoomSnapshot } from '@virtual-city/contracts';
-import { maidCatalog,maidMenu,maidSourceAvatarSuggestions,maidWorldVersion,maidServicePolicy } from '@virtual-city/maid-world';
+import { MeSchema,RoomAckSchema,AvatarKeySchema,ChatAckSchema,ChatMessageSchema,type RoomSnapshot } from '@aetheria/contracts';
+import { maidCatalog,maidMenu,maidSourceAvatarSuggestions,maidWorldVersion,maidServicePolicy } from '@aetheria/maid-world';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 const origin='http://127.0.0.1:3300',schema='maid_identity_'+randomUUID().replaceAll('-',''),sockets=new Set<Socket>();
 let admin:Pool,pool:Pool,app:Awaited<ReturnType<typeof createApp>>,config:ReturnType<typeof readConfig>,url:string,serial=0;
 async function open(){app=await createApp(config,pool);await app.app.listen(0,'127.0.0.1');url=await app.app.getUrl();}
-beforeAll(async()=>{const address=new URL(process.env.TEST_DATABASE_URL??'');if(address.hostname!=='127.0.0.1'||!/^virtual_city_test(?:_|$)/.test(address.pathname.slice(1))||address.search||address.hash)throw Error('Disposable local test DB required');admin=new Pool({connectionString:address.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);address.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:address.toString()});await migrate(pool);config=readConfig({NODE_ENV:'test',DATABASE_URL:address.toString(),SESSION_SECRET:'maid-local-identity-test-secret-'.repeat(2),LOCAL_MAID_WORLD:'1',LOCAL_DEADLINE_WORLD:'1',SAFETY_EVIDENCE_KEY:'78'.repeat(32),SAFETY_EVIDENCE_KEY_ID:'synthetic-maid-role'});await open();});
+beforeAll(async()=>{const address=new URL(process.env.TEST_DATABASE_URL??'');if(address.hostname!=='127.0.0.1'||!/^aetheria_soulbound_test(?:_|$)/.test(address.pathname.slice(1))||address.search||address.hash)throw Error('Disposable local test DB required');admin=new Pool({connectionString:address.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);address.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:address.toString()});await migrate(pool);config=readConfig({NODE_ENV:'test',DATABASE_URL:address.toString(),SESSION_SECRET:'maid-local-identity-test-secret-'.repeat(2),LOCAL_MAID_WORLD:'1',LOCAL_DEADLINE_WORLD:'1',SAFETY_EVIDENCE_KEY:'78'.repeat(32),SAFETY_EVIDENCE_KEY_ID:'synthetic-maid-role'});await open();});
 afterEach(async()=>{for(const socket of sockets)socket.close();sockets.clear();await app?.app.close();await open();});
 afterAll(async()=>{await app?.app.close();await pool?.end();if(admin){await admin.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);await admin.end();}});
 async function guest(){const address='127.124.0.'+(++serial),response=await app.http.inject({method:'POST',url:'/v1/session/guest',remoteAddress:address,headers:{origin},payload:{requestId:randomUUID(),displayName:'Maid world visitor',avatarKey:'mint'}});expect(response.statusCode).toBe(201);return {me:MeSchema.parse(response.json()),cookie:String(response.headers['set-cookie']).split(';')[0],address};}

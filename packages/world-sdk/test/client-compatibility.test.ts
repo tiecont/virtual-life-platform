@@ -1,6 +1,6 @@
 import {expect, it} from 'vitest';
 import {resolveClientCompatibility, createClientProtocolOffer, acceptSessionCompatibility} from '../src';
-import {CURRENT_CLIENT_COMPATIBILITY, negotiateClientProtocol} from '@virtual-city/contracts';
+import {CURRENT_CLIENT_COMPATIBILITY, negotiateClientProtocol} from '@aetheria/contracts';
 const nonce = '00000000-0000-4000-8000-000000000001';
 it('falls back only for an absent discovery route and fails closed for unsupported or malformed servers', () => {
   expect(resolveClientCompatibility(404)).toEqual({mode: 'legacy'});

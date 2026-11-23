@@ -1,6 +1,6 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
-import { AudienceViewSchema,AudienceResultSchema,type Me,type TravelSource,type EventViewSchema } from '@virtual-city/contracts';
+import { AudienceViewSchema,AudienceResultSchema,type Me,type TravelSource,type EventViewSchema } from '@aetheria/contracts';
 type View=ReturnType<typeof AudienceViewSchema.parse>;type Command={path:'send'|'control';body:object;key:string;negative:boolean};
 const usable=()=>document.visibilityState!=='hidden'&&navigator.onLine;
 export default function LoungeAudience({me,source,events}:{me:Me;source:TravelSource|null;events:ReturnType<typeof EventViewSchema.parse>[]} ){

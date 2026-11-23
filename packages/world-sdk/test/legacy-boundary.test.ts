@@ -1,5 +1,5 @@
 import { it, expect } from 'vitest';
-import { WorldDefinitionSchema, WorldInvocationSchema } from '@virtual-city/contracts';
+import { WorldDefinitionSchema, WorldInvocationSchema } from '@aetheria/contracts';
 import { supportsContract } from '../src';
 
 // Hand-authored wire-shape fixtures from the recorded audit, not legacy source imports.

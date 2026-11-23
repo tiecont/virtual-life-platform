@@ -1,5 +1,5 @@
 import avatarAsset from './avatar-asset.json';
-import { AvatarAppearanceSchema, AvatarKeySchema, AvatarOutfitSchema, AnimationStateSchema, type AvatarAppearance, type AnimationState } from '@virtual-city/contracts';
+import { AvatarAppearanceSchema, AvatarKeySchema, AvatarOutfitSchema, AnimationStateSchema, type AvatarAppearance, type AnimationState } from '@aetheria/contracts';
 
 export const avatarAtlasSpec = { schemaVersion: 1, core: 'starter-v1', path: avatarAsset.path, width: 512, height: 768, frameWidth: 32, frameHeight: 48, frameCount: 4, frameDurationMs: 120 } as const;
 export const avatarPalette = { fern: '#4c806b', amber: '#d7a04a', indigo: '#687ab3', rose: '#c88291', cloud: '#cedbd6', cocoa: '#986c55', mint: '#77b8a5', plum: '#936e9c' } as const;

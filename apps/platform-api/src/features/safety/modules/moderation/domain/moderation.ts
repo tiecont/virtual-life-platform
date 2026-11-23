@@ -1,4 +1,4 @@
-import { ModerationDecisionSchema } from '@virtual-city/contracts';
+import { ModerationDecisionSchema } from '@aetheria/contracts';
 
 export interface ChatModerator { inspect(text: string, signal: AbortSignal): Promise<unknown> }
 export function normalizeChatText(input: string): string {

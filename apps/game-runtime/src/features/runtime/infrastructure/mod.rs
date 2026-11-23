@@ -3,6 +3,12 @@ use crate::features::{
     pet_arena::domain as pet,
     synthetic::domain::{Rules, State},
 };
+use aetheria_gateway::{Options, durable::PgAdmission};
+use aetheria_persistence::{Host, Keys, Owner, Scope};
+use aetheria_security::{
+    RuntimeScope, TicketVerifier, durable::DurableTrust, transport::connect_runtime_postgres,
+};
+use aetheria_world::ZoneHandle;
 use axum::{Router, extract::State as AxumState, http::StatusCode, routing::get};
 use jsonwebtoken::DecodingKey;
 use serde::Deserialize;
@@ -17,12 +23,6 @@ use std::{
 use tokio::{sync::Mutex, task::JoinHandle};
 use tokio_postgres::{Client, Config};
 use uuid::Uuid;
-use vl_gateway::{Options, durable::PgAdmission};
-use vl_persistence::{Host, Keys, Owner, Scope};
-use vl_security::{
-    RuntimeScope, TicketVerifier, durable::DurableTrust, transport::connect_runtime_postgres,
-};
-use vl_world::ZoneHandle;
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -166,9 +166,9 @@ impl NativeRuntime {
             )
             .map_err(|_| "Native ticket scope unavailable")?,
         );
-        let (zone, actor) = vl_world::zone(32, 64).map_err(|_| "Native zone unavailable")?;
+        let (zone, actor) = aetheria_world::zone(32, 64).map_err(|_| "Native zone unavailable")?;
         let (actor, collision) = if settings.movement {
-            let collision = vl_world::collision::Collision::aurora()
+            let collision = aetheria_world::collision::Collision::aurora()
                 .map_err(|_| "Native collision unavailable")?;
             let epoch = u64::from_le_bytes(Uuid::new_v4().as_bytes()[..8].try_into().unwrap()) >> 1;
             (
@@ -187,7 +187,7 @@ impl NativeRuntime {
         if let Some(collision) = collision {
             admission = admission.with_movement(collision);
         }
-        let gateway = vl_gateway::router(
+        let gateway = aetheria_gateway::router(
             Options {
                 enabled: true,
                 origins: vec![settings.origin],
@@ -235,7 +235,7 @@ impl NativeRuntime {
             .route("/health/ready", get(ready::<G>))
             .route("/metrics", get(metrics::<G>))
             .with_state(health)
-            .route("/health/live", get(move || { let ruleset = ruleset.clone(); async move { ([("content-type", "application/json")], serde_json::json!({"status":"live","service":"vl-game-runtime","gameplayEnabled":true,"ruleset":ruleset}).to_string()) } }))
+            .route("/health/live", get(move || { let ruleset = ruleset.clone(); async move { ([("content-type", "application/json")], serde_json::json!({"status":"live","service":"aetheria-game-runtime","gameplayEnabled":true,"ruleset":ruleset}).to_string()) } }))
             .merge(gateway);
         Ok(Self { router, zone, task })
     }
@@ -292,7 +292,7 @@ async fn metrics<G: NativeGame>(
     (
         [("content-type", "text/plain; version=0.0.4")],
         format!(
-            "# TYPE vl_native_command_receipts_total counter\nvl_native_command_receipts_total {committed}\n# TYPE vl_native_command_rejections_total counter\nvl_native_command_rejections_total {rejected}\n"
+            "# TYPE aetheria_native_command_receipts_total counter\naetheria_native_command_receipts_total {committed}\n# TYPE aetheria_native_command_rejections_total counter\naetheria_native_command_rejections_total {rejected}\n"
         ),
     )
 }

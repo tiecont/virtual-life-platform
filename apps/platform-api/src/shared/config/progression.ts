@@ -1,5 +1,5 @@
 import {readFile} from 'node:fs/promises';
-import {ProgressionPolicySchema} from '@virtual-city/contracts';
+import {ProgressionPolicySchema} from '@aetheria/contracts';
 // Trusted immutable release configuration, not a player/admin mutation endpoint.
 export async function loadProgressionPolicy(file?: string) {
   if (!file) return undefined;

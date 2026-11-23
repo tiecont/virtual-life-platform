@@ -1,7 +1,7 @@
 import { randomUUID, timingSafeEqual } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
 import { z } from 'zod';
-import { TravelIntentInputSchema, TravelIntentReceiptSchema, TravelRequestSchema, TravelResultSchema, type TravelResult, type TravelSource, type TravelDestination, type TravelPhase } from '@virtual-city/contracts';
+import { TravelIntentInputSchema, TravelIntentReceiptSchema, TravelRequestSchema, TravelResultSchema, type TravelResult, type TravelSource, type TravelDestination, type TravelPhase } from '@aetheria/contracts';
 import type { IdentityContext, IdentityService } from '../../../../identity/modules/accounts/application/service';
 import type { RoomService } from '../../../../rooms/modules/presence/application/service';
 import { DomainError } from '../../../../../shared/common/errors';

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
-import { EventCatalogSchema,ReservationPageSchema,ReservationResultSchema,ReservationPartiesSchema,ReservationPartyOwnSchema,ReservationPartyResultSchema,ReservationPartyStoppedSchema,type Me,type TravelSource } from '@virtual-city/contracts';
-import { restaurantTables } from '@virtual-city/restaurant-world';
+import { EventCatalogSchema,ReservationPageSchema,ReservationResultSchema,ReservationPartiesSchema,ReservationPartyOwnSchema,ReservationPartyResultSchema,ReservationPartyStoppedSchema,type Me,type TravelSource } from '@aetheria/contracts';
+import { restaurantTables } from '@aetheria/restaurant-world';
 import DinnerInvitations from './DinnerInvitations';
 type Data={events:ReturnType<typeof EventCatalogSchema.parse>|null;bookings:ReturnType<typeof ReservationPageSchema.parse>|null;own:ReturnType<typeof ReservationPartyOwnSchema.parse>|null;groups:ReturnType<typeof ReservationPartiesSchema.parse>|null};
 type Change={path:string;body:object;key:string;kind:'booking'|'party'};

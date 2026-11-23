@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { ApiErrorSchema, InvitationGroupSchema, type InvitationGroup, type FriendsPage, type InvitationsPage, type Me, type WorldCard } from '@virtual-city/contracts';
+import { ApiErrorSchema, InvitationGroupSchema, type InvitationGroup, type FriendsPage, type InvitationsPage, type Me, type WorldCard } from '@aetheria/contracts';
 export default function GroupInvitations({ me, friends, worlds, revision,optionsKnown=true }: { me: Me; friends: FriendsPage | null; worlds: WorldCard[]; revision: InvitationsPage | null;optionsKnown?:boolean }) {
   const [recipients, setRecipients] = useState<string[]>([]), [destination, setDestination] = useState(''), [group, setGroup] = useState<InvitationGroup | null>(null), [groupId, setGroupId] = useState<string | null>(null), [busy, setBusy] = useState(false), [message, setMessage] = useState('');
   const keys = useRef(new Map<string, string>()), mounted = useRef(true), sending = useRef(false);

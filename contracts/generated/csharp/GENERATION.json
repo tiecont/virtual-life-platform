@@ -7,17 +7,17 @@
   "generated": [
     {
       "ref": "contracts/generated/csharp/Public.cs",
-      "sha256": "75694d93e44acc6a1989b1c93b569105bcfe88f9011b47d218ab0b665f4edcc4"
+      "sha256": "ec3deef007511783d09c04adc7171f57448623b29789c8af9d89345aa246702d"
     },
     {
       "ref": "packages/native-protocol/src/generated/public_pb.ts",
-      "sha256": "3acb1354ea7d6573233a03667caf8063d1fe3480181c82a47f1c6237b1e16f96"
+      "sha256": "9e5d5d65a7f1ab02cc43c6168061f07cd9370ac796b7672ad9feac3ce0ff4bb4"
     }
   ],
   "generationHost": "linux-x86_64",
-  "internalProtoSha256": "0b83537bd8752132d36accc1591cd3ebbff8b9aa0d81490e1b1075fb71fcb6f8",
+  "internalProtoSha256": "0379136e87352e2cd98e91db40ad50360c7457f6e8b6191826c9151105d76de2",
   "internalRpcVersion": 1,
-  "publicProtoSha256": "d13ae34ebcf3503e37e53bb37784265aa8fe34b03e988bb4bda9befeadfd43e1",
+  "publicProtoSha256": "37f3ccdd4eea2ea3ac30acb66be50700b3ee5d4e4abcf01ea9554b0763cf66cf",
   "publicProtocolVersion": 1,
   "schemaVersion": 1,
   "typescriptGenerator": "2.17.0"

@@ -38,6 +38,123 @@ dependencies = [
 ]
 
 [[package]]
+name = "aetheria-game-core"
+version = "0.1.0"
+dependencies = [
+ "hmac 0.12.1",
+ "proptest",
+ "rand_chacha 0.10.0",
+ "sha2 0.10.9",
+ "zeroize",
+]
+
+[[package]]
+name = "aetheria-game-runtime"
+version = "0.1.0"
+dependencies = [
+ "aetheria-game-core",
+ "aetheria-gateway",
+ "aetheria-persistence",
+ "aetheria-pet-arena",
+ "aetheria-protocol",
+ "aetheria-security",
+ "aetheria-world",
+ "axum",
+ "jsonwebtoken",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tokio-postgres",
+ "tower",
+ "uuid",
+]
+
+[[package]]
+name = "aetheria-gateway"
+version = "0.1.0"
+dependencies = [
+ "aetheria-protocol",
+ "aetheria-security",
+ "aetheria-world",
+ "axum",
+ "futures-util",
+ "jsonwebtoken",
+ "prost",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "tokio",
+ "tokio-postgres",
+ "tokio-tungstenite",
+ "tower",
+]
+
+[[package]]
+name = "aetheria-persistence"
+version = "0.1.0"
+dependencies = [
+ "aes-gcm",
+ "aetheria-game-core",
+ "aetheria-security",
+ "getrandom 0.4.3",
+ "jsonwebtoken",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "tokio",
+ "tokio-postgres",
+ "uuid",
+ "zeroize",
+]
+
+[[package]]
+name = "aetheria-pet-arena"
+version = "0.1.0"
+dependencies = [
+ "aetheria-game-core",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "aetheria-protocol"
+version = "0.1.0"
+dependencies = [
+ "prost",
+ "prost-build",
+ "protoc-bin-vendored",
+ "serde_json",
+ "sha2 0.10.9",
+ "tonic",
+ "tonic-prost",
+ "tonic-prost-build",
+]
+
+[[package]]
+name = "aetheria-security"
+version = "0.1.0"
+dependencies = [
+ "base64",
+ "ed25519-dalek",
+ "jsonwebtoken",
+ "native-tls",
+ "postgres-native-tls",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tokio-postgres",
+]
+
+[[package]]
+name = "aetheria-world"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "aho-corasick"
 version = "1.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2377,123 +2494,6 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
-
-[[package]]
-name = "vl-game-core"
-version = "0.1.0"
-dependencies = [
- "hmac 0.12.1",
- "proptest",
- "rand_chacha 0.10.0",
- "sha2 0.10.9",
- "zeroize",
-]
-
-[[package]]
-name = "vl-game-runtime"
-version = "0.1.0"
-dependencies = [
- "axum",
- "jsonwebtoken",
- "serde",
- "serde_json",
- "tokio",
- "tokio-postgres",
- "tower",
- "uuid",
- "vl-game-core",
- "vl-gateway",
- "vl-persistence",
- "vl-pet-arena",
- "vl-protocol",
- "vl-security",
- "vl-world",
-]
-
-[[package]]
-name = "vl-gateway"
-version = "0.1.0"
-dependencies = [
- "axum",
- "futures-util",
- "jsonwebtoken",
- "prost",
- "serde",
- "serde_json",
- "sha2 0.10.9",
- "tokio",
- "tokio-postgres",
- "tokio-tungstenite",
- "tower",
- "vl-protocol",
- "vl-security",
- "vl-world",
-]
-
-[[package]]
-name = "vl-persistence"
-version = "0.1.0"
-dependencies = [
- "aes-gcm",
- "getrandom 0.4.3",
- "jsonwebtoken",
- "serde",
- "serde_json",
- "sha2 0.10.9",
- "tokio",
- "tokio-postgres",
- "uuid",
- "vl-game-core",
- "vl-security",
- "zeroize",
-]
-
-[[package]]
-name = "vl-pet-arena"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
- "vl-game-core",
-]
-
-[[package]]
-name = "vl-protocol"
-version = "0.1.0"
-dependencies = [
- "prost",
- "prost-build",
- "protoc-bin-vendored",
- "serde_json",
- "sha2 0.10.9",
- "tonic",
- "tonic-prost",
- "tonic-prost-build",
-]
-
-[[package]]
-name = "vl-security"
-version = "0.1.0"
-dependencies = [
- "base64",
- "ed25519-dalek",
- "jsonwebtoken",
- "native-tls",
- "postgres-native-tls",
- "serde",
- "serde_json",
- "tokio",
- "tokio-postgres",
-]
-
-[[package]]
-name = "vl-world"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
- "tokio",
-]
 
 [[package]]
 name = "wait-timeout"

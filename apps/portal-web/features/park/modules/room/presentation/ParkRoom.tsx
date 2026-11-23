@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { parkScene,parkAreas,parkDestinations,parkWorldVersion } from '@virtual-city/park-world';
+import { parkScene,parkAreas,parkDestinations,parkWorldVersion } from '@aetheria/park-world';
 import WorldRoomPanel,{type RoomExperience} from '../../../../rooms/modules/rooms/presentation/WorldRoomPanel';
 import ParkQuick from './ParkQuick';
 import ParkActivities from './ParkActivities';

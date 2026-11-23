@@ -1,4 +1,4 @@
-import { AvatarKeySchema, AvatarOutfitSchema, AnimationStateSchema, type AvatarAppearance, type AnimationState } from '@virtual-city/contracts';
+import { AvatarKeySchema, AvatarOutfitSchema, AnimationStateSchema, type AvatarAppearance, type AnimationState } from '@aetheria/contracts';
 import { avatarPalette, avatarFrame } from './avatar-art';
 
 // Original pixel geometry. No external image, font, character reference or music.

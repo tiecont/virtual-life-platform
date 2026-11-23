@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "repository": "tiecont/virtual-life-platform",
+  "repository": "tiecont/aetheria-soulbound",
   "branch": "main",
   "qualityWorkflow": ".github/workflows/quality.yml",
   "publishEnabled": false,
@@ -8,9 +8,9 @@
   "productionAutoPromotion": false,
   "ownerPromotionRequired": true,
   "images": {
-    "api": "ghcr.io/tiecont/vlp-api",
-    "web": "ghcr.io/tiecont/vlp-web",
-    "admin": "ghcr.io/tiecont/vlp-admin"
+    "api": "ghcr.io/tiecont/aetheria-api",
+    "web": "ghcr.io/tiecont/aetheria-web",
+    "admin": "ghcr.io/tiecont/aetheria-admin"
   },
   "candidate": null
 }

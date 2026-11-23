@@ -1,5 +1,5 @@
 'use client';
-import { loungeScene,loungeAreas,loungeWorldVersion } from '@virtual-city/lounge-world';
+import { loungeScene,loungeAreas,loungeWorldVersion } from '@aetheria/lounge-world';
 import WorldRoomPanel,{type RoomExperience} from '../../../../rooms/modules/rooms/presentation/WorldRoomPanel';
 import LoungeSchedule from './LoungeSchedule';
 import LoungeStage from './LoungeStage';

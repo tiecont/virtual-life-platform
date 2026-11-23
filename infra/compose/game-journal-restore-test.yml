@@ -1,12 +1,12 @@
-name: ${CITY_BACKUP_TEST_PROJECT:?Disposable project required}
+name: ${AETHERIA_BACKUP_TEST_PROJECT:?Disposable project required}
 services:
   source:
     image: postgres:17.7-alpine
     environment:
       POSTGRES_USER: city_backup_test
-      POSTGRES_PASSWORD: ${CITY_BACKUP_TEST_PASSWORD:?Ephemeral test password required}
-      POSTGRES_DB: virtual_city_test_game_backup
-    ports: ['127.0.0.1:${CITY_BACKUP_SOURCE_PORT:?}:5432']
+      POSTGRES_PASSWORD: ${AETHERIA_BACKUP_TEST_PASSWORD:?Ephemeral test password required}
+      POSTGRES_DB: aetheria_soulbound_test_game_backup
+    ports: ['127.0.0.1:${AETHERIA_BACKUP_SOURCE_PORT:?}:5432']
     tmpfs: [/var/lib/postgresql/data]
     healthcheck:
       test: [CMD-SHELL, 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
@@ -17,9 +17,9 @@ services:
     image: postgres:17.7-alpine
     environment:
       POSTGRES_USER: city_backup_test
-      POSTGRES_PASSWORD: ${CITY_BACKUP_TEST_PASSWORD:?}
-      POSTGRES_DB: virtual_city_restore_test
-    ports: ['127.0.0.1:${CITY_BACKUP_RESTORE_PORT:?}:5432']
+      POSTGRES_PASSWORD: ${AETHERIA_BACKUP_TEST_PASSWORD:?}
+      POSTGRES_DB: aetheria_soulbound_restore_test
+    ports: ['127.0.0.1:${AETHERIA_BACKUP_RESTORE_PORT:?}:5432']
     tmpfs: [/var/lib/postgresql/data]
     healthcheck:
       test: [CMD-SHELL, 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']

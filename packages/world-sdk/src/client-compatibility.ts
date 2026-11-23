@@ -1,4 +1,4 @@
-import {ClientCompatibilitySchema, CURRENT_CLIENT_COMPATIBILITY, ClientProtocolOfferSchema, NegotiatedSessionSchema, type ClientProtocolOffer, type NegotiatedSession} from '@virtual-city/contracts';
+import {ClientCompatibilitySchema, CURRENT_CLIENT_COMPATIBILITY, ClientProtocolOfferSchema, NegotiatedSessionSchema, type ClientProtocolOffer, type NegotiatedSession} from '@aetheria/contracts';
 export type ResolvedClientCompatibility = {mode: 'legacy'} | {mode: 'negotiated'};
 export function resolveClientCompatibility(status: number, input?: unknown): ResolvedClientCompatibility {
   if (status === 404) return {mode: 'legacy'};

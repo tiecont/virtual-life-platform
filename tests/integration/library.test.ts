@@ -3,9 +3,9 @@ import { beforeAll,afterAll,afterEach,it,expect } from 'vitest';
 import { Pool } from 'pg';
 import { randomUUID } from 'node:crypto';
 import { io,type Socket } from 'socket.io-client';
-import { MeSchema,RoomAckSchema,ChatAckSchema,TravelAckSchema,type RoomSnapshot } from '@virtual-city/contracts';
-import { libraryWorldVersion } from '@virtual-city/library-world';
-import { deadlineWorldVersion } from '@virtual-city/deadline-world';
+import { MeSchema,RoomAckSchema,ChatAckSchema,TravelAckSchema,type RoomSnapshot } from '@aetheria/contracts';
+import { libraryWorldVersion } from '@aetheria/library-world';
+import { deadlineWorldVersion } from '@aetheria/deadline-world';
 import {mkdir,writeFile} from 'node:fs/promises';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { createApp } from '../../apps/platform-api/src/app';
@@ -13,7 +13,7 @@ import { migrate } from '../../apps/platform-api/src/shared/database/migrations'
 let admin:Pool,pool:Pool,app:Awaited<ReturnType<typeof createApp>>,url:string,runtimeConfig:ReturnType<typeof readConfig>;const clients:Socket[]=[],organizers=new Set<string>(),schema='library_test_'+randomUUID().replaceAll('-',''),origin='http://127.0.0.1:3300';let serial=0,offset=0;
 async function open(){app=await createApp(runtimeConfig,pool,false,{now:()=>Date.now()+offset,safety:{enabled:true},events:{organizers:{permits:async(_db,actor,world)=>world==='library'&&organizers.has(actor.accountId)}}});await app.app.listen(0,'127.0.0.1');url=await app.app.getUrl();}
 beforeAll(async()=>{
- const connection=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(connection.hostname)||!/^virtual_city_test(?:_|$)/.test(connection.pathname.slice(1)))throw Error('Refusing non-local/non-test database');
+ const connection=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(connection.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(connection.pathname.slice(1)))throw Error('Refusing non-local/non-test database');
  admin=new Pool({connectionString:connection.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);connection.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:connection.toString()});await migrate(pool);
  runtimeConfig=readConfig({NODE_ENV:'test',DATABASE_URL:connection.toString(),SESSION_SECRET:'library-test-session-key-'.repeat(2),WEB_ORIGIN:origin,LOCAL_LIBRARY_WORLD:'1',LOCAL_DEADLINE_WORLD:'1'});await open();
 });

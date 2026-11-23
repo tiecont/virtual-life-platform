@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useEffect,useRef,useState } from 'react';
-import { WorldCatalogSchema,type WorldCatalog,type Me } from '@virtual-city/contracts';
+import { WorldCatalogSchema,type WorldCatalog,type Me } from '@aetheria/contracts';
 import WorldActivity from '../../../../rooms/modules/rooms/presentation/WorldActivity';
 import { travelHref } from '../../../../travel/modules/travel/application/destination-link';
 import '../../../../city/modules/city/presentation/city-map.css';

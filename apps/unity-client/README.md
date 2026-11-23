@@ -4,9 +4,9 @@ Open this project with Unity 6000.3.14f1 and URP 17.3.0. The pinned
 manifest uses Unity Test Framework 1.6.0. The Editor prepares URP settings,
 a resource material and the scene build list on import. The package lock,
 project settings and generated developer materials are resolved by the pinned
-Editor and maintained in source. Temporary art stays under VirtualLife.
+Editor and maintained in source. Temporary art stays under Aetheria.
 
-Open Assets/VirtualLife/Scenes/AuroraBlockout.unity and enter Play mode.
+Open Assets/Aetheria/Scenes/AuroraBlockout.unity and enter Play mode.
 WASD moves the capsule. Approach the blue terminal and press E for the local
 three-turn input rehearsal. The scene uses temporary developer primitives.
 The client displays its offline mode. The explicitly configured development connection panel routes terminal input
@@ -21,7 +21,7 @@ Unity folders. .NET Standard 2.1 supplies Memory/Span APIs. `unzip` and access
 to NuGet are required on the first preparation; subsequent runs use the
 verified cache under artifacts/unity-packages. Do not edit staged bindings.
 
-`VirtualLife.Native` has no UnityEngine dependency. `PlatformSession` logs in
+`Aetheria.Native` has no UnityEngine dependency. `PlatformSession` logs in
 over HTTPS with an in-memory cookie container, then posts the CSRF-protected
 empty runtime-ticket request. The server chooses world/boot/session scope.
 Pass `session.TicketAsync` to `NativeConnection` together with the configured
@@ -43,8 +43,8 @@ Standalone validation uses SDK 8.0.428 (`DOTNET=/absolute/path/to/dotnet`):
 node scripts/native-csharp.mjs
 export PATH="$(dirname "$DOTNET"):$PATH"
 pnpm build:packages
-pnpm --filter @virtual-city/platform-api build
-cargo build --locked --package vl-game-runtime
+pnpm --filter @aetheria/platform-api build
+cargo build --locked --package aetheria-game-runtime
 node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client
 ```
 
@@ -179,8 +179,8 @@ and the licensed Editor named by `UNITY_EDITOR`:
 
 ```sh
 pnpm build:packages
-pnpm --filter @virtual-city/platform-api build
-cargo build --locked -p vl-game-runtime
+pnpm --filter @aetheria/platform-api build
+cargo build --locked -p aetheria-game-runtime
 node scripts/unity-validate.mjs linux
 pnpm play:linux
 ```
@@ -224,7 +224,7 @@ development player. The separate adapter fixture retains wrong-CA rejection.
 
 The `NativeSceneController` source wires the scene to the existing adapters via
 `NativePlaySession` (`SyntheticPlaySession` or `PetArenaPlaySession`). It is enabled only in the Editor or a development build
-of `AuroraBlockout`, and only when `VL_NATIVE_DEV_CONFIG` names an external JSON
+of `AuroraBlockout`, and only when `AETHERIA_NATIVE_DEV_CONFIG` names an external JSON
 file. No login happens automatically. The file must remain outside `Assets/` and
 the packaged player's data directory; it contains scope only:
 

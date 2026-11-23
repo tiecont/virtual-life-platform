@@ -10,7 +10,7 @@
     "Pull the object back through the managed cache and pass the existing asset/Unity checks before changing tracked source assets."
   ],
   "roots": [
-    "apps/unity-client/Assets/VirtualLife/ArtStudies/",
+    "apps/unity-client/Assets/Aetheria/ArtStudies/",
     "assets/characters/icarus/",
     "integrations/legacy-snapshots/",
     "specs/pet-arena/references/"
@@ -25,7 +25,7 @@
   ],
   "files": [
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/icarus-study.fbx",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/icarus-study.fbx",
       "sizeBytes": 8322540,
       "sha256": "f9fe114cd53ba29b39a51285df27da33f3dd8bfd8480d05eaa804d3c46c345db",
       "contentType": "application/vnd.autodesk.fbx",
