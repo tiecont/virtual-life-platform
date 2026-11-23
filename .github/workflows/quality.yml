@@ -122,7 +122,17 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm legacy:prepare
+      - name: Restore prepared legacy API baselines
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: artifacts/legacy-runtime
+          key: ${{ runner.os }}-legacy-runtime-${{ hashFiles('integrations/legacy-snapshots/**','scripts/prepare-deadline-baseline.mjs','scripts/prepare-maid-baseline.mjs','.node-version') }}
+          restore-keys: |
+            ${{ runner.os }}-legacy-runtime-
+      - name: Prepare selected legacy API baselines
+        run: |
+          node scripts/prepare-deadline-baseline.mjs --allow-network
+          node scripts/prepare-maid-baseline.mjs --allow-network
       - run: pnpm build:packages
       - run: pnpm --filter @aetheria/platform-api build
       - name: Run PostgreSQL integration shard
