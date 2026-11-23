@@ -4719,6 +4719,28 @@
         "standardAssetSkill": ".agents/skills/aetheria-standard-asset-3d/SKILL.md",
         "scope": "Two canonical 3D skills: Charakuru-to-VRM hero production and direct Tripo/Meshy standard-asset production, with separate owner, poly-budget, provenance, SHA-256 and Unity admission gates. Documentation only; no new model, accepted benchmark or task-wide completion claimed.",
         "remaining": "Validate the process against an actual reference-quality pilot; signed authoring conventions, measured shader/VRAM budgets and production character assets remain open.",
+        "wave1MvpPipeline": {
+          "sourceRevision": "2063b7d",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "specification": "specs/pet-arena/mvp-wave1-43-pets.json",
+          "skills": [".agents/skills/aetheria-hero-character-vrm/SKILL.md", ".agents/skills/aetheria-standard-asset-3d/SKILL.md"],
+          "scripts": ["scripts/art/blender_normalize_r2_batch.py", "scripts/art/validate-mvp-wave1.mjs"],
+          "scope": "Priority-1 free Tripo GPT Image 2.5 lane, Blender 5.3 production workspace, 28K provider-candidate Hero Wings ceiling with final assembled contract retained, robust scale/pivot/triangle normalization, schema-compatible R2 manifests, and dependency-free Wave 1 catalog validation.",
+          "commands": [
+            {"command": "python3 /home/tiecont/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/aetheria-hero-character-vrm && python3 /home/tiecont/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/aetheria-standard-asset-3d", "exitCode": 0, "result": "Both canonical skills PASS."},
+            {"command": "python3 -m unittest discover -s tests/art -p 'test_*.py'", "exitCode": 0, "result": "21 PASS on the current implementation tree."},
+            {"command": "node scripts/art/validate-mvp-wave1.mjs", "exitCode": 0, "result": "43 Pets in exact 1/6/6/30 composition; six elements/maps; ten used base meshes; eighteen accessories; six arena kits; canonical source hashes and release state PASS."},
+            {"command": "pnpm exec eslint scripts/art/validate-mvp-wave1.mjs", "exitCode": 0},
+            {"command": "python3 -m py_compile scripts/art/blender_normalize_r2_batch.py && node --check scripts/art/validate-mvp-wave1.mjs", "exitCode": 0},
+            {"command": "Blender 5.3 headless GLB fixture normalization", "exitCode": 0, "result": "24 triangles; target height 2.0m; bottom-center root at world origin; actual export SHA256 f896ad9fa271eab5f3b287c6ede2b4b749a01b547076fb070354f1f9af76422f; manifest schema PASS."},
+            {"command": "Blender 5.3 headless .blend fixture normalization", "exitCode": 0, "result": "12 triangles; target height 3.0m; actual GLB export and manifest PASS."},
+            {"command": "Blender 5.3 headless over-budget fixture", "exitCode": 1, "result": "Expected fail-closed result: 24-triangle fixture rejected by a 10-triangle LOD0 budget; no manifest produced."},
+            {"command": "pnpm governance:check", "exitCode": 0, "result": "Governance/release consistency and binary hygiene PASS; indexed historical retrieval is not fresh runtime acceptance."},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "limitations": "Hosted final-head CI and a real normalized Pet/Prop source remain pending. Blender fixtures validate mechanics, not visual or Unity admission. No paid provider call, owner art approval or task completion is claimed.",
+          "nextAction": "Run exact hosted CI on the finished PR head, then reconcile the next real Tripo Pet batch through the normalizer."
+        },
         "skillVerification": {
           "sourceRevision": "99d7469ef2f87a7f1470dd457e7c3f3777c1e95f",
           "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
@@ -5546,6 +5568,17 @@
       "wave": "P0/P4",
       "specification": "specs/pet-arena/v2.md; specs/pet-arena/art-direction.md",
       "draftContract": "Strict typed asset/source/import hash references, all eleven animation semantics and six-hero/boss missing-asset preflight. Explicit 19-element art direction and original catalog-aligned model/animation briefs. Draft only; no runtime activation or production publication port.",
+      "wave1MvpBlueprint": {
+        "sourceRevision": "bac10cd",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "specification": "specs/pet-arena/mvp-wave1-43-pets.json",
+        "scope": "Canonical 43-Pet Wave 1 lock: Icarus, six Standard S, six map legendary bosses, thirty map regulars over ten shared race bases, eighteen element/stage evolution accessories and six modular arena kits.",
+        "canonicalSources": ["specs/pet-arena/v3.1/data/pets_initial_240.json", "specs/pet-arena/v3.1/data/maps_19.json", "specs/pet-arena/v3.1/data/standard_gacha_pets_6.json", "packages/contracts/src/pet-acquisition-catalog-v3.ts"],
+        "ownerBoundary": "The five remaining Limited S identities remain excluded under VL-172. Concept images are not models, rigs, motion, rights clearance or production approval.",
+        "availableCheck": {"command": "node scripts/art/validate-mvp-wave1.mjs", "exitCode": 0, "result": "At implementation source: exact identity, map membership, base grouping, accessory, arena and source-hash invariants PASS."},
+        "limitations": "Exact final-head hosted CI pending; actual portrait/icon/tile atlas, animation bindings, Unity preview, measured performance and owner/rights review remain open.",
+        "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
+      },
       "limitedBindingVerification": {
         "sourceRevision": "9a9e250d7ba59f8e03ed718906ba8709d69a9597",
         "reviewMode": "SINGLE_AGENT_AUDIT",
@@ -7131,7 +7164,7 @@
         "Radial and six-legged locomotion are valid; board stays stationary/visible; animation never decides results",
         "LOD/performance, reduced motion and event dedupe verified in licensed Linux Unity; integrate VL-146 companion adapter and VL-133 combat events when ready"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [
         "Original asset provenance/rights and actual Unity motion/render acceptance; physical Windows separately"
       ],
@@ -7142,6 +7175,34 @@
       ],
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
+        "conceptBatch1": {
+          "sourceRevision": "2063b7d",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "OWNER_REVIEW_REQUIRED",
+          "specification": "specs/pet-arena/mvp-wave1-43-pets.json",
+          "workspace": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1",
+          "reviewSheet": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/review/index.html",
+          "reviewNotes": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/review/README.md",
+          "ledger": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts/generation-ledger.json",
+          "assets": 22,
+          "composition": {"standardS": 6, "mapLegendary": 6, "sharedRaceBase": 10},
+          "provider": "Tripo Studio Image",
+          "model": "GPT Image 2.5",
+          "freeQuotaBefore": 0,
+          "freeQuotaAfter": 22,
+          "freeQuotaLimit": 100,
+          "paidCreditsConsumed": 0,
+          "paidBalanceObservedBefore": 1910,
+          "paidBalanceObservedAfter": 1910,
+          "commands": [
+            {"command": "Tripo Studio Image UI, GPT Image 2.5, one 4:3 image per request", "exitCode": 0, "result": "22 unique task IDs; free counter advanced 0→22; visible model checked before each run; paid balance remained 1910; no paid fallback."},
+            {"command": "node artifacts/mvp-wave1-generator/build-review.mjs", "exitCode": 0, "result": "22 valid PNGs; 22 unique SHA-256 values; six Standard, six bosses, ten race bases; review HTML, Markdown, manifest and ledger generated."},
+            {"command": "Chrome local HTML inspection at 1920px desktop and 390px mobile", "exitCode": 0, "result": "All implementations loaded; grouped cards, owner decision controls and 22-item checklist render without horizontal overflow; screenshots retained under review/assets."}
+          ],
+          "transientIssue": "One boss image request ended in ERR_NETWORK_CHANGED after the task completed. Reload recovered the existing task image without a duplicate generation.",
+          "limitations": "PNG concepts are not editable models, rigs, animation or Unity acceptance. Owner approval is missing for all 22. Keep outside Git and PUBLISHED OFF.",
+          "nextAction": "Owner approves or marks revisions for all 22 in one review sitting; then start approved Smart Mesh batches with no paid call without a quote and authorization."
+        },
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
       }
     },
