@@ -2,8 +2,10 @@ import assert from 'node:assert/strict';
 import {readdir,readFile} from 'node:fs/promises';
 import path from 'node:path';
 
-const directory=process.argv[2],expected=Number(process.argv[3]);
-assert(directory&&Number.isSafeInteger(expected)&&expected>0,'usage: verify-vitest-reports <directory> <expected-total>');
+const directory=process.argv[2],capacity=JSON.parse(await readFile('config/ci-capacity.json','utf8'));
+const expected=process.argv[3]===undefined?capacity.integrationTestTotal:Number(process.argv[3]);
+assert(capacity.schemaVersion===1&&capacity.integrationShards===4&&Number.isSafeInteger(capacity.integrationTestTotal)&&capacity.integrationTestTotal>0,'Invalid CI capacity config');
+assert(directory&&Number.isSafeInteger(expected)&&expected>0,'usage: verify-vitest-reports <directory> [expected-total]');
 const files=(await readdir(directory)).filter(name=>name.endsWith('.json')).sort();
 assert.equal(files.length,4,'Expected exactly four integration-shard reports');
 let total=0,passed=0;

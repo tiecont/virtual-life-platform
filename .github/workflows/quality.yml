@@ -282,5 +282,5 @@ jobs:
           path: artifacts/ci/integration-reports
           merge-multiple: true
       - name: Verify all integration shards passed without skipped tests
-        run: node scripts/verify-vitest-reports.mjs artifacts/ci/integration-reports 813
+        run: node scripts/verify-vitest-reports.mjs artifacts/ci/integration-reports
       - run: node scripts/artifact-gate.mjs

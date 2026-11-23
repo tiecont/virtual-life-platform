@@ -18,7 +18,9 @@ async function main(){
  assert.equal((workflow.match(/max-parallel: 4/g)??[]).length,2,'Integration and browser matrices use all four public-runner slots');
  assert(workflow.includes('fail-fast: false'));
  assert(workflow.includes('--project integration')&&workflow.includes('--shard="${{ matrix.shard }}/4"'));
- assert(workflow.includes('node scripts/verify-vitest-reports.mjs artifacts/ci/integration-reports 813'));
+ const capacity=JSON.parse(await readFile('config/ci-capacity.json','utf8'));
+ assert(capacity.schemaVersion===1&&capacity.integrationShards===4&&Number.isSafeInteger(capacity.integrationTestTotal)&&capacity.integrationTestTotal>0);
+ assert(workflow.includes('node scripts/verify-vitest-reports.mjs artifacts/ci/integration-reports'));
  assert(workflow.includes("VITEST_MAX_WORKERS: '4'")&&workflow.includes('NODE_OPTIONS: --max-old-space-size=12288'));
  const gate=workflow.split('\n  quality:')[1];assert(gate&&gate.includes('needs: [plan, core, integration, browser, images]')&&gate.includes('if: ${{ always() }}')&&gate.includes('node scripts/artifact-gate.mjs'));
  assert(!/^\s+artifacts\/\s*$/m.test(workflow));assert(!workflow.includes('pnpm test:e2e'));

@@ -40,7 +40,7 @@ export function assertArtifactWorkflows(quality, publish, pins) {
   assert(gate?.includes('needs: [plan, core, integration, browser, images]'));
   assert(gate.includes('if: ${{ always() }}') && gate.includes('node scripts/artifact-gate.mjs'));
   assert(gate.includes('pattern: integration-report-*') && gate.includes('merge-multiple: true'));
-  assert(gate.includes('node scripts/verify-vitest-reports.mjs artifacts/ci/integration-reports 813'));
+  assert(gate.includes('node scripts/verify-vitest-reports.mjs artifacts/ci/integration-reports'));
   assert(publish.startsWith('name: Publish verified artifacts\non:\n  workflow_run:\n    workflows: [Quality]\n    types: [completed]\n    branches: [main]\npermissions:\n  contents: read\n'));
   assert.equal((publish.match(/: write\b/g) ?? []).length, 1);
   assert(publish.includes('    permissions:\n      contents: read\n      actions: read\n      packages: write\n'));
