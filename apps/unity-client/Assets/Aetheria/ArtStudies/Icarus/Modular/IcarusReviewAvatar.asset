@@ -1160,7 +1160,7 @@ Avatar:
         m_Skeleton:
           data:
             m_Node: []
-            m_ID: 
+            m_ID:
             m_AxesArray: []
         m_SkeletonPose:
           data:
@@ -1209,8 +1209,8 @@ Avatar:
         m_HasLeftHand: 0
         m_HasRightHand: 0
         m_HasTDoF: 0
-    m_HumanSkeletonIndexArray: 
-    m_HumanSkeletonReverseIndexArray: 
+    m_HumanSkeletonIndexArray:
+    m_HumanSkeletonReverseIndexArray:
     m_RootMotionBoneIndex: 13
     m_RootMotionBoneX:
       t: {x: 0, y: 0, z: 0}
@@ -1253,7 +1253,7 @@ Avatar:
     572710622: root/hips/spine/chest/upperChest/shoulder.R/upper_arm.R/lower_arm.R/hand.R/little_proximal.R/little_intermediate.R/little_distal.R
     2242049741: root/hips/spine/chest/upperChest/neck/head/framing.R_0/framing.R_1/framing.R_2/framing.R_2_CharakitEnd
     709414306: root/hips/spine/chest/upperChest/neck/head/rear.L_0
-    0: 
+    0:
     2250007294: root/hips/skirt_RearRight_0/skirt_RearRight_1/skirt_RearRight_2
     3065365718: root/hips/ribbon_R_0/ribbon_R_1/ribbon_R_2/ribbon_R_3/ribbon_R_3_CharakitEnd
     3833142746: root/hips/skirt_FrontLeft_0/skirt_FrontLeft_1

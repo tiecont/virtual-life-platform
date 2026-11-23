@@ -429,7 +429,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4870552773557632513, guid: 394746fe935221cb7a191fa99d3f0c61, type: 3}
       propertyPath: m_Avatar
-      value: 
+      value:
       objectReference: {fileID: 9000000, guid: db45fd48e8d10217a945272033ec5e72, type: 2}
     - target: {fileID: 5159078012444724336, guid: 394746fe935221cb7a191fa99d3f0c61, type: 3}
       propertyPath: m_LocalPosition.x
@@ -514,7 +514,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0b95e441c3cd4c17ad18048426aaa550, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Aetheria.Icarus.Presentation::Aetheria.Icarus.IcarusWingController
   wingSocket: {fileID: 1333816634307739142}
   haloSocket: {fileID: 1642053408109914421}
@@ -533,7 +533,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4274c439fd3497f8a3b469573b63769, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Aetheria.Icarus.Presentation::Aetheria.Icarus.IcarusSignaturePresentation
 --- !u!114 &8712771175226947494
 MonoBehaviour:
@@ -545,7 +545,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5b4f6e62b9f04565a3a5d1f8d1a43f7d, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Aetheria.Icarus.Presentation::Aetheria.Icarus.IcarusBowString
   upperEndpoint: {fileID: 1617979486567393560}
   lowerEndpoint: {fileID: 6359023431773132584}
