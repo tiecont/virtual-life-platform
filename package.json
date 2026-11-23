@@ -78,6 +78,8 @@
     "architecture:check": "node scripts/verify-architecture.mjs",
     "assets:avatars": "node --import tsx scripts/build-avatar-assets.ts",
     "assets:check": "node --import tsx scripts/build-avatar-assets.ts --check && node scripts/check-scene-provenance.mjs && node --import tsx scripts/pet-asset-check.mjs && node --import tsx scripts/pet-asset-check.mjs --limited-v31 assets/characters/icarus/white-gold-study/bindings.json",
+    "assets:pull": "node --env-file-if-exists=.env scripts/media/assets-pull.mjs",
+    "assets:push": "node --env-file-if-exists=.env scripts/media/assets-push.mjs",
     "bench:rooms": "pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/rooms-baseline.ts",
     "bench:deadline": "pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/deadline-baseline.ts",
     "bench:city": "pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/city-profiles.ts",
