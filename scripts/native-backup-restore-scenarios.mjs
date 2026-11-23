@@ -35,7 +35,7 @@ export async function nativeBackupRestoreScenarios(c){
  const compose=args=>docker([...composeArgs,...args]);
  let target,started=false,running=false,heartbeat,heartbeatWork=Promise.resolve();
  try{
-  await writeFile(envPath,'AETHERIA_BACKUP_TEST_PROJECT='+project+'\nCITY_BACKUP_TEST_PASSWORD='+password+'\n',{mode:0o600});
+  await writeFile(envPath,'AETHERIA_BACKUP_TEST_PROJECT='+project+'\nAETHERIA_BACKUP_TEST_PASSWORD='+password+'\n',{mode:0o600});
   await writeFile(keyPath,randomBytes(32).toString('hex'),{mode:0o600});
   await writeFile(wrongPath,randomBytes(32).toString('hex'),{mode:0o600});
   const before=await fingerprint(pool);
