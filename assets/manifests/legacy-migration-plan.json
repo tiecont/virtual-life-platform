@@ -306,6 +306,16 @@
       "class": "MP4_VIDEO"
     },
     {
+      "path": "assets/characters/icarus/white-gold-study/reduced-motion.mp4",
+      "sizeBytes": 201186,
+      "sha256": "0d11344947022df56b75038a544f43e3f228b226bdc47325e310fc29395ff72e",
+      "contentType": "video/mp4",
+      "s3Key": "assets/legacy/v1/0d11344947022df56b75038a544f43e3f228b226bdc47325e310fc29395ff72e/reduced-motion.mp4",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "MP4_VIDEO"
+    },
+    {
       "path": "integrations/legacy-snapshots/deadline.tar",
       "sizeBytes": 552960,
       "sha256": "6ae6b3c2291357b639039b9b70b1da3d7feb46369ea5908fddc36484bb17e64e",

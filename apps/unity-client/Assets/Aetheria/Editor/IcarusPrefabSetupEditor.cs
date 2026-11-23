@@ -154,6 +154,7 @@ namespace Aetheria.Editor
 
             var controller = root.GetComponent<IcarusWingController>() ?? root.AddComponent<IcarusWingController>();
             if (root.GetComponent<IcarusSignaturePresentation>() == null) root.AddComponent<IcarusSignaturePresentation>();
+            if (root.GetComponent<IcarusFireZonePresentation>() == null) root.AddComponent<IcarusFireZonePresentation>();
             var bowString = root.GetComponent<IcarusBowString>() ?? root.AddComponent<IcarusBowString>();
             var fields = new SerializedObject(controller);
             fields.FindProperty("wingSocket").objectReferenceValue = wings;

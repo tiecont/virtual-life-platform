@@ -108,6 +108,7 @@ namespace Aetheria.Editor.Tests
                     Assert.That(nodes["Socket_Halo"].parent, Is.EqualTo(nodes["Head"]));
                     Assert.That(nodes["Socket_Bow"].parent, Is.EqualTo(nodes["hand.R"]));
                     Assert.That(model.GetComponent<IcarusSignaturePresentation>(), Is.Not.Null);
+                    Assert.That(model.GetComponent<IcarusFireZonePresentation>(), Is.Not.Null);
                     fit = wings.localPosition + Vector3.up * .01f;
                     wings.localPosition = fit;
                     PrefabUtility.SaveAsPrefabAsset(model, output);
