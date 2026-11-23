@@ -16,7 +16,7 @@ const roots=[
   'assets/characters/icarus/',
   'integrations/legacy-snapshots/',
   'specs/pet-arena/references/',
-  'apps/unity-client/Assets/VirtualLife/ArtStudies/',
+  'apps/unity-client/Assets/Aetheria/ArtStudies/',
 ];
 const allowlistPath='config/binary-hygiene-allowlist.json';
 const migrationPath='assets/manifests/legacy-migration-plan.json';
@@ -82,7 +82,7 @@ test('the gate rejects new large binaries, accepts only exact pinned legacy byte
   const big=Buffer.alloc(MAX_NEW_BINARY_BYTES+1,0x5a);
   const different=Buffer.alloc(MAX_NEW_BINARY_BYTES+2,0x31);
   const allowed='assets/characters/icarus/allowlisted.png';
-  const existing='apps/unity-client/Assets/VirtualLife/ArtStudies/existing.png';
+  const existing='apps/unity-client/Assets/Aetheria/ArtStudies/existing.png';
   const policy={
     schemaVersion:1,
     maxTrackedBinaryBytes:MAX_NEW_BINARY_BYTES,
