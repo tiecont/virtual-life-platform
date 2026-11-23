@@ -33,12 +33,12 @@
   "sourceOfTruth": [
     {
       "path": "specs/pet-arena/v3.1/data/pets_initial_240.json",
-      "sha256": "2318013aa0713ac0fa5f99e75183506cf2c1280e191671782ec9b49fdf2ce38c",
+      "sha256": "216b808328bc73755c0b35bc9b9f50a3d249d1a010537b4780d88a030df267f6",
       "role": "Canonical draft Pet identities, morphology, acquisition source, map association and design descriptors."
     },
     {
       "path": "specs/pet-arena/v3.1/data/maps_19.json",
-      "sha256": "6971bc983c15a35c52d56f774cf347557f61c4597b8972a891a4228392daf7ed",
+      "sha256": "0ee69c4c20e5e30a9a2d8ae526639bbe2af347e7da13ec3d5a3ed791d8b024db",
       "role": "Canonical draft maps and regular/legendary membership."
     },
     {
@@ -48,7 +48,7 @@
     },
     {
       "path": "specs/pet-arena/v3.1/data/standard_animation_profiles.json",
-      "sha256": "dc5fa967edaa5975fca84ba7416b285fc9caef6614774b36ad77858aa865fdd2",
+      "sha256": "a20a59473efeebd31658846e5266d83611a4fe4ba97cd5e541e7a357aed2ad2e",
       "role": "Candidate Standard S actions and LOD/material budgets."
     },
     {
