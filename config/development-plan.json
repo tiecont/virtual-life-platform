@@ -4720,7 +4720,9 @@
         "scope": "Two canonical 3D skills: Charakuru-to-VRM hero production and direct Tripo/Meshy standard-asset production, with separate owner, poly-budget, provenance, SHA-256 and Unity admission gates. Documentation only; no new model, accepted benchmark or task-wide completion claimed.",
         "remaining": "Validate the process against an actual reference-quality pilot; signed authoring conventions, measured shader/VRAM budgets and production character assets remain open.",
         "wave1MvpPipeline": {
-          "sourceRevision": "1f74dd56a03f050587dce6f67caf52194b8d084f",
+          "sourceRevision": "3a9e03b70cc6fd5ee6847a40633100d0fee0a8c6",
+          "baseRevision": "dbed5530c4e1e2e50d2f897b5c7aad9697fe2778",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/71",
           "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
           "specification": "specs/pet-arena/mvp-wave1-43-pets.json",
           "skills": [".agents/skills/aetheria-hero-character-vrm/SKILL.md", ".agents/skills/aetheria-standard-asset-3d/SKILL.md"],
@@ -5569,7 +5571,9 @@
       "specification": "specs/pet-arena/v2.md; specs/pet-arena/art-direction.md",
       "draftContract": "Strict typed asset/source/import hash references, all eleven animation semantics and six-hero/boss missing-asset preflight. Explicit 19-element art direction and original catalog-aligned model/animation briefs. Draft only; no runtime activation or production publication port.",
       "wave1MvpBlueprint": {
-        "sourceRevision": "1f74dd56a03f050587dce6f67caf52194b8d084f",
+        "sourceRevision": "3a9e03b70cc6fd5ee6847a40633100d0fee0a8c6",
+        "baseRevision": "dbed5530c4e1e2e50d2f897b5c7aad9697fe2778",
+        "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/71",
         "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
         "specification": "specs/pet-arena/mvp-wave1-43-pets.json",
         "scope": "Canonical 43-Pet Wave 1 lock: Icarus, six Standard S, six map legendary bosses, thirty map regulars over ten shared race bases, eighteen element/stage evolution accessories and six modular arena kits.",
@@ -7176,7 +7180,7 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "conceptBatch1": {
-          "sourceRevision": "1f74dd56a03f050587dce6f67caf52194b8d084f",
+          "sourceRevision": "3a9e03b70cc6fd5ee6847a40633100d0fee0a8c6",
           "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
           "state": "OWNER_REVIEW_REQUIRED",
           "specification": "specs/pet-arena/mvp-wave1-43-pets.json",
