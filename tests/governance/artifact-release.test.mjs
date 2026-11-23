@@ -4,7 +4,7 @@ import {execFileSync, spawnSync} from 'node:child_process';
 import {mkdir, mkdtemp, readFile, rm, stat, symlink, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {dirname, join, resolve} from 'node:path';
-import {artifactCiResult, imageChanges, qualityWorkflow, repository, trustedRun, validateArtifactPolicy} from '../../scripts/artifact-policy.mjs';
+import {artifactCiResult, imageChanges, integrationJobNames, qualityWorkflow, repository, trustedRun, validateArtifactPolicy} from '../../scripts/artifact-policy.mjs';
 import {checkManifest, hash, jsonBytes, validateManifest} from '../../scripts/release-manifest.mjs';
 import {assertArtifactWorkflows} from '../../scripts/verify-artifact-workflows.mjs';
 
@@ -39,10 +39,10 @@ test('real Git PR/push event planning handles source/shared/lock/docs/overlay di
 });
 
 test('required aggregate accepts only the planned image outcome and fails every missing, cancelled, failed or unexpected skip', () => {
-  const needs = images => ({plan: {result: 'success', outputs: {images}}, core: {result: 'success'}, browser: {result: 'success'}, images: {result: images === 'true' ? 'success' : 'skipped'}});
+  const needs = images => ({plan: {result: 'success', outputs: {images}}, core: {result: 'success'}, integration: {result: 'success'}, browser: {result: 'success'}, images: {result: images === 'true' ? 'success' : 'skipped'}});
   for (const required of ['true', 'false']) {
     assert.equal(artifactCiResult(needs(required)), true);
-    for (const job of ['plan', 'core', 'browser', 'images']) for (const result of ['failure', 'cancelled', 'skipped', 'success', 'unknown']) {
+    for (const job of ['plan', 'core', 'integration', 'browser', 'images']) for (const result of ['failure', 'cancelled', 'skipped', 'success', 'unknown']) {
       const copy = needs(required); copy[job].result = result;
       assert.equal(artifactCiResult(copy), result === needs(required)[job].result);
     }
@@ -55,7 +55,7 @@ test('required aggregate accepts only the planned image outcome and fails every 
 test('trusted-main proof rejects forks, PRs, wrong workflow/branch/SHA, partial jobs and failed runs; docs skip cannot mint a release proof', () => {
   const revision = 'a'.repeat(40), groups = ['one', 'two'];
   const run = {repository: {full_name: repository}, head_repository: {full_name: repository}, path: qualityWorkflow, name: 'Quality', event: 'push', head_branch: 'main', head_sha: revision, status: 'completed', conclusion: 'success', id: 123, run_attempt: 2};
-  const jobs = ['change-plan', 'core-checks', 'runtime-images', 'quality', ...groups.map(group => 'browser (' + group + ')')].map(name => ({name, status: 'completed', conclusion: 'success', head_sha: revision}));
+  const jobs = ['change-plan', 'core-checks', ...integrationJobNames, 'runtime-images', 'quality', ...groups.map(group => 'browser (' + group + ')')].map(name => ({name, status: 'completed', conclusion: 'success', head_sha: revision}));
   assert.equal(trustedRun(run, jobs, groups).sourceRevision, revision);
   for (const mutation of [r => r.repository.full_name = 'foreign/repo', r => r.head_repository.full_name = 'attacker/fork', r => r.path = '.github/workflows/other.yml', r => r.event = 'pull_request', r => r.head_branch = 'feature', r => r.head_sha = 'main', r => r.conclusion = 'failure', r => r.status = 'in_progress', r => r.run_attempt = 0]) {const copy = globalThis.structuredClone(run); mutation(copy); assert.throws(() => trustedRun(copy, jobs, groups));}
   for (const mutation of [j => j.pop(), j => j.push({...j[0]}), j => j[1].head_sha = 'b'.repeat(40), j => j[4].conclusion = 'cancelled', j => j[2].conclusion = 'skipped']) {const copy = globalThis.structuredClone(jobs); mutation(copy); assert.throws(() => trustedRun(run, copy, groups));}
@@ -64,12 +64,12 @@ test('trusted-main proof rejects forks, PRs, wrong workflow/branch/SHA, partial 
 test('workflow and policy retain read-only PR/security lanes and grant only bounded same-repository main publishing', async () => {
   const quality = await readFile('.github/workflows/quality.yml', 'utf8'), publish = await readFile('.github/workflows/publish.yml', 'utf8'), pins = JSON.parse(await readFile('config/ci-actions.json', 'utf8'));
   assertArtifactWorkflows(quality, publish, pins);
-  for(const mutation of [q=>q.replace('      - run: pnpm build:packages\n',''),q=>q.replace('artifacts/image-*/smoke/result.json','artifacts/foreign/result.json')])assert.throws(()=>assertArtifactWorkflows(mutation(quality),publish,pins));
+  for(const mutation of [q=>q.replaceAll('      - run: pnpm build:packages\n',''),q=>q.replace('artifacts/image-*/smoke/result.json','artifacts/foreign/result.json')])assert.throws(()=>assertArtifactWorkflows(mutation(quality),publish,pins));
   for (const mutation of [p => p.replace("github.event.workflow_run.event == 'push'", "github.event.workflow_run.event == 'pull_request'"), p => p.replace('head_repository.full_name == github.repository', 'head_repository.full_name != github.repository'), p => p.replace('packages: write', 'contents: write'), p => p.replace('node scripts/release-publish.mjs authorize', 'echo approved'), p => p + '\n  other:\n    permissions: write-all\n', p => p.replace('run-id: ${{ github.event.workflow_run.id }}', 'run-id: 123')]) assert.throws(() => assertArtifactWorkflows(quality, mutation(publish), pins));
   const policy = JSON.parse(await readFile('config/artifact-release.json', 'utf8')); validateArtifactPolicy(policy);
   for (const field of ['autoMerge', 'productionAutoPromotion']) assert.throws(() => validateArtifactPolicy({...policy, [field]: true}));
   // The historical security suite remains part of the complete integration project.
-  const vitest = await readFile('vitest.config.mts', 'utf8'); assert(vitest.includes('integration')); assert(quality.includes('pnpm check'));
+  const vitest = await readFile('vitest.config.mts', 'utf8'); assert(vitest.includes('integration')); assert(quality.includes('pnpm check:core'));
   assert.equal(spawnSync('node', ['scripts/release-publish.mjs', 'authorize'], {env: {...process.env, GITHUB_EVENT_NAME: 'pull_request'}}).status, 1);
 });
 

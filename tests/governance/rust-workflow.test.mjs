@@ -8,6 +8,15 @@ test('Rust foundation CI retains read-only Ubuntu checks without privileged/GPU 
   assert.doesNotThrow(()=>assertRustWorkflow(workflow,pins));
   assert.match(workflow,/fetch-depth: 0/,'Pinned archived API compatibility needs Git history');
   for(const extra of ['\n  packages: write','\n  token: $'+'{{ secrets.PRIVATE_TOKEN }}','\n  run: docker push image','\n  runs-on: self-hosted'])assert.throws(()=>assertRustWorkflow(workflow+extra,pins));
+  for(const mutation of [
+    text=>text.replace('  cancel-in-progress: true','  cancel-in-progress: false'),
+    text=>text.replace("CARGO_BUILD_JOBS: '4'","CARGO_BUILD_JOBS: '2'"),
+    text=>text.replace('NODE_OPTIONS: --max-old-space-size=12288','NODE_OPTIONS: --max-old-space-size=4096'),
+    text=>text.replace('uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0\n',''),
+    text=>text.replace('cache-on-failure: true','cache-on-failure: false'),
+    text=>text.replace('uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830\n',''),
+    text=>text.replace('          cache: pnpm\n',''),
+  ])assert.throws(()=>assertRustWorkflow(mutation(workflow),pins));
   for(const text of ['cargo" test --workspace --locked','sha256sum --check','python3 apps/game-runtime/tools/oci-smoke.py aetheria-runtime-ci',
     'CARGO_TARGET_DIR: artifacts/rust/target','build --locked --package aetheria-security --bin durable-check','scripts/runtime-admission-durable-check.mjs',
     'tests/integration/runtime-admission.test.ts','scripts/native-game-migration-compat.mjs','scripts/runtime-admission-migration-compat.mjs',

@@ -16,7 +16,8 @@ const readJson = async file => JSON.parse(await readFile(file, 'utf8'));
 export function assertBuildAll(root) {
   assert.equal(root.scripts?.build, 'pnpm -r build', 'Build every application and compiled package');
   assert.equal(root.scripts?.['build:packages'], "pnpm --filter './packages/*' -r build", 'Build every shared package');
-  assert(/&& pnpm build$/.test(root.scripts?.check ?? ''), 'Full check must retain the complete production build');
+  assert.equal(root.scripts?.check, 'pnpm check:core && pnpm test:integration', 'Full check must run core checks then the complete integration suite once');
+  assert(/&& pnpm build$/.test(root.scripts?.['check:core'] ?? ''), 'Core check must retain the complete production build');
 }
 
 export function workspaceGraph(projects) {
@@ -70,11 +71,11 @@ export function workspaceGraph(projects) {
 export function assertQualityToolchain(workflow, pnpm) {
   assert(!/pull_request_target|secrets\.|write-all|^\s*secrets:|^\s+[a-z][a-z-]*:\s*["']?write\b|permissions:\s*\{[^}]*\bwrite\b/m.test(workflow), 'Untrusted quality workflow cannot publish or receive secrets');
   assert(/permissions:\s*\n\s+contents: read/.test(workflow), 'Quality needs explicit read-only contents permission');
-  assert.equal((workflow.match(/pnpm install --frozen-lockfile/g) ?? []).length, 3, 'Core, browser and runtime images require frozen install');
+  assert.equal((workflow.match(/pnpm install --frozen-lockfile/g) ?? []).length, 4, 'Core, integration, browser and runtime images require frozen install');
   const versions = [...workflow.matchAll(/^\s+version:\s*([^\s]+)\s*$/gm)].map(match => match[1]);
-  assert.deepEqual(versions, [pnpm, pnpm, pnpm], 'CI pnpm must match packageManager');
-  assert.equal((workflow.match(/node-version-file: \.node-version/g) ?? []).length, 5, 'Every current job uses the same Node pin');
-  assert(workflow.includes('pnpm check') && workflow.includes('- run: pnpm build'), 'Core and browser build all');
+  assert.deepEqual(versions, [pnpm, pnpm, pnpm, pnpm], 'CI pnpm must match packageManager');
+  assert.equal((workflow.match(/node-version-file: \.node-version/g) ?? []).length, 6, 'Every current job uses the same Node pin');
+  assert(workflow.includes('pnpm check:core') && workflow.includes('- run: pnpm build'), 'Core and browser build all');
 }
 
 export async function describeToolchain(root = process.cwd()) {
