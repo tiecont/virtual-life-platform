@@ -7511,7 +7511,7 @@
       "acceptance": [
         "Separate versioned Rust rules preserve frozen v1 bytes and cover a complete6x6 effectiveness matrix, max-level60 evolution, deterministic campaign progression and gacha pity/guarantee order",
         "Platform API DTOs are strict and authenticated, expose no client entropy or mutation, and stay unavailable unless a test/local composition explicitly enables them",
-        "Rust unit tests and24 new real PostgreSQL/HTTP integration cases pass with zero skipped or ignored tests"
+        "Rust unit tests and24 new real PostgreSQL/HTTP integration cases pass with zero skipped or ignored tests; final aggregate is837 after the813-test foundation"
       ],
       "status": "IN_PROGRESS",
       "qualificationRequirements": [],
@@ -7536,9 +7536,10 @@
           {"command": "pnpm --filter @aetheria/platform-api build", "exitCode": 0},
           {"command": "pnpm exec eslint apps/platform-api/src/features/pets/modules/wave1 apps/platform-api/src/app.ts tests/integration/pet-arena-wave1.test.ts", "exitCode": 0},
           {"command": "pnpm architecture:check", "exitCode": 0, "result": "144 SQL tables,522 source files and declared Pet public entry PASS"},
+          {"command": "pnpm check", "exitCode": 0, "result": "Combined infra+backend tree passed 197 governance,541 unit and837 real PostgreSQL integration tests with zero skipped, plus lint/types/all package and application builds on exact pre-metadata source"},
           {"command": "git diff --check", "exitCode": 0}
         ],
-        "fullGate": "RUNNING on the combined infra+backend source; only an exit0 from the unchanged final tree will replace this line."
+        "fullGate": "PASS on the combined infra+backend source at the code tree immediately before this metadata-only record: 197 governance,541 unit,837 integration, all builds; zero skipped."
       }
     }
   ]
