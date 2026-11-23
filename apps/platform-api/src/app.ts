@@ -24,6 +24,9 @@ import { IdentityService } from './features/identity/modules/accounts/applicatio
 import { registerIdentity } from './features/identity/modules/accounts/presentation/http';
 import {NativeIdentityService,registerNativePrivacy} from './features/identity/modules/native-auth/application/native-service';
 import {registerNativeIdentity,prepareNativeApiRequest,assertNativeTransport} from './features/identity/modules/native-auth/presentation/native-http';
+import {PrelaunchRegistrationService} from './features/identity/modules/prelaunch/application/service';
+import {registerPrelaunch} from './features/identity/modules/prelaunch/presentation/http';
+import {UnavailableMailSink,type PrelaunchMailSink} from './features/identity/modules/prelaunch/infrastructure/mail-sink';
 import {apiErrorHandler} from './shared/common/http-errors';
 import {OperatorService} from './features/identity/modules/operators/application/operator-service';
 import {PrivateArtIntake} from './features/operations/modules/art-media/application/private-art';
@@ -114,7 +117,7 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]} } = {}) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]};prelaunch?:{mail?:PrelaunchMailSink} } = {}) {
   if(options.games){const target=new URL(config.DATABASE_URL);if(config.NODE_ENV!=='test'||!['127.0.0.1','localhost','[::1]'].includes(target.hostname)||!/^virtual_city_test(?:_|$)/.test(target.pathname.slice(1)))throw Error('Synthetic game rules require disposable local test runtime');}
   const safetyPolicy = await loadSafetyPolicy(options.safety?.policy,config.SAFETY_POLICY_FILE);
   const mediaClearance=await MediaClearanceGate.create(await loadMediaClearance(),[],options.now);
@@ -153,6 +156,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const privacyRequests=new PrivacyRequestService(identity,config.SESSION_SECRET,operator,options.now);
   const accountControls=operator?new AccountControlService(identity,operator,options.now):undefined;
   registerOperator(http,config,operator,options.now,accountControls,privacyRequests);
+  const prelaunch=config.PRELAUNCH_REGISTRATION_ENABLED==='1'?new PrelaunchRegistrationService(identity,config.PRELAUNCH_EMAIL_KEY!,config.PRELAUNCH_EMAIL_KEY_ID,operator,options.prelaunch?.mail??new UnavailableMailSink(),options.now):undefined;
+  if(prelaunch)registerPrelaunch(http,prelaunch,config.NODE_ENV==='production',options.now);
   registerPrivateArt(http,config,operator?new PrivateArtIntake(operator,options.now):undefined,options.now);
   const deadlineIdentity=new DeadlineIdentityLinks(db,identity,config.NODE_ENV!=='production'&&config.LOCAL_DEADLINE_IDENTITY==='1'?(options.deadlineIdentity??new DeadlineHttpIdentityPort(config.DEADLINE_LEGACY_API_URL!)):undefined,options.now);
   identity.registerExportOwner('legacyIdentity',(account,transaction)=>deadlineIdentity.exportAccount(account,transaction));
@@ -336,5 +341,5 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   http.addHook('onClose', async () => {stopDatabaseObservation(); roomMetrics.databaseAttached(false); stopEventLoopObservation(); roomMetrics.close();});
   await http.ready();
   const diagnostics = () => ({ sockets: gateway.io.of('/').sockets.size, transportConnections: gateway.io.engine.clientsCount, authority: roomAuthority.state, rooms: rooms.diagnostics(), realtime: roomMetrics.snapshot() });
-  return { app, http, identity,nativeIdentity,privacyRequests,runtimeControls, deadlineIdentity, gateway, social, worlds, rooms, gameLobby, gameJournal, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain,admission };
+  return { app, http, identity,nativeIdentity,privacyRequests,prelaunch,runtimeControls, deadlineIdentity, gateway, social, worlds, rooms, gameLobby, gameJournal, chat, reports, sanctions, incidents, travel, invitations, focus, study, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, eventInvitations, reservations, progression, diagnostics,beginDrain,admission };
 }

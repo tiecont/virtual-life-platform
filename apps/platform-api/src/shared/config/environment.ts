@@ -45,6 +45,9 @@ const Env = z.object({
   DATING_TEST_PROOFS:z.enum(['0','1']).default('0'),
   DATING_PROFILE_KEY:z.string().regex(/^[a-f0-9]{64}$/i).optional(),
   DATING_PROFILE_KEY_ID:z.string().regex(/^[a-z0-9-]{1,32}$/).default('local-v1'),
+  PRELAUNCH_REGISTRATION_ENABLED:z.enum(['0','1']).default('0'),
+  PRELAUNCH_EMAIL_KEY:z.preprocess(value=>value===''?undefined:value,z.string().regex(/^[a-f0-9]{64}$/i).optional()),
+  PRELAUNCH_EMAIL_KEY_ID:z.string().regex(/^[a-z0-9-]{1,32}$/).default('prelaunch-local-v1'),
 }).superRefine((env, ctx) => {
   const origin = new URL(env.WEB_ORIGIN);
   if(env.LOCAL_GAME_LOBBY==='1'&&env.LOCAL_LANTERN_LODGE_WORLD!=='1')ctx.addIssue({code:'custom',path:['LOCAL_GAME_LOBBY'],message:'Local Lodge installation required'});
@@ -83,6 +86,11 @@ const Env = z.object({
   if (env.NODE_ENV === 'production' && env.LOCAL_LOUNGE_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_LOUNGE_WORLD'], message: 'Local lounge activation cannot run in production' });
   if(env.NODE_ENV==='production'&&env.LOCAL_DATING_PROTOTYPE==='1')ctx.addIssue({code:'custom',path:['LOCAL_DATING_PROTOTYPE'],message:'Local dating prototype cannot run in production'});
   if(env.DATING_TEST_PROOFS==='1'){const url=new URL(env.DATABASE_URL);if(env.NODE_ENV!=='test'||!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))ctx.addIssue({code:'custom',path:['DATING_TEST_PROOFS'],message:'Synthetic proofs require disposable local test runtime'});}
+  if(env.PRELAUNCH_REGISTRATION_ENABLED==='1'){
+    if(!env.PRELAUNCH_EMAIL_KEY)ctx.addIssue({code:'custom',path:['PRELAUNCH_EMAIL_KEY'],message:'Separate prelaunch email key required'});
+    if(env.NODE_ENV==='production')ctx.addIssue({code:'custom',path:['PRELAUNCH_REGISTRATION_ENABLED'],message:'Production prelaunch acceptance is not release-qualified'});
+  }
+  if(env.PRELAUNCH_EMAIL_KEY&&[env.SESSION_SECRET,env.NATIVE_AUTH_KEY,env.OPERATOR_AUTH_KEY,env.SAFETY_EVIDENCE_KEY,env.DATING_PROFILE_KEY,env.GAME_STATE_KEY].some(value=>value?.toLowerCase()===env.PRELAUNCH_EMAIL_KEY?.toLowerCase()))ctx.addIssue({code:'custom',path:['PRELAUNCH_EMAIL_KEY'],message:'Distinct prelaunch email key required'});
 });
 export type Config = z.infer<typeof Env>;
 export function readConfig(env: Record<string, string | undefined> = process.env): Config {
