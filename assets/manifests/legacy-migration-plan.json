@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 1,
+  "kind": "legacy-binary-s3-migration",
+  "sourceRevision": "3ba910058a8f443eb29ad7f998c5a7550c3d803a",
+  "destination": "S3_TIGRIS_PRIVATE",
+  "status": "QUEUED_CREDENTIALS_REQUIRED",
+  "prerequisites": [
+    "Confirm the live S3/Tigris endpoint, bucket, region and credentials in the private .env file.",
+    "Push through the verified asset CLI and reconcile remote SHA-256 and byte size before removing any tracked legacy file.",
+    "Pull the object back through the managed cache and pass the existing asset/Unity checks before changing tracked source assets."
+  ],
+  "roots": [
+    "apps/unity-client/Assets/VirtualLife/ArtStudies/",
+    "assets/characters/icarus/",
+    "specs/pet-arena/references/"
+  ],
+  "allowedExtensions": [
+    ".fbx",
+    ".glb",
+    ".png"
+  ],
+  "files": [
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/icarus-study.fbx",
+      "sizeBytes": 8322540,
+      "sha256": "f9fe114cd53ba29b39a51285df27da33f3dd8bfd8480d05eaa804d3c46c345db",
+      "contentType": "application/vnd.autodesk.fbx",
+      "s3Key": "assets/legacy/v1/f9fe114cd53ba29b39a51285df27da33f3dd8bfd8480d05eaa804d3c46c345db/icarus-study.fbx",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "FBX_BINARY"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/back-native.png",
+      "sizeBytes": 2159695,
+      "sha256": "4a2ba4b23e706ab1ca66080f37f3491f56123d1e74b820d058061ca57bfda3a0",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/4a2ba4b23e706ab1ca66080f37f3491f56123d1e74b820d058061ca57bfda3a0/back-native.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/bow-native.png",
+      "sizeBytes": 2107018,
+      "sha256": "9779cb92ea1ae55cb114f28a854b53e712b929058eeb26da7992b5c95afba0af",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/9779cb92ea1ae55cb114f28a854b53e712b929058eeb26da7992b5c95afba0af/bow-native.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/front-native.png",
+      "sizeBytes": 2136997,
+      "sha256": "04887f56f81aac94d8116713f64480afe6c4d9272ebe052f98b7d84029cd522b",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/04887f56f81aac94d8116713f64480afe6c4d9272ebe052f98b7d84029cd522b/front-native.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/front-three-quarter-corrected-native.png",
+      "sizeBytes": 2102398,
+      "sha256": "b915bb4d5c7e79cc2d82d36b4e6e12e99268fa73c7cb7c26ef638b18c95bf032",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/b915bb4d5c7e79cc2d82d36b4e6e12e99268fa73c7cb7c26ef638b18c95bf032/front-three-quarter-corrected-native.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/front-three-quarter-native.png",
+      "sizeBytes": 2265059,
+      "sha256": "210b3882cf90c3af82ac8fb5afed553d14e9ee5803fdead1b41dfbb92556af14",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/210b3882cf90c3af82ac8fb5afed553d14e9ee5803fdead1b41dfbb92556af14/front-three-quarter-native.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/rear-three-quarter-corrected-native.png",
+      "sizeBytes": 2149745,
+      "sha256": "38551cd593d90c0262f081a4a47c72bb30fc58333edaa49ef9cbe2898798356f",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/38551cd593d90c0262f081a4a47c72bb30fc58333edaa49ef9cbe2898798356f/rear-three-quarter-corrected-native.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/rear-three-quarter-native.png",
+      "sizeBytes": 2217750,
+      "sha256": "f24f7f4e96943e894eaa3feb1ba75115b0ade39473e0632a35451c448ae0b9e6",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/f24f7f4e96943e894eaa3feb1ba75115b0ade39473e0632a35451c448ae0b9e6/rear-three-quarter-native.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/side-native.png",
+      "sizeBytes": 2041426,
+      "sha256": "eec5420a83e209f30524414d357b003b099403940cd44852ab8f48c8148cd32d",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/eec5420a83e209f30524414d357b003b099403940cd44852ab8f48c8148cd32d/side-native.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/design-v5/back-native.png",
+      "sizeBytes": 2191962,
+      "sha256": "7448ede001e2db1768e4db4fa17fda7b7edc1e4126a0b1b15ffdea3fb12e4e4a",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/7448ede001e2db1768e4db4fa17fda7b7edc1e4126a0b1b15ffdea3fb12e4e4a/back-native.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/design-v5/wing-articulation.png",
+      "sizeBytes": 2437026,
+      "sha256": "dcb749f06350a3b075cffd0645a85275dbfc0d8012b14ef5e8ede7392a093567",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/dcb749f06350a3b075cffd0645a85275dbfc0d8012b14ef5e8ede7392a093567/wing-articulation.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/back.png",
+      "sizeBytes": 226311,
+      "sha256": "96eab5c33a0bd8b6db53a1e18dcbd891d133e18389a8461ec786fb57b830a4f9",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/96eab5c33a0bd8b6db53a1e18dcbd891d133e18389a8461ec786fb57b830a4f9/back.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/front.png",
+      "sizeBytes": 323538,
+      "sha256": "1ecc5a273177c2af2e2a9db1df82eee7f200185f135c0c94569a8aee81022f40",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/1ecc5a273177c2af2e2a9db1df82eee7f200185f135c0c94569a8aee81022f40/front.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/icarus-blockout.glb",
+      "sizeBytes": 1827924,
+      "sha256": "161fc612c4e352863a5ec9e1c5f77839ffd306246b3630b110395cdb30d88e88",
+      "contentType": "model/gltf-binary",
+      "s3Key": "assets/legacy/v1/161fc612c4e352863a5ec9e1c5f77839ffd306246b3630b110395cdb30d88e88/icarus-blockout.glb",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "GLTF_BINARY"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/portrait-detail.png",
+      "sizeBytes": 484185,
+      "sha256": "c828f1d2f495a0ed77b97ef210415326ea6a7d1ce0e4f3c731e5e9129ba033e0",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/c828f1d2f495a0ed77b97ef210415326ea6a7d1ce0e4f3c731e5e9129ba033e0/portrait-detail.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/side.png",
+      "sizeBytes": 93684,
+      "sha256": "e015df7259edea2226cd15dbdacdce469e004b95d1a0e24435d0b1c2e19f35d3",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/e015df7259edea2226cd15dbdacdce469e004b95d1a0e24435d0b1c2e19f35d3/side.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/signature.png",
+      "sizeBytes": 318250,
+      "sha256": "2760a20b662a96bd99add2ef5f5a24abce640e0f5cb93d9250ffb33046a9e01f",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/2760a20b662a96bd99add2ef5f5a24abce640e0f5cb93d9250ffb33046a9e01f/signature.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "specs/pet-arena/references/icarus/owner-battle-reference.png",
+      "sizeBytes": 2841168,
+      "sha256": "af3d8af34268cb01b29fd400e62b71378c0c2176b72991ebfcfd3e722f0eb76c",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/af3d8af34268cb01b29fd400e62b71378c0c2176b72991ebfcfd3e722f0eb76c/owner-battle-reference.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    }
+  ]
+}

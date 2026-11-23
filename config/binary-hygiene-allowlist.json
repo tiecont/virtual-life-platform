@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "maxTrackedBinaryBytes": 512000,
+  "legacy": [
+    {
+      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/icarus-study.fbx",
+      "sha256": "f9fe114cd53ba29b39a51285df27da33f3dd8bfd8480d05eaa804d3c46c345db"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/back-native.png",
+      "sha256": "4a2ba4b23e706ab1ca66080f37f3491f56123d1e74b820d058061ca57bfda3a0"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/bow-native.png",
+      "sha256": "9779cb92ea1ae55cb114f28a854b53e712b929058eeb26da7992b5c95afba0af"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/front-native.png",
+      "sha256": "04887f56f81aac94d8116713f64480afe6c4d9272ebe052f98b7d84029cd522b"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/front-three-quarter-corrected-native.png",
+      "sha256": "b915bb4d5c7e79cc2d82d36b4e6e12e99268fa73c7cb7c26ef638b18c95bf032"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/front-three-quarter-native.png",
+      "sha256": "210b3882cf90c3af82ac8fb5afed553d14e9ee5803fdead1b41dfbb92556af14"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/rear-three-quarter-corrected-native.png",
+      "sha256": "38551cd593d90c0262f081a4a47c72bb30fc58333edaa49ef9cbe2898798356f"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/rear-three-quarter-native.png",
+      "sha256": "f24f7f4e96943e894eaa3feb1ba75115b0ade39473e0632a35451c448ae0b9e6"
+    },
+    {
+      "path": "assets/characters/icarus/design-v4/side-native.png",
+      "sha256": "eec5420a83e209f30524414d357b003b099403940cd44852ab8f48c8148cd32d"
+    },
+    {
+      "path": "assets/characters/icarus/design-v5/back-native.png",
+      "sha256": "7448ede001e2db1768e4db4fa17fda7b7edc1e4126a0b1b15ffdea3fb12e4e4a"
+    },
+    {
+      "path": "assets/characters/icarus/design-v5/wing-articulation.png",
+      "sha256": "dcb749f06350a3b075cffd0645a85275dbfc0d8012b14ef5e8ede7392a093567"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/icarus-blockout.glb",
+      "sha256": "161fc612c4e352863a5ec9e1c5f77839ffd306246b3630b110395cdb30d88e88"
+    },
+    {
+      "path": "specs/pet-arena/references/icarus/owner-battle-reference.png",
+      "sha256": "af3d8af34268cb01b29fd400e62b71378c0c2176b72991ebfcfd3e722f0eb76c"
+    }
+  ],
+  "androidMipmapIcons": {
+    "maxBytes": 131072,
+    "pathPrefix": "apps/mobile/android/app/src/main/res/",
+    "relativePattern": "^mipmap-(?:mdpi|hdpi|xhdpi|xxhdpi|xxxhdpi)/ic_launcher(?:_round|_foreground)?\\.png$"
+  }
+}
