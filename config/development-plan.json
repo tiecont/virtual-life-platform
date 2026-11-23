@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "product": "Aetheria: SoulBound",
   "legacyPlatform": "VirtualLife",
-  "execution": "single-agent",
+  "execution": "opt-in-multi-agent",
   "primaryClient": "Windows Unity URP",
   "authority": "Rust new gameplay; Nest legacy rooms and control plane",
   "archive": "archive/pre-cleanup-2026-11-10",
@@ -302,7 +302,7 @@
       "priority": 1,
       "dependsOn": [],
       "acceptance": [
-        "Owner selected_design_01.png remains the primary appearance reference; actual neutral front/side/back and face/hand/wing closeups pass SINGLE_AGENT_SELF_REVIEW for likeness, anatomy, layered construction and finish. Generated supplements remain proposals; no numeric likeness claim.",
+        "Owner selected_design_01.png remains the primary appearance reference. Stop for owner review of hashed visual evidence after H1 face/hair, H2 costume/wings/bow, H3 rig/motion and H4 Unity presentation. Generated supplements remain proposals. Technical checks and self-review cannot approve a gate.",
         "Editable Blender source with purposeful joint topology, separate articulated wings and usable five-finger hands; actual bow grip, draw and fold clearance pass before downstream animation acceptance.",
         "LOD0 including bow/accessories has 26000-29500 triangles, 74 Icarus bones and at most 3 materials; LOD1/LOD2 meet current kit budgets. Correct UVs and isolated component bakes preserve focal detail; whole-mesh decimation or triangle totals alone do not pass.",
         "High-resolution authoring PBR channel dimensions and provenance are measured against the owner 4K/8K request; runtime texture budgets, channel packing and color spaces are validated separately. Upscaling does not establish source detail.",
@@ -315,6 +315,32 @@
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
         "productionWorkPlan": {
+          "baseTemplateReview": {
+            "gate": "B1",
+            "status": "OWNER_APPROVED",
+            "ownerApprovalDate": "2026-11-20",
+            "approvedBlendSHA256": "9ebdc13fb6dbe1c76f7081bec6132d558e63d159abb0d236597b4d5b74583526",
+            "sourceRevision": "3a357f351cfe2a2afefe478f328ec1c18c2890fc",
+            "sourceSHA256": "68ea376759175d0b5682fa4d6f52cb8fd47116a7e29291c47dd3e6fdc7d113fb",
+            "verification": "Blender 5.3.0 reopened the B1 clay/wire/checker base. Live MCP verified 1.68 m, identity scale, feet Z=0 and 51164 triangles. Both composites decoded. Source has 14 boundary loops and 17103 zero-area UV triangles. Owner authorized diagnostic materials. Separate VRM trial has 69 moving facial morphs, 190 joints and 70874 triangles.",
+            "h1Status": "REVISION_REQUIRED",
+            "next": "Review the revised H1 face and hair against H0. H2 requires separate owner approval of revised H1 hashes."
+          },
+          "ownerDesignFinalH0": {
+            "revision": "icarus-design-final-h0",
+            "ownerDecision": "Duyệt bộ Final cho H0",
+            "sourceRevision": "ab2f62b3b795307028289487ab5bc7ebb94d4954",
+            "inputDirectory": "artifacts/character-production/icarus-owner-gates-v1/input",
+            "verification": "preflight.py input --profile icarus: exit 0, six native PNGs and reconciled specification. Python art suite: 20 passed. Node task-plan, plan-status, icarus-import and pet-limited-assets: 21 passed. H1-H4 require separate owner decisions.",
+            "sha256": {
+              "01_front_apose.png": "960bd90a4a2a5c749ee02bab682922600525f49dbc0cad2075aa8e315d1493ee",
+              "02_side_apose.png": "9ad6044ce3c9f518c010bfb53f554f67f347469aa9ba1e5769c34970efa831a3",
+              "03_back_apose.png": "ffc5ef4d630c4a5f5a4f0a6f5d0aec9b718834005583e7e075c3a10a015eda76",
+              "04_face_closeup.png": "24790c9feb56d4d7ada188419fae9a16edc34b6eefc39d48847bc413e115cf94",
+              "05_wings_or_tail.png": "826b9bda11ee3332b8b5c12c94663b90282f66d6c3d1520c5adb892eea852825",
+              "06_weapon_prop.png": "55f366664c32bd8d7a11f985d3866fd233bc4e48bbac46bd422169c8b4a80948"
+            }
+          },
           "consolidatedRuntimeImport": {
             "sourceRevision": "f84b63d9f63c7f0464db726df876fc76df51d48e",
             "fbxSha256": "1bdf81c91bf828eba44ffb68e8011f8116268b44d26e1855f6ea26632fd4137b",
@@ -4604,7 +4630,7 @@
       "priority": 1,
       "feature": "Avatar-Art",
       "title": "Blender\u2192Unity rig and per-scene shader/material/LOD budgets",
-      "objective": "Define texture, bone, draw, materials and shader keyword budget for first 3 golden scenes.",
+      "objective": "Define texture, bone, draw, materials and shader keyword budget for first 3 golden scenes. Maintain shared character input preflight and owner gate receipt validation.",
       "dependsOn": [
         "VL-010"
       ],

@@ -1,96 +1,79 @@
 ---
 name: aetheria-character-production
-description: Produce or refine Aetheria game characters from reference images through Blender modeling, textures, rigging, animation, Unity URP integration and delivery. Use for reference-matching character work, visual quality review or an artist handoff; exclude ordinary gameplay code and unrelated Blender scenes.
+description: Multi-agent reference-to-Unity-URP production pipeline for Aetheria anime/fantasy characters and Pets. Trigger for face/base mesh, hair, wings, weapons, retopo, rigging, motion, skills VFX, art review and final asset delivery; not gameplay/server implementation.
 ---
 
-# Aetheria Character Production
+# Aetheria Character Production — Codex multi-agent skill
 
-Turn supplied references into an editable, visually reviewed character and a
-working Unity asset package. Blender is the default creation tool. Installing
-this skill does not mean a character or the production process passed acceptance.
+## Role and precedence
 
-## Start And Resume
+The supervising agent is CTO/Tech Lead (requested alias **GPT 6.2 Astra**); delegate isolated tasks to worker agents (requested alias **GPT 6.2 Sol**) **only when supported by the active Codex environment**. Model aliases/reasoning options are configuration targets, not proof of availability. If unavailable, execute sequentially with the available model, preserving all gates and reporting the limitation. The CTO alone owns integration, owner-facing approvals, Git and budget accounting. Never allow two agents to mutate the same `.blend`, Unity scene/prefab, `.meta`, asset manifest or backlog record concurrently.
 
-1. Follow repository `AGENTS.md`, read `README.md` and
-   `config/development-plan.json`, and run `pnpm plan:status`. Locate the current
-   character worktree/assets before creating replacements. Preserve owner edits
-   and work already done on other branches.
-2. Read [production-gates.md](references/production-gates.md) for the stages and
-   delivery contract. Read [style-and-rework.md](references/style-and-rework.md)
-   when establishing appearance, reviewing renders or repairing a failed gate.
-3. Inspect supplied image files. Resolve canonical character ID, roster, actions
-   and opcode from current repository data. Limited Icarus belongs to VL-149 and,
-   where present, VL-171; VL-160 is the distinct Standard S roster. Shared
-   pipeline conventions belong to VL-105 and asset contracts to VL-121.
-4. Use [character-brief.template.json](assets/character-brief.template.json) to
-   capture stable design inputs in the existing character art specification. It
-   is an intake template, not a replacement asset manifest. Fill inferred fields
-   from current kit/contracts and state assumptions. Ask only for consequential
-   missing information that cannot be inferred; an image-only prompt should
-   normally be enough to begin.
-5. Resume from the earliest failed or untested gate. Read previous checks at their
-   recorded source SHA; rerun checks affected by changed source or unresolved
-   failures. A procedural study is reusable source, not an accepted style anchor.
+Read, in order: root `AGENTS.md`, `README.md`, `config/development-plan.json`, `specs/pet-arena/art-direction.md`, character-specific specs, current asset contracts, this Skill, [multi-agent-4-gates.md](references/multi-agent-4-gates.md), [source-routing.md](references/source-routing.md) and [unity-delivery.md](references/unity-delivery.md). Also preserve and read the pre-existing `references/production-gates.md` (technical G0–G8), `references/style-and-rework.md` and `assets/character-brief.template.json`. Run `pnpm plan:status`. Inspect latest revision, current worktrees, source SHA, provenance and unfinished accepted work before creating anything.
 
-## Blender Capability Check
+The new **four owner hard gates** are acceptance checkpoints over existing technical stages; they do NOT erase G0–G8. A positive technical import check is never artistic approval. New user direction to use multi-agent plus explicit owner approvals supersedes the earlier single-agent workflow **only after the repository policy files are reconciled in the implementing branch**. Do not silently ignore the existing conflicting `AGENTS.md`.
 
-Use the installed Blender plugin/MCP and local Blender toolchain first. Discover
-actual callable tools and read their documentation; do not invent tool names or
-assume a previous session is connected. Confirm a real connection by inspecting
-the current scene and Blender version. Probe edits belong in a separate owned
-scene/file, preserving open work. If plugin access is unavailable, use an installed
-Blender background/bpy route and say which route actually ran.
+## Scope and invariants
 
-Blender supports modeling, sculpting, UVs, painting, rigging and animation. The
-plugin exposes control; it does not itself prove image-to-3D generation, image
-generation or reference-quality artistry. Address visual defects using available
-operations. External generation is optional and must be actually connected and
-within the user's existing provider, rights and spending authorization. Do not
-purchase services, enable paid generators or upload references merely because
-this skill was invoked. Continue with Blender and the rework policy when such a
-tool is unavailable; never pretend generated assets exist.
+- Use actual owner-authorized references. Preserve character identity, rights/provenance, naming, colors and anatomy. Unseen views are *design proposals* until approved. Do not produce other five Limited Pets whose owner designs are on hold. Do not interpret lack of data as approval.
+- Preserve canonical `petId`, opcode, gameplay event names and all required action names from current `specs/pet-arena/v3.1/data/limited_animation_profiles.json`. For Icarus: `pet-v3-fire-icarus` / `FIRE_ZONE` / **16 exact actions**, even where old names mention sword. Five study clips are inadequate.
+- Icarus body: **adult human 1.68 m**, no tail, no beast legs; **two foldable feathered wings attached at upper back**. Preserve the approved Version-1 design/owner approval record, do not silently replace it with a more recent unapproved generated proposal. Bow: Phoenix Fire Bow, separate asset and articulation/grip checks. Treat palette as unapproved until its hex fields are reconciled with the owner reference.
+- For current Icarus import contract: Unity **6000.3.14f1**, URP **17.3.0**, **Generic** import, LOD0 **26,000–29,500 triangles** (includes attachments/weapon counted by current contract), **74 joints**; LOD1 **14,000–16,500 triangles / 48–56 joints**; LOD2 **6,500–8,000 triangles / 28–34 joints**; runtime material budget LOD0 ≤3, LOD1 ≤2, LOD2 ≤1; texture ceilings 2048/1024/512. Do NOT replace these with a generic 28k–45k recommendation. Do not change importer to Humanoid without a separate validated contract migration. Blender work scene is naturally Z-up; FBX export is `-Z forward, Y up`, then verify 1.68m and scale 1.0 **in Unity**.
+- Never mark `DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC` as published or runtime-enabled. No animation, Timeline or VFX decides battle outcomes. Icarus `FIRE_ZONE` is a server-authoritative 4×4 marker lasting two turns, presented over a readable 10×10 board. No fictitious gameplay state, damage or new effect opcode.
 
-## Execution
+## Preflight / Seven separate files
 
-- One agent performs engineering, technical art and character art duties. No
-  delegation or second reviewer is required. Do not contact or hire an artist
-  without an explicit instruction.
-- Follow reference/design views, base mesh, detailed model, game topology/UVs/
-  textures/LODs, rig/skin, required animation, Unity integration and delivery.
-  Repair upstream defects before dependent polish; reuse valid existing stages.
-- Compare actual neutral-lit renders to references at visual gates. Hashes,
-  polygon counts and green CI cannot pass an art gate. Use
-  `ART_REVISION_REQUIRED` when likeness or finish is visibly insufficient.
-- Establish a candidate style target. Only a pilot that passes actual visual and
-  technical checks can become a reusable benchmark. Label autonomous acceptance
-  `SINGLE_AGENT_SELF_REVIEW`; claim owner approval only when it exists. Do not
-  add routine approval pauses to already-authorized autonomous offline work.
-- Keep reference/source/export/import hashes in existing asset contracts. Never
-  fill missing action/material/VFX/audio bindings with stills, fixture bytes or
-  renamed copies of another action.
-- Keep maintained designs, sources, assets and backlog in Git. Fresh probes,
-  comparison reports, intermediate renders, logs and handoff archives belong in
-  ignored `artifacts/`. Record source SHA, actual checks and open gates in the
-  relevant task; do not create another backlog or session diary.
-- Preserve `DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC` and release gates.
-  Presentation never writes authoritative gameplay outcomes. Source merge does
-  not authorize publication or production deployment.
+Input directory must contain six independent clean PNGs and one JSON:
 
-## Finish
-
-Deliver only the scope that actually passed, linking editable source and real
-previews. If full production was requested and a gate remains open, mark delivery
-  partial and name the blocker when further in-scope work is blocked. Treat
-  component revisions as checkpoints. Carry repairs into the assembled asset
-  and continue the existing task through its delivery gates. Report task IDs, changed areas, actual checks,
-source SHA/PR if any, limitations and next exact action in Vietnamese. Do not
-imply continued work after the turn ends.
-
-Example invocation:
-
-```text
-$aetheria-character-production
-Lam Icarus theo cac anh tham chieu dinh kem, sat khuon mat, toc, canh va trang phuc.
-Dung Blender da ket noi, tu review va sua trong pham vi offline da cho phep.
-Ban giao nguon Blender, asset Unity URP va video; bao dung cac cong chua dat.
 ```
+01_front_apose.png
+02_side_apose.png
+03_back_apose.png
+04_face_closeup.png
+05_wings_or_tail.png
+06_weapon_prop.png
+07_spec.json
+```
+
+For Icarus, item 05 means **two wings**, not a tail. Front is neutral A-pose with fingers separated, no held bow; side is true 90° with wings hidden/toggled for readable geometry; back shows upper-back attachment; face is neutral; wings and upgraded bow are isolated on a plain background. Full-sheet titles, overlay labels or multiple annotated views are **not** suitable geometry input. Do not upscale 299px crops and call them native HD. Design can still be reviewed with incomplete technical inputs; **stop before model generation** until independent, adequately detailed views are supplied and Gate 0 intake passes.
+
+Copy `assets/07_spec.icarus.example.json` to `07_spec.json`, reconcile palette and actual design revision, and hash the six approved PNGs. Run:
+
+```
+python3 .agents/skills/aetheria-character-production/scripts/preflight.py /path/to/character-input --profile icarus --output artifacts/character-production/<id>/intake-preflight.json
+```
+
+It checks file presence, PNG decoding/resolution, JSON fields, declared hashes and canonical identity. It does **not** establish anatomy, absence of text, A-pose quality or owner approval. CTO performs actual image inspection; discrepancies are reported, not filled by fictional files.
+
+## Tool routing
+
+- **Face/base body**: reviewed licensed anime head/body base with clean editable quad loops and controlled facial shapes; VRoid Studio → VRM → reviewed Blender import only where actual plugin, license and facial controls are verified. Do not use Meshy/Tripo/Hunyuan to create the production anime head/face. Smooth shading/weighted normals cannot fix broken face geometry.
+- **Hair, layered dresses, feather wings, soft parts**: Blender sculpt/curves, manual retopology, separate vertex groups/wing bones, UV inspection, baking and in-context motion clearance. Avoid tube hair, feather rods, collapsed skirt layers, entire-body automatic remesh and indiscriminate decimation.
+- **Props, halo, hard armor**: Meshy/Tripo/Hunyuan optional only when provider/license/credit scope is authorized; image-to-3D proposals require review/retopo/UV/bake. Bow must retain grip/aim/arrow clearance and separate material provenance. A 3k–5k triangle prop *is a proposed target*, subordinate to actual combined Icarus LOD budgets.
+- **Assembly**: Blender with `bpy` or a **verified live** Blender MCP connection; neutral inspection renders here are allowed. No fake gameplay skill VFX stage built from Blender orange curves/cylinders/board props.
+- **Integration/skill effects**: Unity URP renderer, compatible Cel-Lit/Shader Graph or reviewed lilToon, skin/cloth dynamics, Unity Visual Effect Graph or Particle System as appropriate, optional Cinemachine/Recorder/Timeline after package-install compatibility verification. Do not claim those packages are installed just because recommended.
+
+## Multi-agent execution
+
+CTO discovers available delegation APIs; scopes isolated tasks/worktrees by file owner: (1) input & design audit, (2) face/base mesh, (3) hair/costume/wings, (4) hard props/bow, (5) skeleton/rig/animation, (6) Unity material/VFX/cinematic, (7) evidence/performance/contract QA. **No parallel modification** of a common Blender scene, rig root, Unity prefab, animation controller, manifest or shared `AGENTS.md`/backlog. Parallel workers exchange immutable GLB/FBX/images plus `sha256` receipts and exact socket/material/action contracts; CTO assembles serially. Use high reasoning for cross-discipline/rig/integration; medium for visual component work; low for deterministic scans. The CTO may vary count to minimize cost and conflict.
+
+## Owner hard gates (H1–H4)
+
+For the Icarus replacement base, apply the B1 stop and presentation bindings in [icarus-presentation.md](references/icarus-presentation.md).
+
+1. **H1 Face & Hair** — Wireframe + shaded close-ups and genuine facial deformations; neutral/blink/smile/shout/frown or equivalent 5 distinct facial controls. Inspect eye lids, mouth, bangs, normals and target likeness. STOP for owner review before progressing to detailed full-body polish.
+2. **H2 Modular turnaround** — real front/right/back/three-quarter neutral renders; wings folded/spread, bow detached; inspect garment layering, surface/UV seams, feather roots, material and triangle budget. STOP for owner review before rig/animation completion.
+3. **H3 Rig & extreme pose** — hands/bow, shoulder 90°, draw/release, wing fold, hair/skirt clipping, skin-weight tests. 16 canonical moving clips and three game LODs are *delivery contract*; rig checkpoint still requires actual owner review before final effects. FBX orientation/scale measured by actual import.
+4. **H4 Unity URP, skills and showcase** — reimport verified model, material/shader/animation/VFX, normal & reduced-motion FIRE_ZONE, readable board with 4×4 zone, real footage and runtime metrics. STOP for owner review before qualifying asset for production reuse. Owner approval does not waive rights or public-release gates.
+
+At each H gate write a human-readable evidence bundle under ignored `artifacts/character-production/<id>/gates/Hn/` and a gate receipt following `assets/gate-receipt.template.json`. Only owner's explicit review of these exact output hashes advances the gate. The validator checks receipt shape and sequencing, **not the authenticity of approval**. Never infer approval from `ART_PASS_SELF_REVIEWED` or green CI.
+
+## Technical verification and deliverables
+
+Preserve existing `scripts/art/icarus-import-contract.mjs`, `scripts/art/icarus-unity-audit.mjs`, `scripts/pet-asset-check.mjs`, `apps/unity-client`, importer GUIDs, authoring scripts, original sources and accepted owner-design hashes. Follow `references/unity-delivery.md`; complete actual Limited asset bindings, not renamed/empty placeholders. Run genuine licensed Unity Editor checks and device-specific GPU/player profiling. Reopen `.blend`, FBX, prefab and MP4; inspect source and encoded frames. Distinguish `IMPORT_CONTRACT_PASS`, `ART_PASS_SELF_REVIEWED`, `OWNER_APPROVED`, `RIGHTS_PENDING`, `PERFORMANCE_PENDING`, `RELEASE_BLOCKED` in reports.
+
+After any rejection, repair the controlling source, re-render same cameras, rerun changed downstream checks, record failed poses, keep prior best version and avoid infinite same-technique loops. Do not ask owner to pay for new credits, external uploads, artists or new licenses without scoped authorization. Prior owner permission for Icarus Meshy credit **does not authorize buying more credits or other Pets**.
+
+## Finish and report
+
+Report in Vietnamese: current HEAD; task IDs; artifacts and SHA256; separate H1–H4 status, G0–G8 stage status, source/Unity/rights/performance status; executed checks and results; owner decisions still required; next exact step. Do not merge/deploy as a side effect of model production. Do not claim unfinished work will run later.
