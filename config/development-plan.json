@@ -4651,8 +4651,9 @@
         "VL-078"
       ],
       "implementation": {
-        "characterProductionSkill": ".agents/skills/aetheria-character-production/SKILL.md",
-        "scope": "Reusable Blender-first character production instructions, separate visual/technical gates, unvalidated style target and bounded repair/artist handoff. Documentation only; no new model, accepted benchmark or task-wide completion claimed.",
+        "heroCharacterSkill": ".agents/skills/aetheria-hero-character-vrm/SKILL.md",
+        "standardAssetSkill": ".agents/skills/aetheria-standard-asset-3d/SKILL.md",
+        "scope": "Two canonical 3D skills: Charakuru-to-VRM hero production and direct Tripo/Meshy standard-asset production, with separate owner, poly-budget, provenance, SHA-256 and Unity admission gates. Documentation only; no new model, accepted benchmark or task-wide completion claimed.",
         "remaining": "Validate the process against an actual reference-quality pilot; signed authoring conventions, measured shader/VRAM budgets and production character assets remain open.",
         "skillVerification": {
           "sourceRevision": "99d7469ef2f87a7f1470dd457e7c3f3777c1e95f",
@@ -4665,6 +4666,21 @@
           ],
           "additionalInspection": "Relative skill links and intake JSON parsed with Node; benchmark remains UNVALIDATED_TARGET, connection NOT_TESTED, no invented provider or approval. UI YAML parsed with PyYAML; invocation prompt and default implicit invocation validated. The skill is present in the session skill catalog.",
           "limitations": "Instruction packaging validated, not a new production pilot or end-to-end art benchmark. No Blender/Unity/model generation run for this docs-only change. Hosted final-head CI still required before merge; base Gate 0 PR36 remains open."
+        },
+        "canonicalSkillConsolidation": {
+          "sourceRevision": "86f993ce0750f1312797e9c6e84a1a591e286bac",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "commands": [
+            {"command": "python3 /home/tiecont/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/aetheria-hero-character-vrm && python3 /home/tiecont/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/aetheria-standard-asset-3d && python3 /home/tiecont/.codex/skills/.system/skill-creator/scripts/quick_validate.py /home/tiecont/.codex/skills/aetheria-hero-character-vrm && python3 /home/tiecont/.codex/skills/.system/skill-creator/scripts/quick_validate.py /home/tiecont/.codex/skills/aetheria-standard-asset-3d", "exitCode": 0, "result": "Four PASS results for repo and global canonical skills"},
+            {"command": "python3 -m unittest discover -s tests/art -p 'test_*.py'", "exitCode": 0, "result": "21 PASS including exact two-skill inventory"},
+            {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "162 PASS"},
+            {"command": "pnpm governance:check", "exitCode": 0, "result": "Governance/release consistency PASS; indexed historical byte retrieval is not fresh gameplay acceptance"},
+            {"command": "pnpm lint", "exitCode": 0, "result": "PASS, 0 errors and one pre-existing generated protobuf warning"},
+            {"command": "pnpm plan:status", "exitCode": 0, "result": "174 tasks parsed; VL-105 remains IN_PROGRESS"},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "additionalInspection": "Repo and global skill trees are byte-identical; only the two canonical Aetheria 3D skill directories remain. Charakuru RELEASE-MANIFEST.json verified 296/296 file hashes, with its upstream avatar-expression-authoring and nine named protected skills retained.",
+          "limitations": "Full pnpm check and hosted CI were not run before this record. No 3D asset production, Blender, Unity or owner-art acceptance occurred. Legacy evidence text in older verification records remains historical."
         },
         "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
       }
