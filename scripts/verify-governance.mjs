@@ -4,6 +4,7 @@ import {readTaskPlan,taskStatus} from './task-plan.mjs';
 import { checkRelease } from './verify-release.mjs';
 import { checkOpsWatch } from './ops-watch.mjs';
 import {historicalEvidence} from './evidence-reader.mjs';
+import {verifyBinaryHygiene} from './verify-binary-hygiene.mjs';
 
 const plan=await readTaskPlan();
 const policy = JSON.parse(await readFile('config/rollout.json', 'utf8'));
@@ -20,4 +21,6 @@ await checkRelease();
 console.log('Historical offline release fixture checked; current environment entitlement is assessed by release-policy:check.');
 await checkOpsWatch();
 console.log('Monitoring preparation checked; no live collector or business metrics inferred.');
+console.log(JSON.stringify(await verifyBinaryHygiene()));
+console.log('Tracked binary hygiene verified; no S3 upload, migration or media-rights claim.');
 console.log(JSON.stringify(await (await historicalEvidence()).verifyAll()));

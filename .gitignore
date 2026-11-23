@@ -15,6 +15,24 @@ artifacts/
 .idea/
 **/.idea/
 infra/botkeep-ca.pem
+
+# Large media and authored 3D binaries belong in private S3/Tigris storage.
+# Keep JSON manifests and their provenance visible to Git.
+*.vrm
+*.glb
+*.fbx
+*.blend
+*.wav
+*.mp4
+*.zip
+.cache/assets/
+assets/cache/
+assets/downloads/
+assets/local/
+assets/synced/
+!assets/manifests/
+!assets/manifests/*.json
+
 apps/unity-client/Library/
 apps/unity-client/Temp/
 apps/unity-client/Logs/
