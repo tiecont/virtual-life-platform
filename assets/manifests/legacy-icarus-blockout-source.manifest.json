@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-blockout-source",
+  "version": "1.0.0",
+  "stage": "blockout",
+  "s3Key": "assets/legacy-icarus-blockout-source/1.0.0/icarus-blockout.blend",
+  "sha256": "4978c1a00caa2403c461ffed0cb82cdac185768f35e74f6cf9a093a1073555c2",
+  "sizeBytes": 718134,
+  "contentType": "application/x-blender",
+  "localCachePath": ".cache/assets/legacy-icarus-blockout-source/1.0.0/icarus-blockout.blend"
+}

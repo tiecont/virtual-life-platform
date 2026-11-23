@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-white-gold-study-back",
+  "version": "1.0.0",
+  "stage": "reference",
+  "s3Key": "assets/legacy-icarus-white-gold-study-back/1.0.0/back.png",
+  "sha256": "96eab5c33a0bd8b6db53a1e18dcbd891d133e18389a8461ec786fb57b830a4f9",
+  "sizeBytes": 226311,
+  "contentType": "image/png",
+  "localCachePath": ".cache/assets/legacy-icarus-white-gold-study-back/1.0.0/back.png"
+}

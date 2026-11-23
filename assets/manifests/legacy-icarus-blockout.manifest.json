@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-blockout",
+  "version": "1.0.0",
+  "stage": "blockout",
+  "s3Key": "assets/legacy-icarus-blockout/1.0.0/icarus-blockout.glb",
+  "sha256": "161fc612c4e352863a5ec9e1c5f77839ffd306246b3630b110395cdb30d88e88",
+  "sizeBytes": 1827924,
+  "contentType": "model/gltf-binary",
+  "localCachePath": ".cache/assets/legacy-icarus-blockout/1.0.0/icarus-blockout.glb"
+}

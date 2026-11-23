@@ -48,6 +48,15 @@ target shape only and must not be deployed as-is.
 - `admin-web/wrangler.jsonc`: starter Worker/static-assets configuration for
   `apps/admin-web`.
 - `cloudflared/config.yml`: loopback-only origin routing template.
+- `readiness.json`: metadata-only target inventory for the private local and
+  production asset buckets, final Worker names, MCP target names and Upstash
+  production adapter.
+
+Run `node scripts/verify-cloudflare-readiness.mjs` for the offline readiness
+gate. It validates that both asset targets remain private, neither Worker has a
+route/workers.dev/preview URL, the production Redis path requires Upstash REST
+and no deployment or upload authorization is implied. Live MCP/account access
+is recorded separately as `NOT_RUN`; static readiness is not a provider probe.
 
 ## Free-tier guardrails
 

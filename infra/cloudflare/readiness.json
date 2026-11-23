@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+  "deploymentAuthorized": false,
+  "accountIdentifiersIncluded": false,
+  "publicRoutesConfigured": false,
+  "mcp": {
+    "server": "cloudflare",
+    "transport": "streamable_http",
+    "url": "https://mcp.cloudflare.com/mcp",
+    "liveAccountProbe": "NOT_RUN",
+    "requiredAssetTargets": [
+      "aetheria-assets-local",
+      "aetheria-assets-prod"
+    ]
+  },
+  "assetTargets": [
+    {
+      "name": "aetheria-assets-local",
+      "environment": "local",
+      "provider": "s3-compatible",
+      "environmentFile": ".env",
+      "bucketVariable": "S3_BUCKET",
+      "accessKeyVariable": "S3_ACCESS_KEY_ID",
+      "secretKeyVariable": "S3_SECRET_ACCESS_KEY",
+      "regionVariable": "S3_REGION",
+      "private": true,
+      "uploadAuthorized": false
+    },
+    {
+      "name": "aetheria-assets-prod",
+      "environment": "production",
+      "provider": "cloudflare-r2",
+      "environmentFile": ".env.production",
+      "bucketVariable": "S3_BUCKET",
+      "accessKeyVariable": "S3_ACCESS_KEY_ID",
+      "secretKeyVariable": "S3_SECRET_ACCESS_KEY",
+      "regionVariable": "S3_REGION",
+      "private": true,
+      "uploadAuthorized": false
+    }
+  ],
+  "workers": [
+    {
+      "name": "aetheria-soulbound-portal-web",
+      "app": "apps/portal-web",
+      "config": "infra/cloudflare/portal-web/wrangler.jsonc",
+      "artifactDirectory": "artifacts/cloudflare/portal-web",
+      "deployAuthorized": false
+    },
+    {
+      "name": "aetheria-soulbound-admin-web",
+      "app": "apps/admin-web",
+      "config": "infra/cloudflare/admin-web/wrangler.jsonc",
+      "artifactDirectory": "artifacts/cloudflare/admin-web",
+      "deployAuthorized": false
+    }
+  ],
+  "redis": {
+    "adapter": "apps/platform-api/src/shared/config/redis.ts",
+    "environment": "production",
+    "backend": "upstash-rest",
+    "urlVariable": "UPSTASH_REDIS_REST_URL",
+    "tokenVariable": "UPSTASH_REDIS_REST_TOKEN",
+    "forbiddenVariable": "REDIS_URL",
+    "authority": false
+  }
+}

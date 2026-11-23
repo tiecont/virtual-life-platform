@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-art-study",
+  "version": "1.0.0",
+  "stage": "blockout",
+  "s3Key": "assets/legacy-icarus-art-study/1.0.0/icarus-study.fbx",
+  "sha256": "f9fe114cd53ba29b39a51285df27da33f3dd8bfd8480d05eaa804d3c46c345db",
+  "sizeBytes": 8322540,
+  "contentType": "application/vnd.autodesk.fbx",
+  "localCachePath": ".cache/assets/legacy-icarus-art-study/1.0.0/icarus-study.fbx"
+}
