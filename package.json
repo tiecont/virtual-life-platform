@@ -68,7 +68,7 @@
     "legacy:maid:baseline": "node scripts/prepare-maid-baseline.mjs && node scripts/with-test-db.mjs node tests/support/maid-baseline-check.mjs",
     "ci:check": "node scripts/verify-ci.mjs",
     "ci:browser": "node scripts/run-ci-browser.mjs",
-    "playwright:config:check": "node scripts/check-playwright-configs.mjs",
+    "playwright:config:check": "pnpm build:packages && node scripts/check-playwright-configs.mjs",
     "dating:check": "node --import tsx scripts/verify-dating-policy.ts",
     "infra:check": "node scripts/verify-infra.mjs",
     "infra:smoke": "node scripts/staging-smoke.mjs",
