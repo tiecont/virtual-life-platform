@@ -154,6 +154,78 @@
         "path": "assets/characters/icarus/white-gold-study/import-settings.json",
         "sha256": "aa0e06541c9456cab4797f75bd30c9d9d8c7de40928f3153620bd4ce4af83f14"
       }
+    },
+    {
+      "id": "icarus-study-portrait",
+      "kind": "portrait",
+      "path": "assets/characters/icarus/white-gold-study/portrait-detail.png",
+      "sha256": "c828f1d2f495a0ed77b97ef210415326ea6a7d1ce0e4f3c731e5e9129ba033e0",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",
+        "sha256": "4978c1a00caa2403c461ffed0cb82cdac185768f35e74f6cf9a093a1073555c2",
+        "origin": "generated",
+        "author": "Codex; owner-supplied visual reference",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/import-settings.json",
+        "sha256": "e4b3dc1ab1434f7bd9cf84d91b475fca616fadf77bb39ab9bc5695d98cbc9559"
+      }
+    },
+    {
+      "id": "icarus-study-icon",
+      "kind": "icon",
+      "path": "assets/characters/icarus/white-gold-study/front.png",
+      "sha256": "1ecc5a273177c2af2e2a9db1df82eee7f200185f135c0c94569a8aee81022f40",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",
+        "sha256": "4978c1a00caa2403c461ffed0cb82cdac185768f35e74f6cf9a093a1073555c2",
+        "origin": "generated",
+        "author": "Codex; owner-supplied visual reference",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/import-settings.json",
+        "sha256": "e4b3dc1ab1434f7bd9cf84d91b475fca616fadf77bb39ab9bc5695d98cbc9559"
+      }
+    },
+    {
+      "id": "icarus-study-localization",
+      "kind": "localization",
+      "path": "specs/pet-arena/v3.1/data/localization_initial_vi_en.json",
+      "sha256": "1e46a848e9c3b3b88453d7000a699d2b600082039cfa41f79fd00b5fa2e63663",
+      "source": {
+        "path": "specs/pet-arena/v3.1/data/localization_initial_vi_en.json",
+        "sha256": "1e46a848e9c3b3b88453d7000a699d2b600082039cfa41f79fd00b5fa2e63663",
+        "origin": "original",
+        "author": "VirtualLife canonical v3.1 content",
+        "provenanceRef": "specs/pet-arena/v3.1.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/import-settings.json",
+        "sha256": "e4b3dc1ab1434f7bd9cf84d91b475fca616fadf77bb39ab9bc5695d98cbc9559"
+      }
+    },
+    {
+      "id": "icarus-study-reduced-motion",
+      "kind": "preview",
+      "path": "assets/characters/icarus/white-gold-study/reduced-motion.mp4",
+      "sha256": "e56e2d7214f3591ee4fe4e01221ad9812d540ac08cfcc874039638fb8c68d536",
+      "source": {
+        "path": "assets/characters/icarus/white-gold-study/front.png",
+        "sha256": "1ecc5a273177c2af2e2a9db1df82eee7f200185f135c0c94569a8aee81022f40",
+        "origin": "generated",
+        "author": "Codex offline reduced-motion fallback",
+        "provenanceRef": "assets/characters/icarus/white-gold-study/README.md",
+        "rights": "PENDING_REVIEW"
+      },
+      "importSettings": {
+        "path": "assets/characters/icarus/white-gold-study/import-settings.json",
+        "sha256": "e4b3dc1ab1434f7bd9cf84d91b475fca616fadf77bb39ab9bc5695d98cbc9559"
+      }
     }
   ],
   "pets": [
@@ -166,15 +238,15 @@
       },
       "signatureOpcode": "FIRE_ZONE",
       "serverOutcomeIndependent": true,
-      "portrait": null,
-      "icon": null,
+      "portrait": "icarus-study-portrait",
+      "icon": "icarus-study-icon",
       "model": "icarus-study-glb",
-      "prefab": null,
-      "controller": null,
-      "localization": null,
-      "materials": [],
+      "prefab": "icarus-review-prefab",
+      "controller": "icarus-review-controller",
+      "localization": "icarus-study-localization",
+      "materials": ["icarus-review-skin-hair", "icarus-review-feather-silk", "icarus-review-ornament"],
       "preview": "icarus-study-preview",
-      "reducedMotionPreview": null,
+      "reducedMotionPreview": "icarus-study-reduced-motion",
       "animations": [
         {
           "action": "idle",

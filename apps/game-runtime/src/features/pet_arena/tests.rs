@@ -1,4 +1,8 @@
 use super::domain::{Rules, State, content_hash};
+use super::projection::{
+    FIRE_ZONE_OPCODE, FireZoneDto, ICARUS_PET_ID, ICARUS_SIGNATURE_CARD_ID, ICARUS_SIGNATURE_ID,
+    SignatureDto,
+};
 use crate::features::runtime::application::NativeGame;
 use aetheria_game_core::{Command, LogicalClock, Reducer, SecretSeed, apply, begin};
 use aetheria_persistence::{Completion, Game};
@@ -10,6 +14,52 @@ fn fixture_rules() -> Rules {
         pet: 0,
         stage: 0,
     }
+}
+
+#[test]
+fn icarus_signature_dto_is_canonical_and_deterministic() {
+    let cells = (0..16).collect::<Vec<_>>();
+    let dto = SignatureDto::icarus(7, cells.clone()).unwrap();
+    assert_eq!(dto.pet_id, ICARUS_PET_ID);
+    assert_eq!(dto.signature_id, ICARUS_SIGNATURE_ID);
+    assert_eq!(dto.signature_card_id, ICARUS_SIGNATURE_CARD_ID);
+    assert_eq!(dto.opcode, FIRE_ZONE_OPCODE);
+    assert_eq!(dto.turn, 7);
+    assert_eq!(dto.fire_zone.cells, cells);
+    assert_eq!(dto.fire_zone.expires_turn, 9);
+    assert_eq!(
+        serde_json::to_vec(&dto).unwrap(),
+        br#"{"petId":"pet-v3-fire-icarus","signatureId":"signature_icarus","signatureCardId":"signature_card_icarus","opcode":"FIRE_ZONE","turn":7,"fireZone":{"turn":7,"cells":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"expiresTurn":9}}"#
+    );
+}
+
+#[test]
+fn icarus_signature_dto_rejects_forged_or_ambiguous_payloads() {
+    assert!(FireZoneDto::new(7, vec![0; 16]).is_err());
+    assert!(FireZoneDto::new(7, (0..15).collect()).is_err());
+    assert!(FireZoneDto::new(7, (0..15).chain([100]).collect()).is_err());
+    assert!(
+        serde_json::from_slice::<SignatureDto>(
+            br#"{"petId":"pet-v3-fire-icarus","signatureId":"signature_icarus","signatureCardId":"signature_card_icarus","opcode":"FROST_LINE","turn":7,"fireZone":{"turn":7,"cells":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"expiresTurn":9}}"#
+        )
+        .unwrap()
+        .validate()
+        .is_err()
+    );
+    assert!(serde_json::from_slice::<SignatureDto>(
+        br#"{"petId":"pet-v3-fire-icarus","signatureId":"signature_icarus","signatureCardId":"signature_card_icarus","opcode":"FIRE_ZONE","turn":7,"fireZone":{"turn":7,"cells":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"expiresTurn":9},"privateSeed":42}"#
+    )
+    .is_err());
+}
+
+#[test]
+fn existing_default_pet_projection_does_not_promote_signature_fields() {
+    let rules = fixture_rules();
+    let state = rules.initial().unwrap();
+    let projection: serde_json::Value =
+        serde_json::from_slice(&rules.project(&state, PLAYER).unwrap()).unwrap();
+    assert!(projection.get("signature").is_none());
+    assert!(projection.get("petId").is_none());
 }
 #[test]
 fn adapter_contract_rejects_forgery_and_cross_account_projection() {
