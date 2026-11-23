@@ -298,6 +298,56 @@
           {"command": "git diff origin/main...HEAD --check", "exitCode": 0}
         ],
         "remaining": "Require final committed-head hosted Quality/Rust before merge. VL-170 remains IN_PROGRESS: real object ingest/binding, signed preview, retention/correction policy, provenance-document verification and private provider/art acceptance are outstanding. No live provider request, credentials, upload, public release or art acceptance."
+      },
+      "repositoryRefactorPhase1": {
+        "sourceRevision": "e2012dd9222124522b1762789e616ac28cd7726b",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "branch": "refactor/phase1-s3-assets-and-root-cleanup",
+        "scope": "Add a tracked metadata manifest and offline-safe push/pull CLI for private S3/Tigris binaries; reject newly tracked binary additions above500KiB; inventory existing Icarus reference/study binaries for later private migration; move all seven root Playwright configs under config/playwright. Existing binaries remain tracked and no upload, deletion, rights claim, gameplay activation or public release occurred.",
+        "changedAreas": [
+          ".env.example",
+          ".gitignore",
+          "assets/manifests",
+          "config/binary-hygiene-allowlist.json",
+          "config/playwright",
+          "package.json",
+          "scripts/media/assets-*.mjs",
+          "scripts/run-browser-tests.mjs",
+          "scripts/verify-binary-hygiene.mjs",
+          "scripts/verify-governance.mjs",
+          "tests/admin-tsconfig.json",
+          "tests/legacy-tsconfig.json",
+          "tests/governance/assets-s3.test.mjs",
+          "tests/governance/binary-hygiene.test.mjs",
+          "tests/governance/playwright-config.test.mjs"
+        ],
+        "legacyOffloadQueue": {
+          "manifest": "assets/manifests/legacy-migration-plan.json",
+          "files": 18,
+          "status": "QUEUED_CREDENTIALS_REQUIRED",
+          "result": "All tracked .png/.glb/.fbx files under the three requested roots are hash- and size-pinned.13 files above500KiB have exact legacy allowlist entries; no audited file was moved, deleted, modified or uploaded."
+        },
+        "commands": [
+          {"command": "pnpm install --frozen-lockfile", "exitCode": 0},
+          {"command": "pnpm build:packages", "exitCode": 0},
+          {"command": "node --test tests/governance/*.test.mjs", "exitCode": 0, "result": "183 PASS, including12 owned-loopback asset S3 cases and4 binary-hygiene cases."},
+          {"command": "pnpm governance:check", "exitCode": 0, "result": "PASS; binary verifier examined0 newly added oversized files at functional head e2012dd and reported no upload or media-rights claim."},
+          {"command": "pnpm ci:check", "exitCode": 0},
+          {"command": "pnpm lint", "exitCode": 0, "result": "ESLint and518 source boundary checks PASS; one existing generated public_pb.ts unused-disable warning."},
+          {"command": "pnpm typecheck", "exitCode": 0},
+          {"command": "pnpm assets:pull --dry-run", "exitCode": 0, "result": "manifests0,cached0,pending0,networkfalse; no credentials or .env required."},
+          {"command": "pnpm assets:push --dry-run", "exitCode": 0, "result": "manifests0,verified0,bytes0,networkfalse; no credentials or .env required."},
+          {"command": "pnpm exec playwright test --config config/playwright/playwright.config.ts --list", "exitCode": 0, "result": "342 tests in41 files."},
+          {"command": "pnpm exec playwright test --config config/playwright/playwright.{admin,calendar,lodge,privacy,queue,runtime}.config.ts --list (six separate invocations)", "exitCode": 0, "result": "admin20/1,calendar2/1,lodge342/41,privacy4/1,queue342/41,runtime2/1; all moved configs load actual specs."},
+          {"command": "cargo fmt --all -- --check", "exitCode": 0},
+          {"command": "cargo check --workspace --all-targets --locked", "exitCode": 0},
+          {"command": "cargo clippy --workspace --all-targets --locked -- -D warnings", "exitCode": 0},
+          {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "All workspace unit/integration/doc tests PASS; default-off runtime route checks remain green."},
+          {"command": "git diff --check", "exitCode": 0}
+        ],
+        "hostedCi": "PENDING; final PR Quality/Rust must pass before merge.",
+        "limitations": "No live S3/Tigris credentials, endpoint or upload was used. Provider compatibility, private bucket configuration, migration of tracked legacy bytes and CLI pull-back through the managed cache remain pending. The binary gate verifies committed Git additions only; it does not infer media rights.",
+        "remaining": "VL-170 remains IN_PROGRESS for real private object ingest/binding, signed preview delivery, correction/retention policy and provider/art acceptance. VL-172, Rust gameplay defaults and legacy RoomAuthority were not changed."
       }
     },
     {
