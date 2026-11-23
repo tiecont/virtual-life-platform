@@ -10,11 +10,12 @@
   "modules": {
     "pets": {
       "owner": "platform.pet-content",
-      "responsibility": "Default-off versioned Pet metadata drafts; no combat or platform reward writer",
+    "responsibility": "Default-off versioned Pet metadata drafts and local/test Wave 1 rules previews; no production match or platform reward writer",
       "currentPublicEntryFiles": [
         "features/pets/modules/content/infrastructure/draft-store",
         "features/pets/modules/content/infrastructure/manifest-store",
-        "features/pets/modules/content/infrastructure/acquisition-draft-store"
+      "features/pets/modules/content/infrastructure/acquisition-draft-store",
+      "features/pets/modules/wave1/presentation/http"
       ],
       "targetBoundary": "Nest owns content persistence through the existing journal; Rust gameplay and player settlement retain their existing writers"
     },
