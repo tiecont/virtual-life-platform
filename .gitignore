@@ -11,6 +11,7 @@ coverage/
 playwright-report/
 test-results/
 artifacts/
+/apps/unity-client/ProjectSettings/lilToonSetting.json
 /docs/agent/evidence/
 .idea/
 **/.idea/

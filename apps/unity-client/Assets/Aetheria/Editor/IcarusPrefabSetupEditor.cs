@@ -12,6 +12,8 @@ namespace Aetheria.Editor
         private const string ReviewVrmPath = CharacterFolder + "/Source/Icarus.vrm";
         private const string ModularFolder = CharacterFolder + "/Modular";
         private const string AvatarPath = ModularFolder + "/IcarusReviewAvatar.asset";
+        private const string AccessoriesFolder = ModularFolder + "/Accessories";
+        private const float BowStringHalfLength = .55f;
         public const string PrefabPath = CharacterFolder + "/Modular/Icarus.prefab";
 
         [MenuItem("Aetheria/Icarus/Build or update modular prefab")]
@@ -20,6 +22,12 @@ namespace Aetheria.Editor
         [MenuItem("Aetheria/Icarus/Build offline VRM review prefab")]
         public static void BuildVrmReview()
         {
+            AssetDatabase.ImportAsset(ReviewVrmPath,
+                ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
+            AssetDatabase.ImportAsset($"{AccessoriesFolder}/Icarus_Wings.glb",
+                ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
+            AssetDatabase.ImportAsset($"{AccessoriesFolder}/Icarus_Bow.glb",
+                ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
             var selected = AssetDatabase.LoadAssetAtPath<GameObject>(
                 AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath) != null ? PrefabPath : ReviewVrmPath);
             Build(selected, PrefabPath);
@@ -80,7 +88,7 @@ namespace Aetheria.Editor
                 if (output == PrefabPath && !AssetDatabase.IsValidFolder(ModularFolder))
                     AssetDatabase.CreateFolder(CharacterFolder, "Modular");
                 if (buildFromReviewVrm) BindReviewAvatar(root);
-                SetUp(root);
+                SetUp(root, output == PrefabPath);
                 // Use the original path on update so references and the asset GUID are preserved.
                 var saved = PrefabUtility.SaveAsPrefabAsset(root, output, out bool success);
                 if (!success || saved == null) throw new InvalidOperationException("Could not save " + output);
@@ -116,7 +124,7 @@ namespace Aetheria.Editor
             if (vrm != null) vrm.enabled = false;
         }
 
-        private static void SetUp(GameObject root)
+        private static void SetUp(GameObject root, bool attachAccessories)
         {
             Animator[] animators = root.GetComponentsInChildren<Animator>(true);
             if (animators.Length != 1 || animators[0].avatar == null ||
@@ -134,8 +142,15 @@ namespace Aetheria.Editor
             Socket(root.transform, wings, "Socket_Wing_R", new Vector3(.105f, 0, 0), Quaternion.Euler(0, 142, 0));
             Transform halo = Socket(root.transform, head, "Socket_Halo", new Vector3(0, .205f, 0));
             Transform bow = Socket(root.transform, hand, "Socket_Bow", Vector3.zero, Quaternion.identity);
-            Transform bowTop = Socket(root.transform, bow, "Socket_BowString_Top", new Vector3(0, .95f, 0));
-            Transform bowBottom = Socket(root.transform, bow, "Socket_BowString_Bottom", new Vector3(0, -.95f, 0));
+            if (attachAccessories)
+            {
+                AttachAccessory(wings, "Icarus_Wings");
+                AttachAccessory(bow, "Icarus_Bow");
+            }
+            Transform bowTop = Socket(root.transform, bow, "Socket_BowString_Top",
+                new Vector3(0, BowStringHalfLength, 0), refreshPosition: true);
+            Transform bowBottom = Socket(root.transform, bow, "Socket_BowString_Bottom",
+                new Vector3(0, -BowStringHalfLength, 0), refreshPosition: true);
 
             var controller = root.GetComponent<IcarusWingController>() ?? root.AddComponent<IcarusWingController>();
             if (root.GetComponent<IcarusSignaturePresentation>() == null) root.AddComponent<IcarusSignaturePresentation>();
@@ -152,6 +167,32 @@ namespace Aetheria.Editor
             wings.gameObject.SetActive(false);
         }
 
+        private static void AttachAccessory(Transform socket, string name)
+        {
+            Transform existing = socket.Find(name);
+            if (existing != null)
+            {
+                if (existing.GetComponentsInChildren<Renderer>(true).Length == 0)
+                    throw new InvalidOperationException($"{name} is attached but has no renderers.");
+                return;
+            }
+
+            string path = $"{AccessoriesFolder}/{name}.glb";
+            GameObject asset = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (asset == null)
+                throw new InvalidOperationException($"Import failed for {path}.");
+            if (asset.GetComponentsInChildren<Renderer>(true).Length == 0)
+                throw new InvalidOperationException($"{path} contains no renderable geometry.");
+
+            var attachment = (GameObject)PrefabUtility.InstantiatePrefab(asset, socket);
+            if (attachment == null)
+                throw new InvalidOperationException($"Could not instantiate {path}.");
+            attachment.name = name;
+            attachment.transform.localPosition = Vector3.zero;
+            attachment.transform.localRotation = Quaternion.identity;
+            attachment.transform.localScale = Vector3.one;
+        }
+
         private static Transform FindBone(Transform rig, params string[] names)
         {
             var matches = rig.GetComponentsInChildren<Transform>(true)
@@ -162,10 +203,16 @@ namespace Aetheria.Editor
             return matches[0];
         }
 
-        private static Transform Socket(Transform rig, Transform parent, string name, Vector3 rootOffset, Quaternion? orientation = null)
+        private static Transform Socket(Transform rig, Transform parent, string name, Vector3 rootOffset,
+            Quaternion? orientation = null, bool refreshPosition = false)
         {
             var matches = rig.GetComponentsInChildren<Transform>(true).Where(node => node.name == name).ToArray();
-            if (matches.Length == 1 && matches[0].parent == parent) return matches[0];
+            if (matches.Length == 1 && matches[0].parent == parent)
+            {
+                Transform existing = matches[0];
+                if (refreshPosition) existing.localPosition = rootOffset;
+                return existing;
+            }
             if (matches.Length != 0) throw new InvalidOperationException($"Socket '{name}' is duplicated or attached to the wrong bone.");
             var socket = new GameObject(name).transform;
             socket.SetParent(parent, false);

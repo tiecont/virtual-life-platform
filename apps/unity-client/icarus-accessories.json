@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
+  "directory": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Modular/Accessories",
+  "ownerWaiver": {
+    "asset": "Icarus_Wings",
+    "scope": "Aetheria Hero/Limited-S Icarus Wings",
+    "authorizedAt": "2026-11-23",
+    "sha256": "34030b8da0b5c864044907b7e78e3974f784ae73d7558eb434dafd326bda9262",
+    "triangles": 26133,
+    "ceilingTriangles": 28000,
+    "reason": "Owner accepted the verified Tripo Wings and Bow exports as-is instead of spending more credits or changing the untouched Tripo topology, UVs, or 4K texture."
+  },
+  "accessories": [
+    {
+      "name": "Icarus_Wings",
+      "file": "Icarus_Wings.glb",
+      "providerProjectId": "8dd6dc74-9b98-440a-b241-168a001e6ea2",
+      "providerVisibility": "private",
+      "sha256": "34030b8da0b5c864044907b7e78e3974f784ae73d7558eb434dafd326bda9262",
+      "vertices": 18452,
+      "triangles": 26133,
+      "materials": [
+        "Material_tripo_part_4"
+      ],
+      "uv": {
+        "zeroAreaTriangles": 4,
+        "totalTriangleArea": 0.690507709980011
+      },
+      "bounds": {
+        "minimum": [
+          -0.949999988079071,
+          -0.46735695004463196,
+          -0.05522718280553818
+        ],
+        "maximum": [
+          0.949999988079071,
+          0.46735695004463196,
+          0.05522718280553818
+        ]
+      },
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "normalization": "Scale and back-emblem pivot only; no retopology, UV edit, texture rebake, or decimation."
+    },
+    {
+      "name": "Icarus_Bow",
+      "file": "Icarus_Bow.glb",
+      "providerProjectId": "159eaf11-406d-4b55-9256-92123f6071c8",
+      "providerVisibility": "private",
+      "sha256": "7de768381b161037f3e6a549938cd006f45fb72617b4d8140f295424635eebd4",
+      "vertices": 7921,
+      "triangles": 10489,
+      "materials": [
+        "Material_tripo_part_58"
+      ],
+      "uv": {
+        "zeroAreaTriangles": 0,
+        "totalTriangleArea": 0.6610438227653503
+      },
+      "bounds": {
+        "minimum": [
+          -0.07066439092159271,
+          -0.550000011920929,
+          -0.12171472609043121
+        ],
+        "maximum": [
+          0.07066439092159271,
+          0.550000011920929,
+          0.12171472609043121
+        ]
+      },
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "normalization": "Scale and grip pivot only; removed four generated bowstring strips for the Unity LineRenderer. Tripo UVs and 4K base-color texture were retained."
+    }
+  ]
+}

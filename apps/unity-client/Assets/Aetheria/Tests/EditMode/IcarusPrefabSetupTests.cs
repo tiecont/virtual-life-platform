@@ -33,6 +33,38 @@ namespace Aetheria.Editor.Tests
         }
 
         [Test]
+        public void ReviewedPrefabContainsVerifiedTripoModularAccessories()
+        {
+            GameObject prefab = PrefabUtility.LoadPrefabContents(IcarusPrefabSetupEditor.PrefabPath);
+            try
+            {
+                Transform wingsSocket = prefab.GetComponentsInChildren<Transform>(true)
+                    .Single(node => node.name == "Socket_Wings");
+                Transform bowSocket = prefab.GetComponentsInChildren<Transform>(true)
+                    .Single(node => node.name == "Socket_Bow");
+                Transform wings = wingsSocket.Find("Icarus_Wings");
+                Transform bow = bowSocket.Find("Icarus_Bow");
+
+                Assert.That(wings, Is.Not.Null);
+                Assert.That(bow, Is.Not.Null);
+                Assert.That(wingsSocket.gameObject.activeSelf, Is.False, "Wings must default OFF.");
+                Assert.That(TriangleCount(wings.gameObject), Is.EqualTo(26133));
+                Assert.That(TriangleCount(bow.gameObject), Is.EqualTo(10489));
+                Assert.That(wings.GetComponentsInChildren<Renderer>(true), Is.Not.Empty);
+                Assert.That(bow.GetComponentsInChildren<Renderer>(true), Is.Not.Empty);
+
+                Transform top = bowSocket.Find("Socket_BowString_Top");
+                Transform bottom = bowSocket.Find("Socket_BowString_Bottom");
+                Assert.That(top.localPosition.y, Is.EqualTo(.55f).Within(.0001f));
+                Assert.That(bottom.localPosition.y, Is.EqualTo(-.55f).Within(.0001f));
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(prefab);
+            }
+        }
+
+        [Test]
         public void SavesAndReopensGenericPrefabWithoutRewritingTheSourceOrExistingSockets()
         {
             string leaf = "IcarusFixture-" + Guid.NewGuid().ToString("N");
@@ -101,6 +133,14 @@ namespace Aetheria.Editor.Tests
             node.SetParent(parent, false);
             return node;
         }
+
+        private static int TriangleCount(GameObject root) =>
+            root.GetComponentsInChildren<MeshFilter>(true)
+                .Where(filter => filter.sharedMesh != null)
+                .Sum(filter => filter.sharedMesh.triangles.Length / 3) +
+            root.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .Where(renderer => renderer.sharedMesh != null)
+                .Sum(renderer => renderer.sharedMesh.triangles.Length / 3);
 
         private static void Build(GameObject source, string output) =>
             typeof(IcarusPrefabSetupEditor).GetMethod("Build", BindingFlags.Static | BindingFlags.NonPublic)

@@ -21,6 +21,11 @@ export async function verifyPetAssetFiles(input,root=process.cwd()){
  return {state:value.state,pets:value.pets.length,filesVerified,missing,rightsReview:'PENDING',unityImport:'NOT_TESTED',renderedPreview:'NOT_TESTED',productionReady:false,runtimeEnabled:false};
 }
 async function main(){
+ if(process.argv.length===3&&process.argv[2]==='--icarus-accessories'){
+  const {verifyIcarusAccessories}=await import('./art/check-icarus-accessories.mjs');
+  console.log(JSON.stringify(await verifyIcarusAccessories()));
+  return;
+ }
  if(process.argv[2]==='--limited-v31'){
   const {readLimitedPetCatalog,createMissingLimitedPetVisualDraft,verifyLimitedPetAssetFiles}=await import('./pet-limited-asset-check.mjs');
   const args=process.argv.slice(3),requireComplete=args.at(-1)==='--require-complete';if(requireComplete)args.pop();
