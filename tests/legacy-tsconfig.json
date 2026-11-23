@@ -31,6 +31,6 @@
     "integration/admission-ux.test.ts",
     "e2e/queue-ux.spec.ts",
     "support/queue-browser-runtime.ts",
-    "../playwright.queue.config.ts"
+    "../config/playwright/playwright.queue.config.ts"
   ]
 }
