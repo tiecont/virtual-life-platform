@@ -5,11 +5,11 @@
   "sources": [
     {
       "path": "packages/lounge-world/src/index.ts",
-      "sha256": "01d446437c9e8bf5408689d04a6670281ace39a164cc019c44e5afc006d0b4a1"
+      "sha256": "32a7a1d399bfa213996d995031679e659f3217580b85d6511eda5f473cec09bf"
     },
     {
       "path": "packages/pixi-scene/src/renderer.ts",
-      "sha256": "d421ed940624a1eee01f3c60fb2edd44c655252001fb6c15636f272a494ff2c0"
+      "sha256": "9f727e28671a7018e73d0c93e018a9f581ce7d3d7336f203eb91a01c785eeaa8"
     }
   ],
   "avatar": "Existing original starter atlas;separate avatar provenance applies",

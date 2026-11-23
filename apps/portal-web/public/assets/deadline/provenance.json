@@ -9,11 +9,11 @@
     },
     {
       "path": "packages/deadline-world/src/scene.ts",
-      "sha256": "02625c252db3e7cba66037a4bd9755be06950c31aba04f431194dca177e063e9"
+      "sha256": "eca0163017ffa9a9815575d0b68f5e27e31d8840c4e792a0661a37ce3cd2f5e4"
     },
     {
       "path": "packages/pixi-scene/src/deadline-art.ts",
-      "sha256": "c1a2dc45e5f96f1806e450a3c0d5a0c55ca1bdb2a0f1087ab8c1bcbe02df8604"
+      "sha256": "896b9e86cd0484e84428f7a269d5a4ded13fcfa7069fe65bb468250a3f14ec21"
     }
   ],
   "sourceApproval": "integrations/legacy-snapshots/approval.json;offline integration only",
