@@ -555,13 +555,13 @@ def process_asset(
         return result
 
     asset["cachePath"].parent.mkdir(parents=True, exist_ok=True)
-    temporary = Path(
-        tempfile.mkstemp(
-            prefix=f".{asset['filename']}.",
-            suffix=".tmp.glb",
-            dir=asset["cachePath"].parent,
-        )[1]
+    temporary_fd, temporary_name = tempfile.mkstemp(
+        prefix=f".{asset['filename']}.",
+        suffix=".tmp.glb",
+        dir=asset["cachePath"].parent,
     )
+    os.close(temporary_fd)
+    temporary = Path(temporary_name)
     try:
         export_glb(temporary)
         exported_triangles, exported_size = verify_exported_glb(temporary)

@@ -824,9 +824,14 @@
     "publication": "NO_GO_PUBLIC"
   },
   "conceptBatch1": {
-    "state": "GENERATION_AND_OWNER_REVIEW_REQUIRED",
+    "state": "READY_FOR_OWNER_REVIEW",
     "count": 22,
     "categories": {"standardGacha": 6, "mapLegendary": 6, "sharedRaceBase": 10},
+    "generatedFreeImageCount": 22,
+    "freeQuotaObservedAfter": 22,
+    "paidCreditsConsumed": 0,
+    "paidBalanceObservedBefore": 1910,
+    "paidBalanceObservedAfter": 1910,
     "workspaceDirectory": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts/",
     "reviewDirectory": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/review/",
     "reviewSheet": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/review/index.html",
