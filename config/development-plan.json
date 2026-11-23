@@ -1319,13 +1319,13 @@
     {
       "id": "VL-006",
       "feature": "Avatar-Art",
-      "title": "VirtualLife visual brand review",
+      "title": "Aetheria: SoulBound visual brand review",
       "objective": "Convert logo/key-art concept into owner-approved style sheet and source asset checklist.",
       "dependsOn": [
         "VL-001"
       ],
       "acceptance": [
-        "wordmark spelling VirtualLife and icon rights reviewed",
+        "wordmark spelling Aetheria: SoulBound and icon rights reviewed",
         "palette contrast assessed, art concepts explicitly nonproduction"
       ],
       "status": "TODO",
@@ -4016,7 +4016,7 @@
     {
       "id": "VL-079",
       "feature": "Web-UX",
-      "title": "Official VirtualLife portal IA and hero media direction",
+      "title": "Official Aetheria: SoulBound portal IA and hero media direction",
       "objective": "Define website download/account/news/gallery/support structure without open world browser shader requirement.",
       "dependsOn": [
         "VL-010"
@@ -4466,7 +4466,7 @@
     {
       "id": "VL-092",
       "feature": "Web-UX",
-      "title": "VirtualLife official promotional pages and character gallery",
+      "title": "Aetheria: SoulBound official promotional pages and character gallery",
       "objective": "High-impact original preview media, clear Windows CTA and launch community funnels.",
       "dependsOn": [
         "VL-083",
@@ -4834,7 +4834,7 @@
       "id": "VL-111",
       "feature": "Rust-Runtime",
       "title": "Default-off native runtime gameplay composition",
-      "objective": "Compose vl-gateway, vl-security, vl-game-core, vl-persistence and vl-world in apps/game-runtime using a small synthetic ruleset.",
+      "objective": "Compose aetheria-gateway, aetheria-security, aetheria-game-core, aetheria-persistence and aetheria-world in apps/game-runtime using a small synthetic ruleset.",
       "dependsOn": [
         "VL-013",
         "VL-017",
@@ -6615,7 +6615,7 @@
     {
       "id": "VL-146",
       "feature": "Pet-Arena",
-      "title": "Owned Pet companions across the VirtualLife world",
+      "title": "Owned Pet companions across the Aetheria: SoulBound world",
       "objective": "Shared permitted-zone companion controller for map, Limited and Standard species; morphology-specific navigation, LOD, emotes and privacy. Each species qualifies assets independently.",
       "dependsOn": [
         "VL-139",
@@ -7209,7 +7209,7 @@
     {
       "id": "VL-163",
       "feature": "Aetheria-Prelaunch",
-      "title": "Aetheria: Soulbound public and operator route separation",
+      "title": "Aetheria: SoulBound public and operator route separation",
       "objective": "Prepare the renamed NOYUNE-Prelaunch workstream in existing admin-web. Move the existing console to /admin and add a default-off VI/EN public homepage; no new app, database or service.",
       "dependsOn": [],
       "acceptance": [
@@ -7223,9 +7223,9 @@
       "implementation": {
         "overlap": "VL-079/083/092 retain broader official-site IA, download/support/gallery work; this independent slice provides their reusable admin-web foundation. VL-098/106 retain Windows/full-product qualification. VL-110 and VL-121/123 retain gameplay capture/art ownership; no duplicate completion claim.",
         "auditSourceRevision": "80a9186f39b2401df6b88b33411bd9a1ad50c340",
-        "brand": "Aetheria: Soulbound (owner requested name; legal clearance not assumed)",
+        "brand": "Aetheria: SoulBound (owner requested name; legal clearance not assumed)",
         "scope": "Owner expanded PR33 to complete product introduction and concept motion previews (VL-165). Signup API and operator marketing remain future slices. IDs moved from 128-132 to 163-167 after PR32 independently allocated 128-162; no old main task changed.",
-        "designReference": "Owner supplied /home/tiecont/Downloads/NOYUNE_Prelaunch_AdminWeb_Handoff after initial audit. Read product copy, technical architecture, backlog, QA gates and both style-only previews. Aetheria: Soulbound supersedes the handoff name. Cropped concept media is served only in development, with source hash/provenance; no production-media or legal clearance inferred."
+        "designReference": "Owner supplied /home/tiecont/Downloads/NOYUNE_Prelaunch_AdminWeb_Handoff after initial audit. Read product copy, technical architecture, backlog, QA gates and both style-only previews. Aetheria: SoulBound supersedes the handoff name. Cropped concept media is served only in development, with source hash/provenance; no production-media or legal clearance inferred."
       },
     "verification": {
       "sourceRevision": "ead95c52eccf4130d96f2bdcb6e39a9f325bbb1e",
