@@ -16,13 +16,13 @@ function validateEndpoint(value){
 export function assetTargetFromEnvironment(env){
   const endpoint=validateEndpoint(requiredEnvironment(env,'S3_ENDPOINT'));
   const bucket=requiredEnvironment(env,'S3_BUCKET');
-  const region=requiredEnvironment(env,'AWS_REGION');
-  const accessKeyId=requiredEnvironment(env,'AWS_ACCESS_KEY_ID');
-  const secretAccessKey=requiredEnvironment(env,'AWS_SECRET_ACCESS_KEY');
+  const region=env.S3_REGION?.trim()||'auto';
+  const accessKeyId=requiredEnvironment(env,'S3_ACCESS_KEY_ID');
+  const secretAccessKey=requiredEnvironment(env,'S3_SECRET_ACCESS_KEY');
   assert(/^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/.test(bucket),'S3_BUCKET is invalid');
-  assert(/^[a-z0-9-]{1,64}$/.test(region),'AWS_REGION is invalid');
-  assert(/^[A-Za-z0-9_-]{3,128}$/.test(accessKeyId),'AWS_ACCESS_KEY_ID is invalid');
-  assert(secretAccessKey.length>=16&&secretAccessKey.length<=256&&/^[\x21-\x7e]+$/.test(secretAccessKey),'AWS_SECRET_ACCESS_KEY is invalid');
+  assert(/^[a-z0-9-]{1,64}$/.test(region),'S3_REGION is invalid');
+  assert(/^[A-Za-z0-9_-]{3,128}$/.test(accessKeyId),'S3_ACCESS_KEY_ID is invalid');
+  assert(secretAccessKey.length>=16&&secretAccessKey.length<=256&&/^[\x21-\x7e]+$/.test(secretAccessKey),'S3_SECRET_ACCESS_KEY is invalid');
   return {endpoint,bucket,region,credentials:{accessKeyId,secretAccessKey}};
 }
 

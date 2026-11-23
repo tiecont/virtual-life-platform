@@ -12,11 +12,15 @@
   "roots": [
     "apps/unity-client/Assets/VirtualLife/ArtStudies/",
     "assets/characters/icarus/",
+    "integrations/legacy-snapshots/",
     "specs/pet-arena/references/"
   ],
   "allowedExtensions": [
+    ".blend",
     ".fbx",
     ".glb",
+    ".mp4",
+    ".tar",
     ".png"
   ],
   "files": [
@@ -199,6 +203,56 @@
       "status": "QUEUED",
       "migrationWave": 1,
       "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",
+      "sizeBytes": 718134,
+      "sha256": "4978c1a00caa2403c461ffed0cb82cdac185768f35e74f6cf9a093a1073555c2",
+      "contentType": "application/x-blender",
+      "s3Key": "assets/legacy/v1/4978c1a00caa2403c461ffed0cb82cdac185768f35e74f6cf9a093a1073555c2/icarus-blockout.blend",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "BLEND_BINARY"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/icarus-blockout1.blend",
+      "sizeBytes": 741651,
+      "sha256": "7bb62cabcc5742ac707cbfc2f6dd89379185ee98b43063563dbe10607c03e1fc",
+      "contentType": "application/x-blender",
+      "s3Key": "assets/legacy/v1/7bb62cabcc5742ac707cbfc2f6dd89379185ee98b43063563dbe10607c03e1fc/icarus-blockout1.blend",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "BLEND_BINARY"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/icarus-study.mp4",
+      "sizeBytes": 13778752,
+      "sha256": "1623b451f713dd18967c1bdaf9c1a871c31070c88190221dacc1ead2d2d5928a",
+      "contentType": "video/mp4",
+      "s3Key": "assets/legacy/v1/1623b451f713dd18967c1bdaf9c1a871c31070c88190221dacc1ead2d2d5928a/icarus-study.mp4",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "MP4_VIDEO"
+    },
+    {
+      "path": "integrations/legacy-snapshots/deadline.tar",
+      "sizeBytes": 552960,
+      "sha256": "6ae6b3c2291357b639039b9b70b1da3d7feb46369ea5908fddc36484bb17e64e",
+      "contentType": "application/x-tar",
+      "s3Key": "assets/legacy/v1/6ae6b3c2291357b639039b9b70b1da3d7feb46369ea5908fddc36484bb17e64e/deadline.tar",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "TAR_ARCHIVE"
+    },
+    {
+      "path": "integrations/legacy-snapshots/maid.tar",
+      "sizeBytes": 348160,
+      "sha256": "599cc3945fcac7d82d9d998c7b0cecf0c8beb90a47accae5e034cb20ce977890",
+      "contentType": "application/x-tar",
+      "s3Key": "assets/legacy/v1/599cc3945fcac7d82d9d998c7b0cecf0c8beb90a47accae5e034cb20ce977890/maid.tar",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "TAR_ARCHIVE"
     }
   ]
 }

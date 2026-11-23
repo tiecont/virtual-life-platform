@@ -1,13 +1,14 @@
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {constants} from 'node:fs';
-import {lstat,mkdir,open,rename,rm} from 'node:fs/promises';
+import {lstat,mkdir,open,readFile,rename,rm} from 'node:fs/promises';
 import path from 'node:path';
+import {parseEnv} from 'node:util';
 import {loadManifests,readAsset,sha256} from './assets-manifest.mjs';
 import {assetTargetFromEnvironment,sendAssetRequest,signedAssetRequest} from './assets-s3.mjs';
 
 function parseOptions(args){
-  const options={dryRun:false,manifestPaths:[]};
+  const options={dryRun:false,manifestPaths:[],envFile:undefined};
   for(let index=0;index<args.length;index++){
     const argument=args[index];
     if(argument==='--dry-run'||argument==='--offline')options.dryRun=true;
@@ -19,11 +20,31 @@ function parseOptions(args){
       const value=argument.slice('--manifest='.length);
       assert(value,'--manifest requires a repository-relative path');
       options.manifestPaths.push(value);
+    }else if(argument==='--env-file'){
+      const value=args[++index];
+      assert(value&&!value.startsWith('--'),'--env-file requires a repository-relative path');
+      options.envFile=value;
+    }else if(argument.startsWith('--env-file=')){
+      const value=argument.slice('--env-file='.length);
+      assert(value,'--env-file requires a repository-relative path');
+      options.envFile=value;
     }else if(argument==='--help'){
       options.help=true;
     }else throw Error(`Unknown option: ${argument}`);
   }
   return options;
+}
+
+async function commandEnvironment(root,envFile,baseEnv){
+  if(envFile===undefined)return baseEnv;
+  assert(!path.isAbsolute(envFile)&&!envFile.includes('\\'),'Environment file path must be repository-relative');
+  const target=path.resolve(root,envFile),relative=path.relative(path.resolve(root),target);
+  assert(relative&&!relative.startsWith('..')&&!path.isAbsolute(relative),'Environment file path escaped the repository');
+  const info=await lstat(target);
+  assert(info.isFile()&&!info.isSymbolicLink(),'Environment file must be a regular file');
+  const bytes=await readFile(target);
+  assert(bytes.length>0&&bytes.length<=1024*1024,'Environment file size is invalid');
+  return {...baseEnv,...parseEnv(bytes.toString('utf8'))};
 }
 
 function cacheTarget(root,manifest){
@@ -101,14 +122,14 @@ async function cachedAsset(root,manifest){
 
 export async function pushAssets({root=process.cwd(),args=[],env=process.env,transport=sendAssetRequest,now=new Date}={}){
   const options=parseOptions(args);
-  if(options.help)return {command:'push',usage:'assets-push [--dry-run|--offline] [--manifest <path>]'};
+  if(options.help)return {command:'push',usage:'assets-push [--dry-run|--offline] [--manifest <path>] [--env-file <path>]'};
   const manifests=await loadManifests(root,options.manifestPaths);
   const prepared=await preflight(root,manifests);
   if(options.dryRun){
     return {command:'push',mode:'dry-run',network:false,manifests:manifests.length,verified:prepared.verified.length,bytes:prepared.totalBytes};
   }
 
-  const target=assetTargetFromEnvironment(env);
+  const target=assetTargetFromEnvironment(await commandEnvironment(root,options.envFile,env));
   let uploaded=0,reused=0;
   for(const entry of manifests){
     const {manifest}=entry;
@@ -135,7 +156,7 @@ export async function pushAssets({root=process.cwd(),args=[],env=process.env,tra
 
 export async function pullAssets({root=process.cwd(),args=[],env=process.env,transport=sendAssetRequest,now=new Date}={}){
   const options=parseOptions(args);
-  if(options.help)return {command:'pull',usage:'assets-pull [--dry-run|--offline] [--manifest <path>]'};
+  if(options.help)return {command:'pull',usage:'assets-pull [--dry-run|--offline] [--manifest <path>] [--env-file <path>]'};
   const manifests=await loadManifests(root,options.manifestPaths);
   if(options.dryRun){
     let cached=0,pending=0;
@@ -146,7 +167,7 @@ export async function pullAssets({root=process.cwd(),args=[],env=process.env,tra
     return {command:'pull',mode:'dry-run',network:false,manifests:manifests.length,cached,pending};
   }
 
-  const target=assetTargetFromEnvironment(env);
+  const target=assetTargetFromEnvironment(await commandEnvironment(root,options.envFile,env));
   let downloaded=0,reused=0;
   for(const entry of manifests){
     const {manifest}=entry;

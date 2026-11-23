@@ -36,9 +36,9 @@ Configure the private provider only in local `.env`:
 ```dotenv
 S3_ENDPOINT=https://your-private-s3-or-tigris-origin
 S3_BUCKET=your-private-bucket
-AWS_REGION=auto
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
+S3_REGION=auto
+S3_ACCESS_KEY_ID=
+S3_SECRET_ACCESS_KEY=
 ```
 
 The checked-in `.env.example` contains empty placeholders. Never commit `.env`
@@ -51,9 +51,11 @@ pnpm assets:push --dry-run
 pnpm assets:push
 ```
 
-Both commands accept repeated `--manifest <repository-relative-path>` options;
-without them they read all `assets/manifests/*.manifest.json`. `--offline` is an
-alias for `--dry-run` and is useful in CI.
+Both commands accept repeated `--manifest <repository-relative-path>` options
+and `--env-file <repository-relative-path>` to select the local Tigris or
+Cloudflare R2 environment file. Without manifests they read all
+`assets/manifests/*.manifest.json`. `--offline` is an alias for `--dry-run` and
+is useful in CI.
 
 Dry-run push verifies every declared cache file, size, and SHA-256 before
 reporting what would upload. Dry-run pull only reports cached versus pending

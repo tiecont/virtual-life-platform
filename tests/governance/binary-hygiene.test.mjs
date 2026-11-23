@@ -14,6 +14,7 @@ import {
 
 const roots=[
   'assets/characters/icarus/',
+  'integrations/legacy-snapshots/',
   'specs/pet-arena/references/',
   'apps/unity-client/Assets/VirtualLife/ArtStudies/',
 ];
@@ -32,10 +33,10 @@ test('legacy migration inventory covers every audited PNG, GLB and FBX with immu
   assert.equal(plan.status,'QUEUED_CREDENTIALS_REQUIRED');
   assert.equal(plan.destination,'S3_TIGRIS_PRIVATE');
   assert.deepEqual([...plan.roots].sort(),[...roots].sort());
-  assert.deepEqual(plan.allowedExtensions,['.fbx','.glb','.png']);
+  assert.deepEqual(plan.allowedExtensions,['.blend','.fbx','.glb','.mp4','.tar','.png']);
   const expected=git('.',['ls-files','-z','--',...roots]).split('\0')
-    .filter(file=>/\.(png|glb|fbx)$/i.test(file)).sort();
-  assert.deepEqual(plan.files.map(row=>row.path),expected);
+    .filter(file=>/\.(png|glb|fbx|blend|mp4|tar)$/i.test(file)).sort();
+  assert.deepEqual(plan.files.map(row=>row.path).sort(),expected);
   assert.equal(new Set(plan.files.map(row=>row.s3Key)).size,plan.files.length);
   for(const row of plan.files){
     const bytes=await readFile(row.path);
@@ -45,8 +46,22 @@ test('legacy migration inventory covers every audited PNG, GLB and FBX with immu
     assert.equal(row.status,'QUEUED');
     assert.equal(row.migrationWave,1);
     const extension=path.extname(row.path);
-    assert.equal(row.contentType,{'.png':'image/png','.glb':'model/gltf-binary','.fbx':'application/vnd.autodesk.fbx'}[extension]);
-    assert.equal(row.class,{'.png':'PNG_IMAGE','.glb':'GLTF_BINARY','.fbx':'FBX_BINARY'}[extension]);
+    assert.equal(row.contentType,{
+      '.png':'image/png',
+      '.glb':'model/gltf-binary',
+      '.fbx':'application/vnd.autodesk.fbx',
+      '.blend':'application/x-blender',
+      '.mp4':'video/mp4',
+      '.tar':'application/x-tar',
+    }[extension]);
+    assert.equal(row.class,{
+      '.png':'PNG_IMAGE',
+      '.glb':'GLTF_BINARY',
+      '.fbx':'FBX_BINARY',
+      '.blend':'BLEND_BINARY',
+      '.mp4':'MP4_VIDEO',
+      '.tar':'TAR_ARCHIVE',
+    }[extension]);
   }
   assert.deepEqual(
     policy.legacy,
