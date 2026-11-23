@@ -157,7 +157,7 @@ player loading/frame/memory behavior separately. No public activation or art mer
     include = []
     folders = ['references', 'meshy/pilot-01', 'meshy/rig-01', 'meshy/bow-01',
                'blender/assembled-04', 'blender/refined-03', 'unity/review-videos',
-               'unity/project/Assets/VirtualLife/ArtStudies/IcarusV3Pilot']
+               'unity/project/Assets/Aetheria/ArtStudies/IcarusV3Pilot']
     for folder in folders:
         include.extend(p for p in (ROOT / folder).rglob('*') if p.is_file() and p.suffix not in {'.blend1'})
     for file in ['provenance/owner-authorization-v3.json','provenance/task-ledger-reconciled.json',

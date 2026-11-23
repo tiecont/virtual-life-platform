@@ -1,6 +1,6 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
-import { EventCatalogSchema,EventRsvpResultSchema,type Me,type TravelSource } from '@virtual-city/contracts';
+import { EventCatalogSchema,EventRsvpResultSchema,type Me,type TravelSource } from '@aetheria/contracts';
 import LoungeAudience from './LoungeAudience';
 import LoungeMedia from './LoungeMedia';
 type Catalog=ReturnType<typeof EventCatalogSchema.parse>;

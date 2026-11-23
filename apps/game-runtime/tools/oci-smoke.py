@@ -10,7 +10,7 @@ import uuid
 
 assert len(sys.argv) == 2 and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9./:@_-]+", sys.argv[1])
 image = sys.argv[1]
-name = "vl-runtime-smoke-" + uuid.uuid4().hex[:12]
+name = "aetheria-runtime-smoke-" + uuid.uuid4().hex[:12]
 facts = {"scope": "Local OCI foundation only; not hosted CI or gameplay readiness"}
 
 
@@ -52,9 +52,9 @@ try:
     assert live["gameplayEnabled"] is False and ready["reason"] == "GAMEPLAY_NOT_IMPLEMENTED"
     request(base, "/rt/v1", 404)
     request(base, "/health/live", 405, "POST")
-    docker("exec", name, "/usr/local/bin/vl-game-runtime", "--healthcheck")
+    docker("exec", name, "/usr/local/bin/aetheria-game-runtime", "--healthcheck")
     negative = docker("run", "--rm", "--network=none", "--read-only", "--cap-drop=ALL",
-                      "--security-opt=no-new-privileges", "-e", "VL_GAMEPLAY_ENABLED=1", image, check=False)
+                      "--security-opt=no-new-privileges", "-e", "AETHERIA_GAMEPLAY_ENABLED=1", image, check=False)
     assert negative.returncode != 0, "Unexpected gameplay activation"
     docker("stop", "--time=5", name)
     stopped = json.loads(docker("inspect", name).stdout)[0]["State"]

@@ -1,5 +1,5 @@
 {
-  "name": "@virtual-city/mobile",
+  "name": "@aetheria/mobile",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,18 +14,18 @@
     "cap": "cap"
   },
   "dependencies": {
-    "@virtual-city/contracts":"workspace:*",
-    "@virtual-city/scene3d":"workspace:*",
-    "@virtual-city/game-client": "workspace:*",
-    "@virtual-city/client-sdk": "workspace:*",
-    "@virtual-city/deadline-world": "workspace:*",
-    "@virtual-city/maid-world": "workspace:*",
+    "@aetheria/contracts":"workspace:*",
+    "@aetheria/scene3d":"workspace:*",
+    "@aetheria/game-client": "workspace:*",
+    "@aetheria/client-sdk": "workspace:*",
+    "@aetheria/deadline-world": "workspace:*",
+    "@aetheria/maid-world": "workspace:*",
     "@capacitor/core": "8.6.0",
     "@capacitor/android": "8.6.0",
     "@capacitor/app": "8.0.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "@virtual-city/pixi-scene": "workspace:*"
+    "@aetheria/pixi-scene": "workspace:*"
   },
   "devDependencies": {
     "@capacitor/cli": "8.6.0",

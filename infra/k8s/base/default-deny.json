@@ -2,15 +2,15 @@
   "apiVersion": "networking.k8s.io/v1",
   "kind": "NetworkPolicy",
   "metadata": {
-    "name": "vlp-default-deny",
+    "name": "aetheria-default-deny",
     "labels": {
-      "app.kubernetes.io/part-of": "virtual-life-platform"
+      "app.kubernetes.io/part-of": "aetheria-soulbound"
     }
   },
   "spec": {
     "podSelector": {
       "matchLabels": {
-        "app.kubernetes.io/part-of": "virtual-life-platform"
+        "app.kubernetes.io/part-of": "aetheria-soulbound"
       }
     },
     "policyTypes": [

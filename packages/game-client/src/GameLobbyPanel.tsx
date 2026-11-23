@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import {ApiErrorSchema,GameLobbyViewSchema,type GameLobbyView,type GameMode,type Me,type TravelSource} from '@virtual-city/contracts';
-import type {ClientPlatform} from '@virtual-city/client-sdk';
+import {ApiErrorSchema,GameLobbyViewSchema,type GameLobbyView,type GameMode,type Me,type TravelSource} from '@aetheria/contracts';
+import type {ClientPlatform} from '@aetheria/client-sdk';
 const modes:{id:GameMode;title:string;detail:string}[]=[{id:'lantern-colors',title:'Lantern Colors',detail:'2–6 players'},{id:'mask-and-tell',title:'Mask & Tell',detail:'3–6 players'},{id:'mistbound-routes',title:'Mistbound Routes',detail:'4–8 players'}];
 export function GameLobbyPanel({me,source,active=!!source,platform}:{me:Me;source:TravelSource|null;active?:boolean;platform:ClientPlatform}){
  const [view,setView]=useState<GameLobbyView|null>(null),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[mode,setMode]=useState<GameMode>('lantern-colors'),[consent,setConsent]=useState(false);

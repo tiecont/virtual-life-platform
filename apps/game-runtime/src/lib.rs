@@ -30,7 +30,7 @@ pub fn router() -> Router {
             get(|| async {
                 (
                     [("content-type", "application/json")],
-                    r#"{"status":"live","service":"vl-game-runtime","gameplayEnabled":false}"#,
+                    r#"{"status":"live","service":"aetheria-game-runtime","gameplayEnabled":false}"#,
                 )
             }),
         )

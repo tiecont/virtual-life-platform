@@ -5,7 +5,7 @@
   "createdAt": "2026-11-05T16:33:27.750168+00:00",
   "purpose": "Historical evidence byte retrieval, never fresh source acceptance",
   "remoteObservation": {
-    "repository": "tiecont/virtual-life-platform",
+    "repository": "tiecont/aetheria-soulbound",
     "private": true,
     "defaultBranch": "main",
     "observedAt": "2026-11-05T16:33:27.750188+00:00",

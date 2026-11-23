@@ -33,9 +33,9 @@ if (args.length === 1 && args[0] === 'authorize') {
   const checks = await verifiedFile(input, bundle.checks); assert.equal(checks.sourceRevision, bundle.sourceRevision); assert.equal(checks.result, 'PASS'); assert.equal(checks.cleanupComplete, true); for(const target of targets)assert.equal(checks[target+'Scenarios'],6);keys(checks.images,targets.join(','));
   await mkdir(output, {mode: 0o700});
   const save = async (file, bytes) => {await writeFile(resolve(output, file), bytes, {mode: 0o600, flag: 'wx'}); return {file, sha256: hash(bytes)};};
-  const manifest = {schemaVersion: bundle.schemaVersion, kind: rehearsal ? 'local-registry-rehearsal' : 'vlp-release-candidate', source: {repository, revision: bundle.sourceRevision}, quality: {runId: proof.runId, runAttempt: proof.runAttempt, workflow: proof.workflow, event: proof.event, branch: proof.branch}, artifacts: {}, compatibility: bundle.compatibility, promotion: {autoMerge: false, productionAutoPromotion: false, ownerRequired: true, publicRelease: false}, evidence: {quality: await save('quality-proof.json', jsonBytes(proof)), imageChecks: await save('image-checks.json', jsonBytes(checks))}, vulnerabilities: {status: 'NOT_RUN', promotionRequiresReview: true}};
+  const manifest = {schemaVersion: bundle.schemaVersion, kind: rehearsal ? 'local-registry-rehearsal' : 'aetheria-release-candidate', source: {repository, revision: bundle.sourceRevision}, quality: {runId: proof.runId, runAttempt: proof.runAttempt, workflow: proof.workflow, event: proof.event, branch: proof.branch}, artifacts: {}, compatibility: bundle.compatibility, promotion: {autoMerge: false, productionAutoPromotion: false, ownerRequired: true, publicRelease: false}, evidence: {quality: await save('quality-proof.json', jsonBytes(proof)), imageChecks: await save('image-checks.json', jsonBytes(checks))}, vulnerabilities: {status: 'NOT_RUN', promotionRequiresReview: true}};
   const provisional = globalThis.structuredClone(manifest);
-  for (const target of targets) provisional.artifacts[target] = {...bundle.schemaVersion===2?{sourceRevision:bundle.sourceRevision}:{},image: registry + '/vlp-' + target + '@sha256:' + '0'.repeat(64), localImageId: bundle.images[target].id, sbom: {file: target + '-sbom.cdx.json', sha256: '0'.repeat(64)}, provenance: {file: target + '-provenance.json', sha256: '0'.repeat(64)}};
+  for (const target of targets) provisional.artifacts[target] = {...bundle.schemaVersion===2?{sourceRevision:bundle.sourceRevision}:{},image: registry + '/aetheria-' + target + '@sha256:' + '0'.repeat(64), localImageId: bundle.images[target].id, sbom: {file: target + '-sbom.cdx.json', sha256: '0'.repeat(64)}, provenance: {file: target + '-provenance.json', sha256: '0'.repeat(64)}};
   validateManifest(provisional, {rehearsal});
   // Validate every payload before the first registry mutation.
   for (const target of targets) {
@@ -44,17 +44,17 @@ if (args.length === 1 && args[0] === 'authorize') {
     assert.equal(image.sbom.file, target + '-sbom.cdx.json'); const sbom = await verifiedFile(input, image.sbom); assert.equal(sbom.bomFormat, 'CycloneDX'); assert(sbom.components.length > 0);
     execFileSync('docker', ['load', '--input', archive], {timeout: 1200000, stdio: ['ignore', 'pipe', 'pipe']});
     const metadata = JSON.parse(execFileSync('docker', ['image', 'inspect', image.id], {encoding: 'utf8'}))[0];
-    assert.equal(metadata.Config.Labels['org.opencontainers.image.revision'], bundle.sourceRevision); assert.equal(metadata.Config.Labels['org.opencontainers.image.title'], 'vlp-' + target); assert.equal(metadata.Config.User, 'node');
+    assert.equal(metadata.Config.Labels['org.opencontainers.image.revision'], bundle.sourceRevision); assert.equal(metadata.Config.Labels['org.opencontainers.image.title'], 'aetheria-' + target); assert.equal(metadata.Config.User, 'node');
   }
   for (const target of targets) {
-    const image = bundle.images[target], name = registry + '/vlp-' + target, tag = name + ':sha-' + bundle.sourceRevision + '-run-' + proof.runId + '-' + proof.runAttempt;
+    const image = bundle.images[target], name = registry + '/aetheria-' + target, tag = name + ':sha-' + bundle.sourceRevision + '-run-' + proof.runId + '-' + proof.runAttempt;
     execFileSync('docker', ['tag', image.id, tag]); execFileSync('docker', ['push', tag], {timeout: 1200000, stdio: ['ignore', 'pipe', 'pipe']});
     const metadata = JSON.parse(execFileSync('docker', ['image', 'inspect', tag], {encoding: 'utf8'}))[0]; assert.equal(metadata.Id, image.id);
     const remote = JSON.parse(execFileSync('docker', ['buildx', 'imagetools', 'inspect', tag, '--format', '{{json .Manifest}}'], {encoding: 'utf8', timeout: 120000}));
     assert(digestPattern.test(remote.digest)); const reference = name + '@' + remote.digest;
     const sbom = await readFile(resolve(input, image.sbom.file)); assert.equal(hash(sbom), image.sbom.sha256);
     const descriptor = await save(target + '-sbom.cdx.json', sbom);
-    const provenance = {_type: 'https://in-toto.io/Statement/v1', subject: [{name, digest: {sha256: remote.digest.slice(7)}}], predicateType: 'https://github.com/tiecont/virtual-life-platform/provenance/v1', predicate: {source: manifest.source, quality: manifest.quality, compatibility: manifest.compatibility, imageId: image.id, sbomSha256: descriptor.sha256, checksSha256: manifest.evidence.imageChecks.sha256, signed: false}};
+    const provenance = {_type: 'https://in-toto.io/Statement/v1', subject: [{name, digest: {sha256: remote.digest.slice(7)}}], predicateType: 'https://github.com/tiecont/aetheria-soulbound/provenance/v1', predicate: {source: manifest.source, quality: manifest.quality, compatibility: manifest.compatibility, imageId: image.id, sbomSha256: descriptor.sha256, checksSha256: manifest.evidence.imageChecks.sha256, signed: false}};
     manifest.artifacts[target] = {...bundle.schemaVersion===2?{sourceRevision:bundle.sourceRevision}:{},image: reference, localImageId: image.id, sbom: descriptor, provenance: await save(target + '-provenance.json', jsonBytes(provenance))};
   }
   await save('release.json', jsonBytes(manifest));

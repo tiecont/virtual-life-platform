@@ -32,7 +32,7 @@
     {
       "id": "icarus-study-fbx",
       "kind": "model",
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/icarus-study.fbx",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/icarus-study.fbx",
       "sha256": "f9fe114cd53ba29b39a51285df27da33f3dd8bfd8480d05eaa804d3c46c345db",
       "source": {
         "path": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",
@@ -68,7 +68,7 @@
     {
       "id": "icarus-review-prefab",
       "kind": "prefab",
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/IcarusStudy.prefab",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/IcarusStudy.prefab",
       "sha256": "865d84ba4ea7f06b6c4b541772a424515dac2b74430f06956be745e04c51ad90",
       "source": {
         "path": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",
@@ -86,7 +86,7 @@
     {
       "id": "icarus-review-controller",
       "kind": "controller",
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/IcarusStudy.controller",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/IcarusStudy.controller",
       "sha256": "5e46817bcf212add78806f15893e81cba8f8764d7cdd9b072304ac98d0cd99b1",
       "source": {
         "path": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",
@@ -104,7 +104,7 @@
     {
       "id": "icarus-review-skin-hair",
       "kind": "material",
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/SkinHair.mat",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/SkinHair.mat",
       "sha256": "6803ee1730c15de16f70ebfbe3fdc60d8a68b92ebea3313e37a545c526989050",
       "source": {
         "path": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",
@@ -122,7 +122,7 @@
     {
       "id": "icarus-review-feather-silk",
       "kind": "material",
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/FeatherSilk.mat",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/FeatherSilk.mat",
       "sha256": "bdcfa519809eb0b9354512a935ec6810e29c1b816362f6552ecde3ff41353088",
       "source": {
         "path": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",
@@ -140,7 +140,7 @@
     {
       "id": "icarus-review-ornament",
       "kind": "material",
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/Ornament.mat",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/Ornament.mat",
       "sha256": "c17e666dad58777c54a4e8ffd4eabf3d2719ad5d6b39fa7d7385aed634896e85",
       "source": {
         "path": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",

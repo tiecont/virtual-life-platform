@@ -1,6 +1,6 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
-import { StudySharingStateSchema,StudyViewSchema,type Me,type StudyView,type StudySharingState,type TravelSource } from '@virtual-city/contracts';
+import { StudySharingStateSchema,StudyViewSchema,type Me,type StudyView,type StudySharingState,type TravelSource } from '@aetheria/contracts';
 type Pending={key:string;body:unknown};
 export default function StudyProgress({me,eventId,source}:{me:Me;eventId:string;source:TravelSource|null}){
  const [view,setView]=useState<StudyView|null>(null),[state,setState]=useState<StudySharingState|null>(null),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[retry,setRetry]=useState(false);

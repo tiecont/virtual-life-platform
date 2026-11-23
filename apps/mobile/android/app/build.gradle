@@ -17,11 +17,11 @@ if (nativeTestCa) {
         doLast {
             def destination = nativeTrustDir.get().asFile
             new File(destination, 'raw').mkdirs(); new File(destination, 'xml').mkdirs()
-            new File(destination, 'raw/vlp_native_test_ca.pem').bytes = ca.bytes
+            new File(destination, 'raw/aetheria_native_test_ca.pem').bytes = ca.bytes
             new File(destination, 'xml/native_network_security.xml').text = '''<?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
   <base-config cleartextTrafficPermitted="false"><trust-anchors><certificates src="system" /></trust-anchors></base-config>
-  <domain-config cleartextTrafficPermitted="false"><domain includeSubdomains="false">localhost</domain><trust-anchors><certificates src="system" /><certificates src="@raw/vlp_native_test_ca" /></trust-anchors></domain-config>
+  <domain-config cleartextTrafficPermitted="false"><domain includeSubdomains="false">localhost</domain><trust-anchors><certificates src="system" /><certificates src="@raw/aetheria_native_test_ca" /></trust-anchors></domain-config>
 </network-security-config>
 '''
         }
@@ -32,10 +32,10 @@ if (nativeTestCa) {
 android {
     if (nativeTestCa) { sourceSets.debug.res.srcDir(nativeTrustDir) }
     buildFeatures { buildConfig = true }
-    namespace = "life.virtualcity.spike"
+    namespace = "life.aetheriasoulbound.spike"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "life.virtualcity.spike"
+        applicationId "life.aetheriasoulbound.spike"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

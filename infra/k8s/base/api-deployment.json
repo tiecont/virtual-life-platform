@@ -2,10 +2,10 @@
   "apiVersion": "apps/v1",
   "kind": "Deployment",
   "metadata": {
-    "name": "vlp-api",
+    "name": "aetheria-api",
     "labels": {
-      "app.kubernetes.io/part-of": "virtual-life-platform",
-      "app.kubernetes.io/name": "vlp-api"
+      "app.kubernetes.io/part-of": "aetheria-soulbound",
+      "app.kubernetes.io/name": "aetheria-api"
     }
   },
   "spec": {
@@ -17,19 +17,19 @@
     },
     "selector": {
       "matchLabels": {
-        "app.kubernetes.io/part-of": "virtual-life-platform",
-        "app.kubernetes.io/name": "vlp-api"
+        "app.kubernetes.io/part-of": "aetheria-soulbound",
+        "app.kubernetes.io/name": "aetheria-api"
       }
     },
     "template": {
       "metadata": {
         "labels": {
-          "app.kubernetes.io/part-of": "virtual-life-platform",
-          "app.kubernetes.io/name": "vlp-api"
+          "app.kubernetes.io/part-of": "aetheria-soulbound",
+          "app.kubernetes.io/name": "aetheria-api"
         }
       },
       "spec": {
-        "serviceAccountName": "vlp-runtime",
+        "serviceAccountName": "aetheria-runtime",
         "automountServiceAccountToken": false,
         "enableServiceLinks": false,
         "hostNetwork": false,
@@ -39,7 +39,7 @@
         },
         "imagePullSecrets": [
           {
-            "name": "vlp-registry-pull"
+            "name": "aetheria-registry-pull"
           }
         ],
         "terminationGracePeriodSeconds": 20,
@@ -55,7 +55,7 @@
         "containers": [
           {
             "name": "api",
-            "image": "registry.invalid/vlp-api:release-required",
+            "image": "registry.invalid/aetheria-api:release-required",
             "imagePullPolicy": "Always",
             "command": [
               "node",
@@ -88,7 +88,7 @@
                 "name": "WEB_ORIGIN",
                 "valueFrom": {
                   "configMapKeyRef": {
-                    "name": "vlp-runtime",
+                    "name": "aetheria-runtime",
                     "key": "WEB_ORIGIN"
                   }
                 }
@@ -97,7 +97,7 @@
                 "name": "TRUSTED_PROXY_IP",
                 "valueFrom": {
                   "configMapKeyRef": {
-                    "name": "vlp-runtime",
+                    "name": "aetheria-runtime",
                     "key": "TRUSTED_PROXY_IP"
                   }
                 }
@@ -106,28 +106,28 @@
                 "name": "RELEASE_ENVIRONMENT",
                 "valueFrom": {
                   "configMapKeyRef": {
-                    "name": "vlp-runtime",
+                    "name": "aetheria-runtime",
                     "key": "RELEASE_ENVIRONMENT"
                   }
                 }
               },
               {
                 "name": "RELEASE_POLICY_FILE",
-                "value": "/run/vlp-policy/release.json"
+                "value": "/run/aetheria-policy/release.json"
               },
               {
                 "name": "RUNTIME_WORLD_POLICY_FILE",
-                "value": "/run/vlp-policy/runtime-worlds.json"
+                "value": "/run/aetheria-policy/runtime-worlds.json"
               },
               {
                 "name": "SAFETY_POLICY_FILE",
-                "value": "/run/vlp-policy/safety.json"
+                "value": "/run/aetheria-policy/safety.json"
               },
               {
                 "name": "DATABASE_URL",
                 "valueFrom": {
                   "secretKeyRef": {
-                    "name": "vlp-runtime-secrets",
+                    "name": "aetheria-runtime-secrets",
                     "key": "DATABASE_URL"
                   }
                 }
@@ -136,7 +136,7 @@
                 "name": "SESSION_SECRET",
                 "valueFrom": {
                   "secretKeyRef": {
-                    "name": "vlp-runtime-secrets",
+                    "name": "aetheria-runtime-secrets",
                     "key": "SESSION_SECRET"
                   }
                 }
@@ -145,7 +145,7 @@
                 "name": "SAFETY_EVIDENCE_KEY",
                 "valueFrom": {
                   "secretKeyRef": {
-                    "name": "vlp-runtime-secrets",
+                    "name": "aetheria-runtime-secrets",
                     "key": "SAFETY_EVIDENCE_KEY",
                     "optional": true
                   }
@@ -214,7 +214,7 @@
               },
               {
                 "name": "policy",
-                "mountPath": "/run/vlp-policy",
+                "mountPath": "/run/aetheria-policy",
                 "readOnly": true
               }
             ]
@@ -230,7 +230,7 @@
           {
             "name": "policy",
             "configMap": {
-              "name": "vlp-installation-policy",
+              "name": "aetheria-installation-policy",
               "items": [
                 {
                   "key": "release.json",

@@ -14,7 +14,7 @@ export async function packageApiRuntime(sourceRoot, destination) {
     if (entry.isDirectory()) sourcePackages.add(await realpath(resolve(sourceRoot, folder, entry.name)));
   }
   const api = resolve(sourceRoot, 'apps/platform-api');
-  assert.equal(JSON.parse(await readFile(resolve(api, 'package.json'))).name, '@virtual-city/platform-api');
+  assert.equal(JSON.parse(await readFile(resolve(api, 'package.json'))).name, '@aetheria/platform-api');
   await mkdir(destination); // New output only; never replace an existing artifact.
   const packages = new Map(), records = [];
   async function removeTests(directory) {
@@ -54,7 +54,7 @@ export async function packageApiRuntime(sourceRoot, destination) {
       await cp(resolve(source, 'dist'), resolve(target, 'dist'), {recursive: true});
       await removeTests(resolve(target, 'dist'));
     } else {
-      assert(!manifest.name.startsWith('@virtual-city/'), 'Unrecognized first-party package');
+      assert(!manifest.name.startsWith('@aetheria/'), 'Unrecognized first-party package');
       await cp(source, target, {recursive: true, filter: file => file !== resolve(source, 'node_modules')});
     }
     const dependencies = new Map(Object.keys(manifest.dependencies ?? {}).map(name => [name, false]));

@@ -9,7 +9,7 @@ import {migrationSetDigest,resolveSchemaCompatibility} from '../../apps/platform
 import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
 let admin:Pool;const opened:{pool:Pool;schema:string;directory:string;apps:Awaited<ReturnType<typeof createApp>>[]}[]=[];
-beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))||url.search||url.hash)throw Error('Disposable local DB required');admin=new Pool({connectionString:url.toString()});});
+beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))||url.search||url.hash)throw Error('Disposable local DB required');admin=new Pool({connectionString:url.toString()});});
 afterEach(async()=>{for(const r of opened.splice(0)){for(const app of r.apps)await app.app.close();await r.pool.end();await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`);await rm(r.directory,{recursive:true,force:true});}});
 afterAll(async()=>{await admin.end();});
 async function fixture(){

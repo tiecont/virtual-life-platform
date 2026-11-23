@@ -1,4 +1,4 @@
-import { EventCatalogSchema } from '@virtual-city/contracts';
+import { EventCatalogSchema } from '@aetheria/contracts';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import type { RoomService } from '../../../../rooms/modules/presence/application/service';
 import type { EventService } from '../../../../events/modules/calendar/application/service';

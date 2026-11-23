@@ -2,7 +2,7 @@
 
 The runtime is default-off. NestJS keeps identity, admission, safety and the
 platform ledger; legacy rooms continue through Nest RoomAuthority. This binary
-uses the existing single-writer `vl-persistence::Host` for both native rulesets.
+uses the existing single-writer `aetheria-persistence::Host` for both native rulesets.
 It never migrates the database or grants platform rewards.
 
 The isolated Linux process suites are reproducible without Unity:
@@ -10,8 +10,8 @@ The isolated Linux process suites are reproducible without Unity:
 ```sh
 pnpm install --frozen-lockfile
 pnpm build:packages
-pnpm --filter @virtual-city/platform-api build
-cargo build --locked --package vl-game-runtime
+pnpm --filter @aetheria/platform-api build
+cargo build --locked --package aetheria-game-runtime
 node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay
 node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena
 node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena-loss
@@ -22,8 +22,8 @@ a loopback Nest HTTPS/WSS gateway and an actual Rust process. Facts and private
 fixture material stay under ignored `artifacts/`. These are developer tests,
 not a production activation or Unity player qualification.
 
-For a reviewed local allocator, the existing explicit `VL_GAMEPLAY_ENABLED=1`,
-`VL_GAMEPLAY_CONFIG` and `VL_GAME_DATABASE_URL` configuration is required. The
+For a reviewed local allocator, the existing explicit `AETHERIA_GAMEPLAY_ENABLED=1`,
+`AETHERIA_GAMEPLAY_CONFIG` and `AETHERIA_GAME_DATABASE_URL` configuration is required. The
 upstream bind must be loopback behind trusted TLS. The configuration file is
 private: it includes the exact world, leased logical boot, match UUID, player
 UUID, ticket public keys, PostgreSQL CA and role, HTTPS origin, engine digest,
@@ -50,13 +50,13 @@ for the remaining account export/erasure and restore-after-deletion requirements
 of VL-055.
 
 The `headless-counter` ruleset remains a synthetic three-turn transport fixture.
-The `pet-arena-pve` ruleset runs the pinned `vl-pet-arena::combat::Combat` reducer.
+The `pet-arena-pve` ruleset runs the pinned `aetheria-pet-arena::combat::Combat` reducer.
 It additionally requires server-selected `pet` (0–7) and `stage` (0–5). The client
 cannot select those fields or supply entropy, damage, outcomes or reward values.
 Obtain its adapter content hash with:
 
 ```sh
-artifacts/rust/target/debug/vl-game-runtime --ruleset-content-hash pet-arena-pve
+artifacts/rust/target/debug/aetheria-game-runtime --ruleset-content-hash pet-arena-pve
 ```
 
 Use that exact hash for the allocator and scoped ticket configuration. The

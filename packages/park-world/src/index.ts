@@ -1,5 +1,5 @@
-import { SceneManifestSchema } from '@virtual-city/contracts';
-import { defineWorld,WorldError } from '@virtual-city/world-sdk';
+import { SceneManifestSchema } from '@aetheria/contracts';
+import { defineWorld,WorldError } from '@aetheria/world-sdk';
 
 export const parkWorldVersion='1.1.0';
 export const parkScene=SceneManifestSchema.parse({

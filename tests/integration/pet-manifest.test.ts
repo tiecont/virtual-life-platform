@@ -3,14 +3,14 @@ import {Pool,type PoolClient} from 'pg';
 import {randomUUID,randomBytes} from 'node:crypto';
 import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 import {PetManifestStore,petManifestHash} from '../../apps/platform-api/src/features/pets/modules/content/infrastructure/manifest-store';
-import {PetContentManifestV3Schema,PetMatchContentPinV3Schema} from '@virtual-city/contracts';
+import {PetContentManifestV3Schema,PetMatchContentPinV3Schema} from '@aetheria/contracts';
 import {petManifestFixture} from '../support/pet-manifest-fixture';
 import {petDesignDraft} from '../../scripts/pet-content-draft-seed.mjs';
 async function fixture(){return petManifestFixture(await petDesignDraft());}
 
 const schema='pet_manifest_'+randomUUID().replaceAll('-','');let admin:Pool,pool:Pool,store:PetManifestStore;
 beforeAll(async()=>{
- const url=new URL(process.env.TEST_DATABASE_URL!);if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test/.test(url.pathname.slice(1)))throw Error('Disposable local DB required');
+ const url=new URL(process.env.TEST_DATABASE_URL!);if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test/.test(url.pathname.slice(1)))throw Error('Disposable local DB required');
  admin=new Pool({connectionString:url.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);url.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:url.toString()});await Promise.all([migrate(pool),migrate(pool)]);store=new PetManifestStore(pool);
 });
 afterAll(async()=>{await pool?.end();if(admin){await admin.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);await admin.end();}});

@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
-import {LimitedPetVisualDraftSchema} from '@virtual-city/contracts';
+import {LimitedPetVisualDraftSchema} from '@aetheria/contracts';
 import {readLimitedPetCatalog,createMissingLimitedPetVisualDraft,verifyLimitedPetAssetFiles} from '../../scripts/pet-limited-asset-check.mjs';
 
 const catalog=await readLimitedPetCatalog();

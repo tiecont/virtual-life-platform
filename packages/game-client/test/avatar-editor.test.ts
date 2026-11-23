@@ -1,6 +1,6 @@
 import {it,expect,vi} from 'vitest';
 import {randomUUID} from 'node:crypto';
-import {AVATAR_CATALOG_VERSION,starterAvatarParts,type AvatarOwnState,type AvatarSaveResult} from '@virtual-city/contracts';
+import {AVATAR_CATALOG_VERSION,starterAvatarParts,type AvatarOwnState,type AvatarSaveResult} from '@aetheria/contracts';
 import {AvatarEditor,AvatarStoreError,type AvatarStorePort} from '../src/avatar-editor';
 const state=():AvatarOwnState=>({schemaVersion:2,catalogVersion:AVATAR_CATALOG_VERSION,accountId:randomUUID(),revision:0,selected:starterAvatarParts(),effective:starterAvatarParts(),canEquipApron:false});
 it('reuses the exact request key and body after lost ACK and accepts a receipt with newer current state',async()=>{const own=state(),key=randomUUID(),saved={...own,revision:2,selected:starterAvatarParts('mint','rabbit')},save=vi.fn<AvatarStorePort['save']>().mockRejectedValueOnce(Error('lost ACK')).mockResolvedValueOnce({schemaVersion:2,requestId:key,savedRevision:1,state:saved}),editor=new AvatarEditor(own.accountId,{read:async()=>own,save},()=>key);await editor.load();editor.change('species','dog');editor.change('ears','upright');await editor.save();expect(editor.view.phase).toBe('uncertain');editor.change('fur','rose');await editor.save();expect(save.mock.calls[0]).toEqual(save.mock.calls[1]);expect(editor.view.draft?.species).toBe('rabbit');expect(editor.view.state?.revision).toBe(2);});

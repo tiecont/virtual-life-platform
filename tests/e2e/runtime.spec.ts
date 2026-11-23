@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {randomUUID} from 'node:crypto';
 import {io} from 'socket.io-client';
-import {RoomAckSchema} from '@virtual-city/contracts';
+import {RoomAckSchema} from '@aetheria/contracts';
 import {totp} from '../../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto';
 test('operator maintenance ejects an actual visit, keeps unentitled worlds closed and recovery requires a new visit',async({page,request})=>{
  const api='http://127.0.0.1:4300',origin='http://127.0.0.1:3300',guest=await request.post(api+'/v1/session/guest',{headers:{origin},data:{requestId:randomUUID(),displayName:'Runtime browser visitor',avatarKey:'mint'}});expect(guest.status()).toBe(201);const me=await guest.json(),cookie=guest.headers()['set-cookie'].split(';')[0];

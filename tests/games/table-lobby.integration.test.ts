@@ -2,14 +2,14 @@ import {beforeAll,afterAll,beforeEach,afterEach,it,expect} from 'vitest';
 import {Pool} from 'pg';
 import {randomUUID} from 'node:crypto';
 import {io,type Socket} from 'socket.io-client';
-import {MeSchema,RoomAckSchema,GameLobbyViewSchema,TravelAckSchema,type RoomSnapshot,type GameMode} from '@virtual-city/contracts';
+import {MeSchema,RoomAckSchema,GameLobbyViewSchema,TravelAckSchema,type RoomSnapshot,type GameMode} from '@aetheria/contracts';
 import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
 import {createApp} from '../../apps/platform-api/src/app';
 import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 let admin:Pool,pool:Pool,app:Awaited<ReturnType<typeof createApp>>,url:string,database:string,serial=0;const clients:Socket[]=[],origin='http://127.0.0.1:3300',schema='lodge_'+randomUUID().replaceAll('-','');
 const config=(enabled=true)=>readConfig({NODE_ENV:'test',DATABASE_URL:database,SESSION_SECRET:'local-lodge-integration-secret-'.repeat(2),...(enabled?{LOCAL_LANTERN_LODGE_WORLD:'1',LOCAL_GAME_LOBBY:'1'}:{})});
 async function open(enabled=true){app=await createApp(config(enabled),pool,false,{safety:{enabled:true}});await app.app.listen(0,'127.0.0.1');url=await app.app.getUrl();}
-beforeAll(async()=>{const target=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(target.hostname)||!/^virtual_city_test(?:_|$)/.test(target.pathname.slice(1)))throw Error('Disposable local test database required');admin=new Pool({connectionString:target.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);target.searchParams.set('options','-c search_path='+schema);database=target.toString();pool=new Pool({connectionString:database});await migrate(pool);});
+beforeAll(async()=>{const target=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(target.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(target.pathname.slice(1)))throw Error('Disposable local test database required');admin=new Pool({connectionString:target.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);target.searchParams.set('options','-c search_path='+schema);database=target.toString();pool=new Pool({connectionString:database});await migrate(pool);});
 beforeEach(async()=>open());
 afterEach(async()=>{for(const client of clients.splice(0))client.close();await app?.app.close();await pool.query("DELETE FROM safety_incident_controls WHERE world_slug='lantern-lodge'");});
 afterAll(async()=>{await pool?.end();if(admin){await admin.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);await admin.end();}});

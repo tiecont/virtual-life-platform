@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { WorldDefinitionSchema, type WorldDefinition, type WorldInvocation } from '@virtual-city/contracts';
+import { WorldDefinitionSchema, type WorldDefinition, type WorldInvocation } from '@aetheria/contracts';
 import { WorldRegistry, defineWorld, createSandboxWorld, type WorldHooks, type WorldPorts } from '../src';
 
 const definition: WorldDefinition = {

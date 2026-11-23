@@ -15,7 +15,7 @@ assert([admin, api].every(value => /^sha256:[a-f0-9]{64}$/.test(value)));
 assert(directory.startsWith(resolve('artifacts') + sep + 'image-admin-') && directory.endsWith('/smoke'));
 const expectedMigrations = (await readdir(resolve(contextRoot, 'apps/platform-api/src/shared/database/migrations'))).filter(name => name.endsWith('.sql')).length;
 const {run: execute, save, commands, signal, dispose} = await imageTestTools(directory);
-const project = 'virtual-city-admin-image-' + randomUUID().slice(0, 8), sockets = new Set();
+const project = 'aetheria-soulbound-admin-image-' + randomUUID().slice(0, 8), sockets = new Set();
 let stage = 'prepare', browser, started = false, cert, probe;
 const facts = {taskId: 'N03-05', apiImage: api, adminImage: admin, publicRelease: false, scenarios: [], browserDiagnostics: []};
 const run = (command, values, options = {}) => execute(stage, command, values, options);
@@ -163,7 +163,7 @@ finally {
   stage = 'cleanup'; for (const socket of sockets) socket.close(); await browser?.close().catch(() => {});
   let cleaned = true;
   if (probe) {const removed = await run('docker', ['rm', '--force', probe], {allowFailure: true, ignoreCancellation: true, timeout: 10000}); if (removed.code !== 0 && !/No such container/.test(removed.stderr)) cleaned = false;}
-  if (started) {assert(project.startsWith('virtual-city-admin-image-')); const removed = await compose(['down', '--volumes', '--remove-orphans', '--timeout', '5'], {allowFailure: true, ignoreCancellation: true, timeout: 60000}); cleaned &&= removed.code === 0;}
+  if (started) {assert(project.startsWith('aetheria-soulbound-admin-image-')); const removed = await compose(['down', '--volumes', '--remove-orphans', '--timeout', '5'], {allowFailure: true, ignoreCancellation: true, timeout: 60000}); cleaned &&= removed.code === 0;}
   await Promise.all([envFile, values.IMAGE_TLS_CERT, values.IMAGE_TLS_KEY].map(path => rm(path, {force: true})));
   facts.cleanupComplete = cleaned; facts.generatedSecretsRemoved = true;
   if (!cleaned) {facts.result = 'FAIL'; process.exitCode = 1;}

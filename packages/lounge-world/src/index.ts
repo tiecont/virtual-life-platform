@@ -1,5 +1,5 @@
-import { SceneManifestSchema,HospitalityPolicySchema } from '@virtual-city/contracts';
-import { defineWorld,WorldError } from '@virtual-city/world-sdk';
+import { SceneManifestSchema,HospitalityPolicySchema } from '@aetheria/contracts';
+import { defineWorld,WorldError } from '@aetheria/world-sdk';
 // Original all-ages text/visual venue. The closed stage is a solid collision
 // region,not an audience seat or a role granted by scene presentation.
 export const loungeScene=SceneManifestSchema.parse({schemaVersion:1,key:'lounge',version:'1.0.0',projection:'orthogonal',tileSize:40,columns:24,rows:16,spawn:{x:12,y:13},collisionZones:[

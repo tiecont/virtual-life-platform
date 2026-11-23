@@ -1,6 +1,6 @@
 'use client';
 import { useEffect,useRef,useState,useId,type FormEvent } from 'react';
-import { FriendsPageSchema,InvitationReceiptSchema,type FriendsPage,type Me,type TravelDestination } from '@virtual-city/contracts';
+import { FriendsPageSchema,InvitationReceiptSchema,type FriendsPage,type Me,type TravelDestination } from '@aetheria/contracts';
 export default function RoomInvitation({me,destination,place='study',active=true,purpose='focus'}:{purpose?:'focus'|'social';me:Me;destination:TravelDestination;place?:'study'|'cafe';active?:boolean}){
  const friendId=useId();
  const currentActive=useRef(active);currentActive.current=active;

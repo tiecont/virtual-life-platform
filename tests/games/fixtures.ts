@@ -1,5 +1,5 @@
-import type {GameMode,GameCommand,GamePrivateState} from '@virtual-city/contracts';
-import type {GameState,GameModeRules,GameTransition,GameDecisionContext,ReadonlyGameState} from '@virtual-city/boardgame-core';
+import type {GameMode,GameCommand,GamePrivateState} from '@aetheria/contracts';
+import type {GameState,GameModeRules,GameTransition,GameDecisionContext,ReadonlyGameState} from '@aetheria/boardgame-core';
 export const id=(number:number)=>'a1000000-0000-4000-8000-'+String(number).padStart(12,'0');
 // Synthetic foundation adapters only. These do NOT implement or qualify the
 // actual Color/Mask/Routes rules,deals,seeds,card conservation or balance.

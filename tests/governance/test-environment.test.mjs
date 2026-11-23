@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { testEnvironment,validateTestDatabaseURL } from '../../scripts/test-environment.mjs';
-const url='postgresql://virtual_city_test:synthetic@127.0.0.1:5432/virtual_city_test';
+const url='postgresql://aetheria_soulbound_test:synthetic@127.0.0.1:5432/aetheria_soulbound_test';
 test('database target rejects remote/non-test/scheme/query overrides without echoing credentials',()=>{
- assert.equal(validateTestDatabaseURL(url),url);assert.doesNotThrow(()=>validateTestDatabaseURL('postgresql://test:synthetic@[::1]/virtual_city_test_job1'));
- for(const value of [url+'?host=elsewhere',url+'?options=-csearch_path=public',url+'#fragment',url.replace('127.0.0.1','example.invalid'),url.replace(/virtual_city_test$/,'real_database'),url.replace('postgresql:','http:'),'private-secret-invalid-url'])assert.throws(()=>validateTestDatabaseURL(value),error=>!error.message.includes('synthetic')&&!error.message.includes('private-secret'));
+ assert.equal(validateTestDatabaseURL(url),url);assert.doesNotThrow(()=>validateTestDatabaseURL('postgresql://test:synthetic@[::1]/aetheria_soulbound_test_job1'));
+ for(const value of [url+'?host=elsewhere',url+'?options=-csearch_path=public',url+'#fragment',url.replace('127.0.0.1','example.invalid'),url.replace(/aetheria_soulbound_test$/,'real_database'),url.replace('postgresql:','http:'),'private-secret-invalid-url'])assert.throws(()=>validateTestDatabaseURL(value),error=>!error.message.includes('synthetic')&&!error.message.includes('private-secret'));
 });
 test('fixture environment uses independent keys and excludes inherited runtime,PG and preload state',()=>{
  const parent={PATH:'/synthetic/tools',HOME:'/synthetic/home',SESSION_SECRET:'private-parent-marker',SAFETY_EVIDENCE_KEY:'private-parent-marker',DATING_PROFILE_KEY:'private-parent-marker',OPERATOR_TELEMETRY_TOKEN:'private-parent-marker',PGHOST:'elsewhere',PGOPTIONS:'private-parent-marker',NODE_OPTIONS:'private-parent-marker',WORLD_FLAGS_FILE:'private-parent-marker',UNEXPECTED_PRIVATE_VALUE:'private-parent-marker',NODE_ENV:'production',TZ:'Asia/Ho_Chi_Minh'},a=testEnvironment(parent,url,'synthetic'),b=testEnvironment(parent,url,'synthetic');
@@ -15,7 +15,7 @@ test('only explicit finite test fixtures/report scopes survive environment filte
  for(const parent of [{BROWSER_DATING_PROFILE:'unreviewed'},{BROWSER_REPORT_SCOPE:'../../private'},{PLAYWRIGHT_HTML_OUTPUT_DIR:'/private/report'},{ROOM_LOAD_SOCKETS:'1000'}])assert.throws(()=>testEnvironment(parent,url,'synthetic'));
 });
 test('UX fixtures propagate only a bounded layout mode and opaque run id',()=>{
- const a=testEnvironment({UX_SHELL_MODE:'scene-first',UX_EVIDENCE_RUN:'a1b2c3d4',NEXT_PUBLIC_VLP_SCENE_FIRST:'1',UNEXPECTED_PRIVATE_VALUE:'private-parent-marker'},url,'synthetic');assert.equal(a.UX_SHELL_MODE,'scene-first');assert.equal(a.UX_EVIDENCE_RUN,'a1b2c3d4');assert.equal(a.NEXT_PUBLIC_VLP_SCENE_FIRST,undefined);assert(!JSON.stringify(a).includes('private-parent-marker'));
+ const a=testEnvironment({UX_SHELL_MODE:'scene-first',UX_EVIDENCE_RUN:'a1b2c3d4',NEXT_PUBLIC_AETHERIA_SCENE_FIRST:'1',UNEXPECTED_PRIVATE_VALUE:'private-parent-marker'},url,'synthetic');assert.equal(a.UX_SHELL_MODE,'scene-first');assert.equal(a.UX_EVIDENCE_RUN,'a1b2c3d4');assert.equal(a.NEXT_PUBLIC_AETHERIA_SCENE_FIRST,undefined);assert(!JSON.stringify(a).includes('private-parent-marker'));
  for(const parent of [{UX_SHELL_MODE:'arbitrary'},{UX_EVIDENCE_RUN:'../../outside'},{UX_EVIDENCE_RUN:'a1b2c3d4/extra'}])assert.throws(()=>testEnvironment(parent,url,'synthetic'));
 });
 

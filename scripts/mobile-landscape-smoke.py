@@ -1,7 +1,7 @@
 """Own-app physical landscape/keyboard/panel check; not native auth or N10-04 spike."""
 from pathlib import Path
 import datetime,hashlib,json,os,re,struct,subprocess,time,uuid,xml.etree.ElementTree as ET
-app='life.virtualcity.spike';adb=os.environ.get('ADB_PATH')
+app='life.aetheriasoulbound.spike';adb=os.environ.get('ADB_PATH')
 if not adb or not Path(adb).is_file():raise SystemExit('Set ADB_PATH to the reviewed ADB executable')
 output=Path('artifacts')/('mobile-landscape-'+uuid.uuid4().hex[:8]);output.mkdir(mode=0o700)
 r=subprocess.run([adb,'devices','-l'],capture_output=True,timeout=10);(output/'devices.log').write_bytes(r.stdout+r.stderr)
@@ -20,7 +20,7 @@ def has(nodes,text):return any(label(n)==text for n in nodes)
 def snapshot(name,expected,image=True):
  deadline=time.monotonic()+30
  for attempt in range(4):
-  focus();temporary='/data/local/tmp/vlp-landscape-'+uuid.uuid4().hex+'.xml';nodes=[];rotation=None
+  focus();temporary='/data/local/tmp/aetheria-landscape-'+uuid.uuid4().hex+'.xml';nodes=[];rotation=None
   try:
    dumped=run('dump-'+name,['shell','uiautomator','dump',temporary],allow_error=True)
    if not dumped.returncode:

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useId, useRef, useState } from 'react';
-import { ReportReceiptSchema, ReportStatusSchema, type Me, type RoomSnapshot } from '@virtual-city/contracts';
+import { ReportReceiptSchema, ReportStatusSchema, type Me, type RoomSnapshot } from '@aetheria/contracts';
 
 const categories = [['harassment', 'Harassment'], ['hate', 'Hate or discrimination'], ['threats', 'Threats'], ['sexual-content', 'Sexual content'], ['child-safety', 'Child safety'], ['privacy', 'Privacy'], ['impersonation', 'Impersonation'], ['spam', 'Spam'], ['media-rights', 'Media rights'], ['staff-abuse', 'Staff abuse'], ['consent-violation', 'Consent violation'], ['self-harm', 'Self-harm concern']] as const;
 class SafetyRequestError extends Error {}

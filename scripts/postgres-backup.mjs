@@ -6,7 +6,7 @@ import { performance } from 'node:perf_hooks';
 import { dirname,resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { pathToFileURL } from 'node:url';
-const MAGIC=Buffer.from('VLCB1\0'),MAX=64*1024*1024,HEADER=MAGIC.length+12+16;
+const MAGIC=Buffer.from('AECB1\0'),MAX=64*1024*1024,HEADER=MAGIC.length+12+16;
 const fail=()=>Error('Private Postgres operation unavailable');
 export function sealArchive(plain,key){
  if(!Buffer.isBuffer(plain)||plain.length>MAX||key.length!==32)throw fail();
@@ -24,8 +24,8 @@ async function privateFile(path,max){
 }
 async function keyFile(path){const raw=await privateFile(path,128),value=raw.toString('utf8').trim();raw.fill(0);if(!/^[a-f0-9]{64}$/.test(value))throw fail();return Buffer.from(value,'hex');}
 export function validateTarget(project,service,restoring=false){
- if(!/^virtual-(?:life|city)-[a-z0-9-]{1,64}$/.test(project)||!/^[a-z][a-z0-9-]{0,31}$/.test(service))throw fail();
- if(restoring&&(!/^virtual-city-backup-test-[a-f0-9]{8}$/.test(project)||service!=='restore'))throw fail();
+ if(!/^aetheria-soulbound-[a-z0-9-]{1,64}$/.test(project)||!/^[a-z][a-z0-9-]{0,31}$/.test(service))throw fail();
+ if(restoring&&(!/^aetheria-soulbound-backup-test-[a-f0-9]{8}$/.test(project)||service!=='restore'))throw fail();
 }
 export function validateDockerEndpoint(host){if(typeof host!=='string'||!host.startsWith('unix:///'))throw fail();}
 async function docker(args,input,max=MAX){
@@ -70,7 +70,7 @@ export async function restorePostgres({project,service='restore',keyPath,input})
   // Authentication finishes before container lookup,emptiness check or SQL.
   plain=openArchive(await privateFile(input,MAX+HEADER),key);if(!plain.subarray(0,5).equals(Buffer.from('PGDMP')))throw fail();
   const id=await container(project,service,true),before=await sql(id,"SELECT json_build_object('database',current_database(),'objects',(SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname !~ '^pg_' AND n.nspname<>'information_schema')+(SELECT count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname !~ '^pg_' AND n.nspname<>'information_schema')+(SELECT count(*) FROM pg_namespace WHERE nspname !~ '^pg_' AND nspname NOT IN ('public','information_schema'))+(SELECT count(*) FROM pg_type t JOIN pg_namespace n ON n.oid=t.typnamespace WHERE n.nspname !~ '^pg_' AND n.nspname<>'information_schema')+(SELECT count(*) FROM pg_extension WHERE extname<>'plpgsql'))");
-  if(before.database!=='virtual_city_restore_test'||before.objects!==0)throw fail();
+  if(before.database!=='aetheria_soulbound_restore_test'||before.objects!==0)throw fail();
   await postgres(id,'pg_restore',['--no-password','--single-transaction','--exit-on-error','--no-owner','--no-privileges'],plain);
   return {schemaVersion:1,operation:'restore',authenticatedBeforeSQL:true,emptyDisposableTarget:true,singleTransaction:true,durationMs:performance.now()-started};
  }finally{key.fill(0);plain?.fill(0);}
@@ -87,7 +87,7 @@ export async function observePostgres({project,service='db'}){
  if(disk.availableBytes<1024**3||disk.availableBytes/disk.totalBytes<.2)alerts.push('DATABASE_DISK_LOW');if(db.serverConnections/db.connectionLimit>=.8)alerts.push('DATABASE_CONNECTIONS_HIGH');
  return {schemaVersion:1,observedAt:Date.now(),scope:'single PostgreSQL container PGDATA filesystem and aggregate server/database connections',...db,disk,alerts};
 }
-export function postgresMetrics(value){return ['# TYPE virtual_life_postgres_database_bytes gauge','virtual_life_postgres_database_bytes '+value.databaseBytes,'# TYPE virtual_life_postgres_connections gauge','virtual_life_postgres_connections '+value.serverConnections,'# TYPE virtual_life_postgres_connection_limit gauge','virtual_life_postgres_connection_limit '+value.connectionLimit,'# TYPE virtual_life_postgres_disk_available_bytes gauge','virtual_life_postgres_disk_available_bytes '+value.disk.availableBytes,'# TYPE virtual_life_postgres_disk_total_bytes gauge','virtual_life_postgres_disk_total_bytes '+value.disk.totalBytes].join('\n')+'\n';}
+export function postgresMetrics(value){return ['# TYPE aetheria_postgres_database_bytes gauge','aetheria_postgres_database_bytes '+value.databaseBytes,'# TYPE aetheria_postgres_connections gauge','aetheria_postgres_connections '+value.serverConnections,'# TYPE aetheria_postgres_connection_limit gauge','aetheria_postgres_connection_limit '+value.connectionLimit,'# TYPE aetheria_postgres_disk_available_bytes gauge','aetheria_postgres_disk_available_bytes '+value.disk.availableBytes,'# TYPE aetheria_postgres_disk_total_bytes gauge','aetheria_postgres_disk_total_bytes '+value.disk.totalBytes].join('\n')+'\n';}
 async function main(){
  const {positionals,values}=parseArgs({allowPositionals:true,strict:true,options:{project:{type:'string'},service:{type:'string'},'key-file':{type:'string'},output:{type:'string'},input:{type:'string'},format:{type:'string',default:'json'}}}),action=positionals[0];if(positionals.length!==1||!['backup','restore','observe'].includes(action)||!['json','prometheus'].includes(values.format))throw fail();
  const options={project:values.project,service:values.service,keyPath:values['key-file'],output:values.output,input:values.input};const result=await(action==='backup'?backupPostgres(options):action==='restore'?restorePostgres(options):observePostgres(options));

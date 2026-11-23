@@ -1,6 +1,6 @@
 import {it,expect} from 'vitest';
 import * as T from 'three';
-import {sandboxScene} from '@virtual-city/world-sdk';
+import {sandboxScene} from '@aetheria/world-sdk';
 import {createRoomArt} from '../src/room';
 import {sceneResourceInventory} from '../src/resources';
 import budgets from '../../../config/rendering/budgets-v1.json';

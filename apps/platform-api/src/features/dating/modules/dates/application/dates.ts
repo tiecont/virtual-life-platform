@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool,PoolClient } from 'pg';
-import { DatingDateEnterSchema,DatingDateChatSchema,DatingDateViewSchema,DatingDateChatReceiptSchema,type SafetyPolicy } from '@virtual-city/contracts';
+import { DatingDateEnterSchema,DatingDateChatSchema,DatingDateViewSchema,DatingDateChatReceiptSchema,type SafetyPolicy } from '@aetheria/contracts';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import type { SocialService } from '../../../../social/modules/relationships/application/service';
 import type { ReportService } from '../../../../safety/modules/reporting/application/reports';

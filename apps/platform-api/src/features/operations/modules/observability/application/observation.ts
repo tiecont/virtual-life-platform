@@ -1,4 +1,4 @@
-import {OperationalObservationSchema} from '@virtual-city/contracts';
+import {OperationalObservationSchema} from '@aetheria/contracts';
 import type {OperationalTelemetry} from '../infrastructure/telemetry';
 type Snapshot=Awaited<ReturnType<OperationalTelemetry['snapshot']>>;
 // Project only fixed aggregate fields: never forward raw trace identifiers, room pseudonyms or private input.

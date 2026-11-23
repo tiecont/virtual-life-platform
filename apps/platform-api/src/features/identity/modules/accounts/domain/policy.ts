@@ -1,4 +1,4 @@
-import type { Privacy } from '@virtual-city/contracts';
+import type { Privacy } from '@aetheria/contracts';
 // Inputs come from services. Never deserialize age/role/friend/block claims from clients.
 export function canViewPresence(viewer: string, target: string, world: string, privacy: Privacy, relationship: { blocked: boolean; friends: boolean }): boolean {
   if (viewer === target) return true;

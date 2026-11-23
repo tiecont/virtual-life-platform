@@ -1,17 +1,17 @@
 import { readFile } from 'node:fs/promises';
-import { WorldFlagsSchema } from '@virtual-city/contracts';
-import { WorldRegistry, createSandboxWorld, type WorldActor, type WorldAdapter,type WorldPorts } from '@virtual-city/world-sdk';
+import { WorldFlagsSchema } from '@aetheria/contracts';
+import { WorldRegistry, createSandboxWorld, type WorldActor, type WorldAdapter,type WorldPorts } from '@aetheria/world-sdk';
 import type { Config } from '../../../../../shared/config/environment';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import { AdmissionPolicy, type AdultEligibilityProvider } from '../../../../identity/modules/accounts/domain/policy';
 import { createTravelFixtures } from './travel-fixtures';
-import { createLibraryWorld } from '@virtual-city/library-world';
-import { createParkWorld } from '@virtual-city/park-world';
-import { createDeadlineWorld } from '@virtual-city/deadline-world';
-import { createMaidWorld } from '@virtual-city/maid-world';
-import {createLanternLodgeWorld} from '@virtual-city/lantern-lodge-world';
-import { createRestaurantWorld } from '@virtual-city/restaurant-world';
-import { createLoungeWorld } from '@virtual-city/lounge-world';
+import { createLibraryWorld } from '@aetheria/library-world';
+import { createParkWorld } from '@aetheria/park-world';
+import { createDeadlineWorld } from '@aetheria/deadline-world';
+import { createMaidWorld } from '@aetheria/maid-world';
+import {createLanternLodgeWorld} from '@aetheria/lantern-lodge-world';
+import { createRestaurantWorld } from '@aetheria/restaurant-world';
+import { createLoungeWorld } from '@aetheria/lounge-world';
 import {createReleaseWorldRuntime} from './release-installation';
 import type {RuntimeControlReader} from '../../../../operations/modules/controls/infrastructure/runtime-policy-store';
 

@@ -8,7 +8,7 @@ import { performance } from 'node:perf_hooks';
 import { setTimeout as delay } from 'node:timers/promises';
 import { Pool } from 'pg';
 import { io,type Socket } from 'socket.io-client';
-import { MeSchema,RoomAckSchema,type RoomSnapshot } from '@virtual-city/contracts';
+import { MeSchema,RoomAckSchema,type RoomSnapshot } from '@aetheria/contracts';
 import { startRoomProcess } from '../support/room-process';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 
@@ -17,7 +17,7 @@ if(args.some(a=>!/^--(?:clients=(?:100|1000)|soak=(?:2|120))$/.test(a))||new Set
 const target=Number(args.find(a=>a.startsWith('--clients='))?.split('=')[1]??100),soakSeconds=Number(args.find(a=>a.startsWith('--soak='))?.split('=')[1]??120);
 const origin='http://127.0.0.1:3300',MiB=1024*1024,clients=new Set<Socket>(),schema='city_profile_'+randomUUID().replaceAll('-','');
 const db=new URL(process.env.TEST_DATABASE_URL??'');
-assert(['postgres:','postgresql:'].includes(db.protocol)&&['127.0.0.1','localhost','[::1]'].includes(db.hostname)&&/^virtual_city_test(?:_[a-z0-9_]+)?$/.test(db.pathname.slice(1))&&!db.search&&!db.hash,'Disposable local test DB only');
+assert(['postgres:','postgresql:'].includes(db.protocol)&&['127.0.0.1','localhost','[::1]'].includes(db.hostname)&&/^aetheria_soulbound_test(?:_[a-z0-9_]+)?$/.test(db.pathname.slice(1))&&!db.search&&!db.hash,'Disposable local test DB only');
 const admin=new Pool({connectionString:db.toString()});db.searchParams.set('options','-c search_path='+schema);const pool=new Pool({connectionString:db.toString()});
 type Runtime=Awaited<ReturnType<typeof startRoomProcess>>;
 type Sample={cpu:{user:number;system:number};memory:{rss:number;heapUsed:number};traffic:{readBytes:number;writtenBytes:number};diagnostics:{sockets:number;transportConnections:number;rooms:{memberships:number;connections:number;rooms:number;occupiedSeats:number;pending:number;peakPending:number}}};

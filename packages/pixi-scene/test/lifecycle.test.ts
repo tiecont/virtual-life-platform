@@ -1,5 +1,5 @@
 import { it, expect } from 'vitest';
-import type { RoomSnapshot } from '@virtual-city/contracts';
+import type { RoomSnapshot } from '@aetheria/contracts';
 import { fitSceneCamera } from '../src/camera';
 import { sceneEntities } from '../src/entities';
 import { sandboxScene } from '../src/spec';

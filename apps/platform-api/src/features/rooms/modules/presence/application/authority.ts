@@ -53,7 +53,7 @@ export class RoomAuthority {
         this.#client = client;
         client.on('error', () => { if (this.#client === client) this.#lose(); });
         client.on('end', () => { if (this.#client === client) this.#lose(); });
-        await this.#query("SET application_name='virtual-life-platform-room-owner'");
+        await this.#query("SET application_name='aetheria-soulbound-room-owner'");
         const scope = await this.#query<{ key: number }>('SELECT hashtext(current_schema()) AS key');
         this.#key = scope.rows[0].key;
         const result = await this.#query<{ held: boolean }>('SELECT pg_try_advisory_lock($1::int,$2::int) AS held', [ROOM_OWNER_LOCK_CLASS, this.#key]);

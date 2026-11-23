@@ -1,4 +1,4 @@
-import { ApiErrorSchema } from '@virtual-city/contracts';
+import { ApiErrorSchema } from '@aetheria/contracts';
 import { DomainError } from '../../../../../shared/common/errors';
 import { requestLog } from '../../../../../shared/common/request-log';
 const codes=new Set<string>(ApiErrorSchema.shape.error.shape.code.options);

@@ -7,12 +7,12 @@ import { join } from 'node:path';
 import { migrate, migrationNames } from '../../apps/platform-api/src/shared/database/migrations';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
-import { ReadinessSchema } from '@virtual-city/contracts';
+import { ReadinessSchema } from '@aetheria/contracts';
 let pool: Pool; let admin: Pool;
 const schema = 'city_test_' + randomUUID().replaceAll('-', '');
 beforeAll(async () => {
   const url = new URL(process.env.TEST_DATABASE_URL ?? '');
-  if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
+  if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
   admin = new Pool({ connectionString: url.toString(), connectionTimeoutMillis: 3000 });
   await admin.query(`CREATE SCHEMA "${schema}"`);
   url.searchParams.set('options', '-c search_path=' + schema);

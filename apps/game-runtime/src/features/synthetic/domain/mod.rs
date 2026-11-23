@@ -1,5 +1,5 @@
+use aetheria_game_core::{Canonical, Decision, LogicalClock, Reducer, Ruleset, TurnRng, Value};
 use serde::{Deserialize, Serialize};
-use vl_game_core::{Canonical, Decision, LogicalClock, Reducer, Ruleset, TurnRng, Value};
 
 pub const CONTENT: [u8; 32] = [0x53; 32];
 
@@ -33,13 +33,13 @@ impl Reducer for Rules {
             rng_version: 1,
         }
     }
-    fn validate(&self, state: &State) -> Result<(), vl_game_core::Error> {
+    fn validate(&self, state: &State) -> Result<(), aetheria_game_core::Error> {
         if state.player != self.player
             || uuid::Uuid::parse_str(&state.player).is_err()
             || state.turns > 3
             || state.private_roll >= 100
         {
-            return Err(vl_game_core::Error::InvalidState);
+            return Err(aetheria_game_core::Error::InvalidState);
         }
         Ok(())
     }
@@ -49,9 +49,9 @@ impl Reducer for Rules {
         action: &Value,
         _: LogicalClock,
         rng: &mut TurnRng,
-    ) -> Result<Decision<State>, vl_game_core::Error> {
+    ) -> Result<Decision<State>, aetheria_game_core::Error> {
         if *action != Value::Null || state.turns >= 3 {
-            return Err(vl_game_core::Error::InvalidAction);
+            return Err(aetheria_game_core::Error::InvalidAction);
         }
         let mut next = state.clone();
         next.turns += 1;

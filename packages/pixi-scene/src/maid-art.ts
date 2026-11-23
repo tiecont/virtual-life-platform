@@ -1,5 +1,5 @@
 import { Container,Graphics,Text } from 'pixi.js';
-import type { SceneManifest } from '@virtual-city/contracts';
+import type { SceneManifest } from '@aetheria/contracts';
 // Original deterministic Cafe Sakura art;no external raster,font or media.
 export function maidInterior(scene:SceneManifest){
  const root=new Container(),g=new Graphics(),size=scene.tileSize;root.addChild(g);

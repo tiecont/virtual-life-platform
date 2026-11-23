@@ -6,7 +6,7 @@ import {join} from 'node:path';
 import {evidenceOutput} from '../../scripts/evidence-output.mjs';
 
 test('fresh output preserves historical bytes and fits scoped CI upload boundaries; invalid targets fail',async()=>{
- const root=await mkdtemp(join(tmpdir(),'vlp-evidence-output-')),previous=process.cwd(),scope=process.env.BROWSER_REPORT_SCOPE;
+ const root=await mkdtemp(join(tmpdir(),'aetheria-evidence-output-')),previous=process.cwd(),scope=process.env.BROWSER_REPORT_SCOPE;
  try{
   process.chdir(root);await mkdir('docs/agent/evidence',{recursive:true});await writeFile('docs/agent/evidence/result.json','historical');delete process.env.BROWSER_REPORT_SCOPE;
   const local=evidenceOutput('docs/agent/evidence/result.json');assert.match(local,/^artifacts\/evidence\/local\/[a-f0-9-]+\/result\.json$/);await writeFile(local,'fresh');

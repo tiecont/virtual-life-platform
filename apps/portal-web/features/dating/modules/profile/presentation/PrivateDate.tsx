@@ -1,7 +1,7 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
 import { io } from 'socket.io-client';
-import { DatingDateViewSchema,DatingDateChatReceiptSchema,DatingMatchStoppedSchema,ReportReceiptSchema,MeSchema,type Me } from '@virtual-city/contracts';
+import { DatingDateViewSchema,DatingDateChatReceiptSchema,DatingMatchStoppedSchema,ReportReceiptSchema,MeSchema,type Me } from '@aetheria/contracts';
 type View=ReturnType<typeof DatingDateViewSchema.parse>;
 type Change={path:string;body:Record<string,unknown>;key:string;kind:'enter'|'chat'};
 const labels={hello:'Hello',thanks:'Thank you','need-help':'I need help',bye:'Goodbye'};

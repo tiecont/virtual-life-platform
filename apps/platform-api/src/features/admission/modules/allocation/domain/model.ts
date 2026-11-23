@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {AdmissionPolicySchema,AdmissionPolicyChangeSchema,AdmissionCapacitySchema,AdmissionOwnStateSchema,type AdmissionPolicy} from '@virtual-city/contracts';
+import {AdmissionPolicySchema,AdmissionPolicyChangeSchema,AdmissionCapacitySchema,AdmissionOwnStateSchema,type AdmissionPolicy} from '@aetheria/contracts';
 type Entry={accountId:string;id:string;state:'WAITING'|'RESERVED'|'ACTIVE'|'RECONNECT_GRACE';version:number;sequence:number;expiresAt:number|null};
 const uuid=(value:string)=>z.uuid().parse(value).toLowerCase(),clock=z.number().int().nonnegative().max(253402300799999),conflict=()=>Error('ADMISSION_CONFLICT');
 // Deterministic reference state machine, not the deployed allocator. N09-02

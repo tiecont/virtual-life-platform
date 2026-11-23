@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { randomUUID } from 'node:crypto';
 import type { Pool,PoolClient } from 'pg';
-import { DinnerOfferSchema,DinnerRespondSchema,DinnerReceiptSchema,DinnerOffersSchema,TravelSourceSchema,ReservationPartyReadSchema,ReservationPartyOpenSchema,ReservationPartySourceSchema,ReservationPartyResultSchema,ReservationPartiesSchema,ReservationPartyOwnSchema,ReservationPartyStoppedSchema,type TravelSource } from '@virtual-city/contracts';
+import { DinnerOfferSchema,DinnerRespondSchema,DinnerReceiptSchema,DinnerOffersSchema,TravelSourceSchema,ReservationPartyReadSchema,ReservationPartyOpenSchema,ReservationPartySourceSchema,ReservationPartyResultSchema,ReservationPartiesSchema,ReservationPartyOwnSchema,ReservationPartyStoppedSchema,type TravelSource } from '@aetheria/contracts';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import type { SocialService } from '../../../../social/modules/relationships/application/service';
 import type { RoomService } from '../../../../rooms/modules/presence/application/service';

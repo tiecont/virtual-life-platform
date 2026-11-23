@@ -1,5 +1,5 @@
-import { SceneManifestSchema } from '@virtual-city/contracts';
-import { defineWorld,WorldError } from '@virtual-city/world-sdk';
+import { SceneManifestSchema } from '@aetheria/contracts';
+import { defineWorld,WorldError } from '@aetheria/world-sdk';
 // Original project-authored layout. Eight dining chairs plus two unseated
 // circulation places; none of those places grants a service role.
 export const restaurantScene=SceneManifestSchema.parse({

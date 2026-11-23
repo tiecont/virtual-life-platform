@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { EventScheduleSchema, EventCapacityPolicySchema, EventPhaseSchema, ReservationPhaseSchema } from '@virtual-city/contracts';
+import { EventScheduleSchema, EventCapacityPolicySchema, EventPhaseSchema, ReservationPhaseSchema } from '@aetheria/contracts';
 import { createEvent, advanceEvent, createReservation, advanceReservation, availableCapacity, formatEventSchedule, EventStateSchema, ReservationStateSchema } from './lifecycle';
 
 const schedule = { schemaVersion: 1 as const, timeZone: 'Asia/Ho_Chi_Minh', opensAt: '2026-11-03T09:00:00.000Z', startsAt: '2026-11-03T10:00:00.000Z', checkInClosesAt: '2026-11-03T10:15:00.000Z', endsAt: '2026-11-03T11:00:00.000Z' };

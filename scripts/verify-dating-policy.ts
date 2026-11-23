@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { DatingPolicySchema,SafetyPolicySchema } from '@virtual-city/contracts';
+import { DatingPolicySchema,SafetyPolicySchema } from '@aetheria/contracts';
 async function main(){
 const policy=DatingPolicySchema.parse(JSON.parse(await readFile('config/dating-policy.json','utf8'))),safety=SafetyPolicySchema.parse(JSON.parse(await readFile('config/safety-policy.json','utf8'))),rollout=JSON.parse(await readFile('config/rollout.json','utf8'));
 assert.equal(rollout.publicRelease,false);assert.equal(rollout.worlds.dating.enabled,false);assert.equal(rollout.worlds.dating.requiresReviewedAdultVerification,true);assert.equal(rollout.worlds.dating.globallyDiscoverable,false);

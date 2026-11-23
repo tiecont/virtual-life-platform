@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { Server, type Socket } from 'socket.io';
 import type { FastifyInstance } from 'fastify';
-import { SessionHandshakeSchema, SessionCheckSchema, SessionCheckAckSchema, NativeSocketHandshakeSchema,NATIVE_ANDROID_ORIGIN,negotiateClientProtocol, type NegotiatedSession } from '@virtual-city/contracts';
+import { SessionHandshakeSchema, SessionCheckSchema, SessionCheckAckSchema, NativeSocketHandshakeSchema,NATIVE_ANDROID_ORIGIN,negotiateClientProtocol, type NegotiatedSession } from '@aetheria/contracts';
 import type { Config } from '../../../../../shared/config/environment';
 import { IdentityService, type IdentityContext } from '../application/service';
 import { IdentityError, unauthorized } from '../domain/errors';

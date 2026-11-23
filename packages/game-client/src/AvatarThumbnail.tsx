@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import type {AvatarParts} from '@virtual-city/contracts';
+import type {AvatarParts} from '@aetheria/contracts';
 type Portrait={setAppearance(parts:AvatarParts):void;destroy():void};
 export function AvatarThumbnail({parts,label,loadComposer}:{parts:AvatarParts;label:string;loadComposer:()=>Promise<unknown>}){
  const host=useRef<HTMLSpanElement>(null),portrait=useRef<Portrait|null>(null),latest=useRef(parts);latest.current=parts;const [available,setAvailable]=useState(false);

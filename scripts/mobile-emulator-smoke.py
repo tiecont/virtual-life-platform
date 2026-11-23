@@ -1,7 +1,7 @@
 """Task-owned Android Emulator only; no USB/physical/iOS/performance claim."""
 from pathlib import Path
 import datetime,hashlib,json,os,re,struct,subprocess,time,uuid,xml.etree.ElementTree as ET
-adb=os.environ['ADB_PATH'];serial=os.environ['VLP_EMULATOR_SERIAL'];apk=Path(os.environ['VLP_EMULATOR_APK']);app='life.virtualcity.spike'
+adb=os.environ['ADB_PATH'];serial=os.environ['AETHERIA_EMULATOR_SERIAL'];apk=Path(os.environ['AETHERIA_EMULATOR_APK']);app='life.aetheriasoulbound.spike'
 assert serial=='emulator-5580'and apk.is_file()
 output=Path('artifacts/vnext/n10-05')/('emulated-preview-'+uuid.uuid4().hex[:8]);output.mkdir(mode=0o700);commands=[];scenarios=[]
 def run(name,args,allow=False,timeout=30):
@@ -13,7 +13,7 @@ def focus():
 def label(n):return n.get('text')or n.get('content-desc','')
 def snapshot(name,expected,image=True):
  for attempt in range(4):
-  focus();temporary='/data/local/tmp/vlp-emulated-'+uuid.uuid4().hex+'.xml';nodes=[]
+  focus();temporary='/data/local/tmp/aetheria-emulated-'+uuid.uuid4().hex+'.xml';nodes=[]
   try:
    r=run('dump-'+name,['shell','uiautomator','dump',temporary],allow=True)
    if not r.returncode:
@@ -38,7 +38,7 @@ def tap(nodes,text=None,edit=False):
 facts={'scope':'EMULATED_ANDROID_LOCAL_PREVIEW_NOT_PHYSICAL_N10_04_3D_OR_IOS','observedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'commands':commands,'scenarios':scenarios,'apkSHA256':hashlib.sha256(apk.read_bytes()).hexdigest(),'sourceRevision':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'distributed':False}
 try:
  assert run('emulator-property',['shell','getprop','ro.kernel.qemu']).stdout.decode().strip()=='1'
- assert run('owned-avd',['emu','avd','name']).stdout.decode().splitlines()[0]=='vlp_n10_05_api35'
+ assert run('owned-avd',['emu','avd','name']).stdout.decode().splitlines()[0]=='aetheria_n10_05_api35'
  run('unlock-owned-emulator',['shell','input','keyevent','82']);run('install-own-apk',['install','-r',str(apk)],timeout=90)
  package=run('own-package',['shell','pm','path',app]).stdout.decode().strip();assert re.fullmatch(r'package:/data/app/[^\s]+/base\.apk',package)
  assert run('installed-hash',['shell','sha256sum',package.removeprefix('package:')]).stdout.decode().split()[0]==facts['apkSHA256']

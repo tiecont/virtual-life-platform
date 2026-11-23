@@ -1,0 +1,5 @@
+{
+  "name": "Aetheria.Editor",
+  "references": ["Aetheria.Blockout", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime"],
+  "includePlatforms": ["Editor"]
+}

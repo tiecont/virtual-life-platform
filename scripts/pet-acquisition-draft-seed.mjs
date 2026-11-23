@@ -5,7 +5,7 @@ import {createRequire} from 'node:module';
 import {pathToFileURL} from 'node:url';
 import {Pool} from 'pg';
 import {validateTestDatabaseURL} from './test-environment.mjs';
-const require=createRequire(import.meta.url),{validatePetAcquisitionCatalogV3}=require('@virtual-city/contracts/pet-acquisition-v3');
+const require=createRequire(import.meta.url),{validatePetAcquisitionCatalogV3}=require('@aetheria/contracts/pet-acquisition-v3');
 const root=new URL('../specs/pet-arena/',import.meta.url),sha=b=>createHash('sha256').update(b).digest('hex');
 export const petAcquisitionDraftId='c56a7890-7531-4131-b240-000000000001';
 // Reads repository-owned, hash-verified candidate data only. No uploaded baseline,

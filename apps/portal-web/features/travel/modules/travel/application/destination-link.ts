@@ -1,4 +1,4 @@
-import { WorldSlugSchema,TravelDestinationSchema } from '@virtual-city/contracts';
+import { WorldSlugSchema,TravelDestinationSchema } from '@aetheria/contracts';
 export type DestinationLink={kind:'none'}|{kind:'invalid'}|{kind:'preferred';worldSlug:string;roomId?:string};
 export function destinationLink(raw:unknown):DestinationLink{
  if(!raw||typeof raw!=='object'||Array.isArray(raw))return {kind:'invalid'};const input=raw as Record<string,unknown>;

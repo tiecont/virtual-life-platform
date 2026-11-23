@@ -10,7 +10,7 @@ import {petDesignDraft} from '../../scripts/pet-content-draft-seed.mjs';
 const schema='pet240_'+randomUUID().replaceAll('-','');let admin:Pool,pool:Pool,store:PetAcquisitionDraftStore;
 let input:Awaited<ReturnType<typeof petAcquisitionDraft>>;
 beforeAll(async()=>{
- const url=new URL(process.env.TEST_DATABASE_URL!);if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test/.test(url.pathname.slice(1)))throw Error('Disposable local DB required');
+ const url=new URL(process.env.TEST_DATABASE_URL!);if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test/.test(url.pathname.slice(1)))throw Error('Disposable local DB required');
  admin=new Pool({connectionString:url.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);url.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:url.toString(),max:12});await Promise.all([migrate(pool),migrate(pool)]);input=await petAcquisitionDraft();store=new PetAcquisitionDraftStore(pool,input.upstream);
 });
 afterAll(async()=>{await pool?.end();if(admin){await admin.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);await admin.end();}});

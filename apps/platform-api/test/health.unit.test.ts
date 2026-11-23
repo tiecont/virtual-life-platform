@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { createApp } from '../src/app';
 import { readConfig } from '../src/shared/config/environment';
-import { ApiErrorSchema } from '@virtual-city/contracts';
+import { ApiErrorSchema } from '@aetheria/contracts';
 import type { Pool } from 'pg';
-const config = readConfig({ NODE_ENV: 'test', SESSION_SECRET: 'test-only-session-secret-not-production-0001', DATABASE_URL: 'postgresql://localhost/virtual_city_test' });
+const config = readConfig({ NODE_ENV: 'test', SESSION_SECRET: 'test-only-session-secret-not-production-0001', DATABASE_URL: 'postgresql://localhost/aetheria_soulbound_test' });
 describe('HTTP outage behavior (stub DB; actual PostgreSQL in integration suite)', () => {
   it('keeps liveness healthy and readiness unavailable without exposing DB errors', async () => {
     const db = { query: async () => { throw new Error('private database credentials'); } } as unknown as Pick<Pool, 'query' | 'connect'>;

@@ -1,7 +1,7 @@
 import type {FastifyInstance,FastifyRequest,FastifyReply} from 'fastify';
 import {z,ZodError} from 'zod';
 import {createHash} from 'node:crypto';
-import {NativeSessionResultSchema,NativeLogoutInputSchema,NativeRevokeInputSchema,NativeAuthErrorSchema,NativeAccountDeleteResponseSchema} from '@virtual-city/contracts';
+import {NativeSessionResultSchema,NativeLogoutInputSchema,NativeRevokeInputSchema,NativeAuthErrorSchema,NativeAccountDeleteResponseSchema} from '@aetheria/contracts';
 import {DomainError} from '../../../../../shared/common/errors';
 import {IdentityError,unauthorized} from '../../accounts/domain/errors';
 import {WindowLimiter} from '../../accounts/domain/limits';

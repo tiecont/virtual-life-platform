@@ -1,4 +1,4 @@
-import type {ClientProtocolOffer,ProfileInput,Me,UpgradeInput,NativeDevices,NativeTicketResult,NativeAccountDeleteOutcome,NativeSafetyState,ReportInput,ReportReceipt,AvatarOwnState,AvatarSaveInput,TravelIntentInput} from '@virtual-city/contracts';
+import type {ClientProtocolOffer,ProfileInput,Me,UpgradeInput,NativeDevices,NativeTicketResult,NativeAccountDeleteOutcome,NativeSafetyState,ReportInput,ReportReceipt,AvatarOwnState,AvatarSaveInput,TravelIntentInput} from '@aetheria/contracts';
 
 // Custody is implemented by the native platform. There is deliberately no
 // getToken/exportRefresh method and no browser-storage fallback. iOS stays

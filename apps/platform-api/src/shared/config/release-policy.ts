@@ -1,6 +1,6 @@
 import {z} from 'zod';
 import {createHash} from 'node:crypto';
-import {SafetyPolicySchema,type SafetyPolicy} from '@virtual-city/contracts';
+import {SafetyPolicySchema,type SafetyPolicy} from '@aetheria/contracts';
 
 export const releaseWorlds=['deadline','maid','library','restaurant','park','lounge','dating'] as const;
 export type ReleaseWorld=typeof releaseWorlds[number];

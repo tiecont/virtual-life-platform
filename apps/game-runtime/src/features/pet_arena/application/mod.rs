@@ -1,8 +1,8 @@
 use super::domain::Rules;
 use crate::features::runtime::application::NativeGame;
+use aetheria_persistence::Error;
+use aetheria_pet_arena::combat::Action;
 use serde::Deserialize;
-use vl_persistence::Error;
-use vl_pet_arena::combat::Action;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]

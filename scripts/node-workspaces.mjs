@@ -18,7 +18,7 @@ export async function readNodeWorkspace(root,path) {
     if(path!=='apps/game-runtime')throw error;
     const cargo=await readFile(resolve(root,path,'Cargo.toml'),'utf8');
     const workspace=await readFile(resolve(root,'Cargo.toml'),'utf8');
-    assert(/^\[package\]$/m.test(cargo)&&/^name\s*=\s*"vl-game-runtime"\s*$/m.test(cargo),'Unknown non-Node application');
+    assert(/^\[package\]$/m.test(cargo)&&/^name\s*=\s*"aetheria-game-runtime"\s*$/m.test(cargo),'Unknown non-Node application');
     const members=/^members\s*=\s*\[([^\]]*)\]/m.exec(workspace)?.[1];
     assert(/^\[workspace\]$/m.test(workspace)&&members&&[...members.matchAll(/"([^"]+)"/g)].some(row=>row[1]===path),'Rust application missing workspace registration');
     return null;

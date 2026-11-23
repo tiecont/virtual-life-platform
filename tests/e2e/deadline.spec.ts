@@ -1,7 +1,7 @@
 import { test,expect,type BrowserContext,type Page,type WebSocketRoute } from '@playwright/test';
 import { request } from 'node:http';
 import { randomUUID } from 'node:crypto';
-import { MeSchema } from '@virtual-city/contracts';
+import { MeSchema } from '@aetheria/contracts';
 const origin='http://127.0.0.1:3300';let serial=0;
 async function guest(context:BrowserContext){const body=JSON.stringify({requestId:randomUUID(),displayName:'Deadline Visitor',avatarKey:'mint'});const result=await new Promise<{cookie:string;body:unknown}>((ok,no)=>{const req=request('http://127.0.0.1:4300/v1/session/guest',{method:'POST',localAddress:'127.118.0.'+(++serial),headers:{origin,'content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{let text='';res.on('data',part=>text+=part);res.on('end',()=>{try{expect(res.statusCode).toBe(201);ok({cookie:res.headers['set-cookie']![0].split(';')[0],body:JSON.parse(text)});}catch(error){no(error);}});});req.on('error',no);req.end(body);});const split=result.cookie.indexOf('=');await context.addCookies([{name:result.cookie.slice(0,split),value:result.cookie.slice(split+1),url:origin,httpOnly:true,sameSite:'Lax'}]);return MeSchema.parse(result.body);}
 async function enter(page:Page){await page.goto('/worlds/deadline');await page.getByRole('button',{name:'Enter cafe',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');}

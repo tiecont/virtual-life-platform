@@ -8,13 +8,13 @@ test('Rust foundation CI retains read-only Ubuntu checks without privileged/GPU 
   assert.doesNotThrow(()=>assertRustWorkflow(workflow,pins));
   assert.match(workflow,/fetch-depth: 0/,'Pinned archived API compatibility needs Git history');
   for(const extra of ['\n  packages: write','\n  token: $'+'{{ secrets.PRIVATE_TOKEN }}','\n  run: docker push image','\n  runs-on: self-hosted'])assert.throws(()=>assertRustWorkflow(workflow+extra,pins));
-  for(const text of ['cargo" test --workspace --locked','sha256sum --check','python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-ci',
-    'CARGO_TARGET_DIR: artifacts/rust/target','build --locked --package vl-security --bin durable-check','scripts/runtime-admission-durable-check.mjs',
+  for(const text of ['cargo" test --workspace --locked','sha256sum --check','python3 apps/game-runtime/tools/oci-smoke.py aetheria-runtime-ci',
+    'CARGO_TARGET_DIR: artifacts/rust/target','build --locked --package aetheria-security --bin durable-check','scripts/runtime-admission-durable-check.mjs',
     'tests/integration/runtime-admission.test.ts','scripts/native-game-migration-compat.mjs','scripts/runtime-admission-migration-compat.mjs',
-    '--package vl-world --example zone-probe','node scripts/prepare-ci-browser.mjs',
-    'build --locked --package vl-gateway --example interop','scripts/native-wss-interop.mjs',
-    'build --locked --package vl-game-runtime','scripts/native-wss-interop.mjs --runtime-gameplay',
-    'build --locked --package vl-persistence --example orchestration','scripts/native-game-orchestration.mjs'])assert.throws(()=>assertRustWorkflow(workflow.replaceAll(text,'removed required gate'),pins));
+    '--package aetheria-world --example zone-probe','node scripts/prepare-ci-browser.mjs',
+    'build --locked --package aetheria-gateway --example interop','scripts/native-wss-interop.mjs',
+    'build --locked --package aetheria-game-runtime','scripts/native-wss-interop.mjs --runtime-gameplay',
+    'build --locked --package aetheria-persistence --example orchestration','scripts/native-game-orchestration.mjs'])assert.throws(()=>assertRustWorkflow(workflow.replaceAll(text,'removed required gate'),pins));
   const foundation='node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs\n';
   const runtime='node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay\n';
   const petModes=['--pet-arena','--pet-arena-loss'].map(mode=>'node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs '+mode+'\n');

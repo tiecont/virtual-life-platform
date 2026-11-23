@@ -21,7 +21,7 @@ export async function verifiedFile(directory, descriptor) {
 }
 export function validateManifest(value, {rehearsal = false} = {}) {
   keys(value, 'schemaVersion,kind,source,quality,artifacts,compatibility,promotion,evidence,vulnerabilities');
-  const targets=releaseTargets(value.schemaVersion); assert.equal(value.kind, rehearsal ? 'local-registry-rehearsal' : 'vlp-release-candidate');
+  const targets=releaseTargets(value.schemaVersion); assert.equal(value.kind, rehearsal ? 'local-registry-rehearsal' : 'aetheria-release-candidate');
   keys(value.source, 'repository,revision'); assert.equal(value.source.repository, repository); assert(shaPattern.test(value.source.revision));
   keys(value.quality, 'runId,runAttempt,workflow,event,branch');
   assert.equal(value.quality.workflow, qualityWorkflow); assert.equal(value.quality.event, rehearsal ? 'local-rehearsal' : 'push'); assert.equal(value.quality.branch, 'main');
@@ -32,7 +32,7 @@ export function validateManifest(value, {rehearsal = false} = {}) {
   for (const target of targets) {
     const artifact = value.artifacts[target]; keys(artifact, 'image,localImageId,sbom,provenance'+(value.schemaVersion===2?',sourceRevision':'')); assert(digestPattern.test(artifact.localImageId));
     if(value.schemaVersion===2)assert.equal(artifact.sourceRevision,value.source.revision,'Artifact source revision mismatch');
-    const pattern = rehearsal ? new RegExp('^127\\.0\\.0\\.1:[1-9][0-9]{0,4}/vlp-' + target + '@sha256:[a-f0-9]{64}$') : new RegExp('^ghcr\\.io/tiecont/vlp-' + target + '@sha256:[a-f0-9]{64}$');
+    const pattern = rehearsal ? new RegExp('^127\\.0\\.0\\.1:[1-9][0-9]{0,4}/aetheria-' + target + '@sha256:[a-f0-9]{64}$') : new RegExp('^ghcr\\.io/tiecont/aetheria-' + target + '@sha256:[a-f0-9]{64}$');
     assert(pattern.test(artifact.image), 'Deploy by allowlisted immutable digest only');
     descriptorShape(artifact.sbom); descriptorShape(artifact.provenance);
     assert.equal(artifact.sbom.file, target + '-sbom.cdx.json'); assert.equal(artifact.provenance.file, target + '-provenance.json');
@@ -61,7 +61,7 @@ export async function checkManifest(directory, {rehearsal = false, remote = fals
     const artifact = manifest.artifacts[target]; assert.equal(checks.images[target], artifact.localImageId);
     const sbom = await verifiedFile(directory, artifact.sbom), provenance = await verifiedFile(directory, artifact.provenance);
     assert.equal(sbom.bomFormat, 'CycloneDX'); assert(Array.isArray(sbom.components) && sbom.components.length > 0);
-    assert.equal(provenance._type, 'https://in-toto.io/Statement/v1'); assert.equal(provenance.predicateType, 'https://github.com/tiecont/virtual-life-platform/provenance/v1');
+    assert.equal(provenance._type, 'https://in-toto.io/Statement/v1'); assert.equal(provenance.predicateType, 'https://github.com/tiecont/aetheria-soulbound/provenance/v1');
     assert.deepEqual(provenance.subject, [{name: artifact.image.split('@')[0], digest: {sha256: artifact.image.split('@sha256:')[1]}}]);
     assert.deepEqual(provenance.predicate, {source: manifest.source, quality: manifest.quality, compatibility: manifest.compatibility, imageId: artifact.localImageId, sbomSha256: artifact.sbom.sha256, checksSha256: manifest.evidence.imageChecks.sha256, signed: false});
     if (remote) {
@@ -75,7 +75,7 @@ export async function checkManifest(directory, {rehearsal = false, remote = fals
   if (remote && !rehearsal) {
     const actual = await hostedProof(manifest.quality.runId, manifest.quality.runAttempt);
     assert.deepEqual(proof, actual, 'Hosted proof differs from actual exact-SHA successful run');
-    const metadataDirectory = await mkdtemp(resolve(tmpdir(), 'vlp-hosted-metadata-'));
+    const metadataDirectory = await mkdtemp(resolve(tmpdir(), 'aetheria-hosted-metadata-'));
     try {
       execFileSync('gh', ['run', 'download', String(actual.runId), '--repo', repository, '--name', 'verified-image-metadata-' + actual.sourceRevision + '-' + actual.runAttempt, '--dir', metadataDirectory], {timeout: 120000, stdio: ['ignore', 'pipe', 'pipe']});
       const bundle = JSON.parse(await readFile(resolve(metadataDirectory, 'bundle.json'), 'utf8'));

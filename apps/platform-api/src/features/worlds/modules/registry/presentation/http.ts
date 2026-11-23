@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { WorldError, type WorldRegistry } from '@virtual-city/world-sdk';
-import { WorldSlugSchema, RoomsListSchema } from '@virtual-city/contracts';
+import { WorldError, type WorldRegistry } from '@aetheria/world-sdk';
+import { WorldSlugSchema, RoomsListSchema } from '@aetheria/contracts';
 import type { RoomService } from '../../../../rooms/modules/presence/application/service';
 import type { Config } from '../../../../../shared/config/environment';
 import { readSessionToken } from '../../../../identity/modules/accounts/presentation/http';

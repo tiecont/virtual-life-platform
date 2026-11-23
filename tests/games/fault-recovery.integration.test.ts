@@ -1,6 +1,6 @@
 import {it,expect} from 'vitest';
 import {randomUUID} from 'node:crypto';
-import {RoomAckSchema} from '@virtual-city/contracts';
+import {RoomAckSchema} from '@aetheria/contracts';
 import {ROOM_OWNER_LOCK_CLASS} from '../../apps/platform-api/src/features/rooms/modules/presence/application/authority';
 import {journalFixture,draw,source} from './journal-fixture';
 const f=journalFixture();

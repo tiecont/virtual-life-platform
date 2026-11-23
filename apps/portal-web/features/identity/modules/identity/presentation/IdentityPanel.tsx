@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
-import { AvatarKeySchema, MeSchema, PrivacySchema, VisibilitySchema, type Me, type Privacy } from '@virtual-city/contracts';
+import { AvatarKeySchema, MeSchema, PrivacySchema, VisibilitySchema, type Me, type Privacy } from '@aetheria/contracts';
 import LegacyDeadlineIdentity from './LegacyDeadlineIdentity';
 class RequestFailure extends Error { constructor(readonly status: number, message: string) { super(message); } }
 async function request(path: string, options: RequestInit = {}): Promise<unknown> {
@@ -31,7 +31,7 @@ export default function IdentityPanel() {
   }, [setIdentity]);
   useEffect(() => {
     mounted.current = true; void restore();
-    const bus = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('virtual-city-identity') : null;
+    const bus = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('aetheria-soulbound-identity') : null;
     channel.current = bus; if (bus) bus.onmessage = event => { void restore().then(() => { if (mounted.current && event.data?.type === 'session') setMessage('Session renewed in another tab.'); }); };
     const visible = () => { if (document.visibilityState === 'visible') void restore(); };
     document.addEventListener('visibilitychange', visible);
@@ -89,7 +89,7 @@ export default function IdentityPanel() {
       <h2>Your privacy</h2><label htmlFor="presence">Who can see your presence?</label><select id="presence" value={privacy.presence} disabled={busy} onChange={e => setPrivacy({ ...privacy, presence: VisibilitySchema.parse(e.target.value) })}><option value="hidden">Nobody</option><option value="friends">Friends (when available)</option><option value="public">Everyone in an eligible world</option></select>
       <label className="checkbox"><input type="checkbox" checked={privacy.analyticsConsent} disabled={busy} onChange={e => setPrivacy({ ...privacy, analyticsConsent: e.target.checked })}/>Allow optional usage analytics</label><p className="muted">No external analytics service is connected. Restricted-world presence stays private.</p><button disabled={busy}>Save privacy</button></form>
       <section id="account-deletion" className="status-card actions"><h2>Session and data</h2><button disabled={busy} onClick={() => void perform(async () => { setIdentity(MeSchema.parse(await mutate('/session/rotate', 'POST'))); }, 'Session renewed. Your identity is unchanged.', 'session')}>Renew session</button>
-        <button disabled={busy} onClick={() => void perform(async () => { const data = await request('/me/export'); const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })); const link = document.createElement('a'); link.href = url; link.download = 'virtual-city-data.json'; link.click(); URL.revokeObjectURL(url); }, 'Your data export is ready.')}>Export my data</button>
+        <button disabled={busy} onClick={() => void perform(async () => { const data = await request('/me/export'); const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })); const link = document.createElement('a'); link.href = url; link.download = 'aetheria-soulbound-data.json'; link.click(); URL.revokeObjectURL(url); }, 'Your data export is ready.')}>Export my data</button>
         <button disabled={busy} onClick={() => void perform(async () => { await mutate('/session/logout', 'POST'); setIdentity(null); setPrivacy(null); }, me.kind === 'registered' ? 'Logged out. Sign in to return to your identity.' : 'Logged out. This guest can no longer be restored from this session.')}>Log out</button>
         <label className="checkbox"><input type="checkbox" checked={deleteConfirmed} disabled={busy} onChange={e => setDeleteConfirmed(e.target.checked)}/>I want to permanently delete this city identity and its data</label><button className="danger" disabled={busy || !deleteConfirmed} onClick={() => void perform(async () => { await mutate('/me', 'DELETE'); setIdentity(null); setPrivacy(null); setDeleteConfirmed(false); }, 'City identity deleted.')}>Delete my identity</button>
       </section></>}

@@ -5,7 +5,7 @@ import { io, type Socket } from 'socket.io-client';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
-import { MeSchema, SessionCheckAckSchema, type Me } from '@virtual-city/contracts';
+import { MeSchema, SessionCheckAckSchema, type Me } from '@aetheria/contracts';
 let pool: Pool; let admin: Pool; let server: Awaited<ReturnType<typeof createApp>>; let url: string;
 let offset = 0; let ip = 1;
 const now = () => Date.now() + offset;
@@ -15,7 +15,7 @@ const config = () => readConfig({ NODE_ENV: 'test', SESSION_SECRET: 'socket-test
 const cookie = (r: { headers: Record<string, unknown> }) => String(Array.isArray(r.headers['set-cookie']) ? r.headers['set-cookie'][0] : r.headers['set-cookie']).split(';')[0];
 beforeAll(async () => {
   const connection = new URL(process.env.TEST_DATABASE_URL ?? '');
-  if (!['127.0.0.1', 'localhost', '[::1]'].includes(connection.hostname) || !/^virtual_city_test(?:_|$)/.test(connection.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
+  if (!['127.0.0.1', 'localhost', '[::1]'].includes(connection.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(connection.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
   admin = new Pool({ connectionString: connection.toString() }); await admin.query(`CREATE SCHEMA "${schema}"`);
   connection.searchParams.set('options', '-c search_path=' + schema); pool = new Pool({ connectionString: connection.toString() }); await migrate(pool);
   server = await createApp(config(), pool, false, { now }); await server.app.listen(0, '127.0.0.1'); url = await server.app.getUrl();

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { RoomSnapshotSchema, RoomEndedSchema, sceneManifestHash,AVATAR_CATALOG_VERSION, type AvatarParts,type WorldCard, type WorldDefinition, type AvatarAppearance, type TravelSource, type TravelDestination, type RoomMotion, type RoomMove, type RoomJoin, type RoomOwnCommand, type RoomSnapshot, type RoomEnded, type SeatClaim, type SeatRelease, type PublicProfile } from '@virtual-city/contracts';
-import { findScenePath, motionPosition, type WorldRegistry, type WorldActor } from '@virtual-city/world-sdk';
+import { RoomSnapshotSchema, RoomEndedSchema, sceneManifestHash,AVATAR_CATALOG_VERSION, type AvatarParts,type WorldCard, type WorldDefinition, type AvatarAppearance, type TravelSource, type TravelDestination, type RoomMotion, type RoomMove, type RoomJoin, type RoomOwnCommand, type RoomSnapshot, type RoomEnded, type SeatClaim, type SeatRelease, type PublicProfile } from '@aetheria/contracts';
+import { findScenePath, motionPosition, type WorldRegistry, type WorldActor } from '@aetheria/world-sdk';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import { DomainError } from '../../../../../shared/common/errors';
 import type { RoomAuthority } from './authority';
@@ -432,7 +432,7 @@ export class RoomService {
       const result = await work(valid,visit); if (!valid()) throw new DomainError('NOT_IN_ROOM', 409, 'Your visit changed'); return result;
     });
   }
-  hospitalityContext<T>(credential: string, source: TravelSource, seated: boolean, work: (actor: WorldActor, context: { worldSlug: string; roomId: string; seatId: string | null; epoch: string; membershipId: string; policy: NonNullable<import('@virtual-city/contracts').WorldDefinition['hospitalityPolicy']> }, valid: () => boolean) => Promise<T>) {
+  hospitalityContext<T>(credential: string, source: TravelSource, seated: boolean, work: (actor: WorldActor, context: { worldSlug: string; roomId: string; seatId: string | null; epoch: string; membershipId: string; policy: NonNullable<import('@aetheria/contracts').WorldDefinition['hospitalityPolicy']> }, valid: () => boolean) => Promise<T>) {
     return this.#run(async () => {
       await this.#sweep(); const actor = await this.identity.authenticate(credential), room = this.#rooms.get(this.#accounts.get(actor.accountId) ?? ''), member = room?.members.get(actor.accountId);
       if (!room || !member || source.epoch !== this.epoch || source.roomId !== room.id || source.membershipId !== member.id || (seated && !member.seatId) || ![...member.connections.values()].includes(actor.sessionId)) throw new DomainError('NOT_IN_ROOM', 409, 'Your current visit could not be confirmed');

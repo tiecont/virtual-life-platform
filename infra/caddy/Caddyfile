@@ -16,12 +16,12 @@
 	}
 }
 
-{$CITY_SITE_ADDRESS} {
-	tls {$CITY_TLS_CERT} {$CITY_TLS_KEY}
+{$AETHERIA_SITE_ADDRESS} {
+	tls {$AETHERIA_TLS_CERT} {$AETHERIA_TLS_KEY}
 	header -Server
 	@api path /v1 /v1/* /socket.io /socket.io/* /health/live /health/ready
 	handle @api {
-		reverse_proxy {$CITY_API_UPSTREAM:api:4300} {
+		reverse_proxy {$AETHERIA_API_UPSTREAM:api:4300} {
 			header_up -Forwarded
 			header_up X-Forwarded-For {remote_host}
 			header_up X-Forwarded-Proto https
@@ -29,7 +29,7 @@
 		}
 	}
 	handle {
-		reverse_proxy {$CITY_WEB_UPSTREAM:web:3300} {
+		reverse_proxy {$AETHERIA_WEB_UPSTREAM:web:3300} {
 			header_up -Forwarded
 			header_up X-Forwarded-For {remote_host}
 			header_up X-Forwarded-Proto https

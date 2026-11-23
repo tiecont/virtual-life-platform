@@ -1,0 +1,6 @@
+{
+  "name": "Aetheria.EditMode",
+  "references": ["Aetheria.Blockout", "Aetheria.Native"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

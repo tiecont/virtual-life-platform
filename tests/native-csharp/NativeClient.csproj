@@ -11,9 +11,9 @@
     <PackageReference Include="Google.Protobuf" Version="3.36.2" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Compile Include="../../contracts/generated/csharp/Public.cs" />
-    <Compile Include="../../apps/unity-client/Assets/VirtualLife/Features/Native/Infrastructure/*.cs" />
-    <Compile Include="../../apps/unity-client/Assets/VirtualLife/Features/Native/Application/*.cs" />
-    <Compile Include="../../apps/unity-client/Assets/VirtualLife/Features/Native/Domain/*.cs" />
+    <Compile Include="../../apps/unity-client/Assets/Aetheria/Features/Native/Infrastructure/*.cs" />
+    <Compile Include="../../apps/unity-client/Assets/Aetheria/Features/Native/Application/*.cs" />
+    <Compile Include="../../apps/unity-client/Assets/Aetheria/Features/Native/Domain/*.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
 </Project>

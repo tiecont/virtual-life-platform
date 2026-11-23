@@ -7,12 +7,12 @@ test('Aurora collision export is tied to maintained Unity geometry and stays def
  const manifest=JSON.parse(await readFile('config/aurora-blockout-collision.json','utf8'));
  assert.equal(manifest.schemaVersion,1);assert.equal(manifest.units,'millimeters');
  assert.equal(manifest.developerOnly,true);assert.equal(manifest.nativeMovementEnabled,false);
- const source='apps/unity-client/Assets/VirtualLife/Features/Blockout/Domain/BlockoutGeometry.cs';
+ const source='apps/unity-client/Assets/Aetheria/Features/Blockout/Domain/BlockoutGeometry.cs';
  assert.equal(manifest.geometrySourceSha256,createHash('sha256').update(await readFile(source)).digest('hex'),'Re-export after changing geometry');
  for(const [field,path]of [
   ['geometrySourceGuid',source],
-  ['sceneAssetGuid','apps/unity-client/Assets/VirtualLife/Scenes/AuroraBlockout.unity'],
-  ['materialAssetGuid','apps/unity-client/Assets/VirtualLife/Resources/BlockoutLit.mat']
+  ['sceneAssetGuid','apps/unity-client/Assets/Aetheria/Scenes/AuroraBlockout.unity'],
+  ['materialAssetGuid','apps/unity-client/Assets/Aetheria/Resources/BlockoutLit.mat']
  ])assert.equal(manifest[field],/^guid: ([a-f0-9]{32})$/m.exec(await readFile(path+'.meta','utf8'))?.[1]);
  assert.equal(manifest.boxes.length,4);assert.equal(new Set(manifest.boxes.map(box=>box.geometryGuid)).size,4);
  for(const box of manifest.boxes){

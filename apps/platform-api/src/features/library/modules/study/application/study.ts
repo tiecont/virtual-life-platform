@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
-import { StudySharingInputSchema,StudySharingStateSchema,StudyViewInputSchema,StudyViewSchema,type StudySharingState,type TravelSource } from '@virtual-city/contracts';
+import { StudySharingInputSchema,StudySharingStateSchema,StudyViewInputSchema,StudyViewSchema,type StudySharingState,type TravelSource } from '@aetheria/contracts';
 import type { IdentityContext,IdentityService } from '../../../../identity/modules/accounts/application/service';
 import type { RoomService } from '../../../../rooms/modules/presence/application/service';
 import type { EventService } from '../../../../events/modules/calendar/application/service';

@@ -16,7 +16,7 @@ const movement=options.includes('--movement');
 const localPlayer=options.includes('--linux-play');
 const interactive=options.includes('--unity-interactive');
 const loss=options.includes('--pet-arena-loss'),pet=options.includes('--pet-arena')||loss,playable=options.includes('--runtime-gameplay')||pet,csharp=options.includes('--csharp-client'),unity=options.includes('--unity-player')||interactive||localPlayer;
-const petContent=pet?spawnSync(resolve('artifacts/rust/target/debug/vl-game-runtime'),['--ruleset-content-hash','pet-arena-pve'],{encoding:'utf8'}).stdout.trim():undefined;
+const petContent=pet?spawnSync(resolve('artifacts/rust/target/debug/aetheria-game-runtime'),['--ruleset-content-hash','pet-arena-pve'],{encoding:'utf8'}).stdout.trim():undefined;
 if(pet)assert.match(petContent,/^[a-f0-9]{64}$/);
 if(options.some(value=>!['--runtime-gameplay','--csharp-client','--pet-arena','--pet-arena-loss','--unity-player','--unity-interactive','--movement','--linux-play'].includes(value))||new Set(options).size!==options.length||(csharp||unity)&&!playable||pet&&(csharp||unity&&!interactive&&!localPlayer)||csharp&&unity||interactive&&options.includes('--unity-player')||movement&&(!playable||pet&&!interactive&&!localPlayer||csharp||unity&&!interactive&&!localPlayer)||pet&&(interactive||localPlayer)&&!movement||localPlayer&&(!pet||loss||interactive||options.includes('--unity-player')))throw Error('Unknown native interoperability mode');
 const require=createRequire(import.meta.url),apiRequire=createRequire(resolve('apps/platform-api/package.json'));
@@ -218,8 +218,8 @@ try{
    ...common,schemaVersion:1,ruleset:pet?'pet-arena-pve':'headless-counter',...(pet?{pet:0,stage:0}:{}),...(movement?{movement:true}:{}),matchId,player:guest.me.profile.id,
    role,activeStorageKey:'current',storageKeys,engineHash:Array(32).fill(0x64),
   }:{...common,content:scope.contentHash,expectedRole:role}),{mode:0o600});
-  const binary=resolve(playable?'artifacts/rust/target/debug/vl-game-runtime':'artifacts/rust/target/debug/examples/interop');
-  const env=playable?{PATH:process.env.PATH,VL_RUNTIME_BIND:'127.0.0.1:0',VL_GAMEPLAY_ENABLED:'1',VL_GAMEPLAY_CONFIG:privateFile,VL_GAME_DATABASE_URL:databaseUrl}:{PATH:process.env.PATH,TEST_DATABASE_URL:runtime.toString()};
+  const binary=resolve(playable?'artifacts/rust/target/debug/aetheria-game-runtime':'artifacts/rust/target/debug/examples/interop');
+  const env=playable?{PATH:process.env.PATH,AETHERIA_RUNTIME_BIND:'127.0.0.1:0',AETHERIA_GAMEPLAY_ENABLED:'1',AETHERIA_GAMEPLAY_CONFIG:privateFile,AETHERIA_GAME_DATABASE_URL:databaseUrl}:{PATH:process.env.PATH,TEST_DATABASE_URL:runtime.toString()};
   child=spawn(binary,playable?[]:[privateFile],{env,stdio:['ignore','pipe','pipe']});
   let startup='';child.stderr.on('data',chunk=>{errors+=chunk;});
   childClosed=new Promise(ok=>child.once('close',code=>ok(code)));
@@ -240,7 +240,7 @@ try{
   let probe;
   try{
    await writeFile(privateFile,JSON.stringify({...JSON.parse(original),...overrides}),{mode:0o600});
-   probe=spawn(resolve('artifacts/rust/target/debug/vl-game-runtime'),[],{env:{PATH:process.env.PATH,VL_RUNTIME_BIND:'127.0.0.1:0',VL_GAMEPLAY_ENABLED:'1',VL_GAMEPLAY_CONFIG:privateFile,VL_GAME_DATABASE_URL:databaseUrl},stdio:['ignore','pipe','pipe']});
+   probe=spawn(resolve('artifacts/rust/target/debug/aetheria-game-runtime'),[],{env:{PATH:process.env.PATH,AETHERIA_RUNTIME_BIND:'127.0.0.1:0',AETHERIA_GAMEPLAY_ENABLED:'1',AETHERIA_GAMEPLAY_CONFIG:privateFile,AETHERIA_GAME_DATABASE_URL:databaseUrl},stdio:['ignore','pipe','pipe']});
    let stdout='',stderr='';probe.stdout.on('data',b=>{stdout+=b;});probe.stderr.on('data',b=>{stderr+=b;});
    const timer=setTimeout(()=>probe.kill('SIGKILL'),10000);
    let code;
@@ -255,7 +255,7 @@ try{
  }
 
  if(playable){
-  const missing=spawnSync(resolve('artifacts/rust/target/debug/vl-game-runtime'),[],{env:{PATH:process.env.PATH,VL_RUNTIME_BIND:'127.0.0.1:0',VL_GAMEPLAY_ENABLED:'1'},encoding:'utf8',timeout:5000});
+  const missing=spawnSync(resolve('artifacts/rust/target/debug/aetheria-game-runtime'),[],{env:{PATH:process.env.PATH,AETHERIA_RUNTIME_BIND:'127.0.0.1:0',AETHERIA_GAMEPLAY_ENABLED:'1'},encoding:'utf8',timeout:5000});
   assert.equal(missing.status,1);
   assert(!missing.stdout.includes('LISTEN'));
   assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_matches')).rows[0].n,0);
@@ -473,7 +473,7 @@ try{
   assert.equal((await pool.query('SELECT count(*)::int AS n FROM platform_native_reward_ledger')).rows[0].n,1);
   record('expired-admission-denies-replay-authorized-renewal-reconciles-one-worker-grant');
   const metrics=await (await fetch('http://127.0.0.1:'+upstream+'/metrics')).text();
-  assert(metrics.includes('vl_native_command_receipts_total'));
+  assert(metrics.includes('aetheria_native_command_receipts_total'));
   assert(!metrics.includes(guest.me.profile.id));assert(!metrics.includes('ownRoll'));record('runtime-metrics-contain-aggregate-counters');
 
   clearInterval(heartbeat);heartbeat=undefined;await heartbeatWork;

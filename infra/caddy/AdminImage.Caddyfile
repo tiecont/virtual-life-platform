@@ -16,8 +16,8 @@
 	}
 }
 
-{$CITY_SITE_ADDRESS} {
-	tls {$CITY_TLS_CERT} {$CITY_TLS_KEY}
+{$AETHERIA_SITE_ADDRESS} {
+	tls {$AETHERIA_TLS_CERT} {$AETHERIA_TLS_KEY}
 	header -Server
 	# This disposable edge exposes only the admin frontend/BFF; never the API.
 	@backend path /v1 /v1/* /internal /internal/* /socket.io /socket.io/* /health/*
@@ -25,7 +25,7 @@
 		respond 404
 	}
 	handle {
-		reverse_proxy {$CITY_ADMIN_UPSTREAM:admin:3400} {
+		reverse_proxy {$AETHERIA_ADMIN_UPSTREAM:admin:3400} {
 			header_up -Forwarded
 			header_up X-Forwarded-For {remote_host}
 			header_up X-Forwarded-Proto https

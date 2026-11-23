@@ -1,6 +1,6 @@
 import { it,expect } from 'vitest';
 import { mutualTopics } from './matching-policy';
-import { DatingQueueJoinSchema,DatingMatchViewSchema,DatingMatchAcceptSchema,type DatingProfileData } from '@virtual-city/contracts';
+import { DatingQueueJoinSchema,DatingMatchViewSchema,DatingMatchAcceptSchema,type DatingProfileData } from '@aetheria/contracts';
 const a:DatingProfileData={aliasKey:'willow',topics:['books'],preferredTopics:['art'],pace:'calm'},b:DatingProfileData={aliasKey:'cedar',topics:['art'],preferredTopics:['books'],pace:'either'};
 it('compatibility is bilateral and pace-aware without inspecting general identity or demographics',()=>{expect(mutualTopics(a,b)).toBe(true);expect(mutualTopics(b,a)).toBe(true);expect(mutualTopics(a,{...b,preferredTopics:['nature']})).toBe(false);expect(mutualTopics(a,{...b,pace:'lively'})).toBe(false);expect(mutualTopics({...a,pace:'either'},{...b,pace:'lively'})).toBe(true);});
 it('queue/accept contracts reject chosen peers,client age/scores,free text and missing explicit consent',()=>{const at=Date.now(),value=at+'.'+(at+30000)+'.'+'a'.repeat(64),body={schemaVersion:1,expectedRevision:1,joinGrant:value,consent:true};expect(DatingQueueJoinSchema.safeParse(body).success).toBe(true);for(const extra of [{peerId:'chosen'},{accountId:'chosen'},{age:18},{rank:100},{note:'contact me'},{consent:false}])expect(DatingQueueJoinSchema.safeParse({...body,...extra}).success).toBe(false);expect(DatingMatchAcceptSchema.safeParse({schemaVersion:1,expectedVersion:0,consent:false}).success).toBe(false);});

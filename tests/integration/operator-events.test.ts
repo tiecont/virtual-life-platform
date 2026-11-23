@@ -6,11 +6,11 @@ import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
 import {OperatorService} from '../../apps/platform-api/src/features/identity/modules/operators/application/operator-service';
 import {totp} from '../../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto';
-import {defineWorld} from '@virtual-city/world-sdk';
+import {defineWorld} from '@aetheria/world-sdk';
 import {OperatorEventCalendar} from '../../apps/platform-api/src/features/events/modules/calendar/application/operator-calendar';
 let admin:Pool,pool:Pool,server:Awaited<ReturnType<typeof createApp>>,schema:string,now:number,authKey:string;
 const origin='http://127.0.0.1:3400',factor='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',password='synthetic-calendar-operator-password';
-beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable DB required');admin=new Pool({connectionString:url.toString()});});
+beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable DB required');admin=new Pool({connectionString:url.toString()});});
 beforeEach(async()=>{schema='operator_events_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA "${schema}"`);const url=new URL(process.env.TEST_DATABASE_URL!);url.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:url.toString()});await migrate(pool);now=Date.now();const key=randomBytes(32).toString('hex');authKey=key;await new OperatorService(pool,key,()=>now-60000).bootstrap({password,totpSecret:factor,code:totp(factor,now-60000)});server=await createApp(readConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'synthetic-calendar-player-secret-'.repeat(2),ADMIN_ORIGIN:origin,OPERATOR_AUTH_KEY:key}),pool,false,{now:()=>now});});
 afterEach(async()=>{await server?.app.close();await pool?.end();await admin.query(`DROP SCHEMA "${schema}" CASCADE`);});afterAll(async()=>{await admin.end();});
 async function login(){const r=await server.http.inject({method:'POST',url:'/v1/operator/login',headers:{origin},payload:{password,code:totp(factor,now)}});expect(r.statusCode).toBe(200);return {cookie:String(r.headers['set-cookie']).split(';')[0],csrf:r.json().csrfToken as string};}

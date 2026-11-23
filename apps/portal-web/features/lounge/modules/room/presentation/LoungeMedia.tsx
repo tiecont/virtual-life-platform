@@ -1,6 +1,6 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
-import { MediaViewSchema,type EventCatalogSchema,type Me,type TravelSource } from '@virtual-city/contracts';
+import { MediaViewSchema,type EventCatalogSchema,type Me,type TravelSource } from '@aetheria/contracts';
 type View=ReturnType<typeof MediaViewSchema.parse>;
 type EventView=ReturnType<typeof EventCatalogSchema.parse>['items'][number];
 const usable=()=>document.visibilityState!=='hidden'&&navigator.onLine;

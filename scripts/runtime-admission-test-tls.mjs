@@ -8,8 +8,8 @@ import {createHash} from 'node:crypto';
 const execute=promisify(execFile);
 
 export async function prepareAdmissionTestTls(directory,pool){
- const project=process.env.CITY_TEST_DB_PROJECT;
- assert.match(project??'',/^virtual-city-test-[a-f0-9]{8}$/,'TLS requires wrapper-owned Docker PG');
+ const project=process.env.AETHERIA_TEST_DB_PROJECT;
+ assert.match(project??'',/^aetheria-soulbound-test-[a-f0-9]{8}$/,'TLS requires wrapper-owned Docker PG');
  const root=resolve(directory,'tls');await mkdir(root,{recursive:true,mode:0o700});
  async function openssl(args){await execute('openssl',args,{cwd:root,timeout:15000,maxBuffer:1024**2});}
  await openssl(['req','-x509','-newkey','rsa:2048','-nodes','-keyout','ca.key','-out','ca.pem','-days','1','-subj','/CN=VL013 disposable CA']);

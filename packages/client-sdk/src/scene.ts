@@ -1,4 +1,4 @@
-import type {AvatarAppearance,AvatarParts,RoomSnapshot,SceneManifest} from '@virtual-city/contracts';
+import type {AvatarAppearance,AvatarParts,RoomSnapshot,SceneManifest} from '@aetheria/contracts';
 
 // Renderer ownership is presentation only. No engine,React,Node or authority
 // implementation belongs in this port; the host owns lifetime and DOM actions.

@@ -1,5 +1,5 @@
 import type {PoolClient} from 'pg';
-import {OperatorEventCommandSchema,OperatorEventConfigSchema,OperatorEventDraftSchema,OperatorEventRangeSchema,OperatorEventQuerySchema,OperatorEventCalendarSchema,OperatorEventSnapshotSchema,OperatorEventReceiptSchema,OperatorEventAuditSchema} from '@virtual-city/contracts';
+import {OperatorEventCommandSchema,OperatorEventConfigSchema,OperatorEventDraftSchema,OperatorEventRangeSchema,OperatorEventQuerySchema,OperatorEventCalendarSchema,OperatorEventSnapshotSchema,OperatorEventReceiptSchema,OperatorEventAuditSchema} from '@aetheria/contracts';
 import type {IdentityService} from '../../../../identity/modules/accounts/application/service';
 import type {OperatorService} from '../../../../identity/modules/operators/application/operator-service';
 import {DomainError} from '../../../../../shared/common/errors';

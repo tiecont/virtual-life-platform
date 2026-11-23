@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace VirtualLife.Native.Public.V1 {
+namespace Aetheria.Native.Public.V1 {
 
   /// <summary>Holder for reflection information generated from public.proto</summary>
   public static partial class PublicReflection {
@@ -24,65 +24,64 @@ namespace VirtualLife.Native.Public.V1 {
     static PublicReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "CgxwdWJsaWMucHJvdG8SFXZpcnR1YWxsaWZlLnB1YmxpYy52MSKyAgoOQ2xp",
-            "ZW50RW52ZWxvcGUSGAoQcHJvdG9jb2xfdmVyc2lvbhgBIAEoDRISCgpjb21t",
-            "YW5kX2lkGAIgASgMEhAKCHNlcXVlbmNlGAMgASgEEi0KBWhlbGxvGAogASgL",
-            "MhwudmlydHVhbGxpZmUucHVibGljLnYxLkhlbGxvSAASOAoLZ2FtZV9pbnRl",
-            "bnQYCyABKAsyIS52aXJ0dWFsbGlmZS5wdWJsaWMudjEuR2FtZUludGVudEgA",
-            "EjgKC21vdmVfaW50ZW50GAwgASgLMiEudmlydHVhbGxpZmUucHVibGljLnYx",
-            "Lk1vdmVJbnRlbnRIABIvCgZyZXN5bmMYDSABKAsyHS52aXJ0dWFsbGlmZS5w",
-            "dWJsaWMudjEuUmVzeW5jSABCBgoEYm9keUoECAQQCiJzCgVIZWxsbxIOCgZ0",
-            "aWNrZXQYASABKAkSFAoMY2xpZW50X2J1aWxkGAIgASgJEhQKDGNvbnRlbnRf",
-            "aGFzaBgDIAEoDBIbCg5wbGF0Zm9ybV9sYWJlbBgEIAEoCUgAiAEBQhEKD19w",
-            "bGF0Zm9ybV9sYWJlbCJrCgpHYW1lSW50ZW50EhcKD2dhbWVfc2Vzc2lvbl9p",
-            "ZBgBIAEoDBIeChZleHBlY3RlZF9zdGF0ZV92ZXJzaW9uGAIgASgEEgwKBGtp",
-            "bmQYAyABKAkSFgoOYWN0aW9uX3BheWxvYWQYBCABKAwilwEKCk1vdmVJbnRl",
-            "bnQSFgoOaW5wdXRfc2VxdWVuY2UYASABKAQSEwoLZGlyZWN0aW9uX3gYAiAB",
-            "KBESEwoLZGlyZWN0aW9uX3oYAyABKBESFwoPYXV0aG9yaXR5X2Vwb2NoGAQg",
-            "ASgEEhUKDWV4cGVjdGVkX3RpY2sYBSABKAQSFwoPc2VudF9hdF91bml4X21z",
-            "GAYgASgEIjkKBlJlc3luYxIXCg9sYXN0X3NlZW5fZXBvY2gYASABKAQSFgoO",
-            "bGFzdF9zZWVuX3RpY2sYAiABKAQiwgIKDlNlcnZlckVudmVsb3BlEhgKEHBy",
-            "b3RvY29sX3ZlcnNpb24YASABKA0SEgoKY29tbWFuZF9pZBgCIAEoDBIZChFj",
-            "YW5vbmljYWxfdmVyc2lvbhgDIAEoBBI1CgVoZWxsbxgKIAEoCzIkLnZpcnR1",
-            "YWxsaWZlLnB1YmxpYy52MS5IZWxsb0FjY2VwdGVkSAASMQoHcmVjZWlwdBgL",
-            "IAEoCzIeLnZpcnR1YWxsaWZlLnB1YmxpYy52MS5SZWNlaXB0SAASNQoJcmVq",
-            "ZWN0aW9uGAwgASgLMiAudmlydHVhbGxpZmUucHVibGljLnYxLlJlamVjdGlv",
-            "bkgAEjgKCHNuYXBzaG90GA0gASgLMiQudmlydHVhbGxpZmUucHVibGljLnYx",
-            "LldvcmxkU25hcHNob3RIAEIGCgRib2R5SgQIBBAKIpQBCg1IZWxsb0FjY2Vw",
-            "dGVkEhQKDGNvbnRlbnRfaGFzaBgBIAEoDBIcChRzdGF0ZV9zY2hlbWFfdmVy",
-            "c2lvbhgCIAEoDRI2CghzbmFwc2hvdBgDIAEoCzIkLnZpcnR1YWxsaWZlLnB1",
-            "YmxpYy52MS5Xb3JsZFNuYXBzaG90EhcKD3J1bnRpbWVfYm9vdF9pZBgEIAEo",
-            "DCJqCg1Xb3JsZFNuYXBzaG90EhcKD2F1dGhvcml0eV9lcG9jaBgBIAEoBBIM",
-            "CgR0aWNrGAIgASgEEjIKCW93bl9hY3RvchgDIAEoCzIfLnZpcnR1YWxsaWZl",
-            "LnB1YmxpYy52MS5Pd25BY3RvciJDCghPd25BY3RvchIMCgR4X21tGAEgASgR",
-            "EgwKBHpfbW0YAiABKBESGwoTbGFzdF9pbnB1dF9zZXF1ZW5jZRgDIAEoBCI7",
-            "CgdSZWNlaXB0EhEKCWNvbW1pdHRlZBgBIAEoCBIdChVhdXRob3JpemVkX3By",
-            "b2plY3Rpb24YAiABKAwiYAoJUmVqZWN0aW9uEi4KBGNvZGUYASABKA4yIC52",
-            "aXJ0dWFsbGlmZS5wdWJsaWMudjEuRXJyb3JDb2RlEhEKCXJldHJ5YWJsZRgC",
-            "IAEoCBIQCgh0cmFjZV9pZBgDIAEoDCroAgoJRXJyb3JDb2RlEhUKEUVSUk9S",
-            "X1VOU1BFQ0lGSUVEEAASEwoPVU5BVVRIRU5USUNBVEVEEAESEgoOUE9MSUNZ",
-            "X1JFVk9LRUQQAhIUChBDT05URU5UX01JU01BVENIEAMSEQoNU1RBTEVfVkVS",
-            "U0lPThAEEg8KC1NUQUxFX0VQT0NIEAUSFAoQTk9UX0lOX1BST1hJTUlUWRAG",
-            "Eg4KClNFQVRfVEFLRU4QBxIXChNHQU1FX0FMUkVBRFlfQUNUSVZFEAgSEwoP",
-            "VEVMRVBPUlRfREVOSUVEEAkSGAoUVEFSR0VUX0NBUEFDSVRZX0ZVTEwQChIY",
-            "ChRDT01NQU5EX0lEX0NPTExJU0lPThALEhAKDEJBQ0tQUkVTU1VSRRAMEhsK",
-            "F1RFTVBPUkFSSUxZX1VOQVZBSUxBQkxFEA0SEgoOUkVXQVJEX1BFTkRJTkcQ",
-            "DhIWChJVTlNVUFBPUlRFRF9DTElFTlQQD0IfqgIcVmlydHVhbExpZmUuTmF0",
-            "aXZlLlB1YmxpYy5WMWIGcHJvdG8z"));
+            "CgxwdWJsaWMucHJvdG8SEmFldGhlcmlhLnB1YmxpYy52MSKmAgoOQ2xpZW50",
+            "RW52ZWxvcGUSGAoQcHJvdG9jb2xfdmVyc2lvbhgBIAEoDRISCgpjb21tYW5k",
+            "X2lkGAIgASgMEhAKCHNlcXVlbmNlGAMgASgEEioKBWhlbGxvGAogASgLMhku",
+            "YWV0aGVyaWEucHVibGljLnYxLkhlbGxvSAASNQoLZ2FtZV9pbnRlbnQYCyAB",
+            "KAsyHi5hZXRoZXJpYS5wdWJsaWMudjEuR2FtZUludGVudEgAEjUKC21vdmVf",
+            "aW50ZW50GAwgASgLMh4uYWV0aGVyaWEucHVibGljLnYxLk1vdmVJbnRlbnRI",
+            "ABIsCgZyZXN5bmMYDSABKAsyGi5hZXRoZXJpYS5wdWJsaWMudjEuUmVzeW5j",
+            "SABCBgoEYm9keUoECAQQCiJzCgVIZWxsbxIOCgZ0aWNrZXQYASABKAkSFAoM",
+            "Y2xpZW50X2J1aWxkGAIgASgJEhQKDGNvbnRlbnRfaGFzaBgDIAEoDBIbCg5w",
+            "bGF0Zm9ybV9sYWJlbBgEIAEoCUgAiAEBQhEKD19wbGF0Zm9ybV9sYWJlbCJr",
+            "CgpHYW1lSW50ZW50EhcKD2dhbWVfc2Vzc2lvbl9pZBgBIAEoDBIeChZleHBl",
+            "Y3RlZF9zdGF0ZV92ZXJzaW9uGAIgASgEEgwKBGtpbmQYAyABKAkSFgoOYWN0",
+            "aW9uX3BheWxvYWQYBCABKAwilwEKCk1vdmVJbnRlbnQSFgoOaW5wdXRfc2Vx",
+            "dWVuY2UYASABKAQSEwoLZGlyZWN0aW9uX3gYAiABKBESEwoLZGlyZWN0aW9u",
+            "X3oYAyABKBESFwoPYXV0aG9yaXR5X2Vwb2NoGAQgASgEEhUKDWV4cGVjdGVk",
+            "X3RpY2sYBSABKAQSFwoPc2VudF9hdF91bml4X21zGAYgASgEIjkKBlJlc3lu",
+            "YxIXCg9sYXN0X3NlZW5fZXBvY2gYASABKAQSFgoObGFzdF9zZWVuX3RpY2sY",
+            "AiABKAQitgIKDlNlcnZlckVudmVsb3BlEhgKEHByb3RvY29sX3ZlcnNpb24Y",
+            "ASABKA0SEgoKY29tbWFuZF9pZBgCIAEoDBIZChFjYW5vbmljYWxfdmVyc2lv",
+            "bhgDIAEoBBIyCgVoZWxsbxgKIAEoCzIhLmFldGhlcmlhLnB1YmxpYy52MS5I",
+            "ZWxsb0FjY2VwdGVkSAASLgoHcmVjZWlwdBgLIAEoCzIbLmFldGhlcmlhLnB1",
+            "YmxpYy52MS5SZWNlaXB0SAASMgoJcmVqZWN0aW9uGAwgASgLMh0uYWV0aGVy",
+            "aWEucHVibGljLnYxLlJlamVjdGlvbkgAEjUKCHNuYXBzaG90GA0gASgLMiEu",
+            "YWV0aGVyaWEucHVibGljLnYxLldvcmxkU25hcHNob3RIAEIGCgRib2R5SgQI",
+            "BBAKIpEBCg1IZWxsb0FjY2VwdGVkEhQKDGNvbnRlbnRfaGFzaBgBIAEoDBIc",
+            "ChRzdGF0ZV9zY2hlbWFfdmVyc2lvbhgCIAEoDRIzCghzbmFwc2hvdBgDIAEo",
+            "CzIhLmFldGhlcmlhLnB1YmxpYy52MS5Xb3JsZFNuYXBzaG90EhcKD3J1bnRp",
+            "bWVfYm9vdF9pZBgEIAEoDCJnCg1Xb3JsZFNuYXBzaG90EhcKD2F1dGhvcml0",
+            "eV9lcG9jaBgBIAEoBBIMCgR0aWNrGAIgASgEEi8KCW93bl9hY3RvchgDIAEo",
+            "CzIcLmFldGhlcmlhLnB1YmxpYy52MS5Pd25BY3RvciJDCghPd25BY3RvchIM",
+            "CgR4X21tGAEgASgREgwKBHpfbW0YAiABKBESGwoTbGFzdF9pbnB1dF9zZXF1",
+            "ZW5jZRgDIAEoBCI7CgdSZWNlaXB0EhEKCWNvbW1pdHRlZBgBIAEoCBIdChVh",
+            "dXRob3JpemVkX3Byb2plY3Rpb24YAiABKAwiXQoJUmVqZWN0aW9uEisKBGNv",
+            "ZGUYASABKA4yHS5hZXRoZXJpYS5wdWJsaWMudjEuRXJyb3JDb2RlEhEKCXJl",
+            "dHJ5YWJsZRgCIAEoCBIQCgh0cmFjZV9pZBgDIAEoDCroAgoJRXJyb3JDb2Rl",
+            "EhUKEUVSUk9SX1VOU1BFQ0lGSUVEEAASEwoPVU5BVVRIRU5USUNBVEVEEAES",
+            "EgoOUE9MSUNZX1JFVk9LRUQQAhIUChBDT05URU5UX01JU01BVENIEAMSEQoN",
+            "U1RBTEVfVkVSU0lPThAEEg8KC1NUQUxFX0VQT0NIEAUSFAoQTk9UX0lOX1BS",
+            "T1hJTUlUWRAGEg4KClNFQVRfVEFLRU4QBxIXChNHQU1FX0FMUkVBRFlfQUNU",
+            "SVZFEAgSEwoPVEVMRVBPUlRfREVOSUVEEAkSGAoUVEFSR0VUX0NBUEFDSVRZ",
+            "X0ZVTEwQChIYChRDT01NQU5EX0lEX0NPTExJU0lPThALEhAKDEJBQ0tQUkVT",
+            "U1VSRRAMEhsKF1RFTVBPUkFSSUxZX1VOQVZBSUxBQkxFEA0SEgoOUkVXQVJE",
+            "X1BFTkRJTkcQDhIWChJVTlNVUFBPUlRFRF9DTElFTlQQD0IcqgIZQWV0aGVy",
+            "aWEuTmF0aXZlLlB1YmxpYy5WMWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::VirtualLife.Native.Public.V1.ErrorCode), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.ClientEnvelope), global::VirtualLife.Native.Public.V1.ClientEnvelope.Parser, new[]{ "ProtocolVersion", "CommandId", "Sequence", "Hello", "GameIntent", "MoveIntent", "Resync" }, new[]{ "Body" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.Hello), global::VirtualLife.Native.Public.V1.Hello.Parser, new[]{ "Ticket", "ClientBuild", "ContentHash", "PlatformLabel" }, new[]{ "PlatformLabel" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.GameIntent), global::VirtualLife.Native.Public.V1.GameIntent.Parser, new[]{ "GameSessionId", "ExpectedStateVersion", "Kind", "ActionPayload" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.MoveIntent), global::VirtualLife.Native.Public.V1.MoveIntent.Parser, new[]{ "InputSequence", "DirectionX", "DirectionZ", "AuthorityEpoch", "ExpectedTick", "SentAtUnixMs" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.Resync), global::VirtualLife.Native.Public.V1.Resync.Parser, new[]{ "LastSeenEpoch", "LastSeenTick" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.ServerEnvelope), global::VirtualLife.Native.Public.V1.ServerEnvelope.Parser, new[]{ "ProtocolVersion", "CommandId", "CanonicalVersion", "Hello", "Receipt", "Rejection", "Snapshot" }, new[]{ "Body" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.HelloAccepted), global::VirtualLife.Native.Public.V1.HelloAccepted.Parser, new[]{ "ContentHash", "StateSchemaVersion", "Snapshot", "RuntimeBootId" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.WorldSnapshot), global::VirtualLife.Native.Public.V1.WorldSnapshot.Parser, new[]{ "AuthorityEpoch", "Tick", "OwnActor" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.OwnActor), global::VirtualLife.Native.Public.V1.OwnActor.Parser, new[]{ "XMm", "ZMm", "LastInputSequence" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.Receipt), global::VirtualLife.Native.Public.V1.Receipt.Parser, new[]{ "Committed", "AuthorizedProjection" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::VirtualLife.Native.Public.V1.Rejection), global::VirtualLife.Native.Public.V1.Rejection.Parser, new[]{ "Code", "Retryable", "TraceId" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Aetheria.Native.Public.V1.ErrorCode), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Aetheria.Native.Public.V1.ClientEnvelope), global::Aetheria.Native.Public.V1.ClientEnvelope.Parser, new[]{ "ProtocolVersion", "CommandId", "Sequence", "Hello", "GameIntent", "MoveIntent", "Resync" }, new[]{ "Body" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Aetheria.Native.Public.V1.Hello), global::Aetheria.Native.Public.V1.Hello.Parser, new[]{ "Ticket", "ClientBuild", "ContentHash", "PlatformLabel" }, new[]{ "PlatformLabel" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Aetheria.Native.Public.V1.GameIntent), global::Aetheria.Native.Public.V1.GameIntent.Parser, new[]{ "GameSessionId", "ExpectedStateVersion", "Kind", "ActionPayload" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Aetheria.Native.Public.V1.MoveIntent), global::Aetheria.Native.Public.V1.MoveIntent.Parser, new[]{ "InputSequence", "DirectionX", "DirectionZ", "AuthorityEpoch", "ExpectedTick", "SentAtUnixMs" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Aetheria.Native.Public.V1.Resync), global::Aetheria.Native.Public.V1.Resync.Parser, new[]{ "LastSeenEpoch", "LastSeenTick" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Aetheria.Native.Public.V1.ServerEnvelope), global::Aetheria.Native.Public.V1.ServerEnvelope.Parser, new[]{ "ProtocolVersion", "CommandId", "CanonicalVersion", "Hello", "Receipt", "Rejection", "Snapshot" }, new[]{ "Body" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Aetheria.Native.Public.V1.HelloAccepted), global::Aetheria.Native.Public.V1.HelloAccepted.Parser, new[]{ "ContentHash", "StateSchemaVersion", "Snapshot", "RuntimeBootId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Aetheria.Native.Public.V1.WorldSnapshot), global::Aetheria.Native.Public.V1.WorldSnapshot.Parser, new[]{ "AuthorityEpoch", "Tick", "OwnActor" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Aetheria.Native.Public.V1.OwnActor), global::Aetheria.Native.Public.V1.OwnActor.Parser, new[]{ "XMm", "ZMm", "LastInputSequence" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Aetheria.Native.Public.V1.Receipt), global::Aetheria.Native.Public.V1.Receipt.Parser, new[]{ "Committed", "AuthorizedProjection" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Aetheria.Native.Public.V1.Rejection), global::Aetheria.Native.Public.V1.Rejection.Parser, new[]{ "Code", "Retryable", "TraceId" }, null, null, null, null)
           }));
     }
     #endregion
@@ -129,7 +128,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Aetheria.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -219,8 +218,8 @@ namespace VirtualLife.Native.Public.V1 {
     public const int HelloFieldNumber = 10;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::VirtualLife.Native.Public.V1.Hello Hello {
-      get { return bodyCase_ == BodyOneofCase.Hello ? (global::VirtualLife.Native.Public.V1.Hello) body_ : null; }
+    public global::Aetheria.Native.Public.V1.Hello Hello {
+      get { return bodyCase_ == BodyOneofCase.Hello ? (global::Aetheria.Native.Public.V1.Hello) body_ : null; }
       set {
         body_ = value;
         bodyCase_ = value == null ? BodyOneofCase.None : BodyOneofCase.Hello;
@@ -231,8 +230,8 @@ namespace VirtualLife.Native.Public.V1 {
     public const int GameIntentFieldNumber = 11;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::VirtualLife.Native.Public.V1.GameIntent GameIntent {
-      get { return bodyCase_ == BodyOneofCase.GameIntent ? (global::VirtualLife.Native.Public.V1.GameIntent) body_ : null; }
+    public global::Aetheria.Native.Public.V1.GameIntent GameIntent {
+      get { return bodyCase_ == BodyOneofCase.GameIntent ? (global::Aetheria.Native.Public.V1.GameIntent) body_ : null; }
       set {
         body_ = value;
         bodyCase_ = value == null ? BodyOneofCase.None : BodyOneofCase.GameIntent;
@@ -243,8 +242,8 @@ namespace VirtualLife.Native.Public.V1 {
     public const int MoveIntentFieldNumber = 12;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::VirtualLife.Native.Public.V1.MoveIntent MoveIntent {
-      get { return bodyCase_ == BodyOneofCase.MoveIntent ? (global::VirtualLife.Native.Public.V1.MoveIntent) body_ : null; }
+    public global::Aetheria.Native.Public.V1.MoveIntent MoveIntent {
+      get { return bodyCase_ == BodyOneofCase.MoveIntent ? (global::Aetheria.Native.Public.V1.MoveIntent) body_ : null; }
       set {
         body_ = value;
         bodyCase_ = value == null ? BodyOneofCase.None : BodyOneofCase.MoveIntent;
@@ -255,8 +254,8 @@ namespace VirtualLife.Native.Public.V1 {
     public const int ResyncFieldNumber = 13;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::VirtualLife.Native.Public.V1.Resync Resync {
-      get { return bodyCase_ == BodyOneofCase.Resync ? (global::VirtualLife.Native.Public.V1.Resync) body_ : null; }
+    public global::Aetheria.Native.Public.V1.Resync Resync {
+      get { return bodyCase_ == BodyOneofCase.Resync ? (global::Aetheria.Native.Public.V1.Resync) body_ : null; }
       set {
         body_ = value;
         bodyCase_ = value == null ? BodyOneofCase.None : BodyOneofCase.Resync;
@@ -463,25 +462,25 @@ namespace VirtualLife.Native.Public.V1 {
       switch (other.BodyCase) {
         case BodyOneofCase.Hello:
           if (Hello == null) {
-            Hello = new global::VirtualLife.Native.Public.V1.Hello();
+            Hello = new global::Aetheria.Native.Public.V1.Hello();
           }
           Hello.MergeFrom(other.Hello);
           break;
         case BodyOneofCase.GameIntent:
           if (GameIntent == null) {
-            GameIntent = new global::VirtualLife.Native.Public.V1.GameIntent();
+            GameIntent = new global::Aetheria.Native.Public.V1.GameIntent();
           }
           GameIntent.MergeFrom(other.GameIntent);
           break;
         case BodyOneofCase.MoveIntent:
           if (MoveIntent == null) {
-            MoveIntent = new global::VirtualLife.Native.Public.V1.MoveIntent();
+            MoveIntent = new global::Aetheria.Native.Public.V1.MoveIntent();
           }
           MoveIntent.MergeFrom(other.MoveIntent);
           break;
         case BodyOneofCase.Resync:
           if (Resync == null) {
-            Resync = new global::VirtualLife.Native.Public.V1.Resync();
+            Resync = new global::Aetheria.Native.Public.V1.Resync();
           }
           Resync.MergeFrom(other.Resync);
           break;
@@ -519,7 +518,7 @@ namespace VirtualLife.Native.Public.V1 {
             break;
           }
           case 82: {
-            global::VirtualLife.Native.Public.V1.Hello subBuilder = new global::VirtualLife.Native.Public.V1.Hello();
+            global::Aetheria.Native.Public.V1.Hello subBuilder = new global::Aetheria.Native.Public.V1.Hello();
             if (bodyCase_ == BodyOneofCase.Hello) {
               subBuilder.MergeFrom(Hello);
             }
@@ -528,7 +527,7 @@ namespace VirtualLife.Native.Public.V1 {
             break;
           }
           case 90: {
-            global::VirtualLife.Native.Public.V1.GameIntent subBuilder = new global::VirtualLife.Native.Public.V1.GameIntent();
+            global::Aetheria.Native.Public.V1.GameIntent subBuilder = new global::Aetheria.Native.Public.V1.GameIntent();
             if (bodyCase_ == BodyOneofCase.GameIntent) {
               subBuilder.MergeFrom(GameIntent);
             }
@@ -537,7 +536,7 @@ namespace VirtualLife.Native.Public.V1 {
             break;
           }
           case 98: {
-            global::VirtualLife.Native.Public.V1.MoveIntent subBuilder = new global::VirtualLife.Native.Public.V1.MoveIntent();
+            global::Aetheria.Native.Public.V1.MoveIntent subBuilder = new global::Aetheria.Native.Public.V1.MoveIntent();
             if (bodyCase_ == BodyOneofCase.MoveIntent) {
               subBuilder.MergeFrom(MoveIntent);
             }
@@ -546,7 +545,7 @@ namespace VirtualLife.Native.Public.V1 {
             break;
           }
           case 106: {
-            global::VirtualLife.Native.Public.V1.Resync subBuilder = new global::VirtualLife.Native.Public.V1.Resync();
+            global::Aetheria.Native.Public.V1.Resync subBuilder = new global::Aetheria.Native.Public.V1.Resync();
             if (bodyCase_ == BodyOneofCase.Resync) {
               subBuilder.MergeFrom(Resync);
             }
@@ -586,7 +585,7 @@ namespace VirtualLife.Native.Public.V1 {
             break;
           }
           case 82: {
-            global::VirtualLife.Native.Public.V1.Hello subBuilder = new global::VirtualLife.Native.Public.V1.Hello();
+            global::Aetheria.Native.Public.V1.Hello subBuilder = new global::Aetheria.Native.Public.V1.Hello();
             if (bodyCase_ == BodyOneofCase.Hello) {
               subBuilder.MergeFrom(Hello);
             }
@@ -595,7 +594,7 @@ namespace VirtualLife.Native.Public.V1 {
             break;
           }
           case 90: {
-            global::VirtualLife.Native.Public.V1.GameIntent subBuilder = new global::VirtualLife.Native.Public.V1.GameIntent();
+            global::Aetheria.Native.Public.V1.GameIntent subBuilder = new global::Aetheria.Native.Public.V1.GameIntent();
             if (bodyCase_ == BodyOneofCase.GameIntent) {
               subBuilder.MergeFrom(GameIntent);
             }
@@ -604,7 +603,7 @@ namespace VirtualLife.Native.Public.V1 {
             break;
           }
           case 98: {
-            global::VirtualLife.Native.Public.V1.MoveIntent subBuilder = new global::VirtualLife.Native.Public.V1.MoveIntent();
+            global::Aetheria.Native.Public.V1.MoveIntent subBuilder = new global::Aetheria.Native.Public.V1.MoveIntent();
             if (bodyCase_ == BodyOneofCase.MoveIntent) {
               subBuilder.MergeFrom(MoveIntent);
             }
@@ -613,7 +612,7 @@ namespace VirtualLife.Native.Public.V1 {
             break;
           }
           case 106: {
-            global::VirtualLife.Native.Public.V1.Resync subBuilder = new global::VirtualLife.Native.Public.V1.Resync();
+            global::Aetheria.Native.Public.V1.Resync subBuilder = new global::Aetheria.Native.Public.V1.Resync();
             if (bodyCase_ == BodyOneofCase.Resync) {
               subBuilder.MergeFrom(Resync);
             }
@@ -643,7 +642,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[1]; }
+      get { return global::Aetheria.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -975,7 +974,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[2]; }
+      get { return global::Aetheria.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1287,7 +1286,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[3]; }
+      get { return global::Aetheria.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1685,7 +1684,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[4]; }
+      get { return global::Aetheria.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[4]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1920,7 +1919,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[5]; }
+      get { return global::Aetheria.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[5]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2007,8 +2006,8 @@ namespace VirtualLife.Native.Public.V1 {
     public const int HelloFieldNumber = 10;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::VirtualLife.Native.Public.V1.HelloAccepted Hello {
-      get { return bodyCase_ == BodyOneofCase.Hello ? (global::VirtualLife.Native.Public.V1.HelloAccepted) body_ : null; }
+    public global::Aetheria.Native.Public.V1.HelloAccepted Hello {
+      get { return bodyCase_ == BodyOneofCase.Hello ? (global::Aetheria.Native.Public.V1.HelloAccepted) body_ : null; }
       set {
         body_ = value;
         bodyCase_ = value == null ? BodyOneofCase.None : BodyOneofCase.Hello;
@@ -2019,8 +2018,8 @@ namespace VirtualLife.Native.Public.V1 {
     public const int ReceiptFieldNumber = 11;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::VirtualLife.Native.Public.V1.Receipt Receipt {
-      get { return bodyCase_ == BodyOneofCase.Receipt ? (global::VirtualLife.Native.Public.V1.Receipt) body_ : null; }
+    public global::Aetheria.Native.Public.V1.Receipt Receipt {
+      get { return bodyCase_ == BodyOneofCase.Receipt ? (global::Aetheria.Native.Public.V1.Receipt) body_ : null; }
       set {
         body_ = value;
         bodyCase_ = value == null ? BodyOneofCase.None : BodyOneofCase.Receipt;
@@ -2031,8 +2030,8 @@ namespace VirtualLife.Native.Public.V1 {
     public const int RejectionFieldNumber = 12;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::VirtualLife.Native.Public.V1.Rejection Rejection {
-      get { return bodyCase_ == BodyOneofCase.Rejection ? (global::VirtualLife.Native.Public.V1.Rejection) body_ : null; }
+    public global::Aetheria.Native.Public.V1.Rejection Rejection {
+      get { return bodyCase_ == BodyOneofCase.Rejection ? (global::Aetheria.Native.Public.V1.Rejection) body_ : null; }
       set {
         body_ = value;
         bodyCase_ = value == null ? BodyOneofCase.None : BodyOneofCase.Rejection;
@@ -2043,8 +2042,8 @@ namespace VirtualLife.Native.Public.V1 {
     public const int SnapshotFieldNumber = 13;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::VirtualLife.Native.Public.V1.WorldSnapshot Snapshot {
-      get { return bodyCase_ == BodyOneofCase.Snapshot ? (global::VirtualLife.Native.Public.V1.WorldSnapshot) body_ : null; }
+    public global::Aetheria.Native.Public.V1.WorldSnapshot Snapshot {
+      get { return bodyCase_ == BodyOneofCase.Snapshot ? (global::Aetheria.Native.Public.V1.WorldSnapshot) body_ : null; }
       set {
         body_ = value;
         bodyCase_ = value == null ? BodyOneofCase.None : BodyOneofCase.Snapshot;
@@ -2251,25 +2250,25 @@ namespace VirtualLife.Native.Public.V1 {
       switch (other.BodyCase) {
         case BodyOneofCase.Hello:
           if (Hello == null) {
-            Hello = new global::VirtualLife.Native.Public.V1.HelloAccepted();
+            Hello = new global::Aetheria.Native.Public.V1.HelloAccepted();
           }
           Hello.MergeFrom(other.Hello);
           break;
         case BodyOneofCase.Receipt:
           if (Receipt == null) {
-            Receipt = new global::VirtualLife.Native.Public.V1.Receipt();
+            Receipt = new global::Aetheria.Native.Public.V1.Receipt();
           }
           Receipt.MergeFrom(other.Receipt);
           break;
         case BodyOneofCase.Rejection:
           if (Rejection == null) {
-            Rejection = new global::VirtualLife.Native.Public.V1.Rejection();
+            Rejection = new global::Aetheria.Native.Public.V1.Rejection();
           }
           Rejection.MergeFrom(other.Rejection);
           break;
         case BodyOneofCase.Snapshot:
           if (Snapshot == null) {
-            Snapshot = new global::VirtualLife.Native.Public.V1.WorldSnapshot();
+            Snapshot = new global::Aetheria.Native.Public.V1.WorldSnapshot();
           }
           Snapshot.MergeFrom(other.Snapshot);
           break;
@@ -2307,7 +2306,7 @@ namespace VirtualLife.Native.Public.V1 {
             break;
           }
           case 82: {
-            global::VirtualLife.Native.Public.V1.HelloAccepted subBuilder = new global::VirtualLife.Native.Public.V1.HelloAccepted();
+            global::Aetheria.Native.Public.V1.HelloAccepted subBuilder = new global::Aetheria.Native.Public.V1.HelloAccepted();
             if (bodyCase_ == BodyOneofCase.Hello) {
               subBuilder.MergeFrom(Hello);
             }
@@ -2316,7 +2315,7 @@ namespace VirtualLife.Native.Public.V1 {
             break;
           }
           case 90: {
-            global::VirtualLife.Native.Public.V1.Receipt subBuilder = new global::VirtualLife.Native.Public.V1.Receipt();
+            global::Aetheria.Native.Public.V1.Receipt subBuilder = new global::Aetheria.Native.Public.V1.Receipt();
             if (bodyCase_ == BodyOneofCase.Receipt) {
               subBuilder.MergeFrom(Receipt);
             }
@@ -2325,7 +2324,7 @@ namespace VirtualLife.Native.Public.V1 {
             break;
           }
           case 98: {
-            global::VirtualLife.Native.Public.V1.Rejection subBuilder = new global::VirtualLife.Native.Public.V1.Rejection();
+            global::Aetheria.Native.Public.V1.Rejection subBuilder = new global::Aetheria.Native.Public.V1.Rejection();
             if (bodyCase_ == BodyOneofCase.Rejection) {
               subBuilder.MergeFrom(Rejection);
             }
@@ -2334,7 +2333,7 @@ namespace VirtualLife.Native.Public.V1 {
             break;
           }
           case 106: {
-            global::VirtualLife.Native.Public.V1.WorldSnapshot subBuilder = new global::VirtualLife.Native.Public.V1.WorldSnapshot();
+            global::Aetheria.Native.Public.V1.WorldSnapshot subBuilder = new global::Aetheria.Native.Public.V1.WorldSnapshot();
             if (bodyCase_ == BodyOneofCase.Snapshot) {
               subBuilder.MergeFrom(Snapshot);
             }
@@ -2374,7 +2373,7 @@ namespace VirtualLife.Native.Public.V1 {
             break;
           }
           case 82: {
-            global::VirtualLife.Native.Public.V1.HelloAccepted subBuilder = new global::VirtualLife.Native.Public.V1.HelloAccepted();
+            global::Aetheria.Native.Public.V1.HelloAccepted subBuilder = new global::Aetheria.Native.Public.V1.HelloAccepted();
             if (bodyCase_ == BodyOneofCase.Hello) {
               subBuilder.MergeFrom(Hello);
             }
@@ -2383,7 +2382,7 @@ namespace VirtualLife.Native.Public.V1 {
             break;
           }
           case 90: {
-            global::VirtualLife.Native.Public.V1.Receipt subBuilder = new global::VirtualLife.Native.Public.V1.Receipt();
+            global::Aetheria.Native.Public.V1.Receipt subBuilder = new global::Aetheria.Native.Public.V1.Receipt();
             if (bodyCase_ == BodyOneofCase.Receipt) {
               subBuilder.MergeFrom(Receipt);
             }
@@ -2392,7 +2391,7 @@ namespace VirtualLife.Native.Public.V1 {
             break;
           }
           case 98: {
-            global::VirtualLife.Native.Public.V1.Rejection subBuilder = new global::VirtualLife.Native.Public.V1.Rejection();
+            global::Aetheria.Native.Public.V1.Rejection subBuilder = new global::Aetheria.Native.Public.V1.Rejection();
             if (bodyCase_ == BodyOneofCase.Rejection) {
               subBuilder.MergeFrom(Rejection);
             }
@@ -2401,7 +2400,7 @@ namespace VirtualLife.Native.Public.V1 {
             break;
           }
           case 106: {
-            global::VirtualLife.Native.Public.V1.WorldSnapshot subBuilder = new global::VirtualLife.Native.Public.V1.WorldSnapshot();
+            global::Aetheria.Native.Public.V1.WorldSnapshot subBuilder = new global::Aetheria.Native.Public.V1.WorldSnapshot();
             if (bodyCase_ == BodyOneofCase.Snapshot) {
               subBuilder.MergeFrom(Snapshot);
             }
@@ -2431,7 +2430,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[6]; }
+      get { return global::Aetheria.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[6]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2490,10 +2489,10 @@ namespace VirtualLife.Native.Public.V1 {
 
     /// <summary>Field number for the "snapshot" field.</summary>
     public const int SnapshotFieldNumber = 3;
-    private global::VirtualLife.Native.Public.V1.WorldSnapshot snapshot_;
+    private global::Aetheria.Native.Public.V1.WorldSnapshot snapshot_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::VirtualLife.Native.Public.V1.WorldSnapshot Snapshot {
+    public global::Aetheria.Native.Public.V1.WorldSnapshot Snapshot {
       get { return snapshot_; }
       set {
         snapshot_ = value;
@@ -2644,7 +2643,7 @@ namespace VirtualLife.Native.Public.V1 {
       }
       if (other.snapshot_ != null) {
         if (snapshot_ == null) {
-          Snapshot = new global::VirtualLife.Native.Public.V1.WorldSnapshot();
+          Snapshot = new global::Aetheria.Native.Public.V1.WorldSnapshot();
         }
         Snapshot.MergeFrom(other.Snapshot);
       }
@@ -2680,7 +2679,7 @@ namespace VirtualLife.Native.Public.V1 {
           }
           case 26: {
             if (snapshot_ == null) {
-              Snapshot = new global::VirtualLife.Native.Public.V1.WorldSnapshot();
+              Snapshot = new global::Aetheria.Native.Public.V1.WorldSnapshot();
             }
             input.ReadMessage(Snapshot);
             break;
@@ -2718,7 +2717,7 @@ namespace VirtualLife.Native.Public.V1 {
           }
           case 26: {
             if (snapshot_ == null) {
-              Snapshot = new global::VirtualLife.Native.Public.V1.WorldSnapshot();
+              Snapshot = new global::Aetheria.Native.Public.V1.WorldSnapshot();
             }
             input.ReadMessage(Snapshot);
             break;
@@ -2753,7 +2752,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[7]; }
+      get { return global::Aetheria.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[7]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2811,10 +2810,10 @@ namespace VirtualLife.Native.Public.V1 {
 
     /// <summary>Field number for the "own_actor" field.</summary>
     public const int OwnActorFieldNumber = 3;
-    private global::VirtualLife.Native.Public.V1.OwnActor ownActor_;
+    private global::Aetheria.Native.Public.V1.OwnActor ownActor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::VirtualLife.Native.Public.V1.OwnActor OwnActor {
+    public global::Aetheria.Native.Public.V1.OwnActor OwnActor {
       get { return ownActor_; }
       set {
         ownActor_ = value;
@@ -2940,7 +2939,7 @@ namespace VirtualLife.Native.Public.V1 {
       }
       if (other.ownActor_ != null) {
         if (ownActor_ == null) {
-          OwnActor = new global::VirtualLife.Native.Public.V1.OwnActor();
+          OwnActor = new global::Aetheria.Native.Public.V1.OwnActor();
         }
         OwnActor.MergeFrom(other.OwnActor);
       }
@@ -2973,7 +2972,7 @@ namespace VirtualLife.Native.Public.V1 {
           }
           case 26: {
             if (ownActor_ == null) {
-              OwnActor = new global::VirtualLife.Native.Public.V1.OwnActor();
+              OwnActor = new global::Aetheria.Native.Public.V1.OwnActor();
             }
             input.ReadMessage(OwnActor);
             break;
@@ -3007,7 +3006,7 @@ namespace VirtualLife.Native.Public.V1 {
           }
           case 26: {
             if (ownActor_ == null) {
-              OwnActor = new global::VirtualLife.Native.Public.V1.OwnActor();
+              OwnActor = new global::Aetheria.Native.Public.V1.OwnActor();
             }
             input.ReadMessage(OwnActor);
             break;
@@ -3034,7 +3033,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[8]; }
+      get { return global::Aetheria.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[8]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3306,7 +3305,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[9]; }
+      get { return global::Aetheria.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[9]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3544,7 +3543,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::VirtualLife.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[10]; }
+      get { return global::Aetheria.Native.Public.V1.PublicReflection.Descriptor.MessageTypes[10]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3578,10 +3577,10 @@ namespace VirtualLife.Native.Public.V1 {
 
     /// <summary>Field number for the "code" field.</summary>
     public const int CodeFieldNumber = 1;
-    private global::VirtualLife.Native.Public.V1.ErrorCode code_ = global::VirtualLife.Native.Public.V1.ErrorCode.ErrorUnspecified;
+    private global::Aetheria.Native.Public.V1.ErrorCode code_ = global::Aetheria.Native.Public.V1.ErrorCode.ErrorUnspecified;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::VirtualLife.Native.Public.V1.ErrorCode Code {
+    public global::Aetheria.Native.Public.V1.ErrorCode Code {
       get { return code_; }
       set {
         code_ = value;
@@ -3637,7 +3636,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Code != global::VirtualLife.Native.Public.V1.ErrorCode.ErrorUnspecified) hash ^= Code.GetHashCode();
+      if (Code != global::Aetheria.Native.Public.V1.ErrorCode.ErrorUnspecified) hash ^= Code.GetHashCode();
       if (Retryable != false) hash ^= Retryable.GetHashCode();
       if (TraceId.Length != 0) hash ^= TraceId.GetHashCode();
       if (_unknownFields != null) {
@@ -3658,7 +3657,7 @@ namespace VirtualLife.Native.Public.V1 {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Code != global::VirtualLife.Native.Public.V1.ErrorCode.ErrorUnspecified) {
+      if (Code != global::Aetheria.Native.Public.V1.ErrorCode.ErrorUnspecified) {
         output.WriteRawTag(8);
         output.WriteEnum((int) Code);
       }
@@ -3680,7 +3679,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Code != global::VirtualLife.Native.Public.V1.ErrorCode.ErrorUnspecified) {
+      if (Code != global::Aetheria.Native.Public.V1.ErrorCode.ErrorUnspecified) {
         output.WriteRawTag(8);
         output.WriteEnum((int) Code);
       }
@@ -3702,7 +3701,7 @@ namespace VirtualLife.Native.Public.V1 {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Code != global::VirtualLife.Native.Public.V1.ErrorCode.ErrorUnspecified) {
+      if (Code != global::Aetheria.Native.Public.V1.ErrorCode.ErrorUnspecified) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Code);
       }
       if (Retryable != false) {
@@ -3723,7 +3722,7 @@ namespace VirtualLife.Native.Public.V1 {
       if (other == null) {
         return;
       }
-      if (other.Code != global::VirtualLife.Native.Public.V1.ErrorCode.ErrorUnspecified) {
+      if (other.Code != global::Aetheria.Native.Public.V1.ErrorCode.ErrorUnspecified) {
         Code = other.Code;
       }
       if (other.Retryable != false) {
@@ -3752,7 +3751,7 @@ namespace VirtualLife.Native.Public.V1 {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            Code = (global::VirtualLife.Native.Public.V1.ErrorCode) input.ReadEnum();
+            Code = (global::Aetheria.Native.Public.V1.ErrorCode) input.ReadEnum();
             break;
           }
           case 16: {
@@ -3783,7 +3782,7 @@ namespace VirtualLife.Native.Public.V1 {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 8: {
-            Code = (global::VirtualLife.Native.Public.V1.ErrorCode) input.ReadEnum();
+            Code = (global::Aetheria.Native.Public.V1.ErrorCode) input.ReadEnum();
             break;
           }
           case 16: {

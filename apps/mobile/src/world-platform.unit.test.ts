@@ -1,5 +1,5 @@
 import {expect,it,vi} from 'vitest';
-import type {NativeSessionCustodyPort} from '@virtual-city/client-sdk';
+import type {NativeSessionCustodyPort} from '@aetheria/client-sdk';
 import {nativeWorldPlatform} from './world-platform';
 vi.mock('@capacitor/app',()=>({App:{}}));vi.mock('@capacitor/core',()=>({Capacitor:{isNativePlatform:()=>false}}));
 const account='a0000000-0000-4000-8000-000000000001',other='a0000000-0000-4000-8000-000000000002',intent='a0000000-0000-4000-8000-000000000003';

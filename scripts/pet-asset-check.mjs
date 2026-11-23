@@ -1,6 +1,6 @@
 import {readFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
-import {PetBattleVisualDraftSchema,petAnimationSemantics} from '@virtual-city/contracts';
+import {PetBattleVisualDraftSchema,petAnimationSemantics} from '@aetheria/contracts';
 import {readPetDesign,validatePetDesign} from './pet-design-check.mjs';
 import {verifyPetAssetBytes} from './pet-asset-files.mjs';
 

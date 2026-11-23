@@ -1,5 +1,5 @@
-import {AvatarOwnStateSchema,MeSchema,NativeSocketHandshakeSchema,NativeTicketResultSchema,TravelIntentInputSchema} from '@virtual-city/contracts';
-import type {ClientPlatform,NativeSessionCustodyPort,NativeWorldCall} from '@virtual-city/client-sdk';
+import {AvatarOwnStateSchema,MeSchema,NativeSocketHandshakeSchema,NativeTicketResultSchema,TravelIntentInputSchema} from '@aetheria/contracts';
+import type {ClientPlatform,NativeSessionCustodyPort,NativeWorldCall} from '@aetheria/client-sdk';
 import {mobilePlatform} from './platform';
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const unavailable=()=>new Response(JSON.stringify({error:{code:'NOT_AVAILABLE'}}),{status:503,headers:{'content-type':'application/json'}});

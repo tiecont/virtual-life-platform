@@ -1,9 +1,9 @@
-use vl_game_runtime::{Config, probe, router};
+use aetheria_game_runtime::{Config, probe, router};
 
 #[tokio::main(worker_threads = 2)]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let enabled = std::env::var("VL_GAMEPLAY_ENABLED").ok();
-    let bind = std::env::var("VL_RUNTIME_BIND").ok();
+    let enabled = std::env::var("AETHERIA_GAMEPLAY_ENABLED").ok();
+    let bind = std::env::var("AETHERIA_RUNTIME_BIND").ok();
     let config = Config::parse(
         bind.as_deref(),
         if enabled.as_deref() == Some("1") {
@@ -14,7 +14,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     )?;
     let args: Vec<_> = std::env::args().skip(1).collect();
     if args == ["--ruleset-content-hash", "pet-arena-pve"] {
-        let hash = vl_game_runtime::features::pet_arena::domain::content_hash();
+        let hash = aetheria_game_runtime::features::pet_arena::domain::content_hash();
         println!(
             "{}",
             hash.iter()
@@ -34,17 +34,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         if !config.bind.ip().is_loopback() {
             return Err("Native gateway requires loopback upstream behind trusted TLS".into());
         }
-        let file = std::env::var("VL_GAMEPLAY_CONFIG")
+        let file = std::env::var("AETHERIA_GAMEPLAY_CONFIG")
             .map_err(|_| "Native gameplay configuration required")?;
-        let database = std::env::var("VL_GAME_DATABASE_URL")
+        let database = std::env::var("AETHERIA_GAME_DATABASE_URL")
             .map_err(|_| "Native game database configuration required")?;
-        let runtime = vl_game_runtime::features::runtime::infrastructure::NativeRuntime::start(
-            &file, &database,
-        )
-        .await?;
+        let runtime =
+            aetheria_game_runtime::features::runtime::infrastructure::NativeRuntime::start(
+                &file, &database,
+            )
+            .await?;
         let listener = tokio::net::TcpListener::bind(config.bind).await?;
         println!("LISTEN {}", listener.local_addr()?.port());
-        println!("vl-game-runtime native gameplay listening");
+        println!("aetheria-game-runtime native gameplay listening");
         axum::serve(listener, runtime.router.clone())
             .with_graceful_shutdown(shutdown())
             .await?;
@@ -53,7 +54,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let listener = tokio::net::TcpListener::bind(config.bind).await?;
     println!("LISTEN {}", listener.local_addr()?.port());
-    println!("vl-game-runtime foundation listening; gameplay disabled");
+    println!("aetheria-game-runtime foundation listening; gameplay disabled");
     axum::serve(listener, router())
         .with_graceful_shutdown(shutdown())
         .await?;

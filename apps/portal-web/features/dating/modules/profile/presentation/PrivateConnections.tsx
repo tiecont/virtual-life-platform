@@ -1,6 +1,6 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
-import { MeSchema,DatingContinuationListSchema,DatingContinuationViewSchema,DatingMatchViewSchema,type Me } from '@virtual-city/contracts';
+import { MeSchema,DatingContinuationListSchema,DatingContinuationViewSchema,DatingMatchViewSchema,type Me } from '@aetheria/contracts';
 import PrivateWithdraw from './PrivateWithdraw';
 type List=ReturnType<typeof DatingContinuationListSchema.parse>;
 type View=ReturnType<typeof DatingContinuationViewSchema.parse>;

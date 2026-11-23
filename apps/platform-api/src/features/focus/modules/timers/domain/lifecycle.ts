@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { FocusDurationSchema, FocusPhaseSchema } from '@virtual-city/contracts';
+import { FocusDurationSchema, FocusPhaseSchema } from '@aetheria/contracts';
 import { DomainError } from '../../../../../shared/common/errors';
 const time = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
 export const FocusStateSchema = z.strictObject({ phase: FocusPhaseSchema, durationSeconds: FocusDurationSchema, startedAt: time, changedAt: time, endsAt: time.nullable(), pausedUntil: time.nullable(), remainingMs: z.number().int().min(0).max(3000000), canPause: z.boolean(), pauseBudgetMs: z.number().int().min(0).max(600000) }).refine(state => state.changedAt >= state.startedAt && state.remainingMs <= state.durationSeconds * 1000 && (state.canPause || state.pauseBudgetMs === 0)

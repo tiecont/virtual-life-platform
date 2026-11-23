@@ -17,7 +17,7 @@ const scope:RuntimeScope={worldId:'native:training',runtimeBootId:'11111111-1111
 const policy:RuntimeAdmissionPort=async(_db,accountId,sessionId)=>({accountId,sessionId,generation:1,validUntilMs:now+5000});
 before(async()=>{
  const url=new URL(process.env.TEST_DATABASE_URL??'');
- if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local DB required');
+ if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local DB required');
  admin=new Pool({connectionString:url.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);
  url.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:url.toString()});await migrate(pool);
  identity=new IdentityService(pool,readConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'runtime-ticket-test-only-secret-00000001'}),()=>now);
@@ -36,15 +36,15 @@ test('real identity owner issues Ed25519 scoped grants and produces live cross-l
  assert.equal(first.ticket.includes(user.token),false);
  assert.deepEqual(Object.keys(JSON.parse(Buffer.from(parts[0],'base64url').toString())).sort(),['alg','kid','typ']);
  const rotate=await new RuntimeTicketIssuer(identity,'key-b',key2.privateKey,policy,()=>now).issue(user.token,scope);
- const encode=(change:Record<string,unknown>,header:Record<string,unknown>={alg:'EdDSA',typ:'vl-runtime-ticket+jwt',kid:'key-a'})=>{
+ const encode=(change:Record<string,unknown>,header:Record<string,unknown>={alg:'EdDSA',typ:'aetheria-runtime-ticket+jwt',kid:'key-a'})=>{
   const input=Buffer.from(JSON.stringify(header)).toString('base64url')+'.'+Buffer.from(JSON.stringify({...claims,...change})).toString('base64url');
   return input+'.'+sign(null,Buffer.from(input),keys.privateKey).toString('base64url');
  };
  const negativeTokens={
-  issuer:encode({iss:'other'}),audience:encode({aud:'native-socket-v1'}),world:encode({world:'native:other'}),boot:encode({boot:randomUUID()}),content:encode({content:'cd'.repeat(32)}),protocol:encode({protocol:2}),scope:encode({scope:'admin'}),generation:encode({generation:'01'}),subject:encode({sub:'caller'}),nonce:encode({jti:'bad'}),expired:encode({iat:Number(claims.iat)-10,nbf:Number(claims.iat)-10,exp:Number(claims.iat)}),future:encode({iat:Number(claims.iat)+1,nbf:Number(claims.iat)+1,exp:Number(claims.iat)+5}),ttl:encode({exp:Number(claims.iat)+31}),unknownClaim:encode({role:'admin'}),unknownKey:encode({},{alg:'EdDSA',typ:'vl-runtime-ticket+jwt',kid:'unknown'}),critical:encode({},{alg:'EdDSA',typ:'vl-runtime-ticket+jwt',kid:'key-a',crit:['b64']}),algorithm:encode({},{alg:'HS256',typ:'vl-runtime-ticket+jwt',kid:'key-a'}),keyUrl:encode({},{alg:'EdDSA',typ:'vl-runtime-ticket+jwt',kid:'key-a',jku:'https://invalid.example/key'}),
+  issuer:encode({iss:'other'}),audience:encode({aud:'native-socket-v1'}),world:encode({world:'native:other'}),boot:encode({boot:randomUUID()}),content:encode({content:'cd'.repeat(32)}),protocol:encode({protocol:2}),scope:encode({scope:'admin'}),generation:encode({generation:'01'}),subject:encode({sub:'caller'}),nonce:encode({jti:'bad'}),expired:encode({iat:Number(claims.iat)-10,nbf:Number(claims.iat)-10,exp:Number(claims.iat)}),future:encode({iat:Number(claims.iat)+1,nbf:Number(claims.iat)+1,exp:Number(claims.iat)+5}),ttl:encode({exp:Number(claims.iat)+31}),unknownClaim:encode({role:'admin'}),unknownKey:encode({},{alg:'EdDSA',typ:'aetheria-runtime-ticket+jwt',kid:'unknown'}),critical:encode({},{alg:'EdDSA',typ:'aetheria-runtime-ticket+jwt',kid:'key-a',crit:['b64']}),algorithm:encode({},{alg:'HS256',typ:'aetheria-runtime-ticket+jwt',kid:'key-a'}),keyUrl:encode({},{alg:'EdDSA',typ:'aetheria-runtime-ticket+jwt',kid:'key-a',jku:'https://invalid.example/key'}),
  };
  const fixture={now:Math.floor(now/1000),publicKeys:{'key-a':keys.publicKey.export({format:'jwk'}).x,'key-b':key2.publicKey.export({format:'jwk'}).x},ticket:first.ticket,rotationTicket:rotate.ticket,negativeTokens,account:claims.sub,session:claims.sid,world:scope.worldId,boot:scope.runtimeBootId,content:scope.contentHash};
- const path=process.env.VL_TICKET_FIXTURE_PATH??'artifacts/desktop-first/vl013/tickets.json';
+ const path=process.env.AETHERIA_TICKET_FIXTURE_PATH??'artifacts/desktop-first/vl013/tickets.json';
  await mkdir(dirname(path),{recursive:true});await writeFile(path,JSON.stringify(fixture,null,2)+'\n');
 });
 test('rechecks identity after a real account-lock wait and never signs a revoked session',async()=>{

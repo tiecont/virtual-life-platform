@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { TravelPhaseSchema } from '@virtual-city/contracts';
+import { TravelPhaseSchema } from '@aetheria/contracts';
 
 export const TRAVEL_MAX_TTL_MS = 30000;
 const time = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);

@@ -1,4 +1,4 @@
-import { ReadinessSchema } from '@virtual-city/contracts';
+import { ReadinessSchema } from '@aetheria/contracts';
 import CityMap from '../features/city/modules/city/presentation/CityMap';
 export const dynamic = 'force-dynamic';
 export default async function Home() {

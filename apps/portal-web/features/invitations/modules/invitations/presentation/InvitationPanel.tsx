@@ -4,7 +4,7 @@ import { io } from 'socket.io-client';
 import GroupInvitations from './GroupInvitations';
 import Link from 'next/link';
 import { travelHref } from '../../../../travel/modules/travel/application/destination-link';
-import { ApiErrorSchema, FriendsPageSchema, InvitationChangedSchema, InvitationReceiptSchema, InvitationSettingsSchema, InvitationsPageSchema, MeSchema, WorldCatalogSchema, type FriendsPage, type InvitationSettings, type InvitationsPage, type Me, type WorldCard } from '@virtual-city/contracts';
+import { ApiErrorSchema, FriendsPageSchema, InvitationChangedSchema, InvitationReceiptSchema, InvitationSettingsSchema, InvitationsPageSchema, MeSchema, WorldCatalogSchema, type FriendsPage, type InvitationSettings, type InvitationsPage, type Me, type WorldCard } from '@aetheria/contracts';
 class InvitationError extends Error { constructor(readonly status: number, message: string) { super(message); } }
 async function api(path: string, options: RequestInit = {}) {
   const response = await fetch('/v1' + path, { ...options, credentials: 'same-origin', cache: 'no-store' });
@@ -33,7 +33,7 @@ export default function InvitationPanel({ socketOrigin }: { socketOrigin: string
     } finally { if (mounted.current && ticket === sequence.current) setLoading(false); }
   }, []);
   useEffect(() => {
-    mounted.current = true; void refresh(); const bus = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel('virtual-city-identity');
+    mounted.current = true; void refresh(); const bus = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel('aetheria-soulbound-identity');
     if (bus) bus.onmessage = () => { setInbox(null); setFriends(null); pending.current.clear(); void refresh(); };
     return () => { mounted.current = false; sequence.current++; bus?.close(); };
   }, [refresh]);

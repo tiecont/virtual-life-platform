@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { LegacyIdentityViewSchema, type LegacyIdentityView } from '@virtual-city/contracts';
+import { LegacyIdentityViewSchema, type LegacyIdentityView } from '@aetheria/contracts';
 type Command = { key: string; revision: number };
 class AssociationFailure extends Error {}
 export default function LegacyDeadlineIdentity({ csrf }: { csrf: string }) {

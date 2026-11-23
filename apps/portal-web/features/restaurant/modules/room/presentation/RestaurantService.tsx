@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import type { Me,TravelSource } from '@virtual-city/contracts';
+import type { Me,TravelSource } from '@aetheria/contracts';
 import useHospitalityOrders,{type Orders} from '../../../../hospitality/modules/hospitality/application/use-hospitality-orders';
 export default function RestaurantService({me,source,seated}:{me:Me;source:TravelSource|null;seated:boolean}){
  const {data,busy,uncertain,message,refresh,retry,change}=useHospitalityOrders(me,source,'restaurant');

@@ -1,5 +1,0 @@
-{
-  "name": "VirtualLife.NativeScene",
-  "rootNamespace": "VirtualLife.NativeScene",
-  "references": ["VirtualLife.Native", "VirtualLife.Blockout"]
-}

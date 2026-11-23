@@ -10,7 +10,7 @@ export async function reconcileNativePetRestore({source,sourceUrl,target,targetU
   const original=new URL(validateTestDatabaseURL(sourceUrl));
   const restored=new URL(targetUrl);
   if(!['postgres:','postgresql:'].includes(restored.protocol)||restored.hostname!=='127.0.0.1'
-    ||restored.pathname!=='/virtual_city_restore_test'||restored.port===original.port)throw unavailable();
+    ||restored.pathname!=='/aetheria_soulbound_restore_test'||restored.port===original.port)throw unavailable();
   // Source loss is deliberately indistinguishable from an invalid restore.
   // Never proceed to target mutation when the authoritative DB is unavailable.
   const before=await source.connect();
@@ -22,7 +22,7 @@ export async function reconcileNativePetRestore({source,sourceUrl,target,targetU
     const guard=`SELECT database_identity,game_native_pet_database_identity() AS actual,current_database() AS database
       FROM game_native_pet_database_guard WHERE singleton`;
     const [{rows:[origin]},{rows:[destination]}]=await Promise.all([before.query(guard),after.query(guard)]);
-    if(!origin||!destination||origin.database!==original.pathname.slice(1)||destination.database!=='virtual_city_restore_test'
+    if(!origin||!destination||origin.database!==original.pathname.slice(1)||destination.database!=='aetheria_soulbound_restore_test'
       ||origin.actual!==origin.database_identity||origin.actual===destination.actual
       ||origin.actual!==destination.database_identity||destination.actual===destination.database_identity)throw unavailable();
     if((await after.query(`SELECT 1 FROM game_native_matches m WHERE m.ruleset_id='pet-arena-pve'

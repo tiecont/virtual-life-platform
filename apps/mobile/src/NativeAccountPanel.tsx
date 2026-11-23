@@ -1,9 +1,9 @@
 import {useEffect,useRef,useState} from 'react';
-import type {NativeSessionState} from '@virtual-city/client-sdk';
+import type {NativeSessionState} from '@aetheria/client-sdk';
 import {androidSession} from './native-session';
 import {NativeAccountDeletion} from './NativeAccountDeletion';
 import {NativeSafetyPanel} from './NativeSafetyPanel';
-import {AccountDeletionInfo} from '@virtual-city/game-client';
+import {AccountDeletionInfo} from '@aetheria/game-client';
 import {NativeAvatarCreator} from './NativeAvatarCreator';
 
 // Account-only opt-in lane. It does not supply authenticated identity to the

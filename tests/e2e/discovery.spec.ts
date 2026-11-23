@@ -4,11 +4,11 @@ import { request } from 'node:http';
 import { randomUUID } from 'node:crypto';
 import { io,type Socket } from 'socket.io-client';
 import { Pool } from 'pg';
-import { MeSchema,RoomAckSchema,type Me,type RoomSnapshot } from '@virtual-city/contracts';
+import { MeSchema,RoomAckSchema,type Me,type RoomSnapshot } from '@aetheria/contracts';
 import { mkdir,writeFile } from 'node:fs/promises';
 const origin='http://127.0.0.1:3300';let serial=1;
 async function guest(context?:BrowserContext){const payload=JSON.stringify({requestId:randomUUID(),displayName:'Discovery Visitor',avatarKey:'mint'}),user=await new Promise<{me:Me;cookie:string}>((resolve,reject)=>{const req=request('http://127.0.0.1:4300/v1/session/guest',{method:'POST',localAddress:'127.31.0.'+serial++,headers:{origin,'content-type':'application/json','content-length':Buffer.byteLength(payload)}},res=>{let body='';res.on('data',chunk=>body+=chunk);res.on('end',()=>{try{expect(res.statusCode).toBe(201);resolve({me:MeSchema.parse(JSON.parse(body)),cookie:res.headers['set-cookie']![0].split(';')[0]});}catch(error){reject(error);}});});req.on('error',reject);req.end(payload);});if(context){const at=user.cookie.indexOf('=');await context.addCookies([{name:user.cookie.slice(0,at),value:user.cookie.slice(at+1),url:origin,httpOnly:true,sameSite:'Lax'}]);}return user;}
-function database(){const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Refusing non-local/non-test DB');return new Pool({connectionString:url.toString()});}
+function database(){const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Refusing non-local/non-test DB');return new Pool({connectionString:url.toString()});}
 test('featured places use real occupied and listed-event snapshots without allocating empty rooms or disclosing private schedules',async({page,context})=>{
  const main=await guest(context),peer=await guest(),db=database(),ids=[randomUUID(),randomUUID()];let socket:Socket|undefined,snapshot:RoomSnapshot|undefined;
  try{

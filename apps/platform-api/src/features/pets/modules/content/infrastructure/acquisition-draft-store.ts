@@ -1,6 +1,6 @@
 import {createHash} from 'node:crypto';
 import type {Pool,PoolClient} from 'pg';
-import {validatePetAcquisitionCatalogV3,type PetAcquisitionCatalogV3} from '@virtual-city/contracts/pet-acquisition-v3';
+import {validatePetAcquisitionCatalogV3,type PetAcquisitionCatalogV3} from '@aetheria/contracts/pet-acquisition-v3';
 
 function canonical(value:unknown):unknown{
  if(Array.isArray(value))return value.map(canonical);

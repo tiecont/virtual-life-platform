@@ -8,7 +8,7 @@ import {pathToFileURL} from 'node:url';
 import {readNodeWorkspace} from './node-workspaces.mjs';
 
 const sections = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
-const sourceOnly = new Set(['@virtual-city/config', '@virtual-city/ui']);
+const sourceOnly = new Set(['@aetheria/config', '@aetheria/ui']);
 const compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 const digest = value => createHash('sha256').update(value).digest('hex');
 const readJson = async file => JSON.parse(await readFile(file, 'utf8'));
@@ -25,13 +25,13 @@ export function workspaceGraph(projects) {
   const edges = new Map();
   for (const project of projects) {
     const names = new Set();
-    assert(/^@virtual-city\/[a-z][a-z0-9-]*$/.test(project.manifest.name), 'Invalid workspace name');
+    assert(/^@aetheria\/[a-z][a-z0-9-]*$/.test(project.manifest.name), 'Invalid workspace name');
     if (project.path.startsWith('apps/') || !sourceOnly.has(project.manifest.name)) {
       assert(project.manifest.scripts?.build, 'Missing build target: ' + project.manifest.name);
       assert(project.manifest.scripts?.typecheck, 'Missing typecheck target: ' + project.manifest.name);
     }
     for (const section of sections) for (const [name, version] of Object.entries(project.manifest[section] ?? {})) {
-      if (name.startsWith('@virtual-city/') || version.startsWith('workspace:')) {
+      if (name.startsWith('@aetheria/') || version.startsWith('workspace:')) {
         assert(byName.has(name) && version === 'workspace:*', 'Unknown or unbound workspace dependency: ' + name);
         names.add(name);
       } else assert(/^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$/.test(version), 'External dependency needs exact pin: ' + name);
@@ -94,7 +94,7 @@ export async function describeToolchain(root = process.cwd()) {
   for (const project of projects) {
     project.configurationDependencies = [];
     project.compilerInputs = [];
-    if (!project.manifest.scripts?.build && project.manifest.name !== '@virtual-city/config') continue;
+    if (!project.manifest.scripts?.build && project.manifest.name !== '@aetheria/config') continue;
     let file = resolve(root, project.path, 'tsconfig.json');
     const seen = new Set();
     while (file) {
@@ -112,7 +112,7 @@ export async function describeToolchain(root = process.cwd()) {
   }
   const graph = workspaceGraph(projects);
   for (const section of sections) for (const [name, version] of Object.entries(manifest[section] ?? {})) {
-    if (name.startsWith('@virtual-city/') || version.startsWith('workspace:')) assert(projects.some(project => project.manifest.name === name) && version === 'workspace:*', 'Unknown root workspace dependency');
+    if (name.startsWith('@aetheria/') || version.startsWith('workspace:')) assert(projects.some(project => project.manifest.name === name) && version === 'workspace:*', 'Unknown root workspace dependency');
     else assert(/^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$/.test(version), 'Root dependency needs exact pin: ' + name);
   }
   const workspace = await readFile(resolve(root, 'pnpm-workspace.yaml'));

@@ -1,5 +1,5 @@
-import type {GameMode,TravelSource} from '@virtual-city/contracts';
-import type {GameState} from '@virtual-city/boardgame-core';
+import type {GameMode,TravelSource} from '@aetheria/contracts';
+import type {GameState} from '@aetheria/boardgame-core';
 import type {IdentityContext} from '../../../../identity/modules/accounts/application/service';
 // Internal server ports only. No HTTP schema can mint a lease or consent proof.
 export interface GameAdmission {

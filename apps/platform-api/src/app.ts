@@ -18,7 +18,7 @@ import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, type NestFastifyApplication } from '@nestjs/platform-fastify';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { Pool } from 'pg';
-import { SCHEMA_VERSION, SanctionChangedSchema } from '@virtual-city/contracts';
+import { SCHEMA_VERSION, SanctionChangedSchema } from '@aetheria/contracts';
 import type { Config } from './shared/config/environment';
 import { IdentityService } from './features/identity/modules/accounts/application/service';
 import { registerIdentity } from './features/identity/modules/accounts/presentation/http';
@@ -98,7 +98,7 @@ import {GameJournal} from './features/games/modules/persistence/infrastructure/j
 import {GameJournalCrypto} from './features/games/modules/persistence/infrastructure/journal-crypto';
 import {createGameJournalHost} from './features/games/modules/sessions/application/room-host';
 import type {GameInitialFactory} from './features/games/modules/persistence/infrastructure/journal-host';
-import {GameRulesEngine} from '@virtual-city/boardgame-core';
+import {GameRulesEngine} from '@aetheria/boardgame-core';
 import { registerStudy } from './features/library/modules/study/presentation/http';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
@@ -115,7 +115,7 @@ Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
 export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]} } = {}) {
-  if(options.games){const target=new URL(config.DATABASE_URL);if(config.NODE_ENV!=='test'||!['127.0.0.1','localhost','[::1]'].includes(target.hostname)||!/^virtual_city_test(?:_|$)/.test(target.pathname.slice(1)))throw Error('Synthetic game rules require disposable local test runtime');}
+  if(options.games){const target=new URL(config.DATABASE_URL);if(config.NODE_ENV!=='test'||!['127.0.0.1','localhost','[::1]'].includes(target.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(target.pathname.slice(1)))throw Error('Synthetic game rules require disposable local test runtime');}
   const safetyPolicy = await loadSafetyPolicy(options.safety?.policy,config.SAFETY_POLICY_FILE);
   const mediaClearance=await MediaClearanceGate.create(await loadMediaClearance(),[],options.now);
   const requiredMigrations = await migrationManifest();

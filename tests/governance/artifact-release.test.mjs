@@ -15,7 +15,7 @@ test('source/shared dependency/lock/unknown changes build every artifact; inert 
 });
 
 test('real Git PR/push event planning handles source/shared/lock/docs/overlay diffs and unknown bases without suppressing the aggregate', async () => {
-  const temporary = await mkdtemp(join(tmpdir(), 'vlp-ci-event-')), repo = join(temporary, 'repo');
+  const temporary = await mkdtemp(join(tmpdir(), 'aetheria-ci-event-')), repo = join(temporary, 'repo');
   try {
     await mkdir(join(repo, 'config'), {recursive: true}); await writeFile(join(repo, 'config/artifact-release.json'), await readFile('config/artifact-release.json'));
     const git = args => execFileSync('git', args, {cwd: repo, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe']});
@@ -74,21 +74,21 @@ test('workflow and policy retain read-only PR/security lanes and grant only boun
 });
 
 test('manifest binds immutable image/source/run, checks, package SBOM and unsigned digest provenance; corrupt/foreign/symlink evidence fails closed', async () => {
-  const directory = await mkdtemp(join(tmpdir(), 'vlp-manifest-'));
+  const directory = await mkdtemp(join(tmpdir(), 'aetheria-manifest-'));
   try {
     const revision = 'a'.repeat(40), id = 'sha256:' + 'b'.repeat(64), digest = 'c'.repeat(64);
     const save = async (file, value) => {const bytes = jsonBytes(value); await writeFile(join(directory, file), bytes); return {file, sha256: hash(bytes)};};
     const source = {repository, revision}, quality = {runId: 123, runAttempt: 2, workflow: qualityWorkflow, event: 'push', branch: 'main'};
     const compatibility = {protocol: {minimum: 1, current: 1, maximum: 1}, schema: {metadataVersion: 1, minimumMigrations: 38, maximumMigrations: 38, manifestSha256: digest, policySha256: digest}, assets: {manifestSha256: digest}};
-    const manifest = {schemaVersion: 1, kind: 'vlp-release-candidate', source, quality, artifacts: {}, compatibility, promotion: {autoMerge: false, productionAutoPromotion: false, ownerRequired: true, publicRelease: false}, evidence: {quality: await save('quality-proof.json', {...quality, sourceRevision: revision, repository}), imageChecks: await save('image-checks.json', {sourceRevision: revision, result: 'PASS', apiScenarios: 6, webScenarios: 6, cleanupComplete: true, images: {api: id, web: id}})}, vulnerabilities: {status: 'NOT_RUN', promotionRequiresReview: true}};
+    const manifest = {schemaVersion: 1, kind: 'aetheria-release-candidate', source, quality, artifacts: {}, compatibility, promotion: {autoMerge: false, productionAutoPromotion: false, ownerRequired: true, publicRelease: false}, evidence: {quality: await save('quality-proof.json', {...quality, sourceRevision: revision, repository}), imageChecks: await save('image-checks.json', {sourceRevision: revision, result: 'PASS', apiScenarios: 6, webScenarios: 6, cleanupComplete: true, images: {api: id, web: id}})}, vulnerabilities: {status: 'NOT_RUN', promotionRequiresReview: true}};
     for (const target of ['api', 'web']) {
-      const name = 'ghcr.io/tiecont/vlp-' + target, sbom = await save(target + '-sbom.cdx.json', {bomFormat: 'CycloneDX', components: [{name: 'synthetic-fixture'}]});
-      const provenance = await save(target + '-provenance.json', {_type: 'https://in-toto.io/Statement/v1', subject: [{name, digest: {sha256: digest}}], predicateType: 'https://github.com/tiecont/virtual-life-platform/provenance/v1', predicate: {source, quality, compatibility, imageId: id, sbomSha256: sbom.sha256, checksSha256: manifest.evidence.imageChecks.sha256, signed: false}});
+      const name = 'ghcr.io/tiecont/aetheria-' + target, sbom = await save(target + '-sbom.cdx.json', {bomFormat: 'CycloneDX', components: [{name: 'synthetic-fixture'}]});
+      const provenance = await save(target + '-provenance.json', {_type: 'https://in-toto.io/Statement/v1', subject: [{name, digest: {sha256: digest}}], predicateType: 'https://github.com/tiecont/aetheria-soulbound/provenance/v1', predicate: {source, quality, compatibility, imageId: id, sbomSha256: sbom.sha256, checksSha256: manifest.evidence.imageChecks.sha256, signed: false}});
       manifest.artifacts[target] = {image: name + '@sha256:' + digest, localImageId: id, sbom, provenance};
     }
     const reset = () => writeFile(join(directory, 'release.json'), jsonBytes(manifest)); await reset();
     assert.equal((await checkManifest(directory)).hostedChecksVerified, false);
-    for (const mutation of [m => m.source.revision = 'main', m => m.artifacts.api.image = 'ghcr.io/tiecont/vlp-api:latest', m => m.artifacts.api.image = 'ghcr.io/foreign/image@sha256:' + digest, m => m.quality.runId = 0, m => m.promotion.autoMerge = true, m => m.compatibility.protocol.minimum = 2, m => m.compatibility.schema.minimumMigrations = 39, m => m.evidence.quality.file = '../quality-proof.json', m => m.artifacts.web.localImageId = 'sha256:' + 'd'.repeat(64)]) {
+    for (const mutation of [m => m.source.revision = 'main', m => m.artifacts.api.image = 'ghcr.io/tiecont/aetheria-api:latest', m => m.artifacts.api.image = 'ghcr.io/foreign/image@sha256:' + digest, m => m.quality.runId = 0, m => m.promotion.autoMerge = true, m => m.compatibility.protocol.minimum = 2, m => m.compatibility.schema.minimumMigrations = 39, m => m.evidence.quality.file = '../quality-proof.json', m => m.artifacts.web.localImageId = 'sha256:' + 'd'.repeat(64)]) {
       const copy = globalThis.structuredClone(manifest); mutation(copy); await writeFile(join(directory, 'release.json'), jsonBytes(copy)); await assert.rejects(() => checkManifest(directory));
     }
     await reset(); await writeFile(join(directory, 'web-sbom.cdx.json'), '{}'); await assert.rejects(() => checkManifest(directory));
@@ -103,7 +103,7 @@ test('manifest binds immutable image/source/run, checks, package SBOM and unsign
 
 
 test('release bundle on a clean checkout creates missing private parents and refuses to reuse any output', async () => {
-  const temporary = await mkdtemp(join(tmpdir(), 'vlp-fresh-bundle-')), output = join(temporary, 'artifacts/release-bundle');
+  const temporary = await mkdtemp(join(tmpdir(), 'aetheria-fresh-bundle-')), output = join(temporary, 'artifacts/release-bundle');
   try {
     // An absent source must fail before Docker is invoked;exercise the real CLI
     // initialization without images,registry writes or an existing artifacts tree.

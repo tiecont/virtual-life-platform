@@ -3,7 +3,7 @@ import {readFile} from 'node:fs/promises';
 import {resolve, dirname, relative} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import ts from 'typescript';
-const allowed = new Set(['pg', 'zod', '@virtual-city/contracts', 'node:crypto', 'node:fs/promises', 'node:path']);
+const allowed = new Set(['pg', 'zod', '@aetheria/contracts', 'node:crypto', 'node:fs/promises', 'node:path']);
 export async function checkWorkerBoundary(root = process.cwd()) {
   const base = resolve(root, 'apps/platform-api/src'), files = new Set(), externals = new Set();
   async function visit(file) {

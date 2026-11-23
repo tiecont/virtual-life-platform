@@ -1,8 +1,8 @@
 use super::domain::{Rules, State, content_hash};
 use crate::features::runtime::application::NativeGame;
-use vl_game_core::{Command, LogicalClock, Reducer, SecretSeed, apply, begin};
-use vl_persistence::{Completion, Game};
-use vl_pet_arena::combat::{Action, Phase, legal_swap};
+use aetheria_game_core::{Command, LogicalClock, Reducer, SecretSeed, apply, begin};
+use aetheria_persistence::{Completion, Game};
+use aetheria_pet_arena::combat::{Action, Phase, legal_swap};
 const PLAYER: &str = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
 fn fixture_rules() -> Rules {
     Rules {
@@ -49,7 +49,7 @@ fn adapter_contract_rejects_forgery_and_cross_account_projection() {
         combat: state.combat,
     };
     assert!(rules.validate(&other).is_err());
-    assert_ne!(content_hash(), vl_pet_arena::combat::rules_hash());
+    assert_ne!(content_hash(), aetheria_pet_arena::combat::rules_hash());
 }
 #[test]
 fn terminal_sentinel_is_server_derived_and_replayable_for_wins_and_losses() {

@@ -1,4 +1,4 @@
-import {OperationalObservationSchema,OperatorObservationViewSchema,type OperationalObservation} from '@virtual-city/contracts';
+import {OperationalObservationSchema,OperatorObservationViewSchema,type OperationalObservation} from '@aetheria/contracts';
 import type {AdminConfig} from './runtime-config.mjs';
 type Fetch=(input:string,init?:RequestInit)=>Promise<Response>;
 export function createObservationReader(config:AdminConfig,fetcher:Fetch,now=Date.now){

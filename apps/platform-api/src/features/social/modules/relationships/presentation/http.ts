@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
-import { FriendRequestInputSchema, FriendRespondSchema, BlockInputSchema, SocialSettingsInputSchema, SocialPageSchema } from '@virtual-city/contracts';
+import { FriendRequestInputSchema, FriendRespondSchema, BlockInputSchema, SocialSettingsInputSchema, SocialPageSchema } from '@aetheria/contracts';
 import type { Config } from '../../../../../shared/config/environment';
 import { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import { readSessionToken } from '../../../../identity/modules/accounts/presentation/http';

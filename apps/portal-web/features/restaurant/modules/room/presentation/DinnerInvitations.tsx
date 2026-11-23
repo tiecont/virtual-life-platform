@@ -1,7 +1,7 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
 import Link from 'next/link';
-import { DinnerOffersSchema,DinnerReceiptSchema,FriendsPageSchema,ReportReceiptSchema,type Me,type TravelSource,type ReservationPartyOwnSchema } from '@virtual-city/contracts';
+import { DinnerOffersSchema,DinnerReceiptSchema,FriendsPageSchema,ReportReceiptSchema,type Me,type TravelSource,type ReservationPartyOwnSchema } from '@aetheria/contracts';
 import { travelHref } from '../../../../travel/modules/travel/application/destination-link';
 type Own=ReturnType<typeof ReservationPartyOwnSchema.parse>;
 type Change={path:string;body:object;key:string;kind:'offer'|'report'|'block'};

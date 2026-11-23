@@ -1,6 +1,6 @@
 import {createRoomScene} from '../../packages/scene3d/src/renderer';
 import {animalResourceSummary} from '../../packages/scene3d/src/animal';
-import {sandboxScene} from '@virtual-city/world-sdk';
+import {sandboxScene} from '@aetheria/world-sdk';
 import {bindLandscape} from '../../apps/mobile/src/orientation';
 import {workloadSnapshot,WORKLOAD_LABEL} from './fixture';
 type Quality='low'|'balanced'|'high';

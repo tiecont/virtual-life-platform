@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useEffect,useRef,useState } from 'react';
-import { WorldCatalogSchema,type WorldCatalog } from '@virtual-city/contracts';
+import { WorldCatalogSchema,type WorldCatalog } from '@aetheria/contracts';
 import { layoutCityWorlds } from '../domain/city-plots';
 import PixelCityArt from './PixelCityArt';
 import WorldActivity from '../../../../rooms/modules/rooms/presentation/WorldActivity';
@@ -13,7 +13,7 @@ export default function CityMap(){
  const [catalog,setCatalog]=useState<WorldCatalog|null>(null),[state,setState]=useState<'loading'|'ready'|'session'|'error'>('loading'),[expanded,setExpanded]=useState<string|null>(null);const refresh=useRef<()=>Promise<void>>(async()=>{});
  useEffect(()=>{let disposed=false,pending:AbortController|null=null;
   refresh.current=async()=>{pending?.abort();const controller=new AbortController();pending=controller;setCatalog(null);setExpanded(null);setState('loading');try{const response=await fetch('/v1/worlds',{cache:'no-store',credentials:'same-origin',signal:AbortSignal.any([controller.signal,AbortSignal.timeout(8000)])});if(response.status===401){if(!disposed&&!controller.signal.aborted)setState('session');return;}if(!response.ok)throw Error('CATALOG_UNAVAILABLE');const next=WorldCatalogSchema.parse(await response.json());layoutCityWorlds(next.worlds);if(!disposed&&!controller.signal.aborted){setCatalog(next);setState('ready');}}catch{if(!disposed&&!controller.signal.aborted){setCatalog(null);setState('error');}}};
-  const bus=typeof BroadcastChannel==='undefined'?null:new BroadcastChannel('virtual-city-identity');if(bus)bus.onmessage=()=>void refresh.current();const online=()=>void refresh.current(),offline=()=>{pending?.abort();setCatalog(null);setState('error');};window.addEventListener('online',online);window.addEventListener('offline',offline);void refresh.current();return()=>{disposed=true;pending?.abort();bus?.close();window.removeEventListener('online',online);window.removeEventListener('offline',offline);};
+  const bus=typeof BroadcastChannel==='undefined'?null:new BroadcastChannel('aetheria-soulbound-identity');if(bus)bus.onmessage=()=>void refresh.current();const online=()=>void refresh.current(),offline=()=>{pending?.abort();setCatalog(null);setState('error');};window.addEventListener('online',online);window.addEventListener('offline',offline);void refresh.current();return()=>{disposed=true;pending?.abort();bus?.close();window.removeEventListener('online',online);window.removeEventListener('offline',offline);};
  },[]);
  const plots=catalog?layoutCityWorlds(catalog.worlds):[],numbers=new Map(plots.map((plot,index)=>[plot.world.slug,index+1]));
  function focusDetails(slug:string){document.getElementById('city-world-'+slug)?.focus();}

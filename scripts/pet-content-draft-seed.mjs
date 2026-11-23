@@ -1,5 +1,5 @@
 import {Pool} from 'pg';
-import {PetContentDraftSchema} from '@virtual-city/contracts';
+import {PetContentDraftSchema} from '@aetheria/contracts';
 import {createRequire} from 'node:module';
 import {readPetDesign,validatePetDesign} from './pet-design-check.mjs';
 import {validateTestDatabaseURL} from './test-environment.mjs';

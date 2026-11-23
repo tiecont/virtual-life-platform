@@ -1,6 +1,6 @@
 import {expect,it} from 'vitest';
 import * as T from 'three';
-import {starterAvatarParts} from '@virtual-city/contracts';
+import {starterAvatarParts} from '@aetheria/contracts';
 import {createAnimalVariants,animalCachedGeometries,animalResourceSummary} from '../src/animal';
 import {sceneResourceInventory} from '../src/resources';
 

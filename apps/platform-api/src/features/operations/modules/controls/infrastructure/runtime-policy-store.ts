@@ -1,5 +1,5 @@
 import type {Pool,PoolClient} from 'pg';
-import {RuntimeControlSnapshotSchema,type RuntimeControlSnapshot} from '@virtual-city/contracts';
+import {RuntimeControlSnapshotSchema,type RuntimeControlSnapshot} from '@aetheria/contracts';
 export type RuntimeControlReader={read(environment:string,releaseHash:string):Promise<RuntimeControlSnapshot>};
 export type RuntimeControlPort={context():unknown;fence():()=>void;reconcile():Promise<void>;maintain():Promise<void>};
 export class RuntimePolicyStore implements RuntimeControlReader {

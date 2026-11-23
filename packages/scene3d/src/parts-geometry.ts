@@ -1,6 +1,6 @@
 import * as T from 'three';
 import {indexGeometry} from './index-geometry';
-import type {AvatarParts} from '@virtual-city/contracts';
+import type {AvatarParts} from '@aetheria/contracts';
 import {TORSO_PROFILE} from './surfaces';
 const coatColors={fern:['#a99d7e','#f0e5cf'],amber:['#c49a65','#f5dfba'],indigo:['#7a879c','#e0e5ec'],rose:['#bb928c','#f5dfd5'],cloud:['#c6cccb','#f8f3e7'],cocoa:['#927563','#ebd5be'],mint:['#8da89c','#e5eee1'],plum:['#a48a9e','#efe1e8']} as const;
 export const partCoatColor=(parts:AvatarParts)=>coatColors[parts.fur][0];

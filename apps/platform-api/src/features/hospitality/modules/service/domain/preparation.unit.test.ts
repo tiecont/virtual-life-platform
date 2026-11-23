@@ -1,6 +1,6 @@
 import { it,expect } from 'vitest';
 import { createHmac } from 'node:crypto';
-import { OrderWorkflowStrategySchema } from '@virtual-city/contracts';
+import { OrderWorkflowStrategySchema } from '@aetheria/contracts';
 import { preparationFor,verifyPreparation,canRestartPreparation } from './preparation';
 const sign=(value:unknown)=>createHmac('sha256','synthetic-recipe-test-only').update(JSON.stringify(value)).digest('hex');
 const workflow=OrderWorkflowStrategySchema.parse({key:'coffee',version:'1.1.0',kind:'timed-courses',courses:[{key:'coffee',label:'Coffee',prepareSeconds:2,recipe:{steps:['coffee','water'],choices:['coffee','water','milk']}}]});

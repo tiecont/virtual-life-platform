@@ -36,7 +36,7 @@ try {
     report.commands.push({command: ['node', 'scripts/unity-native-prepare.mjs'], exitCode: prepared.status ?? 1});
     if (prepared.status !== 0) throw Error('Native binding preparation failed');
     report.classification = 'UNVERIFIED';
-    await run(['-executeMethod', 'VirtualLife.Editor.ProjectBuild.Prepare', '-quit'], 'prepare');
+    await run(['-executeMethod', 'Aetheria.Editor.ProjectBuild.Prepare', '-quit'], 'prepare');
     if (action === 'tests') {
       for (const mode of ['EditMode', 'PlayMode']) {
         const results = resolve(directory, mode + '.xml');
@@ -50,14 +50,14 @@ try {
     } else if (action === 'linux-player-tests') {
       if (process.platform !== 'linux') throw Error('Linux player tests require a Linux workstation');
       const results = resolve(directory, 'LinuxPlayer.xml');
-      await run(['-runTests', '-testPlatform', 'StandaloneLinux64', '-testFilter', 'VirtualLife.Blockout.Tests.BlockoutTests',
+      await run(['-runTests', '-testPlatform', 'StandaloneLinux64', '-testFilter', 'Aetheria.Blockout.Tests.BlockoutTests',
         '-buildPlayerPath', resolve(directory, 'Player'), '-testResults', results, '-playerHeartbeatTimeout', '120'], 'LinuxPlayer');
       const xml = await readFile(results, 'utf8');
       if (!/<test-run\b[^>]*result="Passed"/.test(xml) || !/\bpassed="2"/.test(xml) || !/\bskipped="0"/.test(xml))
         throw Error('Both actual Linux player blockout tests must pass without skips');
     } else if (action !== 'prepare') {
       const method = action === 'linux' ? 'Linux' : 'WindowsMono';
-      await run(['-executeMethod', 'VirtualLife.Editor.ProjectBuild.' + method, '-quit'], action);
+      await run(['-executeMethod', 'Aetheria.Editor.ProjectBuild.' + method, '-quit'], action);
     }
     report.classification = 'PASS';
   }

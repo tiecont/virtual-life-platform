@@ -1,10 +1,10 @@
-name: virtual-city-dev
+name: aetheria-soulbound-dev
 services:
   db:
     image: postgres:17.7-alpine
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-virtual_city}
-      POSTGRES_DB: ${POSTGRES_DB:-virtual_city_dev}
+      POSTGRES_USER: ${POSTGRES_USER:-aetheria_soulbound}
+      POSTGRES_DB: ${POSTGRES_DB:-aetheria_soulbound_dev}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Generate and export a local password}
     ports: ["127.0.0.1:55452:5432"]
     volumes: ["city-dev:/var/lib/postgresql/data"]

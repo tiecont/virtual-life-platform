@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { restaurantScene,restaurantTables,restaurantWorldVersion } from '@virtual-city/restaurant-world';
+import { restaurantScene,restaurantTables,restaurantWorldVersion } from '@aetheria/restaurant-world';
 import WorldRoomPanel,{type RoomExperience} from '../../../../rooms/modules/rooms/presentation/WorldRoomPanel';
 import DiningReservations from './DiningReservations';
 import RestaurantStaff from './RestaurantStaff';

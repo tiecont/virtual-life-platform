@@ -2,9 +2,9 @@ import {test,expect,type BrowserContext,type Page} from '@playwright/test';
 import {Pool} from 'pg';
 import {randomUUID} from 'node:crypto';
 import {mkdir,writeFile} from 'node:fs/promises';
-import {MeSchema} from '@virtual-city/contracts';
+import {MeSchema} from '@aetheria/contracts';
 const origin='http://127.0.0.1:3300',runId=process.env.UX_EVIDENCE_RUN??randomUUID().slice(0,8);if(!/^[a-f0-9]{8}$/.test(runId))throw Error('Invalid evidence run');let pool:Pool,serial=0;
-test.beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))||url.search||url.hash)throw Error('Disposable test database required');pool=new Pool({connectionString:url.toString()});});
+test.beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))||url.search||url.hash)throw Error('Disposable test database required');pool=new Pool({connectionString:url.toString()});});
 test.beforeEach(async()=>{await pool.query('DELETE FROM platform_admission_entries');await pool.query('DELETE FROM platform_admission_receipts');});
 test.afterAll(async()=>{await pool.end();});
 async function guest(context:BrowserContext){const response=await context.request.post('/v1/session/guest',{headers:{origin},data:{requestId:randomUUID(),displayName:'Queue visitor '+(++serial),avatarKey:'mint'}});expect(response.status()).toBe(201);return MeSchema.parse(await response.json());}
@@ -36,7 +36,7 @@ test('lost real HTTP acknowledgement retries the same request without creating a
 test('late previous-account queue state cannot restore private position after logout and identity change',async({page,context})=>{
  const old=await guest(context);await context.request.post('/v1/admission',{headers:{origin,'x-csrf-token':old.csrfToken},data:{schemaVersion:1,requestId:randomUUID(),action:'enqueue'}});let release!:()=>void,seen!:()=>void,held=false;const gate=new Promise<void>(ok=>release=ok),observed=new Promise<void>(ok=>seen=ok);
  await page.route('**/v1/admission',async route=>{if(held){await route.continue();return;}held=true;const actual=await route.fetch();expect(actual.status()).toBe(200);seen();await gate;await route.fulfill({response:actual}).catch(()=>{});});
- try{await page.goto('/queue',{waitUntil:'domcontentloaded'});await observed;expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':old.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);await guest(context);await page.evaluate(()=>{const bus=new BroadcastChannel('virtual-city-identity');bus.postMessage({changed:true});bus.close();});await expect(page.getByRole('button',{name:'Join waiting list',exact:true})).toBeVisible();release();await page.unrouteAll({behavior:'wait'});await expect(page.getByText(/Your position:/)).toHaveCount(0);await evidence(page,'identity-late');}finally{release();}
+ try{await page.goto('/queue',{waitUntil:'domcontentloaded'});await observed;expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':old.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);await guest(context);await page.evaluate(()=>{const bus=new BroadcastChannel('aetheria-soulbound-identity');bus.postMessage({changed:true});bus.close();});await expect(page.getByRole('button',{name:'Join waiting list',exact:true})).toBeVisible();release();await page.unrouteAll({behavior:'wait'});await expect(page.getByText(/Your position:/)).toHaveCount(0);await evidence(page,'identity-late');}finally{release();}
 });
 
 test('waiting controls remain keyboard-accessible across landscape, portrait and200percent text',async({page,context})=>{

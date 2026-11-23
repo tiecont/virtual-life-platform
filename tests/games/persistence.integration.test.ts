@@ -1,6 +1,6 @@
 import {it,expect} from 'vitest';
 import {randomUUID} from 'node:crypto';
-import {RoomAckSchema,GameLobbyViewSchema} from '@virtual-city/contracts';
+import {RoomAckSchema,GameLobbyViewSchema} from '@aetheria/contracts';
 import {journalFixture,draw,source,gameKey,keyId} from './journal-fixture';
 import {GameJournalCrypto} from '../../apps/platform-api/src/features/games/modules/persistence/infrastructure/journal-crypto';
 const f=journalFixture();

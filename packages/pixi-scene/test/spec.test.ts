@@ -1,5 +1,5 @@
 import { it, expect } from 'vitest';
-import { SceneManifestSchema } from '@virtual-city/contracts';
+import { SceneManifestSchema } from '@aetheria/contracts';
 import { sandboxScene, isWalkable, tileCenter } from '../src/spec';
 
 it('defines eight unique walkable seats, bounded collision zones and deterministic tile centers', () => {

@@ -19,8 +19,8 @@ using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VirtualLife.Native.Public.V1;
-using VirtualLife.Networking;
+using Aetheria.Native.Public.V1;
+using Aetheria.Networking;
 
 static class Program
 {

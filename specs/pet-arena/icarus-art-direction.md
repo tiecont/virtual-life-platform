@@ -43,7 +43,7 @@ full-board fire illustration into additional gameplay damage or tile mutations.
 The stationary 10x10 board, tile identities, enemy telegraphs and controls must
 remain readable. Supply a reduced-motion presentation with bounded brightness,
 fewer particles and no sweeping camera or repeated full-screen flashes.
-Use Aetheria: SoulBound branding; do not copy the old VirtualLife wordmark or
+Use Aetheria: SoulBound branding; do not copy the old Aetheria wordmark or
 unvalidated screenshot health values, skills or interface copy.
 
 ## Remaining Art Deliverables

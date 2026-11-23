@@ -6,7 +6,7 @@ import {readConfig} from '../../apps/platform-api/src/shared/config/environment'
 import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 let admin:Pool,pool:Pool,schema:string,runtime:Awaited<ReturnType<typeof createApp>>;
 const origin='http://127.0.0.1:3300';
-beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB required');admin=new Pool({connectionString:url.toString()});});
+beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB required');admin=new Pool({connectionString:url.toString()});});
 beforeEach(async()=>{schema='queueux_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA "${schema}"`);const url=new URL(process.env.TEST_DATABASE_URL!);url.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:url.toString()});await migrate(pool);runtime=await createApp(readConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'synthetic-queue-ux-secret-'.repeat(3),LOCAL_ADMISSION_UX:'1'}),pool);});
 afterEach(async()=>{await runtime?.app.close();await pool?.end();await admin.query(`DROP SCHEMA "${schema}" CASCADE`);});
 afterAll(async()=>{await admin.end();});
@@ -49,7 +49,7 @@ it('bounds authenticated polling, fails closed on owner loss, and has no public 
  const limited=await runtime.http.inject({url:'/v1/admission',headers:{cookie:a.cookie}});expect(limited.statusCode).toBe(429);expect(limited.headers['retry-after']).toBe('60');
  expect((await runtime.http.inject({method:'POST',url:'/v1/admission/offer',headers:{cookie:a.cookie,origin},payload:{}})).statusCode).toBe(404);
  const b=await actor('Queue owner check');runtime.admission!.close();expect((await runtime.http.inject({url:'/v1/admission',headers:{cookie:b.cookie}})).statusCode).toBe(503);
- expect(()=>readConfig({NODE_ENV:'production',DATABASE_URL:'postgres://synthetic:synthetic@127.0.0.1/virtual_city_test',WEB_ORIGIN:'https://city.invalid',SESSION_SECRET:'synthetic-queue-secret'.repeat(3),LOCAL_ADMISSION_UX:'1'})).toThrow('LOCAL_ADMISSION_UX');
+ expect(()=>readConfig({NODE_ENV:'production',DATABASE_URL:'postgres://synthetic:synthetic@127.0.0.1/aetheria_soulbound_test',WEB_ORIGIN:'https://city.invalid',SESSION_SECRET:'synthetic-queue-secret'.repeat(3),LOCAL_ADMISSION_UX:'1'})).toThrow('LOCAL_ADMISSION_UX');
 });
 it('leaves ordinary app routes and closed policy unchanged when the local queue preview is disabled',async()=>{
  await runtime.app.close();runtime=await createApp(readConfig({NODE_ENV:'test',DATABASE_URL:process.env.TEST_DATABASE_URL!,SESSION_SECRET:'synthetic-disabled-queue-secret'.repeat(2)}),pool);

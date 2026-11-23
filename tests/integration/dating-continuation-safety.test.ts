@@ -2,13 +2,13 @@ import { beforeAll,afterAll,afterEach,it,expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 import { io,type Socket } from 'socket.io-client';
-import { MeSchema,type Me } from '@virtual-city/contracts';
-import { defineWorld } from '@virtual-city/world-sdk';
+import { MeSchema,type Me } from '@aetheria/contracts';
+import { defineWorld } from '@aetheria/world-sdk';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 const origin='http://127.0.0.1:3300';let admin:Pool,serial=0;const runtimes:Awaited<ReturnType<typeof open>>[]=[],sockets=new Set<Socket>();
-beforeAll(async()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
+beforeAll(async()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
 afterEach(async()=>{for(const socket of sockets)socket.close();sockets.clear();for(const r of runtimes.splice(0)){await r.app.app.close();await r.pool.end();await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`);}});afterAll(async()=>{await admin.end();});
 async function open(){const schema='private_continuation_safety_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA "${schema}"`);const url=new URL(process.env.TEST_DATABASE_URL!);url.searchParams.set('options','-c search_path='+schema);const pool=new Pool({connectionString:url.toString()});await migrate(pool);let now=Date.parse('2026-11-04T12:00:00Z');const config=readConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'synthetic-private-date-secret-'.repeat(3),LOCAL_DATING_PROTOTYPE:'1',DATING_TEST_PROOFS:'1',DATING_PROFILE_KEY:'37'.repeat(32),DATING_PROFILE_KEY_ID:'synthetic-date',SAFETY_EVIDENCE_KEY:'48'.repeat(32)}),options={now:()=>now,worlds:{modules:[defineWorld({schemaVersion:1,apiVersion:1,slug:'dating',version:'1.0.0',title:'Synthetic forbidden generic adult room',kind:'sandbox',sceneRef:{key:'date-fixture',version:'1.0.0'},capacity:2,capabilities:['presence'],accessPolicy:{kind:'restricted',policyKey:'date.fixture',requiresAdult:true},visibility:'hidden',map:{region:'sandbox',position:{x:.5,y:.5},icon:'flask'}},{bootstrap:async()=>{},shutdown:async()=>{},onJoin:async()=>{},onLeave:async()=>{},onCommand:async()=>{}})],policy:{permits:async()=>true},adultProof:{hasReviewedProof:async()=>true}}},app=await createApp(config,pool,false,options);await app.worlds.registry.setEnabled('dating',true);await app.app.listen(0,'127.0.0.1');const r={schema,pool,app,config,options,url:await app.app.getUrl(),now:()=>now,advance:(ms:number)=>{now+=ms;}};runtimes.push(r);return r;}
 type Runtime=Awaited<ReturnType<typeof open>>;type User={me:Me;cookie:string};

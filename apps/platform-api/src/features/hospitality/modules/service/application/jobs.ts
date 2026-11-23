@@ -1,5 +1,5 @@
 import type { Pool, PoolClient } from 'pg';
-import { OrderCompletedSchema, type OrderCompleted } from '@virtual-city/contracts';
+import { OrderCompletedSchema, type OrderCompleted } from '@aetheria/contracts';
 import {z} from 'zod';
 // The durable dispatcher needs account transaction locks, not identity/room runtime.
 export interface HospitalityAccountLocks {

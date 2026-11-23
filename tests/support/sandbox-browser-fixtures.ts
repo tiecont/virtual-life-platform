@@ -1,7 +1,7 @@
 import {expect,type Page,type BrowserContext} from '@playwright/test';
 import {randomUUID} from 'node:crypto';
 import {request} from 'node:http';
-import {MeSchema} from '@virtual-city/contracts';
+import {MeSchema} from '@aetheria/contracts';
 const origin='http://127.0.0.1:3300';
 let bootstrapSerial = 1;
 export async function guest(context: BrowserContext, displayName: string) {

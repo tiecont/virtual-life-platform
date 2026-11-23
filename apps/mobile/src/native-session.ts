@@ -1,5 +1,5 @@
 import {Capacitor,registerPlugin} from '@capacitor/core';
-import type {NativeSessionCustodyPort} from '@virtual-city/client-sdk';
+import type {NativeSessionCustodyPort} from '@aetheria/client-sdk';
 
 const nativeSession=registerPlugin<NativeSessionCustodyPort>('NativeSession');
 // No web/iOS emulation of credential custody. The Android plugin also requires

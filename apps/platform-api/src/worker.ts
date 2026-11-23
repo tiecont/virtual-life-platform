@@ -21,7 +21,7 @@ export async function runDurableWorker(env = process.env, args = process.argv.sl
   const nativeRewardPolicy = await loadNativeRewardPolicy(config.NATIVE_REWARD_POLICY_FILE);
   if (!policy?.enabled && !nativeRewardPolicy) throw Error('Worker requires an explicit enabled consumer policy');
   const compatibility = await loadSchemaCompatibility(config.SCHEMA_COMPATIBILITY_FILE, await migrationManifest());
-  const pool = new Pool({connectionString: config.DATABASE_URL, max: 4, connectionTimeoutMillis: 2000, application_name: 'virtual-life-platform-durable-worker'});
+  const pool = new Pool({connectionString: config.DATABASE_URL, max: 4, connectionTimeoutMillis: 2000, application_name: 'aetheria-soulbound-durable-worker'});
   pool.on('error', () => console.error('Durable worker database unavailable'));
   const eligible = async (db: Pick<PoolClient, 'query'>, account: string, world: string) =>
     await new IncidentPolicy(db).permits(account, world) && await new SanctionPolicy(db).permits(account, world);

@@ -2,7 +2,7 @@ import {evidenceOutput} from '../../scripts/evidence-output.mjs';
 import { test,expect } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { mkdir,writeFile } from 'node:fs/promises';
-import { libraryWorldVersion } from '@virtual-city/library-world';
+import { libraryWorldVersion } from '@aetheria/library-world';
 import { origin,guest,enterPark,parkTestDb,parkFriends,allowParkInvites,parkScheduleFixtures } from '../support/park-fixtures';
 test('a new Park visitor can greet without contact opt-in and chooses Library travel and event RSVP separately',async({page,context,browser},info)=>{
  test.setTimeout(45000);const organizer=await browser.newContext({baseURL:origin}),owner=await guest(organizer,'Cold start organizer'),fixture=await parkScheduleFixtures(owner.profile.id);

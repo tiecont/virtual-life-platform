@@ -1,7 +1,7 @@
 import {it,expect} from 'vitest';
 import {createHash} from 'node:crypto';
 import * as T from 'three';
-import {starterAvatarParts,AVATAR_PART_OPTIONS,AVATAR_COMPATIBILITY,type AvatarParts} from '@virtual-city/contracts';
+import {starterAvatarParts,AVATAR_PART_OPTIONS,AVATAR_COMPATIBILITY,type AvatarParts} from '@aetheria/contracts';
 import {createAnimal,animalResourceSummary,animalCachedGeometries} from '../src/animal';
 import {packPartGeometry} from '../src/parts-geometry';
 function fingerprint(model:ReturnType<typeof createAnimal>){const hash=createHash('sha256');model.group.updateMatrixWorld(true);model.group.traverseVisible(object=>{if(!(object instanceof T.Mesh))return;hash.update(JSON.stringify(object.matrixWorld.toArray()));for(const attribute of Object.values(object.geometry.attributes))hash.update(Buffer.from(attribute.array.buffer,attribute.array.byteOffset,attribute.array.byteLength));hash.update(JSON.stringify((object.material as T.MeshStandardMaterial).color?.toArray()));});return hash.digest('hex');}

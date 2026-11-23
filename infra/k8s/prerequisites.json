@@ -4,8 +4,8 @@
   "deploymentEligible": false,
   "environments": {
     "staging": {
-      "applicationNamespace": "vlp-staging",
-      "dataNamespace": "vlp-data-staging",
+      "applicationNamespace": "aetheria-staging",
+      "dataNamespace": "aetheria-data-staging",
       "architecture": {
         "os": "linux",
         "architecture": "amd64"
@@ -13,11 +13,11 @@
       "externalObjects": [
         {
           "kind": "ServiceAccount",
-          "name": "vlp-runtime"
+          "name": "aetheria-runtime"
         },
         {
           "kind": "ConfigMap",
-          "name": "vlp-runtime",
+          "name": "aetheria-runtime",
           "keys": [
             "WEB_ORIGIN",
             "TRUSTED_PROXY_IP",
@@ -26,7 +26,7 @@
         },
         {
           "kind": "ConfigMap",
-          "name": "vlp-installation-policy",
+          "name": "aetheria-installation-policy",
           "keys": [
             "release.json",
             "runtime-worlds.json",
@@ -35,7 +35,7 @@
         },
         {
           "kind": "Secret",
-          "name": "vlp-runtime-secrets",
+          "name": "aetheria-runtime-secrets",
           "requiredKeys": [
             "DATABASE_URL",
             "SESSION_SECRET"
@@ -46,14 +46,14 @@
         },
         {
           "kind": "Secret",
-          "name": "vlp-registry-pull",
+          "name": "aetheria-registry-pull",
           "type": "kubernetes.io/dockerconfigjson"
         }
       ],
       "databasePeer": {
-        "namespace": "vlp-data-staging",
+        "namespace": "aetheria-data-staging",
         "podLabels": {
-          "app.kubernetes.io/name": "vlp-postgres"
+          "app.kubernetes.io/name": "aetheria-postgres"
         },
         "port": 5432
       },
@@ -68,8 +68,8 @@
       ]
     },
     "production": {
-      "applicationNamespace": "vlp-production",
-      "dataNamespace": "vlp-data-production",
+      "applicationNamespace": "aetheria-production",
+      "dataNamespace": "aetheria-data-production",
       "architecture": {
         "os": "linux",
         "architecture": "amd64"
@@ -77,11 +77,11 @@
       "externalObjects": [
         {
           "kind": "ServiceAccount",
-          "name": "vlp-runtime"
+          "name": "aetheria-runtime"
         },
         {
           "kind": "ConfigMap",
-          "name": "vlp-runtime",
+          "name": "aetheria-runtime",
           "keys": [
             "WEB_ORIGIN",
             "TRUSTED_PROXY_IP",
@@ -90,7 +90,7 @@
         },
         {
           "kind": "ConfigMap",
-          "name": "vlp-installation-policy",
+          "name": "aetheria-installation-policy",
           "keys": [
             "release.json",
             "runtime-worlds.json",
@@ -99,7 +99,7 @@
         },
         {
           "kind": "Secret",
-          "name": "vlp-runtime-secrets",
+          "name": "aetheria-runtime-secrets",
           "requiredKeys": [
             "DATABASE_URL",
             "SESSION_SECRET"
@@ -110,14 +110,14 @@
         },
         {
           "kind": "Secret",
-          "name": "vlp-registry-pull",
+          "name": "aetheria-registry-pull",
           "type": "kubernetes.io/dockerconfigjson"
         }
       ],
       "databasePeer": {
-        "namespace": "vlp-data-production",
+        "namespace": "aetheria-data-production",
         "podLabels": {
-          "app.kubernetes.io/name": "vlp-postgres"
+          "app.kubernetes.io/name": "aetheria-postgres"
         },
         "port": 5432
       },

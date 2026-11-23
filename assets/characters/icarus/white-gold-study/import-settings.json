@@ -14,15 +14,15 @@
   "maximumMaterials": 3,
   "shading": "Three-band cel study with soft facial shading, rim light, gold highlights and filtered hair/feather detail; preliminary overlapping UVs, no production bake",
   "animation": "Generic; five authored actions; no gameplay authority",
-  "importer": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/icarus-study.fbx.meta",
-  "renderer": "apps/unity-client/Assets/VirtualLife/Editor/IcarusStudyRender.cs",
-  "reviewPackageBuilder": "apps/unity-client/Assets/VirtualLife/Editor/IcarusStudyPackage.cs",
-  "reviewPrefab": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/IcarusStudy.prefab",
-  "reviewController": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/IcarusStudy.controller",
+  "importer": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/icarus-study.fbx.meta",
+  "renderer": "apps/unity-client/Assets/Aetheria/Editor/IcarusStudyRender.cs",
+  "reviewPackageBuilder": "apps/unity-client/Assets/Aetheria/Editor/IcarusStudyPackage.cs",
+  "reviewPrefab": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/IcarusStudy.prefab",
+  "reviewController": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/IcarusStudy.controller",
   "artStatus": "ARTIST_HANDOFF_REQUIRED",
   "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
   "styleTarget": "UNVALIDATED_TARGET",
-  "shader": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/StudyVertexColor.shader",
+  "shader": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/StudyVertexColor.shader",
   "runtimeEnabled": false,
   "productionReady": false,
   "rights": "PENDING_REVIEW",
@@ -36,15 +36,15 @@
       "sha256": "161c09d23f8463bf3868e6f61837dae0b37fa82f8f0268744dd265c103a4df42"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/icarus-study.fbx.meta",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/icarus-study.fbx.meta",
       "sha256": "c0605c622825fb468fa9d61cdbcf7ce796fa7cb7d362133af1216841d6497670"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/Editor/IcarusStudyRender.cs",
+      "path": "apps/unity-client/Assets/Aetheria/Editor/IcarusStudyRender.cs",
       "sha256": "b238b9871a4960ba5ecfe704ad2469fe8d7bbf2a017f786aa44f8f1071040be4"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/StudyVertexColor.shader",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/StudyVertexColor.shader",
       "sha256": "d4cbb238b9a75f1beb921b2c20038b129034eabfb80836635f4cc17ac3dd6142"
     },
     {
@@ -76,59 +76,59 @@
       "sha256": "78e62861080370144b71368fcfaa8aabd538ad5df28977c4faa8bde3cee0c626"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/Editor/IcarusStudyPackage.cs",
+      "path": "apps/unity-client/Assets/Aetheria/Editor/IcarusStudyPackage.cs",
       "sha256": "63e8c14d0fdf95cfb246fd41274026669cd312b7f067559f09928f1940ffe229"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/Editor/IcarusStudyPackage.cs.meta",
+      "path": "apps/unity-client/Assets/Aetheria/Editor/IcarusStudyPackage.cs.meta",
       "sha256": "1978c472f6fcc2cc944adbf037a63a29b84fb30fd87ea9615e5d9ff1b80b8fe2"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review.meta",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review.meta",
       "sha256": "7c0aa2f0e6bc2381c9f055dbe6545819bb76174cfbcd8a3095f1e4bcde3d72de"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/StudyVertexColor.shader.meta",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/StudyVertexColor.shader.meta",
       "sha256": "91e7e6571af74e5c6f193b0db6a0c13c75aa4a84a6a3fe8217edceeeb0ba1265"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/FeatherSilk.mat",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/FeatherSilk.mat",
       "sha256": "bdcfa519809eb0b9354512a935ec6810e29c1b816362f6552ecde3ff41353088"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/FeatherSilk.mat.meta",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/FeatherSilk.mat.meta",
       "sha256": "6e63bc1bd1037cc7f1d51a627f61ccc01e9a1b351102b4df2dc0a3d8410b6626"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/IcarusStudy.controller",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/IcarusStudy.controller",
       "sha256": "5e46817bcf212add78806f15893e81cba8f8764d7cdd9b072304ac98d0cd99b1"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/IcarusStudy.controller.meta",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/IcarusStudy.controller.meta",
       "sha256": "45abeb0b7ee22ae4b8dd9d1b55b9fa9d956bd0b4afcb34a77a40f0c171a52154"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/IcarusStudy.prefab",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/IcarusStudy.prefab",
       "sha256": "865d84ba4ea7f06b6c4b541772a424515dac2b74430f06956be745e04c51ad90"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/IcarusStudy.prefab.meta",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/IcarusStudy.prefab.meta",
       "sha256": "961f2aab2dac4bd681e58eb4002e5be56396ea2fe63c4e5098e570243c0f7a57"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/Ornament.mat",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/Ornament.mat",
       "sha256": "c17e666dad58777c54a4e8ffd4eabf3d2719ad5d6b39fa7d7385aed634896e85"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/Ornament.mat.meta",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/Ornament.mat.meta",
       "sha256": "92de0b06189786985b297f2b6698be8b552e483b31f81120e2fa9d5fae786afd"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/SkinHair.mat",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/SkinHair.mat",
       "sha256": "6803ee1730c15de16f70ebfbe3fdc60d8a68b92ebea3313e37a545c526989050"
     },
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Review/SkinHair.mat.meta",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Review/SkinHair.mat.meta",
       "sha256": "e0efbb820006eb7c15567ce3be336d5ffc1434f946a1112f3726060b2298a055"
     }
   ],

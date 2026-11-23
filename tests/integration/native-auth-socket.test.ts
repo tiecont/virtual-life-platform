@@ -2,7 +2,7 @@ import {beforeAll,afterAll,afterEach,it,expect} from 'vitest';
 import {Pool} from 'pg';
 import {randomUUID} from 'node:crypto';
 import {io,type Socket} from 'socket.io-client';
-import {NativeSessionResultSchema,NativeTicketResultSchema,NATIVE_ANDROID_ORIGIN,SessionCheckAckSchema} from '@virtual-city/contracts';
+import {NativeSessionResultSchema,NativeTicketResultSchema,NATIVE_ANDROID_ORIGIN,SessionCheckAckSchema} from '@aetheria/contracts';
 import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
@@ -11,7 +11,7 @@ let admin:Pool,pool:Pool,server:Awaited<ReturnType<typeof createApp>>,target:str
 let offset=0,ip=1;const now=()=>Date.now()+offset,origin='http://127.0.0.1:3300',key='2'.repeat(64),schema='native_socket_'+randomUUID().replaceAll('-',''),sockets=new Set<Socket>();
 const offer=()=>({nonce:randomUUID(),versions:[1],sceneSchemaVersions:[1],requiredCapabilities:[]});
 const client=()=>({schemaVersion:1,platform:'android',clientBuild:'android-debug-v1',protocol:offer()});
-beforeAll(async()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local DB required');admin=new Pool({connectionString:url.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);url.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:url.toString()});await migrate(pool);server=await createApp(readConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'native-socket-only-browser-secret-0000001',NATIVE_AUTH_ENABLED:'1',NATIVE_AUTH_KEY:key}),pool,false,{now});await server.app.listen(0,'127.0.0.1');target=await server.app.getUrl();});
+beforeAll(async()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local DB required');admin=new Pool({connectionString:url.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);url.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:url.toString()});await migrate(pool);server=await createApp(readConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'native-socket-only-browser-secret-0000001',NATIVE_AUTH_ENABLED:'1',NATIVE_AUTH_KEY:key}),pool,false,{now});await server.app.listen(0,'127.0.0.1');target=await server.app.getUrl();});
 afterEach(()=>{offset=0;for(const socket of sockets)socket.close();sockets.clear();});
 afterAll(async()=>{for(const socket of sockets)socket.close();await server?.app.close();await pool?.end();if(admin){await admin.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);await admin.end();}});
 async function guest(){const response=await server.http.inject({method:'POST',url:'/v1/native/session/guest',remoteAddress:'127.78.0.'+ip++,payload:{...client(),deviceLabel:'Synthetic socket device',guest:{requestId:randomUUID(),displayName:'Native Socket Visitor',avatarKey:'fern'}}});expect(response.statusCode).toBe(201);return NativeSessionResultSchema.parse(response.json());}

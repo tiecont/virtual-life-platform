@@ -1,6 +1,6 @@
 import {createHash,createHmac,randomBytes,randomUUID,timingSafeEqual} from 'node:crypto';
 import type {Pool,PoolClient} from 'pg';
-import {OperatorBootstrapSchema,OperatorLoginSchema,OperatorRecoverySchema,type OperatorSession} from '@virtual-city/contracts';
+import {OperatorBootstrapSchema,OperatorLoginSchema,OperatorRecoverySchema,type OperatorSession} from '@aetheria/contracts';
 import {DomainError} from '../../../../../shared/common/errors';
 import {PasswordHasher} from '../../accounts/infrastructure/passwords';
 import {matchTotp,openTotp,sealTotp} from '../infrastructure/operator-crypto';

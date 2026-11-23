@@ -3,7 +3,7 @@ import {randomUUID} from 'node:crypto';
 import {Pool} from 'pg';
 import {totp} from '../../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto';
 let pool:Pool;
-test.beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))||url.search)throw Error('Disposable test DB required');pool=new Pool({connectionString:url.toString()});});
+test.beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))||url.search)throw Error('Disposable test DB required');pool=new Pool({connectionString:url.toString()});});
 test.afterAll(async()=>{await pool.end();});
 test('operator plans and publishes a real silent event, then cancellation closes an actual RSVP and records redacted history',async({page,request})=>{
  const playerOrigin='http://127.0.0.1:3300',api='http://127.0.0.1:4300',guest=await request.post(api+'/v1/session/guest',{headers:{origin:playerOrigin},data:{requestId:randomUUID(),displayName:'Private calendar browser',avatarKey:'mint'}});expect(guest.status()).toBe(201);const initial=await guest.json();const upgraded=await request.post(api+'/v1/session/upgrade',{headers:{origin:playerOrigin,'x-csrf-token':initial.csrfToken,'idempotency-key':randomUUID()},data:{loginName:'calendar_'+randomUUID().replaceAll('-','').slice(0,12),password:'synthetic-calendar-browser-owner'}});expect(upgraded.status()).toBe(200);const owner=await upgraded.json();

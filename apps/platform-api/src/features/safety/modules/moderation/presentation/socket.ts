@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { ChatSendSchema, ChatAckSchema, ChatErrorCodeSchema } from '@virtual-city/contracts';
+import { ChatSendSchema, ChatAckSchema, ChatErrorCodeSchema } from '@aetheria/contracts';
 import type { createIdentityGateway } from '../../../../identity/modules/accounts/presentation/socket';
 import { DomainError } from '../../../../../shared/common/errors';
 import { ChatService, ChatError } from '../application/chat';

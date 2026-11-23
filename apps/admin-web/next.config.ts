@@ -1,10 +1,10 @@
 import type {NextConfig} from 'next';
 import {resolve} from 'node:path';
-const standalone=process.env.VLP_ADMIN_STANDALONE==='1';
+const standalone=process.env.AETHERIA_ADMIN_STANDALONE==='1';
 // Next dev runs behind a loopback port mapping in the local Compose stack.
 const allowedDevOrigins=['127.0.0.1'];
 const privateHeaders=[{key:'Cache-Control',value:'private, no-store'},{key:'X-Robots-Tag',value:'noindex, nofollow'}];
-const config:NextConfig={output:standalone?'standalone':undefined,outputFileTracingRoot:standalone?resolve(__dirname,'../..'):undefined,poweredByHeader:false,devIndicators:false,transpilePackages:['@virtual-city/contracts','@virtual-city/ui'],webpack(config,{dev}){
+const config:NextConfig={output:standalone?'standalone':undefined,outputFileTracingRoot:standalone?resolve(__dirname,'../..'):undefined,poweredByHeader:false,devIndicators:false,transpilePackages:['@aetheria/contracts','@aetheria/ui'],webpack(config,{dev}){
  // Route denial cannot protect publicly served lazy chunks. Exclude draft scene
  // geometry and Three.js from every production compilation.
  if(!dev)config.resolve.alias['./pet-scene$']=resolve(__dirname,'features/prelaunch/modules/product/presentation/pet-scene-disabled.ts');

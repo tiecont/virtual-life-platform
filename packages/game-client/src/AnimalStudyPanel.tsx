@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import type {AnimalStudyHandle,ClientPlatform,SceneQuality} from '@virtual-city/client-sdk';
+import type {AnimalStudyHandle,ClientPlatform,SceneQuality} from '@aetheria/client-sdk';
 type Pose='idle'|'walk'|'sit'|'serve';type View='front'|'left'|'back'|'right';
 export function AnimalStudyPanel({loadStudy,platform,onLeave,onRotate}:{loadStudy:()=>Promise<unknown>;platform:ClientPlatform;onLeave:()=>void;onRotate?:()=>void}){
  const host=useRef<HTMLDivElement>(null),view=useRef<AnimalStudyHandle|null>(null),active=useRef(true);

@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      RUSTUP_HOME: /tmp/vl-rustup
-      CARGO_HOME: /tmp/vl-cargo
+      RUSTUP_HOME: /tmp/aetheria-rustup
+      CARGO_HOME: /tmp/aetheria-cargo
       CARGO_TARGET_DIR: artifacts/rust/target
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -33,11 +33,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/vl-rust-installer"
-          curl -fsSL https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init -o "$RUNNER_TEMP/vl-rust-installer/rustup-init"
-          printf 'b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55  %s\n' "$RUNNER_TEMP/vl-rust-installer/rustup-init" | sha256sum --check
-          chmod +x "$RUNNER_TEMP/vl-rust-installer/rustup-init"
-          "$RUNNER_TEMP/vl-rust-installer/rustup-init" -y --no-modify-path --profile minimal --default-toolchain 1.99.1 --component rustfmt,clippy
+          mkdir -p "$RUNNER_TEMP/aetheria-rust-installer"
+          curl -fsSL https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init -o "$RUNNER_TEMP/aetheria-rust-installer/rustup-init"
+          printf 'b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55  %s\n' "$RUNNER_TEMP/aetheria-rust-installer/rustup-init" | sha256sum --check
+          chmod +x "$RUNNER_TEMP/aetheria-rust-installer/rustup-init"
+          "$RUNNER_TEMP/aetheria-rust-installer/rustup-init" -y --no-modify-path --profile minimal --default-toolchain 1.99.1 --component rustfmt,clippy
       - name: Format, check, clippy and tests
         shell: bash
         run: |
@@ -50,18 +50,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          "$CARGO_HOME/bin/cargo" run --locked --package vl-protocol --bin native-codegen -- --check
-          pnpm --filter @virtual-city/native-protocol typecheck
+          "$CARGO_HOME/bin/cargo" run --locked --package aetheria-protocol --bin native-codegen -- --check
+          pnpm --filter @aetheria/native-protocol typecheck
           pnpm exec vitest run --project unit packages/native-protocol/test/wire.test.ts
       - name: Check frozen pure reducer replay in independent processes
-        run: node crates/vl-game-core/tools/check-replay.mjs
+        run: node crates/aetheria-game-core/tools/check-replay.mjs
       - name: Check native transactional turn orchestration and process recovery
         shell: bash
         run: |
           set -euo pipefail
           pnpm build:packages
-          "$CARGO_HOME/bin/cargo" build --locked --package vl-persistence --example orchestration
-          pnpm --filter @virtual-city/platform-api build
+          "$CARGO_HOME/bin/cargo" build --locked --package aetheria-persistence --example orchestration
+          pnpm --filter @aetheria/platform-api build
           node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs
       - name: Check encrypted journal backup and restored migration integrity
         run: node --import tsx scripts/game-journal-restore-smoke.mjs
@@ -72,13 +72,13 @@ jobs:
         run: |
           set -euo pipefail
           pnpm build:packages
-          "$CARGO_HOME/bin/cargo" build --locked --package vl-gateway --example interop
+          "$CARGO_HOME/bin/cargo" build --locked --package aetheria-gateway --example interop
           node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs
       - name: Check actual runtime gameplay and crash recovery
         shell: bash
         run: |
           set -euo pipefail
-          "$CARGO_HOME/bin/cargo" build --locked --package vl-game-runtime
+          "$CARGO_HOME/bin/cargo" build --locked --package aetheria-game-runtime
           node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay
           node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --movement
       - name: Check Pet Arena PvE matches, recovery and platform settlement
@@ -91,32 +91,32 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/vl-dotnet"
-          curl -fsSL https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.428/dotnet-sdk-8.0.428-linux-x64.tar.gz -o "$RUNNER_TEMP/vl-dotnet-sdk.tar.gz"
-          printf '33212bb99a2bf003973d41106c7e8fe94208a12958ff601d4a476be379403c85a7dc9183a6ec64dfb44ded7102965be09f35add1758e68e9251bae7891d7b7bf  %s\n' "$RUNNER_TEMP/vl-dotnet-sdk.tar.gz" | sha512sum --check
-          tar -xzf "$RUNNER_TEMP/vl-dotnet-sdk.tar.gz" -C "$RUNNER_TEMP/vl-dotnet"
-          export DOTNET="$RUNNER_TEMP/vl-dotnet/dotnet"
-          export PATH="$RUNNER_TEMP/vl-dotnet:$PATH"
+          mkdir -p "$RUNNER_TEMP/aetheria-dotnet"
+          curl -fsSL https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.428/dotnet-sdk-8.0.428-linux-x64.tar.gz -o "$RUNNER_TEMP/aetheria-dotnet-sdk.tar.gz"
+          printf '33212bb99a2bf003973d41106c7e8fe94208a12958ff601d4a476be379403c85a7dc9183a6ec64dfb44ded7102965be09f35add1758e68e9251bae7891d7b7bf  %s\n' "$RUNNER_TEMP/aetheria-dotnet-sdk.tar.gz" | sha512sum --check
+          tar -xzf "$RUNNER_TEMP/aetheria-dotnet-sdk.tar.gz" -C "$RUNNER_TEMP/aetheria-dotnet"
+          export DOTNET="$RUNNER_TEMP/aetheria-dotnet/dotnet"
+          export PATH="$RUNNER_TEMP/aetheria-dotnet:$PATH"
           export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
           node scripts/native-csharp.mjs
           node scripts/unity-native-prepare.mjs
           node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client
       - name: Measure bounded twenty-actor zone prototype
-        run: '"$CARGO_HOME/bin/cargo" run --locked --package vl-world --example zone-probe'
+        run: '"$CARGO_HOME/bin/cargo" run --locked --package aetheria-world --example zone-probe'
       - name: Check identity-issued runtime ticket trust across Node and Rust
         shell: bash
         run: |
           set -euo pipefail
           pnpm build:packages
           node scripts/with-test-db.mjs pnpm exec tsx --test tests/unit/runtime-tickets.test.ts
-          "$CARGO_HOME/bin/cargo" run --locked --package vl-security --bin ticket-check -- artifacts/desktop-first/vl013/tickets.json
-          "$CARGO_HOME/bin/cargo" build --locked --package vl-security --bin durable-check
+          "$CARGO_HOME/bin/cargo" run --locked --package aetheria-security --bin ticket-check -- artifacts/desktop-first/vl013/tickets.json
+          "$CARGO_HOME/bin/cargo" build --locked --package aetheria-security --bin durable-check
           node scripts/with-test-db.mjs node --import tsx scripts/runtime-admission-durable-check.mjs
       - name: Check native game schema races and archived runtime expansion compatibility
         shell: bash
         run: |
           set -euo pipefail
-          pnpm --filter @virtual-city/platform-api build
+          pnpm --filter @aetheria/platform-api build
           node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/native-game-schema.test.ts tests/integration/runtime-admission.test.ts tests/integration/schema-compatibility.test.ts
           node scripts/with-test-db.mjs node --import tsx scripts/native-game-migration-compat.mjs
           node scripts/with-test-db.mjs node --import tsx scripts/runtime-admission-migration-compat.mjs
@@ -124,5 +124,5 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          docker build --build-arg SOURCE_REVISION="$GITHUB_SHA" -f apps/game-runtime/Dockerfile -t vl-runtime-ci .
-          python3 apps/game-runtime/tools/oci-smoke.py vl-runtime-ci
+          docker build --build-arg SOURCE_REVISION="$GITHUB_SHA" -f apps/game-runtime/Dockerfile -t aetheria-runtime-ci .
+          python3 apps/game-runtime/tools/oci-smoke.py aetheria-runtime-ci

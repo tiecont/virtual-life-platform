@@ -11,11 +11,11 @@ import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
 import {OperatorService} from '../../apps/platform-api/src/features/identity/modules/operators/application/operator-service';
 import {totp} from '../../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto';
-import {OperatorSessionSchema} from '@virtual-city/contracts';
+import {OperatorSessionSchema} from '@aetheria/contracts';
 let admin:Pool,pool:Pool,server:Awaited<ReturnType<typeof createApp>>,operator:OperatorService,schema:string,now:number,authKey:string,logs:string[],recovery:{subject:string;recoveryCodes:string[]};
 const origin='http://127.0.0.1:3400',playerOrigin='http://127.0.0.1:3300';
 const secret='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',replacement='JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP',password='synthetic-operator-only-password-32';
-beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))||url.search||url.hash)throw Error('Disposable local DB required');admin=new Pool({connectionString:url.toString()});});
+beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))||url.search||url.hash)throw Error('Disposable local DB required');admin=new Pool({connectionString:url.toString()});});
 beforeEach(async()=>{
  schema='operator_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA "${schema}"`);const url=new URL(process.env.TEST_DATABASE_URL!);url.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:url.toString()});await migrate(pool);now=1804478400000;authKey=randomBytes(32).toString('hex');logs=[];
  operator=new OperatorService(pool,authKey,()=>now);recovery=await operator.bootstrap({password,totpSecret:secret,code:totp(secret,now)});now+=30000;

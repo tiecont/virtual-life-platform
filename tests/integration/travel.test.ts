@@ -2,8 +2,8 @@ import { beforeAll, afterAll, afterEach, it, expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 import { io, type Socket } from 'socket.io-client';
-import { MeSchema, RoomAckSchema, TravelAckSchema, TravelIntentReceiptSchema, type Me, type RoomSnapshot, type TravelSource, type TravelDestination } from '@virtual-city/contracts';
-import { defineWorld } from '@virtual-city/world-sdk';
+import { MeSchema, RoomAckSchema, TravelAckSchema, TravelIntentReceiptSchema, type Me, type RoomSnapshot, type TravelSource, type TravelDestination } from '@aetheria/contracts';
+import { defineWorld } from '@aetheria/world-sdk';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
@@ -13,7 +13,7 @@ const opened: { app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: 
 const address = (family: number) => { const n = serial++; return `127.${family}.${Math.floor(n / 250)}.${n % 250 + 1}`; };
 beforeAll(async () => {
   const url = new URL(process.env.TEST_DATABASE_URL ?? '');
-  if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
+  if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
   admin = new Pool({ connectionString: url.toString() });
 });
 afterEach(async () => {

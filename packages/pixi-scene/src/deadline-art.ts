@@ -1,5 +1,5 @@
 import { Container,Graphics,Text } from 'pixi.js';
-import type { SceneManifest } from '@virtual-city/contracts';
+import type { SceneManifest } from '@aetheria/contracts';
 // Original code-authored cafe art. No external bitmap,font,audio or source art.
 export function deadlineInterior(scene:SceneManifest){
  const root=new Container(),g=new Graphics(),s=scene.tileSize;root.addChild(g);

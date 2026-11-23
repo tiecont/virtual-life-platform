@@ -1,5 +1,5 @@
-import {RoomSnapshotSchema,type RoomSnapshot} from '@virtual-city/contracts';
-import {sandboxScene,isWalkable} from '@virtual-city/world-sdk';
+import {RoomSnapshotSchema,type RoomSnapshot} from '@aetheria/contracts';
+import {sandboxScene,isWalkable} from '@aetheria/world-sdk';
 export const WORKLOAD_LABEL='SYNTHETIC 20-ACTOR RENDERER BENCHMARK — no real session, capacity, authority or reward';
 const id=(value:number)=>'00000000-0000-4000-8000-'+String(value).padStart(12,'0');
 export function workloadSnapshot():RoomSnapshot{

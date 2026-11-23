@@ -1,7 +1,7 @@
 'use client';
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { io } from 'socket.io-client';
-import { ApiErrorSchema, MeSchema, SocialSettingsSchema, FriendsPageSchema, SocialRequestsPageSchema, BlocksPageSchema, FriendRequestResultSchema, type Me, type SocialSettings, type FriendsPage as Friends, type SocialRequestsPage as Requests, type BlocksPage as Blocks } from '@virtual-city/contracts';
+import { ApiErrorSchema, MeSchema, SocialSettingsSchema, FriendsPageSchema, SocialRequestsPageSchema, BlocksPageSchema, FriendRequestResultSchema, type Me, type SocialSettings, type FriendsPage as Friends, type SocialRequestsPage as Requests, type BlocksPage as Blocks } from '@aetheria/contracts';
 class SocialRequestError extends Error { constructor(readonly status: number, message: string) { super(message); } }
 async function api(path: string, options: RequestInit = {}): Promise<unknown> {
   const response = await fetch('/v1' + path, { ...options, credentials: 'same-origin', cache: 'no-store' });
@@ -35,7 +35,7 @@ export default function SocialPanel({ socketOrigin }: { socketOrigin: string }) 
     } finally { if (mounted.current && sequence === fetchSequence.current) setLoading(false); }
   }, []);
   useEffect(() => {
-    mounted.current = true; void reload(); const bus = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel('virtual-city-identity');
+    mounted.current = true; void reload(); const bus = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel('aetheria-soulbound-identity');
     if (bus) bus.onmessage = () => { void reload().then(ok => { if (ok && mounted.current) setMessage('Identity refreshed.'); }); };
     return () => { mounted.current = false; bus?.close(); };
   }, [reload]);

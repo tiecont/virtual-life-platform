@@ -1,6 +1,6 @@
 import {test, expect, type Page, type BrowserContext} from '@playwright/test';
 import {randomUUID} from 'node:crypto';
-import {MeSchema, CURRENT_CLIENT_COMPATIBILITY} from '@virtual-city/contracts';
+import {MeSchema, CURRENT_CLIENT_COMPATIBILITY} from '@aetheria/contracts';
 import legacy from '../fixtures/client-legacy-wire.json';
 
 const origin = 'http://127.0.0.1:3300';

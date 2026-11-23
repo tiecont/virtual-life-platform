@@ -1,9 +1,9 @@
 import {z} from 'zod';
 import {createSystemReader} from './system-observations';
 import {createObservationReader} from './observations';
-import {OperatorLoginSchema,OperatorRecoverySchema,OperatorSessionSchema,OperatorAccountQuerySchema,OperatorAccountCommandSchema,OperatorAccountViewSchema,OperatorAccountResultSchema,OperatorAccountAuditSchema,OperatorPrivacyRequestsSchema,OperatorPrivacyReviewSchema,PrivacyRequestViewSchema} from '@virtual-city/contracts';
-import {OperatorEventRangeSchema,OperatorEventQuerySchema,OperatorEventCalendarSchema,OperatorEventCommandSchema,OperatorEventReceiptSchema,OperatorEventAuditSchema} from '@virtual-city/contracts';
-import {RuntimeControlViewSchema,RuntimeControlCommandSchema,RuntimeControlResultSchema,RuntimeControlAuditSchema} from '@virtual-city/contracts';
+import {OperatorLoginSchema,OperatorRecoverySchema,OperatorSessionSchema,OperatorAccountQuerySchema,OperatorAccountCommandSchema,OperatorAccountViewSchema,OperatorAccountResultSchema,OperatorAccountAuditSchema,OperatorPrivacyRequestsSchema,OperatorPrivacyReviewSchema,PrivacyRequestViewSchema} from '@aetheria/contracts';
+import {OperatorEventRangeSchema,OperatorEventQuerySchema,OperatorEventCalendarSchema,OperatorEventCommandSchema,OperatorEventReceiptSchema,OperatorEventAuditSchema} from '@aetheria/contracts';
+import {RuntimeControlViewSchema,RuntimeControlCommandSchema,RuntimeControlResultSchema,RuntimeControlAuditSchema} from '@aetheria/contracts';
 import {adminConfig,type AdminConfig as Config} from './runtime-config.mjs';
 export {adminConfig};
 type Fetch=(input:string,init?:RequestInit)=>Promise<Response>;
