@@ -1,0 +1,6 @@
+interface:
+  display_name: "Aetheria Hero Character VRM"
+  short_description: "High-likeness hero to VRM and Unity URP"
+  default_prompt: "Use $aetheria-hero-character-vrm to produce an Aetheria hero character through the 11-view, Charakuru, Tripo, Blender, VRM, and Unity URP gates."
+policy:
+  allow_implicit_invocation: true

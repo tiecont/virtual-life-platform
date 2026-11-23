@@ -95,13 +95,16 @@ world packages cannot import another world's persistence or SQL drivers.
 
 ## Work Plan
 
-The repository skill [Aetheria Character Production](.agents/skills/aetheria-character-production/SKILL.md)
-guides reference images through Blender modeling, textures, rigging, animation,
-Unity URP and delivery, with separate art and technical gates. Invoke
-`$aetheria-character-production` with the character name and reference images;
-it infers existing project defaults and reports missing inputs or failed gates.
-The skill includes style calibration and bounded repair/artist handoff. Its
-presence does not establish an accepted art benchmark or a finished character.
+The repository has two canonical 3D-production skills. Use
+[Aetheria Hero Character VRM](.agents/skills/aetheria-hero-character-vrm/SKILL.md)
+with `$aetheria-hero-character-vrm` for flagship/Limited S humanoids and key NPCs
+needing high-likeness faces, expressions, VRM Humanoid rigs, modular accessories,
+and owner-gated Unity URP delivery. Use
+[Aetheria Standard Asset 3D](.agents/skills/aetheria-standard-asset-3d/SKILL.md)
+with `$aetheria-standard-asset-3d` for detached accessories, standard/common
+Pets, weapons, environments, and props. The two skills describe their required
+provider, Blender, budget, SHA-256, and Unity-admission gates. Their presence
+does not establish an accepted art benchmark, rights, or a finished asset.
 
 The [owner-design intake](specs/pet-arena/meshy-character-pipeline.md) preserves
 Icarus's original sheet and immutable native crops. Its later V3 production

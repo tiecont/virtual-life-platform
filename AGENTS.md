@@ -12,11 +12,15 @@ ready task; keep actual code/contract dependencies. Hardware, media rights,
 signing and release qualification apply to their own acceptance and deployment,
 and must not delay unrelated source work. Never claim a check ran when it did not.
 
-For reference-driven character modeling, textures, rigs, animation, Unity art
-delivery or artist handoff, read and apply
-`.agents/skills/aetheria-character-production/SKILL.md`. Users can invoke it as
-`$aetheria-character-production`. Keep ordinary gameplay/code work outside this
-skill. Skill installation does not imply an accepted art benchmark or asset.
+For flagship or Limited S humanoids and key NPCs needing high-likeness faces,
+expressions, VRM Humanoid rigs, and Unity art delivery, read and apply
+`.agents/skills/aetheria-hero-character-vrm/SKILL.md`; invoke it as
+`$aetheria-hero-character-vrm`. For detached accessories, standard/common Pets,
+weapons, environments, and props, read and apply
+`.agents/skills/aetheria-standard-asset-3d/SKILL.md`; invoke it as
+`$aetheria-standard-asset-3d`. These are the only canonical Aetheria 3D skills.
+Keep ordinary gameplay/code work outside them. Skill installation does not imply
+an accepted art benchmark or asset.
 
 Use feature/module/layer folders for application source. Keep entrypoints and
 framework routes where the framework expects them. Domain code contains pure
