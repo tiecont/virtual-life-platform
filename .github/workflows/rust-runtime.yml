@@ -65,6 +65,14 @@ jobs:
           node scripts/with-test-db.mjs node --import tsx scripts/native-game-orchestration.mjs
       - name: Check encrypted journal backup and restored migration integrity
         run: node --import tsx scripts/game-journal-restore-smoke.mjs
+      - name: Preserve journal restore failure summary
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: journal-restore-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/lantern-lodge/n15-04/**/facts.json
+          if-no-files-found: warn
+          retention-days: 7
       - name: Prepare pinned Chromium and fonts
         run: node scripts/prepare-ci-browser.mjs
       - name: Check direct WSS with real Chromium and restricted PostgreSQL
