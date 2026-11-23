@@ -3581,7 +3581,7 @@
         {"command": "pnpm exec eslint focused CI scripts and governance tests", "exitCode": 0},
         {"command": "git diff --check", "exitCode": 0}
       ],
-      "limitations": "No hosted duration improvement is claimed until the final PR run completes. The infra-only capacity remains789 and the dependent MVP PR raises the same versioned aggregate to813."
+      "limitations": "No hosted duration improvement is claimed until the final PR run completes. The foundation capacity is813 and the dependent MVP PR raises the same versioned aggregate to837."
     },
     "imageNavigationDiagnosticsVerification": {
       "sourceRevision": "deb5c2866aede77c4ee428b9dd54dded0806cd6c",
