@@ -10,6 +10,7 @@ concurrency:
   cancel-in-progress: true
 env:
   NEXT_TELEMETRY_DISABLED: '1'
+  NODE_OPTIONS: --max-old-space-size=12288
 jobs:
   plan:
     name: change-plan
@@ -31,23 +32,9 @@ jobs:
   core:
     name: core-checks
     runs-on: ubuntu-24.04
-    # 770 integration cases took20minutes;leave bounded time for checks/builds.
-    timeout-minutes: 45
+    timeout-minutes: 35
     outputs:
       groups: ${{ steps.browser-plan.outputs.groups }}
-    services:
-      postgres:
-        image: postgres:17.7-alpine
-        env:
-          POSTGRES_USER: aetheria_soulbound_test
-          POSTGRES_PASSWORD: ci_ephemeral_only
-          POSTGRES_DB: aetheria_soulbound_test
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd "pg_isready -U aetheria_soulbound_test -d aetheria_soulbound_test"
-          --health-interval 2s --health-timeout 3s --health-retries 30
-    env:
-      TEST_DATABASE_URL: postgresql://aetheria_soulbound_test:ci_ephemeral_only@127.0.0.1:5432/aetheria_soulbound_test
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -60,6 +47,15 @@ jobs:
         with:
           node-version-file: .node-version
           cache: pnpm
+      - name: Restore Next.js incremental build cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: |
+            apps/portal-web/.next/cache
+            apps/admin-web/.next/cache
+          key: ${{ runner.os }}-next-core-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-next-core-
       - run: pnpm install --frozen-lockfile
       - name: Prepare selected Deadline baseline in isolated copy
         run: node scripts/prepare-deadline-baseline.mjs --allow-network
@@ -76,16 +72,75 @@ jobs:
           python3 -m venv artifacts/ci/design-intake-venv
           artifacts/ci/design-intake-venv/bin/python -m pip install -r scripts/art/requirements.txt
           artifacts/ci/design-intake-venv/bin/python -m unittest discover -s tests/art -p 'test_*.py'
-      - name: Lint,types,unit,integration and builds
+      - name: Lint,types,governance,unit and builds
         run: |
           mkdir -p artifacts/ci/core
           set -o pipefail
-          pnpm check 2>&1 | tee artifacts/ci/core/check.log
+          pnpm check:core 2>&1 | tee artifacts/ci/core/check.log
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: ${{ always() }}
         with:
           name: core-evidence
           path: artifacts/ci/core/
+          if-no-files-found: warn
+          retention-days: 7
+
+  integration:
+    name: integration (${{ matrix.shard }}/4)
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        shard: [1, 2, 3, 4]
+    services:
+      postgres:
+        image: postgres:17.7-alpine
+        env:
+          POSTGRES_USER: aetheria_soulbound_test
+          POSTGRES_PASSWORD: ci_ephemeral_only
+          POSTGRES_DB: aetheria_soulbound_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U aetheria_soulbound_test -d aetheria_soulbound_test"
+          --health-interval 2s --health-timeout 3s --health-retries 30
+    env:
+      TEST_DATABASE_URL: postgresql://aetheria_soulbound_test:ci_ephemeral_only@127.0.0.1:5432/aetheria_soulbound_test
+      VITEST_MAX_WORKERS: '4'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 11.28.5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm legacy:prepare
+      - run: pnpm build:packages
+      - run: pnpm --filter @aetheria/platform-api build
+      - name: Run PostgreSQL integration shard
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/ci/integration
+          set -o pipefail
+          node scripts/with-test-db.mjs pnpm exec vitest run --project integration \
+            --shard="${{ matrix.shard }}/4" \
+            --reporter=json \
+            --outputFile="artifacts/ci/integration/shard-${{ matrix.shard }}.json" \
+            2>&1 | tee "artifacts/ci/integration/shard-${{ matrix.shard }}.log"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: ${{ always() }}
+        with:
+          name: integration-report-${{ matrix.shard }}
+          path: artifacts/ci/integration/
           if-no-files-found: warn
           retention-days: 7
 
@@ -96,7 +151,7 @@ jobs:
     timeout-minutes: 30
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 4
       matrix:
         group: ${{ fromJSON(needs.core.outputs.groups || '["invalid-plan"]') }}
     env:
@@ -113,6 +168,23 @@ jobs:
         with:
           node-version-file: .node-version
           cache: pnpm
+      - name: Restore pinned Playwright browser and font cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: artifacts/ci-browser
+          key: ${{ runner.os }}-playwright-1.64.1-${{ hashFiles('package.json','scripts/prepare-ci-browser.mjs') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-1.64.1-
+      - name: Restore Next.js incremental build cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: |
+            apps/portal-web/.next/cache
+            apps/admin-web/.next/cache
+          key: ${{ runner.os }}-next-browser-${{ matrix.group }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-next-browser-${{ matrix.group }}-
+            ${{ runner.os }}-next-browser-
       - run: pnpm install --frozen-lockfile
       - name: Prepare selected Deadline baseline for legacy browser group
         if: ${{ matrix.group == 'legacy' }}
@@ -150,6 +222,13 @@ jobs:
         with:
           node-version-file: .node-version
           cache: pnpm
+      - name: Restore pinned Playwright browser and font cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: artifacts/ci-browser
+          key: ${{ runner.os }}-playwright-1.64.1-${{ hashFiles('package.json','scripts/prepare-ci-browser.mjs') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-1.64.1-
       - run: pnpm install --frozen-lockfile
       - run: node scripts/prepare-ci-browser.mjs
       # Image smoke drivers import compiled shared contracts on the host too.
@@ -184,7 +263,7 @@ jobs:
 
   quality:
     name: quality
-    needs: [plan, core, browser, images]
+    needs: [plan, core, integration, browser, images]
     if: ${{ always() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
@@ -197,4 +276,11 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version-file: .node-version
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: integration-report-*
+          path: artifacts/ci/integration-reports
+          merge-multiple: true
+      - name: Verify all integration shards passed without skipped tests
+        run: node scripts/verify-vitest-reports.mjs artifacts/ci/integration-reports 813
       - run: node scripts/artifact-gate.mjs

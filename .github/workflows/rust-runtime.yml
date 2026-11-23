@@ -16,6 +16,8 @@ jobs:
       RUSTUP_HOME: /tmp/aetheria-rustup
       CARGO_HOME: /tmp/aetheria-cargo
       CARGO_TARGET_DIR: artifacts/rust/target
+      CARGO_BUILD_JOBS: '4'
+      NODE_OPTIONS: --max-old-space-size=12288
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -27,6 +29,7 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .node-version
+          cache: pnpm
       - name: Install pinned contract generation tools
         run: pnpm install --frozen-lockfile
       - name: Install checksum-pinned bootstrap and exact Rust toolchain
@@ -38,6 +41,12 @@ jobs:
           printf 'b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55  %s\n' "$RUNNER_TEMP/aetheria-rust-installer/rustup-init" | sha256sum --check
           chmod +x "$RUNNER_TEMP/aetheria-rust-installer/rustup-init"
           "$RUNNER_TEMP/aetheria-rust-installer/rustup-init" -y --no-modify-path --profile minimal --default-toolchain 1.99.1 --component rustfmt,clippy
+      - name: Cache Rust build artifacts
+        uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0
+        with:
+          workspaces: .
+          shared-key: linux-foundation
+          cache-on-failure: true
       - name: Format, check, clippy and tests
         shell: bash
         run: |
@@ -73,6 +82,13 @@ jobs:
           path: artifacts/lantern-lodge/n15-04/**/facts.json
           if-no-files-found: warn
           retention-days: 7
+      - name: Restore pinned Playwright browser and font cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: artifacts/ci-browser
+          key: ${{ runner.os }}-playwright-1.64.1-${{ hashFiles('package.json','scripts/prepare-ci-browser.mjs') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-1.64.1-
       - name: Prepare pinned Chromium and fonts
         run: node scripts/prepare-ci-browser.mjs
       - name: Check direct WSS with real Chromium and restricted PostgreSQL
