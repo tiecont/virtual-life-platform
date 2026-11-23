@@ -411,6 +411,65 @@
               "06_weapon_prop.png": "55f366664c32bd8d7a11f985d3866fd233bc4e48bbac46bd422169c8b4a80948"
             }
           },
+          "tripoAccessoryH2Review": {
+            "sourceRevision": "843205f35574c79b6b1d5fb0a458d2ef349fcf54",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "state": "H2_OWNER_REVIEW_PENDING",
+            "providerVisibility": "private",
+            "creditsConsumed": 360,
+            "ownerWaiver": {
+              "asset": "Icarus_Wings",
+              "sha256": "34030b8da0b5c864044907b7e78e3974f784ae73d7558eb434dafd326bda9262",
+              "triangles": 26133,
+              "ceilingTriangles": 28000,
+              "authorizedAt": "2026-11-23"
+            },
+            "assets": {
+              "wings": {
+                "providerProjectId": "8dd6dc74-9b98-440a-b241-168a001e6ea2",
+                "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Modular/Accessories/Icarus_Wings.glb",
+                "sha256": "34030b8da0b5c864044907b7e78e3974f784ae73d7558eb434dafd326bda9262",
+                "triangles": 26133,
+                "uvZeroAreaTriangles": 4,
+                "texture": "embedded 4096x4096 JPEG"
+              },
+              "bow": {
+                "providerProjectId": "159eaf11-406d-4b55-9256-92123f6071c8",
+                "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Modular/Accessories/Icarus_Bow.glb",
+                "sha256": "7de768381b161037f3e6a549938cd006f45fb72617b4d8140f295424635eebd4",
+                "triangles": 10489,
+                "uvZeroAreaTriangles": 0,
+                "texture": "embedded 4096x4096 JPEG"
+              }
+            },
+            "sockets": {
+              "wings": "UpperChest/Socket_Wings via IcarusWingController; default OFF",
+              "bow": "RightHand/Socket_Bow; Unity LineRenderer endpoints at normalized ±0.55 m"
+            },
+            "h2Renders": {
+              "01-idle-wings-off.png": "cc217497342bd20d8ec6c2ead222a88e44f9dd0fff2439ab205ac4442a95abc7",
+              "02-ultimate-wings-bow-fire-zone.png": "6b6f49f7194b43300189329a5148aec09953ba02cc3a820f4d4023c99fda11ee",
+              "03-back-closeup.png": "c008c61d3eea6c3ca883fd964445a0d76e92d1da17698d8118f105374d268a2b",
+              "04-side-profile.png": "c0fca8439f608ccdddb0f5cc038f2a9033d1c59501caa76beb428818fe8e86d6"
+            },
+            "commands": [
+              {"command": "pnpm assets:check", "exitCode": 0, "result": "Both exact Tripo GLBs passed hash, triangle, UV-range, pivot, embedded 4096x4096 texture, material and pinned 28K Wings-waiver validation."},
+              {"command": "node --test tests/governance/icarus-accessories.test.mjs tests/governance/unity-metadata.test.mjs", "exitCode": 0, "result": "4 PASS."},
+              {"command": "UNITY_EDITOR=<6000.3.14f1/Editor/Unity> node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "EditMode 19/19 PASS and PlayMode 5/5 PASS, including both attached accessory triangle contracts, default-OFF Wings and bowstring endpoint checks."},
+              {"command": "VL_ICARUS_H2_OUTPUT=<new absolute directory> <6000.3.14f1/Editor/Unity> -batchmode -projectPath apps/unity-client -executeMethod VirtualLife.Editor.IcarusH2ReviewRender.Render -quit", "exitCode": 0, "result": "ICARUS_H2_REVIEW_RENDER_PASS produced four decoded 960x960 URP PNGs. The FIRE_ZONE frame used a validated IcarusFireZoneSnapshot and Signature/FIRE_ZONE presentation."},
+              {"command": "pnpm check", "exitCode": 1, "result": "All gates through lint, typecheck, assets, 167 governance, 535 unit and 813 PostgreSQL integration tests passed. The final monorepo build hit the existing Next.js 16.4.4 one-time security-advisory exit; standalone admin-web and portal-web production builds then passed."}
+            ],
+            "gates": {
+              "h1": "REVISION_REQUIRED",
+              "h2Technical": "PASS_LOCAL",
+              "h2OwnerReview": "PENDING",
+              "unityImport": "PASS_LOCAL",
+              "renderedPreview": "PASS_LOCAL",
+              "productionReady": false
+            },
+            "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
+            "remaining": "Owner H2 visual review remains required. PR66 must remain Draft and unmerged pending that decision; H1 is still REVISION_REQUIRED in the repository plan."
+          },
           "consolidatedRuntimeImport": {
             "sourceRevision": "f84b63d9f63c7f0464db726df876fc76df51d48e",
             "fbxSha256": "1bdf81c91bf828eba44ffb68e8011f8116268b44d26e1855f6ea26632fd4137b",
