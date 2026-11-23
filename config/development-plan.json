@@ -51,6 +51,12 @@
         "observedMainQuality": "Quality43995038750 SUCCESS; Rust43995038683 SUCCESS at observedMain; inspected hosted evidence, not a fresh local run.",
         "observedPR33": "fd94f630e97e907629caf88c3344709620a69f18: 26 SUCCESS checks; merged as d3f23b4daaa96fa23d9112130f439d288d6eaec2",
         "observedPR35": "MERGED on2026-11-17 from4450de786d4036f42970becab1a5890bf29df335 as b2b1a079662556c45ab7f9e135d38d72d107237c; main Quality/Rust green.",
+        "ciCriteria": {
+          "status": "VERIFIED",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/64",
+          "sourceRevision": "214f4ddce16b9fdc9469324cd24ab488c82a1ca1",
+          "result": "PR64 exact head completed all 26 hosted checks successfully. This records the scoped CI criterion only; Gate 0 task status and merge review remain unchanged."
+        },
         "v4Audit": {
           "sourceRevision": "c7a1f8647bb4d6d6fc4e7b979abcf4e85b810736",
           "reviewMode": "SINGLE_AGENT_AUDIT",

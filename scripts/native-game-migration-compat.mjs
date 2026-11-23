@@ -55,9 +55,15 @@ try{
  stage='old47';await old.migrate(pool,source+'/apps/platform-api/dist/db/migrations');await start(old,true);await ready(200);
  const guest=await api.http.inject({method:'POST',url:'/v1/session/guest',headers:{origin:env.WEB_ORIGIN},payload:{requestId:randomUUID(),displayName:'Native compat visitor',avatarKey:'mint'}});
  assert.equal(guest.statusCode,201);const cookie=String(guest.headers['set-cookie']).split(';')[0],account=guest.json().profile.id;
- const legacyId=randomUUID();await pool.query(`INSERT INTO engine_game_matches(id,table_id,generation,room_epoch,room_id,mode,ruleset_version,status,state_version,seed_commitment,start_request_id,start_fingerprint,created_at,updated_at)
- VALUES($1,$2,$3,$4,$5,'lantern-colors','1.0.0','ABORTED',1,$6,$7,$8,now(),now())`,[legacyId,randomUUID(),randomUUID(),randomUUID(),randomUUID(),'a'.repeat(64),randomUUID(),'b'.repeat(64)]);
- const legacy=(await pool.query('SELECT to_jsonb(m) AS data FROM engine_game_matches m WHERE id=$1',[legacyId])).rows[0].data;
+ const legacyId=randomUUID(),legacyRequest=randomUUID();await pool.query(`INSERT INTO engine_game_matches(id,table_id,generation,room_epoch,room_id,mode,ruleset_version,status,state_version,seed_commitment,start_request_id,start_fingerprint,created_at,updated_at)
+ VALUES($1,$2,$3,$4,$5,'lantern-colors','1.0.0','ABORTED',1,$6,$7,$8,now(),now())`,[legacyId,randomUUID(),randomUUID(),randomUUID(),randomUUID(),'a'.repeat(64),legacyRequest,'b'.repeat(64)]);
+ await pool.query(`INSERT INTO engine_game_participants(match_id,account_id,membership_id,session_id,seat_index) VALUES($1,$2,$3,$4,0)`,[legacyId,account,randomUUID(),randomUUID()]);
+ await pool.query(`INSERT INTO engine_game_receipts(match_id,account_id,request_id,fingerprint,accepted,committed_version,created_at) VALUES($1,$2,$3,$4,true,1,now())`,[legacyId,account,legacyRequest,'c'.repeat(64)]);
+ const legacy=(await pool.query(`SELECT jsonb_build_object(
+  'matches',(SELECT jsonb_agg(to_jsonb(m) ORDER BY id) FROM engine_game_matches m WHERE id=$1),
+  'participants',(SELECT jsonb_agg(to_jsonb(p) ORDER BY match_id,account_id) FROM engine_game_participants p WHERE match_id=$1),
+  'receipts',(SELECT jsonb_agg(to_jsonb(r) ORDER BY match_id,account_id,request_id) FROM engine_game_receipts r WHERE match_id=$1)
+ ) AS data`,[legacyId])).rows[0].data;
  stage='expand54';await Promise.all([current.migrate(pool),current.migrate(pool)]);await ready(200);await sameUser(cookie,account);
  facts.scenarios.push('Two current migrators expand47->54 under existing lock; actual archived47 API remains ready and preserves same browser identity');
  const match=randomUUID(),key=randomBytes(32),nonce=randomBytes(12),aad=Buffer.from('VL016-fixture:'+match+':v0');
@@ -78,10 +84,14 @@ try{
  }
  await pool.query("INSERT INTO city_schema_migrations VALUES('9999_unknown.sql',$1,now())",['0'.repeat(64)]);await ready(503);await pool.query("DELETE FROM city_schema_migrations WHERE name='9999_unknown.sql'");await ready(200);
  stage='roll-forward';await stop();await start(current);await ready(200);await sameUser(cookie,account);
- assert.deepEqual(await readNative(),frozen);assert.deepEqual((await pool.query('SELECT to_jsonb(m) AS data FROM engine_game_matches m WHERE id=$1',[legacyId])).rows[0].data,legacy);
+ assert.deepEqual(await readNative(),frozen);assert.deepEqual((await pool.query(`SELECT jsonb_build_object(
+  'matches',(SELECT jsonb_agg(to_jsonb(m) ORDER BY id) FROM engine_game_matches m WHERE id=$1),
+  'participants',(SELECT jsonb_agg(to_jsonb(p) ORDER BY match_id,account_id) FROM engine_game_participants p WHERE match_id=$1),
+  'receipts',(SELECT jsonb_agg(to_jsonb(r) ORDER BY match_id,account_id,request_id) FROM engine_game_receipts r WHERE match_id=$1)
+ ) AS data`,[legacyId])).rows[0].data,legacy);
  const stored=await readNative(),decipher=createDecipheriv('aes-256-gcm',key,stored.snapshot_nonce);decipher.setAAD(aad);decipher.setAuthTag(stored.snapshot_tag);assert.deepEqual(Buffer.concat([decipher.update(stored.sealed_snapshot),decipher.final()]),secret);
  const rows=(await pool.query('SELECT name,checksum FROM city_schema_migrations ORDER BY name')).rows;assert.deepEqual(Object.fromEntries(rows.map(r=>[r.name,r.checksum])),after);
- facts.scenarios.push('Original/native-storage/tail checksum and unknown migration fail closed; current54 roll-forward preserves every old47 checksum, legacy game row, identity and native AEAD fixture roundtrip');
+ facts.scenarios.push('Original/native-storage/tail checksum and unknown migration fail closed; current54 roll-forward preserves every old47 checksum, legacy match, participant and receipt journals, identity and native AEAD fixture roundtrip');
  facts.migrations={previous:47,current:54,oldPrefixUnchanged:true,concurrentMigrators:2};facts.nativeCiphertextSha256=sha(ciphertext);facts.result='PASS';
 }catch(error){facts.result='FAIL';facts.failedStage=stage;facts.failureKind=error.name;facts.frames=String(error.stack??'').split('\n').filter(line=>line.trim().startsWith('at ')).slice(0,4);process.exitCode=1;}
 finally{
