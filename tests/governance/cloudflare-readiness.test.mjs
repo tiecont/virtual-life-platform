@@ -38,7 +38,7 @@ test('readiness rejects public Workers previews, routes and upload authorization
     value=>{value.workers['aetheria-soulbound-admin-web']=value.workers['aetheria-soulbound-admin-web'].replace('"preview_urls": false','"preview_urls": true');},
     value=>{value.workers['aetheria-soulbound-portal-web']=value.workers['aetheria-soulbound-portal-web'].replace('"observability"','"routes": [{"pattern": "example.com/*"}],\n  "observability"');},
   ]){
-    const tampered=structuredClone(base);
+    const tampered=globalThis.structuredClone(base);
     mutate(tampered);
     assert.throws(()=>validateCloudflareReadiness(tampered));
   }

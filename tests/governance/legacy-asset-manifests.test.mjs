@@ -26,7 +26,7 @@ test('legacy manifest validation rejects missing, duplicate and altered bindings
   assert.throws(()=>validateLegacyAssetManifests(plan,missing),/maid\.tar/);
   const duplicated=[...manifests,manifests.find(entry=>entry.manifest.id==='legacy-deadline-snapshot')];
   assert.throws(()=>validateLegacyAssetManifests(plan,duplicated),/exactly one manifest/);
-  const altered=structuredClone(manifests);
+  const altered=globalThis.structuredClone(manifests);
   altered.find(entry=>entry.manifest.id==='legacy-icarus-study-video').manifest.sizeBytes-=1;
   assert.throws(()=>validateLegacyAssetManifests(plan,altered),/icarus-study\.mp4/);
 });
