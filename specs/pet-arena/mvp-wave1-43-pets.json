@@ -1,0 +1,847 @@
+{
+  "schemaVersion": 1,
+  "specId": "aetheria-mvp-wave1-43-pets",
+  "title": "Aetheria Wave 1 MVP Pet and Arena Art Production Lock",
+  "state": "ART_BLUEPRINT_LOCKED_FOR_OWNER_REVIEW",
+  "releaseState": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
+  "lockedOn": "2026-11-24",
+  "owningTasks": ["VL-105", "VL-121", "VL-160", "VL-171"],
+  "excludedTask": "VL-172",
+  "purpose": "Define the exact 43-Pet, six-element, six-map Wave 1 art scope, reusable geometry plan, evolution accessory catalog, arena kit scope, budgets and owner gates without changing gameplay, publication or spending authority.",
+  "scopeLock": {
+    "petCount": 43,
+    "composition": {
+      "limitedEventGacha": 1,
+      "standardGacha": 6,
+      "mapLegendary": 6,
+      "mapRegular": 30
+    },
+    "elementCount": 6,
+    "mapCount": 6,
+    "sharedRaceBaseCount": 10,
+    "sharedEvolutionAccessoryCount": 18,
+    "arenaMapKitCount": 6
+  },
+  "assumptions": [
+    "Wave 1 uses the six Standard S elements: fire, water, electric, ghost, ground and light.",
+    "The matching six maps follow canonical map element and source order: Cinder Terraces, Tideglass Lagoon, Stormcoil Fields, Lantern Necropolis, Ochre Labyrinth and Dawn Prism Sanctum.",
+    "Each selected map contributes the first five canonical map_regular identities and its canonical map_legendary identity.",
+    "Icarus is the sole Limited S in this wave. The remaining five Limited S Pets remain under VL-172 and are outside this specification.",
+    "Lv 20/40/60 accessory stages are presentation-only art layering milestones. Existing source star milestones, combat values, acquisition rules and evolution semantics remain authoritative and unchanged.",
+    "This lock authorizes source planning and zero-cost concept work only. It does not approve likeness, visual quality, rights, paid provider jobs, binary staging, public publication or deployment."
+  ],
+  "sourceOfTruth": [
+    {
+      "path": "specs/pet-arena/v3.1/data/pets_initial_240.json",
+      "sha256": "2318013aa0713ac0fa5f99e75183506cf2c1280e191671782ec9b49fdf2ce38c",
+      "role": "Canonical draft Pet identities, morphology, acquisition source, map association and design descriptors."
+    },
+    {
+      "path": "specs/pet-arena/v3.1/data/maps_19.json",
+      "sha256": "6971bc983c15a35c52d56f774cf347557f61c4597b8972a891a4228392daf7ed",
+      "role": "Canonical draft maps and regular/legendary membership."
+    },
+    {
+      "path": "specs/pet-arena/v3.1/data/standard_gacha_pets_6.json",
+      "sha256": "e4bf754c5c00371c67eb0515458702388080eb2e9e9e2983a068be8f0312291d",
+      "role": "Frozen Standard S roster and shared ability identities."
+    },
+    {
+      "path": "specs/pet-arena/v3.1/data/standard_animation_profiles.json",
+      "sha256": "dc5fa967edaa5975fca84ba7416b285fc9caef6614774b36ad77858aa865fdd2",
+      "role": "Candidate Standard S actions and LOD/material budgets."
+    },
+    {
+      "path": "packages/contracts/src/pet-acquisition-catalog-v3.ts",
+      "sha256": "7c1286c30ebb8885fa7ef74d6375b9dee996b4f4513ccd4359787490eaf7917e",
+      "role": "Typed canonical Standard and Limited identity sets; this lock never replaces runtime validation."
+    }
+  ],
+  "productionWorkspace": "/home/tiecont/Projects/Aetheria-Workspace/",
+  "providerPolicy": {
+    "blender": "Blender 5.3 headless for new batch normalization and export. Existing reviewed sources authored in another pinned Blender version are opened read-only unless an owner-approved migration is recorded.",
+    "conceptImages": {
+      "priority": 1,
+      "provider": "Tripo Studio Image",
+      "model": "GPT Image 2.5",
+      "quota": "100 free images",
+      "costPerRunCredits": 0,
+      "gate": "Before every run, verify the visible model is GPT Image 2.5 and the UI shows the free-image counter with no paid credit charge. Stop when free quota is exhausted; no paid fallback.",
+      "acceptance": "CONCEPT_REVIEW_REQUIRED; a generated concept is not an owner-authorized production reference, model, rig or rights approval."
+    },
+    "geometry": {
+      "provider": "Tripo Studio via Chrome DevTools MCP after concept approval",
+      "chain": ["Smart Mesh", "Segment", "Smart UV", "4K Retexture", "export GLB or FBX", "Blender 5.3 normalization"],
+      "spending": "No paid Tripo or Meshy geometry submission without explicit approval of model, credit quote and total budget."
+    },
+    "r2": {
+      "manifestDirectory": "assets/manifests/",
+      "binaryPolicy": "Never commit a new binary larger than 500 KiB. Keep binaries in the private R2/Tigris cache or production workspace; commit only schema-compatible JSON manifests and source tooling.",
+      "manifestAuthority": "A manifest records bytes and provenance only. It does not grant art, rights, ownership, publication or deployment approval."
+    }
+  },
+  "runtimeAndArtBudgets": {
+    "units": "meters",
+    "blenderAxes": "Z-up authoring",
+    "unityAxes": "Y-up, grounded root, documented forward axis, no root motion that assigns gameplay position",
+    "standardPet": {
+      "lodTriangles": [24000, 12000, 3000],
+      "maxBones": 64,
+      "maxMaterials": 3,
+      "textureMaxSide": 2048,
+      "maxActiveParticles": 256
+    },
+    "mapRegularSharedBase": {
+      "lodTriangles": [14000, 7000, 2000],
+      "maxBones": 48,
+      "maxMaterials": 2,
+      "textureMaxSide": 1024
+    },
+    "mapLegendaryBoss": {
+      "lodTriangles": [28000, 15000, 5000],
+      "maxBones": 72,
+      "maxMaterials": 3,
+      "textureMaxSide": 2048
+    },
+    "heroWings": {
+      "providerCandidateLod0Ceiling": 28000,
+      "note": "The 28K triangle ceiling is for a separately generated hero/Limited S wing candidate. It is not an assembled-character allowance. Retopology and baking must still satisfy the per-character total contract; Icarus assembled LOD0 remains 26000-29500 triangles including approved modular accessories."
+    },
+    "evolutionAccessory": {
+      "lodTriangles": [2500, 1200, 500],
+      "maxBones": 12,
+      "maxMaterials": 1,
+      "textureMaxSide": 1024
+    },
+    "arenaKit": {
+      "grid": "10x10 board remains fully visible and stationary during combat",
+      "readability": "Selected, matched, falling, warning, disabled and triggered tiles remain distinguishable without color alone; VFX may not cover target and health information.",
+      "moduleBudget": "Each modular arena prop is 3K-12K triangles unless the approved per-map contract is tighter."
+    }
+  },
+  "elements": ["fire", "water", "electric", "ghost", "ground", "light"],
+  "maps": [
+    {
+      "id": "cinder-terraces",
+      "name": "Cinder Terraces",
+      "element": "fire",
+      "regularPetIds": ["fire-coalwhisk", "fire-emberloom", "fire-kilnback", "fire-flarequill", "fire-scorchveil"],
+      "legendaryPetId": "fire-pyrecrown",
+      "arenaKitId": "arena-cinder-terraces",
+      "arenaDirection": "Kiln-stone terraces, charcoal arches, ember seams and heat-scarred paving. Keep the board cool-neutral and reserve orange bloom for warnings and impacts."
+    },
+    {
+      "id": "tideglass-lagoon",
+      "name": "Tideglass Lagoon",
+      "element": "water",
+      "regularPetIds": ["water-dewskip", "water-ripplefin", "water-foamcurl", "water-tideweft", "water-abyssail"],
+      "legendaryPetId": "water-lagoonarch",
+      "arenaKitId": "arena-tideglass-lagoon",
+      "arenaDirection": "Shallow tideglass causeways, reef fans and pearl pylons with animated caustics that never cross tile symbols."
+    },
+    {
+      "id": "stormcoil-fields",
+      "name": "Stormcoil Fields",
+      "element": "electric",
+      "regularPetIds": ["electric-zipspool", "electric-copperkip", "electric-arcshell", "electric-pulsecrest", "electric-thundrel"],
+      "legendaryPetId": "electric-stormdiadem",
+      "arenaKitId": "arena-stormcoil-fields",
+      "arenaDirection": "Wind-bent reed platforms, copper coil fences and crow-step pylons. Lightning arcs stay outside the playable cells and never flash the whole board."
+    },
+    {
+      "id": "lantern-necropolis",
+      "name": "Lantern Necropolis",
+      "element": "ghost",
+      "regularPetIds": ["ghost-wickrift", "ghost-shroudlet", "ghost-bellshade", "ghost-echowisp", "ghost-veilrelic"],
+      "legendaryPetId": "ghost-lanternwake",
+      "arenaKitId": "arena-lantern-necropolis",
+      "arenaDirection": "Bone-white bell colonnades, suspended lanterns and layered funerary cloth. Use rim light and opaque value breaks so Ghost Pets remain readable."
+    },
+    {
+      "id": "ochre-labyrinth",
+      "name": "Ochre Labyrinth",
+      "element": "ground",
+      "regularPetIds": ["ground-clodkin", "ground-burrowick", "ground-dunebraid", "ground-siltmaw", "ground-terracrest"],
+      "legendaryPetId": "ground-faultwarden",
+      "arenaKitId": "arena-ochre-labyrinth",
+      "arenaDirection": "Stepped clay walls, chalk inlays and low dusty arches. Ground effects stay beneath creature contact points and do not obscure tile runes."
+    },
+    {
+      "id": "dawn-prism-sanctum",
+      "name": "Dawn Prism Sanctum",
+      "element": "light",
+      "regularPetIds": ["light-gleamlet", "light-dawnpurl", "light-raymantle", "light-solweft", "light-prismhalo"],
+      "legendaryPetId": "light-dawnarchon",
+      "arenaKitId": "arena-dawn-prism-sanctum",
+      "arenaDirection": "Ivory mullions, opal floor geometry and broken prism arches. Use shape and material contrast instead of a full white emissive scene."
+    }
+  ],
+  "pets": [
+    {
+      "id": "pet-v3-fire-icarus",
+      "name": "Icarus",
+      "category": "limited_event_gacha",
+      "element": "fire",
+      "race": "celestial",
+      "bodyPlan": "humanoid",
+      "rig": "rig_humanoid",
+      "mapId": null,
+      "rank": "S",
+      "productionRoute": "hero-character-vrm",
+      "gates": "H1-H4"
+    },
+    {
+      "id": "pet-v31-fire-cindrelis",
+      "name": "Cindrelis",
+      "category": "standard_gacha",
+      "element": "fire",
+      "race": "spirit",
+      "bodyPlan": "floating",
+      "rig": "rig_float",
+      "mapId": null,
+      "rank": "S",
+      "ability": "Ember Halo",
+      "sharedOpcode": "dot"
+    },
+    {
+      "id": "pet-v31-water-marivell",
+      "name": "Marivell",
+      "category": "standard_gacha",
+      "element": "water",
+      "race": "aquatic",
+      "bodyPlan": "radial",
+      "rig": "rig_aquatic",
+      "mapId": null,
+      "rank": "S",
+      "ability": "Tidal Mantle",
+      "sharedOpcode": "shield"
+    },
+    {
+      "id": "pet-v31-electric-quorion",
+      "name": "Quorion",
+      "category": "standard_gacha",
+      "element": "electric",
+      "race": "avian",
+      "bodyPlan": "avian",
+      "rig": "rig_avian",
+      "mapId": null,
+      "rank": "S",
+      "ability": "Arc Relay",
+      "sharedOpcode": "damage"
+    },
+    {
+      "id": "pet-v31-ghost-vesperyn",
+      "name": "Vesperyn",
+      "category": "standard_gacha",
+      "element": "ghost",
+      "race": "undead",
+      "bodyPlan": "spectral",
+      "rig": "rig_spectral",
+      "mapId": null,
+      "rank": "S",
+      "ability": "Wisp Hex",
+      "sharedOpcode": "initiative_debuff"
+    },
+    {
+      "id": "pet-v31-ground-gravorn",
+      "name": "Gravorn",
+      "category": "standard_gacha",
+      "element": "ground",
+      "race": "construct",
+      "bodyPlan": "hexapod",
+      "rig": "rig_insect",
+      "mapId": null,
+      "rank": "S",
+      "ability": "Seismic Ward",
+      "sharedOpcode": "shield"
+    },
+    {
+      "id": "pet-v31-light-aurelune",
+      "name": "Aurelune",
+      "category": "standard_gacha",
+      "element": "light",
+      "race": "celestial",
+      "bodyPlan": "quadruped",
+      "rig": "rig_q4",
+      "mapId": null,
+      "rank": "S",
+      "ability": "Dawn Chorus",
+      "sharedOpcode": "cleanse"
+    },
+    {
+      "id": "fire-pyrecrown",
+      "name": "Pyrecrown",
+      "category": "map_legendary",
+      "element": "fire",
+      "race": "flora",
+      "bodyPlan": "plant",
+      "rig": "rig_flora",
+      "mapId": "cinder-terraces",
+      "rank": "S"
+    },
+    {
+      "id": "water-lagoonarch",
+      "name": "Lagoonarch",
+      "category": "map_legendary",
+      "element": "water",
+      "race": "flora",
+      "bodyPlan": "plant",
+      "rig": "rig_flora",
+      "mapId": "tideglass-lagoon",
+      "rank": "S"
+    },
+    {
+      "id": "electric-stormdiadem",
+      "name": "Stormdiadem",
+      "category": "map_legendary",
+      "element": "electric",
+      "race": "amorphous",
+      "bodyPlan": "amorphous",
+      "rig": "rig_soft",
+      "mapId": "stormcoil-fields",
+      "rank": "S"
+    },
+    {
+      "id": "ground-faultwarden",
+      "name": "Faultwarden",
+      "category": "map_legendary",
+      "element": "ground",
+      "race": "humanoid",
+      "bodyPlan": "humanoid",
+      "rig": "rig_humanoid",
+      "mapId": "ochre-labyrinth",
+      "rank": "S"
+    },
+    {
+      "id": "ghost-lanternwake",
+      "name": "Lanternwake",
+      "category": "map_legendary",
+      "element": "ghost",
+      "race": "undead",
+      "bodyPlan": "spectral",
+      "rig": "rig_spectral",
+      "mapId": "lantern-necropolis",
+      "rank": "S"
+    },
+    {
+      "id": "light-dawnarchon",
+      "name": "Dawnarchon",
+      "category": "map_legendary",
+      "element": "light",
+      "race": "insectoid",
+      "bodyPlan": "insectoid",
+      "rig": "rig_insect",
+      "mapId": "dawn-prism-sanctum",
+      "rank": "S"
+    },
+    {
+      "id": "fire-coalwhisk",
+      "name": "Coalwhisk",
+      "category": "map_regular",
+      "element": "fire",
+      "race": "mythborn",
+      "bodyPlan": "centaur",
+      "rig": "rig_centaur",
+      "mapId": "cinder-terraces",
+      "rank": "B",
+      "baseMeshId": "base-rig-centaur"
+    },
+    {
+      "id": "fire-emberloom",
+      "name": "Emberloom",
+      "category": "map_regular",
+      "element": "fire",
+      "race": "crystalborn",
+      "bodyPlan": "golem",
+      "rig": "rig_heavy",
+      "mapId": "cinder-terraces",
+      "rank": "B",
+      "baseMeshId": "base-rig-golem"
+    },
+    {
+      "id": "fire-kilnback",
+      "name": "Kilnback",
+      "category": "map_regular",
+      "element": "fire",
+      "race": "demon",
+      "bodyPlan": "humanoid",
+      "rig": "rig_humanoid",
+      "mapId": "cinder-terraces",
+      "rank": "B",
+      "baseMeshId": "base-rig-humanoid"
+    },
+    {
+      "id": "fire-flarequill",
+      "name": "Flarequill",
+      "category": "map_regular",
+      "element": "fire",
+      "race": "elemental",
+      "bodyPlan": "amorphous",
+      "rig": "rig_soft",
+      "mapId": "cinder-terraces",
+      "rank": "A",
+      "baseMeshId": "base-rig-soft"
+    },
+    {
+      "id": "fire-scorchveil",
+      "name": "Scorchveil",
+      "category": "map_regular",
+      "element": "fire",
+      "race": "living_artifact",
+      "bodyPlan": "floating",
+      "rig": "rig_float",
+      "mapId": "cinder-terraces",
+      "rank": "A",
+      "baseMeshId": "base-rig-floating"
+    },
+    {
+      "id": "water-dewskip",
+      "name": "Dewskip",
+      "category": "map_regular",
+      "element": "water",
+      "race": "elemental",
+      "bodyPlan": "amorphous",
+      "rig": "rig_soft",
+      "mapId": "tideglass-lagoon",
+      "rank": "B",
+      "baseMeshId": "base-rig-soft"
+    },
+    {
+      "id": "water-ripplefin",
+      "name": "Ripplefin",
+      "category": "map_regular",
+      "element": "water",
+      "race": "flora",
+      "bodyPlan": "plant",
+      "rig": "rig_flora",
+      "mapId": "tideglass-lagoon",
+      "rank": "B",
+      "baseMeshId": "base-rig-flora"
+    },
+    {
+      "id": "water-foamcurl",
+      "name": "Foamcurl",
+      "category": "map_regular",
+      "element": "water",
+      "race": "aquatic",
+      "bodyPlan": "aquatic",
+      "rig": "rig_aquatic",
+      "mapId": "tideglass-lagoon",
+      "rank": "B",
+      "baseMeshId": "base-rig-aquatic"
+    },
+    {
+      "id": "water-tideweft",
+      "name": "Tideweft",
+      "category": "map_regular",
+      "element": "water",
+      "race": "elemental",
+      "bodyPlan": "amorphous",
+      "rig": "rig_soft",
+      "mapId": "tideglass-lagoon",
+      "rank": "A",
+      "baseMeshId": "base-rig-soft"
+    },
+    {
+      "id": "water-abyssail",
+      "name": "Abyssail",
+      "category": "map_regular",
+      "element": "water",
+      "race": "celestial",
+      "bodyPlan": "humanoid",
+      "rig": "rig_humanoid",
+      "mapId": "tideglass-lagoon",
+      "rank": "A",
+      "baseMeshId": "base-rig-humanoid"
+    },
+    {
+      "id": "electric-zipspool",
+      "name": "Zipspool",
+      "category": "map_regular",
+      "element": "electric",
+      "race": "aquatic",
+      "bodyPlan": "aquatic",
+      "rig": "rig_aquatic",
+      "mapId": "stormcoil-fields",
+      "rank": "B",
+      "baseMeshId": "base-rig-aquatic"
+    },
+    {
+      "id": "electric-copperkip",
+      "name": "Copperkip",
+      "category": "map_regular",
+      "element": "electric",
+      "race": "elemental",
+      "bodyPlan": "amorphous",
+      "rig": "rig_soft",
+      "mapId": "stormcoil-fields",
+      "rank": "B",
+      "baseMeshId": "base-rig-soft"
+    },
+    {
+      "id": "electric-arcshell",
+      "name": "Arcshell",
+      "category": "map_regular",
+      "element": "electric",
+      "race": "fungal",
+      "bodyPlan": "plant",
+      "rig": "rig_flora",
+      "mapId": "stormcoil-fields",
+      "rank": "B",
+      "baseMeshId": "base-rig-flora"
+    },
+    {
+      "id": "electric-pulsecrest",
+      "name": "Pulsecrest",
+      "category": "map_regular",
+      "element": "electric",
+      "race": "flora",
+      "bodyPlan": "plant",
+      "rig": "rig_flora",
+      "mapId": "stormcoil-fields",
+      "rank": "A",
+      "baseMeshId": "base-rig-flora"
+    },
+    {
+      "id": "electric-thundrel",
+      "name": "Thundrel",
+      "category": "map_regular",
+      "element": "electric",
+      "race": "mythborn",
+      "bodyPlan": "centaur",
+      "rig": "rig_centaur",
+      "mapId": "stormcoil-fields",
+      "rank": "A",
+      "baseMeshId": "base-rig-centaur"
+    },
+    {
+      "id": "ground-clodkin",
+      "name": "Clodkin",
+      "category": "map_regular",
+      "element": "ground",
+      "race": "crystalborn",
+      "bodyPlan": "golem",
+      "rig": "rig_heavy",
+      "mapId": "ochre-labyrinth",
+      "rank": "B",
+      "baseMeshId": "base-rig-golem"
+    },
+    {
+      "id": "ground-burrowick",
+      "name": "Burrowick",
+      "category": "map_regular",
+      "element": "ground",
+      "race": "demon",
+      "bodyPlan": "humanoid",
+      "rig": "rig_humanoid",
+      "mapId": "ochre-labyrinth",
+      "rank": "B",
+      "baseMeshId": "base-rig-humanoid"
+    },
+    {
+      "id": "ground-dunebraid",
+      "name": "Dunebraid",
+      "category": "map_regular",
+      "element": "ground",
+      "race": "humanoid",
+      "bodyPlan": "humanoid",
+      "rig": "rig_humanoid",
+      "mapId": "ochre-labyrinth",
+      "rank": "B",
+      "baseMeshId": "base-rig-humanoid"
+    },
+    {
+      "id": "ground-siltmaw",
+      "name": "Siltmaw",
+      "category": "map_regular",
+      "element": "ground",
+      "race": "living_artifact",
+      "bodyPlan": "floating",
+      "rig": "rig_float",
+      "mapId": "ochre-labyrinth",
+      "rank": "A",
+      "baseMeshId": "base-rig-floating"
+    },
+    {
+      "id": "ground-terracrest",
+      "name": "Terracrest",
+      "category": "map_regular",
+      "element": "ground",
+      "race": "flora",
+      "bodyPlan": "plant",
+      "rig": "rig_flora",
+      "mapId": "ochre-labyrinth",
+      "rank": "A",
+      "baseMeshId": "base-rig-flora"
+    },
+    {
+      "id": "ghost-wickrift",
+      "name": "Wickrift",
+      "category": "map_regular",
+      "element": "ghost",
+      "race": "living_artifact",
+      "bodyPlan": "floating",
+      "rig": "rig_float",
+      "mapId": "lantern-necropolis",
+      "rank": "B",
+      "baseMeshId": "base-rig-floating"
+    },
+    {
+      "id": "ghost-shroudlet",
+      "name": "Shroudlet",
+      "category": "map_regular",
+      "element": "ghost",
+      "race": "spirit",
+      "bodyPlan": "floating",
+      "rig": "rig_float",
+      "mapId": "lantern-necropolis",
+      "rank": "B",
+      "baseMeshId": "base-rig-floating"
+    },
+    {
+      "id": "ghost-bellshade",
+      "name": "Bellshade",
+      "category": "map_regular",
+      "element": "ghost",
+      "race": "undead",
+      "bodyPlan": "spectral",
+      "rig": "rig_spectral",
+      "mapId": "lantern-necropolis",
+      "rank": "B",
+      "baseMeshId": "base-rig-spectral"
+    },
+    {
+      "id": "ghost-echowisp",
+      "name": "Echowisp",
+      "category": "map_regular",
+      "element": "ghost",
+      "race": "fungal",
+      "bodyPlan": "plant",
+      "rig": "rig_flora",
+      "mapId": "lantern-necropolis",
+      "rank": "A",
+      "baseMeshId": "base-rig-flora"
+    },
+    {
+      "id": "ghost-veilrelic",
+      "name": "Veilrelic",
+      "category": "map_regular",
+      "element": "ghost",
+      "race": "dragonkin",
+      "bodyPlan": "serpentine",
+      "rig": "rig_serpent",
+      "mapId": "lantern-necropolis",
+      "rank": "A",
+      "baseMeshId": "base-rig-serpent"
+    },
+    {
+      "id": "light-gleamlet",
+      "name": "Gleamlet",
+      "category": "map_regular",
+      "element": "light",
+      "race": "elemental",
+      "bodyPlan": "amorphous",
+      "rig": "rig_soft",
+      "mapId": "dawn-prism-sanctum",
+      "rank": "B",
+      "baseMeshId": "base-rig-soft"
+    },
+    {
+      "id": "light-dawnpurl",
+      "name": "Dawnpurl",
+      "category": "map_regular",
+      "element": "light",
+      "race": "celestial",
+      "bodyPlan": "humanoid",
+      "rig": "rig_humanoid",
+      "mapId": "dawn-prism-sanctum",
+      "rank": "B",
+      "baseMeshId": "base-rig-humanoid"
+    },
+    {
+      "id": "light-raymantle",
+      "name": "Raymantle",
+      "category": "map_regular",
+      "element": "light",
+      "race": "machine",
+      "bodyPlan": "mechanical",
+      "rig": "rig_machine",
+      "mapId": "dawn-prism-sanctum",
+      "rank": "B",
+      "baseMeshId": "base-rig-mechanical"
+    },
+    {
+      "id": "light-solweft",
+      "name": "Solweft",
+      "category": "map_regular",
+      "element": "light",
+      "race": "living_artifact",
+      "bodyPlan": "floating",
+      "rig": "rig_float",
+      "mapId": "dawn-prism-sanctum",
+      "rank": "A",
+      "baseMeshId": "base-rig-floating"
+    },
+    {
+      "id": "light-prismhalo",
+      "name": "Prismhalo",
+      "category": "map_regular",
+      "element": "light",
+      "race": "dragonkin",
+      "bodyPlan": "serpentine",
+      "rig": "rig_serpent",
+      "mapId": "dawn-prism-sanctum",
+      "rank": "A",
+      "baseMeshId": "base-rig-serpent"
+    }
+  ],
+  "sharedRaceBases": [
+    {
+      "id": "base-rig-centaur",
+      "name": "Centaur Race Base",
+      "rig": "rig_centaur",
+      "memberPetIds": ["fire-coalwhisk", "electric-thundrel"]
+    },
+    {
+      "id": "base-rig-golem",
+      "name": "Golem Race Base",
+      "rig": "rig_heavy",
+      "memberPetIds": ["fire-emberloom", "ground-clodkin"]
+    },
+    {
+      "id": "base-rig-humanoid",
+      "name": "Humanoid Familiar Base",
+      "rig": "rig_humanoid",
+      "memberPetIds": ["fire-kilnback", "water-abyssail", "ground-burrowick", "ground-dunebraid", "light-dawnpurl"]
+    },
+    {
+      "id": "base-rig-soft",
+      "name": "Soft Amorphous Race Base",
+      "rig": "rig_soft",
+      "memberPetIds": ["fire-flarequill", "water-dewskip", "water-tideweft", "electric-copperkip", "light-gleamlet"]
+    },
+    {
+      "id": "base-rig-floating",
+      "name": "Living Artifact Race Base",
+      "rig": "rig_float",
+      "memberPetIds": ["fire-scorchveil", "ground-siltmaw", "ghost-wickrift", "ghost-shroudlet", "light-solweft"]
+    },
+    {
+      "id": "base-rig-flora",
+      "name": "Flora and Fungal Race Base",
+      "rig": "rig_flora",
+      "memberPetIds": ["water-ripplefin", "electric-arcshell", "electric-pulsecrest", "ground-terracrest", "ghost-echowisp"]
+    },
+    {
+      "id": "base-rig-aquatic",
+      "name": "Aquatic Race Base",
+      "rig": "rig_aquatic",
+      "memberPetIds": ["water-foamcurl", "electric-zipspool"]
+    },
+    {
+      "id": "base-rig-spectral",
+      "name": "Spectral Race Base",
+      "rig": "rig_spectral",
+      "memberPetIds": ["ghost-bellshade"]
+    },
+    {
+      "id": "base-rig-serpent",
+      "name": "Serpentine Race Base",
+      "rig": "rig_serpent",
+      "memberPetIds": ["ghost-veilrelic", "light-prismhalo"]
+    },
+    {
+      "id": "base-rig-mechanical",
+      "name": "Mechanical Race Base",
+      "rig": "rig_machine",
+      "memberPetIds": ["light-raymantle"]
+    }
+  ],
+  "evolutionAccessorySystem": {
+    "levelStages": [20, 40, 60],
+    "fitProfiles": [
+      "base-rig-centaur",
+      "base-rig-golem",
+      "base-rig-humanoid",
+      "base-rig-soft",
+      "base-rig-floating",
+      "base-rig-flora",
+      "base-rig-aquatic",
+      "base-rig-spectral",
+      "base-rig-serpent",
+      "base-rig-mechanical"
+    ],
+    "rules": [
+      "Every element has one separately authored accessory set per art stage: Lv20, Lv40 and Lv60.",
+      "Each set supplies all ten fitting profiles but shares silhouette language, material masks and texel budget.",
+      "Attach only to documented sockets; do not alter gameplay stats, star rules, acquisition or authority.",
+      "Lv60 does not replace the base mesh identity; all prior recognizable features remain visible.",
+      "Accessories do not block board tiles, facial/eye readability or target indicators."
+    ],
+    "accessories": [
+      {"id": "evo-lv20-fire", "level": 20, "element": "fire", "name": "Ember-seal Charm", "material": "kiln ceramic and ember enamel"},
+      {"id": "evo-lv40-fire", "level": 40, "element": "fire", "name": "Cinder Wing Panels", "material": "singed silk and brass feathers"},
+      {"id": "evo-lv60-fire", "level": 60, "element": "fire", "name": "Solar Phoenix Regalia", "material": "blackened gold and translucent flame glass"},
+      {"id": "evo-lv20-water", "level": 20, "element": "water", "name": "Tideglass Mantlelet", "material": "pearl enamel and cyan glass"},
+      {"id": "evo-lv40-water", "level": 40, "element": "water", "name": "Lagoon Fan Mantle", "material": "wet fan membrane and coral ribs"},
+      {"id": "evo-lv60-water", "level": 60, "element": "water", "name": "Abyssal Crown Tails", "material": "deep-blue lacquer and opal"},
+      {"id": "evo-lv20-electric", "level": 20, "element": "electric", "name": "Arc-coil Crest", "material": "copper coil and ceramic insulator"},
+      {"id": "evo-lv40-electric", "level": 40, "element": "electric", "name": "Storm Relay Rings", "material": "lacquered steel and pale conductor"},
+      {"id": "evo-lv60-electric", "level": 60, "element": "electric", "name": "Thunder Diadem Coils", "material": "dark alloy and bounded amber filaments"},
+      {"id": "evo-lv20-ghost", "level": 20, "element": "ghost", "name": "Memory-veil Knot", "material": "folded linen and pearl pin"},
+      {"id": "evo-lv40-ghost", "level": 40, "element": "ghost", "name": "Lamp-wraith Shroud", "material": "matte cloth and smoked crystal"},
+      {"id": "evo-lv60-ghost", "level": 60, "element": "ghost", "name": "Lantern Arch Vestment", "material": "layered violet silk and bell metal"},
+      {"id": "evo-lv20-ground", "level": 20, "element": "ground", "name": "Bedrock Waist Plate", "material": "terrace stone and chalk inlay"},
+      {"id": "evo-lv40-ground", "level": 40, "element": "ground", "name": "Terrace Guard Spurs", "material": "sedimentary plates and jade seams"},
+      {"id": "evo-lv60-ground", "level": 60, "element": "ground", "name": "Faultline Colossus Plate", "material": "ochre basalt and mineral grains"},
+      {"id": "evo-lv20-light", "level": 20, "element": "light", "name": "Dawn-prism Diadem", "material": "pearl and narrow faceted glass"},
+      {"id": "evo-lv40-light", "level": 40, "element": "light", "name": "Prism Halo Fan", "material": "opal mullions and ivory resin"},
+      {"id": "evo-lv60-light", "level": 60, "element": "light", "name": "Dawn Arch Crown", "material": "broken prism arches and warm ceramic core"}
+    ]
+  },
+  "arenaMapKits": [
+    {"id": "arena-cinder-terraces", "mapId": "cinder-terraces", "modules": ["terrace landing", "kiln arch", "ember brazier", "charred stair", "ceramic banner"], "bossStage": "six-horn caldera dais"},
+    {"id": "arena-tideglass-lagoon", "mapId": "tideglass-lagoon", "modules": ["tideglass causeway", "reef fan", "pearl pylon", "shell rail", "shallow pool"], "bossStage": "coral-antler tidal rotunda"},
+    {"id": "arena-stormcoil-fields", "mapId": "stormcoil-fields", "modules": ["reed platform", "copper coil fence", "crow-step pylon", "wind vane", "insulator stack"], "bossStage": "radial storm-crown mast"},
+    {"id": "arena-lantern-necropolis", "mapId": "lantern-necropolis", "modules": ["bell colonnade", "suspended lantern", "funerary banner", "stone plinth", "shroud rail"], "bossStage": "lantern-arch procession"},
+    {"id": "arena-ochre-labyrinth", "mapId": "ochre-labyrinth", "modules": ["clay parapet", "chalk rune slab", "burrow opening", "terrace stair", "low arch"], "bossStage": "faultline slab court"},
+    {"id": "arena-dawn-prism-sanctum", "mapId": "dawn-prism-sanctum", "modules": ["ivory mullion", "opal floor panel", "prism finial", "ceremonial rail", "lightwell"], "bossStage": "broken dawn arch apse"}
+  ],
+  "productionStages": [
+    {"stage": "C1", "name": "Concept batch 1", "output": "22 zero-cost concepts: six Standard S, six map legends and ten shared race bases", "ownerGate": "Approve, revise or reject each concept in one review sitting before geometry generation."},
+    {"stage": "C2", "name": "Base mesh and modular proof", "output": "Ten base meshes, six hero Pet models and six boss models normalized in Blender 5.3", "ownerGate": "Owner review of silhouette fidelity, scale, pivots, sockets, triangle budgets and material partitions."},
+    {"stage": "C3", "name": "Rig and accessory fit", "output": "Rig profiles, eighteen evolution accessory sets and ten fit variants per set", "ownerGate": "Owner review of deformation, attachment clearance, Lv20/40/60 readability and extreme poses."},
+    {"stage": "C4", "name": "Unity URP and arena kit", "output": "Actual prefabs, materials, animations, VFX tiers, six modular arena kits and measured runtime previews", "ownerGate": "Owner technical/visual review; separately licensed Unity/hardware and release checks remain required."},
+    {"stage": "C5", "name": "Private asset delivery", "output": "Hashed source/export/runtime binaries in private R2 cache with committed JSON manifests", "ownerGate": "Private delivery may proceed when the actual art gate passes; it never establishes public rights or publication."}
+  ],
+  "hardGates": {
+    "ownerConceptApproval": "REQUIRED",
+    "ownerCharacterGates": "Icarus H1-H4 and Standard Pet production reviews remain mandatory; CI or self-review never substitutes.",
+    "paidProviderSpending": "FORBIDDEN_WITHOUT_EXPLICIT_MODEL_QUOTE_AND_TOTAL_APPROVAL",
+    "binaryCommit": "FORBIDDEN_ABOVE_500_KIB",
+    "rights": "PENDING_REVIEW",
+    "unityAdmission": "NOT_AUTHORIZED_BY_THIS_SPEC",
+    "publication": "NO_GO_PUBLIC"
+  },
+  "conceptBatch1": {
+    "state": "GENERATION_AND_OWNER_REVIEW_REQUIRED",
+    "count": 22,
+    "categories": {"standardGacha": 6, "mapLegendary": 6, "sharedRaceBase": 10},
+    "workspaceDirectory": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts/",
+    "reviewDirectory": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/review/",
+    "reviewSheet": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/review/index.html",
+    "ledger": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts/generation-ledger.json",
+    "binaryPolicy": "The 22 PNGs remain outside Git under the production workspace. A concept is not a production model, rig or rights-cleared asset."
+  },
+  "validationInvariants": [
+    "Exactly 43 unique Pet IDs with category counts 1/6/6/30.",
+    "Exactly six unique elements and six unique map IDs in selection order.",
+    "Every selected map contributes exactly five unique canonical regular IDs and one canonical legendary ID.",
+    "Every map_regular Pet references one of exactly ten shared base IDs, and every base is used.",
+    "The six Standard IDs equal the canonical Standard S roster.",
+    "The sole Limited ID is pet-v3-fire-icarus; no other Limited identity appears.",
+    "Exactly eighteen accessory IDs exist, three per element at levels 20, 40 and 60.",
+    "Each of six maps has one matching element and one arena kit.",
+    "No validation result may promote assetStatus, rights, productionReady, publication or gameplay."
+  ]
+}

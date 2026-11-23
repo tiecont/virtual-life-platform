@@ -2,7 +2,7 @@
 
 ## Authoring/export
 
-- Blender 4.5 LTS already used for Icarus; keep source in meters. Blender working Z-up, export FBX with `axis_forward='-Z'` and `axis_up='Y'`, preserve animation action naming, avoid accidental armature scaling. In Unity, measure character height 1.68m without halo/wings and root scale `(1,1,1)`; do not equate exporter checkboxes with verified import dimensions.
+- Existing Icarus sources were authored in Blender 4.5 LTS; preserve that source history. Use Blender 5.3 for new retopology, weight transfer, accessory fitting, normalization and export, and record any explicit owner-approved source migration. Keep source in meters. Blender working Z-up, export FBX with `axis_forward='-Z'` and `axis_up='Y'`, preserve animation action naming, avoid accidental armature scaling. In Unity, measure character height 1.68m without halo/wings and root scale `(1,1,1)`; do not equate exporter checkboxes with verified import dimensions.
 - Preserve edit-ready `.blend`; no dangling workstation-only texture links. Segment face/head, hair groups, layered cloth, feather wings, halo and bow. Provide `Weapon_Hand` socket, separate bow grip and arrow release references. Ensure 2 wing roots in upper back with fold, shoulder tests and collision clearance.
 - Facial shapes: 5 distinct functional targets (neutral is a state, NOT a blendshape; choose `Blink_L`, `Blink_R`, `Smile`, `Frown`, `Shout` or equivalent actual names) and at least neutral pose. Report activation tests and deltas. Weighted normals on rigid props only where suitable; don't damage face/feather deformation shading.
 - PBR source maps, exported runtime texture maps, channel pack (Albedo sRGB; Normal linear normal map; ORM masks linear; Emission mask linear where appropriate), transparency/double-sided feather choices. Bake from high-poly to retopo with seam and normal inspection. Report texel density and texture resolution. Runtime LOD budgets from the existing import contract.
@@ -18,6 +18,11 @@
 | max skin influences | 4 | 4 | 4 |
 
 Current `scripts/art/icarus-import-contract.mjs` expects **Generic**. Rig can use a human-like hierarchy, but Unity `Humanoid` is a different importer contract with Avatar retargeting requirements. A Humanoid migration requires independent tests and owner/CTO decision; do not switch just because a blueprint says 'Unity Humanoid'. All 16 named clips must be unique and deform geometry across 3 LODs.
+
+Wing candidates produced separately are capped at 28,000 triangles at LOD0.
+This is an upstream candidate ceiling, not a final assembly budget. Retopology
+and baking must bring the full Icarus assembly back within its 26,000-29,500
+LOD0 contract and must report wing-only and assembled counts separately.
 
 ## Exact Icarus action list
 
