@@ -5,7 +5,7 @@
   "packageManager": "pnpm@11.28.5",
   "rootBuild": "pnpm -r build",
   "packagesBuild": "pnpm --filter './packages/*' -r build",
-  "lockSha256": "364af5ce4e9ff7450d88c7f7d0922e4f01398958364618d2739f51e1afa13921",
+  "lockSha256": "966c33f9fcf6efbacb951f16369239ea851069465adf650d16abf0d024cd066d",
   "workspaceConfigSha256": "0c79bdd36e2d8eac11365b4cba92045f1d494d8e191f41de14298de2263d0ec1",
   "rootDependencies": {
     "dependencies": {},
@@ -79,7 +79,7 @@
       ],
       "externalPins": {
         "dependencies": {
-          "next": "16.4.4",
+          "next": "16.4.6",
           "react": "19.3.1",
           "react-dom": "19.3.1",
           "three": "0.187.0",
@@ -715,7 +715,7 @@
       ],
       "externalPins": {
         "dependencies": {
-          "next": "16.4.4",
+          "next": "16.4.6",
           "react": "19.3.1",
           "react-dom": "19.3.1",
           "socket.io-client": "4.8.4"
