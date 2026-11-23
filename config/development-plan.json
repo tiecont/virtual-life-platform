@@ -345,7 +345,21 @@
           {"command": "cargo test --workspace --locked", "exitCode": 0, "result": "All workspace unit/integration/doc tests PASS; default-off runtime route checks remain green."},
           {"command": "git diff --check", "exitCode": 0}
         ],
-        "hostedCi": "PENDING; final PR Quality/Rust must pass before merge.",
+        "hostedCi": {
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/68",
+          "headRevision": "6ac2b960fc3cf4f461d5537db881da2bdfd5649a",
+          "quality": {
+            "runId": 45182754020,
+            "result": "SUCCESS",
+            "scope": "change-plan, core-checks, runtime-images, all8 browser groups and aggregate quality"
+          },
+          "rust": {
+            "runId": 45182753884,
+            "result": "SUCCESS",
+            "scope": "linux-foundation"
+          }
+        },
+        "mainIntegration": "Merged current main532f255 cleanly after the first fully green hosted run. A fresh Quality/Rust run on the resulting PR head is required before merge.",
         "limitations": "No live S3/Tigris credentials, endpoint or upload was used. Provider compatibility, private bucket configuration, migration of tracked legacy bytes and CLI pull-back through the managed cache remain pending. The binary gate verifies committed Git additions only; it does not infer media rights.",
         "remaining": "VL-170 remains IN_PROGRESS for real private object ingest/binding, signed preview delivery, correction/retention policy and provider/art acceptance. VL-172, Rust gameplay defaults and legacy RoomAuthority were not changed."
       }
