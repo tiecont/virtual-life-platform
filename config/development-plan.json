@@ -3570,6 +3570,10 @@
       "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
       "change": "Quality now runs static/unit/build and four PostgreSQL integration shards concurrently, reports one aggregate from config/ci-capacity.json with zero pending/todo/failed tests, uses four Vitest workers and four browser matrix slots, caches pnpm, .next, pinned Playwright and Rust, and caps Node/Cargo jobs for a 4-vCPU/16-GB runner.",
       "commands": [
+        {"command": "pnpm audit --prod --json", "exitCode": 1, "result": "Before upgrade:7 moderate Next.js advisories affecting16.4.4; the Next build security gate correctly stopped the full check"},
+        {"command": "pnpm install --lockfile-only && pnpm install --frozen-lockfile", "exitCode": 0, "result": "Both Next.js apps upgraded from exact16.4.4 to patched exact16.4.6 and the lockfile updated"},
+        {"command": "pnpm --filter @aetheria/admin-web build && pnpm --filter @aetheria/portal-web build", "exitCode": 0, "result": "Both production builds pass on Next16.4.6 without bypassing the advisory gate"},
+        {"command": "pnpm audit --prod --json (after upgrade)", "exitCode": 0, "result": "0 critical/high/moderate/low production advisories"},
         {"command": "pnpm ci:check", "exitCode": 0, "result": "Workflow pins, action SHAs, browser coverage, four-shard topology, cache restore contract and artifact aggregate PASS; hosted required-check settings NOT_RUN"},
         {"command": "node --test tests/governance/ci.test.mjs tests/governance/rust-workflow.test.mjs tests/governance/artifact-release.test.mjs tests/governance/vitest-reports.test.mjs", "exitCode": 0, "result": "All focused governance tests PASS, including missing/failed/skipped/empty shard rejection"},
         {"command": "node scripts/prepare-ci-browser.mjs (twice)", "exitCode": 0, "result": "First invocation extracted and launched pinned Chromium156.0.8078.80; second reported cached=true and still passed host ldd, render and screenshot preflight"},
