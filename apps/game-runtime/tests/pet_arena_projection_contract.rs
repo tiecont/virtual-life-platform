@@ -1,4 +1,4 @@
-use vl_game_runtime::features::pet_arena::projection::{
+use aetheria_game_runtime::features::pet_arena::projection::{
     FIRE_ZONE_OPCODE, FireZoneDto, ICARUS_PET_ID, ICARUS_SIGNATURE_CARD_ID, ICARUS_SIGNATURE_ID,
     SignatureDto,
 };
