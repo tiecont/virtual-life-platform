@@ -3568,7 +3568,7 @@
     "ciTurboVerification": {
       "sourceRevision": "398e78c6eac6946d1318d2d74f95035a847ff7a0",
       "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
-      "change": "Quality now runs static/unit/build and four PostgreSQL integration shards concurrently, reports one aggregate from config/ci-capacity.json with zero pending/todo/failed tests, uses four Vitest workers and four browser matrix slots, caches pnpm, .next, pinned Playwright and Rust, and caps Node/Cargo jobs for a 4-vCPU/16-GB runner.",
+      "change": "Quality now runs static/unit/build and four PostgreSQL integration shards concurrently, reports one aggregate from config/ci-capacity.json with zero pending/todo/failed tests, uses four Vitest workers and four browser matrix slots, caches pnpm, .next, pinned Playwright and Rust, and caps Node/Cargo jobs for a 4-vCPU/16-GB runner. Feature branches are verified by pull_request only, avoiding duplicate push matrices; push remains the post-merge main gate.",
       "commands": [
         {"command": "pnpm audit --prod --json", "exitCode": 1, "result": "Before upgrade:7 moderate Next.js advisories affecting16.4.4; the Next build security gate correctly stopped the full check"},
         {"command": "pnpm install --lockfile-only && pnpm install --frozen-lockfile", "exitCode": 0, "result": "Both Next.js apps upgraded from exact16.4.4 to patched exact16.4.6 and the lockfile updated"},
