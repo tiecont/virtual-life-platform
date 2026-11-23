@@ -57,10 +57,14 @@ async function exclusiveArchive(output,archive){
  try{const file=await open(pending,'wx',0o600);try{await file.writeFile(archive);await file.sync();}finally{await file.close();}await link(pending,path);const directory=await open(dirname(path),'r');try{await directory.sync();}finally{await directory.close();}}finally{await unlink(pending).catch(()=>{});}
 }
 export async function backupPostgres({project,service='db',keyPath,output}){
- const started=performance.now(),key=await keyFile(keyPath);let plain;
+ const started=performance.now();let key,plain;
  try{
-  const id=await container(project,service);plain=await postgres(id,'pg_dump',['--no-password','--format=custom','--no-owner','--no-privileges','--lock-wait-timeout=5000']);if(!plain.subarray(0,5).equals(Buffer.from('PGDMP')))throw fail();
-  const archive=sealArchive(plain,key);await exclusiveArchive(output,archive);
+  try{key=await keyFile(keyPath);}catch(error){error.code??='BACKUP_KEY_FILE';throw error;}
+  let id;
+  try{id=await container(project,service);}catch(error){error.code??='BACKUP_CONTAINER';throw error;}
+  try{plain=await postgres(id,'pg_dump',['--no-password','--format=custom','--no-owner','--no-privileges','--lock-wait-timeout=5000']);if(!plain.subarray(0,5).equals(Buffer.from('PGDMP')))throw fail();}catch(error){error.code??='BACKUP_DUMP';throw error;}
+  let archive;
+  try{archive=sealArchive(plain,key);await exclusiveArchive(output,archive);}catch(error){error.code??='BACKUP_ARCHIVE';throw error;}
   return {schemaVersion:1,operation:'backup',encrypted:true,bytes:archive.length,sha256:createHash('sha256').update(archive).digest('hex'),durationMs:performance.now()-started,maximumPlaintextBytes:MAX};
  }finally{key.fill(0);plain?.fill(0);}
 }
