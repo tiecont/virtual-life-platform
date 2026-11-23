@@ -1,0 +1,25 @@
+# TEMPLATE ONLY. Credentials and public hostnames stay outside Git.
+tunnel: REPLACE_WITH_PRIVATE_TUNNEL_UUID
+credentials-file: /absolute/private/path/REPLACE_WITH_TUNNEL_CREDENTIALS.json
+no-autoupdate: true
+
+ingress:
+  - hostname: portal.example.invalid
+    service: http://127.0.0.1:3300
+    originRequest:
+      connectTimeout: 10s
+      noHappyEyeballs: true
+
+  - hostname: admin.example.invalid
+    service: http://127.0.0.1:3400
+    originRequest:
+      connectTimeout: 10s
+      noHappyEyeballs: true
+
+  - hostname: api.example.invalid
+    service: http://127.0.0.1:4300
+    originRequest:
+      connectTimeout: 10s
+      noHappyEyeballs: true
+
+  - service: http_status:404

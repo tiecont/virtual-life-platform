@@ -69,6 +69,8 @@ jobs:
         run: node scripts/ci-browser-plan.mjs >> "$GITHUB_OUTPUT"
       - name: Verify disposable test isolation and cleanup
         run: node scripts/test-harness-smoke.mjs
+      - name: Verify split Playwright configuration
+        run: pnpm playwright:config:check
       - name: Verify owner-design intake integrity and gates
         run: |
           python3 -m venv artifacts/ci/design-intake-venv
