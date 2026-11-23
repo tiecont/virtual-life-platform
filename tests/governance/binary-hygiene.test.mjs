@@ -25,7 +25,7 @@ const verifier=fileURLToPath(new URL('../../scripts/verify-binary-hygiene.mjs',i
 const git=(cwd,args)=>execFileSync('git',args,{cwd,encoding:'utf8'}).trim();
 const sha256=bytes=>createHash('sha256').update(bytes).digest('hex');
 
-test('legacy migration inventory covers every audited PNG, GLB and FBX with immutable destination metadata',async()=>{
+test('legacy migration inventory covers every audited PNG, GLB, FBX and VRM with immutable destination metadata',async()=>{
   const plan=JSON.parse(await readFile(migrationPath,'utf8'));
   const policy=validateBinaryHygienePolicy(JSON.parse(await readFile(allowlistPath,'utf8')));
   assert.equal(plan.schemaVersion,1);
@@ -33,9 +33,9 @@ test('legacy migration inventory covers every audited PNG, GLB and FBX with immu
   assert.equal(plan.status,'QUEUED_CREDENTIALS_REQUIRED');
   assert.equal(plan.destination,'S3_TIGRIS_PRIVATE');
   assert.deepEqual([...plan.roots].sort(),[...roots].sort());
-  assert.deepEqual(plan.allowedExtensions,['.blend','.fbx','.glb','.mp4','.tar','.png']);
+  assert.deepEqual(plan.allowedExtensions,['.blend','.fbx','.glb','.mp4','.tar','.png','.vrm']);
   const expected=git('.',['ls-files','-z','--',...roots]).split('\0')
-    .filter(file=>/\.(png|glb|fbx|blend|mp4|tar)$/i.test(file)).sort();
+    .filter(file=>/\.(png|glb|fbx|blend|mp4|tar|vrm)$/i.test(file)).sort();
   assert.deepEqual(plan.files.map(row=>row.path).sort(),expected);
   assert.equal(new Set(plan.files.map(row=>row.s3Key)).size,plan.files.length);
   for(const row of plan.files){
@@ -53,6 +53,7 @@ test('legacy migration inventory covers every audited PNG, GLB and FBX with immu
       '.blend':'application/x-blender',
       '.mp4':'video/mp4',
       '.tar':'application/x-tar',
+      '.vrm':'model/gltf-binary',
     }[extension]);
     assert.equal(row.class,{
       '.png':'PNG_IMAGE',
@@ -61,6 +62,7 @@ test('legacy migration inventory covers every audited PNG, GLB and FBX with immu
       '.blend':'BLEND_BINARY',
       '.mp4':'MP4_VIDEO',
       '.tar':'TAR_ARCHIVE',
+      '.vrm':'VRM_BINARY',
     }[extension]);
   }
   assert.deepEqual(
