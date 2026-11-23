@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-white-gold-study-signature",
+  "version": "1.0.0",
+  "stage": "reference",
+  "s3Key": "assets/legacy-icarus-white-gold-study-signature/1.0.0/signature.png",
+  "sha256": "2760a20b662a96bd99add2ef5f5a24abce640e0f5cb93d9250ffb33046a9e01f",
+  "sizeBytes": 318250,
+  "contentType": "image/png",
+  "localCachePath": ".cache/assets/legacy-icarus-white-gold-study-signature/1.0.0/signature.png"
+}

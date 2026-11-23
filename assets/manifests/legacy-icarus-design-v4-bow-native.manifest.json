@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-design-v4-bow-native",
+  "version": "1.0.0",
+  "stage": "reference",
+  "s3Key": "assets/legacy-icarus-design-v4-bow-native/1.0.0/bow-native.png",
+  "sha256": "9779cb92ea1ae55cb114f28a854b53e712b929058eeb26da7992b5c95afba0af",
+  "sizeBytes": 2107018,
+  "contentType": "image/png",
+  "localCachePath": ".cache/assets/legacy-icarus-design-v4-bow-native/1.0.0/bow-native.png"
+}

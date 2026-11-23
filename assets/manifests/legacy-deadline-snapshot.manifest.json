@@ -1,0 +1,10 @@
+{
+  "id": "legacy-deadline-snapshot",
+  "version": "1.0.0",
+  "stage": "reference",
+  "s3Key": "assets/legacy-deadline-snapshot/1.0.0/deadline.tar",
+  "sha256": "6ae6b3c2291357b639039b9b70b1da3d7feb46369ea5908fddc36484bb17e64e",
+  "sizeBytes": 552960,
+  "contentType": "application/x-tar",
+  "localCachePath": ".cache/assets/legacy-deadline-snapshot/1.0.0/deadline.tar"
+}

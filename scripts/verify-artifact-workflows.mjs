@@ -11,7 +11,22 @@ export function assertArtifactWorkflows(quality, publish, pins) {
     }
   }
   assert(!/^\s+paths:/m.test(quality), 'Required workflow cannot be path-filtered');
+  assert(quality.includes('concurrency:\n  group: quality-${{ github.workflow }}-${{ github.ref }}\n  cancel-in-progress: true'));
+  assert(quality.includes('NODE_OPTIONS: --max-old-space-size=12288'));
   assert(quality.includes('node scripts/artifact-plan.mjs >> "$GITHUB_OUTPUT"'));
+  const coreJob = quality.split('\n  core:')[1]?.split('\n  integration:')[0];
+  assert(coreJob?.includes('pnpm check:core') && !coreJob.includes('--project integration'), 'Core checks must not execute the sharded integration suite');
+  const integrationJob = quality.split('\n  integration:')[1]?.split('\n  browser:')[0];
+  assert(integrationJob?.includes('name: integration (${{ matrix.shard }}/4)'));
+  assert(integrationJob.includes('shard: [1, 2, 3, 4]'));
+  assert(integrationJob.includes('max-parallel: 4') && integrationJob.includes('fail-fast: false'));
+  assert(integrationJob.includes('--project integration') && integrationJob.includes('--shard="${{ matrix.shard }}/4"'));
+  assert(integrationJob.includes("VITEST_MAX_WORKERS: '4'"));
+  assert(integrationJob.includes('postgres:17.7-alpine'));
+  assert(integrationJob.includes('name: integration-report-${{ matrix.shard }}'));
+  const browserJob = quality.split('\n  browser:')[1]?.split('\n  images:')[0];
+  assert(browserJob?.includes('max-parallel: 4'));
+  assert.equal((quality.match(/uses: actions\/cache@/g)??[]).length,4,'Core, browser and image jobs require bounded cache restores');
   const imageJob = quality.split('\n  images:')[1]?.split('\n  quality:')[0];
   assert(imageJob?.includes("if: ${{ needs.plan.outputs.images == 'true' }}"));
   assert(imageJob.includes('node scripts/release-bundle.mjs --output artifacts/release-bundle'));
@@ -21,6 +36,11 @@ export function assertArtifactWorkflows(quality, publish, pins) {
   assert(imageJob.indexOf('name: Preserve image failure summaries')>imageJob.indexOf('node scripts/local-compose-smoke.mjs'), 'Capture failures after all image and Compose checks');
   assert(imageJob.includes('node scripts/local-compose-smoke.mjs --bundle artifacts/release-bundle/bundle.json'), 'Test the shipped local Compose against verified artifacts');
   assert(imageJob.includes('runtime-images-${{ github.sha }}-${{ github.run_attempt }}'));
+  const gate = quality.split('\n  quality:')[1];
+  assert(gate?.includes('needs: [plan, core, integration, browser, images]'));
+  assert(gate.includes('if: ${{ always() }}') && gate.includes('node scripts/artifact-gate.mjs'));
+  assert(gate.includes('pattern: integration-report-*') && gate.includes('merge-multiple: true'));
+  assert(gate.includes('node scripts/verify-vitest-reports.mjs artifacts/ci/integration-reports'));
   assert(publish.startsWith('name: Publish verified artifacts\non:\n  workflow_run:\n    workflows: [Quality]\n    types: [completed]\n    branches: [main]\npermissions:\n  contents: read\n'));
   assert.equal((publish.match(/: write\b/g) ?? []).length, 1);
   assert(publish.includes('    permissions:\n      contents: read\n      actions: read\n      packages: write\n'));
@@ -47,9 +67,14 @@ export async function verifyArtifactWorkflows() {
 export function assertRustWorkflow(workflow,pins) {
   assert(!/pull_request_target|secrets\.|continue-on-error|\|\|\s*true|write-all|: write\b|persist-credentials: true|self-hosted|docker push|gh pr merge|kubectl|argocd/.test(workflow),'Rust CI is untrusted read-only build/test only');
   assert(workflow.includes('permissions:\n  contents: read')&&workflow.includes('persist-credentials: false'),'Rust CI must not retain credentials');
+  assert(workflow.includes('concurrency:\n  group: rust-runtime-${{ github.ref }}\n  cancel-in-progress: true'));
+  assert(workflow.includes("CARGO_BUILD_JOBS: '4'")&&workflow.includes('NODE_OPTIONS: --max-old-space-size=12288'));
   assert.deepEqual([...workflow.matchAll(/^\s*runs-on:\s*(.+)$/gm)].map(row=>row[1]),['ubuntu-24.04'],'Rust foundation uses the declared Ubuntu runner');
   assert.equal((workflow.split('\njobs:\n')[1]?.match(/^ {2}[a-z][a-z-]*:\s*$/gm)??[]).length,1,'Unexpected Rust CI job');
   for(const match of workflow.matchAll(/uses:\s*([^\s#]+)/g)){const [name,revision]=match[1].split('@');assert(/^[a-f0-9]{40}$/.test(revision??'')&&revision===pins[name],'Unpinned Rust action');}
+  assert.equal((workflow.match(/uses: Swatinem\/rust-cache@/g)??[]).length,1);
+  assert(workflow.includes('cache-on-failure: true')&&workflow.includes('cache: pnpm'));
+  assert.equal((workflow.match(/uses: actions\/cache@/g)??[]).length,1);
   for(const gate of ['sha256sum --check','--default-toolchain 1.99.1','fmt --all -- --check','check --workspace --all-targets --locked','clippy --workspace --all-targets --locked -- -D warnings','test --workspace --locked','-f apps/game-runtime/Dockerfile','python3 apps/game-runtime/tools/oci-smoke.py aetheria-runtime-ci',
     'pnpm install --frozen-lockfile','--package aetheria-protocol --bin native-codegen -- --check','pnpm --filter @aetheria/native-protocol typecheck','packages/native-protocol/test/wire.test.ts',
     'CARGO_TARGET_DIR: artifacts/rust/target','build --locked --package aetheria-security --bin durable-check','scripts/runtime-admission-durable-check.mjs',

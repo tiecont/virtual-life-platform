@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-design-v4-front-native",
+  "version": "1.0.0",
+  "stage": "reference",
+  "s3Key": "assets/legacy-icarus-design-v4-front-native/1.0.0/front-native.png",
+  "sha256": "04887f56f81aac94d8116713f64480afe6c4d9272ebe052f98b7d84029cd522b",
+  "sizeBytes": 2136997,
+  "contentType": "image/png",
+  "localCachePath": ".cache/assets/legacy-icarus-design-v4-front-native/1.0.0/front-native.png"
+}
