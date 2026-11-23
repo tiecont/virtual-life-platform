@@ -53,6 +53,22 @@
     {
       "path": "specs/pet-arena/references/icarus/owner-battle-reference.png",
       "sha256": "af3d8af34268cb01b29fd400e62b71378c0c2176b72991ebfcfd3e722f0eb76c"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",
+      "sha256": "4978c1a00caa2403c461ffed0cb82cdac185768f35e74f6cf9a093a1073555c2"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/icarus-blockout1.blend",
+      "sha256": "7bb62cabcc5742ac707cbfc2f6dd89379185ee98b43063563dbe10607c03e1fc"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/icarus-study.mp4",
+      "sha256": "1623b451f713dd18967c1bdaf9c1a871c31070c88190221dacc1ead2d2d5928a"
+    },
+    {
+      "path": "integrations/legacy-snapshots/deadline.tar",
+      "sha256": "6ae6b3c2291357b639039b9b70b1da3d7feb46369ea5908fddc36484bb17e64e"
     }
   ],
   "androidMipmapIcons": {

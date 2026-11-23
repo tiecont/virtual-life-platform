@@ -8,7 +8,7 @@ import http from 'node:http';
 import {createHash,createHmac} from 'node:crypto';
 import {MAX_ASSET_BYTES,sha256,validateManifest} from '../../scripts/media/assets-manifest.mjs';
 import {pullAssets,pushAssets} from '../../scripts/media/assets-command.mjs';
-import {sendAssetRequest} from '../../scripts/media/assets-s3.mjs';
+import {assetTargetFromEnvironment,sendAssetRequest} from '../../scripts/media/assets-s3.mjs';
 
 const assetBytes=Buffer.from('glTF-test-asset');
 const baseManifest=Object.freeze({
@@ -24,9 +24,8 @@ const baseManifest=Object.freeze({
 const liveEnv=Object.freeze({
   S3_ENDPOINT:'https://t3.storage.dev',
   S3_BUCKET:'owned-private-fixture',
-  AWS_REGION:'auto',
-  AWS_ACCESS_KEY_ID:'tid_OWNED_fixture-01',
-  AWS_SECRET_ACCESS_KEY:'owned-local-synthetic-secret',
+  S3_ACCESS_KEY_ID:'tid_OWNED_fixture-01',
+  S3_SECRET_ACCESS_KEY:'owned-local-synthetic-secret',
 });
 
 async function fixture(work){
@@ -74,11 +73,13 @@ test('checked-in JSON schema describes the runtime fields and no secret-bearing 
   assert.equal(schema.properties.sha256.pattern,'^[a-f0-9]{64}$');
 });
 
-test('.env.example advertises only empty S3/Tigris placeholders',async()=>{
+test('.env.example advertises only explicit S3/Tigris placeholders',async()=>{
   const env=await readFile('.env.example','utf8');
-  for(const name of ['S3_ENDPOINT','S3_BUCKET','AWS_REGION','AWS_ACCESS_KEY_ID','AWS_SECRET_ACCESS_KEY']){
-    assert.match(env,new RegExp(`^${name}=$`,'m'));
-  }
+  assert.match(env,/^S3_ENDPOINT=https:\/\/REPLACE_WITH_LOCAL_TIGRIS_ENDPOINT$/m);
+  assert.match(env,/^S3_BUCKET=REPLACE_WITH_PRIVATE_LOCAL_ASSET_BUCKET$/m);
+  assert.match(env,/^S3_ACCESS_KEY_ID=REPLACE_WITH_LOCAL_TIGRIS_ACCESS_KEY$/m);
+  assert.match(env,/^S3_SECRET_ACCESS_KEY=REPLACE_WITH_LOCAL_TIGRIS_SECRET$/m);
+  assert.match(env,/^S3_REGION=auto$/m);
   assert.doesNotMatch(env,/AKIA[0-9A-Z]{16}|tid_[A-Za-z0-9_-]{16,}/);
 });
 
@@ -109,6 +110,36 @@ test('live push fails before network when .env credentials are absent',()=>fixtu
   let transportCalls=0;
   await assert.rejects(pushAssets({root,args:[],env:{},transport:()=>{transportCalls++;throw Error('network must not run');}}),/S3_ENDPOINT/);
   assert.equal(transportCalls,0);
+}));
+
+test('--env-file switches Tigris and R2 targets without code changes and defaults S3_REGION to auto',()=>fixture(async root=>{
+  await writeFile(path.join(root,'.env.production'),[
+    'S3_ENDPOINT=https://t3.storage.dev',
+    'S3_BUCKET=owned-private-fixture',
+    'S3_ACCESS_KEY_ID=fixture_env_file_key',
+    'S3_SECRET_ACCESS_KEY=owned-local-env-file-secret',
+  ].join('\n'));
+  const requests=[];
+  const transport=async request=>{
+    requests.push(request);
+    if(request.method==='PUT')return {status:204,headers:{},bytes:0,body:Buffer.alloc(0)};
+    return {status:200,headers:{'content-type':baseManifest.contentType},bytes:assetBytes.length,body:assetBytes};
+  };
+  const result=await pushAssets({
+    root,
+    args:['--env-file','.env.production'],
+    env:{S3_ENDPOINT:'https://wrong.example.test'},
+    transport,
+    now:new Date('2026-11-23T00:00:00.000Z'),
+  });
+  assert.equal(result.uploaded,1);
+  assert.match(requests[0].headers.authorization,/Credential=fixture_env_file_key\/\d{8}\/auto\/s3\/aws4_request/);
+  assert.equal(assetTargetFromEnvironment({
+    S3_ENDPOINT:'https://t3.storage.dev',
+    S3_BUCKET:'owned-private-fixture',
+    S3_ACCESS_KEY_ID:'fixture_env_file_key',
+    S3_SECRET_ACCESS_KEY:'owned-local-env-file-secret',
+  }).region,'auto');
 }));
 
 test('push dry run rejects changed bytes with the declared size or hash',()=>fixture(async root=>{
@@ -151,12 +182,12 @@ test('owned loopback S3 fixture verifies signed PUT/GET and push-pull round trip
     const match=/^AWS4-HMAC-SHA256 Credential=([^/]+)\/(\d{8})\/([^/]+)\/s3\/aws4_request, SignedHeaders=([^,]+), Signature=([a-f0-9]{64})$/.exec(request.headers.authorization);
     assert.ok(match);
     const [,accessKey,date,region,names,signature]=match;
-    assert.equal(accessKey,liveEnv.AWS_ACCESS_KEY_ID);
+    assert.equal(accessKey,liveEnv.S3_ACCESS_KEY_ID);
     const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
     const hmac=(key,value)=>createHmac('sha256',key).update(value).digest();
     const canonical=[request.method,request.url,'',names.split(';').map(name=>`${name}:${request.headers[name]}\n`).join(''),names,hash(body)].join('\n');
     const scope=`${date}/${region}/s3/aws4_request`;
-    let key=Buffer.from(`AWS4${liveEnv.AWS_SECRET_ACCESS_KEY}`);
+    let key=Buffer.from(`AWS4${liveEnv.S3_SECRET_ACCESS_KEY}`);
     for(const value of [date,region,'s3','aws4_request'])key=hmac(key,value);
     assert.equal(signature,hmac(key,`AWS4-HMAC-SHA256\n${request.headers['x-amz-date']}\n${scope}\n${hash(canonical)}`).toString('hex'));
   }
@@ -213,9 +244,8 @@ test('CLI failures do not print credential or endpoint secrets',()=>fixture(asyn
   const result=spawnSync(process.execPath,[path.resolve('scripts/media/assets-push.mjs')],{cwd:root,encoding:'utf8',env:{
     S3_ENDPOINT:`https://${sentinel}@t3.storage.dev`,
     S3_BUCKET:'owned-private-fixture',
-    AWS_REGION:'auto',
-    AWS_ACCESS_KEY_ID:sentinel,
-    AWS_SECRET_ACCESS_KEY:sentinel,
+    S3_ACCESS_KEY_ID:sentinel,
+    S3_SECRET_ACCESS_KEY:sentinel,
   }});
   assert.equal(result.status,1);
   assert.match(result.stderr,/Asset push refused/);

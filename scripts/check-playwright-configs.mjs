@@ -15,6 +15,7 @@ export const PLAYWRIGHT_CONFIGS = Object.freeze([
 ]);
 
 export async function verifyPlaywrightConfigLayout(root = process.cwd()) {
+  const targetsE2E = /testDir:\s*(?:['"]\.\.\/\.\.\/tests\/e2e['"]|resolve\(repositoryRoot,\s*['"]tests\/e2e['"]\))/u;
   const entries = await readdir(root);
   const staleRoot = entries.filter(name => /^playwright(?:\.[a-z]+)?\.config\.ts$/i.test(name));
   assert.deepEqual(staleRoot, [], 'Playwright configs must live under config/playwright/');
@@ -25,12 +26,12 @@ export async function verifyPlaywrightConfigLayout(root = process.cwd()) {
 
   for (const name of ['playwright.admin.config.ts', 'playwright.privacy.config.ts']) {
     const text = await readFile(join(directory, name), 'utf8');
-    assert.match(text, /testDir:\s*['"]\.\.\/\.\.\/tests\/e2e['"]/u, `${name} must target tests/e2e`);
+    assert.match(text, targetsE2E, `${name} must target tests/e2e`);
   }
   const base = await readFile(join(directory, 'playwright.config.ts'), 'utf8');
   assert.match(
     base,
-    /testDir:\s*['"]\.\.\/\.\.\/tests\/e2e['"]/u,
+    targetsE2E,
     'Base config must target tests/e2e',
   );
   assert.match(
