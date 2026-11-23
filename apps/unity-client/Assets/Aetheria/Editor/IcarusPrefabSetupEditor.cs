@@ -80,7 +80,7 @@ namespace Aetheria.Editor
                 if (output == PrefabPath && !AssetDatabase.IsValidFolder(ModularFolder))
                     AssetDatabase.CreateFolder(CharacterFolder, "Modular");
                 if (buildFromReviewVrm) BindReviewAvatar(root);
-                SetUp(root, output == PrefabPath);
+                SetUp(root);
                 // Use the original path on update so references and the asset GUID are preserved.
                 var saved = PrefabUtility.SaveAsPrefabAsset(root, output, out bool success);
                 if (!success || saved == null) throw new InvalidOperationException("Could not save " + output);
@@ -116,7 +116,7 @@ namespace Aetheria.Editor
             if (vrm != null) vrm.enabled = false;
         }
 
-        private static void SetUp(GameObject root, bool attachAccessories)
+        private static void SetUp(GameObject root)
         {
             Animator[] animators = root.GetComponentsInChildren<Animator>(true);
             if (animators.Length != 1 || animators[0].avatar == null ||
@@ -134,11 +134,6 @@ namespace Aetheria.Editor
             Socket(root.transform, wings, "Socket_Wing_R", new Vector3(.105f, 0, 0), Quaternion.Euler(0, 142, 0));
             Transform halo = Socket(root.transform, head, "Socket_Halo", new Vector3(0, .205f, 0));
             Transform bow = Socket(root.transform, hand, "Socket_Bow", Vector3.zero, Quaternion.identity);
-            if (attachAccessories)
-            {
-                AttachAccessory(wings, "Icarus_Wings", new Vector3(0, 0, -.24f));
-                AttachAccessory(bow, "Icarus_Bow", Vector3.zero);
-            }
             Transform bowTop = Socket(root.transform, bow, "Socket_BowString_Top", new Vector3(0, .95f, 0));
             Transform bowBottom = Socket(root.transform, bow, "Socket_BowString_Bottom", new Vector3(0, -.95f, 0));
 
@@ -155,16 +150,6 @@ namespace Aetheria.Editor
             stringFields.FindProperty("defaultOff").boolValue = true;
             stringFields.ApplyModifiedPropertiesWithoutUndo();
             wings.gameObject.SetActive(false);
-        }
-
-        private static void AttachAccessory(Transform socket, string name, Vector3 offset)
-        {
-            if (socket.Find(name) != null) return;
-            var asset = AssetDatabase.LoadAssetAtPath<GameObject>($"{ModularFolder}/Accessories/{name}.glb");
-            if (asset == null) throw new InvalidOperationException($"Import failed for the {name} review accessory.");
-            var attachment = (GameObject)PrefabUtility.InstantiatePrefab(asset, socket);
-            attachment.name = name;
-            attachment.transform.localPosition = offset;
         }
 
         private static Transform FindBone(Transform rig, params string[] names)
