@@ -87,6 +87,95 @@
         "No public release, purchases, production deployment or signing."
       ]
     },
+    "waveAVerification": {
+      "sourceRevision": "67d28a47f3a03a6ba4e51040d5efe41a156d308d",
+      "status": "PARTIAL_LOCAL_GATES_PASS_HOSTED_CI_PENDING",
+      "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+      "workstreams": [
+        {
+          "taskId": "VL-176",
+          "commit": "b7356b9",
+          "state": "RUST_ENGINE_COMPLETE_NOT_API_WIRED",
+          "checks": [
+            "cargo fmt --all --check PASS",
+            "cargo clippy --all-targets -- -D warnings PASS",
+            "cargo test PASS",
+            "aetheria-pet-arena 58 tests PASS (14 arena8 unit + 10 integration)"
+          ],
+          "remaining": "Expose Arena8Engine through the native runtime/API and replace the Wave 1 action preview for the 8x8 loop."
+        },
+        {
+          "taskId": "VL-177",
+          "commit": "67d28a4",
+          "state": "BACKEND_AND_UNITY_SCREEN_LOCAL_PASS",
+          "checks": [
+            "Artifact domain 9/9 PASS",
+            "PostgreSQL/HTTP Artifact 13/13 PASS",
+            "migration 0056 native compat PASS",
+            "migration 0056 runtime compat PASS",
+            "platform-api build/typecheck PASS"
+          ],
+          "remaining": "Hosted CI and a full Unity-to-API live equip/upgrade/claim playthrough."
+        },
+        {
+          "taskId": "VL-178",
+          "commit": "8a2fcc7",
+          "state": "ROSTER_RECONCILED_OWNER_DECISIONS_OPEN",
+          "checks": [
+            "catalog 18/18 PASS",
+            "full unit 580/580 PASS",
+            "eslint/typecheck PASS"
+          ],
+          "remaining": "OD-1 candidate banner gate, OD-4 Solenne rights, OD-7 production authorization and OD-9 family map membership."
+        },
+        {
+          "taskId": "VL-179",
+          "commit": "8db5b66",
+          "state": "UNITY_SURFACES_COMPILED_TESTED_NOT_8X8_API_CONSUMER",
+          "checks": [
+            "Unity EditMode PASS",
+            "Unity PlayMode PASS",
+            "8x8 board test PASS",
+            "Artifact loadout screen compiles in the campaign UI"
+          ],
+          "remaining": "Consume committed Arena8 events/projections; current live API still exposes the frozen Wave 1 action loop."
+        },
+        {
+          "taskId": "VL-180",
+          "commit": "86551d0",
+          "state": "ICARUS_PREFAB_REBUILT_OTHER_M2_OPEN",
+          "checks": [
+            "Reviewed VRM modular prefab rebuilt through the canonical editor path",
+            "Unity EditMode Icarus prefab gate PASS after rebuild"
+          ],
+          "remaining": "Owner H-gate, reusable morphology intakes, two arena scenes and AudioMixer groups."
+        }
+      ],
+      "integratedLoop": {
+        "status": "PARTIAL",
+        "working": [
+          "Frozen Wave 1 local API/Unity loop",
+          "8x8 standalone Rust engine",
+          "Artifact backend + default-off routes + Unity loadout screen",
+          "Canonical 61-candidate roster"
+        ],
+        "missing": [
+          "Live 8x8 authoritative API/native runtime session",
+          "Unity consumption of Arena8 event stream",
+          "Full reward-to-Artifact-to-next-match 8x8 E2E",
+          "Human playtest/balance"
+        ]
+      },
+      "ownerDecisions": [
+        "OD-1 candidate banner/summon",
+        "OD-3 Jaderyx display name",
+        "OD-4 Solenne rights",
+        "OD-5 power-class ladder",
+        "OD-6 31 concept approvals",
+        "OD-7 model/rig/animation production",
+        "OD-9 family map membership"
+      ]
+    },
     "milestones": [
       {
         "id": "M0",
