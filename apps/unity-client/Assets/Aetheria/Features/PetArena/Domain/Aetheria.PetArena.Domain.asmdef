@@ -1,0 +1,14 @@
+{
+  "name": "Aetheria.PetArena.Domain",
+  "rootNamespace": "Aetheria.PetArena.Domain",
+  "references": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": true
+}
