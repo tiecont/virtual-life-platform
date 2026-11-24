@@ -7,6 +7,7 @@ import {WindowLimiter} from '../../../../identity/modules/accounts/domain/limits
 import {DomainError} from '../../../../../shared/common/errors';
 import {apiErrorHandler} from '../../../../../shared/common/http-errors';
 import {ARTIFACT_SLOTS,PARSED_ARTIFACT_RULES} from '../domain/catalog';
+import {WAVE_A_ACTIVE_PETS,WAVE_A_CANDIDATE_PETS,WAVE_A_COUNTS,WAVE_A_ROSTER_VERSION} from '../../wave1/domain/wave-a-catalog';
 import type {ArtifactService} from '../application/service';
 
 const PetIdSchema=z.string().regex(/^[a-z][a-z0-9-]{2,63}$/);
@@ -58,6 +59,22 @@ export function registerArtifacts(
       if(!limits.take('artifacts-session:'+identity.hash(credential),60))throw new DomainError('RATE_LIMITED',429,'Please wait before retrying');
     });
     api.get('/pets/artifacts/catalog',()=>PARSED_ARTIFACT_RULES);
+    api.get('/pets/wave-a/roster',()=>({
+      rosterVersion:WAVE_A_ROSTER_VERSION,
+      counts:WAVE_A_COUNTS,
+      active:WAVE_A_ACTIVE_PETS.map(pet=>({
+        id:pet.id,name:pet.name,element:pet.element,family:pet.family,
+        powerClass:pet.presentationPowerClass,catalogRank:pet.catalogRank,
+        summonRarity:pet.summonRarity,sourceCategory:pet.sourceCategory,mapId:pet.mapId,
+        gameplayReady:pet.runtime.gameplayReady,modelStatus:pet.runtime.modelStatus,
+        rigStatus:pet.runtime.rigStatus,concept:pet.concept,
+      })),
+      candidates:WAVE_A_CANDIDATE_PETS.map(pet=>({
+        id:pet.id,name:pet.name,element:pet.element,family:pet.family,
+        powerClass:pet.presentationPowerClass,catalogRank:pet.catalogRank,
+        sourceCategory:pet.sourceCategory,grant:pet.candidateGate,
+      })),
+    }));
     api.get('/pets/artifacts/state',req=>artifacts.readState(account(req)));
     api.get('/pets/artifacts/snapshots/:snapshotId',req=>{
       const {snapshotId}=SnapshotParamsSchema.parse(req.params);

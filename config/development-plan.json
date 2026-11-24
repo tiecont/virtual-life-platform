@@ -1602,7 +1602,12 @@
       "title": "Aetheria integrated offline PvE and media acceptance",
       "objective": "Verify 10x10 Pet Arena, capture, six Limited presentations, private media and shared awakening/economy without authorizing a public release.",
       "priority": 2,
-      "dependsOn": ["VL-133", "VL-139", "VL-161", "VL-162", "VL-172", "VL-173"],
+      "dependsOn": [
+        "VL-176",
+        "VL-177",
+        "VL-179",
+        "VL-181"
+      ],
       "acceptance": ["Actual replay/reconnect/duplicate-receipt, economy and abuse tests pass across Nest/Rust/PostgreSQL/Unity", "Final asset hashes, source SHA, actual CI and remaining human/hardware acceptance are recorded", "NO_GO_PUBLIC remains enforced; Pet Arena PvE precedes new Lodge gameplay and mobile remains conditional"],
       "status": "TODO",
       "qualificationRequirements": ["Consented human playtests, retention/deletion decisions and separate release qualification"],
@@ -2046,15 +2051,13 @@
     },
     {
       "id": "VL-011",
-      "mvpMilestone": "M4",
+      "mvpMilestone": "M2",
       "mvpCriticalPath": false,
-      "mvpScope": "DEFERRED_EXPANSION",
-      "deferredExpansion": "Web/social expansion outside the Windows MVP slice.",
+      "mvpScope": "MVP",
       "feature": "Web-UX",
       "title": "Unity URP production renderer spike + optional web teaser cost",
       "objective": "Run compiled Windows Unity anime-stylized shader test on named GPU against original art; preserve web renderer optional as N06 compatibility.",
       "dependsOn": [
-        "VL-005",
         "VL-007",
         "VL-006",
         "VL-080",
@@ -3791,13 +3794,9 @@
       "objective": "E2E native two-player seat/private game and Pet Arena transition with teleport, reconnect, ledger settlement, no duplicate rewards.",
       "dependsOn": [
         "VL-037",
-        "VL-040",
-        "VL-042",
         "VL-046",
         "VL-047",
-        "VL-090",
-        "VL-091",
-        "VL-109"
+        "VL-091"
       ],
       "acceptance": [
         "all user paths pass incl account block/revoke",
@@ -3895,7 +3894,6 @@
       "title": "Windows native HUD/input/accessibility/localization pass",
       "objective": "Font/contrast/control focus/reduced motion, controller mapping and Vietnamese/English for map/chat/card/pet interfaces.",
       "dependsOn": [
-        "VL-040",
         "VL-046",
         "VL-088"
       ],
@@ -4696,7 +4694,8 @@
       "id": "VL-070",
       "mvpMilestone": "M6",
       "mvpCriticalPath": false,
-      "mvpScope": "MVP",
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Release canary/monitoring follows the deferred live-events roadmap, not the closed-beta MVP.",
       "feature": "QA-SRE",
       "title": "Windows native + Rust official-release canary/monitoring",
       "objective": "Canary users install signed Windows client from official site, play Rust game, safely rollback service/asset/client version.",
@@ -4798,9 +4797,10 @@
     },
     {
       "id": "VL-075",
-      "mvpMilestone": "M2",
+      "mvpMilestone": "M4",
       "mvpCriticalPath": false,
-      "mvpScope": "MVP",
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Additional species/outfit expansion is post-MVP content.",
       "feature": "Avatar-Art",
       "title": "Next species/outfit expansion on approved Unity avatar rig",
       "objective": "Grow avatar variants without changing game collision stats; maintain approved Windows profile and future mobile parity.",
@@ -4816,9 +4816,10 @@
     },
     {
       "id": "VL-076",
-      "mvpMilestone": "M0",
+      "mvpMilestone": "M4",
       "mvpCriticalPath": false,
-      "mvpScope": "MVP",
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Community/creator roadmap and tech-debt expansion follow MVP delivery.",
       "feature": "Coordinator",
       "title": "Creator/community roadmap and tech debt re-evaluation",
       "objective": "Review traction, moderation cost, runtime ops and native decision before opening UGC.",
@@ -5494,7 +5495,6 @@
       "objective": "Capture 3 golden scene profiles on named GPUs after warm/cold runs and soak.",
       "dependsOn": [
         "VL-087",
-        "VL-089",
         "VL-091",
         "VL-104"
       ],
@@ -5517,7 +5517,6 @@
       "objective": "Test native compiled game with lost/duplicate packets, failed transfer, private cards and ledger.",
       "dependsOn": [
         "VL-048",
-        "VL-090",
         "VL-091",
         "VL-081"
       ],
@@ -7614,8 +7613,7 @@
       "objective": "3-star, Level100, locked skill levels, rig preview and responsive UI with readable 10x10 HUD.",
       "dependsOn": [
         "VL-122",
-        "VL-131",
-        "VL-134"
+        "VL-179"
       ],
       "acceptance": [
         "3-star, Level100, locked skill levels, rig preview and responsive UI with readable 10x10 HUD.",
@@ -8034,8 +8032,9 @@
       "title": "Pet card/boss/progression QA and economy simulation",
       "objective": "Combat/capture/fusion/boss simulations, replay fuzz, 361 pair immunity softlocks and human fun tests; gacha-specific simulations belong solely to VL-162.",
       "dependsOn": [
-        "VL-143",
-        "VL-151"
+        "VL-176",
+        "VL-177",
+        "VL-181"
       ],
       "acceptance": [
         "Combat/capture/fusion/boss simulations, replay fuzz, 361 pair immunity softlocks and human fun tests; gacha-specific simulations belong solely to VL-162.",
@@ -8189,9 +8188,8 @@
       "objective": "Source CI is not release approval; enforce security, legal, moderation, consent and hardware gates.",
       "dependsOn": [
         "VL-152",
-        "VL-155",
-        "VL-156",
-        "VL-162"
+        "VL-162",
+        "VL-181"
       ],
       "acceptance": [
         "Source CI is not release approval; enforce security, legal, moderation, consent and hardware gates.",
@@ -8339,7 +8337,7 @@
       "title": "Standard and Featured eligibility, 50/50 and family guarantee",
       "objective": "Implement one server-authoritative probability/eligibility state machine with explicit persistence adapter contract; VL-140 owns durable pull transactions.",
       "dependsOn": [
-        "VL-131"
+        "VL-178"
       ],
       "acceptance": [
         "Failed featured50/50 always selects one of six Standard S with validated weights, never lower rank/map S",
@@ -8470,10 +8468,9 @@
       "title": "Gacha simulation, balance, accessible UX and abuse acceptance",
       "objective": "Qualify integrated Standard/Limited distribution, persistent pulls, fair endgame kits and player-facing disclosure.",
       "dependsOn": [
-        "VL-140",
-        "VL-161",
-        "VL-142",
-        "VL-156"
+        "VL-176",
+        "VL-177",
+        "VL-181"
       ],
       "acceptance": [
         "Analytical and fixed-seed Monte Carlo rates/pity/weights with declared confidence and thresholds; no fabricated balance approval",
@@ -8912,7 +8909,7 @@
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave A",
-        "source": "crates/aetheria-pet-arena/src/wave_a"
+        "source": "crates/aetheria-pet-arena/src/arena8"
       }
     },
     {

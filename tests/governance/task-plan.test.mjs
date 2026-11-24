@@ -33,6 +33,11 @@ test('the active backlog classifies every task by MVP milestone and scope',async
  for(const t of p.tasks){assert(t.mvpMilestone,'missing milestone '+t.id);assert(t.mvpScope,'missing scope '+t.id);}
  const deferred=p.tasks.filter(t=>t.mvpScope==='DEFERRED_EXPANSION');
  assert(deferred.length>0&&deferred.every(t=>t.deferredExpansion?.trim()));
+ const byId=new Map(p.tasks.map(t=>[t.id,t]));
+ for(const t of p.tasks.filter(t=>t.mvpScope==='MVP'))
+   assert(t.dependsOn.every(id=>byId.get(id)?.mvpScope==='MVP'),'MVP task has deferred dependency '+t.id);
+ const crossed=plan([task('VL-001',['VL-002'],{mvpScope:'MVP',mvpMilestone:'M1'}),task('VL-002',[],{mvpScope:'DEFERRED_EXPANSION',mvpMilestone:'M4',deferredExpansion:'later'})]);
+ assert.throws(()=>validateTaskPlan(crossed),/deferred implementation dependency/);
  assert.throws(()=>validateTaskPlan({...p,tasks:[...p.tasks,{...p.tasks[0],id:'VL-999',mvpMilestone:'M9'}]}));
  assert.throws(()=>validateTaskPlan({...p,tasks:[...p.tasks,{...p.tasks[0],id:'VL-998',mvpScope:'DEFERRED_EXPANSION',deferredExpansion:undefined}]}));
 });

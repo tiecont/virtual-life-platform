@@ -18,7 +18,7 @@ import {
   type LoadoutEntry,
   type StatModifiers,
 } from '../domain/catalog';
-import {WAVE1_PET_BY_ID,type Wave1PetRank} from '../../wave1/domain/catalog';
+import {WAVE_A_PET_BY_ID,type WaveAPowerClass} from '../../wave1/domain/wave-a-catalog';
 import {ArtifactStore,type ArtifactTransaction,type ArtifactSnapshotRow} from '../infrastructure/store';
 
 export type EquipInput=Readonly<{petId:string;artifactId:string}>;
@@ -34,7 +34,7 @@ export type ArtifactInstanceView=Readonly<{
 }>;
 export type ArtifactSlotsView=Readonly<Record<ArtifactSlot,string|null>>;
 export type ArtifactPetView=Readonly<{
-  petId:string;level:number;powerClass:Wave1PetRank|null;
+  petId:string;level:number;powerClass:WaveAPowerClass|null;
   slots:ArtifactSlotsView;totals:StatModifiers;digest:string;snapshotId:string|null;
 }>;
 export type ArtifactSnapshotView=Readonly<{
@@ -247,7 +247,7 @@ export class ArtifactService {
       const payload=loadoutSnapshotPayload(pet.petId,pet.level,entries);
       const digest=loadoutDigest(payload);
       return {
-        petId:pet.petId,level:pet.level,powerClass:WAVE1_PET_BY_ID.get(pet.petId)?.rank??null,
+        petId:pet.petId,level:pet.level,powerClass:WAVE_A_PET_BY_ID.get(pet.petId)?.presentationPowerClass??null,
         slots,totals:payload.totals,digest,snapshotId:snapshotByDigest.get(digest)??null,
       };
     });

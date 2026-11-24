@@ -100,6 +100,7 @@ describe('Wave A Artifact durable loop',()=>{
     for(const request of [
       {method:'GET' as const,url:'/v1/pets/artifacts/state'},
       {method:'GET' as const,url:'/v1/pets/artifacts/catalog'},
+      {method:'GET' as const,url:'/v1/pets/wave-a/roster'},
       {method:'POST' as const,url:'/v1/pets/artifacts/pve/claim',headers:{origin},payload:{requestId:randomUUID()}},
     ])expect((await disabled.http.inject({...request,remoteAddress})).statusCode).toBe(404);
     const visitor=await guest();
@@ -107,6 +108,21 @@ describe('Wave A Artifact durable loop',()=>{
     expect(exported.statusCode).toBe(200);
     expect(exported.json()).toMatchObject({domains:{}});
     expect(Object.keys((exported.json() as {domains:Record<string,unknown>}).domains)).not.toContain('petArtifacts');
+  });
+
+  it('2a exposes the canonical 55-active/6-gated roster, not the frozen 43-only view',async()=>{
+    const visitor=await guest();
+    const response=await get(app,'/v1/pets/wave-a/roster',visitor);
+    expect(response.statusCode).toBe(200);
+    const body=response.json() as {rosterVersion:string;counts:{active:number;candidates:number;total:number};active:{id:string;powerClass:string}[];candidates:{id:string;grant:{acquisition:string}}[]};
+    expect(body.rosterVersion).toBe('wave-a-v1');
+    expect(body.counts).toMatchObject({active:55,candidates:6,total:61});
+    expect(body.active).toHaveLength(55);
+    expect(body.candidates).toHaveLength(6);
+    expect(new Set(body.active.map(pet=>pet.id)).size).toBe(55);
+    expect(body.candidates.every(pet=>pet.grant.acquisition==='BLOCKED')).toBe(true);
+    expect(body.active.find(pet=>pet.id==='pet-v31-fire-cindrelis')?.powerClass).toBe('A');
+    expect(body.active.find(pet=>pet.id==='pet-v3-fire-icarus')?.powerClass).toBe('S');
   });
 
   it('2 requires an authenticated session, exact origin and CSRF on mutations',async()=>{
