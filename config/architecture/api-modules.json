@@ -15,6 +15,8 @@
         "features/pets/modules/content/infrastructure/draft-store",
         "features/pets/modules/content/infrastructure/manifest-store",
       "features/pets/modules/content/infrastructure/acquisition-draft-store",
+      "features/pets/modules/wave1/application/service",
+      "features/pets/modules/wave1/infrastructure/store",
       "features/pets/modules/wave1/presentation/http"
       ],
       "targetBoundary": "Nest owns content persistence through the existing journal; Rust gameplay and player settlement retain their existing writers"

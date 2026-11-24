@@ -7949,6 +7949,77 @@
           {"command": "git diff --check", "exitCode": 0}
         ],
         "fullGate": "PASS on the combined infra+backend source at the code tree immediately before this metadata-only record: 197 governance,541 unit,837 integration, all builds; zero skipped."
+      },
+      "phase2": {
+        "sourceRevision": "220996fd5c1dc57f76e12d9da59c22a2bc10e91d",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "implementation": "PostgreSQL migration 0055 and authenticated, opt-in loopback API support ownership of the 43 Wave 1 Pets, party, combat replay, currency, evolution, recruits and gacha receipts. PetArenaPve connects the session, party, six regular/boss maps, rewards, evolution and banner, with six URP effects and procedural audio.",
+        "commands": [
+          {
+            "command": "pnpm check",
+            "exitCode": 1,
+            "required": false,
+            "result": "Initial run passed governance, CI policy, infrastructure and frozen legacy checks, then stopped at architecture because migration identifiers contained a digit. Renamed the six new tables and resumed at architecture."
+          },
+          {
+            "command": "pnpm architecture:check && pnpm playwright:config:check && pnpm lint && pnpm typecheck && pnpm release-policy:check && pnpm dating:check && pnpm assets:check && pnpm test && pnpm build && pnpm test:integration",
+            "exitCode": 0,
+            "result": "Verification after the naming correction passed through all remaining checks and builds, including 204 governance, 553 unit and 854 PostgreSQL integration cases with zero skips. The integration run includes 16 durable Wave 1 cases."
+          },
+          {
+            "command": "cargo fmt --all -- --check && cargo check --workspace --all-targets --locked && cargo clippy --workspace --all-targets --locked -- -D warnings && cargo test --workspace --locked",
+            "exitCode": 0,
+            "result": "94 Rust tests including documentation tests and shared Wave 1 replay vectors."
+          },
+          {
+            "command": "Unity 6000.3.14f1 -batchmode -nographics -runTests -testPlatform EditMode -testFilter Aetheria.Tests.EditMode.ArenaPresentationKitTests",
+            "exitCode": 0,
+            "result": "7/7 effects and audio checks passed."
+          },
+          {
+            "command": "Unity 6000.3.14f1 -batchmode -nographics -runTests -testPlatform PlayMode -testFilter Aetheria.Tests.PlayMode.PetArenaMvpTests",
+            "exitCode": 0,
+            "result": "The training scene regression passed."
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/wave1-unity-smoke.mjs",
+            "exitCode": 0,
+            "result": "Two editor processes passed the real PostgreSQL campaign and API restart cases. Restored the four-Pet party, 7,200 coins, Cinder Terraces clear and Icarus at Lv 22 / Stage 1."
+          },
+          {
+            "command": "unity run apps/unity-client -- -nographics -executeMethod Aetheria.Editor.ProjectBuild.Linux",
+            "exitCode": 0,
+            "result": "Linux development player built with the pinned editor."
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx artifacts/mvp-phase2/player-smoke.mjs",
+            "exitCode": 0,
+            "result": "Two headless Linux player launches loaded authenticated campaign state from the same disposable API/database and session."
+          },
+          {
+            "command": "node scripts/verify-binary-hygiene.mjs --base origin/main --head 220996fd5c1dc57f76e12d9da59c22a2bc10e91d && git diff --check origin/main...HEAD",
+            "exitCode": 0
+          }
+        ],
+        "remaining": "Confirm hosted CI for the current PR head before merge. Physical Windows and visual qualification remain separate. Release stays OFFLINE_ONLY / NO_GO_PUBLIC.",
+        "compatFix": {
+          "sourceRevision": "cd53d05007190004ec7eb4ba38f04cdb1bd2a29c",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/80",
+          "rootCause": "Migration 0055_wave1_mvp_state.sql was added in 220996f, raising the current migration set to 55, but native-game-migration-compat.mjs and runtime-admission-migration-compat.mjs still asserted 54 and pointed at 54-window policies. linux-foundation therefore failed at the compat archive stage (after.length===54) before the archived-runtime checks.",
+          "implementation": "Added exact archived47/48-to55 expand-compatible policies containing the 0055 checksum, retained the 54 policy as a frozen negative case, and updated both compat scripts to expect 55. No migration bytes, runtime flags, gameplay behavior or release state changed.",
+          "commands": [
+            {"command": "cargo fmt --check", "exitCode": 0},
+            {"command": "cargo clippy --all-targets -- -D warnings", "exitCode": 0},
+            {"command": "cargo test", "exitCode": 0, "result": "All workspace unit/doc tests passed with zero failures."},
+            {"command": "pnpm --filter @aetheria/platform-api build", "exitCode": 0},
+            {"command": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-migration-compat.mjs", "exitCode": 0, "result": "Actual archived47 runtime/migrator and current55 expansion/rollback PASS; concurrent migrators, frozen50/53/54 rejection, checksum/unknown-tail negatives, identity and native AEAD preservation passed; owned resources cleaned."},
+            {"command": "node scripts/with-test-db.mjs node --import tsx scripts/runtime-admission-migration-compat.mjs", "exitCode": 0, "result": "Actual archived48 runtime and current55 expansion/rollback PASS; closed-world, frozen50/53/54 rejection and checksum/unknown-tail negatives passed; owned resources cleaned."},
+            {"command": "pnpm exec eslint scripts/native-game-migration-compat.mjs scripts/runtime-admission-migration-compat.mjs", "exitCode": 0},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "remaining": "Hosted CI must pass on the fix head before auto-merge. No production deployment, public release or paid provider work is authorized by this verification."
+        }
       }
     }
   ]

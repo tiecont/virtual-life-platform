@@ -37,6 +37,7 @@ const Env = z.object({
   LOCAL_LANTERN_LODGE_WORLD:z.enum(['0','1']).default('0'),
   LOCAL_GAME_LOBBY:z.enum(['0','1']).default('0'),
   LOCAL_GAME_JOURNAL:z.enum(['0','1']).default('0'),
+  LOCAL_PET_ARENA_WAVE1:z.enum(['0','1']).default('0'),
   GAME_STATE_KEY:z.preprocess(value=>value===''?undefined:value,z.string().regex(/^[a-f0-9]{64}$/i).optional()),
   GAME_STATE_KEY_ID:z.string().regex(/^game-[a-z0-9-]{1,27}$/).default('game-local-v1'),
   LOCAL_DEADLINE_IDENTITY:z.enum(['0','1']).default('0'),
@@ -49,6 +50,9 @@ const Env = z.object({
   DATING_PROFILE_KEY_ID:z.string().regex(/^[a-z0-9-]{1,32}$/).default('local-v1'),
 }).superRefine((env, ctx) => {
   const origin = new URL(env.WEB_ORIGIN);
+  if(env.LOCAL_PET_ARENA_WAVE1==='1'&&(env.NODE_ENV==='production'||!['127.0.0.1','::1'].includes(env.HOST)||env.TRUSTED_PROXY_IP)){
+    ctx.addIssue({code:'custom',path:['LOCAL_PET_ARENA_WAVE1'],message:'Wave 1 requires a local/test loopback listener'});
+  }
   if(env.LOCAL_GAME_LOBBY==='1'&&env.LOCAL_LANTERN_LODGE_WORLD!=='1')ctx.addIssue({code:'custom',path:['LOCAL_GAME_LOBBY'],message:'Local Lodge installation required'});
   if(env.LOCAL_GAME_JOURNAL==='1'&&(env.LOCAL_GAME_LOBBY!=='1'||!env.GAME_STATE_KEY||env.NODE_ENV==='production'))ctx.addIssue({code:'custom',path:['LOCAL_GAME_JOURNAL'],message:'Local lobby and separate journal encryption key required'});
   if(env.GAME_STATE_KEY&&[env.SESSION_SECRET,env.NATIVE_AUTH_KEY,env.OPERATOR_AUTH_KEY,env.SAFETY_EVIDENCE_KEY,env.DATING_PROFILE_KEY].some(value=>value?.toLowerCase()===env.GAME_STATE_KEY?.toLowerCase()))ctx.addIssue({code:'custom',path:['GAME_STATE_KEY'],message:'Separate game-state encryption key required'});

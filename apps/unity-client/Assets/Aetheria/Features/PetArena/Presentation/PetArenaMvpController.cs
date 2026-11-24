@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Aetheria.PetArena.Domain;
+using Aetheria.PetArena.Vfx;
 using Aetheria.Pets.Presentation;
 using Aetheria.RemoteContent;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Aetheria.PetArena.Presentation
 {
@@ -36,11 +38,26 @@ namespace Aetheria.PetArena.Presentation
         private string status = "OFFLINE TRAINING / server authority not connected";
         private float presentationPulse;
         private bool initialized;
+        private bool campaignMode;
+        private bool campaignFireZone;
+        private const int CampaignZoneStart = (ArenaBattle.BoardSize - ArenaBattle.FireZoneSide) / 2;
+        private Color campaignPlayerColor, campaignEnemyColor;
+
+        public Vector3 CampaignEffectPosition => enemyRoot != null
+            ? enemyRoot.position : transform.TransformPoint(7.2f, 0, 1.5f);
 
         public ArenaBattle Battle => battle;
         public PetEvolutionController PlayerEvolution => playerEvolution;
         public bool ReducedMotion => reducedMotion;
         public string Status => status;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void OpenCampaignInPlayer()
+        {
+            if (!Application.isEditor && SceneManager.GetActiveScene().name == "AuroraBlockout" &&
+                !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AETHERIA_WAVE1_API")))
+                SceneManager.LoadSceneAsync("PetArenaPve");
+        }
 
         private void Awake()
         {
@@ -55,6 +72,33 @@ namespace Aetheria.PetArena.Presentation
                 playerEvolution.Bind(evolutionProfile);
             initialized = true;
             ApplyPresentation();
+            var origin = Environment.GetEnvironmentVariable("AETHERIA_WAVE1_API");
+            if (!string.IsNullOrWhiteSpace(origin))
+            {
+                campaignMode = true;
+                campaignPlayerColor = Color.white;
+                campaignEnemyColor = Color.white;
+                gameObject.AddComponent<Wave1CampaignScreen>().Initialize(this, origin);
+            }
+        }
+
+        public void PresentCampaignPet(ArenaElement element, int level)
+        {
+            campaignPlayerColor = ArenaPresentationKit.ElementColor(element);
+            playerEvolution?.SetLevel(level);
+            ApplyPresentation();
+        }
+
+        public void PresentCampaignOpponent(ArenaElement element)
+        {
+            campaignEnemyColor = ArenaPresentationKit.ElementColor(element);
+            ApplyPresentation();
+        }
+
+        public void PresentCampaignFireZone(bool active)
+        {
+            campaignFireZone = active;
+            ApplyPresentation();
         }
 
         private void Update()
@@ -63,7 +107,7 @@ namespace Aetheria.PetArena.Presentation
             presentationPulse = Mathf.Max(0, presentationPulse - Time.unscaledDeltaTime);
             if (!reducedMotion && enemyRoot != null)
                 enemyRoot.localScale = Vector3.one * (1f + presentationPulse * .08f);
-            HandleKeyboard();
+            if (!campaignMode) HandleKeyboard();
         }
 
         private void HandleKeyboard()
@@ -136,20 +180,28 @@ namespace Aetheria.PetArena.Presentation
         private void ApplyPresentation()
         {
             if (battle == null) return;
-            if (enemyRenderer != null) SetColor(enemyRenderer, elementColors[(int)battle.EnemyElement]);
+            if (enemyRenderer != null) SetColor(enemyRenderer, campaignMode ? campaignEnemyColor : elementColors[(int)battle.EnemyElement]);
             if (playerEvolution != null && playerRenderer != null)
-                SetColor(playerRenderer, elementColors[(int)battle.PlayerElement]);
+                SetColor(playerRenderer, campaignMode ? campaignPlayerColor : elementColors[(int)battle.PlayerElement]);
             for (var index = 0; index < arenaTiles.Count; index++)
             {
                 var column = index % ArenaBattle.BoardSize;
                 var row = index / ArenaBattle.BoardSize;
-                var zone = battle.IsFireZoneCell(column, row);
+                var zone = campaignMode
+                    ? campaignFireZone && IsCampaignZoneCell(column, row)
+                    : battle.IsFireZoneCell(column, row);
                 var baseColor = (row + column) % 2 == 0
                     ? new Color(.12f, .17f, .25f)
                     : new Color(.17f, .23f, .34f);
                 if (zone) baseColor = Lerp(baseColor, elementColors[(int)PetElement.Fire], .7f);
                 SetColor(arenaTiles[index], baseColor);
             }
+        }
+
+        private static bool IsCampaignZoneCell(int column, int row)
+        {
+            const int end = CampaignZoneStart + ArenaBattle.FireZoneSide;
+            return column >= CampaignZoneStart && column < end && row >= CampaignZoneStart && row < end;
         }
 
         private void BuildDeveloperStage()
@@ -326,7 +378,7 @@ namespace Aetheria.PetArena.Presentation
 
         private void OnGUI()
         {
-            if (battle == null) return;
+            if (battle == null || campaignMode) return;
             DrawHeader();
             DrawBars();
             DrawOpponentChoice();
