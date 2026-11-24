@@ -1,5 +1,5 @@
 {
   "name": "Aetheria.PlayMode",
-  "references": ["Aetheria.Blockout", "Aetheria.Native", "Aetheria.NativeScene"],
+  "references": ["Aetheria.Blockout", "Aetheria.Native", "Aetheria.NativeScene", "Aetheria.PetArena.Domain", "Aetheria.PetArena.Presentation", "Aetheria.Pets", "Aetheria.RemoteContent"],
   "optionalUnityReferences": ["TestAssemblies"]
 }

@@ -12,6 +12,7 @@ namespace Aetheria.Editor
     public static class ProjectBuild
     {
         public const string Scene = "Assets/Aetheria/Scenes/AuroraBlockout.unity";
+        public const string PetArenaScene = PetArenaMvpSceneBuilder.ScenePath;
         private const string Settings = "Assets/Aetheria/Settings";
 
         static ProjectBuild()
@@ -47,7 +48,10 @@ namespace Aetheria.Editor
                 AssetDatabase.CreateAsset(new Material(Shader.Find("Universal Render Pipeline/Lit")), resources + "/BlockoutLit.mat");
             GraphicsSettings.defaultRenderPipeline = pipeline;
             QualitySettings.renderPipeline = pipeline;
-            EditorBuildSettings.scenes = new[] {new EditorBuildSettingsScene(Scene, true)};
+            EditorBuildSettings.scenes = new[] {
+                new EditorBuildSettingsScene(Scene, true),
+                new EditorBuildSettingsScene(new GUID(AssetDatabase.AssetPathToGUID(PetArenaScene)), true),
+            };
             AssetDatabase.SaveAssets();
             BlockoutCollisionExport.Write();
         }
@@ -69,7 +73,7 @@ namespace Aetheria.Editor
             if (!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Standalone, target))
                 throw new InvalidOperationException("Required platform build module is unavailable");
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
-                scenes = new[] {Scene}, locationPathName = output, target = target,
+                scenes = new[] {Scene, PetArenaScene}, locationPathName = output, target = target,
                 options = BuildOptions.Development
             });
             if (report.summary.result != BuildResult.Succeeded) throw new InvalidOperationException("Blockout build failed");

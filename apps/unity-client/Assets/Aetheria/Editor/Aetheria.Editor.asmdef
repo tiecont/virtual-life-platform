@@ -1,5 +1,5 @@
 {
   "name": "Aetheria.Editor",
-  "references": ["Aetheria.Blockout", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime"],
+  "references": ["Aetheria.Blockout", "Aetheria.PetArena.Domain", "Aetheria.PetArena.Presentation", "Aetheria.Pets", "Aetheria.RemoteContent", "Unity.Addressables", "Unity.Addressables.Editor", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime"],
   "includePlatforms": ["Editor"]
 }
