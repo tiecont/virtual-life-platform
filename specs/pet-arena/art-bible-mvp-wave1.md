@@ -6,7 +6,7 @@ Scope: the 22 Wave 1 MVP concepts — 6 Standard S Pets, 6 Map Legendary Bosses,
 
 This bible amends [art-direction.md](art-direction.md) §Shared Visual Language for Wave 1: it replaces the muted palette table
 and the Lv 30/60 wording with the palettes and Lv 20/40/60 stages below. Readability, IP-safety, animation, VFX and legality
-rules in that document still apply. Gameplay values, acquisition, star rules and authority are unchanged.
+rules in that document still apply. Gameplay values, acquisition, star rules and authority are unchanged. The **dragon and bird species families** are specified in [art-bible-families-dragon-bird.md](art-bible-families-dragon-bird.md); they reuse the six element palettes and add no new element.
 
 ## 1. Direction
 

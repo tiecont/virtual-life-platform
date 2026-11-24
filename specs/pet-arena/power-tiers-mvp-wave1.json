@@ -50,7 +50,9 @@
   },
   "reviewSheet": {
     "localPath": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v2/review.html",
-    "familySheet": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v3/review.html"
+    "familySheet": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v3/review.html",
+    "unifiedSheet": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/review-all.html",
+    "note": "Open review-all.html for all 34 concepts in one sitting; the v2 and v3 sheets remain available."
   },
   "ownerReview": {
     "required": true,

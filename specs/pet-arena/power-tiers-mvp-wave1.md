@@ -88,5 +88,6 @@ and the two concept ledgers. Machine-readable list: [power-tiers-mvp-wave1.json]
 
 ## 8. Review
 
-- Owner approves the ladder or moves entries; the ledger records the decision per ID.
+- Owner approves the ladder or moves entries; the ledger records the decision per ID. Review all 34 concepts in one sitting at
+  `Aetheria-Workspace/mvp-wave1/review-all.html` (S/A/B filter); the v2 and v3 sheets remain available.
 - Class changes are metadata-only: they require no new images and consume no paid credits.
