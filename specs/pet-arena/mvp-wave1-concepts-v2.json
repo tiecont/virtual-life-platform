@@ -4,11 +4,11 @@
   "title": "Aetheria Wave 1 MVP Concept Batch v2 — Luminous Tamer",
   "state": "CONCEPT_REVIEW_REQUIRED",
   "releaseState": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
-  "generatedAtUtc": "2026-11-24T12:12:29.392Z",
+  "generatedAtUtc": "2026-11-24T12:35:32.809Z",
   "direction": {
     "name": "Luminous Tamer",
     "artBible": "specs/pet-arena/art-bible-mvp-wave1.md",
-    "summary": "Vibrant stylized anime/fantasy monster-tamer concepts. Six element palettes, rig-first anatomy, wingless weaponless Standard S A-pose, Lv 20/40/60 additive evolution, rare-accent baroque Map Legendary bosses, neutral ivory modular race bases.",
+    "summary": "Vibrant stylized anime/fantasy monster-tamer concepts. Six element palettes, rig-first anatomy, wingless weaponless Standard S A-pose, Lv 20/40/60 additive evolution, rare-accent Map Legendary bosses, modular race bases with one faceless Golem and simple creature faces elsewhere.",
     "ipSafety": "Original body plans, palettes and props. No existing franchise silhouette, mascot, costume or signature pose; no human faces or bare human skin on creature concepts."
   },
   "provider": {
@@ -28,19 +28,20 @@
   "quotaAccounting": {
     "freeQuotaLimit": 100,
     "freeQuotaUsedBefore": 22,
-    "freeQuotaUsedAfter": 50,
-    "freeQuotaConsumed": 28,
-    "freeQuotaRemaining": 50,
+    "freeQuotaUsedAfter": 75,
+    "freeQuotaConsumedByThisBatch": 41,
+    "freeQuotaRemaining": 25,
     "imagesProduced": 22,
-    "correctiveRegenerations": 6,
+    "correctiveRegenerations": 19,
     "paidBalanceBefore": 1910,
     "paidBalanceAfter": 1910,
-    "paidCreditsConsumed": 0
+    "paidCreditsConsumed": 0,
+    "interleavedBatch": "12 dragon/bird family images ran between batches; they are accounted in mvp-wave1-families-v3.json. The 75/100 counter is the shared account total after all work."
   },
   "revisionHistory": [
     {
       "filename": "standard-cindrelis.png",
-      "reason": "First draft grew four legs; rig_float requires a legless hovering body. Regenerated with explicit 'no legs, empty space beneath'."
+      "reason": "First draft grew four legs; rig_float requires a legless hovering body. Later redesigned as a tall three-tier pagoda lantern shrine, distinct from Marivell's radial jellyfish."
     },
     {
       "filename": "base-centaur.png",
@@ -48,7 +49,7 @@
     },
     {
       "filename": "boss-lagoonarch.png",
-      "reason": "First draft read as a blue bird/phoenix rather than a coral reef guardian. Regenerated with coral antlers, reef mantle and plant torso."
+      "reason": "First draft read as a blue bird. Later redesigned as a tall coral archway titan, distinct from Pyrecrown's low caldera quadruped."
     },
     {
       "filename": "base-flora.png",
@@ -56,9 +57,46 @@
     },
     {
       "filename": "standard-gravorn.png",
-      "reason": "Two corrective passes: first a four-legged tortoise, then a six-legged stone beast with a terraced ridge back, matching rig_insect."
+      "reason": "Two corrective passes: four-legged tortoise, then six-legged stone beast with a terraced ridge back, matching rig_insect."
+    },
+    {
+      "filename": "standard-marivell.png",
+      "reason": "Redesigned as a single radial tideglass jellyfish: faceted bell, pearl core and six tendrils, no arms and no separate head."
+    },
+    {
+      "filename": "boss-pyrecrown.png",
+      "reason": "Redesigned as a low four-legged volcanic caldera beast with a furnace back, distinct from Lagoonarch's vertical coral arch."
+    },
+    {
+      "filename": "base-golem.png",
+      "reason": "Faceless modular base per owner direction: smooth blank carved head plate, jade rune core, no eyes or mouth."
+    },
+    {
+      "filename": "base-soft.png",
+      "reason": "Redesigned twice: first to a faceless blob, then to a three-stack droplet slime with a cheerful face and translucent belly core for silhouette distinctness."
+    },
+    {
+      "filename": "base-floating.png",
+      "reason": "Redesigned twice: first to a faceless vessel, then to a compact halo-ringed reliquary with panel wings and a mask face."
+    },
+    {
+      "filename": "base-aquatic.png",
+      "reason": "Redesigned twice: first to a faceless swimmer, then to a round puffer-turtle with shell plates, fan tail and a cheerful face."
+    },
+    {
+      "filename": "base-serpentine.png",
+      "reason": "Redesigned twice: first to a faceless mask socket, then to a tall hooded S-curve sky serpent with mint eyes."
     }
   ],
+  "silhouetteSetReview": {
+    "rule": "No two concepts may share a silhouette family; palette alone never differentiates.",
+    "resolved": [
+      "Cindrelis vertical pagoda vs Marivell radial jellyfish",
+      "Pyrecrown low caldera quadruped vs Lagoonarch tall coral arch",
+      "Soft stacked droplets vs Floating halo reliquary vs Aquatic round puffer-turtle vs Serpentine hooded S-curve",
+      "Only the Golem base is faceless; the other bases keep creature faces"
+    ]
+  },
   "categories": {
     "standard_gacha": {
       "count": 6,
@@ -70,7 +108,7 @@
     },
     "shared_race_base": {
       "count": 10,
-      "rule": "Ivory body, charcoal joints, pearl socket rings, one heritage accent, no element palette."
+      "rule": "Ivory body, charcoal joints, pearl socket rings, one heritage accent, modular sockets, no element palette; only the Golem is faceless."
     }
   },
   "reviewSheet": {
@@ -96,17 +134,18 @@
       "mapId": null,
       "maps": null,
       "rig": null,
-      "taskId": "aeea15d5-7d38-40ba-92cd-8698109071df",
-      "freeCounterBefore": 23,
-      "freeCounterAfter": 24,
+      "taskId": "51752eed-9105-4904-9eff-f84ef45981c2",
+      "freeCounterBefore": 62,
+      "freeCounterAfter": 63,
       "paidCreditsConsumed": 0,
       "width": 1536,
       "height": 1152,
-      "bytes": 2113127,
-      "sha256": "99fd08bf5bc666ad34bf2f11fb4ec8b1487a48415064847b8d6e144d81cb79dc",
-      "promptSha256": "ba61e1587330b71dfe7b5de10172aefc4c0f1a5a7be452a0f69b3c16a22f472a",
-      "regenerations": 0,
-      "generatedAtUtc": "2026-11-24T11:56:45.476Z",
+      "bytes": 2070698,
+      "sha256": "83bae8a6d46367cb61e728dcb8beb300b868b179b8dda773395a1606a7eef564",
+      "promptSha256": "4d1f71e35fd668d97dbd5bf61be3b7bf68321533c710b1527cfc8ea2695f193d",
+      "regenerations": 1,
+      "revision": "silhouette_desubstitution",
+      "generatedAtUtc": "2026-11-24T12:28:03.163Z",
       "ownerDecision": null,
       "ownerNote": null
     },
@@ -120,17 +159,18 @@
       "mapId": null,
       "maps": null,
       "rig": null,
-      "taskId": "dda5b9fa-11b3-45f8-8688-cfbbc74f5f66",
-      "freeCounterBefore": 24,
-      "freeCounterAfter": 25,
+      "taskId": "772aa2c9-908d-40c3-b4c4-11df5bf8e190",
+      "freeCounterBefore": 63,
+      "freeCounterAfter": 64,
       "paidCreditsConsumed": 0,
       "width": 1536,
       "height": 1152,
-      "bytes": 2111421,
-      "sha256": "8624131c426ec6aee68ce7996995070f4ca9224874c810c01eb57cae9c78d88b",
-      "promptSha256": "24d17de129ddabb24566b1b72754b98acd038fc60663f2b4c018a271439fc7a6",
-      "regenerations": 0,
-      "generatedAtUtc": "2026-11-24T11:57:25.931Z",
+      "bytes": 2396427,
+      "sha256": "eb65756aed5a2a27b26655b30dea698fd93b8297cc28797049ec440bdd8f99e8",
+      "promptSha256": "ce0470d7c702f03505320639eda78aba49437fe2d6df135d763718044a1dd227",
+      "regenerations": 1,
+      "revision": "silhouette_desubstitution",
+      "generatedAtUtc": "2026-11-24T12:28:31.521Z",
       "ownerDecision": null,
       "ownerNote": null
     },
@@ -154,6 +194,7 @@
       "sha256": "eb3ffbd364706224dbd0bd3e5a5725abe8a274529db975cdcfb05bc9e36f9822",
       "promptSha256": "87262223f7369602fe5d60f6966c08ab922046401d190647424ec5d9e325e6ce",
       "regenerations": 0,
+      "revision": "initial",
       "generatedAtUtc": "2026-11-24T11:57:55.639Z",
       "ownerDecision": null,
       "ownerNote": null
@@ -178,6 +219,7 @@
       "sha256": "d9f231ee05de4de7777faac80dda0282cd757f68596a440cf7704657ff70ad9a",
       "promptSha256": "c536fd8816cd394e5c1c553ed807e07e83af5b28f1235419525f4d82d5c9e337",
       "regenerations": 0,
+      "revision": "initial",
       "generatedAtUtc": "2026-11-24T11:58:26.017Z",
       "ownerDecision": null,
       "ownerNote": null
@@ -202,6 +244,7 @@
       "sha256": "b4ab36832a6e0846377fa8b88e65e50629625559469f223d58488b63e8d403e7",
       "promptSha256": "ffdc580edf0b2850b2d9e2fa3c616f37cb45bed8c23d6ad98af8b7f5a257b807",
       "regenerations": 2,
+      "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:10:32.260Z",
       "ownerDecision": null,
       "ownerNote": null
@@ -226,6 +269,7 @@
       "sha256": "76b5d54b6b6fddad4d998c5a2e1fbd0f4eb1139ebfa5fec8a042d1b247f37994",
       "promptSha256": "4d286718819ef88cea81261911042cf406c79831c18c6310b3f23f0078eecb4e",
       "regenerations": 0,
+      "revision": "initial",
       "generatedAtUtc": "2026-11-24T11:59:24.477Z",
       "ownerDecision": null,
       "ownerNote": null
@@ -240,17 +284,18 @@
       "mapId": null,
       "maps": "cinder-terraces",
       "rig": null,
-      "taskId": "f2fa070f-b6be-4532-b81d-c1dc287fb643",
-      "freeCounterBefore": 29,
-      "freeCounterAfter": 30,
+      "taskId": "2f1b645a-2ec5-49b9-87c0-f8fb14df0ab7",
+      "freeCounterBefore": 64,
+      "freeCounterAfter": 65,
       "paidCreditsConsumed": 0,
       "width": 1536,
       "height": 1152,
-      "bytes": 2775437,
-      "sha256": "ec6bc00f92e9a685e3bd68577258af0191c912aee2a14704be5994787711f7b9",
-      "promptSha256": "38e04b52594c8185b52a607c7095abb08ccda9ab59e3743fa6bf86b88f007dac",
-      "regenerations": 0,
-      "generatedAtUtc": "2026-11-24T11:59:49.828Z",
+      "bytes": 2834426,
+      "sha256": "ee9071cdd3fdff3f7b8b329d3b9d194fb33f5451c768968702c4c2d5474240a3",
+      "promptSha256": "ced80a2f6765aa8e77a9086f2ba2d2d42cf8ee885011480ee97b9962a265af18",
+      "regenerations": 1,
+      "revision": "silhouette_desubstitution",
+      "generatedAtUtc": "2026-11-24T12:28:59.383Z",
       "ownerDecision": null,
       "ownerNote": null
     },
@@ -264,17 +309,18 @@
       "mapId": null,
       "maps": "tideglass-lagoon",
       "rig": null,
-      "taskId": "3660240c-8ca9-45be-b00e-d50af52a0737",
-      "freeCounterBefore": 47,
-      "freeCounterAfter": 48,
+      "taskId": "bf9933d1-ff09-46d5-b059-19dcb31087ad",
+      "freeCounterBefore": 65,
+      "freeCounterAfter": 66,
       "paidCreditsConsumed": 0,
       "width": 1536,
       "height": 1152,
-      "bytes": 2954869,
-      "sha256": "9ff9b5f979ad20164ac446cd2b446c14191fd51c36537ebbe29cd37df8dc6a06",
-      "promptSha256": "4eb46286584f0c9d947f13c7634d30ccb566ce337b355cf2e2214ad8eb77a1df",
-      "regenerations": 1,
-      "generatedAtUtc": "2026-11-24T12:09:26.696Z",
+      "bytes": 2762447,
+      "sha256": "4475be816167a1cb817eb14aabd42e627b1a4214c47f596b0847fe7a5d371bc2",
+      "promptSha256": "a6cdb461257ad8adccbd411c6c02e1548c10962180e604bb35234e005a793ebf",
+      "regenerations": 2,
+      "revision": "silhouette_desubstitution",
+      "generatedAtUtc": "2026-11-24T12:29:29.942Z",
       "ownerDecision": null,
       "ownerNote": null
     },
@@ -298,6 +344,7 @@
       "sha256": "f7da12c005d1f5eb72dd19a825665acc6097e74280c1ebdf6a52a8683422fda4",
       "promptSha256": "256c6b106ee871bb1b4baf97c74c0e41172f3626819e26715db36f2843c63555",
       "regenerations": 0,
+      "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:00:43.446Z",
       "ownerDecision": null,
       "ownerNote": null
@@ -322,6 +369,7 @@
       "sha256": "4551d93eb6f959a7cdd1c60ebc93aec2dda7b1399a2da507a7391b8258e8fde5",
       "promptSha256": "d58aea0538bc320b3122684454aefbc51f4bb7bc655725efe6d41c057d21ebf4",
       "regenerations": 0,
+      "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:01:25.850Z",
       "ownerDecision": null,
       "ownerNote": null
@@ -346,6 +394,7 @@
       "sha256": "688f8395bbc3c2c6ab1e3ba2548e4a92bdecc8db759ace4f37a5eeaf8e938458",
       "promptSha256": "f43b35c94d9a2f6d17fd77324e1eae447064eaeb1ea64a0b3a43a25d40967164",
       "regenerations": 0,
+      "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:01:51.624Z",
       "ownerDecision": null,
       "ownerNote": null
@@ -370,6 +419,7 @@
       "sha256": "c2f0f30c4f2cd99a4f462fa355c56542544b5a8ac8919cfa274ec5d21f52a2f0",
       "promptSha256": "f79cc87b972c711a1aa58a3cccab9feea19f09172a85d38ed1533eebf55e949c",
       "regenerations": 0,
+      "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:02:21.970Z",
       "ownerDecision": null,
       "ownerNote": null
@@ -397,6 +447,7 @@
       "sha256": "82bc92c6f38f95a6e7175ce28f870db641d4adf93a76ceb8b5ac49d6fe863562",
       "promptSha256": "bd38ab0031311f4840f90907b54b2d2ad0ef8d228cda7dd9b330e9d96332b1fa",
       "regenerations": 0,
+      "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:04:08.459Z",
       "ownerDecision": null,
       "ownerNote": null
@@ -414,17 +465,18 @@
         "ochre-labyrinth"
       ],
       "rig": "rig_heavy",
-      "taskId": "1182de39-5cc8-4809-8b7b-e912ac5ab743",
-      "freeCounterBefore": 36,
-      "freeCounterAfter": 37,
+      "taskId": "62738339-6837-4d2b-a92b-62e6925f8a59",
+      "freeCounterBefore": 66,
+      "freeCounterAfter": 67,
       "paidCreditsConsumed": 0,
       "width": 1536,
       "height": 1152,
-      "bytes": 2370932,
-      "sha256": "5f6405d713ba708c5f4530bf7e1bf836d76e570707f0c0929bb7cefe4ee3f1cc",
-      "promptSha256": "5aef16266fbdfc8241719f7bcf660750563598d247f2446f9c1b886c45c49a7a",
-      "regenerations": 0,
-      "generatedAtUtc": "2026-11-24T12:03:22.743Z",
+      "bytes": 2495870,
+      "sha256": "d44df265ea8fabece63fad2571e1821670533fd709d95fdc1c1d3d274d568fa5",
+      "promptSha256": "0e1f60080104228a976c11ec6bcf8d4c184a60f9f29a43d309e1a8b1e4a47506",
+      "regenerations": 1,
+      "revision": "faceless_modular_base",
+      "generatedAtUtc": "2026-11-24T12:30:13.867Z",
       "ownerDecision": null,
       "ownerNote": null
     },
@@ -453,6 +505,7 @@
       "sha256": "dd6b9d5ed3018d477ee77c027b94c96707a378ca5af1e2f7002be2507c7015d8",
       "promptSha256": "313632e8348b714448555d8dee91640a96fc36eeb090e10e47d6cd7c27400b97",
       "regenerations": 0,
+      "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:04:43.645Z",
       "ownerDecision": null,
       "ownerNote": null
@@ -472,17 +525,18 @@
         "dawn-prism-sanctum"
       ],
       "rig": "rig_soft",
-      "taskId": "16ccac34-0fa0-4950-8e4c-688ceac7773f",
-      "freeCounterBefore": 39,
-      "freeCounterAfter": 40,
+      "taskId": "6d21efc4-517d-4d00-b9bb-d64ba699183f",
+      "freeCounterBefore": 71,
+      "freeCounterAfter": 72,
       "paidCreditsConsumed": 0,
       "width": 1536,
       "height": 1152,
-      "bytes": 1835211,
-      "sha256": "0403ea3c2cccf18aba3cd776bff735095a686447242beb6d5536eb2a1f8aa5ba",
-      "promptSha256": "3948bf5fee5816ce3145ca065d784cd63c18ba58ff7b8059e6b311b7aa0358a2",
-      "regenerations": 0,
-      "generatedAtUtc": "2026-11-24T12:05:06.634Z",
+      "bytes": 1920919,
+      "sha256": "d9810967312e7de39aeb0eaa574b7483c5a38cc939a5284a61ca70542cc33cf4",
+      "promptSha256": "809bb2f1ea57905fb1fd1f6bf298a5ee1de67108a05b9e3a1013903f7f352e30",
+      "regenerations": 2,
+      "revision": "silhouette_distinct_faces_restored",
+      "generatedAtUtc": "2026-11-24T12:33:44.113Z",
       "ownerDecision": null,
       "ownerNote": null
     },
@@ -501,17 +555,18 @@
         "dawn-prism-sanctum"
       ],
       "rig": "rig_float",
-      "taskId": "5cf2069c-3136-4167-b974-51ee79255b5f",
-      "freeCounterBefore": 40,
-      "freeCounterAfter": 41,
+      "taskId": "fa634466-11b5-4f75-9de1-3854f07c7b6b",
+      "freeCounterBefore": 72,
+      "freeCounterAfter": 73,
       "paidCreditsConsumed": 0,
       "width": 1536,
       "height": 1152,
-      "bytes": 1939829,
-      "sha256": "a56adbf09fdde046f9dc7bb8660a86eb37cc478ae50b19a86ae184f37cb47410",
-      "promptSha256": "963ee5125e443d001a8d2bcbdf65de1f0fc662236df6a53cb09b1c898abfec8b",
-      "regenerations": 0,
-      "generatedAtUtc": "2026-11-24T12:05:29.523Z",
+      "bytes": 1956901,
+      "sha256": "2b1ef1649f4e6acdb2f1f185a313a6e203a0693d8750ae9f32ed7a0d6f49c4d9",
+      "promptSha256": "75520f9e119793981980261e905c433701daf850e3ded5ddc5dc75143b4eca4a",
+      "regenerations": 2,
+      "revision": "silhouette_distinct_faces_restored",
+      "generatedAtUtc": "2026-11-24T12:34:14.394Z",
       "ownerDecision": null,
       "ownerNote": null
     },
@@ -540,6 +595,7 @@
       "sha256": "b473eb93007fc5107cd10b15fc503d64f870c55df97c5147bf4b72639c7f0361",
       "promptSha256": "2d15c042152f9f89e8574a48adda03c7428ff369cfbffaf23b5fa9c27520fdaa",
       "regenerations": 1,
+      "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:09:52.036Z",
       "ownerDecision": null,
       "ownerNote": null
@@ -557,17 +613,18 @@
         "stormcoil-fields"
       ],
       "rig": "rig_aquatic",
-      "taskId": "3e0d7a66-4989-4a54-9aec-7c4640b39a4d",
-      "freeCounterBefore": 42,
-      "freeCounterAfter": 43,
+      "taskId": "1859f763-8e28-4fa7-9c8c-9f4f2377dd68",
+      "freeCounterBefore": 73,
+      "freeCounterAfter": 74,
       "paidCreditsConsumed": 0,
       "width": 1536,
       "height": 1152,
-      "bytes": 2021117,
-      "sha256": "a086d4564b67d1aed623071479c653a8187eeb6463cc2e7d3cad3789eb4139a0",
-      "promptSha256": "e4aaf324a4a2e8ff1b5a2f84905e33ea942c6016ce14bf6e893112da0aaec503",
-      "regenerations": 0,
-      "generatedAtUtc": "2026-11-24T12:06:23.112Z",
+      "bytes": 2069996,
+      "sha256": "73d9663e90c7dd71e3e09180b46776b637c5a10fa11eff76707d2aa626cd00b5",
+      "promptSha256": "faf3e6132ae06ae9c7a73a7d429b2fa97a30adfb0176452a474f5f4e8d03dc69",
+      "regenerations": 2,
+      "revision": "silhouette_distinct_faces_restored",
+      "generatedAtUtc": "2026-11-24T12:34:40.930Z",
       "ownerDecision": null,
       "ownerNote": null
     },
@@ -593,6 +650,7 @@
       "sha256": "b34701fac3c6bb8c6623a76c4571160eddc2a32d1b2652854b0c22a87dc4390f",
       "promptSha256": "d4272e47f3341f99640d1321e796d7a58fa4acd49a4568aaed2e082cbc48313e",
       "regenerations": 0,
+      "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:06:56.232Z",
       "ownerDecision": null,
       "ownerNote": null
@@ -610,17 +668,18 @@
         "dawn-prism-sanctum"
       ],
       "rig": "rig_serpent",
-      "taskId": "3638322e-b2dd-4df8-b85f-c181208082f8",
-      "freeCounterBefore": 44,
-      "freeCounterAfter": 45,
+      "taskId": "5085294b-f9a3-465b-954a-a07eef2d4792",
+      "freeCounterBefore": 74,
+      "freeCounterAfter": 75,
       "paidCreditsConsumed": 0,
       "width": 1536,
       "height": 1152,
-      "bytes": 1952805,
-      "sha256": "7b1f315a50451df73ac7eb0ce91f9f742befbecdf1f6f71af20cf681d167c115",
-      "promptSha256": "a146afc0a6d9fba6ea32a3e4e1d08eee76bf437cd55dde2ed6d0abf26bf2b90b",
-      "regenerations": 0,
-      "generatedAtUtc": "2026-11-24T12:07:24.843Z",
+      "bytes": 1885347,
+      "sha256": "856db3436b8706743eff820d4d958b21728963baf89f8b05ab0bc096d70eddbc",
+      "promptSha256": "08d71dff4b7f24954469e6ae474e19ccb745ae7472e07d465ee74e9ad53b5a1e",
+      "regenerations": 2,
+      "revision": "silhouette_distinct_faces_restored",
+      "generatedAtUtc": "2026-11-24T12:35:06.257Z",
       "ownerDecision": null,
       "ownerNote": null
     },
@@ -646,6 +705,7 @@
       "sha256": "66d0903d1475d4717f3e0233047c9631a9556ec3b80a4128dc36aa8d8977f504",
       "promptSha256": "4e5e2c1635409223044abc787b096b702a04a2498a01a05888a3a91e3dd9c012",
       "regenerations": 0,
+      "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:07:55.213Z",
       "ownerDecision": null,
       "ownerNote": null

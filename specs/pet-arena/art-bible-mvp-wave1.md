@@ -46,9 +46,9 @@ white emissive silhouette. Gold, jewel and ornamental pearl trim are **legendary
 
 - **Standard S**: head:body ≈ 1:3.2, one clear S- or C-gesture line plus one asymmetric break for personality, eye area ≤ 8% of the silhouette.
 - **Bosses**: head:body ≈ 1:5–1:6, one framing device and two negative-space breaks so the outline never merges into a blob.
-- Black-fill test: every one of the 22 must be identifiable as a unique shape at 128 px, and no two may share a silhouette family.
-- Signature masses: Cindrelis lantern-teardrop + handle; Marivell bell + ribbon fringe; Quorion split ear-discs + fan tail; Vesperyn mask + veil wedge;
-  Gravorn stepped shell + six-leg fan; Aurelune antler tree + slim legs; Pyrecrown six-horn caldera; Lagoonarch reef fan + tide skirt;
+- Black-fill test: every concept must be identifiable as a unique shape at 128 px, and **no two may share a silhouette family** — a vertical lantern shrine and a radial jellyfish are two families; a low caldera quadruped and a tall coral arch are two families. Palette swaps are not differentiation.
+- Signature masses: Cindrelis stacked pagoda lantern + ember scarf; Marivell bell dome + tendril fringe; Quorion split ear-discs + fan tail; Vesperyn mask + veil wedge;
+  Gravorn stepped shell + six-leg fan; Aurelune antler tree + slim legs; Pyrecrown low caldera beast + six chimney horns; Lagoonarch coral arch + tide skirt;
   Stormdiadem radial crown + coil limbs; Lanternwake broken bell arch; Faultwarden slab shoulders + shield chest; Dawnarchon segmented dawn arch.
 
 ## 4. Standard S A-pose (3D intake)
@@ -86,7 +86,8 @@ Modular bodies that carry six element variants and the Lv 20/40/60 accessory set
 
 - **Palette**: warm ivory `#EDE3D2` body, charcoal `#3A3A3F` joint breaks, pearl `#F7F1E4` socket rings, plus one heritage accent on ≤ 10% of the surface.
 - **Sockets**: visible pearl ring seams at crown/nape, both shoulders, back-centre, waist and forelimb cuffs; sockets are drawn as ring seams, not glowing holes.
-- **Lively, not clay**: expressive eye/face plate or posture, bright heritage accent, clean painted forms — but no element palette and no elemental effects, so all six variants can recolor.
+- **Modular head**: the Golem base is deliberately faceless — a smooth blank carved head plate with no eyes or mouth. The other bases keep a simple non-human creature face so they read as lively Pets; all sockets stay modular for element face plates.
+- **Lively, not clay**: expressive posture and face where present, bright heritage accent, clean painted forms — but no element palette and no elemental effects, so all six variants can recolor.
 - **Distinct plans**: one per rig family; each must differ from the Standard S silhouettes and from the other nine bases.
 - Heritage accents: Centaur saffron mane tips; Golem jade crystal shards; Humanoid Familiar coral shoulder trim; Soft Amorphous sky-blue lobe rims;
   Living Artifact amber ribbon edging; Flora/Fungal leaf-green cap edge; Aquatic turquoise fin ribs; Spectral lavender veil edging;
