@@ -81,8 +81,11 @@
   },
   "familyRule": "Large group: lion, beetle, qilin. Small group: otter, kitten, fox. Each one has unique regalia; no shared rings, crowns or satellites; wingless, weaponless, pet-scale.",
   "reviewSheet": {
-    "unified": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/review-all.html",
-    "conceptDirectory": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v4/",
+    "unified": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review-all.html",
+    "v2": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/review.html",
+    "v3": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/review.html",
+    "ledger": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/ledgers/concepts-v4/ledger.json",
+    "prompts": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/ledgers/concepts-v4/prompts.json",
     "pngsCommittedToGit": false
   },
   "ownerReview": {
@@ -100,7 +103,7 @@
       "archetype": "ember lion",
       "scale": "large",
       "powerClass": "S",
-      "classLabel": "S · Off-rate",
+      "classLabel": "S \u00b7 Off-rate",
       "taskId": "243bb897-fea6-4dd7-bd01-4f1a6f18cb68",
       "freeCounterBefore": 81,
       "freeCounterAfter": 82,
@@ -113,7 +116,8 @@
       "regenerations": 1,
       "generatedAtUtc": "2026-11-24T12:53:48.181Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-fire-vulcaryn.png"
     },
     {
       "order": 2,
@@ -124,7 +128,7 @@
       "archetype": "tide otter",
       "scale": "small",
       "powerClass": "S",
-      "classLabel": "S · Off-rate",
+      "classLabel": "S \u00b7 Off-rate",
       "taskId": "fc68687e-4b7f-4207-805d-514064609d88",
       "freeCounterBefore": 89,
       "freeCounterAfter": 90,
@@ -137,7 +141,8 @@
       "regenerations": 2,
       "generatedAtUtc": "2026-11-24T13:00:06.806Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-water-nerivelle.png"
     },
     {
       "order": 3,
@@ -148,7 +153,7 @@
       "archetype": "thunder beetle",
       "scale": "large",
       "powerClass": "S",
-      "classLabel": "S · Off-rate",
+      "classLabel": "S \u00b7 Off-rate",
       "taskId": "74a9b729-b526-4c4c-9008-0d960d7f1401",
       "freeCounterBefore": 83,
       "freeCounterAfter": 84,
@@ -161,7 +166,8 @@
       "regenerations": 1,
       "generatedAtUtc": "2026-11-24T12:54:46.430Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-electric-fulgarys.png"
     },
     {
       "order": 4,
@@ -172,7 +178,7 @@
       "archetype": "grave kitten",
       "scale": "small",
       "powerClass": "S",
-      "classLabel": "S · Off-rate",
+      "classLabel": "S \u00b7 Off-rate",
       "taskId": "5cb2eaa2-e323-4fd2-ae46-9c19832664a7",
       "freeCounterBefore": 88,
       "freeCounterAfter": 89,
@@ -185,7 +191,8 @@
       "regenerations": 2,
       "generatedAtUtc": "2026-11-24T12:59:31.422Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-ghost-umbryss.png"
     },
     {
       "order": 5,
@@ -196,7 +203,7 @@
       "archetype": "jade qilin",
       "scale": "large",
       "powerClass": "S",
-      "classLabel": "S · Off-rate",
+      "classLabel": "S \u00b7 Off-rate",
       "taskId": "5ddcf19f-97c6-4e57-8e26-afb4f4dd61c3",
       "freeCounterBefore": 87,
       "freeCounterAfter": 88,
@@ -209,7 +216,8 @@
       "regenerations": 1,
       "generatedAtUtc": "2026-11-24T12:58:58.472Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-ground-jaderyx.png"
     },
     {
       "order": 6,
@@ -220,7 +228,7 @@
       "archetype": "prism fox",
       "scale": "small",
       "powerClass": "S",
-      "classLabel": "S · Off-rate",
+      "classLabel": "S \u00b7 Off-rate",
       "taskId": null,
       "freeCounterBefore": 86,
       "freeCounterAfter": 87,
@@ -239,7 +247,13 @@
       "generatedInBatch": false,
       "originalTaskId": "a63a3353-0ce1-46cc-bd5e-ab368dde92c3",
       "rights": "PENDING_REVIEW",
-      "note": "Owner-provided replacement art: nine-tailed crystal fox from Downloads/cao-chin-duoi.webp. Not generated in this batch; rights remain pending review."
+      "note": "Owner-provided replacement art: nine-tailed crystal fox from Downloads/cao-chin-duoi.webp. Not generated in this batch; rights remain pending review.",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-light-solenne.png"
     }
-  ]
+  ],
+  "cdn": {
+    "publicBase": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1",
+    "prefix": "aetheria/mvp-wave1/v1",
+    "manifest": "specs/pet-arena/mvp-wave1-cdn-assets.json"
+  }
 }

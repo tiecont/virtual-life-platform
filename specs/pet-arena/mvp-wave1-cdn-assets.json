@@ -1,0 +1,476 @@
+{
+  "schemaVersion": 1,
+  "provider": "Cloudflare R2",
+  "bucket": "virtual-life-cloudflare-s3",
+  "endpoint": "https://d3bfda28cf2c59b0220f1f0f69a77ce3.r2.cloudflarestorage.com",
+  "publicBase": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1",
+  "prefix": "aetheria/mvp-wave1/v1",
+  "manifestCdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/ledgers/mvp-wave1-cdn-assets.json",
+  "uploadedAtUtc": "2026-11-24T13:17:57.616497+00:00",
+  "access": {
+    "mode": "r2.dev public development URL",
+    "warning": "Rate-limited and not recommended for production. Connect a custom domain to the bucket for production workloads.",
+    "cors": "none set"
+  },
+  "counts": {
+    "total": 63,
+    "images": 41,
+    "reviewHtml": 3,
+    "ledgers": 6,
+    "contactSheets": 10,
+    "docs": 3
+  },
+  "totalBytes": 99366614,
+  "reviewSheets": {
+    "unified": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review-all.html",
+    "v2": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/review.html",
+    "v3": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/review.html"
+  },
+  "unityBuild": {
+    "status": "NOT_UPLOADED",
+    "reason": "No production-ready player build exists in the repository or CI artifacts. ProjectBuild.Linux builds a Development player only."
+  },
+  "files": [
+    {
+      "key": "concepts-v2/base-aquatic.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-aquatic.png",
+      "bytes": 2069996,
+      "sha256": "73d9663e90c7dd71e3e09180b46776b637c5a10fa11eff76707d2aa626cd00b5",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/base-centaur.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-centaur.png",
+      "bytes": 2279502,
+      "sha256": "82bc92c6f38f95a6e7175ce28f870db641d4adf93a76ceb8b5ac49d6fe863562",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/base-floating.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-floating.png",
+      "bytes": 1956901,
+      "sha256": "2b1ef1649f4e6acdb2f1f185a313a6e203a0693d8750ae9f32ed7a0d6f49c4d9",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/base-flora.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-flora.png",
+      "bytes": 2013193,
+      "sha256": "b473eb93007fc5107cd10b15fc503d64f870c55df97c5147bf4b72639c7f0361",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/base-golem.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-golem.png",
+      "bytes": 2495870,
+      "sha256": "d44df265ea8fabece63fad2571e1821670533fd709d95fdc1c1d3d274d568fa5",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/base-humanoid.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-humanoid.png",
+      "bytes": 2086872,
+      "sha256": "dd6b9d5ed3018d477ee77c027b94c96707a378ca5af1e2f7002be2507c7015d8",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/base-mechanical.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-mechanical.png",
+      "bytes": 1978332,
+      "sha256": "66d0903d1475d4717f3e0233047c9631a9556ec3b80a4128dc36aa8d8977f504",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/base-serpentine.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-serpentine.png",
+      "bytes": 1885347,
+      "sha256": "856db3436b8706743eff820d4d958b21728963baf89f8b05ab0bc096d70eddbc",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/base-soft.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-soft.png",
+      "bytes": 1920919,
+      "sha256": "d9810967312e7de39aeb0eaa574b7483c5a38cc939a5284a61ca70542cc33cf4",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/base-spectral.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-spectral.png",
+      "bytes": 1992279,
+      "sha256": "b34701fac3c6bb8c6623a76c4571160eddc2a32d1b2652854b0c22a87dc4390f",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/boss-dawnarchon.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-dawnarchon.png",
+      "bytes": 2647434,
+      "sha256": "c2f0f30c4f2cd99a4f462fa355c56542544b5a8ac8919cfa274ec5d21f52a2f0",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/boss-faultwarden.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-faultwarden.png",
+      "bytes": 3009852,
+      "sha256": "688f8395bbc3c2c6ab1e3ba2548e4a92bdecc8db759ace4f37a5eeaf8e938458",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/boss-lagoonarch.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-lagoonarch.png",
+      "bytes": 2762447,
+      "sha256": "4475be816167a1cb817eb14aabd42e627b1a4214c47f596b0847fe7a5d371bc2",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/boss-lanternwake.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-lanternwake.png",
+      "bytes": 2622565,
+      "sha256": "4551d93eb6f959a7cdd1c60ebc93aec2dda7b1399a2da507a7391b8258e8fde5",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/boss-pyrecrown.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-pyrecrown.png",
+      "bytes": 2834426,
+      "sha256": "ee9071cdd3fdff3f7b8b329d3b9d194fb33f5451c768968702c4c2d5474240a3",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/boss-stormdiadem.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-stormdiadem.png",
+      "bytes": 2917539,
+      "sha256": "f7da12c005d1f5eb72dd19a825665acc6097e74280c1ebdf6a52a8683422fda4",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/standard-aurelune.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-aurelune.png",
+      "bytes": 2047383,
+      "sha256": "76b5d54b6b6fddad4d998c5a2e1fbd0f4eb1139ebfa5fec8a042d1b247f37994",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/standard-cindrelis.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-cindrelis.png",
+      "bytes": 2070698,
+      "sha256": "83bae8a6d46367cb61e728dcb8beb300b868b179b8dda773395a1606a7eef564",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/standard-gravorn.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-gravorn.png",
+      "bytes": 2217608,
+      "sha256": "b4ab36832a6e0846377fa8b88e65e50629625559469f223d58488b63e8d403e7",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/standard-marivell.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-marivell.png",
+      "bytes": 2396427,
+      "sha256": "eb65756aed5a2a27b26655b30dea698fd93b8297cc28797049ec440bdd8f99e8",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/standard-quorion.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-quorion.png",
+      "bytes": 2142897,
+      "sha256": "eb3ffbd364706224dbd0bd3e5a5725abe8a274529db975cdcfb05bc9e36f9822",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v2/standard-vesperyn.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-vesperyn.png",
+      "bytes": 2056714,
+      "sha256": "d9f231ee05de4de7777faac80dda0282cd757f68596a440cf7704657ff70ad9a",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v3/bird-electric-arcswift.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-electric-arcswift.png",
+      "bytes": 2294156,
+      "sha256": "7c77e9e106350e2a542b45c4bf07cedf9514b85f1de57ba6e617ca01194de276",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v3/bird-fire-cinderquill.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-fire-cinderquill.png",
+      "bytes": 2383437,
+      "sha256": "b2f4fd8489d0a520ee2d6d09543246cccfd6183ed7d9653ed24c4ca32a8af674",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v3/bird-ghost-pallidrone.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-ghost-pallidrone.png",
+      "bytes": 2225473,
+      "sha256": "50f41a9e0c4b807aa5b09772ca112c89eebe83b2f4556206187e793feb7d31a7",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v3/bird-ground-dustrunner.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-ground-dustrunner.png",
+      "bytes": 2319079,
+      "sha256": "286123371dd682a5e7940a41a039fa5bec02501e2e5ced39277c6e04abf8f674",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v3/bird-light-prismkite.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-light-prismkite.png",
+      "bytes": 2243556,
+      "sha256": "3e691c5b8b5c6969b9d8ebd29cb2d5fb4645a54a951f91755f048e7a5a355cb1",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v3/bird-water-tidewren.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-water-tidewren.png",
+      "bytes": 2308466,
+      "sha256": "9da40ae0715b776f1675d4c712731feb9a63103808e038a7eef02fb19de2b275",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v3/dragon-electric-voltrazik.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-electric-voltrazik.png",
+      "bytes": 2507320,
+      "sha256": "1f4228bcb8e44fa54338efa29ca417ec6301d58b49034823b85c3a4725480cac",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v3/dragon-fire-ignivar.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-fire-ignivar.png",
+      "bytes": 2749412,
+      "sha256": "a8f7f1bcb16bfd7bfa8c441f3ec3fa3af18c0056f2e57a2fcd3080abf3b7af9a",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v3/dragon-ghost-hollowmaw.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-ghost-hollowmaw.png",
+      "bytes": 2325459,
+      "sha256": "b6886c5ccb9c40dee1b5cad94602fc90f04025ee3eea649be27ce746651c52b4",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v3/dragon-ground-terradrake.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-ground-terradrake.png",
+      "bytes": 2702448,
+      "sha256": "1f23dee709f985b2246b0bd736ae073d6595185ef88cd07cce645a21d1d34c88",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v3/dragon-light-auroryx.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-light-auroryx.png",
+      "bytes": 2699262,
+      "sha256": "9998c68dd613df3a39e85e9cebdfc559684ead676fc4c55a8dab591d996a9167",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v3/dragon-water-tidecoil.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-water-tidecoil.png",
+      "bytes": 2599011,
+      "sha256": "2563148522bcf5a0f85e27c59416429bd28ad3da241210a9baa53f80f14b8e2e",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v4/s-offrate-electric-fulgarys.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-electric-fulgarys.png",
+      "bytes": 2626109,
+      "sha256": "41ee456e86406225f978b58022d47d804e11a3feb84f8601f62c80e4a804c6e5",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v4/s-offrate-fire-vulcaryn.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-fire-vulcaryn.png",
+      "bytes": 2426855,
+      "sha256": "110cc2d65380e7502e1fa0c1fe27748f8540ab609da13413e5711b631684b341",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v4/s-offrate-ghost-umbryss.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-ghost-umbryss.png",
+      "bytes": 2556395,
+      "sha256": "fbb8f37addef6abfc707b9f59710b6d652ad57770793501a4906dcf099669040",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v4/s-offrate-ground-jaderyx.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-ground-jaderyx.png",
+      "bytes": 2624893,
+      "sha256": "284c93de29fd735dd414374bf168a759e0df55e7d5876a4ba7f05f985dda0fbe",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v4/s-offrate-light-solenne.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-light-solenne.png",
+      "bytes": 2346191,
+      "sha256": "3d0f994cc491e3757cee46fdb06de5e8b1ba47a416c5557c3c30e9151a2bce92",
+      "contentType": "image/png"
+    },
+    {
+      "key": "concepts-v4/s-offrate-water-nerivelle.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-water-nerivelle.png",
+      "bytes": 2904332,
+      "sha256": "da4ff346aeaa04d586c149d787bcf7213405a17cfbeee5b34a75af715c558ad4",
+      "contentType": "image/png"
+    },
+    {
+      "key": "icarus/icarus-s-limited.png",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/icarus/icarus-s-limited.png",
+      "bytes": 990958,
+      "sha256": "dbeee9e7f68a63d2180fd1294a058444df18647cb9ffe3df89c02c13c5c6cde4",
+      "contentType": "image/png"
+    },
+    {
+      "key": "review-all.html",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review-all.html",
+      "bytes": 92459,
+      "sha256": "80acc8580a0b4872919b85359cd0539fbf7b3a8b0f1988a1071fd4f7d6949701",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "key": "concepts-v2/review.html",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/review.html",
+      "bytes": 62467,
+      "sha256": "685243996e77d2454978ab82e595311b64f0fb0a4fe31d0004e8b91d798c3caf",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "key": "concepts-v3/review.html",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/review.html",
+      "bytes": 43383,
+      "sha256": "a21964ac049bd22054b726ea3f8080a6c695911ff9034514615bd51607873454",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "key": "ledgers/concepts-v2/prompts.json",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/ledgers/concepts-v2/prompts.json",
+      "bytes": 49559,
+      "sha256": "ebb6b497d0dac6d9b32f37f1851a734b59609356a92bfd177ed1e5e5884a9cc4",
+      "contentType": "application/json"
+    },
+    {
+      "key": "ledgers/concepts-v2/ledger.json",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/ledgers/concepts-v2/ledger.json",
+      "bytes": 45491,
+      "sha256": "1c76c681fe366dccc5a9ba4859eccb6ab7e34feae80b7c1e0b2a318228b9f0ab",
+      "contentType": "application/json"
+    },
+    {
+      "key": "ledgers/concepts-v3/prompts.json",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/ledgers/concepts-v3/prompts.json",
+      "bytes": 23917,
+      "sha256": "cd6bf77f6eedce1b13e612cb7285ed105876884ae09cc3b6e5b803fbc40272cb",
+      "contentType": "application/json"
+    },
+    {
+      "key": "ledgers/concepts-v3/ledger.json",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/ledgers/concepts-v3/ledger.json",
+      "bytes": 23570,
+      "sha256": "05a5b1d69a2b14e413499e2b3c0c3815b055aa09f7fbe4e42956b046fb114458",
+      "contentType": "application/json"
+    },
+    {
+      "key": "ledgers/concepts-v4/prompts.json",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/ledgers/concepts-v4/prompts.json",
+      "bytes": 14904,
+      "sha256": "aa2e19cf02840663623d327ae06e76bdb54ed0b03ee5865d35f09339400aa9d3",
+      "contentType": "application/json"
+    },
+    {
+      "key": "ledgers/concepts-v4/ledger.json",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/ledgers/concepts-v4/ledger.json",
+      "bytes": 13191,
+      "sha256": "bb973de7aa394da893bc134e9f5181cb29f51a27d357398fa4d223fe22b8e441",
+      "contentType": "application/json"
+    },
+    {
+      "key": "review/contact/concepts-v2/contact-all.jpg",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review/contact/concepts-v2/contact-all.jpg",
+      "bytes": 460358,
+      "sha256": "c325493f48bbd401c6d2bc42e084472d6c85b176ed8ed92a5a2724d3a8903684",
+      "contentType": "image/jpeg"
+    },
+    {
+      "key": "review/contact/concepts-v2/contact-bases-final.jpg",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review/contact/concepts-v2/contact-bases-final.jpg",
+      "bytes": 178506,
+      "sha256": "2d249669371df51b7ae8249053b8f89b0574ef99c3a99f16a486514fd9f1f662",
+      "contentType": "image/jpeg"
+    },
+    {
+      "key": "review/contact/concepts-v2/contact-faceless-5.jpg",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review/contact/concepts-v2/contact-faceless-5.jpg",
+      "bytes": 180309,
+      "sha256": "a6aa69f7fb5543461838682d17615eab7e72db781ba073fffeffb7949cce1d56",
+      "contentType": "image/jpeg"
+    },
+    {
+      "key": "review/contact/concepts-v2/contact-redesign-4.jpg",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review/contact/concepts-v2/contact-redesign-4.jpg",
+      "bytes": 248452,
+      "sha256": "678c980159e335c97dd447380ad1220b06a7d2d1998ca7e86882442214261945",
+      "contentType": "image/jpeg"
+    },
+    {
+      "key": "review/contact/concepts-v2/contact-regen3.jpg",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review/contact/concepts-v2/contact-regen3.jpg",
+      "bytes": 173042,
+      "sha256": "2fb36a480574b46e8373692f117f5f0de3938f4fa8578caa37c1b278c2c487a4",
+      "contentType": "image/jpeg"
+    },
+    {
+      "key": "review/contact/concepts-v3/contact-all.jpg",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review/contact/concepts-v3/contact-all.jpg",
+      "bytes": 431034,
+      "sha256": "648206d88d9aa33e8bb79fbaa3b237934d283706a3ceb1a8184e8a5feeba81c0",
+      "contentType": "image/jpeg"
+    },
+    {
+      "key": "review/contact/concepts-v3/contact-dragons-1.jpg",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review/contact/concepts-v3/contact-dragons-1.jpg",
+      "bytes": 256551,
+      "sha256": "509da738586ee722dbc50ebef6e4c313c201d0614e41ee11e478f719e49ccb73",
+      "contentType": "image/jpeg"
+    },
+    {
+      "key": "review/contact/concepts-v4/contact-final6.jpg",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review/contact/concepts-v4/contact-final6.jpg",
+      "bytes": 278056,
+      "sha256": "7b8d9b6642555f9bd9f25657fbd146fafabea519193d523520d00f9ae64bb7f0",
+      "contentType": "image/jpeg"
+    },
+    {
+      "key": "review/contact/concepts-v4/contact-norings.jpg",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review/contact/concepts-v4/contact-norings.jpg",
+      "bytes": 255322,
+      "sha256": "077d2701bfdf79fadcd3cbd2d60446f2455fb6c6b9e6101846d457e301269652",
+      "contentType": "image/jpeg"
+    },
+    {
+      "key": "review/contact/concepts-v4/contact-ringcheck.jpg",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review/contact/concepts-v4/contact-ringcheck.jpg",
+      "bytes": 274703,
+      "sha256": "bcd9991650b46e23365944fb468a638499485632cebd3b09f8fbca0ad27bd08f",
+      "contentType": "image/jpeg"
+    },
+    {
+      "key": "docs/art-bible-mvp-wave1.md",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/docs/art-bible-mvp-wave1.md",
+      "bytes": 11358,
+      "sha256": "d5ee79e334a25d8112400a558296855a52a91f3cfbd1eafd0fed28a5aa4b3932",
+      "contentType": "text/markdown; charset=utf-8"
+    },
+    {
+      "key": "docs/art-bible-families-dragon-bird.md",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/docs/art-bible-families-dragon-bird.md",
+      "bytes": 5345,
+      "sha256": "db4a2dbd9d4f88a3de751845f5cc3cc4b4f7b4f90e49a331843515248e0f03a1",
+      "contentType": "text/markdown; charset=utf-8"
+    },
+    {
+      "key": "docs/power-tiers-mvp-wave1.md",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/docs/power-tiers-mvp-wave1.md",
+      "bytes": 6624,
+      "sha256": "53b4e670feb6693c89762e44ae5c9102a574df69010d46a4ca403b14ee96afd4",
+      "contentType": "text/markdown; charset=utf-8"
+    }
+  ]
+}

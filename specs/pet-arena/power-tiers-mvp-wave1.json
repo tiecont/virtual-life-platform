@@ -50,10 +50,9 @@
     "note": "Bases serve both A and B regular members."
   },
   "reviewSheet": {
-    "localPath": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v2/review.html",
-    "familySheet": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v3/review.html",
-    "unifiedSheet": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/review-all.html",
-    "note": "Open review-all.html for all 34 concepts in one sitting; the v2 and v3 sheets remain available."
+    "unifiedSheet": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review-all.html",
+    "v2Sheet": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/review.html",
+    "v3Sheet": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/review.html"
   },
   "ownerReview": {
     "required": true,
@@ -68,11 +67,12 @@
       "category": "s_offrate",
       "element": "fire",
       "powerClass": "S",
-      "classLabel": "S · Off-rate",
+      "classLabel": "S \u00b7 Off-rate",
       "summonRarity": "Standard S off-rate",
       "conceptBatch": "concepts-v4",
       "filename": "s-offrate-fire-vulcaryn.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-fire-vulcaryn.png"
     },
     {
       "order": 2,
@@ -81,12 +81,13 @@
       "category": "s_offrate",
       "element": "water",
       "powerClass": "S",
-      "classLabel": "S · Off-rate",
+      "classLabel": "S \u00b7 Off-rate",
       "summonRarity": "Standard S off-rate",
       "conceptBatch": "concepts-v4",
       "filename": "s-offrate-water-nerivelle.png",
       "ownerDecision": null,
-      "archetype": "tide otter"
+      "archetype": "tide otter",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-water-nerivelle.png"
     },
     {
       "order": 3,
@@ -95,11 +96,12 @@
       "category": "s_offrate",
       "element": "electric",
       "powerClass": "S",
-      "classLabel": "S · Off-rate",
+      "classLabel": "S \u00b7 Off-rate",
       "summonRarity": "Standard S off-rate",
       "conceptBatch": "concepts-v4",
       "filename": "s-offrate-electric-fulgarys.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-electric-fulgarys.png"
     },
     {
       "order": 4,
@@ -108,12 +110,13 @@
       "category": "s_offrate",
       "element": "ghost",
       "powerClass": "S",
-      "classLabel": "S · Off-rate",
+      "classLabel": "S \u00b7 Off-rate",
       "summonRarity": "Standard S off-rate",
       "conceptBatch": "concepts-v4",
       "filename": "s-offrate-ghost-umbryss.png",
       "ownerDecision": null,
-      "archetype": "grave kitten"
+      "archetype": "grave kitten",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-ghost-umbryss.png"
     },
     {
       "order": 5,
@@ -122,12 +125,13 @@
       "category": "s_offrate",
       "element": "ground",
       "powerClass": "S",
-      "classLabel": "S · Off-rate",
+      "classLabel": "S \u00b7 Off-rate",
       "summonRarity": "Standard S off-rate",
       "conceptBatch": "concepts-v4",
       "filename": "s-offrate-ground-jaderyx.png",
       "ownerDecision": null,
-      "archetype": "jade qilin"
+      "archetype": "jade qilin",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-ground-jaderyx.png"
     },
     {
       "order": 6,
@@ -136,11 +140,12 @@
       "category": "s_offrate",
       "element": "light",
       "powerClass": "S",
-      "classLabel": "S · Off-rate",
+      "classLabel": "S \u00b7 Off-rate",
       "summonRarity": "Standard S off-rate",
       "conceptBatch": "concepts-v4",
       "filename": "s-offrate-light-solenne.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-light-solenne.png"
     },
     {
       "order": 7,
@@ -149,11 +154,12 @@
       "category": "map_legendary",
       "element": "fire",
       "powerClass": "S",
-      "classLabel": "S · Legendary",
+      "classLabel": "S \u00b7 Legendary",
       "summonRarity": "map-legendary",
       "conceptBatch": "concepts-v2",
       "filename": "boss-pyrecrown.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-pyrecrown.png"
     },
     {
       "order": 8,
@@ -162,11 +168,12 @@
       "category": "map_legendary",
       "element": "water",
       "powerClass": "S",
-      "classLabel": "S · Legendary",
+      "classLabel": "S \u00b7 Legendary",
       "summonRarity": "map-legendary",
       "conceptBatch": "concepts-v2",
       "filename": "boss-lagoonarch.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-lagoonarch.png"
     },
     {
       "order": 9,
@@ -175,11 +182,12 @@
       "category": "map_legendary",
       "element": "electric",
       "powerClass": "S",
-      "classLabel": "S · Legendary",
+      "classLabel": "S \u00b7 Legendary",
       "summonRarity": "map-legendary",
       "conceptBatch": "concepts-v2",
       "filename": "boss-stormdiadem.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-stormdiadem.png"
     },
     {
       "order": 10,
@@ -188,11 +196,12 @@
       "category": "map_legendary",
       "element": "ghost",
       "powerClass": "S",
-      "classLabel": "S · Legendary",
+      "classLabel": "S \u00b7 Legendary",
       "summonRarity": "map-legendary",
       "conceptBatch": "concepts-v2",
       "filename": "boss-lanternwake.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-lanternwake.png"
     },
     {
       "order": 11,
@@ -201,11 +210,12 @@
       "category": "map_legendary",
       "element": "ground",
       "powerClass": "S",
-      "classLabel": "S · Legendary",
+      "classLabel": "S \u00b7 Legendary",
       "summonRarity": "map-legendary",
       "conceptBatch": "concepts-v2",
       "filename": "boss-faultwarden.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-faultwarden.png"
     },
     {
       "order": 12,
@@ -214,11 +224,12 @@
       "category": "map_legendary",
       "element": "light",
       "powerClass": "S",
-      "classLabel": "S · Legendary",
+      "classLabel": "S \u00b7 Legendary",
       "summonRarity": "map-legendary",
       "conceptBatch": "concepts-v2",
       "filename": "boss-dawnarchon.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-dawnarchon.png"
     },
     {
       "order": 13,
@@ -227,11 +238,12 @@
       "category": "dragon_family",
       "element": "fire",
       "powerClass": "S",
-      "classLabel": "S · Dragon",
+      "classLabel": "S \u00b7 Dragon",
       "summonRarity": "family-exploration",
       "conceptBatch": "concepts-v3",
       "filename": "dragon-fire-ignivar.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-fire-ignivar.png"
     },
     {
       "order": 14,
@@ -240,11 +252,12 @@
       "category": "dragon_family",
       "element": "water",
       "powerClass": "S",
-      "classLabel": "S · Dragon",
+      "classLabel": "S \u00b7 Dragon",
       "summonRarity": "family-exploration",
       "conceptBatch": "concepts-v3",
       "filename": "dragon-water-tidecoil.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-water-tidecoil.png"
     },
     {
       "order": 15,
@@ -253,11 +266,12 @@
       "category": "dragon_family",
       "element": "electric",
       "powerClass": "S",
-      "classLabel": "S · Dragon",
+      "classLabel": "S \u00b7 Dragon",
       "summonRarity": "family-exploration",
       "conceptBatch": "concepts-v3",
       "filename": "dragon-electric-voltrazik.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-electric-voltrazik.png"
     },
     {
       "order": 16,
@@ -266,11 +280,12 @@
       "category": "dragon_family",
       "element": "ghost",
       "powerClass": "S",
-      "classLabel": "S · Dragon",
+      "classLabel": "S \u00b7 Dragon",
       "summonRarity": "family-exploration",
       "conceptBatch": "concepts-v3",
       "filename": "dragon-ghost-hollowmaw.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-ghost-hollowmaw.png"
     },
     {
       "order": 17,
@@ -279,11 +294,12 @@
       "category": "dragon_family",
       "element": "ground",
       "powerClass": "S",
-      "classLabel": "S · Dragon",
+      "classLabel": "S \u00b7 Dragon",
       "summonRarity": "family-exploration",
       "conceptBatch": "concepts-v3",
       "filename": "dragon-ground-terradrake.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-ground-terradrake.png"
     },
     {
       "order": 18,
@@ -292,11 +308,12 @@
       "category": "dragon_family",
       "element": "light",
       "powerClass": "S",
-      "classLabel": "S · Dragon",
+      "classLabel": "S \u00b7 Dragon",
       "summonRarity": "family-exploration",
       "conceptBatch": "concepts-v3",
       "filename": "dragon-light-auroryx.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-light-auroryx.png"
     },
     {
       "order": 19,
@@ -305,7 +322,7 @@
       "category": "limited_event_gacha",
       "element": "fire",
       "powerClass": "S",
-      "classLabel": "S · Limited",
+      "classLabel": "S \u00b7 Limited",
       "summonRarity": "Limited S",
       "conceptBatch": "none",
       "filename": null,
@@ -318,11 +335,12 @@
       "category": "standard_gacha",
       "element": "fire",
       "powerClass": "A",
-      "classLabel": "A · Standard",
+      "classLabel": "A \u00b7 Standard",
       "summonRarity": "Standard S",
       "conceptBatch": "concepts-v2",
       "filename": "standard-cindrelis.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-cindrelis.png"
     },
     {
       "order": 21,
@@ -331,11 +349,12 @@
       "category": "standard_gacha",
       "element": "water",
       "powerClass": "A",
-      "classLabel": "A · Standard",
+      "classLabel": "A \u00b7 Standard",
       "summonRarity": "Standard S",
       "conceptBatch": "concepts-v2",
       "filename": "standard-marivell.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-marivell.png"
     },
     {
       "order": 22,
@@ -344,11 +363,12 @@
       "category": "standard_gacha",
       "element": "electric",
       "powerClass": "A",
-      "classLabel": "A · Standard",
+      "classLabel": "A \u00b7 Standard",
       "summonRarity": "Standard S",
       "conceptBatch": "concepts-v2",
       "filename": "standard-quorion.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-quorion.png"
     },
     {
       "order": 23,
@@ -357,11 +377,12 @@
       "category": "standard_gacha",
       "element": "ghost",
       "powerClass": "A",
-      "classLabel": "A · Standard",
+      "classLabel": "A \u00b7 Standard",
       "summonRarity": "Standard S",
       "conceptBatch": "concepts-v2",
       "filename": "standard-vesperyn.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-vesperyn.png"
     },
     {
       "order": 24,
@@ -370,11 +391,12 @@
       "category": "standard_gacha",
       "element": "ground",
       "powerClass": "A",
-      "classLabel": "A · Standard",
+      "classLabel": "A \u00b7 Standard",
       "summonRarity": "Standard S",
       "conceptBatch": "concepts-v2",
       "filename": "standard-gravorn.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-gravorn.png"
     },
     {
       "order": 25,
@@ -383,11 +405,12 @@
       "category": "standard_gacha",
       "element": "light",
       "powerClass": "A",
-      "classLabel": "A · Standard",
+      "classLabel": "A \u00b7 Standard",
       "summonRarity": "Standard S",
       "conceptBatch": "concepts-v2",
       "filename": "standard-aurelune.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-aurelune.png"
     },
     {
       "order": 26,
@@ -396,11 +419,12 @@
       "category": "bird_family",
       "element": "fire",
       "powerClass": "A",
-      "classLabel": "A · Bird family",
+      "classLabel": "A \u00b7 Bird family",
       "summonRarity": "family-exploration",
       "conceptBatch": "concepts-v3",
       "filename": "bird-fire-cinderquill.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-fire-cinderquill.png"
     },
     {
       "order": 27,
@@ -409,11 +433,12 @@
       "category": "bird_family",
       "element": "water",
       "powerClass": "A",
-      "classLabel": "A · Bird family",
+      "classLabel": "A \u00b7 Bird family",
       "summonRarity": "family-exploration",
       "conceptBatch": "concepts-v3",
       "filename": "bird-water-tidewren.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-water-tidewren.png"
     },
     {
       "order": 28,
@@ -422,11 +447,12 @@
       "category": "bird_family",
       "element": "electric",
       "powerClass": "A",
-      "classLabel": "A · Bird family",
+      "classLabel": "A \u00b7 Bird family",
       "summonRarity": "family-exploration",
       "conceptBatch": "concepts-v3",
       "filename": "bird-electric-arcswift.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-electric-arcswift.png"
     },
     {
       "order": 29,
@@ -435,11 +461,12 @@
       "category": "bird_family",
       "element": "ghost",
       "powerClass": "A",
-      "classLabel": "A · Bird family",
+      "classLabel": "A \u00b7 Bird family",
       "summonRarity": "family-exploration",
       "conceptBatch": "concepts-v3",
       "filename": "bird-ghost-pallidrone.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-ghost-pallidrone.png"
     },
     {
       "order": 30,
@@ -448,11 +475,12 @@
       "category": "bird_family",
       "element": "ground",
       "powerClass": "A",
-      "classLabel": "A · Bird family",
+      "classLabel": "A \u00b7 Bird family",
       "summonRarity": "family-exploration",
       "conceptBatch": "concepts-v3",
       "filename": "bird-ground-dustrunner.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-ground-dustrunner.png"
     },
     {
       "order": 31,
@@ -461,11 +489,12 @@
       "category": "bird_family",
       "element": "light",
       "powerClass": "A",
-      "classLabel": "A · Bird family",
+      "classLabel": "A \u00b7 Bird family",
       "summonRarity": "family-exploration",
       "conceptBatch": "concepts-v3",
       "filename": "bird-light-prismkite.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-light-prismkite.png"
     },
     {
       "order": 32,
@@ -474,11 +503,12 @@
       "category": "shared_race_base",
       "element": null,
       "powerClass": "B",
-      "classLabel": "B · Race base",
+      "classLabel": "B \u00b7 Race base",
       "summonRarity": "shared-race-base",
       "conceptBatch": "concepts-v2",
       "filename": "base-centaur.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-centaur.png"
     },
     {
       "order": 33,
@@ -487,11 +517,12 @@
       "category": "shared_race_base",
       "element": null,
       "powerClass": "B",
-      "classLabel": "B · Race base",
+      "classLabel": "B \u00b7 Race base",
       "summonRarity": "shared-race-base",
       "conceptBatch": "concepts-v2",
       "filename": "base-golem.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-golem.png"
     },
     {
       "order": 34,
@@ -500,11 +531,12 @@
       "category": "shared_race_base",
       "element": null,
       "powerClass": "B",
-      "classLabel": "B · Race base",
+      "classLabel": "B \u00b7 Race base",
       "summonRarity": "shared-race-base",
       "conceptBatch": "concepts-v2",
       "filename": "base-humanoid.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-humanoid.png"
     },
     {
       "order": 35,
@@ -513,11 +545,12 @@
       "category": "shared_race_base",
       "element": null,
       "powerClass": "B",
-      "classLabel": "B · Race base",
+      "classLabel": "B \u00b7 Race base",
       "summonRarity": "shared-race-base",
       "conceptBatch": "concepts-v2",
       "filename": "base-soft.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-soft.png"
     },
     {
       "order": 36,
@@ -526,11 +559,12 @@
       "category": "shared_race_base",
       "element": null,
       "powerClass": "B",
-      "classLabel": "B · Race base",
+      "classLabel": "B \u00b7 Race base",
       "summonRarity": "shared-race-base",
       "conceptBatch": "concepts-v2",
       "filename": "base-floating.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-floating.png"
     },
     {
       "order": 37,
@@ -539,11 +573,12 @@
       "category": "shared_race_base",
       "element": null,
       "powerClass": "B",
-      "classLabel": "B · Race base",
+      "classLabel": "B \u00b7 Race base",
       "summonRarity": "shared-race-base",
       "conceptBatch": "concepts-v2",
       "filename": "base-flora.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-flora.png"
     },
     {
       "order": 38,
@@ -552,11 +587,12 @@
       "category": "shared_race_base",
       "element": null,
       "powerClass": "B",
-      "classLabel": "B · Race base",
+      "classLabel": "B \u00b7 Race base",
       "summonRarity": "shared-race-base",
       "conceptBatch": "concepts-v2",
       "filename": "base-aquatic.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-aquatic.png"
     },
     {
       "order": 39,
@@ -565,11 +601,12 @@
       "category": "shared_race_base",
       "element": null,
       "powerClass": "B",
-      "classLabel": "B · Race base",
+      "classLabel": "B \u00b7 Race base",
       "summonRarity": "shared-race-base",
       "conceptBatch": "concepts-v2",
       "filename": "base-spectral.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-spectral.png"
     },
     {
       "order": 40,
@@ -578,11 +615,12 @@
       "category": "shared_race_base",
       "element": null,
       "powerClass": "B",
-      "classLabel": "B · Race base",
+      "classLabel": "B \u00b7 Race base",
       "summonRarity": "shared-race-base",
       "conceptBatch": "concepts-v2",
       "filename": "base-serpentine.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-serpentine.png"
     },
     {
       "order": 41,
@@ -591,18 +629,19 @@
       "category": "shared_race_base",
       "element": null,
       "powerClass": "B",
-      "classLabel": "B · Race base",
+      "classLabel": "B \u00b7 Race base",
       "summonRarity": "shared-race-base",
       "conceptBatch": "concepts-v2",
       "filename": "base-mechanical.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-mechanical.png"
     }
   ],
   "icarusShowcase": {
     "id": "pet-v3-fire-icarus",
     "name": "Icarus",
     "powerClass": "S",
-    "classLabel": "S · Limited",
+    "classLabel": "S \u00b7 Limited",
     "summonRarity": "Limited S",
     "image": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/icarus/icarus-s-limited.png",
     "sourceImage": "/home/tiecont/Projects/Aetheria/artifacts/character-production/icarus/references/owner-review-v3/references/front_standalone_candidate_native_1024x1536.png",
@@ -611,10 +650,11 @@
     "width": 1536,
     "height": 1152,
     "generatedInBatch": false,
-    "note": "Existing owner-reviewed Icarus reference art, background-composited to 4:3 for the review card. No Tripo generation and no credit spent."
+    "note": "Existing owner-reviewed Icarus reference art, background-composited to 4:3 for the review card. No Tripo generation and no credit spent.",
+    "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/icarus/icarus-s-limited.png"
   },
   "sOffrateBatch": {
-    "path": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v4",
+    "path": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4",
     "count": 6,
     "state": "CONCEPT_REVIEW_REQUIRED",
     "ledger": "specs/pet-arena/mvp-wave1-concepts-v4.json",
@@ -631,5 +671,10 @@
       ]
     },
     "rule": "Three large imposing Pets (lion, beetle, qilin) and three small cute Pets with strong aura (otter, kitten, fox)."
+  },
+  "cdn": {
+    "publicBase": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1",
+    "prefix": "aetheria/mvp-wave1/v1",
+    "manifest": "specs/pet-arena/mvp-wave1-cdn-assets.json"
   }
 }

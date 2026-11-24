@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "specId": "aetheria-mvp-wave1-concepts-v2",
-  "title": "Aetheria Wave 1 MVP Concept Batch v2 — Luminous Tamer",
+  "title": "Aetheria Wave 1 MVP Concept Batch v2 \u2014 Luminous Tamer",
   "state": "CONCEPT_REVIEW_REQUIRED",
   "releaseState": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
   "generatedAtUtc": "2026-11-24T12:35:32.809Z",
@@ -112,10 +112,11 @@
     }
   },
   "reviewSheet": {
-    "localPath": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v2/review.html",
-    "conceptDirectory": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v2/",
-    "ledgerPath": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v2/ledger.json",
-    "promptsPath": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v2/prompts.json",
+    "unified": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review-all.html",
+    "v2": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/review.html",
+    "v3": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/review.html",
+    "ledger": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/ledgers/concepts-v2/ledger.json",
+    "prompts": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/ledgers/concepts-v2/prompts.json",
     "pngsCommittedToGit": false
   },
   "ownerReview": {
@@ -149,7 +150,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "A",
-      "classLabel": "A · Standard"
+      "classLabel": "A \u00b7 Standard",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-cindrelis.png"
     },
     {
       "order": 2,
@@ -176,7 +178,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "A",
-      "classLabel": "A · Standard"
+      "classLabel": "A \u00b7 Standard",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-marivell.png"
     },
     {
       "order": 3,
@@ -203,7 +206,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "A",
-      "classLabel": "A · Standard"
+      "classLabel": "A \u00b7 Standard",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-quorion.png"
     },
     {
       "order": 4,
@@ -230,7 +234,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "A",
-      "classLabel": "A · Standard"
+      "classLabel": "A \u00b7 Standard",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-vesperyn.png"
     },
     {
       "order": 5,
@@ -257,7 +262,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "A",
-      "classLabel": "A · Standard"
+      "classLabel": "A \u00b7 Standard",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-gravorn.png"
     },
     {
       "order": 6,
@@ -284,7 +290,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "A",
-      "classLabel": "A · Standard"
+      "classLabel": "A \u00b7 Standard",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/standard-aurelune.png"
     },
     {
       "order": 7,
@@ -311,7 +318,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "S",
-      "classLabel": "S · Legendary"
+      "classLabel": "S \u00b7 Legendary",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-pyrecrown.png"
     },
     {
       "order": 8,
@@ -338,7 +346,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "S",
-      "classLabel": "S · Legendary"
+      "classLabel": "S \u00b7 Legendary",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-lagoonarch.png"
     },
     {
       "order": 9,
@@ -365,7 +374,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "S",
-      "classLabel": "S · Legendary"
+      "classLabel": "S \u00b7 Legendary",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-stormdiadem.png"
     },
     {
       "order": 10,
@@ -392,7 +402,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "S",
-      "classLabel": "S · Legendary"
+      "classLabel": "S \u00b7 Legendary",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-lanternwake.png"
     },
     {
       "order": 11,
@@ -419,7 +430,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "S",
-      "classLabel": "S · Legendary"
+      "classLabel": "S \u00b7 Legendary",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-faultwarden.png"
     },
     {
       "order": 12,
@@ -446,7 +458,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "S",
-      "classLabel": "S · Legendary"
+      "classLabel": "S \u00b7 Legendary",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/boss-dawnarchon.png"
     },
     {
       "order": 13,
@@ -476,7 +489,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "B",
-      "classLabel": "B · Race base"
+      "classLabel": "B \u00b7 Race base",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-centaur.png"
     },
     {
       "order": 14,
@@ -506,7 +520,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "B",
-      "classLabel": "B · Race base"
+      "classLabel": "B \u00b7 Race base",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-golem.png"
     },
     {
       "order": 15,
@@ -538,7 +553,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "B",
-      "classLabel": "B · Race base"
+      "classLabel": "B \u00b7 Race base",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-humanoid.png"
     },
     {
       "order": 16,
@@ -570,7 +586,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "B",
-      "classLabel": "B · Race base"
+      "classLabel": "B \u00b7 Race base",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-soft.png"
     },
     {
       "order": 17,
@@ -602,7 +619,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "B",
-      "classLabel": "B · Race base"
+      "classLabel": "B \u00b7 Race base",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-floating.png"
     },
     {
       "order": 18,
@@ -634,7 +652,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "B",
-      "classLabel": "B · Race base"
+      "classLabel": "B \u00b7 Race base",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-flora.png"
     },
     {
       "order": 19,
@@ -664,7 +683,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "B",
-      "classLabel": "B · Race base"
+      "classLabel": "B \u00b7 Race base",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-aquatic.png"
     },
     {
       "order": 20,
@@ -693,7 +713,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "B",
-      "classLabel": "B · Race base"
+      "classLabel": "B \u00b7 Race base",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-spectral.png"
     },
     {
       "order": 21,
@@ -723,7 +744,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "B",
-      "classLabel": "B · Race base"
+      "classLabel": "B \u00b7 Race base",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-serpentine.png"
     },
     {
       "order": 22,
@@ -752,7 +774,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "B",
-      "classLabel": "B · Race base"
+      "classLabel": "B \u00b7 Race base",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/base-mechanical.png"
     }
   ],
   "powerClasses": {
@@ -764,5 +787,10 @@
     "ladder": "S > A > B",
     "spec": "specs/pet-arena/power-tiers-mvp-wave1.md",
     "note": "The six Standard-S summons are Power Class A by owner direction (A-tier appearance); summon rarity is unchanged. S off-rate pets live in mvp-wave1-concepts-v4.json."
+  },
+  "cdn": {
+    "publicBase": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1",
+    "prefix": "aetheria/mvp-wave1/v1",
+    "manifest": "specs/pet-arena/mvp-wave1-cdn-assets.json"
   }
 }

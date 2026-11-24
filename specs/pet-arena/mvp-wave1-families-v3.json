@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "specId": "aetheria-mvp-wave1-families-v3",
-  "title": "Aetheria Wave 1 Species Families — Dragons and Birds",
+  "title": "Aetheria Wave 1 Species Families \u2014 Dragons and Birds",
   "state": "CONCEPT_REVIEW_REQUIRED",
   "releaseState": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
   "scope": {
@@ -51,10 +51,11 @@
   },
   "ipSafety": "Energy-blade and void-fracture geometry used as general principles only. No named franchise creature, character, mask, costume, silhouette or pose reproduced; no franchise image references.",
   "reviewSheet": {
-    "localPath": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v3/review.html",
-    "conceptDirectory": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v3/",
-    "ledgerPath": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v3/ledger.json",
-    "promptsPath": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v3/prompts.json",
+    "unified": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review-all.html",
+    "v2": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/review.html",
+    "v3": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/review.html",
+    "ledger": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/ledgers/concepts-v3/ledger.json",
+    "prompts": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/ledgers/concepts-v3/prompts.json",
     "pngsCommittedToGit": false
   },
   "ownerReview": {
@@ -86,7 +87,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "S",
-      "classLabel": "S · Dragon"
+      "classLabel": "S \u00b7 Dragon",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-fire-ignivar.png"
     },
     {
       "order": 2,
@@ -111,7 +113,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "S",
-      "classLabel": "S · Dragon"
+      "classLabel": "S \u00b7 Dragon",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-water-tidecoil.png"
     },
     {
       "order": 3,
@@ -136,7 +139,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "S",
-      "classLabel": "S · Dragon"
+      "classLabel": "S \u00b7 Dragon",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-electric-voltrazik.png"
     },
     {
       "order": 4,
@@ -161,7 +165,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "S",
-      "classLabel": "S · Dragon"
+      "classLabel": "S \u00b7 Dragon",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-ghost-hollowmaw.png"
     },
     {
       "order": 5,
@@ -186,7 +191,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "S",
-      "classLabel": "S · Dragon"
+      "classLabel": "S \u00b7 Dragon",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-ground-terradrake.png"
     },
     {
       "order": 6,
@@ -211,7 +217,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "S",
-      "classLabel": "S · Dragon"
+      "classLabel": "S \u00b7 Dragon",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/dragon-light-auroryx.png"
     },
     {
       "order": 7,
@@ -236,7 +243,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "A",
-      "classLabel": "A · Bird family"
+      "classLabel": "A \u00b7 Bird family",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-fire-cinderquill.png"
     },
     {
       "order": 8,
@@ -261,7 +269,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "A",
-      "classLabel": "A · Bird family"
+      "classLabel": "A \u00b7 Bird family",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-water-tidewren.png"
     },
     {
       "order": 9,
@@ -286,7 +295,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "A",
-      "classLabel": "A · Bird family"
+      "classLabel": "A \u00b7 Bird family",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-electric-arcswift.png"
     },
     {
       "order": 10,
@@ -311,7 +321,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "A",
-      "classLabel": "A · Bird family"
+      "classLabel": "A \u00b7 Bird family",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-ghost-pallidrone.png"
     },
     {
       "order": 11,
@@ -336,7 +347,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "A",
-      "classLabel": "A · Bird family"
+      "classLabel": "A \u00b7 Bird family",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-ground-dustrunner.png"
     },
     {
       "order": 12,
@@ -361,7 +373,8 @@
       "ownerDecision": null,
       "ownerNote": null,
       "powerClass": "A",
-      "classLabel": "A · Bird family"
+      "classLabel": "A \u00b7 Bird family",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/bird-light-prismkite.png"
     }
   ],
   "powerClasses": {
@@ -373,5 +386,10 @@
     "ladder": "S > A > B",
     "spec": "specs/pet-arena/power-tiers-mvp-wave1.md",
     "note": "Presentation ladder only; not summon rarity or stats."
+  },
+  "cdn": {
+    "publicBase": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1",
+    "prefix": "aetheria/mvp-wave1/v1",
+    "manifest": "specs/pet-arena/mvp-wave1-cdn-assets.json"
   }
 }
