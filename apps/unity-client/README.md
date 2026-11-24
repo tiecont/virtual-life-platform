@@ -12,6 +12,30 @@ three-turn input rehearsal. The scene uses temporary developer primitives.
 The client displays its offline mode. The explicitly configured development connection panel routes terminal input
 to the native synthetic match. Windows player qualification remains separate.
 
+## Playable Pet Arena MVP
+
+Open `Assets/Aetheria/Scenes/PetArenaPve.unity` and enter Play mode. The scene
+is an explicitly offline training fixture, not a second combat authority. It
+contains a 10x10 arena, six-element opponent selection, HP/Rage bars, Intro,
+Normal, Rage and Signature/FIRE_ZONE actions, win/lose state, and an Icarus
+evolution reference at Lv20/Lv40/Lv60. Keyboard controls are `1` Intro, `N`
+Normal, `R` Rage, `F` FIRE_ZONE, `Tab` next opponent, `L` next evolution stage,
+and `X` reset. Reduced motion is enabled by default.
+
+Rebuild the scene and generated profile/settings assets through
+`Aetheria > Pet Arena > Build playable MVP scene`. The builder does not stage a
+production Icarus prefab; the regression scene uses temporary primitives while
+PR #66 remains behind the owner H2 gate.
+
+Future Pets and Arena Maps are loaded through Addressables groups delivered
+from the private R2 asset pipeline. `R2RemoteContentSettings.asset` is disabled
+by default so the local scene remains playable without network access. Its
+manifest is strict, HTTPS-only, bounded to 96 entries and keyed by stable Pet
+and map IDs. A published Addressables remote catalog and manifest must be
+uploaded together under an immutable content version; changing remote entries
+does not require a new client binary. No production R2 endpoint, content or
+credentials are committed here.
+
 ## Native protocol adapter
 
 Run `node scripts/unity-native-prepare.mjs` before opening the project. This
