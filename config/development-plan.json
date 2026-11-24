@@ -36,14 +36,93 @@
   ],
   "mvpProgram": {
     "schemaVersion": 1,
-    "wave": "Wave A",
+    "wave": "Wave B",
     "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
     "operatingRule": "Future development requests are executed as substantial, coordinated development waves: name the MVP milestone, split independent file-owned workstreams, integrate through one owner, and record measured acceptance. Do not substitute isolated microtasks, audits or documentation for playable progress.",
     "backlog": "config/development-plan.json",
     "currentWave": {
-      "id": "WAVE-A",
-      "title": "Playable 8x8 core, Artifact progression, 55/61 roster reconciliation",
-      "milestones": [
+      "id": "WAVE-B",
+      "title": "Authoritative 8x8, progression and living world",
+      "waveBVerification": {
+      "sourceRevision": "07362b52907d1cca5cade398e0c0f99747c10bb9",
+      "status": "PARTIAL_LOCAL_GATES_PASS_HOSTED_CI_PENDING",
+      "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+      "runtime": {
+        "commit": "f765b51/c6c488f",
+        "checks": [
+          "cargo test 87 PASS",
+          "arena8 binding 10 PASS",
+          "frozen compatibility 2 PASS",
+          "arena8-pve content hash 12660784..."
+        ],
+        "binding": {
+          "active": 55,
+          "playable": 6,
+          "bound": 49,
+          "gatedCandidates": 6,
+          "uniqueStatlines": 55
+        },
+        "proof": "Same Pet/seed: no loadout Lost turn10; equipped Won turn10 with changed stats/damage/state hash",
+        "remaining": "Nest allocator/platform_native_worlds seeding, ticket minting and Unity intent/view wiring are not implemented."
+      },
+      "world": {
+        "commit": "a9cb704",
+        "scenes": [
+          "CentralPlaza.unity",
+          "CinderTerraces.unity",
+          "TideglassLagoon.unity"
+        ],
+        "checks": [
+          "Unity 55 EditMode PASS",
+          "PlayMode 14 passed/2 skipped",
+          "Linux development player build PASS",
+          "Linux player smoke PASS"
+        ],
+        "remaining": "Owner art acceptance; four remaining map kits are not production-finished."
+      },
+      "audio": {
+        "commit": "9948d5e",
+        "assets": [
+          "AetheriaArenaMixer.mixer",
+          "ArenaAudioLibrary.asset",
+          "Resources/ArenaPresentation.prefab"
+        ],
+        "checks": [
+          "ArenaAudio/ArenaVfx EditMode PASS",
+          "PlayMode audio tests PASS"
+        ],
+        "remaining": "Licensed music/VO media remains OD-10; procedural fallback is temporary."
+      },
+      "unity": {
+        "checks": [
+          "55 EditMode PASS",
+          "PlayMode 14 passed/2 skipped",
+          "Linux build/player PASS"
+        ],
+        "remaining": "Default Arena8 path still needs the committed arena8.view.v1 consumer; current campaign remains a Wave1 compatibility flow."
+      },
+      "integratedLoop": {
+        "status": "PARTIAL",
+        "working": [
+          "Central Plaza/Fire/Water scenes load",
+          "AudioMixer/volume/VFX foundation",
+          "Artifact inventory/equip/upgrade/PvE claim",
+          "Standalone arena8-pve Rust authority"
+        ],
+        "missing": [
+          "Nest allocation + ticket + Unity Arena8 intent/view client",
+          "Full hub->8x8->reward->Artifact->next-match E2E",
+          "Repeatable material drip beyond six first-clear claims"
+        ]
+      },
+      "gaps": [
+        "PR81 exact-source CI/merge prerequisite remains in flight",
+        "No production allocator for arena8-pve",
+        "Unity does not consume arena8.view.v1 yet",
+        "Windows qualification and human playtests separate"
+      ]
+    },
+    "milestones": [
         "M0",
         "M1",
         "M2",
