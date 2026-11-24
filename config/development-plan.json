@@ -3805,6 +3805,7 @@
       "database": "Prisma Postgres accepted all54 migrations through the predefined pg_database_owner role. The production runtime uses the direct URL for the legacy session-level room-owner advisory lock and DATABASE_POOL_MAX=4.",
       "northflank": "aetheria-frontend and aetheria-backend each run one instance at0.2vCPU/512MiB with CI and CD enabled. Portal3300, admin3400, API4300 and default-off Rust4400 remain private.",
       "cloudflare": "Both Workers run the edge relay from main-ready Wrangler configuration with production workers.dev URLs enabled, preview URLs disabled, and the hostname-based Aetheria Production Access application active. Three VPC services use the Northflank namespace FQDN and port mappings.",
+      "automaticDeployments": "Workers Builds triggers89f7b0cb-3bb5-435c-8750-d0e84f67e377 and93fa5720-4a7e-4dd0-b776-a25d66479fce deploy the portal and admin edge Workers from main. Preview-branch builds are disabled on the obsolete virtual-life-platform Worker; its remaining legacy main-only trigger runs explicit no-op build and deploy commands, so it cannot redeploy the prototype or create pull-request checks.",
       "commands": [
         {"command":"DATABASE_URL=$DIRECT_DATABASE_URL DATABASE_MIGRATION_ROLE=pg_database_owner NODE_ENV=production pnpm db:migrate","exitCode":0,"result":"City migrations applied."},
         {"command":"Prisma direct read-only schema/ACL probe","exitCode":0,"result":"54 migration rows,145 public tables,0 tables with PUBLIC SELECT/INSERT/UPDATE/DELETE, all table owners pg_database_owner."},
@@ -3818,7 +3819,7 @@
         {"command":"node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/foundation.test.ts","exitCode":0,"result":"4 PASS including complete migration execution under an explicit database-owner role."},
         {"command":"pnpm check","exitCode":143,"result":"Interrupted during the governance test launch on the local host after earlier check stages passed; not recorded as a full local pass. Hosted CI remains required."}
       ],
-      "remaining": "Merge only after exact-head hosted Quality and Rust pass. After merge, switch both Northflank services to main, enable Workers Builds for main if the owner approves Cloudflare GitHub App repository access, and verify resulting main revisions. No public release is authorized."
+      "remaining": "Merge only after exact-head hosted Quality and Rust pass. The capacity contract is 838 integration tests after adding the explicit database-owner migration case. Both Northflank services already target main and both Workers Builds triggers are main-only; verify their automatic deployments at the merged revision. No public release is authorized."
     },
     "scope": "Partial CI reliability: actual Stage PostgreSQL blocker synchronization; explicit Ubuntu 24.04; checksum-addressed official Playwright 1.64.1 browser/fonts with host render preflight; bounded image-navigation diagnostics retain all application assertions and merge gates",
     "ciTurboVerification": {
@@ -3837,7 +3838,7 @@
         {"command": "pnpm exec eslint focused CI scripts and governance tests", "exitCode": 0},
         {"command": "git diff --check", "exitCode": 0}
       ],
-      "limitations": "No hosted duration improvement is claimed until the final PR run completes. The foundation capacity is813 and the dependent MVP PR raises the same versioned aggregate to837."
+      "limitations": "No hosted duration improvement is claimed until the final PR run completes. The foundation capacity was 813; dependent work raised the versioned aggregate to 837, and the private-production database-owner migration case raises the exact aggregate to 838."
     },
     "imageNavigationDiagnosticsVerification": {
       "sourceRevision": "deb5c2866aede77c4ee428b9dd54dded0806cd6c",
