@@ -85,7 +85,8 @@
       "summonRarity": "Standard S off-rate",
       "conceptBatch": "concepts-v4",
       "filename": "s-offrate-water-nerivelle.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "archetype": "tide otter"
     },
     {
       "order": 3,
@@ -111,20 +112,22 @@
       "summonRarity": "Standard S off-rate",
       "conceptBatch": "concepts-v4",
       "filename": "s-offrate-ghost-umbryss.png",
-      "ownerDecision": null
+      "ownerDecision": null,
+      "archetype": "grave kitten"
     },
     {
       "order": 5,
-      "id": "pet-s-ground-jadewarden",
-      "name": "Jadewarden",
+      "id": "pet-s-ground-jaderyx",
+      "name": "Jaderyx",
       "category": "s_offrate",
       "element": "ground",
       "powerClass": "S",
       "classLabel": "S · Off-rate",
       "summonRarity": "Standard S off-rate",
       "conceptBatch": "concepts-v4",
-      "filename": "s-offrate-ground-jadewarden.png",
-      "ownerDecision": null
+      "filename": "s-offrate-ground-jaderyx.png",
+      "ownerDecision": null,
+      "archetype": "jade qilin"
     },
     {
       "order": 6,
@@ -614,6 +617,19 @@
     "path": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v4",
     "count": 6,
     "state": "CONCEPT_REVIEW_REQUIRED",
-    "ledger": "specs/pet-arena/mvp-wave1-concepts-v4.json"
+    "ledger": "specs/pet-arena/mvp-wave1-concepts-v4.json",
+    "scaleSplit": {
+      "large": [
+        "Vulcaryn",
+        "Fulgarys",
+        "Jaderyx"
+      ],
+      "small": [
+        "Nerivelle",
+        "Umbryss",
+        "Solenne"
+      ]
+    },
+    "rule": "Three large imposing Pets (lion, beetle, qilin) and three small cute Pets with strong aura (otter, kitten, fox)."
   }
 }

@@ -4,7 +4,7 @@
   "title": "Aetheria Wave 1 S Off-rate Summon Pets (batch v4)",
   "state": "CONCEPT_REVIEW_REQUIRED",
   "releaseState": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
-  "purpose": "Six new S off-rate summon Pets, one per element, replacing the six A-appearance Standard-S concepts at the top of the power ladder.",
+  "purpose": "Six S off-rate summon Pets, one per element: three large imposing Pets and three small cute Pets with a disproportionately strong aura.",
   "provider": {
     "service": "Tripo Studio Image",
     "model": "GPT Image 2.5",
@@ -21,40 +21,53 @@
   "quotaAccounting": {
     "freeQuotaLimit": 100,
     "freeQuotaUsedBefore": 75,
-    "freeQuotaUsedAfter": 87,
-    "freeQuotaConsumed": 12,
-    "freeQuotaRemaining": 13,
+    "freeQuotaUsedAfter": 90,
+    "freeQuotaConsumed": 15,
+    "freeQuotaRemaining": 10,
     "imagesProduced": 6,
-    "correctiveRegenerations": 6,
+    "correctiveRegenerations": 9,
     "paidBalanceBefore": 1910,
     "paidBalanceAfter": 1910,
     "paidCreditsConsumed": 0,
-    "note": "6 concepts + 6 regenerations after the repeated three-ring regalia was rejected; all six regenerated with unique regalia."
+    "note": "6 first pass + 6 after the repeated three-ring regalia was rejected + 3 after the large/small split and elephant replacement."
+  },
+  "scaleSplit": {
+    "large": [
+      "Vulcaryn (ember lion)",
+      "Fulgarys (thunder beetle)",
+      "Jaderyx (jade qilin)"
+    ],
+    "small": [
+      "Nerivelle (tide otter)",
+      "Umbryss (grave kitten)",
+      "Solenne (prism fox)"
+    ],
+    "rule": "Three large imposing Pets and three small, cute Pets whose aura reads far above their size."
   },
   "revisionHistory": [
     {
       "filename": "s-offrate-fire-vulcaryn.png",
-      "reason": "Repeated three-ring regalia rejected; regenerated with unique regalia: ember lion."
+      "reason": "Repeated three-ring regalia rejected; unique flame mane, kiln-horn crest and ember cape."
     },
     {
       "filename": "s-offrate-water-nerivelle.png",
-      "reason": "Repeated three-ring regalia rejected; regenerated with unique regalia: tide koi sovereign."
+      "reason": "Repeated rings rejected; then reframed as a small cute tide otter with coral-pearl tiara and bubble aura."
     },
     {
       "filename": "s-offrate-electric-fulgarys.png",
-      "reason": "Repeated three-ring regalia rejected; regenerated with unique regalia: thunder beetle."
+      "reason": "Repeated three-ring regalia rejected; unique chrome antenna prongs, elytra and arc sparks."
     },
     {
       "filename": "s-offrate-ghost-umbryss.png",
-      "reason": "Repeated three-ring regalia rejected; regenerated with unique regalia: grave hound."
+      "reason": "Repeated rings rejected; then reframed as a small cute grave kitten with bell cowl and wisp lanterns."
     },
     {
-      "filename": "s-offrate-ground-jadewarden.png",
-      "reason": "Repeated three-ring regalia rejected; regenerated with unique regalia: jade elephant."
+      "filename": "s-offrate-ground-jaderyx.png",
+      "reason": "Elephant rejected as not fantasy enough; replaced with a large jade qilin, plus unique antlers and floating jade tablets."
     },
     {
       "filename": "s-offrate-light-solenne.png",
-      "reason": "Repeated three-ring regalia rejected; regenerated with unique regalia: prism fox."
+      "reason": "Repeated three-ring regalia rejected; unique nine prism tails, ivory-ray diadem and prism shards."
     }
   ],
   "powerClasses": {
@@ -66,7 +79,7 @@
     "ladder": "S > A > B",
     "spec": "specs/pet-arena/power-tiers-mvp-wave1.md"
   },
-  "familyRule": "Each S off-rate pet: unique body plan + unique regalia; no shared rings, crowns or satellites. Wingless, weaponless, pet-scale A-pose.",
+  "familyRule": "Large group: lion, beetle, qilin. Small group: otter, kitten, fox. Each one has unique regalia; no shared rings, crowns or satellites; wingless, weaponless, pet-scale.",
   "reviewSheet": {
     "unified": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/review-all.html",
     "conceptDirectory": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v4/",
@@ -85,6 +98,7 @@
       "name": "Vulcaryn",
       "element": "fire",
       "archetype": "ember lion",
+      "scale": "large",
       "powerClass": "S",
       "classLabel": "S · Off-rate",
       "taskId": "243bb897-fea6-4dd7-bd01-4f1a6f18cb68",
@@ -107,20 +121,21 @@
       "canonicalId": "pet-s-water-nerivelle",
       "name": "Nerivelle",
       "element": "water",
-      "archetype": "tide koi sovereign",
+      "archetype": "tide otter",
+      "scale": "small",
       "powerClass": "S",
       "classLabel": "S · Off-rate",
-      "taskId": "1ffb3b84-175b-4184-bafb-21a2c7ad53f1",
-      "freeCounterBefore": 82,
-      "freeCounterAfter": 83,
+      "taskId": "fc68687e-4b7f-4207-805d-514064609d88",
+      "freeCounterBefore": 89,
+      "freeCounterAfter": 90,
       "paidCreditsConsumed": 0,
       "width": 1536,
       "height": 1152,
-      "bytes": 2548730,
-      "sha256": "c82451d4554a88fbea450a23d4ffbc50ea95001fc60cb3980bda312e423784fd",
-      "promptSha256": "8fa018e970ef0bed907b20ddf2a6dfef5fbaee1a7d4387a412e8963703150e6e",
-      "regenerations": 1,
-      "generatedAtUtc": "2026-11-24T12:54:15.445Z",
+      "bytes": 2904332,
+      "sha256": "da4ff346aeaa04d586c149d787bcf7213405a17cfbeee5b34a75af715c558ad4",
+      "promptSha256": "beacf2d87249ec02eb7891e37bdf95584fc95966523b5d1cf07693b4349dc914",
+      "regenerations": 2,
+      "generatedAtUtc": "2026-11-24T13:00:06.806Z",
       "ownerDecision": null,
       "ownerNote": null
     },
@@ -131,6 +146,7 @@
       "name": "Fulgarys",
       "element": "electric",
       "archetype": "thunder beetle",
+      "scale": "large",
       "powerClass": "S",
       "classLabel": "S · Off-rate",
       "taskId": "74a9b729-b526-4c4c-9008-0d960d7f1401",
@@ -153,43 +169,45 @@
       "canonicalId": "pet-s-ghost-umbryss",
       "name": "Umbryss",
       "element": "ghost",
-      "archetype": "grave hound",
+      "archetype": "grave kitten",
+      "scale": "small",
       "powerClass": "S",
       "classLabel": "S · Off-rate",
-      "taskId": "41f99697-eb5b-4fc1-b693-3241281f984b",
-      "freeCounterBefore": 84,
-      "freeCounterAfter": 85,
+      "taskId": "5cb2eaa2-e323-4fd2-ae46-9c19832664a7",
+      "freeCounterBefore": 88,
+      "freeCounterAfter": 89,
       "paidCreditsConsumed": 0,
       "width": 1536,
       "height": 1152,
-      "bytes": 2174978,
-      "sha256": "6d0cf3288d9142ec6587a5925d9760aa04161b05f16d2ea92b489f043b0e7cd8",
-      "promptSha256": "3b0b6b5902c430ea614b1ee9acd39e1f57b65e7ffb4940cb28a3702568d943cb",
-      "regenerations": 1,
-      "generatedAtUtc": "2026-11-24T12:55:24.520Z",
+      "bytes": 2556395,
+      "sha256": "fbb8f37addef6abfc707b9f59710b6d652ad57770793501a4906dcf099669040",
+      "promptSha256": "966ca917b1fd3d99041b0e184827e451ce14e1bc53f3f1ff296f4d784d031210",
+      "regenerations": 2,
+      "generatedAtUtc": "2026-11-24T12:59:31.422Z",
       "ownerDecision": null,
       "ownerNote": null
     },
     {
       "order": 5,
-      "filename": "s-offrate-ground-jadewarden.png",
-      "canonicalId": "pet-s-ground-jadewarden",
-      "name": "Jadewarden",
+      "filename": "s-offrate-ground-jaderyx.png",
+      "canonicalId": "pet-s-ground-jaderyx",
+      "name": "Jaderyx",
       "element": "ground",
-      "archetype": "jade elephant",
+      "archetype": "jade qilin",
+      "scale": "large",
       "powerClass": "S",
       "classLabel": "S · Off-rate",
-      "taskId": "a1ca0958-e019-44ef-862e-fb3045de2448",
-      "freeCounterBefore": 85,
-      "freeCounterAfter": 86,
+      "taskId": "5ddcf19f-97c6-4e57-8e26-afb4f4dd61c3",
+      "freeCounterBefore": 87,
+      "freeCounterAfter": 88,
       "paidCreditsConsumed": 0,
       "width": 1536,
       "height": 1152,
-      "bytes": 2403328,
-      "sha256": "6741ebac4fd17e5d7cdceb99864192a7961a08da6b7714a60381890b60ec1304",
-      "promptSha256": "1ade5249682add84cda826d06fd123984fc14acc079e2f74c984f46e86296974",
+      "bytes": 2624893,
+      "sha256": "284c93de29fd735dd414374bf168a759e0df55e7d5876a4ba7f05f985dda0fbe",
+      "promptSha256": "aea830f88896b9ca30464d68e1d81b64ea67222184fc6c6bbb2bdf91c68a3fb2",
       "regenerations": 1,
-      "generatedAtUtc": "2026-11-24T12:55:54.079Z",
+      "generatedAtUtc": "2026-11-24T12:58:58.472Z",
       "ownerDecision": null,
       "ownerNote": null
     },
@@ -200,6 +218,7 @@
       "name": "Solenne",
       "element": "light",
       "archetype": "prism fox",
+      "scale": "small",
       "powerClass": "S",
       "classLabel": "S · Off-rate",
       "taskId": "a63a3353-0ce1-46cc-bd5e-ab368dde92c3",

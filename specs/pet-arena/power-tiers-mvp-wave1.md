@@ -79,19 +79,21 @@ and the concept ledgers. Machine-readable list: [power-tiers-mvp-wave1.json](pow
 
 ## 6. S off-rate batch (v4)
 
-Six new summons, one per element, each with a unique body plan and regalia:
+Six new summons, one per element, split into two size groups:
 
-| Element | Name | Body plan | Unique regalia |
-| --- | --- | --- | --- |
-| Fire | Vulcaryn | Ember lion | Flame-glass petal mane, six kiln-horn crest points, ember cape |
-| Water | Nerivelle | Tide koi | Coral-pearl tiara, tideglass shoulder veils, bubbles |
-| Electric | Fulgarys | Thunder beetle | Chrome antenna prongs, elytra shell, branch-arc sparks |
-| Ghost | Umbryss | Grave hound | Bell-cowled mourning veil, lantern chest core, wisp lanterns |
-| Ground | Jadewarden | Jade elephant | Terraced stone tusks, jade forehead plate, chalk mantle |
-| Light | Solenne | Prism fox | Nine faceted prism tails, ivory-ray diadem, prism shards |
+| Group | Element | Name | Body plan | Unique regalia |
+| --- | --- | --- | --- | --- |
+| Large | Fire | Vulcaryn | Ember lion | Flame-glass petal mane, six kiln-horn crest points, ember cape |
+| Large | Electric | Fulgarys | Thunder beetle | Chrome antenna prongs, elytra shell, branch-arc sparks |
+| Large | Ground | Jaderyx | Jade qilin | Branching stone antlers, terraced jade scales, floating jade tablets |
+| Small | Water | Nerivelle | Tide otter | Coral-pearl tiara, tideglass scarf, bubble aura |
+| Small | Ghost | Umbryss | Grave kitten | Bell cowl, lantern chest core, wisp lanterns |
+| Small | Light | Solenne | Prism fox | Nine faceted prism tails, ivory-ray diadem, prism shards |
 
-The first pass gave every pet the same three floating rings; that was rejected as non-unique and all six were regenerated. Shared motif such as
-floating rings, identical crowns or matching satellites is forbidden across the S off-rate family.
+- **Large group**: big, cool, physically dominant — lion, beetle, qilin.
+- **Small group**: compact and cute with oversized eyes, but surrounded by a disproportionately strong aura — otter, kitten, fox.
+- The first pass gave every pet the same three floating rings; that was rejected as non-unique. The elephant was also rejected as not fantasy enough and replaced by the qilin.
+- Shared motif such as floating rings, identical crowns or matching satellites is forbidden across the S off-rate family.
 
 ## 7. Relationship to the locked roster
 

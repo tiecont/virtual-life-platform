@@ -101,7 +101,8 @@ rarity or a stat block. **S** covers the six S off-rate summons, the six map leg
 a badge only — S gold `#E9C46A`, A violet `#B9A6F2`, B teal `#7FE0D0`. Class never recolours a creature or changes its element palette,
 silhouette, materials or evolution modules, and the badge must not cover the face, core, board tile or target indicator. S off-rate Pets
 each carry one unique regalia language (crest, tiara, antenna prongs, bell cowl, forehead plate, diadem); a shared motif such as identical
-floating rings is forbidden across the family.
+floating rings is forbidden across the family. The family splits into three **large imposing** Pets (lion, beetle, qilin) and three
+**small, cute, high-aura** Pets (otter, kitten, fox) whose elemental aura reads far above their body size.
 
 ## 9. Review and cost rules
 
